@@ -1,0 +1,7 @@
+832x1344
+
+21 states
+
+height: 64
+width: 64
+
