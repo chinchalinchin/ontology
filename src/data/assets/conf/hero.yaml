@@ -1,82 +1,83 @@
 entity:
-  inital:
-    x: 0
-    y: 0
-  width: 64
-  height: 64
-  sheets:
-    compose:
-      - filepath: body/male_human_ivory_sheet.png
-      - filepath: apparel/hair_messy_red.png
-      - filepath: apparel/legs_pants_green.png
-      - filepath: apparel/torso_male_shirt_green.png
-  states:
-    # Cast
-    - cast_up:
-        row: 0
-        frames: 7
-    - cast_left:
-        row: 1
-        frames: 7
-    - cast_down:
-        row: 2
-        frames: 7
-    - cast_right:
-        row: 3
-        frames: 7
-    # Thrust
-    - thrust_up:
-        row: 4
-        frames: 8
-    - thrust_left:
-        row: 5
-        frames: 8
-    - thrust_down:
-        row: 6
-        frames: 8
-    - thrust_right:
-        row: 7
-        frames: 8
-    # Walk
-    - walk_up:
-        row: 8
-        frames: 9
-    - walk_left:
-        row: 9
-        frames: 9
-    - walk_down:
-        row: 10
-        frames: 9
-    - walk_right: 
-        row: 11 
-        frames: 9
-    # Slash
-    - slash_up:
-        row: 12
-        frames: 6
-    - slash_left:
-        row: 13
-        frames: 6
-    - slash_down:
-        row: 14
-        frames: 6
-    - slash_right:
-        row: 15
-        frames: 6
-    # Shoot
-    - shoot_up:
-        row: 16
-        frames: 13
-    - shoot_left:
-        row: 17
-        frames: 13
-    - shoot_down:
-        row: 18
-        frames: 13
-    - shoot_right:
-        row: 19
-        frames: 13
-    # Death
-    - death:
-        row: 20
-        frames: 6
+    initial:
+        x: 0
+        y: 0
+    dimensions:
+        width: 64
+        height: 64
+    sheets:
+        compose:
+        - filepath: body/male_human_ivory_sheet.png
+        - filepath: apparel/hair_messy_red.png
+        - filepath: apparel/legs_pants_green.png
+        - filepath: apparel/torso_male_shirt_green.png
+    states:
+        # Cast
+        - cast_up:
+            row: 0
+            frames: 7
+        - cast_left:
+            row: 1
+            frames: 7
+        - cast_down:
+            row: 2
+            frames: 7
+        - cast_right:
+            row: 3
+            frames: 7
+        # Thrust
+        - thrust_up:
+            row: 4
+            frames: 8
+        - thrust_left:
+            row: 5
+            frames: 8
+        - thrust_down:
+            row: 6
+            frames: 8
+        - thrust_right:
+            row: 7
+            frames: 8
+        # Walk
+        - walk_up:
+            row: 8
+            frames: 9
+        - walk_left:
+            row: 9
+            frames: 9
+        - walk_down:
+            row: 10
+            frames: 9
+        - walk_right: 
+            row: 11 
+            frames: 9
+        # Slash
+        - slash_up:
+            row: 12
+            frames: 6
+        - slash_left:
+            row: 13
+            frames: 6
+        - slash_down:
+            row: 14
+            frames: 6
+        - slash_right:
+            row: 15
+            frames: 6
+        # Shoot
+        - shoot_up:
+            row: 16
+            frames: 13
+        - shoot_left:
+            row: 17
+            frames: 13
+        - shoot_down:
+            row: 18
+            frames: 13
+        - shoot_right:
+            row: 19
+            frames: 13
+        # Death
+        - death:
+            row: 20
+            frames: 6

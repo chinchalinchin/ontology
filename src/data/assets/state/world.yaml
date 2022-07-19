@@ -1,0 +1,8 @@
+dimensions:
+  width: 8000
+  height: 6000
+
+tiles:
+  apartment_wall:
+    x: 400
+    y: 400
