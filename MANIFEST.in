@@ -1,0 +1,3 @@
+include src/onta/data/assets/*
+
+exclude src/onta/tests/**
