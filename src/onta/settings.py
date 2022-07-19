@@ -13,7 +13,7 @@ ASSET_DIR = os.path.join(SRC_DIR, 'data', 'assets')
 CONF_DIR = os.path.join(ASSET_DIR, 'conf')
 """Directory containing application configuration"""
 
-SPRITE_DIR = os.path.join(ASSET_DIR, 'sprites')
+IMG_DIR = os.path.join(ASSET_DIR, 'img')
 """Diretory containing spritesheets"""
 
 DEFAULT_WIDTH = int(os.environ.setdefault('DEFAULT_WIDTH', '800'))

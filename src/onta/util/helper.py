@@ -1,9 +1,6 @@
 from math import trunc, log10, floor
 from typing import Dict, List, Tuple
 
-from scrilla.static import constants
-
-
 def truncate(number: float, digits: int) -> float:
     stepper = 10.0 ** digits
     return trunc(stepper * number) / stepper

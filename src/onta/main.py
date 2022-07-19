@@ -11,19 +11,19 @@ log = logger.Logger('ontology.onta.main', settings.LOG_LEVEL)
 
 def be():
     app, game = view.init(), view.view()
-    game_loop = threading.Thread(target=loop, daemon=True)
+    game_loop = threading.Thread(target=do, daemon=True)
     game_loop.start()
     game.show()
-    sys.exit(app.exec_())
-
-def loop():
+    view.quit(app)
+    
+def do():
     while True:
         user_input = control.poll()
         log.debug(f'User Input: {user_input}', 'loop')
 
         world_state = world.iterate(user_input)
         log.debug(f'World State: {world_state}', 'loop')
-        
+
         view.render(world_state)
 
 if __name__=="__main__":
