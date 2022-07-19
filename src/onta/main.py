@@ -1,19 +1,30 @@
 import sys
-from PySide6 import QtWidgets, QtGui
+import threading
 
 import onta.view as view
+import onta.control as control
+import onta.world as world
+import onta.settings as settings
+import onta.util.logger as logger
+
+log = logger.Logger('ontology.onta.main', settings.LOG_LEVEL)
 
 def be():
-    app = QtWidgets.QApplication([])
-    game = view.view()
-    game.resize(800, 800)
-    center = QtGui.QScreen.availableGeometry(
-        QtWidgets.QApplication.primaryScreen()).center()
-    geo = game.frameGeometry()
-    geo.moveCenter(center)
-    game.move(geo.topLeft())
+    app, game = view.init(), view.view()
+    game_loop = threading.Thread(target=loop, daemon=True)
+    game_loop.start()
     game.show()
     sys.exit(app.exec_())
+
+def loop():
+    while True:
+        user_input = control.poll()
+        log.debug(f'User Input: {user_input}', 'loop')
+
+        world_state = world.iterate(user_input)
+        log.debug(f'World State: {world_state}', 'loop')
+        
+        view.render(world_state)
 
 if __name__=="__main__":
     be()

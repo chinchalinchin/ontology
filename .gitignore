@@ -1,4 +1,6 @@
-dist
-src/ontology.egg-info
+**/dist
 **/*.pyc
-.vscode
+**/__pycache__
+**/.vscode
+
+src/ontology.egg-info

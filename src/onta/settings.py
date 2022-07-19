@@ -16,4 +16,11 @@ CONF_DIR = os.path.join(ASSET_DIR, 'conf')
 SPRITE_DIR = os.path.join(ASSET_DIR, 'sprites')
 """Diretory containing spritesheets"""
 
-SHEET_SIZE = (832, 1344)
+DEFAULT_WIDTH = int(os.environ.setdefault('DEFAULT_WIDTH', '800'))
+"""Default GUI width"""
+
+DEFAULT_HEIGHT = int(os.environ.setdefault('DEFAULT_HEIGHT', '600'))
+"""Default GUI height"""
+
+LOG_LEVEL = "DEBUG"
+"""Log level for capturing stdout"""
