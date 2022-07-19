@@ -1,0 +1,4 @@
+dist
+src/ontology.egg-info
+**/*.pyc
+.vscode

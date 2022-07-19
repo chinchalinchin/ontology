@@ -1,8 +1,9 @@
 entity:
-  x:
-  y:
-  width:
-  height:
+  inital:
+    x: 0
+    y: 0
+  width: 64
+  height: 64
   sheets:
     compose:
       - filepath: body/female_human_ivory_sheet.png
