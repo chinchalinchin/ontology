@@ -1,6 +1,6 @@
 apartment_wall:
   image:
-    file: tiles/apartment.png
+    file: apartment.png
     position:
       x: 2
       y: 0
@@ -16,7 +16,7 @@ apartment_wall:
 
 apartment_roof:
   image:
-    file: tiles/apartment.png
+    file: apartment.png
     position:
       x: 0
       y: 96
@@ -32,7 +32,7 @@ apartment_roof:
 
 apartment_steps:
   image: 
-    file: tiles/apartment.png
+    file: apartment.png
     position:
       x: 128
       y: 16
@@ -45,7 +45,7 @@ apartment_steps:
 
 apartment_door:
   image:
-    file: tiles/apartment.png
+    file: apartment.png
     position: 
       x: 160
       y: 0
@@ -57,7 +57,7 @@ apartment_door:
 
 apartment_chimney:
   image:
-    file: tiles/apartment.png
+    file: apartment.png
     position: 
       x: 199
       y: 11

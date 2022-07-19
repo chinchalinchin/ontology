@@ -1,9 +1,17 @@
 from ..loader import parser
 
-HERO_KEYS = ['initial', 'dimensions', 'sheets', 'states']
+import pytest
 
-def test_hero_configuration():
-    conf = parser.hero_configuration()
-    conf_keys = list(conf['entity'].keys())
-    assert conf.get('entity') is not None
-    assert all(key in HERO_KEYS for key in conf_keys)
+
+@pytest.mark.parametrize('obj,el,keys',[
+    ('hero', 'hero', ['initial', 'dimensions', 'sheets', 'states']),
+    ('tiles', 'apartment_wall', ['image', 'properties']),
+    ('tiles', 'apartment_roof', ['image', 'properties']),
+    ('tiles', 'apartment_steps', ['image', 'properties']),
+    ('tiles', 'apartment_door', ['image', 'properties']),
+    ('tiles', 'apartment_chimney', ['image', 'properties']),
+])
+def test_configuration(obj, el, keys):
+    conf = parser.configuration(obj)
+    assert conf.get(el) is not None
+    assert all(key in keys for key in list(conf[el].keys()))

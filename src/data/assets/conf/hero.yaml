@@ -1,4 +1,4 @@
-entity:
+hero:
     initial:
         x: 0
         y: 0
@@ -7,10 +7,10 @@ entity:
         height: 64
     sheets:
         compose:
-        - filepath: body/male_human_ivory_sheet.png
-        - filepath: apparel/hair_messy_red.png
-        - filepath: apparel/legs_pants_green.png
-        - filepath: apparel/torso_male_shirt_green.png
+        - file: body/male_human_ivory_sheet.png
+        - file: apparel/hair_messy_red.png
+        - file: apparel/legs_pants_green.png
+        - file: apparel/torso_male_shirt_green.png
     states:
         # Cast
         - cast_up:

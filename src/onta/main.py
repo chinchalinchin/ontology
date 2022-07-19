@@ -1,4 +1,3 @@
-import sys
 import threading
 
 import onta.view as view
@@ -15,7 +14,7 @@ def be():
     game_loop.start()
     game.show()
     view.quit(app)
-    
+
 def do():
     while True:
         user_input = control.poll()
