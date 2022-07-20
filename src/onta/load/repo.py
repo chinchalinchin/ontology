@@ -70,12 +70,6 @@ class Repo():
                 state_key = list(state_conf.keys())[0]
                 state_row = state_conf[state_key]['row']
                 state_frames = state_conf[state_key]['frames']
-
-                print('state_key', state_key)
-                print('state_row', state_row)
-                print('state_frames', state_frames)
-                print('sprite_dim', sprite_dim)
-
                 self.sprites[sprite_conf_key][state_key] = []
 
                 start_y = state_row * sprite_dim[1]
@@ -94,11 +88,6 @@ class Repo():
                     i = 0
                     for sheet in crop_sheets:
                         sprite_state_frame.paste(sheet, (0,0), sheet)
-                        if i in [0, 1, 2, 3]:
-                            sprite_state_frame.show()
-                        if i == 3:
-                            exit()
-                        i+=1
 
                     self.sprites[sprite_conf_key][state_key].append(sprite_state_frame)
 

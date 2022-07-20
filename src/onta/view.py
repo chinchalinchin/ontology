@@ -113,6 +113,6 @@ class Renderer():
         hero_position = (game_world.hero['position']['x'], game_world.hero['position']['y'])
         hero_state, hero_frame = game_world.hero['state'], game_world.hero['frame']
         hero_frame = repository.get_sprite('hero', hero_state, hero_frame)      
-        self.world_frame.paste(hero_frame, hero_position)
+        self.world_frame.paste(hero_frame, hero_position, hero_frame)
 
     
