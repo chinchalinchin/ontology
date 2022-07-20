@@ -43,10 +43,9 @@ class Renderer():
         # they pass through and return to main.py
         self._render_tiles(static_world, repository)
         self._render_struts(static_world, repository)
-        
+
     def render(self, game_world: world.World, view_widget: QtWidgets.QWidget, repo: repo.Repo):
         view_frame = view_widget.layout().itemAt(0).widget() 
-        view_frame.hide()
         # frame = gui.qimage_to_image(view_frame.pixmap().toImage())
    
         self._render_objects()
@@ -54,8 +53,6 @@ class Renderer():
         qim = ImageQt(self.world_frame)
         pix = QtGui.QPixmap.fromImage(qim)
         view_frame.setPixmap(pix)
-        view_frame.show()
-
         return view_widget
 
 
@@ -72,9 +69,12 @@ class Renderer():
             log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
 
             for set_conf in group_sets:
-                # group_conf measured in tiles, so scale by pixels per tile
-                start = (set_conf['start']['x']*settings.TILE_DIM[0], 
-                    set_conf['start']['y']*settings.TILE_DIM[1])
+                if set_conf['start']['relative']:
+                    start = (set_conf['start']['x']*settings.TILE_DIM[0], 
+                        set_conf['start']['y']*settings.TILE_DIM[1])
+                else:
+                    start = (set_conf['start']['x'], set_conf['start']['y'])
+
                 set_dim = (set_conf['dim']['w'], set_conf['dim']['h'])
 
                 log.debug(f'Rendering group set at {start[0], start[1]} with dimensions {set_dim[0], set_dim[1]}', 'Repo._render_tiles')
@@ -86,7 +86,25 @@ class Renderer():
                         self.world_frame.paste(group_tile, dim)
 
     def _render_struts(self, game_world: world.World, repository: repo.Repo,):
-        pass
+        log.debug('Rendering strut sets', 'Repo._render_tiles')
+        struts = game_world.strutsets
+
+        for group_key, group_conf in struts.items():
+            group_strut = repository.get_asset('struts', group_key)
+            group_sets = group_conf['sets']
+
+            log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
+
+            for set_conf in group_sets:
+                if set_conf['start']['relative']:
+                    start = (set_conf['start']['x']*settings.TILE_DIM[0], 
+                        set_conf['start']['y']*settings.TILE_DIM[1])
+                else:
+                    start = (set_conf['start']['x'], set_conf['start']['y'])
+
+                log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_struts')
+
+                self.world_frame.paste(group_strut, start)
 
     def _render_objects(self):
         pass

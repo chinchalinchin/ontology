@@ -21,7 +21,7 @@ apartment_roof:
       x: 0
       y: 96
     size: 
-      width: 97
+      width: 96
       height: 96
   properties:
     hitbox:
