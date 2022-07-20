@@ -43,7 +43,7 @@ class Renderer():
         # they pass through and return to main.py
         self._render_tiles(static_world, repository)
         self._render_struts(static_world, repository)
-
+        
     def render(self, game_world: world.World, view_widget: QtWidgets.QWidget, repo: repo.Repo):
         view_frame = view_widget.layout().itemAt(0).widget() 
         view_frame.hide()
@@ -81,7 +81,8 @@ class Renderer():
                 
                 for i in range(set_dim[0]):
                     for j in range(set_dim[1]):
-                        dim = (start[0]*i, start[1]*j)
+                        dim = (start[0] + settings.TILE_DIM[0]*i, 
+                                start[1] + settings.TILE_DIM[1]*j)
                         self.world_frame.paste(group_tile, dim)
 
     def _render_struts(self, game_world: world.World, repository: repo.Repo,):

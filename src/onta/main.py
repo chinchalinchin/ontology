@@ -41,8 +41,8 @@ def do(game_view: QtWidgets.QWidget):
         sleep_time = ms_per_frame - diff
 
         if sleep_time >= 0:
-            log.debug(f'Loop time delta: {diff} ms', 'do')
-            log.debug(f'Sleeping excess period - delta: {sleep_time}', 'do')
+            log.verbose(f'Loop time delta: {diff} ms', 'do')
+            log.verbose(f'Sleeping excess period - delta: {sleep_time}', 'do')
             time.sleep(sleep_time/1000)
 
 if __name__=="__main__":
