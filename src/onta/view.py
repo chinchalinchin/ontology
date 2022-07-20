@@ -35,57 +35,59 @@ def view() -> QtWidgets.QWidget:
 
     return view_widget
 
-def render(game_world: world.World, view: QtWidgets.QWidget, repo: repo.Repo):
-    view_frame = view.layout().itemAt(0).widget()
-    view_frame.hide()
+class Renderer():
+    world_frame = None
 
-    _render_tiles(game_world, view, repo)
-    _render_struts()
+    def __init__(self, static_world, repository):
+        # no references are kept to static_world, repository
+        # they pass through and return to main.py
+        self._render_tiles(static_world, repository)
+        self._render_struts(static_world, repository)
 
-    view_frame.show()
-    return view
+    def render(self, game_world: world.World, view_widget: QtWidgets.QWidget, repo: repo.Repo):
+        view_frame = view_widget.layout().itemAt(0).widget() 
+        view_frame.hide()
+        # frame = gui.qimage_to_image(view_frame.pixmap().toImage())
+   
+        self._render_objects()
+
+        qim = ImageQt(self.world_frame)
+        pix = QtGui.QPixmap.fromImage(qim)
+        view_frame.setPixmap(pix)
+        view_frame.show()
+
+        return view_widget
 
 
-def _render_tiles(game_world: world.World, view: QtWidgets.QWidget, repository: repo.Repo) -> QtWidgets.QWidget:
-    log.debug('Rendering tile sets', '_render_tiles')
-    frame = Image.new(settings.IMG_MODE, game_world.dimensions, settings.IMG_BLANK)
+    def _render_tiles(self, game_world: world.World, repository: repo.Repo) -> None:
+        log.debug('Rendering tile sets', 'Repo._render_tiles')
 
-    tiles = game_world.tilesets
+        self.world_frame = gui.new_image(game_world.dimensions)
+        tiles = game_world.tilesets
 
-    for group_key, group_conf in tiles.items():
-        group_tile = repository.get_asset('tiles', group_key)
-        group_sets = group_conf['sets']
-        log.debug(f'Rendering {group_key} tiles', 'render_tiles')
+        for group_key, group_conf in tiles.items():
+            group_tile = repository.get_asset('tiles', group_key)
+            group_sets = group_conf['sets']
 
-        for group_conf in group_sets:
-            # group_conf measured in tiles, so scale by pixels per tile
-            start = (group_conf['start']['x']*settings.TILE_DIM[0], 
-                group_conf['start']['y']*settings.TILE_DIM[1])
-            group_dim = (group_conf['dim']['w']*settings.TILE_DIM[0], 
-                group_conf['dim']['h']*settings.TILE_DIM[1])
+            log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
 
-            log.debug(f'Rendering group set at ({start[0]}, {start[1]}) with dimensions ({group_dim[0], group_dim[1]})', '_render_tiles')
-            
-            for i in range(group_dim[0]):
-                for j in range(group_dim[1]):
-                    dim = (start[0]*i, start[1]*j, group_dim[0], group_dim[1])
-                    print(dim)
-                    frame.paste(group_tile, dim)
+            for set_conf in group_sets:
+                # group_conf measured in tiles, so scale by pixels per tile
+                start = (set_conf['start']['x']*settings.TILE_DIM[0], 
+                    set_conf['start']['y']*settings.TILE_DIM[1])
+                set_dim = (set_conf['dim']['w'], set_conf['dim']['h'])
 
-    view_frame = view.layout().itemAt(0).widget()
+                log.debug(f'Rendering group set at {start[0], start[1]} with dimensions {set_dim[0], set_dim[1]}', 'Repo._render_tiles')
+                
+                for i in range(set_dim[0]):
+                    for j in range(set_dim[1]):
+                        dim = (start[0]*i, start[1]*j)
+                        self.world_frame.paste(group_tile, dim)
 
-    qim = ImageQt(frame)
-    pix = QtGui.QPixmap.fromImage(qim)
-    view_frame.setPixmap(pix)
-    return view
+    def _render_struts(self, game_world: world.World, repository: repo.Repo,):
+        pass
 
-def _render_struts(game_world: world.World, view: QtWidgets.QWidget, repository: repo.Repo):
-    view_frame = view.layout().itemAt(0).widget()
-    frame = gui.qimage_to_image(view_frame.pixmap().toImage())
+    def _render_objects(self):
+        pass
+
     
-    # TODO: render struts....
-
-    qim = ImageQt(frame)
-    pix = QtGui.QPixmap.fromImage(qim)
-    view_frame.setPixmap(pix)
-    return view

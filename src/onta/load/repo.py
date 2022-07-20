@@ -22,7 +22,7 @@ class Repo():
             self._init_assets(obj)
 
     def _init_assets(self, obj: str) -> None:
-        log.debug('Initializing assets', 'Repo._init_assets')
+        log.debug(f'Initializing {obj} assets', 'Repo._init_assets')
         objects_conf = conf.configuration(obj)
 
         for obj_key, obj_conf in objects_conf.items():
@@ -36,9 +36,9 @@ class Repo():
                 image_path = os.path.join(settings.STRUT_DIR, image_conf['file'])
 
             buffer = Image.open(image_path)
-            buffer.convert(settings.IMG_MODE)
+            buffer = buffer.convert(settings.IMG_MODE)
 
-            log.debug( f"{obj} {obj_key} Configuration: {buffer.format} - {buffer.size}x{buffer.mode}", 
+            log.debug( f"{obj} configuration: {buffer.format} - {buffer.size}x{buffer.mode}", 
                 'Repo._init_assets')
 
             if obj == OBJECTS[0]:

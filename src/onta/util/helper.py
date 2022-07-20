@@ -1,5 +1,9 @@
 from math import trunc, log10, floor
 from typing import Dict, List, Tuple
+import time
+
+def current_ms_time():
+    return round(time.time() * 1000)
 
 def truncate(number: float, digits: int) -> float:
     stepper = 10.0 ** digits

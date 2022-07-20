@@ -63,3 +63,8 @@ Color channels for a blank screen for the given rendering mode. If `IMG_MODE == 
 
 see [PIL docs](https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes) for more information.
 """
+
+# Game Loop Configuration
+
+FPS=25
+"""Framerate for the rendering engine"""

@@ -13,5 +13,5 @@ class World():
         self.tilesets = static_conf['tiles']
 
 
-    def iterate(self, user_input: dict):
-        pass
+    def iterate(self, user_input: dict) -> dict:
+        return {}
