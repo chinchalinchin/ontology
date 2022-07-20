@@ -13,6 +13,9 @@ ASSET_DIR = os.path.join(SRC_DIR, 'data', 'assets')
 CONF_DIR = os.path.join(ASSET_DIR, 'conf')
 """Directory containing application configuration"""
 
+STATE_DIR = os.path.join(ASSET_DIR, 'state')
+"""Directory containg state information"""
+
 IMG_DIR = os.path.join(ASSET_DIR, 'img')
 """Diretory containing image assets"""
 
