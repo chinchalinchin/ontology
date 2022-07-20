@@ -1,7 +1,8 @@
 include src/data/assets/conf/*
-include src/data/assets/objects/*
-include src/data/assets/sprites/*
-include src/data/assets/tiles/*
+include src/data/assets/img/effects*
+include src/data/assets/img/objects/*
+include src/data/assets/img/struts/*
+include src/data/assets/img/tiles/*
 include src/version.txt
 
 exclude src/onta/tests/**

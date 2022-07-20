@@ -4,8 +4,6 @@ from PySide6 import QtWidgets, QtGui
 
 from onta import settings
 
-APPLICATION = None
-
 def init() -> QtWidgets.QApplication:
     return QtWidgets.QApplication([])    
 

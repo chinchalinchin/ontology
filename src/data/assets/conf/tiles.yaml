@@ -1,72 +1,49 @@
-apartment_wall:
+coal:
   image:
-    file: apartment.png
-    position:
-      x: 2
-      y: 0
-    size:
-      width: 92
-      height: 96
-  properties:
-    hitbox:
-      offset_x:
-      offset_y:
-      width: 
-      height:
-
-apartment_roof:
-  image:
-    file: apartment.png
+    file: coal.png
     position:
       x: 0
-      y: 96
-    size: 
-      width: 97
-      height: 96
-  properties:
-    hitbox:
-      offset_x:
-      offset_y:
-      width: 
-      height:
-
-apartment_steps:
-  image: 
-    file: apartment.png
-    position:
-      x: 128
-      y: 16
+      y: 160
     size:
-      width: 32
-      height: 24
-  properties:
-    hitbox: null
-    
+      width: 96
+      height: 32
 
-apartment_door:
+grass:
   image:
-    file: apartment.png
-    position: 
-      x: 160
-      y: 0
-    size: 
-      width: 32
-      height: 48
-  properties:
-    hitbox: null
+    file: grass.png
+    position:
+      x: 0
+      y: 160
+    size:
+      width: 96
+      height: 32
 
-apartment_chimney:
+mud:
   image:
-    file: apartment.png
+    file: mud.png
     position: 
-      x: 199
-      y: 11
+      x: 0
+      y: 160
+    size:
+      width: 96
+      height: 32
+
+lava:
+  image:
+    file: lava.png
+    position:
+      x: 0 
+      y: 160
+    size:
+      width: 96
+      height: 32
+
+sand:
+  image: 
+    file: sand.png
+    position:
+      x: 0
+      y: 160
     size: 
-      width: 22
-      height: 45
-  properties:
-    hitbox:
-      offset_x:
-      offset_y:
-      width: 
-      height:
+      width: 96
+      height: 32

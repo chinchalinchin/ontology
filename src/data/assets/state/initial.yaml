@@ -1,0 +1,8 @@
+# dimensions are measured relative to the pixel size of one tile.
+dimensions:
+  # grid unit: 96px by 32px
+  width: 10
+  height: 10
+
+tiles:
+  
