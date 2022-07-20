@@ -1,10 +1,10 @@
-include src/data/assets/conf/*
-include src/data/assets/img/effects*
-include src/data/assets/img/objects/*
-include src/data/assets/img/struts/*
-include src/data/assets/img/tiles/*
-include src/data/assets/img/sprites/*
-include src/data/assets/state/*
+include src/data/conf/*
+include src/data/state/*
+include src/data/assets/effects*
+include src/data/assets/objects/*
+include src/data/assets/struts/*
+include src/data/assets/tiles/*
+include src/data/assets/sprites/*
 include src/version.txt
 
 exclude src/onta/tests/**

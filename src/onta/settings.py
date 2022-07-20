@@ -8,25 +8,25 @@ APP_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.dirname(APP_DIR)
 """Directory containing the project source"""
 
-ASSET_DIR = os.path.join(SRC_DIR, 'data', 'assets')
+DATA_DIR = os.path.join(SRC_DIR, 'data')
+"""Directory containg application data"""
+
+ASSET_DIR = os.path.join(DATA_DIR, 'assets')
 """Directory containing application assets."""
 
-CONF_DIR = os.path.join(ASSET_DIR, 'conf')
+CONF_DIR = os.path.join(DATA_DIR, 'conf')
 """Directory containing application configuration"""
 
-STATE_DIR = os.path.join(ASSET_DIR, 'state')
+STATE_DIR = os.path.join(DATA_DIR, 'state')
 """Directory containg state information"""
 
-IMG_DIR = os.path.join(ASSET_DIR, 'img')
-"""Diretory containing image assets"""
-
-SPRITE_DIR = os.path.join(IMG_DIR, 'sprites')
+SPRITE_DIR = os.path.join(ASSET_DIR, 'sprites')
 """Directory containing spritesheets"""
 
-TILE_DIR = os.path.join(IMG_DIR, 'tiles')
+TILE_DIR = os.path.join(ASSET_DIR, 'tiles')
 """Directory containing tile sheets"""
 
-STRUT_DIR = os.path.join(IMG_DIR, 'struts')
+STRUT_DIR = os.path.join(ASSET_DIR, 'struts')
 """Directory containing strut sheets"""
 
 # Debug Configuration
