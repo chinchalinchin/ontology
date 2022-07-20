@@ -1,0 +1,51 @@
+directions:
+  n:
+    input:
+      - up
+  nw:
+    input:
+      - up
+      - left
+  w:
+    input:
+      -left
+  sw:
+    input:
+      - down
+      - left
+  s:
+    input:
+      - down
+  se:
+    input:
+      - down
+      - right
+  e:
+    input:
+      - right
+  ne:
+    input:
+      - up
+      - right
+
+actions:
+  jump:
+    input:
+      - space
+  sprint:
+    input:
+      - tab
+  slash:
+    input:
+      - ctrl_left
+  thrust:
+    input:
+      - alt_left
+  shoot:
+    input:
+      - shift_left
+  cast:
+    input:
+      - tab
+  
+  

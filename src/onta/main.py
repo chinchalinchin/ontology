@@ -16,6 +16,7 @@ import onta.util.helper as helper
 log = logger.Logger('ontology.onta.main', settings.LOG_LEVEL)
 
 asset_repository = repo.Repo() 
+controller = control.Controller()
 game_world = world.World()
 render_engine = view.Renderer(game_world, asset_repository)
 
@@ -32,7 +33,7 @@ def do(game_view: QtWidgets.QWidget):
     while True:
         start_time = helper.current_ms_time()
 
-        user_input = control.poll()
+        user_input = controller.poll()
         game_world.iterate(user_input)
         render_engine.render(game_world, game_view, asset_repository)
 

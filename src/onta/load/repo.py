@@ -37,8 +37,7 @@ class Repo():
             elif layer == LAYERS[1]:
                 image_path = os.path.join(settings.STRUT_DIR, image_conf['file'])
 
-            buffer = Image.open(image_path)
-            buffer = buffer.convert(settings.IMG_MODE)
+            buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
             log.debug( f"{layer} configuration: {buffer.format} - {buffer.size}x{buffer.mode}", 
                 'Repo._init_assets')
@@ -62,8 +61,7 @@ class Repo():
 
             for sheet in sprite_sheets:
                 sheet_path = os.path.join(settings.SPRITE_DIR, sheet['file'])
-                sheet_img = Image.open(sheet_path)
-                sheet_img = sheet_img.convert(settings.IMG_MODE)
+                sheet_img = Image.open(sheet_path).convert(settings.IMG_MODE)
                 sheets.append(sheet_img)
 
             for state_conf in sprite_states:
