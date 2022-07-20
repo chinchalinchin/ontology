@@ -33,8 +33,8 @@ def do(game_view: QtWidgets.QWidget):
         start_time = helper.current_ms_time()
 
         user_input = control.poll()
-        world_state = game_world.iterate(user_input)
-        render_engine.render(world_state, game_view, asset_repository)
+        game_world.iterate(user_input)
+        render_engine.render(game_world, game_view, asset_repository)
 
         end_time = helper.current_ms_time()
         diff = end_time - start_time

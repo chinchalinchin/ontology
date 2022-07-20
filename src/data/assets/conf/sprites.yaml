@@ -1,16 +1,13 @@
 hero:
-    initial:
-        x: 0
-        y: 0
-    dimensions:
-        width: 64
-        height: 64
+    size:
+        w: 64
+        h: 64
     sheets:
         compose:
-        - file: body/male_human_ivory_sheet.png
-        - file: apparel/hair_messy_red.png
-        - file: apparel/legs_pants_green.png
-        - file: apparel/torso_male_shirt_green.png
+        - file: male_human_ivory_sheet.png
+        - file: head_hair_messy_red.png
+        - file: legs_pants_green.png
+        - file: torso_male_shirt_green.png
     states:
         # Cast
         - cast_up:

@@ -7,6 +7,7 @@ from PIL.ImageQt import ImageQt
 import onta.settings as settings
 import onta.world as world
 import onta.load.repo as repo
+import onta.load.conf as conf
 import onta.util.logger as logger
 import onta.util.gui as gui
 
@@ -37,6 +38,7 @@ def view() -> QtWidgets.QWidget:
 
 class Renderer():
     world_frame = None
+    hero_frame = None
 
     def __init__(self, static_world, repository):
         # no references are kept to static_world, repository
@@ -48,8 +50,9 @@ class Renderer():
         view_frame = view_widget.layout().itemAt(0).widget() 
         # frame = gui.qimage_to_image(view_frame.pixmap().toImage())
    
-        self._render_objects()
+        self._render_hero(game_world, repo)
 
+        # TODO: crop world_frame to view_window determined by user coordinates and game_world.dimensions
         qim = ImageQt(self.world_frame)
         pix = QtGui.QPixmap.fromImage(qim)
         view_frame.setPixmap(pix)
@@ -63,7 +66,7 @@ class Renderer():
         tiles = game_world.tilesets
 
         for group_key, group_conf in tiles.items():
-            group_tile = repository.get_asset('tiles', group_key)
+            group_tile = repository.get_layer('tiles', group_key)
             group_sets = group_conf['sets']
 
             log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
@@ -90,7 +93,7 @@ class Renderer():
         struts = game_world.strutsets
 
         for group_key, group_conf in struts.items():
-            group_strut = repository.get_asset('struts', group_key)
+            group_strut = repository.get_layer('struts', group_key)
             group_sets = group_conf['sets']
 
             log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
@@ -106,7 +109,10 @@ class Renderer():
 
                 self.world_frame.paste(group_strut, start)
 
-    def _render_objects(self):
-        pass
+    def _render_hero(self, game_world: world.World, repository: repo.Repo):
+        hero_position = (game_world.hero['position']['x'], game_world.hero['position']['y'])
+        hero_state, hero_frame = game_world.hero['state'], game_world.hero['frame']
+        hero_frame = repository.get_sprite('hero', hero_state, hero_frame)      
+        self.world_frame.paste(hero_frame, hero_position)
 
     

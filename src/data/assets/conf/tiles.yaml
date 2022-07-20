@@ -1,6 +1,14 @@
-# tile definitions
-# 
-# 
+
+# <group>
+#   image:
+#     file: str
+#     position:
+#       x: int
+#       y: int
+#     size:
+#       width: int
+#       height: int
+
 coal:
   image:
     file: coal.png
@@ -8,8 +16,8 @@ coal:
       x: 0
       y: 160
     size:
-      width: 96
-      height: 32
+      w: 96
+      h: 32
 
 grass:
   image:
@@ -18,8 +26,8 @@ grass:
       x: 0
       y: 160
     size:
-      width: 96
-      height: 32
+      w: 96
+      h: 32
 
 mud:
   image:
@@ -28,8 +36,8 @@ mud:
       x: 0
       y: 160
     size:
-      width: 96
-      height: 32
+      w: 96
+      h: 32
 
 lava:
   image:
@@ -38,8 +46,8 @@ lava:
       x: 0 
       y: 160
     size:
-      width: 96
-      height: 32
+      w: 96
+      h: 32
 
 sand:
   image: 
@@ -48,8 +56,8 @@ sand:
       x: 0
       y: 160
     size: 
-      width: 96
-      height: 32
+      w: 96
+      h: 32
 
 water:
   image:
@@ -58,5 +66,5 @@ water:
       x: 0
       y: 160
     size:
-      width: 96
-      height: 32
+      w: 96
+      h: 32

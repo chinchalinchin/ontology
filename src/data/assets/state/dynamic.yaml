@@ -1,0 +1,6 @@
+hero:
+  position:
+    x: 40
+    y: 40
+  state: walk_down
+  frame: 0

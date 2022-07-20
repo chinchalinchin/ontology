@@ -1,3 +1,22 @@
+
+# <group>
+#   image:
+#     file: str
+#     position:
+#       x: int
+#       y: int
+#     size:
+#       width: int
+#       height: int
+#     properties:
+#       hitbox:
+#       offset:
+#         x:
+#         y:
+#       dimensions:
+#         w:
+#         h:
+
 apartment_wall:
   image:
     file: apartment.png
@@ -5,14 +24,16 @@ apartment_wall:
       x: 2
       y: 0
     size:
-      width: 92
-      height: 96
+      w: 92
+      h: 96
   properties:
     hitbox:
-      offset_x:
-      offset_y:
-      width: 
-      height:
+      offset:
+        x: 
+        y:
+      size:
+        w:
+        h:
 
 apartment_roof:
   image:
@@ -21,14 +42,16 @@ apartment_roof:
       x: 0
       y: 96
     size: 
-      width: 96
-      height: 96
+      w: 96
+      h: 96
   properties:
     hitbox:
-      offset_x:
-      offset_y:
-      width: 
-      height:
+      offset:
+        x: 
+        y:
+      size:
+        w:
+        h:
 
 apartment_steps:
   image: 
@@ -37,8 +60,8 @@ apartment_steps:
       x: 128
       y: 16
     size:
-      width: 32
-      height: 24
+      w: 32
+      h: 24
   properties:
     hitbox: null
     
@@ -50,8 +73,8 @@ apartment_door:
       x: 160
       y: 0
     size: 
-      width: 32
-      height: 48
+      w: 32
+      h: 48
   properties:
     hitbox: null
 
@@ -62,11 +85,13 @@ apartment_chimney:
       x: 199
       y: 11
     size: 
-      width: 22
-      height: 45
+      w: 22
+      h: 45
   properties:
     hitbox:
-      offset_x:
-      offset_y:
-      width: 
-      height:
+      offset:
+        x: 
+        y:
+      size:
+        w:
+        h:

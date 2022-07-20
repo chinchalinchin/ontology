@@ -3,6 +3,7 @@ include src/data/assets/img/effects*
 include src/data/assets/img/objects/*
 include src/data/assets/img/struts/*
 include src/data/assets/img/tiles/*
+include src/data/assets/img/sprites/*
 include src/data/assets/state/*
 include src/version.txt
 
