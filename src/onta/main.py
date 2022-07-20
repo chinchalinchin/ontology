@@ -1,29 +1,35 @@
 import threading
 
+import PySide6.QtWidgets as QtWidgets
+
 import onta.view as view
 import onta.control as control
-import onta.world as world
 import onta.settings as settings
+import onta.world as world
+
+import onta.load.repo as repo
+
 import onta.util.logger as logger
 
 log = logger.Logger('ontology.onta.main', settings.LOG_LEVEL)
 
+repository = repo.Repo() 
+game_world = world.World()
+
 def be():
-    app, game = view.init(), view.view()
-    game_loop = threading.Thread(target=do, daemon=True)
+    app, game_view = view.init(), view.view()
+    game_loop = threading.Thread(target=do, args=(game_view,), daemon=True)
     game_loop.start()
-    game.show()
     view.quit(app)
 
-def do():
+def do(game_view: QtWidgets.QWidget):
     while True:
         user_input = control.poll()
         log.debug(f'User Input: {user_input}', 'loop')
 
-        world_state = world.iterate(user_input)
-        log.debug(f'World State: {world_state}', 'loop')
+        game_world.iterate(user_input)
 
-        view.render(world_state)
+        view.render(game_world, game_view, repository)
 
 if __name__=="__main__":
     be()
