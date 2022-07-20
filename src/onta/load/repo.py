@@ -21,7 +21,7 @@ class Repo():
     def __init__(self) -> None:
         for layer in LAYERS:
             self._init_layers(layer)
-            self._init_sprites()
+        self._init_sprites()
 
     def _init_layers(self, layer: str) -> None:
         log.debug(f'Initializing {layer} assets', 'Repo._init_assets')
@@ -52,6 +52,7 @@ class Repo():
 
     def _init_sprites(self) -> None:
         sprites_conf = conf.configuration('sprites')
+
         for sprite_conf_key, sprite_conf in sprites_conf.items():
             self.sprites[sprite_conf_key] = {}
             sprite_dim = (sprite_conf['size']['w'], sprite_conf['size']['h'])
@@ -69,24 +70,35 @@ class Repo():
                 state_key = list(state_conf.keys())[0]
                 state_row = state_conf[state_key]['row']
                 state_frames = state_conf[state_key]['frames']
+
+                print('state_key', state_key)
+                print('state_row', state_row)
+                print('state_frames', state_frames)
+                print('sprite_dim', sprite_dim)
+
                 self.sprites[sprite_conf_key][state_key] = []
 
                 start_y = state_row * sprite_dim[1]
                 for i in range(state_frames):
                     start_x = i*sprite_dim[0]
                     crop_box = (start_x, start_y, 
-                        start_x + sprite_dim[0], start_y +sprite_dim[1])
+                        start_x + sprite_dim[0], start_y + sprite_dim[1])
                     
-                    print(crop_box)
                     crop_sheets = []
 
                     for sheet in sheets:
                         crop_sheets.append(sheet.crop(crop_box))
-                    
+                
                     sprite_state_frame = gui.new_image(sprite_dim)
 
+                    i = 0
                     for sheet in crop_sheets:
-                        sprite_state_frame.paste(sheet, (0,0))
+                        sprite_state_frame.paste(sheet, (0,0), sheet)
+                        if i in [0, 1, 2, 3]:
+                            sprite_state_frame.show()
+                        if i == 3:
+                            exit()
+                        i+=1
 
                     self.sprites[sprite_conf_key][state_key].append(sprite_state_frame)
 
@@ -100,3 +112,8 @@ class Repo():
 
     def get_sprite(self, sprite: str, state: str, frame: int):
         return self.sprites[sprite][state][frame]
+
+if __name__=="__main__":
+    repository = Repo()
+    frame = repository.get_sprite('hero', 'walk_down', 1)
+    frame.show()

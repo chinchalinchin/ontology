@@ -50,14 +50,14 @@ SPRITESHEET_DIM = (832, 1344)
 TILE_DIM = (96, 32)
 """Dimensions of a tile"""
 
-IMG_MODE = "RGB"
+IMG_MODE = "RGBA"
 """
 Rendering mode for application images
 
 see [PIL docs](https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes) for more information.
 """
 
-IMG_BLANK = (255, 255, 255)
+IMG_BLANK = (255, 255, 255, 0)
 """
 Color channels for a blank screen for the given rendering mode. If `IMG_MODE == 'RGB'`, then this should be set to a 3-tuple such as (255,255,255). If `IMG_MODE == 'RGBA'`, then this should be set to (255, 255, 255, 1). And so on for a given image mode.
 
