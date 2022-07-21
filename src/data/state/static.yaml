@@ -6,7 +6,7 @@
 #   <group>:
 #     sets:
 #       - start:
-#           tile_units: bool
+#           tile_units: str # default | absolute | relative
 #           x: int
 #           y: int
 #         dim:
@@ -14,6 +14,7 @@
 #           h: int
 #
 # # NOTE: (w, h) dimensions are always expressed as integer-valued multiples of the tile dimensions.
+# # NOTE: default == scaled by (96px, 32px), absolute == pixel value, relative == scaled by tile_dim
 dim:
   # grid unit: 96px by 32px
   w: 10
@@ -24,7 +25,7 @@ tiles:
     sets:
       # top
       - start:
-          tile_units: true
+          tile_units: relative
           x: 0
           y: 0
         dim:
@@ -33,7 +34,7 @@ tiles:
         cover: false
       # left
       - start: 
-          tile_units: true
+          tile_units: relative
           x: 0
           y: 1
         dim:
@@ -42,7 +43,7 @@ tiles:
         cover: false
       # bottom
       - start:
-          tile_units: true
+          tile_units: relative
           x: 1
           y: 19
         dim:
@@ -51,7 +52,7 @@ tiles:
         cover: false
       # right
       - start: 
-          tile_units: true
+          tile_units: relative
           x: 9
           y: 1
         dim:
@@ -61,7 +62,7 @@ tiles:
   grass:
     sets:
       - start:
-          tile_units: true
+          tile_units: relative
           x: 1
           y: 1
         dim:
@@ -80,44 +81,44 @@ struts:
   apartment_wall:
     sets:
       - start:
-          tile_units: true
-          x: 2
-          y: 3
+          tile_units: absolute
+          x: 192
+          y: 96
         cover: false
       - start:
-          tile_units: true
-          x: 3
-          y: 3
+          tile_units: absolute
+          x: 288
+          y: 96
         cover: false
       - start:
-          tile_units: false
+          tile_units: absolute
           x: 480
           y: 96
         cover: false
       - start:
-          tile_units: false
+          tile_units: absolute
           x: 576
           y: 96
         cover: false
   apartment_roof:
     sets:
       - start:
-          tile_units: false
+          tile_units: absolute
           x: 190
           y: 0
         cover: true
       - start:
-          tile_units: false
+          tile_units: absolute
           x: 286
           y: 0
         cover: true
       - start:
-          tile_units: false
+          tile_units: absolute
           x: 478
           y: 0
         cover: true
       - start:
-          tile_units: false
+          tile_units: absolute
           x: 574
           y: 0
         cover: true
@@ -130,17 +131,17 @@ struts:
           y: 168
         cover: false
       - start:
-          tile_units: false
+          tile_units: absolute
           x: 320
           y: 168
         cover: false
       - start:
-          tile_units: false
+          tile_units: absolute
           x: 512
           y: 168
         cover: false
       - start:
-          tile_units: false
+          tile_units: absolute
           x: 608
           y: 168
         cover: false

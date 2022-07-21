@@ -25,6 +25,9 @@
 #       - state:
 #           row: int
 #           frames: int
+
+# # NOTE: blocking_states are states where user input is blocked until state animation finishes
+
 hero:
     size:
         w: 64
@@ -46,7 +49,6 @@ hero:
         - file: head_hair_messy_red.png
         - file: legs_pants_green.png
         - file: torso_male_shirt_green.png
-    # states where user input is blocked until state animation finishes
     blocking_states:
         - cast_up
         - cast_down
@@ -64,6 +66,7 @@ hero:
         - shoot_down
         - shoot_left
         - shoot_right
+        - death
     states:
         # Cast
         - cast_up:
@@ -143,6 +146,95 @@ hero:
         - shoot_left:
             row: 19
             frames: 13
+        # Death
+        - death:
+            row: 20
+            frames: 6
+
+heroine:
+    size:
+        w: 64
+        h: 64
+    properties:
+        hitbox:
+            offset:
+                x: 23
+                y: 3
+            size: 
+                w: 19
+                h: 61
+        walk: 3
+        run: 5
+        collide: 3
+    sheets:
+        compose:
+            - file: female_human_ivory_sheet.png
+            - file: head_female_hair_braid_red.png
+            - file: legs_pants_blue.png
+            - file: torso_female_shirt_blue.png
+    blocking_states:
+        - thrust_up
+        - thrust_down
+        - thrust_left
+        - thrust_right
+        - slash_up
+        - slash_down
+        - slash_left
+        - slash_right
+        - death
+    states:
+        # Thrust
+        - thrust_up:
+            row: 4
+            frames: 8
+        - thrust_right:
+            row: 5
+            frames: 8
+        - thrust_down:
+            row: 6
+            frames: 8
+        - thrust_left:
+            row: 7
+            frames: 8
+        # Walk
+        - walk_up:
+            row: 8
+            frames: 9
+        - walk_right:
+            row: 9
+            frames: 9
+        - walk_down:
+            row: 10
+            frames: 9
+        - walk_left: 
+            row: 11 
+            frames: 9
+        # Run
+        - run_up:
+            row: 8
+            frames: 9
+        - run_right:
+            row: 9
+            frames: 9
+        - run_down:
+            row: 10
+            frames: 9
+        - run_left: 
+            row: 11 
+            frames: 9
+        # Slash
+        - slash_up:
+            row: 12
+            frames: 6
+        - slash_right:
+            row: 13
+            frames: 6
+        - slash_down:
+            row: 14
+            frames: 6
+        - slash_left:
+            row: 15
+            frames: 6
         # Death
         - death:
             row: 20

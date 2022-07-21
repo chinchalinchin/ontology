@@ -92,7 +92,7 @@ class World():
     def _init_conf(self):
         """
         
-        Initialize configuration properties for in-game elements.
+        Initialize configuration properties for in-game elements in the memory.
         """
         struts_conf = conf.configuration('struts')
         sprites_conf = conf.configuration('sprites')
@@ -128,8 +128,12 @@ class World():
         self.strut_property_conf = {}
         
         for strut_key, strut_conf in struts_conf.items():
-            hitbox = strut_conf['properties']['hitbox']
             self.strut_property_conf[strut_key] = {}
+            hitbox = strut_conf['properties']['hitbox']
+
+            self.strut_property_conf[strut_key]['size'] = {}
+            self.strut_property_conf[strut_key]['size']['w'] = strut_conf['image']['size']['w']
+            self.strut_property_conf[strut_key]['size']['h'] = strut_conf['image']['size']['h']
 
             if hitbox is not None:
                 self.strut_property_conf[strut_key]['hitbox'] = (hitbox['offset']['x'], hitbox['offset']['y'],
@@ -169,9 +173,12 @@ class World():
             for i, strut_conf in enumerate(strutset):
 
                 if strutset_hitbox is not None:
-                    if strut_conf['start']['tile_units']:
+                    if strut_conf['start']['tile_units'] == 'default':
                         x = strut_conf['start']['x']*settings.TILE_DIM[0]
                         y = strut_conf['start']['y']*settings.TILE_DIM[1]
+                    if strut_conf['start']['tile_units'] == 'relative':
+                        x = strut_conf['start']['x']*strutset_props['size']['w']
+                        y = strut_conf['start']['y']*strutset_props['size']['h']
                     else:
                         x, y = strut_conf['start']['x'], strut_conf['start']['y']
                     

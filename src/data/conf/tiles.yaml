@@ -1,13 +1,13 @@
 ## Tile Configuration Syntax
-# <group>
+# <group>:
 #   image:
 #     file: str
 #     position:
 #       x: int
 #       y: int
 #     size:
-#       width: int
-#       height: int
+#       w: int
+#       h: int
 
 coal:
   image:
