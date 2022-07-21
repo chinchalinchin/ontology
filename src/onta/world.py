@@ -100,14 +100,18 @@ class World():
         self.sprite_state_conf = {}
 
         for sprite_key, sprite_conf in sprites_conf.items():
+            # transfer fields that don't require condensing
             self.sprite_state_conf[sprite_key] = {}
             self.sprite_state_conf[sprite_key]['size'] = {}
             self.sprite_state_conf[sprite_key]['size']['w'] = sprite_conf['size']['w']
             self.sprite_state_conf[sprite_key]['size']['h'] = sprite_conf['size']['h']
+            self.sprite_state_conf[sprite_key]['blocking_states'] = sprite_conf['blocking_states']
+
+            # condense state information to only info relevant to World 
+            #   i.e., the World doesn't care about the state image configuration
             for state_map in sprite_conf['states']:
                 state = list(state_map.keys())[0]
                 self.sprite_state_conf[sprite_key][state] = state_map[state]['frames']
-            self.sprite_state_conf[sprite_key]['blocking_states'] = sprite_conf['blocking_states']
 
         self.strut_property_conf = {}
         
@@ -160,9 +164,9 @@ class World():
                         x, y = strut_conf['start']['x'], strut_conf['start']['y']
                     
                     top_x, top_y = x + strutset_hitbox[0], y + strutset_hitbox[1]
-                    bottom_x, bottom_y = top_x + strutset_hitbox[2], top_y + strutset_hitbox[3] 
                     
-                    self.strutsets[strutset_key]['sets'][i]['hitbox'] = (top_x, top_y, bottom_x, bottom_y)
+                    self.strutsets[strutset_key]['sets'][i]['hitbox'] = (top_x, top_y,
+                        strutset_hitbox[2], strutset_hitbox[3])
                 else:
                     self.strutsets[strutset_key]['sets'][i]['hitbox'] = None
 
@@ -245,8 +249,8 @@ class World():
         hero_dim = (
             self.hero['position']['x'], 
             self.hero['position']['y'],
-            self.hero['position']['x'] + static_hero_conf['size']['w'],
-            self.hero['position']['y'] + static_hero_conf['size']['h']
+            static_hero_conf['size']['w'],
+            static_hero_conf['size']['h']
         )
         for strutset_conf in self.strutsets.values():
             sets = strutset_conf['sets']
@@ -254,7 +258,7 @@ class World():
             for strut in sets:
                 strut_hitbox = strut.get('hitbox')
                 if strut_hitbox is not None and calculator.intersection(hero_dim, strut_hitbox):
-                    print('hero collided with strut')
+                    log.debug(f'Detected player {hero_dim} collision with hitbox at {strut_hitbox}', 'World._calculate_collisions')
                 
 
     def save(self):

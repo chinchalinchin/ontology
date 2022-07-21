@@ -2,6 +2,14 @@ hero:
     size:
         w: 64
         h: 64
+    properties:
+        hitbox:
+            offset:
+                x: 
+                y:
+            size:
+                w:
+                h:
     # sheet order used to compose sprite
     sheets:
         compose:
