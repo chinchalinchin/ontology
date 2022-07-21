@@ -8,7 +8,7 @@ dim:
 #   <group>:
 #     sets:
 #       - start:
-#           relative: bool
+#           tile_units: bool
 #           x: int
 #           y: int
 #         dim:
@@ -19,7 +19,7 @@ tiles:
     sets:
       # top
       - start:
-          relative: true
+          tile_units: true
           x: 0
           y: 0
         dim:
@@ -27,7 +27,7 @@ tiles:
           h: 1
       # left
       - start: 
-          relative: true
+          tile_units: true
           x: 0
           y: 1
         dim:
@@ -35,7 +35,7 @@ tiles:
           h: 9
       # bottom
       - start:
-          relative: true
+          tile_units: true
           x: 1
           y: 9
         dim:
@@ -43,7 +43,7 @@ tiles:
           h: 1
       # right
       - start: 
-          relative: true
+          tile_units: true
           x: 9
           y: 1
         dim:
@@ -52,7 +52,7 @@ tiles:
   grass:
     sets:
       - start:
-          relative: true
+          tile_units: true
           x: 1
           y: 1
         dim:
@@ -63,43 +63,43 @@ tiles:
 #   <group_set>:
 #     sets:
 #       - start:
-#           relative: bool
+#           tile_units: bool
 #           x: int
 #           y: int
 struts:
   apartment_wall:
     sets:
       - start:
-          relative: true
+          tile_units: true
           x: 2
           y: 3
       - start:
-          relative: true
+          tile_units: true
           x: 3
           y: 3
       - start:
-          relative: false
+          tile_units: false
           x: 480
           y: 96
       - start:
-          relative: false
+          tile_units: false
           x: 576
           y: 96
   apartment_steps:
     sets:
       - start:
-          relative: false
+          tile_units: false
           x: 224
           y: 168
       - start:
-          relative: false
+          tile_units: false
           x: 320
           y: 168
       - start:
-          relative: false
+          tile_units: false
           x: 512
           y: 168
       - start:
-          relative: false
+          tile_units: false
           x: 608
           y: 168

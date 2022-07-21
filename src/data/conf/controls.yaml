@@ -8,7 +8,7 @@ directions:
       - left
   w:
     input:
-      -left
+      - left
   sw:
     input:
       - down

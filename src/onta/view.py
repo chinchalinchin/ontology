@@ -37,6 +37,7 @@ def view() -> QtWidgets.QWidget:
     return view_widget
 
 class Renderer():
+    static_frame = None
     world_frame = None
     hero_frame = None
 
@@ -50,6 +51,7 @@ class Renderer():
         view_frame = view_widget.layout().itemAt(0).widget() 
         # frame = gui.qimage_to_image(view_frame.pixmap().toImage())
    
+        self._render_static(game_world)
         self._render_hero(game_world, repo)
 
         # TODO: crop world_frame to view_window determined by user coordinates and game_world.dimensions
@@ -62,7 +64,7 @@ class Renderer():
     def _render_tiles(self, game_world: world.World, repository: repo.Repo) -> None:
         log.debug('Rendering tile sets', 'Repo._render_tiles')
 
-        self.world_frame = gui.new_image(game_world.dimensions)
+        self.static_frame = gui.new_image(game_world.dimensions)
         tiles = game_world.tilesets
 
         for group_key, group_conf in tiles.items():
@@ -72,7 +74,7 @@ class Renderer():
             log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
 
             for set_conf in group_sets:
-                if set_conf['start']['relative']:
+                if set_conf['start']['tile_units']:
                     start = (set_conf['start']['x']*settings.TILE_DIM[0], 
                         set_conf['start']['y']*settings.TILE_DIM[1])
                 else:
@@ -86,7 +88,7 @@ class Renderer():
                     for j in range(set_dim[1]):
                         dim = (start[0] + settings.TILE_DIM[0]*i, 
                                 start[1] + settings.TILE_DIM[1]*j)
-                        self.world_frame.paste(group_tile, dim)
+                        self.static_frame.paste(group_tile, dim)
 
     def _render_struts(self, game_world: world.World, repository: repo.Repo,):
         log.debug('Rendering strut sets', 'Repo._render_tiles')
@@ -99,7 +101,7 @@ class Renderer():
             log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
 
             for set_conf in group_sets:
-                if set_conf['start']['relative']:
+                if set_conf['start']['tile_units']:
                     start = (set_conf['start']['x']*settings.TILE_DIM[0], 
                         set_conf['start']['y']*settings.TILE_DIM[1])
                 else:
@@ -107,10 +109,14 @@ class Renderer():
 
                 log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_struts')
 
-                self.world_frame.paste(group_strut, start)
+                self.static_frame.paste(group_strut, start)
+    
+    def _render_static(self, game_world: world.World):
+        self.world_frame = gui.new_image(game_world.dimensions)
+        self.world_frame.paste(self.static_frame, (0,0))
 
     def _render_hero(self, game_world: world.World, repository: repo.Repo):
-        hero_position = (game_world.hero['position']['x'], game_world.hero['position']['y'])
+        hero_position = (int(game_world.hero['position']['x']), int(game_world.hero['position']['y']))
         hero_state, hero_frame = game_world.hero['state'], game_world.hero['frame']
         hero_frame = repository.get_sprite('hero', hero_state, hero_frame)      
         self.world_frame.paste(hero_frame, hero_position, hero_frame)
