@@ -47,18 +47,28 @@ class World():
             if self.hero['state'] != 'walk_up':
                 self.hero['frame'] = 0
                 self.hero['state'] = 'walk_up'
+            else:
+                self.hero['frame'] += 1
+            # TODO: needs to be aware of the number of frames in the state somehow.
+            # could call the sprites.yaml loader, but that's another io call. 
+            # should figure out another way to approach this...
             self.hero['position']['y'] -= speed
 
         elif user_input['s']:
             if self.hero['state'] != 'walk_down':
                 self.hero['frame'] = 0
                 self.hero['state'] = 'walk_down'
+            else:
+                self.hero['frame'] += 1
+
             self.hero['position']['y'] += speed
 
         elif user_input['nw'] or user_input['w'] or user_input['sw']:
             if self.hero['state'] != 'walk_right':
                 self.hero['frame'] = 0
                 self.hero['state'] = 'walk_right'
+            else:
+                self.hero['frame'] += 1
 
             if user_input['nw'] or user_input['sw']:    
                 proj = calculator.projection()
@@ -75,6 +85,8 @@ class World():
             if self.hero['state'] != 'walk_left':
                 self.hero['frame'] = 0
                 self.hero['state'] = 'walk_left'
+            else:
+                self.hero['frame'] += 1
 
             if user_input['se'] or user_input['ne']:
                 proj = calculator.projection()

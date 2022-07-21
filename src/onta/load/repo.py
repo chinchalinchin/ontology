@@ -24,7 +24,7 @@ class Repo():
         self._init_sprites()
 
     def _init_layers(self, layer: str) -> None:
-        log.debug(f'Initializing {layer} assets', 'Repo._init_assets')
+        log.debug(f'Initializing {layer} asset', 'Repo._init_assets')
         layers_conf = conf.configuration(layer)
 
         for layer_key, layer_conf in layers_conf.items():
@@ -39,7 +39,7 @@ class Repo():
 
             buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
-            log.debug( f"{layer} configuration: {buffer.format} - {buffer.size}x{buffer.mode}", 
+            log.debug( f"{layer_key} configuration: {buffer.format} - {buffer.size}x{buffer.mode}", 
                 'Repo._init_assets')
 
             if layer == LAYERS[0]:
