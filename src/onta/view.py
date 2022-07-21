@@ -65,7 +65,7 @@ class Renderer():
         return (crop_x, crop_y, crop_width, crop_height)
 
     def __init__(self, static_world, repository):
-        # NOTE: no references are kept to static_world OR repository
+        # NOTE: no references are kept to static_world or repository;
         # they pass through and return to main.py
         self._render_tiles(static_world, repository)
         self._render_struts(static_world, repository)
