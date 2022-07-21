@@ -3,8 +3,8 @@ import onta.settings as settings
 import onta.load.state as state
 import onta.load.conf as conf
 import onta.util.logger as logger
-import onta.util.calculator as calculator
-
+import onta.engine.calculator as calculator
+import onta.engine.collisions as collisions
 
 log = logger.Logger('ontology.onta.world', settings.LOG_LEVEL)
 
@@ -244,7 +244,7 @@ class World():
         if self.hero['frame'] >= static_hero_conf[self.hero['state']]:
             self.hero['frame'] = 0
 
-    def _calculate_collisions(self):
+    def _apply_physics(self):
         static_hero_conf = self.sprite_state_conf['hero']
         hero_dim = (
             self.hero['position']['x'], 
@@ -252,13 +252,16 @@ class World():
             static_hero_conf['size']['w'],
             static_hero_conf['size']['h']
         )
-        for strutset_conf in self.strutsets.values():
-            sets = strutset_conf['sets']
-            
-            for strut in sets:
-                strut_hitbox = strut.get('hitbox')
-                if strut_hitbox is not None and calculator.intersection(hero_dim, strut_hitbox):
-                    log.debug(f'Detected player {hero_dim} collision with hitbox at {strut_hitbox}', 'World._calculate_collisions')
+        if collisions.detect_hero_collision(hero_dim, self.strutsets):
+            speed = self.hero['properties']['speed']
+            if 'down' in self.hero['state']:
+                self.hero['position']['y'] -= speed
+            elif 'left' in self.hero['state']:
+                self.hero['position']['x'] -= speed
+            elif 'right' in self.hero['state']:
+                self.hero['position']['x'] += speed
+            else:
+                self.hero['position']['y'] += speed
                 
 
     def save(self):
@@ -271,4 +274,4 @@ class World():
         Update the world state.
         """
         self._update_hero(user_input)
-        self._calculate_collisions()
+        self._apply_physics()
