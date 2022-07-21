@@ -1,7 +1,6 @@
 
 import onta.settings as settings
 import onta.load.state as state
-import onta.load.conf as conf
 import onta.util.logger as logger
 import onta.engine.calculator as calculator
 import onta.engine.collisions as collisions
@@ -83,19 +82,19 @@ class World():
     dimensions = None
     hero = None
 
-    def __init__(self):
-        self._init_conf()
-        self._init_static_state()
-        self._init_dynamic_state()
+    def __init__(self, config, state_ao):
+        self._init_conf(config)
+        self._init_static_state(state_ao)
+        self._init_dynamic_state(state_ao)
         self._init_hitboxes()
 
-    def _init_conf(self):
+    def _init_conf(self, config):
         """
         
         Initialize configuration properties for in-game elements in the memory.
         """
-        struts_conf = conf.configuration('struts')
-        sprites_conf = conf.configuration('sprites')
+        struts_conf = config.configuration('struts')
+        sprites_conf = config.configuration('sprites')
 
         self.sprite_state_conf = {}
         self.sprite_property_conf = {}
@@ -141,11 +140,11 @@ class World():
             else:
                 self.strut_property_conf[strut_key]['hitbox'] = None
 
-    def _init_static_state(self):
+    def _init_static_state(self, state_ao):
         """
         Initialize the state for static in-game elements, i.e. elements that do not move and are not interactable.
         """
-        static_conf = state.get_state('static')
+        static_conf = state_ao.get_state('static')
         self.dimensions = (static_conf['dim']['w']*settings.TILE_DIM[0], 
             static_conf['dim']['h']*settings.TILE_DIM[1])
         self.tilesets = static_conf['tiles']
@@ -153,11 +152,11 @@ class World():
 
         log.debug(f'Initialized static world layer with dimensions {self.dimensions}', 'World._init_static_layer')
 
-    def _init_dynamic_state(self):
+    def _init_dynamic_state(self, state_ao):
         """
         Initialize the state for dynamic in-game elements, i.e.e elements that move and are interactable.
         """
-        dynamic_conf = state.get_state('dynamic')
+        dynamic_conf = state_ao.get_state('dynamic')
         self.hero = dynamic_conf['hero']
 
     def _init_hitboxes(self):

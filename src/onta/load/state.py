@@ -1,13 +1,19 @@
 
 import os
 import yaml
-import onta.settings as settings
 
-def get_state(obj: str) -> dict:
-    state_path = os.path.join(settings.STATE_DIR, f'{obj}.yaml')
-    with open(state_path, 'r') as infile:
-        conf = yaml.safe_load(infile)
-    return conf
+class State():
 
-def save_state(obj: str, state: dict):
-    pass
+    state_dir = None
+
+    def __init__(self, data_dir):
+        self.state_dir = os.path.join(data_dir, 'state')
+
+    def get_state(self, obj: str) -> dict:
+        state_path = os.path.join(self.state_dir, f'{obj}.yaml')
+        with open(state_path, 'r') as infile:
+            conf = yaml.safe_load(infile)
+        return conf
+
+    def save_state(self, obj: str, state: dict):
+        pass

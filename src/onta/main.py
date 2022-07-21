@@ -1,5 +1,7 @@
+import argparse
 import threading
 import time
+import sys
 
 import PySide6.QtWidgets as QtWidgets
 
@@ -7,33 +9,52 @@ import onta.view as view
 import onta.control as control
 import onta.settings as settings
 import onta.world as world
-
 import onta.load.repo as repo
-
+import onta.load.conf as conf
+import onta.load.state as state
 import onta.util.logger as logger
 import onta.util.helper as helper
 
 log = logger.Logger('ontology.onta.main', settings.LOG_LEVEL)
 
 
-def create():
+def parse_args(args):
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-o',
+        '--o',
+        '-ontology',
+        '--ontology',
+        action="store_const",
+        dest='ontology',
+        default=settings.DATA_DIR,
+    )
+    return parser.parse_args()
+
+def create(ontology_path: str):
     log.debug('Initializing controller...', 'create')
     controller = control.Controller()
 
+    log.debug('Intializing configuration access object...', 'create')
+    config = conf.Conf(ontology_path)
+
+    log.debug('Initializing state access object...', 'create')
+    state_ao = state.State(ontology_path)
+
     log.debug('Initializing asset repository...', 'create')
-    asset_repository = repo.Repo()
+    asset_repository = repo.Repo(config)
 
     log.debug('Initializing game world...', 'create')
-    game_world = world.World()
+    game_world = world.World(config, state_ao)
 
     log.debug('Initializing rendering engine...', 'create')
     render_engine = view.Renderer(game_world, asset_repository)
     return controller, game_world, render_engine, asset_repository
 
-def start():
+def start(ontology_path: str):
     log.debug('Creating GUI...', 'start')
     app, vw = view.init(), view.view()
-    cntl, wrld, eng, rep = create()
+    cntl, wrld, eng, rep = create(ontology_path)
 
     log.debug('Threading game...', 'start')
     game_loop = threading.Thread(
@@ -73,4 +94,7 @@ def do(
             time.sleep(sleep_time/1000)
 
 if __name__=="__main__":
-    start()
+    cli_args = sys.argv[1:]
+    ontology_path = parse_args(cli_args).ontology
+    start(ontology_path)
+    

@@ -3,7 +3,6 @@ from typing import Union
 from PIL import Image
 
 import onta.settings as settings
-import onta.load.conf as conf
 import onta.util.logger as logger
 import onta.util.gui as gui
 
@@ -18,14 +17,14 @@ class Repo():
     struts = {}
     sprites = {}
 
-    def __init__(self) -> None:
+    def __init__(self, config) -> None:
         for layer in LAYERS:
-            self._init_layers(layer)
+            self._init_layers(layer, config)
         self._init_sprites()
 
-    def _init_layers(self, layer: str) -> None:
+    def _init_layers(self, layer: str, config) -> None:
         log.debug(f'Initializing {layer} asset', 'Repo._init_assets')
-        layers_conf = conf.configuration(layer)
+        layers_conf = config.configuration(layer)
 
         for layer_key, layer_conf in layers_conf.items():
             image_conf = layer_conf['image']
@@ -49,8 +48,8 @@ class Repo():
                 self.struts[layer_key] = buffer.crop((x,y,w+x,h+y))
 
 
-    def _init_sprites(self) -> None:
-        sprites_conf = conf.configuration('sprites')
+    def _init_sprites(self, config) -> None:
+        sprites_conf = config.configuration('sprites')
 
         for sprite_conf_key, sprite_conf in sprites_conf.items():
             self.sprites[sprite_conf_key] = {}
