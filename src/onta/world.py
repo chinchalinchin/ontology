@@ -44,35 +44,45 @@ class World():
         speed = self.hero['properties']['speed']
 
         if user_input['n']:
+            if self.hero['state'] != 'walk_up':
+                self.hero['frame'] = 0
+                self.hero['state'] = 'walk_up'
             self.hero['position']['y'] -= speed
 
-        elif user_input['nw']:
-            proj = calculator.projection()
-            self.hero['position']['x'] -= speed*proj[0]
-            self.hero['position']['y'] -= speed*proj[1]
-
-        elif user_input['w']:
-            self.hero['position']['x'] -= speed
-
-        elif user_input['sw']:
-            proj = calculator.projection()
-            self.hero['position']['x'] -= speed*proj[0]
-            self.hero['position']['y'] += speed*proj[1]
-
         elif user_input['s']:
+            if self.hero['state'] != 'walk_down':
+                self.hero['frame'] = 0
+                self.hero['state'] = 'walk_down'
             self.hero['position']['y'] += speed
 
-        elif user_input['se']:
-            proj = calculator.projection()
-            self.hero['position']['x'] += speed*proj[0]
-            self.hero['position']['y'] += speed*proj[1]
+        elif user_input['nw'] or user_input['w'] or user_input['sw']:
+            if self.hero['state'] != 'walk_right':
+                self.hero['frame'] = 0
+                self.hero['state'] = 'walk_right'
 
-        elif user_input['e']:
-            self.hero['position']['x'] += speed
+            if user_input['nw'] or user_input['sw']:    
+                proj = calculator.projection()
+                if user_input['nw']:
+                    self.hero['position']['x'] -= speed*proj[0]
+                    self.hero['position']['y'] -= speed*proj[1]
+                elif user_input['sw']:
+                    self.hero['position']['x'] -= speed*proj[0]
+                self.hero['position']['y'] += speed*proj[1]
+            elif user_input['w']:
+                self.hero['position']['x'] -= speed
 
-        elif user_input['ne']:
-            proj = calculator.projection()
-            self.hero['position']['x'] += speed*proj[0]
-            self.hero['position']['y'] -= speed*proj[1]
+        elif user_input['se'] or user_input['e'] or user_input['ne']:
+            if self.hero['state'] != 'walk_left':
+                self.hero['frame'] = 0
+                self.hero['state'] = 'walk_left'
 
-        pass
+            if user_input['se'] or user_input['ne']:
+                proj = calculator.projection()
+                if user_input['se']:
+                    self.hero['position']['x'] += speed*proj[0]
+                    self.hero['position']['y'] += speed*proj[1]
+                elif user_input['ne']:
+                    self.hero['position']['x'] += speed*proj[0]
+                    self.hero['position']['y'] -= speed*proj[1]
+            elif user_input['e']:
+                self.hero['position']['x'] += speed
