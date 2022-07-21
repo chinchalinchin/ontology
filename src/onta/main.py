@@ -22,12 +22,9 @@ def create():
 
     log.debug('Initializing asset repository...', 'create')
     asset_repository = repo.Repo()
-    
-    log.debug('Calculating state frames from sheets metadata...', 'create')
-    sprite_state_conf = asset_repository.enumerate_sprite_state_frames()
 
     log.debug('Initializing game world...', 'create')
-    game_world = world.World(sprite_state_conf)
+    game_world = world.World()
 
     log.debug('Initializing rendering engine...', 'create')
     render_engine = view.Renderer(game_world, asset_repository)
