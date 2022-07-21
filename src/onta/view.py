@@ -22,7 +22,7 @@ def view() -> QtWidgets.QWidget:
     view_widget, view_layout, view_frame = \
             QtWidgets.QWidget(), QtWidgets.QVBoxLayout(),  QtWidgets.QLabel()
 
-    view_widget.resize(settings.DEFAULT_WIDTH, settings.DEFAULT_HEIGHT)
+    view_widget.resize(settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
     view_layout.addWidget(view_frame)
     view_widget.setLayout(view_layout)
 
@@ -39,6 +39,31 @@ class Renderer():
     world_frame = None
     hero_frame = None
 
+    @staticmethod
+    def calculate_crop_box(screen_dim: tuple, world_dim: tuple, hero_pt: tuple):
+        left_breakpoint = screen_dim[0]/2
+        right_breakpoint = world_dim[0] - screen_dim[0]/2
+        top_breakpoint = screen_dim[1]/2
+        bottom_breakpoint = world_dim[1] - screen_dim[1]/2
+
+        if hero_pt[0] >= 0 and hero_pt[0] <= left_breakpoint:
+            crop_x = 0
+        elif hero_pt[0] > right_breakpoint:
+            crop_x = world_dim[0] - screen_dim[0]
+        else:
+            crop_x = hero_pt[0] - screen_dim[0]/2
+
+        if hero_pt[1] >= 0 and hero_pt[1] <= top_breakpoint:
+            crop_y = 0
+        elif hero_pt[1] > bottom_breakpoint:
+            crop_y = world_dim[1] - screen_dim[1]
+        else:
+            crop_y = hero_pt[1] - screen_dim[1]/2
+
+        crop_width = crop_x + screen_dim[0]
+        crop_height = crop_y + screen_dim[1]
+        return (crop_x, crop_y, crop_width, crop_height)
+
     def __init__(self, static_world, repository):
         # NOTE: no references are kept to static_world OR repository
         # they pass through and return to main.py
@@ -47,13 +72,16 @@ class Renderer():
 
     def render(self, game_world: world.World, view_widget: QtWidgets.QWidget, repo: repo.Repo):
         view_frame = view_widget.layout().itemAt(0).widget() 
-        # frame = gui.qimage_to_image(view_frame.pixmap().toImage())
    
         self._render_static(game_world)
         self._render_hero(game_world, repo)
 
-        # TODO: crop world_frame to view_window determined by user coordinates and game_world.dimensions
-        qim = ImageQt(self.world_frame)
+        screen_dim = (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
+        world_dim = game_world.dimensions
+        hero_pt = (game_world.hero['position']['x'], game_world.hero['position']['y'])
+        crop_box = self.calculate_crop_box(screen_dim, world_dim, hero_pt)
+
+        qim = ImageQt(self.world_frame.crop(crop_box))
         pix = QtGui.QPixmap.fromImage(qim)
         view_frame.setPixmap(pix)
         return view_widget

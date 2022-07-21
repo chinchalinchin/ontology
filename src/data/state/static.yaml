@@ -2,7 +2,7 @@
 dim:
   # grid unit: 96px by 32px
   w: 10
-  h: 10
+  h: 20
 
 # tiles:
 #   <group>:
@@ -32,14 +32,14 @@ tiles:
           y: 1
         dim:
           w: 1
-          h: 9
+          h: 19
       # bottom
       - start:
           tile_units: true
           x: 1
-          y: 9
+          y: 19
         dim:
-          w: 9
+          w: 19
           h: 1
       # right
       - start: 
@@ -48,7 +48,7 @@ tiles:
           y: 1
         dim:
           w: 1
-          h: 8
+          h: 18
   grass:
     sets:
       - start:
@@ -57,7 +57,7 @@ tiles:
           y: 1
         dim:
           w: 8
-          h: 8
+          h: 18
 
 # struts:
 #   <group_set>:

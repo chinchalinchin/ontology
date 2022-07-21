@@ -2,12 +2,31 @@ hero:
     size:
         w: 64
         h: 64
+    # sheet order used to compose sprite
     sheets:
         compose:
         - file: male_human_ivory_sheet.png
         - file: head_hair_messy_red.png
         - file: legs_pants_green.png
         - file: torso_male_shirt_green.png
+    # states where user input is blocked until state animation finishes
+    blocking_states:
+        - cast_up
+        - cast_down
+        - cast_left
+        - cast_right
+        - thrust_up
+        - thrust_down
+        - thrust_left
+        - thrust_right
+        - slash_up
+        - slash_down
+        - slash_left
+        - slash_right
+        - shoot_up
+        - shoot_down
+        - shoot_left
+        - shoot_right
     states:
         # Cast
         - cast_up:
