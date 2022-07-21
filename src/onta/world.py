@@ -11,10 +11,57 @@ log = logger.Logger('ontology.onta.world', settings.LOG_LEVEL)
 CONFIGURABLE_ELEMENTS = [ 'struts', 'sprites' ]
 class World():
 
-    strut_state_conf = None
+    strut_property_conf = None
+    """
+    Holds strut property configuration information
+    ```python
+    self.strut_property_conf = {
+            'strut_1': {
+                'hitbox_1': hitbox_1_dim, # tuple
+                'hitbox_2': hitbox_2_dim, # tuple
+                # ...
+            }
+        }
+    ```
+    """
     sprite_state_conf = None
+    """
+    Holds sprite state configuration information.
+
+    ```python
+    self.sprite_state_conf = {
+        'sprite_1': {
+            'state_1': state_1_frames, # int
+            'state_2': state_2_frames, # int
+            # ..
+            'blocking_states': [ block_state_1, block_state_2, ], # list(str)
+        }
+
+    }
+    ```
+    """
+    sprite_property_conf = None
     tilesets = None
     strutsets = None
+    """
+    ```python
+    self.strutsets = {
+        'strut_1': {
+            'sets': [
+                { 
+                    'start': {
+                        'tile_units': tile_units, # bool
+                        'x': x, # int
+                        'y': y, # int
+                    },
+                    'hitbox': (hx, hy, hw, hh), # tuple(int, int, int, int)
+
+                }
+            ]
+        }
+    }
+    ```
+    """
     dimensions = None
     hero = None
 
@@ -22,24 +69,12 @@ class World():
         self._init_conf()
         self._init_static_state()
         self._init_dynamic_state()
+        self._init_hitboxes()
 
     def _init_conf(self):
         """
         
         Initialize configuration properties for in-game elements.
-
-        ```python
-        self.sprite_state_conf = {
-            'sprite_1': {
-                'state_1': state_1_frames, # int
-                'state_2': state_2_frames, # int
-                # ..
-                'blocking_states': [ block_state_1, block_state_2, ], # list(str)
-            }
-
-        }
-        self.strut_property_conf
-        ```
         """
         struts_conf = conf.configuration('struts')
         sprites_conf = conf.configuration('sprites')
@@ -53,13 +88,13 @@ class World():
                 self.sprite_state_conf[sprite_key][state] = state_map[state]['frames']
             self.sprite_state_conf[sprite_key]['blocking_states'] = state_map['blocking_states']
 
-        self.strut_state_conf = {}
+        self.strut_property_conf = {}
         
         for strut_key, strut_conf in struts_conf.items():
             hitbox = strut_conf['properties']['hitbox']
 
-            self.strut_state_conf[strut_key] = {}
-            self.strut_state_conf[strut_key]['hitbox'] = (hitbox['offset']['x'], hitbox['offset']['y'],
+            self.strut_property_conf[strut_key] = {}
+            self.strut_property_conf[strut_key]['hitbox'] = (hitbox['offset']['x'], hitbox['offset']['y'],
                 hitbox['size']['w'], hitbox['size']['h'])
 
     def _init_static_state(self):
@@ -80,6 +115,26 @@ class World():
         """
         dynamic_conf = state.get_state('dynamic')
         self.hero = dynamic_conf['hero']
+
+    def _init_hitboxes(self):
+        buffer_strutsets = self.strutsets.copy()
+
+        for strutset_key, strutset_conf in buffer_strutsets.items():
+            strutset_props = self.strut_property_conf[strutset_key]
+            strutset_hitbox = strutset_props['hitbox']
+            strutset = strutset_conf['sets']
+
+            for i, strut_conf in enumerate(strutset):
+                if strut_conf['start']['tile_units']:
+                    x = strut_conf['start']['x']*settings.TILE_DIM[0]
+                    y = strut_conf['start']['y']*settings.TILE_DIM[1]
+                else:
+                    x, y = strut_conf['start']['x'], strut_conf['start']['y']
+                
+                top_x, top_y = x + strutset_hitbox[0], y + strutset_hitbox[1]
+                bottom_x, bottom_y = top_x + strutset_hitbox[2], top_y + strutset_hitbox[3] 
+                
+                self.strutsets[strutset_key]['sets'][i]['hitbox'] = (top_x, top_y, bottom_x, bottom_y)
 
     def _update_hero(self, user_input:dict): 
         """
@@ -156,7 +211,20 @@ class World():
             self.hero['frame'] = 0
 
     def _calculate_collisions(self):
-        pass
+        hero_dim = (
+            self.hero['position']['x'], 
+            self.hero['position']['y'],
+            self.hero['position']['x'] + self.hero['size']['w'],
+            self.hero['position']['y'] + self.hero['size']['y']
+        )
+        for strutset_conf in self.strutsets.values():
+            sets = strutset_conf['sets']
+            
+            for strut in sets:
+                strut_hitbox = strut['hitbox']
+                if calculator.intersection(hero_dim, strut_hitbox):
+                    print('hero collided with strut')
+                
 
     def save(self):
         dynamic_conf = self.hero.copy()
