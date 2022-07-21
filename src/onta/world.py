@@ -42,6 +42,23 @@ class World():
     """
     sprite_property_conf = None
     tilesets = None
+    """
+    ```python
+    self.tilesets = {
+        'tile_1': {
+            'sets': [
+                { 
+                    'start': {
+                        'tile_units': tile_units, # bool
+                        'x': x, # int
+                        'y': y, # int
+                    }
+                }
+            ]
+        }
+    }
+    ```
+    """
     strutsets = None
     """
     ```python

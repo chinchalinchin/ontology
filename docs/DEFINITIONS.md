@@ -21,4 +21,7 @@
 
 ### Notes
 
-- A _Strut_ has properties. A _Sprite_ has properties _and_ states. Properties determine how the in-game element interacts with other in-game elements. States determine how a given element is animated. This is the key difference between these types of objects: _Sprite_\s get animated, where _Strut_\s do not.
+- Each in-game object builds up complexity in sequence by introducing another dimension of operation.
+- A _Tile_ has an image frame; it is painted to screen. The user cannot interact with a _Tile_ in anyway. 
+- A _Strut_ has properties in addition to an image frame. Properties determine how the in-game element interacts with other in-game elements. 
+- A _Sprite_ has properties _and_ states. States determine how a given element is animated. In other words, a _Sprite_ has multiple frames and the currently displayed frame depends on the _Sprite_ state.
