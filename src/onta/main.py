@@ -18,28 +18,29 @@ import onta.util.helper as helper
 log = logger.Logger('ontology.onta.main', settings.LOG_LEVEL)
 
 
-def parse_args(args):
+def parse_cli_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '-o',
         '--o',
         '-ontology',
         '--ontology',
-        action="store_const",
+        nargs="?",
+        type=str,
         dest='ontology',
-        default=settings.DATA_DIR,
+        default=str(settings.DATA_DIR),
     )
     return parser.parse_args()
 
 def create(ontology_path: str):
-    log.debug('Initializing controller...', 'create')
-    controller = control.Controller()
-
     log.debug('Intializing configuration access object...', 'create')
     config = conf.Conf(ontology_path)
 
     log.debug('Initializing state access object...', 'create')
     state_ao = state.State(ontology_path)
+
+    log.debug('Initializing controller...', 'create')
+    controller = control.Controller(config)
 
     log.debug('Initializing asset repository...', 'create')
     asset_repository = repo.Repo(config)
@@ -93,8 +94,10 @@ def do(
             log.verbose(f'Sleeping excess period - delta: {sleep_time}', 'do')
             time.sleep(sleep_time/1000)
 
+def entrypoint():
+    args = parse_cli_args()
+    start(args.ontology)
+
 if __name__=="__main__":
-    cli_args = sys.argv[1:]
-    ontology_path = parse_args(cli_args).ontology
-    start(ontology_path)
+    entrypoint()
     

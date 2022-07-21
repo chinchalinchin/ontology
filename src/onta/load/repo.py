@@ -20,7 +20,7 @@ class Repo():
     def __init__(self, config) -> None:
         for layer in LAYERS:
             self._init_layers(layer, config)
-        self._init_sprites()
+        self._init_sprites(config)
 
     def _init_layers(self, layer: str, config) -> None:
         log.debug(f'Initializing {layer} asset', 'Repo._init_assets')

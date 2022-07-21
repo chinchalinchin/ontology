@@ -2,7 +2,6 @@
 from pynput import keyboard
 
 import onta.settings as settings
-import onta.load.conf as conf
 import onta.util.logger as logger
 
 log = logger.Logger('ontology.onta.control', settings.LOG_LEVEL)
@@ -40,8 +39,8 @@ class Controller():
                 return 'down'
             return 'unmapped'
 
-    def __init__(self):
-        self.control_conf = conf.configuration('controls')
+    def __init__(self, config):
+        self.control_conf = config.configuration('controls')
         self.keys = { 
             key: False for key in 
                 ['space', 'alt_left', 'ctrl_left', 'shift_left', 
