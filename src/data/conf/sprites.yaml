@@ -5,12 +5,14 @@ hero:
     properties:
         hitbox:
             offset:
-                x: 
-                y:
+                x: 23
+                y: 3
             size:
-                w:
-                h:
-    # sheet order used to compose sprite
+                w: 19
+                h: 47
+        walk: 3
+        run: 5
+        collide: 3
     sheets:
         compose:
         - file: male_human_ivory_sheet.png
@@ -73,6 +75,19 @@ hero:
             row: 10
             frames: 9
         - walk_left: 
+            row: 11 
+            frames: 9
+        # Run
+        - run_up:
+            row: 8
+            frames: 9
+        - run_right:
+            row: 9
+            frames: 9
+        - run_down:
+            row: 10
+            frames: 9
+        - run_left: 
             row: 11 
             frames: 9
         # Slash

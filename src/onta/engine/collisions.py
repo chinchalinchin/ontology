@@ -12,5 +12,5 @@ def detect_hero_collision(hero_dim, hitbox_set):
             strut_hitbox = hitbox.get('hitbox')
             if strut_hitbox is not None and calculator.intersection(hero_dim, strut_hitbox):
                 # return true once collision is detected. it doesn't matter where it occurs, only what direction the hero is travelling...
-                log.debug(f'Detected player {hero_dim} collision with hitbox at {strut_hitbox}', '.calculate_collisions')
+                log.debug(f'Detected player {hero_dim} collision with hitbox at {strut_hitbox}', 'detect_hero_collisions')
                 return True

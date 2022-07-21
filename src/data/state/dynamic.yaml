@@ -4,5 +4,3 @@ hero:
     y: 40
   state: walk_down
   frame: 0
-  properties:
-    speed: 5

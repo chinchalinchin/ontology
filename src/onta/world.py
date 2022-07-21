@@ -98,10 +98,22 @@ class World():
         sprites_conf = conf.configuration('sprites')
 
         self.sprite_state_conf = {}
-
+        self.sprite_property_conf = {}
         for sprite_key, sprite_conf in sprites_conf.items():
             # transfer fields that don't require condensing
             self.sprite_state_conf[sprite_key] = {}
+            self.sprite_property_conf[sprite_key] = {}
+
+            self.sprite_property_conf[sprite_key]['hitbox'] = (
+                sprite_conf['properties']['hitbox']['offset']['x'],
+                sprite_conf['properties']['hitbox']['offset']['y'],
+                sprite_conf['properties']['hitbox']['size']['w'],
+                sprite_conf['properties']['hitbox']['size']['h']
+            )
+            self.sprite_property_conf[sprite_key]['walk'] = sprite_conf['properties']['walk']
+            self.sprite_property_conf[sprite_key]['run'] = sprite_conf['properties']['run']
+            self.sprite_property_conf[sprite_key]['collide'] = sprite_conf['properties']['collide']
+
             self.sprite_state_conf[sprite_key]['size'] = {}
             self.sprite_state_conf[sprite_key]['size']['w'] = sprite_conf['size']['w']
             self.sprite_state_conf[sprite_key]['size']['h'] = sprite_conf['size']['h']
@@ -174,8 +186,11 @@ class World():
         """
         Map user input to new hero state and then animate state.
         """
-        static_hero_conf = self.sprite_state_conf['hero']
-        speed = self.hero['properties']['speed']
+
+        if 'run' in self.hero['state']:
+            speed = self.sprite_property_conf['hero']['run']
+        else:
+            speed = self.sprite_property_conf['hero']['walk']
 
         if user_input['n']:
             if self.hero['state'] != 'walk_up':
@@ -241,27 +256,26 @@ class World():
             elif user_input['e']:
                 self.hero['position']['x'] += speed
 
-        if self.hero['frame'] >= static_hero_conf[self.hero['state']]:
+        if self.hero['frame'] >= self.sprite_state_conf['hero'][self.hero['state']]:
             self.hero['frame'] = 0
 
     def _apply_physics(self):
-        static_hero_conf = self.sprite_state_conf['hero']
-        hero_dim = (
-            self.hero['position']['x'], 
-            self.hero['position']['y'],
-            static_hero_conf['size']['w'],
-            static_hero_conf['size']['h']
+        static_hero_props = self.sprite_property_conf['hero']
+        hero_hitbox = (
+            self.hero['position']['x'] + static_hero_props['hitbox'][0], 
+            self.hero['position']['y'] + static_hero_props['hitbox'][1],
+            static_hero_props['hitbox'][2],
+            static_hero_props['hitbox'][3]
         )
-        if collisions.detect_hero_collision(hero_dim, self.strutsets):
-            speed = self.hero['properties']['speed']
+        if collisions.detect_hero_collision(hero_hitbox, self.strutsets):
             if 'down' in self.hero['state']:
-                self.hero['position']['y'] -= speed
+                self.hero['position']['y'] -= static_hero_props['collide']
             elif 'left' in self.hero['state']:
-                self.hero['position']['x'] -= speed
+                self.hero['position']['x'] -= static_hero_props['collide']
             elif 'right' in self.hero['state']:
-                self.hero['position']['x'] += speed
+                self.hero['position']['x'] += static_hero_props['collide']
             else:
-                self.hero['position']['y'] += speed
+                self.hero['position']['y'] += static_hero_props['collide']
                 
 
     def save(self):

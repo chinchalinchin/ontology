@@ -33,7 +33,7 @@ apartment_wall:
         y: 0
       size:
         w: 92
-        h: 62
+        h: 55
 
 # apartment_roof:
 #   image:
