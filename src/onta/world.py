@@ -3,12 +3,13 @@ import onta.settings as settings
 import onta.load.state as state
 import onta.load.conf as conf
 import onta.util.logger as logger
-import onta.graphics.calculator as calculator
+import onta.util.calculator as calculator
 
 
 log = logger.Logger('ontology.onta.world', settings.LOG_LEVEL)
 
 CONFIGURABLE_ELEMENTS = [ 'struts', 'sprites' ]
+
 class World():
 
     strut_property_conf = None
@@ -99,20 +100,26 @@ class World():
         self.sprite_state_conf = {}
 
         for sprite_key, sprite_conf in sprites_conf.items():
+            self.sprite_state_conf[sprite_key] = {}
+            self.sprite_state_conf[sprite_key]['size'] = {}
+            self.sprite_state_conf[sprite_key]['size']['w'] = sprite_conf['size']['w']
+            self.sprite_state_conf[sprite_key]['size']['h'] = sprite_conf['size']['h']
             for state_map in sprite_conf['states']:
                 state = list(state_map.keys())[0]
-                self.sprite_state_conf[sprite_key] = {}
                 self.sprite_state_conf[sprite_key][state] = state_map[state]['frames']
-            self.sprite_state_conf[sprite_key]['blocking_states'] = state_map['blocking_states']
+            self.sprite_state_conf[sprite_key]['blocking_states'] = sprite_conf['blocking_states']
 
         self.strut_property_conf = {}
         
         for strut_key, strut_conf in struts_conf.items():
             hitbox = strut_conf['properties']['hitbox']
-
             self.strut_property_conf[strut_key] = {}
-            self.strut_property_conf[strut_key]['hitbox'] = (hitbox['offset']['x'], hitbox['offset']['y'],
-                hitbox['size']['w'], hitbox['size']['h'])
+
+            if hitbox is not None:
+                self.strut_property_conf[strut_key]['hitbox'] = (hitbox['offset']['x'], hitbox['offset']['y'],
+                    hitbox['size']['w'], hitbox['size']['h'])
+            else:
+                self.strut_property_conf[strut_key]['hitbox'] = None
 
     def _init_static_state(self):
         """
@@ -124,7 +131,7 @@ class World():
         self.tilesets = static_conf['tiles']
         self.strutsets = static_conf['struts']
 
-        log.debug(f'Initialized static world layer with dimensions {self.dimensions}', 'world.World._init_static_layer')
+        log.debug(f'Initialized static world layer with dimensions {self.dimensions}', 'World._init_static_layer')
 
     def _init_dynamic_state(self):
         """
@@ -141,17 +148,23 @@ class World():
             strutset_hitbox = strutset_props['hitbox']
             strutset = strutset_conf['sets']
 
+            log.debug(f'Initialize strutset {strutset_key} with properties: {strutset_props}', 'World._init_hitboxes')
+
             for i, strut_conf in enumerate(strutset):
-                if strut_conf['start']['tile_units']:
-                    x = strut_conf['start']['x']*settings.TILE_DIM[0]
-                    y = strut_conf['start']['y']*settings.TILE_DIM[1]
+
+                if strutset_hitbox is not None:
+                    if strut_conf['start']['tile_units']:
+                        x = strut_conf['start']['x']*settings.TILE_DIM[0]
+                        y = strut_conf['start']['y']*settings.TILE_DIM[1]
+                    else:
+                        x, y = strut_conf['start']['x'], strut_conf['start']['y']
+                    
+                    top_x, top_y = x + strutset_hitbox[0], y + strutset_hitbox[1]
+                    bottom_x, bottom_y = top_x + strutset_hitbox[2], top_y + strutset_hitbox[3] 
+                    
+                    self.strutsets[strutset_key]['sets'][i]['hitbox'] = (top_x, top_y, bottom_x, bottom_y)
                 else:
-                    x, y = strut_conf['start']['x'], strut_conf['start']['y']
-                
-                top_x, top_y = x + strutset_hitbox[0], y + strutset_hitbox[1]
-                bottom_x, bottom_y = top_x + strutset_hitbox[2], top_y + strutset_hitbox[3] 
-                
-                self.strutsets[strutset_key]['sets'][i]['hitbox'] = (top_x, top_y, bottom_x, bottom_y)
+                    self.strutsets[strutset_key]['sets'][i]['hitbox'] = None
 
     def _update_hero(self, user_input:dict): 
         """
@@ -228,18 +241,19 @@ class World():
             self.hero['frame'] = 0
 
     def _calculate_collisions(self):
+        static_hero_conf = self.sprite_state_conf['hero']
         hero_dim = (
             self.hero['position']['x'], 
             self.hero['position']['y'],
-            self.hero['position']['x'] + self.hero['size']['w'],
-            self.hero['position']['y'] + self.hero['size']['y']
+            self.hero['position']['x'] + static_hero_conf['size']['w'],
+            self.hero['position']['y'] + static_hero_conf['size']['h']
         )
         for strutset_conf in self.strutsets.values():
             sets = strutset_conf['sets']
             
             for strut in sets:
-                strut_hitbox = strut['hitbox']
-                if calculator.intersection(hero_dim, strut_hitbox):
+                strut_hitbox = strut.get('hitbox')
+                if strut_hitbox is not None and calculator.intersection(hero_dim, strut_hitbox):
                     print('hero collided with strut')
                 
 

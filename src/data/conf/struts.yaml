@@ -29,29 +29,29 @@ apartment_wall:
   properties:
     hitbox:
       offset:
-        x: 
-        y:
+        x: 0
+        y: 0
       size:
-        w:
-        h:
+        w: 92
+        h: 62
 
-apartment_roof:
-  image:
-    file: apartment.png
-    position:
-      x: 0
-      y: 96
-    size: 
-      w: 96
-      h: 96
-  properties:
-    hitbox:
-      offset:
-        x: 
-        y:
-      size:
-        w:
-        h:
+# apartment_roof:
+#   image:
+#     file: apartment.png
+#     position:
+#       x: 0
+#       y: 96
+#     size: 
+#       w: 96
+#       h: 96
+#   properties:
+#     hitbox:
+#       offset:
+#         x: 
+#         y:
+#       size:
+#         w:
+#         h:
 
 apartment_steps:
   image: 
@@ -66,32 +66,32 @@ apartment_steps:
     hitbox: null
     
 
-apartment_door:
-  image:
-    file: apartment.png
-    position: 
-      x: 160
-      y: 0
-    size: 
-      w: 32
-      h: 48
-  properties:
-    hitbox: null
+# apartment_door:
+#   image:
+#     file: apartment.png
+#     position: 
+#       x: 160
+#       y: 0
+#     size: 
+#       w: 32
+#       h: 48
+#   properties:
+#     hitbox: null
 
-apartment_chimney:
-  image:
-    file: apartment.png
-    position: 
-      x: 199
-      y: 11
-    size: 
-      w: 22
-      h: 45
-  properties:
-    hitbox:
-      offset:
-        x: 
-        y:
-      size:
-        w:
-        h:
+# apartment_chimney:
+#   image:
+#     file: apartment.png
+#     position: 
+#       x: 199
+#       y: 11
+#     size: 
+#       w: 22
+#       h: 45
+#   properties:
+#     hitbox:
+#       offset:
+#         x: 
+#         y:
+#       size:
+#         w:
+#         h:
