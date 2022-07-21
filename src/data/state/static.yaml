@@ -1,9 +1,7 @@
-# dimensions are measured relative to the pixel size of one tile.
-dim:
-  # grid unit: 96px by 32px
-  w: 10
-  h: 20
-
+## Static State Configuration Syntax
+# dim:
+#   w: int
+#   h: int
 # tiles:
 #   <group>:
 #     sets:
@@ -14,6 +12,13 @@ dim:
 #         dim:
 #           w: int
 #           h: int
+#
+# # NOTE: (w, h) dimensions are always expressed as integer-valued multiples of the tile dimensions.
+dim:
+  # grid unit: 96px by 32px
+  w: 10
+  h: 20
+
 tiles:
   water:
     sets:
@@ -25,6 +30,7 @@ tiles:
         dim:
           w: 10
           h: 1
+        cover: false
       # left
       - start: 
           tile_units: true
@@ -33,6 +39,7 @@ tiles:
         dim:
           w: 1
           h: 19
+        cover: false
       # bottom
       - start:
           tile_units: true
@@ -41,6 +48,7 @@ tiles:
         dim:
           w: 19
           h: 1
+        cover: false
       # right
       - start: 
           tile_units: true
@@ -49,6 +57,7 @@ tiles:
         dim:
           w: 1
           h: 18
+        cover: false
   grass:
     sets:
       - start:
@@ -58,6 +67,7 @@ tiles:
         dim:
           w: 8
           h: 18
+        cover: false
 
 # struts:
 #   <group_set>:
@@ -73,33 +83,64 @@ struts:
           tile_units: true
           x: 2
           y: 3
+        cover: false
       - start:
           tile_units: true
           x: 3
           y: 3
+        cover: false
       - start:
           tile_units: false
           x: 480
           y: 96
+        cover: false
       - start:
           tile_units: false
           x: 576
           y: 96
+        cover: false
+  apartment_roof:
+    sets:
+      - start:
+          tile_units: false
+          x: 190
+          y: 0
+        cover: true
+      - start:
+          tile_units: false
+          x: 286
+          y: 0
+        cover: true
+      - start:
+          tile_units: false
+          x: 478
+          y: 0
+        cover: true
+      - start:
+          tile_units: false
+          x: 574
+          y: 0
+        cover: true
+
   apartment_steps:
     sets:
       - start:
           tile_units: false
           x: 224
           y: 168
+        cover: false
       - start:
           tile_units: false
           x: 320
           y: 168
+        cover: false
       - start:
           tile_units: false
           x: 512
           y: 168
+        cover: false
       - start:
           tile_units: false
           x: 608
           y: 168
+        cover: false

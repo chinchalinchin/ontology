@@ -1,4 +1,4 @@
-
+## Tile Configuration Syntax
 # <group>
 #   image:
 #     file: str
@@ -18,6 +18,8 @@ coal:
     size:
       w: 96
       h: 32
+  properties:
+    cover: false
 
 grass:
   image:
@@ -28,6 +30,8 @@ grass:
     size:
       w: 96
       h: 32
+  properties:
+    cover: false
 
 mud:
   image:
@@ -38,6 +42,8 @@ mud:
     size:
       w: 96
       h: 32
+  properties:
+    cover: false
 
 lava:
   image:
@@ -48,6 +54,8 @@ lava:
     size:
       w: 96
       h: 32
+  properties:
+    cover: false
 
 sand:
   image: 
@@ -58,6 +66,8 @@ sand:
     size: 
       w: 96
       h: 32
+  properties:
+    cover: false
 
 water:
   image:
@@ -68,3 +78,5 @@ water:
     size:
       w: 96
       h: 32
+  properties:
+    cover: false

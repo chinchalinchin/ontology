@@ -35,7 +35,9 @@ def view() -> QtWidgets.QWidget:
     return view_widget
 
 class Renderer():
-    static_frame = None
+    
+    static_cover_frame = None
+    static_back_frame = None
     world_frame = None
     hero_frame = None
 
@@ -67,14 +69,18 @@ class Renderer():
     def __init__(self, static_world, repository):
         # NOTE: no references are kept to static_world or repository;
         # they pass through and return to main.py
+        self.static_cover_frame = gui.new_image(static_world.dimensions)
+        self.static_back_frame = gui.new_image(static_world.dimensions)
         self._render_tiles(static_world, repository)
         self._render_struts(static_world, repository)
 
     def render(self, game_world: world.World, view_widget: QtWidgets.QWidget, repo: repo.Repo):
         view_frame = view_widget.layout().itemAt(0).widget() 
-   
-        self._render_static(game_world)
+        self.world_frame = gui.new_image(game_world.dimensions)
+
+        self._render_static(False)
         self._render_hero(game_world, repo)
+        self._render_static(True)
 
         screen_dim = (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
         world_dim = game_world.dimensions
@@ -89,8 +95,6 @@ class Renderer():
 
     def _render_tiles(self, game_world: world.World, repository: repo.Repo) -> None:
         log.debug('Rendering tile sets', 'Repo._render_tiles')
-
-        self.static_frame = gui.new_image(game_world.dimensions)
 
         for group_key, group_conf in game_world.tilesets.items():
             group_tile = repository.get_layer('tiles', group_key)
@@ -113,9 +117,13 @@ class Renderer():
                     for j in range(set_dim[1]):
                         dim = (start[0] + settings.TILE_DIM[0]*i, 
                             start[1] + settings.TILE_DIM[1]*j)
-                        self.static_frame.paste(group_tile, dim)
 
-    def _render_struts(self, game_world: world.World, repository: repo.Repo,):
+                        if set_conf['cover']:
+                            self.static_cover_frame.paste(group_tile, dim, group_tile)
+                        else:
+                            self.static_back_frame.paste(group_tile, dim, group_tile)
+
+    def _render_struts(self, game_world: world.World, repository: repo.Repo):
         log.debug('Rendering strut sets', 'Repo._render_tiles')
         struts = game_world.strutsets
 
@@ -134,11 +142,16 @@ class Renderer():
 
                 log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_struts')
 
-                self.static_frame.paste(group_strut, start)
+                if set_conf['cover']:
+                    self.static_cover_frame.paste(group_strut, start, group_strut)
+                else:
+                    self.static_back_frame.paste(group_strut, start, group_strut)
     
-    def _render_static(self, game_world: world.World):
-        self.world_frame = gui.new_image(game_world.dimensions)
-        self.world_frame.paste(self.static_frame, (0,0))
+    def _render_static(self, cover: bool = False):
+        if cover:
+            self.world_frame.paste(self.static_cover_frame, (0,0), self.static_cover_frame)
+        else:
+            self.world_frame.paste(self.static_back_frame, (0,0), self.static_back_frame)
 
     def _render_hero(self, game_world: world.World, repository: repo.Repo):
         hero_position = (int(game_world.hero['position']['x']), int(game_world.hero['position']['y']))

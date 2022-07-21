@@ -1,3 +1,30 @@
+## Sprite Configuration
+# <group>
+#   size:
+#       w: int
+#       h: int
+#   properties:
+#       hitbox:
+#           offset:
+#               x: int
+#               y: int
+#           size:
+#               w: int
+#               h: int
+#       walk: int
+#       run: int
+#       collide: int
+#   sheets:
+#       compose:
+#           - file: str
+#           - file: str
+#   blocking_states:
+#       - str
+#       - str
+#   states:
+#       - state:
+#           row: int
+#           frames: int
 hero:
     size:
         w: 64
@@ -9,7 +36,7 @@ hero:
                 y: 3
             size:
                 w: 19
-                h: 47
+                h: 61
         walk: 3
         run: 5
         collide: 3

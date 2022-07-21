@@ -42,7 +42,11 @@ class Controller():
 
     def __init__(self):
         self.control_conf = conf.configuration('controls')
-        self.keys = { key: False for key in CONTROLS }
+        self.keys = { 
+            key: False for key in 
+                ['space', 'alt_left', 'ctrl_left', 'shift_left', 
+                    'tab', 'up', 'left', 'right', 'down'] 
+        }
         self._register_listener()
         self._start_listener()
         
