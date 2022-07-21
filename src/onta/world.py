@@ -9,12 +9,14 @@ log = logger.Logger('ontology.onta.world', settings.LOG_LEVEL)
 
 class World():
 
+    sprite_state_conf = None
     tilesets = None
     strutsets = None
     dimensions = None
     hero = None
 
-    def __init__(self):
+    def __init__(self, sprite_state_conf):
+        self.sprite_state_conf = sprite_state_conf
         self._init_static_layer()
         self._init_dynamic_layer()
 
@@ -47,17 +49,17 @@ class World():
             if self.hero['state'] != 'walk_up':
                 self.hero['frame'] = 0
                 self.hero['state'] = 'walk_up'
+
             else:
                 self.hero['frame'] += 1
-            # TODO: needs to be aware of the number of frames in the state somehow.
-            # could call the sprites.yaml loader, but that's another io call. 
-            # should figure out another way to approach this...
+
             self.hero['position']['y'] -= speed
 
         elif user_input['s']:
             if self.hero['state'] != 'walk_down':
                 self.hero['frame'] = 0
                 self.hero['state'] = 'walk_down'
+
             else:
                 self.hero['frame'] += 1
 
@@ -67,17 +69,22 @@ class World():
             if self.hero['state'] != 'walk_right':
                 self.hero['frame'] = 0
                 self.hero['state'] = 'walk_right'
+
             else:
                 self.hero['frame'] += 1
 
             if user_input['nw'] or user_input['sw']:    
                 proj = calculator.projection()
+
                 if user_input['nw']:
                     self.hero['position']['x'] -= speed*proj[0]
                     self.hero['position']['y'] -= speed*proj[1]
+
                 elif user_input['sw']:
                     self.hero['position']['x'] -= speed*proj[0]
+
                 self.hero['position']['y'] += speed*proj[1]
+
             elif user_input['w']:
                 self.hero['position']['x'] -= speed
 
@@ -90,11 +97,17 @@ class World():
 
             if user_input['se'] or user_input['ne']:
                 proj = calculator.projection()
+
                 if user_input['se']:
                     self.hero['position']['x'] += speed*proj[0]
                     self.hero['position']['y'] += speed*proj[1]
+
                 elif user_input['ne']:
                     self.hero['position']['x'] += speed*proj[0]
                     self.hero['position']['y'] -= speed*proj[1]
+
             elif user_input['e']:
                 self.hero['position']['x'] += speed
+
+        if self.hero['frame'] >= self.sprite_state_conf['hero'][self.hero['state']]:
+            self.hero['frame'] = 0

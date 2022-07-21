@@ -68,6 +68,9 @@ class Repo():
                 state_key = list(state_conf.keys())[0]
                 state_row = state_conf[state_key]['row']
                 state_frames = state_conf[state_key]['frames']
+
+                # here is where the repo is aware of the frames per state
+                # how to get this to the world?
                 self.sprites[sprite_conf_key][state_key] = []
 
                 start_y = state_row * sprite_dim[1]
@@ -99,6 +102,17 @@ class Repo():
 
     def get_sprite(self, sprite: str, state: str, frame: int):
         return self.sprites[sprite][state][frame]
+
+    def get_sprite_state_frames(self, sprite: str, state: str):
+        return len(self.sprites[sprite][state])
+
+    def enumerate_sprite_state_frames(self):
+        enum_state_frames = {}
+        for sprite_key, sprite_conf in self.sprites.items():
+            enum_state_frames[sprite_key] = {}
+            for state_key, state_conf in sprite_conf.items():
+                enum_state_frames[sprite_key][state_key] = len(state_conf)
+        return enum_state_frames
 
 if __name__=="__main__":
     repository = Repo()

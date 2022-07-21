@@ -66,5 +66,5 @@ see [PIL docs](https://pillow.readthedocs.io/en/stable/handbook/concepts.html#mo
 
 # Game Loop Configuration
 
-FPS=25
+FPS=30
 """Framerate for the rendering engine"""

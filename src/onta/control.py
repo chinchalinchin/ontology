@@ -1,7 +1,11 @@
 
 from pynput import keyboard
 
+import onta.settings as settings
 import onta.load.conf as conf
+import onta.util.logger as logger
+
+log = logger.Logger('ontology.onta.control', settings.LOG_LEVEL)
 
 CONTROLS = ['space', 'alt_left', 'ctrl_left', 'shift_left', 'tab', 'up', 'left', 'right', 'down']
 
@@ -43,6 +47,7 @@ class Controller():
         self._start_listener()
         
     def _register_listener(self):
+        log.debug('Registering keyboard listeners...', 'Controller._register_listener')
         self.listener = keyboard.Listener(
             on_press=self.on_press,
             on_release=self.on_release

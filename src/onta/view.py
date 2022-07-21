@@ -1,13 +1,11 @@
 import sys
 
 from PySide6 import QtWidgets, QtGui
-from PIL import Image
 from PIL.ImageQt import ImageQt
 
 import onta.settings as settings
 import onta.world as world
 import onta.load.repo as repo
-import onta.load.conf as conf
 import onta.util.logger as logger
 import onta.util.gui as gui
 
@@ -42,7 +40,7 @@ class Renderer():
     hero_frame = None
 
     def __init__(self, static_world, repository):
-        # no references are kept to static_world, repository
+        # NOTE: no references are kept to static_world OR repository
         # they pass through and return to main.py
         self._render_tiles(static_world, repository)
         self._render_struts(static_world, repository)
@@ -65,9 +63,8 @@ class Renderer():
         log.debug('Rendering tile sets', 'Repo._render_tiles')
 
         self.static_frame = gui.new_image(game_world.dimensions)
-        tiles = game_world.tilesets
 
-        for group_key, group_conf in tiles.items():
+        for group_key, group_conf in game_world.tilesets.items():
             group_tile = repository.get_layer('tiles', group_key)
             group_sets = group_conf['sets']
 
@@ -87,7 +84,7 @@ class Renderer():
                 for i in range(set_dim[0]):
                     for j in range(set_dim[1]):
                         dim = (start[0] + settings.TILE_DIM[0]*i, 
-                                start[1] + settings.TILE_DIM[1]*j)
+                            start[1] + settings.TILE_DIM[1]*j)
                         self.static_frame.paste(group_tile, dim)
 
     def _render_struts(self, game_world: world.World, repository: repo.Repo,):
