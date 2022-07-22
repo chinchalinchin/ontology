@@ -4,6 +4,11 @@ import math
 def projection(angle = 45):
     return math.cos(angle*math.pi/180), math.sin(angle*math.pi/180)
 
+def distance(a, b):
+    dx = a[0] - b[0]
+    dy = a[1] - b[1]
+    return math.sqrt(dx*dx + dy*dy)
+
 def intersection(rect_a: tuple, rect_b: tuple):
     """ Determines if two rectangles intersect. Rectangles are defined by the coordinate of the upper-left corner (as viewed in screen units, where the down is the positive y-direction), and its dimensions (i.e., width and height)
 

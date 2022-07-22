@@ -8,8 +8,6 @@ import onta.engine.collisions as collisions
 
 log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
-CONFIGURABLE_ELEMENTS = [ 'struts', 'sprites' ]
-
 class World():
 
     strut_property_conf = None
@@ -104,7 +102,7 @@ class World():
     dimensions = None
     """
     ```
-    self.dimensions = (w, h)
+    self.dimensions = (w, h) # tuple
     ```
     """
     hero = None
@@ -153,9 +151,10 @@ class World():
 
     def __init__(self, config: conf.Conf, state_ao: state.State):
         """
+        Creates an instance of `onta.world.World`.
 
         .. notes:
-            - Configuration and state are passed in as references to populate internal dictionaries.
+            - Configuration and state are passed in to populate internal dictionaries. No references are kept to the `config` or `state_ao` objects.
         """
         self._init_conf(config)
         self._init_static_state(state_ao)
@@ -228,7 +227,7 @@ class World():
 
     def _init_dynamic_state(self, state_ao: state.State):
         """
-        Initialize the state for dynamic in-game elements, i.e.e elements that move and are interactable.
+        Initialize the state for dynamic in-game elements, i.e. elements that move and are interactable.
         """
         dynamic_conf = state_ao.get_state('dynamic')
         self.hero = dynamic_conf['hero']
@@ -236,6 +235,9 @@ class World():
         self.villains = dynamic_conf['villains']
 
     def _init_static_hitboxes(self):
+        """
+        Construct static hitboxes from object dimensions and properties.
+        """
         buffer_strutsets = self.strutsets.copy()
 
         for strutset_key, strutset_conf in buffer_strutsets.items():
@@ -270,7 +272,7 @@ class World():
 
     def _update_hero(self, user_input: dict): 
         """
-        Map user input to new hero state and then animate state.
+        Map user input to new hero state, apply state action and iterate state frame.
         """
         if self.hero['state'] not in self.sprite_state_conf['hero']['blocking_states']:
             if 'run' in self.hero['state']:
@@ -345,6 +347,19 @@ class World():
         if self.hero['frame'] >= self.sprite_state_conf['hero'][self.hero['state']]:
             self.hero['frame'] = 0
 
+    def _update_npcs(self):
+        """
+        Maps npc state to in-game action, applies action and then iterates npc state frame.
+
+        .. notes:
+            - This method is essentially an interface between the NPC state and the game world. It determines what happens to an NPC once it is in a state.
+        """
+        for npc_key, npc_state in self.npcs.items():
+            npc_props = self.sprite_property_conf[npc_key]
+
+            # TODO: hit detection
+
+
     def _apply_physics(self):
         hero_props = self.sprite_property_conf['hero']
         hero_hitbox = self.get_hero_hitbox()
@@ -357,6 +372,12 @@ class World():
             if collisions.detect_hero_collision(hero_hitbox, collision_set):
                 collisions.recoil_sprite(self.hero, hero_props)
         
+    def _apply_interaction(self):
+        pass
+
+    def _apply_combat(self):
+        pass
+
     def get_strut_hitboxes(self):
         strut_hitboxes = []
         for strut_conf in self.strutsets.values():
@@ -412,5 +433,8 @@ class World():
         """
         Update the world state.
         """
+        self._update_npcs()
         self._update_hero(user_input)
         self._apply_physics()
+        self._apply_combat()
+        self._apply_interaction()
