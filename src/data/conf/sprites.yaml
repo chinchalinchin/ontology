@@ -159,10 +159,10 @@ sister:
         hitbox:
             offset:
                 x: 23
-                y: 3
+                y: 18
             size: 
-                w: 19
-                h: 61
+                w: 23
+                h: 15
         walk: 3
         run: 5
         collide: 3
@@ -248,10 +248,10 @@ skeleton:
         hitbox:
             offset:
                 x: 23
-                y: 3
+                y: 18
             size: 
-                w: 19
-                h: 61
+                w: 23
+                h: 15
         walk: 3
         run: 5
         collide: 3

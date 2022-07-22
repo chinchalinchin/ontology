@@ -42,6 +42,27 @@ class World():
     ```
     """
     sprite_property_conf = None
+    """
+    ```python
+    self.sprite_property_conf = {
+        'sprite_1': {
+            'walk': walk, # int,
+            'run': run, # int,
+            'collide': collide, # int
+            'hitbox': {
+                'offset': {
+                    'x': x, # int
+                    'y': y, #int
+                },
+                'size': {
+                    'w' : w, # int
+                    'h' : h, # int
+                }
+            }
+        }
+    }
+    ```
+    """
     tilesets = None
     """
     ```python
@@ -81,7 +102,54 @@ class World():
     ```
     """
     dimensions = None
+    """
+    ```
+    self.dimensions = (w, h)
+    ```
+    """
     hero = None
+    """
+    ```python
+    self.hero = {
+        'position': {
+            'x': x, # float,
+            'y': y, # float
+        },
+        'state': state, # str,
+        'frame': frame, # int
+    }
+    ```
+    """
+    npcs = None
+    """
+    ```python
+    self.npcs = {
+        'npc_1': {
+            'position: {
+                'x': x, # float
+                'y': y, # float
+            },
+            'state': state, # string
+            'frame': frame, # int
+        },
+    }
+    ```
+    """
+    villains = None
+    """
+    ```python
+    self.villains = {
+        'vil_1': {
+            'position: {
+                'x': x, # float
+                'y': y, # float
+            },
+            'state': state, # string
+            'frame': frame, # int
+        },
+    }
+    ```
+    """
 
     def __init__(self, config: conf.Conf, state_ao: state.State):
         """
@@ -92,7 +160,7 @@ class World():
         self._init_conf(config)
         self._init_static_state(state_ao)
         self._init_dynamic_state(state_ao)
-        self._init_hitboxes()
+        self._init_static_hitboxes()
 
     def _init_conf(self, config: conf.Conf):
         """
@@ -167,7 +235,7 @@ class World():
         self.npcs = dynamic_conf['npcs']
         self.villains = dynamic_conf['villains']
 
-    def _init_hitboxes(self):
+    def _init_static_hitboxes(self):
         buffer_strutsets = self.strutsets.copy()
 
         for strutset_key, strutset_conf in buffer_strutsets.items():
@@ -195,6 +263,10 @@ class World():
                         strutset_hitbox[2], strutset_hitbox[3])
                 else:
                     self.strutsets[strutset_key]['sets'][i]['hitbox'] = None
+        
+        # condense all the hitboxes into a list and save to strutsets,
+        # to avoid repeated internal calls to `get_strut_hitboxes`
+        self.strutsets['hitboxes'] = self.get_strut_hitboxes()
 
     def _update_hero(self, user_input: dict): 
         """
@@ -274,6 +346,26 @@ class World():
             self.hero['frame'] = 0
 
     def _apply_physics(self):
+        hero_props = self.sprite_property_conf['hero']
+        hero_hitbox = self.get_hero_hitbox()
+        npcs_hitboxes = self.get_sprite_hitboxes('npcs')    
+        vil_hitboxes = self.get_sprite_hitboxes('villains')
+
+        collision_sets = [npcs_hitboxes, vil_hitboxes, self.strutsets['hitboxes']]
+
+        for collision_set in collision_sets:
+            if collisions.detect_hero_collision(hero_hitbox, collision_set):
+                collisions.recoil_sprite(self.hero, hero_props)
+        
+    def get_strut_hitboxes(self):
+        strut_hitboxes = []
+        for strut_conf in self.strutsets.values():
+            sets = strut_conf['sets']
+            for strut in sets:
+                strut_hitboxes.append(strut.get('hitbox'))
+        return strut_hitboxes
+
+    def get_hero_hitbox(self):
         static_hero_props = self.sprite_property_conf['hero']
         hero_hitbox = (
             self.hero['position']['x'] + static_hero_props['hitbox'][0], 
@@ -281,16 +373,35 @@ class World():
             static_hero_props['hitbox'][2],
             static_hero_props['hitbox'][3]
         )
-        if collisions.detect_hero_collision(hero_hitbox, self.strutsets):
-            if 'down' in self.hero['state']:
-                self.hero['position']['y'] -= static_hero_props['collide']
-            elif 'left' in self.hero['state']:
-                self.hero['position']['x'] -= static_hero_props['collide']
-            elif 'right' in self.hero['state']:
-                self.hero['position']['x'] += static_hero_props['collide']
-            else:
-                self.hero['position']['y'] += static_hero_props['collide']
-                
+        return hero_hitbox
+
+    def get_sprite_hitboxes(self, key):
+        calculated = []
+
+        if key == 'npcs':
+            iter_set = self.npcs
+        elif key == 'villains':
+            iter_set = self.villains
+        else:
+            iter_set = []
+
+        for sprite_key, sprite_conf in iter_set.items():
+            raw_hitbox = self.sprite_property_conf[sprite_key]['hitbox']
+            sprite_pos = sprite_conf['position']['x'], sprite_conf['position']['y']
+            calc_hitbox = (
+                sprite_pos[0] + raw_hitbox[0],
+                sprite_pos[1] + raw_hitbox[1],
+                raw_hitbox[2],
+                raw_hitbox[3]
+            )
+            calculated.append(calc_hitbox)
+        return calculated
+    
+    def get_strutsets(self):
+        return { key: val for key, val in self.strutsets.items() if key != 'hitboxes' } 
+
+    def get_tilesets(self):
+        return self.tilesets
 
     def save(self):
         dynamic_conf = self.hero.copy()

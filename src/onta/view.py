@@ -98,7 +98,7 @@ class Renderer():
     def _render_tiles(self, game_world: world.World, repository: repo.Repo) -> None:
         log.debug('Rendering tile sets', 'Repo._render_tiles')
 
-        for group_key, group_conf in game_world.tilesets.items():
+        for group_key, group_conf in game_world.get_tilesets().items():
             group_tile = repository.get_layer('tiles', group_key)
             group_sets = group_conf['sets']
 
@@ -132,9 +132,8 @@ class Renderer():
 
     def _render_struts(self, game_world: world.World, repository: repo.Repo):
         log.debug('Rendering strut sets', 'Repo._render_tiles')
-        struts = game_world.strutsets
 
-        for group_key, group_conf in struts.items():
+        for group_key, group_conf in game_world.get_strutsets().items():
             group_strut = repository.get_layer('struts', group_key)
             group_sets = group_conf['sets']
 
@@ -148,6 +147,7 @@ class Renderer():
                 elif set_conf['start']['tile_units'] == 'relative':
                     start = (set_conf['start']['x']*group_strut.size[0], 
                         set_conf['start']['y']*group_strut.size[1])
+
                 else:
                     start = (set_conf['start']['x'], set_conf['start']['y'])
 
