@@ -74,27 +74,6 @@ class Renderer():
         self._render_tiles(static_world, repository)
         self._render_struts(static_world, repository)
 
-    def render(self, game_world: world.World, view_widget: QtWidgets.QWidget, repository: repo.Repo):
-        view_frame = view_widget.layout().itemAt(0).widget() 
-        self.world_frame = gui.new_image(game_world.dimensions)
-
-        self._render_static(False)
-        self._render_npcs(game_world, repository)
-        self._render_villains(game_world, repository)
-        self._render_hero(game_world, repository)
-        self._render_static(True)
-
-        screen_dim = (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
-        world_dim = game_world.dimensions
-        hero_pt = (game_world.hero['position']['x'], game_world.hero['position']['y'])
-        crop_box = self.calculate_crop_box(screen_dim, world_dim, hero_pt)
-
-        qim = ImageQt(self.world_frame.crop(crop_box))
-        pix = QtGui.QPixmap.fromImage(qim)
-        view_frame.setPixmap(pix)
-        return view_widget
-
-
     def _render_tiles(self, game_world: world.World, repository: repo.Repo) -> None:
         log.debug('Rendering tile sets', 'Repo._render_tiles')
 
@@ -164,22 +143,35 @@ class Renderer():
         else:
             self.world_frame.paste(self.static_back_frame, (0,0), self.static_back_frame)
 
-    def _render_hero(self, game_world: world.World, repository: repo.Repo):
-        hero_position = (int(game_world.hero['position']['x']), int(game_world.hero['position']['y']))
-        hero_state, hero_frame_index = game_world.hero['state'], game_world.hero['frame']
-        hero_frame = repository.get_sprite('hero', hero_state, hero_frame_index)      
-        self.world_frame.paste(hero_frame, hero_position, hero_frame)
+    def _render_spriteset(self, spriteset: str, game_world: world.World, repository: repo.Repo):
+        if spriteset == 'hero':
+            iter_set = { 'hero': game_world.hero }
+        elif spriteset == 'npcs':
+            iter_set = game_world.npcs
+        elif spriteset == 'villains':
+            iter_set = game_world.villains
 
-    def _render_npcs(self, game_world: world.World, repository: repo.Repo):
-        for npc_key, npc_state in game_world.npcs.items():
-            npc_position = (int(npc_state['position']['x']), int(npc_state['position']['y']))
-            npc_state, npc_frame_index = npc_state['state'], npc_state['frame']
-            npc_frame = repository.get_sprite(npc_key, npc_state, npc_frame_index)
-            self.world_frame.paste(npc_frame, npc_position, npc_frame)
-    
-    def _render_villains(self, game_world: world.World, repository: repo.Repo):
-        for vil_key, vil_state in game_world.villains.items():
-            vil_position = (int(vil_state['position']['x']), int(vil_state['position']['y']))
-            vil_state, vil_frame_index = vil_state['state'], vil_state['frame']
-            vil_frame = repository.get_sprite(vil_key, vil_state, vil_frame_index)
-            self.world_frame.paste(vil_frame, vil_position, vil_frame)
+        for sprite_key, sprite in iter_set.items():
+            sprite_position = (int(sprite['position']['x']), int(sprite['position']['y']))
+            sprite_state, sprite_frame = sprite['state'], sprite['frame']
+            sprite_frame = repository.get_sprite(sprite_key, sprite_state, sprite_frame)
+            self.world_frame.paste(sprite_frame, sprite_position, sprite_frame)
+
+    def render(self, game_world: world.World, view_widget: QtWidgets.QWidget, repository: repo.Repo):
+        view_frame = view_widget.layout().itemAt(0).widget() 
+        self.world_frame = gui.new_image(game_world.dimensions)
+
+        self._render_static(False)
+        for spriteset in ['npcs', 'villains', 'hero']:
+            self._render_spriteset(spriteset, game_world, repository)
+        self._render_static(True)
+
+        screen_dim = (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
+        world_dim = game_world.dimensions
+        hero_pt = (game_world.hero['position']['x'], game_world.hero['position']['y'])
+        crop_box = self.calculate_crop_box(screen_dim, world_dim, hero_pt)
+
+        qim = ImageQt(self.world_frame.crop(crop_box))
+        pix = QtGui.QPixmap.fromImage(qim)
+        view_frame.setPixmap(pix)
+        return view_widget

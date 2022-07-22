@@ -381,7 +381,6 @@ class World():
 
              # TODO: hit detection
 
-
     def _apply_physics(self):
         hero_props = self.sprite_property_conf['hero']
         hero_hitbox = self.get_sprite_hitbox('hero')
@@ -402,7 +401,6 @@ class World():
                 if collisions.detect_collision(npc_hitbox, collision_set):
                     collisions.recoil_sprite(npc, self.sprite_property_conf[npc_key])
         
-
     def _apply_interaction(self):
         pass
 
