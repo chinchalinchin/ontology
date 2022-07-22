@@ -15,7 +15,7 @@ import onta.load.state as state
 import onta.util.logger as logger
 import onta.util.helper as helper
 
-log = logger.Logger('ontology.onta.main', settings.LOG_LEVEL)
+log = logger.Logger('onta.main', settings.LOG_LEVEL)
 
 
 def parse_cli_args():

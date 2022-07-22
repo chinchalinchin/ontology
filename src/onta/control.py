@@ -4,7 +4,7 @@ from pynput import keyboard
 import onta.settings as settings
 import onta.util.logger as logger
 
-log = logger.Logger('ontology.onta.control', settings.LOG_LEVEL)
+log = logger.Logger('onta.control', settings.LOG_LEVEL)
 
 CONTROLS = ['space', 'alt_left', 'ctrl_left', 'shift_left', 'tab', 'up', 'left', 'right', 'down']
 

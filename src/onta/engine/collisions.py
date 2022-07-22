@@ -2,7 +2,7 @@ import onta.settings as settings
 import onta.engine.calculator as calculator
 import onta.util.logger as logger
 
-log = logger.Logger('ontology.onta.engine.collisions', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.collisions', settings.LOG_LEVEL)
 
 def detect_hero_collision(hero_dim, hitbox_set):
     for hitbox_conf in hitbox_set.values():

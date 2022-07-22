@@ -7,7 +7,7 @@ import onta.util.logger as logger
 import onta.util.gui as gui
 
 
-log = logger.Logger('ontology.onta.repo', settings.LOG_LEVEL)
+log = logger.Logger('onta.repo', settings.LOG_LEVEL)
 
 LAYERS = ['tiles', 'struts']
 

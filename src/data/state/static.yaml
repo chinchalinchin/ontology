@@ -15,6 +15,7 @@
 #
 # # NOTE: (w, h) dimensions are always expressed as integer-valued multiples of the tile dimensions.
 # # NOTE: default == scaled by (96px, 32px), absolute == pixel value, relative == scaled by tile_dim
+
 dim:
   # grid unit: 96px by 32px
   w: 10
@@ -122,7 +123,6 @@ struts:
           x: 574
           y: 0
         cover: true
-
   apartment_steps:
     sets:
       - start:

@@ -6,9 +6,17 @@ hero:
   frame: 0
 
 npcs: 
-  heroine:
+  sister:
     position:
       x: 100
       y: 100
+    state: walk_down
+    frame: 0
+  
+villains:
+  skeleton:
+    position:
+      x: 200
+      y: 200
     state: walk_down
     frame: 0

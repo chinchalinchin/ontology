@@ -1,11 +1,12 @@
 
 import onta.settings as settings
 import onta.load.state as state
+import onta.load.conf as conf
 import onta.util.logger as logger
 import onta.engine.calculator as calculator
 import onta.engine.collisions as collisions
 
-log = logger.Logger('ontology.onta.world', settings.LOG_LEVEL)
+log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
 CONFIGURABLE_ELEMENTS = [ 'struts', 'sprites' ]
 
@@ -82,13 +83,18 @@ class World():
     dimensions = None
     hero = None
 
-    def __init__(self, config, state_ao):
+    def __init__(self, config: conf.Conf, state_ao: state.State):
+        """
+
+        .. notes:
+            - Configuration and state are passed in as references to populate internal dictionaries.
+        """
         self._init_conf(config)
         self._init_static_state(state_ao)
         self._init_dynamic_state(state_ao)
         self._init_hitboxes()
 
-    def _init_conf(self, config):
+    def _init_conf(self, config: conf.Conf):
         """
         
         Initialize configuration properties for in-game elements in the memory.
@@ -140,7 +146,7 @@ class World():
             else:
                 self.strut_property_conf[strut_key]['hitbox'] = None
 
-    def _init_static_state(self, state_ao):
+    def _init_static_state(self, state_ao: state.State):
         """
         Initialize the state for static in-game elements, i.e. elements that do not move and are not interactable.
         """
@@ -152,12 +158,14 @@ class World():
 
         log.debug(f'Initialized static world layer with dimensions {self.dimensions}', 'World._init_static_layer')
 
-    def _init_dynamic_state(self, state_ao):
+    def _init_dynamic_state(self, state_ao: state.State):
         """
         Initialize the state for dynamic in-game elements, i.e.e elements that move and are interactable.
         """
         dynamic_conf = state_ao.get_state('dynamic')
         self.hero = dynamic_conf['hero']
+        self.npcs = dynamic_conf['npcs']
+        self.villains = dynamic_conf['villains']
 
     def _init_hitboxes(self):
         buffer_strutsets = self.strutsets.copy()
@@ -188,79 +196,79 @@ class World():
                 else:
                     self.strutsets[strutset_key]['sets'][i]['hitbox'] = None
 
-    def _update_hero(self, user_input:dict): 
+    def _update_hero(self, user_input: dict): 
         """
         Map user input to new hero state and then animate state.
         """
-
-        if 'run' in self.hero['state']:
-            speed = self.sprite_property_conf['hero']['run']
-        else:
-            speed = self.sprite_property_conf['hero']['walk']
-
-        if user_input['n']:
-            if self.hero['state'] != 'walk_up':
-                self.hero['frame'] = 0
-                self.hero['state'] = 'walk_up'
-
+        if self.hero['state'] not in self.sprite_state_conf['hero']['blocking_states']:
+            if 'run' in self.hero['state']:
+                speed = self.sprite_property_conf['hero']['run']
             else:
-                self.hero['frame'] += 1
+                speed = self.sprite_property_conf['hero']['walk']
 
-            self.hero['position']['y'] -= speed
+            if user_input['n']:
+                if self.hero['state'] != 'walk_up':
+                    self.hero['frame'] = 0
+                    self.hero['state'] = 'walk_up'
 
-        elif user_input['s']:
-            if self.hero['state'] != 'walk_down':
-                self.hero['frame'] = 0
-                self.hero['state'] = 'walk_down'
+                else:
+                    self.hero['frame'] += 1
 
-            else:
-                self.hero['frame'] += 1
+                self.hero['position']['y'] -= speed
 
-            self.hero['position']['y'] += speed
+            elif user_input['s']:
+                if self.hero['state'] != 'walk_down':
+                    self.hero['frame'] = 0
+                    self.hero['state'] = 'walk_down'
 
-        elif user_input['nw'] or user_input['w'] or user_input['sw']:
-            if self.hero['state'] != 'walk_right':
-                self.hero['frame'] = 0
-                self.hero['state'] = 'walk_right'
+                else:
+                    self.hero['frame'] += 1
 
-            else:
-                self.hero['frame'] += 1
+                self.hero['position']['y'] += speed
 
-            if user_input['nw'] or user_input['sw']:    
-                proj = calculator.projection()
+            elif user_input['nw'] or user_input['w'] or user_input['sw']:
+                if self.hero['state'] != 'walk_right':
+                    self.hero['frame'] = 0
+                    self.hero['state'] = 'walk_right'
 
-                if user_input['nw']:
-                    self.hero['position']['x'] -= speed*proj[0]
-                    self.hero['position']['y'] -= speed*proj[1]
+                else:
+                    self.hero['frame'] += 1
 
-                elif user_input['sw']:
-                    self.hero['position']['x'] -= speed*proj[0]
+                if user_input['nw'] or user_input['sw']:    
+                    proj = calculator.projection()
 
-                self.hero['position']['y'] += speed*proj[1]
+                    if user_input['nw']:
+                        self.hero['position']['x'] -= speed*proj[0]
+                        self.hero['position']['y'] -= speed*proj[1]
 
-            elif user_input['w']:
-                self.hero['position']['x'] -= speed
+                    elif user_input['sw']:
+                        self.hero['position']['x'] -= speed*proj[0]
 
-        elif user_input['se'] or user_input['e'] or user_input['ne']:
-            if self.hero['state'] != 'walk_left':
-                self.hero['frame'] = 0
-                self.hero['state'] = 'walk_left'
-            else:
-                self.hero['frame'] += 1
-
-            if user_input['se'] or user_input['ne']:
-                proj = calculator.projection()
-
-                if user_input['se']:
-                    self.hero['position']['x'] += speed*proj[0]
                     self.hero['position']['y'] += speed*proj[1]
 
-                elif user_input['ne']:
-                    self.hero['position']['x'] += speed*proj[0]
-                    self.hero['position']['y'] -= speed*proj[1]
+                elif user_input['w']:
+                    self.hero['position']['x'] -= speed
 
-            elif user_input['e']:
-                self.hero['position']['x'] += speed
+            elif user_input['se'] or user_input['e'] or user_input['ne']:
+                if self.hero['state'] != 'walk_left':
+                    self.hero['frame'] = 0
+                    self.hero['state'] = 'walk_left'
+                else:
+                    self.hero['frame'] += 1
+
+                if user_input['se'] or user_input['ne']:
+                    proj = calculator.projection()
+
+                    if user_input['se']:
+                        self.hero['position']['x'] += speed*proj[0]
+                        self.hero['position']['y'] += speed*proj[1]
+
+                    elif user_input['ne']:
+                        self.hero['position']['x'] += speed*proj[0]
+                        self.hero['position']['y'] -= speed*proj[1]
+
+                elif user_input['e']:
+                    self.hero['position']['x'] += speed
 
         if self.hero['frame'] >= self.sprite_state_conf['hero'][self.hero['state']]:
             self.hero['frame'] = 0

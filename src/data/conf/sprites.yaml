@@ -151,7 +151,7 @@ hero:
             row: 20
             frames: 6
 
-heroine:
+sister:
     size:
         w: 64
         h: 64
@@ -235,6 +235,64 @@ heroine:
         - slash_left:
             row: 15
             frames: 6
+        # Death
+        - death:
+            row: 20
+            frames: 6
+
+skeleton:
+    size:
+        w: 64
+        h: 64
+    properties:
+        hitbox:
+            offset:
+                x: 23
+                y: 3
+            size: 
+                w: 19
+                h: 61
+        walk: 3
+        run: 5
+        collide: 3
+    sheets:
+        compose:
+            - file: monster_skeleton_white_sheet.png
+            - file: equipment_male_armor_bronze.png
+            - file: item_spear.png
+    blocking_states:
+        - thrust_up
+        - thrust_down
+        - thrust_left
+        - thrust_right
+        - death
+    states:
+        # Thrust
+        - thrust_up:
+            row: 4
+            frames: 8
+        - thrust_right:
+            row: 5
+            frames: 8
+        - thrust_down:
+            row: 6
+            frames: 8
+        - thrust_left:
+            row: 7
+            frames: 8
+        # Walk
+        - walk_up:
+            row: 8
+            frames: 9
+        - walk_right:
+            row: 9
+            frames: 9
+        - walk_down:
+            row: 10
+            frames: 9
+        - walk_left: 
+            row: 11 
+            frames: 9
         # Death
         - death:
             row: 20
