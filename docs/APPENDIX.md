@@ -8,4 +8,6 @@
 
 All of the game assets were retrieved from [OpenGameArt](https://opengameart). Specifically, the Liberated Pixel Cup (LPC) has been a great source of interesting and unique assets. The following contributors have assets appearing in the default application distribution:
 
-TODO
+- [adrix89](https://opengameart.org/users/adrix89)
+- [aritisticdude](https://opengameart.org/users/artisticdude)
+- [Hyptosis](http://www.lorestrome.com/pixel_archive/main.htm)
