@@ -79,11 +79,10 @@ class Renderer():
 
         for group_key, group_conf in game_world.get_tilesets().items():
             group_tile = repository.get_layer('tiles', group_key)
-            group_sets = group_conf['sets']
 
             log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
 
-            for set_conf in group_sets:
+            for set_conf in group_conf['sets']:
                 if set_conf['start']['tile_units'] == 'default':
                     start = (set_conf['start']['x']*settings.TILE_DIM[0], 
                         set_conf['start']['y']*settings.TILE_DIM[1])

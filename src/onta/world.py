@@ -36,8 +36,7 @@ class World():
             'state_2': state_2_frames, # int
             # ..
             'blocking_states': [ block_state_1, block_state_2, ], # list(str)
-        }
-
+        },
     }
     ```
     """
@@ -49,17 +48,9 @@ class World():
             'walk': walk, # int,
             'run': run, # int,
             'collide': collide, # int
-            'hitbox': {
-                'offset': {
-                    'x': x, # int
-                    'y': y, #int
-                },
-                'size': {
-                    'w' : w, # int
-                    'h' : h, # int
-                }
-            }
-        }
+            'size': (w, h), # tuple
+            'hitbox': (offset_x, offset_y, width, height), # tuple
+        },
     }
     ```
     """
@@ -77,7 +68,7 @@ class World():
                     }
                 }
             ]
-        }
+        },
     }
     ```
     """
@@ -97,7 +88,7 @@ class World():
 
                 }
             ]
-        }
+        },
     }
     ```
     """
@@ -153,7 +144,7 @@ class World():
 
     def __init__(self, config: conf.Conf, state_ao: state.State):
         """
-        Creates an instance of `onta.world.World`.
+        Creates an instance of `onta.world.World` and calls internal methods to initialize in-game element configuration, the game's static state and the game's dynamic state.
 
         .. notes:
             - Configuration and state are passed in to populate internal dictionaries. No references are kept to the `config` or `state_ao` objects.
@@ -161,11 +152,9 @@ class World():
         self._init_conf(config)
         self._init_static_state(state_ao)
         self._init_dynamic_state(state_ao)
-        self._init_static_hitboxes()
 
     def _init_conf(self, config: conf.Conf):
-        """
-        
+        """ 
         Initialize configuration properties for in-game elements in the memory.
         """
         struts_conf = config.configuration('struts')
@@ -174,27 +163,13 @@ class World():
         self.sprite_state_conf = {}
         self.sprite_property_conf = {}
         for sprite_key, sprite_conf in sprites_conf.items():
-            # transfer fields that don't require condensing
             self.sprite_state_conf[sprite_key] = {}
             self.sprite_property_conf[sprite_key] = {}
 
-            self.sprite_property_conf[sprite_key]['hitbox'] = (
-                sprite_conf['properties']['hitbox']['offset']['x'],
-                sprite_conf['properties']['hitbox']['offset']['y'],
-                sprite_conf['properties']['hitbox']['size']['w'],
-                sprite_conf['properties']['hitbox']['size']['h']
-            )
-            self.sprite_property_conf[sprite_key]['walk'] = sprite_conf['properties']['walk']
-            self.sprite_property_conf[sprite_key]['run'] = sprite_conf['properties']['run']
-            self.sprite_property_conf[sprite_key]['collide'] = sprite_conf['properties']['collide']
+            self.sprite_property_conf[sprite_key] = sprite_conf['properties']
+            self.sprite_property_conf[sprite_key]['size'] = sprite_conf['size']
 
-            self.sprite_state_conf[sprite_key]['size'] = {}
-            self.sprite_state_conf[sprite_key]['size']['w'] = sprite_conf['size']['w']
-            self.sprite_state_conf[sprite_key]['size']['h'] = sprite_conf['size']['h']
             self.sprite_state_conf[sprite_key]['blocking_states'] = sprite_conf['blocking_states']
-
-            # condense state information to only info relevant to World 
-            #   i.e., the World doesn't care about the state image configuration
             for state_map in sprite_conf['states']:
                 state = list(state_map.keys())[0]
                 self.sprite_state_conf[sprite_key][state] = state_map[state]['frames']
@@ -203,17 +178,8 @@ class World():
         
         for strut_key, strut_conf in struts_conf.items():
             self.strut_property_conf[strut_key] = {}
-            hitbox = strut_conf['properties']['hitbox']
-
-            self.strut_property_conf[strut_key]['size'] = {}
-            self.strut_property_conf[strut_key]['size']['w'] = strut_conf['image']['size']['w']
-            self.strut_property_conf[strut_key]['size']['h'] = strut_conf['image']['size']['h']
-
-            if hitbox is not None:
-                self.strut_property_conf[strut_key]['hitbox'] = (hitbox['offset']['x'], hitbox['offset']['y'],
-                    hitbox['size']['w'], hitbox['size']['h'])
-            else:
-                self.strut_property_conf[strut_key]['hitbox'] = None
+            self.strut_property_conf[strut_key]['size'] = strut_conf['image']['size']
+            self.strut_property_conf[strut_key]['hitbox'] = strut_conf['properties']['hitbox']
 
     def _init_static_state(self, state_ao: state.State):
         """
@@ -224,7 +190,7 @@ class World():
             static_conf['dim']['h']*settings.TILE_DIM[1])
         self.tilesets = static_conf['tiles']
         self.strutsets = static_conf['struts']
-
+        self._init_static_hitboxes()
         log.debug(f'Initialized static world layer with dimensions {self.dimensions}', 'World._init_static_layer')
 
     def _init_dynamic_state(self, state_ao: state.State):
@@ -244,14 +210,12 @@ class World():
 
         for strutset_key, strutset_conf in buffer_strutsets.items():
             strutset_props = self.strut_property_conf[strutset_key]
-            strutset_hitbox = strutset_props['hitbox']
-            strutset = strutset_conf['sets']
 
             log.debug(f'Initialize strutset {strutset_key} with properties: {strutset_props}', 'World._init_hitboxes')
 
-            for i, strut_conf in enumerate(strutset):
+            for i, strut_conf in enumerate(strutset_conf['sets']):
 
-                if strutset_hitbox is not None:
+                if strutset_props['hitbox'] is not None:
                     if strut_conf['start']['tile_units'] == 'default':
                         x = strut_conf['start']['x']*settings.TILE_DIM[0]
                         y = strut_conf['start']['y']*settings.TILE_DIM[1]
@@ -261,10 +225,15 @@ class World():
                     else:
                         x, y = strut_conf['start']['x'], strut_conf['start']['y']
                     
-                    top_x, top_y = x + strutset_hitbox[0], y + strutset_hitbox[1]
+                    top_x = x + strutset_props['hitbox']['offset']['x']
+                    top_y = y + strutset_props['hitbox']['offset']['y']
                     
-                    self.strutsets[strutset_key]['sets'][i]['hitbox'] = (top_x, top_y,
-                        strutset_hitbox[2], strutset_hitbox[3])
+                    self.strutsets[strutset_key]['sets'][i]['hitbox'] = (
+                        top_x, 
+                        top_y,
+                        strutset_props['hitbox']['size']['w'], 
+                        strutset_props['hitbox']['size']['h']
+                    )
                 else:
                     self.strutsets[strutset_key]['sets'][i]['hitbox'] = None
         
@@ -428,12 +397,11 @@ class World():
         elif spriteset == 'villains':
             sprite = self.villains[key]
         raw_hitbox = self.sprite_property_conf[key]['hitbox']
-        sprite_pos = sprite['position']['x'], sprite['position']['y']
         calc_hitbox = (
-            sprite_pos[0] + raw_hitbox[0],
-            sprite_pos[1] + raw_hitbox[1],
-            raw_hitbox[2],
-            raw_hitbox[3]
+            sprite['position']['x'] + raw_hitbox['offset']['x'],
+            sprite['position']['y'] + raw_hitbox['offset']['y'],
+            raw_hitbox['size']['w'],
+            raw_hitbox['size']['h']
         )
         return calc_hitbox
 
