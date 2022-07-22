@@ -10,6 +10,8 @@ log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
 class World():
 
+    # TODO: possibly. does it make sense to separate property and state conf for sprites?
+
     strut_property_conf = None
     """
     Holds strut property configuration information
@@ -354,24 +356,53 @@ class World():
         .. notes:
             - This method is essentially an interface between the NPC state and the game world. It determines what happens to an NPC once it is in a state.
         """
-        for npc_key, npc_state in self.npcs.items():
+        for npc_key, npc in self.npcs.items():
             npc_props = self.sprite_property_conf[npc_key]
 
-            # TODO: hit detection
+            if npc['state'] not in self.sprite_state_conf[npc_key]['blocking_states']:
+                if 'run' in npc['state']:
+                    speed = npc_props['run']
+                else:
+                    speed = npc_props['walk']
+
+                if npc['state'] == 'walk_up':
+                    npc['position']['y'] -= speed
+                elif npc['state'] == 'walk_left':
+                    npc['position']['x'] -= speed
+                elif npc['state'] == 'walk_right':
+                    npc['position']['y'] += speed
+                elif npc['state'] == 'walk_down':
+                    npc['position']['y'] += speed
+
+            npc['frame'] += 1
+
+            if npc['frame'] >= self.sprite_state_conf[npc_key][npc['state']]:
+                npc['frame'] = 0
+
+             # TODO: hit detection
 
 
     def _apply_physics(self):
         hero_props = self.sprite_property_conf['hero']
-        hero_hitbox = self.get_hero_hitbox()
+        hero_hitbox = self.get_sprite_hitbox('hero')
         npcs_hitboxes = self.get_sprite_hitboxes('npcs')    
         vil_hitboxes = self.get_sprite_hitboxes('villains')
 
         collision_sets = [npcs_hitboxes, vil_hitboxes, self.strutsets['hitboxes']]
 
         for collision_set in collision_sets:
-            if collisions.detect_hero_collision(hero_hitbox, collision_set):
+            if collisions.detect_collision(hero_hitbox, collision_set):
                 collisions.recoil_sprite(self.hero, hero_props)
+
+        for npc_key, npc in self.npcs.items():
+            npc_hitbox = self.get_sprite_hitbox('npcs', npc_key)
+            no_self_hitboxes = self.get_sprite_hitboxes('npcs', npc_key)
+            collision_sets = [no_self_hitboxes, vil_hitboxes, self.strutsets['hitboxes']]
+            for collision_set in collision_sets:
+                if collisions.detect_collision(npc_hitbox, collision_set):
+                    collisions.recoil_sprite(npc, self.sprite_property_conf[npc_key])
         
+
     def _apply_interaction(self):
         pass
 
@@ -386,17 +417,29 @@ class World():
                 strut_hitboxes.append(strut.get('hitbox'))
         return strut_hitboxes
 
-    def get_hero_hitbox(self):
-        static_hero_props = self.sprite_property_conf['hero']
-        hero_hitbox = (
-            self.hero['position']['x'] + static_hero_props['hitbox'][0], 
-            self.hero['position']['y'] + static_hero_props['hitbox'][1],
-            static_hero_props['hitbox'][2],
-            static_hero_props['hitbox'][3]
+    def get_sprite_hitbox(self, spriteset, key = None):
+        """
+        .. notes:
+            - A sprite's hitbox dimensions are fixed, but the actual hitbox coordinates depend on the position of the sprite. This method must be called each iteration of the world loop, so the newest coordinates of the hitbox are retrieved.
+        """
+        if spriteset == 'hero':
+            sprite = self.hero
+            key = 'hero'
+        elif spriteset == 'npcs':
+            sprite = self.npcs[key]
+        elif spriteset == 'villains':
+            sprite = self.villains[key]
+        raw_hitbox = self.sprite_property_conf[key]['hitbox']
+        sprite_pos = sprite['position']['x'], sprite['position']['y']
+        calc_hitbox = (
+            sprite_pos[0] + raw_hitbox[0],
+            sprite_pos[1] + raw_hitbox[1],
+            raw_hitbox[2],
+            raw_hitbox[3]
         )
-        return hero_hitbox
+        return calc_hitbox
 
-    def get_sprite_hitboxes(self, key):
+    def get_sprite_hitboxes(self, key, exclude = None):
         calculated = []
 
         if key == 'npcs':
@@ -406,16 +449,12 @@ class World():
         else:
             iter_set = []
 
-        for sprite_key, sprite_conf in iter_set.items():
-            raw_hitbox = self.sprite_property_conf[sprite_key]['hitbox']
-            sprite_pos = sprite_conf['position']['x'], sprite_conf['position']['y']
-            calc_hitbox = (
-                sprite_pos[0] + raw_hitbox[0],
-                sprite_pos[1] + raw_hitbox[1],
-                raw_hitbox[2],
-                raw_hitbox[3]
-            )
-            calculated.append(calc_hitbox)
+        for sprite_key in iter_set.keys():
+            if exclude is None or sprite_key not in exclude:
+                if key == 'npcs':
+                    calculated.append(self.get_sprite_hitbox('npcs', sprite_key))
+                elif key == 'villains':
+                    calculated.append(self.get_sprite_hitbox('villains', sprite_key))
         return calculated
     
     def get_strutsets(self):
@@ -424,15 +463,16 @@ class World():
     def get_tilesets(self):
         return self.tilesets
 
-    def save(self):
+    def save(self, state_ao):
         dynamic_conf = self.hero.copy()
         # dynamic_conf.update(self.other_conf)
-        state.save_state('dynamic', dynamic_conf)
+        state_ao.save_state('dynamic', dynamic_conf)
 
     def iterate(self, user_input: dict) -> dict:
         """
         Update the world state.
         """
+
         self._update_npcs()
         self._update_hero(user_input)
         self._apply_physics()

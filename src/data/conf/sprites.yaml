@@ -151,11 +151,13 @@ hero:
             row: 20
             frames: 6
 
-sister:
+esmeralda:
     size:
         w: 64
         h: 64
     properties:
+        # TODO: may need to separate hitboxes for hero and hitboxes for other in-game elements...
+
         hitbox:
             offset:
                 x: 23

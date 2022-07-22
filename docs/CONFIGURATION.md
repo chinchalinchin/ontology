@@ -15,7 +15,7 @@ This file defines the mapping between user input and player state. **Note**: The
 
 - **Location**: _data/conf/sprites.yaml_
 
-This file defines the mapping between player state and spritesheet frames, along with other static information related to sprites. **Note**: the state names defined in this file must match the state maps in the _controls.yaml_.
+This file defines the mapping between player state and spritesheet frames through a group named `hero`. Besides the required `hero` configuration, this file will also configure the state mappings between any defined sprites and their spritesheet frames.  **Note**: the state names defined in this file must match the state maps in the _controls.yaml_.
 
 ```yaml
 <group>:
@@ -50,6 +50,8 @@ This file defines the mapping between player state and spritesheet frames, along
 
 - **Location**: _data/conf/struts.yaml_
 
+This file defines the mapping between struts and their corresponding strutsheet. In particular, it tells the game engine how to crop a group strut from a strutset, by specifying the (_x_, _y_) coordinates of the upper left corner and its dimension (_w_, _h_). 
+
 ```yaml
 <group>:
   image:
@@ -58,16 +60,16 @@ This file defines the mapping between player state and spritesheet frames, along
       x: int
       y: int
     size:
-      width: int
-      height: int
-    properties:
-      hitbox:
-      offset:
-        x:
-        y:
-      dimensions:
-        w:
-        h:
+      w: int
+      h: int
+  properties:
+    hitbox:
+    offset:
+      x:
+      y:
+    dimensions:
+      w:
+      h:
 ```
 
 ## Tiles

@@ -4,11 +4,11 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.engine.collisions', settings.LOG_LEVEL)
 
-def detect_hero_collision(hero_dim, hitbox_list):
+def detect_collision(sprite_dim, hitbox_list):
     for hitbox in hitbox_list:
-        if hitbox is not None and calculator.intersection(hero_dim, hitbox):
+        if hitbox is not None and calculator.intersection(sprite_dim, hitbox):
             # return true once collision is detected. it doesn't matter where it occurs, only what direction the hero is travelling...
-            log.debug(f'Detected player {hero_dim} collision with hitbox at {hitbox}', 
+            log.debug(f'Detected sprite {sprite_dim} collision with hitbox at {hitbox}', 
                 'detect_hero_collisions')
             return True
 

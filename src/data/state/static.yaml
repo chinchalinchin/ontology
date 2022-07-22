@@ -101,6 +101,12 @@ struts:
           x: 576
           y: 96
         cover: false
+      - start:
+          tile_units: absolute
+          x: 96
+          y: 192
+        cover: false
+        
   apartment_roof:
     sets:
       - start:

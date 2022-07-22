@@ -1,7 +1,7 @@
 
 # Overview
 
-The core game loop is made up of three components: the _World_ object, the _Renderer_ object and the _Controller_ object. This implementation mirrors the common _Model-View-Controller_ (MVC) architecture seen in many modern frameworks. At a high level, the _World_ object contains all of the object state information and methods for updating this state. The _Controller_ object listens for user input, keeping track of which keys have been pressed. The _Renderer_ object paints the game graphics to screen.
+The core game loop is made up of three components: the _World_ object, the _Renderer_ object and the _Controller_ object. This implementation mirrors the common [Model-View-Controller(MVC)]() architecture seen in many modern frameworks. At a high level, the _World_ object contains all of the object state information and methods for updating this state. The _Controller_ object listens for user input, keeping track of which keys have been pressed. The _Renderer_ object paints the game graphics to screen.
 
 The objects are orchestrated in the central _main_ module (i.e., _main.py_).
 

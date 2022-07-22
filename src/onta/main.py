@@ -82,9 +82,23 @@ def do(
         start_time = helper.current_ms_time()
 
         user_input = controller.poll()
+
+        # # pre_update hook here
+            # # need:
+            # # scripts/npc.py:state_handler
+            # # construct npc state from game world info
+        # scripts.apply_scripts(game_world, 'pre_update')
+
         game_world.iterate(user_input)
+
+        # # pre_render hook here
+        # scripts.apply_scripts(game_world, 'pre_render')
+
         render_engine.render(game_world, game_view, asset_repository)
 
+        # # post_render hook here
+        # scripts.apply_scripts(game_world, 'post_render')
+        
         end_time = helper.current_ms_time()
         diff = end_time - start_time
         sleep_time = ms_per_frame - diff
