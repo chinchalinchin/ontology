@@ -31,7 +31,7 @@ STRUT_DIR = os.path.join(ASSET_DIR, 'struts')
 
 # Debug Configuration
 
-LOG_LEVEL = "DEBUG"
+LOG_LEVEL = os.environ.setdefault('LOG_LEVEL', 'DEBUG')
 """Log level for capturing stdout"""
 
 # GUI Configuration

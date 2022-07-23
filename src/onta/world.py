@@ -379,6 +379,7 @@ class World():
         
         .. notes:
             - Keep in mind, the sprite collision doesn't care what sprite or strut with which the player collided, only what direction the player was travelling when the collision happened. The door hit detection, however, _is_ aware of what door with which the player is colliding, in order to locate the world layer to which the door is connected.
+            - Technically, there is overlap here. Since sprite npc is checked against every other sprite for collisions, there are n! combinations, whereas there are a total of 2^n collision checks. Therefore, 2^n - n! checks are unneccesary. This algorithm can be vastly improved. A key TODO should be fixing this.
         """
 
         for spriteset_key in ['hero', 'npcs', 'villains']:
@@ -387,33 +388,36 @@ class World():
             elif spriteset_key == 'npcs':
                 iter_set = self.npcs
             elif spriteset_key == 'villains':
-                iter_set == self.villains
+                iter_set = self.villains
 
-            for hitbox_key in ['npc', 'villain', 'strut']:
-                for sprite_key, sprite in iter_set.items():
-                    if spriteset_key in ['npcs', 'villains']:
+            for sprite_key, sprite in iter_set.items():
+                if spriteset_key in ['npcs', 'villains']:
+                    for hitbox_key in ['sprite', 'strut']:
                         sprite_hitbox = self.get_sprite_hitbox(spriteset_key, hitbox_key, sprite_key)
-                        vil_hitboxes = self.get_sprite_hitboxes(spriteset_key, hitbox_key, sprite_key)
-                        npc_hitboxes = self.get_sprite_hitboxes(spriteset_key, hitbox_key, sprite_key)
-                    else:
-                        sprite_hitbox = self.get_sprite_hitbox(spriteset_key, sprite_key, sprite_key)
-                        vil_hitboxes = self.get_sprite_hitboxes(spriteset_key, hitbox_key)
-                        npc_hitboxes = self.get_sprite_hitboxes(spriteset_key, hitbox_key)
+                        vil_hitboxes = self.get_sprite_hitboxes('villains', hitbox_key, sprite_key)
+                        npc_hitboxes = self.get_sprite_hitboxes('npcs', hitbox_key, sprite_key)
 
-                collision_sets = [npc_hitboxes, vil_hitboxes, self.strutsets[self.layer]['hitboxes']]
-                for collision_set in collision_sets:
-                    if collisions.detect_collision(sprite_hitbox, collision_set):
-                        collisions.recoil_sprite(sprite, self.sprite_property_conf[sprite_key])
+                        collision_sets = [npc_hitboxes, vil_hitboxes, self.strutsets[self.layer]['hitboxes']]
 
-        if len(self.npcs) > 0:
-            for npc_key, npc in self.npcs.items():
-                npc_hitbox = self.get_sprite_hitbox('npcs', 'strut', npc_key)
-                no_self_hitboxes = self.get_sprite_hitboxes('npcs', 'npc', npc_key)
-                
-                collision_sets = [no_self_hitboxes, vil_hitboxes, self.strutsets[self.layer]['hitboxes']]
-                for collision_set in collision_sets:
-                    if collisions.detect_collision(npc_hitbox, collision_set):
-                        collisions.recoil_sprite(npc, self.sprite_property_conf[npc_key])
+                        log.verbose(f'Checking {spriteset_key} set member "{sprite_key}" with hitbox {sprite_hitbox} for {hitbox_key} collisions...', 
+                            '_apply_physics')
+
+                        for collision_set in collision_sets:
+                            if collisions.detect_collision(sprite_hitbox, collision_set):
+                                collisions.recoil_sprite(sprite, self.sprite_property_conf[sprite_key])
+    
+                elif spriteset_key == 'hero':
+                    sprite_hitbox = self.get_sprite_hitbox(spriteset_key, sprite_key, sprite_key)
+                    vil_hitboxes = self.get_sprite_hitboxes('villains', sprite_key)
+                    npc_hitboxes = self.get_sprite_hitboxes('npcs', sprite_key)
+
+                    log.verbose('Checking "hero" for collisions...', 
+                        '_apply_physics')
+
+                    collision_sets = [npc_hitboxes, vil_hitboxes, self.strutsets[self.layer]['hitboxes']]
+                    for collision_set in collision_sets:
+                        if collisions.detect_collision(sprite_hitbox, collision_set):
+                            collisions.recoil_sprite(sprite, self.sprite_property_conf[sprite_key])
     
     def _apply_interaction(self):
         self.strutsets[self.layer]['doors']

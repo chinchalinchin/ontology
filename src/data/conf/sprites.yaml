@@ -173,7 +173,7 @@ esmeralda:
                 size:
                     w: 19
                     h: 61
-            npc:
+            sprite:
                 offset:
                     x: 23
                     y: 18
@@ -277,7 +277,7 @@ skeleton:
                 size:
                     w: 19
                     h: 61
-            npc:
+            sprite:
                 offset:
                     x: 23
                     y: 18
