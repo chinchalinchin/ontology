@@ -4,6 +4,7 @@ hero:
     y: 40
   state: walk_down
   frame: 0
+  layer: one
 
 npcs: 
   esmeralda:
@@ -12,6 +13,7 @@ npcs:
       y: 100
     state: walk_down
     frame: 0
+    layer: one
   
 villains:
   skeleton:
@@ -20,3 +22,4 @@ villains:
       y: 200
     state: walk_down
     frame: 0
+    layer: one

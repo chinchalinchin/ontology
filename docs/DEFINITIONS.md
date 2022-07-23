@@ -4,7 +4,7 @@
 
 1. **World**: Game object that contains all the state and property information about the game world. It also possesses internal methods for updating the world state that are called when the public interface method `iterate()` is called. 
 
-    - _Layer_: A world is made up of layers. Each layer is independently rendered. In-game actions trigger the transition from one layer to another layer, e.g. the player enters a _Door_.
+    - _Layer_: A world is made up of layers. Each layer is independently rendered. In-game actions trigger the transition from one layer to another layer, e.g. the player interacts with a _Door_.
 
 2. **Sprite**: An in-game animation element whose frames are constructed from panels in a sprite sheet.
 

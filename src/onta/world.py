@@ -141,6 +141,8 @@ class World():
     }
     ```
     """
+    layer = None
+    layers = None
 
     def __init__(self, config: conf.Conf, state_ao: state.State):
         """
@@ -186,10 +188,25 @@ class World():
         Initialize the state for static in-game elements, i.e. elements that do not move and are not interactable.
         """
         static_conf = state_ao.get_state('static')
-        self.dimensions = (static_conf['dim']['w']*settings.TILE_DIM[0], 
-            static_conf['dim']['h']*settings.TILE_DIM[1])
-        self.tilesets = static_conf['tiles']
-        self.strutsets = static_conf['struts']
+
+        if static_conf['properties']['size']['tile_units'] == 'relative':
+            self.dimensions = (
+                static_conf['properties']['size']['w']*settings.TILE_DIM[0], 
+                static_conf['properties']['size']['h']*settings.TILE_DIM[1]
+            )
+        else:
+            self.dimensions =(
+                static_conf['properties']['size']['w'],
+                static_conf['properties']['size']['h']
+            )
+
+        self.layers = []
+        self.tilesets, self.strutsets = { }, { }
+        for layer_key, layer_conf in static_conf['layers'].items():
+            self.layers.append(layer_key)
+            self.tilesets[layer_key] = layer_conf.get('tiles')
+            self.strutsets[layer_key] = layer_conf.get('struts')
+
         self._init_static_hitboxes()
         log.debug(f'Initialized static world layer with dimensions {self.dimensions}', 'World._init_static_layer')
 
@@ -199,47 +216,49 @@ class World():
         """
         dynamic_conf = state_ao.get_state('dynamic')
         self.hero = dynamic_conf['hero']
-        self.npcs = dynamic_conf['npcs'] if dynamic_conf['npcs'] is not None else {}
-        self.villains = dynamic_conf['villains'] if dynamic_conf['villains'] is not None else {}
+        self.layer = dynamic_conf['hero']['layer']
+        self.npcs = dynamic_conf.get('npcs') if dynamic_conf.get('npcs') is not None else {}
+        self.villains = dynamic_conf.get('villains') if dynamic_conf.get('villains') is not None else {}
 
     def _init_static_hitboxes(self):
         """
         Construct static hitboxes from object dimensions and properties.
         """
-        buffer_strutsets = self.strutsets.copy()
+        for layer in self.layers:
+            buffer_strutsets = self.strutsets[layer].copy()
 
-        for strutset_key, strutset_conf in buffer_strutsets.items():
-            strutset_props = self.strut_property_conf[strutset_key]
+            for strutset_key, strutset_conf in buffer_strutsets.items():
+                strutset_props = self.strut_property_conf[strutset_key]
 
-            log.debug(f'Initialize strutset {strutset_key} with properties: {strutset_props}', 'World._init_hitboxes')
+                log.debug(f'Initialize strutset {strutset_key} with properties: {strutset_props}', 'World._init_hitboxes')
 
-            for i, strut_conf in enumerate(strutset_conf['sets']):
+                for i, strut_conf in enumerate(strutset_conf['sets']):
 
-                if strutset_props['hitbox'] is not None:
-                    if strut_conf['start']['tile_units'] == 'default':
-                        x = strut_conf['start']['x']*settings.TILE_DIM[0]
-                        y = strut_conf['start']['y']*settings.TILE_DIM[1]
-                    if strut_conf['start']['tile_units'] == 'relative':
-                        x = strut_conf['start']['x']*strutset_props['size']['w']
-                        y = strut_conf['start']['y']*strutset_props['size']['h']
+                    if strutset_props['hitbox'] is not None:
+                        if strut_conf['start']['tile_units'] == 'default':
+                            x = strut_conf['start']['x']*settings.TILE_DIM[0]
+                            y = strut_conf['start']['y']*settings.TILE_DIM[1]
+                        if strut_conf['start']['tile_units'] == 'relative':
+                            x = strut_conf['start']['x']*strutset_props['size']['w']
+                            y = strut_conf['start']['y']*strutset_props['size']['h']
+                        else:
+                            x, y = strut_conf['start']['x'], strut_conf['start']['y']
+                        
+                        top_x = x + strutset_props['hitbox']['offset']['x']
+                        top_y = y + strutset_props['hitbox']['offset']['y']
+                        
+                        self.strutsets[layer][strutset_key]['sets'][i]['hitbox'] = (
+                            top_x, 
+                            top_y,
+                            strutset_props['hitbox']['size']['w'], 
+                            strutset_props['hitbox']['size']['h']
+                        )
                     else:
-                        x, y = strut_conf['start']['x'], strut_conf['start']['y']
-                    
-                    top_x = x + strutset_props['hitbox']['offset']['x']
-                    top_y = y + strutset_props['hitbox']['offset']['y']
-                    
-                    self.strutsets[strutset_key]['sets'][i]['hitbox'] = (
-                        top_x, 
-                        top_y,
-                        strutset_props['hitbox']['size']['w'], 
-                        strutset_props['hitbox']['size']['h']
-                    )
-                else:
-                    self.strutsets[strutset_key]['sets'][i]['hitbox'] = None
+                        self.strutsets[layer][strutset_key]['sets'][i]['hitbox'] = None
         
-        # condense all the hitboxes into a list and save to strutsets,
-        # to avoid repeated internal calls to `get_strut_hitboxes`
-        self.strutsets['hitboxes'] = self.get_strut_hitboxes()
+            # condense all the hitboxes into a list and save to strutsets,
+            # to avoid repeated internal calls to `get_strut_hitboxes`
+            self.strutsets[layer]['hitboxes'] = self.get_strut_hitboxes(layer)
 
     def _update_hero(self, user_input: dict): 
         """
@@ -357,7 +376,7 @@ class World():
         npcs_hitboxes = self.get_sprite_hitboxes('npcs', 'hero')    
         vil_hitboxes = self.get_sprite_hitboxes('villains', 'hero')
 
-        collision_sets = [npcs_hitboxes, vil_hitboxes, self.strutsets['hitboxes']]
+        collision_sets = [npcs_hitboxes, vil_hitboxes, self.strutsets[self.layer]['hitboxes']]
         for collision_set in collision_sets:
             if collisions.detect_collision(hero_hitbox, collision_set):
                 collisions.recoil_sprite(self.hero, hero_props)
@@ -366,7 +385,8 @@ class World():
             for npc_key, npc in self.npcs.items():
                 npc_hitbox = self.get_sprite_hitbox('npcs', 'strut', npc_key)
                 no_self_hitboxes = self.get_sprite_hitboxes('npcs', 'npc', npc_key)
-                collision_sets = [no_self_hitboxes, vil_hitboxes, self.strutsets['hitboxes']]
+                
+                collision_sets = [no_self_hitboxes, vil_hitboxes, self.strutsets[self.layer]['hitboxes']]
                 for collision_set in collision_sets:
                     if collisions.detect_collision(npc_hitbox, collision_set):
                         collisions.recoil_sprite(npc, self.sprite_property_conf[npc_key])
@@ -377,9 +397,9 @@ class World():
     def _apply_combat(self):
         pass
 
-    def get_strut_hitboxes(self):
+    def get_strut_hitboxes(self, layer):
         strut_hitboxes = []
-        for strut_conf in self.strutsets.values():
+        for strut_conf in self.strutsets[layer].values():
             sets = strut_conf['sets']
             for strut in sets:
                 strut_hitboxes.append(strut.get('hitbox'))
@@ -411,15 +431,9 @@ class World():
         calculated = []
 
         if spriteset == 'npcs':
-            if len(self.npcs) > 0:
-                iter_set = self.npcs
-            else:
-                iter_set = {}
+            iter_set = self.npcs
         elif spriteset == 'villains':
-            if len(self.villains) > 0:
-                iter_set = self.villains
-            else:
-                iter_set = {}
+            iter_set = self.villains
         else:
             iter_set = {}
 
@@ -431,15 +445,19 @@ class World():
                     calculated.append(self.get_sprite_hitbox('villains', hitbox_key, sprite_key))
         return calculated
     
-    def get_strutsets(self):
-        return { key: val for key, val in self.strutsets.items() if key != 'hitboxes' } 
+    def get_strutsets(self, layer):
+        return { key: val for key, val in self.strutsets[layer].items() if key != 'hitboxes' } 
 
-    def get_tilesets(self):
-        return self.tilesets
+    def get_tilesets(self, layer: str):
+        return self.tilesets[layer] if self.tilesets[layer] is not None else { }
 
-    def save(self, state_ao):
-        dynamic_conf = self.hero.copy()
-        # dynamic_conf.update(self.other_conf)
+    def save(self, state_ao: state.State):
+        self.hero['layer'] = self.layer
+        dynamic_conf = {
+            'hero': self.hero,
+            'npcs': self.npcs,
+            'villains': self.villains
+        }
         state_ao.save_state('dynamic', dynamic_conf)
 
     def iterate(self, user_input: dict) -> dict:

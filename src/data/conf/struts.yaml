@@ -17,7 +17,7 @@
 #         w:
 #         h:
 
-apartment_wall:
+apartment_exterior_wall:
   image:
     file: apartment.png
     position:
@@ -34,6 +34,32 @@ apartment_wall:
       size:
         w: 92
         h: 55
+        
+apartment_interior_wall:
+  image:
+    file: house_interior_general.png
+    position:
+      x: 64
+      y: 256
+    size:
+      w: 128
+      h: 105
+  properties:
+    hitbox: null
+    cover: false
+
+apartment_floor:
+  image:
+    file: house_interior_luxury.png
+    position:
+      x: 32
+      y: 0
+    size:
+      w: 96
+      h: 96
+  properties:
+    hitbox: null
+    cover: false
 
 apartment_roof:
   image:
@@ -58,7 +84,8 @@ apartment_steps:
       w: 32
       h: 24
   properties:
-    hitbox: null    
+    hitbox: null   
+    cover: false 
 
 apartment_door:
   image:
@@ -71,6 +98,7 @@ apartment_door:
       h: 48
   properties:
     hitbox: null
+    cover: false
 
 apartment_chimney:
   image:
@@ -89,3 +117,4 @@ apartment_chimney:
       size:
         w:
         h:
+    cover: false

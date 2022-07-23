@@ -1,153 +1,151 @@
 ## Static State Configuration Syntax
-# dim:
-#   w: int
-#   h: int
-# tiles:
-#   <group>:
-#     sets:
-#       - start:
-#           tile_units: str # default | absolute | relative
-#           x: int
-#           y: int
-#         dim:
-#           w: int
-#           h: int
-#
+
 # # NOTE: (w, h) dimensions are always expressed as integer-valued multiples of the tile dimensions.
 # # NOTE: default == scaled by (96px, 32px), absolute == pixel value, relative == scaled by tile_dim
 
-dim:
-  # grid unit: 96px by 32px
-  w: 10
-  h: 20
+properties:
+  size:
+    tile_units: relative
+    w: 10
+    h: 20
 
-tiles:
-  water:
-    sets:
-      # top
-      - start:
-          tile_units: relative
-          x: 0
-          y: 0
-        dim:
-          w: 10
-          h: 1
-        cover: false
-      # left
-      - start: 
-          tile_units: relative
-          x: 0
-          y: 1
-        dim:
-          w: 1
-          h: 19
-        cover: false
-      # bottom
-      - start:
-          tile_units: relative
-          x: 1
-          y: 19
-        dim:
-          w: 19
-          h: 1
-        cover: false
-      # right
-      - start: 
-          tile_units: relative
-          x: 9
-          y: 1
-        dim:
-          w: 1
-          h: 18
-        cover: false
-  grass:
-    sets:
-      - start:
-          tile_units: relative
-          x: 1
-          y: 1
-        dim:
-          w: 8
-          h: 18
-        cover: false
 
-# struts:
-#   <group_set>:
-#     sets:
-#       - start:
-#           tile_units: bool
-#           x: int
-#           y: int
-struts:
-  apartment_wall:
-    sets:
-      - start:
-          tile_units: absolute
-          x: 192
-          y: 96
-        cover: false
-      - start:
-          tile_units: absolute
-          x: 288
-          y: 96
-        cover: false
-      - start:
-          tile_units: absolute
-          x: 480
-          y: 96
-        cover: false
-      - start:
-          tile_units: absolute
-          x: 576
-          y: 96
-        cover: false
-      - start:
-          tile_units: absolute
-          x: 96
-          y: 192
-        cover: false
-        
-  apartment_roof:
-    sets:
-      - start:
-          tile_units: absolute
-          x: 190
-          y: 0
-        cover: true
-      - start:
-          tile_units: absolute
-          x: 286
-          y: 0
-        cover: true
-      - start:
-          tile_units: absolute
-          x: 478
-          y: 0
-        cover: true
-      - start:
-          tile_units: absolute
-          x: 574
-          y: 0
-        cover: true
-  apartment_steps:
-    sets:
-      - start:
-          tile_units: false
-          x: 224
-          y: 168
-        cover: false
-      - start:
-          tile_units: absolute
-          x: 320
-          y: 168
-        cover: false
-      - start:
-          tile_units: absolute
-          x: 512
-          y: 168
-        cover: false
-      - start:
-          tile_units: absolute
-          x: 608
-          y: 168
-        cover: false
+layers:
+  one:
+    tiles:
+      water:
+        sets:
+          # top
+          - start:
+              tile_units: relative
+              x: 0
+              y: 0
+            dim:
+              w: 10
+              h: 1
+            cover: false
+          # left
+          - start: 
+              tile_units: relative
+              x: 0
+              y: 1
+            dim:
+              w: 1
+              h: 19
+            cover: false
+          # bottom
+          - start:
+              tile_units: relative
+              x: 1
+              y: 19
+            dim:
+              w: 19
+              h: 1
+            cover: false
+          # right
+          - start: 
+              tile_units: relative
+              x: 9
+              y: 1
+            dim:
+              w: 1
+              h: 18
+            cover: false
+      grass:
+        sets:
+          - start:
+              tile_units: relative
+              x: 1
+              y: 1
+            dim:
+              w: 8
+              h: 18
+            cover: false
+    struts:
+      apartment_exterior_wall:
+        sets:
+          - start:
+              tile_units: absolute
+              x: 192
+              y: 96
+            cover: false
+          - start:
+              tile_units: absolute
+              x: 288
+              y: 96
+            cover: false
+          - start:
+              tile_units: absolute
+              x: 480
+              y: 96
+            cover: false
+          - start:
+              tile_units: absolute
+              x: 576
+              y: 96
+            cover: false
+          - start:
+              tile_units: absolute
+              x: 96
+              y: 192
+            cover: false      
+      apartment_roof:
+        sets:
+          - start:
+              tile_units: absolute
+              x: 190
+              y: 0
+            cover: true
+          - start:
+              tile_units: absolute
+              x: 286
+              y: 0
+            cover: true
+          - start:
+              tile_units: absolute
+              x: 478
+              y: 0
+            cover: true
+          - start:
+              tile_units: absolute
+              x: 574
+              y: 0
+            cover: true
+      apartment_steps:
+        sets:
+          - start:
+              tile_units: absolute
+              x: 224
+              y: 168
+            cover: false
+          - start:
+              tile_units: absolute
+              x: 320
+              y: 168
+            cover: false
+          - start:
+              tile_units: absolute
+              x: 512
+              y: 168
+            cover: false
+          - start:
+              tile_units: absolute
+              x: 608
+              y: 168
+            cover: false
+  two:
+    struts:
+      apartment_interior_wall:
+        sets:
+          - start:
+              tile_units: absolute
+              x: 176
+              y: 96
+            cover: false
+      apartment_floor:
+        sets:
+          - start: 
+              tile_units: absolute
+              x: 176
+              y: 201
+            cover: false
