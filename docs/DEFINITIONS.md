@@ -17,7 +17,9 @@
 
 4. **Strut**: An in-game asset whose frame is constructed from a strut sheet. _Struts_ have "physical" presence in the game world, so to speak; in other words, the player can collide with _Struts_. They must have a hitbox defined in their properties
 
-5. **View**: The GUI widget on which the game screen gets painted. The game world gets cropped to the widget based on the position of the player.
+5. **Plates**: An in-game asset whoe frame is construct from a plate set. _Plates_ also have "phsyical presence in the game world; however, in addition to allowing player collisions, player can interact with plates, e.g. treasure chests, pressure plates, switches, etc. 
+
+6. **View**: The GUI widget on which the game screen gets painted. The game world gets cropped to the widget based on the position of the player.
 
 ### Notes
 
