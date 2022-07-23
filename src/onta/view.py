@@ -1,3 +1,4 @@
+from symbol import pass_stmt
 import sys
 
 from PySide6 import QtWidgets, QtGui
@@ -123,8 +124,15 @@ class Renderer():
 
         for layer in game_world.layers:
             for strut_type in [True, False]:
-                # TODO: need to order strutsets by rendering order
-                for group_key, group_conf in game_world.get_strutsets(layer, strut_type).items():
+                unordered_groups = game_world.get_strutsets(layer, strut_type)
+                render_map = {}
+                for group_key, group_conf in unordered_groups.items():
+                    render_order = group_conf['order']
+                    render_map[str(render_order)] = group_key
+
+                for i in range(len(render_map)):
+                    group_key = render_map[str(i)]
+                    group_conf = unordered_groups[group_key]
                     group_strut = repository.get_layer('struts', group_key)
                     group_sets = group_conf['sets']
 

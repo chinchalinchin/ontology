@@ -9,6 +9,7 @@ The benefit of having a hardcoded tile size is it makes the math of rendering la
 
 ## Struts
 
+
 ### Doors
 
 _Doors_ are a special type of _Strut_. When the player character overlaps with the hitbox of a _Door_, he or she has the option of interacting with it. This will trigger the world transitioning to a new layer. See [Definitions](./DEFINITIONS.md) for more information on layers.
