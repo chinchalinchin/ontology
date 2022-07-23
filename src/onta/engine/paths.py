@@ -29,10 +29,10 @@ def reorient(sprite, hitbox, collision_sets, goal, speed, world_dim) -> None:
 
     possibilities = {}
 
-    log.debug('Determining which directions are valid for reorientation...', 'reorient')
+    log.verbose('Determining which directions are valid for reorientation...', 'reorient')
 
     if up_valid:
-        log.debug('Up valid!', 'reorient')
+        log.verbose('Up valid!', 'reorient')
         possibilities['up'] = calculator.distance(new_up, goal_point)
     if left_valid:
         log.debug('Left valid!', 'reorient')
@@ -46,14 +46,14 @@ def reorient(sprite, hitbox, collision_sets, goal, speed, world_dim) -> None:
 
     least_state, least_state_distance = None, calculator.distance((0,0), world_dim)
 
-    log.debug(f'Reorientation possibility map: {possibilities}', 'reorient')
+    log.verbose(f'Reorientation possibility map: {possibilities}', 'reorient')
 
     for key, possibility in possibilities.items():
         if possibility < least_state_distance:
             least_state_distance = possibility
             least_state = key
 
-    log.debug(f'Choice to minimize distance: {least_state}', 'reorient')
+    log.verbose(f'Choice to minimize distance: {least_state}', 'reorient')
 
     if least_state == 'up':
         if 'walk' in sprite['state']:
