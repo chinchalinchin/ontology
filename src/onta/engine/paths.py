@@ -7,20 +7,12 @@ import onta.util.logger as logger
 log = logger.Logger('onta.engine.paths', settings.LOG_LEVEL)
 
 def reorient(sprite, hitbox, collision_sets, goal, speed, world_dim) -> None:
-    start = (sprite['position']['x'], sprite['position']['y'])
     goal_point = (goal['x'], goal['y'])
 
     new_up = (hitbox[0], hitbox[1] - 2*speed - 1, hitbox[2], hitbox[3])
     new_left = (hitbox[0] - 2*speed - 1, hitbox[1], hitbox[2], hitbox[3])
     new_right = (hitbox[0] + 2*speed + 1, hitbox[1], hitbox[2], hitbox[3])
     new_down = (hitbox[0], hitbox[1] + 2*speed + 1, hitbox[2], hitbox[3])
-
-    log.debug(f'Start: {start}', 'reorient')
-    log.debug('Possiblities:', 'reorient')
-    log.debug(f'{new_up}', 'reorient')
-    log.debug(f'{new_left}', 'reorient')
-    log.debug(f'{new_right}', 'reorient')
-    log.debug(f'{new_down}', 'reorient')
 
     up_valid = all(not collisions.detect_collision(new_up, collision_set) for collision_set in collision_sets)
     left_valid = all(not collisions.detect_collision(new_left, collision_set) for collision_set in collision_sets)
@@ -35,13 +27,13 @@ def reorient(sprite, hitbox, collision_sets, goal, speed, world_dim) -> None:
         log.verbose('Up valid!', 'reorient')
         possibilities['up'] = calculator.distance(new_up, goal_point)
     if left_valid:
-        log.debug('Left valid!', 'reorient')
+        log.verbose('Left valid!', 'reorient')
         possibilities['left'] = calculator.distance(new_left, goal_point)
     if right_valid:
-        log.debug('Right valid!', 'reorient')
+        log.verbose('Right valid!', 'reorient')
         possibilities['right'] = calculator.distance(new_right, goal_point)
     if down_valid:
-        log.debug('Down valid!', 'reorient')
+        log.verbose('Down valid!', 'reorient')
         possibilities['down'] = calculator.distance(new_down, goal_point)
 
     least_state, least_state_distance = None, calculator.distance((0,0), world_dim)

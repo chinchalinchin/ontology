@@ -86,4 +86,11 @@ class Controller():
     def poll(self):
         user_input = self._direction()
         user_input.update(self._actions())
+
+        for consume in self.control_conf['consumable']:
+            if user_input[consume]:
+                input_combo = self.control_conf['actions'][consume]['input']
+                for input in input_combo:
+                    self.keys[input] = False
+
         return user_input

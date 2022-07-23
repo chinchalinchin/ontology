@@ -80,3 +80,15 @@ water:
       h: 32
   properties:
     cover: false
+
+hole:
+  image:
+    file: hole.png
+    position:
+      x: 0
+      y: 160
+    size:
+      w: 96
+      h: 32
+  properties:
+    cover: false

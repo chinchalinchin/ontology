@@ -51,4 +51,5 @@ actions:
     input:
       - tab
   
-  
+consumable:
+  - interact

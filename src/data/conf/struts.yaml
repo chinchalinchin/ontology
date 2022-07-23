@@ -42,10 +42,16 @@ apartment_interior_wall:
       x: 64
       y: 256
     size:
-      w: 128
+      w: 96
       h: 105
   properties:
-    hitbox: null
+    hitbox: 
+      offset:
+        x: 0
+        y: 0
+      size:
+        w: 96
+        h: 64
 
 apartment_floor:
   image:

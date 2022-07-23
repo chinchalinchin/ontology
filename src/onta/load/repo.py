@@ -34,28 +34,46 @@ class Repo():
 
         for layer_key, layer_conf in layers_conf.items():
             image_conf = layer_conf['image']
-            x, y = image_conf['position']['x'], image_conf['position']['y']
             w, h = image_conf['size']['w'], image_conf['size']['h']
 
-            if asset == 'tiles':
-                image_path = os.path.join(settings.TILE_DIR, image_conf['file'])
-            elif asset == 'struts':
-                image_path = os.path.join(settings.STRUT_DIR, image_conf['file'])
-            elif asset == 'plates': 
-                image_path = os.path.join(settings.PLATE_DIR, image_conf['file'])
+            if image_conf.get('file') is not None:
+                x, y = image_conf['position']['x'], image_conf['position']['y']
+                w, h = image_conf['size']['w'], image_conf['size']['h']
 
-            buffer = Image.open(image_path).convert(settings.IMG_MODE)
+                if asset == 'tiles':
+                    image_path = os.path.join(settings.TILE_DIR, image_conf['file'])
+                elif asset == 'struts':
+                    image_path = os.path.join(settings.STRUT_DIR, image_conf['file'])
+                elif asset == 'plates': 
+                    image_path = os.path.join(settings.PLATE_DIR, image_conf['file'])
 
-            log.debug( f"{layer_key} configuration: {buffer.format} - {buffer.size}x{buffer.mode}", 
-                'Repo._init_assets')
+                buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
-            if asset == 'tiles':
-                self.tiles[layer_key] = buffer.crop((x,y,w+x,h+y))
-            elif asset == 'struts':
-                self.struts[layer_key] = buffer.crop((x,y,w+x,h+y))
-            elif asset == 'plates':
-                self.plates[layer_key] = buffer.crop((x,y,w+x,h+y))
+                log.debug( f"{layer_key} configuration: {buffer.format} - {buffer.size}x{buffer.mode}", 
+                    'Repo._init_assets')
 
+                if asset == 'tiles':
+                    self.tiles[layer_key] = buffer.crop((x,y,w+x,h+y))
+                elif asset == 'struts':
+                    self.struts[layer_key] = buffer.crop((x,y,w+x,h+y))
+                elif asset == 'plates':
+                    self.plates[layer_key] = buffer.crop((x,y,w+x,h+y))
+                    
+            elif image_conf.get('channels') is not None:
+                channels = (
+                    image_conf['channels']['r'], 
+                    image_conf['channels']['g'],
+                    image_conf['channels']['b'],
+                    image_conf['channels']['a']
+                )
+                buffer = Image.new(settings.IMG_MODE, (w,h), channels)
+                if asset == 'tiles':
+                    self.tiles[layer_key] = buffer
+                elif asset == 'struts':
+                    self.struts[layer_key] = buffer
+                elif asset == 'plates':
+                    self.plates[layer_key] = buffer
+ 
 
     def _init_sprites(self, config) -> None:
         sprites_conf = config.configuration('sprites')

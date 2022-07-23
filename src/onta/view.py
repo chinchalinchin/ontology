@@ -175,9 +175,9 @@ class Renderer():
         if spriteset == 'hero':
             iter_set = { 'hero': game_world.hero }
         elif spriteset == 'npcs':
-            iter_set = game_world.npcs
+            iter_set = game_world.get_npcs(game_world.layer)
         elif spriteset == 'villains':
-            iter_set = game_world.villains
+            iter_set = game_world.get_villains(game_world.layer)
 
         for sprite_key, sprite in iter_set.items():
             sprite_position = (int(sprite['position']['x']), int(sprite['position']['y']))

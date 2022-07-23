@@ -21,8 +21,28 @@ apartment_door:
   image:
     file: doors.png
     position: 
-      x: 16
-      y: 128
+      x: 32
+      y: 80
+    size: 
+      w: 32
+      h: 48
+  properties:
+    hitbox: 
+      offset:
+        x: 0
+        y: 0
+      size:
+        w: 32 
+        h: 48
+    door: true
+
+inside_door:
+  image:
+    channels:
+      r: 255
+      g: 255
+      b: 0
+      a: 64
     size: 
       w: 32
       h: 48

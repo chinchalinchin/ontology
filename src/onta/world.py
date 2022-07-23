@@ -274,14 +274,16 @@ class World():
                 self.platesets[layer] = {}
             if self.strutsets[layer] is None:
                 self.strutsets[layer] = {}
+
             for static_set in ['strutset', 'plateset']:
+
                 if static_set == 'strutset':
                     iter_set = self.strutsets[layer].copy()
                     props = self.strut_property_conf
                 elif static_set == 'plateset':
                     iter_set = self.platesets[layer].copy()
                     props = self.plate_property_conf
-
+                
                 for set_key, set_conf in iter_set.items():
                     set_props = props[set_key]
 
@@ -470,8 +472,8 @@ class World():
                                 exclusions.append(key)
 
                         sprite_hitbox = self.get_sprite_hitbox(spriteset_key, hitbox_key, sprite_key)
-                        vil_hitboxes = self.get_sprite_hitboxes('villains', hitbox_key, exclusions)
-                        npc_hitboxes = self.get_sprite_hitboxes('npcs', hitbox_key, exclusions)
+                        vil_hitboxes = self.get_sprite_hitboxes('villains', hitbox_key, sprite['layer'], exclusions)
+                        npc_hitboxes = self.get_sprite_hitboxes('npcs', hitbox_key, sprite['layer'], exclusions)
 
                         collision_sets = []
                         if npc_hitboxes is not None:
@@ -515,8 +517,8 @@ class World():
     
                 elif spriteset_key == 'hero':
                     sprite_hitbox = self.get_sprite_hitbox(spriteset_key, sprite_key, sprite_key)
-                    vil_hitboxes = self.get_sprite_hitboxes('villains', sprite_key)
-                    npc_hitboxes = self.get_sprite_hitboxes('npcs', sprite_key)
+                    vil_hitboxes = self.get_sprite_hitboxes('villains', sprite_key, self.layer)
+                    npc_hitboxes = self.get_sprite_hitboxes('npcs', sprite_key, self.layer)
 
                     log.verbose('Checking "hero" for collisions...', 
                         '_apply_physics')
@@ -528,7 +530,13 @@ class World():
     
     def _apply_interaction(self, user_input: dict):
         if user_input['interact']:
-            doors = self.strutsets[self.layer]['doors']
+            doors = self.platesets[self.layer]['doors']
+
+            for door in doors:
+                door_hitbox = door['hitbox']
+                hero_hitbox = self.get_sprite_hitbox('hero', 'hero', 'hero')
+                if collisions.detect_collision(hero_hitbox, [ door_hitbox ]):
+                    self.layer = door['layer']
 
     def _apply_combat(self):
         pass
@@ -549,7 +557,7 @@ class World():
                 for plate in sets:
                     doors.append({
                         'hitbox': plate['hitbox'],
-                        'door': plate['door']['layer']
+                        'layer': plate['door']['layer']
                     })
         return doors
 
@@ -575,13 +583,13 @@ class World():
             return calc_hitbox
         return None
 
-    def get_sprite_hitboxes(self, spriteset, hitbox_key, exclude = None):
+    def get_sprite_hitboxes(self, spriteset, hitbox_key, layer, exclude = None):
         calculated = []
 
         if spriteset == 'npcs':
-            iter_set = self.npcs
+            iter_set = self.get_npcs(layer)
         elif spriteset == 'villains':
-            iter_set = self.villains
+            iter_set = self.get_villains(layer)
         else:
             iter_set = {}
 
@@ -609,6 +617,21 @@ class World():
             if key not in ['doors']
         }
 
+    def get_npcs(self, layer):
+        return {
+            key: val
+            for key, val 
+            in self.npcs.items()
+            if val['layer'] == layer
+        }
+
+    def get_villains(self, layer):
+        return {
+            key: val
+            for key, val in self.villains.items()
+            if val['layer'] == layer
+        }
+    
     def get_tilesets(self, layer: str):
         return self.tilesets[layer] if self.tilesets[layer] is not None else { }
 
