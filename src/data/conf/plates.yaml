@@ -1,0 +1,37 @@
+## Strut Configurtionat
+# <group>:
+#   image:
+#     file: str
+#     position:
+#       x: int
+#       y: int
+#     size:
+#       w: int
+#       h: int
+#     properties:
+#       hitbox:
+#         offset:
+#           x:
+#           y:
+#         dimensions:
+#           w:
+#           h:
+
+apartment_door:
+  image:
+    file: apartment.png
+    position: 
+      x: 160
+      y: 0
+    size: 
+      w: 32
+      h: 48
+  properties:
+    hitbox: 
+      offset:
+        x: 0
+        y: 0
+      size:
+        w: 32 
+        h: 48
+    door: true

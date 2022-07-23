@@ -3,49 +3,58 @@ from typing import Union
 from PIL import Image
 
 import onta.settings as settings
+import onta.load.conf as conf
 import onta.util.logger as logger
 import onta.util.gui as gui
 
 
 log = logger.Logger('onta.repo', settings.LOG_LEVEL)
 
-LAYERS = ['tiles', 'struts']
+ASSETS = ['tiles', 'struts', 'plates']
 
 class Repo():
 
     tiles = {}
     struts = {}
+    plates = {}
     sprites = {}
 
-    def __init__(self, config) -> None:
-        for layer in LAYERS:
-            self._init_layers(layer, config)
+    def __init__(self, config: conf.Conf) -> None:
+        """
+        .. note:
+            - No reference is kept to `config`; it is passed to initialize methods and released unaltered.
+        """
+        for asset in ASSETS:
+            self._init_assets(asset, config)
         self._init_sprites(config)
 
-    def _init_layers(self, layer: str, config) -> None:
-        log.debug(f'Initializing {layer} asset', 'Repo._init_assets')
-        layers_conf = config.configuration(layer)
+    def _init_assets(self, asset: str, config: conf.Conf) -> None:
+        log.debug(f'Initializing {asset} asset', 'Repo._init_assets')
+        layers_conf = config.configuration(asset)
 
         for layer_key, layer_conf in layers_conf.items():
             image_conf = layer_conf['image']
             x, y = image_conf['position']['x'], image_conf['position']['y']
             w, h = image_conf['size']['w'], image_conf['size']['h']
 
-            if layer == LAYERS[0]:
+            if asset == 'tiles':
                 image_path = os.path.join(settings.TILE_DIR, image_conf['file'])
-            elif layer == LAYERS[1]:
+            elif asset == 'struts':
                 image_path = os.path.join(settings.STRUT_DIR, image_conf['file'])
+            elif asset == 'plates': 
+                image_path = os.path.join(settings.PLATE_DIR, image_conf['file'])
 
             buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
             log.debug( f"{layer_key} configuration: {buffer.format} - {buffer.size}x{buffer.mode}", 
                 'Repo._init_assets')
 
-            if layer == LAYERS[0]:
+            if asset == 'tiles':
                 self.tiles[layer_key] = buffer.crop((x,y,w+x,h+y))
-
-            elif layer == LAYERS[1]:
+            elif asset == 'struts':
                 self.struts[layer_key] = buffer.crop((x,y,w+x,h+y))
+            elif asset == 'plates':
+                self.plates[layer_key] = buffer.crop((x,y,w+x,h+y))
 
 
     def _init_sprites(self, config) -> None:
@@ -92,11 +101,13 @@ class Repo():
                     self.sprites[sprite_conf_key][state_key].append(sprite_state_frame)
 
 
-    def get_layer(self, layer: str, layer_key: str) -> Union[Image.Image, None]:
-        if layer == LAYERS[0]:
+    def get_asset(self, layer: str, layer_key: str) -> Union[Image.Image, None]:
+        if layer == 'tiles':
             return self.tiles.get(layer_key)
-        if layer == LAYERS[1]:
+        if layer == 'struts':
             return self.struts.get(layer_key)
+        if layer == 'plates':
+            return self.plates.get(layer_key)
         return None
 
     def get_sprite(self, sprite: str, state: str, frame: int):

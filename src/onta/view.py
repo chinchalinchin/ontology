@@ -82,14 +82,15 @@ class Renderer():
             self.static_back_frame[layer] = gui.new_image(static_world.dimensions)
             self.static_cover_frame[layer] = gui.new_image(static_world.dimensions)
         self._render_tiles(static_world, repository)
-        self._render_struts(static_world, repository)
+        self._render_struts_and_plates(static_world, repository)
 
     def _render_tiles(self, game_world: world.World, repository: repo.Repo) -> None:
+        # TODO: this can be condensed into `self._render_struts_and_plates()`
         log.debug('Rendering tile sets', 'Repo._render_tiles')
 
         for layer in game_world.layers:
             for group_key, group_conf in game_world.get_tilesets(layer).items():
-                group_tile = repository.get_layer('tiles', group_key)
+                group_tile = repository.get_asset('tiles', group_key)
 
                 log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
 
@@ -119,47 +120,49 @@ class Renderer():
                             else:
                                 self.static_back_frame[layer].paste(group_tile, dim, group_tile)
 
-    def _render_struts(self, game_world: world.World, repository: repo.Repo):
+    def _render_struts_and_plates(self, game_world: world.World, repository: repo.Repo):
         log.debug('Rendering strut sets', 'Repo._render_tiles')
 
-        for layer in game_world.layers:
-            # NOTE: this assumes a hard division between door struts and non-door struts
-            #           in other words, if one element from a strutset is set to `door`
-            #           then ALL elements from that strutset must be set to `door`
-            unordered_groups = game_world.get_strutsets(layer, True)
-            unordered_groups.update(game_world.get_strutsets(layer, False))
-            render_map = {}
+        for static_set in ['struts', 'plates']:
+            for layer in game_world.layers:
+                if static_set == 'struts':
+                    unordered_groups = game_world.get_strutsets(layer)
+                elif static_set == 'plates':
+                    unordered_groups = game_world.get_platesets(layer)
 
-            for group_key, group_conf in unordered_groups.items():
-                render_order = group_conf['order']
-                render_map[str(render_order)] = group_key
+                render_map = {}
 
-            for i in range(len(render_map)):
-                group_key = render_map[str(i)]
-                group_conf = unordered_groups[group_key]
-                group_strut = repository.get_layer('struts', group_key)
-                group_sets = group_conf['sets']
+                for group_key, group_conf in unordered_groups.items():
+                    render_order = group_conf['order']
+                    render_map[str(render_order)] = group_key
 
-                log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
+                for i in range(len(render_map)):
+                    group_key = render_map[str(i)]
+                    group_conf = unordered_groups[group_key]
 
-                for set_conf in group_sets:
-                    if set_conf['start']['tile_units'] == 'default':
-                        start = (set_conf['start']['x']*settings.TILE_DIM[0], 
-                            set_conf['start']['y']*settings.TILE_DIM[1])
+                    group_frame = repository.get_asset(static_set, group_key)
+                    group_sets = group_conf['sets']
 
-                    elif set_conf['start']['tile_units'] == 'relative':
-                        start = (set_conf['start']['x']*group_strut.size[0], 
-                            set_conf['start']['y']*group_strut.size[1])
+                    log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
 
-                    else:
-                        start = (set_conf['start']['x'], set_conf['start']['y'])
+                    for set_conf in group_sets:
+                        if set_conf['start']['tile_units'] == 'default':
+                            start = (set_conf['start']['x']*settings.TILE_DIM[0], 
+                                set_conf['start']['y']*settings.TILE_DIM[1])
 
-                    log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_struts')
+                        elif set_conf['start']['tile_units'] == 'relative':
+                            start = (set_conf['start']['x']*group_frame.size[0], 
+                                set_conf['start']['y']*group_frame.size[1])
 
-                    if set_conf['cover']:
-                        self.static_cover_frame[layer].paste(group_strut, start, group_strut)
-                    else:
-                        self.static_back_frame[layer].paste(group_strut, start, group_strut)
+                        else:
+                            start = (set_conf['start']['x'], set_conf['start']['y'])
+
+                        log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_struts')
+
+                        if set_conf['cover']:
+                            self.static_cover_frame[layer].paste(group_frame, start, group_frame)
+                        else:
+                            self.static_back_frame[layer].paste(group_frame, start, group_frame)
     
     def _render_static(self, layer, cover: bool = False):
         if cover:

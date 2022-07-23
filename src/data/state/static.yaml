@@ -148,6 +148,18 @@ layers:
             cover: false
             door: 
               layer: two
+    plates:
+      apartment_door:
+        order: 0
+        sets:
+          - start:
+              tile_units: absolute
+              x: 224
+              y: 120
+            cover: false
+            door: 
+              layer: two
+
   two:
     struts:
       apartment_interior_wall:

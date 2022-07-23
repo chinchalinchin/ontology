@@ -12,8 +12,9 @@ log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
 class World():
 
-    # TODO: possibly. does it make sense to separate property and state conf for sprites?
-
+    plate_property_conf = None
+    """
+    """
     strut_property_conf = None
     """
     Holds strut property configuration information
@@ -60,17 +61,19 @@ class World():
     """
     ```python
     self.tilesets = {
-        'tile_1': {
-            'sets': [
-                { 
-                    'start': {
-                        'tile_units': tile_units, # bool
-                        'x': x, # int
-                        'y': y, # int
+        'layer_1': {
+            'tile_1': {
+                'sets': [
+                    { 
+                        'start': {
+                            'tile_units': tile_units, # bool
+                            'x': x, # int
+                            'y': y, # int
+                        }
                     }
-                }
-            ]
-        },
+                ]
+            },
+        }
     }
     ```
     """
@@ -78,18 +81,42 @@ class World():
     """
     ```python
     self.strutsets = {
-        'strut_1': {
-            'sets': [
-                { 
-                    'start': {
-                        'tile_units': tile_units, # bool
-                        'x': x, # int
-                        'y': y, # int
-                    },
-                    'hitbox': (hx, hy, hw, hh), # tuple(int, int, int, int)
+        'layer_1': {
+            'strut_1': {
+                'sets': [
+                    { 
+                        'start': {
+                            'tile_units': tile_units, # bool
+                            'x': x, # int
+                            'y': y, # int
+                        },
+                        'hitbox': (hx, hy, hw, hh), # tuple(int, int, int, int)
 
-                }
-            ]
+                    }
+                ]
+            },
+        },
+    }
+    ```
+    """
+    platesets = None
+    """
+    ```python
+    self.platesets = {
+        'layer_1': {
+            'strut_1': {
+                'sets': [
+                    { 
+                        'start': {
+                            'tile_units': tile_units, # bool
+                            'x': x, # int
+                            'y': y, # int
+                        },
+                        'hitbox': (hx, hy, hw, hh), # tuple(int, int, int, int)
+
+                    }
+                ]
+            },
         },
     }
     ```
@@ -205,11 +232,12 @@ class World():
             )
 
         self.layers = []
-        self.tilesets, self.strutsets = { }, { }
+        self.tilesets, self.strutsets, self.platesets = { }, { }, { }
         for layer_key, layer_conf in static_conf['layers'].items():
             self.layers.append(layer_key)
             self.tilesets[layer_key] = layer_conf.get('tiles')
             self.strutsets[layer_key] = layer_conf.get('struts')
+            self.platesets[layer_key] = layer_conf.get('plates')
 
         # TODO: initialize doors?
 
@@ -235,37 +263,48 @@ class World():
             - Strut
         """
         for layer in self.layers:
-            buffer_strutsets = self.strutsets[layer].copy()
 
-            for strutset_key, strutset_conf in buffer_strutsets.items():
-                strutset_props = self.strut_property_conf[strutset_key]
+            for static_set in ['strutset', 'plateset']:
+                if static_set == 'strutset':
+                    iter_set = self.strutsets[layer].copy()
+                    props = self.strut_property_conf
+                elif static_set == 'plateset':
+                    iter_set = self.platesets[layer].copy()
+                    props = self.plate_property_conf
 
-                log.debug(f'Initialize strutset {strutset_key} with properties: {strutset_props}', 'World._init_hitboxes')
+                for set_key, set_conf in iter_set.items():
+                    set_props = props[set_key]
 
-                for i, strut_conf in enumerate(strutset_conf['sets']):
+                    log.debug(f'Initialize {static_set} {set_key} with properties: {set_props}', 'World._init_hitboxes')
 
-                    if strutset_props['hitbox'] is not None:
-                        if strut_conf['start']['tile_units'] == 'default':
-                            x = strut_conf['start']['x']*settings.TILE_DIM[0]
-                            y = strut_conf['start']['y']*settings.TILE_DIM[1]
-                        if strut_conf['start']['tile_units'] == 'relative':
-                            x = strut_conf['start']['x']*strutset_props['size']['w']
-                            y = strut_conf['start']['y']*strutset_props['size']['h']
+                    for i, set_conf in enumerate(set_conf['sets']):
+
+                        if set_props['hitbox'] is not None:
+                            if set_conf['start']['tile_units'] == 'default':
+                                x = set_conf['start']['x']*settings.TILE_DIM[0]
+                                y = set_conf['start']['y']*settings.TILE_DIM[1]
+                            if set_conf['start']['tile_units'] == 'relative':
+                                x = set_conf['start']['x']*set_props['size']['w']
+                                y = set_conf['start']['y']*set_props['size']['h']
+                            else:
+                                x, y = set_conf['start']['x'], set_conf['start']['y']
+                            
+                            hitbox = (
+                                x + set_props['hitbox']['offset']['x'], 
+                                y + set_props['hitbox']['offset']['y'],
+                                set_props['hitbox']['size']['w'], 
+                                set_props['hitbox']['size']['h']
+                            )
+                            if static_set == 'strutset' :
+                                self.strutsets[layer][set_key]['sets'][i]['hitbox'] = hitbox
+                            elif static_set == 'plateset':
+                                self.platesets[layer][set_key]['sets'][i]['hitbox'] = hitbox
                         else:
-                            x, y = strut_conf['start']['x'], strut_conf['start']['y']
-                        
-                        top_x = x + strutset_props['hitbox']['offset']['x']
-                        top_y = y + strutset_props['hitbox']['offset']['y']
-                        
-                        self.strutsets[layer][strutset_key]['sets'][i]['hitbox'] = (
-                            top_x, 
-                            top_y,
-                            strutset_props['hitbox']['size']['w'], 
-                            strutset_props['hitbox']['size']['h']
-                        )
-                    else:
-                        self.strutsets[layer][strutset_key]['sets'][i]['hitbox'] = None
-        
+                            if static_set == 'strutset':
+                                self.strutsets[layer][set_key]['sets'][i]['hitbox'] = None
+                            elif static_set == ['plateset']:
+                                self.platesets[layer][set_key]['sets'][i]['hitbox'] = None
+            
             # condense all the hitboxes into a list and save to strutsets,
             # to avoid repeated internal calls to `get_strut_hitboxes`
             world_bounds = [
@@ -274,10 +313,9 @@ class World():
                 (self.dimensions[0], 0, 1, self.dimensions[1]),
                 (0, self.dimensions[1], self.dimensions[0], 1)
             ]
-            self.strutsets[layer]['hitboxes'] = world_bounds + self.get_strut_hitboxes(layer, False)
-            self.strutsets[layer]['doors'] = self.get_strut_hitboxes(layer, True)
-
-
+            self.strutsets[layer]['hitboxes'] = world_bounds + self.get_strut_hitboxes(layer)
+            self.platesets[layer]['doors'] = self.get_doors(layer)
+            
     def _update_hero(self, user_input: dict): 
         """
         Map user input to new hero state, apply state action and iterate state frame.
@@ -485,13 +523,25 @@ class World():
     def _apply_combat(self):
         pass
 
-    def get_strut_hitboxes(self, layer, door = False):
+    def get_strut_hitboxes(self, layer):
         strut_hitboxes = []
-        for strut_conf in self.get_strutsets(layer, door).values():
+        for strut_conf in self.get_strutsets(layer).values():
             sets = strut_conf['sets']
             for strut in sets:
-                strut_hitboxes.append(strut.get('hitbox'))
+                strut_hitboxes.append(strut['hitbox'])
         return strut_hitboxes
+
+    def get_doors(self, layer):
+        doors = []
+        for plate_key, plate_conf in self.get_platesets(layer).items():
+            if self.plate_property_conf[plate_key]['door']:
+                sets = plate_conf['sets']
+                for plate in sets:
+                    doors.append({
+                        'hitbox': plate['hitbox'],
+                        'door': plate['door']['layer']
+                    })
+        return doors
 
     def get_sprite_hitbox(self, spriteset, hitbox_key, sprite_key):
         """
@@ -533,12 +583,18 @@ class World():
                     calculated.append(self.get_sprite_hitbox('villains', hitbox_key, sprite_key))
         return calculated
     
-    def get_strutsets(self, layer, doors = False):
+    def get_strutsets(self, layer):
         return {
             key: val
             for key, val in self.strutsets[layer].items()
-            if key not in  ['hitboxes', 'doors'] 
-                and self.strut_property_conf[key]['door'] == doors
+            if key not in  ['hitboxes'] 
+        }
+
+    def get_platesets(self, layer):
+        return {
+            key: val
+            for key, val in self.platesets[layer].items()
+            if key not in ['hitboxes']
         }
 
     def get_tilesets(self, layer: str):

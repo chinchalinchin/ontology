@@ -93,3 +93,5 @@ group:
 3. **image.size.w**, **image.size.h**: Dimensions of the tile frame in the asset file.
 
 **NOTE**: `image.position` and `image.size` are used to crop the tiel frame from the asset file.
+
+## Plates

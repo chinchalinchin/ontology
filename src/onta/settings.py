@@ -29,6 +29,9 @@ TILE_DIR = os.path.join(ASSET_DIR, 'tiles')
 STRUT_DIR = os.path.join(ASSET_DIR, 'struts')
 """Directory containing strut sheets"""
 
+PLATE_DIR = os.path.join(ASSET_DIR, 'plates')
+"""Directory containg plate sheets"""
+
 # Debug Configuration
 
 LOG_LEVEL = os.environ.setdefault('LOG_LEVEL', 'DEBUG')
