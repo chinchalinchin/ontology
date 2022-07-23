@@ -29,6 +29,9 @@ directions:
       - right
 
 actions:
+  interact:
+    input:
+      - e
   jump:
     input:
       - space

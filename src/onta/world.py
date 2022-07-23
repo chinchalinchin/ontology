@@ -379,8 +379,19 @@ class World():
         
         .. notes:
             - Keep in mind, the sprite collision doesn't care what sprite or strut with which the player collided, only what direction the player was travelling when the collision happened. The door hit detection, however, _is_ aware of what door with which the player is colliding, in order to locate the world layer to which the door is connected.
-            - Technically, there is overlap here. Since sprite npc is checked against every other sprite for collisions, there are n! combinations, whereas there are a total of 2^n collision checks. Therefore, 2^n - n! checks are unneccesary. This algorithm can be vastly improved. A key TODO should be fixing this.
+            - Technically, there is overlap here. Since sprite npc is checked against every other sprite for collisions, there are Pn = n!/(n-2)! permutations, but Cn = n!/(2!(n-2)!). Therefore, Pn - Cn checks are unneccesary. To circumvent this problem (sort of), a collision map is kept internally within this method to keep track of which sprite-to-sprite collisions have already taken place. However, whether or not this is worth the effort, since the map has to be traversed when it is initialized.
         """
+
+        collision_map = { 
+            npc_key: {
+                vil_key: False for vil_key in self.villains.keys()
+            } for npc_key in self.npcs.keys()
+        }
+        collision_map.update({
+            vil_key: {
+                npc_key: False for npc_key in self.npcs.keys()
+            } for vil_key in self.villains.keys()
+        })
 
         for spriteset_key in ['hero', 'npcs', 'villains']:
             if spriteset_key == 'hero':
@@ -393,18 +404,31 @@ class World():
             for sprite_key, sprite in iter_set.items():
                 if spriteset_key in ['npcs', 'villains']:
                     for hitbox_key in ['sprite', 'strut']:
+
+                        exclusions = [ sprite_key ]
+                        for key, val in collision_map[sprite_key].items():
+                            if val:
+                                exclusions.append(key)
+
                         sprite_hitbox = self.get_sprite_hitbox(spriteset_key, hitbox_key, sprite_key)
-                        vil_hitboxes = self.get_sprite_hitboxes('villains', hitbox_key, sprite_key)
-                        npc_hitboxes = self.get_sprite_hitboxes('npcs', hitbox_key, sprite_key)
+                        vil_hitboxes = self.get_sprite_hitboxes('villains', hitbox_key, exclusions)
+                        npc_hitboxes = self.get_sprite_hitboxes('npcs', hitbox_key, exclusions)
 
                         collision_sets = [npc_hitboxes, vil_hitboxes, self.strutsets[self.layer]['hitboxes']]
 
                         log.verbose(f'Checking {spriteset_key} set member "{sprite_key}" with hitbox {sprite_hitbox} for {hitbox_key} collisions...', 
                             '_apply_physics')
 
+
                         for collision_set in collision_sets:
                             if collisions.detect_collision(sprite_hitbox, collision_set):
                                 collisions.recoil_sprite(sprite, self.sprite_property_conf[sprite_key])
+
+                        for key, val in collision_map.copy().items():
+                            if key not in exclusions and key == sprite_key:
+                                for nest_key in val.keys():
+                                    collision_map[key][nest_key] = True
+                                    collision_map[nest_key][key] = True
     
                 elif spriteset_key == 'hero':
                     sprite_hitbox = self.get_sprite_hitbox(spriteset_key, sprite_key, sprite_key)
@@ -419,9 +443,9 @@ class World():
                         if collisions.detect_collision(sprite_hitbox, collision_set):
                             collisions.recoil_sprite(sprite, self.sprite_property_conf[sprite_key])
     
-    def _apply_interaction(self):
-        self.strutsets[self.layer]['doors']
-        pass
+    def _apply_interaction(self, user_input: dict):
+        if user_input['interact']:
+            doors = self.strutsets[self.layer]['doors']
 
     def _apply_combat(self):
         pass
@@ -503,4 +527,4 @@ class World():
         self._update_hero(user_input)
         self._apply_physics()
         self._apply_combat()
-        self._apply_interaction()
+        self._apply_interaction(user_input)

@@ -141,8 +141,8 @@ layers:
         sets:
           - start:
               tile_units: absolute
-              x: 222
-              y: 144
+              x: 224
+              y: 120
             cover: false
             door: 
               layer: two
