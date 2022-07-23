@@ -362,31 +362,28 @@ class World():
         .. notes:
             - This method is essentially an interface between the NPC state and the game world. It determines what happens to an NPC once it is in a state.
         """
-        if len(self.npcs) > 0:
-            for npc_key, npc in self.npcs.items():
-                npc_props = self.sprite_property_conf[npc_key]
+        for npc_key, npc in self.npcs.items():
+            npc_props = self.sprite_property_conf[npc_key]
 
-                if npc['state'] not in self.sprite_state_conf[npc_key]['blocking_states']:
-                    if 'run' in npc['state']:
-                        speed = npc_props['run']
-                    else:
-                        speed = npc_props['walk']
+            if npc['state'] not in self.sprite_state_conf[npc_key]['blocking_states']:
+                if 'run' in npc['state']:
+                    speed = npc_props['run']
+                else:
+                    speed = npc_props['walk']
 
-                    if npc['state'] == 'walk_up':
-                        npc['position']['y'] -= speed
-                    elif npc['state'] == 'walk_left':
-                        npc['position']['x'] -= speed
-                    elif npc['state'] == 'walk_right':
-                        npc['position']['x'] += speed
-                    elif npc['state'] == 'walk_down':
-                        npc['position']['y'] += speed
+                if npc['state'] == 'walk_up':
+                    npc['position']['y'] -= speed
+                elif npc['state'] == 'walk_left':
+                    npc['position']['x'] -= speed
+                elif npc['state'] == 'walk_right':
+                    npc['position']['x'] += speed
+                elif npc['state'] == 'walk_down':
+                    npc['position']['y'] += speed
 
-                npc['frame'] += 1
+            npc['frame'] += 1
 
-                if npc['frame'] >= self.sprite_state_conf[npc_key][npc['state']]:
-                    npc['frame'] = 0
-
-                # TODO: hit detection
+            if npc['frame'] >= self.sprite_state_conf[npc_key][npc['state']]:
+                npc['frame'] = 0
 
     def _apply_physics(self):
         """
@@ -439,24 +436,28 @@ class World():
                         log.verbose(f'Checking {spriteset_key} set member "{sprite_key}" with hitbox {sprite_hitbox} for {hitbox_key} collisions...', 
                             '_apply_physics')
 
-
+                        collided = False
                         for collision_set in collision_sets:
                             if collisions.detect_collision(
                                 sprite_hitbox, 
                                 collision_set
                             ):
+                                collided =True
                                 collisions.recoil_sprite(
                                     sprite, 
                                     self.sprite_property_conf[sprite_key]
                                 )
-                                paths.reorient(
-                                    sprite,
-                                    sprite_hitbox, 
-                                    collision_sets, 
-                                    self.sprite_property_conf[sprite_key]['paths'][sprite['path']],
-                                    self.sprite_property_conf[sprite_key]['walk'],
-                                    self.dimensions
-                                )
+                        if collided:
+                                # recalculate hitbox after sprite recoils
+                            sprite_hitbox = self.get_sprite_hitbox(spriteset_key, hitbox_key, sprite_key)
+                            paths.reorient(
+                                sprite,
+                                sprite_hitbox,
+                                collision_sets, 
+                                self.sprite_property_conf[sprite_key]['paths'][sprite['path']],
+                                self.sprite_property_conf[sprite_key]['collide'],
+                                self.dimensions
+                            )
 
                         for key, val in collision_map.copy().items():
                             if key not in exclusions and key == sprite_key:

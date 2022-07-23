@@ -44,7 +44,7 @@ hero:
                     h: 61
         walk: 3
         run: 5
-        collide: 3
+        collide: 6
     sheets:
         compose:
         - file: male_human_ivory_sheet.png
@@ -180,9 +180,9 @@ esmeralda:
                 size: 
                     w: 23
                     h: 15
-        walk: 1
+        walk: 2
         run: 3
-        collide: 3
+        collide: 5
         paths:
             one:
                 x: 300
@@ -225,13 +225,13 @@ esmeralda:
             row: 8
             frames: 9
         - walk_right:
-            row: 9
+            row: 11
             frames: 9
         - walk_down:
             row: 10
             frames: 9
         - walk_left: 
-            row: 11 
+            row: 9
             frames: 9
         # Run
         - run_up:
@@ -292,8 +292,8 @@ skeleton:
                     w: 23
                     h: 15
         walk: 3
-        run: 5
-        collide: 3
+        run: 4
+        collide: 5
         paths:
             one:
                 x: 300
