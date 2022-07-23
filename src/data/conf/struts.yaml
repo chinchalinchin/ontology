@@ -34,6 +34,7 @@ apartment_exterior_wall:
       size:
         w: 92
         h: 55
+    door: false
         
 apartment_interior_wall:
   image:
@@ -46,7 +47,7 @@ apartment_interior_wall:
       h: 105
   properties:
     hitbox: null
-    cover: false
+    door: false
 
 apartment_floor:
   image:
@@ -59,7 +60,7 @@ apartment_floor:
       h: 96
   properties:
     hitbox: null
-    cover: false
+    door: false
 
 apartment_roof:
   image:
@@ -72,7 +73,7 @@ apartment_roof:
       h: 96
   properties:
     hitbox: null
-    cover: true
+    door: false
 
 apartment_steps:
   image: 
@@ -85,7 +86,7 @@ apartment_steps:
       h: 24
   properties:
     hitbox: null   
-    cover: false 
+    door: false
 
 apartment_door:
   image:
@@ -97,8 +98,14 @@ apartment_door:
       w: 32
       h: 48
   properties:
-    hitbox: null
-    cover: false
+    hitbox: 
+      offset:
+        x: 0
+        y: 0
+      size:
+        w: 32 
+        h: 48
+    door: true
 
 apartment_chimney:
   image:
@@ -112,9 +119,9 @@ apartment_chimney:
   properties:
     hitbox:
       offset:
-        x: 
-        y:
+        x: 0
+        y: 0
       size:
-        w:
-        h:
-    cover: false
+        w: 22
+        h: 45
+    door: false

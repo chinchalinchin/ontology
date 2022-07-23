@@ -13,6 +13,7 @@ def detect_collision(sprite_dim, hitbox_list):
             return True
 
 def recoil_sprite(sprite_state, sprite_props):
+    # TODO: pass in collide directly instead of through dictionary
     if 'down' in sprite_state['state']:
         sprite_state['position']['y'] -= sprite_props['collide']
     elif 'left' in sprite_state['state']:

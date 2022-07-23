@@ -66,6 +66,10 @@ class Renderer():
         crop_height = crop_y + screen_dim[1]
         return (crop_x, crop_y, crop_width, crop_height)
 
+    @staticmethod
+    def generate_render_order(set):
+        pass
+
     def __init__(self, static_world: world.World, repository: repo.Repo):
         """
         .. notes:
@@ -118,30 +122,34 @@ class Renderer():
         log.debug('Rendering strut sets', 'Repo._render_tiles')
 
         for layer in game_world.layers:
-            for group_key, group_conf in game_world.get_strutsets(layer).items():
-                group_strut = repository.get_layer('struts', group_key)
-                group_sets = group_conf['sets']
+            for strut_type in [True, False]:
+                # TODO: need to order strutsets by rendering order
+                for group_key, group_conf in game_world.get_strutsets(layer, strut_type).items():
+                    group_strut = repository.get_layer('struts', group_key)
+                    group_sets = group_conf['sets']
 
-                log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
+                    log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
 
-                for set_conf in group_sets:
-                    if set_conf['start']['tile_units'] == 'default':
-                        start = (set_conf['start']['x']*settings.TILE_DIM[0], 
-                            set_conf['start']['y']*settings.TILE_DIM[1])
+                    for set_conf in group_sets:
+                        if set_conf['start']['tile_units'] == 'default':
+                            start = (set_conf['start']['x']*settings.TILE_DIM[0], 
+                                set_conf['start']['y']*settings.TILE_DIM[1])
 
-                    elif set_conf['start']['tile_units'] == 'relative':
-                        start = (set_conf['start']['x']*group_strut.size[0], 
-                            set_conf['start']['y']*group_strut.size[1])
+                        elif set_conf['start']['tile_units'] == 'relative':
+                            start = (set_conf['start']['x']*group_strut.size[0], 
+                                set_conf['start']['y']*group_strut.size[1])
 
-                    else:
-                        start = (set_conf['start']['x'], set_conf['start']['y'])
+                        else:
+                            start = (set_conf['start']['x'], set_conf['start']['y'])
 
-                    log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_struts')
+                        log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_struts')
 
-                    if set_conf['cover']:
-                        self.static_cover_frame[layer].paste(group_strut, start, group_strut)
-                    else:
-                        self.static_back_frame[layer].paste(group_strut, start, group_strut)
+                        if set_conf['cover']:
+                            self.static_cover_frame[layer].paste(group_strut, start, group_strut)
+                        else:
+                            self.static_back_frame[layer].paste(group_strut, start, group_strut)
+                    if strut_type:
+                        print(group_sets)
     
     def _render_static(self, layer, cover: bool = False):
         if cover:

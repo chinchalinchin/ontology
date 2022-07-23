@@ -1,4 +1,5 @@
 
+from logging.config import valid_ident
 import onta.settings as settings
 import onta.load.state as state
 import onta.load.conf as conf
@@ -143,6 +144,7 @@ class World():
     """
     layer = None
     layers = None
+    doors = None
 
     def __init__(self, config: conf.Conf, state_ao: state.State):
         """
@@ -182,6 +184,7 @@ class World():
             self.strut_property_conf[strut_key] = {}
             self.strut_property_conf[strut_key]['size'] = strut_conf['image']['size']
             self.strut_property_conf[strut_key]['hitbox'] = strut_conf['properties']['hitbox']
+            self.strut_property_conf[strut_key]['door'] = strut_conf['properties']['door']
 
     def _init_static_state(self, state_ao: state.State):
         """
@@ -258,7 +261,8 @@ class World():
         
             # condense all the hitboxes into a list and save to strutsets,
             # to avoid repeated internal calls to `get_strut_hitboxes`
-            self.strutsets[layer]['hitboxes'] = self.get_strut_hitboxes(layer)
+            self.strutsets[layer]['hitboxes'] = self.get_strut_hitboxes(layer, False)
+            self.strutsets[layer]['doors'] = self.get_strut_hitboxes(layer, True)
 
     def _update_hero(self, user_input: dict): 
         """
@@ -371,6 +375,11 @@ class World():
                 # TODO: hit detection
 
     def _apply_physics(self):
+        """
+        
+        .. notes:
+            - Keep in mind, the sprite collision doesn't care what sprite or strut with which the player collided, only what direction the player was travelling when the collision happened. The door hit detection, however, _is_ aware of what door with which the player is colliding, in order to locate the world layer to which the door is connected.
+        """
         hero_props = self.sprite_property_conf['hero']
         hero_hitbox = self.get_sprite_hitbox('hero', 'hero', 'hero')
         npcs_hitboxes = self.get_sprite_hitboxes('npcs', 'hero')    
@@ -380,6 +389,7 @@ class World():
         for collision_set in collision_sets:
             if collisions.detect_collision(hero_hitbox, collision_set):
                 collisions.recoil_sprite(self.hero, hero_props)
+        # TODO: see note
 
         if len(self.npcs) > 0:
             for npc_key, npc in self.npcs.items():
@@ -390,16 +400,17 @@ class World():
                 for collision_set in collision_sets:
                     if collisions.detect_collision(npc_hitbox, collision_set):
                         collisions.recoil_sprite(npc, self.sprite_property_conf[npc_key])
-        
+    
     def _apply_interaction(self):
+        self.strutsets[self.layer]['doors']
         pass
 
     def _apply_combat(self):
         pass
 
-    def get_strut_hitboxes(self, layer):
+    def get_strut_hitboxes(self, layer, door = False):
         strut_hitboxes = []
-        for strut_conf in self.strutsets[layer].values():
+        for strut_conf in self.get_strutsets(layer, door).values():
             sets = strut_conf['sets']
             for strut in sets:
                 strut_hitboxes.append(strut.get('hitbox'))
@@ -445,8 +456,13 @@ class World():
                     calculated.append(self.get_sprite_hitbox('villains', hitbox_key, sprite_key))
         return calculated
     
-    def get_strutsets(self, layer):
-        return { key: val for key, val in self.strutsets[layer].items() if key != 'hitboxes' } 
+    def get_strutsets(self, layer, doors = False):
+        return {
+            key: val
+            for key, val in self.strutsets[layer].items()
+            if key not in  ['hitboxes', 'doors'] 
+                and self.strut_property_conf[key]['door'] == doors
+        }
 
     def get_tilesets(self, layer: str):
         return self.tilesets[layer] if self.tilesets[layer] is not None else { }
