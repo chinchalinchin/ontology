@@ -138,16 +138,6 @@ layers:
               x: 608
               y: 168
             cover: false
-      apartment_door:
-        order: 3
-        sets:
-          - start:
-              tile_units: absolute
-              x: 224
-              y: 120
-            cover: false
-            door: 
-              layer: two
     plates:
       apartment_door:
         order: 0

@@ -191,9 +191,10 @@ class World():
         """
         struts_conf = config.configuration('struts')
         sprites_conf = config.configuration('sprites')
+        plates_conf = config.configuration('plates')
 
-        self.sprite_state_conf = {}
-        self.sprite_property_conf = {}
+        self.sprite_state_conf = { }
+        self.sprite_property_conf = { }
         for sprite_key, sprite_conf in sprites_conf.items():
             self.sprite_state_conf[sprite_key] = {}
             self.sprite_property_conf[sprite_key] = {}
@@ -206,13 +207,18 @@ class World():
                 state = list(state_map.keys())[0]
                 self.sprite_state_conf[sprite_key][state] = state_map[state]['frames']
 
-        self.strut_property_conf = {}
-        
+        self.strut_property_conf = { }
         for strut_key, strut_conf in struts_conf.items():
             self.strut_property_conf[strut_key] = {}
             self.strut_property_conf[strut_key]['size'] = strut_conf['image']['size']
             self.strut_property_conf[strut_key]['hitbox'] = strut_conf['properties']['hitbox']
-            self.strut_property_conf[strut_key]['door'] = strut_conf['properties']['door']
+
+        self.plate_property_conf = { }
+        for plate_key, plate_conf in plates_conf.items():
+            self.plate_property_conf[plate_key] = {}
+            self.plate_property_conf[plate_key]['size'] = plate_conf['image']['size']
+            self.plate_property_conf[plate_key]['hitbox'] = plate_conf['properties']['hitbox']
+            self.plate_property_conf[plate_key]['door'] = plate_conf['properties']['door']
 
     def _init_static_state(self, state_ao: state.State):
         """
@@ -264,6 +270,10 @@ class World():
         """
         for layer in self.layers:
 
+            if self.platesets[layer] is None:
+                self.platesets[layer] = {}
+            if self.strutsets[layer] is None:
+                self.strutsets[layer] = {}
             for static_set in ['strutset', 'plateset']:
                 if static_set == 'strutset':
                     iter_set = self.strutsets[layer].copy()
@@ -315,7 +325,7 @@ class World():
             ]
             self.strutsets[layer]['hitboxes'] = world_bounds + self.get_strut_hitboxes(layer)
             self.platesets[layer]['doors'] = self.get_doors(layer)
-            
+
     def _update_hero(self, user_input: dict): 
         """
         Map user input to new hero state, apply state action and iterate state frame.
@@ -584,17 +594,19 @@ class World():
         return calculated
     
     def get_strutsets(self, layer):
+        iter_set = self.strutsets[layer].items() if self.strutsets[layer] is not None else { }
         return {
             key: val
-            for key, val in self.strutsets[layer].items()
+            for key, val in iter_set
             if key not in  ['hitboxes'] 
         }
 
     def get_platesets(self, layer):
+        iter_set = self.platesets[layer].items() if self.platesets[layer] is not None else { }
         return {
             key: val
-            for key, val in self.platesets[layer].items()
-            if key not in ['hitboxes']
+            for key, val in iter_set
+            if key not in ['doors']
         }
 
     def get_tilesets(self, layer: str):

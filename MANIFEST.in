@@ -5,6 +5,7 @@ include src/data/assets/objects/*
 include src/data/assets/struts/*
 include src/data/assets/tiles/*
 include src/data/assets/sprites/*
+include src/data/assets/plates/*
 include src/version.txt
 
 exclude src/onta/tests/**
