@@ -229,6 +229,10 @@ class World():
     def _init_static_hitboxes(self):
         """
         Construct static hitboxes from object dimensions and properties.
+
+        .. notes:
+            - All of the strut hitboxes are condensed into a list in `self.strutsets['hitboxes']`, so that strut hitboxes only need calculated once.
+            - Strut
         """
         for layer in self.layers:
             buffer_strutsets = self.strutsets[layer].copy()
@@ -264,8 +268,15 @@ class World():
         
             # condense all the hitboxes into a list and save to strutsets,
             # to avoid repeated internal calls to `get_strut_hitboxes`
-            self.strutsets[layer]['hitboxes'] = self.get_strut_hitboxes(layer, False)
+            world_bounds = [
+                (0, 0, self.dimensions[0], 1), 
+                (0, 0, 1, self.dimensions[1]),
+                (self.dimensions[0], 0, 1, self.dimensions[1]),
+                (0, self.dimensions[1], self.dimensions[0], 1)
+            ]
+            self.strutsets[layer]['hitboxes'] = world_bounds + self.get_strut_hitboxes(layer, False)
             self.strutsets[layer]['doors'] = self.get_strut_hitboxes(layer, True)
+
 
     def _update_hero(self, user_input: dict): 
         """
@@ -366,7 +377,7 @@ class World():
                     elif npc['state'] == 'walk_left':
                         npc['position']['x'] -= speed
                     elif npc['state'] == 'walk_right':
-                        npc['position']['y'] += speed
+                        npc['position']['x'] += speed
                     elif npc['state'] == 'walk_down':
                         npc['position']['y'] += speed
 

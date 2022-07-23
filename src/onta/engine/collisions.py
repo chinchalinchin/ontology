@@ -8,7 +8,7 @@ def detect_collision(sprite_dim, hitbox_list):
     for hitbox in hitbox_list:
         if hitbox is not None and calculator.intersection(sprite_dim, hitbox):
             # return true once collision is detected. it doesn't matter where it occurs, only what direction the hero is travelling...
-            log.debug(f'Detected sprite {sprite_dim} collision with hitbox at {hitbox}', 
+            log.verbose(f'Detected sprite {sprite_dim} collision with hitbox at {hitbox}', 
                 'detect_hero_collisions')
             return True
 

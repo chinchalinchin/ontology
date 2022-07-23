@@ -180,8 +180,8 @@ esmeralda:
                 size: 
                     w: 23
                     h: 15
-        walk: 3
-        run: 5
+        walk: 1
+        run: 3
         collide: 3
         paths:
             one:
