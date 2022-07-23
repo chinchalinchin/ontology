@@ -8,6 +8,8 @@ properties:
     tile_units: relative
     w: 10
     h: 20
+  # determines whether a sprite has arrived at a position, i.e. if the sprite is within a radius of 3 pixels
+  tolerance: 3
 
 
 layers:

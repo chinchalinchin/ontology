@@ -12,13 +12,13 @@ def detect_collision(sprite_dim, hitbox_list):
                 'detect_hero_collisions')
             return True
 
-def recoil_sprite(sprite_state, sprite_props):
+def recoil_sprite(sprite, sprite_props):
     # TODO: pass in collide directly instead of through dictionary
-    if 'down' in sprite_state['state']:
-        sprite_state['position']['y'] -= sprite_props['collide']
-    elif 'left' in sprite_state['state']:
-        sprite_state['position']['x'] -= sprite_props['collide']
-    elif 'right' in sprite_state['state']:
-        sprite_state['position']['x'] += sprite_props['collide']
+    if 'down' in sprite['state']:
+        sprite['position']['y'] -= sprite_props['collide']
+    elif 'left' in sprite['state']:
+        sprite['position']['x'] -= sprite_props['collide']
+    elif 'right' in sprite['state']:
+        sprite['position']['x'] += sprite_props['collide']
     else:
-        sprite_state['position']['y'] += sprite_props['collide']
+        sprite['position']['y'] += sprite_props['collide']

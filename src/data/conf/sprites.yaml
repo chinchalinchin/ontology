@@ -183,6 +183,13 @@ esmeralda:
         walk: 3
         run: 5
         collide: 3
+        paths:
+            one:
+                x: 300
+                y: 100
+            two:
+                x: 500
+                y: 300
     sheets:
         compose:
             - file: female_human_ivory_sheet.png
@@ -287,6 +294,13 @@ skeleton:
         walk: 3
         run: 5
         collide: 3
+        paths:
+            one:
+                x: 300
+                y: 100
+            two:
+                x: 500
+                y: 300
     sheets:
         compose:
             - file: monster_skeleton_white_sheet.png

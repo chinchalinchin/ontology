@@ -6,6 +6,7 @@ import onta.load.conf as conf
 import onta.util.logger as logger
 import onta.engine.calculator as calculator
 import onta.engine.collisions as collisions
+import onta.engine.paths as paths
 
 log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
@@ -209,6 +210,8 @@ class World():
             self.layers.append(layer_key)
             self.tilesets[layer_key] = layer_conf.get('tiles')
             self.strutsets[layer_key] = layer_conf.get('struts')
+
+        # TODO: initialize doors?
 
         self._init_static_hitboxes()
         log.debug(f'Initialized static world layer with dimensions {self.dimensions}', 'World._init_static_layer')
@@ -414,15 +417,35 @@ class World():
                         vil_hitboxes = self.get_sprite_hitboxes('villains', hitbox_key, exclusions)
                         npc_hitboxes = self.get_sprite_hitboxes('npcs', hitbox_key, exclusions)
 
-                        collision_sets = [npc_hitboxes, vil_hitboxes, self.strutsets[self.layer]['hitboxes']]
+                        collision_sets = []
+                        if npc_hitboxes is not None:
+                            collision_sets.append(npc_hitboxes)
+                        if vil_hitboxes is not None:
+                            collision_sets.append(vil_hitboxes)
+                        if self.strutsets[self.layer]['hitboxes'] is not None:
+                            collision_sets.append(self.strutsets[self.layer]['hitboxes'])
 
                         log.verbose(f'Checking {spriteset_key} set member "{sprite_key}" with hitbox {sprite_hitbox} for {hitbox_key} collisions...', 
                             '_apply_physics')
 
 
                         for collision_set in collision_sets:
-                            if collisions.detect_collision(sprite_hitbox, collision_set):
-                                collisions.recoil_sprite(sprite, self.sprite_property_conf[sprite_key])
+                            if collisions.detect_collision(
+                                sprite_hitbox, 
+                                collision_set
+                            ):
+                                collisions.recoil_sprite(
+                                    sprite, 
+                                    self.sprite_property_conf[sprite_key]
+                                )
+                                paths.reorient(
+                                    sprite,
+                                    sprite_hitbox, 
+                                    collision_sets, 
+                                    self.sprite_property_conf[sprite_key]['paths'][sprite['path']],
+                                    self.sprite_property_conf[sprite_key]['walk'],
+                                    self.dimensions
+                                )
 
                         for key, val in collision_map.copy().items():
                             if key not in exclusions and key == sprite_key:

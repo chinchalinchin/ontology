@@ -12,6 +12,7 @@ npcs:
       x: 100
       y: 100
     state: walk_down
+    path: one
     frame: 0
     layer: one
   
@@ -21,5 +22,6 @@ villains:
       x: 200
       y: 200
     state: walk_down
+    path: one
     frame: 0
     layer: one

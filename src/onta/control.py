@@ -6,7 +6,7 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.control', settings.LOG_LEVEL)
 
-CONTROLS = ['space', 'alt_left', 'ctrl_left', 'shift_left', 'tab', 'up', 'left', 'right', 'down']
+CONTROLS = ['space', 'alt_left', 'ctrl_left', 'shift_left', 'tab', 'up', 'left', 'right', 'down', 'e']
 
 class Controller():
 
@@ -42,9 +42,7 @@ class Controller():
     def __init__(self, config):
         self.control_conf = config.configuration('controls')
         self.keys = { 
-            key: False for key in 
-                ['space', 'alt_left', 'ctrl_left', 'shift_left', 
-                    'tab', 'up', 'left', 'right', 'down'] 
+            key: False for key in CONTROLS
         }
         self._register_listener()
         self._start_listener()
