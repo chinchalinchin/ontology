@@ -26,3 +26,9 @@ That said, _onta_ does have scripting capabilities, if the base engine is not su
 For more information on configuration, see [Configuration](./CONFIGURATION.md).
 
 For more information on scripting, see [Scripting](./SCRIPTING.md)
+
+## 
+
+While possessing a degree of flexibility, _onta_ is highly opinionated on the type of games it will run. Obviously, only two-dimensional games based on spritesheets can be run in the _onta_ engine, but beyond that, _onta_ produces a very specific type of game. 
+
+What sets _onta_ apart is how it approaches the game loop. The state of the game is described through configuration files that are loaded into the game world once and then saved at the end of a session; everything in between is driven entirely through how the user interacts with the game engine. There are no "scripted" events in the game (not entirely accurate, but spiritually true). What this means is: the game state is always updating. When a NPC dialogue appears, this was a natural consequence of the previous game state, and when it disappears, that event will subsequently affect the game state's evolution. A well-written _ontology_ 

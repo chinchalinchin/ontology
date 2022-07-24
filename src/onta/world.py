@@ -12,6 +12,9 @@ log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
 class World():
 
+    composite_conf = None
+    """
+    """
     plate_property_conf = None
     """
     """
@@ -21,8 +24,7 @@ class World():
     ```python
     self.strut_property_conf = {
             'strut_1': {
-                'hitbox_1': hitbox_1_dim, # tuple
-                'hitbox_2': hitbox_2_dim, # tuple
+                'hitbox_1': hitbox_dim, # tuple
                 # ...
             }
         }
@@ -38,7 +40,6 @@ class World():
             'state_1': state_1_frames, # int
             'state_2': state_2_frames, # int
             # ..
-            'blocking_states': [ block_state_1, block_state_2, ], # list(str)
         },
     }
     ```
@@ -53,6 +54,8 @@ class World():
             'collide': collide, # int
             'size': (w, h), # tuple
             'hitbox': (offset_x, offset_y, width, height), # tuple
+            'blocking_states': [ block_state_1, block_state_2, ], # list(str)
+            # ...
         },
     }
     ```
@@ -69,7 +72,8 @@ class World():
                             'tile_units': tile_units, # bool
                             'x': x, # int
                             'y': y, # int
-                        }
+                        },
+                        'cover': cover, # bool
                     }
                 ]
             },
@@ -90,6 +94,7 @@ class World():
                             'x': x, # int
                             'y': y, # int
                         },
+                        'cover': cover, # bool
                         'hitbox': (hx, hy, hw, hh), # tuple(int, int, int, int)
 
                     }
@@ -113,13 +118,19 @@ class World():
                             'y': y, # int
                         },
                         'hitbox': (hx, hy, hw, hh), # tuple(int, int, int, int)
-
+                        'cover': cover, # bool
+                        'door': {
+                            'layer': layer, # str
+                        },
                     }
                 ]
             },
         },
     }
     ```
+    """
+    compositions = None
+    """
     """
     dimensions = None
     """
@@ -184,6 +195,7 @@ class World():
         """
         self._init_conf(config)
         self._init_static_state(state_ao)
+        self._generate_composite_static_state(state_ao)
         self._init_dynamic_state(state_ao)
         self._init_stationary_hitboxes()
 
@@ -195,7 +207,7 @@ class World():
         self.sprite_state_conf, self.sprite_property_conf, _ = unpack
         self.plate_property_conf, _ = config.load_plate_configuration()
         self.strut_property_conf, _ = config.load_strut_configuration()
-
+        self.composite_conf = config.load_composite_configuration()
 
     def _init_static_state(self, state_ao: state.State) -> None:
         """
@@ -216,13 +228,27 @@ class World():
             )
 
         self.layers = []
-        self.tilesets, self.strutsets, self.platesets = { }, { }, { }
+        self.tilesets, self.strutsets = {}, {}
+        self.platesets, self.compositions = {}, {}
         for layer_key, layer_conf in static_conf['layers'].items():
             self.layers.append(layer_key)
             self.tilesets[layer_key] = layer_conf.get('tiles')
             self.strutsets[layer_key] = layer_conf.get('struts')
             self.platesets[layer_key] = layer_conf.get('plates')
+            self.compositions[layer_key] = layer_conf.get('compositions')
 
+    def _generate_composite_static_state(self) -> None:
+
+        for layer in self.layers:
+            layer_compositions = self.compositions[layer]
+
+            for composite_key, composition in layer_compositions.items():
+                compose_order, compose_sets = composition['order'], composition['sets']
+                compose_conf = self.composite_conf[composite_key]
+
+                for element in ['struts', 'plates', 'tiles']:
+                    elements = compose_conf[element]
+                    element_order, element_sets = element['order'], element['sets']
 
     def _init_dynamic_state(self, state_ao: state.State) -> None:
         """

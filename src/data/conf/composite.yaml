@@ -1,0 +1,38 @@
+apartment:
+  struts:
+    apartment_exterior_wall:
+      order: 0
+      sets:
+        - start:
+            tile_units: absolute
+            x: 2
+            y: 96
+          cover: false
+    apartment_roof:
+      order: 1
+      sets:
+        - start:
+            tile_units: absolute
+            x: 0
+            y: 0
+          cover: true
+    apartment_steps:
+      order: 2
+      sets: 
+        - start:
+            tile_units: absolute
+            x: 0
+            y: 418
+          cover: false
+  plates:
+    apartment_door:
+      order: 0
+      sets:
+        - start:
+            tile_units: absolute
+            x: 34
+            y: 0
+          cover: false
+          door:
+            layer: two
+

@@ -17,6 +17,7 @@ class Conf():
     plate_sheet_conf = None
     tile_sheet_conf = None
     control_conf = None
+    composite_conf = None
 
     def __init__(self, data_dir):
         """
@@ -35,6 +36,11 @@ class Conf():
             self.control_conf = self._configuration('controls')
         return self.control_conf
 
+    def load_composite_configuration(self):
+        if self.composite_conf is None:
+            self.composite_conf = self._configuration('composite')
+        return self.composite_conf
+        
     def load_tile_configuration(self):
         if self.tile_sheet_conf is None:
 
