@@ -14,7 +14,11 @@ properties:
     h: 20
   # determines whether a sprite has arrived at a position, i.e. if the sprite is within a radius of 3 pixels
   tolerance: 5
+  # determines then number of iterations in an in-game hour
+    # 18000 = 30 FPS * 60 SPM * 10 Min
+  hour: 18000
 
+# TODO: ??? possibly separate FPS from UPS.
 
 layers:
   one:

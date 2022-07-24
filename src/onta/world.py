@@ -656,13 +656,14 @@ class World():
 
     def _apply_interaction(self, user_input: dict):
         if user_input['interact']:
-            doors = self.platesets[self.layer]['doors']
 
-            for door in doors:
-                door_hitbox = door['hitbox']
-                hero_hitbox = self.get_sprite_hitbox('hero', 'sprite', 'hero')
-                if collisions.detect_collision(hero_hitbox, [ door_hitbox ]):
+            for door in self.platesets[self.layer]['doors']:
+                if collisions.detect_collision(
+                    self.get_sprite_hitbox('hero', 'sprite', 'hero'), 
+                    [ door['hitbox'] ]
+                ):
                     self.layer = door['layer']
+                    break
 
 
     def _apply_combat(self):
