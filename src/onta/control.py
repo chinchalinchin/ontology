@@ -61,9 +61,27 @@ class Controller():
     def _direction(self):
         directions = self.control_conf['directions']
         direction_flags = {}
+        dirs= 0
         for dir_key, dir_conf in directions.items():
             input_combo = dir_conf['input']
             direction_flags[dir_key] = all(self.keys[key] for key in input_combo)
+            if direction_flags[dir_key]:
+                dirs += 1
+
+        # ensure precedence is enforced if overlap
+        if dirs > 1:
+            for dir_key, dir_flag in direction_flags.copy().items():
+
+                if dir_flag and \
+                    self.control_conf['overlap'].get(dir_key) is not None:
+
+                    for input in self.control_conf['overlap'].get(dir_key):
+
+                        if input != dir_key and \
+                            direction_flags[input] and \
+                            directions[input]['precedence'] > directions[dir_key]['precedence']:
+                                direction_flags[dir_key] = False
+                                break
         return direction_flags
 
         # TODO: account for overlap in states, i.e. n and nw will be triggered at same time...
@@ -72,11 +90,38 @@ class Controller():
     def _actions(self):
         actions = self.control_conf['actions']
         action_flags = {}
+        acts = 0
         for action_key, action_conf in actions.items():
             input_combo = action_conf['input']
             action_flags[action_key] = all(self.keys[key] for key in input_combo)
+            if action_flags[action_key]:
+                acts += 1
+
+        # ensure precedence is enforced if overlap
+        if acts > 1:
+            for action_key, action_flag in action_flags.copy().items():
+
+                if action_flag and \
+                    self.control_conf['overlap'].get(action_key) is not None:
+
+                    for input in self.control_conf['overlap'].get(action_key):
+                        if input != action_key and \
+                            action_flags[input] and \
+                            actions[input]['precedence'] > actions[action_key]['precedence']:
+                                action_flags[action_key] = False
+                                break
+                        
         return action_flags 
 
+    def _consume(self):
+        user_input = self._direction()
+        user_input.update(self._actions())
+
+        for consume in self.control_conf['consumable']:
+            if user_input[consume]:
+                for input in self.control_conf['actions'][consume]['input']:
+                    self.keys[input] = False
+        return user_input
 
     def on_press(self, key):
         self.keys[self.map_key(key)] = True
@@ -85,13 +130,6 @@ class Controller():
         self.keys[self.map_key(key)] = False
 
     def poll(self):
-        user_input = self._direction()
-        user_input.update(self._actions())
-
-        for consume in self.control_conf['consumable']:
-            if user_input[consume]:
-                input_combo = self.control_conf['actions'][consume]['input']
-                for input in input_combo:
-                    self.keys[input] = False
+        user_input = self._consume()
 
         return user_input

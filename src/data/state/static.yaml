@@ -193,6 +193,10 @@ layers:
         sets:
           - start:
               units: absolute
+              x: 370
+              y: 1305
+          - start:
+              units: absolute
               x: 400
               y: 1400
           - start:

@@ -2,31 +2,39 @@ directions:
   n:
     input:
       - up
+    precedence: 0
   nw:
     input:
       - up
       - left
+    precedence: 1
   w:
     input:
       - left
+    precedence: 0
   sw:
     input:
       - down
       - left
+    precedence: 2
   s:
     input:
       - down
+    precedence: 0
   se:
     input:
       - down
       - right
+    precedence: 1
   e:
     input:
       - right
+    precedence: 0
   ne:
     input:
       - up
       - right
+    precedence: 2
 
 actions:
   interact:
@@ -50,6 +58,16 @@ actions:
   cast:
     input:
       - tab
-  
+
+overlap:
+  left:
+    - nw
+    - w
+    - sw
+  right: 
+    - ne
+    - e
+    - se
+    
 consumable:
   - interact
