@@ -7,67 +7,64 @@ directions:
     input:
       - up
       - left
-    precedence: 1
+    precedence: 4
   w:
     input:
       - left
-    precedence: 0
+    precedence: 1
   sw:
     input:
       - down
       - left
-    precedence: 2
+    precedence: 5
   s:
     input:
       - down
-    precedence: 0
+    precedence: 2
   se:
     input:
       - down
       - right
-    precedence: 1
+    precedence: 6
   e:
     input:
       - right
-    precedence: 0
+    precedence: 3
   ne:
     input:
       - up
       - right
-    precedence: 2
+    precedence: 7
 
 actions:
   interact:
     input:
       - e
+    precedence: 1
   jump:
     input:
       - space
+    precedence: 2
   sprint:
     input:
       - tab
+    precedence: 0
   slash:
     input:
       - ctrl_left
+    precedence: 3
   thrust:
     input:
       - alt_left
+    precedence: 4
   shoot:
     input:
       - shift_left
+    precedence: 5
   cast:
     input:
       - tab
-
-overlap:
-  left:
-    - nw
-    - w
-    - sw
-  right: 
-    - ne
-    - e
-    - se
+    precedence: 6
     
 consumable:
   - interact

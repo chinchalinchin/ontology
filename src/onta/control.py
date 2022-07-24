@@ -1,10 +1,12 @@
 
+from re import A
 from pynput import keyboard
 
 import onta.settings as settings
 import onta.load.conf as conf
 import onta.util.logger as logger
 
+import pprint
 log = logger.Logger('onta.control', settings.LOG_LEVEL)
 
 CONTROLS = ['space', 'alt_left', 'ctrl_left', 'shift_left', 'tab', 'up', 'left', 'right', 'down', 'e']
@@ -70,22 +72,14 @@ class Controller():
 
         # ensure precedence is enforced if overlap
         if dirs > 1:
+            precedence, activated_key = 0, None
             for dir_key, dir_flag in direction_flags.copy().items():
-
-                if dir_flag and \
-                    self.control_conf['overlap'].get(dir_key) is not None:
-
-                    for input in self.control_conf['overlap'].get(dir_key):
-
-                        if input != dir_key and \
-                            direction_flags[input] and \
-                            directions[input]['precedence'] > directions[dir_key]['precedence']:
-                                direction_flags[dir_key] = False
-                                break
+                if dir_flag and directions[dir_key]['precedence'] >= precedence:
+                    precedence = directions[dir_key]['precedence']
+                    activated_key = dir_key
+            direction_flags = { key: True if key == activated_key else False for key in direction_flags.keys() }
+       
         return direction_flags
-
-        # TODO: account for overlap in states, i.e. n and nw will be triggered at same time...
-
 
     def _actions(self):
         actions = self.control_conf['actions']
@@ -99,17 +93,13 @@ class Controller():
 
         # ensure precedence is enforced if overlap
         if acts > 1:
-            for action_key, action_flag in action_flags.copy().items():
-
-                if action_flag and \
-                    self.control_conf['overlap'].get(action_key) is not None:
-
-                    for input in self.control_conf['overlap'].get(action_key):
-                        if input != action_key and \
-                            action_flags[input] and \
-                            actions[input]['precedence'] > actions[action_key]['precedence']:
-                                action_flags[action_key] = False
-                                break
+            precedence, activated_key = 0, None
+            for act_key, act_flag in action_flags.copy().items():
+                if act_flag and actions[act_key]['precedence'] >= precedence:
+                    precedence = actions[act_key]['precedence']
+                    activated_key = act_key
+  
+            action_flags = { key: True if key == activated_key else False for key in action_flags.keys() }
                         
         return action_flags 
 
