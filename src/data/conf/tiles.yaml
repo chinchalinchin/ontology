@@ -13,40 +13,44 @@
 
 coal:
   image:
-    file: coal.png
-    position:
-      x: 0
-      y: 160
+    file: 
+      path: coal.png
+      position:
+        x: 0
+        y: 160
     size:
       w: 96
       h: 32
 
 grass:
   image:
-    file: grass.png
-    position:
-      x: 0
-      y: 160
+    file: 
+      path: grass.png
+      position:
+        x: 0
+        y: 160
     size:
       w: 96
       h: 32
 
 mud:
   image:
-    file: mud.png
-    position: 
-      x: 0
-      y: 160
+    file: 
+      path: mud.png
+      position: 
+        x: 0
+        y: 160
     size:
       w: 96
       h: 32
 
 lava:
   image:
-    file: lava.png
-    position:
-      x: 0 
-      y: 160
+    file: 
+      path: lava.png
+      position:
+        x: 0 
+        y: 160
     size:
       w: 96
       h: 32
@@ -55,30 +59,33 @@ lava:
 
 sand:
   image: 
-    file: sand.png
-    position:
-      x: 0
-      y: 160
+    file: 
+      path: sand.png
+      position:
+        x: 0
+        y: 160
     size: 
       w: 96
       h: 32
 
 water:
   image:
-    file: water.png
-    position:
-      x: 0
-      y: 160
+    file: 
+      name: water.png
+      position:
+        x: 0
+        y: 160
     size:
       w: 96
       h: 32
 
 hole:
   image:
-    file: hole.png
-    position:
-      x: 0
-      y: 160
+    file: 
+      name: hole.png
+      position:
+        x: 0
+        y: 160
     size:
       w: 96
       h: 32

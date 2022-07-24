@@ -69,7 +69,7 @@ class World():
                 'sets': [
                     { 
                         'start': {
-                            'tile_units': tile_units, # bool
+                            'units': units, # bool
                             'x': x, # int
                             'y': y, # int
                         },
@@ -90,7 +90,7 @@ class World():
                 'sets': [
                     { 
                         'start': {
-                            'tile_units': tile_units, # bool
+                            'units': units, # bool
                             'x': x, # int
                             'y': y, # int
                         },
@@ -113,7 +113,7 @@ class World():
                 'sets': [
                     { 
                         'start': {
-                            'tile_units': tile_units, # bool
+                            'units': units, # bool
                             'x': x, # int
                             'y': y, # int
                         },
@@ -218,7 +218,7 @@ class World():
         log.debug(f'Initializing simple static world state...', 'World._init_static_state')
         static_conf = state_ao.get_state('static')
 
-        if static_conf['properties']['size']['tile_units'] == 'relative':
+        if static_conf['properties']['size']['units'] == 'relative':
             self.dimensions = (
                 static_conf['properties']['size']['w']*settings.TILE_DIM[0], 
                 static_conf['properties']['size']['h']*settings.TILE_DIM[1]
@@ -260,7 +260,7 @@ class World():
                     for composeset in compose_sets:
                         # NOTE: compose_set = { 'start': { ... } }
                         #           via compose state information (static.yaml)
-                        if composeset['start']['tile_units'] == 'absolute':
+                        if composeset['start']['units'] == 'absolute':
                             compose_start = (
                                 composeset['start']['x'], 
                                 composeset['start']['y']
@@ -298,7 +298,7 @@ class World():
                                         self.strutsets[layer][element_key]['sets'].append(
                                             {
                                                 'start': {
-                                                    'tile_units': strutset['start']['tile_units'],
+                                                    'units': strutset['start']['units'],
                                                     'x': compose_start[0] + strutset['start']['x'],
                                                     'y': compose_start[1] + strutset['start']['y'],
                                                 },
@@ -319,7 +319,7 @@ class World():
                                         self.platesets[layer][element_key]['sets'].append(
                                             {
                                                 'start': {
-                                                    'tile_units': 'absolute',
+                                                    'units': 'absolute',
                                                     'x': compose_start[0] + plateset['start']['x'],
                                                     'y': compose_start[1] + plateset['start']['y']
                                                 },
@@ -362,10 +362,10 @@ class World():
                     for i, set_conf in enumerate(set_conf['sets']):
 
                         if set_props['hitbox'] is not None:
-                            if set_conf['start']['tile_units'] == 'default':
+                            if set_conf['start']['units'] == 'default':
                                 x = set_conf['start']['x']*settings.TILE_DIM[0]
                                 y = set_conf['start']['y']*settings.TILE_DIM[1]
-                            if set_conf['start']['tile_units'] == 'relative':
+                            if set_conf['start']['units'] == 'relative':
                                 x = set_conf['start']['x']*set_props['size']['w']
                                 y = set_conf['start']['y']*set_props['size']['h']
                             else:
@@ -557,6 +557,9 @@ class World():
         .. notes:
             - Keep in mind, the sprite collision doesn't care what sprite or strut with which the player collided, only what direction the player was travelling when the collision happened. The door hit detection, however, _is_ aware of what door with which the player is colliding, in order to locate the world layer to which the door is connected.
             - Technically, there is overlap here. Since sprite npc is checked against every other sprite for collisions, there are Pn = n!/(n-2)! permutations, but Cn = n!/(2!(n-2)!). Therefore, Pn - Cn checks are unneccesary. To circumvent this problem (sort of), a collision map is kept internally within this method to keep track of which sprite-to-sprite collisions have already taken place. However, whether or not this is worth the effort, since the map has to be traversed when it is initialized.
+            - There is an inherent ordering here affecting how collisions work. Because the NPC set is checked first, the act of an NPC-Villain collision will always proceed relative to the NPC, meaning the NPC will recoil and reorient their direction based on the collision, while the villain iteration will miss the collision since the NPC has already been recoiled when its collision detection is attempt.
+        .. todos:
+            - see third note. It may be possible to use the collision map to also apply the collision to the villain next iteration.
         """
 
         collision_map = { 

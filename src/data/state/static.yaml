@@ -9,7 +9,7 @@
 
 properties:
   size:
-    tile_units: relative
+    units: relative
     w: 10
     h: 20
   # determines whether a sprite has arrived at a position, i.e. if the sprite is within a radius of 3 pixels
@@ -20,6 +20,9 @@ properties:
 
 # TODO: ??? possibly separate FPS from UPS.
 
+# relative -> relative to settings.TILE_DIM
+# absolute -> pixel value
+
 layers:
   one:
     tiles:
@@ -27,7 +30,7 @@ layers:
         sets:
           # top
           - start:
-              tile_units: relative
+              units: relative
               x: 0
               y: 0
             multiply:
@@ -36,7 +39,7 @@ layers:
             cover: false
           # left
           - start: 
-              tile_units: relative
+              units: relative
               x: 0
               y: 1
             multiply:
@@ -45,7 +48,7 @@ layers:
             cover: false
           # bottom
           - start:
-              tile_units: relative
+              units: relative
               x: 1
               y: 19
             multiply:
@@ -54,7 +57,7 @@ layers:
             cover: false
           # right
           - start: 
-              tile_units: relative
+              units: relative
               x: 9
               y: 1
             multiply:
@@ -64,7 +67,7 @@ layers:
       grass:
         sets:
           - start:
-              tile_units: relative
+              units: relative
               x: 1
               y: 1
             multiply:
@@ -89,19 +92,19 @@ layers:
       apartment_exterior:
         sets:
           - start:
-              tile_units: absolute
+              units: absolute
               x: 190
               y: 0
           - start:
-              tile_units: absolute
+              units: absolute
               x: 286
               y: 0
           - start:
-              tile_units: absolute
+              units: absolute
               x: 478
               y: 0
           - start:
-              tile_units: absolute
+              units: absolute
               x: 574
               y: 0
   two:
@@ -109,7 +112,7 @@ layers:
       hole:
         sets:
           - start:
-              tile_units: relative
+              units: relative
               x: 0
               y: 0
             multiply:
@@ -131,18 +134,18 @@ layers:
       apartment_interior:
         sets:
           - start: 
-              tile_units: absolute
+              units: absolute
               x: 186
               y: 46
           - start: 
-              tile_units: absolute
+              units: absolute
               x: 282
               y: 46
           - start: 
-              tile_units: absolute
+              units: absolute
               x: 474
               y: 46
           - start: 
-              tile_units: absolute
+              units: absolute
               x: 570
               y: 46

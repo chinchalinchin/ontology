@@ -19,10 +19,11 @@
 
 apartment_exterior_wall:
   image:
-    file: apartment.png
-    position:
-      x: 2
-      y: 0
+    file: 
+      path: apartment.png
+      position:
+        x: 2
+        y: 0
     size:
       w: 92
       h: 96
@@ -37,10 +38,11 @@ apartment_exterior_wall:
         
 apartment_interior_wall:
   image:
-    file: house_interior_general.png
-    position:
-      x: 64
-      y: 256
+    file: 
+      path: house_interior_general.png
+      position:
+        x: 64
+        y: 256
     size:
       w: 96
       h: 105
@@ -55,10 +57,11 @@ apartment_interior_wall:
 
 apartment_floor:
   image:
-    file: house_interior_luxury.png
-    position:
-      x: 32
-      y: 0
+    file: 
+      path: house_interior_luxury.png
+      position:
+        x: 32
+        y: 0
     size:
       w: 96
       h: 96
@@ -67,10 +70,11 @@ apartment_floor:
 
 apartment_roof:
   image:
-    file: apartment.png
-    position:
-      x: 0
-      y: 96
+    file: 
+      path: apartment.png
+      position:
+        x: 0
+        y: 96
     size: 
       w: 96
       h: 96
@@ -79,10 +83,11 @@ apartment_roof:
 
 apartment_steps:
   image: 
-    file: apartment.png
-    position:
-      x: 128
-      y: 16
+    file: 
+      path: apartment.png
+      position:
+        x: 128
+        y: 16
     size:
       w: 32
       h: 24
@@ -91,10 +96,11 @@ apartment_steps:
 
 apartment_chimney:
   image:
-    file: apartment.png
-    position: 
-      x: 199
-      y: 11
+    file: 
+      path: apartment.png
+      position: 
+        x: 199
+        y: 11
     size: 
       w: 22
       h: 45

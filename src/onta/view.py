@@ -101,11 +101,11 @@ class Renderer():
                 log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
 
                 for set_conf in group_conf['sets']:
-                    if set_conf['start']['tile_units'] == 'default':
+                    if set_conf['start']['units'] == 'default':
                         start = (set_conf['start']['x']*settings.TILE_DIM[0], 
                             set_conf['start']['y']*settings.TILE_DIM[1])
 
-                    elif set_conf['start']['tile_units'] == 'relative':
+                    elif set_conf['start']['units'] == 'relative':
                         start = (set_conf['start']['x']*group_tile.size[0], 
                             set_conf['start']['y']*group_tile.size[1])
                     else:
@@ -148,11 +148,11 @@ class Renderer():
                     log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
 
                     for set_conf in group_sets:
-                        if set_conf['start']['tile_units'] == 'default':
+                        if set_conf['start']['units'] == 'default':
                             start = (set_conf['start']['x']*settings.TILE_DIM[0], 
                                 set_conf['start']['y']*settings.TILE_DIM[1])
 
-                        elif set_conf['start']['tile_units'] == 'relative':
+                        elif set_conf['start']['units'] == 'relative':
                             start = (set_conf['start']['x']*group_frame.size[0], 
                                 set_conf['start']['y']*group_frame.size[1])
 

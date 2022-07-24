@@ -19,10 +19,11 @@
 
 apartment_door:
   image:
-    file: doors.png
-    position: 
-      x: 32
-      y: 80
+    file: 
+      path: doors.png
+      position: 
+        x: 32
+        y: 80
     size: 
       w: 32
       h: 48

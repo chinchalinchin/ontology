@@ -8,21 +8,21 @@ apartment_exterior:
     apartment_exterior_wall:
       sets:
         - start:
-            tile_units: absolute
+            units: absolute
             x: 2
             y: 96
           cover: false
     apartment_roof:
       sets:
         - start:
-            tile_units: absolute
+            units: absolute
             x: 0
             y: 0
           cover: true
     apartment_steps:
       sets: 
         - start:
-            tile_units: absolute
+            units: absolute
             x: 34
             y: 168
           cover: false
@@ -30,7 +30,7 @@ apartment_exterior:
     apartment_door:
       sets:
         - start:
-            tile_units: absolute
+            units: absolute
             x: 34
             y: 120
           cover: false
@@ -42,14 +42,14 @@ apartment_interior:
     apartment_interior_wall:
       sets:
         - start:
-            tile_units: absolute
+            units: absolute
             x: 0 # 186
             y: 0 # 46
           cover: false
     apartment_floor:
       sets:
         - start: 
-            tile_units: absolute
+            units: absolute
             x: 0
             y: 105
           cover: false
@@ -57,7 +57,7 @@ apartment_interior:
     inside_door:
       sets:
         - start:
-            tile_units: absolute
+            units: absolute
             x: 38
             y: 149
           cover: false

@@ -38,18 +38,20 @@ class Repo():
         elif asset == 'plates':
             assets_conf = config.load_plate_configuration()[1]
 
+        print(assets_conf)
+
         for asset_key, asset_conf in assets_conf.items():
             w, h = asset_conf['size']['w'], asset_conf['size']['h']
 
             if asset_conf.get('file') is not None:
-                x, y = asset_conf['position']['x'], asset_conf['position']['y']
+                x, y = asset_conf['file']['position']['x'], asset_conf['file']['position']['y']
 
                 if asset == 'tiles':
-                    image_path = os.path.join(settings.TILE_DIR, asset_conf['file'])
+                    image_path = os.path.join(settings.TILE_DIR, asset_conf['file']['path'])
                 elif asset == 'struts':
-                    image_path = os.path.join(settings.STRUT_DIR, asset_conf['file'])
+                    image_path = os.path.join(settings.STRUT_DIR, asset_conf['file']['path'])
                 elif asset == 'plates': 
-                    image_path = os.path.join(settings.PLATE_DIR, asset_conf['file'])
+                    image_path = os.path.join(settings.PLATE_DIR, asset_conf['file']['path'])
 
                 buffer = Image.open(image_path).convert(settings.IMG_MODE)
 

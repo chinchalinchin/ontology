@@ -63,9 +63,9 @@ class Conf():
 
             sprites_conf = self._configuration('sprites')
 
-            self.sprite_state_conf = { }
-            self.sprite_property_conf = { }
-            self.sprite_sheet_conf = { }
+            self.sprite_state_conf = {}
+            self.sprite_property_conf = {}
+            self.sprite_sheet_conf = {}
 
             for sprite_key, sprite_conf in sprites_conf.items():
                 self.sprite_state_conf[sprite_key] = {}
