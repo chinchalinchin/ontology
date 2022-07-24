@@ -15,24 +15,23 @@
 #       walk: int
 #       run: int
 #       collide: int
+#       blocking_states:
+#           - str
+#           - str
 #   sheets:
-#       compose:
-#           - file: str
-#           - file: str
-#   blocking_states:
-#       - str
-#       - str
+#      - file: str
+#      - file: str
 #   states:
-#       - state:
-#           row: int
-#           frames: int
+#       - state: str
+#         row: int
+#         frames: int
 
 # # NOTE: blocking_states are states where user input is blocked until state animation finishes
 
 hero:
     properties:
         hitboxes:
-            hero:
+            sprite:
                 offset:
                     x: 23
                     y: 3
@@ -151,13 +150,6 @@ esmeralda:
             w: 64
             h: 64
         hitboxes:
-            hero:
-                offset:
-                    x: 23
-                    y: 18
-                size: 
-                    w: 23
-                    h: 15
             strut:
                 offset:
                     x: 23
@@ -263,13 +255,6 @@ skeleton:
             w: 64
             h: 64
         hitboxes:
-            hero:
-                offset:
-                    x: 23
-                    y: 18
-                size: 
-                    w: 23
-                    h: 15
             strut:
                 offset:
                     x: 23

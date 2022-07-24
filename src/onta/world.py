@@ -478,14 +478,17 @@ class World():
                                 exclusions.append(key)
 
                         sprite_hitbox = self.get_sprite_hitbox(spriteset_key, hitbox_key, sprite_key)
-                        vil_hitboxes = self.get_sprite_hitboxes('villains', hitbox_key, sprite['layer'], exclusions)
-                        npc_hitboxes = self.get_sprite_hitboxes('npcs', hitbox_key, sprite['layer'], exclusions)
 
                         collision_sets = []
-                        if npc_hitboxes is not None:
-                            collision_sets.append(npc_hitboxes)
-                        if vil_hitboxes is not None:
-                            collision_sets.append(vil_hitboxes)
+                        if hitbox_key =='sprite':
+                            npc_hitboxes = self.get_sprite_hitboxes('npcs', hitbox_key, sprite['layer'], exclusions)
+                            vil_hitboxes = self.get_sprite_hitboxes('villains', hitbox_key, sprite['layer'], exclusions)
+
+                            if npc_hitboxes is not None:
+                                collision_sets.append(npc_hitboxes)
+                            if vil_hitboxes is not None:
+                                collision_sets.append(vil_hitboxes)
+
                         if hitbox_key == 'strut' and self.strutsets[sprite['layer']]['hitboxes'] is not None:
                             collision_sets.append(self.strutsets[sprite['layer']]['hitboxes'])
 
@@ -522,9 +525,9 @@ class World():
                                     collision_map[nest_key][key] = True
     
                 elif spriteset_key == 'hero':
-                    sprite_hitbox = self.get_sprite_hitbox(spriteset_key, sprite_key, sprite_key)
-                    vil_hitboxes = self.get_sprite_hitboxes('villains', sprite_key, self.layer)
-                    npc_hitboxes = self.get_sprite_hitboxes('npcs', sprite_key, self.layer)
+                    sprite_hitbox = self.get_sprite_hitbox(spriteset_key, 'sprite', sprite_key)
+                    vil_hitboxes = self.get_sprite_hitboxes('villains', 'sprite', self.layer)
+                    npc_hitboxes = self.get_sprite_hitboxes('npcs', 'sprite', self.layer)
 
                     collision_sets = []
                     if npc_hitboxes is not None:

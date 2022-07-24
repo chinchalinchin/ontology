@@ -8,8 +8,8 @@ def detect_collision(sprite_hitbox, hitbox_list):
     for hitbox in hitbox_list:
         if hitbox is not None and calculator.intersection(sprite_hitbox, hitbox):
             # return true once collision is detected. it doesn't matter where it occurs, only what direction the hero is travelling...
-            log.verbose(f'Detected sprite {sprite_hitbox} collision with hitbox at {hitbox}', 
-                'detect_hero_collisions')
+            log.verbose(f'Detected sprite hitbox {sprite_hitbox} collision with hitbox at {hitbox}', 
+                'detect_collision')
             return True
 
 def recoil_sprite(sprite, sprite_props):
