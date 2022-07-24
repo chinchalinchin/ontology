@@ -80,3 +80,23 @@ tree:
             x: 0
             y: 0
           cover: true
+
+horizontal_pavement:
+  struts:
+    pavement:
+      sets:
+        - start:
+            units: absolute
+            x: 0
+            y: 0
+          cover: false
+        - start:
+            units: absolute
+            x: 96
+            y: 0
+          cover: false
+        - start:
+            units: absolute
+            x: 188
+            y: 0
+          cover: false

@@ -294,6 +294,9 @@ class World():
                                     for strutset in element_sets:
                                         # NOTE strutset = { 'start': { ... }, 'cover': bool }
                                         #       via compose element configuration (composite.yaml)
+                                        if self.strutsets.get(layer) is None:
+                                            self.strutsets[layer] = {}
+
                                         if self.strutsets[layer].get(element_key) is None:
                                             self.strutsets[layer][element_key] = {}
 
@@ -301,7 +304,7 @@ class World():
                                             self.strutsets[layer][element_key]['sets'] = []
 
                                         if self.strutsets[layer][element_key].get('order') is None:
-                                            self.strutsets[layer][element_key]['order'] = len(self.strutsets[layer][element_key])
+                                            self.strutsets[layer][element_key]['order'] = len(self.strutsets[layer]) - 1
 
                                         self.strutsets[layer][element_key]['sets'].append(
                                             {
@@ -321,6 +324,9 @@ class World():
                                     for plateset in element_sets:
                                         # NOTE plateset = { 'start': { ... }, 'cover': bool }
                                         #       via compose element configuration (composite.yaml)
+                                        if self.platesets.get(layer) is None:
+                                            self.platesets[layer] = {}
+                                        
                                         if self.platesets[layer].get(element_key) is None:
                                             self.platesets[layer][element_key] = {}
 
@@ -328,7 +334,7 @@ class World():
                                             self.platesets[layer][element_key]['sets'] = []
                                         
                                         if self.platesets[layer][element_key].get('order') is None:
-                                            self.platesets[layer][element_key]['order'] = len(self.platesets[layer][element_key])
+                                            self.platesets[layer][element_key]['order'] = len(self.platesets[layer]) - 1
 
                                         self.platesets[layer][element_key]['sets'].append(
                                             {

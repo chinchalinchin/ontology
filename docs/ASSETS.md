@@ -24,7 +24,7 @@ _Doors_ are a special type of _Plate_. When the player character overlaps with t
 
 ## Compositions
 
-A _Composition_ can be constructed from a collection of sets of _Strut_\s and a collection of set of _Plate_\s. To use the terminology defined in the previous sections, a composition is a union of strutsets and platesets. 
+A _Composition_ can be constructed from a collection of sets of _Strut_\s and a collection of sets of _Plate_\s. To use the terminology defined in the previous sections, a composition is a union of strutsets and platesets. 
 
 A composition definition can be referenced as many times as desired in the game state files, so that a group of assets can be reused, instead of defining each of its constituents multiple times in the state files.
 

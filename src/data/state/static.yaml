@@ -161,25 +161,7 @@ layers:
               h: 45
             cover: false
     struts:
-      apartment_exterior_wall:
-        order: 0
-        sets: null 
-      apartment_roof:
-        order: 1
-        sets: null
-      apartment_steps:
-        order: 2
-        sets: null
-      tree_trunk:
-        order: 3
-        sets: null
-      tree_top:
-        order: 4
-        sets: null
     plates:
-      apartment_door:
-        order: 0
-        sets: null
     compositions:
       apartment_exterior:
         sets:
@@ -201,6 +183,13 @@ layers:
               units: absolute
               x: 400
               y: 1400
+      horizontal_pavement:
+        sets:
+          - start:
+              units: absolute
+              x: 300
+              y: 1800
+      
   two:
     tiles:
       hole:

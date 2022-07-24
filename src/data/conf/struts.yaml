@@ -144,3 +144,16 @@ tree_top:
       h: 80
   properties:
     hitbox: null
+
+pavement:
+  image:
+    file: 
+      path: city.png
+      position:
+        x: 32
+        y: 0
+    size: 
+      w: 96
+      h: 96
+  properties:
+    hitbox: null
