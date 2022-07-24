@@ -71,7 +71,7 @@ sand:
 water:
   image:
     file: 
-      name: water.png
+      path: water.png
       position:
         x: 0
         y: 160
@@ -82,7 +82,7 @@ water:
 hole:
   image:
     file: 
-      name: hole.png
+      path: hole.png
       position:
         x: 0
         y: 160

@@ -41,6 +41,8 @@ group:
 
 **NOTE**: `image.file` and `image.channels` are mutually exclusive. If one is specified, the other cannot be specified. 
 
+**NOTE**: Specifically for _Tiles_: You may specify whatever size you want for the tileset, but only the block defined by the tile dimensions in the settings will be rendered, i.e. only the first 92px by 32px block will be rendered from that tileset.
+
 ## Struts
 
 - **Location**: _data/conf/struts.yaml_
@@ -50,7 +52,7 @@ This file defines the mapping between struts and their corresponding strutsheet.
 As mentioned in previous section, each in-game element builds up complexity on top of the simpler pieces. A _Strut_ contains the same configuration as a _Tile_, plus properties Because of this, the explanation for keys appearing in the previous configurations are excluded. Only new configuration keys are explained.
 
 ```yaml
-<group>:
+group:
   image:
     file: 
       path: str
@@ -87,7 +89,35 @@ This file defines the m
 As mentioned in previous section, each in-game element builds up complexity on top of the simpler pieces. A _Plate_ contains the same configuration and properties as a _Strut_, plus some additional properties. Because of this, the explanation for keys appearing in the previous configurations are excluded. Only new configuration keys are explained.
 
 ```yaml
+group:
+  image:
+    file: 
+      path: str
+      position:
+        x: int
+        y: int
+    size:
+      w: int
+      h: int
+    channels:
+      r: int
+      g: int
+      b: int
+      a: int
+  properties:
+    hitbox:
+      offset:
+        x:
+        y:
+      size:
+        w:
+        h:
+    door: bool
 ```
+- `properties.door`: Signals this particular plateset should be treated as a door.
+
+**Note**: If a plate is configured as a `door`, then when you define its state in _data/state/static.yml_, you must provide an outlet for the door. See [State](./STATE.md) for more information on state definitions.
+
 
 ## Sprites
 
