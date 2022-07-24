@@ -196,8 +196,9 @@ class World():
         self._init_conf(config)
         self._init_static_state(state_ao)
         self._generate_composite_static_state()
+        self._generate_stationary_hitboxes()
         self._init_dynamic_state(state_ao)
-        self._init_stationary_hitboxes()
+
 
     def _init_conf(self, config: conf.Conf) -> None:
         """ 
@@ -208,6 +209,7 @@ class World():
         self.plate_property_conf, _ = config.load_plate_configuration()
         self.strut_property_conf, _ = config.load_strut_configuration()
         self.composite_conf = config.load_composite_configuration()
+
 
     def _init_static_state(self, state_ao: state.State) -> None:
         """
@@ -236,6 +238,7 @@ class World():
             self.strutsets[layer_key] = layer_conf.get('struts')
             self.platesets[layer_key] = layer_conf.get('plates')
             self.compositions[layer_key] = layer_conf.get('compositions')
+
 
     def _generate_composite_static_state(self) -> None:
         log.debug(f'Decomposing composite static world state into constituents...', 'World._generate_composite_static_state')
@@ -326,19 +329,7 @@ class World():
                                         )
 
 
-    def _init_dynamic_state(self, state_ao: state.State) -> None:
-        """
-        Initialize the state for dynamic in-game elements, i.e. elements that move and are interactable.
-        """
-        log.debug(f'Initalizing dynamic world state...', 'World._init_dynamic_state')
-        dynamic_conf = state_ao.get_state('dynamic')
-        self.hero = dynamic_conf['hero']
-        self.layer = dynamic_conf['hero']['layer']
-        self.npcs = dynamic_conf.get('npcs') if dynamic_conf.get('npcs') is not None else {}
-        self.villains = dynamic_conf.get('villains') if dynamic_conf.get('villains') is not None else {}
-
-
-    def _init_stationary_hitboxes(self) -> None:
+    def _generate_stationary_hitboxes(self) -> None:
         """
         Construct static hitboxes from object dimensions and properties.
 
@@ -406,6 +397,18 @@ class World():
             ]
             self.strutsets[layer]['hitboxes'] = world_bounds + self.get_strut_hitboxes(layer)
             self.platesets[layer]['doors'] = self.get_doors(layer)
+
+
+    def _init_dynamic_state(self, state_ao: state.State) -> None:
+        """
+        Initialize the state for dynamic in-game elements, i.e. elements that move and are interactable.
+        """
+        log.debug(f'Initalizing dynamic world state...', 'World._init_dynamic_state')
+        dynamic_conf = state_ao.get_state('dynamic')
+        self.hero = dynamic_conf['hero']
+        self.layer = dynamic_conf['hero']['layer']
+        self.npcs = dynamic_conf.get('npcs') if dynamic_conf.get('npcs') is not None else {}
+        self.villains = dynamic_conf.get('villains') if dynamic_conf.get('villains') is not None else {}
 
 
     def _update_hero(self, user_input: dict) -> None: 

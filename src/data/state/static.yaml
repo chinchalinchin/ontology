@@ -134,3 +134,11 @@ layers:
               tile_units: absolute
               x: 282
               y: 46
+          - start: 
+              tile_units: absolute
+              x: 474
+              y: 46
+          - start: 
+              tile_units: absolute
+              x: 570
+              y: 46
