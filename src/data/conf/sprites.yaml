@@ -171,11 +171,11 @@ esmeralda:
         poll: 100
         paths:
             one:
-                x: 300
-                y: 100
+                x: 600
+                y: 1700
             two:
-                x: 500
-                y: 300
+                x: 900
+                y: 1500
         blocking_states:
             - thrust_up
             - thrust_down

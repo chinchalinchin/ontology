@@ -9,3 +9,5 @@ another option would be to introduce a division in the concept of npc and villai
 - if strutset and plateset definitions are null but compositions are defined, ensure the null values get populated with their corresponding definitions. this will involve initializing the rendering order, so the default rendering order will need to be sensible.
 
 - exiting a door has a problem with collision engine, since when you exit you will most likely be intersecting with outside object, but facing the wrong way you would approach it in-layer. thus, the character sprite slides over the hitbox.
+
+- function to render and save static world state outside of game loop. cli arg?

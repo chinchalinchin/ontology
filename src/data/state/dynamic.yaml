@@ -9,8 +9,8 @@ hero:
 npcs: 
   esmeralda:
     position:
-      x: 75
-      y: 350
+      x: 900
+      y: 1800
     state: walk_down
     path: one
     frame: 0
@@ -19,8 +19,8 @@ npcs:
 villains:
   skeleton:
     position:
-      x: 200
-      y: 250
+      x: 500
+      y: 1200
     state: walk_down
     path: one
     frame: 0

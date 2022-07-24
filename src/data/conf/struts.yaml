@@ -157,3 +157,54 @@ pavement:
       h: 96
   properties:
     hitbox: null
+
+burial_pit:
+  image:
+    file: 
+      path: graveyard.png
+      position:
+        x: 2
+        y: 128
+    size:
+      w: 60
+      h: 63
+  properties:
+    hitbox:
+      offset:
+        x: 4
+        y: 4
+      size:
+        w: 52
+        h: 15
+
+headstone:
+  image:
+    file:
+      path: graveyard.png
+      position:
+        x: 10
+        y: 97
+    size:
+      w: 44
+      h: 31
+  properties: 
+    hitbox: null
+
+grave_marker:
+  image:
+    file: 
+      path: graveyard.png
+      position:
+        x: 128
+        y: 192
+    size:
+      w: 32
+      h: 32
+  properties:
+    hitbox:
+      offset:
+        x: 5
+        y: 0
+      size:
+        w: 25
+        h: 25

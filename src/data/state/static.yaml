@@ -195,6 +195,14 @@ layers:
               units: absolute
               x: 400
               y: 1400
+          - start:
+              units: absolute
+              x: 510
+              y: 1420
+          - start:
+              units: absolute
+              x: 590
+              y: 1415
       horizontal_pavement:
         sets:
           - start:
@@ -205,6 +213,16 @@ layers:
               units: absolute
               x: 638
               y: 1800
+      grave:
+        sets:
+          - start:
+              units: absolute
+              x: 550
+              y: 1280
+          - start:
+              units: absolute
+              x: 630
+              y: 1280
       
   two:
     tiles:
@@ -219,16 +237,7 @@ layers:
               h: 60
             cover: false
     struts:
-      apartment_interior_wall:
-        order: 0
-        sets: null
-      apartment_floor:
-        order: 1
-        sets: null
     plates:
-      inside_door:
-        order: 0
-        sets: null
     compositions:
       apartment_interior:
         sets:

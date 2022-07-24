@@ -100,3 +100,20 @@ horizontal_pavement:
             x: 188
             y: 0
           cover: false
+
+grave:
+  struts:
+    headstone:
+      sets:
+        - start:
+            units: absolute
+            x: 8
+            y: 0
+          cover: true
+    burial_pit:
+      sets:
+        - start:
+            units: absolute
+            x: 0
+            y: 31
+          cover: false 
