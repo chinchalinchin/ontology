@@ -82,7 +82,7 @@ layers:
         order: 0
         sets: null
     compositions:
-      apartment:
+      apartment_exterior:
         sets:
           - start:
               tile_units: absolute
@@ -115,46 +115,22 @@ layers:
     struts:
       apartment_interior_wall:
         order: 0
-        sets:
-          - start:
-              tile_units: absolute
-              x: 186
-              y: 46
-            cover: false
-          - start:
-              tile_units: absolute
-              x: 282
-              y: 46
-            cover: false
+        sets: null
       apartment_floor:
         order: 1
-        sets:
-          - start: 
-              tile_units: absolute
-              x: 186
-              y: 151
-            cover: false
-          - start: 
-              tile_units: absolute
-              x: 282
-              y: 151
-            cover: false
+        sets: null
     plates:
       inside_door:
         order: 0
-        sets:
-          - start:
-              tile_units: absolute
-              x: 224
-              y: 195
-            cover: false
-            door: 
-              layer: one
-          - start:
-              tile_units: absolute
-              x: 320
-              y: 195
-            cover: false
-            door:
-              layer: one
+        sets: null
     compositions:
+      apartment_interior:
+        sets:
+          - start: 
+              tile_units: absolute
+              x: 186
+              y: 46
+          - start: 
+              tile_units: absolute
+              x: 282
+              y: 46

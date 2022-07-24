@@ -312,7 +312,7 @@ class World():
                                         #       via compose element configuration (composite.yaml)
                                         if self.platesets[layer][element_key]['sets'] is None:
                                             self.platesets[layer][element_key]['sets'] = []
-                                            
+
                                         self.platesets[layer][element_key]['sets'].append(
                                             {
                                                 'start': {
@@ -326,7 +326,6 @@ class World():
                                         )
 
 
-
     def _init_dynamic_state(self, state_ao: state.State) -> None:
         """
         Initialize the state for dynamic in-game elements, i.e. elements that move and are interactable.
@@ -337,6 +336,7 @@ class World():
         self.layer = dynamic_conf['hero']['layer']
         self.npcs = dynamic_conf.get('npcs') if dynamic_conf.get('npcs') is not None else {}
         self.villains = dynamic_conf.get('villains') if dynamic_conf.get('villains') is not None else {}
+
 
     def _init_stationary_hitboxes(self) -> None:
         """
@@ -406,6 +406,7 @@ class World():
             ]
             self.strutsets[layer]['hitboxes'] = world_bounds + self.get_strut_hitboxes(layer)
             self.platesets[layer]['doors'] = self.get_doors(layer)
+
 
     def _update_hero(self, user_input: dict) -> None: 
         """
@@ -484,6 +485,7 @@ class World():
         if self.hero['frame'] >= self.sprite_state_conf['hero'][self.hero['state']]['frames']:
             self.hero['frame'] = 0
 
+
     def _update_npcs(self) -> None:
         """
         Maps npc state to in-game action, applies action and then iterates npc state frame.
@@ -516,7 +518,8 @@ class World():
 
             if npc['frame'] >= self.sprite_state_conf[npc_key][npc['state']]['frames']:
                 npc['frame'] = 0
-    
+
+
     def _reorient(self, spriteset_key, sprite_key) -> None:
         if spriteset_key == 'npcs':
             sprite = self.npcs[sprite_key]
@@ -543,6 +546,7 @@ class World():
             self.sprite_property_conf[sprite_key]['collide'],
             self.dimensions
         )
+
 
     def _apply_physics(self) -> None:
         """
@@ -645,7 +649,8 @@ class World():
                     for collision_set in collision_sets:
                         if collisions.detect_collision(sprite_hitbox, collision_set):
                             collisions.recoil_sprite(sprite, self.sprite_property_conf[sprite_key])
-    
+
+
     def _apply_interaction(self, user_input: dict):
         if user_input['interact']:
             doors = self.platesets[self.layer]['doors']
@@ -656,8 +661,10 @@ class World():
                 if collisions.detect_collision(hero_hitbox, [ door_hitbox ]):
                     self.layer = door['layer']
 
+
     def _apply_combat(self):
         pass
+
 
     def get_strut_hitboxes(self, layer):
         strut_hitboxes = []
@@ -666,6 +673,7 @@ class World():
             for strut in sets:
                 strut_hitboxes.append(strut['hitbox'])
         return strut_hitboxes
+
 
     def get_doors(self, layer):
         doors = []
@@ -678,6 +686,7 @@ class World():
                         'layer': plate['door']['layer']
                     })
         return doors
+
 
     def get_sprite_hitbox(self, spriteset, hitbox_key, sprite_key):
         """
@@ -701,6 +710,7 @@ class World():
             return calc_hitbox
         return None
 
+
     def get_sprite_hitboxes(self, spriteset, hitbox_key, layer, exclude = None):
         calculated = []
 
@@ -718,7 +728,8 @@ class World():
                 elif spriteset == 'villains':
                     calculated.append(self.get_sprite_hitbox('villains', hitbox_key, sprite_key))
         return calculated
-    
+
+
     def get_strutsets(self, layer):
         iter_set = self.strutsets[layer].items() if self.strutsets[layer] is not None else { }
         return {
@@ -726,6 +737,7 @@ class World():
             for key, val in iter_set
             if key not in  ['hitboxes'] 
         }
+
 
     def get_platesets(self, layer):
         iter_set = self.platesets[layer].items() if self.platesets[layer] is not None else { }
@@ -735,6 +747,7 @@ class World():
             if key not in ['doors']
         }
 
+
     def get_npcs(self, layer):
         return {
             key: val
@@ -743,15 +756,18 @@ class World():
             if val['layer'] == layer
         }
 
+
     def get_villains(self, layer):
         return {
             key: val
             for key, val in self.villains.items()
             if val['layer'] == layer
         }
-    
+
+
     def get_tilesets(self, layer: str):
         return self.tilesets[layer] if self.tilesets[layer] is not None else { }
+
 
     def save(self, state_ao: state.State):
         self.hero['layer'] = self.layer
@@ -761,6 +777,7 @@ class World():
             'villains': self.villains
         }
         state_ao.save_state('dynamic', dynamic_conf)
+
 
     def iterate(self, user_input: dict) -> dict:
         """

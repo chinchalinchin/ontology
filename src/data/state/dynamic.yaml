@@ -9,8 +9,8 @@ hero:
 npcs: 
   esmeralda:
     position:
-      x: 100
-      y: 100
+      x: 75
+      y: 350
     state: walk_down
     path: one
     frame: 0

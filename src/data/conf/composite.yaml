@@ -3,7 +3,7 @@
 #       if no other instances of that component, besides the composition, are 
 #       present
 
-apartment:
+apartment_exterior:
   struts:
     apartment_exterior_wall:
       sets:
@@ -36,4 +36,31 @@ apartment:
           cover: false
           door:
             layer: two
+
+apartment_interior:
+  struts:
+    apartment_interior_wall:
+      sets:
+        - start:
+            tile_units: absolute
+            x: 0 # 186
+            y: 0 # 46
+          cover: false
+    apartment_floor:
+      sets:
+        - start: 
+            tile_units: absolute
+            x: 0
+            y: 105
+          cover: false
+  plates:
+    inside_door:
+      sets:
+        - start:
+            tile_units: absolute
+            x: 38
+            y: 149
+          cover: false
+          door: 
+            layer: one
 
