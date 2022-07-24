@@ -213,7 +213,7 @@ class World():
         """
         Initialize the state for static in-game elements, i.e. elements that do not move and are not interactable.
         """
-        log.debug(f'Initializing static world state...', 'World._init_static_state')
+        log.debug(f'Initializing simple static world state...', 'World._init_static_state')
         static_conf = state_ao.get_state('static')
 
         if static_conf['properties']['size']['tile_units'] == 'relative':
@@ -238,34 +238,88 @@ class World():
             self.compositions[layer_key] = layer_conf.get('compositions')
 
     def _generate_composite_static_state(self) -> None:
+        log.debug(f'Decomposing composite static world state into constituents...', 'World._generate_composite_static_state')
 
         for layer in self.layers:
             layer_compositions = self.compositions[layer]
 
             for composite_key, composition in layer_compositions.items():
-                # compose state information
-                compose_order, compose_sets = composition['order'], composition['sets']
-                # compose configuration informatino
+                # NOTE: composition = { 'order': int, 'sets': [ ... ] }
+                #           via compose state information (static.yaml)
+                compose_sets = composition['sets']
+
+                # NOTE: compose_conf = { 'struts': { ..}, 'plates': { ...} }
+                #           via compose configuration information (composite.yaml)
                 compose_conf = self.composite_conf[composite_key]
 
-                for compose_set in compose_sets:
-                    if compose_set['start']['tile_units'] == 'absolute':
+                log.debug(f'Decomposing {composite_key} composition...', 'World._generate_composite_static_state')
+
+                for composeset in compose_sets:
+                    # NOTE: compose_set = { 'start': { ... } }
+                    #           via compose state information (static.yaml)
+                    if composeset['start']['tile_units'] == 'absolute':
                         compose_start = (
-                            compose_set['start']['x'], 
-                            compose_set['start']['y']
+                            composeset['start']['x'], 
+                            composeset['start']['y']
                         )
                     else:
                         compose_start =(
-                            compose_set['start']['x']*settings.TILE_DIM[0],
-                            compose_set['start']['y']*settings.TILE_DIM[1]
+                            composeset['start']['x']*settings.TILE_DIM[0],
+                            composeset['start']['y']*settings.TILE_DIM[1]
                         )
 
-                    # traverse composition elements,
-                    # add compose start to x,y
-                    # append to appropriate world set.
-                    for elementsets in ['struts', 'plates', 'tiles']:
-                        elements = compose_conf[elementsets]
-                        elementset_order, elementset = elementsets['order'], elementsets['sets']
+                    for elementset_key, elementset in compose_conf.items():
+
+                        log.debug(f'Initializing decomposed {elementset_key} elementset...', 'World._generate_composite_static_state')
+
+                        # NOTE: elementset = { 'element_key': { 'order': int, 'sets': [ ... ] } }
+                        #           via compose element configuration (composite.yaml)
+                        for element_key, element in elementset.items():
+                            
+                            log.debug(f'Initializing {element_key}', 'World._generate_composite_static_state')
+
+                            # NOTE: element_sets = [ { 'start': {..}, 'cover': bool } ]
+                            #            via compose element configuration (composite.yaml)
+                            element_sets = element['sets']
+
+                            # TODO: adjust strutset rendering order based on element order
+
+                            if elementset_key == 'struts':
+
+                                for strutset in element_sets:
+                                    # NOTE strutset = { 'start': { ... }, 'cover': bool }
+                                    #       via compose element configuration (composite.yaml)
+
+                                    self.strutsets[layer][element_key]['sets'].append(
+                                        {
+                                            'start': {
+                                                'tile_units': strutset['start']['tile_units'],
+                                                'x': compose_start[0] + strutset['start']['x'],
+                                                'y': compose_start[1] + strutset['start']['y'],
+                                            },
+                                            'cover': strutset['cover'],
+                                        }
+                                    )
+
+                            # TODO: adjust plateset rendering order based on element order
+
+                            elif elementset_key == 'plates':
+
+                                for plateset in element_sets:
+                                    # NOTE plateset = { 'start': { ... }, 'cover': bool }
+                                    #       via compose element configuration (composite.yaml)
+
+                                    self.platesets[layer][element_key]['sets'].append(
+                                        {
+                                            'start': {
+                                                'tile_units': 'absolute',
+                                                'x': compose_start[0] + plateset['start']['x'],
+                                                'y': compose_start[0] + plateset['start']['y']
+                                            },
+                                            'cover': plateset['cover'],
+                                            'door': plateset.get('door')
+                                        }
+                                    )
 
 
 

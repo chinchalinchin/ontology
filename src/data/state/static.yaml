@@ -3,6 +3,10 @@
 # # NOTE: (w, h) dimensions are always expressed as integer-valued multiples of the tile dimensions.
 # # NOTE: default == scaled by (96px, 32px), absolute == pixel value, relative == scaled by tile_dim
 
+# # NOTE: any elements from a composition must have their rendering order defined in their corresponding
+#         initialization, i.e. if a composite definition involes strut_a, then a definition for strut_a 
+#         must be included...
+
 properties:
   size:
     tile_units: relative
@@ -136,7 +140,6 @@ layers:
               layer: two
     compositions:
       apartment:
-        order: 0
         sets:
           - start:
               tile_units: absolute

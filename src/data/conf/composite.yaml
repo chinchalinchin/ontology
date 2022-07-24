@@ -1,7 +1,11 @@
+# NOTE: rendering order for the individual components (i.e. struts and plates)
+#       must be defined in the state file for each individual component, even 
+#       if no other instances of that component, besides the composition, are 
+#       present
+
 apartment:
   struts:
     apartment_exterior_wall:
-      order: 0
       sets:
         - start:
             tile_units: absolute
@@ -9,7 +13,6 @@ apartment:
             y: 96
           cover: false
     apartment_roof:
-      order: 1
       sets:
         - start:
             tile_units: absolute
@@ -17,7 +20,6 @@ apartment:
             y: 0
           cover: true
     apartment_steps:
-      order: 2
       sets: 
         - start:
             tile_units: absolute
@@ -26,7 +28,6 @@ apartment:
           cover: false
   plates:
     apartment_door:
-      order: 0
       sets:
         - start:
             tile_units: absolute
