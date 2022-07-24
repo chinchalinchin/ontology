@@ -184,46 +184,23 @@ class World():
         self._init_conf(config)
         self._init_static_state(state_ao)
         self._init_dynamic_state(state_ao)
+        self._init_stationary_hitboxes()
 
     def _init_conf(self, config: conf.Conf):
         """ 
         Initialize configuration properties for in-game elements in the memory.
         """
-        struts_conf = config.configuration('struts')
-        sprites_conf = config.configuration('sprites')
-        plates_conf = config.configuration('plates')
+        unpack = config.load_sprite_configuration()
+        self.sprite_state_conf, self.sprite_property_conf, _ = unpack
+        self.plate_property_conf, _ = config.load_plate_configuration()
+        self.strut_property_conf, _ = config.load_strut_configuration()
 
-        self.sprite_state_conf = { }
-        self.sprite_property_conf = { }
-        for sprite_key, sprite_conf in sprites_conf.items():
-            self.sprite_state_conf[sprite_key] = {}
-            self.sprite_property_conf[sprite_key] = {}
-
-            self.sprite_property_conf[sprite_key] = sprite_conf['properties']
-            self.sprite_property_conf[sprite_key]['size'] = sprite_conf['size']
-
-            self.sprite_state_conf[sprite_key]['blocking_states'] = sprite_conf['blocking_states']
-            for state_map in sprite_conf['states']:
-                state = list(state_map.keys())[0]
-                self.sprite_state_conf[sprite_key][state] = state_map[state]['frames']
-
-        self.strut_property_conf = { }
-        for strut_key, strut_conf in struts_conf.items():
-            self.strut_property_conf[strut_key] = {}
-            self.strut_property_conf[strut_key]['size'] = strut_conf['image']['size']
-            self.strut_property_conf[strut_key]['hitbox'] = strut_conf['properties']['hitbox']
-
-        self.plate_property_conf = { }
-        for plate_key, plate_conf in plates_conf.items():
-            self.plate_property_conf[plate_key] = {}
-            self.plate_property_conf[plate_key]['size'] = plate_conf['image']['size']
-            self.plate_property_conf[plate_key]['hitbox'] = plate_conf['properties']['hitbox']
-            self.plate_property_conf[plate_key]['door'] = plate_conf['properties']['door']
 
     def _init_static_state(self, state_ao: state.State):
         """
         Initialize the state for static in-game elements, i.e. elements that do not move and are not interactable.
         """
+        log.debug(f'Initializing static world state...', 'World._init_static_state')
         static_conf = state_ao.get_state('static')
 
         if static_conf['properties']['size']['tile_units'] == 'relative':
@@ -245,22 +222,19 @@ class World():
             self.strutsets[layer_key] = layer_conf.get('struts')
             self.platesets[layer_key] = layer_conf.get('plates')
 
-        # TODO: initialize doors?
-
-        self._init_static_hitboxes()
-        log.debug(f'Initialized static world layer with dimensions {self.dimensions}', 'World._init_static_layer')
 
     def _init_dynamic_state(self, state_ao: state.State):
         """
         Initialize the state for dynamic in-game elements, i.e. elements that move and are interactable.
         """
+        log.debug(f'Initalizing dynamic world state...', 'World._init_dynamic_state')
         dynamic_conf = state_ao.get_state('dynamic')
         self.hero = dynamic_conf['hero']
         self.layer = dynamic_conf['hero']['layer']
         self.npcs = dynamic_conf.get('npcs') if dynamic_conf.get('npcs') is not None else {}
         self.villains = dynamic_conf.get('villains') if dynamic_conf.get('villains') is not None else {}
 
-    def _init_static_hitboxes(self):
+    def _init_stationary_hitboxes(self):
         """
         Construct static hitboxes from object dimensions and properties.
 
@@ -268,26 +242,27 @@ class World():
             - All of the strut hitboxes are condensed into a list in `self.strutsets['hitboxes']`, so that strut hitboxes only need calculated once.
             - Strut
         """
+        log.debug(f'Calculating stationary hitbox locations...', 'World._init_stationary_hitboxes')
         for layer in self.layers:
 
-            if self.platesets[layer] is None:
-                self.platesets[layer] = {}
-            if self.strutsets[layer] is None:
-                self.strutsets[layer] = {}
+            # if self.platesets[layer] is None:
+            #     self.platesets[layer] = {}
+            # if self.strutsets[layer] is None:
+            #     self.strutsets[layer] = {}
 
             for static_set in ['strutset', 'plateset']:
 
                 if static_set == 'strutset':
-                    iter_set = self.strutsets[layer].copy()
+                    iter_set = self.get_strutsets(layer).copy()
                     props = self.strut_property_conf
                 elif static_set == 'plateset':
-                    iter_set = self.platesets[layer].copy()
+                    iter_set = self.get_platesets(layer).copy()
                     props = self.plate_property_conf
                 
                 for set_key, set_conf in iter_set.items():
                     set_props = props[set_key]
 
-                    log.debug(f'Initialize {static_set} {set_key} with properties: {set_props}', 'World._init_hitboxes')
+                    log.debug(f'Initializing {static_set} {set_key} hitboxes with properties: {set_props}', 'World._init_hitboxes')
 
                     for i, set_conf in enumerate(set_conf['sets']):
 
@@ -332,7 +307,7 @@ class World():
         """
         Map user input to new hero state, apply state action and iterate state frame.
         """
-        if self.hero['state'] not in self.sprite_state_conf['hero']['blocking_states']:
+        if self.hero['state'] not in self.sprite_property_conf['hero']['blocking_states']:
             if 'run' in self.hero['state']:
                 speed = self.sprite_property_conf['hero']['run']
             else:
@@ -402,7 +377,7 @@ class World():
                 elif user_input['e']:
                     self.hero['position']['x'] += speed
 
-        if self.hero['frame'] >= self.sprite_state_conf['hero'][self.hero['state']]:
+        if self.hero['frame'] >= self.sprite_state_conf['hero'][self.hero['state']]['frames']:
             self.hero['frame'] = 0
 
     def _update_npcs(self):
@@ -415,7 +390,7 @@ class World():
         for npc_key, npc in self.npcs.items():
             npc_props = self.sprite_property_conf[npc_key]
 
-            if npc['state'] not in self.sprite_state_conf[npc_key]['blocking_states']:
+            if npc['state'] not in self.sprite_property_conf[npc_key]['blocking_states']:
                 if 'run' in npc['state']:
                     speed = npc_props['run']
                 else:
@@ -432,7 +407,7 @@ class World():
 
             npc['frame'] += 1
 
-            if npc['frame'] >= self.sprite_state_conf[npc_key][npc['state']]:
+            if npc['frame'] >= self.sprite_state_conf[npc_key][npc['state']]['frames']:
                 npc['frame'] = 0
 
     def _apply_physics(self):

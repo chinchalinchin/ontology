@@ -22,7 +22,7 @@ layers:
               tile_units: relative
               x: 0
               y: 0
-            dim:
+            multiply:
               w: 10
               h: 1
             cover: false
@@ -31,7 +31,7 @@ layers:
               tile_units: relative
               x: 0
               y: 1
-            dim:
+            multiply:
               w: 1
               h: 19
             cover: false
@@ -40,7 +40,7 @@ layers:
               tile_units: relative
               x: 1
               y: 19
-            dim:
+            multiply:
               w: 19
               h: 1
             cover: false
@@ -49,7 +49,7 @@ layers:
               tile_units: relative
               x: 9
               y: 1
-            dim:
+            multiply:
               w: 1
               h: 18
             cover: false
@@ -59,7 +59,7 @@ layers:
               tile_units: relative
               x: 1
               y: 1
-            dim:
+            multiply:
               w: 8
               h: 18
             cover: false
@@ -164,7 +164,7 @@ layers:
               tile_units: relative
               x: 0
               y: 0
-            dim:
+            multiply:
               w: 10
               h: 20
             cover: false

@@ -90,7 +90,7 @@ class Renderer():
 
         for layer in game_world.layers:
             for group_key, group_conf in game_world.get_tilesets(layer).items():
-                group_tile = repository.get_asset('tiles', group_key)
+                group_tile = repository.get_asset_frame('tiles', group_key)
 
                 log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
 
@@ -105,7 +105,7 @@ class Renderer():
                     else:
                         start = (set_conf['start']['x'], set_conf['start']['y'])
 
-                    set_dim = (set_conf['dim']['w'], set_conf['dim']['h'])
+                    set_dim = (set_conf['multiply']['w'], set_conf['multiply']['h'])
 
                     log.debug(f'Rendering group set at {start[0], start[1]} with dimensions {set_dim[0], set_dim[1]}', 'Repo._render_tiles')
                     
@@ -140,7 +140,7 @@ class Renderer():
                     group_key = render_map[str(i)]
                     group_conf = unordered_groups[group_key]
 
-                    group_frame = repository.get_asset(static_set, group_key)
+                    group_frame = repository.get_asset_frame(static_set, group_key)
                     group_sets = group_conf['sets']
 
                     log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
@@ -182,7 +182,7 @@ class Renderer():
         for sprite_key, sprite in iter_set.items():
             sprite_position = (int(sprite['position']['x']), int(sprite['position']['y']))
             sprite_state, sprite_frame = sprite['state'], sprite['frame']
-            sprite_frame = repository.get_sprite(sprite_key, sprite_state, sprite_frame)
+            sprite_frame = repository.get_sprite_frame(sprite_key, sprite_state, sprite_frame)
             self.world_frame.paste(sprite_frame, sprite_position, sprite_frame)
 
     def render(self, game_world: world.World, view_widget: QtWidgets.QWidget, repository: repo.Repo):

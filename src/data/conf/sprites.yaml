@@ -30,9 +30,6 @@
 # # NOTE: blocking_states are states where user input is blocked until state animation finishes
 
 hero:
-    size:
-        w: 64
-        h: 64
     properties:
         hitboxes:
             hero:
@@ -45,119 +42,114 @@ hero:
         walk: 3
         run: 5
         collide: 6
+        blocking_states:
+            - cast_up
+            - cast_down
+            - cast_left
+            - cast_right
+            - thrust_up
+            - thrust_down
+            - thrust_left
+            - thrust_right
+            - slash_up
+            - slash_down
+            - slash_left
+            - slash_right
+            - shoot_up
+            - shoot_down
+            - shoot_left
+            - shoot_right
+            - death
+        size:
+            w: 64
+            h: 64
     sheets:
-        compose:
-        - file: male_human_ivory_sheet.png
-        - file: head_hair_messy_red.png
-        - file: legs_pants_green.png
-        - file: torso_male_shirt_green.png
-    blocking_states:
-        - cast_up
-        - cast_down
-        - cast_left
-        - cast_right
-        - thrust_up
-        - thrust_down
-        - thrust_left
-        - thrust_right
-        - slash_up
-        - slash_down
-        - slash_left
-        - slash_right
-        - shoot_up
-        - shoot_down
-        - shoot_left
-        - shoot_right
-        - death
+        - male_human_ivory_sheet.png
+        - head_hair_messy_red.png
+        - legs_pants_green.png
+        - torso_male_shirt_green.png
     states:
-        # Cast
-        - cast_up:
+        -   state: cast_up
             row: 0
             frames: 7
-        - cast_right:
+        -   state: cast_right
             row: 1
             frames: 7
-        - cast_down:
+        -   state: cast_down
             row: 2
             frames: 7
-        - cast_left:
+        -   state: cast_left
             row: 3
             frames: 7
-        # Thrust
-        - thrust_up:
+        -   state: thrust_up
             row: 4
             frames: 8
-        - thrust_right:
+        -   state: thrust_right
             row: 5
             frames: 8
-        - thrust_down:
+        -   state: thrust_down
             row: 6
             frames: 8
-        - thrust_left:
+        -   state: thrust_left
             row: 7
             frames: 8
-        # Walk
-        - walk_up:
+        -   state: walk_up
             row: 8
             frames: 9
-        - walk_right:
+        -   state: walk_right
             row: 9
             frames: 9
-        - walk_down:
+        -   state: walk_down
             row: 10
             frames: 9
-        - walk_left: 
+        -   state: walk_left
             row: 11 
             frames: 9
-        # Run
-        - run_up:
+        -   state: run_up
             row: 8
             frames: 9
-        - run_right:
+        -   state: run_right
             row: 9
             frames: 9
-        - run_down:
+        -   state: run_down
             row: 10
             frames: 9
-        - run_left: 
+        -   state: run_left
             row: 11 
             frames: 9
-        # Slash
-        - slash_up:
+        -   state: slash_up
             row: 12
             frames: 6
-        - slash_right:
+        -   state: slash_right
             row: 13
             frames: 6
-        - slash_down:
+        -   state: slash_down
             row: 14
             frames: 6
-        - slash_left:
+        -   state: slash_left
             row: 15
             frames: 6
-        # Shoot
-        - shoot_up:
+        -   state: shoot_up
             row: 16
             frames: 13
-        - shoot_right:
+        -   state: shoot_right
             row: 17
             frames: 13
-        - shoot_down:
+        -   state: shoot_down
             row: 18
             frames: 13
-        - shoot_left:
+        -   state: shoot_left
             row: 19
             frames: 13
-        # Death
-        - death:
+        -   state: death
             row: 20
             frames: 6
 
 esmeralda:
-    size:
-        w: 64
-        h: 64
     properties:
+        size:
+            w: 64
+            h: 64
         hitboxes:
             hero:
                 offset:
@@ -190,85 +182,84 @@ esmeralda:
             two:
                 x: 500
                 y: 300
+        blocking_states:
+            - thrust_up
+            - thrust_down
+            - thrust_left
+            - thrust_right
+            - slash_up
+            - slash_down
+            - slash_left
+            - slash_right
+            - death
     sheets:
-        compose:
-            - file: female_human_ivory_sheet.png
-            - file: head_female_hair_braid_red.png
-            - file: legs_pants_blue.png
-            - file: torso_female_shirt_blue.png
-    blocking_states:
-        - thrust_up
-        - thrust_down
-        - thrust_left
-        - thrust_right
-        - slash_up
-        - slash_down
-        - slash_left
-        - slash_right
-        - death
+        - female_human_ivory_sheet.png
+        - head_female_hair_braid_red.png
+        - legs_pants_blue.png
+        - torso_female_shirt_blue.png
     states:
         # Thrust
-        - thrust_up:
+        -   state: thrust_up
             row: 4
             frames: 8
-        - thrust_right:
+        -   state: thrust_right
             row: 5
             frames: 8
-        - thrust_down:
+        -   state: thrust_down
             row: 6
             frames: 8
-        - thrust_left:
+        -   state: thrust_left
             row: 7
             frames: 8
         # Walk
-        - walk_up:
+        -   state: walk_up
             row: 8
             frames: 9
-        - walk_right:
+        -   state: walk_right
             row: 11
             frames: 9
-        - walk_down:
+        -   state: walk_down
             row: 10
             frames: 9
-        - walk_left: 
+        -   state: walk_left
             row: 9
             frames: 9
         # Run
-        - run_up:
+        -   state: run_up
             row: 8
             frames: 9
-        - run_right:
+        -   state: run_right
             row: 9
             frames: 9
-        - run_down:
+        -   state: run_down
             row: 10
             frames: 9
-        - run_left: 
+        -   state: run_left
             row: 11 
             frames: 9
         # Slash
-        - slash_up:
+        -   state: slash_up
             row: 12
             frames: 6
-        - slash_right:
+        -   state: slash_right
             row: 13
             frames: 6
-        - slash_down:
+        -   state: slash_down
             row: 14
             frames: 6
-        - slash_left:
+        -   state: slash_left
             row: 15
             frames: 6
         # Death
-        - death:
+        -   state: death
             row: 20
             frames: 6
 
 skeleton:
-    size:
-        w: 64
-        h: 64
     properties:
+        size:
+            w: 64
+            h: 64
         hitboxes:
             hero:
                 offset:
@@ -301,45 +292,44 @@ skeleton:
             two:
                 x: 500
                 y: 300
+        blocking_states:
+            - thrust_up
+            - thrust_down
+            - thrust_left
+            - thrust_right
+            - death
     sheets:
-        compose:
-            - file: monster_skeleton_white_sheet.png
-            - file: equipment_male_armor_bronze.png
-            - file: item_spear.png
-    blocking_states:
-        - thrust_up
-        - thrust_down
-        - thrust_left
-        - thrust_right
-        - death
+        - monster_skeleton_white_sheet.png
+        - equipment_male_armor_bronze.png
+        - item_spear.png
     states:
         # Thrust
-        - thrust_up:
+        -   state: thrust_up
             row: 4
             frames: 8
-        - thrust_right:
+        -   state: thrust_right
             row: 5
             frames: 8
-        - thrust_down:
+        -   state: thrust_down
             row: 6
             frames: 8
-        - thrust_left:
+        -   state: thrust_left
             row: 7
             frames: 8
         # Walk
-        - walk_up:
+        -   state: walk_up
             row: 8
             frames: 9
-        - walk_right:
+        -   state: walk_right
             row: 9
             frames: 9
-        - walk_down:
+        -   state: walk_down
             row: 10
             frames: 9
-        - walk_left: 
+        -   state: walk_left
             row: 11 
             frames: 9
         # Death
-        - death:
+        -   state: death
             row: 20
             frames: 6
