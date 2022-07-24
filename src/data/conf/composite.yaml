@@ -17,7 +17,7 @@ apartment_exterior:
         - start:
             units: absolute
             x: 0
-            y: 0
+            y: 5
           cover: true
     apartment_steps:
       sets: 
@@ -71,7 +71,7 @@ tree:
         - start:
             units: absolute
             x: 14
-            y: 75
+            y: 55
           cover: false
     tree_top:
       sets:

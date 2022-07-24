@@ -31,10 +31,10 @@ apartment_exterior_wall:
     hitbox:
       offset:
         x: 0
-        y: 0
+        y: -30
       size:
         w: 92
-        h: 50
+        h: 70
         
 apartment_interior_wall:
   image:
@@ -126,11 +126,11 @@ tree_trunk:
   properties:
     hitbox:
       offset:
-        x: 40
-        y: 0
+        x: 20
+        y: 20
       size:
-        w: 16
-        h: 38
+        w: 20
+        h: 18
 
 tree_top:
   image:
