@@ -243,12 +243,31 @@ class World():
             layer_compositions = self.compositions[layer]
 
             for composite_key, composition in layer_compositions.items():
+                # compose state information
                 compose_order, compose_sets = composition['order'], composition['sets']
+                # compose configuration informatino
                 compose_conf = self.composite_conf[composite_key]
 
-                for element in ['struts', 'plates', 'tiles']:
-                    elements = compose_conf[element]
-                    element_order, element_sets = element['order'], element['sets']
+                for compose_set in compose_sets:
+                    if compose_set['start']['tile_units'] == 'absolute':
+                        compose_start = (
+                            compose_set['start']['x'], 
+                            compose_set['start']['y']
+                        )
+                    else:
+                        compose_start =(
+                            compose_set['start']['x']*settings.TILE_DIM[0],
+                            compose_set['start']['y']*settings.TILE_DIM[1]
+                        )
+
+                    # traverse composition elements,
+                    # add compose start to x,y
+                    # append to appropriate world set.
+                    for elementsets in ['struts', 'plates', 'tiles']:
+                        elements = compose_conf[elementsets]
+                        elementset_order, elementset = elementsets['order'], elementsets['sets']
+
+
 
     def _init_dynamic_state(self, state_ao: state.State) -> None:
         """
