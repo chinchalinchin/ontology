@@ -173,8 +173,9 @@ class World():
     layer = None
     layers = None
     doors = None
+    iterations = 0
 
-    def __init__(self, config: conf.Conf, state_ao: state.State):
+    def __init__(self, config: conf.Conf, state_ao: state.State) -> None:
         """
         Creates an instance of `onta.world.World` and calls internal methods to initialize in-game element configuration, the game's static state and the game's dynamic state.
 
@@ -186,7 +187,7 @@ class World():
         self._init_dynamic_state(state_ao)
         self._init_stationary_hitboxes()
 
-    def _init_conf(self, config: conf.Conf):
+    def _init_conf(self, config: conf.Conf) -> None:
         """ 
         Initialize configuration properties for in-game elements in the memory.
         """
@@ -196,7 +197,7 @@ class World():
         self.strut_property_conf, _ = config.load_strut_configuration()
 
 
-    def _init_static_state(self, state_ao: state.State):
+    def _init_static_state(self, state_ao: state.State) -> None:
         """
         Initialize the state for static in-game elements, i.e. elements that do not move and are not interactable.
         """
@@ -223,7 +224,7 @@ class World():
             self.platesets[layer_key] = layer_conf.get('plates')
 
 
-    def _init_dynamic_state(self, state_ao: state.State):
+    def _init_dynamic_state(self, state_ao: state.State) -> None:
         """
         Initialize the state for dynamic in-game elements, i.e. elements that move and are interactable.
         """
@@ -234,7 +235,7 @@ class World():
         self.npcs = dynamic_conf.get('npcs') if dynamic_conf.get('npcs') is not None else {}
         self.villains = dynamic_conf.get('villains') if dynamic_conf.get('villains') is not None else {}
 
-    def _init_stationary_hitboxes(self):
+    def _init_stationary_hitboxes(self) -> None:
         """
         Construct static hitboxes from object dimensions and properties.
 
@@ -303,7 +304,7 @@ class World():
             self.strutsets[layer]['hitboxes'] = world_bounds + self.get_strut_hitboxes(layer)
             self.platesets[layer]['doors'] = self.get_doors(layer)
 
-    def _update_hero(self, user_input: dict): 
+    def _update_hero(self, user_input: dict) -> None: 
         """
         Map user input to new hero state, apply state action and iterate state frame.
         """
@@ -380,7 +381,7 @@ class World():
         if self.hero['frame'] >= self.sprite_state_conf['hero'][self.hero['state']]['frames']:
             self.hero['frame'] = 0
 
-    def _update_npcs(self):
+    def _update_npcs(self) -> None:
         """
         Maps npc state to in-game action, applies action and then iterates npc state frame.
 
@@ -407,10 +408,40 @@ class World():
 
             npc['frame'] += 1
 
+            if self.iterations % npc_props['poll'] == 0:
+                self._reorient('npcs', npc_key)
+
             if npc['frame'] >= self.sprite_state_conf[npc_key][npc['state']]['frames']:
                 npc['frame'] = 0
+    
+    def _reorient(self, spriteset_key, sprite_key) -> None:
+        if spriteset_key == 'npcs':
+            sprite = self.npcs[sprite_key]
+        elif spriteset_key == 'villains':
+            sprite = self.villains[sprite_key]
 
-    def _apply_physics(self):
+        sprite_hitbox = self.get_sprite_hitbox(spriteset_key, 'strut', sprite_key)
+        vil_hitboxes = self.get_sprite_hitboxes('villains', 'strut', sprite['layer'], [sprite_key])
+        npc_hitboxes = self.get_sprite_hitboxes('npcs', 'strut', sprite['layer'], [sprite_key])
+
+        collision_sets = []
+        if npc_hitboxes is not None:
+            collision_sets.append(npc_hitboxes)
+        if vil_hitboxes is not None:
+            collision_sets.append(vil_hitboxes)
+        if self.strutsets[sprite['layer']]['hitboxes'] is not None:
+            collision_sets.append(self.strutsets[sprite['layer']]['hitboxes'])
+        
+        paths.reorient(
+            sprite,
+            sprite_hitbox,
+            collision_sets, 
+            self.sprite_property_conf[sprite_key]['paths'][sprite['path']],
+            self.sprite_property_conf[sprite_key]['collide'],
+            self.dimensions
+        )
+
+    def _apply_physics(self) -> None:
         """
         
         .. notes:
@@ -455,10 +486,10 @@ class World():
                             collision_sets.append(npc_hitboxes)
                         if vil_hitboxes is not None:
                             collision_sets.append(vil_hitboxes)
-                        if self.strutsets[self.layer]['hitboxes'] is not None:
-                            collision_sets.append(self.strutsets[self.layer]['hitboxes'])
+                        if hitbox_key == 'strut' and self.strutsets[sprite['layer']]['hitboxes'] is not None:
+                            collision_sets.append(self.strutsets[sprite['layer']]['hitboxes'])
 
-                        log.verbose(f'Checking {spriteset_key} set member "{sprite_key}" with hitbox {sprite_hitbox} for {hitbox_key} collisions...', 
+                        log.infinite(f'Checking {spriteset_key} set member "{sprite_key}" with hitbox {sprite_hitbox} for {hitbox_key} collisions...', 
                             '_apply_physics')
 
                         collided = False
@@ -495,10 +526,16 @@ class World():
                     vil_hitboxes = self.get_sprite_hitboxes('villains', sprite_key, self.layer)
                     npc_hitboxes = self.get_sprite_hitboxes('npcs', sprite_key, self.layer)
 
-                    log.verbose('Checking "hero" for collisions...', 
-                        '_apply_physics')
+                    collision_sets = []
+                    if npc_hitboxes is not None:
+                        collision_sets.append(npc_hitboxes)
+                    if vil_hitboxes is not None:
+                        collision_sets.append(vil_hitboxes)
+                    if self.strutsets[self.layer]['hitboxes'] is not None:
+                        collision_sets.append(self.strutsets[sprite['layer']]['hitboxes'])
 
-                    collision_sets = [npc_hitboxes, vil_hitboxes, self.strutsets[self.layer]['hitboxes']]
+                    log.infinite('Checking "hero" for collisions...', '_apply_physics')
+
                     for collision_set in collision_sets:
                         if collisions.detect_collision(sprite_hitbox, collision_set):
                             collisions.recoil_sprite(sprite, self.sprite_property_conf[sprite_key])
@@ -629,3 +666,4 @@ class World():
         self._apply_physics()
         self._apply_combat()
         self._apply_interaction(user_input)
+        self.iterations += 1

@@ -17,13 +17,17 @@ class Logger():
         self.comment(msg, method, 'ERROR',)
 
     def info(self, msg, method):
-        if self.log_level in ['INFO', 'DEBUG', 'VERBOSE']:
+        if self.log_level in ['INFO', 'DEBUG', 'VERBOSE', 'INFINITE']:
             self.comment(msg, method, 'INFO')
 
     def debug(self, msg, method):
-        if self.log_level in ['DEBUG', 'VERBOSE']:
+        if self.log_level in ['DEBUG', 'VERBOSE', 'INFINITE']:
             self.comment(msg, method, 'DEBUG')
 
     def verbose(self, msg, method):
-        if self.log_level == 'VERBOSE':
+        if self.log_level in ['VERBOSE', 'INFINITE']:
             self.comment(msg, method, 'VERBOSE')
+
+    def infinite(self, msg, method):
+        if self.log_level == 'INFINITE':
+            self.comment(msg, method, 'INFINITE')

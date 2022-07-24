@@ -68,8 +68,14 @@ class Renderer():
         return (crop_x, crop_y, crop_width, crop_height)
 
     @staticmethod
-    def generate_render_order(set):
-        pass
+    def generate_render_map(unordered_dict):
+        render_map = {}
+
+        for dict_key, dict_value in unordered_dict.items():
+            render_order = dict_value['order']
+            render_map[render_order] = dict_key
+        
+        return render_map
 
     def __init__(self, static_world: world.World, repository: repo.Repo):
         """
@@ -130,14 +136,10 @@ class Renderer():
                 elif static_set == 'plates':
                     unordered_groups = game_world.get_platesets(layer)
 
-                render_map = {}
-
-                for group_key, group_conf in unordered_groups.items():
-                    render_order = group_conf['order']
-                    render_map[str(render_order)] = group_key
+                render_map = self.generate_render_map(unordered_groups)
 
                 for i in range(len(render_map)):
-                    group_key = render_map[str(i)]
+                    group_key = render_map[i]
                     group_conf = unordered_groups[group_key]
 
                     group_frame = repository.get_asset_frame(static_set, group_key)

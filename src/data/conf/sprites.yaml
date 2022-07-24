@@ -175,6 +175,8 @@ esmeralda:
         walk: 2
         run: 3
         collide: 5
+        aware: 20
+        poll: 100
         paths:
             one:
                 x: 300
@@ -285,6 +287,8 @@ skeleton:
         walk: 3
         run: 4
         collide: 5
+        aware: 20
+        poll: 10
         paths:
             one:
                 x: 300
