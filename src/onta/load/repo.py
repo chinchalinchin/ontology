@@ -38,8 +38,6 @@ class Repo():
         elif asset == 'plates':
             assets_conf = config.load_plate_configuration()[1]
 
-        print(assets_conf)
-
         for asset_key, asset_conf in assets_conf.items():
             w, h = asset_conf['size']['w'], asset_conf['size']['h']
 

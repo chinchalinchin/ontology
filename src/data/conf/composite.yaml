@@ -32,7 +32,7 @@ apartment_exterior:
         - start:
             units: absolute
             x: 34
-            y: 120
+            y: 130
           cover: false
           door:
             layer: two
@@ -59,8 +59,24 @@ apartment_interior:
         - start:
             units: absolute
             x: 38
-            y: 149
-          cover: false
+            y: 179
+          cover: true
           door: 
             layer: one
 
+tree:
+  struts:
+    tree_trunk:
+      sets:
+        - start:
+            units: absolute
+            x: 14
+            y: 75
+          cover: false
+    tree_top:
+      sets:
+        - start:
+            units: absolute
+            x: 0
+            y: 0
+          cover: true

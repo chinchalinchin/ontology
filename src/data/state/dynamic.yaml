@@ -1,7 +1,7 @@
 hero:
   position:
     x: 600
-    y: 500
+    y: 1800
   state: walk_down
   frame: 0
   layer: one

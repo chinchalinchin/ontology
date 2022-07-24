@@ -8,6 +8,8 @@ import onta.engine.calculator as calculator
 import onta.engine.collisions as collisions
 import onta.engine.paths as paths
 
+import pprint
+
 log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
 class World():
@@ -292,8 +294,14 @@ class World():
                                     for strutset in element_sets:
                                         # NOTE strutset = { 'start': { ... }, 'cover': bool }
                                         #       via compose element configuration (composite.yaml)
-                                        if self.strutsets[layer][element_key]['sets'] is None:
+                                        if self.strutsets[layer].get(element_key) is None:
+                                            self.strutsets[layer][element_key] = {}
+
+                                        if self.strutsets[layer][element_key].get('sets') is None:
                                             self.strutsets[layer][element_key]['sets'] = []
+
+                                        if self.strutsets[layer][element_key].get('order') is None:
+                                            self.strutsets[layer][element_key]['order'] = len(self.strutsets[layer][element_key])
 
                                         self.strutsets[layer][element_key]['sets'].append(
                                             {
@@ -313,8 +321,14 @@ class World():
                                     for plateset in element_sets:
                                         # NOTE plateset = { 'start': { ... }, 'cover': bool }
                                         #       via compose element configuration (composite.yaml)
-                                        if self.platesets[layer][element_key]['sets'] is None:
+                                        if self.platesets[layer].get(element_key) is None:
+                                            self.platesets[layer][element_key] = {}
+
+                                        if self.platesets[layer][element_key].get('sets') is None:
                                             self.platesets[layer][element_key]['sets'] = []
+                                        
+                                        if self.platesets[layer][element_key].get('order') is None:
+                                            self.platesets[layer][element_key]['order'] = len(self.platesets[layer][element_key])
 
                                         self.platesets[layer][element_key]['sets'].append(
                                             {
@@ -648,7 +662,7 @@ class World():
                     if vil_hitboxes is not None:
                         collision_sets.append(vil_hitboxes)
                     if self.strutsets[self.layer]['hitboxes'] is not None:
-                        collision_sets.append(self.strutsets[sprite['layer']]['hitboxes'])
+                        collision_sets.append(self.strutsets[self.layer]['hitboxes'])
 
                     log.infinite('Checking "hero" for collisions...', '_apply_physics')
 

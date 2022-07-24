@@ -9,6 +9,7 @@
 
 properties:
   size:
+    # 1920 by 1920
     units: relative
     w: 20
     h: 60
@@ -169,6 +170,12 @@ layers:
       apartment_steps:
         order: 2
         sets: null
+      tree_trunk:
+        order: 3
+        sets: null
+      tree_top:
+        order: 4
+        sets: null
     plates:
       apartment_door:
         order: 0
@@ -178,20 +185,22 @@ layers:
         sets:
           - start:
               units: absolute
-              x: 190
-              y: 0
+              x: 450
+              y: 1600
           - start:
               units: absolute
-              x: 286
-              y: 0
+              x: 546
+              y: 1600
           - start:
               units: absolute
-              x: 478
-              y: 0
+              x: 642
+              y: 1600
+      tree:
+        sets:
           - start:
               units: absolute
-              x: 574
-              y: 0
+              x: 400
+              y: 1400
   two:
     tiles:
       hole:
@@ -202,7 +211,7 @@ layers:
               y: 0
             multiply:
               w: 20
-              h: 20
+              h: 60
             cover: false
     struts:
       apartment_interior_wall:
@@ -218,19 +227,16 @@ layers:
     compositions:
       apartment_interior:
         sets:
+        # 190, 0
           - start: 
               units: absolute
-              x: 186
-              y: 46
+              x: 446
+              y: 1566
           - start: 
               units: absolute
-              x: 282
-              y: 46
+              x: 542
+              y: 1566
           - start: 
               units: absolute
-              x: 474
-              y: 46
-          - start: 
-              units: absolute
-              x: 570
-              y: 46
+              x: 638
+              y: 1566

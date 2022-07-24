@@ -5,3 +5,7 @@
 - the question arises. should each sprite be unique? or, like with strutsets and platesets, if the configuration should allow sets of them to be declared. The question there is how to differentiate sprite states. Currently, each sprite is keyed to dictionaries in the world object. If the concept of a spriteset is to be introduced, then a stateset must be also be introduced, so each member of the set has its own unique state recorded in the world state.It is either that, or each npc and villain needs its own definition in the configuration, which might get out of hand.
 
 another option would be to introduce a division in the concept of npc and villain. there could be anoynmous and character npcs, and stranger and rogue villains, where anonymosu and stranger sets offer less functionality, but allow sets to be declared, where as character and rogues are unique. Perhaps. Perhaps. Will need to think on it.
+
+- if strutset and plateset definitions are null but compositions are defined, ensure the null values get populated with their corresponding definitions. this will involve initializing the rendering order, so the default rendering order will need to be sensible.
+
+- exiting a door has a problem with collision engine, since when you exit you will most likely be intersecting with outside object, but facing the wrong way you would approach it in-layer. thus, the character sprite slides over the hitbox.

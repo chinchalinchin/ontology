@@ -34,7 +34,7 @@ apartment_exterior_wall:
         y: 0
       size:
         w: 92
-        h: 55
+        h: 50
         
 apartment_interior_wall:
   image:
@@ -112,3 +112,35 @@ apartment_chimney:
       size:
         w: 22
         h: 45
+
+tree_trunk:
+  image:
+    file: 
+      path: trunk.png
+      position: 
+        x: 16
+        y: 0
+    size: 
+      w: 64
+      h: 73
+  properties:
+    hitbox:
+      offset:
+        x: 40
+        y: 0
+      size:
+        w: 16
+        h: 38
+
+tree_top:
+  image:
+    file:
+      path: treetop.png
+      position:
+        x: 2
+        y: 0
+    size:
+      w: 93
+      h: 80
+  properties:
+    hitbox: null
