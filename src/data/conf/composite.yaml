@@ -23,8 +23,8 @@ apartment:
       sets: 
         - start:
             tile_units: absolute
-            x: 0
-            y: 418
+            x: 34
+            y: 168
           cover: false
   plates:
     apartment_door:
@@ -32,7 +32,7 @@ apartment:
         - start:
             tile_units: absolute
             x: 34
-            y: 0
+            y: 120
           cover: false
           door:
             layer: two

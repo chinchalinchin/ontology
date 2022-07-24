@@ -13,7 +13,7 @@ properties:
     w: 10
     h: 20
   # determines whether a sprite has arrived at a position, i.e. if the sprite is within a radius of 3 pixels
-  tolerance: 3
+  tolerance: 5
 
 
 layers:
@@ -70,80 +70,35 @@ layers:
     struts:
       apartment_exterior_wall:
         order: 0
-        sets:
-          - start:
-              tile_units: absolute
-              x: 288
-              y: 96
-            cover: false
-          - start:
-              tile_units: absolute
-              x: 480
-              y: 96
-            cover: false
-          - start:
-              tile_units: absolute
-              x: 576
-              y: 96
-            cover: false
-          - start:
-              tile_units: absolute
-              x: 96
-              y: 192
-            cover: false      
+        sets: null 
       apartment_roof:
         order: 1
-        sets:
-          - start:
-              tile_units: absolute
-              x: 286
-              y: 0
-            cover: true
-          - start:
-              tile_units: absolute
-              x: 478
-              y: 0
-            cover: true
-          - start:
-              tile_units: absolute
-              x: 574
-              y: 0
-            cover: true
+        sets: null
       apartment_steps:
         order: 2
-        sets:
-          - start:
-              tile_units: absolute
-              x: 320
-              y: 168
-            cover: false
-          - start:
-              tile_units: absolute
-              x: 512
-              y: 168
-            cover: false
-          - start:
-              tile_units: absolute
-              x: 608
-              y: 168
-            cover: false
+        sets: null
     plates:
       apartment_door:
         order: 0
-        sets:
-          - start: 
-              tile_units: absolute
-              x: 320
-              y: 120
-            cover: false
-            door:
-              layer: two
+        sets: null
     compositions:
       apartment:
         sets:
           - start:
               tile_units: absolute
               x: 190
+              y: 0
+          - start:
+              tile_units: absolute
+              x: 286
+              y: 0
+          - start:
+              tile_units: absolute
+              x: 478
+              y: 0
+          - start:
+              tile_units: absolute
+              x: 574
               y: 0
   two:
     tiles:

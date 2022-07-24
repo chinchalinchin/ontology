@@ -1,5 +1,7 @@
 # Definitions
 
+The following definitions form the core concepts of the _onta_ engine. Each definition will be explained in greater detail in other sections, but this page can be used a quick reference.
+
 ## Terms
 
 1. **World**: Game object that contains all the state and property information about the game world. It also possesses internal methods for updating the world state that are called when the public interface method `iterate()` is called. 
@@ -19,11 +21,14 @@
 
 5. **Plates**: An in-game asset whoe frame is construct from a plate set. _Plates_ also have "phsyical presence in the game world; however, in addition to allowing player collisions, player can interact with plates, e.g. treasure chests, pressure plates, switches, etc. 
 
-6. **View**: The GUI widget on which the game screen gets painted. The game world gets cropped to the widget based on the position of the player.
+    - _Door_: A _Door_ is a special type of _Plate_ that when interacted with allows the player to change the _World_ _Layer_.
+
+6. **View**: The GUI widget on which the game screen gets painted. The game world gets cropped to the widget based on the position of the player and the view dimensions.
 
 ### Notes
 
 - Each in-game object builds up complexity in sequence by introducing another dimension of operation.
 - A _Tile_ has an image frame; it is painted to screen. The user cannot interact with a _Tile_ in anyway. 
 - A _Strut_ has properties in addition to an image frame. Properties determine how the in-game element interacts with other in-game elements. 
-- A _Sprite_ has properties _and_ states. States determine how a given element is animated. In other words, a _Sprite_ has multiple frames and the currently displayed frame depends on the _Sprite_ state.
+- A _Plate_ is interactable in addition to having properties. An interactable element can receive user input.
+- A _Sprite_ has properties, reacts to user input _and_ has states. States determine how a given element is animated. In other words, a _Sprite_ has multiple frames and the currently displayed frame depends on the _Sprite_ state.
