@@ -804,6 +804,13 @@ class World():
         elif spriteset_key == 'villains':
             return self.villains
 
+    def get_sprite(self, sprite_key):
+        if sprite_key == 'hero':
+            return self.hero
+        elif sprite_key in list(self.npcs.keys()):
+            return self.npcs[sprite_key]
+        elif sprite_key in list(self.villains.keys()):
+            return self.villains[sprite_key]
 
     def get_npcs(self, layer):
         return {

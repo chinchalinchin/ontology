@@ -153,8 +153,10 @@ As mentioned in previous section, each in-game element builds up complexity on t
       walk: int
       run: int
       collide: int
-      aware: int
       poll: int
+      radii:
+        aware: int
+        attack: int
       paths:
         path_one:
           x: int
@@ -162,17 +164,26 @@ As mentioned in previous section, each in-game element builds up complexity on t
         path_two:
           x: int
           y: int
+      blocking_states:
+        - str
+        - str
+      null_states:
+        - str
+      intents:
+        - plot: str
+          intent: str
+          dialogue:
+            - str
   sheets:
     - str
     - str
-  blocking_states:
-      - str
-      - str
   states:
       - state:
           row: int
           frames: int
         
 ```
+
+- **properties.intents**: A _Sprite_'s `intents` describes its available decision tree. Each `intent` is associated with a `plot` defined in _data/conf/plots.yaml_. When the world enters this `plot`, the `intents` associated with this `plot` become available to the _Sprite_.
 
 **Notes**: Sprites are the most complex object in the game.
