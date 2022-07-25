@@ -6,7 +6,6 @@ import onta.settings as settings
 import onta.load.conf as conf
 import onta.util.logger as logger
 
-import pprint
 log = logger.Logger('onta.control', settings.LOG_LEVEL)
 
 CONTROLS = ['space', 'alt_left', 'ctrl_left', 'shift_left', 'tab', 'up', 'left', 'right', 'down', 'e']
@@ -62,8 +61,7 @@ class Controller():
 
     def _direction(self):
         directions = self.control_conf['directions']
-        direction_flags = {}
-        dirs= 0
+        direction_flags, dirs = {}, 0
         for dir_key, dir_conf in directions.items():
             input_combo = dir_conf['input']
             direction_flags[dir_key] = all(self.keys[key] for key in input_combo)
@@ -83,8 +81,7 @@ class Controller():
 
     def _actions(self):
         actions = self.control_conf['actions']
-        action_flags = {}
-        acts = 0
+        action_flags, acts = {}, 0
         for action_key, action_conf in actions.items():
             input_combo = action_conf['input']
             action_flags[action_key] = all(self.keys[key] for key in input_combo)

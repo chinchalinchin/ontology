@@ -548,11 +548,17 @@ class World():
         if self.strutsets[sprite['layer']]['hitboxes'] is not None:
             collision_sets.append(self.strutsets[sprite['layer']]['hitboxes'])
         
+        paths = self.sprite_property_conf[sprite_key]['paths'].copy()
+
+        if sprite['path'] == 'hero':
+            paths['hero']['x'] = self.hero['position']['x']
+            paths['hero']['y'] = self.hero['position']['y']
+            
         paths.reorient(
             sprite,
             sprite_hitbox,
             collision_sets, 
-            self.sprite_property_conf[sprite_key]['paths'][sprite['path']],
+            paths[sprite['path']],
             self.sprite_property_conf[sprite_key]['collide'],
             self.dimensions
         )

@@ -186,6 +186,15 @@ esmeralda:
             - slash_left
             - slash_right
             - death
+        intents:
+            -   plot: a
+                intent:
+                dialogue:
+                    - 
+            -   plot: b
+                intent:
+                dialogue:
+                    - 
     sheets:
         - female_human_ivory_sheet.png
         - head_female_hair_braid_red.png
@@ -287,6 +296,15 @@ skeleton:
             - thrust_left
             - thrust_right
             - death
+        intents:
+            -   plot: a
+                intent: 
+                dialogue: 
+                    - 
+            -   plot: b
+                intent:
+                dialogue:
+                    -
     sheets:
         - monster_skeleton_white_sheet.png
         - equipment_male_armor_bronze.png

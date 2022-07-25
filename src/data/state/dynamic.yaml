@@ -5,6 +5,7 @@ hero:
   state: walk_down
   frame: 0
   layer: one
+  plot: a
 
 npcs: 
   esmeralda:
