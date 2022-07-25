@@ -6,6 +6,8 @@ hero:
   frame: 0
   layer: one
   plot: a
+  equipment:
+    -
 
 npcs: 
   esmeralda:

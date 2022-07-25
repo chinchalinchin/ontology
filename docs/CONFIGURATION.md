@@ -6,6 +6,8 @@ Configuration files define metadata for how to construct asset frames. They also
 
 To put it in terms of the engine, different configurations applied to the same game state will result in different behavior governing state transitions on the same state trajectory. In contrast, the same configuration applied to different states will result in the same behavior, more or less, along a different state trajectory. Trajectory is a good analogy for the process of successive state transitions: two balls thrown in different gravitational fields from the same starting position will have isomorphic trajectories but different "behavior", but two balls thrown from different positions in the same gravitational field will have the same "behavior" but different trajectories.
 
+**NOTE**: In what follows, take note: there is no configuration for the _World_. This is because, while configuration affects how the _World_ object functions, the _World_ is, in essence, the game state. It is not initialized with configuration information; it is initialized through state information.
+
 ## Controls
 
 - **Location**: _data/conf/controls.yaml_

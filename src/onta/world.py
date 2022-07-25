@@ -226,11 +226,11 @@ class World():
         log.debug(f'Initializing simple static world state...', 'World._init_static_state')
         static_conf = state_ao.get_state('static')
 
-        self.tile_dimensions = (static_conf['properties']['tiles']['w'], static_conf['properties']['tiles']['h'])
+        self.tile_dimensions = (static_conf['world']['tiles']['w'], static_conf['world']['tiles']['h'])
         self.dimensions = calculator.scale(
-            (static_conf['properties']['size']['w'], static_conf['properties']['size']['h']),
+            (static_conf['world']['size']['w'], static_conf['world']['size']['h']),
             self.tile_dimensions,
-            static_conf['properties']['size']['units']
+            static_conf['world']['size']['units']
         )
 
         self.layers = []

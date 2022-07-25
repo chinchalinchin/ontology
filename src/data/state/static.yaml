@@ -7,7 +7,7 @@
 #         initialization, i.e. if a composite definition involes strut_a, then a definition for strut_a 
 #         must be included...
 
-properties:
+world:
   tiles:
     w: 96
     h: 32

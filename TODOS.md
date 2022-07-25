@@ -13,3 +13,5 @@ another option would be to introduce a division in the concept of npc and villai
 - for some reason, the npc walk_left and walk_right are not mapping the same way as the player walk_left and walk_right. i have to switch the rows for npcs and villains, where as the hero is fine.
 
 - allow sprites to create their own intents if attacked by another sprite, i.e. add intent of attacking_sprite to sprite['intents']
+
+- add `looper` property to sprite definitions to allow developers to turn off game loop physics and interactions for that sprite. lets scripts completely control the sprite state.
