@@ -15,3 +15,7 @@ another option would be to introduce a division in the concept of npc and villai
 - allow sprites to create their own intents if attacked by another sprite, i.e. add intent of attacking_sprite to sprite['intents']
 
 - add `looper` property to sprite definitions to allow developers to turn off game loop physics and interactions for that sprite. lets scripts completely control the sprite state.
+
+- multiple regression of sprite states against hero state vs. collection of simple linear regression of sprite state against state.
+
+- if sprite aware: train model: if iteratoin == learning_rate or something, then apply prediction
