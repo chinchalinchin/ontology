@@ -37,8 +37,6 @@ apartment_door:
         h: 48
     moveable: false
     type: door
-    door: true
-
 
 inside_door:
   image:
@@ -60,4 +58,3 @@ inside_door:
         h: 48
     moveable: false
     type: door
-    door: true

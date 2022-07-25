@@ -79,11 +79,11 @@ def concat_dynamic_paths(sprite, static_pathset, hero, npcs, vils):
             'y': hero['position']['y']
         }
     elif sprite['path']['current'] in npc_keys:
-        pathset[sprite['path']['curent']] = {
+        pathset[sprite['path']['current']] = {
             'x': npcs[sprite['path']['current']]['position']['x'],
             'y': npcs[sprite['path']['current']]['position']['y']
         }
-    elif sprite['path'] in villain_keys:
+    elif sprite['path']['current'] in villain_keys:
         pathset[sprite['path']['current']] = {
             'x': vils[sprite['path']['current']]['position']['x'],
             'y': vils[sprite['path']['current']]['position']['y']

@@ -308,10 +308,17 @@ skeleton:
         intents:
             -   plot: a
                 intent: hero
-                dialogue: 
+                dialogue: null
+            -   plot: a
+                intent: esmeralda
+                dialogue:
                     - 
             -   plot: b
                 intent: two
+                dialogue:
+                    -
+            -   plot: b
+                intent: esmeralda
                 dialogue:
                     -
     sheets:

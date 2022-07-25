@@ -643,7 +643,7 @@ class World():
                         if collided:
                                 # recalculate hitbox after sprite recoils
                             sprite_hitbox = self.get_sprite_hitbox(spriteset_key, hitbox_key, sprite_key)
-                            if sprite['path'] in list(self.sprite_property_conf.keys()):
+                            if sprite['path']['current'] in list(self.sprite_property_conf.keys()):
                                 pathset = paths.concat_dynamic_paths(
                                     sprite,
                                     self.sprite_property_conf[sprite_key]['paths'],
