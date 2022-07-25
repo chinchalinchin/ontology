@@ -229,6 +229,26 @@ headstone:
     hitbox: null
     moveable: false
 
+obelisk:
+  image:
+    file: 
+      path: city.png
+      position:
+        x: 740  
+        y: 101
+    size:
+      w: 24
+      h: 59
+  properties:
+    hitbox:
+      offset:
+        x: 2
+        y: 0
+      size:
+        w: 24
+        h: 35
+    moveable: true
+
 grave_marker:
   image:
     file: 

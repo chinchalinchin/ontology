@@ -27,6 +27,8 @@ This definition, in essense, explains what this library is all about. _onta_ ope
 
 The general principle of _onta_ is: configuration is gospel. In other words, _onta_ is written in such as way as to declare as much of the game configuration as possible in external files that get fed into the game engine on start. Learning how to create a game in _onta_ requires understanding the [YAML]() syntax, as all configuration is declared through **YAML** files. 
 
+In a more technical sense, the object of _onta_ is to show how a game can be written entirely in markup, without any additional scripting. Furthermore, games written purely in markup can be fully featured, with complex stories and gameplay mechanics, if the parsing engine is written with this in mind.
+
 That said, _onta_ does have scripting capabilities, if the base engine is not sufficient for your project's purposes. These scripts are essentially callbacks that get injected with references to the game state information, allowing you to modify the game state on the fly. 
 
 While possessing a degree of flexibility, _onta_ is highly opinionated on the type of games it will run. Obviously, only two-dimensional games based on spritesheets can be run in the _onta_ engine, but beyond that, _onta_ produces a very specific type of game. 

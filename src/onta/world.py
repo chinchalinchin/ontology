@@ -287,17 +287,21 @@ class World():
                                 if elementset_key == 'struts':
 
                                     for strutset in element_sets:
+
+                                        log.verbose('Generating strut render order', 'World._generate_composite_static_state')
+                                        
                                         # NOTE strutset = { 'start': { ... }, 'cover': bool }
                                         #       via compose element configuration (composite.yaml)
+
                                         if self.strutsets.get(layer) is None:
                                             self.strutsets[layer] = {}
-
+                                        
                                         if self.strutsets[layer].get(element_key) is None:
                                             self.strutsets[layer][element_key] = {}
 
                                         if self.strutsets[layer][element_key].get('sets') is None:
                                             self.strutsets[layer][element_key]['sets'] = []
-
+                                        
                                         if self.strutsets[layer][element_key].get('order') is None:
                                             self.strutsets[layer][element_key]['order'] = len(self.strutsets[layer]) - 1
 
@@ -697,12 +701,13 @@ class World():
         pass
 
 
-    def get_strut_hitboxes(self, layer):
+    def get_strut_hitboxes(self, layer, moveable = False):
         strut_hitboxes = []
-        for strut_conf in self.get_strutsets(layer).values():
-            sets = strut_conf['sets']
-            for strut in sets:
-                strut_hitboxes.append(strut['hitbox'])
+        for strut_key, strut_conf in self.get_strutsets(layer).items():
+            if self.strut_property_conf[strut_key]['moveable'] == moveable:
+                sets = strut_conf['sets']
+                for strut in sets:
+                    strut_hitboxes.append(strut['hitbox'])
         return strut_hitboxes
 
 
@@ -753,6 +758,7 @@ class World():
             return list(filter(lambda x: x['plot'] == self.plot, self.sprite_property_conf[sprite_key]['intents']))
         return None
 
+
     def get_collision_sets_relative_to(self, sprite, sprite_key, hitbox_key):
         vil_hitboxes = self.get_sprite_hitboxes('villains', hitbox_key, sprite['layer'], [sprite_key])
         npc_hitboxes = self.get_sprite_hitboxes('npcs', hitbox_key, sprite['layer'], [sprite_key])
@@ -768,14 +774,15 @@ class World():
         return collision_sets
 
 
-    def get_strutsets(self, layer):
+    def get_strutsets(self, layer, moveable = False):
         iter_set = self.strutsets[layer].items() if self.strutsets[layer] is not None else { }
         return {
             key: val
             for key, val in iter_set
-            if key not in  ['hitboxes'] 
+            if key not in  ['hitboxes'] \
+                and self.strut_property_conf[key]['moveable'] == moveable
         }
-
+    
 
     def get_platesets(self, layer):
         iter_set = self.platesets[layer].items() if self.platesets[layer] is not None else { }
@@ -784,6 +791,7 @@ class World():
             for key, val in iter_set
             if key not in ['doors', 'chests', 'pressures']
         }
+
 
     def get_typed_platesets(self, layer, plateset_type):
         typed_platesets = []
@@ -796,6 +804,7 @@ class World():
                     })
         return typed_platesets
 
+
     def get_spriteset(self, spriteset_key):
         if spriteset_key == 'hero':
             return { 'hero': self.hero }
@@ -804,6 +813,7 @@ class World():
         elif spriteset_key == 'villains':
             return self.villains
 
+
     def get_sprite(self, sprite_key):
         if sprite_key == 'hero':
             return self.hero
@@ -811,6 +821,7 @@ class World():
             return self.npcs[sprite_key]
         elif sprite_key in list(self.villains.keys()):
             return self.villains[sprite_key]
+
 
     def get_npcs(self, layer):
         return {

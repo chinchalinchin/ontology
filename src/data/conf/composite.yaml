@@ -41,7 +41,6 @@ house:
             x: 188
             y: 32
           cover: true
-
     house_steps:
       sets: 
         - start:

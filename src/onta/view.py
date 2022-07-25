@@ -124,11 +124,16 @@ class Renderer():
         for static_set in ['struts', 'plates']:
             for layer in game_world.layers:
                 if static_set == 'struts':
-                    unordered_groups = game_world.get_strutsets(layer)
+                    unordered_groups = game_world.get_strutsets(layer, True)
+                    unordered_groups.update(
+                        game_world.get_strutsets(layer, True)
+                    )
                 elif static_set == 'plates':
                     unordered_groups = game_world.get_platesets(layer)
 
                 render_map = self.generate_render_map(unordered_groups)
+
+                print(render_map)
 
                 for i in range(len(render_map)):
                     group_key = render_map[i]

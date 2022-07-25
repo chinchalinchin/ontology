@@ -35,7 +35,6 @@ house_door:
       size:
         w: 32 
         h: 48
-    moveable: false
     type: door
 
 inside_door:
@@ -56,5 +55,4 @@ inside_door:
       size:
         w: 32 
         h: 48
-    moveable: false
     type: door
