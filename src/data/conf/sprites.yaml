@@ -285,16 +285,16 @@ skeleton:
                     w: 23
                     h: 15
         radii:
-            aware: 50
-            attack: 10
+            aware: 250
+            attack: 15
         walk: 1
         run: 3
         collide: 5
         poll: 50
         paths:
             one:
-                x: 300
-                y: 100
+                x: 700
+                y: 600
             two:
                 x: 500
                 y: 300

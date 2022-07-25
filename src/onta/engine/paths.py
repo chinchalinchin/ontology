@@ -90,10 +90,12 @@ def concat_dynamic_paths(sprite, static_pathset, hero, npcs, vils):
         }
     return pathset
 
-def locate_intent(intent, hero, npcs, villains):
+def locate_intent(intent, hero, npcs, villains, paths):
     if intent == 'hero':
         return (hero['position']['x'], hero['position']['y'],)
-    elif intent in npcs.keys():
+    elif intent in list(npcs.keys()):
         return (npcs[intent]['position']['x'], npcs[intent]['position']['y'])
-    elif intent in villains.keys():
+    elif intent in list(villains.keys()):
         return (villains[intent]['position']['x'], villains[intent]['position']['y'])
+    elif intent in list(paths.keys()):
+        return (paths[intent]['x'], paths[intent]['y'])

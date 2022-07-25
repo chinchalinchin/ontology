@@ -531,18 +531,35 @@ class World():
 
                 if self.iterations % sprite_props['poll'] == 0:
                     
-                    # location based intent
                     sprite_pos = (sprite['position']['x'], sprite['position']['y'])
                     intent = self.get_sprite_intent(sprite_key)
-                    intent_pos = paths.locate_intent(intent, self.hero, self.npcs, self.villains)
-
-                    if calculator.distance(intent_pos, sprite_pos) < sprite_props['radii']['aware']:
-                        sprite['path']['previous'] = sprite['path']['current']
-                        sprite['path']['current'] = intent
-                    elif sprite['path']['current'] == intent:
-                        sprite['path']['current'] = sprite['path']['previous']
-                        sprite['path']['previous'] = intent
                     
+                    if intent not in self.sprite_property_conf[sprite_key]['paths']:
+                        # if intent is sprite location based
+
+                        log.debug(f'Checking {sprite_key} plot {self.plot} {intent["intent"]} intent...', 'World.update_sprites')
+                        intent_pos = paths.locate_intent(
+                            intent['intent'], 
+                            self.hero, 
+                            self.npcs, 
+                            self.villains, 
+                            self.sprite_property_conf[sprite_key]['paths']
+                        )
+                        distance = calculator.distance(intent_pos, sprite_pos)
+
+                        if distance <= sprite_props['radii']['aware'] \
+                            and sprite['path']['current'] != intent['intent']:
+                            
+                            log.debug(f'Applying {sprite_key} {intent} intent at {intent_pos}...', 'World._update_sprites')
+                            sprite['path']['previous'] = sprite['path']['current']
+                            sprite['path']['current'] = intent['intent']
+
+                        elif distance >= sprite_props['radii']['aware'] \
+                            and sprite['path']['current'] == intent['intent']:
+
+                            sprite['path']['current'] = sprite['path']['previous']
+                            sprite['path']['previous'] = intent['intent']
+                        
                     self._reorient(spriteset_key, sprite_key)
 
 
@@ -567,6 +584,11 @@ class World():
             self.npcs, 
             self.villains
         )
+
+        print(self.sprite_property_conf[sprite_key]['paths'])
+
+        print(pathset)
+        print(sprite)
 
         paths.reorient(
             sprite,
@@ -744,7 +766,7 @@ class World():
 
     def get_sprite_intent(self, sprite_key):
         if sprite_key != 'hero':
-            return filter(lambda x: x['plot'] == self.plot, self.sprite_property_conf[sprite_key]['intents'])[0]
+            return list(filter(lambda x: x['plot'] == self.plot, self.sprite_property_conf[sprite_key]['intents']))[0]
         return None
 
     def get_collision_sets_relative_to(self, sprite, sprite_key, hitbox_key):
