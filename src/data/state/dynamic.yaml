@@ -20,7 +20,7 @@ villains:
   skeleton:
     position:
       x: 500
-      y: 1200
+      y: 800
     state: walk_down
     path: one
     frame: 0

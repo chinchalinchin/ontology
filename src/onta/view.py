@@ -173,20 +173,28 @@ class Renderer():
             sprite_frame = repository.get_sprite_frame(sprite_key, sprite_state, sprite_frame)
             self.world_frame.paste(sprite_frame, sprite_position, sprite_frame)
 
-    def render(self, game_world: world.World, repository: repo.Repo):
+    def render(self, game_world: world.World, repository: repo.Repo, crop: bool = True, layer: str = None):
         self.world_frame = gui.new_image(game_world.dimensions)
+
+        if layer is not None:
+            layer_buffer = game_world.layer
+            game_world.layer = layer
 
         self._render_static(game_world.layer, False)
         for spriteset in ['npcs', 'villains', 'hero']:
             self._render_spriteset(spriteset, game_world, repository)
         self._render_static(game_world.layer, True)
 
-        screen_dim = (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
-        world_dim = game_world.dimensions
-        hero_pt = (game_world.hero['position']['x'], game_world.hero['position']['y'])
-        crop_box = self.calculate_crop_box(screen_dim, world_dim, hero_pt)
+        if layer is not None:
+            game_world.layer = layer_buffer
+            
+        if crop:
+            screen_dim = (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
+            world_dim = game_world.dimensions
+            hero_pt = (game_world.hero['position']['x'], game_world.hero['position']['y'])
+            crop_box = self.calculate_crop_box(screen_dim, world_dim, hero_pt)
 
-        self.world_frame = self.world_frame.crop(crop_box)
+            self.world_frame = self.world_frame.crop(crop_box)
 
         return self.world_frame
 

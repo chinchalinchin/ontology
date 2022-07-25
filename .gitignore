@@ -1,4 +1,5 @@
 **/dist
+**/scratch
 **/*.pyc
 **/__pycache__
 **/.vscode

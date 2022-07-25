@@ -1,9 +1,9 @@
-import argparse
 import threading
 import time
 import sys
 
 import PySide6.QtWidgets as QtWidgets
+from PIL import Image
 
 import onta.view as view
 import onta.control as control
@@ -14,23 +14,11 @@ import onta.load.conf as conf
 import onta.load.state as state
 import onta.util.logger as logger
 import onta.util.helper as helper
+import onta.util.cli as cli
 
 log = logger.Logger('onta.main', settings.LOG_LEVEL)
 
 
-def parse_cli_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        '-o',
-        '--o',
-        '-ontology',
-        '--ontology',
-        nargs="?",
-        type=str,
-        dest='ontology',
-        default=str(settings.DATA_DIR),
-    )
-    return parser.parse_args()
 
 def create(ontology_path: str):
     log.debug('Intializing configuration access object...', 'create')
@@ -68,6 +56,11 @@ def start(ontology_path: str):
     vw.show()
     game_loop.start()
     view.quit(app)
+
+def render(ontology_path: str, crop: bool, layer: str) -> Image.Image:
+    _, wrld, eng, rep = create(ontology_path)
+    return eng.render(wrld, rep, crop, layer)
+
 
 def do(
     game_view: QtWidgets.QWidget, 
@@ -109,7 +102,13 @@ def do(
             time.sleep(sleep_time/1000)
 
 def entrypoint():
-    args = parse_cli_args()
+    args = cli.parse_cli_args()
+
+    if args.render:
+        img = render(args.ontology, args.crop, args.layer)
+        img.save(args.render)
+        return
+
     start(args.ontology)
 
 if __name__=="__main__":
