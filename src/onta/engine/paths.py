@@ -68,8 +68,8 @@ def reorient(sprite, hitbox, collision_sets, goal, speed, world_dim) -> None:
         elif 'run' in sprite['state']:
             sprite['state'] = 'run_right'
 
-def concat_dynamic_paths(sprite, actual_pathset, hero, npcs, vils):
-    pathset = actual_pathset.copy()
+def concat_dynamic_paths(sprite, static_pathset, hero, npcs, vils):
+    pathset = static_pathset.copy()
     npc_keys = list(npcs.keys())
     villain_keys = list(vils.keys())
 
@@ -89,3 +89,11 @@ def concat_dynamic_paths(sprite, actual_pathset, hero, npcs, vils):
             'y': vils[sprite['path']]['position']['y']
         }
     return pathset
+
+def locate_intent(intent, hero, npcs, villains):
+    if intent == 'hero':
+        return (hero['position']['x'], hero['position']['y'],)
+    elif intent in npcs.keys():
+        return (npcs[intent]['position']['x'], npcs[intent]['position']['y'])
+    elif intent in villains.keys():
+        return (villains[intent]['position']['x'], villains[intent]['position']['y'])

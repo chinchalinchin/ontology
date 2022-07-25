@@ -15,6 +15,8 @@
 #       walk: int
 #       run: int
 #       collide: int
+#       poll: int
+#       aware: int
 #       blocking_states:
 #           - str
 #           - str
@@ -25,8 +27,6 @@
 #       - state: str
 #         row: int
 #         frames: int
-
-# # NOTE: blocking_states are states where user input is blocked until state animation finishes
 
 hero:
     properties:
@@ -59,6 +59,9 @@ hero:
             - shoot_left
             - shoot_right
             - death
+        null_states:
+            - interact
+            - jump
         size:
             w: 64
             h: 64
@@ -164,10 +167,12 @@ esmeralda:
                 size: 
                     w: 23
                     h: 15
-        walk: 2
-        run: 3
+        radii:
+            aware: 50
+            attack: 10
+        walk: 0.5
+        run: 2
         collide: 5
-        aware: 20
         poll: 100
         paths:
             one:
@@ -186,6 +191,7 @@ esmeralda:
             - slash_left
             - slash_right
             - death
+        null_states:
         intents:
             -   plot: a
                 intent:
@@ -278,11 +284,13 @@ skeleton:
                 size: 
                     w: 23
                     h: 15
-        walk: 3
-        run: 4
+        radii:
+            aware: 50
+            attack: 10
+        walk: 1
+        run: 3
         collide: 5
-        aware: 20
-        poll: 100
+        poll: 50
         paths:
             one:
                 x: 300
@@ -296,6 +304,7 @@ skeleton:
             - thrust_left
             - thrust_right
             - death
+        null_states:
         intents:
             -   plot: a
                 intent: 
@@ -328,13 +337,13 @@ skeleton:
             row: 8
             frames: 9
         -   state: walk_right
-            row: 9
+            row: 11
             frames: 9
         -   state: walk_down
             row: 10
             frames: 9
         -   state: walk_left
-            row: 11 
+            row: 9
             frames: 9
         # Death
         -   state: death

@@ -9,8 +9,6 @@ import onta.engine.calculator as calculator
 import onta.engine.collisions as collisions
 import onta.engine.paths as paths
 
-import pprint
-
 log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
 class World():
@@ -416,6 +414,7 @@ class World():
         dynamic_conf = state_ao.get_state('dynamic')
         self.hero = dynamic_conf['hero']
         self.layer = dynamic_conf['hero']['layer']
+        self.plot = dynamic_conf['hero']['plot']
         self.npcs = dynamic_conf.get('npcs') if dynamic_conf.get('npcs') is not None else {}
         self.villains = dynamic_conf.get('villains') if dynamic_conf.get('villains') is not None else {}
 
@@ -531,7 +530,18 @@ class World():
                 sprite['frame'] += 1
 
                 if self.iterations % sprite_props['poll'] == 0:
+                    
+                    # location based intent
+                    sprite_pos = (sprite['position']['x'], sprite['position']['y'])
+                    intent = self.get_sprite_intent(sprite_key)
+                    intent_pos = paths.locate_intent(intent, self.hero, self.npcs, self.villains)
+
+                    if calculator.distance(intent_pos, sprite_pos) < sprite_props['radii']['aware']:
+                        sprite['path']['previous'] = sprite['path']['current']
+                        sprite['path']['current'] = intent
+                    
                     self._reorient(spriteset_key, sprite_key)
+
 
                 if sprite['frame'] >= self.sprite_state_conf[sprite_key][sprite['state']]['frames']:
                     sprite['frame'] = 0
@@ -559,7 +569,7 @@ class World():
             sprite,
             sprite_hitbox,
             collision_sets, 
-            pathset[sprite['path']],
+            pathset[sprite['path']['current']],
             self.sprite_property_conf[sprite_key]['collide'],
             self.dimensions
         )
@@ -611,11 +621,22 @@ class World():
                         if collided:
                                 # recalculate hitbox after sprite recoils
                             sprite_hitbox = self.get_sprite_hitbox(spriteset_key, hitbox_key, sprite_key)
+                            if sprite['path'] in list(self.sprite_property_conf.keys()):
+                                pathset = paths.concat_dynamic_paths(
+                                    sprite,
+                                    self.sprite_property_conf[sprite_key]['paths'],
+                                    self.hero,
+                                    self.npcs,
+                                    self.villains
+                                )
+                            else:
+                                pathset = self.sprite_property_conf[sprite_key]['paths']
+
                             paths.reorient(
                                 sprite,
                                 sprite_hitbox,
                                 collision_sets, 
-                                self.sprite_property_conf[sprite_key]['paths'][sprite['path']],
+                                pathset[sprite['path']['current']],
                                 self.sprite_property_conf[sprite_key]['collide'],
                                 self.dimensions
                             )
@@ -718,6 +739,11 @@ class World():
         return calculated
 
 
+    def get_sprite_intent(self, sprite_key):
+        if sprite_key != 'hero':
+            return filter(lambda x: x['plot'] == self.plot, self.sprite_property_conf[sprite_key]['intents'])[0]
+        return None
+
     def get_collision_sets_relative_to(self, sprite, sprite_key, hitbox_key):
         vil_hitboxes = self.get_sprite_hitboxes('villains', hitbox_key, sprite['layer'], [sprite_key])
         npc_hitboxes = self.get_sprite_hitboxes('npcs', hitbox_key, sprite['layer'], [sprite_key])
@@ -727,7 +753,8 @@ class World():
             collision_sets.append(npc_hitboxes)
         if vil_hitboxes is not None:
             collision_sets.append(vil_hitboxes)
-        if hitbox_key == 'strut' and self.strutsets[sprite['layer']]['hitboxes'] is not None:
+        if (hitbox_key =='strut' or sprite_key == 'hero' ) \
+             and self.strutsets[sprite['layer']]['hitboxes'] is not None:
             collision_sets.append(self.strutsets[sprite['layer']]['hitboxes'])
         return collision_sets
 
@@ -758,6 +785,7 @@ class World():
         elif spriteset_key == 'villains':
             return self.villains
 
+
     def get_npcs(self, layer):
         return {
             key: val
@@ -781,6 +809,7 @@ class World():
 
     def save(self, state_ao: state.State):
         self.hero['layer'] = self.layer
+        self.hero['plot'] = self.plot
         dynamic_conf = {
             'hero': self.hero,
             'npcs': self.npcs,

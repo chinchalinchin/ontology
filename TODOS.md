@@ -8,6 +8,6 @@ another option would be to introduce a division in the concept of npc and villai
 
 - exiting a door has a problem with collision engine, since when you exit you will most likely be intersecting with outside object, but facing the wrong way you would approach it in-layer. thus, the character sprite slides over the hitbox.
 
-- function to render and save static world state outside of game loop. cli arg?
-
 - when rendering, should check if element intersects with crop box to determine whether or not to proceed with rendering, i.e. only render on screen elements.
+
+- for some reason, the npc walk_left and walk_right are not mapping the same way as the player walk_left and walk_right. i have to switch the rows for npcs and villains, where as the hero is fine.

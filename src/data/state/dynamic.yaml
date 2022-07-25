@@ -13,7 +13,9 @@ npcs:
       x: 900
       y: 1800
     state: walk_down
-    path: one
+    path: 
+      current: one
+      previous: null
     frame: 0
     layer: one
   
@@ -23,6 +25,8 @@ villains:
       x: 500
       y: 800
     state: walk_down
-    path: hero
+    path: 
+      current: one
+      previous: null
     frame: 0
     layer: one
