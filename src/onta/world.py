@@ -123,9 +123,7 @@ class World():
                         },
                         'hitbox': (hx, hy, hw, hh), # tuple(int, int, int, int)
                         'cover': cover, # bool
-                        'door': {
-                            'layer': layer, # str
-                        },
+                        'content': content, # str
                     }
                 ]
             },
@@ -341,7 +339,7 @@ class World():
                                                     'y': compose_start[1] + plateset['start']['y']
                                                 },
                                                 'cover': plateset['cover'],
-                                                'door': plateset.get('door')
+                                                'content': plateset['content']
                                             }
                                         )
 
@@ -403,7 +401,9 @@ class World():
                 (0, self.dimensions[1], self.dimensions[0], 1)
             ]
             self.strutsets[layer]['hitboxes'] = world_bounds + self.get_strut_hitboxes(layer)
-            self.platesets[layer]['doors'] = self.get_doors(layer)
+            self.platesets[layer]['doors'] = self.get_typed_platesets(layer, 'door')
+            self.platesets[layer]['chests'] = self.get_typed_platesets(layer, 'chest')
+            self.platesets[layer]['pressures'] = self.get_typed_platesets(layer, 'pressure')
 
 
     def _init_dynamic_state(self, state_ao: state.State) -> None:
@@ -417,7 +417,6 @@ class World():
         self.plot = dynamic_conf['hero']['plot']
         self.npcs = dynamic_conf.get('npcs') if dynamic_conf.get('npcs') is not None else {}
         self.villains = dynamic_conf.get('villains') if dynamic_conf.get('villains') is not None else {}
-        print(self.npcs)
 
 
     def _update_hero(self, user_input: dict) -> None: 
@@ -533,35 +532,35 @@ class World():
                 if self.iterations % sprite_props['poll'] == 0:
                     
                     sprite_pos = (sprite['position']['x'], sprite['position']['y'])
-                    intent = self.get_sprite_intent(sprite_key)
+                    intents = self.get_sprite_intent(sprite_key)
                     
-                
-                    if intent['intent'] not in list(self.sprite_property_conf[sprite_key]['paths'].keys()):
-                        # if intent is sprite location based
+                    for intent in intents:
+                        if intent['intent'] not in list(self.sprite_property_conf[sprite_key]['paths'].keys()):
+                            # if intent is sprite location based
 
-                        log.debug(f'Checking {sprite_key} plot {self.plot} {intent["intent"]} intent conditions...', 'World.update_sprites')
-                        intent_pos = paths.locate_intent(
-                            intent['intent'], 
-                            self.hero, 
-                            self.npcs, 
-                            self.villains, 
-                            self.sprite_property_conf[sprite_key]['paths']
-                        )
-                        distance = calculator.distance(intent_pos, sprite_pos)
+                            log.debug(f'Checking {sprite_key} plot {self.plot} {intent["intent"]} intent conditions...', 'World.update_sprites')
+                            intent_pos = paths.locate_intent(
+                                intent['intent'], 
+                                self.hero, 
+                                self.npcs, 
+                                self.villains, 
+                                self.sprite_property_conf[sprite_key]['paths']
+                            )
+                            distance = calculator.distance(intent_pos, sprite_pos)
 
-                        if distance <= sprite_props['radii']['aware'] \
-                            and sprite['path']['current'] != intent['intent']:
-                            
-                            log.debug(f'Applying {sprite_key} {intent} intent at {intent_pos}...', 'World._update_sprites')
-                            sprite['path']['previous'] = sprite['path']['current']
-                            sprite['path']['current'] = intent['intent']
+                            if distance <= sprite_props['radii']['aware'] \
+                                and sprite['path']['current'] != intent['intent']:
+                                
+                                log.debug(f'Applying {sprite_key} {intent["intent"]} intent at {intent_pos}...', 'World._update_sprites')
+                                sprite['path']['previous'] = sprite['path']['current']
+                                sprite['path']['current'] = intent['intent']
 
-                        elif distance >= sprite_props['radii']['aware'] \
-                            and sprite['path']['current'] == intent['intent']:
+                            elif distance >= sprite_props['radii']['aware'] \
+                                and sprite['path']['current'] == intent['intent']:
 
-                            log.debug(f'Resetting {sprite_key} memory to {sprite["path"]["previous"]}', 'World.update_sprites')
-                            sprite['path']['current'] = sprite['path']['previous']
-                            sprite['path']['previous'] = intent['intent']
+                                log.debug(f'Resetting {sprite_key} memory to {sprite["path"]["previous"]}', 'World.update_sprites')
+                                sprite['path']['current'] = sprite['path']['previous']
+                                sprite['path']['previous'] = intent['intent']
                         
                     self._reorient(spriteset_key, sprite_key)
 
@@ -689,8 +688,8 @@ class World():
                     self.get_sprite_hitbox('hero', 'sprite', 'hero'), 
                     [ door['hitbox'] ]
                 ):
-                    self.layer = door['layer']
-                    self.hero['layer'] = door['layer']
+                    self.layer = door['content']
+                    self.hero['layer'] = door['content']
                     break
 
 
@@ -705,19 +704,6 @@ class World():
             for strut in sets:
                 strut_hitboxes.append(strut['hitbox'])
         return strut_hitboxes
-
-
-    def get_doors(self, layer):
-        doors = []
-        for plate_key, plate_conf in self.get_platesets(layer).items():
-            if self.plate_property_conf[plate_key]['door']:
-                sets = plate_conf['sets']
-                for plate in sets:
-                    doors.append({
-                        'hitbox': plate['hitbox'],
-                        'layer': plate['door']['layer']
-                    })
-        return doors
 
 
     def get_sprite_hitbox(self, spriteset_key, hitbox_key, sprite_key):
@@ -764,7 +750,7 @@ class World():
 
     def get_sprite_intent(self, sprite_key):
         if sprite_key != 'hero':
-            return list(filter(lambda x: x['plot'] == self.plot, self.sprite_property_conf[sprite_key]['intents']))[0]
+            return list(filter(lambda x: x['plot'] == self.plot, self.sprite_property_conf[sprite_key]['intents']))
         return None
 
     def get_collision_sets_relative_to(self, sprite, sprite_key, hitbox_key):
@@ -796,9 +782,19 @@ class World():
         return {
             key: val
             for key, val in iter_set
-            if key not in ['doors']
+            if key not in ['doors', 'chests', 'pressures']
         }
 
+    def get_typed_platesets(self, layer, plateset_type):
+        typed_platesets = []
+        for plate_key, plate_conf in self.get_platesets(layer).items():
+            if self.plate_property_conf[plate_key]['type'] == plateset_type:
+                for plate in plate_conf['sets']:
+                    typed_platesets.append({
+                        'hitbox': plate['hitbox'],
+                        'content': plate['content']
+                    })
+        return typed_platesets
 
     def get_spriteset(self, spriteset_key):
         if spriteset_key == 'hero':

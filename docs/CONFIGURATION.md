@@ -76,15 +76,17 @@ group:
   properties:
     hitbox:
       offset:
-        x:
-        y:
+        x: int
+        y: int
       size:
-        w:
-        h:
+        w: int
+        h: int
+    moveable: bool
 ```
 
 - `properties.hitbox.offset.x`, `properties.hitbox.offset.y`: How far into the image frame, relative to its top left corner, to start the _Strut_'s hitbox
 - `properties.hitbox.size.w`, `properties.hitbox.size.h`: Dimensions of the _Strut_'s hitbox, relative to its `offset`.
+- `properties.moveable`: A boolean flag denoting whether or not the strut should remain stationary when a sprite collides with it.
 
 ## Plates 
 
@@ -113,16 +115,18 @@ group:
   properties:
     hitbox:
       offset:
-        x:
-        y:
+        x: int
+        y: int
       size:
-        w:
-        h:
+        w: int
+        h: int
+    moveable: bool
+    type: str
     door: bool
 ```
-- `properties.door`: Signals this particular plateset should be treated as a door.
+- `properties.type`: Key representing the _type_ of plate to define. Allowable values: `door`, `chest`, `pressure`
 
-**Note**: If a plate is configured as a `door`, then when you define its state in _data/state/static.yml_, you must provide an outlet for the door. See [State](./STATE.md) for more information on state definitions.
+**Note**: If a plate is configured in _data/conf/plates.yaml_, then when you define its static state in _data/state/static.yml_, you must hook a connection into it. See [State](./STATE.md) for more information on state definitions.
 
 
 ## Sprites

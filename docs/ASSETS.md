@@ -2,26 +2,38 @@
 
 ## Tiles
 
-Tiles are defined to be 96px by 32px. There is no getting around this. It is hardcoded into the game engine. If you wish to paint a graphic of arbitrary dimensions, you are looking for a _Strut_. 
+Tiles have their dimensions defined in the the static world state, i.e. _data/state/static.yaml_. Because of this, whatever the tile dimensions are defined to be (by default, _(92px, 32px)_), all tiles are rendered in multiples of the tile dimensions. There is no getting around this. It is hardcoded into the game engine. If you wish to paint a graphic of arbitrary dimensions, you are looking for a _Strut_. 
 
-The benefit of having a hardcoded tile size is it makes the math of rendering large areas of the canvas relatively simple. _Tiles_ are rendered in multiples of the base unit (96px, 32px). _Tiles_ are meant to provide a general background to the game, more custom graphics are implemented 
+The benefit of having a pre-defined tile size is it makes the math of rendering large areas of the canvas relatively simple. _Tiles_ are rendered in multiples of the base unit. _Tiles_ are meant to provide a general background to the game, more custom graphics are implemented by higher level in-game objects.
 
-A set of _Tile_\s construccted from the same tileset frame is called a _tileset_.
+### Notes
+
+- **Collections**: A set of _Tile_\s constructed from the same tileset frame is called a _tileset_.
+- **State vs. Property**: A _Tile_ has no state information and its in-game representation is defined entirely by its properties. Its representation does not depend in any way on what happens in-game. 
 
 ## Struts
 
-A set of _Strut_\s constructed from the same strutsheet frame is called a _strutset_.
+### Notes
+
+- **Collections**: A set of _Strut_\s constructed from the same strutsheet frame is called a _strutset_.
+- **State vs Property**: A _Strut_ has no state information and is defined entirely by its properties.  Its representation does not depend in anyway on what happens in-game.
 
 ## Plates
 
 
 A set of _Plate_\s constructed from the same platesheet frame is a called a _plateset_.
 
-### Doors
+### Door
 
 _Doors_ are a special type of _Plate_. When the player character overlaps with the hitbox of a _Door_, he or she has the option of interacting with it. This will trigger the world transitioning to a new layer. See [Definitions](./DEFINITIONS.md) for more information on layers.
 
+### Chest
 
+### Pressure
+
+### Notes
+- **Collections**: A set of _Plate_\s constructed from the same platesheet frame is called a _plateset_.
+- **State vs. Property**: A _Plate_ are "fuzzy." They have, in a sense, a _pseudo-state_. As it is plain from the different types of _Plate_\s
 ## Compositions
 
 A _Composition_ can be constructed from a collection of sets of _Strut_\s and a collection of sets of _Plate_\s. To use the terminology defined in the previous sections, a composition is a union of strutsets and platesets. 

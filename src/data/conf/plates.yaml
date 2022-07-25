@@ -35,7 +35,10 @@ apartment_door:
       size:
         w: 32 
         h: 48
+    moveable: false
+    type: door
     door: true
+
 
 inside_door:
   image:
@@ -55,4 +58,6 @@ inside_door:
       size:
         w: 32 
         h: 48
+    moveable: false
+    type: door
     door: true

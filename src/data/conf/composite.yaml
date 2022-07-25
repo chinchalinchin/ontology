@@ -34,8 +34,7 @@ apartment_exterior:
             x: 34
             y: 130
           cover: false
-          door:
-            layer: two
+          content: two
 
 apartment_interior:
   struts:
@@ -61,8 +60,7 @@ apartment_interior:
             x: 38
             y: 179
           cover: true
-          door: 
-            layer: one
+          content: one
 
 tree:
   struts:
