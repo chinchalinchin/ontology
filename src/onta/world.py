@@ -1,5 +1,6 @@
 
 from logging.config import valid_ident
+from re import S
 import onta.settings as settings
 import onta.load.state as state
 import onta.load.conf as conf
@@ -496,38 +497,44 @@ class World():
             self.hero['frame'] = 0
 
 
-    def _update_npcs(self) -> None:
+    def _update_sprites(self) -> None:
         """
         Maps npc state to in-game action, applies action and then iterates npc state frame.
 
         .. notes:
-            - This method is essentially an interface between the NPC state and the game world. It determines what happens to an NPC once it is in a state.
+            - This method is essentially an interface between the sprite state and the game world. It determines what happens to a sprite once it is in a state. It has nothing to say about how to came to be in that state, and only what happens when it is there.
         """
-        for npc_key, npc in self.npcs.items():
-            npc_props = self.sprite_property_conf[npc_key]
+        for spriteset_key in ['npcs', 'villains']:
+            if spriteset_key == 'npcs':
+                iter_set = self.npcs
+            elif spriteset_key == 'villains':
+                iter_set = self.villains
 
-            if npc['state'] not in self.sprite_property_conf[npc_key]['blocking_states']:
-                if 'run' in npc['state']:
-                    speed = npc_props['run']
-                else:
-                    speed = npc_props['walk']
+            for sprite_key, sprite in iter_set.items():
+                sprite_props = self.sprite_property_conf[sprite_key]
 
-                if npc['state'] == 'walk_up':
-                    npc['position']['y'] -= speed
-                elif npc['state'] == 'walk_left':
-                    npc['position']['x'] -= speed
-                elif npc['state'] == 'walk_right':
-                    npc['position']['x'] += speed
-                elif npc['state'] == 'walk_down':
-                    npc['position']['y'] += speed
+                if sprite['state'] not in self.sprite_property_conf[sprite_key]['blocking_states']:
+                    if 'run' in sprite['state']:
+                        speed = sprite_props['run']
+                    else:
+                        speed = sprite_props['walk']
 
-            npc['frame'] += 1
+                    if sprite['state'] == 'walk_up':
+                        sprite['position']['y'] -= speed
+                    elif sprite['state'] == 'walk_left':
+                        sprite['position']['x'] -= speed
+                    elif sprite['state'] == 'walk_right':
+                        sprite['position']['x'] += speed
+                    elif sprite['state'] == 'walk_down':
+                        sprite['position']['y'] += speed
 
-            if self.iterations % npc_props['poll'] == 0:
-                self._reorient('npcs', npc_key)
+                sprite['frame'] += 1
 
-            if npc['frame'] >= self.sprite_state_conf[npc_key][npc['state']]['frames']:
-                npc['frame'] = 0
+                if self.iterations % sprite_props['poll'] == 0:
+                    self._reorient(spriteset_key, sprite_key)
+
+                if sprite['frame'] >= self.sprite_state_conf[sprite_key][sprite['state']]['frames']:
+                    sprite['frame'] = 0
 
 
     def _reorient(self, spriteset_key, sprite_key) -> None:
@@ -553,7 +560,7 @@ class World():
         if sprite['path'] == 'hero':
             paths['hero']['x'] = self.hero['position']['x']
             paths['hero']['y'] = self.hero['position']['y']
-            
+
         paths.reorient(
             sprite,
             sprite_hitbox,
@@ -804,7 +811,7 @@ class World():
         Update the world state.
         """
 
-        self._update_npcs()
+        self._update_sprites()
         self._update_hero(user_input)
         self._apply_physics()
         self._apply_combat()

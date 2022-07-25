@@ -282,7 +282,7 @@ skeleton:
         run: 4
         collide: 5
         aware: 20
-        poll: 10
+        poll: 100
         paths:
             one:
                 x: 300
