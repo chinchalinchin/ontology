@@ -11,3 +11,5 @@ another option would be to introduce a division in the concept of npc and villai
 - when rendering, should check if element intersects with crop box to determine whether or not to proceed with rendering, i.e. only render on screen elements.
 
 - for some reason, the npc walk_left and walk_right are not mapping the same way as the player walk_left and walk_right. i have to switch the rows for npcs and villains, where as the hero is fine.
+
+- allow sprites to create their own intents if attacked by another sprite, i.e. add intent of attacking_sprite to sprite['intents']

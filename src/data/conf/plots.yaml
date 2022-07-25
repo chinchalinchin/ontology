@@ -1,0 +1,10 @@
+a:
+  conditions:
+    - type:
+      predicate:
+      subject:
+b:
+  conditions:
+    - type:
+      predicate:
+      subject:

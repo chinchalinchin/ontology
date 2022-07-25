@@ -194,11 +194,11 @@ esmeralda:
         null_states:
         intents:
             -   plot: a
-                intent:
+                intent: one
                 dialogue:
                     - 
             -   plot: b
-                intent:
+                intent: one
                 dialogue:
                     - 
     sheets:
@@ -307,11 +307,11 @@ skeleton:
         null_states:
         intents:
             -   plot: a
-                intent: 
+                intent: hero
                 dialogue: 
                     - 
             -   plot: b
-                intent:
+                intent: two
                 dialogue:
                     -
     sheets:

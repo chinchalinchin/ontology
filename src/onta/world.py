@@ -539,6 +539,9 @@ class World():
                     if calculator.distance(intent_pos, sprite_pos) < sprite_props['radii']['aware']:
                         sprite['path']['previous'] = sprite['path']['current']
                         sprite['path']['current'] = intent
+                    elif sprite['path']['current'] == intent:
+                        sprite['path']['current'] = sprite['path']['previous']
+                        sprite['path']['previous'] = intent
                     
                     self._reorient(spriteset_key, sprite_key)
 

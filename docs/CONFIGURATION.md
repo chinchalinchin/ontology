@@ -2,6 +2,10 @@
 
 The configuration files listed below are ingested when the game engine initializes. They are read into memory and accessed through the course of the game, but are not modified in any way.
 
+Configuration files define metadata for how to construct asset frames. They also contain property definitions that affect how the game state evolves. They do not contain any state information directly. 
+
+To put it in terms of the engine, different configurations applied to the same game state will result in different behavior governing state transitions on the same state trajectory. In contrast, the same configuration applied to different states will result in the same behavior, more or less, along a different state trajectory. Trajectory is a good analogy for the process of successive state transitions: two balls thrown in different gravitational fields from the same starting position will have isomorphic trajectories but different "behavior", but two balls thrown from different positions in the same gravitational field will have the same "behavior" but different trajectories.
+
 ## Controls
 
 - **Location**: _data/conf/controls.yaml_

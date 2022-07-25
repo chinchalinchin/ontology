@@ -14,7 +14,9 @@ The following definitions form the core concepts of the _onta_ engine. Each defi
     - _Property_: A _Sprite_ has a list of properties that determine how it behaves in-game. These properties influence the _Sprite_'s behavior in the _World_'s `iterate()` method.
     - _Frame_:
     - _Hero_: A special instance of a _Sprite_. This _Sprite_ represents the player's in-game character. It responds to user input via the _World_ `iterate()` method.
-
+    - _Intent_: A piece of state information held in a sprite that describes its current goals.
+    - _Path_: A piece of state information that determines where a sprite is heading.
+    
 3. **Tile**: An in-game asset whose frame is constructed from a tile sheet. _Tiles_ are not interactable in-game elements; they are simply the background on which other in-game elements interact. They are the first element rendered on the **View**.
 
 4. **Strut**: An in-game asset whose frame is constructed from a strut sheet. _Struts_ have "physical" presence in the game world, so to speak; in other words, the player can collide with _Struts_. They must have a hitbox defined in their properties

@@ -28,6 +28,13 @@ A strutset is group of _Strut_s created from the same _Strut_ frame. Each _Strut
 
 Elements defined in the dynamic state _do_ change over the course of the game. As a result, the dynamic state needs persisted to the file system anytime the user saves.
 
+
+This is perhaps the most important file in terms of the in-game state trajectories. This file essentially defines the initial state of any in-game entity that has its own state, and is thus interactable and animated. 
+
+_Sprite_\s are complex creatures. They have properties defined in their configuration, but they also have a state defined in the game state. 
+
+_Sprites_ have `intents`. This state information describes the different goals of a sprite depending on the current _plot_. See [Plotting](./PLOTTING.md) for more information on _plots_ and _intents_.
 ```yaml
 ```
+
 ### 
