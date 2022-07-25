@@ -10,8 +10,16 @@ The objects are orchestrated in the central _main_ module (i.e., _main.py_).
 
 ## View Module
 
-
 ## World Module
 
-
 ## Control Module
+
+## Engine Module
+
+See [Engine](./ENGINE.md) for more information on the different components of this module.
+
+## Load Module
+
+This is the module through which all physical files pass from the filesystem into the game memory. If the game needs access to any asset, configuration or state data, it will make a call to one of the functions in this module.
+
+## Util Module

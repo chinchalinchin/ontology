@@ -3,53 +3,96 @@
 #       if no other instances of that component, besides the composition, are 
 #       present
 
-apartment_exterior:
+house:
   struts:
-    apartment_exterior_wall:
+    house_exterior_wall:
       sets:
         - start:
             units: absolute
-            x: 2
+            x: 4
             y: 96
           cover: false
-    apartment_roof:
+        - start:
+            units: absolute
+            x: 96
+            y: 96
+          cover: false
+        - start:
+            units: absolute
+            x: 188
+            y: 96
+          cover: false
+    house_roof:
+      sets:
+        - start: 
+            units: absolute
+            x: 96
+            y: 0
+          cover: true
+    house_flattop:
       sets:
         - start:
             units: absolute
             x: 0
-            y: 5
+            y: 32
           cover: true
-    apartment_steps:
+        - start:
+            units: absolute
+            x: 188
+            y: 32
+          cover: true
+
+    house_steps:
       sets: 
         - start:
             units: absolute
-            x: 34
-            y: 168
+            x: 130
+            y: 180
           cover: false
   plates:
-    apartment_door:
+    house_door:
       sets:
         - start:
             units: absolute
-            x: 34
-            y: 130
+            x: 130
+            y: 135
           cover: false
           content: two
 
-apartment_interior:
+house_interior:
   struts:
-    apartment_interior_wall:
+    house_interior_wall:
       sets:
         - start:
             units: absolute
             x: 0 # 186
             y: 0 # 46
           cover: false
-    apartment_floor:
+        - start:
+            units: absolute
+            x: 96
+            y: 0
+          cover: false
+        - start:
+            units: absolute
+            x: 188
+            y: 0
+          cover: false
+    house_floor:
       sets:
         - start: 
             units: absolute
             x: 0
+            y: 105
+          cover: false
+        - start: 
+            units: absolute
+            x: 96
+            y: 105
+          cover: false
+        - start: 
+            units: absolute
+            x: 188
             y: 105
           cover: false
   plates:
@@ -57,7 +100,7 @@ apartment_interior:
       sets:
         - start:
             units: absolute
-            x: 38
+            x: 138
             y: 179
           cover: true
           content: one
@@ -115,3 +158,20 @@ grave:
             x: 0
             y: 31
           cover: false 
+
+vertical_wood_bridge:
+  struts:
+    vertical_wood_bridge_left:
+      sets:
+        - start:
+            units: absolute
+            x: 0
+            y: 0
+          cover: false
+    vertical_wood_bridge_right:
+      sets:
+        - start: 
+            units: absolute
+            x: 48
+            y: 0
+          cover: false

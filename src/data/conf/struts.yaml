@@ -17,10 +17,10 @@
 #         w:
 #         h:
 
-apartment_exterior_wall:
+house_exterior_wall:
   image:
     file: 
-      path: apartment.png
+      path: house.png
       position:
         x: 2
         y: 0
@@ -37,7 +37,7 @@ apartment_exterior_wall:
         h: 70
     moveable: false
         
-apartment_interior_wall:
+house_interior_wall:
   image:
     file: 
       path: house_interior_general.png
@@ -57,7 +57,7 @@ apartment_interior_wall:
         h: 64
     moveable: false
 
-apartment_floor:
+house_floor:
   image:
     file: 
       path: house_interior_luxury.png
@@ -71,10 +71,10 @@ apartment_floor:
     hitbox: null
     moveable: false
 
-apartment_roof:
+house_roof:
   image:
     file: 
-      path: apartment.png
+      path: house.png
       position:
         x: 0
         y: 96
@@ -85,10 +85,24 @@ apartment_roof:
     hitbox: null
     moveable: false
 
-apartment_steps:
+house_flattop:
+  image:
+    file:
+      path: house.png
+      position:
+        x: 96
+        y: 127
+    size:
+      w: 96
+      h: 64
+  properties:
+    hitbox: null
+    moveable: false
+
+house_steps:
   image: 
     file: 
-      path: apartment.png
+      path: house.png
       position:
         x: 128
         y: 16
@@ -99,10 +113,10 @@ apartment_steps:
     hitbox: null
     moveable: false 
 
-apartment_chimney:
+house_chimney:
   image:
     file: 
-      path: apartment.png
+      path: house.png
       position: 
         x: 199
         y: 11
@@ -117,6 +131,20 @@ apartment_chimney:
       size:
         w: 22
         h: 45
+    moveable: false
+
+house_window:
+  image:
+    file:
+      path: windows.png
+      position:
+       x: 192
+       y: 403
+    size:
+      w: 32
+      h: 27
+  properties:
+    hitbox: null
     moveable: false
 
 tree_trunk:
@@ -219,4 +247,44 @@ grave_marker:
       size:
         w: 25
         h: 25
+    moveable: false
+
+vertical_wood_bridge_left:
+  image:
+    file:
+      path: village.png
+      position:
+        x: 448
+        y: 9
+    size:
+      w: 48
+      h: 87
+  properties:
+    hitbox:
+      offset:
+        x: 0
+        y: 0
+      size:
+        w: 6
+        h: 87
+    moveable: false
+
+vertical_wood_bridge_right:
+  image:
+    file:
+      path: village.png
+      position:
+        x: 496
+        y: 9
+    size:
+      w: 48
+      h: 87
+  properties:
+    hitbox:
+      offset:
+        x: 42
+        y: 0
+      size:
+        w: 6
+        h: 40
     moveable: false

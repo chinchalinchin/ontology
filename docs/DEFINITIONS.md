@@ -27,6 +27,7 @@ The following definitions form the core concepts of the _onta_ engine. Each defi
 
 6. **View**: The GUI widget on which the game screen gets painted. The game world gets cropped to the widget based on the position of the player and the view dimensions.
 
+7 .**Ontology**: The bundle of configuration, asset files and state definitions (and scripts, see [Scripting](./SCRIPTING.md) for more information) taken together is called an _ontology_. It completely determines how the game engine behaves on every iteration of the loop (i.e., poll, update and render).
 ### Notes
 
 - Each in-game object builds up complexity in sequence by introducing another dimension of operation.

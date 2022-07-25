@@ -29,12 +29,6 @@ The general principle of _onta_ is: configuration is gospel. In other words, _on
 
 That said, _onta_ does have scripting capabilities, if the base engine is not sufficient for your project's purposes. These scripts are essentially callbacks that get injected with references to the game state information, allowing you to modify the game state on the fly. 
 
-For more information on configuration, see [Configuration](./CONFIGURATION.md).
-
-For more information on scripting, see [Scripting](./SCRIPTING.md)
-
-## 
-
 While possessing a degree of flexibility, _onta_ is highly opinionated on the type of games it will run. Obviously, only two-dimensional games based on spritesheets can be run in the _onta_ engine, but beyond that, _onta_ produces a very specific type of game. 
 
 What sets _onta_ apart is how it approaches the game loop. The state of the game is described through configuration files that are loaded into the game world once and then saved at the end of a session; everything in between is driven entirely through how the user interacts with the game engine. There are no "scripted" events in the game (not entirely accurate, but spiritually true). What this means is: the game state is always updating. When a NPC dialogue appears, for instance, this was a natural consequence of the previous game state, and when it disappears, that event will subsequently affect the game state's evolution. There are no "cutscenes"; all in-game events are derived through NPC and villain _intents_ and _plots_. A well-written _ontology_ creates a network of relationships between in-game elements
@@ -43,6 +37,12 @@ What does this mean?
 
 It means no invisible walls, beyond the world dimensions. A player can go anywhere, unless the _ontology_ is designed to contain locked doors, pressure plates, puzzles, etc. 
 
-It means there is "time" in the engine. In fact, a key piece of world configuration is the number of iterations equal to an in-game hour. "Plot" states, which affect the presence, dialogue and path options of sprites, can be calculated from a combination of in-game time and player history. 
+It means there is "time" in the engine. In fact, a key piece of world configuration is the number of iterations equal to an in-game hour. "Plot" states, which affect the presence, dialogue and path options of sprites, can be calculated from a combination of in-game time and state information. 
 
-As a consequence, this means the world state, the collection of NPC, hero, villain state, is always updating, regardless of whether or it that particular element is being rendered. NPCs and villains exist independent of the player, seeking goals defined in their _intents_.
+As a consequence, this means the world state, the collection of NPC, hero, villain states, is always updating, regardless of whether or it that particular element is being rendered. NPCs and villains exist independent of the player, seeking goals defined in their _intents_. A game _World_ in _onta_ is a "living", "breating" "thing".
+
+With _onta_, I have tried to apply all the mathematical, philosophical and scientific knowledge I have accumulated in my life in developing a world simulator, albeit a virutal one. But then again, when it comes right down to it, where does the physical end and the virtual start?
+
+For more information on configuration, see [Configuration](./CONFIGURATION.md).
+
+For more information on scripting, see [Scripting](./SCRIPTING.md)

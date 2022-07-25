@@ -17,7 +17,7 @@
 #           w:
 #           h:
 
-apartment_door:
+house_door:
   image:
     file: 
       path: doors.png
