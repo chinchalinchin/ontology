@@ -101,6 +101,7 @@ class Renderer():
                 for set_conf in group_conf['sets']:
                     start = calculator.scale(
                         (set_conf['start']['x'], set_conf['start']['y']), 
+                        game_world.tile_dimensions,
                         set_conf['start']['units']
                     )
                     set_dim = (set_conf['multiply']['w'], set_conf['multiply']['h'])
@@ -109,8 +110,8 @@ class Renderer():
                     
                     for i in range(set_dim[0]):
                         for j in range(set_dim[1]):
-                            dim = (start[0] + settings.TILE_DIM[0]*i, 
-                                start[1] + settings.TILE_DIM[1]*j)
+                            dim = (start[0] + game_world.tile_dimensions[0]*i, 
+                                start[1] + game_world.tile_dimensions[1]*j)
 
                             if set_conf['cover']:
                                 self.static_cover_frame[layer].paste(group_tile, dim, group_tile)
@@ -141,6 +142,7 @@ class Renderer():
                     for set_conf in group_sets:
                         start = calculator.scale(
                             (set_conf['start']['x'], set_conf['start']['y']), 
+                            game_world.tile_dimensions,
                             set_conf['start']['units']
                         )
                         log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_struts')
@@ -184,12 +186,15 @@ class Renderer():
         hero_pt = (game_world.hero['position']['x'], game_world.hero['position']['y'])
         crop_box = self.calculate_crop_box(screen_dim, world_dim, hero_pt)
 
-        return self.world_frame.crop(crop_box)
+        self.world_frame = self.world_frame.crop(crop_box)
+
+        return self.world_frame
 
     def view(self, game_world: world.World, view_widget: QtWidgets.QWidget, repository: repo.Repo):
-        view_frame = view_widget.layout().itemAt(0).widget() 
-        self.render(game_world, repository)
-        qim = ImageQt(self.world_frame)
+        cropped = self.render(game_world, repository)
+        qim = ImageQt(cropped)
         pix = QtGui.QPixmap.fromImage(qim)
+
+        view_frame = view_widget.layout().itemAt(0).widget() 
         view_frame.setPixmap(pix)
         return view_widget

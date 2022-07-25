@@ -45,13 +45,7 @@ SCREEN_WIDTH = int(os.environ.setdefault('SCREEN_WIDTH', '800'))
 SCREEN_HEIGHT = int(os.environ.setdefault('SCREEN_HEIGHT', '600'))
 """Default GUI height"""
 
-# Asset Configuration
-
-SPRITESHEET_DIM = (832, 1344)
-"""Dimensions of spritesheets"""
-
-TILE_DIM = (96, 32)
-"""Dimensions of a tile"""
+# Rendering Configuration
 
 IMG_MODE = "RGBA"
 """
@@ -66,8 +60,6 @@ Color channels for a blank screen for the given rendering mode. If `IMG_MODE == 
 
 see [PIL docs](https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes) for more information.
 """
-
-# Game Loop Configuration
 
 FPS=30
 """Framerate for the rendering engine"""

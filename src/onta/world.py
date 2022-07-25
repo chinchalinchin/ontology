@@ -14,6 +14,7 @@ log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
 class World():
 
+    # CONFIGURATION FIELDS
     composite_conf = None
     """
     """
@@ -62,6 +63,8 @@ class World():
     }
     ```
     """
+
+    # OBJECT SET FIELDS
     tilesets = None
     """
     ```python
@@ -134,12 +137,6 @@ class World():
     compositions = None
     """
     """
-    dimensions = None
-    """
-    ```
-    self.dimensions = (w, h) # tuple
-    ```
-    """
     hero = None
     """
     ```python
@@ -183,6 +180,16 @@ class World():
     }
     ```
     """
+
+    dimensions = None
+    """
+    ```
+    self.dimensions = (w, h) # tuple
+    ```
+    """
+    tile_dimensions = None
+    """
+    """
     layer = None
     layers = None
     doors = None
@@ -220,8 +227,10 @@ class World():
         log.debug(f'Initializing simple static world state...', 'World._init_static_state')
         static_conf = state_ao.get_state('static')
 
+        self.tile_dimensions = (static_conf['properties']['tiles']['w'], static_conf['properties']['tiles']['h'])
         self.dimensions = calculator.scale(
             (static_conf['properties']['size']['w'], static_conf['properties']['size']['h']),
+            self.tile_dimensions,
             static_conf['properties']['size']['units']
         )
 
@@ -256,16 +265,11 @@ class World():
                     for composeset in compose_sets:
                         # NOTE: compose_set = { 'start': { ... } }
                         #           via compose state information (static.yaml)
-                        if composeset['start']['units'] == 'absolute':
-                            compose_start = (
-                                composeset['start']['x'], 
-                                composeset['start']['y']
-                            )
-                        else:
-                            compose_start =(
-                                composeset['start']['x']*settings.TILE_DIM[0],
-                                composeset['start']['y']*settings.TILE_DIM[1]
-                            )
+                        compose_start = calculator.scale(
+                            (composeset['start']['x'], composeset['start']['y']),
+                            self.tile_dimensions,
+                            composeset['start']['units']
+                        )
 
                         for elementset_key, elementset in compose_conf.items():
 
@@ -353,12 +357,6 @@ class World():
         """
         log.debug(f'Calculating stationary hitbox locations...', 'World._init_stationary_hitboxes')
         for layer in self.layers:
-
-            # if self.platesets[layer] is None:
-            #     self.platesets[layer] = {}
-            # if self.strutsets[layer] is None:
-            #     self.strutsets[layer] = {}
-
             for static_set in ['strutset', 'plateset']:
 
                 if static_set == 'strutset':
@@ -378,6 +376,7 @@ class World():
                         if set_props['hitbox'] is not None:
                             x,y = calculator.scale(
                                 (set_conf['start']['x'],set_conf['start']['y']),
+                                self.tile_dimensions,
                                 set_conf['start']['units']
                             )
                             hitbox = (

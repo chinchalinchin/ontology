@@ -94,7 +94,7 @@ def do(
         # # pre_render hook here
         # scripts.apply_scripts(game_world, 'pre_render')
 
-        render_engine.render(game_world, game_view, asset_repository)
+        render_engine.view(game_world, game_view, asset_repository)
 
         # # post_render hook here
         # scripts.apply_scripts(game_world, 'post_render')

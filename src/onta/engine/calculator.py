@@ -1,26 +1,25 @@
 import math
 
-import onta.settings as settings
-
-def projection(angle = 45):
+def projection(angle:float = 45) -> float:
     return math.cos(angle*math.pi/180), math.sin(angle*math.pi/180)
 
-def distance(a, b):
+def distance(a: tuple, b: tuple) -> float:
     dx = a[0] - b[0]
     dy = a[1] - b[1]
     return math.sqrt(dx*dx + dy*dy)
 
-def intersection(rect_a: tuple, rect_b: tuple):
-    """ Determines if two rectangles intersect. Rectangles are defined by the coordinate of the upper-left corner (as viewed in screen units, where the down is the positive y-direction), and its dimensions (i.e., width and height)
+def intersection(rect_a: tuple, rect_b: tuple) -> bool:
+    """Determines if two rectangles intersect. Rectangles are defined by the coordinate of the upper-left corner (as viewed in screen units, where the down is the positive y-direction), and its dimensions (i.e., width and height)
 
-    :type rect_a:tuple:
-    :param rect_a:tuple: (x, y, width, height)
 
-    :type rect_b:tuple:
-    :param rect_b:tuple: (x, y, width, height)
-
-    :rtype:bool:
-    """
+    :param rect_a: _(x,y,w,h)_
+    :type rect_a: tuple
+    :param rect_b: _(x,y,w,h)_
+    :type rect_b: tuple
+    :return: `True` if intersection, `False` otherwise.
+    :rtype: bool
+    """    
+    
     # verify rectangles have area
     if 0 in [rect_a[2], rect_a[3], rect_b[2], rect_b[3]]:
         return False
@@ -38,7 +37,18 @@ def intersection(rect_a: tuple, rect_b: tuple):
 
     return True
 
-def scale(start, units = 'absolute'):          
+def scale(point: tuple, factor: tuple, units: str = 'absolute') -> tuple:    
+    """Scales a coordinate _(x,y)_ by the tile dimensions if the units match, otherwise returns point unaltered.
+
+    :param point: _(x,y))_
+    :type point: tuple
+    :param factor: _(w,h)_
+    :type factor: tuple
+    :param units: measurement units, defaults to 'absolute'
+    :type units: str, optional
+    :return: the scaled coordinate
+    :rtype: tuple
+    """
     if units == 'tiles':
-        return (start[0]*settings.TILE_DIM[0], start[1]*settings.TILE_DIM[1])
-    return start
+        return (point[0]*factor[0], point[1]*factor[1])
+    return point

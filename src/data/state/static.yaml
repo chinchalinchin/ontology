@@ -8,9 +8,12 @@
 #         must be included...
 
 properties:
+  tiles:
+    w: 96
+    h: 32
   size:
     # 1920 by 1920
-    units: relative
+    units: tiles
     w: 20
     h: 60
   # determines whether a sprite has arrived at a position, i.e. if the sprite is within a radius of 3 pixels
@@ -20,9 +23,6 @@ properties:
   hour: 18000
 
 # TODO: ??? possibly separate FPS from UPS.
-
-# relative -> relative to settings.TILE_DIM
-# absolute -> pixel value
 
 layers:
   one:
@@ -129,7 +129,7 @@ layers:
               h: 1
             cover: false
           - start:
-              units: tile
+              units: tiles
               x: 14
               y: 5
             multiply:
