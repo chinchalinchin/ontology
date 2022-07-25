@@ -1,5 +1,6 @@
 import math
 
+import onta.settings as settings
 
 def projection(angle = 45):
     return math.cos(angle*math.pi/180), math.sin(angle*math.pi/180)
@@ -36,3 +37,8 @@ def intersection(rect_a: tuple, rect_b: tuple):
         return False
 
     return True
+
+def scale(start, units = 'absolute'):          
+    if units == 'tiles':
+        return (start[0]*settings.TILE_DIM[0], start[1]*settings.TILE_DIM[1])
+    return start

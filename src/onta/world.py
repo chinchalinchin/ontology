@@ -220,16 +220,10 @@ class World():
         log.debug(f'Initializing simple static world state...', 'World._init_static_state')
         static_conf = state_ao.get_state('static')
 
-        if static_conf['properties']['size']['units'] == 'relative':
-            self.dimensions = (
-                static_conf['properties']['size']['w']*settings.TILE_DIM[0], 
-                static_conf['properties']['size']['h']*settings.TILE_DIM[1]
-            )
-        else:
-            self.dimensions =(
-                static_conf['properties']['size']['w'],
-                static_conf['properties']['size']['h']
-            )
+        self.dimensions = calculator.scale(
+            (static_conf['properties']['size']['w'], static_conf['properties']['size']['h']),
+            static_conf['properties']['size']['units']
+        )
 
         self.layers = []
         self.tilesets, self.strutsets = {}, {}
@@ -382,15 +376,10 @@ class World():
                     for i, set_conf in enumerate(set_conf['sets']):
 
                         if set_props['hitbox'] is not None:
-                            if set_conf['start']['units'] == 'default':
-                                x = set_conf['start']['x']*settings.TILE_DIM[0]
-                                y = set_conf['start']['y']*settings.TILE_DIM[1]
-                            if set_conf['start']['units'] == 'relative':
-                                x = set_conf['start']['x']*set_props['size']['w']
-                                y = set_conf['start']['y']*set_props['size']['h']
-                            else:
-                                x, y = set_conf['start']['x'], set_conf['start']['y']
-                            
+                            x,y = calculator.scale(
+                                (set_conf['start']['x'],set_conf['start']['y']),
+                                set_conf['start']['units']
+                            )
                             hitbox = (
                                 x + set_props['hitbox']['offset']['x'], 
                                 y + set_props['hitbox']['offset']['y'],
@@ -478,8 +467,7 @@ class World():
 
                     elif user_input['sw']:
                         self.hero['position']['x'] -= speed*proj[0]
-
-                    self.hero['position']['y'] += speed*proj[1]
+                        self.hero['position']['y'] += speed*proj[1]
 
                 elif user_input['w']:
                     self.hero['position']['x'] -= speed

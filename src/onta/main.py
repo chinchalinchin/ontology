@@ -54,7 +54,7 @@ def create(ontology_path: str):
 
 def start(ontology_path: str):
     log.debug('Creating GUI...', 'start')
-    app, vw = view.init(), view.view()
+    app, vw = view.get_app(), view.get_view()
     cntl, wrld, eng, rep = create(ontology_path)
 
     log.debug('Threading game...', 'start')

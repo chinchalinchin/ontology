@@ -6,6 +6,7 @@ from PIL.ImageQt import ImageQt
 
 import onta.settings as settings
 import onta.world as world
+import onta.engine.calculator as calculator
 import onta.load.repo as repo
 import onta.util.logger as logger
 import onta.util.gui as gui
@@ -13,13 +14,13 @@ import onta.util.gui as gui
 
 log = logger.Logger('onta.view', settings.LOG_LEVEL)
 
-def init() -> QtWidgets.QApplication:
+def get_app() -> QtWidgets.QApplication:
     return QtWidgets.QApplication([])    
 
 def quit(app) -> None:
     sys.exit(app.exec_())
 
-def view() -> QtWidgets.QWidget:
+def get_view() -> QtWidgets.QWidget:
     view_widget, view_layout, view_frame = \
             QtWidgets.QWidget(), QtWidgets.QVBoxLayout(),  QtWidgets.QLabel()
 
@@ -40,7 +41,6 @@ class Renderer():
     static_cover_frame = None
     static_back_frame = None
     world_frame = None
-    hero_frame = None
 
     @staticmethod
     def calculate_crop_box(screen_dim: tuple, world_dim: tuple, hero_pt: tuple):
@@ -88,36 +88,27 @@ class Renderer():
             self.static_back_frame[layer] = gui.new_image(static_world.dimensions)
             self.static_cover_frame[layer] = gui.new_image(static_world.dimensions)
         self._render_tiles(static_world, repository)
-        self._render_struts_and_plates(static_world, repository)
+        self._render_sets(static_world, repository)
 
     def _render_tiles(self, game_world: world.World, repository: repo.Repo) -> None:
-        # TODO: this can be condensed into `self._render_struts_and_plates()`
         log.debug('Rendering tile sets', 'Repo._render_tiles')
 
         for layer in game_world.layers:
             for group_key, group_conf in game_world.get_tilesets(layer).items():
-                group_tile = repository.get_asset_frame('tiles', group_key)
-
                 log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
 
+                group_tile = repository.get_asset_frame('tiles', group_key)
                 for set_conf in group_conf['sets']:
-                    if set_conf['start']['units'] == 'default':
-                        start = (set_conf['start']['x']*settings.TILE_DIM[0], 
-                            set_conf['start']['y']*settings.TILE_DIM[1])
-
-                    elif set_conf['start']['units'] == 'relative':
-                        start = (set_conf['start']['x']*group_tile.size[0], 
-                            set_conf['start']['y']*group_tile.size[1])
-                    else:
-                        start = (set_conf['start']['x'], set_conf['start']['y'])
-
+                    start = calculator.scale(
+                        (set_conf['start']['x'], set_conf['start']['y']), 
+                        set_conf['start']['units']
+                    )
                     set_dim = (set_conf['multiply']['w'], set_conf['multiply']['h'])
 
                     log.debug(f'Rendering group set at {start[0], start[1]} with dimensions {set_dim[0], set_dim[1]}', 'Repo._render_tiles')
                     
                     for i in range(set_dim[0]):
                         for j in range(set_dim[1]):
-                            # TODO: see above
                             dim = (start[0] + settings.TILE_DIM[0]*i, 
                                 start[1] + settings.TILE_DIM[1]*j)
 
@@ -126,8 +117,8 @@ class Renderer():
                             else:
                                 self.static_back_frame[layer].paste(group_tile, dim, group_tile)
 
-    def _render_struts_and_plates(self, game_world: world.World, repository: repo.Repo):
-        log.debug('Rendering strut sets', 'Repo._render_tiles')
+    def _render_sets(self, game_world: world.World, repository: repo.Repo):
+        log.debug('Rendering strut and plate sets', 'Repo._render_sets')
 
         for static_set in ['struts', 'plates']:
             for layer in game_world.layers:
@@ -148,17 +139,10 @@ class Renderer():
                     log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
 
                     for set_conf in group_sets:
-                        if set_conf['start']['units'] == 'default':
-                            start = (set_conf['start']['x']*settings.TILE_DIM[0], 
-                                set_conf['start']['y']*settings.TILE_DIM[1])
-
-                        elif set_conf['start']['units'] == 'relative':
-                            start = (set_conf['start']['x']*group_frame.size[0], 
-                                set_conf['start']['y']*group_frame.size[1])
-
-                        else:
-                            start = (set_conf['start']['x'], set_conf['start']['y'])
-
+                        start = calculator.scale(
+                            (set_conf['start']['x'], set_conf['start']['y']), 
+                            set_conf['start']['units']
+                        )
                         log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_struts')
 
                         if set_conf['cover']:
@@ -187,8 +171,7 @@ class Renderer():
             sprite_frame = repository.get_sprite_frame(sprite_key, sprite_state, sprite_frame)
             self.world_frame.paste(sprite_frame, sprite_position, sprite_frame)
 
-    def render(self, game_world: world.World, view_widget: QtWidgets.QWidget, repository: repo.Repo):
-        view_frame = view_widget.layout().itemAt(0).widget() 
+    def render(self, game_world: world.World, repository: repo.Repo):
         self.world_frame = gui.new_image(game_world.dimensions)
 
         self._render_static(game_world.layer, False)
@@ -201,7 +184,12 @@ class Renderer():
         hero_pt = (game_world.hero['position']['x'], game_world.hero['position']['y'])
         crop_box = self.calculate_crop_box(screen_dim, world_dim, hero_pt)
 
-        qim = ImageQt(self.world_frame.crop(crop_box))
+        return self.world_frame.crop(crop_box)
+
+    def view(self, game_world: world.World, view_widget: QtWidgets.QWidget, repository: repo.Repo):
+        view_frame = view_widget.layout().itemAt(0).widget() 
+        self.render(game_world, repository)
+        qim = ImageQt(self.world_frame)
         pix = QtGui.QPixmap.fromImage(qim)
         view_frame.setPixmap(pix)
         return view_widget

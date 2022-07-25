@@ -31,7 +31,7 @@ layers:
         sets:
           # top
           - start:
-              units: relative
+              units: tiles
               x: 0
               y: 2
             multiply:
@@ -39,7 +39,7 @@ layers:
               h: 58
             cover: false
           - start:
-              units: relative
+              units: tiles
               x: 3
               y: 3
             multiply:
@@ -47,7 +47,7 @@ layers:
               h: 12
             cover: false
           - start: 
-              units: relative
+              units: tiles
               x: 5
               y: 7
             multiply:
@@ -55,7 +55,7 @@ layers:
              h: 9
             cover: false
           - start:
-              units: relative
+              units: tiles
               x: 8
               y: 7
             multiply: 
@@ -63,7 +63,7 @@ layers:
               h: 4
             cover: false
           - start:
-              units: relative
+              units: tiles
               x: 9
               y: 5
             multiply: 
@@ -71,7 +71,7 @@ layers:
               h: 2
             cover: false
           - start:
-              units: relative
+              units: tiles
               x: 11
               y: 6 
             multiply:
@@ -81,7 +81,7 @@ layers:
       grass:
         sets:
           - start:
-              units: relative
+              units: tiles
               x: 0
               y: 0
             multiply:
@@ -89,7 +89,7 @@ layers:
               h: 2
             cover: false
           - start:
-              units: relative
+              units: tiles
               x: 1
               y: 2
             multiply:
@@ -97,7 +97,7 @@ layers:
               h: 1
             cover: false
           - start:
-              units: relative
+              units: tiles
               x: 2
               y: 3
             multiply:
@@ -105,7 +105,7 @@ layers:
               h: 1
             cover: false
           - start:
-              units: relative
+              units: tiles
               x: 5
               y: 4
             multiply:
@@ -113,7 +113,7 @@ layers:
               h: 1
             cover: false
           - start:
-              units: relative
+              units: tiles
               x: 5
               y: 5
             multiply:
@@ -121,7 +121,7 @@ layers:
               h: 2
             cover: false
           - start:
-              units: relative
+              units: tiles
               x: 11
               y: 5
             multiply:
@@ -129,7 +129,7 @@ layers:
               h: 1
             cover: false
           - start:
-              units: relative
+              units: tile
               x: 14
               y: 5
             multiply:
@@ -137,7 +137,7 @@ layers:
               h: 55
             cover: false
           - start:
-              units: relative
+              units: tiles
               x: 11
               y: 8
             multiply:
@@ -145,7 +145,7 @@ layers:
               h: 58
             cover: false
           - start:
-              units: relative
+              units: tiles
               x: 8
               y: 11
             multiply:
@@ -153,7 +153,7 @@ layers:
               h: 49
             cover: false
           - start:
-              units: relative
+              units: tiles
               x: 3
               y: 15
             multiply:
@@ -233,7 +233,7 @@ layers:
       hole:
         sets:
           - start:
-              units: relative
+              units: tiles
               x: 0
               y: 0
             multiply:
