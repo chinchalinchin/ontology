@@ -417,6 +417,7 @@ class World():
         self.plot = dynamic_conf['hero']['plot']
         self.npcs = dynamic_conf.get('npcs') if dynamic_conf.get('npcs') is not None else {}
         self.villains = dynamic_conf.get('villains') if dynamic_conf.get('villains') is not None else {}
+        print(self.npcs)
 
 
     def _update_hero(self, user_input: dict) -> None: 
@@ -534,7 +535,8 @@ class World():
                     sprite_pos = (sprite['position']['x'], sprite['position']['y'])
                     intent = self.get_sprite_intent(sprite_key)
                     
-                    if intent not in self.sprite_property_conf[sprite_key]['paths']:
+                
+                    if intent['intent'] not in list(self.sprite_property_conf[sprite_key]['paths'].keys()):
                         # if intent is sprite location based
 
                         log.debug(f'Checking {sprite_key} plot {self.plot} {intent["intent"]} intent...', 'World.update_sprites')
@@ -557,6 +559,7 @@ class World():
                         elif distance >= sprite_props['radii']['aware'] \
                             and sprite['path']['current'] == intent['intent']:
 
+                            log.debug(f'Resetting {sprite_key} memory to {sprite["path"]["previous"]}', 'World.update_sprites')
                             sprite['path']['current'] = sprite['path']['previous']
                             sprite['path']['previous'] = intent['intent']
                         
@@ -584,11 +587,6 @@ class World():
             self.npcs, 
             self.villains
         )
-
-        print(self.sprite_property_conf[sprite_key]['paths'])
-
-        print(pathset)
-        print(sprite)
 
         paths.reorient(
             sprite,
