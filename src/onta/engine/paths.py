@@ -73,20 +73,20 @@ def concat_dynamic_paths(sprite, static_pathset, hero, npcs, vils):
     npc_keys = list(npcs.keys())
     villain_keys = list(vils.keys())
 
-    if sprite['path'] == 'hero':
+    if sprite['path']['current'] == 'hero':
         pathset['hero'] = {
             'x': hero['position']['x'],
             'y': hero['position']['y']
         }
-    elif sprite['path'] in npc_keys:
-        pathset[sprite['path']] = {
-            'x': npcs[sprite['path']]['position']['x'],
-            'y': npcs[sprite['path']]['position']['y']
+    elif sprite['path']['current'] in npc_keys:
+        pathset[sprite['path']['curent']] = {
+            'x': npcs[sprite['path']['current']]['position']['x'],
+            'y': npcs[sprite['path']['current']]['position']['y']
         }
     elif sprite['path'] in villain_keys:
-        pathset[sprite['path']] = {
-            'x': vils[sprite['path']]['position']['x'],
-            'y': vils[sprite['path']]['position']['y']
+        pathset[sprite['path']['current']] = {
+            'x': vils[sprite['path']['current']]['position']['x'],
+            'y': vils[sprite['path']['current']]['position']['y']
         }
     return pathset
 

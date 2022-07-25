@@ -539,7 +539,7 @@ class World():
                     if intent['intent'] not in list(self.sprite_property_conf[sprite_key]['paths'].keys()):
                         # if intent is sprite location based
 
-                        log.debug(f'Checking {sprite_key} plot {self.plot} {intent["intent"]} intent...', 'World.update_sprites')
+                        log.debug(f'Checking {sprite_key} plot {self.plot} {intent["intent"]} intent conditions...', 'World.update_sprites')
                         intent_pos = paths.locate_intent(
                             intent['intent'], 
                             self.hero, 
