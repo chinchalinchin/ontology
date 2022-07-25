@@ -67,3 +67,25 @@ def reorient(sprite, hitbox, collision_sets, goal, speed, world_dim) -> None:
             sprite['state'] = 'walk_right'
         elif 'run' in sprite['state']:
             sprite['state'] = 'run_right'
+
+def concat_dynamic_paths(sprite, actual_pathset, hero, npcs, vils):
+    pathset = actual_pathset.copy()
+    npc_keys = list(npcs.keys())
+    villain_keys = list(vils.keys())
+
+    if sprite['path'] == 'hero':
+        pathset['hero'] = {
+            'x': hero['position']['x'],
+            'y': hero['position']['y']
+        }
+    elif sprite['path'] in npc_keys:
+        pathset[sprite['path']] = {
+            'x': npcs[sprite['path']]['position']['x'],
+            'y': npcs[sprite['path']]['position']['y']
+        }
+    elif sprite['path'] in villain_keys:
+        pathset[sprite['path']] = {
+            'x': vils[sprite['path']]['position']['x'],
+            'y': vils[sprite['path']]['position']['y']
+        }
+    return pathset

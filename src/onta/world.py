@@ -537,29 +537,23 @@ class World():
                     sprite['frame'] = 0
 
 
-    def _reorient(self, spriteset_key, sprite_key) -> None:
+    def _reorient(self, spriteset_key: str, sprite_key: str) -> None:
+
         if spriteset_key == 'npcs':
             sprite = self.npcs[sprite_key]
         elif spriteset_key == 'villains':
             sprite = self.villains[sprite_key]
-
         sprite_hitbox = self.get_sprite_hitbox(spriteset_key, 'strut', sprite_key)
-        vil_hitboxes = self.get_sprite_hitboxes('villains', 'strut', sprite['layer'], [sprite_key])
-        npc_hitboxes = self.get_sprite_hitboxes('npcs', 'strut', sprite['layer'], [sprite_key])
 
-        collision_sets = []
-        if npc_hitboxes is not None:
-            collision_sets.append(npc_hitboxes)
-        if vil_hitboxes is not None:
-            collision_sets.append(vil_hitboxes)
-        if self.strutsets[sprite['layer']]['hitboxes'] is not None:
-            collision_sets.append(self.strutsets[sprite['layer']]['hitboxes'])
+        collision_sets = self.get_collision_sets_relative_to(sprite, sprite_key, 'strut')
         
-        pathset = self.sprite_property_conf[sprite_key]['paths'].copy()
-
-        if sprite['path'] == 'hero':
-            pathset['hero']['x'] = self.hero['position']['x']
-            pathset['hero']['y'] = self.hero['position']['y']
+        pathset = paths.concat_dynamic_paths(
+            sprite, 
+            self.sprite_property_conf[sprite_key]['paths'], 
+            self.hero, 
+            self.npcs, 
+            self.villains
+        )
 
         paths.reorient(
             sprite,
@@ -575,31 +569,17 @@ class World():
         """
         
         .. notes:
-            - Keep in mind, the sprite collision doesn't care what sprite or strut with which the player collided, only what direction the player was travelling when the collision happened. The door hit detection, however, _is_ aware of what door with which the player is colliding, in order to locate the world layer to which the door is connected.
-            - Technically, there is overlap here. Since sprite npc is checked against every other sprite for collisions, there are Pn = n!/(n-2)! permutations, but Cn = n!/(2!(n-2)!). Therefore, Pn - Cn checks are unneccesary. To circumvent this problem (sort of), a collision map is kept internally within this method to keep track of which sprite-to-sprite collisions have already taken place. However, whether or not this is worth the effort, since the map has to be traversed when it is initialized.
-            - There is an inherent ordering here affecting how collisions work. Because the NPC set is checked first, the act of an NPC-Villain collision will always proceed relative to the NPC, meaning the NPC will recoil and reorient their direction based on the collision, while the villain iteration will miss the collision since the NPC has already been recoiled when its collision detection is attempt.
+            - Keep in mind, the sprite collision doesn't care what sprite or strut with which the sprite collided, only what direction the sprite was travelling when the collision happened. The door hit detection, however, _is_ aware of what door with which the player is colliding, in order to locate the world layer to which the door is connected.
+            - Technically, there is overlap here. Since sprite is checked against every other sprite for collisions, there are Pn = n!/(n-2)! permutations, but Cn = n!/(2!(n-2)!) distinct combinations. Therefore, Pn - Cn checks are unneccesary. To circumvent this problem (sort of), a collision map is kept internally within this method to keep track of which sprite-to-sprite collisions have already taken place. However, whether or not this is worth the effort, since the map has to be traversed when it is initialized, is an open question? 
+            - There is an inherent ordering here affecting how collisions work. Because the NPC set is checked first, the act of an NPC-villain collision will always proceed relative to the NPC, meaning the NPC will recoil and reorient their direction based on the collision, while the villain iteration will miss the collision since the NPC has already been recoiled when the villain's collision detection is attempt.
         .. todos:
             - see third note. It may be possible to use the collision map to also apply the collision to the villain next iteration.
         """
 
-        collision_map = { 
-            npc_key: {
-                vil_key: False for vil_key in self.villains.keys()
-            } for npc_key in self.npcs.keys()
-        }
-        collision_map.update({
-            vil_key: {
-                npc_key: False for npc_key in self.npcs.keys()
-            } for vil_key in self.villains.keys()
-        })
+        collision_map = collisions.generate_collision_map(self.npcs, self.villains)
 
         for spriteset_key in ['hero', 'npcs', 'villains']:
-            if spriteset_key == 'hero':
-                iter_set = { 'hero': self.hero }
-            elif spriteset_key == 'npcs':
-                iter_set = self.npcs
-            elif spriteset_key == 'villains':
-                iter_set = self.villains
+            iter_set = self.get_spriteset(spriteset_key)
 
             for sprite_key, sprite in iter_set.items():
                 if spriteset_key in ['npcs', 'villains']:
@@ -612,18 +592,7 @@ class World():
 
                         sprite_hitbox = self.get_sprite_hitbox(spriteset_key, hitbox_key, sprite_key)
 
-                        collision_sets = []
-                        if hitbox_key =='sprite':
-                            npc_hitboxes = self.get_sprite_hitboxes('npcs', hitbox_key, sprite['layer'], exclusions)
-                            vil_hitboxes = self.get_sprite_hitboxes('villains', hitbox_key, sprite['layer'], exclusions)
-
-                            if npc_hitboxes is not None:
-                                collision_sets.append(npc_hitboxes)
-                            if vil_hitboxes is not None:
-                                collision_sets.append(vil_hitboxes)
-
-                        if hitbox_key == 'strut' and self.strutsets[sprite['layer']]['hitboxes'] is not None:
-                            collision_sets.append(self.strutsets[sprite['layer']]['hitboxes'])
+                        collision_sets = self.get_collision_sets_relative_to(sprite, sprite_key, hitbox_key)
 
                         log.infinite(f'Checking {spriteset_key} set member "{sprite_key}" with hitbox {sprite_hitbox} for {hitbox_key} collisions...', 
                             '_apply_physics')
@@ -659,16 +628,7 @@ class World():
     
                 elif spriteset_key == 'hero':
                     sprite_hitbox = self.get_sprite_hitbox(spriteset_key, 'sprite', sprite_key)
-                    vil_hitboxes = self.get_sprite_hitboxes('villains', 'sprite', self.layer)
-                    npc_hitboxes = self.get_sprite_hitboxes('npcs', 'sprite', self.layer)
-
-                    collision_sets = []
-                    if npc_hitboxes is not None:
-                        collision_sets.append(npc_hitboxes)
-                    if vil_hitboxes is not None:
-                        collision_sets.append(vil_hitboxes)
-                    if self.strutsets[self.layer]['hitboxes'] is not None:
-                        collision_sets.append(self.strutsets[self.layer]['hitboxes'])
+                    collision_sets = self.get_collision_sets_relative_to(self.hero, 'hero', 'sprite')
 
                     log.infinite('Checking "hero" for collisions...', '_apply_physics')
 
@@ -686,6 +646,7 @@ class World():
                     [ door['hitbox'] ]
                 ):
                     self.layer = door['layer']
+                    self.hero['layer'] = door['layer']
                     break
 
 
@@ -715,16 +676,16 @@ class World():
         return doors
 
 
-    def get_sprite_hitbox(self, spriteset, hitbox_key, sprite_key):
+    def get_sprite_hitbox(self, spriteset_key, hitbox_key, sprite_key):
         """
         .. notes:
             - A sprite's hitbox dimensions are fixed, but the actual hitbox coordinates depend on the position of the sprite. This method must be called each iteration of the world loop, so the newest coordinates of the hitbox are retrieved.
         """
-        if spriteset == 'hero':
+        if spriteset_key == 'hero':
             sprite = self.hero
-        elif spriteset == 'npcs':
+        elif spriteset_key == 'npcs':
             sprite = self.npcs.get(sprite_key)
-        elif spriteset == 'villains':
+        elif spriteset_key == 'villains':
             sprite = self.villains.get(sprite_key)
         if sprite is not None:
             raw_hitbox = self.sprite_property_conf[sprite_key]['hitboxes'][hitbox_key]
@@ -738,23 +699,37 @@ class World():
         return None
 
 
-    def get_sprite_hitboxes(self, spriteset, hitbox_key, layer, exclude = None):
+    def get_sprite_hitboxes(self, spriteset_key, hitbox_key, layer, exclude = None):
         calculated = []
 
-        if spriteset == 'npcs':
+        if spriteset_key == 'npcs':
             iter_set = self.get_npcs(layer)
-        elif spriteset == 'villains':
+        elif spriteset_key == 'villains':
             iter_set = self.get_villains(layer)
         else:
             iter_set = {}
 
         for sprite_key in iter_set.keys():
             if exclude is None or sprite_key not in exclude:
-                if spriteset == 'npcs':
+                if spriteset_key == 'npcs':
                     calculated.append(self.get_sprite_hitbox('npcs', hitbox_key, sprite_key))
-                elif spriteset == 'villains':
+                elif spriteset_key == 'villains':
                     calculated.append(self.get_sprite_hitbox('villains', hitbox_key, sprite_key))
         return calculated
+
+
+    def get_collision_sets_relative_to(self, sprite, sprite_key, hitbox_key):
+        vil_hitboxes = self.get_sprite_hitboxes('villains', hitbox_key, sprite['layer'], [sprite_key])
+        npc_hitboxes = self.get_sprite_hitboxes('npcs', hitbox_key, sprite['layer'], [sprite_key])
+
+        collision_sets = []
+        if npc_hitboxes is not None:
+            collision_sets.append(npc_hitboxes)
+        if vil_hitboxes is not None:
+            collision_sets.append(vil_hitboxes)
+        if hitbox_key == 'strut' and self.strutsets[sprite['layer']]['hitboxes'] is not None:
+            collision_sets.append(self.strutsets[sprite['layer']]['hitboxes'])
+        return collision_sets
 
 
     def get_strutsets(self, layer):
@@ -774,6 +749,14 @@ class World():
             if key not in ['doors']
         }
 
+
+    def get_spriteset(self, spriteset_key):
+        if spriteset_key == 'hero':
+            return { 'hero': self.hero }
+        elif spriteset_key == 'npcs':
+            return self.npcs
+        elif spriteset_key == 'villains':
+            return self.villains
 
     def get_npcs(self, layer):
         return {

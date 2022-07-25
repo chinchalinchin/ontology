@@ -22,3 +22,16 @@ def recoil_sprite(sprite, sprite_props):
         sprite['position']['x'] += sprite_props['collide']
     else:
         sprite['position']['y'] += sprite_props['collide']
+
+def generate_collision_map(npcs, villains):
+    collision_map = { 
+        npc_key: {
+            vil_key: False for vil_key in villains.keys()
+        } for npc_key in npcs.keys()
+    }
+    collision_map.update({
+        vil_key: {
+            npc_key: False for npc_key in npcs.keys()
+        } for vil_key in villains.keys()
+    })
+    return collision_map

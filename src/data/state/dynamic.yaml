@@ -23,6 +23,6 @@ villains:
       x: 500
       y: 800
     state: walk_down
-    path: one
+    path: hero
     frame: 0
     layer: one
