@@ -119,4 +119,27 @@ plain_chest:
         w: 28
         h: 10
     type: container
+
+sword_stone:
+  image:
+    file:
+      path: sword_in_stone.png
+      on_position:
+        x: 26
+        y: 0
+      off_position:
+        x: 0
+        y: 0
+    size:
+      w: 26
+      h: 38
+  properties:
+    hitbox:
+      offset:
+        x: 2
+        y: 0
+      size:
+        w: 22
+        h: 20
+    type: container
         

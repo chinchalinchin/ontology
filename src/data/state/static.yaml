@@ -175,9 +175,17 @@ layers:
         sets:
           - start:
               units: absolute
-              x: 400
-              y: 1265
-            content: item
+              x: 1643
+              y: 1750
+            content: potion
+      sword_stone:
+        order: 2
+        sets:
+          - start:
+              units: absolute
+              x: 600
+              y: 800
+            content: sword
     compositions:
       house:
         sets:
@@ -189,7 +197,7 @@ layers:
               units: absolute
               x: 1350
               y: 1600
-      tree:
+      tree_patch:
         sets:
           - start:
               units: absolute
@@ -197,16 +205,17 @@ layers:
               y: 1305
           - start:
               units: absolute
-              x: 400
-              y: 1400
+              x: 780
+              y: 1105
           - start:
               units: absolute
-              x: 510
-              y: 1420
+              x: 750
+              y: 1210
           - start:
               units: absolute
-              x: 590
-              y: 1415
+              x: 700 
+              y: 1300
+
       horizontal_pavement:
         sets:
           - start:
