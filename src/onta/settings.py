@@ -13,26 +13,23 @@ SRC_DIR = os.path.dirname(APP_DIR)
 DATA_DIR = os.path.join(SRC_DIR, 'data')
 """Directory containg application data"""
 
-ASSET_DIR = os.path.join(DATA_DIR, 'assets')
-"""Directory containing application assets."""
+CONF_PATH=['conf']
+"""Array containing path parts relative to ontology directory leading to application configuration directory"""
 
-CONF_DIR = os.path.join(DATA_DIR, 'conf')
-"""Directory containing application configuration"""
+STATE_PATH = ['state']
+"""Array containing path parts relative to ontology directory leading to state information directory"""
 
-STATE_DIR = os.path.join(DATA_DIR, 'state')
-"""Directory containg state information"""
+SPRITE_PATH = ['assets', 'entities', 'sprites']
+"""Array containing path parts relative to ontology directory leading to spritesheets directory"""
 
-SPRITE_DIR = os.path.join(ASSET_DIR, 'entities', 'sprites')
-"""Directory containing spritesheets"""
+TILE_PATH=['assets','forms','tiles']
+"""Array containing path parts relative to ontology directory leading to tilesheet directory"""
 
-TILE_DIR = os.path.join(ASSET_DIR, 'forms', 'tiles')
-"""Directory containing tile sheets"""
+STRUT_PATH=['assets','forms','struts']
+"""Array containing path parts relative to ontology directory leading to strutsheet directory"""
 
-STRUT_DIR = os.path.join(ASSET_DIR, 'forms', 'struts')
-"""Directory containing strut sheets"""
-
-PLATE_DIR = os.path.join(ASSET_DIR, 'forms', 'plates')
-"""Directory containg plate sheets"""
+PLATE_PATH=['assets', 'forms', 'plates']
+"""Array containing path parts relative to ontology directory leading to platesheet directory"""
 
 # Debug Configuration
 

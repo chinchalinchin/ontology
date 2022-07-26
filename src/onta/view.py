@@ -8,6 +8,7 @@ from PIL.ImageQt import ImageQt
 
 import onta.settings as settings
 import onta.world as world
+import onta.hud as hud
 import onta.engine.calculator as calculator
 import onta.load.repo as repo
 import onta.util.logger as logger
@@ -187,7 +188,6 @@ class Renderer():
                         else: 
                             self.world_frame.paste(group_frame['off'], start, group_frame['off'] )
 
-
     def _render_static(self, layer, cover: bool = False):
         if cover:
             self.world_frame.paste(self.static_cover_frame[layer], (0,0), self.static_cover_frame[layer])
@@ -229,8 +229,12 @@ class Renderer():
 
         return self.world_frame
 
-    def view(self, game_world: world.World, view_widget: QtWidgets.QWidget, repository: repo.Repo):
+    def view(self, game_world: world.World, view_widget: QtWidgets.QWidget, headsup_display: hud.HUD,repository: repo.Repo):
+
+        # TODO: render HUD
+        
         cropped = self.render(game_world, repository)
+
         qim = ImageQt(cropped)
         pix = QtGui.QPixmap.fromImage(qim)
 

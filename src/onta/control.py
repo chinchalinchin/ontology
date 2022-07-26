@@ -41,8 +41,8 @@ class Controller():
                 return 'down'
             return 'unmapped'
 
-    def __init__(self, config: conf.Conf):
-        self.control_conf = config.load_control_configuration()
+    def __init__(self, ontology_path = settings.DATA_DIR):
+        self.control_conf = conf.Conf(ontology_path).load_control_configuration()
         self.keys = { 
             key: False for key in CONTROLS
         }

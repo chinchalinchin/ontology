@@ -10,8 +10,6 @@ import onta.control as control
 import onta.settings as settings
 import onta.world as world
 import onta.load.repo as repo
-import onta.load.conf as conf
-import onta.load.state as state
 import onta.util.logger as logger
 import onta.util.helper as helper
 import onta.util.cli as cli
@@ -20,26 +18,21 @@ log = logger.Logger('onta.main', settings.LOG_LEVEL)
 
 
 def create(ontology_path: str):
-    log.debug('Intializing configuration access object...', 'create')
-    config = conf.Conf(ontology_path)
-
-    log.debug('Initializing state access object...', 'create')
-    state_ao = state.State(ontology_path)
-
     log.debug('Initializing controller...', 'create')
-    controller = control.Controller(config)
+    controller = control.Controller(ontology_path)
+
+    log.debug('Initializing HUD...', 'create')
+    headsup_display = hud.HUD(ontology_path)
 
     log.debug('Initializing asset repository...', 'create')
-    asset_repository = repo.Repo(config)
+    asset_repository = repo.Repo(ontology_path)
 
     log.debug('Initializing game world...', 'create')
-    game_world = world.World(config, state_ao)
+    game_world = world.World(ontology_path)
 
     log.debug('Initializing rendering engine...', 'create')
     render_engine = view.Renderer(game_world, asset_repository)
 
-    log.debug('Initializing HUD...', 'create')
-    headsup_display = hud.HUD(config)
     return controller, game_world, render_engine, asset_repository, headsup_display
 
 def start(ontology_path: str):
@@ -87,12 +80,12 @@ def do(
 
         game_world.iterate(user_input)
 
-        # hud.update(game_world)
+        headsup_display.update(game_world)
 
         # # pre_render hook here
         # scripts.apply_scripts(game_world, 'pre_render')
 
-        render_engine.view(game_world, game_view, asset_repository)
+        render_engine.view(game_world, game_view, headsup_display, asset_repository)
 
         # # post_render hook here
         # scripts.apply_scripts(game_world, 'post_render')

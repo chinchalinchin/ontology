@@ -20,17 +20,19 @@ class Repo():
     plates = {}
     sprites = {}
 
-    def __init__(self, config: conf.Conf) -> None:
+    def __init__(self, ontology_path: str) -> None:
         """
         .. note:
-            - No reference is kept to `config`; it is passed to initialize methods and released unaltered.
+            - No reference is kept to `ontology_path`; it is passed to initialize methods and released.
         """
         for asset in ASSETS:
-            self._init_assets(asset, config)
-        self._init_sprites(config)
+            self._init_assets(asset, ontology_path)
+        self._init_sprites(ontology_path)
 
-    def _init_assets(self, asset: str, config: conf.Conf) -> None:
+    def _init_assets(self, asset: str, ontology_path: str) -> None:
         log.debug(f'Initializing {asset} assets...', 'Repo._init_assets')
+
+        config = conf.Conf(ontology_path)
 
         if asset == 'tiles':
             assets_conf = config.load_tile_configuration()
@@ -50,11 +52,11 @@ class Repo():
                     x, y = asset_conf['file']['position']['x'], asset_conf['file']['position']['y']
 
                 if asset == 'tiles':
-                    image_path = os.path.join(settings.TILE_DIR, asset_conf['file']['path'])
+                    image_path = os.path.join(ontology_path, *settings.TILE_PATH, asset_conf['file']['path'])
                 elif asset == 'struts':
-                    image_path = os.path.join(settings.STRUT_DIR, asset_conf['file']['path'])
+                    image_path = os.path.join(ontology_path, *settings.STRUT_PATH, asset_conf['file']['path'])
                 elif asset == 'plates':                         
-                    image_path = os.path.join(settings.PLATE_DIR, asset_conf['file']['path'])
+                    image_path = os.path.join(ontology_path, *settings.PLATE_PATH, asset_conf['file']['path'])
 
                 buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
@@ -91,8 +93,10 @@ class Repo():
                     self.plates[asset_key] = buffer
  
 
-    def _init_sprites(self, config: conf.Conf) -> None:
+    def _init_sprites(self, ontology_path: str) -> None:
         log.debug('Initializing sprite assets...', 'Repo._init_sprites')
+        config = conf.Conf(ontology_path)
+
         states_conf, props_conf, sheets_conf = config.load_sprite_configuration()
 
         for sprite_key, sheet_conf in sheets_conf.items():
@@ -101,7 +105,7 @@ class Repo():
             sheets, self.sprites[sprite_key] = [], {}
 
             for sheet in sheet_conf:
-                sheet_path = os.path.join(settings.SPRITE_DIR, sheet)
+                sheet_path = os.path.join(ontology_path, *settings.SPRITE_PATH, sheet)
                 sheet_img = Image.open(sheet_path).convert(settings.IMG_MODE)
                 sheets.append(sheet_img)
                 
@@ -132,7 +136,6 @@ class Repo():
             log.debug(f'{sprite_key} configuration: states - {len(self.sprites[sprite_key])}, frames - {frames}', 'Repo._init_sprites')
 
 
-
     def get_asset_frame(self, asset_key: str, element_key: str) -> Union[Image.Image, None]:
         if asset_key == 'tiles':
             return self.tiles.get(element_key)
@@ -141,6 +144,7 @@ class Repo():
         if asset_key == 'plates':
             return self.plates.get(element_key)
         return None
+
 
     def get_sprite_frame(self, sprite: str, state: str, frame: int):
         return self.sprites[sprite][state][frame]
