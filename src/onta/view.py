@@ -16,7 +16,7 @@ import onta.util.gui as gui
 
 log = logger.Logger('onta.view', settings.LOG_LEVEL)
 
-SWITCH_PLATES = ['container']
+SWITCH_PLATES = ['container', 'pressure', 'gate']
 
 def get_app() -> QtWidgets.QApplication:
     return QtWidgets.QApplication([])    
@@ -175,7 +175,8 @@ class Renderer():
                         game_world.tile_dimensions,
                         set_conf['start']['units']
                     )
-                    log.infinite(f'Rendering "{plate_type}" plate set at {start[0], start[1]}', 'Repo._render_moveable_sets')
+                    log.infinite(f'Rendering "{plate_type}" plate set at {start[0], start[1]}', 
+                    'Repo._render_typed_plates')
 
                     if plate_type not in SWITCH_PLATES:
                         self.world_frame.paste(group_frame, start, group_frame)
@@ -212,7 +213,7 @@ class Renderer():
             game_world.layer = layer
 
         self._render_static(game_world.layer, False)
-        for typed_plate in ['mass', 'container', 'gate']:
+        for typed_plate in ['mass', 'container', 'gate', 'pressure']:
             self._render_typed_plates(game_world, repository, typed_plate)
         for spriteset in ['npcs', 'villains', 'hero']:
             self._render_spriteset(spriteset, game_world, repository)

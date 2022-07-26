@@ -11,7 +11,7 @@ import onta.util.gui as gui
 log = logger.Logger('onta.repo', settings.LOG_LEVEL)
 
 ASSETS = ['tiles', 'struts', 'plates']
-SWITCH_PLATES = ['container']
+SWITCH_PLATES = ['container', 'pressure', 'gate']
 
 class Repo():
 

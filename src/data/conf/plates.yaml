@@ -143,3 +143,21 @@ sword_stone:
         h: 20
     type: container
         
+stone_switch:
+  image:
+    file: 
+      path: various_continued.png
+      on_position:
+        x: 400
+        y: 688
+      off_position:
+        x: 432
+        y: 576
+    size:
+      w: 16
+      h: 16
+  properties:
+    hitbox: null
+    type: pressure
+
+

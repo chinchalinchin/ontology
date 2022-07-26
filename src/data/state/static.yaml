@@ -186,6 +186,15 @@ layers:
               x: 600
               y: 800
             content: sword
+      stone_switch:
+        order: 3
+        sets:
+          - start:
+              units:
+              x: 1880
+              y: 1700
+            cover: true
+            content: connection_a
     compositions:
       house:
         sets:
