@@ -20,10 +20,13 @@ class HUD():
         self.sizes = config.get('sizes')
         self.breakpoints = config.get('breakpoints')
         self.hud_conf = config.get('hud')
-        self._init_slots(config)
+        self._init_slots()
 
     def _init_slots(self):
+        for size in self.sizes:
+            self.hud_conf[size]['slot']
         pass
+    
         # slots = {
         #   'cast':
         #   'thrust':
@@ -40,5 +43,5 @@ class HUD():
         game_world.hero['ammo']
         game_world.hero['health']['current'], game_world.hero['health']['max']
 
-        for slot_key, slot in game_world.hero['slots']:
+        for slot_key, slot in game_world.hero['slots'].items():
             pass

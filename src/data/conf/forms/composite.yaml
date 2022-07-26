@@ -22,13 +22,6 @@ house:
             x: 188
             y: 96
           cover: false
-    house_roof:
-      sets:
-        - start: 
-            units: absolute
-            x: 96
-            y: 0
-          cover: true
     house_flattop:
       sets:
         - start:
@@ -40,6 +33,13 @@ house:
             units: absolute
             x: 188
             y: 32
+          cover: true
+    house_roof:
+      sets:
+        - start: 
+            units: absolute
+            x: 96
+            y: 0
           cover: true
     house_steps:
       sets: 

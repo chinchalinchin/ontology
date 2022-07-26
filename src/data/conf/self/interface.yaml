@@ -23,30 +23,30 @@ hud:
       empty:
         image:
           file:
-            path:
-            x:
-            y:
+            path: null
+            x: null
+            y: null
           size:
-            w:
-            h:
+            w: null
+            h: null
       fill:
         image:
           file:
-            path:
-            x:
-            y:
+            path: null
+            x: null
+            y: null
           size:
-            w:
-            h:
+            w: null
+            h: null
       select:
         image:
           file:
-            path:
-            x:
-            y:
+            path: null
+            x: null
+            y: null
           size:
-            w:
-            h:
+            w: null
+            h: null
     mirrors:
       life: null
       magic: null
@@ -54,9 +54,7 @@ hud:
       item: null
       ammo: null
       coin: null
-
-    avatars:
-
+    avatars: null
   large:
     display:
       image:
@@ -67,43 +65,40 @@ hud:
         size:
           w: 640
           h: 96
-    slots:
-      slash:
+    slot:
+      empty:
         image:
           file:
-            path:
-            x:
-            y:
+            path: null
+            x: null
+            y: null
           size:
-            w:
-            h:
-      cast:
+            w: null
+            h: null
+      fill:
         image:
           file:
-            path:
-            x:
-            y:
+            path: null
+            x: null
+            y: null
           size:
-            w:
-            h:
-      thrust:
+            w: null
+            h: null
+      select:
         image:
           file:
-            path:
-            x:
-            y:
+            path: null
+            x: null
+            y: null
           size:
-            w:
-            h:
-      shoot:
-        image:
-          file:
-            path:
-            x:
-            y:
-          size:
-            w:
-            h:
+            w: null
+            h: null
     mirrors:
-    avatars:
+      life: null
+      magic: null
+      bag: null
+      item: null
+      ammo: null
+      coin: null
+    avatars: null
     

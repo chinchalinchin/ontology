@@ -115,50 +115,52 @@ class Repo():
         log.debug(f'Initializing  assets...', 'Repo._init_interface_assets')
         interface_conf = config.load_interface_configuration()
         for size in interface_conf['sizes']:
-            for interset_key, interset in interface_conf[size].items():
-                for component_key in ['display', 'slots', 'mirrors', 'avatars']:
-                    component = interset[component_key]
-
-                    if component_key == 'display':
-                        image_path = os.path.join(
-                            ontology_path,
-                            *settings.DISPLAY_PATH,
-                            component['image']['file']['path']
-                        )
-                    elif component_key == 'slots':
-                        image_path = os.path.join(
-                            ontology_path,
-                            *settings.SLOT_PATH,
-                            component['image']['file']['path']
-                        )
-                    elif component_key == 'mirrors':
-                        image_path = os.path.join(
-                            ontology_path,
-                            *settings.MIRROR_PATH,
-                            component['image']['file']['path']
-                        )
-                    elif component_key == 'avatars':
-                        image_path = os.path.join(
-                            ontology_path,
-                            *settings.AVATAR_PATH,
-                            component['image']['file']['path']
-                        )
-
+            for interset_key, interset in interface_conf['hud'][size].items():
+                if interset_key == 'display':
+                    x, y = interset['image']['file']['x'], interset['image']['file']['y']
+                    w, h = interset['image']['size']['w'], interset['image']['size']['h']
+                    image_path = os.path.join(
+                        ontology_path,
+                        *settings.DISPLAY_PATH,
+                        interset['image']['file']['path']
+                    )
                     buffer = Image.open(image_path).convert(settings.IMG_MODE)
+                    log.debug( f"{interset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                        'Repo._init_interface_assets')
+                    self.displays[size] = buffer.crop((x,y,w+x,h+y))
+                    
+                # elif interset_key == 'slots':
+                #     image_path = os.path.join(
+                #         ontology_path,
+                #         *settings.SLOT_PATH,
+                #         interset['image']['file']['path']
+                #     )
+                # elif interset_key == 'mirrors':
+                #     image_path = os.path.join(
+                #         ontology_path,
+                #         *settings.MIRROR_PATH,
+                #         interset['image']['file']['path']
+                #     )
+                # elif interset_key == 'avatars':
+                #     image_path = os.path.join(
+                #         ontology_path,
+                #         *settings.AVATAR_PATH,
+                #         interset['image']['file']['path']
+                #   )
 
-                    log.debug( f"{asset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                        'Repo._init_static_assets')
-                    x, y = component['image']['file']['x'], component['image']['file']['y']
-                    w, h = component['image']['size']['w'], component['image']['size']['h']
+                # buffer = Image.open(image_path).convert(settings.IMG_MODE)
+                # log.debug( f"{interset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                #     'Repo._init_interface_assets')
+                
+                # if interset_key == 'display':
+                #     self.displays[size] = buffer.crop((x,y,w+x,h+y))
 
-                    if component_key == 'display':
-                        self.displays[interset_key]
-                    elif component_key == 'slots':
-                        self.slots[interset_key]
-                    elif component_key == 'mirrors':
-                        self.mirrors[interset_key]
-                    elif component_key == 'avatars':
-                        self.mirrors[interset_key]
+                # elif component_key == 'slots':
+                #     self.slots[size] = buffer.crop((x,y,w+x,h+y))
+                # elif component_key == 'mirrors':
+                #     self.mirrors[size] = buffer.crop((x,y,w+x,h+y))
+                # elif component_key == 'avatars':
+                #     self.mirrors[size] = buffer.crop((x,y,w+x,h+y))
 
     def _init_sprite_assets(self, config: conf.Conf, ontology_path: str) -> None:
         log.debug('Initializing sprite assets...', 'Repo._init_sprite_assets')
