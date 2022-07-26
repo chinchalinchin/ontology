@@ -11,6 +11,7 @@ import onta.util.gui as gui
 log = logger.Logger('onta.repo', settings.LOG_LEVEL)
 
 ASSETS = ['tiles', 'struts', 'plates']
+SWITCH_PLATES = ['container']
 
 class Repo():
 
@@ -36,19 +37,23 @@ class Repo():
         elif asset == 'struts':
             assets_conf = config.load_strut_configuration()[1]
         elif asset == 'plates':
-            assets_conf = config.load_plate_configuration()[1]
+            asset_props, assets_conf = config.load_plate_configuration()
 
         for asset_key, asset_conf in assets_conf.items():
             w, h = asset_conf['size']['w'], asset_conf['size']['h']
 
             if asset_conf.get('file') is not None:
-                x, y = asset_conf['file']['position']['x'], asset_conf['file']['position']['y']
+                if asset == 'plates' and asset_props[asset_key].get('type') in SWITCH_PLATES:
+                    on_x, on_y = asset_conf['file']['on']['x'], asset_conf['file']['on']['y']
+                    off_x, off_y = asset_conf['file']['off']['x'], asset_conf['file']['off']['y']
+                else:
+                    x, y = asset_conf['file']['position']['x'], asset_conf['file']['position']['y']
 
                 if asset == 'tiles':
                     image_path = os.path.join(settings.TILE_DIR, asset_conf['file']['path'])
                 elif asset == 'struts':
                     image_path = os.path.join(settings.STRUT_DIR, asset_conf['file']['path'])
-                elif asset == 'plates': 
+                elif asset == 'plates':                         
                     image_path = os.path.join(settings.PLATE_DIR, asset_conf['file']['path'])
 
                 buffer = Image.open(image_path).convert(settings.IMG_MODE)
@@ -61,9 +66,15 @@ class Repo():
                 elif asset == 'struts':
                     self.struts[asset_key] = buffer.crop((x,y,w+x,h+y))
                 elif asset == 'plates':
-                    self.plates[asset_key] = buffer.crop((x,y,w+x,h+y))
+                    if asset_props[asset_key].get('type') in SWITCH_PLATES:
+                        self.plates[asset_key]['on'] = buffer.crop((on_x,on_y,w+on_x,h+on_y))
+                        self.plates[asset_key]['off'] = buffer.crop((off_x,off_y,w+off_x,h+off_y))
+                    else:
+                        self.plates[asset_key] = buffer.crop((x,y,w+x,h+y))
                     
             elif asset_conf.get('channels') is not None:
+                # TODO: on/off switch plate channels, currently using channels on switch plates will break this method
+
                 channels = (
                     asset_conf['channels']['r'], 
                     asset_conf['channels']['g'],

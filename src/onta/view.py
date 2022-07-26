@@ -16,6 +16,8 @@ import onta.util.gui as gui
 
 log = logger.Logger('onta.view', settings.LOG_LEVEL)
 
+SWITCH_PLATES = ['container']
+
 def get_app() -> QtWidgets.QApplication:
     return QtWidgets.QApplication([])    
 
@@ -97,7 +99,7 @@ class Renderer():
             self.static_back_frame[layer] = gui.new_image(static_world.dimensions)
             self.static_cover_frame[layer] = gui.new_image(static_world.dimensions)
         self._render_tiles(static_world, repository)
-        self._render_sets(static_world, repository)
+        self._render_static_sets(static_world, repository)
 
     def _render_tiles(self, game_world: world.World, repository: repo.Repo) -> None:
         log.debug('Rendering tile sets', 'Repo._render_tiles')
@@ -127,8 +129,8 @@ class Renderer():
                             else:
                                 self.static_back_frame[layer].paste(group_tile, dim, group_tile)
 
-    def _render_sets(self, game_world: world.World, repository: repo.Repo):
-        log.debug('Rendering strut and plate sets', 'Repo._render_sets')
+    def _render_static_sets(self, game_world: world.World, repository: repo.Repo):
+        log.debug('Rendering strut and plate sets', 'Repo._render_static_sets')
 
         for static_set in ['struts', 'plates']:
             for layer in game_world.layers:
@@ -140,11 +142,11 @@ class Renderer():
                 render_map = self.render_ordered_dict(unordered_groups)
 
                 for group_key, group_conf in render_map.items():
-                    log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
-
                     if static_set == 'struts' or \
                         (static_set == 'plates' and \
                             game_world.plate_property_conf[group_key]['type'] == 'door'):
+
+                        log.debug(f'Rendering {group_key} struts', 'Repo._render_static_sets')
 
                         group_frame = repository.get_asset_frame(static_set, group_key)
                         for set_conf in group_conf['sets']:
@@ -153,32 +155,36 @@ class Renderer():
                                 game_world.tile_dimensions,
                                 set_conf['start']['units']
                             )
-                            log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_struts')
+                            log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_static_sets')
 
                             if set_conf.get('cover'):
                                 self.static_cover_frame[layer].paste(group_frame, start, group_frame)
                             else:
                                 self.static_back_frame[layer].paste(group_frame, start, group_frame)
     
-    def _render_moveable_sets(self, game_world: world.World, repository: repo.Repo):
+    def _render_typed_plates(self, game_world: world.World, repository: repo.Repo, plate_type: str):
         unordered_groups = game_world.get_platesets(game_world.layer)
         render_map = self.render_ordered_dict(unordered_groups)
 
         for group_key, group_conf in render_map.items():
-            if game_world.plate_property_conf[group_key]['type'] == 'mass':
+            if game_world.plate_property_conf[group_key]['type'] == plate_type:
                 group_frame = repository.get_asset_frame('plates', group_key)
-                for set_conf in group_conf['sets']:
+                for i, set_conf in enumerate(group_conf['sets']):
                     start = calculator.scale(
                         (set_conf['start']['x'], set_conf['start']['y']), 
                         game_world.tile_dimensions,
                         set_conf['start']['units']
                     )
-                    log.infinite(f'Rendering moveable plate set at {start[0], start[1]}', 'Repo._render_moveable_sets')
+                    log.infinite(f'Rendering "{plate_type}" plate set at {start[0], start[1]}', 'Repo._render_moveable_sets')
 
-                    self.world_frame.paste(group_frame, start, group_frame)
+                    if plate_type not in SWITCH_PLATES:
+                        self.world_frame.paste(group_frame, start, group_frame)
+                    else:
+                        pass
+                        # TODO: render on/off frame based on game_world plate map, will need index of plate in set
 
 
-    def _render_switch_sets(self, game_world: world.World, repository: repo.Repo):
+    def _render_switch_plates(self, game_world: world.World, repository: repo.Repo):
         pass
 
 
@@ -204,8 +210,8 @@ class Renderer():
             game_world.layer = layer
 
         self._render_static(game_world.layer, False)
-        self._render_moveable_sets(game_world, repository)
-        self._render_switch_sets(game_world, repository)
+        self._render_moveable_plates(game_world, repository)
+        self._render_switch_plates(game_world, repository)
         for spriteset in ['npcs', 'villains', 'hero']:
             self._render_spriteset(spriteset, game_world, repository)
         self._render_static(game_world.layer, True)

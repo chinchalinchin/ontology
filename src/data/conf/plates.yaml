@@ -95,3 +95,27 @@ statue:
       size:
         w: 26
         h: 34
+    type: mass
+
+plain_chest:
+  image:
+    file: chest_rounded.png
+      on:
+        x: 0
+        y: 0
+      off: 
+        x: 96
+        y: 0
+    size:
+      w: 32
+      h: 32
+  properties:
+    hitbox:
+      offset: 
+        x: 2
+        y: 0
+      size:
+        w: 28
+        h: 20
+    type: container
+        

@@ -18,8 +18,6 @@ another option would be to introduce a division in the concept of npc and villai
 
 - multiple regression of sprite states against hero state vs. collection of simple linear regression of sprite state against state.
 
-- if sprite aware: train model: if iteratoin == learning_rate or something, then apply prediction
+- if sprite aware: train model: if iteration == learning_rate or something, then apply prediction
 
 - initialize plate map in world to determine if plates of type 'chest' or 'pressure' are activated.
-
-- i don't think there is any other good way but to make plates have state.
