@@ -655,10 +655,9 @@ class World():
         collision_map = collisions.generate_collision_map(self.npcs, self.villains)
 
         for spriteset_key in ['hero', 'npcs', 'villains']:
-            iter_set = self.get_spriteset(spriteset_key)
+            for sprite_key, sprite in self.get_spriteset(spriteset_key).items():
 
-            for sprite_key, sprite in iter_set.items():
-                # sprite hit detection
+                # sprite collision detection
                 if spriteset_key in ['npcs', 'villains']:
                     for hitbox_key in ['sprite', 'strut']:
 
@@ -714,7 +713,7 @@ class World():
                                     collision_map[key][nest_key] = True
                                     collision_map[nest_key][key] = True
     
-                # hero hit detection
+                # hero collision detection
                 elif spriteset_key == 'hero':
                     sprite_hitbox = self.get_sprite_hitbox(spriteset_key, 'sprite', sprite_key)
                     collision_sets = self.get_collision_sets_relative_to(self.hero, 'hero', 'sprite')
@@ -725,6 +724,7 @@ class World():
                         if collisions.detect_collision(sprite_hitbox, collision_set):
                             collisions.recoil_sprite(sprite, self.sprite_property_conf[sprite_key])
 
+                # mass plate collision detection
                 masses = self.platesets[self.layer]['masses'].copy()
                 hero_flag = spriteset_key == 'hero'
                 for mass in masses:
@@ -745,6 +745,7 @@ class World():
                             'mass'
                         )
 
+        # TODO: plate-to-plate collisions, plate-to-strut collisions
 
     def _apply_interaction(self, user_input: dict):
         """_summary_

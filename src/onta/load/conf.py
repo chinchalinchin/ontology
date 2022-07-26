@@ -25,26 +25,35 @@ class Conf():
         """
         self.conf_dir = os.path.join(data_dir, 'conf')
     
-    def _configuration(self, obj: str) -> dict:
-        conf_path = os.path.join(self.conf_dir, f'{obj}.yaml')
+    def __configuration(self, obj: str, species: str) -> dict:
+        conf_path = os.path.join(self.conf_dir, species, f'{obj}.yaml')
         with open(conf_path, 'r') as infile:
             conf = yaml.safe_load(infile)
         return conf
 
+    def _self_configuration(self, obj: str) -> dict:
+        return self.__configuration(obj, 'self')
+
+    def _form_configuration(self, obj):
+        return self.__configuration(obj, 'forms')
+
+    def _entity_configuration(self, obj):
+        return self.__configuration(obj, 'entities')
+
     def load_control_configuration(self):
         if self.control_conf is None:
-            self.control_conf = self._configuration('controls')
+            self.control_conf = self._self_configuration('controls')
         return self.control_conf
 
     def load_composite_configuration(self):
         if self.composite_conf is None:
-            self.composite_conf = self._configuration('composite')
+            self.composite_conf = self._form_configuration('composite')
         return self.composite_conf
         
     def load_tile_configuration(self):
         if self.tile_sheet_conf is None:
 
-            tiles_conf = self._configuration('tiles')
+            tiles_conf = self._form_configuration('tiles')
             self.tile_sheet_conf = { }
             for tile_key, tile_conf in tiles_conf.items():
                 self.tile_sheet_conf[tile_key] = tile_conf['image']
@@ -61,7 +70,7 @@ class Conf():
             or self.sprite_property_conf is None\
             or self.sprite_sheet_conf is None:
 
-            sprites_conf = self._configuration('sprites')
+            sprites_conf = self._entity_configuration('sprites')
 
             self.sprite_state_conf = {}
             self.sprite_property_conf = {}
@@ -89,7 +98,7 @@ class Conf():
         """
         if self.strut_property_conf is None \
             or self.strut_sheet_conf is None:
-            struts_conf = self._configuration('struts')
+            struts_conf = self._form_configuration('struts')
 
             self.strut_property_conf = {}
             self.strut_sheet_conf = {}
@@ -103,7 +112,7 @@ class Conf():
     def load_plate_configuration(self) -> tuple:
         if self.plate_property_conf is None \
             or self.plate_sheet_conf is None:
-            plates_conf = self._configuration('plates')
+            plates_conf = self._form_configuration('plates')
 
             self.plate_property_conf = {}
             self.plate_sheet_conf = {}

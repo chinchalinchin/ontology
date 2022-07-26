@@ -6,8 +6,12 @@ hero:
   frame: 0
   layer: one
   plot: a
-  equipment:
-    -
+  slots:
+    cast: null
+    thrust: null
+    slash: null
+    shoot: null
+  bag: null
 
 npcs: 
   esmeralda:
@@ -20,6 +24,12 @@ npcs:
       previous: null
     frame: 0
     layer: one
+    slots:
+      cast: null
+      thrust: null
+      slash: null
+      shoot: null
+    bag: null
   
 villains:
   skeleton:
@@ -32,3 +42,9 @@ villains:
       previous: null
     frame: 0
     layer: one
+    slots:
+      cast: null
+      thrust: null
+      slash: null
+      shoot: null
+    bag: null

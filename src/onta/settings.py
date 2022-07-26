@@ -2,6 +2,8 @@ import os
 
 # Directory Configuration
 
+# TODO: will need to wrap this in an object and allow user to base in data_dir if I want ontologies to be completely passed in through command line
+
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 """Directory containing the root module of the project"""
 
@@ -20,16 +22,16 @@ CONF_DIR = os.path.join(DATA_DIR, 'conf')
 STATE_DIR = os.path.join(DATA_DIR, 'state')
 """Directory containg state information"""
 
-SPRITE_DIR = os.path.join(ASSET_DIR, 'sprites')
+SPRITE_DIR = os.path.join(ASSET_DIR, 'entities', 'sprites')
 """Directory containing spritesheets"""
 
-TILE_DIR = os.path.join(ASSET_DIR, 'tiles')
+TILE_DIR = os.path.join(ASSET_DIR, 'forms', 'tiles')
 """Directory containing tile sheets"""
 
-STRUT_DIR = os.path.join(ASSET_DIR, 'struts')
+STRUT_DIR = os.path.join(ASSET_DIR, 'forms', 'struts')
 """Directory containing strut sheets"""
 
-PLATE_DIR = os.path.join(ASSET_DIR, 'plates')
+PLATE_DIR = os.path.join(ASSET_DIR, 'forms', 'plates')
 """Directory containg plate sheets"""
 
 # Debug Configuration

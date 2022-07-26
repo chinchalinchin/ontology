@@ -187,9 +187,6 @@ class Renderer():
                         else: 
                             self.world_frame.paste(group_frame['off'], start, group_frame['off'] )
 
-    def _render_switch_plates(self, game_world: world.World, repository: repo.Repo):
-        pass
-
 
     def _render_static(self, layer, cover: bool = False):
         if cover:

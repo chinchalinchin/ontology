@@ -1,11 +1,19 @@
-include src/data/conf/*
 include src/data/state/*
-include src/data/assets/effects*
-include src/data/assets/objects/*
-include src/data/assets/struts/*
-include src/data/assets/tiles/*
-include src/data/assets/sprites/*
-include src/data/assets/plates/*
+include src/data/assets/entities/effects*
+include src/data/assets/entities/sprites/*
+include src/data/assets/forms/struts/*
+include src/data/assets/forms/tiles/*
+include src/data/assets/forms/plates/*
+include src/data/assets/forms/tracks/*
+include src/data/assets/self/hud/*
+include src/data/assets/self/mirrors/*
+include src/data/assets/self/slots/*
+include src/data/assets/sounds/*
+include src/data/conf/dialectic/*
+include src/data/conf/entities/*
+include src/data/conf/forms/*
+include src/data/conf/self/*
+
 include src/version.txt
 
 exclude src/onta/tests/**
