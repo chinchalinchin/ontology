@@ -7,9 +7,6 @@ class HUD():
 
     # HUD will essentially be its own world. let view decide how it is rendered.
 
-    breakpoints = None
-    breakpoint = None
-    sizes = None
     size = None
     hud_conf = None
     slots = None
@@ -17,22 +14,17 @@ class HUD():
 
     def __init__(self, ontology_path: str = settings.DEFAULT_DIR):
         config = conf.Conf(ontology_path).load_interface_configuration()
-        self.sizes = config.get('sizes')
-        self.breakpoints = config.get('breakpoints')
         self.hud_conf = config.get('hud')
         self._init_slots()
 
-    def _init_slots(self):
-        for size in self.sizes:
-            self.hud_conf[size]['slot']
-        pass
-    
+    def _init_slots(self):    
         # slots = {
         #   'cast':
         #   'thrust':
         #   'slash':
         #   'shoot':
         # }
+        pass
 
     def _init_mirrors(self):
         pass

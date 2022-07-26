@@ -82,10 +82,10 @@ LOG_LEVEL = os.environ.setdefault('LOG_LEVEL', 'DEBUG')
 
 # GUI Configuration
 
-SCREEN_WIDTH = int(os.environ.setdefault('SCREEN_WIDTH', '800'))
+SCREEN_DEFAULT_WIDTH = int(os.environ.setdefault('SCREEN_WIDTH', '800'))
 """Default GUI width"""
 
-SCREEN_HEIGHT = int(os.environ.setdefault('SCREEN_HEIGHT', '600'))
+SCREEN_DEFAULT_HEIGHT = int(os.environ.setdefault('SCREEN_HEIGHT', '600'))
 """Default GUI height"""
 
 # Rendering Configuration

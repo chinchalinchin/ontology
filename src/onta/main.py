@@ -5,6 +5,7 @@ import PySide6.QtWidgets as QtWidgets
 from PIL import Image
 
 import onta.hud as hud
+import onta.device as device
 import onta.view as view
 import onta.control as control
 import onta.settings as settings
@@ -17,28 +18,32 @@ import onta.util.cli as cli
 log = logger.Logger('onta.main', settings.LOG_LEVEL)
 
 
-def create(ontology_path: str):
+def create(args):
+    log.debug('Pulling device information...', 'create')
+    player_device = device.Device(args.width, args.height)
+
     log.debug('Initializing controller...', 'create')
-    controller = control.Controller(ontology_path)
+    controller = control.Controller(args.ontology)
 
     log.debug('Initializing HUD...', 'create')
-    headsup_display = hud.HUD(ontology_path)
+    headsup_display = hud.HUD(args.ontology)
 
     log.debug('Initializing asset repository...', 'create')
-    asset_repository = repo.Repo(ontology_path)
+    asset_repository = repo.Repo(args.ontology)
 
     log.debug('Initializing game world...', 'create')
-    game_world = world.World(ontology_path)
+    game_world = world.World(args.ontology)
 
     log.debug('Initializing rendering engine...', 'create')
-    render_engine = view.Renderer(game_world, asset_repository)
+    render_engine = view.Renderer(game_world, asset_repository, player_device)
 
-    return controller, game_world, render_engine, asset_repository, headsup_display
+    return controller, game_world, render_engine, asset_repository, headsup_display, player_device
 
 def start(ontology_path: str):
+    cntl, wrld, eng, rep, hd, dv = create(ontology_path)
+
     log.debug('Creating GUI...', 'start')
-    app, vw = view.get_app(), view.get_view()
-    cntl, wrld, eng, rep, hd = create(ontology_path)
+    app, vw = view.get_app(), view.get_view(dv)
 
     log.debug('Threading game...', 'start')
     game_loop = threading.Thread(
@@ -87,8 +92,8 @@ def do(
 
         render_engine.view(game_world, game_view, headsup_display, asset_repository)
 
-        # # post_render hook here
-        # scripts.apply_scripts(game_world, 'post_render')
+        # # post_loop hook here
+        # scripts.apply_scripts(game_world, 'post_loop')
         
         end_time = helper.current_ms_time()
         diff = end_time - start_time
@@ -107,7 +112,7 @@ def entrypoint():
         img.save(args.render)
         return
 
-    start(args.ontology)
+    start(args)
 
 if __name__=="__main__":
     entrypoint()

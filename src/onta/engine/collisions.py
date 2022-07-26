@@ -90,6 +90,6 @@ def recoil_plate(plate, sprite, sprite_props, hero_flag):
         if hero_flag:
             plate['start']['x'] -= sprite_props['collide']
         else:
-            plate['start']['x'] += sprite_props['collid']
+            plate['start']['x'] += sprite_props['collide']
     else:
         plate['start']['y'] -= sprite_props['collide']

@@ -42,4 +42,24 @@ def parse_cli_args():
         action='store_true',
         dest="crop"
     )
+    parser.add_argument(
+        '-sw',
+        '--sw',
+        '-screen-width',
+        '--screen-width',
+        nargs="?",
+        type=int,
+        dest='width',
+        default=settings.SCREEN_DEFAULT_WIDTH,
+    )
+    parser.add_argument(
+        '-sh',
+        '--sh',
+        '-screen-height',
+        '--screen-height',
+        nargs="?",
+        type=int,
+        dest='height',
+        default=settings.SCREEN_DEFAULT_HEIGHT,
+    )
     return parser.parse_args()

@@ -152,11 +152,11 @@ tree_trunk:
   properties:
     hitbox:
       offset:
-        x: 20
+        x: 25
         y: 20
       size:
-        w: 20
-        h: 18
+        w: 15
+        h: 14
 
 tree_top:
   image:

@@ -1,11 +1,10 @@
 import sys
-
-
 from collections import OrderedDict
 
 from PySide6 import QtWidgets, QtGui
 from PIL.ImageQt import ImageQt
 
+import onta.device as device
 import onta.settings as settings
 import onta.world as world
 import onta.hud as hud
@@ -15,21 +14,24 @@ import onta.util.logger as logger
 import onta.util.gui as gui
 
 
+SWITCH_PLATES = ['container', 'pressure', 'gate']
+
 log = logger.Logger('onta.view', settings.LOG_LEVEL)
 
-SWITCH_PLATES = ['container', 'pressure', 'gate']
 
 def get_app() -> QtWidgets.QApplication:
     return QtWidgets.QApplication([])    
 
+
 def quit(app) -> None:
     sys.exit(app.exec_())
 
-def get_view() -> QtWidgets.QWidget:
+
+def get_view(player_device: device.Device) -> QtWidgets.QWidget:
     view_widget, view_layout, view_frame = \
             QtWidgets.QWidget(), QtWidgets.QVBoxLayout(),  QtWidgets.QLabel()
 
-    view_widget.resize(settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
+    view_widget.resize(*player_device.dimensions)
     view_layout.addWidget(view_frame)
     view_widget.setLayout(view_layout)
 
@@ -41,11 +43,28 @@ def get_view() -> QtWidgets.QWidget:
 
     return view_widget
 
+
 class Renderer():
-    
+    """_summary_
+
+    :return: _description_
+    :rtype: _type_
+    """
+
+
+    player_device = None
+    """
+    """
     static_cover_frame = None
+    """
+    """
     static_back_frame = None
+    """
+    """
     world_frame = None
+    """
+    """
+
 
     @staticmethod
     def calculate_crop_box(screen_dim: tuple, world_dim: tuple, hero_pt: tuple):
@@ -72,6 +91,7 @@ class Renderer():
         crop_height = crop_y + screen_dim[1]
         return (crop_x, crop_y, crop_width, crop_height)
 
+
     @staticmethod
     def render_ordered_dict(unordered_dict):
         render_map = {}
@@ -89,18 +109,24 @@ class Renderer():
         
         return ordered_dict
 
-    def __init__(self, static_world: world.World, repository: repo.Repo):
+
+    def __init__(self, game_world: world.World, repository: repo.Repo, player_device: device.Device):
         """
         .. notes:
             - No references are kept to `static_world` or `repository`.
         """
-        self.static_cover_frame = {}
-        self.static_back_frame = {}
-        for layer in static_world.layers:
-            self.static_back_frame[layer] = gui.new_image(static_world.dimensions)
-            self.static_cover_frame[layer] = gui.new_image(static_world.dimensions)
-        self._render_tiles(static_world, repository)
-        self._render_static_sets(static_world, repository)
+        self.player_device = player_device
+        self.static_cover_frame = {
+            layer: gui.new_image(game_world.dimensions) 
+            for layer in game_world.layers
+        }
+        self.static_back_frame = {
+            layer: gui.new_image(game_world.dimensions)
+            for layer in game_world.layers
+        }
+        self._render_tiles(game_world, repository)
+        self._render_sets(game_world, repository)
+
 
     def _render_tiles(self, game_world: world.World, repository: repo.Repo) -> None:
         log.debug('Rendering tile sets', 'Repo._render_tiles')
@@ -130,7 +156,18 @@ class Renderer():
                             else:
                                 self.static_back_frame[layer].paste(group_tile, dim, group_tile)
 
-    def _render_static_sets(self, game_world: world.World, repository: repo.Repo):
+
+    def _render_sets(self, game_world: world.World, repository: repo.Repo):
+        """Renders static sets onto the static world frames. This method is only called once per session, when the game engine is initializing.
+
+        :param game_world: _description_
+        :type game_world: world.World
+        :param repository: _description_
+        :type repository: repo.Repo
+
+        .. notes:
+            - Only _Doors_ are considered static platesets. All other types of plates need to be re-rendered.
+        """
         log.debug('Rendering strut and plate sets', 'Repo._render_static_sets')
 
         for static_set in ['struts', 'plates']:
@@ -163,36 +200,40 @@ class Renderer():
                             else:
                                 self.static_back_frame[layer].paste(group_frame, start, group_frame)
     
-    def _render_typed_plates(self, game_world: world.World, repository: repo.Repo, plate_type: str):
+
+    def _render_typed_platesets(self, game_world: world.World, repository: repo.Repo):
         unordered_groups = game_world.get_platesets(game_world.layer)
         render_map = self.render_ordered_dict(unordered_groups)
 
+        # This definitely isn't rendering in the intended order...
+
         for group_key, group_conf in render_map.items():
-            if game_world.plate_property_conf[group_key]['type'] == plate_type:
-                group_frame = repository.get_asset_frame('plates', group_key)
-                for i, set_conf in enumerate(group_conf['sets']):
-                    start = calculator.scale(
-                        (set_conf['start']['x'], set_conf['start']['y']), 
-                        game_world.tile_dimensions,
-                        set_conf['start']['units']
-                    )
-                    log.infinite(f'Rendering "{plate_type}" plate set at {start[0], start[1]}', 
-                    'Repo._render_typed_plates')
+            group_frame = repository.get_asset_frame('plates', group_key)
+            for i, set_conf in enumerate(group_conf['sets']):
+                start = calculator.scale(
+                    (set_conf['start']['x'], set_conf['start']['y']), 
+                    game_world.tile_dimensions,
+                    set_conf['start']['units']
+                )
+                log.infinite(f'Rendering "{game_world.plate_property_conf[group_key]["type"]}" plate set at {start[0], start[1]}', 
+                'Repo._render_typed_plates')
 
-                    if plate_type not in SWITCH_PLATES:
-                        self.world_frame.paste(group_frame, start, group_frame)
+                if game_world.plate_property_conf[group_key]['type'] not in SWITCH_PLATES:
+                    self.world_frame.paste(group_frame, start, group_frame)
 
-                    else:
-                        if game_world.switch_map[game_world.layer][group_key][i]:
-                            self.world_frame.paste(group_frame['on'], start, group_frame['on'])
-                        else: 
-                            self.world_frame.paste(group_frame['off'], start, group_frame['off'] )
+                else:
+                    if game_world.switch_map[game_world.layer][group_key][i]:
+                        self.world_frame.paste(group_frame['on'], start, group_frame['on'])
+                    else: 
+                        self.world_frame.paste(group_frame['off'], start, group_frame['off'] )
+
 
     def _render_static(self, layer, cover: bool = False):
         if cover:
             self.world_frame.paste(self.static_cover_frame[layer], (0,0), self.static_cover_frame[layer])
         else:
             self.world_frame.paste(self.static_back_frame[layer], (0,0), self.static_back_frame[layer])
+
 
     def _render_spriteset(self, spriteset_key: str, game_world: world.World, repository: repo.Repo):
         spriteset = game_world.get_spriteset(spriteset_key)
@@ -202,7 +243,25 @@ class Renderer():
             sprite_frame = repository.get_sprite_frame(sprite_key, sprite_state, sprite_frame)
             self.world_frame.paste(sprite_frame, sprite_position, sprite_frame)
 
+
+    def _render_hud(self, headsup_display: hud.HUD, repository: repo.Repo):
+        pass
+
+
     def render(self, game_world: world.World, repository: repo.Repo, crop: bool = True, layer: str = None):
+        """_summary_
+
+        :param game_world: _description_
+        :type game_world: world.World
+        :param repository: _description_
+        :type repository: repo.Repo
+        :param crop: _description_, defaults to True
+        :type crop: bool, optional
+        :param layer: _description_, defaults to None
+        :type layer: str, optional
+        :return: _description_
+        :rtype: _type_
+        """
         self.world_frame = gui.new_image(game_world.dimensions)
 
         if layer is not None:
@@ -210,8 +269,7 @@ class Renderer():
             game_world.layer = layer
 
         self._render_static(game_world.layer, False)
-        for typed_plate in ['mass', 'container', 'gate', 'pressure']:
-            self._render_typed_plates(game_world, repository, typed_plate)
+        self._render_typed_platesets(game_world, repository)
         for spriteset in ['npcs', 'villains', 'hero']:
             self._render_spriteset(spriteset, game_world, repository)
         self._render_static(game_world.layer, True)
@@ -220,12 +278,13 @@ class Renderer():
             game_world.layer = layer_buffer
             
         if crop:
-            screen_dim = (settings.SCREEN_WIDTH, settings.SCREEN_HEIGHT)
             world_dim = game_world.dimensions
             hero_pt = (game_world.hero['position']['x'], game_world.hero['position']['y'])
-            crop_box = self.calculate_crop_box(screen_dim, world_dim, hero_pt)
+            crop_box = self.calculate_crop_box(self.player_device.dimensions, world_dim, hero_pt)
 
             self.world_frame = self.world_frame.crop(crop_box)
+        
+        # TODO: render HUD here
 
         return self.world_frame
 

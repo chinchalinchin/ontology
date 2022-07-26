@@ -262,8 +262,8 @@ skeleton:
         radii:
             aware: 250
             attack: 15
-        walk: 2
-        run: 3
+        walk: 1
+        run: 2
         collide: 5
         poll: 50
         paths:
