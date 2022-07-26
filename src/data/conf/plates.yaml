@@ -56,3 +56,42 @@ inside_door:
         w: 32 
         h: 48
     type: door
+
+obelisk:
+  image:
+    file: 
+      path: statues.png
+      position:
+        x: 195 
+        y: 101
+    size:
+      w: 24
+      h: 59
+  properties:
+    hitbox:
+      offset:
+        x: 2
+        y: 0
+      size:
+        w: 24
+        h: 35
+    type: mass
+
+statue:
+  image:
+    file: 
+      path: statues.png
+      position:
+        x: 64
+        y: 128
+    size:
+      w: 30
+      h: 64
+  properties:
+    hitbox:
+      offset:
+        x: 2
+        y: 0
+      size:
+        w: 26
+        h: 34

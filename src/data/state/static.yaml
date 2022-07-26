@@ -161,6 +161,7 @@ layers:
               h: 45
             cover: false
     struts:
+    plates:
       obelisk:
         order: 0
         sets:
@@ -169,7 +170,7 @@ layers:
               x: 500
               y: 1265
             cover: false
-    plates:
+            content: 5
     compositions:
       house:
         sets:

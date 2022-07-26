@@ -4,6 +4,19 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.engine.collisions', settings.LOG_LEVEL)
 
+def generate_collision_map(npcs, villains):
+    collision_map = { 
+        npc_key: {
+            vil_key: False for vil_key in villains.keys()
+        } for npc_key in npcs.keys()
+    }
+    collision_map.update({
+        vil_key: {
+            npc_key: False for npc_key in npcs.keys()
+        } for vil_key in villains.keys()
+    })
+    return collision_map
+    
 def detect_collision(sprite_hitbox, hitbox_list):
     for hitbox in hitbox_list:
         if hitbox is not None and calculator.intersection(sprite_hitbox, hitbox):
@@ -23,15 +36,13 @@ def recoil_sprite(sprite, sprite_props):
     else:
         sprite['position']['y'] += sprite_props['collide']
 
-def generate_collision_map(npcs, villains):
-    collision_map = { 
-        npc_key: {
-            vil_key: False for vil_key in villains.keys()
-        } for npc_key in npcs.keys()
-    }
-    collision_map.update({
-        vil_key: {
-            npc_key: False for npc_key in npcs.keys()
-        } for vil_key in villains.keys()
-    })
-    return collision_map
+def recoil_plate(plate, sprite, sprite_props):
+    # TODO: pass in collide directly instead of through dictionary
+    if 'down' in sprite['state']:
+        plate['start']['y'] -= sprite_props['collide']
+    elif 'left' in sprite['state']:
+        plate['start']['x'] -= sprite_props['collide']
+    elif 'right' in sprite['state']:
+        plate['start']['x'] += sprite_props['collide']
+    else:
+        plate['start']['y'] += sprite_props['collide']

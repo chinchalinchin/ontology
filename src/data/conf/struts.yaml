@@ -35,7 +35,6 @@ house_exterior_wall:
       size:
         w: 92
         h: 70
-    moveable: false
         
 house_interior_wall:
   image:
@@ -55,7 +54,6 @@ house_interior_wall:
       size:
         w: 96
         h: 64
-    moveable: false
 
 house_floor:
   image:
@@ -69,7 +67,6 @@ house_floor:
       h: 96
   properties:
     hitbox: null
-    moveable: false
 
 house_roof:
   image:
@@ -83,7 +80,6 @@ house_roof:
       h: 96
   properties:
     hitbox: null
-    moveable: false
 
 house_flattop:
   image:
@@ -97,7 +93,6 @@ house_flattop:
       h: 64
   properties:
     hitbox: null
-    moveable: false
 
 house_steps:
   image: 
@@ -111,7 +106,6 @@ house_steps:
       h: 24
   properties:
     hitbox: null
-    moveable: false 
 
 house_chimney:
   image:
@@ -131,7 +125,6 @@ house_chimney:
       size:
         w: 22
         h: 45
-    moveable: false
 
 house_window:
   image:
@@ -145,7 +138,6 @@ house_window:
       h: 27
   properties:
     hitbox: null
-    moveable: false
 
 tree_trunk:
   image:
@@ -165,7 +157,6 @@ tree_trunk:
       size:
         w: 20
         h: 18
-    moveable: false
 
 tree_top:
   image:
@@ -179,7 +170,6 @@ tree_top:
       h: 80
   properties:
     hitbox: null
-    moveable: false
 
 pavement:
   image:
@@ -193,7 +183,6 @@ pavement:
       h: 96
   properties:
     hitbox: null
-    moveable: false
 
 burial_pit:
   image:
@@ -213,7 +202,6 @@ burial_pit:
       size:
         w: 52
         h: 15
-    moveable: false
 
 headstone:
   image:
@@ -227,7 +215,6 @@ headstone:
       h: 31
   properties: 
     hitbox: null
-    moveable: false
 
 obelisk:
   image:
@@ -247,7 +234,6 @@ obelisk:
       size:
         w: 24
         h: 35
-    moveable: true
 
 grave_marker:
   image:
@@ -267,7 +253,6 @@ grave_marker:
       size:
         w: 25
         h: 25
-    moveable: false
 
 vertical_wood_bridge_left:
   image:
@@ -287,7 +272,6 @@ vertical_wood_bridge_left:
       size:
         w: 6
         h: 87
-    moveable: false
 
 vertical_wood_bridge_right:
   image:
@@ -307,4 +291,3 @@ vertical_wood_bridge_right:
       size:
         w: 6
         h: 40
-    moveable: false

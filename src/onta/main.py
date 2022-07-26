@@ -1,6 +1,5 @@
 import threading
 import time
-import sys
 
 import PySide6.QtWidgets as QtWidgets
 from PIL import Image
@@ -17,7 +16,6 @@ import onta.util.helper as helper
 import onta.util.cli as cli
 
 log = logger.Logger('onta.main', settings.LOG_LEVEL)
-
 
 
 def create(ontology_path: str):

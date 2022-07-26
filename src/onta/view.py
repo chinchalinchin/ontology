@@ -1,5 +1,7 @@
-from symbol import pass_stmt
 import sys
+
+
+from collections import OrderedDict
 
 from PySide6 import QtWidgets, QtGui
 from PIL.ImageQt import ImageQt
@@ -68,14 +70,21 @@ class Renderer():
         return (crop_x, crop_y, crop_width, crop_height)
 
     @staticmethod
-    def generate_render_map(unordered_dict):
+    def render_ordered_dict(unordered_dict):
         render_map = {}
+        ordered_dict = OrderedDict()
 
-        for dict_key, dict_value in unordered_dict.items():
-            render_order = dict_value['order']
-            render_map[render_order] = dict_key
+        if len(unordered_dict)>0:
+            for dict_key, dict_value in unordered_dict.items():
+                render_order = dict_value['order']
+                render_map[render_order] = dict_key
+
+            ordered_map = list(render_map.keys())
+            ordered_map.sort()
+            for order in ordered_map:
+                ordered_dict[render_map[order]] = unordered_dict[render_map[order]]
         
-        return render_map
+        return ordered_dict
 
     def __init__(self, static_world: world.World, repository: repo.Repo):
         """
@@ -124,27 +133,17 @@ class Renderer():
         for static_set in ['struts', 'plates']:
             for layer in game_world.layers:
                 if static_set == 'struts':
-                    unordered_groups = game_world.get_strutsets(layer, True)
-                    unordered_groups.update(
-                        game_world.get_strutsets(layer, True)
-                    )
+                    unordered_groups = game_world.get_strutsets(layer)
                 elif static_set == 'plates':
                     unordered_groups = game_world.get_platesets(layer)
 
-                render_map = self.generate_render_map(unordered_groups)
+                render_map = self.render_ordered_dict(unordered_groups)
 
-                print(render_map)
-
-                for i in range(len(render_map)):
-                    group_key = render_map[i]
-                    group_conf = unordered_groups[group_key]
-
-                    group_frame = repository.get_asset_frame(static_set, group_key)
-                    group_sets = group_conf['sets']
-
+                for group_key, group_conf in render_map.items():
                     log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
 
-                    for set_conf in group_sets:
+                    group_frame = repository.get_asset_frame(static_set, group_key)
+                    for set_conf in group_conf['sets']:
                         start = calculator.scale(
                             (set_conf['start']['x'], set_conf['start']['y']), 
                             game_world.tile_dimensions,
@@ -157,6 +156,28 @@ class Renderer():
                         else:
                             self.static_back_frame[layer].paste(group_frame, start, group_frame)
     
+    def _render_moveable_sets(self, game_world: world.World, repository: repo.Repo):
+        for layer in game_world.layers:
+            unordered_groups = game_world.get_platesets(game_world.layer)
+            render_map = self.render_ordered_dict(unordered_groups)
+
+            for group_key, group_conf in render_map.items():
+                if game_world.plate_property_conf[group_key]['type'] == 'mass':
+                    group_frame = repository.get_asset_frame('plates', group_key)
+                    for set_conf in group_conf['sets']:
+                        start = calculator.scale(
+                            (set_conf['start']['x'], set_conf['start']['y']), 
+                            game_world.tile_dimensions,
+                            set_conf['start']['units']
+                        )
+                        log.infinite(f'Rendering moveable plate set at {start[0], start[1]}', 'Repo._render_moveable_sets')
+
+                        if set_conf['cover']:
+                            self.static_cover_frame[layer].paste(group_frame, start, group_frame)
+                        else:
+                            self.static_back_frame[layer].paste(group_frame, start, group_frame)
+
+
     def _render_static(self, layer, cover: bool = False):
         if cover:
             self.world_frame.paste(self.static_cover_frame[layer], (0,0), self.static_cover_frame[layer])
@@ -186,6 +207,7 @@ class Renderer():
             game_world.layer = layer
 
         self._render_static(game_world.layer, False)
+        self._render_moveable_sets(game_world, repository)
         for spriteset in ['npcs', 'villains', 'hero']:
             self._render_spriteset(spriteset, game_world, repository)
         self._render_static(game_world.layer, True)

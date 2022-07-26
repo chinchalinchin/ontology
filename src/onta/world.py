@@ -406,8 +406,9 @@ class World():
             ]
             self.strutsets[layer]['hitboxes'] = world_bounds + self.get_strut_hitboxes(layer)
             self.platesets[layer]['doors'] = self.get_typed_platesets(layer, 'door')
-            self.platesets[layer]['chests'] = self.get_typed_platesets(layer, 'chest')
+            self.platesets[layer]['containers'] = self.get_typed_platesets(layer, 'container')
             self.platesets[layer]['pressures'] = self.get_typed_platesets(layer, 'pressure')
+            self.platesets[layer]['masses'] = self.get_typed_platesets(layer, 'mass')
 
 
     def _init_dynamic_state(self, state_ao: state.State) -> None:
@@ -618,6 +619,7 @@ class World():
             iter_set = self.get_spriteset(spriteset_key)
 
             for sprite_key, sprite in iter_set.items():
+                # sprite hit detection
                 if spriteset_key in ['npcs', 'villains']:
                     for hitbox_key in ['sprite', 'strut']:
 
@@ -673,6 +675,7 @@ class World():
                                     collision_map[key][nest_key] = True
                                     collision_map[nest_key][key] = True
     
+                # hero hit detection
                 elif spriteset_key == 'hero':
                     sprite_hitbox = self.get_sprite_hitbox(spriteset_key, 'sprite', sprite_key)
                     collision_sets = self.get_collision_sets_relative_to(self.hero, 'hero', 'sprite')
@@ -682,6 +685,13 @@ class World():
                     for collision_set in collision_sets:
                         if collisions.detect_collision(sprite_hitbox, collision_set):
                             collisions.recoil_sprite(sprite, self.sprite_property_conf[sprite_key])
+
+                # general sprite hit detection
+
+                for mass in self.platesets[self.layer]['masses']:
+                    if collisions.detect_collision(mass['hitbox'], [sprite_hitbox]):
+                        pass
+                        # collisions.recoil_strut(strut, sprite, self.sprite_property_conf[sprite_key])
 
 
     def _apply_interaction(self, user_input: dict):
@@ -701,13 +711,12 @@ class World():
         pass
 
 
-    def get_strut_hitboxes(self, layer, moveable = False):
+    def get_strut_hitboxes(self, layer):
         strut_hitboxes = []
-        for strut_key, strut_conf in self.get_strutsets(layer).items():
-            if self.strut_property_conf[strut_key]['moveable'] == moveable:
-                sets = strut_conf['sets']
-                for strut in sets:
-                    strut_hitboxes.append(strut['hitbox'])
+        for strut_conf in self.get_strutsets(layer).values():
+            sets = strut_conf['sets']
+            for strut in sets:
+                strut_hitboxes.append(strut['hitbox'])
         return strut_hitboxes
 
 
@@ -774,13 +783,12 @@ class World():
         return collision_sets
 
 
-    def get_strutsets(self, layer, moveable = False):
+    def get_strutsets(self, layer):
         iter_set = self.strutsets[layer].items() if self.strutsets[layer] is not None else { }
         return {
             key: val
             for key, val in iter_set
-            if key not in  ['hitboxes'] \
-                and self.strut_property_conf[key]['moveable'] == moveable
+            if key not in  ['hitboxes']
         }
     
 
@@ -789,7 +797,7 @@ class World():
         return {
             key: val
             for key, val in iter_set
-            if key not in ['doors', 'chests', 'pressures']
+            if key not in ['doors', 'containers', 'pressures', 'masses']
         }
 
 
