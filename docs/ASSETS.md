@@ -79,7 +79,7 @@ Entities
 --------
 ## Sprites
 
-A _Sprite_ have frames extracted from spritesheets arranged in rows and columns, so that each state frame can be mapped to an entry in the sheet. This engine was developed around the [Liberated Pixel Cup's]() _Sprite_ specification, where there are 21 states arranged in rows, with a different name of frames for each state. Therefore, each sprite has the following states defined: 
+A _Sprite_ have frames extracted from spritesheets arranged in rows and columns, so that each state frame can be mapped to an entry in the sheet. This engine was developed around the [Liberated Pixel Cup's]() _Sprite_ specification, where there are 21 states arranged in rows, with a different number of frames for each state. Therefore, each sprite has the following states defined: 
     
 - cast_up
 - cast_left
@@ -107,11 +107,11 @@ A _Sprite_ have frames extracted from spritesheets arranged in rows and columns,
 - shoot_down
 - death
 
-In theory, a sprite could have as many states defined as the user desires; however, it must, at minimum, provide definitions for these states.
+In theory, a sprite could have as many states defined as the user desires; however, it must, at minimum, provide definitions for these states; furthermore, these are the only states that will be animated by the game engine by default. Any other state definitions will be to be taken care of with scripts. See [Scripting](./SCRIPTING.md) for more information on scripting.
 
 Sprites also have states that do map one-to-one with animation frames, such as `interact` interacting with an in-game object or `jump`. These states are called _null states_, because they do not possess an outlet in the game's rendering engine.
 
-_Sprite_\s are complex creatures. They have properties defined in their configuration, but they also have a state defined in the game state. Beyond that, _Sprites_ have `intents`. This state information describes the different goals of a sprite depending on the current _plot_. See [Plotting](./PLOTTING.md) for more information on _plots_ and _intents_.
+_Sprite_\s are complex creatures. They have properties defined in their configuration, but they also have a state defined in the game state. Beyond that, _Sprites_ have `intents`. This state information describes the different goals of a sprite depending on the current _plot_. See [Plotting](./PLOTTING.md) for more information on _plots_ and _intents_. See [State: Sprites](./STATE#sprite-state) for more information on _Sprite_ state information.
 
 ## Effects
 
@@ -120,11 +120,15 @@ Self
 
 ## Display
 
+A _Display_ is a container for player state information. It contains a slot for each equipment state: `thrust`, `slash`, `cast`, `shoot` and `shield`. (See [State: Sprite](./STATE.md#sprite-state) for more information on _Sprite_ states.)
+
 ## Slots
 
 ## Mirrors
 
 ## Avatars
 
-## Symbols
+## Equipment
+
+
 

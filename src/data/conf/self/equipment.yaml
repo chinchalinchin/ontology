@@ -17,7 +17,7 @@ knife:
 
 pickaxe:
   sheets: 
-    - slash_pickage.png
+    - slash_pickaxe.png
   state: slash
 
 sword:
@@ -27,7 +27,7 @@ sword:
 
 warhammer:
   sheets:
-    - slash_sword.png
+    - slash_warhammer.png
   state: slash
 
 blood_magic:
@@ -59,9 +59,9 @@ emblem_shield:
 falcon_shield:
   sheets:
     - shield_falcon.png
-  thrust: shield
+  state: shield
 
 leather_shield:
   sheets:
     - shield_leather.png
-  thrust: shield
+  state: shield

@@ -8,6 +8,9 @@ To put it in terms of the engine, different configurations applied to the same g
 
 **NOTE**: In what follows, take note: there is no configuration for the _World_. This is because, while configuration affects how the _World_ object functions, the _World_ is, in essence, the game state. It is not initialized with configuration information; it is initialized through state information.
 
+Self
+----
+
 ## Controls
 
 - **Location**: _data/conf/controls.yaml_
@@ -16,6 +19,17 @@ This file defines the mapping between user input and player state. **Note**: The
 
 ```python
 ```
+
+## Equipment
+
+## Display
+
+## Avatars
+
+## Mirrors
+
+Forms
+-----
 
 ## Tiles
 
@@ -128,6 +142,10 @@ group:
 
 **Note**: If a plate is configured in _data/conf/plates.yaml_, then when you define its static state in _data/state/static.yml_, you must hook a connection into it. See [State](./STATE.md) for more information on state definitions.
 
+## Tracks
+
+Entities
+--------
 
 ## Sprites
 
@@ -187,3 +205,5 @@ As mentioned in previous section, each in-game element builds up complexity on t
 - **properties.intents**: A _Sprite_'s `intents` describes its available decision tree. Each `intent` is associated with a `plot` defined in _data/conf/plots.yaml_. When the world enters this `plot`, the `intents` associated with this `plot` become available to the _Sprite_.
 
 **Notes**: Sprites are the most complex object in the game.
+
+## Effects

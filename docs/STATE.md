@@ -91,4 +91,22 @@ This is perhaps the most important file in terms of the in-game state trajectori
 ```yaml
 ```
 
-### 
+### Sprite State
+
+_Sprite_ states are complex. By far, a _Sprite_ state trajectory is the most complex data structure in the game. Different states means different things, in terms of how they get interpretted by the engine, and thus it's possible for a slightly different initial states to produce radically different outcomes (see [Chaos Theory](). Because of this complexity, we will be as precise as possible in defining what is meant by a _Sprite_ state, in the hopes that everything is clear.
+
+A _Sprite_ state can be grouped into _animate_ and _null_ (or _inanimate_) states. _Animate_ states have a _frameset_ associated them, which the engine uses to animate that _Sprite_. _Null_ states do not affect the content of the _frameset_ animation, although they may alter its rendering options; for instance, when jumping, the sprite has its frame margins shifted and a shadow painted underneath it, without altering which _frameset_ is being iterated.
+
+A _Sprite_ has twenty-one _animate_ state and four _null_ states.
+
+An _animate_ _Sprite_ state is composed of an _action_ and a _direction_. The _direction_ of a state maps one-to-one to the direction keys the player users for input (one-to-one, ignoring the diagonal directions, which produce diagonal movement while using the _left_ and _right_ direction states, so for all intents and purposes, these directions can be ignored in what follows), whereas an _action_ is mapped to the secondary buttons, such as `ASDF`, `SHFT, ALT, CTRL, TAB` or widgets on a touch screen.
+
+A _Sprite_ has four directions: `left`, `right`, `up`, `down`.
+
+A _Sprite_ has five actions: `cast`, `thrust`, `slash`, `shoot`
+
+The cross of these two sets, _(action, direction)_, yields 20 distinct states. In addition to this cross product, there is one more _animate_ state: `death`. `death` has no direction. It is always rendered head-on.
+
+In addition to these 21 _animate_ states, there exists four _null_ states: `interact`, `jump`, `shield`, `use`.
+
+_Sprite_ _action_ states are mapped to equipment _slots_. (See [Configuration](./CONFIGURATION.md#equipment) for more information on _Equipment_). When a _Sprite_ has an _Equipment_ equipped to a _slot_, this appends a spritesheet onto the existing spritesheets for a _Sprite_ and alters the engine calculations for player attack damage in that state. When the player is rendered, the equipmentsheet will be rendered on top of him or her.

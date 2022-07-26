@@ -182,7 +182,6 @@ esmeralda:
         - legs_pants_blue.png
         - torso_female_shirt_blue.png
     states:
-        # Thrust
         -   state: thrust_up
             row: 4
             frames: 8
@@ -195,7 +194,6 @@ esmeralda:
         -   state: thrust_left
             row: 7
             frames: 8
-        # Walk
         -   state: walk_up
             row: 8
             frames: 9
@@ -208,7 +206,6 @@ esmeralda:
         -   state: walk_left
             row: 9
             frames: 9
-        # Run
         -   state: run_up
             row: 8
             frames: 9
@@ -221,7 +218,6 @@ esmeralda:
         -   state: run_left
             row: 11 
             frames: 9
-        # Slash
         -   state: slash_up
             row: 12
             frames: 6
@@ -234,7 +230,6 @@ esmeralda:
         -   state: slash_left
             row: 15
             frames: 6
-        # Death
         -   state: death
             row: 20
             frames: 6
@@ -301,7 +296,6 @@ skeleton:
     sheets:
         - monster_skeleton_white.png
     states:
-        # Thrust
         -   state: thrust_up
             row: 4
             frames: 8
@@ -314,7 +308,6 @@ skeleton:
         -   state: thrust_left
             row: 7
             frames: 8
-        # Walk
         -   state: walk_up
             row: 8
             frames: 9
@@ -327,7 +320,6 @@ skeleton:
         -   state: walk_left
             row: 9
             frames: 9
-        # Death
         -   state: death
             row: 20
             frames: 6
