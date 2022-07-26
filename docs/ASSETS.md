@@ -2,6 +2,11 @@
 
 Assets are the backbone of the _onta_ engine. They form the basis for the graphics and the sound. Assets are grouped according to how they are treated by the engine.
 
+Assets are logically grouped into types: _Forms_, _Entities_ and _Self_. These asset types are purely organizational, although they do reflect how the assets are treated by the engine when being rendered and acted upon in-game. 
+
+Forms
+-----
+
 ## Tiles
 
 Tiles have their dimensions defined in the the static world state, i.e. _data/state/static.yaml_. Because of this, whatever the tile dimensions are defined to be (by default, _(92px, 32px)_), all tiles are rendered in multiples of these dimensions. There is no getting around this. It is hardcoded into the game engine. If you wish to paint a graphic of arbitrary dimensions, you are looking for a _Strut_. 
@@ -70,6 +75,8 @@ A _Composition_ can be constructed from a collection of sets of _Strut_\s and a 
 
 Think of a _Composition_ as a rendering template for a group of objects. For example, a _Composition_ could be used to easily render a house wall, a house roof, a house porch and a house door through a logical grouping. These objects can have their relative positions defined in a _Composition_ and then this collection itself can be referenced in the game's static state file. A _Composition_ definition can be referenced as many times as desired in the static state files, so that a group of assets can be reused, instead of defining each of its constituents multiple times in the state file. 
 
+Entities
+--------
 ## Sprites
 
 A _Sprite_ have frames extracted from spritesheets arranged in rows and columns, so that each state frame can be mapped to an entry in the sheet. This engine was developed around the [Liberated Pixel Cup's]() _Sprite_ specification, where there are 21 states arranged in rows, with a different name of frames for each state. Therefore, each sprite has the following states defined: 
@@ -105,3 +112,19 @@ In theory, a sprite could have as many states defined as the user desires; howev
 Sprites also have states that do map one-to-one with animation frames, such as `interact` interacting with an in-game object or `jump`. These states are called _null states_, because they do not possess an outlet in the game's rendering engine.
 
 _Sprite_\s are complex creatures. They have properties defined in their configuration, but they also have a state defined in the game state. Beyond that, _Sprites_ have `intents`. This state information describes the different goals of a sprite depending on the current _plot_. See [Plotting](./PLOTTING.md) for more information on _plots_ and _intents_.
+
+## Effects
+
+Self
+----
+
+## Display
+
+## Slots
+
+## Mirrors
+
+## Avatars
+
+## Symbols
+

@@ -36,17 +36,20 @@ def create(ontology_path: str):
 
     log.debug('Initializing rendering engine...', 'create')
     render_engine = view.Renderer(game_world, asset_repository)
-    return controller, game_world, render_engine, asset_repository
+
+    log.debug('Initializing HUD...', 'create')
+    hud = None
+    return controller, game_world, render_engine, asset_repository, hud
 
 def start(ontology_path: str):
     log.debug('Creating GUI...', 'start')
     app, vw = view.get_app(), view.get_view()
-    cntl, wrld, eng, rep = create(ontology_path)
+    cntl, wrld, eng, rep, hud = create(ontology_path)
 
     log.debug('Threading game...', 'start')
     game_loop = threading.Thread(
         target=do, 
-        args=(vw,cntl,wrld,eng,rep), 
+        args=(vw,cntl,wrld,eng,rep,hud), 
         daemon=True
     )
 
@@ -56,7 +59,7 @@ def start(ontology_path: str):
     view.quit(app)
 
 def render(ontology_path: str, crop: bool, layer: str) -> Image.Image:
-    _, wrld, eng, rep = create(ontology_path)
+    _, wrld, eng, rep, hud = create(ontology_path)
     return eng.render(wrld, rep, crop, layer)
 
 
@@ -65,7 +68,8 @@ def do(
     controller: control.Controller, 
     game_world: world.World, 
     render_engine: view.Renderer, 
-    asset_repository: repo.Repo
+    asset_repository: repo.Repo,
+    hud
 ):
     ms_per_frame = (1/settings.FPS)*1000
 
@@ -81,6 +85,8 @@ def do(
         # scripts.apply_scripts(game_world, 'pre_update')
 
         game_world.iterate(user_input)
+
+        # hud.update(game_world)
 
         # # pre_render hook here
         # scripts.apply_scripts(game_world, 'pre_render')
