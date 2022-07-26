@@ -210,8 +210,7 @@ class Renderer():
             game_world.layer = layer
 
         self._render_static(game_world.layer, False)
-        self._render_moveable_plates(game_world, repository)
-        self._render_switch_plates(game_world, repository)
+        self._render_typed_plates(game_world, repository, 'mass')
         for spriteset in ['npcs', 'villains', 'hero']:
             self._render_spriteset(spriteset, game_world, repository)
         self._render_static(game_world.layer, True)

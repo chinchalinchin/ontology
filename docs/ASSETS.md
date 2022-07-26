@@ -31,19 +31,27 @@ See [Configuration](./CONFIGURATION.md#plates) for more information on _Doors_ a
 
 ### Container
 
-The item in a _Container_ is delivered statically through the _Chest_'s content.
+The item in a _Container_ is delivered statically through the _Container_'s `content`.
 
 ### Mass
 
+A _Mass_ gets to the heart of why _Plate_\s are fuzzy concepts, in the sense they blur the line between definitions of configuration and state. A _Mass_ is a plate that, when a sprite collides with it, will move in the direction of the collision.
+ 
+Obviously, in order to do this, a _Mass_ must alter its position based on the _Sprite_ interaction. Position is state level information, thus a _Mass_ is inherently tied to the game state. This does not, however, mean _Mass_\es have a dynamic state. See the **Notes** as the end of the section for more discussion on this "fuzziness".
+
+A _Mass_'s weight is statically delivered through its `content`.
+
 ### Pressure
 
-_Pressure_\s, while capable of existing independently, are not very interesting without _Gates_. _Pressure_\s are "switches" that activate a _Gate_. A _Gate_ is essentially a locked door that is opened when the _Pressure_ is activated. 
+_Pressure_\s, while capable of existing independently, are not very interesting without _Gate_\s. _Pressure_\s are "switches" that activate a _Gate_. See next section for more information on _Gate_\s
 
 The _Pressure_'s connection to a _Gate_ when activated is statically delivered through the _Pressure_'s `content`.
 
 See [Configuration](./CONFIGURATION.md#plates) for more information on _Plates_ and their `content`
 
 ### Gate
+
+A _Gate_ is most easily understood as a locked door that is opened when its accompanying _Pressure_ is activated, although the notion of a "door" simply means a connection between different world layers in game.
 
 A _Gate_'s connection to a _Pressure_ is statically delivered through the _Gate_'s `content`.
 
@@ -53,7 +61,7 @@ See [Configuration](./CONFIGURATION.md#plates) for more information on _Gates_ a
 ### Notes
 
 - **Collections**: A set of _Plate_\s constructed from the same platesheet frame is called a _plateset_.
-- **State vs. Property**: A _Plate_ are "fuzzy." While they do not have a defined dynamic state, they have, in a sense, a _pseudo_-dynamic state. As it is plain from the different types of _Plate_\s, they are inherently tied to an in-game interaction at a certain position. In order to accomplish interactions like opening a chest, stepping on a pressure plate or entering a door, the engine requires some way of keeping track of these events so they can be rendered. However, this is done through the dynamic state of _Sprite_\s; all of the possible _Plate_ interactions have one thing in common: they are dependent on a _Sprite_ in a particular state initiating the interaction. Therefore, the _type_ of _Plate_ interaction can be statically defined  in the static state and then manifested dynamically through a _Sprite_'s dynamic state. 
+- **State vs. Property**: The concept of _Plate_ is "fuzzy." They are completely defined by their configuration and static state infromation, but, while they do not have a defined dynamic state, they have, in a sense, a _pseudo_-dynamic state. As is plain from the different types of _Plate_\s described above, they are inherently tied to an in-game interaction at a certain position. In order to accomplish interactions like opening a chest, stepping on a pressure plate or entering a door, the engine requires some way of keeping track of these events so they can be rendered. In order to avoid adding _Plates_ to the list of in-game elements with a dynamic state (and thus excluding them from _Compositions_; see next section), at a high level, this is done through the dynamic state of _Sprite_\s; all of the possible _Plate_ interactions have one thing in common: they are dependent on a _Sprite_ in a particular state initiating the interaction. To put a finer point on it, the dynamic part of the interaction is dependent on the _Sprite_ state, while the _type_ and _content_ of the interaction can be defined statically. Therefore, the _type_ of a _Plate_'s interaction is defined in its configuration file, the _content_ of its interaction defined in the static state and then the actual interaction is manifested in-game dynamically through a _Sprite_'s dynamic state, e.g. a _Sprite_ entering the `interact` state while colliding with a _Plate_.
 
 
 ## Compositions

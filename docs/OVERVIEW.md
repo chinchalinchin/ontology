@@ -41,9 +41,9 @@ It means no invisible walls, beyond the world dimensions. A player can go anywhe
 
 It means there is "time" in the engine. In fact, a key piece of world configuration is the number of iterations equal to an in-game hour. "Plot" states, which affect the presence, dialogue and path options of sprites, can be calculated from a combination of in-game time and state information. 
 
-As a consequence, this means the world state, the collection of NPC, hero, villain states, is always updating, regardless of whether or it that particular element is being rendered. NPCs and villains exist independent of the player, seeking goals defined in their _intents_. A game _World_ in _onta_ is a "living", "breating" "thing".
+As a consequence, this means the world state, the collection of NPC, hero, villain states, is always updating, regardless of whether or not that particular element is being rendered. NPCs and villains exist independent of the player, seeking goals defined in their _intents_. A game _World_ in _onta_ is a "living", "breating" "thing".
 
-With _onta_, I have tried to apply all the mathematical, philosophical and scientific knowledge I have accumulated in my life in developing a world simulator, albeit a virutal one. But then again, when it comes right down to it, where does the physical end and the virtual start?
+With _onta_, I have tried to apply all the mathematical, philosophical and scientific knowledge I have accumulated in my life to develop a world simulator, albeit a virutal one. But, when it comes right down to it, where does the physical end and the virtual start?
 
 For more information on configuration, see [Configuration](./CONFIGURATION.md).
 

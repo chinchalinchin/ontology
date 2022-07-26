@@ -99,11 +99,12 @@ statue:
 
 plain_chest:
   image:
-    file: chest_rounded.png
-      on:
+    file: 
+      path: chest_rounded.png
+      on_position:
         x: 0
         y: 0
-      off: 
+      off_position: 
         x: 96
         y: 0
     size:

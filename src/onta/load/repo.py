@@ -44,8 +44,8 @@ class Repo():
 
             if asset_conf.get('file') is not None:
                 if asset == 'plates' and asset_props[asset_key].get('type') in SWITCH_PLATES:
-                    on_x, on_y = asset_conf['file']['on']['x'], asset_conf['file']['on']['y']
-                    off_x, off_y = asset_conf['file']['off']['x'], asset_conf['file']['off']['y']
+                    on_x, on_y = asset_conf['file']['on_position']['x'], asset_conf['file']['on_position']['y']
+                    off_x, off_y = asset_conf['file']['off_position']['x'], asset_conf['file']['off_position']['y']
                 else:
                     x, y = asset_conf['file']['position']['x'], asset_conf['file']['position']['y']
 
@@ -67,6 +67,7 @@ class Repo():
                     self.struts[asset_key] = buffer.crop((x,y,w+x,h+y))
                 elif asset == 'plates':
                     if asset_props[asset_key].get('type') in SWITCH_PLATES:
+                        self.plates[asset_key] = {}
                         self.plates[asset_key]['on'] = buffer.crop((on_x,on_y,w+on_x,h+on_y))
                         self.plates[asset_key]['off'] = buffer.crop((off_x,off_y,w+off_x,h+off_y))
                     else:
