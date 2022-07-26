@@ -110,6 +110,11 @@ tree_patch:
       sets:
         - start:
             units: absolute
+            x: 234
+            y: 165
+          cover: false 
+        - start:
+            units: absolute
             x: 14
             y: 55
           cover: false
@@ -128,13 +133,13 @@ tree_patch:
             x: 154
             y: 170
           cover: false
-        - start:
-            units: absolute
-            x: 234
-            y: 165
-          cover: false 
     tree_top:
       sets:
+        - start:
+            units: absolute
+            x: 220
+            y: 110
+          cover: true
         - start:
             units: absolute
             x: 0
@@ -154,11 +159,6 @@ tree_patch:
             units: absolute
             x: 140
             y: 115
-          cover: true
-        - start:
-            units: absolute
-            x: 220
-            y: 110
           cover: true
 
 horizontal_pavement:
