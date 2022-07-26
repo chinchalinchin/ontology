@@ -39,7 +39,7 @@ def create(ontology_path: str):
     render_engine = view.Renderer(game_world, asset_repository)
 
     log.debug('Initializing HUD...', 'create')
-    headsup_display = hud.HUD()
+    headsup_display = hud.HUD(config)
     return controller, game_world, render_engine, asset_repository, headsup_display
 
 def start(ontology_path: str):
