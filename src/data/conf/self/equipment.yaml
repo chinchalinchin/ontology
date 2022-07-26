@@ -1,0 +1,67 @@
+bow:
+  sheets: 
+    - shoot_bow.png
+  state: shoot
+
+# TODO: should equipment reference avatars, avatars reference equipment, or interface orchestrate everything? leaning towards the middle, since avatars are dependent, in a sense, on the equipment.
+
+axe:
+  sheets: 
+    - slash_axe.png
+  state: slash
+
+knife:
+  sheets: 
+    - slash_knife.png
+  state: slash
+
+pickaxe:
+  sheets: 
+    - slash_pickage.png
+  state: slash
+
+sword:
+  sheets:
+    - slash_sword.png
+  state: slash
+
+warhammer:
+  sheets:
+    - slash_sword.png
+  state: slash
+
+blood_magic:
+  sheets:
+    - cast_bleeding_eye.png
+    - cast_bloody_mouth.png
+  state: cast
+
+cane:
+  sheets:
+    - thrust_cane.png
+  state: thrust
+
+shovel:
+  sheets:
+    - thrust_shovel.png
+  state: thrust
+
+spear:
+  sheets:
+    - thrust_spear.png
+  state: thrust
+
+emblem_shield:
+  sheets:
+    - shield_emblem.png
+  state: shield
+
+falcon_shield:
+  sheets:
+    - shield_falcon.png
+  thrust: shield
+
+leather_shield:
+  sheets:
+    - shield_leather.png
+  thrust: shield

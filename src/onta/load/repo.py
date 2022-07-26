@@ -120,30 +120,34 @@ class Repo():
                     component = interset[component_key]
 
                     if component_key == 'display':
-                        path = os.path.join(
+                        image_path = os.path.join(
                             ontology_path,
                             *settings.DISPLAY_PATH,
                             component['image']['file']['path']
                         )
                     elif component_key == 'slots':
-                        path = os.path.join(
+                        image_path = os.path.join(
                             ontology_path,
                             *settings.SLOT_PATH,
                             component['image']['file']['path']
                         )
                     elif component_key == 'mirrors':
-                        path = os.path.join(
+                        image_path = os.path.join(
                             ontology_path,
                             *settings.MIRROR_PATH,
                             component['image']['file']['path']
                         )
                     elif component_key == 'avatars':
-                        path = os.path.join(
+                        image_path = os.path.join(
                             ontology_path,
                             *settings.AVATAR_PATH,
                             component['image']['file']['path']
                         )
 
+                    buffer = Image.open(image_path).convert(settings.IMG_MODE)
+
+                    log.debug( f"{asset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                        'Repo._init_static_assets')
                     x, y = component['image']['file']['x'], component['image']['file']['y']
                     w, h = component['image']['size']['w'], component['image']['size']['h']
 

@@ -34,11 +34,12 @@ hero:
             - interact
             - use
             - jump
+            - shield
         size:
             w: 64
             h: 64
     sheets:
-        - male_human_ivory_sheet.png
+        - human_male_ivory.png
         - head_hair_messy_red.png
         - legs_pants_green.png
         - torso_male_shirt_green.png
@@ -176,7 +177,7 @@ esmeralda:
                 dialogue:
                     - 
     sheets:
-        - female_human_ivory_sheet.png
+        - human_female_ivory.png
         - head_female_hair_braid_red.png
         - legs_pants_blue.png
         - torso_female_shirt_blue.png
@@ -298,9 +299,7 @@ skeleton:
                 dialogue:
                     -
     sheets:
-        - monster_skeleton_white_sheet.png
-        - equipment_male_armor_bronze.png
-        - item_spear.png
+        - monster_skeleton_white.png
     states:
         # Thrust
         -   state: thrust_up
