@@ -34,6 +34,18 @@ def calculate_set_hitbox(set_hitbox, set_conf, tile_dim):
     return None
 
 def detect_collision(sprite_hitbox, hitbox_list):
+    """Determines if a sprite's hitbox has collided with a list of hitboxes
+
+    :param sprite_hitbox: _description_
+    :type sprite_hitbox: _type_
+    :param hitbox_list: _description_
+    :type hitbox_list: _type_
+    :return: _description_
+    :rtype: _type_
+
+    .. notes:
+        - This method assumes it only cares _if_ a collision occurs, not with _what_ the collision occurs. The hitbox list is traversed and if any one of the contained hitboxes intersects the sprite, `True` is returned. If none of the hitboxes in the list intersect the given sprite, `False` is returned.
+    """
     for hitbox in hitbox_list:
         if hitbox is not None and calculator.intersection(sprite_hitbox, hitbox):
             # return true once collision is detected. it doesn't matter where it occurs, only what direction the hero is travelling...
@@ -42,7 +54,6 @@ def detect_collision(sprite_hitbox, hitbox_list):
             return True
 
 def recoil_sprite(sprite, sprite_props):
-    # TODO: pass in collide directly instead of through dictionary
     if 'down' in sprite['state']:
         sprite['position']['y'] -= sprite_props['collide']
     elif 'left' in sprite['state']:
