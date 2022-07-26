@@ -747,9 +747,18 @@ class World():
 
 
     def _apply_interaction(self, user_input: dict):
+        """_summary_
+
+        :param user_input: _description_
+        :type user_input: dict
+
+        .. notes:
+            - Collisions with containers are based on their calculated hitboxes, whereas interactions with containers are based on their actual dimensions.
+        """
         if user_input['interact']:
             hero_hitbox = self.get_sprite_hitbox('hero', 'sprite', 'hero')
 
+            triggered = False
             for door in self.platesets[self.layer]['doors']:
                 if collisions.detect_collision(
                     hero_hitbox,
@@ -757,23 +766,29 @@ class World():
                 ):
                     self.layer = door['content']
                     self.hero['layer'] = door['content']
+                    triggered = True
                     break
-            for container in self.platesets[self.layer]['containers']:
-                key, index = container['key'], container['index']
-                modified_hitbox = (
-                    container['position']['x'], 
-                    container['position']['y'],
-                    self.plate_property_conf[key]['size']['w'],
-                    self.plate_property_conf[key]['size']['h']    
-                )
-                if not self.switch_map[self.layer][key][index] and \
-                    collisions.detect_collision(
-                        hero_hitbox,
-                        [ modified_hitbox ]
-                    ):
-                    self.switch_map[self.layer][key][index] = True
-                    # TODO: deliver item to hero via content
-                    break
+
+            if not triggered:
+                for container in self.platesets[self.layer]['containers']:
+                    key, index = container['key'], container['index']
+                    modified_hitbox = (
+                        container['position']['x'], 
+                        container['position']['y'],
+                        self.plate_property_conf[key]['size']['w'],
+                        self.plate_property_conf[key]['size']['h']    
+                    )
+                    if not self.switch_map[self.layer][key][index] and \
+                        collisions.detect_collision(
+                            hero_hitbox,
+                            [ modified_hitbox ]
+                        ):
+                        self.switch_map[self.layer][key][index] = True
+                        triggered = True
+                        # TODO: deliver item to hero via content
+                        break
+                    
+            # TODO: gate and pressure interaction implementation
 
 
     def _apply_combat(self):
