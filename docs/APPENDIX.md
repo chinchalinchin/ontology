@@ -13,7 +13,11 @@ All of the game assets were retrieved from [OpenGameArt](https://opengameart). S
 - [PySide6](https://doc.qt.io/qtforpython/PySide6/QtWidgets/index.html#module-PySide6.QtWidgets)
 - [PyYAML](https://pyyaml.org/)
 
-# References
+# Guides
 
 - [Killer Game Programming]()
+- [Liberated Pixel Cup Style Guide](https://lpc.opengameart.org/static/LPC-Style-Guide/build/index.html)
+
+# References
+
 - [Dyjsktra's Algorithm]()

@@ -48,3 +48,9 @@ With _onta_, I have tried to apply all the mathematical, philosophical and scien
 For more information on configuration, see [Configuration](./CONFIGURATION.md).
 
 For more information on scripting, see [Scripting](./SCRIPTING.md)
+
+## Liberated Pixel Cup
+
+This engine was designed using created around the **LPC** specification (see [here](https://lpc.opengameart.org/static/LPC-Style-Guide/build/styleguide.html) and [here](https://bztsrc.gitlab.io/lpc-refined/). In principle, there is nothing special about LPC assets, and _onta_ could be configured to use an entirely different class of assets. However, **LPC** assets have well-defined states and animations, and embody the principles of well-designed game assets, so they have been used as a starting point. I recommend reading through the guides linked above and understanding at least a general overview of some of the design choices in the **LPC** spec.
+
+This engine should hopefully meet the **LPC** specification, as I have understood it. In fact, this documentation is intended to serve as a guide for how to take the **LPC** specification and expand it into an entire markup language so that a game can be specified in terms of that markup.

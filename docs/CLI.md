@@ -27,3 +27,15 @@ onta --ontology <path/to/ontology> \
     --render <path/to/save> \
     --layer <layer>
 ```
+
+## Separating Ontology Directories
+
+You can specify the asset directory, the configuration directory and the state directory through separate command line arguments, if you need to separate the directories themselves for whatever reason. If any one of these arguments is missing, the default data directory in the installation will be used,
+
+```shell
+onta --asset-dir <> \
+        --conf-dir <> \
+        --state-dir <> 
+```
+
+TODO: implement this.

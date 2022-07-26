@@ -4,6 +4,7 @@ import time
 import PySide6.QtWidgets as QtWidgets
 from PIL import Image
 
+import onta.hud as hud
 import onta.view as view
 import onta.control as control
 import onta.settings as settings
@@ -38,18 +39,18 @@ def create(ontology_path: str):
     render_engine = view.Renderer(game_world, asset_repository)
 
     log.debug('Initializing HUD...', 'create')
-    hud = None
-    return controller, game_world, render_engine, asset_repository, hud
+    headsup_display = hud.HUD()
+    return controller, game_world, render_engine, asset_repository, headsup_display
 
 def start(ontology_path: str):
     log.debug('Creating GUI...', 'start')
     app, vw = view.get_app(), view.get_view()
-    cntl, wrld, eng, rep, hud = create(ontology_path)
+    cntl, wrld, eng, rep, hd = create(ontology_path)
 
     log.debug('Threading game...', 'start')
     game_loop = threading.Thread(
         target=do, 
-        args=(vw,cntl,wrld,eng,rep,hud), 
+        args=(vw,cntl,wrld,eng,rep,hd), 
         daemon=True
     )
 
@@ -59,7 +60,7 @@ def start(ontology_path: str):
     view.quit(app)
 
 def render(ontology_path: str, crop: bool, layer: str) -> Image.Image:
-    _, wrld, eng, rep, hud = create(ontology_path)
+    _, wrld, eng, rep, hd = create(ontology_path)
     return eng.render(wrld, rep, crop, layer)
 
 
@@ -69,7 +70,7 @@ def do(
     game_world: world.World, 
     render_engine: view.Renderer, 
     asset_repository: repo.Repo,
-    hud
+    headsup_display: hud.HUD
 ):
     ms_per_frame = (1/settings.FPS)*1000
 
