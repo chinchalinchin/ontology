@@ -13,31 +13,67 @@ SRC_DIR = os.path.dirname(APP_DIR)
 DEFAULT_DIR = os.path.join(SRC_DIR, 'data')
 """Directory containg application data"""
 
-CONF_PATH = [ 'conf' ]
+CONF_PATH = [ 
+    'conf' 
+]
 """Array containing path parts relative to ontology directory leading to application configuration directory"""
 
-STATE_PATH = [ 'state' ]
+STATE_PATH = [ 
+    'state' 
+]
 """Array containing path parts relative to ontology directory leading to state information directory"""
 
-SPRITE_PATH = [ 'assets', 'entities', 'sprites' ]
+SPRITE_PATH = [ 
+    'assets', 
+    'entities', 
+    'sprites' 
+]
 """Array containing path parts relative to ontology directory leading to spritesheets directory"""
 
-TILE_PATH = [ 'assets', 'forms', 'tiles' ]
+TILE_PATH = [ 
+    'assets', 
+    'forms', 
+    'tiles' 
+]
 """Array containing path parts relative to ontology directory leading to tilesheet directory"""
 
-STRUT_PATH = [ 'assets', 'forms', 'struts' ]
+STRUT_PATH = [ 
+    'assets', 
+    'forms', 
+    'struts' 
+]
 """Array containing path parts relative to ontology directory leading to strutsheet directory"""
 
-PLATE_PATH=[ 'assets', 'forms', 'plates' ]
+PLATE_PATH = [ 
+    'assets', 
+    'forms', 
+    'plates' 
+]
 """Array containing path parts relative to ontology directory leading to platesheet directory"""
 
-AVATAR_PATH=[ 'assets', 'self', 'avatars' ]
+AVATAR_PATH = [ 
+    'assets', 
+    'self', 
+    'avatars' 
+]
 
-DISPLAY_PATH=[ 'assets', 'self', 'display' ]
+DISPLAY_PATH = [ 
+    'assets', 
+    'self', 
+    'display' 
+]
 
-MIRROR_PATH=[ 'assets', 'self', 'mirrors' ]
+MIRROR_PATH = [ 
+    'assets', 
+    'self', 
+    'mirrors' 
+]
 
-SLOT_PATH=[ 'assets', 'self', 'slots' ]
+SLOT_PATH = [ 
+    'assets', 
+    'self', 
+    'slots' 
+]
 
 # Debug Configuration
 
