@@ -204,6 +204,7 @@ class World():
         self._init_static_state(state_ao)
         self._generate_composite_static_state()
         self._generate_stationary_hitboxes()
+        self._generate_switch_map()
         self._init_dynamic_state(state_ao)
 
 
@@ -244,6 +245,12 @@ class World():
 
 
     def _generate_composite_static_state(self) -> None:
+        """_summary_
+
+        .. notes:
+            - Method must be called before stationary hitboxes are initialized, since this method decompose compositions into their consistuent sets and appends them to the existing static state.
+
+        """
         log.debug(f'Decomposing composite static world state into constituents...', 'World._generate_composite_static_state')
 
         for layer in self.layers:
@@ -401,10 +408,47 @@ class World():
 
 
     def _generate_switch_map(self) -> None:
+        """_summary_
+
+        .. notes:
+            - switch_map example,
+            ```python
+            self.switch_map = {
+                'layer_1': {
+                    'switch_key_1': {
+                        'switch_set_index_1': bool_1, # bool
+                        'switch_set_index_2': bool_2, # bool
+                        # ...
+                    },
+                    # ...
+                },
+                # ...
+            }
+            ```
+        """
+        self.switch_map = {}
         for layer in self.layers:
-            containers = self.get_typed_platesets(layer, 'container')
-            pressures = self.get_typed_platesets(layer, 'pressure')
+            switches =  self.get_typed_platesets(layer, 'pressure') + \
+                self.get_typed_platesets(layer, 'container') + \
+                self.get_typed_platesets(layer, 'gate')
+            switch_indices = [ switch['index'] for switch in switches]
+            self.switch_map[layer] = {
+                switch['key']: {
+                    index: False for index in switch_indices
+                } for switch in switches
+            }
+            # switch_map ={
+            #   'layer_1': {
+            #       'switch_key': {
+            #           'switch_set_index': bool,
+            #           'switch_set_index': bool,
+            #           # ...
+            #       }
+            #   }
+            # }
+                
         pass
+
 
     def _init_dynamic_state(self, state_ao: state.State) -> None:
         """
@@ -704,14 +748,31 @@ class World():
 
     def _apply_interaction(self, user_input: dict):
         if user_input['interact']:
+            hero_hitbox = self.get_sprite_hitbox('hero', 'sprite', 'hero')
 
             for door in self.platesets[self.layer]['doors']:
                 if collisions.detect_collision(
-                    self.get_sprite_hitbox('hero', 'sprite', 'hero'), 
+                    hero_hitbox,
                     [ door['hitbox'] ]
                 ):
                     self.layer = door['content']
                     self.hero['layer'] = door['content']
+                    break
+            for container in self.platesets[self.layer]['containers']:
+                key, index = container['key'], container['index']
+                modified_hitbox = (
+                    container['position']['x'], 
+                    container['position']['y'],
+                    self.plate_property_conf[key]['size']['w'],
+                    self.plate_property_conf[key]['size']['h']    
+                )
+                if not self.switch_map[self.layer][key][index] and \
+                    collisions.detect_collision(
+                        hero_hitbox,
+                        [ modified_hitbox ]
+                    ):
+                    self.switch_map[self.layer][key][index] = True
+                    # TODO: deliver item to hero via content
                     break
 
 
@@ -788,6 +849,12 @@ class World():
         if (hitbox_key =='strut' or sprite_key == 'hero' ) \
              and self.strutsets[sprite['layer']]['hitboxes'] is not None:
             collision_sets.append(self.strutsets[sprite['layer']]['hitboxes'])
+        if (hitbox_key =='strut' or sprite_key == 'hero' ) \
+             and self.platesets[sprite['layer']]['containers'] is not None:
+             collision_sets.append([
+                 container['hitbox']
+                 for container in self.platesets[sprite['layer']]['containers']
+             ])
         return collision_sets
 
 
@@ -818,7 +885,8 @@ class World():
                         'key': plate_key,
                         'index': i,
                         'hitbox': plate['hitbox'],
-                        'content': plate['content']
+                        'content': plate['content'],
+                        'position': plate['start']
                     })
         return typed_platesets
 

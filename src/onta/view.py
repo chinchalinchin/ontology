@@ -179,10 +179,12 @@ class Renderer():
 
                     if plate_type not in SWITCH_PLATES:
                         self.world_frame.paste(group_frame, start, group_frame)
-                    else:
-                        pass
-                        # TODO: render on/off frame based on game_world plate map, will need index of plate in set
 
+                    else:
+                        if game_world.switch_map[game_world.layer][group_key][i]:
+                            self.world_frame.paste(group_frame['on'], start, group_frame['on'])
+                        else: 
+                            self.world_frame.paste(group_frame['off'], start, group_frame['off'] )
 
     def _render_switch_plates(self, game_world: world.World, repository: repo.Repo):
         pass
@@ -210,7 +212,8 @@ class Renderer():
             game_world.layer = layer
 
         self._render_static(game_world.layer, False)
-        self._render_typed_plates(game_world, repository, 'mass')
+        for typed_plate in ['mass', 'container', 'gate']:
+            self._render_typed_plates(game_world, repository, typed_plate)
         for spriteset in ['npcs', 'villains', 'hero']:
             self._render_spriteset(spriteset, game_world, repository)
         self._render_static(game_world.layer, True)

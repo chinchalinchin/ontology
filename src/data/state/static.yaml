@@ -169,8 +169,15 @@ layers:
               units: absolute
               x: 500
               y: 1265
-            cover: false
             content: 5
+      plain_chest:
+        order: 1
+        sets:
+          - start:
+              units: absolute
+              x: 400
+              y: 1265
+            content: item
     compositions:
       house:
         sets:

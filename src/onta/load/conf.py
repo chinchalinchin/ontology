@@ -111,6 +111,7 @@ class Conf():
                 self.plate_property_conf[plate_key] = {}
                 self.plate_sheet_conf[plate_key] = {}
                 self.plate_property_conf[plate_key] = plate_conf['properties']
+                self.plate_property_conf[plate_key]['size'] = plate_conf['image']['size']
                 self.plate_sheet_conf[plate_key] = plate_conf['image']
         
         return self.plate_property_conf, self.plate_sheet_conf

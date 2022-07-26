@@ -102,10 +102,10 @@ plain_chest:
     file: 
       path: chest_rounded.png
       on_position:
-        x: 0
+        x: 96
         y: 0
       off_position: 
-        x: 96
+        x: 0
         y: 0
     size:
       w: 32
@@ -117,6 +117,6 @@ plain_chest:
         y: 0
       size:
         w: 28
-        h: 20
+        h: 10
     type: container
         
