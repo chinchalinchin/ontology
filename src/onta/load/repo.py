@@ -129,6 +129,8 @@ class Repo():
                         'Repo._init_interface_assets')
                     self.displays[size] = buffer.crop((x,y,w+x,h+y))
                     
+                # TODO
+                
                 # elif interset_key == 'slots':
                 #     image_path = os.path.join(
                 #         ontology_path,
