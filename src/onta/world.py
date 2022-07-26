@@ -193,7 +193,7 @@ class World():
     switch_map = None
     iterations = 0
 
-    def __init__(self, ontology_path: str = settings.DATA_DIR) -> None:
+    def __init__(self, ontology_path: str = settings.DEFAULT_DIR) -> None:
         """
         Creates an instance of `onta.world.World` and calls internal methods to initialize in-game element configuration, the game's static state and the game's dynamic state.
 

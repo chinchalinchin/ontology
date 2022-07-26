@@ -1,6 +1,8 @@
 import os
 import yaml
 
+import onta.settings as settings
+
 class Conf():
     """
     
@@ -17,13 +19,14 @@ class Conf():
     plate_sheet_conf = None
     tile_sheet_conf = None
     control_conf = None
+    interface_conf = None
     composite_conf = None
 
     def __init__(self, data_dir):
         """
         
         """
-        self.conf_dir = os.path.join(data_dir, 'conf')
+        self.conf_dir = os.path.join(data_dir, *settings.CONF_PATH)
     
     def __configuration(self, obj: str, species: str) -> dict:
         conf_path = os.path.join(self.conf_dir, species, f'{obj}.yaml')
@@ -44,6 +47,11 @@ class Conf():
         if self.control_conf is None:
             self.control_conf = self._self_configuration('controls')
         return self.control_conf
+
+    def load_interface_configuration(self):
+        if self.interface_conf is None:
+            self.interface_conf = self._self_configuration('interface')
+        return self.interface_conf
 
     def load_composite_configuration(self):
         if self.composite_conf is None:

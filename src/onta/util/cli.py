@@ -14,7 +14,7 @@ def parse_cli_args():
         nargs="?",
         type=str,
         dest='ontology',
-        default=str(settings.DATA_DIR),
+        default=str(settings.DEFAULT_DIR),
     )
     parser.add_argument(
         '-r',

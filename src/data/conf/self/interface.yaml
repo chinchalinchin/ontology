@@ -1,0 +1,108 @@
+sizes:
+  - small
+  - large
+
+breakpoints:
+  - w: 800
+    h: 600
+
+small:
+  display:
+    image:
+      file:
+        path: display_small.png
+        x: 0
+        y: 0
+      size:
+        w: 192
+        h: 64
+  slots:
+    slash:
+      image:
+        file:
+          path:
+          x:
+          y:
+        size:
+          w:
+          h:
+    cast:
+      image:
+        file:
+          path:
+          x:
+          y:
+        size:
+          w:
+          h:
+    thrust:
+      image:
+        file:
+          path:
+          x:
+          y:
+        size:
+          w:
+          h:
+    shoot:
+      image:
+        file:
+          path:
+          x:
+          y:
+        size:
+          w:
+          h:
+  mirrors:
+  avatars:
+
+large:
+  display:
+    image:
+      file:
+        path: display_large.png
+        x: 0
+        y: 0
+      size:
+        w: 640
+        h: 96
+  slots:
+    slash:
+      image:
+        file:
+          path:
+          x:
+          y:
+        size:
+          w:
+          h:
+    cast:
+      image:
+        file:
+          path:
+          x:
+          y:
+        size:
+          w:
+          h:
+    thrust:
+      image:
+        file:
+          path:
+          x:
+          y:
+        size:
+          w:
+          h:
+    shoot:
+      image:
+        file:
+          path:
+          x:
+          y:
+        size:
+          w:
+          h:
+  mirrors:
+  avatars:
+  

@@ -10,7 +10,7 @@ APP_DIR = os.path.dirname(os.path.abspath(__file__))
 SRC_DIR = os.path.dirname(APP_DIR)
 """Directory containing the project source"""
 
-DATA_DIR = os.path.join(SRC_DIR, 'data')
+DEFAULT_DIR = os.path.join(SRC_DIR, 'data')
 """Directory containg application data"""
 
 CONF_PATH=['conf']
@@ -30,6 +30,14 @@ STRUT_PATH=['assets','forms','struts']
 
 PLATE_PATH=['assets', 'forms', 'plates']
 """Array containing path parts relative to ontology directory leading to platesheet directory"""
+
+AVATAR_PATH=['assets', 'self', 'avatars']
+
+DISPLAY_PATH=['assets', 'self', 'display']
+
+MIRROR_PATH=['assets','self','mirrors']
+
+SLOT_PATH=['assets','self','slots']
 
 # Debug Configuration
 

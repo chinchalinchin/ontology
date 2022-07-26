@@ -10,65 +10,83 @@ import onta.util.gui as gui
 
 log = logger.Logger('onta.repo', settings.LOG_LEVEL)
 
-ASSETS = ['tiles', 'struts', 'plates']
-SWITCH_PLATES = ['container', 'pressure', 'gate']
+STATIC_ASSETS_TYPES = ['tiles', 'struts', 'plates']
+SWITCH_PLATES_TYPES = ['container', 'pressure', 'gate']
 
 class Repo():
 
     tiles = {}
     struts = {}
     plates = {}
+    tracks = {}
     sprites = {}
+    effects = {}
+    displays = {}
+    avatars = {}
+    mirrors = {}
+    slots = {}
 
     def __init__(self, ontology_path: str) -> None:
         """
         .. note:
             - No reference is kept to `ontology_path`; it is passed to initialize methods and released.
         """
-        for asset in ASSETS:
-            self._init_assets(asset, ontology_path)
-        self._init_sprites(ontology_path)
-
-    def _init_assets(self, asset: str, ontology_path: str) -> None:
-        log.debug(f'Initializing {asset} assets...', 'Repo._init_assets')
-
         config = conf.Conf(ontology_path)
+        for asset_type in STATIC_ASSETS_TYPES:
+            self._init_static_assets(asset_type, config, ontology_path)
+        self._init_sprite_assets(config, ontology_path)
+        self._init_interface_assets(config, ontology_path)
 
-        if asset == 'tiles':
+    def _init_static_assets(self, asset_type: str, config: conf.Conf, ontology_path: str) -> None:
+        log.debug(f'Initializing {asset_type} assets...', 'Repo._init_static_assets')
+
+        if asset_type == 'tiles':
             assets_conf = config.load_tile_configuration()
-        elif asset == 'struts':
-            assets_conf = config.load_strut_configuration()[1]
-        elif asset == 'plates':
+        elif asset_type == 'struts':
+            asset_props, assets_conf = config.load_strut_configuration()
+        elif asset_type == 'plates':
             asset_props, assets_conf = config.load_plate_configuration()
 
         for asset_key, asset_conf in assets_conf.items():
             w, h = asset_conf['size']['w'], asset_conf['size']['h']
 
             if asset_conf.get('file') is not None:
-                if asset == 'plates' and asset_props[asset_key].get('type') in SWITCH_PLATES:
+                if asset_type == 'plates' and asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
                     on_x, on_y = asset_conf['file']['on_position']['x'], asset_conf['file']['on_position']['y']
                     off_x, off_y = asset_conf['file']['off_position']['x'], asset_conf['file']['off_position']['y']
                 else:
                     x, y = asset_conf['file']['position']['x'], asset_conf['file']['position']['y']
 
-                if asset == 'tiles':
-                    image_path = os.path.join(ontology_path, *settings.TILE_PATH, asset_conf['file']['path'])
-                elif asset == 'struts':
-                    image_path = os.path.join(ontology_path, *settings.STRUT_PATH, asset_conf['file']['path'])
-                elif asset == 'plates':                         
-                    image_path = os.path.join(ontology_path, *settings.PLATE_PATH, asset_conf['file']['path'])
+                if asset_type == 'tiles':
+                    image_path = os.path.join(
+                        ontology_path, 
+                        *settings.TILE_PATH, 
+                        asset_conf['file']['path']
+                    )
+                elif asset_type == 'struts':
+                    image_path = os.path.join(
+                        ontology_path, 
+                        *settings.STRUT_PATH, 
+                        asset_conf['file']['path']
+                    )
+                elif asset_type == 'plates':                         
+                    image_path = os.path.join(
+                        ontology_path, 
+                        *settings.PLATE_PATH, 
+                        asset_conf['file']['path']
+                    )
 
                 buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
                 log.debug( f"{asset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                    'Repo._init_assets')
+                    'Repo._init_static_assets')
 
-                if asset == 'tiles':
+                if asset_type == 'tiles':
                     self.tiles[asset_key] = buffer.crop((x,y,w+x,h+y))
-                elif asset == 'struts':
+                elif asset_type == 'struts':
                     self.struts[asset_key] = buffer.crop((x,y,w+x,h+y))
-                elif asset == 'plates':
-                    if asset_props[asset_key].get('type') in SWITCH_PLATES:
+                elif asset_type == 'plates':
+                    if asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
                         self.plates[asset_key] = {}
                         self.plates[asset_key]['on'] = buffer.crop((on_x,on_y,w+on_x,h+on_y))
                         self.plates[asset_key]['off'] = buffer.crop((off_x,off_y,w+off_x,h+off_y))
@@ -85,17 +103,61 @@ class Repo():
                     asset_conf['channels']['a']
                 )
                 buffer = Image.new(settings.IMG_MODE, (w,h), channels)
-                if asset == 'tiles':
+                if asset_type == 'tiles':
                     self.tiles[asset_key] = buffer
-                elif asset == 'struts':
+                elif asset_type == 'struts':
                     self.struts[asset_key] = buffer
-                elif asset == 'plates':
+                elif asset_type == 'plates':
                     self.plates[asset_key] = buffer
  
 
-    def _init_sprites(self, ontology_path: str) -> None:
-        log.debug('Initializing sprite assets...', 'Repo._init_sprites')
-        config = conf.Conf(ontology_path)
+    def _init_interface_assets(self, config: conf.Conf, ontology_path: str) -> None:
+        log.debug(f'Initializing  assets...', 'Repo._init_interface_assets')
+        interface_conf = config.load_interface_configuration()
+        for size in interface_conf['sizes']:
+            for interset_key, interset in interface_conf[size].items():
+                for component_key in ['display', 'slots', 'mirrors', 'avatars']:
+                    component = interset[component_key]
+
+                    if component_key == 'display':
+                        path = os.path.join(
+                            ontology_path,
+                            *settings.DISPLAY_PATH,
+                            component['image']['file']['path']
+                        )
+                    elif component_key == 'slots':
+                        path = os.path.join(
+                            ontology_path,
+                            *settings.SLOT_PATH,
+                            component['image']['file']['path']
+                        )
+                    elif component_key == 'mirrors':
+                        path = os.path.join(
+                            ontology_path,
+                            *settings.MIRROR_PATH,
+                            component['image']['file']['path']
+                        )
+                    elif component_key == 'avatars':
+                        path = os.path.join(
+                            ontology_path,
+                            *settings.AVATAR_PATH,
+                            component['image']['file']['path']
+                        )
+
+                    x, y = component['image']['file']['x'], component['image']['file']['y']
+                    w, h = component['image']['size']['w'], component['image']['size']['h']
+
+                    if component_key == 'display':
+                        self.displays[interset_key]
+                    elif component_key == 'slots':
+                        self.slots[interset_key]
+                    elif component_key == 'mirrors':
+                        self.mirrors[interset_key]
+                    elif component_key == 'avatars':
+                        self.mirrors[interset_key]
+
+    def _init_sprite_assets(self, config: conf.Conf, ontology_path: str) -> None:
+        log.debug('Initializing sprite assets...', 'Repo._init_sprite_assets')
 
         states_conf, props_conf, sheets_conf = config.load_sprite_configuration()
 
