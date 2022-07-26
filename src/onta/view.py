@@ -245,10 +245,18 @@ class Renderer():
 
 
     def _render_hud(self, headsup_display: hud.HUD, repository: repo.Repo):
-        pass
+        display_frame = repository.get_interface_frame('display', headsup_display.media_size)
+
+        display_dim = display_frame.size
+        device_dim = self.player_device.dimensions
+
+        x_start = int((device_dim[0] - display_dim[0])/2)
+        y_start = int(device_dim[1] - display_dim[1])
+
+        self.world_frame.paste(display_frame, (x_start, y_start), display_frame)
 
 
-    def render(self, game_world: world.World, repository: repo.Repo, crop: bool = True, layer: str = None):
+    def render(self, game_world: world.World, repository: repo.Repo, headsup_display: hud.HUD, crop: bool = True, layer: str = None):
         """_summary_
 
         :param game_world: _description_
@@ -284,7 +292,8 @@ class Renderer():
 
             self.world_frame = self.world_frame.crop(crop_box)
         
-        # TODO: render HUD here
+        if headsup_display.activated:
+            self._render_hud(headsup_display, repository)
 
         return self.world_frame
 
@@ -292,7 +301,7 @@ class Renderer():
 
         # TODO: render HUD
         
-        cropped = self.render(game_world, repository)
+        cropped = self.render(game_world, repository, headsup_display)
 
         qim = ImageQt(cropped)
         pix = QtGui.QPixmap.fromImage(qim)

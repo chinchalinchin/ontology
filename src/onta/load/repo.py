@@ -164,6 +164,7 @@ class Repo():
                 # elif component_key == 'avatars':
                 #     self.mirrors[size] = buffer.crop((x,y,w+x,h+y))
 
+
     def _init_sprite_assets(self, config: conf.Conf, ontology_path: str) -> None:
         log.debug('Initializing sprite assets...', 'Repo._init_sprite_assets')
 
@@ -216,7 +217,12 @@ class Repo():
         return None
 
 
-    def get_sprite_frame(self, sprite: str, state: str, frame: int):
+    def get_interface_frame(self, interface_key, breakpoint_key) -> Union[Image.Image, None]:
+        if interface_key == 'display':
+            return self.displays[breakpoint_key]
+        return None
+    
+    def get_sprite_frame(self, sprite: str, state: str, frame: int) -> Union[Image.Image, None]:
         return self.sprites[sprite][state][frame]
 
 if __name__=="__main__":

@@ -62,4 +62,12 @@ def parse_cli_args():
         dest='height',
         default=settings.SCREEN_DEFAULT_HEIGHT,
     )
+    parser.add_argument(
+        '-hud',
+        '--hud',
+        '-heads-up',
+        '--heads-up',
+        action='store_true',
+        dest="hud"
+    )
     return parser.parse_args()

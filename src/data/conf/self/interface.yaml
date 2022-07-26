@@ -6,6 +6,8 @@ breakpoints:
   - w: 800
     h: 600
 
+# NOTE: each successive breakpoint must contain the last
+
 # NOTE: len(breakpoints) = len(sizes) - 1
 
 hud:
@@ -23,30 +25,21 @@ hud:
       empty:
         image:
           file:
-            path: null
-            x: null
-            y: null
+            path: slots.png
+            x: 208
+            y: 144
           size:
-            w: null
-            h: null
-      fill:
+            w: 48
+            h: 48
+      equipped:
         image:
           file:
-            path: null
-            x: null
-            y: null
+            path: slots.png
+            x: 208
+            y: 48
           size:
-            w: null
-            h: null
-      select:
-        image:
-          file:
-            path: null
-            x: null
-            y: null
-          size:
-            w: null
-            h: null
+            w: 48
+            h: 48
     mirrors:
       life: null
       magic: null
@@ -59,40 +52,31 @@ hud:
     display:
       image:
         file:
-          path: display_large.png
+          path: display_medium.png
           x: 0
           y: 0
         size:
-          w: 640
-          h: 96
+          w: 577
+          h: 64
     slot:
       empty:
         image:
           file:
-            path: null
-            x: null
-            y: null
+            path: slots.png
+            x: 208
+            y: 144
           size:
-            w: null
-            h: null
-      fill:
+            w: 48
+            h: 48
+      equipped:
         image:
           file:
-            path: null
-            x: null
-            y: null
+            path: slots.png
+            x: 208
+            y: 48
           size:
-            w: null
-            h: null
-      select:
-        image:
-          file:
-            path: null
-            x: null
-            y: null
-          size:
-            w: null
-            h: null
+            w: 48
+            h: 48
     mirrors:
       life: null
       magic: null

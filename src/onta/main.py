@@ -25,14 +25,14 @@ def create(args):
     log.debug('Initializing controller...', 'create')
     controller = control.Controller(args.ontology)
 
-    log.debug('Initializing HUD...', 'create')
-    headsup_display = hud.HUD(args.ontology)
-
     log.debug('Initializing asset repository...', 'create')
     asset_repository = repo.Repo(args.ontology)
 
     log.debug('Initializing game world...', 'create')
     game_world = world.World(args.ontology)
+
+    log.debug('Initializing HUD...', 'create')
+    headsup_display = hud.HUD(player_device, args.ontology)
 
     log.debug('Initializing rendering engine...', 'create')
     render_engine = view.Renderer(game_world, asset_repository, player_device)
@@ -57,9 +57,10 @@ def start(ontology_path: str):
     game_loop.start()
     view.quit(app)
 
-def render(ontology_path: str, crop: bool, layer: str) -> Image.Image:
-    _, wrld, eng, rep, hd = create(ontology_path)
-    return eng.render(wrld, rep, crop, layer)
+def render(ontology_path: str, crop: bool, layer: str, hud_on: bool) -> Image.Image:
+    _, wrld, eng, rep, hd, _ = create(ontology_path)
+    hd.activated = hud_on
+    return eng.render(wrld, rep, hd, crop, layer, hd)
 
 
 def do(
@@ -85,6 +86,9 @@ def do(
 
         game_world.iterate(user_input)
 
+        if user_input['hud']:
+            headsup_display.toggle()
+            
         headsup_display.update(game_world)
 
         # # pre_render hook here
@@ -108,7 +112,7 @@ def entrypoint():
     args = cli.parse_cli_args()
 
     if args.render:
-        img = render(args.ontology, args.crop, args.layer)
+        img = render(args.ontology, args.crop, args.layer, args.hud)
         img.save(args.render)
         return
 

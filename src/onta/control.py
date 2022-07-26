@@ -8,7 +8,8 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.control', settings.LOG_LEVEL)
 
-CONTROLS = ['space', 'alt_left', 'ctrl_left', 'shift_left', 'tab', 'up', 'left', 'right', 'down', 'e']
+# TODO: generate this by traversing controls config
+CONTROLS = ['space', 'alt_left', 'ctrl_left', 'shift_left', 'tab', 'up', 'left', 'right', 'down', 'e', 'h']
 
 class Controller():
 
