@@ -122,7 +122,7 @@ class Renderer():
                             dim = (start[0] + game_world.tile_dimensions[0]*i, 
                                 start[1] + game_world.tile_dimensions[1]*j)
 
-                            if set_conf['cover']:
+                            if set_conf.get('cover'):
                                 self.static_cover_frame[layer].paste(group_tile, dim, group_tile)
                             else:
                                 self.static_back_frame[layer].paste(group_tile, dim, group_tile)
@@ -142,40 +142,44 @@ class Renderer():
                 for group_key, group_conf in render_map.items():
                     log.debug(f'Rendering {group_key} struts', 'Repo._render_struts')
 
-                    group_frame = repository.get_asset_frame(static_set, group_key)
-                    for set_conf in group_conf['sets']:
-                        start = calculator.scale(
-                            (set_conf['start']['x'], set_conf['start']['y']), 
-                            game_world.tile_dimensions,
-                            set_conf['start']['units']
-                        )
-                        log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_struts')
+                    if static_set == 'struts' or \
+                        (static_set == 'plates' and \
+                            game_world.plate_property_conf[group_key]['type'] == 'door'):
 
-                        if set_conf['cover']:
-                            self.static_cover_frame[layer].paste(group_frame, start, group_frame)
-                        else:
-                            self.static_back_frame[layer].paste(group_frame, start, group_frame)
+                        group_frame = repository.get_asset_frame(static_set, group_key)
+                        for set_conf in group_conf['sets']:
+                            start = calculator.scale(
+                                (set_conf['start']['x'], set_conf['start']['y']), 
+                                game_world.tile_dimensions,
+                                set_conf['start']['units']
+                            )
+                            log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_struts')
+
+                            if set_conf.get('cover'):
+                                self.static_cover_frame[layer].paste(group_frame, start, group_frame)
+                            else:
+                                self.static_back_frame[layer].paste(group_frame, start, group_frame)
     
     def _render_moveable_sets(self, game_world: world.World, repository: repo.Repo):
-        for layer in game_world.layers:
-            unordered_groups = game_world.get_platesets(game_world.layer)
-            render_map = self.render_ordered_dict(unordered_groups)
+        unordered_groups = game_world.get_platesets(game_world.layer)
+        render_map = self.render_ordered_dict(unordered_groups)
 
-            for group_key, group_conf in render_map.items():
-                if game_world.plate_property_conf[group_key]['type'] == 'mass':
-                    group_frame = repository.get_asset_frame('plates', group_key)
-                    for set_conf in group_conf['sets']:
-                        start = calculator.scale(
-                            (set_conf['start']['x'], set_conf['start']['y']), 
-                            game_world.tile_dimensions,
-                            set_conf['start']['units']
-                        )
-                        log.infinite(f'Rendering moveable plate set at {start[0], start[1]}', 'Repo._render_moveable_sets')
+        for group_key, group_conf in render_map.items():
+            if game_world.plate_property_conf[group_key]['type'] == 'mass':
+                group_frame = repository.get_asset_frame('plates', group_key)
+                for set_conf in group_conf['sets']:
+                    start = calculator.scale(
+                        (set_conf['start']['x'], set_conf['start']['y']), 
+                        game_world.tile_dimensions,
+                        set_conf['start']['units']
+                    )
+                    log.infinite(f'Rendering moveable plate set at {start[0], start[1]}', 'Repo._render_moveable_sets')
 
-                        if set_conf['cover']:
-                            self.static_cover_frame[layer].paste(group_frame, start, group_frame)
-                        else:
-                            self.static_back_frame[layer].paste(group_frame, start, group_frame)
+                    self.world_frame.paste(group_frame, start, group_frame)
+
+
+    def _render_switch_sets(self, game_world: world.World, repository: repo.Repo):
+        pass
 
 
     def _render_static(self, layer, cover: bool = False):
@@ -184,16 +188,9 @@ class Renderer():
         else:
             self.world_frame.paste(self.static_back_frame[layer], (0,0), self.static_back_frame[layer])
 
-    def _render_spriteset(self, spriteset: str, game_world: world.World, repository: repo.Repo):
-        # TODO: conditionally render based on layer
-        if spriteset == 'hero':
-            iter_set = { 'hero': game_world.hero }
-        elif spriteset == 'npcs':
-            iter_set = game_world.get_npcs(game_world.layer)
-        elif spriteset == 'villains':
-            iter_set = game_world.get_villains(game_world.layer)
-
-        for sprite_key, sprite in iter_set.items():
+    def _render_spriteset(self, spriteset_key: str, game_world: world.World, repository: repo.Repo):
+        spriteset = game_world.get_spriteset(spriteset_key)
+        for sprite_key, sprite in spriteset.items():
             sprite_position = (int(sprite['position']['x']), int(sprite['position']['y']))
             sprite_state, sprite_frame = sprite['state'], sprite['frame']
             sprite_frame = repository.get_sprite_frame(sprite_key, sprite_state, sprite_frame)
@@ -208,6 +205,7 @@ class Renderer():
 
         self._render_static(game_world.layer, False)
         self._render_moveable_sets(game_world, repository)
+        self._render_switch_sets(game_world, repository)
         for spriteset in ['npcs', 'villains', 'hero']:
             self._render_spriteset(spriteset, game_world, repository)
         self._render_static(game_world.layer, True)

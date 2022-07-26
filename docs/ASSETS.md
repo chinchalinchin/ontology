@@ -29,11 +29,11 @@ _Door_s are a special type of _Plate_. When the player character overlaps with t
 
 See [Configuration](./CONFIGURATION.md#plates) for more information on _Doors_ and their `content`. See [Definitions](./DEFINITIONS.md#terms) for more information on layers.
 
-### Chest
+### Container
 
-The item in a _Chest_ is delivered statically through the _Chest_'s content.
+The item in a _Container_ is delivered statically through the _Chest_'s content.
 
-### Masses
+### Mass
 
 ### Pressure
 
@@ -43,7 +43,7 @@ The _Pressure_'s connection to a _Gate_ when activated is statically delivered t
 
 See [Configuration](./CONFIGURATION.md#plates) for more information on _Plates_ and their `content`
 
-### Gates
+### Gate
 
 A _Gate_'s connection to a _Pressure_ is statically delivered through the _Gate_'s `content`.
 

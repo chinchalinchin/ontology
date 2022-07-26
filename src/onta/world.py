@@ -190,6 +190,7 @@ class World():
     layer = None
     layers = None
     doors = None
+    switch_map = None
     iterations = 0
 
     def __init__(self, config: conf.Conf, state_ao: state.State) -> None:
@@ -368,33 +369,21 @@ class World():
                     props = self.plate_property_conf
                 
                 for set_key, set_conf in iter_set.items():
-                    set_props = props[set_key]
+                    log.debug(f'Initializing {static_set} {set_key} hitboxes', 'World._init_hitboxes')
 
-                    log.debug(f'Initializing {static_set} {set_key} hitboxes with properties: {set_props}', 'World._init_hitboxes')
+                    set_props, set_hitbox = props[set_key], props[set_key]['hitbox']
 
                     for i, set_conf in enumerate(set_conf['sets']):
 
-                        if set_props['hitbox'] is not None:
-                            x,y = calculator.scale(
-                                (set_conf['start']['x'],set_conf['start']['y']),
-                                self.tile_dimensions,
-                                set_conf['start']['units']
-                            )
-                            hitbox = (
-                                x + set_props['hitbox']['offset']['x'], 
-                                y + set_props['hitbox']['offset']['y'],
-                                set_props['hitbox']['size']['w'], 
-                                set_props['hitbox']['size']['h']
-                            )
-                            if static_set == 'strutset' :
-                                self.strutsets[layer][set_key]['sets'][i]['hitbox'] = hitbox
-                            elif static_set == 'plateset':
-                                self.platesets[layer][set_key]['sets'][i]['hitbox'] = hitbox
-                        else:
-                            if static_set == 'strutset':
-                                self.strutsets[layer][set_key]['sets'][i]['hitbox'] = None
-                            elif static_set == ['plateset']:
-                                self.platesets[layer][set_key]['sets'][i]['hitbox'] = None
+                        set_hitbox = collisions.calculate_set_hitbox(
+                            set_props['hitbox'], 
+                            set_conf, 
+                            self.tile_dimensions
+                        )
+                        if static_set == 'strutset' :
+                            self.strutsets[layer][set_key]['sets'][i]['hitbox'] = set_hitbox
+                        elif static_set == 'plateset':
+                            self.platesets[layer][set_key]['sets'][i]['hitbox'] = set_hitbox
             
             # condense all the hitboxes into a list and save to strutsets,
             # to avoid repeated internal calls to `get_strut_hitboxes`
@@ -410,6 +399,12 @@ class World():
             self.platesets[layer]['pressures'] = self.get_typed_platesets(layer, 'pressure')
             self.platesets[layer]['masses'] = self.get_typed_platesets(layer, 'mass')
 
+
+    def _generate_switch_map(self) -> None:
+        for layer in self.layers:
+            containers = self.get_typed_platesets(layer, 'container')
+            pressures = self.get_typed_platesets(layer, 'pressure')
+        pass
 
     def _init_dynamic_state(self, state_ao: state.State) -> None:
         """
@@ -686,12 +681,25 @@ class World():
                         if collisions.detect_collision(sprite_hitbox, collision_set):
                             collisions.recoil_sprite(sprite, self.sprite_property_conf[sprite_key])
 
-                # general sprite hit detection
-
-                for mass in self.platesets[self.layer]['masses']:
+                masses = self.platesets[self.layer]['masses'].copy()
+                hero_flag = spriteset_key == 'hero'
+                for mass in masses:
                     if collisions.detect_collision(mass['hitbox'], [sprite_hitbox]):
-                        pass
-                        # collisions.recoil_strut(strut, sprite, self.sprite_property_conf[sprite_key])
+                        plate = self.get_plate(self.layer, mass['key'], mass['index'])
+                        collisions.recoil_plate(
+                            plate, sprite, 
+                            self.sprite_property_conf[sprite_key],
+                            hero_flag
+                        )
+                        plate['hitbox'] = collisions.calculate_set_hitbox(
+                            self.plate_property_conf[mass['key']]['hitbox'],
+                            plate,
+                            self.tile_dimensions
+                        )
+                        self.platesets[self.layer]['masses'] = self.get_typed_platesets(
+                            self.layer, 
+                            'mass'
+                        )
 
 
     def _apply_interaction(self, user_input: dict):
@@ -805,12 +813,18 @@ class World():
         typed_platesets = []
         for plate_key, plate_conf in self.get_platesets(layer).items():
             if self.plate_property_conf[plate_key]['type'] == plateset_type:
-                for plate in plate_conf['sets']:
+                for i, plate in enumerate(plate_conf['sets']):
                     typed_platesets.append({
+                        'key': plate_key,
+                        'index': i,
                         'hitbox': plate['hitbox'],
                         'content': plate['content']
                     })
         return typed_platesets
+
+
+    def get_plate(self, layer, plate_key, index):
+        return self.platesets[layer][plate_key]['sets'][index]
 
 
     def get_spriteset(self, spriteset_key):

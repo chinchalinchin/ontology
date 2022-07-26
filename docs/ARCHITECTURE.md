@@ -10,7 +10,10 @@ The objects are orchestrated in the central _main_ module (i.e., _main.py_).
 
 ## View Module
 
+
 ## World Module
+
+By their nature, the _View_ and _World_ module are tightly coupled. The _View_ renders what is displayed on the world. It accesses properties on the _World_ object and uses their values to calculate rendering coordinates. The _View_, however, does **not** modify the _World_ state in _any way_.
 
 ## Control Module
 
