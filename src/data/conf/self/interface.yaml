@@ -58,27 +58,20 @@ hud:
           size:
             w: 40
             h: 40
-      left:
+      cap:
         image:
           path: slotsheet.png
+          definition: left
           position:
             x: 30
             y: 370
           size:
             w: 14
             h: 26
-      right:
-        image:
-          path: slotsheet.png
-          position:
-            x: 160
-            y: 296
-          size:
-            w: 14
-            h: 26
       buffer:
         image:
           path: slotsheet.png
+          definition: vertical
           position:
             x: 116
             y: 292
@@ -128,27 +121,20 @@ hud:
           size:
             w: 40
             h: 40
-      left:
+      cap:
         image:
           path: slotsheet.png
+          definition: left
           position:
             x: 30
             y: 370
           size:
             w: 14
             h: 26
-      right:
-        image:
-          path: slotsheet.png
-          position:
-            x: 160
-            y: 296
-          size:
-            w: 14
-            h: 26
       buffer:
         image:
           path: slotsheet.png
+          definition: vertical
           position:
             x: 116
             y: 292

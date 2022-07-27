@@ -18,6 +18,7 @@ class HUD():
     sizes = None
     breakpoints = None
     slots = None
+    start_position = None
 
     @staticmethod
     def format_breakpoints(break_points: list) -> list:
@@ -25,6 +26,28 @@ class HUD():
             (break_point['w'], break_point['h']) 
                 for break_point in break_points
         ]
+
+    @staticmethod
+    def cap_dimensions(cap, direction):
+        """The width and height of a cap relative to a direction, `vertical` or `horizontal`.
+
+        :param cap: _description_
+        :type cap: _type_
+        :param direction: _description_
+        :type direction: _type_
+        :return: _description_
+        :rtype: _type_
+        """
+        if cap['definition'] in ['left', 'right']:
+            if direction =='horizontal':
+                return cap['size']['w'], cap['size']['h']
+            if direction == 'vertical':
+                return cap['size']['h'], cap['size']['w']
+        elif cap['definition'] in ['up', 'down']:
+            if direction == 'horizontal':
+                return cap['size']['h'], cap['size']['w']
+            if direction == 'vertical':
+                return cap['size']['w'], cap['size']['h']
 
     def __init__(self, player_device: device.Device, ontology_path: str = settings.DEFAULT_DIR):
         config = conf.Conf(ontology_path).load_interface_configuration()
@@ -88,7 +111,18 @@ class HUD():
                 y_start = player_device.dimensions[1] \
                     - y_margins \
                     - slot_height
-
+        elif slot_styles['stack'] == 'vertical':
+            if slot_styles['alignment']['vertical'] == 'bottom':
+                leftcap_height = self.hud_conf[self.media_size]['slots']['left']['image']['size']['h']
+                buffer_height = self.hud_conf[self.media_size]['slots']['buffer']['image']['size']['h']
+                slot_height = self.hud_conf[self.media_size]['slots']['empty']['image']['size']['h']
+                rightcap_height = self.hud_conf[self.media_size]['slots']['right']['image']['size']['h']
+                y_start = player_device.dimensions[1] \
+                    - y_margins \
+                    - SLOTS_TOTAL*slot_height \
+                    - (SLOTS_TOTAL-1)*buffer_height \
+                    - leftcap_height - rightcap_height
+        self.start_position = (x_start, y_start)
 
     def _init_slots(self, state_ao):
         self.slots = state_ao.get('hero').get('slots')

@@ -64,6 +64,9 @@ class Renderer():
     world_frame = None
     """
     """
+    slot_frames = None
+    cap_frames = None
+
 
 
     @staticmethod
@@ -110,7 +113,13 @@ class Renderer():
         return ordered_dict
 
 
-    def __init__(self, game_world: world.World, repository: repo.Repo, player_device: device.Device):
+    def __init__(
+        self, 
+        game_world: world.World, 
+        repository: repo.Repo, 
+        headsup_display: hud.HUD, 
+        player_device: device.Device
+    ):
         """
         .. notes:
             - No references are kept to `static_world` or `repository`.
@@ -124,10 +133,53 @@ class Renderer():
             layer: gui.new_image(game_world.dimensions)
             for layer in game_world.layers
         }
+        self._init_interface_set(repository, headsup_display)
         self._render_tiles(game_world, repository)
         self._render_sets(game_world, repository)
 
 
+    def _init_interface_set(self, repository: repo.Repo, headsup_display: hud.HUD):
+        slot_props = headsup_display.hud_conf[headsup_display.media_size]['slots']
+
+
+        cap_frame = repository.get_interface_frame(
+            'slot', 
+            headsup_display.media_size,
+            'cap'
+        )
+        cap_dir = slot_props['cap']['image']['definition']
+        self.cap_frames = {
+            'up': '',
+            'left': '',
+            'down': '',
+            'right': ''
+        }
+
+
+        buffer_frame = repository.get_interface_frame(
+            'slot', 
+            headsup_display.media_size,
+            'buffer'
+        )
+        buffer_dir = slot_props['buffer']['image']['definition']
+        self.buffer_frames = {
+            'vertical': '',
+            'horizontal': ''
+        }
+
+
+        self.slot_frames = {
+            'empty': repository.get_interface_frame(
+                'slot', 
+                headsup_display.media_size,
+                'empty'
+            ),
+            'equipped': repository.get_interface_frame(
+                'slot',
+                headsup_display.media_size,
+                'equipped'
+            )
+        }
     def _render_tiles(self, game_world: world.World, repository: repo.Repo) -> None:
         log.debug('Rendering tile sets', 'Repo._render_tiles')
 
@@ -245,28 +297,14 @@ class Renderer():
 
 
     def _render_slots(self, headsup_display: hud.HUD, repository: repo.Repo):
-        leftcap_frame = repository.get_interface_frame(
-            'slot', 
-            headsup_display.media_size,
-            'left'
-        )
-        buffer_frame = repository.get_interface_frame(
-            'slot', 
-            headsup_display.media_size,
-            'buffer'
-        )
-        rightcap_frame = repository.get_interface_frame(
-            'slot', 
-            headsup_display.media_size,
-            'right'
-        )
+        slot_styles = headsup_display.styles[headsup_display.media_size]['slots']
+        
+        # headsup_display.slot_frame_map = { 'cast': 'equipped', 'slash': 'empty', ...} 
         for slot_key, slot_frame_key in headsup_display.slot_frame_map().items():
-            slot_frame = repository.get_interface_frame(
-                'slot', 
-                headsup_display.media_size,
-                slot_frame_key
-            )
-            slot_dim = slot_frame.size
+            if slot_frame_key == 'equipped':
+                pass
+            elif slot_frame_key == 'empty':
+                pass
 
     def render(self, game_world: world.World, repository: repo.Repo, headsup_display: hud.HUD, crop: bool = True, layer: str = None):
         """_summary_
