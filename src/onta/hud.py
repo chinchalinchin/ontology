@@ -60,7 +60,7 @@ class HUD():
         self.styles = config.get('hud').get('styles')
         self._init_conf(config)
         self._find_media_size(player_device)
-        self._init_positions(player_device)
+        self._init_slot_positions(player_device)
         self._init_slots(state_ao)
         self._init_mirrors(state_ao)
 
@@ -87,7 +87,7 @@ class HUD():
             self.media_size = self.sizes[len(self.sizes)-1]
 
 
-    def _init_positions(self, player_device:device.Device):
+    def _init_slot_positions(self, player_device:device.Device):
          # note the difference between the 'slots' key in the hud_conf dict 
         # and the self.slots property. the first represents image configuration properties
         # the second represents player state information
@@ -181,6 +181,13 @@ class HUD():
                             y_start + cap_correction
                         )
                     )
+                elif i == 1:
+                    self.rendering_points.append(
+                        (
+                            self.rendering_points[i-1][0] + cap_dim[0], 
+                            y_start
+                        )
+                    )
                 elif i == num - 1:
                     self.rendering_points.append(
                         (
@@ -195,21 +202,13 @@ class HUD():
                             y_start + buffer_correction
                         )
                     )
-                elif i % 2 == 1:
-                    if i == 1:
-                        self.rendering_points.append(
-                            (
-                                self.rendering_points[i-1][0] + cap_dim[0], 
-                                y_start
-                            )
+                else:
+                    self.rendering_points.append(
+                        (
+                            self.rendering_points[i-1][0] + buffer_dim[0], 
+                            y_start
                         )
-                    else:
-                        self.rendering_points.append(
-                            (
-                                self.rendering_points[i-1][0] + buffer_dim[0], 
-                                y_start
-                            )
-                        )
+                    )
 
         elif slot_styles['stack'] == 'vertical':
             for i in range(num):
@@ -218,6 +217,13 @@ class HUD():
                         (
                             x_start + cap_correction, 
                             y_start
+                        )
+                    )
+                elif i == 1:
+                    self.rendering_points.append(
+                        (
+                            x_start,
+                            self.rendering_points[i-1][1] + cap_dim[1]
                         )
                     )
                 elif i == num - 1:
@@ -234,21 +240,13 @@ class HUD():
                             self.rendering_points[i-1][1] + slot_dim[1]
                         )
                     )
-                elif i % 2 == 1:
-                    if i == 1:
-                        self.rendering_points.append(
-                            (
-                                x_start,
-                                self.rendering_points[i-1][1] + cap_dim[1]
-                            )
+                else:
+                    self.rendering_points.append(
+                        (
+                            x_start,
+                            self.rendering_points[i-1][1] + buffer_dim[1]
                         )
-                    else:
-                        self.rendering_points.append(
-                            (
-                                x_start,
-                                self.rendering_points[i-1][1] + buffer_dim[1]
-                            )
-                        )
+                    )
 
     def _init_slots(self, state_ao):
         self.slots = state_ao.get('hero').get('slots')

@@ -338,16 +338,16 @@ class Renderer():
         render_map = headsup_display.slot_frame_map()
 
         for i, render_point in enumerate(rendering_points):
-            if i % 2 == 0:
-                if i == 0:
-                    render_frame = self.cap_frames[cap_dir[0]]
-                elif i == len(rendering_points) - 1:
-                    render_frame = self.cap_frames[cap_dir[1]]
-                else:
-                    render_frame = self.buffer_frames[buffer_dir]
+            if i == 0:
+                render_frame = self.cap_frames[cap_dir[0]]
+            elif i == len(rendering_points) -1:
+                render_frame = self.cap_frames[cap_dir[1]]
+            elif i % 2 == 0:
+                render_frame = self.buffer_frames[buffer_dir]
             else:
                 render_key = next(render_order)
                 render_frame = self.slot_frames[render_map[render_key]]
+
             self.world_frame.paste(
                 render_frame, 
                 (int(render_point[0]), int(render_point[1])), 
