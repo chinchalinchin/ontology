@@ -56,24 +56,23 @@ AVATAR_PATH = [
     'self', 
     'avatars' 
 ]
-
-DISPLAY_PATH = [ 
-    'assets', 
-    'self', 
-    'display' 
-]
+"""Array containing path parts relative to ontology directory leading to avatar directory"""
 
 MIRROR_PATH = [ 
     'assets', 
     'self', 
     'mirrors' 
 ]
+"""Array containing path parts relative to ontology directory leading to mirror directory"""
+
 
 SLOT_PATH = [ 
     'assets', 
     'self', 
     'slots' 
 ]
+"""Array containing path parts relative to ontology directory leading to slots directory"""
+
 
 # Debug Configuration
 
@@ -87,6 +86,8 @@ SCREEN_DEFAULT_WIDTH = int(os.environ.setdefault('SCREEN_WIDTH', '800'))
 
 SCREEN_DEFAULT_HEIGHT = int(os.environ.setdefault('SCREEN_HEIGHT', '600'))
 """Default GUI height"""
+
+SLOT_MARGINS = 0.025
 
 # Rendering Configuration
 

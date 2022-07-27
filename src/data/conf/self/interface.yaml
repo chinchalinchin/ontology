@@ -11,35 +11,80 @@ breakpoints:
 # NOTE: len(breakpoints) = len(sizes) - 1
 
 hud:
+  styles:
+    small:
+      slots:
+        stack: horizontal
+        alignment: 
+          vertical: bottom
+          horizontal: left
+      mirrors:
+        stack: horizontal
+        alignment:
+          vertical: bottom
+          horizontal: right
+      avatars: null
+    large:
+      slots:
+        stack: horizontal
+        alignment: 
+          vertical: bottom
+          horizontal: left
+      mirrors:
+        stack: horizontal
+        alignment:
+          vertical: bottom
+          horizontal: right
+      avatars: null
+
+
   small:
-    display:
-      image:
-        file:
-          path: display_small.png
-          x: 0
-          y: 0
-        size:
-          w: 192
-          h: 64
-    slot:
+    slots:
       empty:
         image:
-          file:
-            path: slots.png
-            x: 208
-            y: 144
+          path: slotsheet.png
+          position:
+            x: 30
+            y: 288
           size:
-            w: 48
-            h: 48
+            w: 40
+            h: 40
       equipped:
         image:
-          file:
-            path: slots.png
-            x: 208
-            y: 48
+          path: slotsheet.png
+          position:
+            x: 30
+            y: 370
           size:
-            w: 48
-            h: 48
+            w: 40
+            h: 40
+      left:
+        image:
+          path: slotsheet.png
+          position:
+            x: 30
+            y: 370
+          size:
+            w: 14
+            h: 26
+      right:
+        image:
+          path: slotsheet.png
+          position:
+            x: 160
+            y: 296
+          size:
+            w: 14
+            h: 26
+      buffer:
+        image:
+          path: slotsheet.png
+          position:
+            x: 116
+            y: 292
+          size:
+            w: 4
+            h: 32
     mirrors:
       life: null
       magic: null
@@ -47,36 +92,69 @@ hud:
       item: null
       ammo: null
       coin: null
-    avatars: null
+    avatars: 
+      bow: null
+      knife: null
+      sword: null
+      axe: null
+      pickaxe:
+      warhammer: null
+      cane: null
+      shovel: null
+      spear: null
+      emblem_shield: null
+      falcon_shield: null
+      leather_shield: null
+      blood_magic: null
+
+
   large:
-    display:
-      image:
-        file:
-          path: display_medium.png
-          x: 0
-          y: 0
-        size:
-          w: 577
-          h: 64
-    slot:
+    slots:
       empty:
         image:
-          file:
-            path: slots.png
-            x: 208
-            y: 144
+          path: slotsheet.png
+          position:
+            x: 30
+            y: 288
           size:
-            w: 48
-            h: 48
+            w: 40
+            h: 40
       equipped:
         image:
-          file:
-            path: slots.png
-            x: 208
-            y: 48
+          path: slotsheet.png
+          position:
+            x: 30
+            y: 370
           size:
-            w: 48
-            h: 48
+            w: 40
+            h: 40
+      left:
+        image:
+          path: slotsheet.png
+          position:
+            x: 30
+            y: 370
+          size:
+            w: 14
+            h: 26
+      right:
+        image:
+          path: slotsheet.png
+          position:
+            x: 160
+            y: 296
+          size:
+            w: 14
+            h: 26
+      buffer:
+        image:
+          path: slotsheet.png
+          position:
+            x: 116
+            y: 292
+          size:
+            w: 4
+            h: 32
     mirrors:
       life: null
       magic: null
@@ -84,5 +162,18 @@ hud:
       item: null
       ammo: null
       coin: null
-    avatars: null
+    avatars: 
+      bow: null
+      knife: null
+      sword: null
+      axe: null
+      pickaxe:
+      warhammer: null
+      cane: null
+      shovel: null
+      spear: null
+      emblem_shield: null
+      falcon_shield: null
+      leather_shield: null
+      blood_magic: null
     

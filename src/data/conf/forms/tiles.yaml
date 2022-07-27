@@ -1,56 +1,42 @@
-## Tile Configuration Syntax
-# <group>:
-#   image:
-#     file: str
-#     position:
-#       x: int
-#       y: int
-#     size:
-#       w: int
-#       h: int
-
-# TODO: size is redundant if tile dimensions are hardcoded...
-
+# NOTE: there are two redundancies here
+# 1. there is an "unnecessary" nesting between the tile name and its properties through the 'image' key.
+#     this is done to keep the tile configuration consistent with struts and plates.
 coal:
   image:
-    file: 
-      path: coal.png
-      position:
-        x: 0
-        y: 160
+    path: coal.png
+    position:
+      x: 0
+      y: 160
     size:
       w: 96
       h: 32
 
 grass:
   image:
-    file: 
-      path: grass.png
-      position:
-        x: 0
-        y: 160
+    path: grass.png
+    position:
+      x: 0
+      y: 160
     size:
       w: 96
       h: 32
 
 mud:
   image:
-    file: 
-      path: mud.png
-      position: 
-        x: 0
-        y: 160
+    path: mud.png
+    position: 
+      x: 0
+      y: 160
     size:
       w: 96
       h: 32
 
 lava:
   image:
-    file: 
-      path: lava.png
-      position:
-        x: 0 
-        y: 160
+    path: lava.png
+    position:
+      x: 0 
+      y: 160
     size:
       w: 96
       h: 32
@@ -59,33 +45,30 @@ lava:
 
 sand:
   image: 
-    file: 
-      path: sand.png
-      position:
-        x: 0
-        y: 160
+    path: sand.png
+    position:
+      x: 0
+      y: 160
     size: 
       w: 96
       h: 32
 
 water:
   image:
-    file: 
-      path: water.png
-      position:
-        x: 0
-        y: 160
+    path: water.png
+    position:
+      x: 0
+      y: 160
     size:
       w: 96
       h: 32
 
 hole:
   image:
-    file: 
-      path: hole.png
-      position:
-        x: 0
-        y: 160
+    path: hole.png
+    position:
+      x: 0
+      y: 160
     size:
       w: 96
       h: 32

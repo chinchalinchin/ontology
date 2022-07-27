@@ -1,29 +1,9 @@
-## Strut Configurtionat
-# <group>:
-#   image:
-#     file: str
-#     position:
-#       x: int
-#       y: int
-#     size:
-#       w: int
-#       h: int
-#     properties:
-#       hitbox:
-#         offset:
-#           x:
-#           y:
-#         dimensions:
-#           w:
-#           h:
-
 house_door:
   image:
-    file: 
-      path: doors.png
-      position: 
-        x: 32
-        y: 80
+    path: doors.png
+    position: 
+      x: 32
+      y: 80
     size: 
       w: 32
       h: 48
@@ -59,11 +39,10 @@ inside_door:
 
 obelisk:
   image:
-    file: 
-      path: statues.png
-      position:
-        x: 195 
-        y: 101
+    path: statues.png
+    position:
+      x: 195 
+      y: 101
     size:
       w: 24
       h: 59
@@ -79,11 +58,10 @@ obelisk:
 
 statue:
   image:
-    file: 
-      path: statues.png
-      position:
-        x: 64
-        y: 128
+    path: statues.png
+    position:
+      x: 64
+      y: 128
     size:
       w: 30
       h: 64
@@ -99,8 +77,8 @@ statue:
 
 plain_chest:
   image:
-    file: 
-      path: chest_rounded.png
+    path: chest_rounded.png
+    position:
       on_position:
         x: 96
         y: 0
@@ -122,8 +100,8 @@ plain_chest:
 
 sword_stone:
   image:
-    file:
-      path: sword_in_stone.png
+    path: sword_in_stone.png
+    position:
       on_position:
         x: 26
         y: 0
@@ -145,8 +123,8 @@ sword_stone:
         
 stone_switch:
   image:
-    file: 
-      path: various_continued.png
+    path: various_continued.png
+    position:
       on_position:
         x: 400
         y: 688

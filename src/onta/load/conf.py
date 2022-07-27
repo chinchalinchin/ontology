@@ -21,6 +21,7 @@ class Conf():
     control_conf = None
     interface_conf = None
     composite_conf = None
+    equipment_con = None
 
     def __init__(self, data_dir):
         """
@@ -53,6 +54,11 @@ class Conf():
             self.interface_conf = self._self_configuration('interface')
         return self.interface_conf
 
+    def load_equipment_configuration(self):
+        if self.equipment_conf is None:
+            self.equipment_conf = self._self_configuration('equipment')
+        return self.equipment_conf
+        
     def load_composite_configuration(self):
         if self.composite_conf is None:
             self.composite_conf = self._form_configuration('composite')

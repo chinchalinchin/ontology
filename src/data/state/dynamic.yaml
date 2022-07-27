@@ -9,10 +9,10 @@ hero:
   slots:
     cast: null
     thrust: null
-    slash: null
+    slash: sword
     shoot: null
   bag: null
-  ammo: null
+  belt: null
   health:
     current: 100
     max: 100
@@ -34,7 +34,7 @@ npcs:
       slash: null
       shoot: null
     bag: null
-    ammo: null
+    belt: null
     health:
       current: 100
       max: 100
@@ -56,7 +56,7 @@ villains:
       slash: null
       shoot: null
     bag: null
-    ammo: null
+    belt: null
     health:
       current: 100
       max: 100

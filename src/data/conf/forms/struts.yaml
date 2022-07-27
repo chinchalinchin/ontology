@@ -1,29 +1,9 @@
-## Strut Configurtionat
-# <group>:
-#   image:
-#     file: str
-#     position:
-#       x: int
-#       y: int
-#     size:
-#       width: int
-#       height: int
-#     properties:
-#       hitbox:
-#       offset:
-#         x:
-#         y:
-#       dimensions:
-#         w:
-#         h:
-
 house_exterior_wall:
   image:
-    file: 
-      path: house.png
-      position:
-        x: 2
-        y: 0
+    path: house.png
+    position:
+      x: 2
+      y: 0
     size:
       w: 92
       h: 96
@@ -38,11 +18,10 @@ house_exterior_wall:
         
 house_interior_wall:
   image:
-    file: 
-      path: house_interior_general.png
-      position:
-        x: 64
-        y: 256
+    path: house_interior_general.png
+    position:
+      x: 64
+      y: 256
     size:
       w: 96
       h: 105
@@ -57,11 +36,10 @@ house_interior_wall:
 
 house_floor:
   image:
-    file: 
-      path: house_interior_luxury.png
-      position:
-        x: 32
-        y: 0
+    path: house_interior_luxury.png
+    position:
+      x: 32
+      y: 0
     size:
       w: 96
       h: 96
@@ -70,11 +48,10 @@ house_floor:
 
 house_roof:
   image:
-    file: 
-      path: house.png
-      position:
-        x: 0
-        y: 96
+    path: house.png
+    position:
+      x: 0
+      y: 96
     size: 
       w: 96
       h: 96
@@ -83,11 +60,10 @@ house_roof:
 
 house_flattop:
   image:
-    file:
-      path: house.png
-      position:
-        x: 96
-        y: 127
+    path: house.png
+    position:
+      x: 96
+      y: 127
     size:
       w: 96
       h: 64
@@ -96,11 +72,10 @@ house_flattop:
 
 house_steps:
   image: 
-    file: 
-      path: house.png
-      position:
-        x: 128
-        y: 16
+    path: house.png
+    position:
+      x: 128
+      y: 16
     size:
       w: 32
       h: 24
@@ -109,11 +84,10 @@ house_steps:
 
 house_chimney:
   image:
-    file: 
-      path: house.png
-      position: 
-        x: 199
-        y: 11
+    path: house.png
+    position: 
+      x: 199
+      y: 11
     size: 
       w: 22
       h: 45
@@ -128,11 +102,10 @@ house_chimney:
 
 house_window:
   image:
-    file:
-      path: windows.png
-      position:
-       x: 192
-       y: 403
+    path: windows.png
+    position:
+      x: 192
+      y: 403
     size:
       w: 32
       h: 27
@@ -141,11 +114,10 @@ house_window:
 
 tree_trunk:
   image:
-    file: 
-      path: trunk.png
-      position: 
-        x: 16
-        y: 0
+    path: trunk.png
+    position: 
+      x: 16
+      y: 0
     size: 
       w: 64
       h: 73
@@ -160,11 +132,10 @@ tree_trunk:
 
 tree_top:
   image:
-    file:
-      path: treetop.png
-      position:
-        x: 2
-        y: 0
+    path: treetop.png
+    position:
+      x: 2
+      y: 0
     size:
       w: 93
       h: 80
@@ -173,11 +144,10 @@ tree_top:
 
 pavement:
   image:
-    file: 
-      path: city.png
-      position:
-        x: 32
-        y: 0
+    path: city.png
+    position:
+      x: 32
+      y: 0
     size: 
       w: 96
       h: 96
@@ -186,11 +156,10 @@ pavement:
 
 burial_pit:
   image:
-    file: 
-      path: graveyard.png
-      position:
-        x: 2
-        y: 128
+    path: graveyard.png
+    position:
+      x: 2
+      y: 128
     size:
       w: 60
       h: 63
@@ -205,11 +174,10 @@ burial_pit:
 
 headstone:
   image:
-    file:
-      path: graveyard.png
-      position:
-        x: 10
-        y: 97
+    path: graveyard.png
+    position:
+      x: 10
+      y: 97
     size:
       w: 44
       h: 31
@@ -218,11 +186,10 @@ headstone:
 
 obelisk:
   image:
-    file: 
-      path: city.png
-      position:
-        x: 740  
-        y: 101
+    path: city.png
+    position:
+      x: 740  
+      y: 101
     size:
       w: 24
       h: 59
@@ -237,11 +204,10 @@ obelisk:
 
 grave_marker:
   image:
-    file: 
-      path: graveyard.png
-      position:
-        x: 128
-        y: 192
+    path: graveyard.png
+    position:
+      x: 128
+      y: 192
     size:
       w: 32
       h: 32
@@ -256,11 +222,10 @@ grave_marker:
 
 vertical_wood_bridge_left:
   image:
-    file:
-      path: village.png
-      position:
-        x: 448
-        y: 9
+    path: village.png
+    position:
+      x: 448
+      y: 9
     size:
       w: 48
       h: 87
@@ -275,11 +240,10 @@ vertical_wood_bridge_left:
 
 vertical_wood_bridge_right:
   image:
-    file:
-      path: village.png
-      position:
-        x: 496
-        y: 9
+    path: village.png
+    position:
+      x: 496
+      y: 9
     size:
       w: 48
       h: 87

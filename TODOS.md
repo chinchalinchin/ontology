@@ -22,7 +22,7 @@ another option would be to introduce a division in the concept of npc and villai
 
 - desires: `safety`, `treasure`, `battle`, `relationship`
 
-Sprites have paths, intents, desires, expressions.
+- Sprites have paths, intents, desires, expressions.
 
 A path is a point in space a sprite seeks to find. An intent operates on the path by searching for world state conditions. An intent can change the state of sprite.
 
@@ -32,6 +32,15 @@ in order to achieve a more sensitive feedback loop between desire and state, ano
 
 Aha. Desire is the ordering of intent. Expression and intent are the transmittal of desire to state. 
 
-
-
 What does plot space looks like?
+
+
+~~~~~~
+THIS ONE FIRST.
+~~~~~~
+
+- should retool tile rendering to be consistent with LPC style guide. currently uses 96 by 32px, but could easily be changed. Should allow tiles to be specified in compositions to make it easier to statically defined everything.
+
+~~~~~~
+THAT ONE FIRST.
+~~~~~~

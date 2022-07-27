@@ -84,6 +84,7 @@ def do(
             # # construct npc state from game world info
         # scripts.apply_scripts(game_world, 'pre_update')
 
+        # if user is not paused
         game_world.iterate(user_input)
 
         if user_input['hud']:

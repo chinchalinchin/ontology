@@ -21,10 +21,10 @@ class Repo():
     tracks = {}
     sprites = {}
     effects = {}
-    displays = {}
     avatars = {}
     mirrors = {}
     slots = {}
+    equipment = {}
 
     def __init__(self, ontology_path: str) -> None:
         """
@@ -50,30 +50,30 @@ class Repo():
         for asset_key, asset_conf in assets_conf.items():
             w, h = asset_conf['size']['w'], asset_conf['size']['h']
 
-            if asset_conf.get('file') is not None:
+            if asset_conf.get('path') is not None:
                 if asset_type == 'plates' and asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
-                    on_x, on_y = asset_conf['file']['on_position']['x'], asset_conf['file']['on_position']['y']
-                    off_x, off_y = asset_conf['file']['off_position']['x'], asset_conf['file']['off_position']['y']
+                    on_x, on_y = asset_conf['position']['on_position']['x'], asset_conf['position']['on_position']['y']
+                    off_x, off_y = asset_conf['position']['off_position']['x'], asset_conf['position']['off_position']['y']
                 else:
-                    x, y = asset_conf['file']['position']['x'], asset_conf['file']['position']['y']
+                    x, y = asset_conf['position']['x'], asset_conf['position']['y']
 
                 if asset_type == 'tiles':
                     image_path = os.path.join(
                         ontology_path, 
                         *settings.TILE_PATH, 
-                        asset_conf['file']['path']
+                        asset_conf['path']
                     )
                 elif asset_type == 'struts':
                     image_path = os.path.join(
                         ontology_path, 
                         *settings.STRUT_PATH, 
-                        asset_conf['file']['path']
+                        asset_conf['path']
                     )
                 elif asset_type == 'plates':                         
                     image_path = os.path.join(
                         ontology_path, 
                         *settings.PLATE_PATH, 
-                        asset_conf['file']['path']
+                        asset_conf['path']
                     )
 
                 buffer = Image.open(image_path).convert(settings.IMG_MODE)
@@ -112,57 +112,60 @@ class Repo():
  
 
     def _init_interface_assets(self, config: conf.Conf, ontology_path: str) -> None:
-        log.debug(f'Initializing  assets...', 'Repo._init_interface_assets')
         interface_conf = config.load_interface_configuration()
         for size in interface_conf['sizes']:
+            self.slots[size] = {}
             for interset_key, interset in interface_conf['hud'][size].items():
-                if interset_key == 'display':
-                    x, y = interset['image']['file']['x'], interset['image']['file']['y']
-                    w, h = interset['image']['size']['w'], interset['image']['size']['h']
-                    image_path = os.path.join(
-                        ontology_path,
-                        *settings.DISPLAY_PATH,
-                        interset['image']['file']['path']
-                    )
-                    buffer = Image.open(image_path).convert(settings.IMG_MODE)
-                    log.debug( f"{interset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                        'Repo._init_interface_assets')
-                    self.displays[size] = buffer.crop((x,y,w+x,h+y))
-                    
-                # TODO
-                
-                # elif interset_key == 'slots':
-                #     image_path = os.path.join(
-                #         ontology_path,
-                #         *settings.SLOT_PATH,
-                #         interset['image']['file']['path']
-                #     )
-                # elif interset_key == 'mirrors':
-                #     image_path = os.path.join(
-                #         ontology_path,
-                #         *settings.MIRROR_PATH,
-                #         interset['image']['file']['path']
-                #     )
-                # elif interset_key == 'avatars':
-                #     image_path = os.path.join(
-                #         ontology_path,
-                #         *settings.AVATAR_PATH,
-                #         interset['image']['file']['path']
-                #   )
+                log.debug(f'Initializing {interset_key} assets...', 'Repo._init_interface_assets')
 
-                # buffer = Image.open(image_path).convert(settings.IMG_MODE)
-                # log.debug( f"{interset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                #     'Repo._init_interface_assets')
-                
-                # if interset_key == 'display':
-                #     self.displays[size] = buffer.crop((x,y,w+x,h+y))
+                for component_key, inter_component in interset.items():
+                    if inter_component is not None and inter_component.get('image') is not None:
+                        w, h = inter_component['image']['size']['w'], inter_component['image']['size']['h']   
 
-                # elif component_key == 'slots':
-                #     self.slots[size] = buffer.crop((x,y,w+x,h+y))
-                # elif component_key == 'mirrors':
-                #     self.mirrors[size] = buffer.crop((x,y,w+x,h+y))
-                # elif component_key == 'avatars':
-                #     self.mirrors[size] = buffer.crop((x,y,w+x,h+y))
+                        if inter_component['image'].get('path') is not None:
+                            x, y = inter_component['image']['position']['x'], inter_component['image']['position']['y']
+                            
+                            if interset_key == 'slots':
+                                image_path = os.path.join(
+                                    ontology_path,
+                                    *settings.SLOT_PATH,
+                                    inter_component['image']['path']
+                                )
+                            elif interset_key == 'mirrors':
+                                image_path = os.path.join(
+                                    ontology_path,
+                                    *settings.MIRROR_PATH,
+                                    inter_component['image']['path']
+
+                                )
+                            elif interset_key == 'avatars':
+                                image_path = os.path.join(
+                                    ontology_path,
+                                    *settings.AVATAR_PATH,
+                                    inter_component['image']['path']
+                                )
+
+                            buffer = Image.open(image_path).convert(settings.IMG_MODE)
+
+                        elif inter_component['image'].get('channels') is not None:
+                            channels = (
+                                inter_component['image']['channels']['r'], 
+                                inter_component['image']['channels']['g'],
+                                inter_component['image']['channels']['b'],
+                                inter_component['image']['channels']['a']
+                            )
+                            buffer = Image.new(settings.IMG_MODE, (w,h), channels)
+                        
+                        if buffer is not None:
+                            log.debug( f"{interset_key} {component_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                                'Repo._init_interface_assets')
+
+                            if interset_key == 'slots':
+                                self.slots[size][component_key] = buffer.crop((x,y,w+x,h+y))
+                            elif interset_key == 'mirrors':
+                                self.mirrors[size][component_key] = buffer.crop((x,y,w+x,h+y))
+                            elif interset_key == 'avators':
+                                self.avatars[size][component_key] = buffer.crop((x,y,w+x,h+y))
 
 
     def _init_sprite_assets(self, config: conf.Conf, ontology_path: str) -> None:
@@ -217,15 +220,20 @@ class Repo():
         return None
 
 
-    def get_interface_frame(self, interface_key, breakpoint_key) -> Union[Image.Image, None]:
-        if interface_key == 'display':
-            return self.displays[breakpoint_key]
+    def get_interface_frame(self, interface_key, breakpoint_key, component_key) -> Union[Image.Image, None]:
+        if interface_key == 'slot':
+            return self.slots[breakpoint_key][component_key]
+        if interface_key == 'mirror':
+            return self.mirrors[breakpoint_key][component_key]
+        if interface_key == 'avatar':
+            return self.avatars[breakpoint_key][component_key]
         return None
     
+
     def get_sprite_frame(self, sprite: str, state: str, frame: int) -> Union[Image.Image, None]:
         return self.sprites[sprite][state][frame]
 
 if __name__=="__main__":
     repository = Repo()
-    frame = repository.get_sprite('hero', 'walk_down', 1)
+    frame = repository.get_sprite_frame('hero', 'walk_down', 1)
     frame.show()
