@@ -131,8 +131,8 @@ class Renderer():
     @staticmethod
     def adjust_buffer_rotation(direction):
         if direction == 'vertical':
-            return (0, 180)
-        return (180, 0)
+            return (0, 90)
+        return (90, 0)
         
 
     def __init__(
@@ -326,7 +326,7 @@ class Renderer():
             self.world_frame.paste(sprite_frame, sprite_position, sprite_frame)
 
 
-    def _render_slots(self, headsup_display: hud.HUD, repository: repo.Repo):
+    def _render_slots(self, headsup_display: hud.HUD):
         # horizontal
         # 1 = start, 2 = 1 + cap_width, 3 = 2 + slot_width, 4 = 3 + buffer_width, 5 = 4 + slot_width
         rendering_points = headsup_display.get_rendering_points()
@@ -391,14 +391,11 @@ class Renderer():
             self.world_frame = self.world_frame.crop(crop_box)
         
         if headsup_display.activated:
-            self._render_slots(headsup_display, repository)
+            self._render_slots(headsup_display)
 
         return self.world_frame
 
-    def view(self, game_world: world.World, view_widget: QtWidgets.QWidget, headsup_display: hud.HUD,repository: repo.Repo):
-
-        # TODO: render HUD
-        
+    def view(self, game_world: world.World, view_widget: QtWidgets.QWidget, headsup_display: hud.HUD,repository: repo.Repo):        
         cropped = self.render(game_world, repository, headsup_display)
 
         qim = ImageQt(cropped)

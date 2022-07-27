@@ -1,6 +1,6 @@
 import os
 from typing import Union
-from PIL import Image
+from PIL import Image, ImageEnhance
 
 import onta.settings as settings
 import onta.load.conf as conf
@@ -26,6 +26,7 @@ class Repo():
     slots = {}
     equipment = {}
 
+
     def __init__(self, ontology_path: str) -> None:
         """
         .. note:
@@ -36,6 +37,7 @@ class Repo():
             self._init_static_assets(asset_type, config, ontology_path)
         self._init_sprite_assets(config, ontology_path)
         self._init_interface_assets(config, ontology_path)
+
 
     def _init_static_assets(self, asset_type: str, config: conf.Conf, ontology_path: str) -> None:
         log.debug(f'Initializing {asset_type} assets...', 'Repo._init_static_assets')
@@ -235,8 +237,3 @@ class Repo():
 
     def get_sprite_frame(self, sprite: str, state: str, frame: int) -> Union[Image.Image, None]:
         return self.sprites[sprite][state][frame]
-
-if __name__=="__main__":
-    repository = Repo()
-    frame = repository.get_sprite_frame('hero', 'walk_down', 1)
-    # frame.show()

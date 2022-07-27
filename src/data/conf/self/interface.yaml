@@ -6,6 +6,9 @@ breakpoints:
   - w: 800
     h: 600
 
+slots: 4
+
+
 # NOTE: each successive breakpoint must contain the last
 
 # NOTE: len(breakpoints) = len(sizes) - 1
@@ -21,17 +24,19 @@ hud:
         alignment: 
           vertical: bottom
           horizontal: left
+        opacity: 0.5
       mirrors:
         stack: horizontal
         alignment:
           vertical: bottom
           horizontal: right
+        opacity: 0.5
       avatars: null
     large:
       slots:
-        stack: vertical
+        stack: horizontal
         alignment: 
-          vertical: bottom
+          vertical: top
           horizontal: left
       mirrors:
         stack: horizontal
@@ -71,6 +76,7 @@ hud:
           size:
             w: 16
             h: 24
+          alpha: 127
       buffer:
         image:
           path: slotsheet.png
@@ -81,6 +87,7 @@ hud:
           size:
             w: 4
             h: 32
+          alpha: 127
     mirrors:
       life: null
       magic: null
