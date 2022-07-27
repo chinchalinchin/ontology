@@ -5,6 +5,8 @@ import onta.world as world
 import onta.load.conf as conf
 import onta.load.state as state
 
+SLOTS_TOTAL = 4
+
 class HUD():
 
     # HUD will essentially be its own world. let view decide how it is rendered.
@@ -57,23 +59,35 @@ class HUD():
 
 
     def _init_positions(self, player_device:device.Device):
+         # note the difference between the 'slots' key in the hud_conf dict 
+        # and the self.slots property. the first represents image configuration properties
+        # the second represents player state information
+
         slot_styles = self.styles[self.media_size]['slots']
         x_margins = settings.SLOT_MARGINS*player_device.dimensions[0]
         y_margins = settings.SLOT_MARGINS*player_device.dimensions[1]
 
-        if slot_styles['alignment']['horizontal'] == 'right':
-            leftcap_width = self.hud_conf[self.media_size]['slots']['left']
-            buffer_width = self.hud_conf[self.media_size]['slots']['buffer']
-            x_start = player_device.dimensions[0] - x_margins
-            # subtract three buffer widths and four slot widths
-        else:
-            x_start = x_margins
-        
-        if slot_styles['alignment']['vertical'] == 'top':
-            y_start = y_margins
-        else:
-            y_start = player_device.dimensions[1] - y_margins
-            # subtract slot height
+        if slot_styles['stack'] == 'horizontal':
+            if slot_styles['alignment']['horizontal'] == 'right':
+                leftcap_width = self.hud_conf[self.media_size]['slots']['left']['image']['size']['w']
+                buffer_width = self.hud_conf[self.media_size]['slots']['buffer']['image']['size']['w']
+                slot_width = self.hud_conf[self.media_size]['slots']['empty']['image']['size']['w']
+                rightcap_width = self.hud_conf[self.media_size]['slots']['right']['image']['size']['w']
+                x_start = player_device.dimensions[0] \
+                    - x_margins \
+                    - SLOTS_TOTAL*slot_width \
+                    - (SLOTS_TOTAL-1)*buffer_width \
+                    - leftcap_width - rightcap_width
+            else:
+                x_start = x_margins
+            
+            if slot_styles['alignment']['vertical'] == 'top':
+                y_start = y_margins
+            else:
+                slot_height = self.hud_conf[self.media_size]['slots']['empty']['image']['size']['h']
+                y_start = player_device.dimensions[1] \
+                    - y_margins \
+                    - slot_height
 
 
     def _init_slots(self, state_ao):

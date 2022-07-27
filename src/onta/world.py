@@ -255,6 +255,8 @@ class World():
         """
         log.debug(f'Decomposing composite static world state into constituents...', 'World._generate_composite_static_state')
 
+        import pprint
+
         for layer in self.layers:
             layer_compositions = self.compositions[layer]
             if layer_compositions is not None:
@@ -278,13 +280,13 @@ class World():
                             composeset['start']['units']
                         )
 
-                        for elementset_key, elementset in compose_conf.items():
+                        for elementset_key, elementset_conf in compose_conf.items():
 
                             log.verbose(f'Initializing decomposed {elementset_key} elementset...', 'World._generate_composite_static_state')
 
                             # NOTE: elementset = { 'element_key': { 'order': int, 'sets': [ ... ] } }
                             #           via compose element configuration (composite.yaml)
-                            for element_key, element in elementset.items():
+                            for element_key, element in elementset_conf.items():
                                 
                                 log.verbose(f'Initializing {element_key}', 'World._generate_composite_static_state')
 
@@ -294,68 +296,59 @@ class World():
 
                                 # TODO: adjust strutset rendering order based on element order
 
-                                if elementset_key == 'struts':
+                                buffer_sets = self.get_formsets(elementset_key).copy()
 
-                                    for strutset in element_sets:
+                                for elementset in element_sets:
 
-                                        log.verbose('Generating strut render order', 'World._generate_composite_static_state')
-                                        
-                                        # NOTE strutset = { 'start': { ... }, 'cover': bool }
-                                        #       via compose element configuration (composite.yaml)
+                                    log.verbose('Generating strut render order', 'World._generate_composite_static_state')
+                                    
+                                    # NOTE strutset = { 'start': { ... }, 'cover': bool }
+                                    #       via compose element configuration (composite.yaml)
 
-                                        if self.strutsets.get(layer) is None:
-                                            self.strutsets[layer] = {}
-                                        
-                                        if self.strutsets[layer].get(element_key) is None:
-                                            self.strutsets[layer][element_key] = {}
+                                    if buffer_sets.get(layer) is None:
+                                        buffer_sets[layer] = {}
+                                    
+                                    if buffer_sets[layer].get(element_key) is None:
+                                        buffer_sets[layer][element_key] = {}
 
-                                        if self.strutsets[layer][element_key].get('sets') is None:
-                                            self.strutsets[layer][element_key]['sets'] = []
-                                        
-                                        if self.strutsets[layer][element_key].get('order') is None:
-                                            self.strutsets[layer][element_key]['order'] = len(self.strutsets[layer]) - 1
+                                    if buffer_sets[layer][element_key].get('sets') is None:
+                                        buffer_sets[layer][element_key]['sets'] = []
+                                    
+                                    if buffer_sets[layer][element_key].get('order') is None:
+                                        buffer_sets[layer][element_key]['order'] = len(buffer_sets[layer]) - 1
 
-                                        self.strutsets[layer][element_key]['sets'].append(
+                            
+                                    if elementset_key == 'plates':
+                                        buffer_sets[layer][element_key]['sets'].append(
                                             {
                                                 'start': {
-                                                    'units': strutset['start']['units'],
-                                                    'x': compose_start[0] + strutset['start']['x'],
-                                                    'y': compose_start[1] + strutset['start']['y'],
+                                                    'units': elementset['start']['units'],
+                                                    'x': compose_start[0] + elementset['start']['x'],
+                                                    'y': compose_start[1] + elementset['start']['y'],
                                                 },
-                                                'cover': strutset['cover'],
+                                                'cover': elementset['cover'],
+                                                'content': elementset['content']
+
                                             }
                                         )
-
-                                # TODO: adjust plateset rendering order based on element order
-
+                                    else:
+                                        buffer_sets[layer][element_key]['sets'].append(
+                                            {
+                                                'start': {
+                                                    'units': elementset['start']['units'],
+                                                    'x': compose_start[0] + elementset['start']['x'],
+                                                    'y': compose_start[1] + elementset['start']['y'],
+                                                },
+                                                'cover': elementset['cover'],
+                                            }
+                                        )
+                                
+                                if elementset_key == 'tiles':
+                                    self.tilesets = buffer_sets
+                                elif elementset_key == 'struts':
+                                    self.strutsets = buffer_sets
                                 elif elementset_key == 'plates':
-
-                                    for plateset in element_sets:
-                                        # NOTE plateset = { 'start': { ... }, 'cover': bool }
-                                        #       via compose element configuration (composite.yaml)
-                                        if self.platesets.get(layer) is None:
-                                            self.platesets[layer] = {}
-                                        
-                                        if self.platesets[layer].get(element_key) is None:
-                                            self.platesets[layer][element_key] = {}
-
-                                        if self.platesets[layer][element_key].get('sets') is None:
-                                            self.platesets[layer][element_key]['sets'] = []
-                                        
-                                        if self.platesets[layer][element_key].get('order') is None:
-                                            self.platesets[layer][element_key]['order'] = len(self.platesets[layer]) - 1
-
-                                        self.platesets[layer][element_key]['sets'].append(
-                                            {
-                                                'start': {
-                                                    'units': 'absolute',
-                                                    'x': compose_start[0] + plateset['start']['x'],
-                                                    'y': compose_start[1] + plateset['start']['y']
-                                                },
-                                                'cover': plateset['cover'],
-                                                'content': plateset['content']
-                                            }
-                                        )
+                                    self.platesets = buffer_sets
 
 
     def _generate_stationary_hitboxes(self) -> None:
@@ -749,6 +742,7 @@ class World():
 
         # TODO: plate-to-plate collisions, plate-to-strut collisions
 
+
     def _apply_interaction(self, user_input: dict):
         """_summary_
 
@@ -920,6 +914,15 @@ class World():
             return self.npcs
         elif spriteset_key == 'villains':
             return self.villains
+        return None
+
+    def get_formsets(self, formset_key):
+        if formset_key in ['tile', 'tiles']:
+            return self.tilesets
+        elif formset_key in ['strut', 'struts']:
+            return self.strutsets
+        elif formset_key in ['plate', 'plates']:
+            return self.platesets
 
 
     def get_sprite(self, sprite_key):
@@ -929,6 +932,7 @@ class World():
             return self.npcs[sprite_key]
         elif sprite_key in list(self.villains.keys()):
             return self.villains[sprite_key]
+        return None
 
 
     def get_npcs(self, layer):
