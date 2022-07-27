@@ -115,6 +115,7 @@ class Repo():
         interface_conf = config.load_interface_configuration()
         for size in interface_conf['sizes']:
             self.slots[size] = {}
+
             for interset_key, interset in interface_conf['hud'][size].items():
                 log.debug(f'Initializing {interset_key} assets...', 'Repo._init_interface_assets')
 
@@ -131,6 +132,7 @@ class Repo():
                                     *settings.SLOT_PATH,
                                     inter_component['image']['path']
                                 )
+
                             elif interset_key == 'mirrors':
                                 image_path = os.path.join(
                                     ontology_path,
@@ -138,6 +140,7 @@ class Repo():
                                     inter_component['image']['path']
 
                                 )
+
                             elif interset_key == 'avatars':
                                 image_path = os.path.join(
                                     ontology_path,
@@ -236,4 +239,4 @@ class Repo():
 if __name__=="__main__":
     repository = Repo()
     frame = repository.get_sprite_frame('hero', 'walk_down', 1)
-    frame.show()
+    # frame.show()

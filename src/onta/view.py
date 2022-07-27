@@ -169,17 +169,17 @@ class Renderer():
             headsup_display.media_size,
             'cap'
         )
-        (up_adjust, left_adjust, right_adjust, down_adjust) = \
+
+        (down_adjust, left_adjust, right_adjust, up_adjust) = \
             self.adjust_cap_rotation(
                 slot_props['cap']['image']['definition']
             )
         self.cap_frames = {
-            'up': cap_frame.rotate(up_adjust),
-            'left': cap_frame.rotate(left_adjust),
-            'down': cap_frame.rotate(down_adjust),
-            'right': cap_frame.rotate(right_adjust)
+            'up': cap_frame.rotate(up_adjust, expand=True),
+            'left': cap_frame.rotate(left_adjust, expand=True),
+            'down': cap_frame.rotate(down_adjust, expand=True),
+            'right': cap_frame.rotate(right_adjust, expand=True)
         }
-
 
         buffer_frame = repository.get_interface_frame(
             'slot', 
@@ -191,8 +191,8 @@ class Renderer():
               slot_props['buffer']['image']['definition']  
             )
         self.buffer_frames = {
-            'vertical': buffer_frame.rotate(vertical_adjust),
-            'horizontal': buffer_frame.rotate(horizontal_adjust)
+            'vertical': buffer_frame.rotate(vertical_adjust, expand=True),
+            'horizontal': buffer_frame.rotate(horizontal_adjust, expand=True)
         }
 
 
@@ -327,23 +327,32 @@ class Renderer():
 
 
     def _render_slots(self, headsup_display: hud.HUD, repository: repo.Repo):
-        slot_styles = headsup_display.styles[headsup_display.media_size]['slots']
-        
-        cap_dirs = headsup_display.get_cap_directions()
-        buffer_dir = headsup_display.get_buffer_direction()
-        
-
         # horizontal
         # 1 = start, 2 = 1 + cap_width, 3 = 2 + slot_width, 4 = 3 + buffer_width, 5 = 4 + slot_width
-        startcap_frame, endcap_frame = self.cap_frames[cap_dirs[0]], self.cap_frames[cap_dirs[1]]
-        buffer_frame = self.buffer_frames[buffer_dir]
+        rendering_points = headsup_display.get_rendering_points()
 
-        i = 0
-        for slot_key, slot_frame_key in headsup_display.slot_frame_map().items():
-            # TODO: will need slot_key for avatars...
+        cap_dir = headsup_display.get_cap_directions()
+        buffer_dir = headsup_display.get_buffer_direction()
 
-            slot_frame = self.slot_frames[slot_frame_key]
-            i += 1
+        render_order = iter(hud.SLOT_STATES)
+        render_map = headsup_display.slot_frame_map()
+
+        for i, render_point in enumerate(rendering_points):
+            if i % 2 == 0:
+                if i == 0:
+                    render_frame = self.cap_frames[cap_dir[0]]
+                elif i == len(rendering_points) - 1:
+                    render_frame = self.cap_frames[cap_dir[1]]
+                else:
+                    render_frame = self.buffer_frames[buffer_dir]
+            else:
+                render_key = next(render_order)
+                render_frame = self.slot_frames[render_map[render_key]]
+            self.world_frame.paste(
+                render_frame, 
+                (int(render_point[0]), int(render_point[1])), 
+                render_frame
+            )
 
     def render(self, game_world: world.World, repository: repo.Repo, headsup_display: hud.HUD, crop: bool = True, layer: str = None):
         """_summary_

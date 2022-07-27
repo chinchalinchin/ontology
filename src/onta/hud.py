@@ -4,8 +4,12 @@ import onta.device as device
 import onta.world as world
 import onta.load.conf as conf
 import onta.load.state as state
+import onta.util.logger as logger
+
+log = logger.Logger('onta.hud', settings.LOG_LEVEL)
 
 SLOTS_TOTAL = 4
+SLOT_STATES = [ 'cast', 'shoot', 'thrust', 'slash' ]
 
 class HUD():
 
@@ -110,7 +114,13 @@ class HUD():
             self.hud_conf[self.media_size]['slots']['empty']['image']['size']['h']
         )
 
+        log.debug('Initializing interface screen positions...', 
+            'HUD._init_positions')
+
         if slot_styles['stack'] == 'horizontal':
+            buffer_correction = (slot_dim[1] - buffer_dim[1])/2
+            cap_correction = (slot_dim[1] - cap_dim[1])/2 
+
             if slot_styles['alignment']['horizontal'] == 'right':
                 x_start = player_device.dimensions[0] \
                     - x_margins \
@@ -126,15 +136,10 @@ class HUD():
                 y_start = player_device.dimensions[1] \
                     - y_margins \
                     - slot_dim[1]
+
         elif slot_styles['stack'] == 'vertical':
-            if slot_styles['alignment']['vertical'] == 'bottom':
-                y_start = player_device.dimensions[1] \
-                    - y_margins \
-                    - SLOTS_TOTAL*slot_dim[1] \
-                    - (SLOTS_TOTAL-1)*buffer_dim[1] \
-                    - cap_dim[1]
-            else: 
-                y_start = y_margins
+            buffer_correction = (slot_dim[0] - buffer_dim[0])/2
+            cap_correction = (slot_dim[0] - cap_dim[0])/2
 
             if slot_styles['alignment']['horizontal'] == 'left':
                 x_start = x_margins
@@ -143,18 +148,37 @@ class HUD():
                     - x_margins \
                     - slot_dim[0]
 
-        start_cap = (x_start, y_start)
+            if slot_styles['alignment']['vertical'] == 'bottom':
+                y_start = player_device.dimensions[1] \
+                    - y_margins \
+                    - SLOTS_TOTAL*slot_dim[1] \
+                    - (SLOTS_TOTAL-1)*buffer_dim[1] \
+                    - 2*cap_dim[1]
+            else: 
+                y_start = y_margins
+
+
         if slot_styles['stack'] == 'horizontal':
-            first_slot = (start_cap[0] + cap_dim[0], start_cap[0])
-            first_buffer = (first_slot[0] + slot_dim[0], start_cap[0])
-            second_slot = (first_buffer[0] + buffer_dim[0], start_cap[0])
-            second_buffer = (second_slot[0] + slot_dim[0], start_cap[0])
-            third_slot = (second_buffer[0] + buffer_dim[0], start_cap[0])
-            third_buffer = (third_slot[0] + slot_dim[0], start_cap[0])
-            fourth_slot = (third_buffer[0] + buffer_dim[0], start_cap[0])
-            end_cap = (fourth_slot[0] + slot_dim[0], start_cap[0])
+            start_cap = (x_start, y_start + cap_correction)
+            first_slot = (x_start + cap_dim[0], y_start)
+            first_buffer = (first_slot[0] + slot_dim[0], y_start + buffer_correction)
+            second_slot = (first_buffer[0] + buffer_dim[0], y_start)
+            second_buffer = (second_slot[0] + slot_dim[0], y_start + buffer_correction)
+            third_slot = (second_buffer[0] + buffer_dim[0], y_start)
+            third_buffer = (third_slot[0] + slot_dim[0], y_start + buffer_correction)
+            fourth_slot = (third_buffer[0] + buffer_dim[0], y_start)
+            end_cap = (fourth_slot[0] + slot_dim[0], y_start + cap_correction)
+
         elif slot_styles['stack'] == 'vertical':
-            pass
+            start_cap = (x_start + cap_correction, y_start)
+            first_slot = (x_start, y_start + cap_dim[1])
+            first_buffer = (x_start + buffer_correction, first_slot[1]+slot_dim[1])
+            second_slot = (x_start, first_buffer[1]+buffer_dim[1])
+            second_buffer = (x_start + buffer_correction, second_slot[1]+slot_dim[1])
+            third_slot = (x_start, second_buffer[1] + buffer_dim[1])
+            third_buffer = (x_start + buffer_correction, third_slot[1]+slot_dim[1])
+            fourth_slot = (x_start, third_buffer[1] + buffer_dim[1])
+            end_cap = (x_start + cap_correction, fourth_slot[1] + slot_dim[1])
 
         self.rendering_points = (
             start_cap,
@@ -167,6 +191,8 @@ class HUD():
             fourth_slot,
             end_cap
         )
+
+        print(self.rendering_points)
 
 
     def _init_slots(self, state_ao):

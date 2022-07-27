@@ -10,6 +10,9 @@ breakpoints:
 
 # NOTE: len(breakpoints) = len(sizes) - 1
 
+# stack: horizontal | vertical
+# alignment.vertical : top | bottom
+# alignment.horizontal: left | right
 hud:
   styles:
     small:
@@ -26,7 +29,7 @@ hud:
       avatars: null
     large:
       slots:
-        stack: horizontal
+        stack: vertical
         alignment: 
           vertical: bottom
           horizontal: left
@@ -63,11 +66,11 @@ hud:
           path: slotsheet.png
           definition: left
           position:
-            x: 30
-            y: 370
+            x: 14
+            y: 296
           size:
-            w: 14
-            h: 26
+            w: 16
+            h: 24
       buffer:
         image:
           path: slotsheet.png
@@ -126,15 +129,15 @@ hud:
           path: slotsheet.png
           definition: left
           position:
-            x: 30
-            y: 370
+            x: 14
+            y: 296
           size:
-            w: 14
-            h: 26
+            w: 16
+            h: 24
       buffer:
         image:
           path: slotsheet.png
-          definition: vertical
+          definition: horizontal
           position:
             x: 116
             y: 292
