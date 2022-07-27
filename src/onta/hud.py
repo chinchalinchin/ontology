@@ -97,8 +97,14 @@ class HUD():
         x_margins = settings.SLOT_MARGINS*player_device.dimensions[0]
         y_margins = settings.SLOT_MARGINS*player_device.dimensions[1]
 
-        cap_dim = self.rotate_dimensions(self.hud_conf[self.media_size]['slots']['cap'])
-        buffer_dim = self.rotate_dimensions(self.hud_conf[self.media_size]['slots']['buffer'])
+        cap_dim = self.rotate_dimensions(
+            self.hud_conf[self.media_size]['slots']['cap']['image'],
+            self.styles[self.media_size]['slots']['stack']
+        )
+        buffer_dim = self.rotate_dimensions(
+            self.hud_conf[self.media_size]['slots']['buffer']['image'],
+            self.styles[self.media_size]['slots']['stack']
+        )
         slot_dim = (
             self.hud_conf[self.media_size]['slots']['empty']['image']['size']['w'],
             self.hud_conf[self.media_size]['slots']['empty']['image']['size']['h']
@@ -145,8 +151,8 @@ class HUD():
             second_buffer = (second_slot[0] + slot_dim[0], start_cap[0])
             third_slot = (second_buffer[0] + buffer_dim[0], start_cap[0])
             third_buffer = (third_slot[0] + slot_dim[0], start_cap[0])
-            fourth_slot = (third_buffer + buffer_dim[0], start_cap[0])
-            end_cap = (fourth_slot + slot_dim[0], start_cap[0])
+            fourth_slot = (third_buffer[0] + buffer_dim[0], start_cap[0])
+            end_cap = (fourth_slot[0] + slot_dim[0], start_cap[0])
         elif slot_styles['stack'] == 'vertical':
             pass
 
