@@ -28,7 +28,7 @@ class HUD():
         ]
 
     @staticmethod
-    def cap_dimensions(cap, direction):
+    def rotate_dimensions(rotator, direction):
         """The width and height of a cap relative to a direction, `vertical` or `horizontal`.
 
         :param cap: _description_
@@ -38,16 +38,16 @@ class HUD():
         :return: _description_
         :rtype: _type_
         """
-        if cap['definition'] in ['left', 'right']:
+        if rotator['definition'] in ['left', 'right', 'horizontal']:
             if direction =='horizontal':
-                return cap['size']['w'], cap['size']['h']
+                return rotator['size']['w'], rotator['size']['h']
             if direction == 'vertical':
-                return cap['size']['h'], cap['size']['w']
-        elif cap['definition'] in ['up', 'down']:
+                return rotator['size']['h'], v['size']['w']
+        elif rotator['definition'] in ['up', 'down', 'vertical']:
             if direction == 'horizontal':
-                return cap['size']['h'], cap['size']['w']
+                return rotator['size']['h'], rotator['size']['w']
             if direction == 'vertical':
-                return cap['size']['w'], cap['size']['h']
+                return rotator['size']['w'], rotator['size']['h']
 
     def __init__(self, player_device: device.Device, ontology_path: str = settings.DEFAULT_DIR):
         config = conf.Conf(ontology_path).load_interface_configuration()
@@ -86,21 +86,27 @@ class HUD():
         # and the self.slots property. the first represents image configuration properties
         # the second represents player state information
 
+        # if stacking horizontal to the right, 
+        #   if cap definition is left or right:
+        #       cap_width = width
+        #   if cap definition is up or down:
+        #       cap_width = height
         slot_styles = self.styles[self.media_size]['slots']
         x_margins = settings.SLOT_MARGINS*player_device.dimensions[0]
         y_margins = settings.SLOT_MARGINS*player_device.dimensions[1]
 
+        cap_dim = self.rotate_dimensions(self.hud_conf[self.media_size]['slots']['cap'])
+        buffer_dim = self.rotate_dimensions(self.hud_conf[self.media_size]['slots']['buffer'])
+        slot_width = self.hud_conf[self.media_size]['slots']['empty']['image']['size']['w']
+        slot_height = self.hud_conf[self.media_size]['slots']['empty']['image']['size']['h']
+
         if slot_styles['stack'] == 'horizontal':
             if slot_styles['alignment']['horizontal'] == 'right':
-                leftcap_width = self.hud_conf[self.media_size]['slots']['left']['image']['size']['w']
-                buffer_width = self.hud_conf[self.media_size]['slots']['buffer']['image']['size']['w']
-                slot_width = self.hud_conf[self.media_size]['slots']['empty']['image']['size']['w']
-                rightcap_width = self.hud_conf[self.media_size]['slots']['right']['image']['size']['w']
                 x_start = player_device.dimensions[0] \
                     - x_margins \
                     - SLOTS_TOTAL*slot_width \
-                    - (SLOTS_TOTAL-1)*buffer_width \
-                    - leftcap_width - rightcap_width
+                    - (SLOTS_TOTAL-1)*buffer_dim[0] \
+                    - 2*cap_dim[0]
             else:
                 x_start = x_margins
             
@@ -113,15 +119,21 @@ class HUD():
                     - slot_height
         elif slot_styles['stack'] == 'vertical':
             if slot_styles['alignment']['vertical'] == 'bottom':
-                leftcap_height = self.hud_conf[self.media_size]['slots']['left']['image']['size']['h']
-                buffer_height = self.hud_conf[self.media_size]['slots']['buffer']['image']['size']['h']
-                slot_height = self.hud_conf[self.media_size]['slots']['empty']['image']['size']['h']
-                rightcap_height = self.hud_conf[self.media_size]['slots']['right']['image']['size']['h']
                 y_start = player_device.dimensions[1] \
                     - y_margins \
                     - SLOTS_TOTAL*slot_height \
-                    - (SLOTS_TOTAL-1)*buffer_height \
-                    - leftcap_height - rightcap_height
+                    - (SLOTS_TOTAL-1)*buffer_dim[1] \
+                    - cap_dim[1]
+            else: 
+                y_start = y_margins
+
+            if slot_styles['alignment']['horizontal'] == 'left':
+                x_start = x_margins
+            else:
+                x_start = player_device.dimensions[0] \
+                    - x_margins \
+                    - slot_width
+
         self.start_position = (x_start, y_start)
 
     def _init_slots(self, state_ao):

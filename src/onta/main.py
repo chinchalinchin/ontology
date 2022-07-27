@@ -35,7 +35,7 @@ def create(args):
     headsup_display = hud.HUD(player_device, args.ontology)
 
     log.debug('Initializing rendering engine...', 'create')
-    render_engine = view.Renderer(game_world, asset_repository, player_device)
+    render_engine = view.Renderer(game_world, asset_repository, headsup_display, player_device)
 
     return controller, game_world, render_engine, asset_repository, headsup_display, player_device
 
