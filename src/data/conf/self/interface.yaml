@@ -71,7 +71,7 @@ hud:
       buffer:
         image:
           path: slotsheet.png
-          definition: vertical
+          definition: horizontal
           position:
             x: 116
             y: 292

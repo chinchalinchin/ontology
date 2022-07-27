@@ -46,9 +46,6 @@ def get_view(player_device: device.Device) -> QtWidgets.QWidget:
 
 class Renderer():
     """_summary_
-
-    :return: _description_
-    :rtype: _type_
     """
 
 
@@ -66,7 +63,6 @@ class Renderer():
     """
     slot_frames = None
     cap_frames = None
-
 
 
     @staticmethod
@@ -113,6 +109,32 @@ class Renderer():
         return ordered_dict
 
 
+    @staticmethod
+    def adjust_cap_rotation(direction):
+        # I am convinced there is an easier way to calculate this using arcosine and arcsine,
+        # but i don't feel like thinking about domains and ranges right now...
+        if direction == 'left':
+            left_adjust, right_adjust = 0, 180
+            up_adjust, down_adjust = 90, 270
+        elif direction == 'right':
+            left_adjust, right_adjust = 180, 0
+            up_adjust, down_adjust = 270, 90
+        elif direction == 'up':
+            left_adjust, right_adjust = 90, 270
+            up_adjust, down_adjust = 0, 180
+        else:
+            left_adjust, right_adjust = 270, 90
+            up_adjust, down_adjust = 180, 0
+        return (up_adjust, left_adjust, right_adjust, down_adjust)
+
+
+    @staticmethod
+    def adjust_buffer_rotation(direction):
+        if direction == 'vertical':
+            return (0, 180)
+        return (180, 0)
+        
+
     def __init__(
         self, 
         game_world: world.World, 
@@ -147,12 +169,15 @@ class Renderer():
             headsup_display.media_size,
             'cap'
         )
-        cap_dir = slot_props['cap']['image']['definition']
+        (up_adjust, left_adjust, right_adjust, down_adjust) = \
+            self.adjust_cap_rotation(
+                slot_props['cap']['image']['definition']
+            )
         self.cap_frames = {
-            'up': '',
-            'left': '',
-            'down': '',
-            'right': ''
+            'up': cap_frame.rotate(up_adjust),
+            'left': cap_frame.rotate(left_adjust),
+            'down': cap_frame.rotate(down_adjust),
+            'right': cap_frame.rotate(right_adjust)
         }
 
 
@@ -161,10 +186,13 @@ class Renderer():
             headsup_display.media_size,
             'buffer'
         )
-        buffer_dir = slot_props['buffer']['image']['definition']
+        (vertical_adjust, horizontal_adjust) = \
+            self.adjust_buffer_rotation(
+              slot_props['buffer']['image']['definition']  
+            )
         self.buffer_frames = {
-            'vertical': '',
-            'horizontal': ''
+            'vertical': buffer_frame.rotate(vertical_adjust),
+            'horizontal': buffer_frame.rotate(horizontal_adjust)
         }
 
 
@@ -180,6 +208,8 @@ class Renderer():
                 'equipped'
             )
         }
+
+
     def _render_tiles(self, game_world: world.World, repository: repo.Repo) -> None:
         log.debug('Rendering tile sets', 'Repo._render_tiles')
 
@@ -299,12 +329,21 @@ class Renderer():
     def _render_slots(self, headsup_display: hud.HUD, repository: repo.Repo):
         slot_styles = headsup_display.styles[headsup_display.media_size]['slots']
         
-        # headsup_display.slot_frame_map = { 'cast': 'equipped', 'slash': 'empty', ...} 
+        cap_dirs = headsup_display.get_cap_directions()
+        buffer_dir = headsup_display.get_buffer_direction()
+        
+
+        # horizontal
+        # 1 = start, 2 = 1 + cap_width, 3 = 2 + slot_width, 4 = 3 + buffer_width, 5 = 4 + slot_width
+        startcap_frame, endcap_frame = self.cap_frames[cap_dirs[0]], self.cap_frames[cap_dirs[1]]
+        buffer_frame = self.buffer_frames[buffer_dir]
+
+        i = 0
         for slot_key, slot_frame_key in headsup_display.slot_frame_map().items():
-            if slot_frame_key == 'equipped':
-                pass
-            elif slot_frame_key == 'empty':
-                pass
+            # TODO: will need slot_key for avatars...
+
+            slot_frame = self.slot_frames[slot_frame_key]
+            i += 1
 
     def render(self, game_world: world.World, repository: repo.Repo, headsup_display: hud.HUD, crop: bool = True, layer: str = None):
         """_summary_

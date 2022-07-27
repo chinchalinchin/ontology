@@ -18,7 +18,7 @@ class HUD():
     sizes = None
     breakpoints = None
     slots = None
-    start_position = None
+    rendering_points = None
 
     @staticmethod
     def format_breakpoints(break_points: list) -> list:
@@ -42,12 +42,13 @@ class HUD():
             if direction =='horizontal':
                 return rotator['size']['w'], rotator['size']['h']
             if direction == 'vertical':
-                return rotator['size']['h'], v['size']['w']
+                return rotator['size']['h'], rotator['size']['w']
         elif rotator['definition'] in ['up', 'down', 'vertical']:
             if direction == 'horizontal':
                 return rotator['size']['h'], rotator['size']['w']
             if direction == 'vertical':
                 return rotator['size']['w'], rotator['size']['h']
+
 
     def __init__(self, player_device: device.Device, ontology_path: str = settings.DEFAULT_DIR):
         config = conf.Conf(ontology_path).load_interface_configuration()
@@ -91,20 +92,23 @@ class HUD():
         #       cap_width = width
         #   if cap definition is up or down:
         #       cap_width = height
+
         slot_styles = self.styles[self.media_size]['slots']
         x_margins = settings.SLOT_MARGINS*player_device.dimensions[0]
         y_margins = settings.SLOT_MARGINS*player_device.dimensions[1]
 
         cap_dim = self.rotate_dimensions(self.hud_conf[self.media_size]['slots']['cap'])
         buffer_dim = self.rotate_dimensions(self.hud_conf[self.media_size]['slots']['buffer'])
-        slot_width = self.hud_conf[self.media_size]['slots']['empty']['image']['size']['w']
-        slot_height = self.hud_conf[self.media_size]['slots']['empty']['image']['size']['h']
+        slot_dim = (
+            self.hud_conf[self.media_size]['slots']['empty']['image']['size']['w'],
+            self.hud_conf[self.media_size]['slots']['empty']['image']['size']['h']
+        )
 
         if slot_styles['stack'] == 'horizontal':
             if slot_styles['alignment']['horizontal'] == 'right':
                 x_start = player_device.dimensions[0] \
                     - x_margins \
-                    - SLOTS_TOTAL*slot_width \
+                    - SLOTS_TOTAL*slot_dim[0] \
                     - (SLOTS_TOTAL-1)*buffer_dim[0] \
                     - 2*cap_dim[0]
             else:
@@ -113,15 +117,14 @@ class HUD():
             if slot_styles['alignment']['vertical'] == 'top':
                 y_start = y_margins
             else:
-                slot_height = self.hud_conf[self.media_size]['slots']['empty']['image']['size']['h']
                 y_start = player_device.dimensions[1] \
                     - y_margins \
-                    - slot_height
+                    - slot_dim[1]
         elif slot_styles['stack'] == 'vertical':
             if slot_styles['alignment']['vertical'] == 'bottom':
                 y_start = player_device.dimensions[1] \
                     - y_margins \
-                    - SLOTS_TOTAL*slot_height \
+                    - SLOTS_TOTAL*slot_dim[1] \
                     - (SLOTS_TOTAL-1)*buffer_dim[1] \
                     - cap_dim[1]
             else: 
@@ -132,9 +135,33 @@ class HUD():
             else:
                 x_start = player_device.dimensions[0] \
                     - x_margins \
-                    - slot_width
+                    - slot_dim[0]
 
-        self.start_position = (x_start, y_start)
+        start_cap = (x_start, y_start)
+        if slot_styles['stack'] == 'horizontal':
+            first_slot = (start_cap[0] + cap_dim[0], start_cap[0])
+            first_buffer = (first_slot[0] + slot_dim[0], start_cap[0])
+            second_slot = (first_buffer[0] + buffer_dim[0], start_cap[0])
+            second_buffer = (second_slot[0] + slot_dim[0], start_cap[0])
+            third_slot = (second_buffer[0] + buffer_dim[0], start_cap[0])
+            third_buffer = (third_slot[0] + slot_dim[0], start_cap[0])
+            fourth_slot = (third_buffer + buffer_dim[0], start_cap[0])
+            end_cap = (fourth_slot + slot_dim[0], start_cap[0])
+        elif slot_styles['stack'] == 'vertical':
+            pass
+
+        self.rendering_points = (
+            start_cap,
+            first_slot,
+            first_buffer,
+            second_slot,
+            second_buffer,
+            third_slot,
+            third_buffer,
+            fourth_slot,
+            end_cap
+        )
+
 
     def _init_slots(self, state_ao):
         self.slots = state_ao.get('hero').get('slots')
@@ -142,6 +169,35 @@ class HUD():
 
     def _init_mirrors(self, state_ao: state.State):
         pass
+
+
+    def get_cap_directions(self):
+        if self.styles[self.media_size]['slots']['stack'] == 'horizontal':
+            return ('left', 'right')
+        return ('up', 'down')
+
+
+    def get_buffer_direction(self):
+        return self.styles[self.media_size]['slots']['stack']
+
+
+    def get_buffer_dimensions(self):
+        return self.rotate_dimensions(self.hud_conf[self.media_size]['slots']['buffer'])
+
+
+    def get_cap_dimensions(self):
+        return self.rotate_dimensions(self.hud_conf[self.media_size]['slots']['cap'])
+
+
+    def get_rendering_points(self):
+        return self.rendering_points
+        
+
+    def get_slot_dimensions(self):
+        return (
+            self.hud_conf[self.media_size]['slots']['empty']['image']['size']['w'], 
+            self.hud_conf[self.media_size]['slots']['empty']['image']['size']['h']
+        )
 
 
     def slot_frame_map(self):
