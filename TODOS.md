@@ -20,4 +20,18 @@ another option would be to introduce a division in the concept of npc and villai
 
 - if sprite aware: train model: if iteration == learning_rate or something, then apply prediction
 
-- initialize plate map in world to determine if plates of type 'chest' or 'pressure' are activated.
+- desires: `safety`, `treasure`, `battle`, `relationship`
+
+Sprites have paths, intents, desires, expressions.
+
+A path is a point in space a sprite seeks to find. An intent operates on the path by searching for world state conditions. An intent can change the state of sprite.
+
+A desire is a point in plot space a sprite seeks to find. An expression operates on the sprite state directly by searching for the plot state conditions.
+
+in order to achieve a more sensitive feedback loop between desire and state, another channel of communication is opened between desire and intent. Desires should prioritize intents. 
+
+Aha. Desire is the ordering of intent. Expression and intent are the transmittal of desire to state. 
+
+
+
+What does plot space looks like?
