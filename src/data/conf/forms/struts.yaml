@@ -1,12 +1,12 @@
 house_exterior_wall:
-  image:
-    path: house.png
-    position:
-      x: 2
-      y: 0
-    size:
-      w: 92
-      h: 96
+  path: house.png
+  position:
+    x: 2
+    y: 0
+  size:
+    w: 92
+    h: 96
+  channels: null
   properties:
     hitbox:
       offset:
@@ -17,14 +17,14 @@ house_exterior_wall:
         h: 70
         
 house_interior_wall:
-  image:
-    path: house_interior_general.png
-    position:
-      x: 64
-      y: 256
-    size:
-      w: 96
-      h: 105
+  path: house_interior_general.png
+  position:
+    x: 64
+    y: 256
+  size:
+    w: 96
+    h: 105
+  channels: null
   properties:
     hitbox: 
       offset:
@@ -35,62 +35,62 @@ house_interior_wall:
         h: 64
 
 house_floor:
-  image:
-    path: house_interior_luxury.png
-    position:
-      x: 32
-      y: 0
-    size:
-      w: 96
-      h: 96
+  path: house_interior_luxury.png
+  position:
+    x: 32
+    y: 0
+  size:
+    w: 96
+    h: 96
+  channels: null
   properties:
     hitbox: null
 
 house_roof:
-  image:
-    path: house.png
-    position:
-      x: 0
-      y: 96
-    size: 
-      w: 96
-      h: 96
+  path: house.png
+  position:
+    x: 0
+    y: 96
+  size: 
+    w: 96
+    h: 96
+  channels: null
   properties:
     hitbox: null
 
 house_flattop:
-  image:
-    path: house.png
-    position:
-      x: 96
-      y: 127
-    size:
-      w: 96
-      h: 64
+  path: house.png
+  position:
+    x: 96
+    y: 127
+  size:
+    w: 96
+    h: 64
+  channels: null
   properties:
     hitbox: null
 
 house_steps:
-  image: 
-    path: house.png
-    position:
-      x: 128
-      y: 16
-    size:
-      w: 32
-      h: 24
+  path: house.png
+  position:
+    x: 128
+    y: 16
+  size:
+    w: 32
+    h: 24
+  channels: null
   properties:
     hitbox: null
 
 house_chimney:
-  image:
-    path: house.png
-    position: 
-      x: 199
-      y: 11
-    size: 
-      w: 22
-      h: 45
+  path: house.png
+  position: 
+    x: 199
+    y: 11
+  size: 
+    w: 22
+    h: 45
+  channels: null
   properties:
     hitbox:
       offset:
@@ -101,26 +101,26 @@ house_chimney:
         h: 45
 
 house_window:
-  image:
-    path: windows.png
-    position:
-      x: 192
-      y: 403
-    size:
-      w: 32
-      h: 27
+  path: windows.png
+  position:
+    x: 192
+    y: 403
+  size:
+    w: 32
+    h: 27
+  channels: null
   properties:
     hitbox: null
 
 tree_trunk:
-  image:
-    path: trunk.png
-    position: 
-      x: 16
-      y: 0
-    size: 
-      w: 64
-      h: 73
+  path: trunk.png
+  position: 
+    x: 16
+    y: 0
+  size: 
+    w: 64
+    h: 73
+  channels: null
   properties:
     hitbox:
       offset:
@@ -131,38 +131,38 @@ tree_trunk:
         h: 14
 
 tree_top:
-  image:
-    path: treetop.png
-    position:
-      x: 2
-      y: 0
-    size:
-      w: 93
-      h: 80
+  path: treetop.png
+  position:
+    x: 2
+    y: 0
+  size:
+    w: 93
+    h: 80
+  channels: null
   properties:
     hitbox: null
 
 pavement:
-  image:
-    path: city.png
-    position:
-      x: 32
-      y: 0
-    size: 
-      w: 96
-      h: 96
+  path: city.png
+  position:
+    x: 32
+    y: 0
+  size: 
+    w: 96
+    h: 96
+  channels: null
   properties:
     hitbox: null
 
 burial_pit:
-  image:
-    path: graveyard.png
-    position:
-      x: 2
-      y: 128
-    size:
-      w: 60
-      h: 63
+  path: graveyard.png
+  position:
+    x: 2
+    y: 128
+  channels: null
+  size:
+    w: 60
+    h: 63
   properties:
     hitbox:
       offset:
@@ -173,26 +173,26 @@ burial_pit:
         h: 15
 
 headstone:
-  image:
-    path: graveyard.png
-    position:
-      x: 10
-      y: 97
-    size:
-      w: 44
-      h: 31
+  path: graveyard.png
+  position:
+    x: 10
+    y: 97
+  size:
+    w: 44
+    h: 31
+  channels: null
   properties: 
     hitbox: null
 
 obelisk:
-  image:
-    path: city.png
-    position:
-      x: 740  
-      y: 101
-    size:
-      w: 24
-      h: 59
+  path: city.png
+  position:
+    x: 740  
+    y: 101
+  size:
+    w: 24
+    h: 59
+  channels: null
   properties:
     hitbox:
       offset:
@@ -203,14 +203,14 @@ obelisk:
         h: 35
 
 grave_marker:
-  image:
-    path: graveyard.png
-    position:
-      x: 128
-      y: 192
-    size:
-      w: 32
-      h: 32
+  path: graveyard.png
+  position:
+    x: 128
+    y: 192
+  size:
+    w: 32
+    h: 32
+  channels: null
   properties:
     hitbox:
       offset:
@@ -221,14 +221,14 @@ grave_marker:
         h: 25
 
 vertical_wood_bridge_left:
-  image:
-    path: village.png
-    position:
-      x: 448
-      y: 9
-    size:
-      w: 48
-      h: 87
+  path: village.png
+  position:
+    x: 448
+    y: 9
+  size:
+    w: 48
+    h: 87
+  channels: null
   properties:
     hitbox:
       offset:
@@ -239,14 +239,14 @@ vertical_wood_bridge_left:
         h: 87
 
 vertical_wood_bridge_right:
-  image:
-    path: village.png
-    position:
-      x: 496
-      y: 9
-    size:
-      w: 48
-      h: 87
+  path: village.png
+  position:
+    x: 496
+    y: 9
+  size:
+    w: 48
+    h: 87
+  channels: null
   properties:
     hitbox:
       offset:

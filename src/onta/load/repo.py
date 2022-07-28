@@ -1,6 +1,6 @@
 import os
 from typing import Union
-from PIL import Image, ImageEnhance
+from PIL import Image
 
 import onta.settings as settings
 import onta.load.conf as conf

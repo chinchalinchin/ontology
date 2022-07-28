@@ -7,27 +7,27 @@
 #         initialization, i.e. if a composite definition involes strut_a, then a definition for strut_a 
 #         must be included...
 
+# NOTE: tolerance will determine whether a sprite has arrived at a position, i.e. if the sprite is within a radius of 3 pixels
+
+# NOTE: hour determines then number of iterations in an in-game hour
+    # 18000 = 30 FPS * 60 SPM * 10 Min
+  
+# TODO: ??? possibly separate FPS from UPS.
+
 world:
-  tiles:
-    w: 96
-    h: 32
   size:
     # 1920 by 1920
     units: tiles
     w: 20
     h: 60
-  # determines whether a sprite has arrived at a position, i.e. if the sprite is within a radius of 3 pixels
   tolerance: 5
-  # determines then number of iterations in an in-game hour
-    # 18000 = 30 FPS * 60 SPM * 10 Min
   hour: 18000
-
-# TODO: ??? possibly separate FPS from UPS.
 
 layers:
   one:
     tiles:
       water:
+        order: 0
         sets:
           # top
           - start:
@@ -79,6 +79,7 @@ layers:
               h: 2
             cover: false
       grass:
+        order: 1
         sets:
           - start:
               units: tiles
@@ -163,7 +164,7 @@ layers:
     struts:
     plates:
       obelisk:
-        order: 0
+        order: 2
         sets:
           - start:
               units: absolute
@@ -171,7 +172,7 @@ layers:
               y: 1265
             content: 5
       plain_chest:
-        order: 1
+        order: 3
         sets:
           - start:
               units: absolute
@@ -179,7 +180,7 @@ layers:
               y: 1750
             content: potion
       sword_stone:
-        order: 2
+        order: 4
         sets:
           - start:
               units: absolute
@@ -187,16 +188,16 @@ layers:
               y: 800
             content: sword
       stone_switch:
-        order: 3
+        order: 5
         sets:
           - start:
               units:
               x: 1880
               y: 1700
-            cover: true
             content: connection_a
     compositions:
       house:
+        order: 6
         sets:
           - start:
               units: absolute
@@ -207,6 +208,7 @@ layers:
               x: 1350
               y: 1600
       tree_patch:
+        order: 7
         sets:
           - start:
               units: absolute
@@ -230,6 +232,7 @@ layers:
               y: 1300
 
       horizontal_pavement:
+        order: 8
         sets:
           - start:
               units: absolute
@@ -240,6 +243,7 @@ layers:
               x: 1088
               y: 1815
       grave:
+        order: 9
         sets:
           - start:
               units: absolute
@@ -262,6 +266,7 @@ layers:
               x: 630
               y: 1170
       vertical_wood_bridge:
+        order: 10
         sets:
           - start:
               units: absolute
@@ -283,6 +288,7 @@ layers:
   two:
     tiles:
       hole:
+        order: 0
         sets:
           - start:
               units: tiles
@@ -296,8 +302,8 @@ layers:
     plates:
     compositions:
       house_interior:
+        order: 1
         sets:
-        # 190, 0
           - start: 
               units: absolute
               x: 896

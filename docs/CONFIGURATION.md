@@ -20,13 +20,23 @@ This file defines the mapping between user input and player state. **Note**: The
 ```python
 ```
 
+## Interface
+
+- **Location**: _data/conf/interface.yaml_
+
+This file defines the mapping between _slots_, _mirrors_ and _avatars_ and their corresponding asset files. It contains information about screen breakpoints, HUD layout and styles.
+
+NOTE: each successive breakpoint must contain the last
+
+NOTE: len(breakpoints) = len(sizes) - 1
+
+stack: horizontal | vertical
+alignment.vertical : top | bottom
+alignment.horizontal: left | right
+
 ## Equipment
 
-## Display
-
-## Avatars
-
-## Mirrors
+- **Location**: _data/conf/equipment.yaml_
 
 Forms
 -----

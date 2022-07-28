@@ -44,35 +44,40 @@ class Conf():
     def _entity_configuration(self, obj):
         return self.__configuration(obj, 'entities')
 
+
+    def _dialectic_configuration(self, obj):
+        return self.__configuration(obj, 'dialectics')
+
+
     def load_control_configuration(self):
         if self.control_conf is None:
             self.control_conf = self._self_configuration('controls')
         return self.control_conf
+
 
     def load_interface_configuration(self):
         if self.interface_conf is None:
             self.interface_conf = self._self_configuration('interface')
         return self.interface_conf
 
+
     def load_equipment_configuration(self):
         if self.equipment_conf is None:
             self.equipment_conf = self._self_configuration('equipment')
         return self.equipment_conf
-        
+
+
     def load_composite_configuration(self):
         if self.composite_conf is None:
             self.composite_conf = self._form_configuration('composite')
         return self.composite_conf
-        
+
+
     def load_tile_configuration(self):
         if self.tile_sheet_conf is None:
-
-            tiles_conf = self._form_configuration('tiles')
-            self.tile_sheet_conf = { }
-            for tile_key, tile_conf in tiles_conf.items():
-                self.tile_sheet_conf[tile_key] = tile_conf['image']
-
+            self.tile_sheet_conf = self._form_configuration('tiles')
         return self.tile_sheet_conf
+
 
     def load_sprite_configuration(self) -> tuple:
         """ Returns `(sprite_state_conf, sprite_property_conf, sprite_sheet_conf)`-tuple
@@ -104,6 +109,7 @@ class Conf():
 
         return self.sprite_state_conf, self.sprite_property_conf, self.sprite_sheet_conf
 
+
     def load_strut_configuration(self) -> tuple:
         """ Description
         :type self:
@@ -122,6 +128,7 @@ class Conf():
                 self.strut_property_conf[strut_key] = strut_conf['properties']
                 self.strut_sheet_conf[strut_key] = strut_conf['image']
         return self.strut_property_conf, self.strut_sheet_conf
+
 
     def load_plate_configuration(self) -> tuple:
         if self.plate_property_conf is None \

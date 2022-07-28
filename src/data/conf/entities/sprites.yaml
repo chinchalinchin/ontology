@@ -1,5 +1,13 @@
 
 hero:
+    sheets:
+        - human_male_ivory.png
+        - head_hair_messy_red.png
+        - legs_pants_green.png
+        - torso_male_shirt_green.png
+    size:
+        w: 64
+        h: 64
     properties:
         hitboxes:
             sprite:
@@ -35,14 +43,6 @@ hero:
             - use
             - jump
             - shield
-        size:
-            w: 64
-            h: 64
-    sheets:
-        - human_male_ivory.png
-        - head_hair_messy_red.png
-        - legs_pants_green.png
-        - torso_male_shirt_green.png
     states:
         -   state: cast_up
             row: 0
@@ -121,6 +121,11 @@ hero:
             frames: 6
 
 esmeralda:
+    sheets:
+        - human_female_ivory.png
+        - head_female_hair_braid_red.png
+        - legs_pants_blue.png
+        - torso_female_shirt_blue.png
     properties:
         size:
             w: 64
@@ -171,16 +176,11 @@ esmeralda:
             -   plot: a
                 intent: one
                 dialogue:
-                    - 
+                    - null
             -   plot: b
                 intent: one
                 dialogue:
-                    - 
-    sheets:
-        - human_female_ivory.png
-        - head_female_hair_braid_red.png
-        - legs_pants_blue.png
-        - torso_female_shirt_blue.png
+                    - null
     states:
         -   state: thrust_up
             row: 4
@@ -235,6 +235,8 @@ esmeralda:
             frames: 6
 
 skeleton:
+    sheets:
+        - monster_skeleton_white.png
     properties:
         size:
             w: 64
@@ -280,21 +282,20 @@ skeleton:
         intents:
             -   plot: a
                 intent: hero
-                dialogue: null
+                dialogue: 
+                    - null
             -   plot: a
                 intent: esmeralda
                 dialogue:
-                    - 
+                    - null
             -   plot: b
                 intent: two
                 dialogue:
-                    -
+                    - null
             -   plot: b
                 intent: esmeralda
                 dialogue:
-                    -
-    sheets:
-        - monster_skeleton_white.png
+                    - null
     states:
         -   state: thrust_up
             row: 4

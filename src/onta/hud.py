@@ -66,7 +66,7 @@ class HUD():
 
 
     def _init_conf(self, config: conf.Conf):
-        self.styles = config['hud']['styles']
+        self.styles = config.get('styles')
         self.hud_conf = {
             key: val
             for key, val in config['hud'].items()

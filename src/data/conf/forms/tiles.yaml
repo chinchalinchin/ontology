@@ -1,74 +1,52 @@
-# NOTE: there are two redundancies here
-# 1. there is an "unnecessary" nesting between the tile name and its properties through the 'image' key.
-#     this is done to keep the tile configuration consistent with struts and plates.
+dimensions:
+  w: 96
+  h: 32
+
 coal:
-  image:
-    path: coal.png
-    position:
-      x: 0
-      y: 160
-    size:
-      w: 96
-      h: 32
+  path: coal.png
+  position:
+    x: 0
+    y: 160
+  channels: null
 
 grass:
-  image:
-    path: grass.png
-    position:
-      x: 0
-      y: 160
-    size:
-      w: 96
-      h: 32
+  path: grass.png
+  position:
+    x: 0
+    y: 160
+  channels: null
 
 mud:
-  image:
-    path: mud.png
-    position: 
-      x: 0
-      y: 160
-    size:
-      w: 96
-      h: 32
+  path: mud.png
+  position: 
+    x: 0
+    y: 160
+  channels: null
 
 lava:
-  image:
-    path: lava.png
-    position:
-      x: 0 
-      y: 160
-    size:
-      w: 96
-      h: 32
-  properties:
-    cover: false
+  path: lava.png
+  position:
+    x: 0 
+    y: 160
+  channels: null
 
 sand:
-  image: 
-    path: sand.png
-    position:
-      x: 0
-      y: 160
-    size: 
-      w: 96
-      h: 32
+  path: sand.png
+  position:
+    x: 0
+    y: 160
+  channels: null
 
 water:
-  image:
-    path: water.png
-    position:
-      x: 0
-      y: 160
-    size:
-      w: 96
-      h: 32
+  path: water.png
+  position:
+    x: 0
+    y: 160
+  channels: null
 
 hole:
-  image:
-    path: hole.png
-    position:
-      x: 0
-      y: 160
-    size:
-      w: 96
-      h: 32
+  path: hole.png
+  position:
+    x: 0
+    y: 160
+  channels: null

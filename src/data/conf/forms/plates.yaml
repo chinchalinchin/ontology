@@ -1,12 +1,12 @@
 house_door:
-  image:
-    path: doors.png
-    position: 
-      x: 32
-      y: 80
-    size: 
-      w: 32
-      h: 48
+  path: doors.png
+  position: 
+    x: 32
+    y: 80
+  size: 
+    w: 32
+    h: 48
+  channels: null
   properties:
     hitbox: 
       offset:
@@ -18,15 +18,16 @@ house_door:
     type: door
 
 inside_door:
-  image:
-    channels:
-      r: 255
-      g: 255
-      b: 0
-      a: 64
-    size: 
-      w: 32
-      h: 48
+  path: null
+  position: null
+  size: 
+    w: 32
+    h: 48
+  channels:
+    r: 255
+    g: 255
+    b: 0
+    a: 64
   properties:
     hitbox: 
       offset:
@@ -38,14 +39,14 @@ inside_door:
     type: door
 
 obelisk:
-  image:
-    path: statues.png
-    position:
-      x: 195 
-      y: 101
-    size:
-      w: 24
-      h: 59
+  path: statues.png
+  position:
+    x: 195 
+    y: 101
+  size:
+    w: 24
+    h: 59
+  channels: null
   properties:
     hitbox:
       offset:
@@ -57,14 +58,14 @@ obelisk:
     type: mass
 
 statue:
-  image:
-    path: statues.png
-    position:
-      x: 64
-      y: 128
-    size:
-      w: 30
-      h: 64
+  path: statues.png
+  position:
+    x: 64
+    y: 128
+  size:
+    w: 30
+    h: 64
+  channels: null
   properties:
     hitbox:
       offset:
@@ -76,18 +77,18 @@ statue:
     type: mass
 
 plain_chest:
-  image:
-    path: chest_rounded.png
-    position:
-      on_position:
-        x: 96
-        y: 0
-      off_position: 
-        x: 0
-        y: 0
-    size:
-      w: 32
-      h: 32
+  path: chest_rounded.png
+  position:
+    on_position:
+      x: 96
+      y: 0
+    off_position: 
+      x: 0
+      y: 0
+  size:
+    w: 32
+    h: 32
+  channels: null
   properties:
     hitbox:
       offset: 
@@ -99,18 +100,18 @@ plain_chest:
     type: container
 
 sword_stone:
-  image:
-    path: sword_in_stone.png
-    position:
-      on_position:
-        x: 26
-        y: 0
-      off_position:
-        x: 0
-        y: 0
-    size:
-      w: 26
-      h: 38
+  path: sword_in_stone.png
+  position:
+    on_position:
+      x: 26
+      y: 0
+    off_position:
+      x: 0
+      y: 0
+  size:
+    w: 26
+    h: 38
+  channels: null
   properties:
     hitbox:
       offset:
@@ -122,18 +123,18 @@ sword_stone:
     type: container
         
 stone_switch:
-  image:
-    path: various_continued.png
-    position:
-      on_position:
-        x: 400
-        y: 688
-      off_position:
-        x: 432
-        y: 576
-    size:
-      w: 16
-      h: 16
+  path: various_continued.png
+  position:
+    on_position:
+      x: 400
+      y: 688
+    off_position:
+      x: 432
+      y: 576
+  size:
+    w: 16
+    h: 16
+  channels: null
   properties:
     hitbox: null
     type: pressure
