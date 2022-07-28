@@ -164,8 +164,7 @@ class Renderer():
     def _init_interface_set(self, repository: repo.Repo, headsup_display: hud.HUD):
         slot_props = headsup_display.hud_conf[headsup_display.media_size]['slots']
 
-        cap_frame = repository.get_interface_frame(
-            'slot', 
+        cap_frame = repository.get_slot_frame(
             headsup_display.media_size,
             'cap'
         )
@@ -175,14 +174,25 @@ class Renderer():
                 slot_props['cap']['definition']
             )
         self.cap_frames = {
-            'up': cap_frame.rotate(up_adjust, expand=True),
-            'left': cap_frame.rotate(left_adjust, expand=True),
-            'down': cap_frame.rotate(down_adjust, expand=True),
-            'right': cap_frame.rotate(right_adjust, expand=True)
+            'up': cap_frame.rotate(
+                up_adjust, 
+                expand=True
+            ),
+            'left': cap_frame.rotate(
+                left_adjust, 
+                expand=True
+            ),
+            'down': cap_frame.rotate(
+                down_adjust, 
+                expand=True
+            ),
+            'right': cap_frame.rotate(
+                right_adjust, 
+                expand=True
+            )
         }
 
-        buffer_frame = repository.get_interface_frame(
-            'slot', 
+        buffer_frame = repository.get_slot_frame(
             headsup_display.media_size,
             'buffer'
         )
@@ -191,19 +201,23 @@ class Renderer():
               slot_props['buffer']['definition']  
             )
         self.buffer_frames = {
-            'vertical': buffer_frame.rotate(vertical_adjust, expand=True),
-            'horizontal': buffer_frame.rotate(horizontal_adjust, expand=True)
+            'vertical': buffer_frame.rotate(
+                vertical_adjust, 
+                expand=True
+            ),
+            'horizontal': buffer_frame.rotate(
+                horizontal_adjust, 
+                expand=True
+            )
         }
 
 
         self.slot_frames = {
-            'empty': repository.get_interface_frame(
-                'slot', 
+            'empty': repository.get_slot_frame(
                 headsup_display.media_size,
                 'empty'
             ),
-            'equipped': repository.get_interface_frame(
-                'slot',
+            'equipped': repository.get_slot_frame(
                 headsup_display.media_size,
                 'equipped'
             )

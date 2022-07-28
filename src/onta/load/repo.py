@@ -178,16 +178,27 @@ class Repo():
 
     def _init_metered_interface_assets(self, config: conf.Conf, ontology_path: str) -> None:
         interface_conf = config.load_interface_configuration()
+
         for size in interface_conf['sizes']:
             self.mirrors[size] = {}
             mirror_set = interface_conf['hud'][size]['mirrors']
 
             for mirror_key, mirror in mirror_set.items():
-                
-                for mirror_type in ['unit', 'empty']:
+                if mirror:
+                    self.mirrors[size][mirror_key] = {}
+                    
+                    for mirror_fill in ['unit', 'empty']:
+                        if mirror[mirror_fill].get('path'):
+                            x,y = mirror[mirror_fill]['position']['x'], mirror[mirror_fill]['position']['y']
+                            w, h = mirror[mirror_fill]['size']['w'], mirror[mirror_fill]['size']['h']
+                            image_path = os.path.join(
+                                ontology_path,
+                                *settings.MIRROR_PATH,
+                                mirror[mirror_fill]['path']
+                            )
+                            buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
-                    mirror[mirror_type]
-                    self.mirrors[size][mirror_key][mirror_type]
+                            self.mirrors[size][mirror_key][mirror_fill] = buffer.crop((x,y,w+x,h+y))
 
     def _init_sprite_assets(self, config: conf.Conf, ontology_path: str) -> None:
         log.debug('Initializing sprite assets...', 'Repo._init_sprite_assets')
@@ -248,15 +259,20 @@ class Repo():
         return None
 
 
-    def get_interface_frame(self, interface_key, breakpoint_key, component_key) -> Union[Image.Image, None]:
-        if interface_key == 'slot':
-            return self.slots[breakpoint_key][component_key]
-        if interface_key == 'mirror':
-            return self.mirrors[breakpoint_key][component_key]
-        if interface_key == 'avatar':
-            return self.avatars[breakpoint_key][component_key]
+    def get_avatar_frame(self, breakpoint_key, component_key) -> Union[Image.Image, None]:
+        if self.avatars.get(breakpoint_key):
+            return self.avatars[breakpoint_key].get(component_key)
         return None
     
+    def get_slot_frame(self, breakpoint_key, component_key) -> Union[Image.Image, None]:
+        if self.slots.get(breakpoint_key):
+            return self.slots[breakpoint_key].get(component_key)
+        return None
+
+    def get_mirror_frame(self, breakpoint_key, component_key, fill_key):
+        if self.mirrors.get(breakpoint_key) and self.mirrors[breakpoint_key].get(component_key):
+            return self.mirrors[breakpoint_key][component_key].get(fill_key)
+        return None
 
     def get_sprite_frame(self, sprite: str, state: str, frame: int) -> Union[Image.Image, None]:
         return self.sprites[sprite][state][frame]
