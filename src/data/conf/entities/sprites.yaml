@@ -237,10 +237,10 @@ esmeralda:
 skeleton:
     sheets:
         - monster_skeleton_white.png
+    size:
+        w: 64
+        h: 64
     properties:
-        size:
-            w: 64
-            h: 64
         hitboxes:
             strut:
                 offset:

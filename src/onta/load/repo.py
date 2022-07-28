@@ -46,7 +46,7 @@ class Repo():
 
             if asset_type == 'tiles':
                 assets_conf = config.load_tile_configuration()
-                w, h = asset_conf['tile']['w'], asset_conf['tile']['h']
+                w, h = assets_conf['tile']['w'], assets_conf['tile']['h']
             elif asset_type == 'struts':
                 asset_props, assets_conf = config.load_strut_configuration()
             elif asset_type == 'plates':
@@ -188,7 +188,7 @@ class Repo():
             
             sheets, self.sprites[sprite_key] = [], {}
 
-            for sheet in sheet_conf:
+            for sheet in sheet_conf['sheets']:
                 sheet_path = os.path.join(
                     ontology_path, 
                     *settings.SPRITE_PATH, 
@@ -225,11 +225,11 @@ class Repo():
 
 
     def get_form_frame(self, form_key: str, group_key: str) -> Union[Image.Image, None]:
-        if form_key == 'tiles':
+        if form_key in [ 'tiles', 'tile' ]:
             return self.tiles.get(group_key)
-        if form_key == 'struts':
+        if form_key in [ 'struts', 'strut' ]:
             return self.struts.get(group_key)
-        if form_key == 'plates':
+        if form_key in [ 'plates', 'plate' ]:
             return self.plates.get(group_key)
         return None
 

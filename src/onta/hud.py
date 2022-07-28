@@ -103,16 +103,16 @@ class HUD():
         y_margins = settings.SLOT_MARGINS*player_device.dimensions[1]
 
         cap_dim = self.rotate_dimensions(
-            self.hud_conf[self.media_size]['slots']['cap']['image'],
+            self.hud_conf[self.media_size]['slots']['cap'],
             self.styles[self.media_size]['slots']['stack']
         )
         buffer_dim = self.rotate_dimensions(
-            self.hud_conf[self.media_size]['slots']['buffer']['image'],
+            self.hud_conf[self.media_size]['slots']['buffer'],
             self.styles[self.media_size]['slots']['stack']
         )
         slot_dim = (
-            self.hud_conf[self.media_size]['slots']['empty']['image']['size']['w'],
-            self.hud_conf[self.media_size]['slots']['empty']['image']['size']['h']
+            self.hud_conf[self.media_size]['slots']['empty']['size']['w'],
+            self.hud_conf[self.media_size]['slots']['empty']['size']['h']
         )
 
         log.debug('Initializing interface screen positions...', 
@@ -280,8 +280,8 @@ class HUD():
 
     def get_slot_dimensions(self):
         return (
-            self.hud_conf[self.media_size]['slots']['empty']['image']['size']['w'], 
-            self.hud_conf[self.media_size]['slots']['empty']['image']['size']['h']
+            self.hud_conf[self.media_size]['slots']['empty']['size']['w'], 
+            self.hud_conf[self.media_size]['slots']['empty']['size']['h']
         )
 
 

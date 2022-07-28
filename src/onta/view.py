@@ -16,6 +16,7 @@ import onta.util.gui as gui
 
 SWITCH_PLATES = ['container', 'pressure', 'gate']
 
+
 log = logger.Logger('onta.view', settings.LOG_LEVEL)
 
 
@@ -99,8 +100,7 @@ class Renderer():
 
         if len(unordered_dict)>0:
             for dict_key, dict_value in unordered_dict.items():
-                render_order = dict_value['order']
-                render_map[render_order] = dict_key
+                render_map[dict_value['order']] = dict_key
 
             ordered_map = list(render_map.keys())
             ordered_map.sort()
@@ -248,46 +248,48 @@ class Renderer():
         :type repository: repo.Repo
 
         .. note:
-            Only _Doors_ are considered static platesets. All other types of plates need to be re-rendered.
+            Only _Doors_ are considered static platesets. All other types of plates need to be re-rendered. Therefore, this method will only render _Door_\s.
         """
         log.debug('Rendering strut and plate sets', 'Repo._render_static_sets')
-        
-        for forms in ['struts', 'plates']:
-            for layer in game_world.layers:
-                if forms == 'struts':
-                    unordered_groups = game_world.get_strutsets(layer)
-                elif forms == 'plates':
-                    unordered_groups = game_world.get_platesets(layer)
+    
+        for layer in game_world.layers:
+            strutsets, platesets =  game_world.get_strutsets(layer), game_world.get_platesets(layer)
+            strut_keys = list(strutsets.keys())
 
-                render_map = self.render_ordered_dict(unordered_groups)
+            unordered_groups = strutsets
+            unordered_groups.update(platesets)
 
-                for group_key, group_conf in render_map.items():
-                    if forms == 'struts' or \
-                        (forms == 'plates' and \
-                            game_world.plate_property_conf[group_key]['type'] == 'door'):
+            render_map = self.render_ordered_dict(unordered_groups)
 
-                        log.debug(f'Rendering {group_key} struts', 'Repo._render_static_sets')
+            for group_key, group_conf in unordered_groups.items():
+                if group_key in strut_keys or \
+                    (game_world.plate_property_conf.get(group_key) and \
+                        game_world.plate_property_conf.get('type') == 'door'):
 
-                        group_frame = repository.get_form_frame(forms, group_key)
-                        for set_conf in group_conf['sets']:
-                            start = calculator.scale(
-                                (set_conf['start']['x'], set_conf['start']['y']), 
-                                game_world.tile_dimensions,
-                                set_conf['start']['units']
-                            )
-                            log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_static_sets')
+                    log.debug(f'Rendering {group_key} struts', 'Repo._render_static_sets')
 
-                            if set_conf.get('cover'):
-                                self.static_cover_frame[layer].paste(group_frame, start, group_frame)
-                            else:
-                                self.static_back_frame[layer].paste(group_frame, start, group_frame)
+                    if group_key in strut_keys:
+                        group_frame = repository.get_form_frame('struts', group_key)
+                    else:
+                        group_frame = repository.get_form_frame('plates', group_key)
+
+                    for set_conf in group_conf['sets']:
+                        start = calculator.scale(
+                            (set_conf['start']['x'], set_conf['start']['y']), 
+                            game_world.tile_dimensions,
+                            set_conf['start']['units']
+                        )
+                        log.debug(f'Rendering group set at {start[0], start[1]}', 'Repo._render_static_sets')
+
+                        if set_conf.get('cover'):
+                            self.static_cover_frame[layer].paste(group_frame, start, group_frame)
+                        else:
+                            self.static_back_frame[layer].paste(group_frame, start, group_frame)
     
 
     def _render_typed_platesets(self, game_world: world.World, repository: repo.Repo):
         unordered_groups = game_world.get_platesets(game_world.layer)
         render_map = self.render_ordered_dict(unordered_groups)
-
-        # This definitely isn't rendering in the intended order...
 
         for group_key, group_conf in render_map.items():
             group_frame = repository.get_form_frame('plates', group_key)

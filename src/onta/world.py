@@ -217,7 +217,7 @@ class World():
         self.strut_property_conf, _ = config.load_strut_configuration()
         self.composite_conf = config.load_composite_configuration()
         tile_conf = config.load_tile_configuration()
-        self.tile_dimensions = (tile_conf['tile']['w'], tile_conf['world']['tile']['h'])
+        self.tile_dimensions = (tile_conf['tile']['w'], tile_conf['tile']['h'])
 
 
     def _init_static_state(self, state_ao: state.State) -> None:
@@ -281,7 +281,7 @@ class World():
                             #           via compose element configuration (composite.yaml)
                             for element_key, element in elementset_conf.items():
                                 
-                                log.verbose(f'Initializing {element_key}', 'World._generate_composite_static_state')
+                                log.verbose(f'Initializing {element_key}', 'World._decompose_composite_static_state')
 
                                 # NOTE: element_sets = [ { 'start': {..}, 'cover': bool } ]
                                 #            via compose element configuration (composite.yaml)
@@ -295,20 +295,19 @@ class World():
 
                                     log.verbose('Generating strut render order', 'World._decompose_composite_static_state')
                                     
-                                    # NOTE strutset = { 'start': { ... }, 'cover': bool }
+                                    # NOTE elementset = { 'start': { ... }, 'cover': bool }
                                     #       via compose element configuration (composite.yaml)
 
                                     if not buffer_sets.get(layer):
                                         buffer_sets[layer] = {}
                                     
-                                    if not buffer_sets[layer]:
+                                    if not buffer_sets[layer].get(element_key):
                                         buffer_sets[layer][element_key] = {}
 
                                     if not buffer_sets[layer][element_key].get('sets'):
                                         buffer_sets[layer][element_key]['sets'] = []
                                     
                                     if not buffer_sets[layer][element_key].get('order'):
-                                        # the problem here is the order is relative to the group et
                                         buffer_sets[layer][element_key]['order'] = len(buffer_sets[layer]) - 1
 
                             

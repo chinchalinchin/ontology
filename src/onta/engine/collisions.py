@@ -4,6 +4,7 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.engine.collisions', settings.LOG_LEVEL)
 
+
 def generate_collision_map(npcs, villains):
     collision_map = { 
         npc_key: {
@@ -16,6 +17,7 @@ def generate_collision_map(npcs, villains):
         } for vil_key in villains.keys()
     })
     return collision_map
+
 
 def calculate_set_hitbox(set_hitbox, set_conf, tile_dim):
     if set_hitbox:
@@ -33,6 +35,7 @@ def calculate_set_hitbox(set_hitbox, set_conf, tile_dim):
         return hitbox
     return None
 
+
 def detect_collision(sprite_hitbox, hitbox_list):
     """Determines if a sprite's hitbox has collided with a list of hitboxes
 
@@ -45,13 +48,18 @@ def detect_collision(sprite_hitbox, hitbox_list):
 
     .. note::
         This method assumes it only cares _if_ a collision occurs, not with _what_ the collision occurs. The hitbox list is traversed and if any one of the contained hitboxes intersects the sprite, `True` is returned. If none of the hitboxes in the list intersect the given sprite, `False` is returned.
+    
+    .. todo::
+        Modify this to return the direction of the collision. Need to recoil sprite based on where the collision came from, not which direction the sprite is heading...
     """
+
     for hitbox in hitbox_list:
         if hitbox and calculator.intersection(sprite_hitbox, hitbox):
             # return true once collision is detected. it doesn't matter where it occurs, only what direction the hero is travelling...
             log.verbose(f'Detected sprite hitbox {sprite_hitbox} collision with hitbox at {hitbox}', 
                 'detect_collision')
             return True
+    return False
 
 def recoil_sprite(sprite, sprite_props):
     if 'down' in sprite['state']:

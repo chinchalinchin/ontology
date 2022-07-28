@@ -92,7 +92,7 @@ class Conf():
         :return: _Control_ specific configurations.
         :rtype: _type_
         """
-        if self.control_conf is None:
+        if not self.control_conf:
             self.control_conf = self._self_configuration('controls')
         return self.control_conf
 
@@ -158,9 +158,10 @@ class Conf():
 
             for sprite_key, sprite_conf in sprites_conf.items():
                 self.sprite_property_conf[sprite_key] = sprite_conf['properties']
-                self.sprite_sheet_conf[sprite_key] = sprite_conf['sheets']
-                self.sprite_sheet_conf[sprite_key]['size'] = sprite_conf['size']
-
+                self.sprite_sheet_conf[sprite_key] = {
+                    'sheets': sprite_conf['sheets'],
+                    'size': sprite_conf['size']
+                }
                 self.sprite_state_conf[sprite_key] = {}
                 for map in sprite_conf['states']:
                     self.sprite_state_conf[sprite_key][map['state']] = {
@@ -202,13 +203,15 @@ class Conf():
         :return: _Plate_ specific configurations parsed into `(plate_property_conf, strut_sheet_conf)`-tupe.
         :rtype: tuple
 
-        .. note:
+        .. note::
+            - Size is _both_ a game property and an image configuration property.
         """
         if not self.plate_property_conf or not self.plate_sheet_conf:
             plates_conf = self._form_configuration('plates')
 
             for plate_key, plate_conf in plates_conf.items():
                 self.plate_property_conf[plate_key] = plate_conf['properties']
+                self.plate_property_conf[plate_key]['size'] = plate_conf['size']
                 self.plate_sheet_conf[plate_key] = {
                     key: val for key, val in plate_conf.items()
                     if key != 'properties'
