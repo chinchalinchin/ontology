@@ -1,11 +1,5 @@
 import onta.world as world
 
-# coefficients = [
-#   {
-#       'sprite_key': str,
-#       'value': float
-#   }
-# ]
 
 def state_map(game_world: world.World):
     state_keys = list(game_world.sprite_state_conf.keys())
@@ -13,17 +7,18 @@ def state_map(game_world: world.World):
         state_key: i for i, state_key in enumerate(state_keys)
     }
 
+
 def predict(game_world: world.World):
     """
     
-    .. notes:
-        - coefficients example:
+    .. note::
         ```python
         coefficients = [
             {
                 'sprite_key': str,
                 'value': float
-            }
+            },
+            # ...
         ]
         ```
     """

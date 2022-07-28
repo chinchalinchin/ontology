@@ -18,7 +18,7 @@ def generate_collision_map(npcs, villains):
     return collision_map
 
 def calculate_set_hitbox(set_hitbox, set_conf, tile_dim):
-    if set_hitbox is not None:
+    if set_hitbox:
         x,y = calculator.scale(
             (set_conf['start']['x'],set_conf['start']['y']),
             tile_dim,
@@ -43,11 +43,11 @@ def detect_collision(sprite_hitbox, hitbox_list):
     :return: _description_
     :rtype: _type_
 
-    .. notes:
-        - This method assumes it only cares _if_ a collision occurs, not with _what_ the collision occurs. The hitbox list is traversed and if any one of the contained hitboxes intersects the sprite, `True` is returned. If none of the hitboxes in the list intersect the given sprite, `False` is returned.
+    .. note::
+        This method assumes it only cares _if_ a collision occurs, not with _what_ the collision occurs. The hitbox list is traversed and if any one of the contained hitboxes intersects the sprite, `True` is returned. If none of the hitboxes in the list intersect the given sprite, `False` is returned.
     """
     for hitbox in hitbox_list:
-        if hitbox is not None and calculator.intersection(sprite_hitbox, hitbox):
+        if hitbox and calculator.intersection(sprite_hitbox, hitbox):
             # return true once collision is detected. it doesn't matter where it occurs, only what direction the hero is travelling...
             log.verbose(f'Detected sprite hitbox {sprite_hitbox} collision with hitbox at {hitbox}', 
                 'detect_collision')
@@ -75,10 +75,9 @@ def recoil_plate(plate, sprite, sprite_props, hero_flag):
     :param hero_flag: _description_
     :type hero_flag: _type_
 
-    .. notes:
-        - I am unsure where the mismatch between sprite left vs. hero right and sprite right vs. hero left comes from...I think it may have to do with the control mapping vs. the direction of the _(x,y)_ rendering plane, i.e. positive y is in the down direction...Until I discover the source of the error, this method needs an additional check when recoiling to left or right.
+    .. note::
+        I am unsure where the mismatch between sprite left vs. hero right and sprite right vs. hero left comes from...I think it may have to do with the control mapping vs. the direction of the _(x,y)_ rendering plane, i.e. positive y is in the down direction...Until I discover the source of the error, this method needs an additional check when recoiling to left or right.
     """
-    # TODO: pass in collide directly instead of through dictionary
     if 'down' in sprite['state']:
         plate['start']['y'] += sprite_props['collide']
     elif 'left' in sprite['state']:

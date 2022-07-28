@@ -126,10 +126,10 @@ esmeralda:
         - head_female_hair_braid_red.png
         - legs_pants_blue.png
         - torso_female_shirt_blue.png
+    size:
+        w: 64
+        h: 64
     properties:
-        size:
-            w: 64
-            h: 64
         hitboxes:
             strut:
                 offset:

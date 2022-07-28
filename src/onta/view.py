@@ -93,6 +93,7 @@ class Renderer():
 
     @staticmethod
     def render_ordered_dict(unordered_dict):
+        # doesnt work. need to rethink this entirely.
         render_map = {}
         ordered_dict = OrderedDict()
 
@@ -143,8 +144,8 @@ class Renderer():
         player_device: device.Device
     ):
         """
-        .. notes:
-            - No references are kept to `static_world` or `repository`.
+        .. note:
+            No references are kept to `static_world` or `repository`.
         """
         self.player_device = player_device
         self.static_cover_frame = {
@@ -163,7 +164,6 @@ class Renderer():
     def _init_interface_set(self, repository: repo.Repo, headsup_display: hud.HUD):
         slot_props = headsup_display.hud_conf[headsup_display.media_size]['slots']
 
-
         cap_frame = repository.get_interface_frame(
             'slot', 
             headsup_display.media_size,
@@ -172,7 +172,7 @@ class Renderer():
 
         (down_adjust, left_adjust, right_adjust, up_adjust) = \
             self.adjust_cap_rotation(
-                slot_props['cap']['image']['definition']
+                slot_props['cap']['definition']
             )
         self.cap_frames = {
             'up': cap_frame.rotate(up_adjust, expand=True),
@@ -188,7 +188,7 @@ class Renderer():
         )
         (vertical_adjust, horizontal_adjust) = \
             self.adjust_buffer_rotation(
-              slot_props['buffer']['image']['definition']  
+              slot_props['buffer']['definition']  
             )
         self.buffer_frames = {
             'vertical': buffer_frame.rotate(vertical_adjust, expand=True),
@@ -217,7 +217,7 @@ class Renderer():
             for group_key, group_conf in game_world.get_tilesets(layer).items():
                 log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
 
-                group_tile = repository.get_asset_frame('tiles', group_key)
+                group_tile = repository.get_form_frame('tiles', group_key)
                 for set_conf in group_conf['sets']:
                     start = calculator.scale(
                         (set_conf['start']['x'], set_conf['start']['y']), 
@@ -247,28 +247,28 @@ class Renderer():
         :param repository: _description_
         :type repository: repo.Repo
 
-        .. notes:
-            - Only _Doors_ are considered static platesets. All other types of plates need to be re-rendered.
+        .. note:
+            Only _Doors_ are considered static platesets. All other types of plates need to be re-rendered.
         """
         log.debug('Rendering strut and plate sets', 'Repo._render_static_sets')
-
-        for static_set in ['struts', 'plates']:
+        
+        for forms in ['struts', 'plates']:
             for layer in game_world.layers:
-                if static_set == 'struts':
+                if forms == 'struts':
                     unordered_groups = game_world.get_strutsets(layer)
-                elif static_set == 'plates':
+                elif forms == 'plates':
                     unordered_groups = game_world.get_platesets(layer)
 
                 render_map = self.render_ordered_dict(unordered_groups)
 
                 for group_key, group_conf in render_map.items():
-                    if static_set == 'struts' or \
-                        (static_set == 'plates' and \
+                    if forms == 'struts' or \
+                        (forms == 'plates' and \
                             game_world.plate_property_conf[group_key]['type'] == 'door'):
 
                         log.debug(f'Rendering {group_key} struts', 'Repo._render_static_sets')
 
-                        group_frame = repository.get_asset_frame(static_set, group_key)
+                        group_frame = repository.get_form_frame(forms, group_key)
                         for set_conf in group_conf['sets']:
                             start = calculator.scale(
                                 (set_conf['start']['x'], set_conf['start']['y']), 
@@ -290,7 +290,7 @@ class Renderer():
         # This definitely isn't rendering in the intended order...
 
         for group_key, group_conf in render_map.items():
-            group_frame = repository.get_asset_frame('plates', group_key)
+            group_frame = repository.get_form_frame('plates', group_key)
             for i, set_conf in enumerate(group_conf['sets']):
                 start = calculator.scale(
                     (set_conf['start']['x'], set_conf['start']['y']), 

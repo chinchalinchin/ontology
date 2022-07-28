@@ -1,6 +1,3 @@
-
-from logging.config import valid_ident
-from re import S
 import onta.settings as settings
 import onta.load.state as state
 import onta.load.conf as conf
@@ -14,13 +11,13 @@ log = logger.Logger('onta.world', settings.LOG_LEVEL)
 class World():
 
     # CONFIGURATION FIELDS
-    composite_conf = None
+    composite_conf = {}
     """
     """
-    plate_property_conf = None
+    plate_property_conf = {}
     """
     """
-    strut_property_conf = None
+    strut_property_conf = {}
     """
     Holds strut property configuration information
     ```python
@@ -32,7 +29,7 @@ class World():
         }
     ```
     """
-    sprite_state_conf = None
+    sprite_state_conf = {}
     """
     Holds sprite state configuration information.
 
@@ -46,7 +43,7 @@ class World():
     }
     ```
     """
-    sprite_property_conf = None
+    sprite_property_conf = {}
     """
     ```python
     self.sprite_property_conf = {
@@ -62,9 +59,8 @@ class World():
     }
     ```
     """
-
-    # OBJECT SET FIELDS
-    tilesets = None
+    # FORM SET FIELDS
+    tilesets = {}
     """
     ```python
     self.tilesets = {
@@ -85,7 +81,7 @@ class World():
     }
     ```
     """
-    strutsets = None
+    strutsets = {}
     """
     ```python
     self.strutsets = {
@@ -108,7 +104,7 @@ class World():
     }
     ```
     """
-    platesets = None
+    platesets = {}
     """
     ```python
     self.platesets = {
@@ -131,10 +127,11 @@ class World():
     }
     ```
     """
-    compositions = None
+    compositions = {}
     """
     """
-    hero = None
+    # SPRITE SET FIELDS
+    hero = {}
     """
     ```python
     self.hero = {
@@ -147,7 +144,7 @@ class World():
     }
     ```
     """
-    npcs = None
+    npcs = {}
     """
     ```python
     self.npcs = {
@@ -162,7 +159,7 @@ class World():
     }
     ```
     """
-    villains = None
+    villains = {}
     """
     ```python
     self.villains = {
@@ -177,7 +174,7 @@ class World():
     }
     ```
     """
-
+    # OTHER FIELDS
     dimensions = None
     """
     ```
@@ -188,8 +185,7 @@ class World():
     """
     """
     layer = None
-    layers = None
-    doors = None
+    layers = []
     switch_map = None
     iterations = 0
 
@@ -197,14 +193,14 @@ class World():
         """
         Creates an instance of `onta.world.World` and calls internal methods to initialize in-game element configuration, the game's static state and the game's dynamic state.
 
-        .. notes:
-            - Configuration and state are passed in to populate internal dictionaries. No references are kept to the `config` or `state_ao` objects.
+        .. note:
+            Configuration and state are passed in to populate internal dictionaries. No references are kept to the `config` or `state_ao` objects.
         """
         config = conf.Conf(ontology_path)
         state_ao = state.State(ontology_path)
         self._init_conf(config)
         self._init_static_state(state_ao)
-        self._generate_composite_static_state()
+        self._decompose_composite_static_state()
         self._generate_stationary_hitboxes()
         self._generate_switch_map()
         self._init_dynamic_state(state_ao)
@@ -214,11 +210,14 @@ class World():
         """ 
         Initialize configuration properties for in-game elements in the memory.
         """
-        unpack = config.load_sprite_configuration()
-        self.sprite_state_conf, self.sprite_property_conf, _ = unpack
+        log.debug('Initializing world configuration...', 'World._init_conf')
+        sprite_conf = config.load_sprite_configuration()
+        self.sprite_state_conf, self.sprite_property_conf, _ = sprite_conf
         self.plate_property_conf, _ = config.load_plate_configuration()
         self.strut_property_conf, _ = config.load_strut_configuration()
         self.composite_conf = config.load_composite_configuration()
+        tile_conf = config.load_tile_configuration()
+        self.tile_dimensions = (tile_conf['tile']['w'], tile_conf['world']['tile']['h'])
 
 
     def _init_static_state(self, state_ao: state.State) -> None:
@@ -228,16 +227,12 @@ class World():
         log.debug(f'Initializing simple static world state...', 'World._init_static_state')
         static_conf = state_ao.get_state('static')
 
-        self.tile_dimensions = (static_conf['world']['tiles']['w'], static_conf['world']['tiles']['h'])
         self.dimensions = calculator.scale(
             (static_conf['world']['size']['w'], static_conf['world']['size']['h']),
             self.tile_dimensions,
             static_conf['world']['size']['units']
         )
 
-        self.layers = []
-        self.tilesets, self.strutsets = {}, {}
-        self.platesets, self.compositions = {}, {}
         for layer_key, layer_conf in static_conf['layers'].items():
             self.layers.append(layer_key)
             self.tilesets[layer_key] = layer_conf.get('tiles')
@@ -246,16 +241,14 @@ class World():
             self.compositions[layer_key] = layer_conf.get('compositions')
 
 
-    def _generate_composite_static_state(self) -> None:
+    def _decompose_composite_static_state(self) -> None:
         """_summary_
 
-        .. notes:
-            - Method must be called before stationary hitboxes are initialized, since this method decompose compositions into their consistuent sets and appends them to the existing static state.
+        .. note:
+            Method must be called before stationary hitboxes are initialized, since this method decompose compositions into their consistuent sets and appends them to the existing static state.
 
         """
-        log.debug(f'Decomposing composite static world state into constituents...', 'World._generate_composite_static_state')
-
-        import pprint
+        log.debug(f'Decomposing composite static world state into constituents...', 'World._decompose_composite_static_state')
 
         for layer in self.layers:
             layer_compositions = self.compositions[layer]
@@ -265,11 +258,11 @@ class World():
                     #           via compose state information (static.yaml)
                     compose_sets = composition['sets']
 
-                    # NOTE: compose_conf = { 'struts': { ..}, 'plates': { ...} }
+                    # NOTE: compose_conf = { 'struts': { ... }, 'plates': { ... } }
                     #           via compose configuration information (composite.yaml)
                     compose_conf = self.composite_conf[composite_key]
 
-                    log.verbose(f'Decomposing {composite_key} composition...', 'World._generate_composite_static_state')
+                    log.verbose(f'Decomposing {composite_key} composition...', 'World._decompose_composite_static_state')
 
                     for composeset in compose_sets:
                         # NOTE: compose_set = { 'start': { ... } }
@@ -282,7 +275,7 @@ class World():
 
                         for elementset_key, elementset_conf in compose_conf.items():
 
-                            log.verbose(f'Initializing decomposed {elementset_key} elementset...', 'World._generate_composite_static_state')
+                            log.verbose(f'Initializing decomposed {elementset_key} elementset...', 'World._decompose_composite_static_state')
 
                             # NOTE: elementset = { 'element_key': { 'order': int, 'sets': [ ... ] } }
                             #           via compose element configuration (composite.yaml)
@@ -296,25 +289,26 @@ class World():
 
                                 # TODO: adjust strutset rendering order based on element order
 
-                                buffer_sets = self.get_formsets(elementset_key).copy()
+                                buffer_sets = self.get_formset(elementset_key).copy()
 
                                 for elementset in element_sets:
 
-                                    log.verbose('Generating strut render order', 'World._generate_composite_static_state')
+                                    log.verbose('Generating strut render order', 'World._decompose_composite_static_state')
                                     
                                     # NOTE strutset = { 'start': { ... }, 'cover': bool }
                                     #       via compose element configuration (composite.yaml)
 
-                                    if buffer_sets.get(layer) is None:
+                                    if not buffer_sets.get(layer):
                                         buffer_sets[layer] = {}
                                     
-                                    if buffer_sets[layer].get(element_key) is None:
+                                    if not buffer_sets[layer]:
                                         buffer_sets[layer][element_key] = {}
 
-                                    if buffer_sets[layer][element_key].get('sets') is None:
+                                    if not buffer_sets[layer][element_key].get('sets'):
                                         buffer_sets[layer][element_key]['sets'] = []
                                     
-                                    if buffer_sets[layer][element_key].get('order') is None:
+                                    if not buffer_sets[layer][element_key].get('order'):
+                                        # the problem here is the order is relative to the group et
                                         buffer_sets[layer][element_key]['order'] = len(buffer_sets[layer]) - 1
 
                             
@@ -355,9 +349,8 @@ class World():
         """
         Construct static hitboxes from object dimensions and properties.
 
-        .. notes:
-            - All of the strut hitboxes are condensed into a list in `self.strutsets['hitboxes']`, so that strut hitboxes only need calculated once.
-            - Strut
+        .. note::
+            All of the strut hitboxes are condensed into a list in `self.strutsets['hitboxes']`, so that strut hitboxes only need calculated once.
         """
         log.debug(f'Calculating stationary hitbox locations...', 'World._init_stationary_hitboxes')
         for layer in self.layers:
@@ -405,8 +398,7 @@ class World():
     def _generate_switch_map(self) -> None:
         """_summary_
 
-        .. notes:
-            - switch_map example,
+        .. note::
             ```python
             self.switch_map = {
                 'layer_1': {
@@ -432,17 +424,6 @@ class World():
                     index: False for index in switch_indices
                 } for switch in switches
             }
-            # switch_map ={
-            #   'layer_1': {
-            #       'switch_key': {
-            #           'switch_set_index': bool,
-            #           'switch_set_index': bool,
-            #           # ...
-            #       }
-            #   }
-            # }
-                
-        pass
 
 
     def _init_dynamic_state(self, state_ao: state.State) -> None:
@@ -539,8 +520,8 @@ class World():
         """
         Maps npc state to in-game action, applies action and then iterates npc state frame.
 
-        .. notes:
-            - This method is essentially an interface between the sprite state and the game world. It determines what happens to a sprite once it is in a state. It has nothing to say about how to came to be in that state, and only what happens when it is there.
+        .. note::
+            This method is essentially an interface between the sprite state and the game world. It determines what happens to a sprite once it is in a state. It has nothing to say about how to came to be in that state, and only what happens when it is there.
         """
         for spriteset_key in ['npcs', 'villains']:
             if spriteset_key == 'npcs':
@@ -639,11 +620,13 @@ class World():
     def _apply_physics(self) -> None:
         """
         
-        .. notes:
-            - Keep in mind, the sprite collision doesn't care what sprite or strut with which the sprite collided, only what direction the sprite was travelling when the collision happened. The door hit detection, however, _is_ aware of what door with which the player is colliding, in order to locate the world layer to which the door is connected.
-            - Technically, there is overlap here. Since sprite is checked against every other sprite for collisions, there are Pn = n!/(n-2)! permutations, but Cn = n!/(2!(n-2)!) distinct combinations. Therefore, Pn - Cn checks are unneccesary. To circumvent this problem (sort of), a collision map is kept internally within this method to keep track of which sprite-to-sprite collisions have already taken place. However, whether or not this is worth the effort, since the map has to be traversed when it is initialized, is an open question? 
-            - There is an inherent ordering here affecting how collisions work. Because the NPC set is checked first, the act of an NPC-villain collision will always proceed relative to the NPC, meaning the NPC will recoil and reorient their direction based on the collision, while the villain iteration will miss the collision since the NPC has already been recoiled when the villain's collision detection is attempt.
-        .. todos:
+        .. note::
+            Keep in mind, the sprite collision doesn't care what sprite or strut with which the sprite collided, only what direction the sprite was travelling when the collision happened. The door hit detection, however, _is_ aware of what door with which the player is colliding, in order to locate the world layer to which the door is connected.
+        .. note::
+            Technically, there is overlap here. Since sprite is checked against every other sprite for collisions, there are Pn = n!/(n-2)! permutations, but Cn = n!/(2!(n-2)!) distinct combinations. Therefore, Pn - Cn checks are unneccesary. To circumvent this problem (sort of), a collision map is kept internally within this method to keep track of which sprite-to-sprite collisions have already taken place. However, whether or not this is worth the effort, since the map has to be traversed when it is initialized, is an open question? 
+        .. note:: 
+            There is an inherent ordering here affecting how collisions work. Because the NPC set is checked first, the act of an NPC-villain collision will always proceed relative to the NPC, meaning the NPC will recoil and reorient their direction based on the collision, while the villain iteration will miss the collision since the NPC has already been recoiled when the villain's collision detection is attempt.
+        .. todo::
             - see third note. It may be possible to use the collision map to also apply the collision to the villain next iteration.
         """
 
@@ -746,11 +729,11 @@ class World():
     def _apply_interaction(self, user_input: dict):
         """_summary_
 
-        :param user_input: _description_
+        :param user_input: Dictionary containing the user input keys mapped to their corresponding _directions_ and _actions_, i.e. the result of calling `onta.control.Controller().poll()`
         :type user_input: dict
 
-        .. notes:
-            - Collisions with containers are based on their calculated hitboxes, whereas interactions with containers are based on their actual dimensions.
+        .. note::
+            Collisions with containers are based on their calculated hitboxes, whereas interactions with containers are based on their actual dimensions.
         """
         if user_input['interact']:
             hero_hitbox = self.get_sprite_hitbox('hero', 'sprite', 'hero')
@@ -803,8 +786,8 @@ class World():
 
     def get_sprite_hitbox(self, spriteset_key, hitbox_key, sprite_key):
         """
-        .. notes:
-            - A sprite's hitbox dimensions are fixed, but the actual hitbox coordinates depend on the position of the sprite. This method must be called each iteration of the world loop, so the newest coordinates of the hitbox are retrieved.
+        .. note::
+            A sprite's hitbox dimensions are fixed, but the actual hitbox coordinates depend on the position of the sprite. This method must be called each iteration of the world loop, so the newest coordinates of the hitbox are retrieved.
         """
         if spriteset_key == 'hero':
             sprite = self.hero
@@ -916,7 +899,8 @@ class World():
             return self.villains
         return None
 
-    def get_formsets(self, formset_key):
+
+    def get_formset(self, formset_key):
         if formset_key in ['tile', 'tiles']:
             return self.tilesets
         elif formset_key in ['strut', 'struts']:

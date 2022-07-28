@@ -13,7 +13,7 @@ Self
 
 ## Controls
 
-- **Location**: _data/conf/controls.yaml_
+- **Location**: _data/conf/self/controls.yaml_
 
 This file defines the mapping between user input and player state. **Note**: The state name used in the mapping must be defined in the _sprites.yaml_ sheet for the `hero` sprite (the player character). The example below shows the general syntax, along with comments explaining the purpose of each variable,
 
@@ -22,7 +22,7 @@ This file defines the mapping between user input and player state. **Note**: The
 
 ## Interface
 
-- **Location**: _data/conf/interface.yaml_
+- **Location**: _data/conf/self/interface.yaml_
 
 This file defines the mapping between _slots_, _mirrors_ and _avatars_ and their corresponding asset files. It contains information about screen breakpoints, HUD layout and styles.
 
@@ -36,14 +36,14 @@ alignment.horizontal: left | right
 
 ## Equipment
 
-- **Location**: _data/conf/equipment.yaml_
+- **Location**: _data/conf/self/equipment.yaml_
 
 Forms
 -----
 
 ## Tiles
 
-- **Location**: _data/conf/tiles.yaml_
+- **Location**: _data/conf/forms/tiles.yaml_
 
 ```yaml
 group:
@@ -75,7 +75,7 @@ group:
 
 ## Struts
 
-- **Location**: _data/conf/struts.yaml_
+- **Location**: _data/conf/forms/struts.yaml_
 
 This file defines the mapping between struts and their corresponding strutsheet. In particular, it tells the game engine how to crop a group strut from a strutset, by specifying the (_x_, _y_) coordinates of the upper left corner and its dimension (_w_, _h_). In addition, it configures the _Strut_'s hitbox relative to its upper left corner.
 
@@ -114,7 +114,7 @@ group:
 
 ## Plates 
 
-- **Location**: _data/conf/plates.yaml_
+- **Location**: _data/conf/forms/plates.yaml_
 
 This file defines the m
 
@@ -159,7 +159,7 @@ Entities
 
 ## Sprites
 
-- **Location**: _data/conf/sprites.yaml_
+- **Location**: _data/conf/entites/sprites.yaml_
 
 This file defines the mapping between player state and spritesheet frames through a group named `hero`. Besides the required `hero` configuration, this file will also configure the state mappings between any defined sprites and their spritesheet frames.  **Note**: the state names defined in this file must match the state maps in the _controls.yaml_.
 
@@ -217,3 +217,13 @@ As mentioned in previous section, each in-game element builds up complexity on t
 **Notes**: Sprites are the most complex object in the game.
 
 ## Effects
+
+- **Location**: _data/conf/entites/effects.yaml_
+
+
+Dialectics 
+----------
+
+## Plots
+
+## Scripts

@@ -10,8 +10,9 @@ import onta.util.gui as gui
 
 log = logger.Logger('onta.repo', settings.LOG_LEVEL)
 
-STATIC_ASSETS_TYPES = ['tiles', 'struts', 'plates']
-SWITCH_PLATES_TYPES = ['container', 'pressure', 'gate']
+STATIC_ASSETS_TYPES = [ 'tiles', 'struts', 'plates' ]
+SWITCH_PLATES_TYPES = [ 'container', 'pressure', 'gate' ]
+UNITLESS_UI_TYPES = [ 'slots', 'avatars' ]
 
 class Repo():
 
@@ -29,162 +30,170 @@ class Repo():
 
     def __init__(self, ontology_path: str) -> None:
         """
-        .. note:
-            - No reference is kept to `ontology_path`; it is passed to initialize methods and released.
+        .. note::
+            No reference is kept to `ontology_path`; it is passed to initialize methods and released.
         """
         config = conf.Conf(ontology_path)
-        for asset_type in STATIC_ASSETS_TYPES:
-            self._init_static_assets(asset_type, config, ontology_path)
+        self._init_static_assets(config, ontology_path)
         self._init_sprite_assets(config, ontology_path)
-        self._init_interface_assets(config, ontology_path)
+        self._init_unitless_interface_assets(config, ontology_path)
 
 
-    def _init_static_assets(self, asset_type: str, config: conf.Conf, ontology_path: str) -> None:
-        log.debug(f'Initializing {asset_type} assets...', 'Repo._init_static_assets')
+    def _init_static_assets(self, config: conf.Conf, ontology_path: str) -> None:
 
-        if asset_type == 'tiles':
-            assets_conf = config.load_tile_configuration()
-        elif asset_type == 'struts':
-            asset_props, assets_conf = config.load_strut_configuration()
-        elif asset_type == 'plates':
-            asset_props, assets_conf = config.load_plate_configuration()
+        for asset_type in STATIC_ASSETS_TYPES:
+            log.debug(f'Initializing {asset_type} assets...', 'Repo._init_static_assets')
 
-        for asset_key, asset_conf in assets_conf.items():
-            w, h = asset_conf['size']['w'], asset_conf['size']['h']
+            if asset_type == 'tiles':
+                assets_conf = config.load_tile_configuration()
+                w, h = asset_conf['tile']['w'], asset_conf['tile']['h']
+            elif asset_type == 'struts':
+                asset_props, assets_conf = config.load_strut_configuration()
+            elif asset_type == 'plates':
+                asset_props, assets_conf = config.load_plate_configuration()
 
-            if asset_conf.get('path') is not None:
-                if asset_type == 'plates' and asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
-                    on_x, on_y = asset_conf['position']['on_position']['x'], asset_conf['position']['on_position']['y']
-                    off_x, off_y = asset_conf['position']['off_position']['x'], asset_conf['position']['off_position']['y']
-                else:
-                    x, y = asset_conf['position']['x'], asset_conf['position']['y']
+            for asset_key, asset_conf in assets_conf.items():
+                # need tile dimensions here...but tile dimensions don't exist until world
+                # pulls static state...
+                if asset_type != 'tiles':
+                    w, h = asset_conf['size']['w'], asset_conf['size']['h']
 
-                if asset_type == 'tiles':
-                    image_path = os.path.join(
-                        ontology_path, 
-                        *settings.TILE_PATH, 
-                        asset_conf['path']
-                    )
-                elif asset_type == 'struts':
-                    image_path = os.path.join(
-                        ontology_path, 
-                        *settings.STRUT_PATH, 
-                        asset_conf['path']
-                    )
-                elif asset_type == 'plates':                         
-                    image_path = os.path.join(
-                        ontology_path, 
-                        *settings.PLATE_PATH, 
-                        asset_conf['path']
-                    )
-
-                buffer = Image.open(image_path).convert(settings.IMG_MODE)
-
-                log.debug( f"{asset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                    'Repo._init_static_assets')
-
-                if asset_type == 'tiles':
-                    self.tiles[asset_key] = buffer.crop((x,y,w+x,h+y))
-                elif asset_type == 'struts':
-                    self.struts[asset_key] = buffer.crop((x,y,w+x,h+y))
-                elif asset_type == 'plates':
-                    if asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
-                        self.plates[asset_key] = {}
-                        self.plates[asset_key]['on'] = buffer.crop((on_x,on_y,w+on_x,h+on_y))
-                        self.plates[asset_key]['off'] = buffer.crop((off_x,off_y,w+off_x,h+off_y))
+                if asset_conf.get('path'):
+                    if asset_type == 'plates' and asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
+                        on_x, on_y = asset_conf['position']['on_position']['x'], asset_conf['position']['on_position']['y']
+                        off_x, off_y = asset_conf['position']['off_position']['x'], asset_conf['position']['off_position']['y']
                     else:
-                        self.plates[asset_key] = buffer.crop((x,y,w+x,h+y))
-                    
-            elif asset_conf.get('channels') is not None:
-                # TODO: on/off switch plate channels, currently using channels on switch plates will break this method
+                        x, y = asset_conf['position']['x'], asset_conf['position']['y']
 
-                channels = (
-                    asset_conf['channels']['r'], 
-                    asset_conf['channels']['g'],
-                    asset_conf['channels']['b'],
-                    asset_conf['channels']['a']
-                )
-                buffer = Image.new(settings.IMG_MODE, (w,h), channels)
-                if asset_type == 'tiles':
-                    self.tiles[asset_key] = buffer
-                elif asset_type == 'struts':
-                    self.struts[asset_key] = buffer
-                elif asset_type == 'plates':
-                    self.plates[asset_key] = buffer
+                    if asset_type == 'tiles':
+                        image_path = os.path.join(
+                            ontology_path, 
+                            *settings.TILE_PATH, 
+                            asset_conf['path']
+                        )
+                    elif asset_type == 'struts':
+                        image_path = os.path.join(
+                            ontology_path, 
+                            *settings.STRUT_PATH, 
+                            asset_conf['path']
+                        )
+                    elif asset_type == 'plates':                         
+                        image_path = os.path.join(
+                            ontology_path, 
+                            *settings.PLATE_PATH, 
+                            asset_conf['path']
+                        )
+
+                    buffer = Image.open(image_path).convert(settings.IMG_MODE)
+
+                    # TODO: check if channels exist and then modify as appropriate
+
+                    log.debug( f"{asset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                        'Repo._init_static_assets')
+
+                    if asset_type == 'tiles':
+                        self.tiles[asset_key] = buffer.crop((x,y,w+x,h+y))
+                    elif asset_type == 'struts':
+                        self.struts[asset_key] = buffer.crop((x,y,w+x,h+y))
+                    elif asset_type == 'plates':
+                        if asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
+                            self.plates[asset_key] = {
+                                'on': buffer.crop((on_x,on_y,w+on_x,h+on_y)),
+                                'off': buffer.crop((off_x,off_y,w+off_x,h+off_y))
+                            }
+                        else:
+                            self.plates[asset_key] = buffer.crop((x,y,w+x,h+y))
+                        
+                elif asset_conf.get('channels'):
+                    channels = (
+                        asset_conf['channels']['r'], 
+                        asset_conf['channels']['g'],
+                        asset_conf['channels']['b'],
+                        asset_conf['channels']['a']
+                    )
+                    buffer = Image.new(settings.IMG_MODE, (w,h), channels)
+                    if asset_type == 'tiles':
+                        self.tiles[asset_key] = buffer
+                    elif asset_type == 'struts':
+                        self.struts[asset_key] = buffer
+                    elif asset_type == 'plates':
+                        if asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
+                            self.plates[asset_key] = {
+                                'on': buffer,
+                                'off': buffer
+                            }
+                        else:
+                            self.plates[asset_key] = buffer
  
 
-    def _init_interface_assets(self, config: conf.Conf, ontology_path: str) -> None:
+    def _init_unitless_interface_assets(self, config: conf.Conf, ontology_path: str) -> None:
         interface_conf = config.load_interface_configuration()
         for size in interface_conf['sizes']:
-            self.slots[size] = {}
+            self.slots[size], self.avatars[size] = {}, {}
 
-            for interset_key, interset in interface_conf['hud'][size].items():
-                log.debug(f'Initializing {interset_key} assets...', 'Repo._init_interface_assets')
+            for interfaceset_key in UNITLESS_UI_TYPES:
+                interfaceset = interface_conf['hud'][size][interfaceset_key]
+                log.debug(f'Initializing {interfaceset_key} assets...', 'Repo._init_interface_assets')
+                
+                for interface_key, interface in interfaceset.items():
+                    if interface:
+                        w, h = interface['size']['w'], interface['size']['h']   
 
-                for component_key, inter_component in interset.items():
-                    if inter_component is not None and inter_component.get('image') is not None:
-                        w, h = inter_component['image']['size']['w'], inter_component['image']['size']['h']   
-
-                        if inter_component['image'].get('path') is not None:
-                            x, y = inter_component['image']['position']['x'], inter_component['image']['position']['y']
+                        if interface.get('path'):
+                            x, y = interface['position']['x'], interface['position']['y']
                             
-                            if interset_key == 'slots':
-                                image_path = os.path.join(
+                            if interfaceset_key == 'slots':
+                                sub_path = settings.SLOT_PATH
+                            elif interfaceset_key == 'avatars':
+                                sub_path = settings.AVATAR_PATH
+         
+                            image_path = os.path.join(
                                     ontology_path,
-                                    *settings.SLOT_PATH,
-                                    inter_component['image']['path']
+                                    *sub_path,
+                                    interface['path']
                                 )
-
-                            elif interset_key == 'mirrors':
-                                image_path = os.path.join(
-                                    ontology_path,
-                                    *settings.MIRROR_PATH,
-                                    inter_component['image']['path']
-
-                                )
-
-                            elif interset_key == 'avatars':
-                                image_path = os.path.join(
-                                    ontology_path,
-                                    *settings.AVATAR_PATH,
-                                    inter_component['image']['path']
-                                )
-
                             buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
-                        elif inter_component['image'].get('channels') is not None:
+                            # TODO: check if channels exist and then apply as appropriate
+
+                        elif interface.get('channels'):
                             channels = (
-                                inter_component['image']['channels']['r'], 
-                                inter_component['image']['channels']['g'],
-                                inter_component['image']['channels']['b'],
-                                inter_component['image']['channels']['a']
+                                interface['channels']['r'], 
+                                interface['channels']['g'],
+                                interface['channels']['b'],
+                                interface['channels']['a']
                             )
                             buffer = Image.new(settings.IMG_MODE, (w,h), channels)
                         
-                        if buffer is not None:
-                            log.debug( f"{interset_key} {component_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                        if buffer:
+                            log.debug( f"{interfaceset_key} {interface_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
                                 'Repo._init_interface_assets')
 
-                            if interset_key == 'slots':
-                                self.slots[size][component_key] = buffer.crop((x,y,w+x,h+y))
-                            elif interset_key == 'mirrors':
-                                self.mirrors[size][component_key] = buffer.crop((x,y,w+x,h+y))
-                            elif interset_key == 'avators':
-                                self.avatars[size][component_key] = buffer.crop((x,y,w+x,h+y))
+                            if interfaceset_key == 'slots':
+                                self.slots[size][interface_key] = buffer.crop((x,y,w+x,h+y))
+                            elif interfaceset_key == 'avators':
+                                self.avatars[size][interface_key] = buffer.crop((x,y,w+x,h+y))
 
 
     def _init_sprite_assets(self, config: conf.Conf, ontology_path: str) -> None:
         log.debug('Initializing sprite assets...', 'Repo._init_sprite_assets')
 
-        states_conf, props_conf, sheets_conf = config.load_sprite_configuration()
+        states_conf, _, sheets_conf = config.load_sprite_configuration()
 
         for sprite_key, sheet_conf in sheets_conf.items():
-            sprite_dim = props_conf[sprite_key]['size']['w'], props_conf[sprite_key]['size']['h']
+            sprite_dim = (
+                sheets_conf[sprite_key]['size']['w'], 
+                sheets_conf[sprite_key]['size']['h']
+            )
             
             sheets, self.sprites[sprite_key] = [], {}
 
             for sheet in sheet_conf:
-                sheet_path = os.path.join(ontology_path, *settings.SPRITE_PATH, sheet)
+                sheet_path = os.path.join(
+                    ontology_path, 
+                    *settings.SPRITE_PATH, 
+                    sheet
+                )
                 sheet_img = Image.open(sheet_path).convert(settings.IMG_MODE)
                 sheets.append(sheet_img)
                 
@@ -215,13 +224,13 @@ class Repo():
             log.debug(f'{sprite_key} configuration: states - {len(self.sprites[sprite_key])}, frames - {frames}', 'Repo._init_sprites')
 
 
-    def get_asset_frame(self, asset_key: str, element_key: str) -> Union[Image.Image, None]:
-        if asset_key == 'tiles':
-            return self.tiles.get(element_key)
-        if asset_key == 'struts':
-            return self.struts.get(element_key)
-        if asset_key == 'plates':
-            return self.plates.get(element_key)
+    def get_form_frame(self, form_key: str, group_key: str) -> Union[Image.Image, None]:
+        if form_key == 'tiles':
+            return self.tiles.get(group_key)
+        if form_key == 'struts':
+            return self.struts.get(group_key)
+        if form_key == 'plates':
+            return self.plates.get(group_key)
         return None
 
 
