@@ -37,6 +37,7 @@ class Repo():
         self._init_static_assets(config, ontology_path)
         self._init_sprite_assets(config, ontology_path)
         self._init_unitless_interface_assets(config, ontology_path)
+        self._init_metered_interface_assets(config, ontology_path)
 
 
     def _init_static_assets(self, config: conf.Conf, ontology_path: str) -> None:
@@ -174,6 +175,19 @@ class Repo():
                             elif interfaceset_key == 'avators':
                                 self.avatars[size][interface_key] = buffer.crop((x,y,w+x,h+y))
 
+
+    def _init_metered_interface_assets(self, config: conf.Conf, ontology_path: str) -> None:
+        interface_conf = config.load_interface_configuration()
+        for size in interface_conf['sizes']:
+            self.mirrors[size] = {}
+            mirror_set = interface_conf['hud'][size]['mirrors']
+
+            for mirror_key, mirror in mirror_set.items():
+                
+                for mirror_type in ['unit', 'empty']:
+
+                    mirror[mirror_type]
+                    self.mirrors[size][mirror_key][mirror_type]
 
     def _init_sprite_assets(self, config: conf.Conf, ontology_path: str) -> None:
         log.debug('Initializing sprite assets...', 'Repo._init_sprite_assets')
