@@ -20,8 +20,10 @@ class HUD():
     properties = {}
     breakpoints = {}
     slots = {}
+    mirrors = {}
     sizes = []
     slot_rendering_points = []
+    mirror_rendering_points = []
     activated = True
     media_size = None
 
@@ -228,28 +230,28 @@ class HUD():
                 elif i == 1:
                     self.slot_rendering_points.append(
                         (
-                            self.rendering_points[i-1][0] + cap_dim[0], 
+                            self.slot_rendering_points[i-1][0] + cap_dim[0], 
                             y_start
                         )
                     )
                 elif i == num - 1:
                     self.slot_rendering_points.append(
                         (
-                            self.rendering_points[i-1][0] + slot_dim[0], 
+                            self.slot_rendering_points[i-1][0] + slot_dim[0], 
                             y_start + cap_correction
                         )
                     )
                 elif i % 2 == 0:
                     self.slot_rendering_points.append(
                         (
-                            self.rendering_points[i-1][0] + slot_dim[0], 
+                            self.slot_rendering_points[i-1][0] + slot_dim[0], 
                             y_start + buffer_correction
                         )
                     )
                 else:
-                    self.rendering_points.append(
+                    self.slot_rendering_points.append(
                         (
-                            self.rendering_points[i-1][0] + buffer_dim[0], 
+                            self.slot_rendering_points[i-1][0] + buffer_dim[0], 
                             y_start
                         )
                     )
@@ -267,28 +269,28 @@ class HUD():
                     self.slot_rendering_points.append(
                         (
                             x_start,
-                            self.rendering_points[i-1][1] + cap_dim[1]
+                            self.slot_rendering_points[i-1][1] + cap_dim[1]
                         )
                     )
                 elif i == num - 1:
                     self.slot_rendering_points.append(
                         (
                             x_start + cap_correction,
-                            self.rendering_points[i-1][1] + slot_dim[1]
+                            self.slot_rendering_points[i-1][1] + slot_dim[1]
                         )
                     )
                 elif i % 2 == 0:
                     self.slot_rendering_points.append(
                         (
                             x_start + buffer_correction,
-                            self.rendering_points[i-1][1] + slot_dim[1]
+                            self.slot_rendering_points[i-1][1] + slot_dim[1]
                         )
                     )
                 else:
                     self.slot_rendering_points.append(
                         (
                             x_start,
-                            self.rendering_points[i-1][1] + buffer_dim[1]
+                            self.slot_rendering_points[i-1][1] + buffer_dim[1]
                         )
                     )
 
@@ -320,7 +322,7 @@ class HUD():
 
 
     def get_rendering_points(self):
-        return self.rendering_points
+        return self.slot_rendering_points
         
 
     def get_slot_dimensions(self):
