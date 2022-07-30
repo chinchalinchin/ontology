@@ -43,11 +43,11 @@ properties:
     total: 4
   mirrors:
     life:
-      columns: 5
-      rows: null 
+      columns: 10
+      rows: 1
     magic:
-      columns: 5
-      rows: null
+      columns: 10
+      rows: 1
   packs: null
   avatars: null
 

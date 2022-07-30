@@ -8,21 +8,22 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.hud', settings.LOG_LEVEL)
 
-SLOTS_TOTAL = 4
 SLOT_STATES = [ 'cast', 'shoot', 'thrust', 'slash' ]
+MIRROR_PADDING = 0.005
 
 class HUD():
 
     # HUD will essentially be its own world. let view decide how it is rendered.
 
-    hud_conf = None
+    hud_conf = {}
+    styles = {}
+    properties = {}
+    breakpoints = {}
+    slots = {}
+    sizes = []
+    slot_rendering_points = []
     activated = True
     media_size = None
-    styles = None
-    sizes = None
-    breakpoints = None
-    slots = None
-    rendering_points = None
 
     @staticmethod
     def format_breakpoints(break_points: list) -> list:
@@ -66,14 +67,11 @@ class HUD():
 
 
     def _init_conf(self, config: conf.Conf):
-        self.styles = config.get('styles')
-        self.hud_conf = {
-            key: val
-            for key, val in config['hud'].items()
-            if key != 'styles'
-        }
+        self.styles = config['styles']
+        self.hud_conf = config['hud']
         self.sizes = config['sizes']
         self.breakpoints = config['breakpoints']
+        self.properties = config['properties']
 
 
     def _find_media_size(self, player_device: device.Device):
@@ -87,20 +85,71 @@ class HUD():
             self.media_size = self.sizes[len(self.sizes)-1]
 
 
-    def _init_slot_positions(self, player_device:device.Device):
-         # note the difference between the 'slots' key in the hud_conf dict 
-        # and the self.slots property. the first represents image configuration properties
-        # the second represents player state information
+    def _init_mirror_positions(self, player_device: device.Device):
+        """_summary_
 
-        # if stacking horizontal to the right, 
-        #   if cap definition is left or right:
-        #       cap_width = width
-        #   if cap definition is up or down:
-        #       cap_width = height
-        slots_total = SLOTS_TOTAL
+        :param player_device: _description_
+        :type player_device: device.Device
+
+        .. note::
+            Remember, just because the position is initalized doesn't mean it will be used. The player could have less life than the number of display positions. However, still need to calculate everything, just in case.
+        """
+        log.debug('Initializing mirror positions on device...', 
+            'HUD._init_mirror_positions')
+        mirror_styles = self.styles[self.media_size]['mirrors']
+
+        life_cols = self.properties['mirrors']['life']['columns']
+        life_rows = self.properties['mirrors']['life']['rows']
+        life_dim = (
+            self.hud_conf[self.media_size]['mirrors']['unit']['size']['w'],
+            self.hud_conf[self.media_size]['mirrors']['unit']['size']['h']
+        )
+        x_margins = settings.GUI_MARGINS*player_device.dimensions[0]
+        y_margins = settings.GUI_MARGINS*player_device.dimensions[1]
+
+        if mirror_styles['stack'] == 'horizontal':
+            if mirror_styles['alignment']['horizontal'] == 'right':
+                x_start = player_device.dimensions[0] - \
+                    x_margins - \
+                    life_rows *life_dim[0]*(1 + MIRROR_PADDING) 
+
+            elif mirror_styles['alignment']['horizontal'] == 'left':
+                x_start = x_margins
+            else: # center
+                x_start = (player_device.dimensions[0] - \
+                    life_rows * life_dim[0] *(1 + MIRROR_PADDING))/2
+
+            if mirror_styles['alignment']['vertical'] == 'top':
+                y_start = y_margins
+            else:
+                y_start = player_device.dimensions[1] - \
+                    y_margins - \
+                    life_cols * life_dim[1] *(1 + MIRROR_PADDING)
+
+        elif mirror_styles['stack'] == 'vertical':
+            if mirror_styles['alignment']['horizontal'] == 'right':
+                x_start = player_device.dimensions[0] - \
+                    x_margins - \
+                    life_rows * life_dim[0] * (1 + MIRROR_PADDING)
+            elif mirror_styles['alignment']['horizontal'] == 'left':
+                x_start = x_margins
+
+            if mirror_styles['alignment']['vertical'] == 'top':
+                y_start = y_margins
+            elif mirror_styles['alignment']['vertical'] == 'bottom':
+                y_start = player_device.dimensions[1] - \
+                    y_margins - \
+                    life_cols * life_dim[1] * (1 + MIRROR_PADDING)
+
+
+    def _init_slot_positions(self, player_device: device.Device):
+        log.debug('Initializing slot positions on device...', 
+            'HUD._init_slot_positions')
+
+        slots_total = self.properties['slots']['total']
         slot_styles = self.styles[self.media_size]['slots']
-        x_margins = settings.SLOT_MARGINS*player_device.dimensions[0]
-        y_margins = settings.SLOT_MARGINS*player_device.dimensions[1]
+        x_margins = settings.GUI_MARGINS*player_device.dimensions[0]
+        y_margins = settings.GUI_MARGINS*player_device.dimensions[1]
 
         cap_dim = self.rotate_dimensions(
             self.hud_conf[self.media_size]['slots']['cap'],
@@ -114,9 +163,6 @@ class HUD():
             self.hud_conf[self.media_size]['slots']['empty']['size']['w'],
             self.hud_conf[self.media_size]['slots']['empty']['size']['h']
         )
-
-        log.debug('Initializing interface screen positions...', 
-            'HUD._init_positions')
 
         if slot_styles['stack'] == 'horizontal':
             buffer_correction = (slot_dim[1] - buffer_dim[1])/2
@@ -168,35 +214,33 @@ class HUD():
             else: 
                 y_start = y_margins
 
-
-        self.rendering_points = []
         # number of slots + number of buffer + number of caps
         num = slots_total + (slots_total - 1) + 2
         if slot_styles['stack'] == 'horizontal':
             for i in range(num):
                 if i == 0:
-                    self.rendering_points.append(
+                    self.slot_rendering_points.append(
                         (
                             x_start, 
                             y_start + cap_correction
                         )
                     )
                 elif i == 1:
-                    self.rendering_points.append(
+                    self.slot_rendering_points.append(
                         (
                             self.rendering_points[i-1][0] + cap_dim[0], 
                             y_start
                         )
                     )
                 elif i == num - 1:
-                    self.rendering_points.append(
+                    self.slot_rendering_points.append(
                         (
                             self.rendering_points[i-1][0] + slot_dim[0], 
                             y_start + cap_correction
                         )
                     )
                 elif i % 2 == 0:
-                    self.rendering_points.append(
+                    self.slot_rendering_points.append(
                         (
                             self.rendering_points[i-1][0] + slot_dim[0], 
                             y_start + buffer_correction
@@ -213,47 +257,48 @@ class HUD():
         elif slot_styles['stack'] == 'vertical':
             for i in range(num):
                 if i == 0:
-                    self.rendering_points.append(
+                    self.slot_rendering_points.append(
                         (
                             x_start + cap_correction, 
                             y_start
                         )
                     )
                 elif i == 1:
-                    self.rendering_points.append(
+                    self.slot_rendering_points.append(
                         (
                             x_start,
                             self.rendering_points[i-1][1] + cap_dim[1]
                         )
                     )
                 elif i == num - 1:
-                    self.rendering_points.append(
+                    self.slot_rendering_points.append(
                         (
                             x_start + cap_correction,
                             self.rendering_points[i-1][1] + slot_dim[1]
                         )
                     )
                 elif i % 2 == 0:
-                    self.rendering_points.append(
+                    self.slot_rendering_points.append(
                         (
                             x_start + buffer_correction,
                             self.rendering_points[i-1][1] + slot_dim[1]
                         )
                     )
                 else:
-                    self.rendering_points.append(
+                    self.slot_rendering_points.append(
                         (
                             x_start,
                             self.rendering_points[i-1][1] + buffer_dim[1]
                         )
                     )
 
+
     def _init_slots(self, state_ao):
-        self.slots = state_ao.get('hero').get('slots')
+        self.slots = state_ao['hero']['slots']
 
 
     def _init_mirrors(self, state_ao: state.State):
-        pass
+        state_ao['hero']['health']['current'], state_ao['hero']['health']['max']
 
 
     def get_cap_directions(self):
