@@ -10,6 +10,7 @@ log = logger.Logger('onta.hud', settings.LOG_LEVEL)
 
 SLOT_STATES = [ 'cast', 'shoot', 'thrust', 'slash' ]
 MIRROR_PADDING = 0.005
+MAX_LIFE = 20
 
 class HUD():
 
@@ -64,6 +65,7 @@ class HUD():
         self._init_conf(config)
         self._find_media_size(player_device)
         self._init_slot_positions(player_device)
+        self._init_mirror_positions(player_device)
         self._init_slots(state_ao)
         self._init_mirrors(state_ao)
 
@@ -103,40 +105,43 @@ class HUD():
         life_cols = self.properties['mirrors']['life']['columns']
         life_rows = self.properties['mirrors']['life']['rows']
         life_dim = (
-            self.hud_conf[self.media_size]['mirrors']['unit']['size']['w'],
-            self.hud_conf[self.media_size]['mirrors']['unit']['size']['h']
+            self.hud_conf[self.media_size]['mirrors']['life']['unit']['size']['w'],
+            self.hud_conf[self.media_size]['mirrors']['life']['unit']['size']['h']
         )
         x_margins = settings.GUI_MARGINS*player_device.dimensions[0]
         y_margins = settings.GUI_MARGINS*player_device.dimensions[1]
 
         if mirror_styles['alignment']['horizontal'] == 'right':
-                x_start = player_device.dimensions[0] - \
-                    x_margins - \
-                    life_rows *life_dim[0]*(1 + MIRROR_PADDING) 
+            x_start = player_device.dimensions[0] - \
+                x_margins - \
+                life_cols * life_dim[0]*(1 + MIRROR_PADDING) 
 
         elif mirror_styles['alignment']['horizontal'] == 'left':
             x_start = x_margins
         else: # center
             x_start = (player_device.dimensions[0] - \
-                life_rows * life_dim[0] *(1 + MIRROR_PADDING))/2
+                life_cols * life_dim[0] *(1 + MIRROR_PADDING))/2
         
         if mirror_styles['alignment']['vertical'] == 'top':
             y_start = y_margins
         elif mirror_styles['alignment']['vertical'] == 'bottom':
             y_start = player_device.dimensions[1] - \
                 y_margins - \
-                life_cols * life_dim[1] * (1 + MIRROR_PADDING)
+                life_rows * life_dim[1] * (1 + MIRROR_PADDING)
         else: # center
             y_start = (player_device.dimensions[1] - \
-                life_cols * life_dim[1] * (1 + MIRROR_PADDING))/2
+                life_rows * life_dim[1] * (1 + MIRROR_PADDING))/2
 
 
         if mirror_styles['stack'] == 'vertical':
             (life_rows, life_cols) = (life_cols, life_rows)
             
+        print(x_start, y_start)
+        # TODO: problem with rendering points
         for row in range(life_rows):
             for col in range(life_cols):
-                if col == 0:
+
+                if (row+1)*col == 0:
                     self.life_rendering_points.append(
                         (
                             x_start, 
@@ -144,14 +149,23 @@ class HUD():
                         )
                     )
                 else:
-                    self.life_rendering_points.append(
-                        (
-                            self.life_rendering_points[(row+1)*(col+1)-1][0] + \
-                                life_dim[0]*col,
-                            self.life_rendering_points[(row+1)*(col+1)-1][1] +
-                                life_dim[1]*row
+                    if mirror_styles['stack'] == 'horizontal':
+                        self.life_rendering_points.append(
+                            (
+                                self.life_rendering_points[(row+1)*col - 1][0] + \
+                                    life_dim[0]*(1+MIRROR_PADDING),
+                                self.life_rendering_points[(row+1)*col - 1][1]
+                            )
                         )
-                    )
+                    else:
+                        self.life_rendering_points.append(
+                            (
+                                self.life_rendering_points[(row+1)*col - 1][0] + \
+                                    life_dim[0],
+                                self.life_rendering_points[(row+1)*col - 1][1] + \
+                                    life_dim[1]*(1+MIRROR_PADDING)
+                            )
+                        )
             
 
 
@@ -295,8 +309,11 @@ class HUD():
 
 
     def _init_mirrors(self, state_ao: state.State):
-        state_ao['hero']['health']['current'], state_ao['hero']['health']['max']
+        self.mirrors = {
+            'life': state_ao['hero']['health']
 
+        }
+        
 
     def get_cap_directions(self):
         if self.styles[self.media_size]['slots']['stack'] == 'horizontal':
@@ -316,9 +333,11 @@ class HUD():
         return self.rotate_dimensions(self.hud_conf[self.media_size]['slots']['cap'])
 
 
-    def get_rendering_points(self):
-        return self.slot_rendering_points
-        
+    def get_rendering_points(self, interface_key):
+        if interface_key in ['slot', 'slots']:
+            return self.slot_rendering_points
+        elif interface_key in ['mirror', 'mirrors']:
+            return self.life_rendering_points    
 
     def get_slot_dimensions(self):
         return (
@@ -331,6 +350,13 @@ class HUD():
         return {
             key: 'empty' if val is None else 'equipped' 
             for key, val in self.slots.items()
+        }
+
+    def life_frame_map(self):
+        return {
+            i: 'unit' if i <= self.mirrors['life']['current'] - 1 else 'empty'
+            for i in range(MAX_LIFE)
+            if i <= self.mirrors['life']['max'] - 1
         }
 
 

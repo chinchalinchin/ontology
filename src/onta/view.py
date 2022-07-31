@@ -252,7 +252,7 @@ class Renderer():
 
 
     def _render_slots(self, headsup_display: hud.HUD, repository: repo.Repo):
-        rendering_points = headsup_display.get_rendering_points()
+        rendering_points = headsup_display.get_rendering_points('slot')
 
         cap_dir = headsup_display.get_cap_directions()
         buffer_dir = headsup_display.get_buffer_direction()
@@ -281,6 +281,22 @@ class Renderer():
                 render_frame
             )
 
+    def _render_mirrors(self, headsup_display: hud.HUD, repository: repo.Repo):
+        rendering_points = headsup_display.get_rendering_points('mirror')
+        life_map = headsup_display.life_frame_map()
+
+        for i, fill in life_map.items():
+            life_frame = repository.get_mirror_frame(
+                headsup_display.media_size, 
+                'life', 
+                fill
+            )
+            render_point = rendering_points[i]
+            self.world_frame.paste(
+                life_frame,
+                (int(render_point[0]), int(render_point[1])),
+                life_frame
+            )
 
     def render(self, game_world: world.World, repository: repo.Repo, headsup_display: hud.HUD, crop: bool = True, layer: str = None):
         """_summary_
@@ -320,6 +336,7 @@ class Renderer():
         
         if headsup_display.activated:
             self._render_slots(headsup_display, repository)
+            self._render_mirrors(headsup_display, repository)
 
         return self.world_frame
 

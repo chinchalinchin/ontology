@@ -14,8 +14,8 @@ hero:
   bag: null
   belt: null
   health:
-    current: 1
-    max: 2
+    current: 2
+    max: 4
 
 npcs: 
   esmeralda:

@@ -11,13 +11,13 @@ styles:
     slots:
       stack: horizontal
       alignment: 
-        vertical: bottom
+        vertical: top
         horizontal: left
       opacity: 0.5
     mirrors:
       stack: horizontal
       alignment:
-        vertical: bottom
+        vertical: top
         horizontal: right
       opacity: 0.5
     avatars: null
@@ -32,7 +32,7 @@ styles:
     mirrors:
       stack: horizontal
       alignment:
-        vertical: bottom
+        vertical: top
         horizontal: right
       opacity: 0.5
     packs: null
@@ -223,7 +223,44 @@ hud:
           b: null
           a: 127
     mirrors:
-      life: null
+      life:
+        unit: 
+          path: hearts.png
+          position: 
+            x: 0
+            y: 0
+          size: 
+            w: 16
+            h: 16
+          channels: null
+        empty:
+          path: hearts.png
+          position: 
+            x: 48
+            y: 0
+          size: 
+            w: 16
+            h: 16
+          channels: null
+      magic:
+        unit: 
+          path: hearts.png
+          position: 
+            x: 0
+            y: 0
+          size: 
+            w: 16
+            h: 16
+          channels: null
+        empty:
+          path: hearts.png
+          position: 
+            x: 48
+            y: 0
+          size: 
+            w: 16
+            h: 16
+          channels: null
       magic: null
       bag: null
       belt: null
