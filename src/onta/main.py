@@ -18,7 +18,6 @@ import onta.util.cli as cli
 
 log = logger.Logger('onta.main', settings.LOG_LEVEL)
 
-
 def create(args) -> Tuple[
     control.Controller,
     world.World,
@@ -82,7 +81,7 @@ def render(
     hud_on: bool
 ) -> Image.Image:
     _, wrld, eng, rep, hd, _ = create(ontology_path)
-    hd.activated = hud_on
+    hd.hud_activated = hud_on
     return eng.render(wrld, rep, hd, crop, layer, hd)
 
 
@@ -95,6 +94,7 @@ def do(
     headsup_display: hud.HUD
 ) -> None:
     ms_per_frame = (1/settings.FPS)*1000
+    paused = False
 
     while True:
         start_time = helper.current_ms_time()
@@ -108,12 +108,22 @@ def do(
         # scripts.apply_scripts(game_world, 'pre_update')
 
         # if user is not paused
-        game_world.iterate(user_input)
+        if user_input['menu']:
+            paused = not paused
+            headsup_display.toggle_menu()
+        
+        if not paused:
+            game_world.iterate(user_input)
+            headsup_display.update(game_world)
+        else:
+            # hud consumes user_input to traverse menu
+            # hud will need to return user input map so game_world
+            # can up hero equipment state, item state, etc.
+            pass
 
         if user_input['hud']:
-            headsup_display.toggle()
+            headsup_display.toggle_hud()
             
-        headsup_display.update(game_world)
 
         # # pre_render hook here
         # scripts.apply_scripts(game_world, 'pre_render')

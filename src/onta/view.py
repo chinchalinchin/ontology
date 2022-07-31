@@ -2,7 +2,6 @@ import sys
 from collections import OrderedDict
 
 from PySide6 import QtWidgets, QtGui
-from PIL.ImageQt import ImageQt
 
 import onta.device as device
 import onta.settings as settings
@@ -62,8 +61,6 @@ class Renderer():
     world_frame = None
     """
     """
-    slot_frames = None
-    cap_frames = None
 
 
     @staticmethod
@@ -129,6 +126,7 @@ class Renderer():
             layer: gui.new_image(game_world.dimensions)
             for layer in game_world.layers
         }
+
         self._render_tiles(game_world, repository)
         self._render_sets(game_world, repository)
 
@@ -183,6 +181,8 @@ class Renderer():
             unordered_groups.update(platesets)
 
             render_map = self.render_ordered_dict(unordered_groups)
+            # TODO: render map doesn't work...should be able to iterate over it instaed of 
+            # unordered groups
 
             for group_key, group_conf in unordered_groups.items():
                 if group_key in strut_keys or \
@@ -298,6 +298,7 @@ class Renderer():
                 life_frame
             )
 
+
     def render(self, game_world: world.World, repository: repo.Repo, headsup_display: hud.HUD, crop: bool = True, layer: str = None):
         """_summary_
 
@@ -334,7 +335,10 @@ class Renderer():
 
             self.world_frame = self.world_frame.crop(crop_box)
         
-        if headsup_display.activated:
+        if headsup_display.menu_activated:
+            gui.replace_alpha(self.world_frame, 127)
+
+        if headsup_display.hud_activated:
             self._render_slots(headsup_display, repository)
             self._render_mirrors(headsup_display, repository)
 
@@ -343,8 +347,7 @@ class Renderer():
     def view(self, game_world: world.World, view_widget: QtWidgets.QWidget, headsup_display: hud.HUD,repository: repo.Repo):        
         cropped = self.render(game_world, repository, headsup_display)
 
-        qim = ImageQt(cropped)
-        pix = QtGui.QPixmap.fromImage(qim)
+        pix = gui.convert_to_gui(cropped)
 
         view_frame = view_widget.layout().itemAt(0).widget() 
         view_frame.setPixmap(pix)

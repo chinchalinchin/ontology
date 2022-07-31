@@ -53,6 +53,7 @@ class Repo():
             return (0, 90)
         return (90, 0)
 
+
     def __init__(self, ontology_path: str) -> None:
         """
         .. note::
@@ -61,8 +62,9 @@ class Repo():
         config = conf.Conf(ontology_path)
         self._init_static_assets(config, ontology_path)
         self._init_sprite_assets(config, ontology_path)
-        self._init_unitless_interface_assets(config, ontology_path)
-        self._init_metered_interface_assets(config, ontology_path)
+        self._init_unitless_hud_assets(config, ontology_path)
+        self._init_metered_hud_assets(config, ontology_path)
+        self._init_menu_assets(config, ontology_path)
 
 
     def _init_static_assets(self, config: conf.Conf, ontology_path: str) -> None:
@@ -152,7 +154,7 @@ class Repo():
                             self.plates[asset_key] = buffer
  
 
-    def _init_unitless_interface_assets(self, config: conf.Conf, ontology_path: str) -> None:
+    def _init_unitless_hud_assets(self, config: conf.Conf, ontology_path: str) -> None:
         interface_conf = config.load_interface_configuration()
         for size in interface_conf['sizes']:
             self.slots[size], self.avatars[size] = {}, {}
@@ -240,8 +242,7 @@ class Repo():
                                 self.slots[size]['slot'][interface_key] = buffer
 
 
-
-    def _init_metered_interface_assets(self, config: conf.Conf, ontology_path: str) -> None:
+    def _init_metered_hud_assets(self, config: conf.Conf, ontology_path: str) -> None:
         interface_conf = config.load_interface_configuration()
 
         for size in interface_conf['sizes']:
@@ -264,6 +265,10 @@ class Repo():
                             buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
                             self.mirrors[size][mirror_key][mirror_fill] = buffer.crop((x,y,w+x,h+y))
+
+
+    def _init_menu_assets(self, config: conf.Conf, ontology_path: str) -> None:
+        pass
 
     def _init_sprite_assets(self, config: conf.Conf, ontology_path: str) -> None:
         log.debug('Initializing sprite assets...', 'Repo._init_sprite_assets')

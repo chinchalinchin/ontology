@@ -50,6 +50,10 @@ properties:
       rows: 1
   packs: null
   avatars: null
+  menu:
+    buttons:
+      - equipment
+      - inventory
 
 hud:
   small:
@@ -265,6 +269,10 @@ hud:
       bag: null
       belt: null
       wallet: null
+    packs: 
+      bag: null
+      belt: null
+      wallet: null
     avatars: 
       bow: null
       knife: null
@@ -279,4 +287,25 @@ hud:
       falcon_shield: null
       leather_shield: null
       blood_magic: null
-    
+
+menu:
+  small:
+    button:
+      path:
+      position:
+      size:
+      channels:
+        r: null
+        g: null
+        b: null
+        a: 255
+  large:
+    button:
+      path:
+      position:
+      size:
+      channels:
+        r: null
+        g: null
+        b: null
+        a: 255

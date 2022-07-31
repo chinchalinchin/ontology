@@ -14,8 +14,22 @@ hero:
   bag: null
   belt: null
   health:
-    current: 2
-    max: 4
+    current: 4
+    max: 10
+  equipment:
+    bow: False
+    axe: False
+    knife: False
+    pickaxe: False
+    sword: True
+    warhammer: False
+    blood_magic: False
+    cane: False
+    shovel: False
+    spear: False
+    emblem_shield: False
+    falcon_shield: False
+    leather_shield: False
 
 npcs: 
   esmeralda:

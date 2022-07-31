@@ -40,7 +40,7 @@ actions:
   interact:
     input:
       - e
-    precedence: 2
+    precedence: 4
   jump:
     input:
       - space
@@ -48,28 +48,33 @@ actions:
   sprint:
     input:
       - tab
-    precedence: 1
+    precedence: 2
   slash:
     input:
       - ctrl_left
-    precedence: 4
+    precedence: 5
   thrust:
     input:
       - alt_left
-    precedence: 5
+    precedence: 6
   shoot:
     input:
       - shift_left
-    precedence: 6
+    precedence: 7
   cast:
     input:
       - tab
-    precedence: 7
+    precedence: 8
   hud: 
     input:
       - h
+    precedence: 1
+  menu:
+    input: 
+      - q
     precedence: 0
     
 consumable:
   - interact
   - hud
+  - menu

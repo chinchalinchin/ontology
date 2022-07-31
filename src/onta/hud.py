@@ -22,10 +22,13 @@ class HUD():
     breakpoints = {}
     slots = {}
     mirrors = {}
+    menus = {}
+    equipment = {}
     sizes = []
     slot_rendering_points = []
     life_rendering_points = []
-    activated = True
+    hud_activated = True
+    menu_activated = False
     media_size = None
 
     @staticmethod
@@ -66,8 +69,10 @@ class HUD():
         self._find_media_size(player_device)
         self._init_slot_positions(player_device)
         self._init_mirror_positions(player_device)
+        self._init_menu_positions(player_device)
         self._init_slots(state_ao)
         self._init_mirrors(state_ao)
+        self._init_equipment(state_ao)
 
 
     def _init_conf(self, config: conf.Conf):
@@ -136,8 +141,6 @@ class HUD():
         if mirror_styles['stack'] == 'vertical':
             (life_rows, life_cols) = (life_cols, life_rows)
             
-        print(x_start, y_start)
-        # TODO: problem with rendering points
         for row in range(life_rows):
             for col in range(life_cols):
 
@@ -166,8 +169,9 @@ class HUD():
                                     life_dim[1]*(1+MIRROR_PADDING)
                             )
                         )
-            
 
+        self.life_rendering_points.reverse()
+            
 
     def _init_slot_positions(self, player_device: device.Device):
         log.debug('Initializing slot positions on device...', 
@@ -304,14 +308,21 @@ class HUD():
                     )
 
 
+    def _init_menu_positions(self, player_device: device.Device):
+        pass
+
+    
     def _init_slots(self, state_ao):
         self.slots = state_ao['hero']['slots']
+
+
+    def _init_equipment(self, state_ao):
+        self.equipment = state_ao['hero']['equipment']
 
 
     def _init_mirrors(self, state_ao: state.State):
         self.mirrors = {
             'life': state_ao['hero']['health']
-
         }
         
 
@@ -339,6 +350,7 @@ class HUD():
         elif interface_key in ['mirror', 'mirrors']:
             return self.life_rendering_points    
 
+
     def get_slot_dimensions(self):
         return (
             self.hud_conf[self.media_size]['slots']['empty']['size']['w'], 
@@ -352,6 +364,7 @@ class HUD():
             for key, val in self.slots.items()
         }
 
+
     def life_frame_map(self):
         return {
             i: 'unit' if i <= self.mirrors['life']['current'] - 1 else 'empty'
@@ -362,7 +375,15 @@ class HUD():
 
     def update(self, game_world: world.World):
         self.slots = game_world.hero['slots']
+        self.equipment = game_world.hero['equipment']
+        self.mirrors = {
+            'life': game_world.hero['health']
+        }
 
 
-    def toggle(self) -> None:
-        self.activated = not self.activated
+    def toggle_hud(self) -> None:
+        self.hud_activated = not self.hud_activated
+
+
+    def toggle_menu(self) -> None:
+        self.menu_activated = not self.menu_activated
