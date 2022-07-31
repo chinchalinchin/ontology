@@ -23,7 +23,7 @@ class HUD():
     mirrors = {}
     sizes = []
     slot_rendering_points = []
-    mirror_rendering_points = []
+    life_rendering_points = []
     activated = True
     media_size = None
 
@@ -109,39 +109,50 @@ class HUD():
         x_margins = settings.GUI_MARGINS*player_device.dimensions[0]
         y_margins = settings.GUI_MARGINS*player_device.dimensions[1]
 
-        if mirror_styles['stack'] == 'horizontal':
-            if mirror_styles['alignment']['horizontal'] == 'right':
+        if mirror_styles['alignment']['horizontal'] == 'right':
                 x_start = player_device.dimensions[0] - \
                     x_margins - \
                     life_rows *life_dim[0]*(1 + MIRROR_PADDING) 
 
-            elif mirror_styles['alignment']['horizontal'] == 'left':
-                x_start = x_margins
-            else: # center
-                x_start = (player_device.dimensions[0] - \
-                    life_rows * life_dim[0] *(1 + MIRROR_PADDING))/2
+        elif mirror_styles['alignment']['horizontal'] == 'left':
+            x_start = x_margins
+        else: # center
+            x_start = (player_device.dimensions[0] - \
+                life_rows * life_dim[0] *(1 + MIRROR_PADDING))/2
+        
+        if mirror_styles['alignment']['vertical'] == 'top':
+            y_start = y_margins
+        elif mirror_styles['alignment']['vertical'] == 'bottom':
+            y_start = player_device.dimensions[1] - \
+                y_margins - \
+                life_cols * life_dim[1] * (1 + MIRROR_PADDING)
+        else: # center
+            y_start = (player_device.dimensions[1] - \
+                life_cols * life_dim[1] * (1 + MIRROR_PADDING))/2
 
-            if mirror_styles['alignment']['vertical'] == 'top':
-                y_start = y_margins
-            else:
-                y_start = player_device.dimensions[1] - \
-                    y_margins - \
-                    life_cols * life_dim[1] *(1 + MIRROR_PADDING)
 
-        elif mirror_styles['stack'] == 'vertical':
-            if mirror_styles['alignment']['horizontal'] == 'right':
-                x_start = player_device.dimensions[0] - \
-                    x_margins - \
-                    life_rows * life_dim[0] * (1 + MIRROR_PADDING)
-            elif mirror_styles['alignment']['horizontal'] == 'left':
-                x_start = x_margins
-
-            if mirror_styles['alignment']['vertical'] == 'top':
-                y_start = y_margins
-            elif mirror_styles['alignment']['vertical'] == 'bottom':
-                y_start = player_device.dimensions[1] - \
-                    y_margins - \
-                    life_cols * life_dim[1] * (1 + MIRROR_PADDING)
+        if mirror_styles['stack'] == 'vertical':
+            (life_rows, life_cols) = (life_cols, life_rows)
+            
+        for row in range(life_rows):
+            for col in range(life_cols):
+                if col == 0:
+                    self.life_rendering_points.append(
+                        (
+                            x_start, 
+                            y_start
+                        )
+                    )
+                else:
+                    self.life_rendering_points.append(
+                        (
+                            self.life_rendering_points[(row+1)*(col+1)-1][0] + \
+                                life_dim[0]*col,
+                            self.life_rendering_points[(row+1)*(col+1)-1][1] +
+                                life_dim[1]*row
+                        )
+                    )
+            
 
 
     def _init_slot_positions(self, player_device: device.Device):
@@ -166,59 +177,41 @@ class HUD():
             self.hud_conf[self.media_size]['slots']['empty']['size']['h']
         )
 
-        if slot_styles['stack'] == 'horizontal':
-            buffer_correction = (slot_dim[1] - buffer_dim[1])/2
-            cap_correction = (slot_dim[1] - cap_dim[1])/2 
-
-            if slot_styles['alignment']['horizontal'] == 'right':
+        if slot_styles['alignment']['horizontal'] == 'right':
                 x_start = player_device.dimensions[0] \
                     - x_margins \
                     - slots_total*slot_dim[0] \
                     - (slots_total-1)*buffer_dim[0] \
                     - 2*cap_dim[0]
-            elif slot_styles['alignment']['horizontal'] == 'left':
-                x_start = x_margins
-            else: # center
-                x_start = (player_device.dimensions[0] \
-                    - slots_total*slot_dim[0] \
-                    - (slots_total-1)*buffer_dim[0] \
-                    - 2*cap_dim[0])/2
+        elif slot_styles['alignment']['horizontal'] == 'center':
+            x_start = (player_device.dimensions[0] \
+                - slots_total*slot_dim[0] \
+                - (slots_total-1)*buffer_dim[0] \
+                - 2*cap_dim[0])/2
+                
+        else: # left
+            x_start = x_margins
 
-            if slot_styles['alignment']['vertical'] == 'top':
-                y_start = y_margins
-            else:
-                y_start = player_device.dimensions[1] \
-                    - y_margins \
-                    - slot_dim[1]
-
-        elif slot_styles['stack'] == 'vertical':
-            buffer_correction = (slot_dim[0] - buffer_dim[0])/2
-            cap_correction = (slot_dim[0] - cap_dim[0])/2
-
-            if slot_styles['alignment']['horizontal'] == 'left':
-                x_start = x_margins
-            else:
-                x_start = player_device.dimensions[0] \
-                    - x_margins \
-                    - slot_dim[0]
-
-            if slot_styles['alignment']['vertical'] == 'bottom':
+                
+        if slot_styles['alignment']['vertical'] == 'bottom':
                 y_start = player_device.dimensions[1] \
                     - y_margins \
                     - slots_total*slot_dim[1] \
                     - (slots_total-1)*buffer_dim[1] \
                     - 2*cap_dim[1]
-            elif slot_styles['alignment']['vertical'] == 'center':
-                y_start = (player_device.dimensions[1] \
-                    - slots_total*slot_dim[1] \
-                    - (slots_total-1)*buffer_dim[1] \
-                    - 2*cap_dim[1])/2
-            else: 
-                y_start = y_margins
+        elif slot_styles['alignment']['vertical'] == 'center':
+            y_start = (player_device.dimensions[1] \
+                - slots_total*slot_dim[1] \
+                - (slots_total-1)*buffer_dim[1] \
+                - 2*cap_dim[1])/2
+        else: # top
+            y_start = y_margins
 
         # number of slots + number of buffer + number of caps
         num = slots_total + (slots_total - 1) + 2
         if slot_styles['stack'] == 'horizontal':
+            buffer_correction = (slot_dim[1] - buffer_dim[1])/2
+            cap_correction = (slot_dim[1] - cap_dim[1])/2 
             for i in range(num):
                 if i == 0:
                     self.slot_rendering_points.append(
@@ -257,6 +250,8 @@ class HUD():
                     )
 
         elif slot_styles['stack'] == 'vertical':
+            buffer_correction = (slot_dim[0] - buffer_dim[0])/2
+            cap_correction = (slot_dim[0] - cap_dim[0])/2
             for i in range(num):
                 if i == 0:
                     self.slot_rendering_points.append(

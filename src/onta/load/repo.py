@@ -28,6 +28,31 @@ class Repo():
     equipment = {}
 
 
+    @staticmethod
+    def adjust_cap_rotation(direction):
+        # I am convinced there is an easier way to calculate this using arcosine and arcsine,
+        # but i don't feel like thinking about domains and ranges right now...
+        if direction == 'left':
+            left_adjust, right_adjust = 0, 180
+            up_adjust, down_adjust = 90, 270
+        elif direction == 'right':
+            left_adjust, right_adjust = 180, 0
+            up_adjust, down_adjust = 270, 90
+        elif direction == 'up':
+            left_adjust, right_adjust = 90, 270
+            up_adjust, down_adjust = 0, 180
+        else:
+            left_adjust, right_adjust = 270, 90
+            up_adjust, down_adjust = 180, 0
+        return (up_adjust, left_adjust, right_adjust, down_adjust)
+
+
+    @staticmethod
+    def adjust_buffer_rotation(direction):
+        if direction == 'vertical':
+            return (0, 90)
+        return (90, 0)
+
     def __init__(self, ontology_path: str) -> None:
         """
         .. note::
@@ -131,6 +156,7 @@ class Repo():
         interface_conf = config.load_interface_configuration()
         for size in interface_conf['sizes']:
             self.slots[size], self.avatars[size] = {}, {}
+            self.slots[size]['slot'] = {}
 
             for interfaceset_key in UNITLESS_UI_TYPES:
                 interfaceset = interface_conf['hud'][size][interfaceset_key]
@@ -170,10 +196,49 @@ class Repo():
                             log.debug( f"{interfaceset_key} {interface_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
                                 'Repo._init_interface_assets')
 
-                            if interfaceset_key == 'slots':
-                                self.slots[size][interface_key] = buffer.crop((x,y,w+x,h+y))
-                            elif interfaceset_key == 'avators':
-                                self.avatars[size][interface_key] = buffer.crop((x,y,w+x,h+y))
+                            slot_props = interface_conf['hud'][size]['slots']
+                            buffer = buffer.crop((x,y,w+x,h+y))
+                            if interface_key == 'cap':
+                                (down_adjust, left_adjust, right_adjust, up_adjust) = \
+                                    self.adjust_cap_rotation(
+                                        slot_props['cap']['definition']
+                                    )
+                                self.slots[size][interface_key] = {
+                                    'up': buffer.rotate(
+                                        up_adjust,
+                                        expand=True
+                                    ),
+                                    'left': buffer.rotate(
+                                        left_adjust,
+                                        expand=True
+                                    ),
+                                    'right': buffer.rotate(
+                                        right_adjust,
+                                        expand=True
+                                    ),
+                                    'down': buffer.rotate(
+                                        down_adjust,
+                                        expand=True
+                                    )
+                                }
+                            elif interface_key == 'buffer':
+                                (vertical_adjust, horizontal_adjust) = \
+                                    self.adjust_buffer_rotation(
+                                    slot_props['buffer']['definition']  
+                                )
+                                self.slots[size][interface_key] = {
+                                    'vertical': buffer.rotate(
+                                        vertical_adjust,
+                                        expand=True
+                                    ),
+                                    'horizontal': buffer.rotate(
+                                        horizontal_adjust,
+                                        expand=True
+                                    )
+                                }
+                            elif interface_key in ['empty', 'equipped']:
+                                self.slots[size]['slot'][interface_key] = buffer
+
 
 
     def _init_metered_interface_assets(self, config: conf.Conf, ontology_path: str) -> None:
@@ -264,10 +329,11 @@ class Repo():
             return self.avatars[breakpoint_key].get(component_key)
         return None
     
-    def get_slot_frame(self, breakpoint_key, component_key) -> Union[Image.Image, None]:
+    def get_slot_frames(self, breakpoint_key, component_key) -> Union[Image.Image, None]:
         if self.slots.get(breakpoint_key):
             return self.slots[breakpoint_key].get(component_key)
         return None
+        
 
     def get_mirror_frame(self, breakpoint_key, component_key, fill_key):
         if self.mirrors.get(breakpoint_key) and self.mirrors[breakpoint_key].get(component_key):

@@ -1,5 +1,6 @@
 import threading
 import time
+from typing import Tuple
 
 import PySide6.QtWidgets as QtWidgets
 from PIL import Image
@@ -18,9 +19,19 @@ import onta.util.cli as cli
 log = logger.Logger('onta.main', settings.LOG_LEVEL)
 
 
-def create(args):
+def create(args) -> Tuple[
+    control.Controller,
+    world.World,
+    view.Renderer,
+    repo.Repo,
+    hud.HUD,
+    device.Device
+]:
     log.debug('Pulling device information...', 'create')
-    player_device = device.Device(args.width, args.height)
+    player_device = device.Device(
+        args.width, 
+        args.height
+    )
 
     log.debug('Initializing controller...', 'create')
     controller = control.Controller(args.ontology)
@@ -32,14 +43,21 @@ def create(args):
     game_world = world.World(args.ontology)
 
     log.debug('Initializing HUD...', 'create')
-    headsup_display = hud.HUD(player_device, args.ontology)
+    headsup_display = hud.HUD(
+        player_device, 
+        args.ontology
+    )
 
     log.debug('Initializing rendering engine...', 'create')
-    render_engine = view.Renderer(game_world, asset_repository, headsup_display, player_device)
+    render_engine = view.Renderer(
+        game_world, 
+        asset_repository, 
+        player_device
+    )
 
     return controller, game_world, render_engine, asset_repository, headsup_display, player_device
 
-def start(ontology_path: str):
+def start(ontology_path: str) -> None:
     cntl, wrld, eng, rep, hd, dv = create(ontology_path)
 
     log.debug('Creating GUI...', 'start')
@@ -57,7 +75,12 @@ def start(ontology_path: str):
     game_loop.start()
     view.quit(app)
 
-def render(ontology_path: str, crop: bool, layer: str, hud_on: bool) -> Image.Image:
+def render(
+    ontology_path: str, 
+    crop: bool, 
+    layer: str, 
+    hud_on: bool
+) -> Image.Image:
     _, wrld, eng, rep, hd, _ = create(ontology_path)
     hd.activated = hud_on
     return eng.render(wrld, rep, hd, crop, layer, hd)
@@ -70,7 +93,7 @@ def do(
     render_engine: view.Renderer, 
     asset_repository: repo.Repo,
     headsup_display: hud.HUD
-):
+) -> None:
     ms_per_frame = (1/settings.FPS)*1000
 
     while True:
@@ -95,7 +118,12 @@ def do(
         # # pre_render hook here
         # scripts.apply_scripts(game_world, 'pre_render')
 
-        render_engine.view(game_world, game_view, headsup_display, asset_repository)
+        render_engine.view(
+            game_world, 
+            game_view, 
+            headsup_display, 
+            asset_repository
+        )
 
         # # post_loop hook here
         # scripts.apply_scripts(game_world, 'post_loop')
@@ -109,7 +137,7 @@ def do(
             log.infinite(f'Sleeping excess period - delta: {sleep_time}', 'do')
             time.sleep(sleep_time/1000)
 
-def entrypoint():
+def entrypoint() -> None:
     args = cli.parse_cli_args()
 
     if args.render:
