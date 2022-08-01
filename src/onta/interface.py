@@ -9,7 +9,7 @@ import onta.util.logger as logger
 log = logger.Logger('onta.hud', settings.LOG_LEVEL)
 
 SLOT_STATES = [ 'cast', 'shoot', 'thrust', 'slash' ]
-SLOT_PIECES = [ 'cap', 'buffer', 'empty', 'equipped' ]
+SLOT_PIECES = [ 'cap', 'buffer', 'empty', 'equipped', 'disabled']
 BUTTON_PIECES = [ 'left', 'middle', 'right' ]
 MIRROR_PIECES = [ 'unit', 'empty' ]
 MIRROR_PADDING = (0.005, 0.005)
@@ -364,8 +364,9 @@ class HUD():
 
 
     def slot_frame_map(self):
+        # TODO: need to calculate disabled slots from hero state
         return {
-            key: 'empty' if val is None else 'equipped' 
+            key: 'enabled' if val is None else 'active' 
             for key, val in self.slots.items()
         }
 

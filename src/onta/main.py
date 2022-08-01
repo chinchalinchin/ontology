@@ -26,7 +26,8 @@ def create(args) -> Tuple[
     view.Renderer,
     repo.Repo,
     interface.HUD,
-    device.Device
+    device.Device,
+    interface.Menu
 ]:
     log.debug('Pulling device information...', 'create')
     player_device = device.Device(
@@ -86,14 +87,12 @@ def start(ontology_path: str) -> None:
 
 
 def render(
-    ontology_path: str, 
-    crop: bool, 
-    layer: str, 
-    hud_on: bool
+    args
 ) -> Image.Image:
-    _, wrld, eng, rep, hd, _ = create(ontology_path)
-    hd.hud_activated = hud_on
-    return eng.render(wrld, rep, hd, crop, layer, hd)
+    # TODO: use args.width and args.height to adjust crop box for render method...
+    _, wld, eng, rep, hd, _, mn = create(args)
+    hd.hud_activated = args.hud
+    return eng.render(wld, rep, hd, mn, args.crop, args.layer)
 
 
 def do(
@@ -131,6 +130,7 @@ def do(
             controller.consume_all()
             
             # TODO: pass menu result back to game world
+            # for updating hero state
 
         if user_input['hud']:
             headsup_display.toggle_hud()
@@ -163,7 +163,7 @@ def entrypoint() -> None:
     args = cli.parse_cli_args()
 
     if args.render:
-        img = render(args.ontology, args.crop, args.layer, args.hud)
+        img = render(args)
         img.save(args.render)
         return
 
