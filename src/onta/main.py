@@ -5,7 +5,7 @@ from typing import Tuple
 import PySide6.QtWidgets as QtWidgets
 from PIL import Image
 
-import onta.hud as hud
+import onta.interface as interface
 import onta.device as device
 import onta.view as view
 import onta.control as control
@@ -16,14 +16,16 @@ import onta.util.logger as logger
 import onta.util.helper as helper
 import onta.util.cli as cli
 
+
 log = logger.Logger('onta.main', settings.LOG_LEVEL)
+
 
 def create(args) -> Tuple[
     control.Controller,
     world.World,
     view.Renderer,
     repo.Repo,
-    hud.HUD,
+    interface.HUD,
     device.Device
 ]:
     log.debug('Pulling device information...', 'create')
@@ -42,8 +44,14 @@ def create(args) -> Tuple[
     game_world = world.World(args.ontology)
 
     log.debug('Initializing HUD...', 'create')
-    headsup_display = hud.HUD(
+    headsup_display = interface.HUD(
         player_device, 
+        args.ontology
+    )
+
+    log.debug('Initializing Menu...', 'create')
+    menu = interface.Menu(
+        player_device,
         args.ontology
     )
 
@@ -54,10 +62,12 @@ def create(args) -> Tuple[
         player_device
     )
 
-    return controller, game_world, render_engine, asset_repository, headsup_display, player_device
+    return controller, game_world, render_engine, \
+            asset_repository, headsup_display, player_device, menu
+
 
 def start(ontology_path: str) -> None:
-    cntl, wrld, eng, rep, hd, dv = create(ontology_path)
+    cntl, wrld, eng, rep, hd, dv, mn = create(ontology_path)
 
     log.debug('Creating GUI...', 'start')
     app, vw = view.get_app(), view.get_view(dv)
@@ -65,7 +75,7 @@ def start(ontology_path: str) -> None:
     log.debug('Threading game...', 'start')
     game_loop = threading.Thread(
         target=do, 
-        args=(vw,cntl,wrld,eng,rep,hd), 
+        args=(vw,cntl,wrld,eng,rep,hd, mn), 
         daemon=True
     )
 
@@ -73,6 +83,7 @@ def start(ontology_path: str) -> None:
     vw.show()
     game_loop.start()
     view.quit(app)
+
 
 def render(
     ontology_path: str, 
@@ -91,10 +102,10 @@ def do(
     game_world: world.World, 
     render_engine: view.Renderer, 
     asset_repository: repo.Repo,
-    headsup_display: hud.HUD
+    headsup_display: interface.HUD,
+    menu: interface.Menu
 ) -> None:
     ms_per_frame = (1/settings.FPS)*1000
-    paused = False
 
     while True:
         start_time = helper.current_ms_time()
@@ -107,18 +118,22 @@ def do(
             # # construct npc state from game world info
         # scripts.apply_scripts(game_world, 'pre_update')
 
-        # if user is not paused
         if user_input['menu']:
-            paused = not paused
-            headsup_display.toggle_menu()
+            menu.toggle_menu()
         
-        if not paused:
+        if not menu.menu_activated:
             game_world.iterate(user_input)
             headsup_display.update(game_world)
+
         else:
             # hud consumes user_input to traverse menu
             # hud will need to return user input map so game_world
             # can up hero equipment state, item state, etc.
+
+            # ... and that is the reason the menu should be its own class.
+            # the heads_up display should only consume the world state,
+            # whereas the menu should consume the world state and user_input
+
             pass
 
         if user_input['hud']:
@@ -131,7 +146,8 @@ def do(
         render_engine.view(
             game_world, 
             game_view, 
-            headsup_display, 
+            headsup_display,
+            menu,
             asset_repository
         )
 

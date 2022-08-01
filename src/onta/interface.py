@@ -12,86 +12,82 @@ SLOT_STATES = [ 'cast', 'shoot', 'thrust', 'slash' ]
 MIRROR_PADDING = 0.005
 MAX_LIFE = 20
 
+def format_breakpoints(break_points: list) -> list:
+    return [
+        (break_point['w'], break_point['h']) 
+            for break_point in break_points
+    ]
+
+def rotate_dimensions(rotator: dict, direction: str) -> tuple:
+    """The width and height of a cap relative to a direction, `vertical` or `horizontal`.
+
+    :param cap: _description_
+    :type cap: _type_
+    :param direction: _description_
+    :type direction: _type_
+    :return: _description_
+    :rtype: _type_
+    """
+    if rotator['definition'] in ['left', 'right', 'horizontal']:
+        if direction =='horizontal':
+            return rotator['size']['w'], rotator['size']['h']
+        if direction == 'vertical':
+            return rotator['size']['h'], rotator['size']['w']
+    elif rotator['definition'] in ['up', 'down', 'vertical']:
+        if direction == 'horizontal':
+            return rotator['size']['h'], rotator['size']['w']
+        if direction == 'vertical':
+            return rotator['size']['w'], rotator['size']['h']
+
+def find_media_size(player_device: device.Device, sizes: list, breakpoints: list) -> str:
+    dim = player_device.dimensions
+    for i, break_point in enumerate(breakpoints):
+        if dim[0] < break_point[0] and dim[1] < break_point[1]:
+            return sizes[i]
+    return sizes[len(sizes)-1]
+
 class HUD():
-
-    # HUD will essentially be its own world. let view decide how it is rendered.
-
     hud_conf = {}
     styles = {}
     properties = {}
-    breakpoints = {}
     slots = {}
     mirrors = {}
-    menus = {}
     equipment = {}
     sizes = []
+    breakpoints = []
     slot_rendering_points = []
     life_rendering_points = []
     hud_activated = True
-    menu_activated = False
     media_size = None
 
-    @staticmethod
-    def format_breakpoints(break_points: list) -> list:
-        return [
-            (break_point['w'], break_point['h']) 
-                for break_point in break_points
-        ]
 
-    @staticmethod
-    def rotate_dimensions(rotator, direction):
-        """The width and height of a cap relative to a direction, `vertical` or `horizontal`.
-
-        :param cap: _description_
-        :type cap: _type_
-        :param direction: _description_
-        :type direction: _type_
-        :return: _description_
-        :rtype: _type_
-        """
-        if rotator['definition'] in ['left', 'right', 'horizontal']:
-            if direction =='horizontal':
-                return rotator['size']['w'], rotator['size']['h']
-            if direction == 'vertical':
-                return rotator['size']['h'], rotator['size']['w']
-        elif rotator['definition'] in ['up', 'down', 'vertical']:
-            if direction == 'horizontal':
-                return rotator['size']['h'], rotator['size']['w']
-            if direction == 'vertical':
-                return rotator['size']['w'], rotator['size']['h']
-
-
-    def __init__(self, player_device: device.Device, ontology_path: str = settings.DEFAULT_DIR):
+    def __init__(
+        self, 
+        player_device: device.Device, 
+        ontology_path: str = settings.DEFAULT_DIR
+    ) -> None:
         config = conf.Conf(ontology_path).load_interface_configuration()
         state_ao = state.State(ontology_path).get_state('dynamic')
         self.styles = config.get('hud').get('styles')
         self._init_conf(config)
-        self._find_media_size(player_device)
+        self.media_size = find_media_size(
+            player_device, 
+            self.sizes, 
+            self.breakpoints
+        )
         self._init_slot_positions(player_device)
         self._init_mirror_positions(player_device)
-        self._init_menu_positions(player_device)
         self._init_slots(state_ao)
         self._init_mirrors(state_ao)
         self._init_equipment(state_ao)
 
 
-    def _init_conf(self, config: conf.Conf):
+    def _init_conf(self, config: conf.Conf) -> None:
         self.styles = config['styles']
         self.hud_conf = config['hud']
         self.sizes = config['sizes']
-        self.breakpoints = config['breakpoints']
+        self.breakpoints = format_breakpoints(config['breakpoints'])
         self.properties = config['properties']
-
-
-    def _find_media_size(self, player_device: device.Device):
-        breakpoints = self.format_breakpoints(self.breakpoints)
-        dim = player_device.dimensions
-        for i, break_point in enumerate(breakpoints):
-            if dim[0] < break_point[0] and dim[1] < break_point[1]:
-                self.media_size = self.sizes[i]
-                break
-        if self.media_size is None:
-            self.media_size = self.sizes[len(self.sizes)-1]
 
 
     def _init_mirror_positions(self, player_device: device.Device):
@@ -182,11 +178,11 @@ class HUD():
         x_margins = settings.GUI_MARGINS*player_device.dimensions[0]
         y_margins = settings.GUI_MARGINS*player_device.dimensions[1]
 
-        cap_dim = self.rotate_dimensions(
+        cap_dim = rotate_dimensions(
             self.hud_conf[self.media_size]['slots']['cap'],
             self.styles[self.media_size]['slots']['stack']
         )
-        buffer_dim = self.rotate_dimensions(
+        buffer_dim = rotate_dimensions(
             self.hud_conf[self.media_size]['slots']['buffer'],
             self.styles[self.media_size]['slots']['stack']
         )
@@ -307,16 +303,12 @@ class HUD():
                         )
                     )
 
-
-    def _init_menu_positions(self, player_device: device.Device):
-        pass
-
     
-    def _init_slots(self, state_ao):
+    def _init_slots(self, state_ao: state.State):
         self.slots = state_ao['hero']['slots']
 
 
-    def _init_equipment(self, state_ao):
+    def _init_equipment(self, state_ao: state.State):
         self.equipment = state_ao['hero']['equipment']
 
 
@@ -337,11 +329,11 @@ class HUD():
 
 
     def get_buffer_dimensions(self):
-        return self.rotate_dimensions(self.hud_conf[self.media_size]['slots']['buffer'])
+        return rotate_dimensions(self.hud_conf[self.media_size]['slots']['buffer'])
 
 
     def get_cap_dimensions(self):
-        return self.rotate_dimensions(self.hud_conf[self.media_size]['slots']['cap'])
+        return rotate_dimensions(self.hud_conf[self.media_size]['slots']['cap'])
 
 
     def get_rendering_points(self, interface_key):
@@ -384,6 +376,37 @@ class HUD():
     def toggle_hud(self) -> None:
         self.hud_activated = not self.hud_activated
 
+
+
+class Menu():
+    menu_conf = {}
+    menus = {}
+    properties = {}
+    sizes = []
+    breakpoints = []
+    button_rendering_points = []
+    menu_activated = False
+    media_size = None
+
+    def __init__(self, player_device: device.Device, ontology_path: str = settings.DEFAULT_DIR):
+        config = conf.Conf(ontology_path).load_interface_configuration()
+        state_ao = state.State(ontology_path).get_state('dynamic')
+        self._init_conf(config)
+        self.media_size = find_media_size(
+            player_device, 
+            self.sizes, 
+            self.breakpoints
+        )
+        self._init_menu_positions(player_device)
+
+    def _init_conf(self, config: conf.Conf):
+        self.menu_conf = config['menu']
+        self.sizes = config['sizes']
+        self.breakpoints = format_breakpoints(config['breakpoints'])
+        self.properties = config['properties']['menu']
+
+    def _init_menu_positions(self, player_device: device.Device):
+        pass
 
     def toggle_menu(self) -> None:
         self.menu_activated = not self.menu_activated

@@ -51,28 +51,13 @@ PLATE_PATH = [
 ]
 """Array containing path parts relative to ontology directory leading to platesheet directory"""
 
-AVATAR_PATH = [ 
-    'assets', 
-    'self', 
-    'avatars' 
+SENSES_PATH = [
+    'assets',
+    'self',
+    'senses'
 ]
-"""Array containing path parts relative to ontology directory leading to avatar directory"""
-
-MIRROR_PATH = [ 
-    'assets', 
-    'self', 
-    'mirrors' 
-]
-"""Array containing path parts relative to ontology directory leading to mirror directory"""
-
-
-SLOT_PATH = [ 
-    'assets', 
-    'self', 
-    'slots' 
-]
-"""Array containing path parts relative to ontology directory leading to slots directory"""
-
+"""
+"""
 
 # Debug Configuration
 

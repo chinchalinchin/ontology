@@ -54,6 +54,9 @@ properties:
     buttons:
       - equipment
       - inventory
+      - map
+      - save
+      - load
 
 hud:
   small:
@@ -291,21 +294,248 @@ hud:
 menu:
   small:
     button:
-      path:
-      position:
-      size:
-      channels:
-        r: null
-        g: null
-        b: null
-        a: 255
+      enabled:
+        left: 
+          path: slotsheet.png
+          position:
+            x: 633
+            y: 23
+          size:
+            w: 41
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 23
+          size:
+            w: 40
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255 
+        middle:
+          path: slotsheet.png
+          position:
+            x: 675
+            y: 23
+          size:
+            w: 40
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255
+      active:
+        left: 
+          path: slotsheet.png
+          position:
+            x: 633
+            y: 53
+          size:
+            w: 41
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 53
+          size:
+            w: 41
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255 
+        middle:
+          path: slotsheet.png
+          position:
+            x: 675 
+            y: 53
+          size:
+            w: 40
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255
+      disabled:
+        left: 
+          path: slotsheet.png
+          position:
+            x: 633
+            y: 83
+          size:
+            w: 41
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 83
+          size:
+            w: 41
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255 
+        middle:
+          path:
+          position:
+            x: 675
+            y: 83
+          size:
+            w: 40
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255
   large:
     button:
-      path:
-      position:
-      size:
-      channels:
-        r: null
-        g: null
-        b: null
-        a: 255
+      enabled:
+        left: 
+          path: slotsheet.png
+          position:
+            x: 633
+            y: 23
+          size:
+            w: 41
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 23
+          size:
+            w: 40
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255 
+        middle:
+          path: slotsheet.png
+          position:
+            x: 675
+            y: 23
+          size:
+            w: 40
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255
+      active:
+        left: 
+          path: slotsheet.png
+          position:
+            x: 633
+            y: 53
+          size:
+            w: 41
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 53
+          size:
+            w: 41
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255 
+        middle:
+          path: slotsheet.png
+          position:
+            x: 675 
+            y: 53
+          size:
+            w: 40
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255
+      disabled:
+        left: 
+          path: slotsheet.png
+          position:
+            x: 633
+            y: 83
+          size:
+            w: 41
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 83
+          size:
+            w: 41
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255 
+        middle:
+          path:
+          position:
+            x: 675
+            y: 83
+          size:
+            w: 40
+            h: 28
+          channels:
+            r: null
+            g: null
+            b: null
+            a: 255
+
+    
+      

@@ -1,5 +1,4 @@
 import onta.settings as settings
-import onta.load.conf as conf
 
 class Device():
 

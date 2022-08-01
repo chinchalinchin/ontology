@@ -15,10 +15,7 @@ include src/data/assets/forms/tiles/*
 include src/data/assets/forms/plates/*
 include src/data/assets/forms/tracks/*
 
-include src/data/assets/self/display/*
-include src/data/assets/self/mirrors/*
-include src/data/assets/self/slots/*
-include src/data/assets/self/avatars/*
+include src/data/assets/self/senses/*
 include src/data/assets/self/equipment/*
 include src/data/assets/sounds/*
 

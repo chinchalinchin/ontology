@@ -24,6 +24,7 @@ class Repo():
     effects = {}
     avatars = {}
     mirrors = {}
+    menus = {}
     slots = {}
     equipment = {}
 
@@ -155,6 +156,16 @@ class Repo():
  
 
     def _init_unitless_hud_assets(self, config: conf.Conf, ontology_path: str) -> None:
+        """_summary_
+
+        :param config: _description_
+        :type config: conf.Conf
+        :param ontology_path: _description_
+        :type ontology_path: str
+
+        .. note::
+            A _Slot_ is defined in a single direction, but used in multiple directions. When styles are applied the engine will need to be aware which direction the definition is in, so it can rotate the _Slot_ component to its appropriate position based on the declared style.
+        """
         interface_conf = config.load_interface_configuration()
         for size in interface_conf['sizes']:
             self.slots[size], self.avatars[size] = {}, {}
@@ -170,15 +181,10 @@ class Repo():
 
                         if interface.get('path'):
                             x, y = interface['position']['x'], interface['position']['y']
-                            
-                            if interfaceset_key == 'slots':
-                                sub_path = settings.SLOT_PATH
-                            elif interfaceset_key == 'avatars':
-                                sub_path = settings.AVATAR_PATH
          
                             image_path = os.path.join(
                                     ontology_path,
-                                    *sub_path,
+                                    *settings.SENSES_PATH,
                                     interface['path']
                                 )
                             buffer = Image.open(image_path).convert(settings.IMG_MODE)
@@ -198,12 +204,12 @@ class Repo():
                             log.debug( f"{interfaceset_key} {interface_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
                                 'Repo._init_interface_assets')
 
-                            slot_props = interface_conf['hud'][size]['slots']
+                            slot_conf = interface_conf['hud'][size]['slots']
                             buffer = buffer.crop((x,y,w+x,h+y))
                             if interface_key == 'cap':
                                 (down_adjust, left_adjust, right_adjust, up_adjust) = \
                                     self.adjust_cap_rotation(
-                                        slot_props['cap']['definition']
+                                        slot_conf['cap']['definition']
                                     )
                                 self.slots[size][interface_key] = {
                                     'up': buffer.rotate(
@@ -226,7 +232,7 @@ class Repo():
                             elif interface_key == 'buffer':
                                 (vertical_adjust, horizontal_adjust) = \
                                     self.adjust_buffer_rotation(
-                                    slot_props['buffer']['definition']  
+                                    slot_conf['buffer']['definition']  
                                 )
                                 self.slots[size][interface_key] = {
                                     'vertical': buffer.rotate(
@@ -257,9 +263,10 @@ class Repo():
                         if mirror[mirror_fill].get('path'):
                             x,y = mirror[mirror_fill]['position']['x'], mirror[mirror_fill]['position']['y']
                             w, h = mirror[mirror_fill]['size']['w'], mirror[mirror_fill]['size']['h']
+                            
                             image_path = os.path.join(
                                 ontology_path,
-                                *settings.MIRROR_PATH,
+                                *settings.SENSES_PATH,
                                 mirror[mirror_fill]['path']
                             )
                             buffer = Image.open(image_path).convert(settings.IMG_MODE)
@@ -268,7 +275,11 @@ class Repo():
 
 
     def _init_menu_assets(self, config: conf.Conf, ontology_path: str) -> None:
-        pass
+        interface_conf = config.load_interface_configuration()
+        for size in interface_conf['sizes']:
+            self.menus[size] = {}
+            button_set = interface_conf['menu'][size]['button']
+
 
     def _init_sprite_assets(self, config: conf.Conf, ontology_path: str) -> None:
         log.debug('Initializing sprite assets...', 'Repo._init_sprite_assets')
@@ -334,6 +345,7 @@ class Repo():
             return self.avatars[breakpoint_key].get(component_key)
         return None
     
+
     def get_slot_frames(self, breakpoint_key, component_key) -> Union[Image.Image, None]:
         if self.slots.get(breakpoint_key):
             return self.slots[breakpoint_key].get(component_key)
@@ -344,6 +356,7 @@ class Repo():
         if self.mirrors.get(breakpoint_key) and self.mirrors[breakpoint_key].get(component_key):
             return self.mirrors[breakpoint_key][component_key].get(fill_key)
         return None
+
 
     def get_sprite_frame(self, sprite: str, state: str, frame: int) -> Union[Image.Image, None]:
         return self.sprites[sprite][state][frame]

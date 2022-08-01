@@ -6,7 +6,7 @@ from PySide6 import QtWidgets, QtGui
 import onta.device as device
 import onta.settings as settings
 import onta.world as world
-import onta.hud as hud
+import onta.interface as interface
 import onta.engine.calculator as calculator
 import onta.load.repo as repo
 import onta.util.logger as logger
@@ -251,13 +251,13 @@ class Renderer():
             self.world_frame.paste(sprite_frame, sprite_position, sprite_frame)
 
 
-    def _render_slots(self, headsup_display: hud.HUD, repository: repo.Repo):
+    def _render_slots(self, headsup_display: interface.HUD, repository: repo.Repo):
         rendering_points = headsup_display.get_rendering_points('slot')
 
         cap_dir = headsup_display.get_cap_directions()
         buffer_dir = headsup_display.get_buffer_direction()
 
-        render_order = iter(hud.SLOT_STATES)
+        render_order = iter(interface.SLOT_STATES)
         render_map = headsup_display.slot_frame_map()
 
         cap_frames = repository.get_slot_frames(headsup_display.media_size, 'cap')
@@ -281,7 +281,8 @@ class Renderer():
                 render_frame
             )
 
-    def _render_mirrors(self, headsup_display: hud.HUD, repository: repo.Repo):
+
+    def _render_mirrors(self, headsup_display: interface.HUD, repository: repo.Repo):
         rendering_points = headsup_display.get_rendering_points('mirror')
         life_map = headsup_display.life_frame_map()
 
@@ -299,7 +300,18 @@ class Renderer():
             )
 
 
-    def render(self, game_world: world.World, repository: repo.Repo, headsup_display: hud.HUD, crop: bool = True, layer: str = None):
+    def _render_menu(self, repository: repo.Repo):
+        pass
+
+
+    def render(
+        self, 
+        game_world: world.World, 
+        repository: repo.Repo, 
+        headsup_display: interface.HUD, 
+        menu: interface.Menu,
+        crop: bool = True, 
+        layer: str = None):
         """_summary_
 
         :param game_world: _description_
@@ -335,8 +347,9 @@ class Renderer():
 
             self.world_frame = self.world_frame.crop(crop_box)
         
-        if headsup_display.menu_activated:
+        if menu.menu_activated:
             gui.replace_alpha(self.world_frame, 127)
+            self._render_menu(repository)
 
         if headsup_display.hud_activated:
             self._render_slots(headsup_display, repository)
@@ -344,8 +357,15 @@ class Renderer():
 
         return self.world_frame
 
-    def view(self, game_world: world.World, view_widget: QtWidgets.QWidget, headsup_display: hud.HUD,repository: repo.Repo):        
-        cropped = self.render(game_world, repository, headsup_display)
+    def view(
+        self, 
+        game_world: world.World, 
+        view_widget: QtWidgets.QWidget, 
+        headsup_display: interface.HUD,
+        menu: interface.Menu,
+        repository: repo.Repo
+    ):        
+        cropped = self.render(game_world, repository, headsup_display, menu)
 
         pix = gui.convert_to_gui(cropped)
 

@@ -118,19 +118,25 @@ _Sprite_\s are complex creatures. They have properties defined in their configur
 Self
 ----
 
+The various components in this category are used to construct both the headsup display (HUD) and the menu. 
+
 ## Slots
 
-A slot is used to display the current mapping between the player's _Equipment_ and their equipment state. A player has four _equipment_ states, i.e. a state that gets binded and modified by _Equipment_, `thrust`, `slash`, `cast` and `shoot` (technically, these are actions; an _animate_ state is the combination of an _action_ and a _direction_; See [Sprites](./SPRITES.md) for more information on _Sprite_ _actions_ and _directions_).
+A _Slot_ is used to display the current mapping between the player's _Equipment_ and their equipment state on the heads up display. A player has four _equipment_ states, i.e. a state that gets binded and modified by _Equipment_, `thrust`, `slash`, `cast` and `shoot` (technically, these are actions; an _animate_ state is the combination of an _action_ and a _direction_; See [Sprites](./SPRITES.md) for more information on _Sprite_ _actions_ and _directions_).
 
 When a player enters into one of these four states, the slotted equipment will be added to the animation and the equipment properties will modify the player properties.
 
+A _Slot_ container has three four graphical components: an `empty` frame, an `equipped` frame, a `cap` frame and a `buffer` frame. 
+
 ## Mirrors
 
-A _Mirror_ measures and displays player state information, such as a life or magic meter. A _Mirror_ is a collection of _Unit_ frames, where the number of _Units_ displayed is directly proportional the player state being measured.
+A _Mirror_ measures and displays player state information, such as a life or magic meter, on the heads up display. A _Mirror_ is a collection of _Unit_ frames, where the number of _Units_ displayed is directly proportional the player state being measured.
+
+As such, a _Mirror_ container has two graphical components: an `empty` frame and a `unit` frame. 
 
 ## Packs
 
-A _Pack_ is similar to a _Slot_, in that it displays specific player state information. To understand what a _Pack_ is, take a look at its subtypes.
+A _Pack_ is similar to a _Slot_, in that it displays specific player state information related to controller mappings on the heads up display. To understand what a _Pack_ is, take a look at its subtypes.
 
 ### Bag
 
