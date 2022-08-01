@@ -111,6 +111,12 @@ class Controller():
                     self.keys[input] = False
         return user_input
 
+
+    def consume_all(self):
+        self.keys = { 
+            key: False for key in CONTROLS
+        }
+        
     def on_press(self, key):
         self.keys[self.map_key(key)] = True
     

@@ -126,15 +126,11 @@ def do(
             headsup_display.update(game_world)
 
         else:
-            # hud consumes user_input to traverse menu
-            # hud will need to return user input map so game_world
-            # can up hero equipment state, item state, etc.
-
-            # ... and that is the reason the menu should be its own class.
-            # the heads_up display should only consume the world state,
-            # whereas the menu should consume the world state and user_input
-
-            pass
+            # TODO: catch result in variable
+            menu.update(user_input)
+            controller.consume_all()
+            
+            # TODO: pass menu result back to game world
 
         if user_input['hud']:
             headsup_display.toggle_hud()

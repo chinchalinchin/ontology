@@ -13,7 +13,7 @@ SLOT_PIECES = [ 'cap', 'buffer', 'empty', 'equipped' ]
 BUTTON_PIECES = [ 'left', 'middle', 'right' ]
 MIRROR_PIECES = [ 'unit', 'empty' ]
 MIRROR_PADDING = (0.005, 0.005)
-MENU_MARGINS = (0.10, 0.20)
+MENU_MARGINS = (0.05, 0.20)
 MENU_PADDING = (0.05, 0.05)
 MAX_LIFE = 20
 
@@ -390,7 +390,6 @@ class HUD():
         self.hud_activated = not self.hud_activated
 
 
-
 class Menu():
     menu_conf = {}
     buttons = {}
@@ -401,9 +400,15 @@ class Menu():
     breakpoints = []
     button_rendering_points = []
     menu_activated = False
+    active_button = None
     media_size = None
 
-    def __init__(self, player_device: device.Device, ontology_path: str = settings.DEFAULT_DIR):
+
+    def __init__(
+        self, 
+        player_device: device.Device, 
+        ontology_path: str = settings.DEFAULT_DIR
+    ) -> None:
         config = conf.Conf(ontology_path).load_interface_configuration()
         state_ao = state.State(ontology_path).get_state('dynamic')
         self._init_conf(config)
@@ -415,7 +420,8 @@ class Menu():
         self._init_menu_positions(player_device)
         self._init_buttons(state_ao)
 
-    def _init_conf(self, config: conf.Conf):
+
+    def _init_conf(self, config: conf.Conf) -> None:
         self.menu_conf = config['menu']
         self.sizes = config['sizes']
         self.breakpoints = format_breakpoints(config['breakpoints'])
@@ -423,13 +429,13 @@ class Menu():
         self.styles = config['styles']
 
 
-    def _init_menu_positions(self, player_device: device.Device):
+    def _init_menu_positions(self, player_device: device.Device) -> None:
         menu_styles = self.styles[self.media_size]['menu']
 
-        # all button component pieces are same dimensions, so use enabled...
+        # all button component pieces have the same pieces, so any will do...
         button_conf = self.menu_conf[self.media_size]['button']['enabled']
 
-        # [ (left_w, left_h), (middle_w, middle_h), (right_w, right_h)]
+        # [ (left_w, left_h), (middle_w, middle_h), (right_w, right_h) ]
         dims = [
             (
                 button_conf[piece]['size']['w'],
@@ -452,11 +458,8 @@ class Menu():
 
                 if menu_styles['stack'] == 'vertical':
                     if i == 0 and j == 0:
-                        x_start = (1 - MENU_MARGINS[0])*player_device.dimensions[0] - full_width
-                        y_start = MENU_MARGINS[1]*player_device.dimensions[1]
-                        self.button_rendering_points.append(
-                            (x_start, y_start)
-                        )
+                        x = (1 - MENU_MARGINS[0])*player_device.dimensions[0] - full_width
+                        y = MENU_MARGINS[1]*player_device.dimensions[1]
                     else:
                         if j == 0:
                             x = self.button_rendering_points[0][0]
@@ -468,51 +471,105 @@ class Menu():
                             y = self.button_rendering_points[j-1][1] + \
                                 (1+MENU_PADDING[1])*i*dims[j-1][1]
 
-                        self.button_rendering_points.append((x,y))
-
                 elif menu_styles['stack'] == 'horizontal':
-                    if (i+1)*j == 0:
-                        self.button_rendering_points.append(
-                            MENU_MARGINS[0]*player_device.dimensions[0],
-                            MENU_MARGINS[1]*player_device.dimensions[1]
-                        )
+                    if i == 0 and j == 0:
+                        x = MENU_MARGINS[0]*player_device.dimensions[0]
+                        y = MENU_MARGINS[1]*player_device.dimensions[1]
                     else:
-                        self.button_rendering_points.append(
-                            (
-                                self.button_rendering_points[(i+1)*j - 1][0] + (1+MENU_PADDING)(dim[j][0]),
-                                self.button_rendering_points[(i+1)*j - 1][1]
-                            )
-                        )
+                        if j == 0 :
+                            x = self.button_rendering_points[0][0] + \
+                                i*(full_width + MENU_PADDING[0])
+                            y = self.button_rendering_points[0][1]
+                        else:
+                            x = self.button_rendering_points[j-1][0] + dims[j-1][0]
+                            y = self.button_rendering_points[j-1][1]
+            
+                self.button_rendering_points.append((x,y))
 
 
-    def _init_buttons(self, state_ao: state.State):
+    def _init_buttons(self, state_ao: state.State) -> dict:
         # TODO: calculate based on state information
-        self.buttons = {
-            name: {
-                piece: 'enabled' for piece in BUTTON_PIECES
-            } for name in self.properties['buttons']
+
+        for i, name in enumerate(self.properties['buttons']):
+            if i == 0:
+                self._activate_button(name)
+                self.active_button = i
+            else:
+                self._enable_button(name)
+
+
+    def _activate_button(self, button_key):
+        self.buttons[button_key] = {
+            piece: 'active' for piece in BUTTON_PIECES
         }
 
-    def button_frame_map(self):
+
+    def _disable_button(self, button_key):
+        self.buttons[button_key] = {
+            piece: 'disabled' for piece in BUTTON_PIECES
+        }
+
+
+    def _enable_button(self, button_key):
+        self.buttons[button_key] = {
+            piece: 'enabled' for piece in BUTTON_PIECES
+        }
+
+
+    def increment_active_button(self):
+        ## TODO: skip disabled buttons
+        previous_active = self.active_button
+        self.active_button -= 1
+
+        if self.active_button < 0:
+            self.active_button = len(self.properties['buttons']) - 1
+        
+        self._enable_button(self.properties['buttons'][previous_active])
+        self._activate_button(self.properties['buttons'][self.active_button])
+
+
+    def decrement_active_button(self):
+        ## TODO: skip disabled buttons
+        previous_active = self.active_button
+        self.active_button += 1
+
+        if self.active_button > len(self.properties['buttons']) - 1:
+            self.active_button = 0
+        
+        self._enable_button(self.properties['buttons'][previous_active])
+        self._activate_button(self.properties['buttons'][self.active_button])
+
+
+    def button_frame_map(self) -> list:
         frame_map = []
         for piece_conf in self.buttons.values():
             for piece_state in piece_conf.values():
                 frame_map.append(piece_state)
         return frame_map
 
-    def button_piece_map(self):
+
+    def button_piece_map(self) -> list:
         piece_map = []
         for piece_conf in self.buttons.values():
             for piece_key in piece_conf.keys():
                 piece_map.append(piece_key)
         return piece_map
 
-    def button_maps(self):
-        return self.button_frame_map(), self.button_piece_map()
+
+    def button_maps(self) -> tuple:
+        return (self.button_frame_map(), self.button_piece_map())
+
 
     def toggle_menu(self) -> None:
         self.menu_activated = not self.menu_activated
 
-    def get_rendering_points(self, interface_key):
+
+    def get_rendering_points(self, interface_key) -> list:
         if interface_key in [ 'button', 'buttons' ]:
             return self.button_rendering_points
+
+    def update(self, user_input):
+        if user_input['n']:
+            self.increment_active_button()
+        elif user_input['s']:
+            self.decrement_active_button()

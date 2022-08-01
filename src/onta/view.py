@@ -304,6 +304,17 @@ class Renderer():
 
 
     def _render_menu(self, menu: interface.Menu, repository: repo.Repo):
+        gui.replace_alpha(self.world_frame, 127)
+        overlay = gui.channels(
+            self.player_device.dimensions, 
+            (20, 67, 142, 175)
+        )
+        self.world_frame.paste(
+            overlay,
+            (0,0),
+            overlay
+        )
+
         btn_rendering_points = menu.get_rendering_points('button')
 
         btn_frame_map, btn_piece_map = menu.button_maps()
@@ -365,7 +376,6 @@ class Renderer():
             self.world_frame = self.world_frame.crop(crop_box)
         
         if menu.menu_activated:
-            gui.replace_alpha(self.world_frame, 127)
             self._render_menu(menu, repository)
 
         if headsup_display.hud_activated:

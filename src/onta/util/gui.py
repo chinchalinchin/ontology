@@ -17,3 +17,7 @@ def new_image(dim: tuple) -> Image.Image:
 
 def replace_alpha(img: Image.Image, alpha: int) -> None:
     return img.putalpha(alpha)
+
+
+def channels(dim, channels):
+    return Image.new(settings.IMG_MODE, dim, channels)
