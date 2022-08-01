@@ -176,11 +176,19 @@ esmeralda:
             -   plot: a
                 intent: one
                 dialogue:
-                    - null
+                    -   type: converse
+                        content: esmeralda_a
+                    -   type: action
+                        content: esmeralda_a
             -   plot: b
                 intent: one
                 dialogue:
-                    - null
+                    -   type: converse
+                        content: B
+                    -   type: converse
+                        content: C
+                    -   type: action
+                        content: A
     states:
         -   state: thrust_up
             row: 4
@@ -282,20 +290,16 @@ skeleton:
         intents:
             -   plot: a
                 intent: hero
-                dialogue: 
-                    - null
+                dialogue: null
             -   plot: a
                 intent: esmeralda
-                dialogue:
-                    - null
+                dialogue: null
             -   plot: b
                 intent: two
-                dialogue:
-                    - null
+                dialogue: null
             -   plot: b
                 intent: esmeralda
-                dialogue:
-                    - null
+                dialogue:  null
     states:
         -   state: thrust_up
             row: 4

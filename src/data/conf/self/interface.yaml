@@ -11,7 +11,7 @@ styles:
     slots:
       stack: horizontal
       alignment: 
-        vertical: top
+        vertical: bottom
         horizontal: left
       opacity: 0.5
     mirrors:
@@ -22,11 +22,13 @@ styles:
       opacity: 0.5
     avatars: null
     packs: null
+    menu:
+      stack: vertical
   large:
     slots:
       stack: horizontal
       alignment: 
-        vertical: top
+        vertical: bottom
         horizontal: left
       opacity: 0.5
     mirrors:
@@ -37,6 +39,8 @@ styles:
       opacity: 0.5
     packs: null
     avatars: null
+    menu:
+      stack: vertical
 
 properties:
   slots: 
@@ -54,6 +58,7 @@ properties:
     buttons:
       - equipment
       - inventory
+      - status
       - map
       - save
       - load
@@ -69,11 +74,6 @@ hud:
         size:
           w: 40
           h: 40
-        channels:
-          r: null
-          g: null
-          b: null
-          a: 127
       equipped:
         path: slotsheet.png
         position:
@@ -82,11 +82,6 @@ hud:
         size:
           w: 40
           h: 40
-        channels:
-          r: null
-          g: null
-          b: null
-          a: 127
       cap:
         path: slotsheet.png
         definition: left
@@ -96,11 +91,6 @@ hud:
         size:
           w: 16
           h: 24
-        channels:
-          r: null
-          g: null
-          b: null
-          a: 127
       buffer:
         path: slotsheet.png
         definition: horizontal
@@ -110,11 +100,6 @@ hud:
         size:
           w: 4
           h: 32
-        channels:
-          r: null
-          g: null
-          b: null
-          a: 127
     mirrors:
       life:
         unit: 
@@ -125,7 +110,6 @@ hud:
           size: 
             w: 16
             h: 16
-          channels: null
         empty:
           path: hearts.png
           position: 
@@ -134,7 +118,6 @@ hud:
           size: 
             w: 16
             h: 16
-          channels: null
       magic:
         unit: 
           path: hearts.png
@@ -144,7 +127,6 @@ hud:
           size: 
             w: 16
             h: 16
-          channels: null
         empty:
           path: hearts.png
           position: 
@@ -153,7 +135,6 @@ hud:
           size: 
             w: 16
             h: 16
-          channels: null
     packs:
       bag: null
       belt: null
@@ -183,11 +164,6 @@ hud:
         size:
           w: 40
           h: 40
-        channels:
-          r: null
-          g: null
-          b: null
-          a: 127
       equipped:
         path: slotsheet.png
         position:
@@ -196,11 +172,6 @@ hud:
         size:
           w: 40
           h: 40
-        channels:
-          r: null
-          g: null
-          b: null
-          a: 127
       cap:
         path: slotsheet.png
         definition: left
@@ -210,11 +181,6 @@ hud:
         size:
           w: 16
           h: 24
-        channels:
-          r: null
-          g: null
-          b: null
-          a: 127
       buffer:
         path: slotsheet.png
         definition: horizontal
@@ -224,11 +190,6 @@ hud:
         size:
           w: 4
           h: 32
-        channels:
-          r: null
-          g: null
-          b: null
-          a: 127
     mirrors:
       life:
         unit: 
@@ -248,7 +209,6 @@ hud:
           size: 
             w: 16
             h: 16
-          channels: null
       magic:
         unit: 
           path: hearts.png
@@ -258,7 +218,6 @@ hud:
           size: 
             w: 16
             h: 16
-          channels: null
         empty:
           path: hearts.png
           position: 
@@ -267,7 +226,6 @@ hud:
           size: 
             w: 16
             h: 16
-          channels: null
       magic: null
       bag: null
       belt: null
@@ -303,11 +261,6 @@ menu:
           size:
             w: 41
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255
         right:
           path: slotsheet.png
           position:
@@ -316,11 +269,6 @@ menu:
           size:
             w: 40
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255 
         middle:
           path: slotsheet.png
           position:
@@ -329,11 +277,6 @@ menu:
           size:
             w: 40
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255
       active:
         left: 
           path: slotsheet.png
@@ -343,11 +286,6 @@ menu:
           size:
             w: 41
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255
         right:
           path: slotsheet.png
           position:
@@ -355,12 +293,7 @@ menu:
             y: 53
           size:
             w: 41
-            h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255 
+            h: 28 
         middle:
           path: slotsheet.png
           position:
@@ -369,11 +302,6 @@ menu:
           size:
             w: 40
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255
       disabled:
         left: 
           path: slotsheet.png
@@ -383,11 +311,6 @@ menu:
           size:
             w: 41
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255
         right:
           path: slotsheet.png
           position:
@@ -396,11 +319,6 @@ menu:
           size:
             w: 41
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255 
         middle:
           path:
           position:
@@ -409,11 +327,6 @@ menu:
           size:
             w: 40
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255
   large:
     button:
       enabled:
@@ -425,11 +338,6 @@ menu:
           size:
             w: 41
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255
         right:
           path: slotsheet.png
           position:
@@ -438,11 +346,6 @@ menu:
           size:
             w: 40
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255 
         middle:
           path: slotsheet.png
           position:
@@ -451,11 +354,6 @@ menu:
           size:
             w: 40
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255
       active:
         left: 
           path: slotsheet.png
@@ -465,11 +363,6 @@ menu:
           size:
             w: 41
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255
         right:
           path: slotsheet.png
           position:
@@ -477,12 +370,7 @@ menu:
             y: 53
           size:
             w: 41
-            h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255 
+            h: 28 
         middle:
           path: slotsheet.png
           position:
@@ -491,11 +379,6 @@ menu:
           size:
             w: 40
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255
       disabled:
         left: 
           path: slotsheet.png
@@ -517,12 +400,7 @@ menu:
             y: 83
           size:
             w: 41
-            h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255 
+            h: 28 
         middle:
           path:
           position:
@@ -531,11 +409,6 @@ menu:
           size:
             w: 40
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255
 
     
       

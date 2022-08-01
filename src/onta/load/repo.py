@@ -12,7 +12,6 @@ log = logger.Logger('onta.repo', settings.LOG_LEVEL)
 
 STATIC_ASSETS_TYPES = [ 'tiles', 'struts', 'plates' ]
 SWITCH_PLATES_TYPES = [ 'container', 'pressure', 'gate' ]
-UNITLESS_UI_TYPES = [ 'slots', 'avatars' ]
 
 class Repo():
 
@@ -63,9 +62,8 @@ class Repo():
         config = conf.Conf(ontology_path)
         self._init_static_assets(config, ontology_path)
         self._init_sprite_assets(config, ontology_path)
-        self._init_unitless_hud_assets(config, ontology_path)
-        self._init_metered_hud_assets(config, ontology_path)
-        self._init_menu_assets(config, ontology_path)
+        self._init_slot_assets(config, ontology_path)
+        self._init_interface_assets(config, ontology_path)
 
 
     def _init_static_assets(self, config: conf.Conf, ontology_path: str) -> None:
@@ -155,7 +153,7 @@ class Repo():
                             self.plates[asset_key] = buffer
  
 
-    def _init_unitless_hud_assets(self, config: conf.Conf, ontology_path: str) -> None:
+    def _init_slot_assets(self, config: conf.Conf, ontology_path: str) -> None:
         """_summary_
 
         :param config: _description_
@@ -168,117 +166,123 @@ class Repo():
         """
         interface_conf = config.load_interface_configuration()
         for size in interface_conf['sizes']:
-            self.slots[size], self.avatars[size] = {}, {}
-            self.slots[size]['slot'] = {}
+            self.slots[size]= {}
 
-            for interfaceset_key in UNITLESS_UI_TYPES:
-                interfaceset = interface_conf['hud'][size][interfaceset_key]
-                log.debug(f'Initializing {interfaceset_key} assets...', 'Repo._init_interface_assets')
-                
-                for interface_key, interface in interfaceset.items():
-                    if interface:
-                        w, h = interface['size']['w'], interface['size']['h']   
+            slotset = interface_conf['hud'][size]['slots']
+            log.debug(f'Initializing slot assets...', 'Repo._init_interface_assets')
+            
+            for slot_key, slot in slotset.items():
+                if slot:
+                    w, h = slot['size']['w'], slot['size']['h']   
 
-                        if interface.get('path'):
-                            x, y = interface['position']['x'], interface['position']['y']
-         
-                            image_path = os.path.join(
-                                    ontology_path,
-                                    *settings.SENSES_PATH,
-                                    interface['path']
+                    if slot.get('path'):
+                        x, y = slot['position']['x'], slot['position']['y']
+        
+                        image_path = os.path.join(
+                                ontology_path,
+                                *settings.SENSES_PATH,
+                                slot['path']
+                        )
+                        buffer = Image.open(image_path).convert(settings.IMG_MODE)
+
+                        log.debug( f"Slot {slot_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                            'Repo._init_interface_assets')
+
+                        slot_conf = interface_conf['hud'][size]['slots']
+                        buffer = buffer.crop((x,y,w+x,h+y))
+
+                        if slot_key == 'cap':
+                            (down_adjust, left_adjust, right_adjust, up_adjust) = \
+                                self.adjust_cap_rotation(
+                                    slot_conf['cap']['definition']
                                 )
-                            buffer = Image.open(image_path).convert(settings.IMG_MODE)
-
-                            # TODO: check if channels exist and then apply as appropriate
-
-                        elif interface.get('channels'):
-                            channels = (
-                                interface['channels']['r'], 
-                                interface['channels']['g'],
-                                interface['channels']['b'],
-                                interface['channels']['a']
+                            self.slots[size][slot_key] = {
+                                'up': buffer.rotate(
+                                    up_adjust,
+                                    expand=True
+                                ),
+                                'left': buffer.rotate(
+                                    left_adjust,
+                                    expand=True
+                                ),
+                                'right': buffer.rotate(
+                                    right_adjust,
+                                    expand=True
+                                ),
+                                'down': buffer.rotate(
+                                    down_adjust,
+                                    expand=True
+                                )
+                            }
+                        elif slot_key == 'buffer':
+                            (vertical_adjust, horizontal_adjust) = \
+                                self.adjust_buffer_rotation(
+                                slot_conf['buffer']['definition']  
                             )
-                            buffer = Image.new(settings.IMG_MODE, (w,h), channels)
-                        
-                        if buffer:
-                            log.debug( f"{interfaceset_key} {interface_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                                'Repo._init_interface_assets')
-
-                            slot_conf = interface_conf['hud'][size]['slots']
-                            buffer = buffer.crop((x,y,w+x,h+y))
-                            if interface_key == 'cap':
-                                (down_adjust, left_adjust, right_adjust, up_adjust) = \
-                                    self.adjust_cap_rotation(
-                                        slot_conf['cap']['definition']
-                                    )
-                                self.slots[size][interface_key] = {
-                                    'up': buffer.rotate(
-                                        up_adjust,
-                                        expand=True
-                                    ),
-                                    'left': buffer.rotate(
-                                        left_adjust,
-                                        expand=True
-                                    ),
-                                    'right': buffer.rotate(
-                                        right_adjust,
-                                        expand=True
-                                    ),
-                                    'down': buffer.rotate(
-                                        down_adjust,
-                                        expand=True
-                                    )
-                                }
-                            elif interface_key == 'buffer':
-                                (vertical_adjust, horizontal_adjust) = \
-                                    self.adjust_buffer_rotation(
-                                    slot_conf['buffer']['definition']  
+                            self.slots[size][slot_key] = {
+                                'vertical': buffer.rotate(
+                                    vertical_adjust,
+                                    expand=True
+                                ),
+                                'horizontal': buffer.rotate(
+                                    horizontal_adjust,
+                                    expand=True
                                 )
-                                self.slots[size][interface_key] = {
-                                    'vertical': buffer.rotate(
-                                        vertical_adjust,
-                                        expand=True
-                                    ),
-                                    'horizontal': buffer.rotate(
-                                        horizontal_adjust,
-                                        expand=True
-                                    )
-                                }
-                            elif interface_key in ['empty', 'equipped']:
-                                self.slots[size]['slot'][interface_key] = buffer
+                            }
+                        elif slot_key in ['empty', 'equipped']:
+                            self.slots[size][slot_key] = buffer
 
 
-    def _init_metered_hud_assets(self, config: conf.Conf, ontology_path: str) -> None:
+    def _init_interface_assets(self, config: conf.Conf, ontology_path: str) -> None:
         interface_conf = config.load_interface_configuration()
 
         for size in interface_conf['sizes']:
             self.mirrors[size] = {}
             mirror_set = interface_conf['hud'][size]['mirrors']
 
+
+            # (life, mirror), (magic, mirror)
             for mirror_key, mirror in mirror_set.items():
                 if mirror:
                     self.mirrors[size][mirror_key] = {}
                     
-                    for mirror_fill in ['unit', 'empty']:
-                        if mirror[mirror_fill].get('path'):
-                            x,y = mirror[mirror_fill]['position']['x'], mirror[mirror_fill]['position']['y']
-                            w, h = mirror[mirror_fill]['size']['w'], mirror[mirror_fill]['size']['h']
+                    # for (unit, fill), (empty, fill)
+                    for fill_key, fill in mirror.items():
+                        if fill.get('path'):
+                            x,y = fill['position']['x'], fill['position']['y']
+                            w, h = fill['size']['w'], fill['size']['h']
                             
                             image_path = os.path.join(
                                 ontology_path,
                                 *settings.SENSES_PATH,
-                                mirror[mirror_fill]['path']
+                                fill['path']
                             )
                             buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
-                            self.mirrors[size][mirror_key][mirror_fill] = buffer.crop((x,y,w+x,h+y))
-
-
-    def _init_menu_assets(self, config: conf.Conf, ontology_path: str) -> None:
-        interface_conf = config.load_interface_configuration()
-        for size in interface_conf['sizes']:
+                            self.mirrors[size][mirror_key][fill_key] = buffer.crop((x,y,w+x,h+y))
+            
             self.menus[size] = {}
             button_set = interface_conf['menu'][size]['button']
+
+            # for (enabled, button), (active, button), (disabled, button)
+            for button_key, button in button_set.items():
+                if button:
+                    self.menus[size][button_key] = {}
+                    
+                    # for (left, piece), (right, piece), (middle, piece)
+                    for piece_key, piece in button.items():
+                        if piece.get('path'):
+                            x,y = (piece['position']['x'], piece['position']['y'])
+                            w,h = (piece['size']['w'], piece['size']['h'])
+
+                            image_path = os.path.join(
+                                ontology_path,
+                                *settings.SENSES_PATH,
+                                piece['path']
+                            )
+                            buffer = Image.open(image_path).convert(settings.IMG_MODE)
+
+                            self.menus[size][button_key][piece_key] = buffer.crop((x,y,w+x,h+y))
 
 
     def _init_sprite_assets(self, config: conf.Conf, ontology_path: str) -> None:
@@ -346,17 +350,36 @@ class Repo():
         return None
     
 
-    def get_slot_frames(self, breakpoint_key, component_key) -> Union[Image.Image, None]:
+    def get_slot_frames(self, breakpoint_key: str, component_key) -> Union[Image.Image, None]:
         if self.slots.get(breakpoint_key):
             return self.slots[breakpoint_key].get(component_key)
         return None
         
 
-    def get_mirror_frame(self, breakpoint_key, component_key, fill_key):
+    def get_mirror_frame(self, breakpoint_key: str, component_key: str, fill_key):
         if self.mirrors.get(breakpoint_key) and self.mirrors[breakpoint_key].get(component_key):
             return self.mirrors[breakpoint_key][component_key].get(fill_key)
         return None
 
 
+    def get_menu_frame(self, breakpoint_key, component_key, piece_key) -> Union[Image.Image, None]:
+        if self.menus.get(breakpoint_key) and self.menus[breakpoint_key].get(component_key):
+            return self.menus[breakpoint_key][component_key].get(piece_key)
+        return None
+
+
     def get_sprite_frame(self, sprite: str, state: str, frame: int) -> Union[Image.Image, None]:
-        return self.sprites[sprite][state][frame]
+        """Return the sprite frame corresponding to a given state and a frame iteration.
+
+        :param sprite: Sprite key for lookup
+        :type sprite: str
+        :param state: State key for lookup
+        :type state: str
+        :param frame: Frame iteration index for lookup; this variable represents which frame in the state animation the sprite is currently in.
+        :type frame: int
+        :return: An image cropped to the approprite sprite state frame.
+        :rtype: Union[Image.Image, None]
+        """
+        if self.sprites.get(sprite) and self.sprites[sprite].get(state):
+            return self.sprites[sprite][state][frame]
+        return None

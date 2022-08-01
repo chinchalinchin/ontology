@@ -9,7 +9,12 @@ import onta.util.logger as logger
 log = logger.Logger('onta.hud', settings.LOG_LEVEL)
 
 SLOT_STATES = [ 'cast', 'shoot', 'thrust', 'slash' ]
-MIRROR_PADDING = 0.005
+SLOT_PIECES = [ 'cap', 'buffer', 'empty', 'equipped' ]
+BUTTON_PIECES = [ 'left', 'middle', 'right' ]
+MIRROR_PIECES = [ 'unit', 'empty' ]
+MIRROR_PADDING = (0.005, 0.005)
+MENU_MARGINS = (0.10, 0.20)
+MENU_PADDING = (0.05, 0.05)
 MAX_LIFE = 20
 
 def format_breakpoints(break_points: list) -> list:
@@ -105,6 +110,7 @@ class HUD():
 
         life_cols = self.properties['mirrors']['life']['columns']
         life_rows = self.properties['mirrors']['life']['rows']
+        # NOTE: dependent on 'unit' and 'empty' being the same dimensions...
         life_dim = (
             self.hud_conf[self.media_size]['mirrors']['life']['unit']['size']['w'],
             self.hud_conf[self.media_size]['mirrors']['life']['unit']['size']['h']
@@ -115,23 +121,23 @@ class HUD():
         if mirror_styles['alignment']['horizontal'] == 'right':
             x_start = player_device.dimensions[0] - \
                 x_margins - \
-                life_cols * life_dim[0]*(1 + MIRROR_PADDING) 
+                life_cols * life_dim[0]*(1 + MIRROR_PADDING[0]) 
 
         elif mirror_styles['alignment']['horizontal'] == 'left':
             x_start = x_margins
         else: # center
             x_start = (player_device.dimensions[0] - \
-                life_cols * life_dim[0] *(1 + MIRROR_PADDING))/2
+                life_cols * life_dim[0] *(1 + MIRROR_PADDING[0]))/2
         
         if mirror_styles['alignment']['vertical'] == 'top':
             y_start = y_margins
         elif mirror_styles['alignment']['vertical'] == 'bottom':
             y_start = player_device.dimensions[1] - \
                 y_margins - \
-                life_rows * life_dim[1] * (1 + MIRROR_PADDING)
+                life_rows * life_dim[1] * (1 + MIRROR_PADDING[1])
         else: # center
             y_start = (player_device.dimensions[1] - \
-                life_rows * life_dim[1] * (1 + MIRROR_PADDING))/2
+                life_rows * life_dim[1] * (1 + MIRROR_PADDING[1]))/2
 
 
         if mirror_styles['stack'] == 'vertical':
@@ -152,7 +158,7 @@ class HUD():
                         self.life_rendering_points.append(
                             (
                                 self.life_rendering_points[(row+1)*col - 1][0] + \
-                                    life_dim[0]*(1+MIRROR_PADDING),
+                                    life_dim[0]*(1+MIRROR_PADDING[0]),
                                 self.life_rendering_points[(row+1)*col - 1][1]
                             )
                         )
@@ -162,7 +168,7 @@ class HUD():
                                 self.life_rendering_points[(row+1)*col - 1][0] + \
                                     life_dim[0],
                                 self.life_rendering_points[(row+1)*col - 1][1] + \
-                                    life_dim[1]*(1+MIRROR_PADDING)
+                                    life_dim[1]*(1+MIRROR_PADDING[1])
                             )
                         )
 
@@ -186,17 +192,18 @@ class HUD():
             self.hud_conf[self.media_size]['slots']['buffer'],
             self.styles[self.media_size]['slots']['stack']
         )
+        # NOTE: dependent on 'empty' and 'equipped' being the same dimensions...
         slot_dim = (
             self.hud_conf[self.media_size]['slots']['empty']['size']['w'],
             self.hud_conf[self.media_size]['slots']['empty']['size']['h']
         )
 
         if slot_styles['alignment']['horizontal'] == 'right':
-                x_start = player_device.dimensions[0] \
-                    - x_margins \
-                    - slots_total*slot_dim[0] \
-                    - (slots_total-1)*buffer_dim[0] \
-                    - 2*cap_dim[0]
+            x_start = player_device.dimensions[0] \
+                - x_margins \
+                - slots_total*slot_dim[0] \
+                - (slots_total-1)*buffer_dim[0] \
+                - 2*cap_dim[0]
         elif slot_styles['alignment']['horizontal'] == 'center':
             x_start = (player_device.dimensions[0] \
                 - slots_total*slot_dim[0] \
@@ -208,6 +215,11 @@ class HUD():
 
                 
         if slot_styles['alignment']['vertical'] == 'bottom':
+            if slot_styles['stack'] == 'horizontal':
+                y_start = player_device.dimensions[1] \
+                    - y_margins \
+                    - slot_dim[1] 
+            elif slot_styles['stack'] == 'vertical':
                 y_start = player_device.dimensions[1] \
                     - y_margins \
                     - slots_total*slot_dim[1] \
@@ -221,11 +233,12 @@ class HUD():
         else: # top
             y_start = y_margins
 
-        # number of slots + number of buffer + number of caps
+        # number of slots + number of buffers + number of caps
         num = slots_total + (slots_total - 1) + 2
         if slot_styles['stack'] == 'horizontal':
             buffer_correction = (slot_dim[1] - buffer_dim[1])/2
             cap_correction = (slot_dim[1] - cap_dim[1])/2 
+
             for i in range(num):
                 if i == 0:
                     self.slot_rendering_points.append(
@@ -380,8 +393,10 @@ class HUD():
 
 class Menu():
     menu_conf = {}
+    buttons = {}
     menus = {}
     properties = {}
+    styles = {}
     sizes = []
     breakpoints = []
     button_rendering_points = []
@@ -398,15 +413,106 @@ class Menu():
             self.breakpoints
         )
         self._init_menu_positions(player_device)
+        self._init_buttons(state_ao)
 
     def _init_conf(self, config: conf.Conf):
         self.menu_conf = config['menu']
         self.sizes = config['sizes']
         self.breakpoints = format_breakpoints(config['breakpoints'])
         self.properties = config['properties']['menu']
+        self.styles = config['styles']
+
 
     def _init_menu_positions(self, player_device: device.Device):
-        pass
+        menu_styles = self.styles[self.media_size]['menu']
+
+        # all button component pieces are same dimensions, so use enabled...
+        button_conf = self.menu_conf[self.media_size]['button']['enabled']
+
+        # [ (left_w, left_h), (middle_w, middle_h), (right_w, right_h)]
+        dims = [
+            (
+                button_conf[piece]['size']['w'],
+                button_conf[piece]['size']['h']
+            ) for piece in BUTTON_PIECES
+        ]
+
+        full_width = 0
+        for dim in dims:
+            full_width += dim[0]
+
+
+        # self.button_rendering_points => len() == len(buttons)*len(pieces)
+        # for (0, equipment), (1, inventory), (2, status), ...
+        for i in range(len(self.properties['buttons'])):
+
+            # for (0, left), (1, middle), (2, right)
+            # j gives you index for the piece dim in dims
+            for j in range(len(button_conf)):
+
+                if menu_styles['stack'] == 'vertical':
+                    if i == 0 and j == 0:
+                        x_start = (1 - MENU_MARGINS[0])*player_device.dimensions[0] - full_width
+                        y_start = MENU_MARGINS[1]*player_device.dimensions[1]
+                        self.button_rendering_points.append(
+                            (x_start, y_start)
+                        )
+                    else:
+                        if j == 0:
+                            x = self.button_rendering_points[0][0]
+                            y = self.button_rendering_points[0][1] + \
+                                (1+MENU_PADDING[1])*i*dims[0][1]
+                        else:
+                            x = self.button_rendering_points[j-1][0] + \
+                                dims[j-1][0]
+                            y = self.button_rendering_points[j-1][1] + \
+                                (1+MENU_PADDING[1])*i*dims[j-1][1]
+
+                        self.button_rendering_points.append((x,y))
+
+                elif menu_styles['stack'] == 'horizontal':
+                    if (i+1)*j == 0:
+                        self.button_rendering_points.append(
+                            MENU_MARGINS[0]*player_device.dimensions[0],
+                            MENU_MARGINS[1]*player_device.dimensions[1]
+                        )
+                    else:
+                        self.button_rendering_points.append(
+                            (
+                                self.button_rendering_points[(i+1)*j - 1][0] + (1+MENU_PADDING)(dim[j][0]),
+                                self.button_rendering_points[(i+1)*j - 1][1]
+                            )
+                        )
+
+
+    def _init_buttons(self, state_ao: state.State):
+        # TODO: calculate based on state information
+        self.buttons = {
+            name: {
+                piece: 'enabled' for piece in BUTTON_PIECES
+            } for name in self.properties['buttons']
+        }
+
+    def button_frame_map(self):
+        frame_map = []
+        for piece_conf in self.buttons.values():
+            for piece_state in piece_conf.values():
+                frame_map.append(piece_state)
+        return frame_map
+
+    def button_piece_map(self):
+        piece_map = []
+        for piece_conf in self.buttons.values():
+            for piece_key in piece_conf.keys():
+                piece_map.append(piece_key)
+        return piece_map
+
+    def button_maps(self):
+        return self.button_frame_map(), self.button_piece_map()
 
     def toggle_menu(self) -> None:
         self.menu_activated = not self.menu_activated
+
+    def get_rendering_points(self, interface_key):
+        if interface_key in [ 'button', 'buttons' ]:
+            return self.button_rendering_points

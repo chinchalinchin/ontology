@@ -262,7 +262,10 @@ class Renderer():
 
         cap_frames = repository.get_slot_frames(headsup_display.media_size, 'cap')
         buffer_frames = repository.get_slot_frames(headsup_display.media_size, 'buffer')
-        slot_frames = repository.get_slot_frames(headsup_display.media_size, 'slot')
+        slot_frames = {
+            'empty': repository.get_slot_frames(headsup_display.media_size, 'empty'),
+            'equipped':  repository.get_slot_frames(headsup_display.media_size, 'equipped')
+        }
 
         for i, render_point in enumerate(rendering_points):
             if i == 0:
@@ -300,8 +303,22 @@ class Renderer():
             )
 
 
-    def _render_menu(self, repository: repo.Repo):
-        pass
+    def _render_menu(self, menu: interface.Menu, repository: repo.Repo):
+        btn_rendering_points = menu.get_rendering_points('button')
+
+        btn_frame_map, btn_piece_map = menu.button_maps()
+
+        for i, render_point in enumerate(btn_rendering_points):
+            render_frame = repository.get_menu_frame(
+                menu.media_size, 
+                btn_frame_map[i],
+                btn_piece_map[i]
+            )
+            self.world_frame.paste(
+                render_frame,
+                (int(render_point[0]), int(render_point[1])),
+                render_frame
+            )
 
 
     def render(
@@ -349,7 +366,7 @@ class Renderer():
         
         if menu.menu_activated:
             gui.replace_alpha(self.world_frame, 127)
-            self._render_menu(repository)
+            self._render_menu(menu, repository)
 
         if headsup_display.hud_activated:
             self._render_slots(headsup_display, repository)
