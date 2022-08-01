@@ -14,7 +14,7 @@ import onta.util.gui as gui
 
 
 SWITCH_PLATES = ['container', 'pressure', 'gate']
-
+MATERIAL_BLUE_900 = (20, 67, 142, 175)
 
 log = logger.Logger('onta.view', settings.LOG_LEVEL)
 
@@ -307,7 +307,7 @@ class Renderer():
         gui.replace_alpha(self.world_frame, 127)
         overlay = gui.channels(
             self.player_device.dimensions, 
-            (20, 67, 142, 175)
+            MATERIAL_BLUE_900
         )
         self.world_frame.paste(
             overlay,
@@ -316,7 +316,7 @@ class Renderer():
         )
 
         btn_rendering_points = menu.get_rendering_points('button')
-
+        
         btn_frame_map, btn_piece_map = menu.button_maps()
 
         for i, render_point in enumerate(btn_rendering_points):
@@ -372,7 +372,6 @@ class Renderer():
             world_dim = game_world.dimensions
             hero_pt = (game_world.hero['position']['x'], game_world.hero['position']['y'])
             crop_box = self.calculate_crop_box(self.player_device.dimensions, world_dim, hero_pt)
-
             self.world_frame = self.world_frame.crop(crop_box)
         
         if menu.menu_activated:
@@ -383,6 +382,7 @@ class Renderer():
             self._render_mirrors(headsup_display, repository)
 
         return self.world_frame
+
 
     def view(
         self, 

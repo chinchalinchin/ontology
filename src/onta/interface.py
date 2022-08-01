@@ -481,7 +481,7 @@ class Menu():
                                 i*(full_width + MENU_PADDING[0])
                             y = self.button_rendering_points[0][1]
                         else:
-                            x = self.button_rendering_points[j-1][0] + dims[j-1][0]
+                            x = self.button_rendering_points[len(self.button_rendering_points)-1][0] + dims[j-1][0]
                             y = self.button_rendering_points[j-1][1]
             
                 self.button_rendering_points.append((x,y))
