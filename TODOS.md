@@ -40,3 +40,12 @@ What does plot space looks like?
 - Menu can alter the world's dynamic state. HUD cannot. HUD is just a vessel for information, while Menu is an interface for altering information (or at least associations)
 
 - The essence of the collision bug is due to the diagonal directions. When only four directions, no bugs. But because recoil is based on direction of sprite, and diagonal movement mixes orthogonal directions with left and right, result in recoil not knowing which direction to send the sprite. Only applies to hero since that is the only sprite that can move diagonally.
+
+
+!!!!!! DO THIS BELOW !!!!!!!!!!!!!!!!!!!1
+
+- Is there really any need to differentiate between NPCS and villains? It would condense alot of information into a single category and the game logic should use intents and desires to determine whether or not an NPC is hostile. in fact, i think i can just shift the villain definition as is into the npc state and it should function. then i can remove the villains configuration and properties from the world, drastically cleaning it up. 
+
+!!!!!!!! DO THIS ABOVE !!!!!!!
+
+- refactor all the hitbox generation and composite set decomposition into engine package to clean up world module.

@@ -241,6 +241,7 @@ class World():
             self.compositions[layer_key] = layer_conf.get('compositions')
 
 
+    # TODO: shift this method to ...engine somwhere to clean up world
     def _decompose_composite_static_state(self) -> None:
         """_summary_
 
@@ -344,6 +345,7 @@ class World():
                                     self.platesets = buffer_sets
 
 
+    # TODO: see above
     def _generate_stationary_hitboxes(self) -> None:
         """
         Construct static hitboxes from object dimensions and properties.
@@ -890,6 +892,10 @@ class World():
 
 
     def get_spriteset(self, spriteset_key):
+        # TODO: should either overload this with layer to allow filtering by layer.
+
+        # this is how the view retrieves the spriteset to be rendered, and why sprites
+        # are rendered on all layers, instead of the layer they are on.
         if spriteset_key == 'hero':
             return { 'hero': self.hero }
         elif spriteset_key == 'npcs':

@@ -55,6 +55,7 @@ hero:
       key: null
     pocket:
       produce: null
+      herb: null
       pelt: null
       ore: null
       crystal: null

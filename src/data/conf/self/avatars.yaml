@@ -211,6 +211,7 @@ avatars:
       size:
         w: 36
         h: 35
+    herb: null
     pelt: null
     ore: 
       path: ore.png
