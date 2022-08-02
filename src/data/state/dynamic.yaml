@@ -48,19 +48,18 @@ hero:
       fire_arrow: null
       magic_arrow: null
       bolt: null
-      rapid_bolt: null
-      cannon_ball: null
+      precise_bolt: null
+      poison_ball: null
+      stone: null
       pellet: null
       spike: null
-      dart: null
     wallet:
       coin: null
       key: null
     pocket:
-      carrot: null
-      tomato: null
-      iron_ore: null
-      copper_ore: null
+      produce: null
+      pelt: null
+      ore: null
       crystal: null
       butterfly: null
 

@@ -10,9 +10,31 @@ avatars:
       size:
         w: 30
         h: 19
+    gold:
+      path:
+      position:
+        x:
+        y:
+      size:
+        w:
+        h:
+    bronze:
+      path:
+      position:
+        x:
+        y:
+      size:
+        w:
+        h:
   equipment:
     bow:
-      path: 
+      path: items.png
+      position:
+        x: 291
+        y: 109
+      size:
+        w: 31
+        h: 31
     crossbow:
       path: equipment.png
       position:
@@ -21,9 +43,30 @@ avatars:
       size:
         w: 30
         h: 28
-    knife: null
-    sword: null
-    axe: null
+    knife: 
+      path: items.png
+      position:
+        x: 20
+        y: 10
+      size:
+        w: 16
+        h: 17
+    sword:
+      path: items.png
+      position:
+        x: 50
+        y: 8
+      size:
+        w: 21
+        h: 22
+    axe: 
+      path: equipment.png
+      position:
+        x: 32
+        y: 18
+      size:
+        w: 32
+        h: 14
     pickaxe:
       path: equipment.png
       position:
@@ -74,30 +117,92 @@ avatars:
       size:
         w: 21
         h: 25
-    blood_magic: null
+    blood_magic:
+      path: equipment.png
+      position:
+        x: 451
+        y: 233
+      size: 
+        w: 26
+        h: 23
   inventory:
-    arrow_quiver: null
+    arrow_quiver:
+      path: quivers.png
+      position:
+        x: 42
+        y: 1
+      size:
+        w: 16
+        h: 32
     bolt_quiver: null
     sling_pouch: null
-    shrapnel_bomb: null
-    rope: null
+    shrapnel_bomb:
+      path: items.png
+      position: 
+        x: 115
+        y: 101
+      size:
+        w: 20
+        h: 28
+    rope:
+      path: items.png
+      position:
+        x: 322
+        y: 209
+      size:
+        w: 29
+        h: 15
     portal_gate: null
     smoke_bomb: null
     spindle_seeds: null
     resource_seeds: null
-    arrow: null
-    fire_arrow: null
-    magic_arrow: null
+    arrow:
+      path: arrow.png
+      position:
+        x: 4
+        y: 4
+      size:
+        w: 24
+        h: 24
+    fire_arrow:
+      path: arrow_fire.png
+      position:
+        x: 5
+        y: 4
+      size:
+        w: 25
+        h: 26
+    magic_arrow:
+      path: arrow_magic.png
+      position:
+        x: 2
+        y: 3
+      size:
+        w: 26
+        y: 25
     bolt: null
-    rapid_bolt: null
-    cannon_ball: null
+    precise_bolt: null
+    poison_bolt: null
+    stone: null
     pellet: null
     spike: null
-    dart: null
-    carrot: null
-    tomato: null
-    iron_ore: null
-    copper_ore: null
+    produce: 
+      path: vegetables.png
+      position:
+        x: 78
+        y: 107
+      size:
+        w: 36
+        h: 35
+    pelt: null
+    ore: 
+      path: ore.png
+      position:
+        x: 98
+        y: 290
+      size:
+        w: 23
+        h: 24
     crystal: null
     butterfly: null
     coin:
@@ -117,13 +222,125 @@ avatars:
         w: 12
         h: 12
   quantity:
-    digit_0: null
-    digit_1: null
-    digit_2: null
-    digit_3: null
-    digit_4: null
-    digit_5: null
-    digit_6: null
-    digit_7: null
-    digit_8: null
-    digit_9: null
+    digit_0:
+      path: digit_0.png
+      position:
+        x: 0
+        y: 0
+      size:
+        w: 12
+        h: 14
+    digit_1:
+      path: digit_1.png
+      position:
+        x: 0
+        y: 0
+      size:
+        w: 12
+        h: 14
+    digit_2:
+      path: digit_2.png
+      position:
+        x: 0
+        y: 0
+      size:
+        w: 12
+        h: 14
+    digit_3:
+      path: digit_3.png
+      position:
+        x: 0
+        y: 0
+      size:
+        w: 12
+        h: 14
+    digit_4:
+      path: digit_4.png
+      position:
+        x: 0
+        y: 0
+      size:
+        w: 12
+        h: 14
+    digit_5:
+      path: digit_5.png
+      position:
+        x: 0
+        y: 0
+      size:
+        w: 12
+        h: 14
+    digit_6:
+      path: digit_6.png
+      position:
+        x: 0
+        y: 0
+      size:
+        w: 12
+        h: 14
+    digit_7:
+      path: digit_7.png
+      position:
+        x: 0
+        y: 0
+      size:
+        w: 12
+        h: 14
+    digit_8:
+      path: digit_8.png
+      position:
+        x: 0
+        y: 0
+      size:
+        w: 12
+        h: 14
+    digit_9:
+      path: digit_9.png
+      position:
+        x: 0
+        y: 0
+      size:
+        w: 12
+        h: 14
+  bottles:
+    bottle:
+      path:
+      position:
+        x:
+        y:
+      size:
+        w:
+        h:
+    contents:
+      green:
+        path:
+        position:
+          x:
+          y:
+        size:
+          w:
+          h:
+      blue:
+        path:
+        position:
+          x:
+          y:
+        size:
+          w:
+          h:
+      purple:
+        path:
+        position:
+          x:
+          y:
+        size:
+          w:
+          h:
+      orange:
+        path:
+        position:
+          x:
+          y:
+        size:
+          w:
+          h:
