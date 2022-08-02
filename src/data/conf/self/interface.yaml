@@ -9,42 +9,87 @@ breakpoints:
 styles:
   small:
     slots:
+      margins:
+        w: 0.025
+        h: 0.025
       stack: horizontal
       alignment: 
         vertical: bottom
         horizontal: left
       opacity: 0.5
     mirrors:
+      margins:
+        w: 0.025
+        h: 0.025
       stack: horizontal
       alignment:
         vertical: top
         horizontal: right
       opacity: 0.5
     avatars: null
-    packs: null
+    packs: 
+      margins:
+        w: 0.025
+        h: 0.025
+      alignment:
+        vertical: bottom
+        horizontal: right
     menu:
+      padding:
+        w: 0.05
+        h: 0.05
+      margins:
+        w: 0.05
+        h: 0.20
       stack: vertical
   large:
     slots:
+      margins: 
+        w: 0.025
+        h: 0.025
       stack: horizontal
       alignment: 
         vertical: bottom
         horizontal: left
       opacity: 0.5
     mirrors:
+      margins:
+        w: 0.025
+        h: 0.025
+      padding:
+        w: 0.005
+        h: 0.005
       stack: horizontal
       alignment:
         vertical: top
         horizontal: right
       opacity: 0.5
-    packs: null
+    packs:
+      margins:
+        w: 0.025
+        h: 0.025
+      alignment:
+        vertical: bottom
+        horizontal: right
     avatars: null
     menu:
+      padding:
+        w: 0.05
+        h: 0.05
+      margins:
+        w: 0.05
+        h: 0.20
       stack: vertical
 
 properties:
   slots: 
     total: 4
+    pieces:
+      - cap
+      - buffer
+      - emabled
+      - active
+      - disabled
   mirrors:
     life:
       columns: 10
@@ -52,7 +97,14 @@ properties:
     magic:
       columns: 10
       rows: 1
-  packs: null
+    pieces:
+      - unit
+      - empy
+  packs:
+    pieces:
+      - left
+      - middle
+      - right
   avatars: null
   menu:
     buttons:

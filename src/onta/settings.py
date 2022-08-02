@@ -72,8 +72,6 @@ SCREEN_DEFAULT_WIDTH = int(os.environ.setdefault('SCREEN_WIDTH', '800'))
 SCREEN_DEFAULT_HEIGHT = int(os.environ.setdefault('SCREEN_HEIGHT', '600'))
 """Default GUI height"""
 
-GUI_MARGINS = 0.025
-
 # Rendering Configuration
 
 IMG_MODE = "RGBA"

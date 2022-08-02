@@ -11,8 +11,10 @@ hero:
     thrust: null
     slash: sword
     shoot: null
-  bag: null
-  belt: null
+  packs:
+    bag: null
+    belt: null
+    wallet: null
   health:
     current: 4
     max: 10
@@ -47,8 +49,10 @@ npcs:
       thrust: null
       slash: null
       shoot: null
-    bag: null
-    belt: null
+    packs:
+      bag: null
+      belt: null
+      wallet: null
     health:
       current: 100
       max: 100
@@ -69,8 +73,10 @@ villains:
       thrust: null
       slash: null
       shoot: null
-    bag: null
-    belt: null
+    packs:
+      bag: null
+      belt: null
+      wallet: null
     health:
       current: 100
       max: 100

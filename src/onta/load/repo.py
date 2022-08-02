@@ -25,6 +25,7 @@ class Repo():
     mirrors = {}
     menus = {}
     slots = {}
+    packs = {}
     equipment = {}
 
 
@@ -67,6 +68,16 @@ class Repo():
 
 
     def _init_static_assets(self, config: conf.Conf, ontology_path: str) -> None:
+        """_summary_
+
+        :param config: _description_
+        :type config: conf.Conf
+        :param ontology_path: _description_
+        :type ontology_path: str
+
+        .. note::
+            - Static assets, i.e. _Tile_\s, _Strut_\s & _Plate_\s can be rendered using RGBA channels instead of a cropping a sheet file into an PIL image. If the channels are specified through the configuration file for the appropriate _Form_ asset, the asset frame will be created using through channels. Particularly useful if you need to create an inside door with a transculent light square leading back outside.
+        """
 
         for asset_type in STATIC_ASSETS_TYPES:
             log.debug(f'Initializing {asset_type} assets...', 'Repo._init_static_assets')
@@ -112,8 +123,6 @@ class Repo():
                         )
 
                     buffer = Image.open(image_path).convert(settings.IMG_MODE)
-
-                    # TODO: check if channels exist and then modify as appropriate
 
                     log.debug( f"{asset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
                         'Repo._init_static_assets')
@@ -162,7 +171,7 @@ class Repo():
         :type ontology_path: str
 
         .. note::
-            A _Slot_ is defined in a single direction, but used in multiple directions. When styles are applied the engine will need to be aware which direction the definition is in, so it can rotate the _Slot_ component to its appropriate position based on the declared style.
+            A _Slot_ is defined in a single direction, but used in multiple directions. When styles are applied the engine will need to be aware which direction the definition is in, so it can rotate the _Slot_ component to its appropriate position based on the declared style. In other words, _Slot_\s are a pain.
         """
         interface_conf = config.load_interface_configuration()
         for size in interface_conf['sizes']:
@@ -236,6 +245,7 @@ class Repo():
     def _init_interface_assets(self, config: conf.Conf, ontology_path: str) -> None:
         interface_conf = config.load_interface_configuration()
 
+        # TODO: these can be condensed with a loop
         for size in interface_conf['sizes']:
             self.mirrors[size] = {}
             mirror_set = interface_conf['hud'][size]['mirrors']
@@ -261,6 +271,28 @@ class Repo():
 
                             self.mirrors[size][mirror_key][fill_key] = buffer.crop((x,y,w+x,h+y))
             
+            self.packs[size]= {}
+            pack_set = interface_conf['hud'][size]['packs']
+
+            # (bag, pack), (belt, pack), (wallet, pack)
+            for pack_key, pack in pack_set.items():
+                if pack:
+                    self.packs[size][pack_key] = {}
+
+                    for piece_key, piece in pack.items():
+                        if piece.get('path'):
+                            x, y = piece['position']['x'], piece['position']['y']
+                            w, h = piece['size']['w'], piece['size']['h']
+
+                            image_path = os.path.join(
+                                ontology_path,
+                                *settings.SENSES_PATH,
+                                piece['path']
+                            )
+                            buffer = Image.open(image_path).convert(settings.IMG_MODE)
+
+                            self.packs[size][pack_key][piece_key] = buffer.crop((x,y,w+x,h+y))
+
             self.menus[size] = {}
             button_set = interface_conf['menu'][size]['button']
 
@@ -355,6 +387,12 @@ class Repo():
             return self.slots[breakpoint_key].get(component_key)
         return None
         
+        
+    def get_pack_frame(self, breakpoint_key: str, component_key: str, piece_key: str):
+        if self.packs.get(breakpoint_key) and self.packs[breakpoint_key].get(component_key):
+            return self.packs[breakpoint_key][component_key].get(piece_key)
+        return None
+
 
     def get_mirror_frame(self, breakpoint_key: str, component_key: str, fill_key):
         if self.mirrors.get(breakpoint_key) and self.mirrors[breakpoint_key].get(component_key):

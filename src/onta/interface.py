@@ -9,12 +9,15 @@ import onta.util.logger as logger
 log = logger.Logger('onta.hud', settings.LOG_LEVEL)
 
 SLOT_STATES = [ 'cast', 'shoot', 'thrust', 'slash' ]
-SLOT_PIECES = [ 'cap', 'buffer', 'empty', 'equipped', 'disabled']
+SLOT_PIECES = [ 'cap', 'buffer', 'enabled', 'active', 'disabled']
 BUTTON_PIECES = [ 'left', 'middle', 'right' ]
 MIRROR_PIECES = [ 'unit', 'empty' ]
+SLOT_MARGINS = (0.025, 0.025)
+MIRROR_MARGINS = (0.025, 0.025)
 MIRROR_PADDING = (0.005, 0.005)
 MENU_MARGINS = (0.05, 0.20)
 MENU_PADDING = (0.05, 0.05)
+PACK_MARGINS = (0.025, 0.025)
 MAX_LIFE = 20
 
 def format_breakpoints(break_points: list) -> list:
@@ -57,11 +60,13 @@ class HUD():
     properties = {}
     slots = {}
     mirrors = {}
+    packs = {}
     equipment = {}
     sizes = []
     breakpoints = []
     slot_rendering_points = []
     life_rendering_points = []
+    pack_rendering_points = []
     hud_activated = True
     media_size = None
 
@@ -82,8 +87,10 @@ class HUD():
         )
         self._init_slot_positions(player_device)
         self._init_mirror_positions(player_device)
+        self._init_pack_positions(player_device)
         self._init_slots(state_ao)
         self._init_mirrors(state_ao)
+        self._init_packs(state_ao)
         self._init_equipment(state_ao)
 
 
@@ -94,6 +101,14 @@ class HUD():
         self.breakpoints = format_breakpoints(config['breakpoints'])
         self.properties = config['properties']
 
+
+    def _init_pack_positions(self, player_device: device.Device):
+        pack_styles = self.styles[self.media_size]['packs']
+
+        x_margins = PACK_MARGINS[0]*player_device.dimensions[0]
+        y_margins = PACK_MARGINS[1]*player_device.dimensions[1]
+
+        packset = self.hud_conf[self.media_size]['packs']
 
     def _init_mirror_positions(self, player_device: device.Device):
         """_summary_
@@ -115,8 +130,8 @@ class HUD():
             self.hud_conf[self.media_size]['mirrors']['life']['unit']['size']['w'],
             self.hud_conf[self.media_size]['mirrors']['life']['unit']['size']['h']
         )
-        x_margins = settings.GUI_MARGINS*player_device.dimensions[0]
-        y_margins = settings.GUI_MARGINS*player_device.dimensions[1]
+        x_margins = MIRROR_MARGINS[0]*player_device.dimensions[0]
+        y_margins = MIRROR_MARGINS[1]*player_device.dimensions[1]
 
         if mirror_styles['alignment']['horizontal'] == 'right':
             x_start = player_device.dimensions[0] - \
@@ -181,8 +196,8 @@ class HUD():
 
         slots_total = self.properties['slots']['total']
         slot_styles = self.styles[self.media_size]['slots']
-        x_margins = settings.GUI_MARGINS*player_device.dimensions[0]
-        y_margins = settings.GUI_MARGINS*player_device.dimensions[1]
+        x_margins = SLOT_MARGINS[0]*player_device.dimensions[0]
+        y_margins = SLOT_MARGINS[1]*player_device.dimensions[1]
 
         cap_dim = rotate_dimensions(
             self.hud_conf[self.media_size]['slots']['cap'],
@@ -323,6 +338,10 @@ class HUD():
 
     def _init_equipment(self, state_ao: state.State):
         self.equipment = state_ao['hero']['equipment']
+
+
+    def _init_packs(self, state_ao: state.State): 
+        pass
 
 
     def _init_mirrors(self, state_ao: state.State):
