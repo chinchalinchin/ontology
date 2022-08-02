@@ -135,7 +135,6 @@ avatars:
         w: 16
         h: 32
     bolt_quiver: null
-    sling_pouch: null
     shrapnel_bomb:
       path: items.png
       position: 
@@ -180,12 +179,30 @@ avatars:
       size:
         w: 26
         y: 25
-    bolt: null
-    precise_bolt: null
-    poison_bolt: null
-    stone: null
-    pellet: null
-    spike: null
+    bolt: 
+      path: bolt.png
+      position:
+        x: 7
+        y: 6
+      size:
+        w: 19
+        h: 20
+    precise_bolt:
+      path: bolt_precision.png
+      position:
+        x: 2
+        y: 2
+      size:
+        w: 28
+        h: 28
+    poison_bolt:
+      path: bolt_poison.png
+      position:
+        x: 7
+        y: 6
+      size:
+        w: 19
+        h: 21
     produce: 
       path: vegetables.png
       position:

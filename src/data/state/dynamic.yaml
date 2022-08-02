@@ -49,10 +49,7 @@ hero:
       magic_arrow: null
       bolt: null
       precise_bolt: null
-      poison_ball: null
-      stone: null
-      pellet: null
-      spike: null
+      poison_bolt: null
     wallet:
       coin: null
       key: null
