@@ -206,22 +206,22 @@ hud:
             w: 32
             h: 64
       belt: 
-        enabled:
+        left:
           path: slotsheet.png
           position:
-            x: 802
-            y: 431
+            x: 16
+            y: 184
           size:
-            w: 44
-            h: 44
-        disabled: 
+            w: 32
+            h: 64
+        right:
           path: slotsheet.png
           position:
-            x: 802
-            y: 481
+            x: 82
+            y: 184
           size:
-            w: 44
-            h: 44
+            w: 32
+            h: 64
       wallet:
         display:
           path: slotsheet.png
@@ -314,22 +314,22 @@ hud:
             w: 32
             h: 64
       belt: 
-        enabled:
+        left:
           path: slotsheet.png
           position:
-            x: 802
-            y: 431
+            x: 16
+            y: 184
           size:
-            w: 44
-            h: 44
-        disabled: 
+            w: 32
+            h: 64
+        right:
           path: slotsheet.png
           position:
-            x: 802
-            y: 481
+            x: 82
+            y: 184
           size:
-            w: 44
-            h: 44
+            w: 32
+            h: 64
       wallet:
         display:
           path: slotsheet.png

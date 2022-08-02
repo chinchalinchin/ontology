@@ -70,7 +70,7 @@ class HUD():
     life_rendering_points = []
     bag_rendering_points = []
     wallet_rendering_points = []
-    belt_rendering_point = (None, None)
+    belt_rendering_points = []
     hud_activated = True
     media_size = None
 
@@ -156,65 +156,62 @@ class HUD():
 
         beltset = self.hud_conf[self.media_size]['packs']['belt']
 
+        total_belt_width = 0
+        for belt_piece in beltset.values():
+            total_belt_width += belt_piece['size']['w']
         total_belt_height = beltset[list(beltset.keys())[0]]['size']['h']
 
-        # only one belt position
-        # belt position only affected by pack vertical alignment
-        if pack_styles['alignment']['horizontal'] == 'left':
-            # dependent on bag height > belt height
-            self.belt_rendering_point = (
-                self.bag_rendering_points[0][0] + \
-                    (1+PACK_MARGINS[0])*total_bag_width,
-                self.bag_rendering_points[0][1] + \
-                    (total_bag_height-total_belt_height)
-            )
-        elif pack_styles['alignment']['horizontal'] == 'right':
-            self.belt_rendering_point = (
-                self.bag_rendering_points[0][0] - \
-                    (1+PACK_MARGINS[0])*total_bag_width,
-                  self.bag_rendering_points[0][1] + \
-                    (total_bag_height-total_belt_height)  
-            )
+        # belt initial position only affected by pack vertical alignment
+        for i, belt_piece in enumerate(beltset.values()):
+            if i == 0:
+                if pack_styles['alignment']['horizontal'] == 'left':
+                    # dependent on bag height > belt height
+                    x = self.bag_rendering_points[0][0] + \
+                            (1+PACK_MARGINS[0])*total_bag_width
+                    y = self.bag_rendering_points[0][1] + \
+                            (total_bag_height-total_belt_height)/2
+                elif pack_styles['alignment']['horizontal'] == 'right':
+                    x = self.bag_rendering_points[0][0] - \
+                            (1+PACK_MARGINS[0])*total_bag_width
+                    y = self.bag_rendering_points[0][1] + \
+                            (total_bag_height-total_belt_height)/2  
+            else:
+                x = self.belt_rendering_points[i-1][0] + prev_w
+                y = self.belt_rendering_points[i-1][1]
+            self.belt_rendering_points.append((x,y))
+            prev_w = belt_piece['size']['w']
+        
+            
 
         wallet = self.hud_conf[self.media_size]['packs']['wallet']['display']
         wallet_w, wallet_h = wallet['size']['w'], wallet['size']['h']
 
-        if pack_styles['alignment']['vertical'] == 'top':
+        if pack_styles['alignment']['horizontal'] == 'left':
             self.wallet_rendering_points.append(
                 (
-                    self.bag_rendering_points[0][0] + \
-                        (total_bag_width - wallet_w)/2,
+                    self.belt_rendering_points[0][0] + \
+                        (1 + PACK_MARGINS[0])*total_belt_width,
+                    self.bag_rendering_points[0][1] +
+                        (total_belt_height - wallet_h * (2 + PACK_MARGINS[1]))/2
+                )
+            )
+        elif pack_styles['alignment']['horizontal'] == 'right':
+            self.wallet_rendering_points.append(
+                (
+                    self.bag_rendering_points[0][0] - \
+                        (1 + PACK_MARGINS[0])*total_belt_width - \
+                        wallet_w,
                     self.bag_rendering_points[0][1] + \
-                        PACK_MARGINS[1]*total_bag_width + \
-                        wallet_h
+                        (total_belt_height - wallet_h * (2 + PACK_MARGINS[1]))/2
                 )
             )
-            self.wallet_rendering_points.append(
-                (
-                    self.wallet_rendering_points[0][0],
-                    self.wallet_rendering_points[0][1] + \
-                        PACK_MARGINS[1]*total_bag_width + \
-                        wallet_h
-                )
+        self.wallet_rendering_points.append(
+            (
+                self.wallet_rendering_points[0][0],
+                self.wallet_rendering_points[0][1] + \
+                    (1+PACK_MARGINS[1])*wallet_h
             )
-        elif pack_styles['alignment']['vertical'] == 'bottom':
-            self.wallet_rendering_points.append(
-                (
-                    self.bag_rendering_points[0][0] + \
-                        (total_bag_width - wallet_w)/2,
-                    self.bag_rendering_points[0][1] - \
-                        PACK_MARGINS[1]*total_bag_width - \
-                        wallet_h
-                )
-            )
-            self.wallet_rendering_points.append(
-                (
-                    self.wallet_rendering_points[0][0],
-                    self.wallet_rendering_points[0][1] - \
-                        PACK_MARGINS[1]*total_bag_width - \
-                        wallet_h
-                )
-            )
+        )
 
     def _init_mirror_positions(self, player_device: device.Device):
         """_summary_
@@ -453,8 +450,9 @@ class HUD():
 
 
     def _init_mirrors(self, state_ao: state.State):
+        dynamic_state = state_ao.get_state('dynamic')
         self.mirrors = {
-            'life': state_ao['hero']['health']
+            'life': dynamic_state['hero']['health']
         }
         
 
@@ -486,7 +484,7 @@ class HUD():
         elif interface_key in ['wallet', 'wallets']:
             return self.wallet_rendering_points
         elif interface_key in ['belt','belts']:
-            return self.belt_rendering_point
+            return self.belt_rendering_points
 
 
     def get_slot_dimensions(self) -> tuple:
@@ -518,19 +516,14 @@ class HUD():
 
     def pack_frame_map(self, pack_key: str) -> dict:
         packset = self.hud_conf[self.media_size]['packs'][pack_key]
-        if pack_key == 'bag':
+        if pack_key in ['bag', 'bags', 'belt', 'belts']:
             return {
                 i: key for i, key in enumerate(packset)
             }
-        elif pack_key == 'belt':
-            # TODO: calculate based on hero state information
-            # i.e., only enabled if equipped ammo > 0
-            return{
-                0: 'enabled'
-            }
         elif pack_key == 'wallet':
             return {
-                0: 'display'
+                0: 'display',
+                1: 'display'
             }
 
 

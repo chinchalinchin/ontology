@@ -262,7 +262,9 @@ class Renderer():
         cap_dir = headsup_display.get_cap_directions()
         buffer_dir = headsup_display.get_buffer_direction()
 
+        # slot names
         render_order = iter(interface.SLOT_STATES)
+        # which slot is enabled, disabled or active
         render_map = headsup_display.slot_frame_map()
 
         cap_frames = repository.get_slot_frames(headsup_display.media_size, 'cap')
@@ -282,6 +284,7 @@ class Renderer():
                 render_frame = buffer_frames[buffer_dir]
             else:
                 render_key = next(render_order)
+                # map from slot name -> slot state -> slot frame
                 render_frame = slot_frames[render_map[render_key]]
 
             self.world_frame.paste(
@@ -318,6 +321,9 @@ class Renderer():
         headsup_display: interface.HUD, 
         repository: repo.Repo
     ) -> None:
+        # TODO: need to clarify what exactly a 'map' is.
+
+        # In this case, it is used to assemble the pieces of a bag
         bag_map = headsup_display.pack_frame_map('bag')
         bag_rendering_points = headsup_display.get_rendering_points('bag')
 
@@ -329,25 +335,14 @@ class Renderer():
             )
             self.world_frame.paste(
                 bag_frame,
-                (int(render_point[0]), int(render_point[1])),
+                (
+                    int(render_point[0]), 
+                    int(render_point[1])
+                ),
                 bag_frame
             )
 
-        belt_map = headsup_display.pack_frame_map('belt')
-        belt_rendering_points = headsup_display.get_rendering_points('belt')
-
-        for i, render_point in enumerate(belt_rendering_points):
-            belt_frame = repository.get_pack_frame(
-                headsup_display.media_size,
-                'belt',
-                belt_map[i]
-            )
-            self.world_frame.paste(
-                belt_frame,
-                (int(render_point[0]), int(render_point[1])),
-                belt_frame
-            )
-
+        # in this case, it used to render each wallet as unity
         wallet_map = headsup_display.pack_frame_map('wallet')
         wallet_rendering_points = headsup_display.get_rendering_points('wallet')
 
@@ -359,9 +354,31 @@ class Renderer():
             )
             self.world_frame.paste(
                 wallet_frame,
-                (int(render_point[0]), int(render_point[1])),
+                (
+                    int(render_point[0]), 
+                    int(render_point[1])
+                ),
                 wallet_frame
             )
+
+        # same thing in this case.
+        belt_map = headsup_display.pack_frame_map('belt')
+        belt_rendering_points = headsup_display.get_rendering_points('belt')
+
+        for i, render_point in enumerate(belt_rendering_points):
+            belt_frame = repository.get_pack_frame(
+                headsup_display.media_size,
+                'belt',
+                belt_map[i]
+            )
+            self.world_frame.paste(
+                belt_frame,
+                (
+                    int(render_point[0]), 
+                    int(render_point[1])
+                ),
+                belt_frame
+        )
 
 
     def _render_menu(
@@ -393,7 +410,10 @@ class Renderer():
             )
             self.world_frame.paste(
                 render_frame,
-                (int(render_point[0]), int(render_point[1])),
+                (
+                    int(render_point[0]), 
+                    int(render_point[1])
+                ),
                 render_frame
             )
 
