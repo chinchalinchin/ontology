@@ -105,10 +105,24 @@ class HUD():
     def _init_pack_positions(self, player_device: device.Device):
         pack_styles = self.styles[self.media_size]['packs']
 
-        x_margins = PACK_MARGINS[0]*player_device.dimensions[0]
-        y_margins = PACK_MARGINS[1]*player_device.dimensions[1]
-
         packset = self.hud_conf[self.media_size]['packs']
+
+        for i, pack in enumerate(packset.values()):
+            if i == 0:
+                if pack_styles['alignment']['horizontal'] == 'left':
+                    x = PACK_MARGINS[0]*player_device.dimensions[0]
+                elif pack_styles['alignment']['horizontal'] == 'right':
+                    x = (1-PACK_MARGINS[0])*player_device.dimensions[0]
+                if pack_styles['alignment']['vertical'] == 'top':
+                    y = PACK_MARGINS[1]*player_device.dimensions[1]
+                elif pack_styles['alignment']['vertical'] == 'bottom':
+                    y = (1-PACK_MARGINS[0])*player_device.dimensions[1]
+            else:
+                x = self.pack_rendering_points[i-1][0] + prev_w
+                y = self.pack_rendering_points[i-1][1] + prev_h
+            self.pack_rendering_points.append((x,y))
+            prev_w, prev_h= pack['size']['w'], pack['size']['h']
+
 
     def _init_mirror_positions(self, player_device: device.Device):
         """_summary_
