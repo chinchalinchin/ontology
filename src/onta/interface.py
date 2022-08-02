@@ -550,7 +550,7 @@ class HUD():
 class Menu():
     menu_conf = {}
     buttons = {}
-    menus = {}
+    tabs = {}
     properties = {}
     styles = {}
     sizes = []
@@ -558,6 +558,7 @@ class Menu():
     button_rendering_points = []
     menu_activated = False
     active_button = None
+    active_tab = None
     media_size = None
 
 
@@ -581,9 +582,13 @@ class Menu():
     def _init_conf(self, config: conf.Conf) -> None:
         self.menu_conf = config['menu']
         self.sizes = config['sizes']
-        self.breakpoints = format_breakpoints(config['breakpoints'])
-        self.properties = config['properties']['menu']
         self.styles = config['styles']
+        self.properties = config['properties']['menu']
+        self.breakpoints = format_breakpoints(config['breakpoints'])
+        self.tabs = {
+            button_name: {} 
+            for button_name in self.properties['buttons']
+        }
 
 
     def _init_menu_positions(self, player_device: device.Device) -> None:
@@ -673,7 +678,7 @@ class Menu():
         }
 
 
-    def increment_active_button(self):
+    def _increment_active_button(self):
         ## TODO: skip disabled buttons
         previous_active = self.active_button
         self.active_button -= 1
@@ -685,7 +690,7 @@ class Menu():
         self._activate_button(self.properties['buttons'][self.active_button])
 
 
-    def decrement_active_button(self):
+    def _decrement_active_button(self):
         ## TODO: skip disabled buttons
         previous_active = self.active_button
         self.active_button += 1
@@ -695,6 +700,10 @@ class Menu():
         
         self._enable_button(self.properties['buttons'][previous_active])
         self._activate_button(self.properties['buttons'][self.active_button])
+
+
+    def execute_active_button(self):
+        pass
 
 
     def button_frame_map(self) -> list:
@@ -725,8 +734,9 @@ class Menu():
         if interface_key in [ 'button', 'buttons' ]:
             return self.button_rendering_points
 
+
     def update(self, user_input):
         if user_input['n']:
-            self.increment_active_button()
+            self._increment_active_button()
         elif user_input['s']:
-            self.decrement_active_button()
+            self._decrement_active_button()

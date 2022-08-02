@@ -36,3 +36,5 @@ What does plot space looks like?
 
 
 - Ingest interface styles through yaml instead of hardcoded constants
+
+- Menu can alter the world's dynamic state. HUD cannot. HUD is just a vessel for information, while Menu is an interface for altering information (or at least associations)
