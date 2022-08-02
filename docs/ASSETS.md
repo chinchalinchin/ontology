@@ -2,7 +2,7 @@
 
 Assets are the backbone of the _onta_ engine. They form the basis for the graphics and the sound. Assets are grouped according to how they are treated by the engine.
 
-Assets are logically grouped into types: _Forms_, _Entities_ and _Self_. These asset types are purely organizational, although they do reflect how the assets are treated by the engine when being rendered and acted upon in-game. 
+Assets are logically grouped into types: _Forms_, _Entities_ and _Self_. These asset types are purely organizational and do not have any direct effect, although the names were carefully chosen as they do reflect how the assets are treated by the engine when being rendered and acted upon in-game. 
 
 Forms
 -----
@@ -120,19 +120,37 @@ Self
 
 The various components in this category are used to construct both the headsup display (HUD) and the menu. 
 
+
+**Note**: Styles are applied to most UI elements to organize their layout on screen; these styles are applied are the asset is extract from the element sheet and put into the application's memory.
+
+**Note**: Some of the eccentrities of the following definitions are due to the format of the assets used to construct the user interface. All of the assets are open-source and have no unifying standard. The following is an attempt to provide a framework that can interpret and parse arbtirary UI sheets into a user interface, provided certain elements are present in the sheet. Furthermore, the elements must be able to be broken down into the definition's constituent components.
+
+
 ## Slots
 
-A _Slot_ is used to display the current mapping between the player's _Equipment_ and their equipment state on the heads up display. A player has four _equipment_ states, i.e. a state that gets binded and modified by _Equipment_, `thrust`, `slash`, `cast` and `shoot` (technically, these are actions; an _animate_ state is the combination of an _action_ and a _direction_; See [Sprites](./SPRITES.md) for more information on _Sprite_ _actions_ and _directions_).
+A _Slot_ is used to display the current mapping between _Equipment_ and the hero's equipment state on the heads up display. A player has four _equipment_ states, i.e. a state that gets binded and modified by _Equipment_, `thrust`, `slash`, `cast` and `shoot` (technically, these are actions; an _animate_ state is the combination of an _action_ and a _direction_; See [Sprites](./SPRITES.md) for more information on _Sprite_ _actions_ and _directions_).
 
 When a player enters into one of these four states, the slotted equipment will be added to the animation and the equipment properties will modify the player properties.
 
-A _Slot_ container has three four graphical components: an `empty` frame, an `equipped` frame, a `cap` frame and a `buffer` frame. 
+A _Slot_ container has five graphical components. The three main frames are: an `enabled` frame, an `disabled` frame and an `active` frame. Decoration frames are: a `cap` frame and a `buffer` frame. In order to be ingested into the _onta_ engine, a _Slot_ **must** have these five components.
+
+_Slot_\s are rendered, in conjunction with the applied styles, so that the first frame is a `cap` and then alternating frames of `buffer` and `disabled | enabled | active` (depending on the hero equipment state) and finally another `cap`.
 
 ## Mirrors
 
-A _Mirror_ measures and displays player state information, such as a life or magic meter, on the heads up display. A _Mirror_ is a collection of _Unit_ frames, where the number of _Units_ displayed is directly proportional the player state being measured.
+A _Mirror_ measures and displays player state information, such as a life or magic, on the heads up display.
 
-As such, a _Mirror_ container has two graphical components: an `empty` frame and a `unit` frame. 
+### Life
+ 
+A _Life Mirror_ is a collection of _Unit_ frames, where the number of _Unit_\s displayed is directly proportional the player health state. The difference between the maximum player health and the current player health is rendered using _Empty_ frames.
+
+As such, a _Life Mirror_ container has two graphical components: an `empty` frame and a `unit` frame. In order to be ingested into the _onta_ engine and displayed on-screen, a _Life Mirror_ **must** have these two components.
+
+### Magic
+
+A _Magic Mirror_ are slightly different than a _Life Mirror_, because instead of measuring life units, it measures a "discrete continuum", embodied in a meter or gauge. A _Magic Mirror_ must have a _Container_ frame and _Unit_ frames that provide the meter with tiny units of "fill".
+
+**TODO**: Elaborate more once implemented.
 
 ## Packs
 
@@ -140,11 +158,30 @@ A _Pack_ is similar to a _Slot_, in that it displays specific player state infor
 
 ### Bag
 
+The _Bag_ is used to display the current item binded to the player's `use` state.
+
+A _Bag_ is made up of `left` and `right` pieces. These pieces are rendered adjoined to one another, to form a single whole. (See second note in section introduction). Take note that a _Bag_ can only be defined in the horizontal direction in a pack sheet, not the vertical.
+
 ### Belt
+
+The _Belt_ is used to display hero state information regarding the quantity of ammo in the player's inventory. 
+
+A _Belt_ is made up of an `enabled` and a `disabled` frame. 
+
+The `enabled` frame is used when the contents of the _Belt_ are non-zero, according to the player belt state. The `disabled` frame is used otherwise.
 
 ### Wallet
 
+A _Wallet_ is made up of a single `display` frame.
+
+A _Wallet_ `display` frame is used to contain an the _Wallet_'s avatar and an accumulator representing the player's current wallet state.
+
+
 ## Avatars
+
+### Equipment
+### Inventory
+### Quantity
 
 ## Equipment
 

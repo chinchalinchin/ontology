@@ -20,15 +20,19 @@ MATERIAL_BLUE_900 = (20, 67, 142, 175)
 log = logger.Logger('onta.view', settings.LOG_LEVEL)
 
 
+# GUI Handlers
+
 def get_app() -> QtWidgets.QApplication:
     return QtWidgets.QApplication([])    
 
 
-def quit(app) -> None:
+def quit(app: QtWidgets.QApplication) -> None:
     sys.exit(app.exec_())
 
 
-def get_view(player_device: device.Device) -> QtWidgets.QWidget:
+def get_view(
+    player_device: device.Device
+) -> QtWidgets.QWidget:
     view_widget, view_layout, view_frame = \
             QtWidgets.QWidget(), QtWidgets.QVBoxLayout(),  QtWidgets.QLabel()
 
@@ -48,7 +52,6 @@ def get_view(player_device: device.Device) -> QtWidgets.QWidget:
 class Renderer():
     """_summary_
     """
-
 
     player_device = None
     """
@@ -310,13 +313,12 @@ class Renderer():
             )
 
 
-    def _render_bag(
+    def _render_packs(
         self, 
         headsup_display: interface.HUD, 
         repository: repo.Repo
     ) -> None:
         bag_map = headsup_display.pack_frame_map('bag')
-
         bag_rendering_points = headsup_display.get_rendering_points('bag')
 
         for i, render_point in enumerate(bag_rendering_points):
@@ -329,6 +331,36 @@ class Renderer():
                 bag_frame,
                 (int(render_point[0]), int(render_point[1])),
                 bag_frame
+            )
+
+        belt_map = headsup_display.pack_frame_map('belt')
+        belt_rendering_points = headsup_display.get_rendering_points('belt')
+
+        for i, render_point in enumerate(belt_rendering_points):
+            belt_frame = repository.get_pack_frame(
+                headsup_display.media_size,
+                'belt',
+                belt_map[i]
+            )
+            self.world_frame.paste(
+                belt_frame,
+                (int(render_point[0]), int(render_point[1])),
+                belt_frame
+            )
+
+        wallet_map = headsup_display.pack_frame_map('wallet')
+        wallet_rendering_points = headsup_display.get_rendering_points('wallet')
+
+        for i, render_point in enumerate(wallet_rendering_points):
+            wallet_frame = repository.get_pack_frame(
+                headsup_display.media_size,
+                'wallet',
+                wallet_map[i]
+            )
+            self.world_frame.paste(
+                wallet_frame,
+                (int(render_point[0]), int(render_point[1])),
+                wallet_frame
             )
 
 
@@ -421,11 +453,11 @@ class Renderer():
         if headsup_display.hud_activated:
             self._render_slots(headsup_display, repository)
             self._render_mirrors(headsup_display, repository)
-            self._render_bag(headsup_display, repository)
+            self._render_packs(headsup_display, repository)
 
         return self.world_frame
 
-
+    # Rendering connection to GUI
     def view(
         self, 
         game_world: world.World, 

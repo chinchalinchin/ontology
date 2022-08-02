@@ -41,6 +41,10 @@ actions:
     input:
       - e
     precedence: 4
+  use:
+    input:
+      - w
+    precedence: 5
   jump:
     input:
       - space
@@ -52,19 +56,19 @@ actions:
   slash:
     input:
       - ctrl_left
-    precedence: 5
+    precedence: 6
   thrust:
     input:
       - alt_left
-    precedence: 6
+    precedence: 7
   shoot:
     input:
       - shift_left
-    precedence: 7
+    precedence: 8
   cast:
     input:
       - tab
-    precedence: 8
+    precedence: 9
   hud: 
     input:
       - h

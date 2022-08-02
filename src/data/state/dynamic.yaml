@@ -32,6 +32,37 @@ hero:
     emblem_shield: False
     falcon_shield: False
     leather_shield: False
+  inventory:
+    bag:
+      shrapnel_bomb: null
+      rope: null
+      portal_gate: null
+      smoke_bomb: null
+      spindle_seed: null
+      resource_seed: null
+      bottle_a: null
+      bottle_b: null
+      bottle_c: null
+    belt:
+      arrow: null
+      fire_arrow: null
+      magic_arrow: null
+      bolt: null
+      rapid_bolt: null
+      cannon_ball: null
+      pellet: null
+      spike: null
+      dart: null
+    wallet:
+      coin: null
+      key: null
+    pocket:
+      carrot: null
+      tomato: null
+      iron_ore: null
+      copper_ore: null
+      crystal: null
+      butterfly: null
 
 npcs: 
   esmeralda:

@@ -35,12 +35,4 @@ Aha. Desire is the ordering of intent. Expression and intent are the transmittal
 What does plot space looks like?
 
 
-~~~~~~
-THIS ONE FIRST.
-~~~~~~
-
-- should retool tile rendering to be consistent with LPC style guide. currently uses 96 by 32px, but could easily be changed. Should allow tiles to be specified in compositions to make it easier to statically defined everything.
-
-~~~~~~
-THAT ONE FIRST.
-~~~~~~
+- Ingest interface styles through yaml instead of hardcoded constants

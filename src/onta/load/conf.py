@@ -98,13 +98,15 @@ class Conf():
 
 
     def load_interface_configuration(self) -> dict:
-        """Returns the parsed _Slot_, _Mirror_, _Pack_ and _Avatar_ (collectively known as the _Interface_) configuration from the _data/conf/self/interface.yaml_ file.
+        """Returns the parsed _Slot_, _Mirror_, _Pack_ and _Avatar_ (collectively known as the _Interface_) configuration from the _data/conf/self/senses.yaml_ file.
 
         :return: _Interface_ specific configurations.
         :rtype: dict
+
         """
+        # TODO: mismatch between senses and interface naming scheme...
         if not self.interface_conf:
-            self.interface_conf = self._self_configuration('interface')
+            self.interface_conf = self._self_configuration('senses')
         return self.interface_conf
 
 

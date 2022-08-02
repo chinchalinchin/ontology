@@ -1,0 +1,89 @@
+equipment:
+  bow:
+    sheets: 
+      - shoot_bow.png
+    state: shoot
+  axe:
+    sheets: 
+      - slash_axe.png
+    state: slash
+
+  knife:
+    sheets: 
+      - slash_knife.png
+    state: slash
+
+  pickaxe:
+    sheets: 
+      - slash_pickaxe.png
+    state: slash
+
+  sword:
+    sheets:
+      - slash_sword.png
+    state: slash
+
+  warhammer:
+    sheets:
+      - slash_warhammer.png
+    state: slash
+
+  blood_magic:
+    sheets:
+      - cast_bleeding_eye.png
+      - cast_bloody_mouth.png
+    state: cast
+
+  cane:
+    sheets:
+      - thrust_cane.png
+    state: thrust
+
+  shovel:
+    sheets:
+      - thrust_shovel.png
+    state: thrust
+
+  spear:
+    sheets:
+      - thrust_spear.png
+    state: thrust
+
+  emblem_shield:
+    sheets:
+      - shield_emblem.png
+    state: shield
+
+  falcon_shield:
+    sheets:
+      - shield_falcon.png
+    state: shield
+
+  leather_shield:
+    sheets:
+      - shield_leather.png
+    state: shield
+
+armor:
+  bronze:
+    sheets:
+      - boots_sandals.png
+      - chest_bronze.png
+      - helmet_bronze.png
+      - shoulders_bronze.png
+      - gloves_leather.png
+  gold:
+    sheets:
+      - boots_sandals.png
+      - chest_gold.png
+      - helmet_gold.png
+      - shoulders_gold.png
+      - gloves_leather.png
+  plate:
+    sheets:
+      - boots_plate.png
+      - chest_plate.png
+      - gloves_plate.png
+      - greaves_plate.png
+      - helmet_plate.png
+      - shoulders_plate.png

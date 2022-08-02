@@ -1,0 +1,129 @@
+# avatars do not get styles applied, so separate config seems appropriate
+
+avatars:
+  armor:
+    plate:
+      path: equipment.png
+      position:
+        x: 1
+        y: 44
+      size:
+        w: 30
+        h: 19
+  equipment:
+    bow:
+      path: 
+    crossbow:
+      path: equipment.png
+      position:
+        x: 193
+        y: 4
+      size:
+        w: 30
+        h: 28
+    knife: null
+    sword: null
+    axe: null
+    pickaxe:
+      path: equipment.png
+      position:
+        x: 96
+        y: 7
+      size:
+        w: 32
+        h: 23
+    warhammer:
+      path: equipment.png
+      position:
+        x: 352
+        y: 112
+      size:
+        w: 32
+        h: 16
+    cane: null
+    shovel:
+      path: equipment.png
+      position:
+        x: 34
+        y: 258
+      size:
+        w: 29
+        h: 29
+    spear:
+      path: equipment.png
+      position:
+        x: 99
+        y: 227
+      size:
+        w: 29
+        h: 29
+    emblem_shield: null
+    falcon_shield: 
+      path: equipment.png
+      position:
+        x: 37
+        y: 230
+      size:
+        w: 22
+        h: 26
+    leather_shield: 
+      path: equipment.png
+      position: 
+        x: 69
+        y: 7
+      size:
+        w: 21
+        h: 25
+    blood_magic: null
+  inventory:
+    arrow_quiver: null
+    bolt_quiver: null
+    sling_pouch: null
+    shrapnel_bomb: null
+    rope: null
+    portal_gate: null
+    smoke_bomb: null
+    spindle_seeds: null
+    resource_seeds: null
+    arrow: null
+    fire_arrow: null
+    magic_arrow: null
+    bolt: null
+    rapid_bolt: null
+    cannon_ball: null
+    pellet: null
+    spike: null
+    dart: null
+    carrot: null
+    tomato: null
+    iron_ore: null
+    copper_ore: null
+    crystal: null
+    butterfly: null
+    coin:
+      path: coin.png
+      position:
+        x: 135
+        y: 0
+      size:
+        w: 18
+        h: 18
+    key: 
+      path: equipment.png
+      position:
+        x: 235
+        y: 83
+      size:
+        w: 12
+        h: 12
+  quantity:
+    digit_0: null
+    digit_1: null
+    digit_2: null
+    digit_3: null
+    digit_4: null
+    digit_5: null
+    digit_6: null
+    digit_7: null
+    digit_8: null
+    digit_9: null

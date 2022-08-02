@@ -26,7 +26,6 @@ styles:
         vertical: top
         horizontal: right
       opacity: 0.5
-    avatars: null
     packs: 
       margins:
         w: 0.025
@@ -71,7 +70,6 @@ styles:
       alignment:
         vertical: bottom
         horizontal: right
-    avatars: null
     menu:
       padding:
         w: 0.05
@@ -94,17 +92,27 @@ properties:
     life:
       columns: 10
       rows: 1
+      pieces:
+        - unit
+        - empty
     magic:
       columns: 10
       rows: 1
-    pieces:
-      - unit
-      - empy
+      pieces:
+        - container
+        - unit
   packs:
-    pieces:
-      - left
-      - middle
-      - right
+    bag:
+      pieces:
+        - left
+        - right
+    belt:
+      pieces:
+        - enabled
+        - disabled
+    wallet:
+      pieces:
+        - display
   avatars: null
   menu:
     buttons:
@@ -215,41 +223,14 @@ hud:
             w: 44
             h: 44
       wallet:
-        enabled:
+        display:
           path: slotsheet.png
           position:
-            x: 802
-            y: 431
+            x: 762
+            y: 86
           size:
-            w: 44
-            h: 44
-        disabled: 
-          path: slotsheet.png
-          position:
-            x: 802
-            y: 481
-          size:
-            w: 44
-            h: 44
-    avatars: 
-      # equipment avatars
-      bow: null
-      knife: null
-      sword: null
-      axe: null
-      pickaxe:
-      warhammer: null
-      cane: null
-      shovel: null
-      spear: null
-      emblem_shield: null
-      falcon_shield: null
-      leather_shield: null
-      blood_magic: null
-      # inventory avatars
-      quiver: null
-      bomb: null
-      coin: null
+            w: 24
+            h: 24
   large:
     slots:
       disabled:
@@ -350,41 +331,14 @@ hud:
             w: 44
             h: 44
       wallet:
-        enabled:
+        display:
           path: slotsheet.png
           position:
-            x: 802
-            y: 431
+            x: 762
+            y: 86
           size:
-            w: 44
-            h: 44
-        disabled: 
-          path: slotsheet.png
-          position:
-            x: 802
-            y: 481
-          size:
-            w: 44
-            h: 44
-    avatars: 
-      # equipment avatars
-      bow: null
-      knife: null
-      sword: null
-      axe: null
-      pickaxe:
-      warhammer: null
-      cane: null
-      shovel: null
-      spear: null
-      emblem_shield: null
-      falcon_shield: null
-      leather_shield: null
-      blood_magic: null
-      # inventory avatars
-      quiver: null
-      bomb: null
-      coin: null
+            w: 24
+            h: 24
 
 menu:
   small:

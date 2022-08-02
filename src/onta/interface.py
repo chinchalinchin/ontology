@@ -1,4 +1,5 @@
 
+from typing import Union
 import onta.settings as settings
 import onta.device as device
 import onta.world as world
@@ -68,6 +69,8 @@ class HUD():
     slot_rendering_points = []
     life_rendering_points = []
     bag_rendering_points = []
+    wallet_rendering_points = []
+    belt_rendering_point = (None, None)
     hud_activated = True
     media_size = None
 
@@ -77,65 +80,141 @@ class HUD():
         player_device: device.Device, 
         ontology_path: str = settings.DEFAULT_DIR
     ) -> None:
-        config = conf.Conf(ontology_path).load_interface_configuration()
-        state_ao = state.State(ontology_path).get_state('dynamic')
-        self.styles = config.get('hud').get('styles')
-        self._init_conf(config)
-        self.media_size = find_media_size(
-            player_device, 
-            self.sizes, 
-            self.breakpoints
-        )
+        config = conf.Conf(ontology_path)
+        state_ao = state.State(ontology_path)
+        self._init_conf(config, player_device)
         self._init_slot_positions(player_device)
         self._init_mirror_positions(player_device)
-        self._init_bag_positions(player_device)
+        self._init_pack_positions(player_device)
         self._init_slots(state_ao)
         self._init_mirrors(state_ao)
         self._init_packs(state_ao)
         self._init_equipment(state_ao)
 
 
-    def _init_conf(self, config: conf.Conf) -> None:
+    def _init_conf(self, config: conf.Conf, player_device: device.Device) -> None:
+        """Parse and store configuration from yaml files in instance fields.
+
+        :param config: _description_
+        :type config: conf.Conf
+        :param player_device: _description_
+        :type player_device: device.Device
+        """
+        config = config.load_interface_configuration()
         self.styles = config['styles']
         self.hud_conf = config['hud']
         self.sizes = config['sizes']
         self.breakpoints = format_breakpoints(config['breakpoints'])
         self.properties = config['properties']
+        self.media_size = find_media_size(
+            player_device, 
+            self.sizes, 
+            self.breakpoints
+        )
 
 
-    def _init_bag_positions(self, player_device: device.Device):
+    def _init_pack_positions(self, player_device: device.Device):
+        """_summary_
+
+        :param player_device: _description_
+        :type player_device: device.Device
+
+        .. note::
+            The necessity of open source assets imposes some obscurity on the proceedings. Essentially, each type of pack is composed of different pieces and is defined differently in the asset sheet, i.e. each pack type needs treated slightly differently when constructing its rendering position. See documentation for more information.
+        """
         pack_styles = self.styles[self.media_size]['packs']
 
         bagset = self.hud_conf[self.media_size]['packs']['bag']
 
-        total_width = 0
+        total_bag_width = 0
         for bag_piece in bagset.values():
-            total_width += bag_piece['size']['w']
+            total_bag_width += bag_piece['size']['w']
 
         # dependent on both pieces being the same height
         # i.e., the pack sheet can only be broken in the 
         # horizontal direction
-        total_height = bagset[list(bagset.keys())[0]]['size']['h']
+        total_bag_height = bagset[list(bagset.keys())[0]]['size']['h']
 
-        # (0, left), (1, middle), (2, right)
+        # (0, left), (1, right)
         for i, bag_piece in enumerate(bagset.values()):
             if i == 0:
                 if pack_styles['alignment']['horizontal'] == 'left':
                     x = PACK_MARGINS[0]*player_device.dimensions[0]
                 elif pack_styles['alignment']['horizontal'] == 'right':
                     x = (1-PACK_MARGINS[0])*player_device.dimensions[0] - \
-                        total_width
+                        total_bag_width
                 if pack_styles['alignment']['vertical'] == 'top':
                     y = PACK_MARGINS[1]*player_device.dimensions[1]
                 elif pack_styles['alignment']['vertical'] == 'bottom':
                     y = (1-PACK_MARGINS[0])*player_device.dimensions[1] - \
-                        total_height
+                        total_bag_height
             else:
                 x = self.bag_rendering_points[i-1][0] + prev_w
                 y = self.bag_rendering_points[i-1][1]
             self.bag_rendering_points.append((x,y))
             prev_w = bag_piece['size']['w']
 
+        beltset = self.hud_conf[self.media_size]['packs']['belt']
+
+        total_belt_height = beltset[list(beltset.keys())[0]]['size']['h']
+
+        # only one belt position
+        # belt position only affected by pack vertical alignment
+        if pack_styles['alignment']['horizontal'] == 'left':
+            # dependent on bag height > belt height
+            self.belt_rendering_point = (
+                self.bag_rendering_points[0][0] + \
+                    (1+PACK_MARGINS[0])*total_bag_width,
+                self.bag_rendering_points[0][1] + \
+                    (total_bag_height-total_belt_height)
+            )
+        elif pack_styles['alignment']['horizontal'] == 'right':
+            self.belt_rendering_point = (
+                self.bag_rendering_points[0][0] - \
+                    (1+PACK_MARGINS[0])*total_bag_width,
+                  self.bag_rendering_points[0][1] + \
+                    (total_bag_height-total_belt_height)  
+            )
+
+        wallet = self.hud_conf[self.media_size]['packs']['wallet']['display']
+        wallet_w, wallet_h = wallet['size']['w'], wallet['size']['h']
+
+        if pack_styles['alignment']['vertical'] == 'top':
+            self.wallet_rendering_points.append(
+                (
+                    self.bag_rendering_points[0][0] + \
+                        (total_bag_width - wallet_w)/2,
+                    self.bag_rendering_points[0][1] + \
+                        PACK_MARGINS[1]*total_bag_width + \
+                        wallet_h
+                )
+            )
+            self.wallet_rendering_points.append(
+                (
+                    self.wallet_rendering_points[0][0],
+                    self.wallet_rendering_points[0][1] + \
+                        PACK_MARGINS[1]*total_bag_width + \
+                        wallet_h
+                )
+            )
+        elif pack_styles['alignment']['vertical'] == 'bottom':
+            self.wallet_rendering_points.append(
+                (
+                    self.bag_rendering_points[0][0] + \
+                        (total_bag_width - wallet_w)/2,
+                    self.bag_rendering_points[0][1] - \
+                        PACK_MARGINS[1]*total_bag_width - \
+                        wallet_h
+                )
+            )
+            self.wallet_rendering_points.append(
+                (
+                    self.wallet_rendering_points[0][0],
+                    self.wallet_rendering_points[0][1] - \
+                        PACK_MARGINS[1]*total_bag_width - \
+                        wallet_h
+                )
+            )
 
     def _init_mirror_positions(self, player_device: device.Device):
         """_summary_
@@ -360,15 +439,17 @@ class HUD():
 
     
     def _init_slots(self, state_ao: state.State):
-        self.slots = state_ao['hero']['slots']
+        dynamic_state = state_ao.get_state('dynamic')
+        self.slots = dynamic_state['hero']['slots']
 
 
     def _init_equipment(self, state_ao: state.State):
-        self.equipment = state_ao['hero']['equipment']
+        dynamic_state = state_ao.get_state('dynamic')
+        self.equipment = dynamic_state['hero']['equipment']
 
 
     def _init_packs(self, state_ao: state.State): 
-        pass
+        dynamic_state = state_ao.get_state('dynamic')
 
 
     def _init_mirrors(self, state_ao: state.State):
@@ -395,23 +476,27 @@ class HUD():
         return rotate_dimensions(self.hud_conf[self.media_size]['slots']['cap'])
 
 
-    def get_rendering_points(self, interface_key):
+    def get_rendering_points(self, interface_key: str) -> Union[list, tuple]:
         if interface_key in ['slot', 'slots']:
             return self.slot_rendering_points
         elif interface_key in ['life', 'lives']:
             return self.life_rendering_points    
         elif interface_key in ['bag', 'bags']:
             return self.bag_rendering_points
+        elif interface_key in ['wallet', 'wallets']:
+            return self.wallet_rendering_points
+        elif interface_key in ['belt','belts']:
+            return self.belt_rendering_point
 
 
-    def get_slot_dimensions(self):
+    def get_slot_dimensions(self) -> tuple:
         return (
             self.hud_conf[self.media_size]['slots']['disabled']['size']['w'], 
             self.hud_conf[self.media_size]['slots']['disabled']['size']['h']
         )
 
 
-    def slot_frame_map(self):
+    def slot_frame_map(self) -> dict:
         # TODO: need to calculate disabled slots from hero state
         # TODO: should parameterize key somehow
         return {
@@ -420,7 +505,7 @@ class HUD():
         }
 
 
-    def mirror_frame_map(self, mirror_key):
+    def mirror_frame_map(self, mirror_key: str) -> dict:
         # TODO: need to calculate disabled slots from hero state
         # TODO: should parameterize the key somehow
         if mirror_key == 'life':
@@ -431,11 +516,23 @@ class HUD():
             }
 
 
-    def pack_frame_map(self, pack_key):
+    def pack_frame_map(self, pack_key: str) -> dict:
         packset = self.hud_conf[self.media_size]['packs'][pack_key]
-        return {
-            i: key for i, key in enumerate(packset)
-        }
+        if pack_key == 'bag':
+            return {
+                i: key for i, key in enumerate(packset)
+            }
+        elif pack_key == 'belt':
+            # TODO: calculate based on hero state information
+            # i.e., only enabled if equipped ammo > 0
+            return{
+                0: 'enabled'
+            }
+        elif pack_key == 'wallet':
+            return {
+                0: 'display'
+            }
+
 
 
     def update(self, game_world: world.World):
