@@ -12,14 +12,10 @@ log = logger.Logger('onta.hud', settings.LOG_LEVEL)
 # TODO: configuration and styles candidates
 SLOT_STATES = [ 'cast', 'shoot', 'thrust', 'slash' ]
 SLOT_PIECES = [ 'cap', 'buffer', 'enabled', 'active', 'disabled']
-BUTTON_PIECES = [ 'left', 'middle', 'right' ]
 MIRROR_PIECES = [ 'unit', 'empty' ]
 SLOT_MARGINS = (0.025, 0.025)
 MIRROR_MARGINS = (0.025, 0.025)
 MIRROR_PADDING = (0.005, 0.005)
-MENU_MARGINS = (0.05, 0.20)
-MENU_PADDING = (0.05, 0.05)
-PACK_MARGINS = (0.025, 0.025)
 MAX_LIFE = 20
 
 def format_breakpoints(break_points: list) -> list:
@@ -122,7 +118,12 @@ class HUD():
         .. note::
             The necessity of open source assets imposes some obscurity on the proceedings. Essentially, each type of pack is composed of different pieces and is defined differently in the asset sheet, i.e. each pack type needs treated slightly differently when constructing its rendering position. See documentation for more information.
         """
-        pack_styles = self.styles[self.media_size]['packs']
+        pack_margins = (
+            self.styles[self.media_size]['packs']['margins']['w'], 
+            self.styles[self.media_size]['packs']['margins']['h']
+        )
+        pack_horizontal_align = self.styles[self.media_size]['packs']['alignment']['horizontal']
+        pack_vertical_align = self.styles[self.media_size]['packs']['alignment']['vertical']
 
         bagset = self.hud_conf[self.media_size]['packs']['bag']
 
@@ -138,15 +139,16 @@ class HUD():
         # (0, left), (1, right)
         for i, bag_piece in enumerate(bagset.values()):
             if i == 0:
-                if pack_styles['alignment']['horizontal'] == 'left':
-                    x = PACK_MARGINS[0]*player_device.dimensions[0]
-                elif pack_styles['alignment']['horizontal'] == 'right':
-                    x = (1-PACK_MARGINS[0])*player_device.dimensions[0] - \
+                if pack_horizontal_align == 'left':
+                    x = pack_margins[0]*player_device.dimensions[0]
+                elif pack_horizontal_align == 'right':
+                    x = (1-pack_margins[0])*player_device.dimensions[0] - \
                         total_bag_width
-                if pack_styles['alignment']['vertical'] == 'top':
-                    y = PACK_MARGINS[1]*player_device.dimensions[1]
-                elif pack_styles['alignment']['vertical'] == 'bottom':
-                    y = (1-PACK_MARGINS[0])*player_device.dimensions[1] - \
+
+                if pack_vertical_align == 'top':
+                    y = pack_margins[1]*player_device.dimensions[1]
+                elif pack_vertical_align == 'bottom':
+                    y = (1-pack_margins[0])*player_device.dimensions[1] - \
                         total_bag_height
             else:
                 x = self.bag_rendering_points[i-1][0] + prev_w
@@ -164,15 +166,15 @@ class HUD():
         # belt initial position only affected by pack vertical alignment
         for i, belt_piece in enumerate(beltset.values()):
             if i == 0:
-                if pack_styles['alignment']['horizontal'] == 'left':
+                if pack_horizontal_align == 'left':
                     # dependent on bag height > belt height
                     x = self.bag_rendering_points[0][0] + \
-                            (1+PACK_MARGINS[0])*total_bag_width
+                            (1+pack_margins[0])*total_bag_width
                     y = self.bag_rendering_points[0][1] + \
                             (total_bag_height-total_belt_height)/2
-                elif pack_styles['alignment']['horizontal'] == 'right':
+                elif pack_horizontal_align == 'right':
                     x = self.bag_rendering_points[0][0] - \
-                            (1+PACK_MARGINS[0])*total_bag_width
+                            (1+pack_margins[0])*total_bag_width
                     y = self.bag_rendering_points[0][1] + \
                             (total_bag_height-total_belt_height)/2  
             else:
@@ -186,30 +188,30 @@ class HUD():
         wallet = self.hud_conf[self.media_size]['packs']['wallet']['display']
         wallet_w, wallet_h = wallet['size']['w'], wallet['size']['h']
 
-        if pack_styles['alignment']['horizontal'] == 'left':
+        if pack_horizontal_align == 'left':
             self.wallet_rendering_points.append(
                 (
                     self.belt_rendering_points[0][0] + \
-                        (1 + PACK_MARGINS[0])*total_belt_width,
+                        (1 + pack_margins[0])*total_belt_width,
                     self.bag_rendering_points[0][1] +
-                        (total_belt_height - wallet_h * (2 + PACK_MARGINS[1]))/2
+                        (total_belt_height - wallet_h * (2 + pack_margins[1]))/2
                 )
             )
-        elif pack_styles['alignment']['horizontal'] == 'right':
+        elif pack_horizontal_align == 'right':
             self.wallet_rendering_points.append(
                 (
                     self.bag_rendering_points[0][0] - \
-                        (1 + PACK_MARGINS[0])*total_belt_width - \
+                        (1 + pack_margins[0])*total_belt_width - \
                         wallet_w,
                     self.bag_rendering_points[0][1] + \
-                        (total_belt_height - wallet_h * (2 + PACK_MARGINS[1]))/2
+                        (total_belt_height - wallet_h * (2 + pack_margins[1]))/2
                 )
             )
         self.wallet_rendering_points.append(
             (
                 self.wallet_rendering_points[0][0],
                 self.wallet_rendering_points[0][1] + \
-                    (1+PACK_MARGINS[1])*wallet_h
+                    (1+pack_margins[1])*wallet_h
             )
         )
 
@@ -585,8 +587,15 @@ class Menu():
 
 
     def _init_menu_positions(self, player_device: device.Device) -> None:
-        menu_styles = self.styles[self.media_size]['menu']
-
+        menu_margins = (
+            self.styles[self.media_size]['menu']['margins']['w'],
+            self.styles[self.media_size]['menu']['margins']['h']
+        )
+        menu_padding = (
+            self.styles[self.media_size]['menu']['padding']['w'],
+            self.styles[self.media_size]['menu']['padding']['h']
+        )
+        menu_stack = self.styles[self.media_size]['menu']['stack']
         # all button component pieces have the same pieces, so any will do...
         button_conf = self.menu_conf[self.media_size]['button']['enabled']
 
@@ -595,7 +604,7 @@ class Menu():
             (
                 button_conf[piece]['size']['w'],
                 button_conf[piece]['size']['h']
-            ) for piece in BUTTON_PIECES
+            ) for piece in self.properties['buttons']['pieces']
         ]
 
         full_width = 0
@@ -611,29 +620,29 @@ class Menu():
             # j gives you index for the piece dim in dims
             for j in range(len(button_conf)):
 
-                if menu_styles['stack'] == 'vertical':
+                if menu_stack == 'vertical':
                     if i == 0 and j == 0:
-                        x = (1 - MENU_MARGINS[0])*player_device.dimensions[0] - full_width
-                        y = MENU_MARGINS[1]*player_device.dimensions[1]
+                        x = (1 - menu_margins[0])*player_device.dimensions[0] - full_width
+                        y = menu_margins[1]*player_device.dimensions[1]
                     else:
                         if j == 0:
                             x = self.button_rendering_points[0][0]
                             y = self.button_rendering_points[0][1] + \
-                                (1+MENU_PADDING[1])*i*dims[0][1]
+                                (1+menu_padding[1])*i*dims[0][1]
                         else:
                             x = self.button_rendering_points[j-1][0] + \
                                 dims[j-1][0]
                             y = self.button_rendering_points[j-1][1] + \
-                                (1+MENU_PADDING[1])*i*dims[j-1][1]
+                                (1+menu_padding[1])*i*dims[j-1][1]
 
-                elif menu_styles['stack'] == 'horizontal':
+                elif menu_stack == 'horizontal':
                     if i == 0 and j == 0:
-                        x = MENU_MARGINS[0]*player_device.dimensions[0]
-                        y = MENU_MARGINS[1]*player_device.dimensions[1]
+                        x = menu_margins[0]*player_device.dimensions[0]
+                        y = menu_margins[1]*player_device.dimensions[1]
                     else:
                         if j == 0 :
                             x = self.button_rendering_points[0][0] + \
-                                i*(full_width + MENU_PADDING[0])
+                                i*(full_width + menu_padding[0])
                             y = self.button_rendering_points[0][1]
                         else:
                             x = self.button_rendering_points[len(self.button_rendering_points)-1][0] + dims[j-1][0]
@@ -655,19 +664,19 @@ class Menu():
 
     def _activate_button(self, button_key):
         self.buttons[button_key] = {
-            piece: 'active' for piece in BUTTON_PIECES
+            piece: 'active' for piece in self.properties['button']['pieces']
         }
 
 
     def _disable_button(self, button_key):
         self.buttons[button_key] = {
-            piece: 'disabled' for piece in BUTTON_PIECES
+            piece: 'disabled' for piece in self.properties['button']['pieces']
         }
 
 
     def _enable_button(self, button_key):
         self.buttons[button_key] = {
-            piece: 'enabled' for piece in BUTTON_PIECES
+            piece: 'enabled' for piece in self.properties['button']['pieces']
         }
 
 
