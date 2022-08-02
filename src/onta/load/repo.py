@@ -238,7 +238,7 @@ class Repo():
                                     expand=True
                                 )
                             }
-                        elif slot_key in ['empty', 'equipped']:
+                        elif slot_key in ['disabled', 'enabled', 'active']:
                             self.slots[size][slot_key] = buffer
 
 
@@ -387,7 +387,7 @@ class Repo():
             return self.slots[breakpoint_key].get(component_key)
         return None
         
-        
+
     def get_pack_frame(self, breakpoint_key: str, component_key: str, piece_key: str):
         if self.packs.get(breakpoint_key) and self.packs[breakpoint_key].get(component_key):
             return self.packs[breakpoint_key][component_key].get(piece_key)

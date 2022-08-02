@@ -105,9 +105,10 @@ class HUD():
     def _init_pack_positions(self, player_device: device.Device):
         pack_styles = self.styles[self.media_size]['packs']
 
-        packset = self.hud_conf[self.media_size]['packs']
+        bagset = self.hud_conf[self.media_size]['packs']['bag']
 
-        for i, pack in enumerate(packset.values()):
+        # (0, left), (1, middle), (2, right)
+        for i, pack in enumerate(bagset.values()):
             if i == 0:
                 if pack_styles['alignment']['horizontal'] == 'left':
                     x = PACK_MARGINS[0]*player_device.dimensions[0]
@@ -223,8 +224,8 @@ class HUD():
         )
         # NOTE: dependent on 'empty' and 'equipped' being the same dimensions...
         slot_dim = (
-            self.hud_conf[self.media_size]['slots']['empty']['size']['w'],
-            self.hud_conf[self.media_size]['slots']['empty']['size']['h']
+            self.hud_conf[self.media_size]['slots']['disabled']['size']['w'],
+            self.hud_conf[self.media_size]['slots']['disabled']['size']['h']
         )
 
         if slot_styles['alignment']['horizontal'] == 'right':
@@ -387,17 +388,20 @@ class HUD():
             return self.slot_rendering_points
         elif interface_key in ['mirror', 'mirrors']:
             return self.life_rendering_points    
+        elif interface_key in ['pack', 'packs']:
+            return self.pack_rendering_points
 
 
     def get_slot_dimensions(self):
         return (
-            self.hud_conf[self.media_size]['slots']['empty']['size']['w'], 
-            self.hud_conf[self.media_size]['slots']['empty']['size']['h']
+            self.hud_conf[self.media_size]['slots']['disabled']['size']['w'], 
+            self.hud_conf[self.media_size]['slots']['disabled']['size']['h']
         )
 
 
     def slot_frame_map(self):
         # TODO: need to calculate disabled slots from hero state
+        # TODO: should parameterize key somehow
         return {
             key: 'enabled' if val is None else 'active' 
             for key, val in self.slots.items()
@@ -405,12 +409,20 @@ class HUD():
 
 
     def life_frame_map(self):
+        # TODO: need to calculate disabled slots from hero state
+        # TODO: should parameterize the key somehow
         return {
             i: 'unit' if i <= self.mirrors['life']['current'] - 1 else 'empty'
             for i in range(MAX_LIFE)
             if i <= self.mirrors['life']['max'] - 1
         }
 
+    def pack_frame_map(self):
+        return {
+            0: 'left',
+            1: 'middle',
+            2: 'right'
+        }
 
     def update(self, game_world: world.World):
         self.slots = game_world.hero['slots']

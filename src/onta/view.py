@@ -263,8 +263,9 @@ class Renderer():
         cap_frames = repository.get_slot_frames(headsup_display.media_size, 'cap')
         buffer_frames = repository.get_slot_frames(headsup_display.media_size, 'buffer')
         slot_frames = {
-            'empty': repository.get_slot_frames(headsup_display.media_size, 'empty'),
-            'equipped':  repository.get_slot_frames(headsup_display.media_size, 'equipped')
+            'enabled': repository.get_slot_frames(headsup_display.media_size, 'enabled'),
+            'disabled':  repository.get_slot_frames(headsup_display.media_size, 'disabled'),
+            'active': repository.get_slot_frames(headsup_display.media_size, 'active')
         }
 
         for i, render_point in enumerate(rendering_points):
@@ -277,6 +278,8 @@ class Renderer():
             else:
                 render_key = next(render_order)
                 render_frame = slot_frames[render_map[render_key]]
+
+            print(render_point)
 
             self.world_frame.paste(
                 render_frame, 
@@ -300,6 +303,24 @@ class Renderer():
                 life_frame,
                 (int(render_point[0]), int(render_point[1])),
                 life_frame
+            )
+
+
+    def _render_packs(self, headsup_display: interface.HUD, repository: repo.Repo):
+        pack_map = headsup_display.pack_frame_map()
+
+        bag_rendering_points = headsup_display.get_rendering_points('pack')
+
+        for i, render_point in enumerate(bag_rendering_points):
+            bag_frame = repository.get_pack_frame(
+                headsup_display.media_size,
+                'bag',
+                pack_map[i]
+            )
+            self.world_frame.paste(
+                bag_frame,
+                (int(render_point[0]), int(render_point[1])),
+                bag_frame
             )
 
 
@@ -380,6 +401,7 @@ class Renderer():
         if headsup_display.hud_activated:
             self._render_slots(headsup_display, repository)
             self._render_mirrors(headsup_display, repository)
+            self._render_packs(headsup_display, repository)
 
         return self.world_frame
 
