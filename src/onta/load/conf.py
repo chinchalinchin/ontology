@@ -18,7 +18,8 @@ class Conf():
     plate_sheet_conf = {}
     tile_sheet_conf = {}
     control_conf = {}
-    interface_conf = {}
+    sense_conf = {}
+    avatar_conf = {}
     composite_conf = {}
     equipment_con = {}
 
@@ -97,17 +98,23 @@ class Conf():
         return self.control_conf
 
 
-    def load_interface_configuration(self) -> dict:
-        """Returns the parsed _Slot_, _Mirror_, _Pack_ and _Avatar_ (collectively known as the _Interface_) configuration from the _data/conf/self/senses.yaml_ file.
+    def load_sense_configuration(self) -> dict:
+        """Returns the parsed _Slot_, _Mirror_ and _Packs_ (collectively known as the _Interface_) configuration from the _data/conf/self/senses.yaml_ file.
 
         :return: _Interface_ specific configurations.
         :rtype: dict
 
         """
         # TODO: mismatch between senses and interface naming scheme...
-        if not self.interface_conf:
-            self.interface_conf = self._self_configuration('senses')
-        return self.interface_conf
+        if not self.sense_conf:
+            self.sense_conf = self._self_configuration('senses')
+        return self.sense_conf
+
+
+    def load_avatar_configuration(self) -> dict:
+        if not self.avatar_conf:
+            self.avatar_conf = self._self_configuration('avatars')
+        return self.avatar_conf
 
 
     def load_equipment_configuration(self) -> dict:

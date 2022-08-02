@@ -96,7 +96,7 @@ class HUD():
         :param player_device: _description_
         :type player_device: device.Device
         """
-        config = config.load_interface_configuration()
+        config = config.load_sense_configuration()
         self.styles = config['styles']
         self.hud_conf = config['hud']
         self.sizes = config['sizes']
@@ -562,7 +562,7 @@ class Menu():
         player_device: device.Device, 
         ontology_path: str = settings.DEFAULT_DIR
     ) -> None:
-        config = conf.Conf(ontology_path).load_interface_configuration()
+        config = conf.Conf(ontology_path).load_sense_configuration()
         state_ao = state.State(ontology_path).get_state('dynamic')
         self._init_conf(config)
         self.media_size = find_media_size(
@@ -582,7 +582,7 @@ class Menu():
         self.breakpoints = format_breakpoints(config['breakpoints'])
         self.tabs = {
             button_name: {} 
-            for button_name in self.properties['buttons']
+            for button_name in self.properties['button']['buttons']
         }
 
 
@@ -604,7 +604,7 @@ class Menu():
             (
                 button_conf[piece]['size']['w'],
                 button_conf[piece]['size']['h']
-            ) for piece in self.properties['buttons']['pieces']
+            ) for piece in self.properties['button']['pieces']
         ]
 
         full_width = 0
@@ -614,7 +614,7 @@ class Menu():
 
         # self.button_rendering_points => len() == len(buttons)*len(pieces)
         # for (0, equipment), (1, inventory), (2, status), ...
-        for i in range(len(self.properties['buttons'])):
+        for i in range(len(self.properties['button']['buttons'])):
 
             # for (0, left), (1, middle), (2, right)
             # j gives you index for the piece dim in dims
@@ -654,7 +654,7 @@ class Menu():
     def _init_buttons(self, state_ao: state.State) -> dict:
         # TODO: calculate based on state information
 
-        for i, name in enumerate(self.properties['buttons']):
+        for i, name in enumerate(self.properties['button']['buttons']):
             if i == 0:
                 self._activate_button(name)
                 self.active_button = i
@@ -686,10 +686,10 @@ class Menu():
         self.active_button -= 1
 
         if self.active_button < 0:
-            self.active_button = len(self.properties['buttons']) - 1
+            self.active_button = len(self.properties['button']['buttons']) - 1
         
-        self._enable_button(self.properties['buttons'][previous_active])
-        self._activate_button(self.properties['buttons'][self.active_button])
+        self._enable_button(self.properties['button']['buttons'][previous_active])
+        self._activate_button(self.properties['button']['buttons'][self.active_button])
 
 
     def _decrement_active_button(self):
@@ -697,11 +697,11 @@ class Menu():
         previous_active = self.active_button
         self.active_button += 1
 
-        if self.active_button > len(self.properties['buttons']) - 1:
+        if self.active_button > len(self.properties['button']['buttons']) - 1:
             self.active_button = 0
         
-        self._enable_button(self.properties['buttons'][previous_active])
-        self._activate_button(self.properties['buttons'][self.active_button])
+        self._enable_button(self.properties['button']['buttons'][previous_active])
+        self._activate_button(self.properties['button']['buttons'][self.active_button])
 
 
     def execute_active_button(self):

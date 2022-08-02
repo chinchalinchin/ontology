@@ -115,13 +115,18 @@ properties:
         - display
   avatars: null
   menu:
-    buttons:
-      - equipment
-      - inventory
-      - status
-      - map
-      - save
-      - load
+    button:
+      buttons:
+        - equipment
+        - inventory
+        - status
+        - map
+        - save
+        - load
+      pieces: 
+        - left
+        - middle
+        - right
 
 hud:
   small:
@@ -352,18 +357,18 @@ menu:
           size:
             w: 41
             h: 28
-        right:
-          path: slotsheet.png
-          position:
-            x: 716
-            y: 23
-          size:
-            w: 40
-            h: 28
         middle:
           path: slotsheet.png
           position:
             x: 675
+            y: 23
+          size:
+            w: 40
+            h: 28
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
             y: 23
           size:
             w: 40
@@ -377,14 +382,6 @@ menu:
           size:
             w: 41
             h: 28
-        right:
-          path: slotsheet.png
-          position:
-            x: 716
-            y: 53
-          size:
-            w: 41
-            h: 28 
         middle:
           path: slotsheet.png
           position:
@@ -393,19 +390,19 @@ menu:
           size:
             w: 40
             h: 28
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 53
+          size:
+            w: 41
+            h: 28 
       disabled:
         left: 
           path: slotsheet.png
           position:
             x: 633
-            y: 83
-          size:
-            w: 41
-            h: 28
-        right:
-          path: slotsheet.png
-          position:
-            x: 716
             y: 83
           size:
             w: 41
@@ -417,6 +414,14 @@ menu:
             y: 83
           size:
             w: 40
+            h: 28
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 83
+          size:
+            w: 41
             h: 28
   large:
     button:
@@ -429,18 +434,18 @@ menu:
           size:
             w: 41
             h: 28
-        right:
-          path: slotsheet.png
-          position:
-            x: 716
-            y: 23
-          size:
-            w: 40
-            h: 28
         middle:
           path: slotsheet.png
           position:
             x: 675
+            y: 23
+          size:
+            w: 40
+            h: 28
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
             y: 23
           size:
             w: 40
@@ -454,14 +459,6 @@ menu:
           size:
             w: 41
             h: 28
-        right:
-          path: slotsheet.png
-          position:
-            x: 716
-            y: 53
-          size:
-            w: 41
-            h: 28 
         middle:
           path: slotsheet.png
           position:
@@ -470,6 +467,14 @@ menu:
           size:
             w: 40
             h: 28
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 53
+          size:
+            w: 41
+            h: 28 
       disabled:
         left: 
           path: slotsheet.png
@@ -479,19 +484,6 @@ menu:
           size:
             w: 41
             h: 28
-          channels:
-            r: null
-            g: null
-            b: null
-            a: 255
-        right:
-          path: slotsheet.png
-          position:
-            x: 716
-            y: 83
-          size:
-            w: 41
-            h: 28 
         middle:
           path:
           position:
@@ -499,6 +491,14 @@ menu:
             y: 83
           size:
             w: 40
+            h: 28
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 83
+          size:
+            w: 41
             h: 28
 
     

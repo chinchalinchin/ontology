@@ -61,13 +61,12 @@ class Repo():
             No reference is kept to `ontology_path`; it is passed to initialize methods and released.
         """
         config = conf.Conf(ontology_path)
-        self._init_static_assets(config, ontology_path)
-        self._init_sprite_assets(config, ontology_path)
-        self._init_slot_assets(config, ontology_path)
-        self._init_interface_assets(config, ontology_path)
+        self._init_form_assets(config, ontology_path)
+        self._init_entity_assets(config, ontology_path)
+        self._init_sense_assets(config, ontology_path)
 
 
-    def _init_static_assets(self, config: conf.Conf, ontology_path: str) -> None:
+    def _init_form_assets(self, config: conf.Conf, ontology_path: str) -> None:
         """_summary_
 
         :param config: _description_
@@ -162,7 +161,7 @@ class Repo():
                             self.plates[asset_key] = buffer
  
 
-    def _init_slot_assets(self, config: conf.Conf, ontology_path: str) -> None:
+    def _init_sense_assets(self, config: conf.Conf, ontology_path: str) -> None:
         """_summary_
 
         :param config: _description_
@@ -173,151 +172,172 @@ class Repo():
         .. note::
             A _Slot_ is defined in a single direction, but used in multiple directions. When styles are applied the engine will need to be aware which direction the definition is in, so it can rotate the _Slot_ component to its appropriate position based on the declared style. In other words, _Slot_\s are a pain.
         """
-        interface_conf = config.load_interface_configuration()
+        interface_conf = config.load_sense_configuration()
+
         for size in interface_conf['sizes']:
             self.slots[size]= {}
 
             slotset = interface_conf['hud'][size]['slots']
             log.debug(f'Initializing slot assets...', 'Repo._init_interface_assets')
             
+            ## SLOT INITIALIZATION
+            # NOTE:
+            #   for (disabled, {slot}), (enabled, {slot}), (active, {slot}), 
+            #       (cap, {slot}), (buffer, {slot})
             for slot_key, slot in slotset.items():
-                if slot:
-                    w, h = slot['size']['w'], slot['size']['h']   
+                if not slot or not slot.get('path'):
+                    continue
 
-                    if slot.get('path'):
-                        x, y = slot['position']['x'], slot['position']['y']
-        
-                        image_path = os.path.join(
-                                ontology_path,
-                                *settings.SENSES_PATH,
-                                slot['path']
+                w, h = slot['size']['w'], slot['size']['h']   
+                x, y = slot['position']['x'], slot['position']['y']
+
+                image_path = os.path.join(
+                        ontology_path,
+                        *settings.SENSES_PATH,
+                        slot['path']
+                )
+                buffer = Image.open(image_path).convert(settings.IMG_MODE)
+
+                log.debug( f"Slot {slot_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                    'Repo._init_interface_assets')
+
+                slot_conf = interface_conf['hud'][size]['slots']
+                buffer = buffer.crop((x,y,w+x,h+y))
+
+                # this is annoying, but necessary to allow slots to be rotated...
+                if slot_key == 'cap':
+                    (down_adjust, left_adjust, right_adjust, up_adjust) = \
+                        self.adjust_cap_rotation(
+                            slot_conf['cap']['definition']
                         )
-                        buffer = Image.open(image_path).convert(settings.IMG_MODE)
+                    self.slots[size][slot_key] = {
+                        'up': buffer.rotate(
+                            up_adjust,
+                            expand=True
+                        ),
+                        'left': buffer.rotate(
+                            left_adjust,
+                            expand=True
+                        ),
+                        'right': buffer.rotate(
+                            right_adjust,
+                            expand=True
+                        ),
+                        'down': buffer.rotate(
+                            down_adjust,
+                            expand=True
+                        )
+                    }
+                elif slot_key == 'buffer':
+                    (vertical_adjust, horizontal_adjust) = \
+                        self.adjust_buffer_rotation(
+                        slot_conf['buffer']['definition']  
+                    )
+                    self.slots[size][slot_key] = {
+                        'vertical': buffer.rotate(
+                            vertical_adjust,
+                            expand=True
+                        ),
+                        'horizontal': buffer.rotate(
+                            horizontal_adjust,
+                            expand=True
+                        )
+                    }
+                elif slot_key in ['disabled', 'enabled', 'active']:
+                    self.slots[size][slot_key] = buffer
+            ########################
 
-                        log.debug( f"Slot {slot_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                            'Repo._init_interface_assets')
-
-                        slot_conf = interface_conf['hud'][size]['slots']
-                        buffer = buffer.crop((x,y,w+x,h+y))
-
-                        if slot_key == 'cap':
-                            (down_adjust, left_adjust, right_adjust, up_adjust) = \
-                                self.adjust_cap_rotation(
-                                    slot_conf['cap']['definition']
-                                )
-                            self.slots[size][slot_key] = {
-                                'up': buffer.rotate(
-                                    up_adjust,
-                                    expand=True
-                                ),
-                                'left': buffer.rotate(
-                                    left_adjust,
-                                    expand=True
-                                ),
-                                'right': buffer.rotate(
-                                    right_adjust,
-                                    expand=True
-                                ),
-                                'down': buffer.rotate(
-                                    down_adjust,
-                                    expand=True
-                                )
-                            }
-                        elif slot_key == 'buffer':
-                            (vertical_adjust, horizontal_adjust) = \
-                                self.adjust_buffer_rotation(
-                                slot_conf['buffer']['definition']  
-                            )
-                            self.slots[size][slot_key] = {
-                                'vertical': buffer.rotate(
-                                    vertical_adjust,
-                                    expand=True
-                                ),
-                                'horizontal': buffer.rotate(
-                                    horizontal_adjust,
-                                    expand=True
-                                )
-                            }
-                        elif slot_key in ['disabled', 'enabled', 'active']:
-                            self.slots[size][slot_key] = buffer
-
-
-    def _init_interface_assets(self, config: conf.Conf, ontology_path: str) -> None:
-        interface_conf = config.load_interface_configuration()
-
-        # TODO: these can be condensed with a loop
-        for size in interface_conf['sizes']:
             self.mirrors[size] = {}
             mirror_set = interface_conf['hud'][size]['mirrors']
 
-
-            # (life, mirror), (magic, mirror)
+            ## MIRROR INITIALIZATION
+            # NOTE: For (life, {mirror}), (magic, {mirror})
             for mirror_key, mirror in mirror_set.items():
-                if mirror:
-                    self.mirrors[size][mirror_key] = {}
-                    
-                    # for (unit, fill), (empty, fill)
-                    for fill_key, fill in mirror.items():
-                        if fill.get('path'):
-                            x,y = fill['position']['x'], fill['position']['y']
-                            w, h = fill['size']['w'], fill['size']['h']
-                            
-                            image_path = os.path.join(
-                                ontology_path,
-                                *settings.SENSES_PATH,
-                                fill['path']
-                            )
-                            buffer = Image.open(image_path).convert(settings.IMG_MODE)
+                if not mirror:
+                    continue
 
-                            self.mirrors[size][mirror_key][fill_key] = buffer.crop((x,y,w+x,h+y))
-            
+                self.mirrors[size][mirror_key] = {}
+                
+                # for (unit, fill), (empty, fill)
+                for fill_key, fill in mirror.items():
+                    if not fill.get('path'):
+                        continue
+
+                    x,y = fill['position']['x'], fill['position']['y']
+                    w, h = fill['size']['w'], fill['size']['h']
+                    
+                    image_path = os.path.join(
+                        ontology_path,
+                        *settings.SENSES_PATH,
+                        fill['path']
+                    )
+                    buffer = Image.open(image_path).convert(settings.IMG_MODE)
+
+                    self.mirrors[size][mirror_key][fill_key] = buffer.crop((x,y,w+x,h+y))
+            ########################
+
             self.packs[size]= {}
             pack_set = interface_conf['hud'][size]['packs']
 
+            ## PACK INITIALIZATION
             # (bag, pack), (belt, pack), (wallet, pack)
             for pack_key, pack in pack_set.items():
-                if pack:
-                    self.packs[size][pack_key] = {}
+                if not pack:
+                    continue
 
-                    for piece_key, piece in pack.items():
-                        if piece.get('path'):
-                            x, y = piece['position']['x'], piece['position']['y']
-                            w, h = piece['size']['w'], piece['size']['h']
+                self.packs[size][pack_key] = {}
 
-                            image_path = os.path.join(
-                                ontology_path,
-                                *settings.SENSES_PATH,
-                                piece['path']
-                            )
-                            buffer = Image.open(image_path).convert(settings.IMG_MODE)
+                for piece_key, piece in pack.items():
+                    if not piece.get('path'):
+                        continue
 
-                            self.packs[size][pack_key][piece_key] = buffer.crop((x,y,w+x,h+y))
+                    x, y = piece['position']['x'], piece['position']['y']
+                    w, h = piece['size']['w'], piece['size']['h']
+
+                    image_path = os.path.join(
+                        ontology_path,
+                        *settings.SENSES_PATH,
+                        piece['path']
+                    )
+                    buffer = Image.open(image_path).convert(settings.IMG_MODE)
+
+                    self.packs[size][pack_key][piece_key] = buffer.crop((x,y,w+x,h+y))
+            ########################
 
             self.menus[size] = {}
             button_set = interface_conf['menu'][size]['button']
 
+            ## BUTTON INITIALIZATION
             # for (enabled, button), (active, button), (disabled, button)
             for button_key, button in button_set.items():
-                if button:
-                    self.menus[size][button_key] = {}
-                    
-                    # for (left, piece), (right, piece), (middle, piece)
-                    for piece_key, piece in button.items():
-                        if piece.get('path'):
-                            x,y = (piece['position']['x'], piece['position']['y'])
-                            w,h = (piece['size']['w'], piece['size']['h'])
+                if not button:
+                    continue
 
-                            image_path = os.path.join(
-                                ontology_path,
-                                *settings.SENSES_PATH,
-                                piece['path']
-                            )
-                            buffer = Image.open(image_path).convert(settings.IMG_MODE)
+                self.menus[size][button_key] = {}
+                
+                # for (left, piece), (right, piece), (middle, piece)
+                for piece_key, piece in button.items():
+                    if not piece.get('path'):
+                        continue
+                    x,y = (piece['position']['x'], piece['position']['y'])
+                    w,h = (piece['size']['w'], piece['size']['h'])
 
-                            self.menus[size][button_key][piece_key] = buffer.crop((x,y,w+x,h+y))
+                    image_path = os.path.join(
+                        ontology_path,
+                        *settings.SENSES_PATH,
+                        piece['path']
+                    )
+                    buffer = Image.open(image_path).convert(settings.IMG_MODE)
+
+                    self.menus[size][button_key][piece_key] = buffer.crop((x,y,w+x,h+y))
+            ##########################
 
 
-    def _init_sprite_assets(self, config: conf.Conf, ontology_path: str) -> None:
+    def _init_avatar_assets(self, config: conf.Conf, ontology_path: str) -> None:
+        avatar_conf = config.load_avatar_configuration()
+
+
+    def _init_entity_assets(self, config: conf.Conf, ontology_path: str) -> None:
         log.debug('Initializing sprite assets...', 'Repo._init_sprite_assets')
 
         states_conf, _, sheets_conf = config.load_sprite_configuration()

@@ -6,3 +6,5 @@
 **/.pytest_cache
 
 src/ontology.egg-info
+
+log
