@@ -189,14 +189,6 @@ hud:
           size:
             w: 32
             h: 64
-        middle:
-          path: slotsheet.png
-          position:
-            x: 49
-            y: 184
-          size:
-            w: 32
-            h: 64
         right:
           path: slotsheet.png
           position:
@@ -205,9 +197,42 @@ hud:
           size:
             w: 32
             h: 64
-      belt: null
-      wallet: null
+      belt: 
+        enabled:
+          path: slotsheet.png
+          position:
+            x: 802
+            y: 431
+          size:
+            w: 44
+            h: 44
+        disabled: 
+          path: slotsheet.png
+          position:
+            x: 802
+            y: 481
+          size:
+            w: 44
+            h: 44
+      wallet:
+        enabled:
+          path: slotsheet.png
+          position:
+            x: 802
+            y: 431
+          size:
+            w: 44
+            h: 44
+        disabled: 
+          path: slotsheet.png
+          position:
+            x: 802
+            y: 481
+          size:
+            w: 44
+            h: 44
     avatars: 
+      # equipment avatars
       bow: null
       knife: null
       sword: null
@@ -221,6 +246,10 @@ hud:
       falcon_shield: null
       leather_shield: null
       blood_magic: null
+      # inventory avatars
+      quiver: null
+      bomb: null
+      coin: null
   large:
     slots:
       disabled:
@@ -295,14 +324,6 @@ hud:
           size:
             w: 32
             h: 64
-        middle:
-          path: slotsheet.png
-          position:
-            x: 49
-            y: 184
-          size:
-            w: 32
-            h: 64
         right:
           path: slotsheet.png
           position:
@@ -311,9 +332,42 @@ hud:
           size:
             w: 32
             h: 64
-      belt: null
-      wallet: null
+      belt: 
+        enabled:
+          path: slotsheet.png
+          position:
+            x: 802
+            y: 431
+          size:
+            w: 44
+            h: 44
+        disabled: 
+          path: slotsheet.png
+          position:
+            x: 802
+            y: 481
+          size:
+            w: 44
+            h: 44
+      wallet:
+        enabled:
+          path: slotsheet.png
+          position:
+            x: 802
+            y: 431
+          size:
+            w: 44
+            h: 44
+        disabled: 
+          path: slotsheet.png
+          position:
+            x: 802
+            y: 481
+          size:
+            w: 44
+            h: 44
     avatars: 
+      # equipment avatars
       bow: null
       knife: null
       sword: null
@@ -327,6 +381,10 @@ hud:
       falcon_shield: null
       leather_shield: null
       blood_magic: null
+      # inventory avatars
+      quiver: null
+      bomb: null
+      coin: null
 
 menu:
   small:

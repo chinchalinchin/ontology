@@ -2,6 +2,7 @@ import sys
 from collections import OrderedDict
 
 from PySide6 import QtWidgets, QtGui
+from PIL import Image
 
 import onta.device as device
 import onta.settings as settings
@@ -242,13 +243,14 @@ class Renderer():
             self.world_frame.paste(self.static_back_frame[layer], (0,0), self.static_back_frame[layer])
 
 
-    def _render_spriteset(self, spriteset_key: str, game_world: world.World, repository: repo.Repo):
-        spriteset = game_world.get_spriteset(spriteset_key)
-        for sprite_key, sprite in spriteset.items():
-            sprite_position = (int(sprite['position']['x']), int(sprite['position']['y']))
-            sprite_state, sprite_frame = sprite['state'], sprite['frame']
-            sprite_frame = repository.get_sprite_frame(sprite_key, sprite_state, sprite_frame)
-            self.world_frame.paste(sprite_frame, sprite_position, sprite_frame)
+    def _render_spriteset(self,game_world: world.World, repository: repo.Repo):
+        for spriteset_key in ['npcs', 'villains', 'hero']:
+            spriteset = game_world.get_spriteset(spriteset_key)
+            for sprite_key, sprite in spriteset.items():
+                sprite_position = (int(sprite['position']['x']), int(sprite['position']['y']))
+                sprite_state, sprite_frame = sprite['state'], sprite['frame']
+                sprite_frame = repository.get_sprite_frame(sprite_key, sprite_state, sprite_frame)
+                self.world_frame.paste(sprite_frame, sprite_position, sprite_frame)
 
 
     def _render_slots(self, headsup_display: interface.HUD, repository: repo.Repo):
@@ -279,8 +281,6 @@ class Renderer():
                 render_key = next(render_order)
                 render_frame = slot_frames[render_map[render_key]]
 
-            print(render_point)
-
             self.world_frame.paste(
                 render_frame, 
                 (int(render_point[0]), int(render_point[1])), 
@@ -288,9 +288,13 @@ class Renderer():
             )
 
 
-    def _render_mirrors(self, headsup_display: interface.HUD, repository: repo.Repo):
-        rendering_points = headsup_display.get_rendering_points('mirror')
-        life_map = headsup_display.life_frame_map()
+    def _render_mirrors(
+        self, 
+        headsup_display: interface.HUD, 
+        repository: repo.Repo
+    ) -> None:
+        life_map = headsup_display.mirror_frame_map('life')
+        rendering_points = headsup_display.get_rendering_points('life')
 
         for i, fill in life_map.items():
             life_frame = repository.get_mirror_frame(
@@ -306,16 +310,20 @@ class Renderer():
             )
 
 
-    def _render_packs(self, headsup_display: interface.HUD, repository: repo.Repo):
-        pack_map = headsup_display.pack_frame_map()
+    def _render_bag(
+        self, 
+        headsup_display: interface.HUD, 
+        repository: repo.Repo
+    ) -> None:
+        bag_map = headsup_display.pack_frame_map('bag')
 
-        bag_rendering_points = headsup_display.get_rendering_points('pack')
+        bag_rendering_points = headsup_display.get_rendering_points('bag')
 
         for i, render_point in enumerate(bag_rendering_points):
             bag_frame = repository.get_pack_frame(
                 headsup_display.media_size,
                 'bag',
-                pack_map[i]
+                bag_map[i]
             )
             self.world_frame.paste(
                 bag_frame,
@@ -324,7 +332,12 @@ class Renderer():
             )
 
 
-    def _render_menu(self, menu: interface.Menu, repository: repo.Repo):
+    def _render_menu(
+        self, 
+        menu: interface.Menu, 
+        repository: repo.Repo
+    ) -> None:
+        # TODO: alpha and overlay should be part of configuration or styles
         gui.replace_alpha(self.world_frame, 127)
         overlay = gui.channels(
             self.player_device.dimensions, 
@@ -360,7 +373,8 @@ class Renderer():
         headsup_display: interface.HUD, 
         menu: interface.Menu,
         crop: bool = True, 
-        layer: str = None):
+        layer: str = None
+    ) -> Image.Image:
         """_summary_
 
         :param game_world: _description_
@@ -382,8 +396,7 @@ class Renderer():
 
         self._render_static(game_world.layer, False)
         self._render_typed_platesets(game_world, repository)
-        for spriteset in ['npcs', 'villains', 'hero']:
-            self._render_spriteset(spriteset, game_world, repository)
+        self._render_spriteset(game_world, repository)
         self._render_static(game_world.layer, True)
 
         if layer is not None:
@@ -391,8 +404,15 @@ class Renderer():
             
         if crop:
             world_dim = game_world.dimensions
-            hero_pt = (game_world.hero['position']['x'], game_world.hero['position']['y'])
-            crop_box = self.calculate_crop_box(self.player_device.dimensions, world_dim, hero_pt)
+            hero_pt = (
+                game_world.hero['position']['x'], 
+                game_world.hero['position']['y']
+            )
+            crop_box = self.calculate_crop_box(
+                self.player_device.dimensions, 
+                world_dim, 
+                hero_pt
+            )
             self.world_frame = self.world_frame.crop(crop_box)
         
         if menu.menu_activated:
@@ -401,7 +421,7 @@ class Renderer():
         if headsup_display.hud_activated:
             self._render_slots(headsup_display, repository)
             self._render_mirrors(headsup_display, repository)
-            self._render_packs(headsup_display, repository)
+            self._render_bag(headsup_display, repository)
 
         return self.world_frame
 
@@ -413,7 +433,7 @@ class Renderer():
         headsup_display: interface.HUD,
         menu: interface.Menu,
         repository: repo.Repo
-    ):        
+    ) -> QtWidgets.QWidget:        
         cropped = self.render(game_world, repository, headsup_display, menu)
 
         pix = gui.convert_to_gui(cropped)

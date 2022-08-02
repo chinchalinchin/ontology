@@ -8,6 +8,7 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.hud', settings.LOG_LEVEL)
 
+# TODO: configuration and styles candidates
 SLOT_STATES = [ 'cast', 'shoot', 'thrust', 'slash' ]
 SLOT_PIECES = [ 'cap', 'buffer', 'enabled', 'active', 'disabled']
 BUTTON_PIECES = [ 'left', 'middle', 'right' ]
@@ -66,7 +67,7 @@ class HUD():
     breakpoints = []
     slot_rendering_points = []
     life_rendering_points = []
-    pack_rendering_points = []
+    bag_rendering_points = []
     hud_activated = True
     media_size = None
 
@@ -87,7 +88,7 @@ class HUD():
         )
         self._init_slot_positions(player_device)
         self._init_mirror_positions(player_device)
-        self._init_pack_positions(player_device)
+        self._init_bag_positions(player_device)
         self._init_slots(state_ao)
         self._init_mirrors(state_ao)
         self._init_packs(state_ao)
@@ -102,27 +103,38 @@ class HUD():
         self.properties = config['properties']
 
 
-    def _init_pack_positions(self, player_device: device.Device):
+    def _init_bag_positions(self, player_device: device.Device):
         pack_styles = self.styles[self.media_size]['packs']
 
         bagset = self.hud_conf[self.media_size]['packs']['bag']
 
+        total_width = 0
+        for bag_piece in bagset.values():
+            total_width += bag_piece['size']['w']
+
+        # dependent on both pieces being the same height
+        # i.e., the pack sheet can only be broken in the 
+        # horizontal direction
+        total_height = bagset[list(bagset.keys())[0]]['size']['h']
+
         # (0, left), (1, middle), (2, right)
-        for i, pack in enumerate(bagset.values()):
+        for i, bag_piece in enumerate(bagset.values()):
             if i == 0:
                 if pack_styles['alignment']['horizontal'] == 'left':
                     x = PACK_MARGINS[0]*player_device.dimensions[0]
                 elif pack_styles['alignment']['horizontal'] == 'right':
-                    x = (1-PACK_MARGINS[0])*player_device.dimensions[0]
+                    x = (1-PACK_MARGINS[0])*player_device.dimensions[0] - \
+                        total_width
                 if pack_styles['alignment']['vertical'] == 'top':
                     y = PACK_MARGINS[1]*player_device.dimensions[1]
                 elif pack_styles['alignment']['vertical'] == 'bottom':
-                    y = (1-PACK_MARGINS[0])*player_device.dimensions[1]
+                    y = (1-PACK_MARGINS[0])*player_device.dimensions[1] - \
+                        total_height
             else:
-                x = self.pack_rendering_points[i-1][0] + prev_w
-                y = self.pack_rendering_points[i-1][1] + prev_h
-            self.pack_rendering_points.append((x,y))
-            prev_w, prev_h= pack['size']['w'], pack['size']['h']
+                x = self.bag_rendering_points[i-1][0] + prev_w
+                y = self.bag_rendering_points[i-1][1]
+            self.bag_rendering_points.append((x,y))
+            prev_w = bag_piece['size']['w']
 
 
     def _init_mirror_positions(self, player_device: device.Device):
@@ -386,10 +398,10 @@ class HUD():
     def get_rendering_points(self, interface_key):
         if interface_key in ['slot', 'slots']:
             return self.slot_rendering_points
-        elif interface_key in ['mirror', 'mirrors']:
+        elif interface_key in ['life', 'lives']:
             return self.life_rendering_points    
-        elif interface_key in ['pack', 'packs']:
-            return self.pack_rendering_points
+        elif interface_key in ['bag', 'bags']:
+            return self.bag_rendering_points
 
 
     def get_slot_dimensions(self):
@@ -408,21 +420,23 @@ class HUD():
         }
 
 
-    def life_frame_map(self):
+    def mirror_frame_map(self, mirror_key):
         # TODO: need to calculate disabled slots from hero state
         # TODO: should parameterize the key somehow
+        if mirror_key == 'life':
+            return {
+                i: 'unit' if i <= self.mirrors['life']['current'] - 1 else 'empty'
+                for i in range(MAX_LIFE)
+                if i <= self.mirrors['life']['max'] - 1
+            }
+
+
+    def pack_frame_map(self, pack_key):
+        packset = self.hud_conf[self.media_size]['packs'][pack_key]
         return {
-            i: 'unit' if i <= self.mirrors['life']['current'] - 1 else 'empty'
-            for i in range(MAX_LIFE)
-            if i <= self.mirrors['life']['max'] - 1
+            i: key for i, key in enumerate(packset)
         }
 
-    def pack_frame_map(self):
-        return {
-            0: 'left',
-            1: 'middle',
-            2: 'right'
-        }
 
     def update(self, game_world: world.World):
         self.slots = game_world.hero['slots']

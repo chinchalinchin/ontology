@@ -4,6 +4,7 @@ All of the game assets were retrieved from [OpenGameArt](https://opengameart). S
 
 - [adrix89](https://opengameart.org/users/adrix89)
 - [aritisticdude](https://opengameart.org/users/artisticdude)
+- [Buch](https://opengameart.org/users/buch)
 - [Hyptosis](http://www.lorestrome.com/pixel_archive/main.htm)
 - [ScratchIO](https://opengameart.org/users/scratchio)
 
