@@ -723,8 +723,9 @@ class HUD():
         # TODO: need to calculate disabled slots from hero state
         #          i.e. will need to pull hero equipment, group by state binding
         #               and see if groups contain enabled equipment
+        # TODO: use active if hero currently in that state!!!
         self.slot_frame_map = {
-            key: 'enabled' if val is None else 'active' 
+            key: 'disabled' if val is None else 'enabled' 
             for key, val in self.slots.items()
         }
 
