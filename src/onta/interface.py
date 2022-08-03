@@ -104,6 +104,14 @@ class HUD():
     ```python
     ```
     """
+    avatar_conf = {}
+    # NOTE: not sure if its the best idea storing this in HUD, the information
+    #       implicitly exists in repo already, but then would need a reference
+    #       to repo in HUD, so...this seems to be the ideal solution.
+    """
+    ```python
+    ```
+    """
     styles = {}
     """
     ```python
@@ -169,6 +177,11 @@ class HUD():
     ```python
     ```
     """
+    avatar_rendering_points = []
+    """
+    ```python
+    ```
+    """
     hud_activated = True
     """
     ```python
@@ -192,10 +205,8 @@ class HUD():
         self._init_slot_positions(player_device)
         self._init_mirror_positions(player_device)
         self._init_pack_positions(player_device)
-        self._init_slots(state_ao)
-        self._init_mirrors(state_ao)
-        self._init_packs(state_ao)
-        self._init_equipment(state_ao)
+        self._init_internal_state(state_ao)
+        self._calculate_avatar_positions()
 
 
     def _init_conf(
@@ -223,6 +234,7 @@ class HUD():
             self.sizes, 
             self.breakpoints
         )
+        self.avatar_conf = config.load_avatar_configuration()
 
 
     def _init_pack_positions(
@@ -337,6 +349,7 @@ class HUD():
             )
         )
 
+
     def _init_mirror_positions(
         self, 
         player_device: device.Device
@@ -441,7 +454,8 @@ class HUD():
             self.hud_conf[self.media_size]['slots']['buffer'],
             self.styles[self.media_size]['slots']['stack']
         )
-        # NOTE: dependent on 'empty' and 'equipped' being the same dimensions...
+        # NOTE: dependent on 'disabled', 'enabled' and 'active' 
+        #       being the same dimensions...
         slot_dim = (
             self.hud_conf[self.media_size]['slots']['disabled']['size']['w'],
             self.hud_conf[self.media_size]['slots']['disabled']['size']['h']
@@ -566,38 +580,89 @@ class HUD():
                     )
 
     
-    def _init_slots(
+    def _init_internal_state(
         self, 
         state_ao: state.State
     ) -> None:
+        """Initialize dynamic HUD information from state file.
+
+        :param state_ao: _description_
+        :type state_ao: state.State
+
+        .. note:: 
+            This method is only used when the class is constructed, since the _World_ at that point is not well defined, (and anyway is not passed into the constructor), so `HUD` properties are hydrated directly from state file on initialization.
+        """
         dynamic_state = state_ao.get_state('dynamic')
         self.slots = dynamic_state['hero']['slots']
-
-
-    def _init_equipment(
-        self, 
-        state_ao: state.State
-    ) -> None:
-        dynamic_state = state_ao.get_state('dynamic')
         self.equipment = dynamic_state['hero']['equipment']
-
-
-    def _init_packs(
-        self, 
-        state_ao: state.State
-    ) -> None: 
-        dynamic_state = state_ao.get_state('dynamic')
-
-
-    def _init_mirrors(
-        self, 
-        state_ao: state.State
-    ) -> None:
-        dynamic_state = state_ao.get_state('dynamic')
+        self.packs = dynamic_state['hero']['packs']
         self.mirrors = {
             'life': dynamic_state['hero']['health']
         }
-        
+        self.wallets = dynamic_state['hero']['wallet']
+
+
+    def _calculate_avatar_positions(
+        self
+    ) -> None:
+        """Calculate each _Slot_, _Pack_ and _Wallet_ avatar position
+        """
+        # NOTE: dependent on 'disabled', 'enabled' and 'active' 
+        #       being the same dimensions...
+        slot_dim = (
+            self.hud_conf[self.media_size]['slots']['disabled']['size']['w'],
+            self.hud_conf[self.media_size]['slots']['disabled']['size']['h']
+        )
+
+        if self.slots.get('cast'):
+            cast_dim = (
+                self.avatar_conf['equipment'][self.slots['cast']]['size']['w'],
+                self.avatar_conf['equipment'][self.slots['cast']]['size']['h']
+            )
+        else:
+            cast_dim = None
+
+        # NOTE: cast slot render point
+        self.slot_rendering_points[2]
+        self.avatar_rendering_points.append()
+
+        if self.slots.get('thrust'):
+            thrust_dim = (
+                self.avatar_conf['equipment'][self.slots['thrust']]['size']['w'],
+                self.avatar_conf['equipment'][self.slots['thrust']]['size']['h']
+            )
+        else:
+            thrust_dim = None
+
+        # NOTE:thrust slot render point
+        self.slot_rendering_points[4]
+        self.avatar_rendering_points.append()
+
+        if self.slots.get('slash'):
+            slash_dim = (
+                self.avatar_conf['equipment'][self.slots['slash']]['size']['w'],
+                self.avatar_conf['equipment'][self.slots['slash']]['size']['h']
+            )
+        else:
+            slash_dim = None
+
+        # NOTE: thrust slot render point
+        self.slot_rendering_points[6]
+        self.avatar_rendering_points.append()
+
+        if self.slots.get('shoot'):
+            shoot_dim = (
+                self.avatar_conf['equipment'][self.slots['shoot']]['size']['w'],
+                self.avatar_conf['equipment'][self.slots['shoot']]['size']['h']
+            )
+        else:
+            shoot_dim = None
+
+        # NOTE: shoot slot render point
+        self.slot_rendering_points[8]
+        self.avatar_rendering_points.append()
+
+
 
     def get_cap_directions(
         self
@@ -684,12 +749,12 @@ class HUD():
             return {
                 i: key for i, key in enumerate(packset)
             }
+        # TODO: some other way to do this...
         elif pack_key == 'wallet':
             return {
                 0: 'display',
                 1: 'display'
             }
-
 
 
     def update(
@@ -698,14 +763,34 @@ class HUD():
     ) ->  None:
         self.slots = game_world.hero['slots']
         self.equipment = game_world.hero['equipment']
+        self.packs = game_world.hero['packs']
         self.mirrors = {
             'life': game_world.hero['health']
         }
+        self.wallets = game_world.hero['wallet']
+        # TODO: should check if avatars have changed before
+        #       recalculating...
+        self._calculate_avatar_positions()
 
 
-    def toggle_hud(self) -> None:
+    def toggle_hud(
+        self
+    ) -> None:
         self.hud_activated = not self.hud_activated
 
+    
+    def get_slot(
+        self,
+        slot_key: str
+    ) -> Union[str, None]:
+        return self.slots.get(slot_key)
+
+
+    def get_pack(
+        self,
+        pack_key: str
+    ) -> Union[str, None]:
+        return self.packs.get(pack_key)
 
 class Menu():
     menu_conf = {}
