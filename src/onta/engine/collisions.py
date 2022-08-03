@@ -1,3 +1,4 @@
+from typing import Union
 import onta.settings as settings
 import onta.engine.calculator as calculator
 import onta.util.logger as logger
@@ -5,7 +6,20 @@ import onta.util.logger as logger
 log = logger.Logger('onta.engine.collisions', settings.LOG_LEVEL)
 
 
-def generate_collision_map(npcs):
+######################
+### "STATIC" FUNCTIONS
+######################
+
+def generate_collision_map(
+    npcs: dict
+) -> dict:
+    """_summary_
+
+    :param npcs: _description_
+    :type npcs: dict
+    :return: _description_
+    :rtype: dict
+    """
     collision_map = { 
         npc_1_key: {
             npc_2_key: False for npc_2_key in npcs.keys()
@@ -14,10 +28,28 @@ def generate_collision_map(npcs):
     return collision_map
 
 
-def calculate_set_hitbox(set_hitbox, set_conf, tile_dim):
+def calculate_set_hitbox(
+    set_hitbox: tuple, 
+    set_conf: dict, 
+    tile_dim: tuple
+) -> Union[tuple, None]:
+    """_summary_
+
+    :param set_hitbox: _description_
+    :type set_hitbox: tuple
+    :param set_conf: _description_
+    :type set_conf: dict
+    :param tile_dim: _description_
+    :type tile_dim: tuple
+    :return: _description_
+    :rtype: Union[tuple, None]
+    """
     if set_hitbox:
         x,y = calculator.scale(
-            (set_conf['start']['x'],set_conf['start']['y']),
+            (
+                set_conf['start']['x'],
+                set_conf['start']['y']
+            ),
             tile_dim,
             set_conf['start']['units']
         )
@@ -31,7 +63,10 @@ def calculate_set_hitbox(set_hitbox, set_conf, tile_dim):
     return None
 
 
-def detect_collision(sprite_hitbox, hitbox_list):
+def detect_collision(
+    sprite_hitbox: tuple, 
+    hitbox_list: list
+) -> bool:
     """Determines if a sprite's hitbox has collided with a list of hitboxes
 
     :param sprite_hitbox: _description_
@@ -49,14 +84,28 @@ def detect_collision(sprite_hitbox, hitbox_list):
     """
 
     for hitbox in hitbox_list:
-        if hitbox and calculator.intersection(sprite_hitbox, hitbox):
-            # return true once collision is detected. it doesn't matter where it occurs, only what direction the hero is travelling...
+        if hitbox and \
+            calculator.intersection(
+                sprite_hitbox, 
+                hitbox
+            ):
+            # NOTE: return true once collision is detected. it doesn't matter where it occurs, 
+            #       only what direction the hero is travelling...
             log.verbose(f'Detected sprite hitbox {sprite_hitbox} collision with hitbox at {hitbox}', 
                 'detect_collision')
             return True
     return False
 
-def recoil_sprite(sprite, sprite_props):
+
+############################
+### STATE ALTERING FUNCTIONS
+############################
+
+
+def recoil_sprite(
+    sprite: dict, 
+    sprite_props: dict
+) -> None:
     if 'down' in sprite['state']:
         sprite['position']['y'] -= sprite_props['collide']
     elif 'left' in sprite['state']:
@@ -66,7 +115,12 @@ def recoil_sprite(sprite, sprite_props):
     else:
         sprite['position']['y'] += sprite_props['collide']
 
-def recoil_plate(plate, sprite, sprite_props, hero_flag):
+def recoil_plate(
+    plate: dict, 
+    sprite: dict, 
+    sprite_props: dict, 
+    hero_flag: bool
+) -> None:
     """_summary_
 
     :param plate: _description_

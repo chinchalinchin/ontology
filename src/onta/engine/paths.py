@@ -8,14 +8,32 @@ log = logger.Logger('onta.engine.paths', settings.LOG_LEVEL)
 
 
 def reorient(
-    sprite, 
-    hitbox, 
-    collision_sets, 
-    goal, 
-    speed, 
-    world_dim
+    sprite: dict, 
+    hitbox: tuple, 
+    collision_sets: list, 
+    goal: tuple, 
+    speed: int, 
+    world_dim: tuple
 ) -> None:
-    goal_point = (goal['x'], goal['y'])
+    """_summary_
+
+    :param sprite: _description_
+    :type sprite: dict
+    :param hitbox: _description_
+    :type hitbox: tuple
+    :param collision_sets: _description_
+    :type collision_sets: list
+    :param goal: _description_
+    :type goal: tuple
+    :param speed: _description_
+    :type speed: int
+    :param world_dim: _description_
+    :type world_dim: tuple
+    """
+    goal_point = (
+        goal['x'], 
+        goal['y']
+    )
 
     new_up = (
         hitbox[0], 
@@ -76,7 +94,11 @@ def reorient(
         log.verbose('Down valid!', 'reorient')
         possibilities['down'] = calculator.distance(new_down, goal_point)
 
-    least_state, least_state_distance = None, calculator.distance((0,0), world_dim)
+    least_state = None
+    least_state_distance = calculator.distance(
+        (0,0), 
+        world_dim
+    )
 
     log.verbose(f'Reorientation possibility map: {possibilities}', 'reorient')
 
