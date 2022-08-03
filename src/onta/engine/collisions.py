@@ -5,17 +5,12 @@ import onta.util.logger as logger
 log = logger.Logger('onta.engine.collisions', settings.LOG_LEVEL)
 
 
-def generate_collision_map(npcs, villains):
+def generate_collision_map(npcs):
     collision_map = { 
-        npc_key: {
-            vil_key: False for vil_key in villains.keys()
-        } for npc_key in npcs.keys()
+        npc_1_key: {
+            npc_2_key: False for npc_2_key in npcs.keys()
+        } for npc_1_key in npcs.keys()
     }
-    collision_map.update({
-        vil_key: {
-            npc_key: False for npc_key in npcs.keys()
-        } for vil_key in villains.keys()
-    })
     return collision_map
 
 

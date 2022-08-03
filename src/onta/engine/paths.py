@@ -6,18 +6,51 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.engine.paths', settings.LOG_LEVEL)
 
+
 def reorient(sprite, hitbox, collision_sets, goal, speed, world_dim) -> None:
     goal_point = (goal['x'], goal['y'])
 
-    new_up = (hitbox[0], hitbox[1] - 2*speed - 1, hitbox[2], hitbox[3])
-    new_left = (hitbox[0] - 2*speed - 1, hitbox[1], hitbox[2], hitbox[3])
-    new_right = (hitbox[0] + 2*speed + 1, hitbox[1], hitbox[2], hitbox[3])
-    new_down = (hitbox[0], hitbox[1] + 2*speed + 1, hitbox[2], hitbox[3])
+    new_up = (
+        hitbox[0], 
+        hitbox[1] - 2*speed - 1, 
+        hitbox[2], 
+        hitbox[3]
+    )
+    new_left = (
+        hitbox[0] - 2*speed - 1, 
+        hitbox[1], 
+        hitbox[2], 
+        hitbox[3]
+    )
+    new_right = (
+        hitbox[0] + 2*speed + 1, 
+        hitbox[1], 
+        hitbox[2], 
+        hitbox[3]
+    )
+    new_down = (
+        hitbox[0], 
+        hitbox[1] + 2*speed + 1, 
+        hitbox[2], 
+        hitbox[3]
+    )
 
-    up_valid = all(not collisions.detect_collision(new_up, collision_set) for collision_set in collision_sets)
-    left_valid = all(not collisions.detect_collision(new_left, collision_set) for collision_set in collision_sets)
-    right_valid = all(not collisions.detect_collision(new_right, collision_set) for collision_set in collision_sets)
-    down_valid = all(not collisions.detect_collision(new_down, collision_set) for collision_set in collision_sets)
+    up_valid = all(
+        not collisions.detect_collision(new_up, collision_set) 
+        for collision_set in collision_sets
+    )
+    left_valid = all(
+        not collisions.detect_collision(new_left, collision_set) 
+        for collision_set in collision_sets
+    )
+    right_valid = all(
+        not collisions.detect_collision(new_right, collision_set) 
+        for collision_set in collision_sets
+    )
+    down_valid = all(
+        not collisions.detect_collision(new_down, collision_set) 
+        for collision_set in collision_sets
+    )
 
     possibilities = {}
 
@@ -68,10 +101,10 @@ def reorient(sprite, hitbox, collision_sets, goal, speed, world_dim) -> None:
         elif 'run' in sprite['state']:
             sprite['state'] = 'run_right'
 
-def concat_dynamic_paths(sprite, static_pathset, hero, npcs, vils):
+
+def concat_dynamic_paths(sprite, static_pathset, hero, npcs):
     pathset = static_pathset.copy()
     npc_keys = list(npcs.keys())
-    villain_keys = list(vils.keys())
 
     if sprite['path']['current'] == 'hero':
         pathset['hero'] = {
@@ -83,19 +116,22 @@ def concat_dynamic_paths(sprite, static_pathset, hero, npcs, vils):
             'x': npcs[sprite['path']['current']]['position']['x'],
             'y': npcs[sprite['path']['current']]['position']['y']
         }
-    elif sprite['path']['current'] in villain_keys:
-        pathset[sprite['path']['current']] = {
-            'x': vils[sprite['path']['current']]['position']['x'],
-            'y': vils[sprite['path']['current']]['position']['y']
-        }
     return pathset
 
-def locate_intent(intent, hero, npcs, villains, paths):
+
+def locate_intent(intent, hero, npcs, paths):
     if intent == 'hero':
-        return (hero['position']['x'], hero['position']['y'],)
+        return (
+            hero['position']['x'], 
+            hero['position']['y']
+        )
     elif intent in list(npcs.keys()):
-        return (npcs[intent]['position']['x'], npcs[intent]['position']['y'])
-    elif intent in list(villains.keys()):
-        return (villains[intent]['position']['x'], villains[intent]['position']['y'])
+        return (
+            npcs[intent]['position']['x'], 
+            npcs[intent]['position']['y']
+        )
     elif intent in list(paths.keys()):
-        return (paths[intent]['x'], paths[intent]['y'])
+        return (
+            paths[intent]['x'], 
+            paths[intent]['y']
+        )

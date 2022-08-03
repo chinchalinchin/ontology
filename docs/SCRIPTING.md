@@ -51,12 +51,12 @@ import onta.engine.calculator as calc
 AWARE_RADIUS = 30
 
 def state_handler(world: world.World) -> None:
-    roy_pos = (world.villains['roy']['position']['x'], world.villains['roy']['position']['y'])
+    roy_pos = (world.npcs['roy']['position']['x'], world.npcs['roy']['position']['y'])
     hero_pos = world.hero['position']['x'], world.hero['position']['y']
     dis = calc.distance(hero_pos, roy_pos)
     if dis < 30:
-        world.villains['roy']['state'] = 'slash_up'
-        world.villains['roy']['frame'] = 0
+        world.npcs['roy']['state'] = 'slash_up'
+        world.npcs['roy']['frame'] = 0
 ```
 
-This will cause the villain "roy" to enter into the desired state when the player enters into a radius of 30 pixels. Note the frame of the villain was reset so when the world's iteration method is applied, the villain will be animated from the beginning of the state.
+This will cause the NPC "roy" to enter into the desired state when the player enters into a radius of 30 pixels. Note the frame of the NPC was reset so when the world's iteration method is applied, the NPC will be animated from the beginning of the state.

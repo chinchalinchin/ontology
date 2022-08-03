@@ -84,8 +84,6 @@ npcs:
     health:
       current: 100
       max: 100
-  
-villains:
   skeleton:
     position:
       x: 500
