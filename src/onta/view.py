@@ -289,23 +289,22 @@ class Renderer():
         game_world: world.World, 
         repository: repo.Repo
     ) -> None:
-        for spriteset_key in ['npcs', 'hero']:
-            spriteset = game_world.get_spriteset(spriteset_key)
-            for sprite_key, sprite in spriteset.items():
-                sprite_position = (
-                    int(sprite['position']['x']), 
-                    int(sprite['position']['y'])
-                )
-                sprite_frame = repository.get_sprite_frame(
-                    sprite_key, 
-                    sprite['state'], 
-                    sprite['frame']
-                )
-                self.world_frame.paste(
-                    sprite_frame, 
-                    sprite_position, 
-                    sprite_frame
-                )
+        sprites = game_world.get_sprites()
+        for sprite_key, sprite in sprites.items():
+            sprite_position = (
+                int(sprite['position']['x']), 
+                int(sprite['position']['y'])
+            )
+            sprite_frame = repository.get_sprite_frame(
+                sprite_key, 
+                sprite['state'], 
+                sprite['frame']
+            )
+            self.world_frame.paste(
+                sprite_frame, 
+                sprite_position, 
+                sprite_frame
+            )
 
 
     def _render_slots(

@@ -192,19 +192,19 @@ class HUD():
             self.wallet_rendering_points.append(
                 (
                     self.belt_rendering_points[0][0] + \
-                        (1 + pack_margins[0])*total_belt_width,
-                    self.bag_rendering_points[0][1] +
-                        (total_belt_height - wallet_h * (2 + pack_margins[1]))/2
+                        (total_belt_width + pack_margins[0]*(total_bag_width+total_belt_width)),
+                    self.bag_rendering_points[0][1] + \
+                        (total_belt_height - wallet_h * (2 + pack_margins[1]) )/2
                 )
             )
         elif pack_horizontal_align == 'right':
             self.wallet_rendering_points.append(
                 (
                     self.bag_rendering_points[0][0] - \
-                        (1 + pack_margins[0])*total_belt_width - \
+                        (total_belt_width + pack_margins[0]*(total_bag_width+total_belt_width)) - \
                         wallet_w,
                     self.bag_rendering_points[0][1] + \
-                        (total_belt_height - wallet_h * (2 + pack_margins[1]))/2
+                        (total_belt_height - wallet_h * (2 + pack_margins[1]) )/2
                 )
             )
         self.wallet_rendering_points.append(
