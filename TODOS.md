@@ -97,3 +97,9 @@ or, another example (this might not work or be a good example), suppose we creat
 
 
 IDEA: make one of the plot predicates an economic indicator, i.e. enter plot state whatever if certain price is greater than or less than some critical points. In other words, a plot state for "economic boom" and "economic recession".
+
+~~~~~~~~~~~~~~~~~~~
+THIS NEXT ONE FIRST (after interface stuff)
+~~~~~~~~~~~~~~~~~~~
+
+- Nymphs and nymphsets. Nymphs are the answer to the uniqueness of sprites. Sprites are unique state machines. Nymphs are generic state machines. "Nymphsets".

@@ -77,6 +77,21 @@ Think of a _Composition_ as a rendering template for a group of objects. For exa
 
 Entities
 --------
+
+## Effects
+
+_Effects_ can be transitory or persistent.
+
+_Effects_ have one state animation that cycles through itself or expires after a set number of iterations, depending on its configuration and state information. The state is wired into the _World_ insofar the _World_ is aware the _Effect_ has been placed, but the _World_ will not update the state of an _Effect_ throughout the course of its loop; it will only monitor its life cycle and delete it if end-life conditions are met, i.e. number of iterations has been reached.
+
+## Nymphs
+
+_Nymphs_ are persistent.
+
+_Nymphs_ have four state animations: `walk_up`, `walk_down`, `walk_left`, `walk_right`. These states and animations are wired into the _World_ iteration loop. They change based on world state information. 
+
+**NOTE**: A _Nymph_ is essentially a "degenerate" _Sprite_, i.e. one with substantially less functionality. 
+
 ## Sprites
 
 A _Sprite_ have frames extracted from spritesheets arranged in rows and columns, so that each state frame can be mapped to an entry in the sheet. This engine was developed around the [Liberated Pixel Cup's]() _Sprite_ specification, where there are 21 states arranged in rows, with a different number of frames for each state. Therefore, each sprite has the following states defined: 
