@@ -83,7 +83,14 @@ avatars:
       size:
         w: 32
         h: 16
-    cane: null
+    cane:
+      path: cane.png
+      position:
+        x: 0
+        y: 0
+      size: 
+        w: 32
+        h: 32
     shovel:
       path: equipment.png
       position:
@@ -211,8 +218,22 @@ avatars:
       size:
         w: 36
         h: 35
-    herb: null
-    pelt: null
+    herb:
+      path: plants.png
+      position:
+        x: 77
+        y: 160
+      size:
+        w: 34
+        h: 19
+    meat:
+      path: meat.png
+      position:
+        x: 50
+        y: 9
+      size:
+        w: 28
+        h: 19
     ore: 
       path: ore.png
       position:
@@ -221,8 +242,22 @@ avatars:
       size:
         w: 23
         h: 24
-    crystal: null
-    butterfly: null
+    crystal: 
+      path: equipment.png
+      position:
+        x: 393
+        y: 133
+      size:
+        w: 14
+        h: 14
+    pendant: 
+      path: avatar_sheet.png
+      position:
+        x: 276
+        y: 646
+      size: 
+        w: 25
+        h: 33
     coin:
       path: coin.png
       position:

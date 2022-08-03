@@ -55,10 +55,10 @@ hero:
     pocket:
       produce: null
       herb: null
-      pelt: null
+      meat: null
       ore: null
       crystal: null
-      butterfly: null
+      pendant: null
 
 npcs: 
   esmeralda:
