@@ -8,6 +8,7 @@ include src/data/conf/forms/*
 include src/data/conf/self/*
 
 include src/data/assets/entities/effects*
+include src/data/assets/entities/nymphs/*
 include src/data/assets/entities/sprites/*
 
 include src/data/assets/forms/struts/*
@@ -17,6 +18,8 @@ include src/data/assets/forms/tracks/*
 
 include src/data/assets/self/senses/*
 include src/data/assets/self/equipment/*
+include src/data/assets/self/avatars/*
+
 include src/data/assets/sounds/*
 
 exclude src/onta/tests/**

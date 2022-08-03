@@ -178,7 +178,7 @@ avatars:
         y: 3
       size:
         w: 26
-        y: 25
+        h: 25
     bolt: 
       path: bolt.png
       position:

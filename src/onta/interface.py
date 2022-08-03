@@ -1,5 +1,4 @@
 
-from tkinter import N
 from typing import Union
 import onta.settings as settings
 import onta.device as device
@@ -221,20 +220,22 @@ class HUD():
         :param player_device: _description_
         :type player_device: device.Device
         """
-        config = config.load_sense_configuration()
-        self.styles = config['styles']
-        self.hud_conf = config['hud']
-        self.sizes = config['sizes']
+        sense_config = config.load_sense_configuration()
+
+        self.styles = sense_config['styles']
+        self.hud_conf = sense_config['hud']
+        self.sizes = sense_config['sizes']
         self.breakpoints = format_breakpoints(
-            config['breakpoints']
+            sense_config['breakpoints']
         )
-        self.properties = config['properties']
+        self.properties = sense_config['properties']
         self.media_size = find_media_size(
             player_device, 
             self.sizes, 
             self.breakpoints
         )
-        self.avatar_conf = config.load_avatar_configuration()
+
+        self.avatar_conf = config.load_avatar_configuration()['avatars']
 
 
     def _init_pack_positions(
@@ -599,8 +600,6 @@ class HUD():
         self.mirrors = {
             'life': dynamic_state['hero']['health']
         }
-        self.wallets = dynamic_state['hero']['wallet']
-
 
     def _calculate_avatar_positions(
         self
@@ -624,7 +623,7 @@ class HUD():
 
         # NOTE: cast slot render point
         self.slot_rendering_points[2]
-        self.avatar_rendering_points.append()
+        self.avatar_rendering_points.append(None)
 
         if self.slots.get('thrust'):
             thrust_dim = (
@@ -634,9 +633,9 @@ class HUD():
         else:
             thrust_dim = None
 
-        # NOTE:thrust slot render point
+        # NOTE: thrust slot render point
         self.slot_rendering_points[4]
-        self.avatar_rendering_points.append()
+        self.avatar_rendering_points.append(None)
 
         if self.slots.get('slash'):
             slash_dim = (
@@ -646,9 +645,9 @@ class HUD():
         else:
             slash_dim = None
 
-        # NOTE: thrust slot render point
+        # NOTE: slash slot render point
         self.slot_rendering_points[6]
-        self.avatar_rendering_points.append()
+        self.avatar_rendering_points.append(None)
 
         if self.slots.get('shoot'):
             shoot_dim = (
@@ -660,7 +659,7 @@ class HUD():
 
         # NOTE: shoot slot render point
         self.slot_rendering_points[8]
-        self.avatar_rendering_points.append()
+        self.avatar_rendering_points.append(None)
 
 
 
@@ -767,7 +766,6 @@ class HUD():
         self.mirrors = {
             'life': game_world.hero['health']
         }
-        self.wallets = game_world.hero['wallet']
         # TODO: should check if avatars have changed before
         #       recalculating...
         self._calculate_avatar_positions()

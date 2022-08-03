@@ -12,6 +12,7 @@ log = logger.Logger('onta.repo', settings.LOG_LEVEL)
 
 STATIC_ASSETS_TYPES = [ 'tiles', 'struts', 'plates' ]
 SWITCH_PLATES_TYPES = [ 'container', 'pressure', 'gate' ]
+AVATAR_TYPES = [ 'armor', 'equipment', 'inventory', 'quantity' ]
 
 class Repo():
 
@@ -69,10 +70,22 @@ class Repo():
             No reference is kept to `ontology_path`; it is passed to initialize methods and released.
         """
         config = conf.Conf(ontology_path)
-        self._init_form_assets(config, ontology_path)
-        self._init_entity_assets(config, ontology_path)
-        self._init_sense_assets(config, ontology_path)
-        self._init_avatar_assets()
+        self._init_form_assets(
+            config, 
+            ontology_path
+        )
+        self._init_entity_assets(
+            config, 
+            ontology_path
+        )
+        self._init_sense_assets(
+            config, 
+            ontology_path
+        )
+        self._init_avatar_assets(
+            config,
+            ontology_path
+        )
 
 
     def _init_form_assets(
@@ -390,7 +403,9 @@ class Repo():
     ) -> None:
         avatar_conf = config.load_avatar_configuration()
 
-        for avatarset_key in ['armor', 'equipment', 'inventory', 'quantity']:
+        for avatarset_key in AVATAR_TYPES:
+            self.avatars[avatarset_key] = {}
+
             for avatar_key, avatar in avatar_conf['avatars'][avatarset_key].items():
                 if not avatar or avatar.get('path') is None:
                     continue
@@ -416,7 +431,7 @@ class Repo():
         # Bottle Configuration is slightly different, so I wonder if I should separate them
         # conceptually...
         # TODO: !!!
-        bottle_conf = avatar_conf['bottles']
+        bottle_conf = avatar_conf['avatars']['bottles']
 
 
     def _init_entity_assets(
