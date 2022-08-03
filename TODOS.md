@@ -42,3 +42,58 @@ What does plot space looks like?
 - The essence of the collision bug is due to the diagonal directions. When only four directions, no bugs. But because recoil is based on direction of sprite, and diagonal movement mixes orthogonal directions with left and right, result in recoil not knowing which direction to send the sprite. Only applies to hero since that is the only sprite that can move diagonally.
 
 - Make Conf and State wrapper classes singletons (so conf is not loaded over and over again)
+
+
+- Every sprite has a sell interaction with whatever is in their bag or belt.
+
+- Special entity type: merchant. Merchant acts as an interface between sprites and "economy". 
+
+
+    
+Sprites should have intents to `sell`, `purchase` and these intents should target `bag | belt` and `equipment | armor | inventory` respectively. 
+
+Sprites will need a map to merchants, in order to locate. 
+
+The "economy" outline
+
+If item is sold to merchant
+    economy price asymptotically decreases to zero. 
+
+If item is bought from merchant
+    price asymptotically increases to some set maximum point
+
+If sprite has `purchase` intent 
+    then if sprite has `wallet` contents and within merchant distance
+        inititate sprite to merchant transaction
+    else if no `wallet` contents,
+        then if item in `bag | belt`
+            add `sell` intent
+        else if no item in `bag | belt
+            add `loot` intent.
+
+If sprite has `sell` intent
+    then if sprite within other_sprite interaction distance
+        then if other_sprite is willing
+            initiate sprite to sprite transaction
+        else
+            seek another_sprite
+    else:
+        seek other_sprite 
+
+If sprite has `loot` intent
+    then if sprite within treasure chest, crop, nymph or loot ..
+        initiate loot type interaction
+            if treasure chest or crop or loot
+                then sprite interact
+            if nymph
+                then sprite attack
+
+needs some way for price increases/decreases to affect sprite `intent`. also need other `intents` that "motivate economic activity". For example, if sprite has `intent` to purchase, then if purchase_price > some boundary, then `intent` receives less precedence, i.e. "desire". if purchase_price < some_boundary, then `intent` receives greather precedence.
+
+or, another example, if purchase_price > some other boundary, that might induce a sprite to create an intent to `sell`. I.e., perhaps sprites have "desires" to acquire if conditions are met.
+
+or, another example (this might not work or be a good example), suppose we create a sprite `intent` to `enter`, for entering bomb-locked door, this could act on the sprite's `bag`, in that the sprite will "desire" to acquire a shrapnel_bomb, so `intent` to enter creates `intent` to `purchase` shrapnel_bomb, and then once acquired, creates `intent` to `locate` bomb-locked door, and then intent to `open`, which initiates sprite `use` state.
+
+
+
+IDEA: make one of the plot predicates an economic indicator, i.e. enter plot state whatever if certain price is greater than or less than some critical points. In other words, a plot state for "economic boom" and "economic recession".
