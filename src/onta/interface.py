@@ -641,10 +641,10 @@ class HUD():
 
         # TODO: someway to calculate this ... ?
         avatar_render_map = {
-            'cast': 2,
-            'thrust': 4,
-            'slash': 6,
-            'shoot': 8
+            'cast': 1,
+            'thrust': 3,
+            'shoot': 5,
+            'slash': 7,
         }
 
         # NOTE: dependent on 'disabled', 'enabled' and 'active' being the 
@@ -656,10 +656,16 @@ class HUD():
 
         for i, slot_key in enumerate(self.properties['slots']['maps']):
             if self.slots.get(slot_key):
-                slot_point = self.slot_rendering_points[avatar_render_map[slot_key]]
+                slot_point = self.slot_rendering_points[
+                    avatar_render_map[slot_key]
+                ]
                 avatar_dim = (
-                    self.avatar_conf['equipment'][self.slots[slot_key]]['size']['w'],
-                    self.avatar_conf['equipment'][self.slots[slot_key]]['size']['h']
+                    self.avatar_conf['equipment'][
+                        self.slots[slot_key]
+                    ]['size']['w'],
+                    self.avatar_conf['equipment'][
+                        self.slots[slot_key]
+                    ]['size']['h']
                 )
                 self.avatar_rendering_points.append(
                     (

@@ -103,3 +103,9 @@ THIS NEXT ONE FIRST (after interface stuff)
 ~~~~~~~~~~~~~~~~~~~
 
 - Nymphs and nymphsets. Nymphs are the answer to the uniqueness of sprites. Sprites are unique state machines. Nymphs are generic state machines. "Nymphsets".
+
+~~~~~~~~~~~~~~~~~~~~
+THAT PREVIOUS ONE FIRST
+~~~~~~~~~~~~~~~~~~~~
+
+- more debug output
