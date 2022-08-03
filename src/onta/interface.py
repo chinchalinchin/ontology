@@ -9,15 +9,6 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.hud', settings.LOG_LEVEL)
 
-# TODO: configuration and styles candidates
-SLOT_STATES = [ 'cast', 'shoot', 'thrust', 'slash' ]
-SLOT_PIECES = [ 'cap', 'buffer', 'enabled', 'active', 'disabled']
-MIRROR_PIECES = [ 'unit', 'empty' ]
-SLOT_MARGINS = (0.025, 0.025)
-MIRROR_MARGINS = (0.025, 0.025)
-MIRROR_PADDING = (0.005, 0.005)
-MAX_LIFE = 20
-
 
 def format_breakpoints(
     break_points: list
@@ -366,45 +357,49 @@ class HUD():
         log.debug('Initializing mirror positions on device...', 
             'HUD._init_mirror_positions')
         mirror_styles = self.styles[self.media_size]['mirrors']
-
-        life_cols = self.properties['mirrors']['life']['columns']
-        life_rows = self.properties['mirrors']['life']['rows']
+        life_rank = (
+            self.properties['mirrors']['life']['columns'],
+            self.properties['mirrors']['life']['rows'],
+        )
         # NOTE: dependent on 'unit' and 'empty' being the same dimensions...
         life_dim = (
             self.hud_conf[self.media_size]['mirrors']['life']['unit']['size']['w'],
             self.hud_conf[self.media_size]['mirrors']['life']['unit']['size']['h']
         )
-        x_margins, y_margins = (
-            MIRROR_MARGINS[0]*player_device.dimensions[0],
-            MIRROR_MARGINS[1]*player_device.dimensions[1]
+        margins= (
+            mirror_styles['margins']['w']*player_device.dimensions[0],
+            mirror_styles['margins']['h']*player_device.dimensions[1]
         )
 
         if mirror_styles['alignment']['horizontal'] == 'right':
             x_start = player_device.dimensions[0] - \
-                x_margins - \
-                life_cols * life_dim[0]*(1 + MIRROR_PADDING[0]) 
+                margins[0] - \
+                life_rank[0] * life_dim[0]*(1 + mirror_styles['padding']['w']) 
         elif mirror_styles['alignment']['horizontal'] == 'left':
-            x_start = x_margins
+            x_start = margins[0]
         else: # center
             x_start = (player_device.dimensions[0] - \
-                life_cols * life_dim[0] *(1 + MIRROR_PADDING[0]))/2
+                life_rank[0] * life_dim[0] *(1 + mirror_styles['padding']['w']))/2
         
         if mirror_styles['alignment']['vertical'] == 'top':
-            y_start = y_margins
+            y_start = margins[1]
         elif mirror_styles['alignment']['vertical'] == 'bottom':
             y_start = player_device.dimensions[1] - \
-                y_margins - \
-                life_rows * life_dim[1] * (1 + MIRROR_PADDING[1])
+                margins[1] - \
+                life_rank[1] * life_dim[1] * (1 + mirror_styles['padding']['h'])
         else: # center
             y_start = (player_device.dimensions[1] - \
-                life_rows * life_dim[1] * (1 + MIRROR_PADDING[1]))/2
+                life_rank[1] * life_dim[1] * (1 + mirror_styles['padding']['h']))/2
 
 
         if mirror_styles['stack'] == 'vertical':
-            (life_rows,life_cols) = (life_cols,life_rows)
+            life_rank = (
+                life_rank[1],
+                life_rank[0]
+            )
             
-        for row in range(life_rows):
-            for col in range(life_cols):
+        for row in range(life_rank[1]):
+            for col in range(life_rank[0]):
 
                 if (row+1)*col == 0:
                     self.life_rendering_points.append(
@@ -418,7 +413,7 @@ class HUD():
                         self.life_rendering_points.append(
                             (
                                 self.life_rendering_points[(row+1)*col - 1][0] + \
-                                    life_dim[0]*(1+MIRROR_PADDING[0]),
+                                    life_dim[0]*(1+mirror_styles['padding']['w']),
                                 self.life_rendering_points[(row+1)*col - 1][1]
                             )
                         )
@@ -428,7 +423,7 @@ class HUD():
                                 self.life_rendering_points[(row+1)*col - 1][0] + \
                                     life_dim[0],
                                 self.life_rendering_points[(row+1)*col - 1][1] + \
-                                    life_dim[1]*(1+MIRROR_PADDING[1])
+                                    life_dim[1]*(1+mirror_styles['padding']['h'])
                             )
                         )
 
@@ -444,8 +439,8 @@ class HUD():
 
         slots_total = self.properties['slots']['total']
         slot_styles = self.styles[self.media_size]['slots']
-        x_margins = SLOT_MARGINS[0]*player_device.dimensions[0]
-        y_margins = SLOT_MARGINS[1]*player_device.dimensions[1]
+        x_margins = slot_styles['margins']['w']*player_device.dimensions[0]
+        y_margins = slot_styles['margins']['h']*player_device.dimensions[1]
 
         cap_dim = rotate_dimensions(
             self.hud_conf[self.media_size]['slots']['cap'],
@@ -606,62 +601,37 @@ class HUD():
     ) -> None:
         """Calculate each _Slot_, _Pack_ and _Wallet_ avatar position
         """
-        # NOTE: dependent on 'disabled', 'enabled' and 'active' 
-        #       being the same dimensions...
+
+        # TODO: someway to calculate this ... ?
+        avatar_map = {
+            'cast': 2,
+            'thrust': 4,
+            'slash': 6,
+            'shoot': 8
+        }
+
+        # NOTE: dependent on 'disabled', 'enabled' and 'active' being the 
+        #           same dimensions...
         slot_dim = (
             self.hud_conf[self.media_size]['slots']['disabled']['size']['w'],
             self.hud_conf[self.media_size]['slots']['disabled']['size']['h']
         )
 
-        if self.slots.get('cast'):
-            cast_dim = (
-                self.avatar_conf['equipment'][self.slots['cast']]['size']['w'],
-                self.avatar_conf['equipment'][self.slots['cast']]['size']['h']
+        for slot_key in self.properties['slots']['maps']:
+            if self.slots.get(slot_key):
+                slot_point = self.slot_rendering_points[avatar_map[slot_key]]
+                avatar_dim = (
+                    self.avatar_conf['equipment'][self.slots[slot_key]]['size']['w'],
+                    self.avatar_conf['equipment'][self.slots[slot_key]]['size']['h']
+                )
+                self.avatar_rendering_points.append(
+                (
+                    slot_point[0] + (slot_dim[0] - avatar_dim[0])/2,
+                    slot_point[1] + (slot_dim[1] - avatar_dim[1])/2
+                )
             )
-        else:
-            cast_dim = None
-
-        # NOTE: cast slot render point
-        self.slot_rendering_points[2]
-        self.avatar_rendering_points.append(None)
-
-        if self.slots.get('thrust'):
-            thrust_dim = (
-                self.avatar_conf['equipment'][self.slots['thrust']]['size']['w'],
-                self.avatar_conf['equipment'][self.slots['thrust']]['size']['h']
-            )
-        else:
-            thrust_dim = None
-
-        # NOTE: thrust slot render point
-        self.slot_rendering_points[4]
-        self.avatar_rendering_points.append(None)
-
-        if self.slots.get('slash'):
-            slash_dim = (
-                self.avatar_conf['equipment'][self.slots['slash']]['size']['w'],
-                self.avatar_conf['equipment'][self.slots['slash']]['size']['h']
-            )
-        else:
-            slash_dim = None
-
-        # NOTE: slash slot render point
-        self.slot_rendering_points[6]
-        self.avatar_rendering_points.append(None)
-
-        if self.slots.get('shoot'):
-            shoot_dim = (
-                self.avatar_conf['equipment'][self.slots['shoot']]['size']['w'],
-                self.avatar_conf['equipment'][self.slots['shoot']]['size']['h']
-            )
-        else:
-            shoot_dim = None
-
-        # NOTE: shoot slot render point
-        self.slot_rendering_points[8]
-        self.avatar_rendering_points.append(None)
-
-
+            else:
+                self.avatar_rendering_points.append(None)
 
     def get_cap_directions(
         self
@@ -703,6 +673,8 @@ class HUD():
             return self.wallet_rendering_points
         elif interface_key in ['belt','belts']:
             return self.belt_rendering_points
+        elif interface_key in ['avatar', 'avatars']:
+            return self.avatar_rendering_points
 
 
     def get_slot_dimensions(
@@ -718,7 +690,8 @@ class HUD():
         self
     ) -> dict:
         # TODO: need to calculate disabled slots from hero state
-        # TODO: should parameterize key somehow
+        #          i.e. will need to pull hero equipment, group by state binding
+        #               and see if groups contain enabled equipment
         return {
             key: 'enabled' if val is None else 'active' 
             for key, val in self.slots.items()
@@ -729,12 +702,10 @@ class HUD():
         self, 
         mirror_key: str
     ) -> dict:
-        # TODO: need to calculate disabled slots from hero state
-        # TODO: should parameterize the key somehow
         if mirror_key == 'life':
             return {
                 i: 'unit' if i <= self.mirrors['life']['current'] - 1 else 'empty'
-                for i in range(MAX_LIFE)
+                for i in range(self.properties['mirrors']['life']['bounds'])
                 if i <= self.mirrors['life']['max'] - 1
             }
 

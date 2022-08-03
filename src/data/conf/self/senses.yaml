@@ -21,6 +21,9 @@ styles:
       margins:
         w: 0.025
         h: 0.025
+      padding:
+        w: 0.005
+        h: 0.005
       stack: horizontal
       alignment:
         vertical: top
@@ -88,6 +91,12 @@ properties:
       - emabled
       - active
       - disabled
+    maps:
+      - cast
+      - thrust
+      - shoot
+      - slash
+    
   mirrors:
     life:
       columns: 10
@@ -95,6 +104,7 @@ properties:
       pieces:
         - unit
         - empty
+      bounds: 20
     magic:
       columns: 10
       rows: 1

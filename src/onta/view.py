@@ -318,7 +318,9 @@ class Renderer():
         buffer_dir = headsup_display.get_buffer_direction()
 
         # slot names
-        render_order = iter(interface.SLOT_STATES)
+        render_order = iter(
+            headsup_display.properties['slots']['maps']
+        )
         # which slot is enabled, disabled or active
         render_map = headsup_display.slot_frame_map()
 
