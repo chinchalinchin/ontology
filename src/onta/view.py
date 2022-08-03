@@ -291,9 +291,11 @@ class Renderer():
     ) -> None:
         sprites = game_world.get_sprites(game_world.layer)
         for sprite_key, sprite in sprites.items():
-            sprite_position = (
-                int(sprite['position']['x']), 
-                int(sprite['position']['y'])
+            sprite_position = gui.int_tuple(
+                (
+                    sprite['position']['x'],
+                    sprite['position']['y']
+                )
             )
             sprite_frame = repository.get_sprite_frame(
                 sprite_key, 
@@ -362,16 +364,11 @@ class Renderer():
 
             self.world_frame.paste(
                 render_frame, 
-                (
-                    int(render_point[0]), 
-                    int(render_point[1])
-                ), 
+                gui.int_tuple(render_point), 
                 render_frame
             )
 
-        avatar_rendering_points = headsup_display.get_rendering_points('avatar')
-        headsup_display.slots
-
+    
     def _render_mirrors(
         self, 
         headsup_display: interface.HUD, 
@@ -389,10 +386,7 @@ class Renderer():
             render_point = rendering_points[i]
             self.world_frame.paste(
                 life_frame,
-                (
-                    int(render_point[0]), 
-                    int(render_point[1])
-                ),
+                gui.int_tuple(render_point),
                 life_frame
             )
 
@@ -403,11 +397,13 @@ class Renderer():
         repository: repo.Repo
     ) -> None:
 
+        # avatar rendering points include slot avatars and wallet avatars...
         for pack_key in interface.PACK_TYPES:
             pack_map = headsup_display.get_frame_map(pack_key)
             pack_rendering_points = headsup_display.get_rendering_points(pack_key)
 
             for i, render_point in enumerate(pack_rendering_points):
+                # offset by slots
                 pack_frame = repository.get_pack_frame(
                     headsup_display.media_size,
                     pack_key,
@@ -415,12 +411,49 @@ class Renderer():
                 )
                 self.world_frame.paste(
                     pack_frame,
-                    (
-                        int(render_point[0]),
-                        int(render_point[1])
-                    ),
+                    gui.int_tuple(render_point),
                     pack_frame
                 )
+
+
+    def _render_avatars(
+        self,
+        headsup_display: interface.HUD,
+        repository: repo.Repo
+    ) -> None:
+
+        avatar_rendering_points = headsup_display.get_rendering_points('avatar')
+        avatar_frame_map = headsup_display.get_frame_map('avatar')
+        avatar_set_map = {
+            'equipment': 4, # slots 
+            'inventory': 8 # slots + wallets + belt + bag
+        }
+
+        for i, render_point in enumerate(avatar_rendering_points):
+            if not render_point or not avatar_frame_map[i]:
+                continue
+
+            if i < avatar_set_map['equipment'] and \
+                i < avatar_set_map['inventory']:
+                set_key = 'equipment'
+            elif i >= avatar_set_map['equipment'] and \
+                i < avatar_set_map['inventory']:
+                set_key = 'inventory'
+            else: 
+                set_key = None
+
+            if not set_key:
+                continue
+
+            avatar_frame = repository.get_avatar_frame(
+                set_key,
+                avatar_frame_map[i]
+            )
+            self.world_frame.paste(
+                avatar_frame,
+                gui.int_tuple(render_point),
+                avatar_frame
+            )
 
 
     def _render_menu(
@@ -452,10 +485,7 @@ class Renderer():
             )
             self.world_frame.paste(
                 render_frame,
-                (
-                    int(render_point[0]), 
-                    int(render_point[1])
-                ),
+                gui.int_tuple(render_point),
                 render_frame
             )
 
@@ -488,10 +518,22 @@ class Renderer():
             layer_buffer = game_world.layer
             game_world.layer = layer
 
-        self._render_static(game_world.layer, False)
-        self._render_typed_platesets(game_world, repository)
-        self._render_sprites(game_world, repository)
-        self._render_static(game_world.layer, True)
+        self._render_static(
+            game_world.layer, 
+            False
+        )
+        self._render_typed_platesets(
+            game_world, 
+            repository
+        )
+        self._render_sprites(
+            game_world, 
+            repository
+        )
+        self._render_static(
+            game_world.layer, 
+            True
+        )
 
         if layer is not None:
             game_world.layer = layer_buffer
@@ -510,14 +552,28 @@ class Renderer():
             self.world_frame = self.world_frame.crop(crop_box)
         
         if menu.menu_activated:
-            self._render_menu(menu, repository)
+            self._render_menu(
+                menu, 
+                repository
+            )
 
         if headsup_display.hud_activated:
-            # TODO: should come up with a way to check if any of these changed, before attempting to render.
-            #       they should not update that often, so there is wasted resources here...
-            self._render_slots(headsup_display, repository)
-            self._render_mirrors(headsup_display, repository)
-            self._render_packs(headsup_display, repository)
+            self._render_slots(
+                headsup_display, 
+                repository
+            )
+            self._render_mirrors(
+                headsup_display, 
+                repository
+            )
+            self._render_packs(
+                headsup_display, 
+                repository
+            )
+            self._render_avatars(
+                headsup_display, 
+                repository
+            )
 
         return self.world_frame
 
@@ -529,8 +585,28 @@ class Renderer():
         headsup_display: interface.HUD,
         menu: interface.Menu,
         repository: repo.Repo
-    ) -> QtWidgets.QWidget:        
-        cropped = self.render(game_world, repository, headsup_display, menu)
+    ) -> QtWidgets.QWidget: 
+        """_summary_
+
+        :param game_world: _description_
+        :type game_world: world.World
+        :param view_widget: _description_
+        :type view_widget: QtWidgets.QWidget
+        :param headsup_display: _description_
+        :type headsup_display: interface.HUD
+        :param menu: _description_
+        :type menu: interface.Menu
+        :param repository: _description_
+        :type repository: repo.Repo
+        :return: _description_
+        :rtype: QtWidgets.QWidget
+        """
+        cropped = self.render(
+            game_world, 
+            repository, 
+            headsup_display, 
+            menu
+        )
 
         pix = gui.convert_to_gui(cropped)
 

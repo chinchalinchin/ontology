@@ -5,6 +5,7 @@ from PIL.ImageQt import ImageQt
 
 import onta.settings as settings
 
+
 def convert_to_gui(cropped: Image.Image):
     qim = ImageQt(cropped)
     pix = QtGui.QPixmap.fromImage(qim)
@@ -21,3 +22,9 @@ def replace_alpha(img: Image.Image, alpha: int) -> None:
 
 def channels(dim, channels):
     return Image.new(settings.IMG_MODE, dim, channels)
+
+def int_tuple(tup: tuple) -> tuple:
+    return (
+        int(tup[0]), 
+        int(tup[1])
+    )

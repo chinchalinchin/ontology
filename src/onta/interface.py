@@ -724,6 +724,7 @@ class HUD():
     def _calcualte_avatar_frame_map(
         self,
     ) -> dict:
+        # start with slots...
         pass
 
 
@@ -741,6 +742,8 @@ class HUD():
             return self.wallet_frame_map
         if hud_key == 'slot':
             return self.slot_frame_map
+        if hud_key == 'avatar':
+            return self.avatar_frame_map
 
 
     def get_cap_directions(
@@ -773,17 +776,17 @@ class HUD():
         self, 
         interface_key: str
     ) -> Union[list, tuple]:
-        if interface_key in ['slot', 'slots']:
+        if interface_key  == 'slot':
             return self.slot_rendering_points
-        elif interface_key in ['life', 'lives']:
+        elif interface_key == 'life':
             return self.life_rendering_points    
-        elif interface_key in ['bag', 'bags']:
+        elif interface_key == 'bag':
             return self.bag_rendering_points
-        elif interface_key in ['wallet', 'wallets']:
+        elif interface_key == 'wallet':
             return self.wallet_rendering_points
-        elif interface_key in ['belt','belts']:
+        elif interface_key == 'belt':
             return self.belt_rendering_points
-        elif interface_key in ['avatar', 'avatars']:
+        elif interface_key == 'avatar':
             return self.avatar_rendering_points
 
 

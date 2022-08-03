@@ -502,7 +502,8 @@ class Repo():
 
 
     def get_avatar_frame(
-        self, 
+        self,
+        avatar_set: str,
         component_key: str
     ) -> Union[Image.Image, None]:
         """_summary_
@@ -512,7 +513,9 @@ class Repo():
         :return: _description_
         :rtype: Union[Image.Image, None]
         """
-        return self.avatars.get(component_key)
+        if self.avatars.get(avatar_set):
+            return self.avatars[avatar_set].get(component_key)
+        return None
     
 
     def get_slot_frames(
