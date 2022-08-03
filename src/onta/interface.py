@@ -87,8 +87,9 @@ def find_media_size(
 
 class HUD():
     """
-    ```python
-    ```
+    
+    .. note::
+        Frame maps and frame rendering points are kept as separate data structures due to the fact that frame maps are dynamically update according to the world state, whereas rendering points are static.
     """
 
     hud_conf = {}
@@ -192,8 +193,13 @@ class HUD():
     bag_frame_map = {}
     wallet_frame_map = {}
 
-    # NOTE: need to separate maps from rendering points since rendering points don't change, but maps do.
-    #       easier to maintain this way?
+    slot_dimensions = None
+    bag_dimensions = None
+    belt_dimensions = None
+    wallet_dimensions = None
+    life_dimensions = None
+    magic_dimensions = None
+
     hud_activated = True
     """
     ```python
@@ -272,29 +278,22 @@ class HUD():
 
         bagset = self.hud_conf[self.media_size]['packs']['bag']
 
-        total_bag_width = 0
-        for bag_piece in bagset.values():
-            total_bag_width += bag_piece['size']['w']
-
-        # dependent on both pieces being the same height
-        # i.e., the pack sheet can only be broken in the 
-        # horizontal direction
-        total_bag_height = bagset[list(bagset.keys())[0]]['size']['h']
+        bag_dim = self.get_bag_dimensions()
 
         # (0, left), (1, right)
         for i, bag_piece in enumerate(bagset.values()):
             if i == 0:
                 if pack_horizontal_align == 'left':
-                    x = pack_margins[0]*player_device.dimensions[0]
+                    x = pack_margins[0] * player_device.dimensions[0]
                 elif pack_horizontal_align == 'right':
-                    x = (1-pack_margins[0])*player_device.dimensions[0] - \
-                        total_bag_width
+                    x = ( 1 - pack_margins[0] ) * player_device.dimensions[0] - \
+                        bag_dim[0]
 
                 if pack_vertical_align == 'top':
                     y = pack_margins[1]*player_device.dimensions[1]
                 elif pack_vertical_align == 'bottom':
-                    y = (1-pack_margins[0])*player_device.dimensions[1] - \
-                        total_bag_height
+                    y = ( 1 - pack_margins[0] ) * player_device.dimensions[1] - \
+                        bag_dim[0]
             else:
                 x = self.bag_rendering_points[i-1][0] + prev_w
                 y = self.bag_rendering_points[i-1][1]
@@ -302,11 +301,7 @@ class HUD():
             prev_w = bag_piece['size']['w']
 
         beltset = self.hud_conf[self.media_size]['packs']['belt']
-
-        total_belt_width = 0
-        for belt_piece in beltset.values():
-            total_belt_width += belt_piece['size']['w']
-        total_belt_height = beltset[list(beltset.keys())[0]]['size']['h']
+        belt_dim = self.get_belt_dimensions()
 
         # belt initial position only affected by pack vertical alignment
         for i, belt_piece in enumerate(beltset.values()):
@@ -314,52 +309,56 @@ class HUD():
                 if pack_horizontal_align == 'left':
                     # dependent on bag height > belt height
                     x = self.bag_rendering_points[0][0] + \
-                            (1+pack_margins[0])*total_bag_width
+                            ( 1 + pack_margins[0] ) * bag_dim[0]
                     y = self.bag_rendering_points[0][1] + \
-                            (total_bag_height-total_belt_height)/2
+                            ( bag_dim[1] - belt_dim[1] )/2
                 elif pack_horizontal_align == 'right':
                     x = self.bag_rendering_points[0][0] - \
-                            (1+pack_margins[0])*total_bag_width
+                            ( 1 + pack_margins[0] ) * bag_dim[0]
                     y = self.bag_rendering_points[0][1] + \
-                            (total_bag_height-total_belt_height)/2  
+                            ( bag_dim[1] - belt_dim[1] )/2  
             else:
                 x = self.belt_rendering_points[i-1][0] + prev_w
                 y = self.belt_rendering_points[i-1][1]
-            self.belt_rendering_points.append((x,y))
+            self.belt_rendering_points.append(
+                (x,y)
+            )
             prev_w = belt_piece['size']['w']
         
-            
 
-        wallet = self.hud_conf[self.media_size]['packs']['wallet']['display']
-        wallet_w, wallet_h = (
-            wallet['size']['w'], 
-            wallet['size']['h']
-        )
+        wallet_dim = self.get_wallet_dimensions()
 
         if pack_horizontal_align == 'left':
             self.wallet_rendering_points.append(
                 (
                     self.belt_rendering_points[0][0] + \
-                        (total_belt_width + pack_margins[0]*(total_bag_width+total_belt_width)),
+                        (
+                            belt_dim[0] + pack_margins[0] * ( bag_dim[0] + belt_dim[0] )
+                        ),
                     self.bag_rendering_points[0][1] + \
-                        (total_belt_height - wallet_h * (2 + pack_margins[1]) )/2
+                        (
+                            belt_dim[1] - wallet_dim[1] * (2 + pack_margins[1]) 
+                        )/2
                 )
             )
         elif pack_horizontal_align == 'right':
             self.wallet_rendering_points.append(
                 (
                     self.bag_rendering_points[0][0] - \
-                        (total_belt_width + pack_margins[0]*(total_bag_width+total_belt_width)) - \
-                        wallet_w,
+                        (
+                            belt_dim[0] + pack_margins[0] * ( bag_dim[0] + belt_dim[0] )
+                        ) - wallet_dim[0],
                     self.bag_rendering_points[0][1] + \
-                        (total_belt_height - wallet_h * (2 + pack_margins[1]) )/2
+                        (
+                            belt_dim[1] - wallet_dim[1] * ( 2 + pack_margins[1] )
+                        ) / 2
                 )
             )
         self.wallet_rendering_points.append(
             (
                 self.wallet_rendering_points[0][0],
                 self.wallet_rendering_points[0][1] + \
-                    (1+pack_margins[1])*wallet_h
+                    ( 1 + pack_margins[1] ) * wallet_dim[0]
             )
         )
 
@@ -778,6 +777,57 @@ class HUD():
         return rotate_dimensions(self.hud_conf[self.media_size]['slots']['cap'])
 
 
+    def get_bag_dimensions(
+        self
+    ) -> tuple:
+        if not self.bag_dimensions:
+            bagset = self.hud_conf[self.media_size]['packs']['bag']
+
+            total_bag_width = 0
+            for bag_piece in bagset.values():
+                total_bag_width += bag_piece['size']['w']
+
+            # dependent on both pieces being the same height
+            # i.e., the pack sheet can only be broken in the 
+            # horizontal direction
+            total_bag_height = bagset[list(bagset.keys())[0]]['size']['h']
+
+            self.bag_dimensions = (
+                total_bag_width,
+                total_bag_height
+            )
+        return self.bag_dimensions
+
+
+    def get_belt_dimensions(
+        self
+    ) -> tuple:
+        if not self.belt_dimensions:
+            beltset = self.hud_conf[self.media_size]['packs']['belt']
+
+            total_belt_width = 0
+            for belt_piece in beltset.values():
+                total_belt_width += belt_piece['size']['w']
+            total_belt_height = beltset[list(beltset.keys())[0]]['size']['h']
+
+            self.belt_dimensions = (
+                total_belt_width,
+                total_belt_height
+            )
+        return self.belt_dimensions
+
+
+    def get_wallet_dimensions(
+        self
+    ) -> tuple:
+        if not self.wallet_dimensions:
+            self.wallet_dimensions = (
+                self.hud_conf[self.media_size]['packs']['wallet']['display']['size']['w'], 
+                self.hud_conf[self.media_size]['packs']['wallet']['display']['size']['h']
+            )
+        return self.wallet_dimensions
+
+
     def get_rendering_points(
         self, 
         interface_key: str
@@ -851,6 +901,8 @@ class HUD():
         pack_key: str
     ) -> Union[str, None]:
         return self.packs.get(pack_key)
+
+
 
 class Menu():
     menu_conf = {}

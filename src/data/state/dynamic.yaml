@@ -8,18 +8,17 @@ hero:
   plot: a
   slots:
     cast: null
-    thrust: null
+    thrust: spear
     slash: sword
-    shoot: null
+    shoot: bow
   packs:
-    bag: null
-    belt: null
-    wallet: null
+    bag: shrapnel_bow
+    belt: arrow
   health:
     current: 4
     max: 10
   equipment:
-    bow: False
+    bow: True
     axe: False
     knife: False
     pickaxe: False
@@ -27,8 +26,8 @@ hero:
     warhammer: False
     blood_magic: False
     cane: False
-    shovel: False
-    spear: False
+    shovel: True
+    spear: True
     emblem_shield: False
     falcon_shield: False
     leather_shield: False
