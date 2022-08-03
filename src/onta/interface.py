@@ -9,6 +9,8 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.hud', settings.LOG_LEVEL)
 
+PACK_TYPES = [ 'bag', 'belt', 'wallet' ]
+MIRROR_TYPES = [ 'life', 'magic' ]
 
 def format_breakpoints(
     break_points: list
@@ -170,8 +172,28 @@ class HUD():
     avatar_rendering_points = []
     """
     ```python
+    self.avatar_rendering_points = [
+        slot_1_avatar_pt, # tuple
+        slot_2_avatar_pt, # tuple
+        slot_3_avatar_pt, # tuple,
+        slot_4_avatar_pt, # tuple
+        bag_avatar_pt, # tuple
+        belt_avatar_pt, # tuple
+        wallet_coin_avatar_pt, # tuple
+        wallet_key_avatar_pt, # tuple
+    ]
     ```
     """
+    avatar_frame_map = {}
+    pack_frame_map = {}
+    slot_frame_map = {}
+    life_frame_map = {}
+    belt_frame_map = {}
+    bag_frame_map = {}
+    wallet_frame_map = {}
+
+    # NOTE: need to separate maps from rendering points since rendering points don't change, but maps do.
+    #       easier to maintain this way?
     hud_activated = True
     """
     ```python
@@ -492,6 +514,8 @@ class HUD():
         else: # top
             y_start = y_margins
 
+        # 0    1     2       3     4       5     6       7     8
+        # cap, slot, buffer, slot, buffer, slot, buffer, slot, cap
         # number of slots + number of buffers + number of caps
         num = slots_total + (slots_total - 1) + 2
         if slot_styles['stack'] == 'horizontal':
@@ -499,35 +523,35 @@ class HUD():
             cap_correction = (slot_dim[1] - cap_dim[1])/2 
 
             for i in range(num):
-                if i == 0:
+                if i == 0: # cap
                     self.slot_rendering_points.append(
                         (
                             x_start, 
                             y_start + cap_correction
                         )
                     )
-                elif i == 1:
+                elif i == 1: # slot
                     self.slot_rendering_points.append(
                         (
                             self.slot_rendering_points[i-1][0] + cap_dim[0], 
                             y_start
                         )
                     )
-                elif i == num - 1:
+                elif i == num - 1: # cap
                     self.slot_rendering_points.append(
                         (
                             self.slot_rendering_points[i-1][0] + slot_dim[0], 
                             y_start + cap_correction
                         )
                     )
-                elif i % 2 == 0:
+                elif i % 2 == 0: # buffer
                     self.slot_rendering_points.append(
                         (
                             self.slot_rendering_points[i-1][0] + slot_dim[0], 
                             y_start + buffer_correction
                         )
                     )
-                else:
+                else: # slot
                     self.slot_rendering_points.append(
                         (
                             self.slot_rendering_points[i-1][0] + buffer_dim[0], 
@@ -539,40 +563,46 @@ class HUD():
             buffer_correction = (slot_dim[0] - buffer_dim[0])/2
             cap_correction = (slot_dim[0] - cap_dim[0])/2
             for i in range(num):
-                if i == 0:
+                if i == 0: # cap
                     self.slot_rendering_points.append(
                         (
                             x_start + cap_correction, 
                             y_start
                         )
                     )
-                elif i == 1:
+                elif i == 1: # slot
                     self.slot_rendering_points.append(
                         (
                             x_start,
                             self.slot_rendering_points[i-1][1] + cap_dim[1]
                         )
                     )
-                elif i == num - 1:
+                    self.slot_rendering_points.append(
+                        'disabled'
+                    )
+                elif i == num - 1: # cap
                     self.slot_rendering_points.append(
                         (
                             x_start + cap_correction,
                             self.slot_rendering_points[i-1][1] + slot_dim[1]
                         )
                     )
-                elif i % 2 == 0:
+                elif i % 2 == 0: # buffer
                     self.slot_rendering_points.append(
                         (
                             x_start + buffer_correction,
                             self.slot_rendering_points[i-1][1] + slot_dim[1]
                         )
                     )
-                else:
+                else: # slot
                     self.slot_rendering_points.append(
                         (
                             x_start,
                             self.slot_rendering_points[i-1][1] + buffer_dim[1]
                         )
+                    )
+                    self.slot_rendering_points.append(
+                        'disabled'
                     )
 
     
@@ -596,6 +626,13 @@ class HUD():
             'life': dynamic_state['hero']['health']
         }
 
+        self._calculate_slot_frame_map()
+        for pack_key in PACK_TYPES:
+            self._calculate_pack_frame_map(pack_key)
+        for mirror_key in MIRROR_TYPES:
+            self._calculate_mirror_frame_map(mirror_key)
+
+
     def _calculate_avatar_positions(
         self
     ) -> None:
@@ -603,7 +640,7 @@ class HUD():
         """
 
         # TODO: someway to calculate this ... ?
-        avatar_map = {
+        avatar_render_map = {
             'cast': 2,
             'thrust': 4,
             'slash': 6,
@@ -617,21 +654,94 @@ class HUD():
             self.hud_conf[self.media_size]['slots']['disabled']['size']['h']
         )
 
-        for slot_key in self.properties['slots']['maps']:
+        for i, slot_key in enumerate(self.properties['slots']['maps']):
             if self.slots.get(slot_key):
-                slot_point = self.slot_rendering_points[avatar_map[slot_key]]
+                slot_point = self.slot_rendering_points[avatar_render_map[slot_key]]
                 avatar_dim = (
                     self.avatar_conf['equipment'][self.slots[slot_key]]['size']['w'],
                     self.avatar_conf['equipment'][self.slots[slot_key]]['size']['h']
                 )
                 self.avatar_rendering_points.append(
-                (
-                    slot_point[0] + (slot_dim[0] - avatar_dim[0])/2,
-                    slot_point[1] + (slot_dim[1] - avatar_dim[1])/2
+                    (
+                        slot_point[0] + (slot_dim[0] - avatar_dim[0])/2,
+                        slot_point[1] + (slot_dim[1] - avatar_dim[1])/2
+                    )
                 )
-            )
+                self.avatar_frame_map[i] = self.slots[slot_key]
             else:
                 self.avatar_rendering_points.append(None)
+                self.avatar_frame_map[i] = None
+        
+        # TODO: bag, belt and wallet avatar rendering points
+
+
+    def _calculate_slot_frame_map(
+        self
+    ) -> dict:
+        # TODO: need to calculate disabled slots from hero state
+        #          i.e. will need to pull hero equipment, group by state binding
+        #               and see if groups contain enabled equipment
+        self.slot_frame_map = {
+            key: 'enabled' if val is None else 'active' 
+            for key, val in self.slots.items()
+        }
+
+
+    def _calculate_mirror_frame_map(
+        self, 
+        mirror_key: str
+    ) -> dict:
+        if mirror_key == 'life':
+            self.life_frame_map = {
+                i: 'unit' if i <= self.mirrors['life']['current'] - 1 else 'empty'
+                for i in range(self.properties['mirrors']['life']['bounds'])
+                if i <= self.mirrors['life']['max'] - 1
+            }
+
+
+    def _calculate_pack_frame_map(
+        self, 
+        pack_key: str
+    ) -> dict:
+        packset = self.hud_conf[self.media_size]['packs'][pack_key]
+        if pack_key in ['bag', 'belt']:
+            if pack_key == 'bag':
+                self.bag_frame_map = {
+                    i: key for i, key in enumerate(packset)
+                }
+            else:
+                self.belt_frame_map = {
+                    i: key for i, key in enumerate(packset)
+                }
+        # TODO: some other way to do this...
+        elif pack_key == 'wallet':
+            self.wallet_frame_map = {
+                0: 'display',
+                1: 'display'
+            }
+
+
+    def _calcualte_avatar_frame_map(
+        self,
+    ) -> dict:
+        pass
+
+
+    def get_frame_map(
+        self, 
+        hud_key: str
+    ) -> list:
+        if hud_key == 'life':
+            return self.life_frame_map
+        if hud_key == 'bag':
+            return self.bag_frame_map
+        if hud_key == 'belt':
+            return self.belt_frame_map
+        if hud_key == 'wallet':
+            return self.wallet_frame_map
+        if hud_key == 'slot':
+            return self.slot_frame_map
+
 
     def get_cap_directions(
         self
@@ -686,60 +796,32 @@ class HUD():
         )
 
 
-    def slot_frame_map(
-        self
-    ) -> dict:
-        # TODO: need to calculate disabled slots from hero state
-        #          i.e. will need to pull hero equipment, group by state binding
-        #               and see if groups contain enabled equipment
-        return {
-            key: 'enabled' if val is None else 'active' 
-            for key, val in self.slots.items()
-        }
-
-
-    def mirror_frame_map(
-        self, 
-        mirror_key: str
-    ) -> dict:
-        if mirror_key == 'life':
-            return {
-                i: 'unit' if i <= self.mirrors['life']['current'] - 1 else 'empty'
-                for i in range(self.properties['mirrors']['life']['bounds'])
-                if i <= self.mirrors['life']['max'] - 1
-            }
-
-
-    def pack_frame_map(
-        self, 
-        pack_key: str
-    ) -> dict:
-        packset = self.hud_conf[self.media_size]['packs'][pack_key]
-        if pack_key in ['bag', 'bags', 'belt', 'belts']:
-            return {
-                i: key for i, key in enumerate(packset)
-            }
-        # TODO: some other way to do this...
-        elif pack_key == 'wallet':
-            return {
-                0: 'display',
-                1: 'display'
-            }
-
-
     def update(
         self, 
         game_world: world.World
     ) ->  None:
-        self.slots = game_world.hero['slots']
-        self.equipment = game_world.hero['equipment']
-        self.packs = game_world.hero['packs']
-        self.mirrors = {
-            'life': game_world.hero['health']
-        }
-        # TODO: should check if avatars have changed before
-        #       recalculating...
-        self._calculate_avatar_positions()
+        avatar_touched = False
+        if self.slots != game_world.hero['slots']:
+            self.slots = game_world.hero['slots'].copy()
+            self._calculate_slot_frame_map()
+            avatar_touched = True
+
+        if self.mirrors['life'] != game_world.hero['health']:
+            self.mirrors['life'] = game_world.hero['health'].copy()
+            self._calculate_mirror_frame_map('life')
+
+        if self.packs['bag'] != game_world.hero['packs']['bag']:
+            self.packs['bag'] = game_world.hero['packs']['bag']
+            self._calculate_pack_frame_map('bag')
+            avatar_touched = True
+        
+        if self.packs['belt'] != game_world.hero['packs']['belt']:
+            self.packs['belt'] = game_world.hero['packs']['belt']
+            self._calculate_pack_frame_map('belt')
+            avatar_touched = True
+
+        if avatar_touched:
+            self._calculate_avatar_positions()
 
 
     def toggle_hud(

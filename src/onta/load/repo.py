@@ -561,7 +561,7 @@ class Repo():
         self, 
         breakpoint_key: str, 
         component_key: str, 
-        fill_key: str
+        frame_key: str
     ) -> Union[Image.Image, None]:
         """_summary_
 
@@ -575,7 +575,7 @@ class Repo():
         :rtype: Union[Image.Image, None]
         """
         if self.mirrors.get(breakpoint_key) and self.mirrors[breakpoint_key].get(component_key):
-            return self.mirrors[breakpoint_key][component_key].get(fill_key)
+            return self.mirrors[breakpoint_key][component_key].get(frame_key)
         return None
 
 
