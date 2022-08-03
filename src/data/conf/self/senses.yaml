@@ -141,7 +141,7 @@ properties:
 hud:
   small:
     slots:
-      disabled:
+      enabled:
         path: slotsheet.png
         position:
           x: 30
@@ -149,7 +149,7 @@ hud:
         size:
           w: 40
           h: 40
-      enabled:
+      disabled:
         path: slotsheet.png
         position:
           x: 30
@@ -248,7 +248,7 @@ hud:
             h: 24
   large:
     slots:
-      disabled:
+      enabled:
         path: slotsheet.png
         position:
           x: 30
@@ -256,7 +256,7 @@ hud:
         size:
           w: 40
           h: 40
-      enabled:
+      disabled:
         path: slotsheet.png
         position:
           x: 30

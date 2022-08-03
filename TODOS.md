@@ -109,3 +109,5 @@ THAT PREVIOUS ONE FIRST
 ~~~~~~~~~~~~~~~~~~~~
 
 - more debug output
+
+- dialogue should be of the same form as hud, insofar as its used to hold static position information about widgets. in dialogue's case, the widget will be a scrollable display frame, a scrollbar and scroll thumb.

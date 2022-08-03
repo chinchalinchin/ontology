@@ -52,13 +52,13 @@ avatars:
         w: 16
         h: 17
     sword:
-      path: items.png
+      path: equipment.png
       position:
-        x: 50
-        y: 8
+        x: 320
+        y: 0
       size:
-        w: 21
-        h: 22
+        w: 32
+        h: 32
     axe: 
       path: equipment.png
       position:
