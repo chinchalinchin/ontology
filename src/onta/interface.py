@@ -277,7 +277,6 @@ class HUD():
         pack_vertical_align = self.styles[self.media_size]['packs']['alignment']['vertical']
 
         bagset = self.hud_conf[self.media_size]['packs']['bag']
-
         bag_dim = self.get_bag_dimensions()
 
         # (0, left), (1, right)
@@ -648,10 +647,7 @@ class HUD():
 
         # NOTE: dependent on 'disabled', 'enabled' and 'active' being the 
         #           same dimensions...
-        slot_dim = (
-            self.hud_conf[self.media_size]['slots']['disabled']['size']['w'],
-            self.hud_conf[self.media_size]['slots']['disabled']['size']['h']
-        )
+        slot_dim = self.get_slot_dimensions()
 
         for i, slot_key in enumerate(self.properties['slots']['maps']):
             if self.slots.get(slot_key):
@@ -668,8 +664,8 @@ class HUD():
                 )
                 self.avatar_rendering_points.append(
                     (
-                        slot_point[0] + (slot_dim[0] - avatar_dim[0])/2,
-                        slot_point[1] + (slot_dim[1] - avatar_dim[1])/2
+                        slot_point[0] + ( slot_dim[0] - avatar_dim[0] ) / 2,
+                        slot_point[1] + ( slot_dim[1] - avatar_dim[1] ) / 2
                     )
                 )
                 self.avatar_frame_map[i] = self.slots[slot_key]
@@ -677,7 +673,48 @@ class HUD():
                 self.avatar_rendering_points.append(None)
                 self.avatar_frame_map[i] = None
         
-        # TODO: bag, belt and wallet avatar rendering points
+        avatar_dim = (
+            self.avatar_conf['inventory'][
+                self.packs['bag']
+            ]['size']['w'],
+            self.avatar_conf['inventory'][
+                self.packs['bag']
+            ]['size']['h']
+        )
+        bag_point = self.bag_rendering_points[0]
+        bag_dim = self.get_bag_dimensions()
+        self.avatar_rendering_points.append(
+            (
+                bag_point[0] + ( bag_dim[0] - avatar_dim[0] ) / 2,
+                bag_point[1] + ( bag_dim[1] - avatar_dim[1] ) / 2
+            )
+        )
+        self.avatar_frame_map[
+            len(self.avatar_frame_map)
+        ] = self.packs['bag']
+
+
+        avatar_dim = (
+            self.avatar_conf['inventory'][
+                self.packs['belt']
+            ]['size']['w'],
+            self.avatar_conf['inventory'][
+                self.packs['belt']
+            ]['size']['h']
+        )
+        belt_point = self.belt_rendering_points[0]
+        belt_dim = self.get_belt_dimensions()
+        self.avatar_rendering_points.append(
+            (
+                belt_point[0] + ( belt_dim[0] - avatar_dim[0] ) / 2,
+                belt_point[1] + ( belt_dim[1] - avatar_dim[1] ) / 2
+            )
+        )
+        self.avatar_frame_map[
+            len(self.avatar_frame_map)
+        ] = self.packs['belt']
+
+        # TODO: wallet avatar rendering points
 
 
     def _calculate_slot_frame_map(

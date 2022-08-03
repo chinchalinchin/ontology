@@ -12,7 +12,7 @@ hero:
     slash: sword
     shoot: bow
   packs:
-    bag: shrapnel_bow
+    bag: shrapnel_bomb
     belt: arrow
   health:
     current: 4
