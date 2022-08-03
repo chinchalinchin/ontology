@@ -616,7 +616,11 @@ class World():
         sprite = self.npcs[sprite_key]
         sprite_hitbox = self.get_sprite_hitbox(sprite_key, 'strut')
 
-        collision_sets = self.get_collision_sets_relative_to(sprite, sprite_key, 'strut')
+        collision_sets = self._collision_sets_relative_to(
+            sprite_key, 
+            sprite['layer'], 
+            'strut'
+        )
         
         pathset = paths.concat_dynamic_paths(
             sprite, 
@@ -651,7 +655,11 @@ class World():
             # hero collision detection
             if sprite_key == 'hero':
                 sprite_hitbox = self.get_sprite_hitbox(sprite_key, 'sprite')
-                collision_sets = self.get_collision_sets_relative_to(self.hero, 'hero', 'sprite')
+                collision_sets = self._collision_sets_relative_to(
+                    'hero', 
+                    self.layer,
+                    'sprite'
+                )
 
                 log.infinite('Checking "hero" for collisions...', '_apply_physics')
 
@@ -670,7 +678,11 @@ class World():
 
                     sprite_hitbox = self.get_sprite_hitbox(sprite_key, hitbox_key)
 
-                    collision_sets = self.get_collision_sets_relative_to(sprite, sprite_key, hitbox_key)
+                    collision_sets = self._collision_sets_relative_to(
+                        sprite_key, 
+                        sprite['layer'],
+                        hitbox_key
+                    )
 
                     log.infinite(f'Checking"{sprite_key}" with hitbox {sprite_hitbox} \
                         for {hitbox_key} collisions...', '_apply_physics')
@@ -719,7 +731,10 @@ class World():
             masses = self.platesets[self.layer]['masses'].copy()
             hero_flag = sprite_key == 'hero'
             for mass in masses:
-                if collisions.detect_collision(mass['hitbox'], [sprite_hitbox]):
+                if collisions.detect_collision(
+                    mass['hitbox'], 
+                    [sprite_hitbox]
+                ):
                     plate = self.get_plate(self.layer, mass['key'], mass['index'])
                     collisions.recoil_plate(
                         plate, sprite, 
@@ -788,6 +803,48 @@ class World():
         pass
 
 
+    def _collision_sets_relative_to(self, sprite_key, layer_key, hitbox_key):
+        """_summary_
+
+        :param sprite: _description_
+        :type sprite: _type_
+        :param sprite_key: _description_
+        :type sprite_key: _type_
+        :param hitbox_key: _description_
+        :type hitbox_key: _type_
+        :return: _description_
+        :rtype: _type_
+
+        .. note::
+            This method inherently takes into account a sprite's layer when determining the collision sets it must consider.
+        """
+        npc_hitboxes = self.get_sprite_hitboxes(
+            hitbox_key, 
+            layer_key, 
+            [sprite_key]
+        )
+
+        collision_sets = []
+        if npc_hitboxes is not None:
+            collision_sets.append(
+                npc_hitboxes
+            )
+
+        if (hitbox_key =='strut' or sprite_key == 'hero' ) \
+             and self.strutsets[layer_key]['hitboxes'] is not None:
+            collision_sets.append(
+                self.strutsets[layer_key]['hitboxes']
+            )
+
+        if (hitbox_key =='strut' or sprite_key == 'hero' ) \
+             and self.platesets[layer_key]['containers'] is not None:
+             collision_sets.append(
+                [ container['hitbox']
+                    for container in self.platesets[layer_key]['containers']
+                ]
+            )
+        return collision_sets
+
     def get_strut_hitboxes(self, layer):
         strut_hitboxes = []
         for strut_conf in self.get_strutsets(layer).values():
@@ -831,40 +888,13 @@ class World():
 
     def get_sprite_intent(self, sprite_key):
         if sprite_key != 'hero':
-            return list(filter(lambda x: x['plot'] == self.plot, self.sprite_properties[sprite_key]['intents']))
+            return list(
+                filter(
+                    lambda x: x['plot'] == self.plot, 
+                    self.sprite_properties[sprite_key]['intents']
+                )
+            )
         return None
-
-
-    def get_collision_sets_relative_to(self, sprite, sprite_key, hitbox_key):
-        """_summary_
-
-        :param sprite: _description_
-        :type sprite: _type_
-        :param sprite_key: _description_
-        :type sprite_key: _type_
-        :param hitbox_key: _description_
-        :type hitbox_key: _type_
-        :return: _description_
-        :rtype: _type_
-
-        .. note::
-            This method inherently takes into account a sprite's layer when determining the collision sets it must consider.
-        """
-        npc_hitboxes = self.get_sprite_hitboxes(hitbox_key, sprite['layer'], [sprite_key])
-
-        collision_sets = []
-        if npc_hitboxes is not None:
-            collision_sets.append(npc_hitboxes)
-        if (hitbox_key =='strut' or sprite_key == 'hero' ) \
-             and self.strutsets[sprite['layer']]['hitboxes'] is not None:
-            collision_sets.append(self.strutsets[sprite['layer']]['hitboxes'])
-        if (hitbox_key =='strut' or sprite_key == 'hero' ) \
-             and self.platesets[sprite['layer']]['containers'] is not None:
-             collision_sets.append([
-                 container['hitbox']
-                 for container in self.platesets[sprite['layer']]['containers']
-             ])
-        return collision_sets
 
 
     def get_strutsets(self, layer):
@@ -905,18 +935,14 @@ class World():
         return self.platesets[layer][plate_key]['sets'][index]
 
 
-    def get_sprites(self, layer = None):
-        """Get all sprites, regardless of layer.
+    def get_sprites(self, layer: str= None) -> dict:
+        """Get all _Sprite_\s.
 
-        :param spriteset_key: _description_
-        :type spriteset_key: _type_
-        :return: _description_
-        :rtype: _type_
+        :param layer: Filter sprites by given layer, defaults to None
+        :type layer: str, optional
+        :return: All sprites, or all sprites on a given layer if `layer` is provided.
+        :rtype: dict
         """
-        # TODO: should either overload this with layer to allow filtering by layer.
-
-        # this is how the view retrieves the spriteset to be rendered, and why sprites
-        # are rendered on all layers, instead of the layer they are on.
         spriteset = { 'hero': self.hero }
         if layer is None:
             spriteset.update(self.npcs)
