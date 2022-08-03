@@ -59,6 +59,12 @@ SENSES_PATH = [
 """
 """
 
+AVATAR_PATH = [
+    'assets',
+    'self',
+    'avatars'
+]
+
 # Debug Configuration
 
 LOG_LEVEL = os.environ.setdefault('LOG_LEVEL', 'DEBUG')

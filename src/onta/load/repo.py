@@ -22,6 +22,7 @@ class Repo():
     sprites = {}
     effects = {}
     avatars = {}
+    bottles = {}
     mirrors = {}
     menus = {}
     slots = {}
@@ -188,13 +189,19 @@ class Repo():
                 if not slot or not slot.get('path'):
                     continue
 
-                w, h = slot['size']['w'], slot['size']['h']   
-                x, y = slot['position']['x'], slot['position']['y']
+                w, h = (
+                    slot['size']['w'], 
+                    slot['size']['h']
+                )   
+                x, y = (
+                    slot['position']['x'], 
+                    slot['position']['y']
+                )
 
                 image_path = os.path.join(
-                        ontology_path,
-                        *settings.SENSES_PATH,
-                        slot['path']
+                    ontology_path,
+                    *settings.SENSES_PATH,
+                    slot['path']
                 )
                 buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
@@ -202,7 +209,9 @@ class Repo():
                     'Repo._init_interface_assets')
 
                 slot_conf = interface_conf['hud'][size]['slots']
-                buffer = buffer.crop((x,y,w+x,h+y))
+                buffer = buffer.crop(
+                    (x,y,w+x,h+y)
+                )
 
                 # this is annoying, but necessary to allow slots to be rotated...
                 if slot_key == 'cap':
@@ -246,6 +255,7 @@ class Repo():
                 elif slot_key in ['disabled', 'enabled', 'active']:
                     self.slots[size][slot_key] = buffer
             ########################
+            # TODO: everything ever slot can be parameterized in a loop to condense this method
 
             self.mirrors[size] = {}
             mirror_set = interface_conf['hud'][size]['mirrors']
@@ -263,8 +273,14 @@ class Repo():
                     if not fill.get('path'):
                         continue
 
-                    x,y = fill['position']['x'], fill['position']['y']
-                    w, h = fill['size']['w'], fill['size']['h']
+                    x,y = (
+                        fill['position']['x'], 
+                        fill['position']['y']
+                    )
+                    w, h = (
+                        fill['size']['w'], 
+                        fill['size']['h']
+                    )
                     
                     image_path = os.path.join(
                         ontology_path,
@@ -273,7 +289,9 @@ class Repo():
                     )
                     buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
-                    self.mirrors[size][mirror_key][fill_key] = buffer.crop((x,y,w+x,h+y))
+                    self.mirrors[size][mirror_key][fill_key] = buffer.crop(
+                        (x,y,w+x,h+y)
+                    )
             ########################
 
             self.packs[size]= {}
@@ -291,8 +309,14 @@ class Repo():
                     if not piece.get('path'):
                         continue
 
-                    x, y = piece['position']['x'], piece['position']['y']
-                    w, h = piece['size']['w'], piece['size']['h']
+                    x, y = (
+                        piece['position']['x'], 
+                        piece['position']['y']
+                    )
+                    w, h = (
+                        piece['size']['w'], 
+                        piece['size']['h']
+                    )
 
                     image_path = os.path.join(
                         ontology_path,
@@ -301,7 +325,9 @@ class Repo():
                     )
                     buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
-                    self.packs[size][pack_key][piece_key] = buffer.crop((x,y,w+x,h+y))
+                    self.packs[size][pack_key][piece_key] = buffer.crop(
+                        (x,y,w+x,h+y)
+                    )
             ########################
 
             self.menus[size] = {}
@@ -319,8 +345,14 @@ class Repo():
                 for piece_key, piece in button.items():
                     if not piece.get('path'):
                         continue
-                    x,y = (piece['position']['x'], piece['position']['y'])
-                    w,h = (piece['size']['w'], piece['size']['h'])
+                    x,y = (
+                        piece['position']['x'], 
+                        piece['position']['y']
+                    )
+                    w,h = (
+                        piece['size']['w'], 
+                        piece['size']['h']
+                    )
 
                     image_path = os.path.join(
                         ontology_path,
@@ -329,13 +361,47 @@ class Repo():
                     )
                     buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
-                    self.menus[size][button_key][piece_key] = buffer.crop((x,y,w+x,h+y))
+                    self.menus[size][button_key][piece_key] = buffer.crop(
+                        (x,y,w+x,h+y)
+                    )
             ##########################
 
 
-    def _init_avatar_assets(self, config: conf.Conf, ontology_path: str) -> None:
+    def _init_avatar_assets(
+        self, 
+        config: conf.Conf, 
+        ontology_path: str
+    ) -> None:
         avatar_conf = config.load_avatar_configuration()
 
+        for avatarset_key in ['armor', 'equipment', 'inventory', 'quantity']:
+            for avatar_key, avatar in avatar_conf['avatars'][avatarset_key].items():
+                if not avatar or avatar.get('path') is None:
+                    continue
+
+                x,y = (
+                    avatar['position']['x'],
+                    avatar['position']['y']
+                )
+                w,h = (
+                    avatar['size']['w'],
+                    avatar['size']['h']
+                )
+                image_path = os.path.join(
+                    ontology_path,
+                    *settings.AVATAR_PATH,
+                    avatar['path']
+                )
+                buffer = Image.open(image_path).convert(settings.IMG_MODE)
+                self.avatars[avatarset_key][avatar_key] = buffer.crop(
+                    (x,y,w+x,h+y)
+                )
+
+        # Bottle Configuration is slightly different, so I wonder if I should separate them
+        # conceptually...
+        bottle_conf = avatar_conf['bottles']
+
+ 
 
     def _init_entity_assets(self, config: conf.Conf, ontology_path: str) -> None:
         log.debug('Initializing sprite assets...', 'Repo._init_sprite_assets')
