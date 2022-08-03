@@ -5,28 +5,21 @@ import onta.util.logger as logger
 import onta.engine.calculator as calculator
 import onta.engine.collisions as collisions
 import onta.engine.paths as paths
+import onta.engine.tasks as tasks
 
 log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
 class World():
+    """
+    """
 
     # CONFIGURATION FIELDS
     composite_conf = {}
     """
-    """
-    plate_properties = {}
-    """
-    """
-    strut_properties = {}
-    """
-    Holds strut property configuration information
     ```python
-    self.strut_properties = {
-            'strut_1': {
-                'hitbox_1': hitbox_dim, # tuple
-                # ...
-            }
-        }
+    self.composite_conf = {
+        
+    }
     ```
     """
     sprite_state_conf = {}
@@ -41,6 +34,21 @@ class World():
             # ..
         },
     }
+    ```
+    """
+    plate_properties = {}
+    """
+    """
+    strut_properties = {}
+    """
+    Holds strut property configuration information
+    ```python
+    self.strut_properties = {
+            'strut_1': {
+                'hitbox_1': hitbox_dim, # tuple
+                # ...
+            }
+        }
     ```
     """
     sprite_properties = {}
@@ -199,16 +207,44 @@ class World():
     # OTHER FIELDS
     dimensions = None
     """
-    ```
+    ```python
     self.dimensions = (w, h) # tuple
     ```
     """
     tile_dimensions = None
     """
+    ```python
+    self.tile_dimensions = (w, h) # tuple
+    ```
     """
     layer = None
+    """
+    self.layer = 'one' # str
+    """
     layers = []
+    """
+    self.layers = [
+        'one', # str
+        'two', # str
+        # ...
+    ]
+    """
     switch_map = None
+    """
+    ```python
+    self.switch_map = {
+        'layer_1': {
+            'switch_key_1': {
+                'switch_set_index_1': bool_1, # bool
+                'switch_set_index_2': bool_2, # bool
+                # ...
+            },
+            # ...
+        },
+        # ...
+    }
+    ```
+    """
     iterations = 0
 
     def __init__(self, ontology_path: str = settings.DEFAULT_DIR) -> None:
@@ -220,11 +256,9 @@ class World():
         """
         config = conf.Conf(ontology_path)
         state_ao = state.State(ontology_path)
+        
         self._init_conf(config)
         self._init_static_state(state_ao)
-        self._decompose_composite_static_state()
-        self._generate_stationary_hitboxes()
-        self._generate_switch_map()
         self._init_dynamic_state(state_ao)
 
 
@@ -262,112 +296,24 @@ class World():
             self.platesets[layer_key] = layer_conf.get('plates')
             self.compositions[layer_key] = layer_conf.get('compositions')
 
+        (
+            self.tilesets, 
+            self.strutsets, 
+            self.platesets
+        ) = tasks.decompose_compositions_into_sets(
+            self.layers,
+            self.compositions,
+            self.composite_conf,
+            self.tile_dimensions,
+            self.tilesets,
+            self.strutsets,
+            self.platesets
+        )
 
-    # TODO: shift this method to ...engine somwhere to clean up world
-    def _decompose_composite_static_state(self) -> None:
-        """_summary_
-
-        .. note:
-            Method must be called before stationary hitboxes are initialized, since this method decompose compositions into their consistuent sets and appends them to the existing static state.
-
-        """
-        log.debug(f'Decomposing composite static world state into constituents...', 'World._decompose_composite_static_state')
-
-        for layer in self.layers:
-            layer_compositions = self.compositions[layer]
-            if layer_compositions is not None:
-                for composite_key, composition in layer_compositions.items():
-                    # NOTE: composition = { 'order': int, 'sets': [ ... ] }
-                    #           via compose state information (static.yaml)
-                    compose_sets = composition['sets']
-
-                    # NOTE: compose_conf = { 'struts': { ... }, 'plates': { ... } }
-                    #           via compose configuration information (composite.yaml)
-                    compose_conf = self.composite_conf[composite_key]
-
-                    log.verbose(f'Decomposing {composite_key} composition...', 'World._decompose_composite_static_state')
-
-                    for composeset in compose_sets:
-                        # NOTE: compose_set = { 'start': { ... } }
-                        #           via compose state information (static.yaml)
-                        compose_start = calculator.scale(
-                            (composeset['start']['x'], composeset['start']['y']),
-                            self.tile_dimensions,
-                            composeset['start']['units']
-                        )
-
-                        for elementset_key, elementset_conf in compose_conf.items():
-
-                            log.verbose(f'Initializing decomposed {elementset_key} elementset...', 'World._decompose_composite_static_state')
-
-                            # NOTE: elementset = { 'element_key': { 'order': int, 'sets': [ ... ] } }
-                            #           via compose element configuration (composite.yaml)
-                            for element_key, element in elementset_conf.items():
-                                
-                                log.verbose(f'Initializing {element_key}', 'World._decompose_composite_static_state')
-
-                                # NOTE: element_sets = [ { 'start': {..}, 'cover': bool } ]
-                                #            via compose element configuration (composite.yaml)
-                                element_sets = element['sets']
-
-                                # TODO: adjust strutset rendering order based on element order
-
-                                buffer_sets = self.get_formset(elementset_key).copy()
-
-                                for elementset in element_sets:
-
-                                    log.verbose('Generating strut render order', 'World._decompose_composite_static_state')
-                                    
-                                    # NOTE elementset = { 'start': { ... }, 'cover': bool }
-                                    #       via compose element configuration (composite.yaml)
-
-                                    if not buffer_sets.get(layer):
-                                        buffer_sets[layer] = {}
-                                    
-                                    if not buffer_sets[layer].get(element_key):
-                                        buffer_sets[layer][element_key] = {}
-
-                                    if not buffer_sets[layer][element_key].get('sets'):
-                                        buffer_sets[layer][element_key]['sets'] = []
-                                    
-                                    if not buffer_sets[layer][element_key].get('order'):
-                                        buffer_sets[layer][element_key]['order'] = len(buffer_sets[layer]) - 1
-
-                            
-                                    if elementset_key == 'plates':
-                                        buffer_sets[layer][element_key]['sets'].append(
-                                            {
-                                                'start': {
-                                                    'units': elementset['start']['units'],
-                                                    'x': compose_start[0] + elementset['start']['x'],
-                                                    'y': compose_start[1] + elementset['start']['y'],
-                                                },
-                                                'cover': elementset['cover'],
-                                                'content': elementset['content']
-
-                                            }
-                                        )
-                                    else:
-                                        buffer_sets[layer][element_key]['sets'].append(
-                                            {
-                                                'start': {
-                                                    'units': elementset['start']['units'],
-                                                    'x': compose_start[0] + elementset['start']['x'],
-                                                    'y': compose_start[1] + elementset['start']['y'],
-                                                },
-                                                'cover': elementset['cover'],
-                                            }
-                                        )
-                                
-                                if elementset_key == 'tiles':
-                                    self.tilesets = buffer_sets
-                                elif elementset_key == 'struts':
-                                    self.strutsets = buffer_sets
-                                elif elementset_key == 'plates':
-                                    self.platesets = buffer_sets
+        self._generate_stationary_hitboxes()
+        self._generate_switch_map()
 
 
-    # TODO: see above
     def _generate_stationary_hitboxes(self) -> None:
         """
         Construct static hitboxes from object dimensions and properties.
@@ -402,7 +348,7 @@ class World():
                             self.platesets[layer][set_key]['sets'][i]['hitbox'] = set_hitbox
             
             # condense all the hitboxes into a list and save to strutsets,
-            # to avoid repeated internal calls to `get_strut_hitboxes`
+            # to avoid repeated internal calls to `_strut_hitboxes`
             # however, this now means these dictionaries have to have these 
             # keys filtered out if the idea is to iterate through them.
             # therefore, can no longer directly touch these properties, but
@@ -413,7 +359,7 @@ class World():
                 (self.dimensions[0], 0, 1, self.dimensions[1]),
                 (0, self.dimensions[1], self.dimensions[0], 1)
             ]
-            self.strutsets[layer]['hitboxes'] = world_bounds + self.get_strut_hitboxes(layer)
+            self.strutsets[layer]['hitboxes'] = world_bounds + self._strut_hitboxes(layer)
             self.platesets[layer]['doors'] = self.get_typed_platesets(layer, 'door')
             self.platesets[layer]['containers'] = self.get_typed_platesets(layer, 'container')
             self.platesets[layer]['pressures'] = self.get_typed_platesets(layer, 'pressure')
@@ -572,7 +518,7 @@ class World():
             if self.iterations % sprite_props['poll'] == 0:
                 
                 sprite_pos = (sprite['position']['x'], sprite['position']['y'])
-                intents = self.get_sprite_intent(sprite_key)
+                intents = self._sprite_intent(sprite_key)
                 
                 for intent in intents:
                     if intent['intent'] not in list(self.sprite_properties[sprite_key]['paths'].keys()):
@@ -614,7 +560,11 @@ class World():
     def _reorient(self, sprite_key: str) -> None:
 
         sprite = self.npcs[sprite_key]
-        sprite_hitbox = self.get_sprite_hitbox(sprite_key, 'strut')
+
+        sprite_hitbox = self._sprite_hitbox(
+            sprite_key, 
+            'strut'
+        )
 
         collision_sets = self._collision_sets_relative_to(
             sprite_key, 
@@ -639,7 +589,7 @@ class World():
         )
 
 
-    def _apply_physics(self) -> None:
+    def _physics(self) -> None:
         """
         
         .. note::
@@ -654,7 +604,10 @@ class World():
 
             # hero collision detection
             if sprite_key == 'hero':
-                sprite_hitbox = self.get_sprite_hitbox(sprite_key, 'sprite')
+                sprite_hitbox = self._sprite_hitbox(
+                    sprite_key, 
+                    'sprite'
+                )
                 collision_sets = self._collision_sets_relative_to(
                     'hero', 
                     self.layer,
@@ -664,8 +617,14 @@ class World():
                 log.infinite('Checking "hero" for collisions...', '_apply_physics')
 
                 for collision_set in collision_sets:
-                    if collisions.detect_collision(sprite_hitbox, collision_set):
-                        collisions.recoil_sprite(sprite, self.sprite_properties[sprite_key])
+                    if collisions.detect_collision(
+                        sprite_hitbox, 
+                        collision_set
+                    ):
+                        collisions.recoil_sprite(
+                            sprite, 
+                            self.sprite_properties[sprite_key]
+                        )
 
             # sprite collision detection
             else:
@@ -676,7 +635,10 @@ class World():
                         if val:
                             exclusions.append(key)
 
-                    sprite_hitbox = self.get_sprite_hitbox(sprite_key, hitbox_key)
+                    sprite_hitbox = self._sprite_hitbox(
+                        sprite_key, 
+                        hitbox_key
+                    )
 
                     collision_sets = self._collision_sets_relative_to(
                         sprite_key, 
@@ -700,7 +662,11 @@ class World():
                             )
                     if collided:
                             # recalculate hitbox after sprite recoils
-                        sprite_hitbox = self.get_sprite_hitbox(sprite_key, hitbox_key)
+                        sprite_hitbox = self._sprite_hitbox(
+                            sprite_key, 
+                            hitbox_key
+                        )
+                        # if current path is sprite based...
                         if sprite['path']['current'] in list(self.sprite_properties.keys()):
                             pathset = paths.concat_dynamic_paths(
                                 sprite,
@@ -708,6 +674,7 @@ class World():
                                 self.hero,
                                 self.npcs,
                             )
+                        # else just use the static props paths...
                         else:
                             pathset = self.sprite_properties[sprite_key]['paths']
 
@@ -754,7 +721,7 @@ class World():
         # TODO: plate-to-plate collisions, plate-to-strut collisions
 
 
-    def _apply_interaction(self, user_input: dict):
+    def _interaction(self, user_input: dict):
         """_summary_
 
         :param user_input: Dictionary containing the user input keys mapped to their corresponding _directions_ and _actions_, i.e. the result of calling `onta.control.Controller().poll()`
@@ -764,7 +731,7 @@ class World():
             Collisions with containers are based on their calculated hitboxes, whereas interactions with containers are based on their actual dimensions.
         """
         if user_input['interact']:
-            hero_hitbox = self.get_sprite_hitbox('hero', 'sprite')
+            hero_hitbox = self._sprite_hitbox('hero', 'sprite')
 
             triggered = False
             for door in self.platesets[self.layer]['doors']:
@@ -799,7 +766,7 @@ class World():
             # TODO: gate and pressure interaction implementation
 
 
-    def _apply_combat(self):
+    def _combat(self):
         pass
 
 
@@ -818,7 +785,7 @@ class World():
         .. note::
             This method inherently takes into account a sprite's layer when determining the collision sets it must consider.
         """
-        npc_hitboxes = self.get_sprite_hitboxes(
+        npc_hitboxes = self._sprite_hitboxes(
             hitbox_key, 
             layer_key, 
             [sprite_key]
@@ -839,13 +806,15 @@ class World():
         if (hitbox_key =='strut' or sprite_key == 'hero' ) \
              and self.platesets[layer_key]['containers'] is not None:
              collision_sets.append(
-                [ container['hitbox']
+                [ 
+                    container['hitbox']
                     for container in self.platesets[layer_key]['containers']
                 ]
             )
         return collision_sets
 
-    def get_strut_hitboxes(self, layer):
+
+    def _strut_hitboxes(self, layer):
         strut_hitboxes = []
         for strut_conf in self.get_strutsets(layer).values():
             sets = strut_conf['sets']
@@ -854,7 +823,7 @@ class World():
         return strut_hitboxes
 
 
-    def get_sprite_hitbox(self, sprite_key, hitbox_key):
+    def _sprite_hitbox(self, sprite_key, hitbox_key):
         """
         .. note::
             A sprite's hitbox dimensions are fixed, but the actual hitbox coordinates depend on the position of the sprite. This method must be called each iteration of the world loop, so the newest coordinates of the hitbox are retrieved.
@@ -877,16 +846,16 @@ class World():
         return None
 
 
-    def get_sprite_hitboxes(self, hitbox_key, layer, exclude = None):
+    def _sprite_hitboxes(self, hitbox_key, layer, exclude = None):
         calculated = []
 
         for sprite_key in  self.get_npcs(layer).keys():
             if exclude is None or sprite_key not in exclude:
-                calculated.append(self.get_sprite_hitbox(sprite_key, hitbox_key))
+                calculated.append(self._sprite_hitbox(sprite_key, hitbox_key))
         return calculated
 
 
-    def get_sprite_intent(self, sprite_key):
+    def _sprite_intent(self, sprite_key):
         if sprite_key != 'hero':
             return list(
                 filter(
@@ -951,7 +920,14 @@ class World():
         return spriteset
 
 
-    def get_formset(self, formset_key):
+    def get_formset(self, formset_key: str) -> dict:
+        """_summary_
+
+        :param formset_key: _description_
+        :type formset_key: str
+        :return: _description_
+        :rtype: dict
+        """
         if formset_key in ['tile', 'tiles']:
             return self.tilesets
         elif formset_key in ['strut', 'struts']:
@@ -998,7 +974,7 @@ class World():
 
         self._update_sprites()
         self._update_hero(user_input)
-        self._apply_physics()
-        self._apply_combat()
-        self._apply_interaction(user_input)
+        self._physics()
+        self._combat()
+        self._interaction(user_input)
         self.iterations += 1
