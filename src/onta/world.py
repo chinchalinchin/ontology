@@ -756,7 +756,10 @@ class World():
         # TODO: plate-to-plate collisions, plate-to-strut collisions
 
 
-    def _interaction(self, user_input: dict):
+    def _interaction(
+        self, 
+        user_input: dict
+    ) -> None:
         """_summary_
 
         :param user_input: Dictionary containing the user input keys mapped to their corresponding _directions_ and _actions_, i.e. the result of calling `onta.control.Controller().poll()`
@@ -801,7 +804,9 @@ class World():
             # TODO: gate and pressure interaction implementation
 
 
-    def _combat(self):
+    def _combat(
+        self
+    ) -> None:
         pass
 
 
@@ -857,7 +862,17 @@ class World():
         return collision_sets
 
 
-    def _strut_hitboxes(self, layer):
+    def _strut_hitboxes(
+        self, 
+        layer: str
+    ) -> list:
+        """_summary_
+
+        :param layer: _description_
+        :type layer: str
+        :return: _description_
+        :rtype: list
+        """
         strut_hitboxes = []
         for strut_conf in self.get_strutsets(layer).values():
             sets = strut_conf['sets']
@@ -866,8 +881,20 @@ class World():
         return strut_hitboxes
 
 
-    def _sprite_hitbox(self, sprite_key, hitbox_key):
-        """
+    def _sprite_hitbox(
+        self, 
+        sprite_key: str, 
+        hitbox_key: str
+    ) -> Union[tuple, None]:
+        """_summary_
+
+        :param sprite_key: _description_
+        :type sprite_key: str
+        :param hitbox_key: _description_
+        :type hitbox_key: str
+        :return: _description_
+        :rtype: Union[tuple, None]
+
         .. note::
             A sprite's hitbox dimensions are fixed, but the actual hitbox coordinates depend on the position of the sprite. This method must be called each iteration of the world loop, so the newest coordinates of the hitbox are retrieved.
         """
@@ -959,7 +986,20 @@ class World():
         }
 
 
-    def get_typed_platesets(self, layer, plateset_type):
+    def get_typed_platesets(
+        self, 
+        layer: str, 
+        plateset_type: str
+    ) -> list:
+        """_summary_
+
+        :param layer: _description_
+        :type layer: str
+        :param plateset_type: _description_
+        :type plateset_type: str
+        :return: _description_
+        :rtype: list
+        """
         typed_platesets = []
         for plate_key, plate_conf in self.get_platesets(layer).items():
             if self.plate_properties[plate_key]['type'] != plateset_type:
@@ -975,11 +1015,30 @@ class World():
         return typed_platesets
 
 
-    def get_plate(self, layer, plate_key, index):
+    def get_plate(
+        self, 
+        layer: str, 
+        plate_key: str, 
+        index: int
+    ) -> dict:
+        """_summary_
+
+        :param layer: _description_
+        :type layer: str
+        :param plate_key: _description_
+        :type plate_key: str
+        :param index: _description_
+        :type index: int
+        :return: _description_
+        :rtype: dict
+        """
         return self.platesets[layer][plate_key]['sets'][index]
 
 
-    def get_sprites(self, layer: str= None) -> dict:
+    def get_sprites(
+        self, 
+        layer: str= None
+    ) -> dict:
         """Get all _Sprite_\s.
 
         :param layer: Filter sprites by given layer, defaults to None
@@ -995,7 +1054,10 @@ class World():
         return spriteset
 
 
-    def get_formset(self, formset_key: str) -> dict:
+    def get_formset(
+        self, 
+        formset_key: str
+    ) -> dict:
         """_summary_
 
         :param formset_key: _description_
@@ -1011,7 +1073,10 @@ class World():
             return self.platesets
 
 
-    def get_sprite(self, sprite_key):
+    def get_sprite(
+        self, 
+        sprite_key: str
+    ) -> dict:
         if sprite_key == 'hero':
             return self.hero
         elif sprite_key in list(self.npcs.keys()):
@@ -1019,7 +1084,10 @@ class World():
         return None
 
 
-    def get_npcs(self, layer):
+    def get_npcs(
+        self, 
+        layer: str
+    ) -> dict:
         return {
             key: val
             for key, val 
@@ -1028,11 +1096,17 @@ class World():
         }
 
 
-    def get_tilesets(self, layer: str):
+    def get_tilesets(
+        self, 
+        layer: str
+    ) -> dict:
         return self.tilesets[layer] if self.tilesets[layer] is not None else { }
 
 
-    def save(self, state_ao: state.State):
+    def save(
+        self, 
+        state_ao: state.State
+    ) -> None:
         self.hero['layer'] = self.layer
         self.hero['plot'] = self.plot
         dynamic_conf = {
@@ -1042,9 +1116,14 @@ class World():
         state_ao.save_state('dynamic', dynamic_conf)
 
 
-    def iterate(self, user_input: dict) -> dict:
-        """
-        Update the world state.
+    def iterate(
+        self, 
+        user_input: dict
+    ) -> None:
+        """Update the _World_ state.
+
+        :param user_input: Map of user input `bool`s
+        :type user_input: dict
         """
 
         self._update_sprites()
