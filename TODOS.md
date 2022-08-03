@@ -1,4 +1,4 @@
-- it would be nice if instead of dictionary state and configuration were kept in native python objects so values could be accessed with dot notation instead of dictionary key lookups.
+- it would be nice if instead of dictionary state and configuration were kept in native python objects so values could be accessed with dot notation instead of dictionary key lookups. this is potentially a huge ask, since the application is written using dictionary look up notation.
 
 - ups vs fps
 
@@ -8,9 +8,9 @@ another option would be to introduce a division in the concept of npc. there cou
 
 - exiting a door has a problem with collision engine, since when you exit you will most likely be intersecting with outside object, but facing the wrong way you would approach it in-layer. thus, the character sprite slides over the hitbox.
 
-- when rendering, should check if element intersects with crop box to determine whether or not to proceed with rendering, i.e. only render on screen elements.
+- when rendering, should check if element intersects with crop box to determine whether or not to proceed with rendering, i.e. only render on screen elements. already inherently does this with layers. need an additional positional check.
 
-- for some reason, the npc walk_left and walk_right are not mapping the same way as the player walk_left and walk_right. i have to switch the rows for npcs, where as the hero is fine.
+- for some reason, the npc walk_left and walk_right are not mapping the same way as the player walk_left and walk_right. i have to switch the rows for npcs, where as the hero is fine. control mapping issue?
 
 - allow sprites to create their own intents if attacked by another sprite, i.e. add intent of attacking_sprite to sprite['intents']
 
@@ -35,11 +35,8 @@ Aha. Desire is the ordering of intent. Expression and intent are the transmittal
 What does plot space looks like?
 
 
-- Ingest interface styles through yaml instead of hardcoded constants
+- Ingest interface styles through yaml instead of hardcoded constants (80% done)
 
 - Menu can alter the world's dynamic state. HUD cannot. HUD is just a vessel for information, while Menu is an interface for altering information (or at least associations)
 
 - The essence of the collision bug is due to the diagonal directions. When only four directions, no bugs. But because recoil is based on direction of sprite, and diagonal movement mixes orthogonal directions with left and right, result in recoil not knowing which direction to send the sprite. Only applies to hero since that is the only sprite that can move diagonally.
-
-
-- refactor all the hitbox generation and composite set decomposition into engine package to clean up world module.

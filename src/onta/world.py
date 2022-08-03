@@ -1,3 +1,4 @@
+from typing import Union
 import onta.settings as settings
 import onta.load.state as state
 import onta.load.conf as conf
@@ -9,6 +10,16 @@ import onta.engine.tasks as tasks
 
 log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
+PLATE_META = [
+    'doors', 
+    'containers', 
+    'pressures', 
+    'masses'
+]
+STRUT_META =  [
+    'hitboxes'
+]
+
 class World():
     """
     """
@@ -18,7 +29,7 @@ class World():
     """
     ```python
     self.composite_conf = {
-        
+
     }
     ```
     """
@@ -247,7 +258,10 @@ class World():
     """
     iterations = 0
 
-    def __init__(self, ontology_path: str = settings.DEFAULT_DIR) -> None:
+    def __init__(
+        self, 
+        ontology_path: str = settings.DEFAULT_DIR
+    ) -> None:
         """
         Creates an instance of `onta.world.World` and calls internal methods to initialize in-game element configuration, the game's static state and the game's dynamic state.
 
@@ -256,13 +270,15 @@ class World():
         """
         config = conf.Conf(ontology_path)
         state_ao = state.State(ontology_path)
-        
         self._init_conf(config)
         self._init_static_state(state_ao)
         self._init_dynamic_state(state_ao)
 
 
-    def _init_conf(self, config: conf.Conf) -> None:
+    def _init_conf(
+        self, 
+        config: conf.Conf
+    ) -> None:
         """ 
         Initialize configuration properties for in-game elements in the memory.
         """
@@ -273,10 +289,16 @@ class World():
         self.strut_properties, _ = config.load_strut_configuration()
         self.composite_conf = config.load_composite_configuration()
         tile_conf = config.load_tile_configuration()
-        self.tile_dimensions = (tile_conf['tile']['w'], tile_conf['tile']['h'])
+        self.tile_dimensions = (
+            tile_conf['tile']['w'], 
+            tile_conf['tile']['h']
+        )
 
 
-    def _init_static_state(self, state_ao: state.State) -> None:
+    def _init_static_state(
+        self, 
+        state_ao: state.State
+    ) -> None:
         """
         Initialize the state for static in-game elements, i.e. elements that do not move and are not interactable.
         """
@@ -284,7 +306,10 @@ class World():
         static_conf = state_ao.get_state('static')
 
         self.dimensions = calculator.scale(
-            (static_conf['world']['size']['w'], static_conf['world']['size']['h']),
+            (
+                static_conf['world']['size']['w'], 
+                static_conf['world']['size']['h']
+            ),
             self.tile_dimensions,
             static_conf['world']['size']['units']
         )
@@ -314,7 +339,9 @@ class World():
         self._generate_switch_map()
 
 
-    def _generate_stationary_hitboxes(self) -> None:
+    def _generate_stationary_hitboxes(
+        self
+    ) -> None:
         """
         Construct static hitboxes from object dimensions and properties.
 
@@ -366,7 +393,9 @@ class World():
             self.platesets[layer]['masses'] = self.get_typed_platesets(layer, 'mass')
 
 
-    def _generate_switch_map(self) -> None:
+    def _generate_switch_map(
+        self
+    ) -> None:
         """_summary_
 
         .. note::
@@ -397,7 +426,10 @@ class World():
             }
 
 
-    def _init_dynamic_state(self, state_ao: state.State) -> None:
+    def _init_dynamic_state(
+        self, 
+        state_ao: state.State
+    ) -> None:
         """
         Initialize the state for dynamic in-game elements, i.e. elements that move and are interactable.
         """
@@ -409,7 +441,10 @@ class World():
         self.npcs = dynamic_state.get('npcs') if dynamic_state.get('npcs') is not None else {}
 
 
-    def _update_hero(self, user_input: dict) -> None: 
+    def _update_hero(
+        self, 
+        user_input: dict
+    ) -> None: 
         """
         Map user input to new hero state, apply state action and iterate state frame.
         """
@@ -770,21 +805,29 @@ class World():
         pass
 
 
-    def _collision_sets_relative_to(self, sprite_key, layer_key, hitbox_key):
-        """_summary_
+    def _collision_sets_relative_to(
+        self, 
+        sprite_key: str, 
+        layer_key: str, 
+        hitbox_key: str
+    ) -> list:
+        """Returns a list of the typed hitbox a given sprite can possibly collide with on a given layer. 
 
         :param sprite: _description_
-        :type sprite: _type_
+        :type sprite: str
         :param sprite_key: _description_
-        :type sprite_key: _type_
+        :type sprite_key: str
         :param hitbox_key: _description_
-        :type hitbox_key: _type_
-        :return: _description_
-        :rtype: _type_
+        :type hitbox_key: str
+        :return: list of lists containing the possible collision hitboxes
+        :rtype: list
 
         .. note::
             This method inherently takes into account a sprite's layer when determining the collision sets it must consider.
         """
+        # TODO: I think it would be simpler to return a list (well, it definitely would). would need to unpack each individual list and append 
+        # elements. would also need to examine how this method gets invoked and whether it truly would be simpler...
+        # if so, change name to _collision_set_relative_to()
         npc_hitboxes = self._sprite_hitboxes(
             hitbox_key, 
             layer_key, 
@@ -846,7 +889,23 @@ class World():
         return None
 
 
-    def _sprite_hitboxes(self, hitbox_key, layer, exclude = None):
+    def _sprite_hitboxes(
+        self, 
+        hitbox_key: str, 
+        layer: str, 
+        exclude: list = None
+    ) -> list:
+        """_summary_
+
+        :param hitbox_key: _description_
+        :type hitbox_key: str
+        :param layer: _description_
+        :type layer: str
+        :param exclude: _description_, defaults to None
+        :type exclude: list, optional
+        :return: _description_
+        :rtype: list
+        """
         calculated = []
 
         for sprite_key in  self.get_npcs(layer).keys():
@@ -855,7 +914,17 @@ class World():
         return calculated
 
 
-    def _sprite_intent(self, sprite_key):
+    def _sprite_intent(
+        self, 
+        sprite_key: str
+    ) -> Union[list, None]:
+        """_summary_
+
+        :param sprite_key: _description_
+        :type sprite_key: str
+        :return: _description_
+        :rtype: Union[list, None]
+        """
         if sprite_key != 'hero':
             return list(
                 filter(
@@ -866,21 +935,27 @@ class World():
         return None
 
 
-    def get_strutsets(self, layer):
+    def get_strutsets(
+        self, 
+        layer: str
+    ) -> dict:
         iter_set = self.strutsets[layer].items() if self.strutsets[layer] is not None else { }
         return {
             key: val
             for key, val in iter_set
-            if key not in  ['hitboxes']
+            if key not in STRUT_META
         }
     
 
-    def get_platesets(self, layer):
+    def get_platesets(
+        self, 
+        layer: str
+    ) -> dict:
         iter_set = self.platesets[layer].items() if self.platesets[layer] is not None else { }
         return {
             key: val
             for key, val in iter_set
-            if key not in ['doors', 'containers', 'pressures', 'masses']
+            if key not in PLATE_META
         }
 
 

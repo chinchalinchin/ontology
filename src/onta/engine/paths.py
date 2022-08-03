@@ -7,7 +7,14 @@ import onta.util.logger as logger
 log = logger.Logger('onta.engine.paths', settings.LOG_LEVEL)
 
 
-def reorient(sprite, hitbox, collision_sets, goal, speed, world_dim) -> None:
+def reorient(
+    sprite, 
+    hitbox, 
+    collision_sets, 
+    goal, 
+    speed, 
+    world_dim
+) -> None:
     goal_point = (goal['x'], goal['y'])
 
     new_up = (
