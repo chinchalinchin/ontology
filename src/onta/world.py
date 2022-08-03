@@ -521,7 +521,9 @@ class World():
             self.hero['frame'] = 0
 
 
-    def _update_sprites(self) -> None:
+    def _update_sprites(
+        self
+    ) -> None:
         """
         Maps npc state to in-game action, applies action and then iterates npc state frame.
 
@@ -592,7 +594,10 @@ class World():
                 sprite['frame'] = 0
 
 
-    def _reorient(self, sprite_key: str) -> None:
+    def _reorient(
+        self, 
+        sprite_key: str
+    ) -> None:
 
         sprite = self.npcs[sprite_key]
 
@@ -624,7 +629,9 @@ class World():
         )
 
 
-    def _physics(self) -> None:
+    def _physics(
+        self
+    ) -> None:
         """
         
         .. note::
@@ -962,6 +969,32 @@ class World():
         return None
 
 
+    def get_formset(
+        self, 
+        formset_key: str
+    ) -> dict:
+        """_summary_
+
+        :param formset_key: _description_
+        :type formset_key: str
+        :return: _description_
+        :rtype: dict
+        """
+        if formset_key in ['tile', 'tiles']:
+            return self.tilesets
+        elif formset_key in ['strut', 'struts']:
+            return self.strutsets
+        elif formset_key in ['plate', 'plates']:
+            return self.platesets
+
+
+    def get_tilesets(
+        self, 
+        layer: str
+    ) -> dict:
+        return self.tilesets[layer] if self.tilesets[layer] is not None else { }
+
+
     def get_strutsets(
         self, 
         layer: str
@@ -1054,36 +1087,6 @@ class World():
         return spriteset
 
 
-    def get_formset(
-        self, 
-        formset_key: str
-    ) -> dict:
-        """_summary_
-
-        :param formset_key: _description_
-        :type formset_key: str
-        :return: _description_
-        :rtype: dict
-        """
-        if formset_key in ['tile', 'tiles']:
-            return self.tilesets
-        elif formset_key in ['strut', 'struts']:
-            return self.strutsets
-        elif formset_key in ['plate', 'plates']:
-            return self.platesets
-
-
-    def get_sprite(
-        self, 
-        sprite_key: str
-    ) -> dict:
-        if sprite_key == 'hero':
-            return self.hero
-        elif sprite_key in list(self.npcs.keys()):
-            return self.npcs[sprite_key]
-        return None
-
-
     def get_npcs(
         self, 
         layer: str
@@ -1096,11 +1099,15 @@ class World():
         }
 
 
-    def get_tilesets(
+    def get_sprite(
         self, 
-        layer: str
+        sprite_key: str
     ) -> dict:
-        return self.tilesets[layer] if self.tilesets[layer] is not None else { }
+        if sprite_key == 'hero':
+            return self.hero
+        elif sprite_key in list(self.npcs.keys()):
+            return self.npcs[sprite_key]
+        return None
 
 
     def save(
