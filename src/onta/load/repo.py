@@ -31,7 +31,9 @@ class Repo():
 
 
     @staticmethod
-    def adjust_cap_rotation(direction):
+    def adjust_cap_rotation(
+        direction: str
+    ) -> tuple:
         # I am convinced there is an easier way to calculate this using arcosine and arcsine,
         # but i don't feel like thinking about domains and ranges right now...
         if direction == 'left':
@@ -50,13 +52,18 @@ class Repo():
 
 
     @staticmethod
-    def adjust_buffer_rotation(direction):
+    def adjust_buffer_rotation(
+        direction: str
+    ) -> tuple:
         if direction == 'vertical':
             return (0, 90)
         return (90, 0)
 
 
-    def __init__(self, ontology_path: str) -> None:
+    def __init__(
+        self, 
+        ontology_path: str
+    ) -> None:
         """
         .. note::
             No reference is kept to `ontology_path`; it is passed to initialize methods and released.
@@ -65,9 +72,14 @@ class Repo():
         self._init_form_assets(config, ontology_path)
         self._init_entity_assets(config, ontology_path)
         self._init_sense_assets(config, ontology_path)
+        self._init_avatar_assets()
 
 
-    def _init_form_assets(self, config: conf.Conf, ontology_path: str) -> None:
+    def _init_form_assets(
+        self, config: 
+        conf.Conf, 
+        ontology_path: str
+    ) -> None:
         """_summary_
 
         :param config: _description_
@@ -162,7 +174,11 @@ class Repo():
                             self.plates[asset_key] = buffer
  
 
-    def _init_sense_assets(self, config: conf.Conf, ontology_path: str) -> None:
+    def _init_sense_assets(
+        self, 
+        config: conf.Conf, 
+        ontology_path: str
+    ) -> None:
         """_summary_
 
         :param config: _description_
@@ -182,9 +198,8 @@ class Repo():
             log.debug(f'Initializing slot assets...', 'Repo._init_interface_assets')
             
             ## SLOT INITIALIZATION
-            # NOTE:
-            #   for (disabled, {slot}), (enabled, {slot}), (active, {slot}), 
-            #       (cap, {slot}), (buffer, {slot})
+            #   NOTE: for (disabled, {slot}), (enabled, {slot}), (active, {slot}), 
+            #               (cap, {slot}), (buffer, {slot})
             for slot_key, slot in slotset.items():
                 if not slot or not slot.get('path'):
                     continue
@@ -254,9 +269,10 @@ class Repo():
                     }
                 elif slot_key in ['disabled', 'enabled', 'active']:
                     self.slots[size][slot_key] = buffer
+
             ########################
             # TODO: everything ever slot can be parameterized in a loop to condense this method
-
+            #       However, should it be parameterized?
             self.mirrors[size] = {}
             mirror_set = interface_conf['hud'][size]['mirrors']
 
@@ -399,11 +415,15 @@ class Repo():
 
         # Bottle Configuration is slightly different, so I wonder if I should separate them
         # conceptually...
+        # TODO: !!!
         bottle_conf = avatar_conf['bottles']
 
- 
 
-    def _init_entity_assets(self, config: conf.Conf, ontology_path: str) -> None:
+    def _init_entity_assets(
+        self, 
+        config: conf.Conf, 
+        ontology_path: str
+    ) -> None:
         log.debug('Initializing sprite assets...', 'Repo._init_sprite_assets')
 
         states_conf, _, sheets_conf = config.load_sprite_configuration()
@@ -452,7 +472,11 @@ class Repo():
             log.debug(f'{sprite_key} configuration: states - {len(self.sprites[sprite_key])}, frames - {frames}', 'Repo._init_sprites')
 
 
-    def get_form_frame(self, form_key: str, group_key: str) -> Union[Image.Image, None]:
+    def get_form_frame(
+        self, 
+        form_key: str, 
+        group_key: str
+    ) -> Union[Image.Image, None]:
         if form_key in [ 'tiles', 'tile' ]:
             return self.tiles.get(group_key)
         if form_key in [ 'struts', 'strut' ]:
@@ -462,48 +486,124 @@ class Repo():
         return None
 
 
-    def get_avatar_frame(self, breakpoint_key, component_key) -> Union[Image.Image, None]:
-        if self.avatars.get(breakpoint_key):
-            return self.avatars[breakpoint_key].get(component_key)
-        return None
+    def get_avatar_frame(
+        self, 
+        component_key: str
+    ) -> Union[Image.Image, None]:
+        """_summary_
+
+        :param component_key: _description_
+        :type component_key: str
+        :return: _description_
+        :rtype: Union[Image.Image, None]
+        """
+        return self.avatars.get(component_key)
     
 
-    def get_slot_frames(self, breakpoint_key: str, component_key) -> Union[Image.Image, None]:
+    def get_slot_frames(
+        self, 
+        breakpoint_key: str, 
+        component_key: str
+    ) -> Union[Image.Image, None]:
+        """_summary_
+
+        :param breakpoint_key: _description_
+        :type breakpoint_key: str
+        :param component_key: _description_
+        :type component_key: str
+        :return: _description_
+        :rtype: Union[Image.Image, None]
+        """
         if self.slots.get(breakpoint_key):
             return self.slots[breakpoint_key].get(component_key)
         return None
         
 
-    def get_pack_frame(self, breakpoint_key: str, component_key: str, piece_key: str):
-        if self.packs.get(breakpoint_key) and self.packs[breakpoint_key].get(component_key):
+    def get_pack_frame(
+        self, 
+        breakpoint_key: str, 
+        component_key: str, 
+        piece_key: str
+    ) -> Union[Image.Image, None]:
+        """_summary_
+
+        :param breakpoint_key: _description_
+        :type breakpoint_key: str
+        :param component_key: _description_
+        :type component_key: str
+        :param piece_key: _description_
+        :type piece_key: str
+        :return: _description_
+        :rtype: Union[Image.Image, None]
+        """
+        if self.packs.get(breakpoint_key) and \
+            self.packs[breakpoint_key].get(component_key):
             return self.packs[breakpoint_key][component_key].get(piece_key)
         return None
 
 
-    def get_mirror_frame(self, breakpoint_key: str, component_key: str, fill_key):
+    def get_mirror_frame(
+        self, 
+        breakpoint_key: str, 
+        component_key: str, 
+        fill_key: str
+    ) -> Union[Image.Image, None]:
+        """_summary_
+
+        :param breakpoint_key: _description_
+        :type breakpoint_key: str
+        :param component_key: _description_
+        :type component_key: str
+        :param fill_key: _description_
+        :type fill_key: str
+        :return: _description_
+        :rtype: Union[Image.Image, None]
+        """
         if self.mirrors.get(breakpoint_key) and self.mirrors[breakpoint_key].get(component_key):
             return self.mirrors[breakpoint_key][component_key].get(fill_key)
         return None
 
 
-    def get_menu_frame(self, breakpoint_key, component_key, piece_key) -> Union[Image.Image, None]:
+    def get_menu_frame(
+        self, 
+        breakpoint_key: str, 
+        component_key: str, 
+        piece_key: str
+    ) -> Union[Image.Image, None]:
+        """_summary_
+
+        :param breakpoint_key: _description_
+        :type breakpoint_key: str
+        :param component_key: _description_
+        :type component_key: str
+        :param piece_key: _description_
+        :type piece_key: str
+        :return: _description_
+        :rtype: Union[Image.Image, None]
+        """
         if self.menus.get(breakpoint_key) and self.menus[breakpoint_key].get(component_key):
             return self.menus[breakpoint_key][component_key].get(piece_key)
         return None
 
 
-    def get_sprite_frame(self, sprite: str, state: str, frame: int) -> Union[Image.Image, None]:
-        """Return the sprite frame corresponding to a given state and a frame iteration.
+    def get_sprite_frame(
+        self, 
+        sprite: str, 
+        state: str, 
+        frame: int
+    ) -> Union[Image.Image, None]:
+        """Return the _Sprite frame corresponding to a given state and a frame iteration.
 
-        :param sprite: Sprite key for lookup
+        :param sprite: _Sprite_ lookup key
         :type sprite: str
-        :param state: State key for lookup
+        :param state: State lookup key 
         :type state: str
-        :param frame: Frame iteration index for lookup; this variable represents which frame in the state animation the sprite is currently in.
+        :param frame: Frame iteration lookup index; this variable represents which frame in the state animation the sprite is currently in.
         :type frame: int
-        :return: An image cropped to the approprite sprite state frame.
+        :return: An image representing the approprite _Sprite_ state frame.
         :rtype: Union[Image.Image, None]
         """
-        if self.sprites.get(sprite) and self.sprites[sprite].get(state):
+        if self.sprites.get(sprite) and \
+            self.sprites[sprite].get(state):
             return self.sprites[sprite][state][frame]
         return None

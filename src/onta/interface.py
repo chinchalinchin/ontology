@@ -1,4 +1,5 @@
 
+from tkinter import N
 from typing import Union
 import onta.settings as settings
 import onta.device as device
@@ -18,13 +19,26 @@ MIRROR_MARGINS = (0.025, 0.025)
 MIRROR_PADDING = (0.005, 0.005)
 MAX_LIFE = 20
 
-def format_breakpoints(break_points: list) -> list:
+
+def format_breakpoints(
+    break_points: list
+) -> list:
+    """_summary_
+
+    :param break_points: _description_
+    :type break_points: list
+    :return: _description_
+    :rtype: list
+    """
     return [
         (break_point['w'], break_point['h']) 
             for break_point in break_points
     ]
 
-def rotate_dimensions(rotator: dict, direction: str) -> tuple:
+def rotate_dimensions(
+    rotator: dict, 
+    direction: str
+) -> tuple:
     """The width and height of a cap relative to a direction, `vertical` or `horizontal`.
 
     :param cap: _description_
@@ -36,16 +50,43 @@ def rotate_dimensions(rotator: dict, direction: str) -> tuple:
     """
     if rotator['definition'] in ['left', 'right', 'horizontal']:
         if direction =='horizontal':
-            return rotator['size']['w'], rotator['size']['h']
+            return (
+                rotator['size']['w'], 
+                rotator['size']['h']
+            )
         if direction == 'vertical':
-            return rotator['size']['h'], rotator['size']['w']
+            return (
+                rotator['size']['h'], 
+                rotator['size']['w']
+            )
     elif rotator['definition'] in ['up', 'down', 'vertical']:
         if direction == 'horizontal':
-            return rotator['size']['h'], rotator['size']['w']
+            return (
+                rotator['size']['h'], 
+                rotator['size']['w']
+            )
         if direction == 'vertical':
-            return rotator['size']['w'], rotator['size']['h']
+            return (
+                rotator['size']['w'], 
+                rotator['size']['h']
+            )
 
-def find_media_size(player_device: device.Device, sizes: list, breakpoints: list) -> str:
+def find_media_size(
+    player_device: device.Device, 
+    sizes: list, 
+    breakpoints: list
+) -> str:
+    """_summary_
+
+    :param player_device: _description_
+    :type player_device: device.Device
+    :param sizes: _description_
+    :type sizes: list
+    :param breakpoints: _description_
+    :type breakpoints: list
+    :return: _description_
+    :rtype: str
+    """
     dim = player_device.dimensions
     for i, break_point in enumerate(breakpoints):
         if dim[0] < break_point[0] and dim[1] < break_point[1]:
@@ -53,22 +94,91 @@ def find_media_size(player_device: device.Device, sizes: list, breakpoints: list
     return sizes[len(sizes)-1]
 
 class HUD():
+    """
+    ```python
+    ```
+    """
+
     hud_conf = {}
+    """
+    ```python
+    ```
+    """
     styles = {}
+    """
+    ```python
+    ```
+    """
     properties = {}
+    """
+    ```python
+    ```
+    """
     slots = {}
+    """
+    ```python
+    ```
+    """
     mirrors = {}
+    """
+    ```python
+    ```
+    """
     packs = {}
+    """
+    ```python
+    ```
+    """
     equipment = {}
+    """
+    ```python
+    ```
+    """
     sizes = []
+    """
+    ```python
+    ```
+    """
     breakpoints = []
+    """
+    ```python
+    ```
+    """
     slot_rendering_points = []
+    """
+    ```python
+    ```
+    """
     life_rendering_points = []
+    """
+    ```python
+    ```
+    """
     bag_rendering_points = []
+    """
+    ```python
+    ```
+    """
     wallet_rendering_points = []
+    """
+    ```python
+    ```
+    """
     belt_rendering_points = []
+    """
+    ```python
+    ```
+    """
     hud_activated = True
+    """
+    ```python
+    ```
+    """
     media_size = None
+    """
+    ```python
+    ```
+    """
 
 
     def __init__(
@@ -88,7 +198,11 @@ class HUD():
         self._init_equipment(state_ao)
 
 
-    def _init_conf(self, config: conf.Conf, player_device: device.Device) -> None:
+    def _init_conf(
+        self, 
+        config: conf.Conf, 
+        player_device: device.Device
+    ) -> None:
         """Parse and store configuration from yaml files in instance fields.
 
         :param config: _description_
@@ -100,7 +214,9 @@ class HUD():
         self.styles = config['styles']
         self.hud_conf = config['hud']
         self.sizes = config['sizes']
-        self.breakpoints = format_breakpoints(config['breakpoints'])
+        self.breakpoints = format_breakpoints(
+            config['breakpoints']
+        )
         self.properties = config['properties']
         self.media_size = find_media_size(
             player_device, 
@@ -109,7 +225,10 @@ class HUD():
         )
 
 
-    def _init_pack_positions(self, player_device: device.Device):
+    def _init_pack_positions(
+        self, 
+        player_device: device.Device
+    ) -> None:
         """_summary_
 
         :param player_device: _description_
@@ -186,7 +305,10 @@ class HUD():
             
 
         wallet = self.hud_conf[self.media_size]['packs']['wallet']['display']
-        wallet_w, wallet_h = wallet['size']['w'], wallet['size']['h']
+        wallet_w, wallet_h = (
+            wallet['size']['w'], 
+            wallet['size']['h']
+        )
 
         if pack_horizontal_align == 'left':
             self.wallet_rendering_points.append(
@@ -215,7 +337,10 @@ class HUD():
             )
         )
 
-    def _init_mirror_positions(self, player_device: device.Device):
+    def _init_mirror_positions(
+        self, 
+        player_device: device.Device
+    ) -> None:
         """_summary_
 
         :param player_device: _description_
@@ -235,14 +360,15 @@ class HUD():
             self.hud_conf[self.media_size]['mirrors']['life']['unit']['size']['w'],
             self.hud_conf[self.media_size]['mirrors']['life']['unit']['size']['h']
         )
-        x_margins = MIRROR_MARGINS[0]*player_device.dimensions[0]
-        y_margins = MIRROR_MARGINS[1]*player_device.dimensions[1]
+        x_margins, y_margins = (
+            MIRROR_MARGINS[0]*player_device.dimensions[0],
+            MIRROR_MARGINS[1]*player_device.dimensions[1]
+        )
 
         if mirror_styles['alignment']['horizontal'] == 'right':
             x_start = player_device.dimensions[0] - \
                 x_margins - \
                 life_cols * life_dim[0]*(1 + MIRROR_PADDING[0]) 
-
         elif mirror_styles['alignment']['horizontal'] == 'left':
             x_start = x_margins
         else: # center
@@ -261,7 +387,7 @@ class HUD():
 
 
         if mirror_styles['stack'] == 'vertical':
-            (life_rows, life_cols) = (life_cols, life_rows)
+            (life_rows,life_cols) = (life_cols,life_rows)
             
         for row in range(life_rows):
             for col in range(life_cols):
@@ -295,7 +421,10 @@ class HUD():
         self.life_rendering_points.reverse()
             
 
-    def _init_slot_positions(self, player_device: device.Device):
+    def _init_slot_positions(
+        self, 
+        player_device: device.Device
+    ) -> None:
         log.debug('Initializing slot positions on device...', 
             'HUD._init_slot_positions')
 
@@ -437,46 +566,69 @@ class HUD():
                     )
 
     
-    def _init_slots(self, state_ao: state.State):
+    def _init_slots(
+        self, 
+        state_ao: state.State
+    ) -> None:
         dynamic_state = state_ao.get_state('dynamic')
         self.slots = dynamic_state['hero']['slots']
 
 
-    def _init_equipment(self, state_ao: state.State):
+    def _init_equipment(
+        self, 
+        state_ao: state.State
+    ) -> None:
         dynamic_state = state_ao.get_state('dynamic')
         self.equipment = dynamic_state['hero']['equipment']
 
 
-    def _init_packs(self, state_ao: state.State): 
+    def _init_packs(
+        self, 
+        state_ao: state.State
+    ) -> None: 
         dynamic_state = state_ao.get_state('dynamic')
 
 
-    def _init_mirrors(self, state_ao: state.State):
+    def _init_mirrors(
+        self, 
+        state_ao: state.State
+    ) -> None:
         dynamic_state = state_ao.get_state('dynamic')
         self.mirrors = {
             'life': dynamic_state['hero']['health']
         }
         
 
-    def get_cap_directions(self):
+    def get_cap_directions(
+        self
+    ) -> str:
         if self.styles[self.media_size]['slots']['stack'] == 'horizontal':
             return ('left', 'right')
         return ('up', 'down')
 
 
-    def get_buffer_direction(self):
+    def get_buffer_direction(
+        self
+    ) -> str:
         return self.styles[self.media_size]['slots']['stack']
 
 
-    def get_buffer_dimensions(self):
+    def get_buffer_dimensions(
+        self
+    ) -> tuple:
         return rotate_dimensions(self.hud_conf[self.media_size]['slots']['buffer'])
 
 
-    def get_cap_dimensions(self):
+    def get_cap_dimensions(
+        self
+    ) -> tuple:
         return rotate_dimensions(self.hud_conf[self.media_size]['slots']['cap'])
 
 
-    def get_rendering_points(self, interface_key: str) -> Union[list, tuple]:
+    def get_rendering_points(
+        self, 
+        interface_key: str
+    ) -> Union[list, tuple]:
         if interface_key in ['slot', 'slots']:
             return self.slot_rendering_points
         elif interface_key in ['life', 'lives']:
@@ -489,14 +641,18 @@ class HUD():
             return self.belt_rendering_points
 
 
-    def get_slot_dimensions(self) -> tuple:
+    def get_slot_dimensions(
+        self
+    ) -> tuple:
         return (
             self.hud_conf[self.media_size]['slots']['disabled']['size']['w'], 
             self.hud_conf[self.media_size]['slots']['disabled']['size']['h']
         )
 
 
-    def slot_frame_map(self) -> dict:
+    def slot_frame_map(
+        self
+    ) -> dict:
         # TODO: need to calculate disabled slots from hero state
         # TODO: should parameterize key somehow
         return {
@@ -505,7 +661,10 @@ class HUD():
         }
 
 
-    def mirror_frame_map(self, mirror_key: str) -> dict:
+    def mirror_frame_map(
+        self, 
+        mirror_key: str
+    ) -> dict:
         # TODO: need to calculate disabled slots from hero state
         # TODO: should parameterize the key somehow
         if mirror_key == 'life':
@@ -516,7 +675,10 @@ class HUD():
             }
 
 
-    def pack_frame_map(self, pack_key: str) -> dict:
+    def pack_frame_map(
+        self, 
+        pack_key: str
+    ) -> dict:
         packset = self.hud_conf[self.media_size]['packs'][pack_key]
         if pack_key in ['bag', 'bags', 'belt', 'belts']:
             return {
@@ -530,7 +692,10 @@ class HUD():
 
 
 
-    def update(self, game_world: world.World):
+    def update(
+        self, 
+        game_world: world.World
+    ) ->  None:
         self.slots = game_world.hero['slots']
         self.equipment = game_world.hero['equipment']
         self.mirrors = {
@@ -574,7 +739,10 @@ class Menu():
         self._init_buttons(state_ao)
 
 
-    def _init_conf(self, config: conf.Conf) -> None:
+    def _init_conf(
+        self, 
+        config: conf.Conf
+    ) -> None:
         self.menu_conf = config['menu']
         self.sizes = config['sizes']
         self.styles = config['styles']
@@ -586,7 +754,10 @@ class Menu():
         }
 
 
-    def _init_menu_positions(self, player_device: device.Device) -> None:
+    def _init_menu_positions(
+        self, 
+        player_device: device.Device
+    ) -> None:
         menu_margins = (
             self.styles[self.media_size]['menu']['margins']['w'],
             self.styles[self.media_size]['menu']['margins']['h']
@@ -651,7 +822,15 @@ class Menu():
                 self.button_rendering_points.append((x,y))
 
 
-    def _init_buttons(self, state_ao: state.State) -> dict:
+    def _init_buttons(
+        self, 
+        state_ao: state.State
+    ) -> None:
+        """_summary_
+
+        :param state_ao: _description_
+        :type state_ao: state.State
+        """
         # TODO: calculate based on state information
 
         for i, name in enumerate(self.properties['button']['buttons']):
@@ -662,25 +841,56 @@ class Menu():
                 self._enable_button(name)
 
 
-    def _activate_button(self, button_key):
+    def _activate_button(
+        self, 
+        button_key: str
+    ) -> None:
+        """_summary_
+
+        :param button_key: _description_
+        :type button_key: str
+        """
         self.buttons[button_key] = {
-            piece: 'active' for piece in self.properties['button']['pieces']
+            piece: 'active' 
+            for piece in self.properties['button']['pieces']
         }
 
 
-    def _disable_button(self, button_key):
+    def _disable_button(
+        self, 
+        button_key: str
+    ) -> None:
+        """_summary_
+
+        :param button_key: _description_
+        :type button_key: str
+        """
         self.buttons[button_key] = {
-            piece: 'disabled' for piece in self.properties['button']['pieces']
+            piece: 'disabled' 
+            for piece in self.properties['button']['pieces']
         }
 
 
-    def _enable_button(self, button_key):
+    def _enable_button(
+        self, 
+        button_key: str
+    ) -> None:
+        """_summary_
+
+        :param button_key: _description_
+        :type button_key: str
+        """
         self.buttons[button_key] = {
-            piece: 'enabled' for piece in self.properties['button']['pieces']
+            piece: 'enabled' 
+            for piece in self.properties['button']['pieces']
         }
 
 
-    def _increment_active_button(self):
+    def _increment_active_button(
+        self
+    ) -> None:
+        """_summary_
+        """
         ## TODO: skip disabled buttons
         previous_active = self.active_button
         self.active_button -= 1
@@ -692,7 +902,11 @@ class Menu():
         self._activate_button(self.properties['button']['buttons'][self.active_button])
 
 
-    def _decrement_active_button(self):
+    def _decrement_active_button(
+        self
+    ) -> None:
+        """_summary_
+        """
         ## TODO: skip disabled buttons
         previous_active = self.active_button
         self.active_button += 1
@@ -704,11 +918,15 @@ class Menu():
         self._activate_button(self.properties['button']['buttons'][self.active_button])
 
 
-    def execute_active_button(self):
+    def execute_active_button(
+        self
+    ):
         pass
 
 
-    def button_frame_map(self) -> list:
+    def button_frame_map(
+        self
+    ) -> list:
         frame_map = []
         for piece_conf in self.buttons.values():
             for piece_state in piece_conf.values():
@@ -716,7 +934,9 @@ class Menu():
         return frame_map
 
 
-    def button_piece_map(self) -> list:
+    def button_piece_map(
+        self
+    ) -> list:
         piece_map = []
         for piece_conf in self.buttons.values():
             for piece_key in piece_conf.keys():
@@ -724,20 +944,30 @@ class Menu():
         return piece_map
 
 
-    def button_maps(self) -> tuple:
+    def button_maps(
+        self
+    ) -> tuple:
         return (self.button_frame_map(), self.button_piece_map())
 
 
-    def toggle_menu(self) -> None:
+    def toggle_menu(
+        self
+    ) -> None:
         self.menu_activated = not self.menu_activated
 
 
-    def get_rendering_points(self, interface_key) -> list:
+    def get_rendering_points(
+        self, 
+        interface_key: str
+    ) -> list:
         if interface_key in [ 'button', 'buttons' ]:
             return self.button_rendering_points
 
 
-    def update(self, user_input):
+    def update(
+        self, 
+        user_input: dict
+    ) -> None:
         if user_input['n']:
             self._increment_active_button()
         elif user_input['s']:
