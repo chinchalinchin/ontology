@@ -905,7 +905,7 @@ class World():
         return self.platesets[layer][plate_key]['sets'][index]
 
 
-    def get_sprites(self):
+    def get_sprites(self, layer = None):
         """Get all sprites, regardless of layer.
 
         :param spriteset_key: _description_
@@ -918,7 +918,10 @@ class World():
         # this is how the view retrieves the spriteset to be rendered, and why sprites
         # are rendered on all layers, instead of the layer they are on.
         spriteset = { 'hero': self.hero }
-        spriteset.update(self.npcs)
+        if layer is None:
+            spriteset.update(self.npcs)
+        else: 
+            spriteset.update(self.get_npcs(layer))
         return spriteset
 
 

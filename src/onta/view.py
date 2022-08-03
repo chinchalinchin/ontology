@@ -289,7 +289,7 @@ class Renderer():
         game_world: world.World, 
         repository: repo.Repo
     ) -> None:
-        sprites = game_world.get_sprites()
+        sprites = game_world.get_sprites(game_world.layer)
         for sprite_key, sprite in sprites.items():
             sprite_position = (
                 int(sprite['position']['x']), 
