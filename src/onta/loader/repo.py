@@ -25,11 +25,6 @@ class Repo():
     pixies = munch.Munch({})
     nymphs = munch.Munch({})
     sprites = munch.Munch({})
-
-    # todo: base and accent attr
-    sprite_bases = {}
-    sprite_accents = {}
-    
     avatars = munch.Munch({})
     bottles = munch.Munch({})
     mirrors = munch.Munch({})
@@ -53,46 +48,20 @@ class Repo():
         # I am convinced there is an easier way to calculate this using arcosine and arcsine,
         # but i don't feel like thinking about domains and ranges right now...
         if direction == 'left':
-            return (
-                90, 
-                0,
-                180,
-                270
-            )
+            return ( 90, 0, 180, 270 )
         elif direction == 'right':
-            return (
-                270,
-                180,
-                0,
-                90
-            )
+            return ( 270, 180, 0, 90 )
         elif direction == 'up':
-            return (
-                0,
-                90, 
-                270,
-                180
-            )
-        return (
-            180, 
-            270, 
-            90, 
-            0
-        )
+            return ( 0, 90,  270, 180 )
+        return ( 180, 270, 90, 0 )
 
     @staticmethod
     def adjust_buffer_rotation(
         direction: str
     ) -> tuple:
         if direction == 'vertical':
-            return (
-                0, 
-                90
-            )
-        return (
-            90, 
-            0
-        )
+            return (0, 90)
+        return (90, 0)
 
 
     def __init__(
@@ -103,29 +72,12 @@ class Repo():
         .. note::
             No reference is kept to `ontology_path`; it is passed to initialize methods and released.
         """
-        config = conf.Conf(
-            ontology_path
-        )
-        self._init_form_assets(
-            config, 
-            ontology_path
-        )
-        self._init_entity_assets(
-            config, 
-            ontology_path
-        )
-        self._init_apparel_assets(
-            config,
-            ontology_path
-        )
-        self._init_sense_assets(
-            config, 
-            ontology_path
-        )
-        self._init_avatar_assets(
-            config,
-            ontology_path
-        )
+        config = conf.Conf(ontology_path)
+        self._init_form_assets(config, ontology_path)
+        self._init_entity_assets(config, ontology_path)
+        self._init_apparel_assets(config, ontology_path)
+        self._init_sense_assets(config, ontology_path)
+        self._init_avatar_assets(config, ontology_path)
 
 
     def _init_form_assets(
@@ -152,10 +104,7 @@ class Repo():
 
             if asset_type == 'tiles':
                 assets_conf = config.load_tile_configuration()
-                w, h = (
-                    assets_conf.tile.w, 
-                    assets_conf.tile.h
-                )
+                w, h = ( assets_conf.tile.w, assets_conf.tile.h )
             elif asset_type == 'struts':
                 asset_props, assets_conf = config.load_strut_configuration()
             elif asset_type == 'plates':
@@ -165,18 +114,11 @@ class Repo():
                 # need tile dimensions here...but tile dimensions don't exist until world
                 # pulls static state...
                 if asset_type != 'tiles':
-                    w, h = (
-                        asset_conf.size.w, 
-                        asset_conf.size.h
-                    )
+                    w, h = ( asset_conf.size.w, asset_conf.size.h )
 
                 if asset_conf.get('path'):
                     if asset_type == 'plates' and \
-                        asset_props.get(
-                            asset_key
-                        ).get(
-                            'type'
-                        ) in SWITCH_PLATES_TYPES:
+                        asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
                         on_x, on_y = (
                             asset_conf.position.on_position.x, 
                             asset_conf.position.on_position.y
@@ -186,10 +128,7 @@ class Repo():
                             asset_conf.position.off_position.y
                         )
                     else:
-                        x, y = (
-                            asset_conf.position.x, 
-                            asset_conf.position.y
-                        )
+                        x, y = ( asset_conf.position.x, asset_conf.position.y )
 
                     if asset_type == 'tiles':
                         image_path = os.path.join(
@@ -210,9 +149,7 @@ class Repo():
                             asset_conf.path
                         )
 
-                    buffer = gui.open_image(
-                        image_path
-                    )
+                    buffer = gui.open_image( image_path )
 
                     log.debug(
                         f"{asset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
@@ -223,67 +160,29 @@ class Repo():
                         setattr(
                             self.tiles,
                             asset_key,
-                            buffer.crop(
-                                (
-                                    x,
-                                    y,
-                                    w + x,
-                                    h + y
-                                )
-                            )
+                            buffer.crop(( x, y, w + x, h + y ))
                         )
                     elif asset_type == 'struts':
                         setattr(
                             self.struts,
                             asset_key,
-                            buffer.crop(
-                                (
-                                    x,
-                                    y,
-                                    w + x,
-                                    h + y
-                                )
-                            )
+                            buffer.crop(( x, y, w + x, h + y ))
                         )
                     elif asset_type == 'plates':
-                        if asset_props.get(
-                            asset_key
-                        ).get(
-                            'type'
-                        ) in SWITCH_PLATES_TYPES:
+                        if asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
                             setattr(
                                 self.plates,
                                 asset_key,
                                 munch.Munch({
-                                    'on': buffer.crop(
-                                        (
-                                            on_x,
-                                            on_y,
-                                            w + on_x,
-                                            h + on_y)
-                                    ),
-                                    'off': buffer.crop(
-                                        (
-                                            off_x,
-                                            off_y,
-                                            w + off_x,
-                                            h + off_y
-                                        )
-                                    )
+                                    'on': buffer.crop(( on_x, on_y, w + on_x, h + on_y )),
+                                    'off': buffer.crop(( off_x, off_y, w + off_x, h + off_y ))
                                 })
                             )
                         else:
                             setattr(
                                 self.plates,
                                 asset_key,
-                                buffer.crop(
-                                    (
-                                        x,
-                                        y,
-                                        w + x,
-                                        h + y
-                                    )
-                                )
+                                buffer.crop(( x, y, w + x, h + y ))
                             )
                         
                 elif asset_conf.get('channels'):
@@ -293,46 +192,21 @@ class Repo():
                         asset_conf.channels.b,
                         asset_conf.channels.a
                     )
-                    buffer = gui.channels(
-                        (
-                            w,
-                            h
-                        ),
-                        channels
-                    )
+                    buffer = gui.channels(( w, h ), channels)
 
                     if asset_type == 'tiles':
-                        setattr(
-                            self.tiles,
-                            asset_key,
-                            buffer
-                        )
+                        setattr(self.tiles, asset_key, buffer)
                     elif asset_type == 'struts':
-                        setattr(
-                            self.struts,
-                            asset_key,
-                            buffer
-                        )
+                        setattr(self.struts, asset_key, buffer)
                     elif asset_type == 'plates':
-                        if asset_props.get(
-                            asset_key
-                        ).get(
-                            'type'
-                        ) in SWITCH_PLATES_TYPES:
+                        if asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
                             setattr(
                                 self.plates,
                                 asset_key,
-                                munch.Munch({
-                                    'on': buffer,
-                                    'off': buffer
-                                })
+                                munch.Munch({ 'on': buffer, 'off': buffer})
                             )
                         else:
-                            setattr(
-                                self.plates,
-                                asset_key,
-                                buffer
-                            )
+                            setattr(self.plates, asset_key, buffer)
  
 
     def _init_sense_assets(
@@ -350,60 +224,31 @@ class Repo():
         .. note::
             A _Slot_ is defined in a single direction, but used in multiple directions. When styles are applied the engine will need to be aware which direction the definition is in, so it can rotate the _Slot_ component to its appropriate position based on the declared style. In other words, _Slot_\s are a pain.
         """
-        log.debug(
-            f'Initializing sense assets...', 
-            'Repo._init_sense_assets'
-        )
+        log.debug(f'Initializing sense assets...', 'Repo._init_sense_assets')
 
         interface_conf = config.load_sense_configuration()
 
         for size in interface_conf.sizes:
 
             if not self.slots.get(size):
-                setattr(
-                    self.slots,
-                    size,
-                    munch.Munch({})
-                )
+                setattr(self.slots, size, munch.Munch({}))
             if not self.mirrors.get(size):
-                setattr(
-                    self.mirrors,
-                    size,
-                    munch.Munch({})
-                )
+                setattr(self.mirrors, size, munch.Munch({}))
             if not self.packs.get(size):
-                setattr(
-                    self.packs,
-                    size,
-                    munch.Munch({})
-                )
+                setattr(self.packs, size, munch.Munch({}))
             if not self.menus.get(size):
-                setattr(
-                    self.menus,
-                    size,
-                    munch.Munch({})
-                )
-
-            slotset = interface_conf.hud.get(
-                size
-            ).slots
+                setattr(self.menus, size, munch.Munch({}))
             
             ## SLOT INITIALIZATION
             #   NOTE: for (disabled, {slot}), (enabled, {slot}), (active, {slot}), 
             #               (cap, {slot}), (buffer, {slot})
             #   NOTE: slots are unique and have to be treated separately
-            for slot_key, slot in slotset.items():
+            for slot_key, slot in interface_conf.hud.get(size).slots.items():
                 if not slot or not slot.get('path'):
                     continue
 
-                w, h = (
-                    slot.size.w, 
-                    slot.size.h
-                )   
-                x, y = (
-                    slot.position.x, 
-                    slot.position.y
-                )
+                w, h = ( slot.size.w, slot.size.h )   
+                x, y = ( slot.position.x, slot.position.y)
 
                 buffer = gui.open_image(
                     os.path.join(
@@ -418,17 +263,8 @@ class Repo():
                     'Repo._init_interface_assets'
                 )
 
-                slot_conf = interface_conf.hud.get(
-                    size
-                ).slots
-                buffer = buffer.crop(
-                    (
-                        x,
-                        y,
-                        w + x,
-                        h + y
-                    )
-                )
+                slot_conf = interface_conf.hud.get(size).slots
+                buffer = buffer.crop(( x, y, w + x, h + y ))
 
                 if slot_key == 'cap':
                     adjust = \
@@ -436,9 +272,7 @@ class Repo():
                             slot_conf.cap.definition
                         )
                     setattr(
-                        self.slots.get(
-                            size
-                        ),
+                        self.slots.get(size),
                         slot_key,
                         munch.Munch({
                             'down': buffer.rotate(
@@ -465,9 +299,7 @@ class Repo():
                             slot_conf.buffer.definition 
                         )
                     setattr(
-                        self.slots.get(
-                            size
-                        ),
+                        self.slots.get(size),
                         slot_key,
                         munch.Munch({
                             'vertical': buffer.rotate(
@@ -480,42 +312,23 @@ class Repo():
                             )
                         })
                     )
-                elif slot_key in [
-                    'disabled', 
-                    'enabled', 
-                    'active'
-                ]:
-                    setattr(
-                        self.slots.get(
-                            size
-                        ),
-                        slot_key,
-                        buffer
-                    )
+                elif slot_key in [ 'disabled',  'enabled', 'active' ]:
+                    setattr(self.slots.get(size), slot_key, buffer)
 
             ########################
             for set_type in ['mirror', 'pack', 'button']:
                 if set_type == 'mirror':
-                    iter_set = interface_conf.hud.get(
-                        size
-                    ).mirrors
+                    iter_set = interface_conf.hud.get(size).mirrors
                 elif set_type == 'pack':
-                    iter_set = interface_conf.hud.get(
-                        size
-                    ).packs
+                    iter_set = interface_conf.hud.get(size).packs
                 elif set_type == 'button':
-                    iter_set = interface_conf.menu.get(
-                        size
-                    ).button
+                    iter_set = interface_conf.menu.get(size).button
+
                 for set_key, set_conf in iter_set.items().copy():
                     if not set_conf:
                         continue
 
-                    if not iter_set.get(
-                        size
-                    ).get(
-                        set_key
-                    ):
+                    if not iter_set.get(size).get(set_key):
                         setattr(
                             self.mirrors.get(size),
                             set_key,
@@ -524,19 +337,11 @@ class Repo():
                     
                     # for (unit, fill), (empty, fill)
                     for component_key, component in set_conf.items():
-                        if not component.get(
-                            'path'
-                        ):
+                        if not component.get('path'):
                             continue
 
-                        x,y = (
-                            component.position.x, 
-                            component.position.y
-                        )
-                        w, h = (
-                            component.size.w, 
-                            component.size.h
-                        )
+                        ( x, y ) = ( component.position.x, component.position.y)
+                        ( w, h ) = ( component.size.w, component.size.h )
                         
                         buffer = gui.open_image(
                             os.path.join(
@@ -547,20 +352,9 @@ class Repo():
                         )
 
                         setattr(
-                            iter_set.get(
-                                size
-                            ).get(
-                                set_key
-                            ),
+                            iter_set.get(size).get(set_key),
                             component_key,
-                            buffer.crop(
-                                (
-                                    x,
-                                    y,
-                                    w + x,
-                                    h + y
-                                )
-                            )
+                            buffer.crop(( x, y, w + x, h + y))
                         )
 
 
@@ -572,47 +366,26 @@ class Repo():
         avatar_conf = config.load_avatar_configuration()
 
         for avatarset_key in AVATAR_TYPES:
-            setattr(
-                self.avatars,
-                avatarset_key,
-                munch.Munch({})
-            )
+            setattr(self.avatars, avatarset_key, munch.Munch({}))
 
-            for avatar_key, avatar in avatar_conf.avatars.get(
-                avatarset_key
-            ).items():
-                if not avatar or \
-                    not avatar.get('path'):
+            for avatar_key, avatar in avatar_conf.avatars.get(avatarset_key).items():
+                if not avatar or not avatar.get('path'):
                     continue
 
-                x,y = (
-                    avatar.position.x,
-                    avatar.position.y
-                )
-                w,h = (
-                    avatar.size.w,
-                    avatar.size.h
-                )
-                image_path = os.path.join(
-                    ontology_path,
-                    *settings.AVATAR_PATH,
-                    avatar.path
-                )
+                x,y = ( avatar.position.x, avatar.position.y )
+                w,h = ( avatar.size.w, avatar.size.h )
                 buffer = gui.open_image(
-                    image_path
+                    os.path.join(
+                        ontology_path,
+                        *settings.AVATAR_PATH,
+                        avatar.path
+                    )
                 )
                 setattr(
-                    self.avatars.get(
-                        avatarset_key
-                    ),
+                    self.avatars.get(avatarset_key),
                     avatar_key,
                     buffer.crop(
-                        (
-                            x,
-                            y,
-                            w + x,
-                            h + y
-                        )
+                        ( x, y, w + x, h + y )
                     )
                 )
 
@@ -627,67 +400,52 @@ class Repo():
         config: conf.Conf,
         ontology_path: str
     ) -> None:
-        apparel_conf = \
-            config.load_apparel_configuration()
-        states_conf, _, _, sprite_dim = \
-            config.load_sprite_configuration()
+
+
+        apparel_conf = config.load_apparel_configuration()
+        states_conf, _, _, sprite_dim = config.load_sprite_configuration()
 
         for set_key, set_conf in apparel_conf.items():
-            setattr(
-                self.apparel,
-                set_key,
-                munch.Munch({})
-            )
+            setattr(self.apparel, set_key, munch.Munch({}))
 
             for apparel_key, apparel in set_conf.items():
                 setattr(
-                    self.apparel.get(
-                        set_key
-                    ),
+                    self.apparel.get(set_key),
                     apparel_key,
                     munch.Munch({})
                 )
 
                 sheets = []
                 for sheet in apparel.sheets:
-                    sheet_img = gui.open_image(
-                        os.path.join(
-                            ontology_path, 
-                            *settings.APPAREL_PATH, 
-                            sheet
+                    sheets.append(
+                        gui.open_image(
+                            os.path.join(
+                                ontology_path, 
+                                *settings.APPAREL_PATH, 
+                                sheet
+                            )
                         )
                     )
-                    sheets.append(sheet_img)
 
                 if apparel.animate_states == 'all':
-                    animate_states = list(
-                        states_conf.animate_states.keys()
-                    )
+                    animate_states = list(states_conf.animate_states.keys())
                 else:
                     animate_states = apparel.animate_states
 
                 for equip_state in animate_states:
-                    equip_state_conf = states_conf.animate_states.get(
-                        equip_state
-                    )
+                    equip_state_conf = states_conf.animate_states.get(equip_state)
                     equip_state_row = equip_state_conf.row
                     equip_state_frames = equip_state_conf.frames
 
                     start_y = equip_state_row * sprite_dim[1]
 
                     setattr(
-                        self.apparel.get(
-                            set_key
-                        ).get(
-                            apparel_key
-                        ),
+                        self.apparel.get(set_key).get(apparel_key),
                         equip_state,
                         []
                     )
 
-                    for i in range(
-                        equip_state_frames
-                    ):
+                    for i in range(equip_state_frames):
                         start_x = i*sprite_dim[0]
                         crop_box = (
                             start_x, 
@@ -696,36 +454,15 @@ class Repo():
                             start_y + sprite_dim[1]
                         )
                         
-                        crop_sheets = [
-                            sheet.crop(
-                                crop_box
-                            ) for sheet 
-                            in sheets
-                        ]
+                        crop_sheets = [ sheet.crop(crop_box) for sheet in sheets ]
                     
-                        equip_state_frame = gui.new_image(
-                            sprite_dim
-                        )
+                        equip_state_frame = gui.new_image(sprite_dim)
 
                         for sheet in crop_sheets:
-                            equip_state_frame.paste(
-                                sheet, 
-                                (
-                                    0,
-                                    0
-                                ), 
-                                sheet
-                            )
+                            equip_state_frame.paste(sheet, ( 0,0 ), sheet)
 
-                        self.apparel.get(
-                            set_key
-                        ).get(
-                            apparel_key
-                        ).get(
-                            equip_state
-                        ).append(
-                            equip_state_frame
-                        ) 
+                        self.apparel.get(set_key).get(apparel_key).get(equip_state
+                        ).append(equip_state_frame) 
 
     def _init_entity_assets(
         self, 
@@ -739,28 +476,12 @@ class Repo():
 
         states_conf, _, sheets_conf, sprite_dim = config.load_sprite_configuration()
 
-        setattr(
-            self.sprites,
-            'base',
-            munch.Munch({})
-        )
-        setattr(
-            self.sprites,
-            'accents',
-            munch.Munch({})
-        )
+        setattr(self.sprites, 'base', munch.Munch({}))
+        setattr(self.sprites, 'accents', munch.Munch({}))
 
         for sprite_key, sheet_conf in sheets_conf.items():
-            setattr(
-                self.sprites.base,
-                sprite_key,
-                munch.Munch({})
-            )
-            setattr(
-                self.sprite.accents,
-                sprite_key,
-                munch.Munch({})
-            )
+            setattr(self.sprites.base, sprite_key, munch.Munch({}))
+            setattr(self.sprite.accents, sprite_key, munch.Munch({}))
             accent_sheets = []
 
             base_img = gui.open_image(
@@ -773,24 +494,19 @@ class Repo():
 
             if sheet_conf.get('accents'):
                 for sheet in sheet_conf.accents:
-                    sheet_img = gui.open_image(
-                        os.path.join(
-                            ontology_path, 
-                            *settings.SPRITE_ACCENT_PATH, 
-                            sheet
-                        )
-                    )
                     accent_sheets.append(
-                        sheet_img
+                        gui.open_image(
+                            os.path.join(
+                                ontology_path, 
+                                *settings.SPRITE_ACCENT_PATH, 
+                                sheet
+                            )
+                        )
                     )
                 
             frames = 0
             for state_key, state_conf in states_conf.animate_states.items():
-                state_row, state_frames = (
-                    state_conf.row, 
-                    state_conf.frames
-                )
-                frames += state_frames
+                frames += state_conf.frames
 
                 setattr(
                     self.sprites.base.get(sprite_key),
@@ -802,9 +518,9 @@ class Repo():
                     state_key,
                     []
                 )
-                start_y = state_row * sprite_dim[1]
+                start_y = state_conf.row * sprite_dim[1]
 
-                for i in range(state_frames):
+                for i in range(state_conf.frames):
                     start_x = i*sprite_dim[0]
                     crop_box = (
                         start_x, 
@@ -813,27 +529,16 @@ class Repo():
                         start_y + sprite_dim[1]
                     )
 
-                    sprite_base_frame = base_img.crop(
-                        crop_box
-                    )
+                    sprite_base_frame = base_img.crop(crop_box)
                     
                     accent_crop_sheets = [ 
-                        sheet.crop(
-                            crop_box
-                        ) for sheet 
-                        in accent_sheets 
+                        sheet.crop(crop_box) for sheet in accent_sheets 
                     ]
                 
-                    sprite_accent_frame = gui.new_image(
-                        sprite_dim
-                    )
+                    sprite_accent_frame = gui.new_image(sprite_dim)
 
                     for sheet in accent_crop_sheets:
-                        sprite_accent_frame.paste(
-                            sheet, 
-                            (0,0), 
-                            sheet
-                        )
+                        sprite_accent_frame.paste(sheet, ( 0,0 ), sheet)
 
                     self.sprite.base.get(sprite_key).get(state_key).append(
                         sprite_base_frame
@@ -876,7 +581,7 @@ class Repo():
         :rtype: Union[Image.Image, None]
         """
         if self.avatars.get(avatar_set):
-            return self.avatars[avatar_set].get(component_key)
+            return self.avatars.get(avatar_set).get(component_key)
         return None
     
 
@@ -895,7 +600,7 @@ class Repo():
         :rtype: Union[Image.Image, None]
         """
         if self.slots.get(breakpoint_key):
-            return self.slots[breakpoint_key].get(component_key)
+            return self.slots.get(breakpoint_key).get(component_key)
         return None
         
 
@@ -917,8 +622,8 @@ class Repo():
         :rtype: Union[Image.Image, None]
         """
         if self.packs.get(breakpoint_key) and \
-            self.packs[breakpoint_key].get(component_key):
-            return self.packs[breakpoint_key][component_key].get(piece_key)
+            self.packs.get(breakpoint_key).get(component_key):
+            return self.packs.get(breakpoint_key).get(component_key).get(piece_key)
         return None
 
 
@@ -939,8 +644,9 @@ class Repo():
         :return: _description_
         :rtype: Union[Image.Image, None]
         """
-        if self.mirrors.get(breakpoint_key) and self.mirrors[breakpoint_key].get(component_key):
-            return self.mirrors[breakpoint_key][component_key].get(frame_key)
+        if self.mirrors.get(breakpoint_key) and \
+            self.mirrors.get(breakpoint_key).get(component_key):
+            return self.mirrors.get(breakpoint_key).get(component_key).get(frame_key)
         return None
 
 
@@ -961,8 +667,9 @@ class Repo():
         :return: _description_
         :rtype: Union[Image.Image, None]
         """
-        if self.menus.get(breakpoint_key) and self.menus[breakpoint_key].get(component_key):
-            return self.menus[breakpoint_key][component_key].get(piece_key)
+        if self.menus.get(breakpoint_key) and \
+            self.menus.get(breakpoint_key).get(component_key):
+            return self.menus.get(breakpoint_key).get(component_key).get(piece_key)
         return None
 
 
@@ -983,13 +690,11 @@ class Repo():
         :return: An image representing the appropriate _Sprite_ state frame, or `None` if frame doesn't exist.
         :rtype: Union[Image.Image, None]
         """
-        if (
-                self.sprites.base.get(sprite_key) and \
-                    self.sprites.accents.get(sprite_key)
-            ) and (
-                self.sprites.base.get(sprite_key).get(state_key) and \
-                    self.sprites.accents(sprite_key).get(state_key)
-            ):
+        if self.sprites.base.get(sprite_key) and \
+            self.sprites.accents.get(sprite_key) and \
+            self.sprites.base.get(sprite_key).get(state_key) and \
+            self.sprites.accents(sprite_key).get(state_key):
+
                 # TODO: check if frame index is less than state frames?
                 return (
                     self.sprites.base.get(sprite_key).get(state_key)[frame_index],
@@ -1012,8 +717,8 @@ class Repo():
         frame_index: int
     ) -> Union[Image.Image, None]:
         if self.apparel.get(set_key) and \
-            self.apparel[set_key].get(apparel_key) and \
-            self.apparel[set_key][apparel_key].get(state_key):
+            self.apparel.get(set_key).get(apparel_key) and \
+            self.apparel.get(set_key).get(apparel_key).get(state_key):
             # TODO: check if frame index is less than state frames?
             return self.apparel[set_key][apparel_key][state_key][frame_index]
         pass
