@@ -12,7 +12,7 @@ import onta.view as view
 import onta.control as control
 import onta.settings as settings
 import onta.world as world
-import onta.load.repo as repo
+import onta.loader.repo as repo
 import onta.util.logger as logger
 import onta.util.helper as helper
 import onta.util.cli as cli

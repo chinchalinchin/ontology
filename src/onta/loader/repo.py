@@ -3,7 +3,7 @@ from typing import Union
 from PIL import Image
 
 import onta.settings as settings
-import onta.load.conf as conf
+import onta.loader.conf as conf
 import onta.util.logger as logger
 import onta.util.gui as gui
 
@@ -24,6 +24,8 @@ class Repo():
     pixies = {}
     nymphs = {}
     sprites = {}
+    # sprite_bases = {}
+    # sprite_defaults = {}
     avatars = {}
     bottles = {}
     mirrors = {}

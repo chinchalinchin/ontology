@@ -1,4 +1,4 @@
-import onta.load.repo as repo
+import onta.loader.repo as repo
 import onta.tests.constants as constants
 import pytest
 

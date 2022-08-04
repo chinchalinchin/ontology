@@ -23,13 +23,20 @@ STATE_PATH = [
 ]
 """Array containing path parts relative to ontology directory leading to state information directory"""
 
-SPRITE_PATH = [ 
+SPRITE_BASE_PATH = [ 
     'assets', 
     'entities', 
-    'sprites' 
+    'sprites',
+    'bases'
 ]
 """Array containing path parts relative to ontology directory leading to spritesheets directory"""
 
+SPRITE_ACCENT_PATH = [
+    'assets',
+    'entities',
+    'sprites',
+    'accents'
+]
 TILE_PATH = [ 
     'assets', 
     'forms', 

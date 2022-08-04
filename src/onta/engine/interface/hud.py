@@ -3,8 +3,8 @@ from typing import Union
 import onta.settings as settings
 import onta.device as device
 import onta.world as world
-import onta.load.conf as conf
-import onta.load.state as state
+import onta.loader.conf as conf
+import onta.loader.state as state
 import onta.util.logger as logger
 import onta.engine.interface.static as static
 

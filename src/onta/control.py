@@ -3,7 +3,7 @@ from re import A
 from pynput import keyboard
 
 import onta.settings as settings
-import onta.load.conf as conf
+import onta.loader.conf as conf
 import onta.util.logger as logger
 
 log = logger.Logger('onta.control', settings.LOG_LEVEL)

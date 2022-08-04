@@ -152,13 +152,12 @@ state:
 
 
 hero:
-    # should look like this:
+    ## should look like this:
     #   sheets:
-    #       base: 
-    #       hair:
-    #       pants:
-    #       shirt:
-    #       extras:
+    #       base: str
+    #       default:
+    #           - str
+    #           # ..
     sheets:
         -   human_male_ivory.png
         -   head_hair_messy_red.png

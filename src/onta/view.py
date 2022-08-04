@@ -10,7 +10,7 @@ import onta.world as world
 import onta.engine.interface.hud as hud
 import onta.engine.interface.menu as menu
 import onta.engine.calculator as calculator
-import onta.load.repo as repo
+import onta.loader.repo as repo
 import onta.util.logger as logger
 import onta.util.gui as gui
 

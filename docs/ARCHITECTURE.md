@@ -35,7 +35,7 @@ Much like the _View_ and the _World_ modules, the _HUD_ and the _World_ modules 
 See [Engine](./ENGINE.md) for more information on the different components of this module.
 
 ### onta.
-## onta.load Package
+## onta.loader Package
 
 This is the package through which all physical files pass from the filesystem into the game memory. If the game needs access to any asset, configuration or state data, it will make a call to one of the functions in this module.
 

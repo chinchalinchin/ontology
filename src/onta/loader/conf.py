@@ -5,7 +5,7 @@ import onta.settings as settings
 
 class Conf():
     """
-    Configuration is wrapped in the `onta.load.conf.Conf` class so a custom _ontology_ at a different location than the default location can be passed into the engine. This object can be a constructed with a path to that _ontology_ to override the preloaded configuration sets.
+    Configuration is wrapped in the `onta.loader.conf.Conf` class so a custom _ontology_ at a different location than the default location can be passed into the engine. This object can be a constructed with a path to that _ontology_ to override the preloaded configuration sets.
     """
 
     conf_dir = None
@@ -26,7 +26,7 @@ class Conf():
 
     def __init__(self, data_dir = settings.DEFAULT_DIR):
         """
-        Initializes a `onta.load.conf.Conf` object with the user provided _ontology_ path. If not path is provided, the path defaults to `onta.settings.DEFAULT_DIR`, i.e. the installation's tutorial _ontology_.
+        Initializes a `onta.loader.conf.Conf` object with the user provided _ontology_ path. If not path is provided, the path defaults to `onta.settings.DEFAULT_DIR`, i.e. the installation's tutorial _ontology_.
         """
         self.conf_dir = os.path.join(data_dir, *settings.CONF_PATH)
     
@@ -162,7 +162,7 @@ class Conf():
         :rtype: tuple
 
         .. note:
-            The _Sprite_ configuration is split into the different sections used by different components of the engine, so that irrelevant information isn't passed to components that do not require it. The `onta.world.World` class uses the property and state information to manage _Sprite_ states. The `onta.load.repo.Repo` class uses the state and sheet information to load the spritesheets into memory.
+            The _Sprite_ configuration is split into the different sections used by different components of the engine, so that irrelevant information isn't passed to components that do not require it. The `onta.world.World` class uses the property and state information to manage _Sprite_ states. The `onta.loader.repo.Repo` class uses the state and sheet information to load the spritesheets into memory.
         """    
         if not self.sprite_state_conf or not self.sprite_property_conf \
             or not self.sprite_sheet_conf or not self.sprite_size:
@@ -204,9 +204,9 @@ class Conf():
         :rtype: tuple
 
         .. note::
-            The _Strut_ configuration is split into the different sections used by different components of the engine, so that irrelevant information isn't passed to components that do not require it. The `onta.world.World` class use the property information to determine how _Strut_\s react to _Sprite_ states. The `onta.load.repo.Repo` class uses the sheet infromation to load the strutsheet into memory.
+            The _Strut_ configuration is split into the different sections used by different components of the engine, so that irrelevant information isn't passed to components that do not require it. The `onta.world.World` class use the property information to determine how _Strut_\s react to _Sprite_ states. The `onta.loader.repo.Repo` class uses the sheet infromation to load the strutsheet into memory.
         .. note::
-            Both `onta.world.World` and `onta.load.repo.Repo` require the dimensions of a _Strut_, e.g. its (_w_, _h_) tuple, for calculations. Rather than dispensing with the separation between sheet and property configuration, this value is added to both configuration dictionary. A little bit of redundancy can be a good thing...
+            Both `onta.world.World` and `onta.loader.repo.Repo` require the dimensions of a _Strut_, e.g. its (_w_, _h_) tuple, for calculations. Rather than dispensing with the separation between sheet and property configuration, this value is added to both configuration dictionary. A little bit of redundancy can be a good thing...
         """
         if not self.strut_property_conf or not self.strut_sheet_conf:
             struts_conf = self._form_configuration('struts')
