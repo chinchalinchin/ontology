@@ -11,7 +11,7 @@ hero:
     thrust: spear
     slash: sword
     shoot: bow
-  armor: bronze
+  armor: plate
   packs:
     bag: shrapnel_bomb
     belt: arrow

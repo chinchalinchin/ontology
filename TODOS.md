@@ -116,3 +116,5 @@ THAT PREVIOUS ONE FIRST
 
 
 - conf directory is parameterized, parameterize asset directory too. will probably require wrapping in object.
+
+- hair should be hidden if wearing an armor set. will need to adjust sprite sheet config to specify which layer of sheet goes where.
