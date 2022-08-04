@@ -1,4 +1,8 @@
 from typing import Union
+
+import munch
+
+
 import onta.settings as settings
 import onta.engine.calculator as calculator
 import onta.util.logger as logger
@@ -62,6 +66,33 @@ def calculate_set_hitbox(
         return hitbox
     return None
 
+
+def calculate_sprite_hitbox(
+        sprite: munch.Munch, 
+        hitbox_key: str,
+        sprite_props: munch.Munch
+    ) -> Union[tuple, None]:
+        """_summary_
+
+        :param sprite_key: _description_
+        :type sprite_key: str
+        :param hitbox_key: _description_
+        :type hitbox_key: str
+        :return: _description_
+        :rtype: Union[tuple, None]
+
+        .. note::
+            A sprite's hitbox dimensions are fixed, but the actual hitbox coordinates depend on the position of the sprite. This method must be called each iteration of the world loop, so the newest coordinates of the hitbox are retrieved.
+        """
+        
+        raw_hitbox = sprite_props.hitboxes.get(hitbox_key)
+        calc_hitbox = (
+            sprite.position.x + raw_hitbox.offset.x,
+            sprite.position.y + raw_hitbox.offset.y,
+            raw_hitbox.size.w,
+            raw_hitbox.size.h
+        )
+        return calc_hitbox
 
 def calculate_attackbox(
 

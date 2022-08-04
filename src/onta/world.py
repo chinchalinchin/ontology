@@ -1,4 +1,8 @@
 from typing import Union
+
+import munch
+
+
 import onta.settings as settings
 import onta.loader.state as state
 import onta.loader.conf as conf
@@ -20,37 +24,46 @@ STRUT_META =  [
     'hitboxes'
 ]
 
+FORM_TYPES = [ 
+    'tiles', 
+    'struts', 
+    'plates'
+]
+ENTITY_TYPES = [
+    'sprites'
+]
+
 class World():
     """
     """
 
     # CONFIGURATION FIELDS
-    composite_conf = {}
+    composite_conf = None
     """
     ```python
-    self.composite_conf = {
+    self.composite_conf = munch.Munch({
 
-    }
+    })
     ```
     """
-    sprite_state_conf = {}
+    sprite_state_conf = None
     """
     Holds sprite state configuration information.
 
     ```python
-    self.sprite_state_conf = {
+    self.sprite_state_conf = munch.Munch({
         'sprite_1': {
             'state_1': state_1_frames, # int
             'state_2': state_2_frames, # int
             # ..
         },
-    }
+    })
     ```
     """
-    apparel_state_conf = {}
+    apparel_state_conf = None
     """
     ```python
-    self.apparel_state_conf = {
+    self.apparel_state_conf = munch.Munch({
         'apparel_1': {
             'animate_states': [
                 'state_1',
@@ -59,28 +72,33 @@ class World():
             ]
         },
         # ...
-    }
+    })
     ```
     """
     plate_properties = {}
     """
+    ```python
+    self.plate_properties = munch.Munch({
+
+    })
+    ```
     """
     strut_properties = {}
     """
     Holds strut property configuration information
     ```python
-    self.strut_properties = {
-            'strut_1': {
-                'hitbox_1': hitbox_dim, # tuple
-                # ...
-            }
+    self.strut_properties = munch.Munch({
+        'strut_1': {
+            'hitbox_1': hitbox_dim, # tuple
+            # ...
         }
+    })
     ```
     """
     sprite_properties = {}
     """
     ```python
-    self.sprite_properties = {
+    self.sprite_properties = munch.Munch({
         'sprite_1': {
             'walk': walk, # int,
             'run': run, # int,
@@ -90,14 +108,14 @@ class World():
             'blocking_states': [ block_state_1, block_state_2, ], # list(str)
             # ...
         },
-    }
+    })
     ```
     """
     # FORM SET FIELDS
     tilesets = {}
     """
     ```python
-    self.tilesets = {
+    self.tilesets = munch.Munch({
         'layer_1': {
             'tile_1': {
                 'sets': [
@@ -112,13 +130,13 @@ class World():
                 ]
             },
         }
-    }
+    })
     ```
     """
     strutsets = {}
     """
     ```python
-    self.strutsets = {
+    self.strutsets = munch.Munch({
         'layer_1': {
             'strut_1': {
                 'sets': [
@@ -135,13 +153,13 @@ class World():
                 ]
             },
         },
-    }
+    })
     ```
     """
     platesets = {}
     """
     ```python
-    self.platesets = {
+    self.platesets = munch.Munch({
         'layer_1': {
             'strut_1': {
                 'sets': [
@@ -158,13 +176,13 @@ class World():
                 ]
             },
         },
-    }
+    })
     ```
     """
     compositions = {}
     """
     ```python
-    self.compositions = {
+    self.compositions = munch.Munch({
         'compose_1': {
             'tiles': {
                 'tile_1': {
@@ -198,27 +216,27 @@ class World():
                 # ...
             },
         }
-    }
+    })
     ```
     """
     # SPRITE SET FIELDS
     hero = {}
     """
     ```python
-    self.hero = {
+    self.hero = munch.Munch({
         'position': {
             'x': x, # float,
             'y': y, # float
         },
         'state': state, # str,
         'frame': frame, # int
-    }
+    })
     ```
     """
     npcs = {}
     """
     ```python
-    self.npcs = {
+    self.npcs = munch.Munch({
         'npc_1': {
             'position: {
                 'x': x, # float
@@ -227,7 +245,7 @@ class World():
             'state': state, # string
             'frame': frame, # int
         },
-    }
+    })
     ```
     """
     # OTHER FIELDS
@@ -308,8 +326,8 @@ class World():
         self.composite_conf = config.load_composite_configuration()
         tile_conf = config.load_tile_configuration()
         self.tile_dimensions = (
-            tile_conf['tile']['w'], 
-            tile_conf['tile']['h']
+            tile_conf.tile.w, 
+            tile_conf.tile.h
         )
 
 
@@ -325,11 +343,11 @@ class World():
 
         self.dimensions = calculator.scale(
             (
-                static_conf['world']['size']['w'], 
-                static_conf['world']['size']['h']
+                static_conf.world.size.w, 
+                static_conf.world.size.h
             ),
             self.tile_dimensions,
-            static_conf['world']['size']['units']
+            static_conf.world.size.units
         )
 
         for layer_key, layer_conf in static_conf['layers'].items():
@@ -380,35 +398,58 @@ class World():
                 for set_key, set_conf in iter_set.items():
                     log.debug(f'Initializing {static_set} {set_key} hitboxes', 'World._init_hitboxes')
 
-                    for i, set_conf in enumerate(set_conf['sets']):
+                    for i, set_conf in enumerate(set_conf.sets):
 
                         set_hitbox = collisions.calculate_set_hitbox(
-                            props[set_key]['hitbox'], 
+                            props.getattr(set_key).hitbox, 
                             set_conf, 
                             self.tile_dimensions
                         )
                         if static_set == 'strutset' :
-                            self.strutsets[layer][set_key]['sets'][i]['hitbox'] = set_hitbox
+                            self.strutsets.get(layer).get(set_key).sets[i].hitbox = \
+                                set_hitbox
                         elif static_set == 'plateset':
-                            self.platesets[layer][set_key]['sets'][i]['hitbox'] = set_hitbox
+                            self.platesets.get(layer).get(set_key).sets[i].hitbox = \
+                                set_hitbox
             
-            # condense all the hitboxes into a list and save to strutsets,
-            # to avoid repeated internal calls to `_strut_hitboxes`
-            # however, this now means these dictionaries have to have these 
-            # keys filtered out if the idea is to iterate through them.
-            # therefore, can no longer directly touch these properties, but
-            # must access them through get methods.
             world_bounds = [
                 (0, 0, self.dimensions[0], 1), 
                 (0, 0, 1, self.dimensions[1]),
                 (self.dimensions[0], 0, 1, self.dimensions[1]),
                 (0, self.dimensions[1], self.dimensions[0], 1)
             ]
-            self.strutsets[layer]['hitboxes'] = world_bounds + self._strut_hitboxes(layer)
-            self.platesets[layer]['doors'] = self.get_typed_platesets(layer, 'door')
-            self.platesets[layer]['containers'] = self.get_typed_platesets(layer, 'container')
-            self.platesets[layer]['pressures'] = self.get_typed_platesets(layer, 'pressure')
-            self.platesets[layer]['masses'] = self.get_typed_platesets(layer, 'mass')
+            
+            if self.strutsets.get(layer) is None:
+                setattr(
+                    self.strutsets,
+                    layer,
+                    munch.Munch({})
+                )
+
+            self.strutsets.get(layer).hitboxes = \
+                world_bounds + self._strut_hitboxes(layer)
+
+            if self.platesets.get(layer) is None:
+                setattr(
+                    self.platesets,
+                    layer,
+                    munch.Munch({})
+                )
+
+            self.platesets.get(layer).doors = \
+                self.get_typed_platesets(
+                    layer, 
+                    'door'
+                )
+            self.platesets.get(layer).containers = self.get_typed_platesets(
+                layer, 
+                'container'
+            )
+            self.platesets.get(layer).pressures = self.get_typed_platesets(
+                layer, 
+                'pressure'
+            )
+            self.platesets.get(layer).masses = self.get_typed_platesets(layer, 'mass')
 
 
     def _generate_switch_map(
@@ -453,9 +494,9 @@ class World():
         """
         log.debug(f'Initalizing dynamic world state...', 'World._init_dynamic_state')
         dynamic_state = state_ao.get_state('dynamic')
-        self.hero = dynamic_state['hero']
-        self.layer = dynamic_state['hero']['layer']
-        self.plot = dynamic_state['hero']['plot']
+        self.hero = dynamic_state.hero
+        self.layer = dynamic_state.hero.layer
+        self.plot = dynamic_state.hero.plot
         self.npcs = dynamic_state.get('npcs') if dynamic_state.get('npcs') is not None else {}
 
 
@@ -624,22 +665,23 @@ class World():
         sprite_key: str
     ) -> None:
 
-        sprite = self.npcs[sprite_key]
+        sprite = self.npcs.get(sprite_key)
 
-        sprite_hitbox = self._sprite_hitbox(
-            sprite_key, 
-            'strut'
+        sprite_hitbox = collisions.calculate_sprite_hitbox(
+            sprite, 
+            'strut',
+            self.sprite_properties.get(sprite_key)
         )
 
         collision_sets = self._collision_sets_relative_to(
             sprite_key, 
-            sprite['layer'], 
+            sprite.layer, 
             'strut'
         )
         
         pathset = paths.concat_dynamic_paths(
             sprite, 
-            self.sprite_properties[sprite_key]['paths'], 
+            self.sprite_properties.get(sprite_key).paths, 
             self.hero, 
             self.npcs, 
         )
@@ -648,8 +690,8 @@ class World():
             sprite,
             sprite_hitbox,
             collision_sets, 
-            pathset[sprite['path']['current']],
-            self.sprite_properties[sprite_key]['collide'],
+            pathset[sprite.path.current],
+            self.sprite_properties.get(sprite_key).collide,
             self.dimensions
         )
 
@@ -671,9 +713,10 @@ class World():
 
             # hero collision detection
             if sprite_key == 'hero':
-                sprite_hitbox = self._sprite_hitbox(
-                    sprite_key, 
-                    'sprite'
+                sprite_hitbox = collisions.calculate_sprite_hitbox(
+                    self.hero, 
+                    'sprite',
+                    self.sprite_properties.get('hero')
                 )
                 collision_sets = self._collision_sets_relative_to(
                     'hero', 
@@ -690,7 +733,7 @@ class World():
                     ):
                         collisions.recoil_sprite(
                             sprite, 
-                            self.sprite_properties[sprite_key]
+                            self.sprite_properties.get(sprite_key)
                         )
 
             # sprite collision detection
@@ -702,9 +745,10 @@ class World():
                         if val:
                             exclusions.append(key)
 
-                    sprite_hitbox = self._sprite_hitbox(
-                        sprite_key, 
-                        hitbox_key
+                    sprite_hitbox = collisions.calculate_sprite_hitbox(
+                        sprite,
+                        hitbox_key,
+                        self.sprite_properties.get(sprite_key)
                     )
 
                     collision_sets = self._collision_sets_relative_to(
@@ -729,10 +773,12 @@ class World():
                             )
                     if collided:
                             # recalculate hitbox after sprite recoils
-                        sprite_hitbox = self._sprite_hitbox(
-                            sprite_key, 
-                            hitbox_key
+                        sprite_hitbox = collisions.calculate_sprite_hitbox(
+                            sprite,
+                            hitbox_key,
+                            self.sprite_properties.get(sprite_key)
                         )
+
                         # if current path is sprite based...
                         if sprite['path']['current'] in list(self.sprite_properties.keys()):
                             pathset = paths.concat_dynamic_paths(
@@ -801,7 +847,11 @@ class World():
             Collisions with containers are based on their calculated hitboxes, whereas interactions with containers are based on their actual dimensions.
         """
         if user_input['interact']:
-            hero_hitbox = self._sprite_hitbox('hero', 'sprite')
+            hero_hitbox = collisions.calculate_sprite_hitbox(
+                self.hero,
+                'sprite',
+                self.sprite_properties.get('hero')
+            )
 
             triggered = False
             for door in self.platesets[self.layer]['doors']:
@@ -967,9 +1017,16 @@ class World():
         """
         calculated = []
 
-        for sprite_key in  self.get_npcs(layer).keys():
-            if exclude is None or sprite_key not in exclude:
-                calculated.append(self._sprite_hitbox(sprite_key, hitbox_key))
+        for sprite_key, sprite in  self.get_npcs(layer).items():
+            if exclude is None or \
+                sprite_key not in exclude:
+                calculated.append(
+                    collisions.calculate_sprite_hitbox(
+                        sprite,
+                        hitbox_key,
+                        self.sprite_properties.get(sprite_key)
+                    )
+                )
         return calculated
 
 
@@ -987,8 +1044,8 @@ class World():
         if sprite_key != 'hero':
             return list(
                 filter(
-                    lambda x: x['plot'] == self.plot, 
-                    self.sprite_properties[sprite_key]['intents']
+                    lambda x: x.ploT == self.plot, 
+                    self.sprite_properties.get(sprite_key).intents
                 )
             )
         return None
@@ -997,7 +1054,7 @@ class World():
     def get_formset(
         self, 
         formset_key: str
-    ) -> dict:
+    ) -> munch.Munch:
         """_summary_
 
         :param formset_key: _description_
@@ -1005,29 +1062,55 @@ class World():
         :return: _description_
         :rtype: dict
         """
-        if formset_key in ['tile', 'tiles']:
+        if formset_key in [
+            'tile', 
+            'tiles',
+            'tileset',
+            'tilesets'
+        ]:
             return self.tilesets
-        elif formset_key in ['strut', 'struts']:
+        elif formset_key in [
+            'strut', 
+            'struts',
+            'strutset',
+            'strutsets'
+        ]:
             return self.strutsets
-        elif formset_key in ['plate', 'plates']:
+        elif formset_key in [
+            'plate', 
+            'plates'
+            'plateset',
+            'platesets'
+        ]:
             return self.platesets
 
 
     def get_tilesets(
         self, 
         layer: str
-    ) -> dict:
-        return self.tilesets[layer] if self.tilesets[layer] is not None else { }
+    ) -> munch.Munch:
+        if self.tilesets.get(layer) is None:
+            setattr(
+                self.tilesets,
+                layer,
+                munch.Munch({})
+            )
+        return self.tilesets.get(layer)
 
 
     def get_strutsets(
         self, 
         layer: str
     ) -> dict:
-        iter_set = self.strutsets[layer].items() if self.strutsets[layer] is not None else { }
+        if self.strutsets.get(layer) is None:
+            setattr(
+                self.strutsets,
+                layer,
+                munch.Munch({})
+            )
         return {
             key: val
-            for key, val in iter_set
+            for key, val in self.strutsets.get(layer).items()
             if key not in STRUT_META
         }
     
@@ -1036,10 +1119,15 @@ class World():
         self, 
         layer: str
     ) -> dict:
-        iter_set = self.platesets[layer].items() if self.platesets[layer] is not None else { }
+        if self.platesets.get(layer) is None:
+            setattr(
+                self.strutsets,
+                layer,
+                munch.Munch({})
+            )        
         return {
             key: val
-            for key, val in iter_set
+            for key, val in self.platesets.get(layer).items()
             if key not in PLATE_META
         }
 
@@ -1060,16 +1148,18 @@ class World():
         """
         typed_platesets = []
         for plate_key, plate_conf in self.get_platesets(layer).items():
-            if self.plate_properties[plate_key]['type'] != plateset_type:
+            if self.plate_properties.get(plate_key).type != plateset_type:
                 continue
             for i, plate in enumerate(plate_conf['sets']):
-                typed_platesets.append({
-                    'key': plate_key,
-                    'index': i,
-                    'hitbox': plate['hitbox'],
-                    'content': plate['content'],
-                    'position': plate['start']
-                })
+                typed_platesets.append(
+                    munch.Munch({
+                        'key': plate_key,
+                        'index': i,
+                        'hitbox': plate.hitbox,
+                        'content': plate.content,
+                        'position': plate.start
+                    })
+                )
         return typed_platesets
 
 
@@ -1104,34 +1194,42 @@ class World():
         :return: All sprites, or all sprites on a given layer if `layer` is provided.
         :rtype: dict
         """
-        spriteset = { 'hero': self.hero }
+        spriteset = munch.Munch({ 
+            'hero': self.hero 
+        })
         if layer is None:
-            spriteset.update(self.npcs)
+            spriteset.update(
+                self.npcs
+            )
         else: 
-            spriteset.update(self.get_npcs(layer))
+            spriteset.update(
+                self.get_npcs(
+                    layer
+                )
+            )
         return spriteset
 
 
     def get_npcs(
         self, 
         layer: str
-    ) -> dict:
-        return {
+    ) -> munch.Munch:
+        return munch.Munch({
             key: val
             for key, val 
             in self.npcs.items()
-            if val['layer'] == layer
-        }
+            if val.layer == layer
+        })
 
 
     def get_sprite(
         self, 
         sprite_key: str
-    ) -> dict:
+    ) -> munch.Munch:
         if sprite_key == 'hero':
             return self.hero
         elif sprite_key in list(self.npcs.keys()):
-            return self.npcs[sprite_key]
+            return self.npcs.get(sprite_key)
         return None
 
 
@@ -1139,12 +1237,12 @@ class World():
         self, 
         state_ao: state.State
     ) -> None:
-        self.hero['layer'] = self.layer
-        self.hero['plot'] = self.plot
-        dynamic_conf = {
+        self.hero.layer = self.layer
+        self.hero.plot = self.plot
+        dynamic_conf = munch.Munch({
             'hero': self.hero,
             'npcs': self.npcs,
-        }
+        })
         state_ao.save_state('dynamic', dynamic_conf)
 
 

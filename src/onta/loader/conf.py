@@ -1,6 +1,6 @@
 import os
 import yaml
-
+import munch
 import onta.settings as settings
 
 class Conf():
@@ -24,13 +24,21 @@ class Conf():
     composite_conf = {}
     apparel_conf = {}
 
-    def __init__(self, data_dir = settings.DEFAULT_DIR):
+    def __init__(
+        self, 
+        data_dir = settings.DEFAULT_DIR
+    ) -> None:
         """
         Initializes a `onta.loader.conf.Conf` object with the user provided _ontology_ path. If not path is provided, the path defaults to `onta.settings.DEFAULT_DIR`, i.e. the installation's tutorial _ontology_.
         """
-        self.conf_dir = os.path.join(data_dir, *settings.CONF_PATH)
+        self.conf_dir = os.path.join(
+            data_dir, *settings.CONF_PATH)
     
-    def __configuration(self, type_key: str, group_key: str) -> dict:
+    def __configuration(
+        self, 
+        type_key: str, 
+        group_key: str
+    ) -> munch.Munch:
         """Returns a specific group of configuration from the _data/conf_ directory.
 
         :param type_key: Type of configuration being retrieved._
@@ -40,12 +48,23 @@ class Conf():
         :return: Configuration formatted into dictionary.
         :rtype: dict
         """
-        conf_path = os.path.join(self.conf_dir, group_key, f'{type_key}.yaml')
+        conf_path = os.path.join(
+            self.conf_dir, 
+            group_key,
+            f'{type_key}.yaml'
+        )
         with open(conf_path, 'r') as infile:
-            conf = yaml.safe_load(infile)
+            conf = munch.munchify(
+                yaml.safe_load(
+                    infile
+                )
+            )
         return conf
 
-    def _self_configuration(self, type_key: str) -> dict:
+    def _self_configuration(
+        self, 
+        type_key: str
+    ) -> munch.Munch:
         """Returns a specific ty
 
         :param type_key: Key for the type of configuration being retrieved.
@@ -53,9 +72,15 @@ class Conf():
         :return: _Self_ configuration formatted into dictionary.
         :rtype: dict
         """
-        return self.__configuration(type_key, 'self')
+        return self.__configuration(
+            type_key, 
+            'self'
+        )
 
-    def _form_configuration(self, type_key: str) -> dict:
+    def _form_configuration(
+        self, 
+        type_key: str
+    ) -> munch.Munch:
         """Returns a specific type of configuration from the _data/conf/forms_ directory.
 
         :param type_key: Key for the type of configuration being retrieved.
@@ -63,10 +88,16 @@ class Conf():
         :return: _Form_ configuration formatted into dictionary
         :rtype: dict
         """
-        return self.__configuration(type_key, 'forms')
+        return self.__configuration(
+            type_key, 
+            'forms'
+        )
 
 
-    def _entity_configuration(self, type_key: str) -> dict:
+    def _entity_configuration(
+        self, 
+        type_key: str
+    ) -> munch.Munch:
         """Returns a specific type of configuration from the _data/conf/entities_ directory.
 
         :param type_key: Key for the type of configuration being retrieved.
@@ -74,10 +105,16 @@ class Conf():
         :return: _Entity_ configuration formatted into dictionary.
         :rtype: dict
         """
-        return self.__configuration(type_key, 'entities')
+        return self.__configuration(
+            type_key, 
+            'entities'
+        )
 
 
-    def _dialectic_configuration(self, type_key: str) -> dict:
+    def _dialectic_configuration(
+        self, 
+        type_key: str
+    ) -> munch.Munch:
         """Returns a specific type of configuration from the _data/conf/dialectics_ directory.
 
         :param type_key: Key for the type of configuration being retrieved.
@@ -85,10 +122,15 @@ class Conf():
         :return: _Dialectic_ configuration formatted into dictionary.
         :rtype: dict
         """
-        return self.__configuration(type_key, 'dialectics')
+        return self.__configuration(
+            type_key, 
+            'dialectics'
+        )
 
 
-    def load_control_configuration(self):
+    def load_control_configuration(
+        self
+    ) -> munch.Munch:
         """Returns the parsed _Control_ configuration from the _data/conf/self/controls.yaml_ file.
 
         :return: _Control_ specific configurations.
@@ -99,7 +141,9 @@ class Conf():
         return self.control_conf
 
 
-    def load_sense_configuration(self) -> dict:
+    def load_sense_configuration(
+        self
+    ) -> munch.Munch:
         """Returns the parsed _Slot_, _Mirror_ and _Packs_ (collectively known as the _Interface_) configuration from the _data/conf/self/senses.yaml_ file.
 
         :return: _Interface_ specific configurations.
@@ -112,13 +156,17 @@ class Conf():
         return self.sense_conf
 
 
-    def load_avatar_configuration(self) -> dict:
+    def load_avatar_configuration(
+        self
+    ) -> munch.Munch:
         if not self.avatar_conf:
             self.avatar_conf = self._self_configuration('avatars')
         return self.avatar_conf
 
 
-    def load_apparel_configuration(self) -> dict:
+    def load_apparel_configuration(
+        self
+    ) -> munch.Munch:
         """_summary_
 
         :return: _description_
@@ -132,7 +180,9 @@ class Conf():
         return self.apparel_conf
 
 
-    def load_composite_configuration(self) -> dict:
+    def load_composite_configuration(
+        self
+    ) -> munch.Munch:
         """Returns the parsed _Composite_ configuration from the _data/conf/forms/composite.yaml_.file.
 
         :return: _Composite_ specific configurations
@@ -143,7 +193,9 @@ class Conf():
         return self.composite_conf
 
 
-    def load_tile_configuration(self) -> dict:
+    def load_tile_configuration(
+        self
+    ) -> munch.Munch:
         """Returns the parsed _Tile_ configuration from the _data/conf/forms/tiles.yaml_ file
 
         :return: _Tile_ specific configurations
@@ -155,7 +207,9 @@ class Conf():
         return self.tile_sheet_conf
 
 
-    def load_sprite_configuration(self) -> tuple:
+    def load_sprite_configuration(
+        self
+    ) -> munch.Munch:
         """Returns the parsed _Sprite_ configuration from the _data/conf/entities/sprites.yaml_ file.
 
         :return: _Sprite_ specific configurations parsed into `(sprite_state_conf, sprite_property_conf, sprite_sheet_conf)`-tuple
@@ -164,8 +218,10 @@ class Conf():
         .. note:
             The _Sprite_ configuration is split into the different sections used by different components of the engine, so that irrelevant information isn't passed to components that do not require it. The `onta.world.World` class uses the property and state information to manage _Sprite_ states. The `onta.loader.repo.Repo` class uses the state and sheet information to load the spritesheets into memory.
         """    
-        if not self.sprite_state_conf or not self.sprite_property_conf \
-            or not self.sprite_sheet_conf or not self.sprite_size:
+        if not self.sprite_state_conf or \
+            not self.sprite_property_conf or \
+            not self.sprite_sheet_conf or \
+            not self.sprite_size:
 
             sprites_conf = self._entity_configuration('sprites')
 
@@ -197,7 +253,9 @@ class Conf():
         )
 
 
-    def load_strut_configuration(self) -> tuple:
+    def load_strut_configuration(
+        self
+    ) -> munch.Munch:
         """Returns the parsed _Strut_ configuration from the _data/conf/forms/struts.yaml_ file.
 
         :return: _Strut_ specific configurations parsed into `(strut_property_conf, strut_sheet_conf)`-tuple.
@@ -222,7 +280,9 @@ class Conf():
         return self.strut_property_conf, self.strut_sheet_conf
 
 
-    def load_plate_configuration(self) -> tuple:
+    def load_plate_configuration(
+        self
+    ) -> munch.Munch:
         """Returns the parsed _Plate_ configuration from the _data/conf/forms/plate.yaml_ file. 
 
         :return: _Plate_ specific configurations parsed into `(plate_property_conf, strut_sheet_conf)`-tupe.
@@ -231,7 +291,9 @@ class Conf():
         .. note::
             - Size is _both_ a game property and an image configuration property.
         """
-        if not self.plate_property_conf or not self.plate_sheet_conf:
+        if not self.plate_property_conf or \
+            not self.plate_sheet_conf:
+
             plates_conf = self._form_configuration('plates')
 
             for plate_key, plate_conf in plates_conf.items():
