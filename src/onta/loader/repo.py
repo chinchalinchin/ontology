@@ -43,35 +43,56 @@ class Repo():
     def adjust_cap_rotation(
         direction: str
     ) -> tuple:
+        """_summary_
+
+        :param direction: _description_
+        :type direction: str
+        :return: (up_adjust, left_adjust, right_adjust, down_adjust)
+        :rtype: tuple
+        """
         # I am convinced there is an easier way to calculate this using arcosine and arcsine,
         # but i don't feel like thinking about domains and ranges right now...
         if direction == 'left':
-            left_adjust, right_adjust = 0, 180
-            up_adjust, down_adjust = 90, 270
+            return (
+                90, 
+                0,
+                180,
+                270
+            )
         elif direction == 'right':
-            left_adjust, right_adjust = 180, 0
-            up_adjust, down_adjust = 270, 90
+            return (
+                270,
+                180,
+                0,
+                90
+            )
         elif direction == 'up':
-            left_adjust, right_adjust = 90, 270
-            up_adjust, down_adjust = 0, 180
-        else:
-            left_adjust, right_adjust = 270, 90
-            up_adjust, down_adjust = 180, 0
-        return (up_adjust, left_adjust, right_adjust, down_adjust)
-
+            return (
+                0,
+                90, 
+                270,
+                180
+            )
+        return (
+            180, 
+            270, 
+            90, 
+            0
+        )
 
     @staticmethod
     def adjust_buffer_rotation(
         direction: str
     ) -> tuple:
         if direction == 'vertical':
-            return (0, 90)
-        return (90, 0)
-
-
-    @staticmethod
-    def open_image():
-        pass
+            return (
+                0, 
+                90
+            )
+        return (
+            90, 
+            0
+        )
 
 
     def __init__(
@@ -82,7 +103,9 @@ class Repo():
         .. note::
             No reference is kept to `ontology_path`; it is passed to initialize methods and released.
         """
-        config = conf.Conf(ontology_path)
+        config = conf.Conf(
+            ontology_path
+        )
         self._init_form_assets(
             config, 
             ontology_path
@@ -149,7 +172,11 @@ class Repo():
 
                 if asset_conf.get('path'):
                     if asset_type == 'plates' and \
-                        asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
+                        asset_props.get(
+                            asset_key
+                        ).get(
+                            'type'
+                        ) in SWITCH_PLATES_TYPES:
                         on_x, on_y = (
                             asset_conf.position.on_position.x, 
                             asset_conf.position.on_position.y
@@ -219,7 +246,11 @@ class Repo():
                             )
                         )
                     elif asset_type == 'plates':
-                        if asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
+                        if asset_props.get(
+                            asset_key
+                        ).get(
+                            'type'
+                        ) in SWITCH_PLATES_TYPES:
                             setattr(
                                 self.plates,
                                 asset_key,
@@ -283,7 +314,11 @@ class Repo():
                             buffer
                         )
                     elif asset_type == 'plates':
-                        if asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
+                        if asset_props.get(
+                            asset_key
+                        ).get(
+                            'type'
+                        ) in SWITCH_PLATES_TYPES:
                             setattr(
                                 self.plates,
                                 asset_key,
@@ -349,11 +384,14 @@ class Repo():
                     munch.Munch({})
                 )
 
-            slotset = interface_conf.hud.get(size).slots
+            slotset = interface_conf.hud.get(
+                size
+            ).slots
             
             ## SLOT INITIALIZATION
             #   NOTE: for (disabled, {slot}), (enabled, {slot}), (active, {slot}), 
             #               (cap, {slot}), (buffer, {slot})
+            #   NOTE: slots are unique and have to be treated separately
             for slot_key, slot in slotset.items():
                 if not slot or not slot.get('path'):
                     continue
@@ -380,7 +418,9 @@ class Repo():
                     'Repo._init_interface_assets'
                 )
 
-                slot_conf = interface_conf.hud.get(size).slots
+                slot_conf = interface_conf.hud.get(
+                    size
+                ).slots
                 buffer = buffer.crop(
                     (
                         x,
@@ -390,14 +430,15 @@ class Repo():
                     )
                 )
 
-                # this is annoying, but necessary to allow slots to be rotated...
                 if slot_key == 'cap':
                     adjust = \
                         self.adjust_cap_rotation(
                             slot_conf.cap.definition
                         )
                     setattr(
-                        self.slots.get(size),
+                        self.slots.get(
+                            size
+                        ),
                         slot_key,
                         munch.Munch({
                             'down': buffer.rotate(
@@ -424,7 +465,9 @@ class Repo():
                             slot_conf.buffer.definition 
                         )
                     setattr(
-                        self.slots.get(size),
+                        self.slots.get(
+                            size
+                        ),
                         slot_key,
                         munch.Munch({
                             'vertical': buffer.rotate(
@@ -443,163 +486,82 @@ class Repo():
                     'active'
                 ]:
                     setattr(
-                        self.slots.get(size),
+                        self.slots.get(
+                            size
+                        ),
                         slot_key,
                         buffer
                     )
 
             ########################
-            # TODO: everything ever slot can be parameterized in a loop to condense this method
-            #       However, should it be parameterized?
-
-            mirror_set = interface_conf.hud.get(size).mirrors
-
-            ## MIRROR INITIALIZATION
-            # NOTE: For (life, {mirror}), (magic, {mirror})
-            for mirror_key, mirror in mirror_set.items():
-                if not mirror:
-                    continue
-
-                if not self.mirrors.get(size).get(mirror_key):
-                    setattr(
-                        self.mirrors.get(size),
-                        mirror_key,
-                        munch.Munch({})
-                    )
-                
-                # for (unit, fill), (empty, fill)
-                for fill_key, fill in mirror.items():
-                    if not fill.get('path'):
+            for set_type in ['mirror', 'pack', 'button']:
+                if set_type == 'mirror':
+                    iter_set = interface_conf.hud.get(
+                        size
+                    ).mirrors
+                elif set_type == 'pack':
+                    iter_set = interface_conf.hud.get(
+                        size
+                    ).packs
+                elif set_type == 'button':
+                    iter_set = interface_conf.menu.get(
+                        size
+                    ).button
+                for set_key, set_conf in iter_set.items().copy():
+                    if not set_conf:
                         continue
 
-                    x,y = (
-                        fill.position.x, 
-                        fill.position.y
-                    )
-                    w, h = (
-                        fill.size.w, 
-                        fill.size.h
-                    )
+                    if not iter_set.get(
+                        size
+                    ).get(
+                        set_key
+                    ):
+                        setattr(
+                            self.mirrors.get(size),
+                            set_key,
+                            munch.Munch({})
+                        )
                     
-                    buffer = gui.open_image(
-                        os.path.join(
-                            ontology_path,
-                            *settings.SENSES_PATH,
-                            fill.path
-                        )
-                    )
+                    # for (unit, fill), (empty, fill)
+                    for component_key, component in set_conf.items():
+                        if not component.get(
+                            'path'
+                        ):
+                            continue
 
-                    setattr(
-                        self.mirrors.get(size).get(mirror_key),
-                        fill_key,
-                        buffer.crop(
-                            (
-                                x,
-                                y,
-                                w + x,
-                                h + y
+                        x,y = (
+                            component.position.x, 
+                            component.position.y
+                        )
+                        w, h = (
+                            component.size.w, 
+                            component.size.h
+                        )
+                        
+                        buffer = gui.open_image(
+                            os.path.join(
+                                ontology_path,
+                                *settings.SENSES_PATH,
+                                component.path
                             )
                         )
-                    )
-            ########################
 
-            pack_set = interface_conf.hud.get(size).packs
-
-            ## PACK INITIALIZATION
-            # (bag, pack), (belt, pack), (wallet, pack)
-            for pack_key, pack in pack_set.items():
-                if not pack:
-                    continue
-
-                if not self.packs.get(size).get(pack_key):
-                    setattr(
-                        self.packs.get(size),
-                        pack_key,
-                        munch.Munch({})
-                    )
-
-                for piece_key, piece in pack.items():
-                    if not piece.get('path'):
-                        continue
-
-                    x, y = (
-                        piece.position.x, 
-                        piece.position.y
-                    )
-                    w, h = (
-                        piece.size.w, 
-                        piece.size.h
-                    )
-
-                    buffer = gui.open_image(
-                        os.path.join(
-                            ontology_path,
-                            *settings.SENSES_PATH,
-                            piece.path
-                        )
-                    )
-
-                    setattr(
-                        self.packs.get(size).get(pack_key),
-                        piece_key,
-                        buffer.crop(
-                            (
-                                x,
-                                y,
-                                w + x,
-                                h + y
+                        setattr(
+                            iter_set.get(
+                                size
+                            ).get(
+                                set_key
+                            ),
+                            component_key,
+                            buffer.crop(
+                                (
+                                    x,
+                                    y,
+                                    w + x,
+                                    h + y
+                                )
                             )
                         )
-                    )
-            ########################
-
-            button_set = interface_conf.menu.get(size).button
-
-            ## BUTTON INITIALIZATION
-            # for (enabled, button), (active, button), (disabled, button)
-            for button_key, button in button_set.items():
-                if not button:
-                    continue
-
-                if not self.menus.get(size).get(button_key):
-                    setattr(
-                        self.menus.get(size),
-                        button_key,
-                        munch.Munch({})
-                    )
-                
-                # for (left, piece), (right, piece), (middle, piece)
-                for piece_key, piece in button.items():
-                    if not piece.get('path'):
-                        continue
-                    x,y = (
-                        piece.position.x, 
-                        piece.position.y
-                    )
-                    w,h = (
-                        piece.size.w, 
-                        piece.size.h
-                    )
-                    buffer = gui.open_image(
-                        os.path.join(
-                            ontology_path,
-                            *settings.SENSES_PATH,
-                            piece.path
-                        )
-                    )
-                    setattr(
-                        self.menus.get(size).get(button_key),
-                        piece_key,
-                        buffer.crop(
-                            (
-                                x,
-                                y,
-                                w + x,
-                                h + y
-                            )
-                        )
-                    )
-            ##########################
 
 
     def _init_avatar_assets(
@@ -616,7 +578,9 @@ class Repo():
                 munch.Munch({})
             )
 
-            for avatar_key, avatar in avatar_conf.avatars.get(avatarset_key).items():
+            for avatar_key, avatar in avatar_conf.avatars.get(
+                avatarset_key
+            ).items():
                 if not avatar or \
                     not avatar.get('path'):
                     continue
@@ -638,7 +602,9 @@ class Repo():
                     image_path
                 )
                 setattr(
-                    self.avatars.get(avatarset_key),
+                    self.avatars.get(
+                        avatarset_key
+                    ),
                     avatar_key,
                     buffer.crop(
                         (
