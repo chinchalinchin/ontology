@@ -255,7 +255,7 @@ class Conf():
 
     def load_strut_configuration(
         self
-    ) -> munch.Munch:
+    ) -> tuple:
         """Returns the parsed _Strut_ configuration from the _data/conf/forms/struts.yaml_ file.
 
         :return: _Strut_ specific configurations parsed into `(strut_property_conf, strut_sheet_conf)`-tuple.
@@ -266,23 +266,35 @@ class Conf():
         .. note::
             Both `onta.world.World` and `onta.loader.repo.Repo` require the dimensions of a _Strut_, e.g. its (_w_, _h_) tuple, for calculations. Rather than dispensing with the separation between sheet and property configuration, this value is added to both configuration dictionary. A little bit of redundancy can be a good thing...
         """
-        if not self.strut_property_conf or not self.strut_sheet_conf:
+        if not self.strut_property_conf or \
+            not self.strut_sheet_conf:
             struts_conf = self._form_configuration('struts')
 
             for strut_key, strut_conf in struts_conf.items():
-                self.strut_property_conf[strut_key] =  strut_conf['properties']
-                self.strut_property_conf[strut_key]['size'] = strut_conf['size'] 
-                self.strut_sheet_conf[strut_key] = {
-                    key: val for key, val in strut_conf.items()
-                    if key != 'properties'
-                }
+                setattr(
+                    self.strut_property_conf,
+                    strut_key,
+                    strut_conf.properties
+                )
+                self.strut_property_conf.get(strut_key).size = strut_conf.size 
+                setattr(
+                    self.strut_sheet_conf,
+                    strut_key,
+                    munch.Munch({
+                        key: val for key, val in strut_conf.items()
+                        if key != 'properties'
+                    })
+                )
 
-        return self.strut_property_conf, self.strut_sheet_conf
+        return (
+            self.strut_property_conf, 
+            self.strut_sheet_conf
+        )
 
 
     def load_plate_configuration(
         self
-    ) -> munch.Munch:
+    ) -> tuple:
         """Returns the parsed _Plate_ configuration from the _data/conf/forms/plate.yaml_ file. 
 
         :return: _Plate_ specific configurations parsed into `(plate_property_conf, strut_sheet_conf)`-tupe.
@@ -297,11 +309,22 @@ class Conf():
             plates_conf = self._form_configuration('plates')
 
             for plate_key, plate_conf in plates_conf.items():
-                self.plate_property_conf[plate_key] = plate_conf['properties']
-                self.plate_property_conf[plate_key]['size'] = plate_conf['size']
-                self.plate_sheet_conf[plate_key] = {
-                    key: val for key, val in plate_conf.items()
-                    if key != 'properties'
-                }
+                setattr(
+                    self.plate_property_conf,
+                    plate_key,
+                    plate_conf.properties
+                )
+                self.plate_property_conf.get(plate_key).size = plate_conf.size
+                setattr(
+                    self.plate_sheet_conf,
+                    plate_key,
+                    munch.Munch({
+                        key: val for key, val in plate_conf.items()
+                        if key != 'properties'
+                    })
+                )
         
-        return self.plate_property_conf, self.plate_sheet_conf
+        return (
+            self.plate_property_conf, 
+            self.plate_sheet_conf
+        )
