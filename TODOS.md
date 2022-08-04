@@ -113,3 +113,6 @@ THAT PREVIOUS ONE FIRST
 - dialogue should be of the same form as hud, insofar as its used to hold static position information about widgets. in dialogue's case, the widget will be a scrollable display frame, a scrollbar and scroll thumb.
 
 - make a sheet of all the singleton objects in the avatars folder. edit and crop nymph sheets to be same size, i.e. rows and columns, not necessarily dimensions, although dimensions would be nice.
+
+
+- conf directory is parameterized, parameterize asset directory too. will probably require wrapping in object.

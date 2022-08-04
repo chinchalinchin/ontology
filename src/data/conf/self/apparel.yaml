@@ -75,7 +75,7 @@ equipment:
     sheets:
       - blood_magic_eyes.png
       - blood_magic_mouth.png
-    aniamte_states:
+    animate_states:
       - cast_down
       - cast_left
       - cast_right

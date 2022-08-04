@@ -457,7 +457,7 @@ class Repo():
             self.apparel[set_key] = {}
 
             for apparel_key, apparel in set_conf.items():
-                self.apparel['equipment'][apparel_key] = {}
+                self.apparel[set_key][apparel_key] = {}
 
                 sheets = []
                 for sheet in apparel['sheets']:
