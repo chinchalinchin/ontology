@@ -317,18 +317,13 @@ class World():
         """
         log.debug('Initializing world configuration...', 'World._init_conf')
         sprite_conf = config.load_sprite_configuration()
-            # skipping sheet conf and sprite size
-            # NOTE: might need sprite size at some point.
         self.sprite_state_conf, self.sprite_properties, _, _= sprite_conf
         self.apparel_state_conf = config.load_apparel_configuration()
         self.plate_properties, _ = config.load_plate_configuration()
         self.strut_properties, _ = config.load_strut_configuration()
         self.composite_conf = config.load_composite_configuration()
         tile_conf = config.load_tile_configuration()
-        self.tile_dimensions = (
-            tile_conf.tile.w, 
-            tile_conf.tile.h
-        )
+        self.tile_dimensions = ( tile_conf.tile.w, tile_conf.tile.h )
 
 
     def _init_static_state(
@@ -338,55 +333,33 @@ class World():
         """
         Initialize the state for static in-game elements, i.e. elements that do not move and are not interactable.
         """
-        log.debug(
-            f'Initializing simple static world state...', 
-            'World._init_static_state'
-        )
+        log.debug(f'Initializing simple static world state...', 'World._init_static_state')
         static_conf = state_ao.get_state('static')
 
         self.dimensions = calculator.scale(
-            (
-                static_conf.world.size.w, 
-                static_conf.world.size.h
-            ),
+            ( static_conf.world.size.w, static_conf.world.size.h ),
             self.tile_dimensions,
             static_conf.world.size.units
         )
 
         for asset_type, asset_set in zip(
-            [
-                'tiles',
-                'struts',
-                'plates',
-                'compositions' 
-            ],
-            [
-                self.tilesets,
-                self.strutsets,
-                self.platesets,
-                self.compositions
-            ]
+            [ 'tiles', 'struts', 'plates', 'compositions' ],
+            [ self.tilesets, self.strutsets, self.platesets, self.compositions ]
         ):
             for layer_key, layer_conf in static_conf['layers'].items():
                 self.layers.append(layer_key)
-                setattr(
-                    asset_set,
-                    layer_key,
-                    layer_conf.get(asset_type)
-                )
-        (
-            self.tilesets, 
-            self.strutsets, 
-            self.platesets
-        ) = formulae.decompose_compositions_into_sets(
-            self.layers,
-            self.compositions,
-            self.composite_conf,
-            self.tile_dimensions,
-            self.tilesets,
-            self.strutsets,
-            self.platesets
-        )
+                setattr(asset_set,layer_key,layer_conf.get(asset_type))
+
+        self.tilesets, self.strutsets, self.platesets = \
+            formulae.decompose_compositions_into_sets(
+                self.layers,
+                self.compositions,
+                self.composite_conf,
+                self.tile_dimensions,
+                self.tilesets,
+                self.strutsets,
+                self.platesets
+            )
 
         self._generate_stationary_hitboxes()
         self._generate_switch_map()
@@ -424,7 +397,7 @@ class World():
                     for i, set_conf in enumerate(set_conf.sets):
 
                         set_hitbox = collisions.calculate_set_hitbox(
-                            props.getattr(set_key).hitbox, 
+                            props.get(set_key).hitbox, 
                             set_conf, 
                             self.tile_dimensions
                         )
@@ -436,77 +409,27 @@ class World():
                                 set_hitbox
             
             world_bounds = [
-                (
-                    0, 
-                    0, 
-                    self.dimensions[0], 
-                    1
-                ), 
-                (
-                    0, 
-                    0, 
-                    1, 
-                    self.dimensions[1]
-                ),
-                (
-                    self.dimensions[0], 
-                    0, 
-                    1, 
-                    self.dimensions[1]
-                ),
-                (
-                    0, 
-                    self.dimensions[1], 
-                    self.dimensions[0], 
-                    1
-                )
+                ( 0, 0, self.dimensions[0], 1 ), 
+                ( 0, 0, 1, self.dimensions[1] ),
+                ( self.dimensions[0], 0, 1, self.dimensions[1] ),
+                ( 0, self.dimensions[1], self.dimensions[0], 1 )
             ]
             
-            self.strutsets.get(layer).hitboxes = \
-                world_bounds + self._strut_hitboxes(layer)
-
-            self.platesets.get(layer).doors = \
-                self.get_typed_platesets(
-                    layer, 
-                    'door'
-                )
-
-            self.platesets.get(layer).containers = \
-                self.get_typed_platesets(
-                    layer, 
-                    'container'
-                )
-            self.platesets.get(layer).pressures = \
-                self.get_typed_platesets(
-                    layer, 
-                    'pressure'
-                )
-            self.platesets.get(layer).masses = \
-                self.get_typed_platesets(
-                    layer, 
-                    'mass'
-                )
+            self.strutsets.get(layer).hitboxes = world_bounds + self._strut_hitboxes(layer)
+            self.platesets.get(layer).doors = self.get_typed_platesets(layer, 'door')
+            self.platesets.get(layer).containers = self.get_typed_platesets(layer, 'container')
+            self.platesets.get(layer).pressures = self.get_typed_platesets(layer,  'pressure')
+            self.platesets.get(layer).masses = self.get_typed_platesets(layer,  'mass')
 
 
     def _generate_switch_map(
         self
     ) -> None:
         for layer in self.layers:
-            switches =  self.get_typed_platesets(
-                layer, 
-                'pressure'
-            ) + self.get_typed_platesets(
-                layer, 
-                'container'
-            ) + self.get_typed_platesets(
-                layer, 
-                'gate'
-            )
-            switch_indices = [ 
-                switch.index 
-                for switch 
-                in switches 
-            ]
+            switches =  self.get_typed_platesets(layer, 'pressure') + \
+                self.get_typed_platesets(layer, 'container') + \
+                self.get_typed_platesets(layer,  'gate')
+            switch_indices = [ switch.index for switch in switches ]
             setattr(
                 self.switch_map,
                 layer,
@@ -645,7 +568,7 @@ class World():
                 if 'run' in sprite.state:
                     speed = sprite_props.run
                 else:
-                    speed = sprite_props.walk'
+                    speed = sprite_props.walk
 
                 if sprite.state == 'walk_up':
                     sprite.position.y -= speed
@@ -741,7 +664,7 @@ class World():
             sprite,
             sprite_hitbox,
             collision_sets, 
-            pathset[sprite.path.current],
+            pathset.get(sprite.path.current),
             self.sprite_properties.get(sprite_key).collide,
             self.dimensions
         )
@@ -758,9 +681,7 @@ class World():
             Technically, there is overlap here. Since sprite is checked against every other sprite for collisions, there are Pn = n!/(n-2)! permutations, but Cn = n!/(2!(n-2)!) distinct combinations. Therefore, Pn - Cn checks are unneccesary. To circumvent this problem (sort of), a collision map is kept internally within this method to keep track of which sprite-to-sprite collisions have already taken place. However, whether or not this is worth the effort, since the map has to be traversed when it is initialized, is an open question? 
         """
 
-        collision_map = collisions.generate_collision_map(
-            self.npcs
-        )
+        collision_map = collisions.generate_collision_map(self.npcs)
 
         for sprite_key, sprite in self.get_sprites().items():
 
@@ -780,10 +701,7 @@ class World():
                 log.infinite('Checking "hero" for collisions...', '_apply_physics')
 
                 for collision_set in collision_sets:
-                    if collisions.detect_collision(
-                        sprite_hitbox, 
-                        collision_set
-                    ):
+                    if collisions.detect_collision(sprite_hitbox, collision_set):
                         collisions.recoil_sprite(
                             sprite, 
                             self.sprite_properties.get(sprite_key)
@@ -815,10 +733,7 @@ class World():
 
                     collided = False
                     for collision_set in collision_sets:
-                        if collisions.detect_collision(
-                            sprite_hitbox, 
-                            collision_set
-                        ):
+                        if collisions.detect_collision(sprite_hitbox, collision_set):
                             collided =True
                             collisions.recoil_sprite(
                                 sprite, 
@@ -857,32 +772,29 @@ class World():
                         if key not in exclusions and \
                             key == sprite_key:
                             for nest_key in val.keys():
-                                collision_map.key.nest_key = True
-                                collision_map.nest_key.key = True
+                                collision_map.get(key).get(nest_key) = True
+                                collision_map.get(nest_key).get(key) = True
 
 
             # mass plate collision detection
             masses = self.platesets.get(self.layer).masses.copy()
             hero_flag = sprite_key == 'hero'
             for mass in masses:
-                if collisions.detect_collision(
-                    mass.hitbox, 
-                    [sprite_hitbox]
-                ):
-                    plate = self.get_plate(
-                        self.layer, 
-                        mass.key,
-                        mass.index
-                    )
+                if collisions.detect_collision(mass.hitbox, [ sprite_hitbox ]):
+                    plate = self.get_plate(self.layer, mass.key, mass.index)
                     collisions.recoil_plate(
                         plate, sprite, 
                         self.sprite_properties.get(sprite_key),
                         hero_flag
                     )
-                    plate.hitbox = collisions.calculate_set_hitbox(
-                        self.plate_properties.get(mass.key).hitbox,
+                    setattr(
                         plate,
-                        self.tile_dimensions
+                        'hitbox',
+                        collisions.calculate_set_hitbox(
+                            self.plate_properties.get(mass.key).hitbox,
+                            plate,
+                            self.tile_dimensions
+                        )
                     )
                     self.platesets.get(self.layer).masses = self.get_typed_platesets(
                         self.layer, 
@@ -912,7 +824,7 @@ class World():
             )
 
             triggered = False
-            for door in self.platesets[self.layer]['doors']:
+            for door in self.platesets.get(self.layer).doors:
                 if collisions.detect_collision(
                     hero_hitbox,
                     [ door.hitbox ]
@@ -931,11 +843,8 @@ class World():
                         self.plate_properties.get(key).size.w,
                         self.plate_properties.get(key).size.h    
                     )
-                    if not self.switch_map[self.layer][key][index] and \
-                        collisions.detect_collision(
-                            hero_hitbox,
-                            [ modified_hitbox ]
-                        ):
+                    if not self.switch_map.get(self.layer).get(key).get(index) and \
+                        collisions.detect_collision(hero_hitbox,[ modified_hitbox ]):
                         self.switch_map[self.layer][key][index] = True
                         triggered = True
                         # TODO: deliver item to hero via content
@@ -976,28 +885,23 @@ class World():
         npc_hitboxes = self._sprite_hitboxes(
             hitbox_key, 
             layer_key, 
-            [sprite_key]
+            [ sprite_key ]
         )
 
         collision_sets = []
         if npc_hitboxes is not None:
+            collision_sets.append(npc_hitboxes)
+
+        if (hitbox_key =='strut' or sprite_key == 'hero' ) \
+             and self.strutsets.get(layer_key).hitboxes is not None:
             collision_sets.append(
-                npc_hitboxes
+                self.strutsets.get(layer_key).hitboxes
             )
 
         if (hitbox_key =='strut' or sprite_key == 'hero' ) \
-             and self.strutsets[layer_key]['hitboxes'] is not None:
-            collision_sets.append(
-                self.strutsets[layer_key]['hitboxes']
-            )
-
-        if (hitbox_key =='strut' or sprite_key == 'hero' ) \
-             and self.platesets[layer_key]['containers'] is not None:
+             and self.platesets.get(layer_key).containers is not None:
              collision_sets.append(
-                [ 
-                    container['hitbox']
-                    for container in self.platesets[layer_key]['containers']
-                ]
+                [ container.hitbox for container in self.platesets.get(layer_key).containers ]
             )
         return collision_sets
 
@@ -1015,9 +919,9 @@ class World():
         """
         strut_hitboxes = []
         for strut_conf in self.get_strutsets(layer).values():
-            sets = strut_conf['sets']
+            sets = strut_conf.sets
             for strut in sets:
-                strut_hitboxes.append(strut['hitbox'])
+                strut_hitboxes.append(strut.hitbox)
         return strut_hitboxes
 
 
@@ -1045,12 +949,12 @@ class World():
             sprite = self.npcs.get(sprite_key)
 
         if sprite is not None:
-            raw_hitbox = self.sprite_properties[sprite_key]['hitboxes'][hitbox_key]
+            raw_hitbox = self.sprite_properties.get(sprite_key).hitboxes.get(hitbox_key)
             calc_hitbox = (
-                sprite['position']['x'] + raw_hitbox['offset']['x'],
-                sprite['position']['y'] + raw_hitbox['offset']['y'],
-                raw_hitbox['size']['w'],
-                raw_hitbox['size']['h']
+                sprite.position.x + raw_hitbox.offset.x,
+                sprite.position.y + raw_hitbox.offset.y,
+                raw_hitbox.size.w,
+                raw_hitbox.size.h
             )
             return calc_hitbox
         return None
@@ -1102,7 +1006,7 @@ class World():
         if sprite_key != 'hero':
             return list(
                 filter(
-                    lambda x: x.ploT == self.plot, 
+                    lambda x: x.plot == self.plot, 
                     self.sprite_properties.get(sprite_key).intents
                 )
             )
@@ -1148,11 +1052,7 @@ class World():
         layer: str
     ) -> munch.Munch:
         if self.tilesets.get(layer) is None:
-            setattr(
-                self.tilesets,
-                layer,
-                munch.Munch({})
-            )
+            setattr(self.tilesets, layer, munch.Munch({}))
         return self.tilesets.get(layer)
 
 
@@ -1161,11 +1061,7 @@ class World():
         layer: str
     ) -> dict:
         if self.strutsets.get(layer) is None:
-            setattr(
-                self.strutsets,
-                layer,
-                munch.Munch({})
-            )
+            setattr(self.strutsets, layer, munch.Munch({}))
         return {
             key: val
             for key, val in self.strutsets.get(layer).items()
@@ -1208,7 +1104,7 @@ class World():
         for plate_key, plate_conf in self.get_platesets(layer).items():
             if self.plate_properties.get(plate_key).type != plateset_type:
                 continue
-            for i, plate in enumerate(plate_conf['sets']):
+            for i, plate in enumerate(plate_conf.sets):
                 typed_platesets.append(
                     munch.Munch({
                         'key': plate_key,
@@ -1238,7 +1134,7 @@ class World():
         :return: _description_
         :rtype: dict
         """
-        return self.platesets[layer][plate_key]['sets'][index]
+        return self.platesets.get(layer).get(plate_key).sets.get(index)
 
 
     def get_sprites(
@@ -1256,15 +1152,9 @@ class World():
             'hero': self.hero 
         })
         if layer is None:
-            spriteset.update(
-                self.npcs
-            )
+            spriteset.update(self.npcs)
         else: 
-            spriteset.update(
-                self.get_npcs(
-                    layer
-                )
-            )
+            spriteset.update(self.get_npcs(layer))
         return spriteset
 
 
@@ -1297,7 +1187,7 @@ class World():
     ) -> None:
         self.hero.layer = self.layer
         self.hero.plot = self.plot
-        dynamic_conf = munch.Munch({
+        dynamic_conf = munch.Munch({ 
             'hero': self.hero,
             'npcs': self.npcs,
         })

@@ -50,10 +50,7 @@ def calculate_set_hitbox(
     """
     if set_hitbox:
         x,y = calculator.scale(
-            (
-                set_conf.start.x,
-                set_conf.start.y
-            ),
+            ( set_conf.start.x, set_conf.start.y ),
             tile_dim,
             set_conf.start.units
         )
@@ -123,11 +120,7 @@ def detect_collision(
     """
 
     for hitbox in hitbox_list:
-        if hitbox and \
-            calculator.intersection(
-                sprite_hitbox, 
-                hitbox
-            ):
+        if hitbox and calculator.intersection(sprite_hitbox, hitbox):
             # NOTE: return true once collision is detected. it doesn't matter where it occurs, 
             #       only what direction the hero is travelling...
             # TODO: fix that!

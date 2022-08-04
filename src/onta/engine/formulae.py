@@ -1,3 +1,5 @@
+import munch
+
 import onta.settings as settings
 import onta.util.logger as logger
 import onta.engine.calculator as calculator
@@ -8,12 +10,12 @@ log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
 
 def decompose_compositions_into_sets(
     layers: list,
-    compositions: dict,
-    composition_conf: dict,
+    compositions: munch.Munch,
+    composition_conf: munch.Munch,
     tile_dimensions: tuple,
-    tilesets: dict,
-    strutsets: dict,
-    platesets: dict,
+    tilesets: munch.Munch,
+    strutsets: munch.Munch,
+    platesets: munch.Munch,
 ) -> tuple:
     """Decompose _Composite_ _Form_\s, or "compositions", into their constituent formsets and append to existing formsets.
 
@@ -56,31 +58,25 @@ def decompose_compositions_into_sets(
             log.verbose(f'Decomposing {composite_key} composition...', 
                 'decompose_compositions')
 
-            # NOTE: compose_conf = { 'struts': { ... }, 'plates': { ... } }
-            #           via compose configuration information (composite.yaml)
-            compose_conf = composition_conf[composite_key]
-
             # NOTE: composition = { 'order': int, 'sets': [ ... ] }
             #           via compose state information (static.yaml)
-            for composeset in composition['sets']:
+            for composeset in composition.sets:
                 # NOTE: composeset = { 'start': { ... } }
                 #           via compose state information (static.yaml)
                 compose_start = calculator.scale(
-                    (
-                        composeset['start']['x'], 
-                        composeset['start']['y']
-                    ),
+                    ( composeset.start.x, composeset.start.y),
                     tile_dimensions,
-                    composeset['start']['units']
+                    composeset.start.units
                 )
 
-                for elementset_key, elementset_conf in compose_conf.items():
+                # NOTE: composition_conf[composite_key] = { 'struts': { ... }, 'plates': { ... } }
+                #           via compose configuration information (composite.yaml)
+                for elementset_key, elementset_conf in composition_conf.get(composite_key).items():
                     # NOTE: elementset_conf = { 'element_key': { 'order': int, 'sets': [ ... ] } }
                     #           via compose element configuration (composite.yaml)
                     log.verbose(f'Initializing decomposed {elementset_key} elementset...', 
                         'decompose_compositions')
 
-                    # careful...a composition doesn't necessarily have everything...
                     if elementset_key == 'tiles':
                         buffer_sets = decomposition[0]
                     elif elementset_key == 'struts':
@@ -89,54 +85,60 @@ def decompose_compositions_into_sets(
                         buffer_sets = decomposition[2]
 
                     for element_key, element in elementset_conf.items():
-                        log.verbose(f'Initializing {element_key}', 
-                            'decompose_compositions')
+                        log.verbose(f'Initializing {element_key}', 'decompose_compositions')
 
                         # NOTE: element['sets'] = [ { 'start': {..}, 'cover': bool } ]
                         #            via compose element configuration (composite.yaml)
-                        for elementset in element['sets']:
-                            log.verbose('Generating strut render order', 
-                                'decompose_compositions')
+                        for elementset in element.sets:
+                            log.verbose('Generating strut render order', 'decompose_compositions')
                             
                             # NOTE elementset = { 'start': { ... }, 'cover': bool }
                             #       via compose element configuration (composite.yaml)
 
                             if not buffer_sets.get(layer):
-                                buffer_sets[layer] = {}
+                                setattr(buffer_sets, layer, munch.Munch({}))
                             
-                            if not buffer_sets[layer].get(element_key):
-                                buffer_sets[layer][element_key] = {}
+                            if not buffer_sets.get(layer).get(element_key):
+                                setattr(buffer_sets.get(layer), element_key, munch.Munch({}))
 
-                            if not buffer_sets[layer][element_key].get('sets'):
-                                buffer_sets[layer][element_key]['sets'] = []
+                            if not buffer_sets.get(layer).get(element_key).get('sets'):
+                                setattr(
+                                    buffer_sets.get(layer).get(element_key),
+                                    'sets',
+                                    []
+                                )
                             
-                            if not buffer_sets[layer][element_key].get('order'):
-                                buffer_sets[layer][element_key]['order'] = len(buffer_sets[layer]) - 1
+                            if not buffer_sets.get(layer).get(element_key).get('order'):
+                                setattr(
+                                    buffer_sets.get(layer).get(element_key),
+                                    'order',
+                                    len(buffer_sets.get(layer)) - 1
+                                )
 
                     
                             if elementset_key == 'plates':
-                                buffer_sets[layer][element_key]['sets'].append(
-                                    {
+                                buffer_sets.get(layer).get(element_key).sets.append(
+                                    munch.Munch({
                                         'start': {
-                                            'units': elementset['start']['units'],
-                                            'x': compose_start[0] + elementset['start']['x'],
-                                            'y': compose_start[1] + elementset['start']['y'],
+                                            'units': elementset.start.units,
+                                            'x': compose_start[0] + elementset.start.x,
+                                            'y': compose_start[1] + elementset.start.y,
                                         },
-                                        'cover': elementset['cover'],
-                                        'content': elementset['content']
+                                        'cover': elementset.cover,
+                                        'content': elementset.content
 
-                                    }
+                                    })
                                 )
                             else:
-                                buffer_sets[layer][element_key]['sets'].append(
-                                    {
+                                buffer_sets.get(layer).get(element_key).sets.append(
+                                    munch.Munch({
                                         'start': {
-                                            'units': elementset['start']['units'],
-                                            'x': compose_start[0] + elementset['start']['x'],
-                                            'y': compose_start[1] + elementset['start']['y'],
+                                            'units': elementset.start.units,
+                                            'x': compose_start[0] + elementset.start.x,
+                                            'y': compose_start[1] + elementset.start.y,
                                         },
-                                        'cover': elementset['cover'],
-                                    }
+                                        'cover': elementset.cover,
+                                    })
                                 )
                         
                     if elementset_key == 'tiles':

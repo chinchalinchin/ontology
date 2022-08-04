@@ -1,3 +1,4 @@
+import munch
 
 import onta.settings as settings
 import onta.engine.collisions as collisions
@@ -8,7 +9,7 @@ log = logger.Logger('onta.engine.paths', settings.LOG_LEVEL)
 
 
 def reorient(
-    sprite: dict, 
+    sprite: munch.Munch, 
     hitbox: tuple, 
     collision_sets: list, 
     goal: tuple, 
@@ -30,10 +31,7 @@ def reorient(
     :param world_dim: _description_
     :type world_dim: tuple
     """
-    goal_point = (
-        goal['x'], 
-        goal['y']
-    )
+    goal_point = ( goal.x, goal.y )
 
     new_up = (
         hitbox[0], 
@@ -95,10 +93,7 @@ def reorient(
         possibilities['down'] = calculator.distance(new_down, goal_point)
 
     least_state = None
-    least_state_distance = calculator.distance(
-        (0,0), 
-        world_dim
-    )
+    least_state_distance = calculator.distance(( 0,0 ), world_dim)
 
     log.verbose(f'Reorientation possibility map: {possibilities}', 'reorient')
 
@@ -110,57 +105,68 @@ def reorient(
     log.verbose(f'Choice to minimize distance: {least_state}', 'reorient')
 
     if least_state == 'up':
-        if 'walk' in sprite['state']:
-            sprite['state'] = 'walk_up'
-        elif 'run' in sprite['state']:
+        if 'walk' in sprite.state:
+            sprite.state = 'walk_up'
+        elif 'run' in sprite.state:
             sprite['state'] = 'run_up'
     elif least_state == 'down':
-        if 'walk' in sprite['state']:
-            sprite['state'] = 'walk_down'
-        elif 'run' in sprite['state']:
-            sprite['state'] = 'run_down'
+        if 'walk' in sprite.state:
+            sprite.state = 'walk_down'
+        elif 'run' in sprite.state:
+            sprite.state = 'run_down'
     elif least_state == 'left':
-        if 'walk' in sprite['state']:
-            sprite['state'] = 'walk_left'
-        elif 'run' in sprite['state']:
-            sprite['state'] = 'run_left'
+        if 'walk' in sprite.state:
+            sprite.state = 'walk_left'
+        elif 'run' in sprite.state:
+            sprite.state = 'run_left'
     elif least_state == 'right':
-        if 'walk' in sprite['state']:
-            sprite['state'] = 'walk_right'
-        elif 'run' in sprite['state']:
-            sprite['state'] = 'run_right'
+        if 'walk' in sprite.state:
+            sprite.state = 'walk_right'
+        elif 'run' in sprite.state:
+            sprite.state = 'run_right'
 
 
-def concat_dynamic_paths(sprite, static_pathset, hero, npcs):
+def concat_dynamic_paths(
+    sprite: munch.Munch, 
+    static_pathset: munch.Munch, 
+    hero: munch.Munch, 
+    npcs: munch.Munch
+) -> munch.Munch:
     pathset = static_pathset.copy()
     npc_keys = list(npcs.keys())
 
-    if sprite['path']['current'] == 'hero':
-        pathset['hero'] = {
-            'x': hero['position']['x'],
-            'y': hero['position']['y']
-        }
-    elif sprite['path']['current'] in npc_keys:
-        pathset[sprite['path']['current']] = {
-            'x': npcs[sprite['path']['current']]['position']['x'],
-            'y': npcs[sprite['path']['current']]['position']['y']
-        }
+    if sprite.path.current == 'hero':
+        setattr(
+            pathset, 
+            hero,
+            munch.Munch({ 
+                'x': hero.position.x, 'y': hero.position.y
+            })
+        )
+
+    elif sprite.path.current in npc_keys:
+        setattr(
+            pathset,
+            sprite.path.current,
+            munch.Munch({
+                'x': npcs.get(sprite.path.current).position.x,
+                'y': npcs.get(sprite.path.current).position.y
+            })
+        )
+
     return pathset
 
 
 def locate_intent(intent, hero, npcs, paths):
     if intent == 'hero':
-        return (
-            hero['position']['x'], 
-            hero['position']['y']
-        )
+        return ( hero.position.x, hero.position.y)
     elif intent in list(npcs.keys()):
         return (
-            npcs[intent]['position']['x'], 
-            npcs[intent]['position']['y']
+            npcs.get(intent).position.x, 
+            npcs.get(intent).position.y
         )
     elif intent in list(paths.keys()):
         return (
-            paths[intent]['x'], 
-            paths[intent]['y']
+            paths.get(intent).x, 
+            paths.get(intent).y
         )
