@@ -1,3 +1,151 @@
+size:
+    w: 64
+    h: 64
+
+state:
+    all:
+        -   cast_up
+        -   cast_down
+        -   cast_left
+        -   cast_right
+        -   thrust_up
+        -   thrust_down
+        -   thurst_right
+        -   thrust_left
+        -   slash_up
+        -   slash_down
+        -   slash_right
+        -   slash_left
+        -   shoot_up
+        -   shoot_down
+        -   shoot_left
+        -   shoot_right
+        -   walk_up
+        -   walk_down
+        -   walk_left
+        -   walk_right
+        -   run_up
+        -   run_down
+        -   run_left
+        -   run_right
+        -   interact
+        -   use
+        -   shield
+        -   death
+    composition:
+        action:
+            -   cast
+            -   thrust
+            -   slash
+            -   shoot
+            -   walk
+            -   run
+        direction:
+            -   up
+            -   down
+            -   left
+            -   right
+        end:
+            -   death    
+    blocking_states:
+        -   cast_up
+        -   cast_down
+        -   cast_left
+        -   cast_right
+        -   thrust_up
+        -   thrust_down
+        -   thrust_left
+        -   thrust_right
+        -   slash_up
+        -   slash_down
+        -   slash_left
+        -   slash_right
+        -   shoot_up
+        -   shoot_down
+        -   shoot_left
+        -   shoot_right
+        -   death
+    null_states:
+        -   interact
+        -   use
+        -   shield
+    animate_states:
+        -   state: cast_up
+            row: 0
+            frames: 7
+        -   state: cast_left
+            row: 1
+            frames: 7
+        -   state: cast_down
+            row: 2
+            frames: 7
+        -   state: cast_right
+            row: 3
+            frames: 7
+        -   state: thrust_up
+            row: 4
+            frames: 8
+        -   state: thrust_left
+            row: 5
+            frames: 8
+        -   state: thrust_down
+            row: 6
+            frames: 8
+        -   state: thrust_right
+            row: 7
+            frames: 8
+        -   state: walk_up
+            row: 8
+            frames: 9
+        -   state: walk_left
+            row: 9
+            frames: 9
+        -   state: walk_down
+            row: 10
+            frames: 9
+        -   state: walk_right
+            row: 11 
+            frames: 9
+        -   state: run_up
+            row: 8
+            frames: 9
+        -   state: run_left
+            row: 9
+            frames: 9
+        -   state: run_down
+            row: 10
+            frames: 9
+        -   state: run_rigt
+            row: 11 
+            frames: 9
+        -   state: slash_up
+            row: 12
+            frames: 6
+        -   state: slash_left
+            row: 13
+            frames: 6
+        -   state: slash_down
+            row: 14
+            frames: 6
+        -   state: slash_right
+            row: 15
+            frames: 6
+        -   state: shoot_up
+            row: 16
+            frames: 13
+        -   state: shoot_left
+            row: 17
+            frames: 13
+        -   state: shoot_down
+            row: 18
+            frames: 13
+        -   state: shoot_right
+            row: 19
+            frames: 13
+        -   state: death
+            row: 20
+            frames: 6
+
 
 hero:
     sheets:
@@ -5,9 +153,6 @@ hero:
         -   head_hair_messy_red.png
         -   legs_pants_green.png
         -   torso_male_shirt_green.png
-    size:
-        w: 64
-        h: 64
     properties:
         hitboxes:
             sprite:
@@ -20,105 +165,6 @@ hero:
         walk: 3
         run: 5
         collide: 6
-        blocking_states:
-            -   cast_up
-            -   cast_down
-            -   cast_left
-            -   cast_right
-            -   thrust_up
-            -   thrust_down
-            -   thrust_left
-            -   thrust_right
-            -   slash_up
-            -   slash_down
-            -   slash_left
-            -   slash_right
-            -   shoot_up
-            -   shoot_down
-            -   shoot_left
-            -   shoot_right
-            -   death
-        null_states:
-            -   interact
-            -   use
-            -   jump
-            -   shield
-    states:
-        -   state: cast_up
-            row: 0
-            frames: 7
-        -   state: cast_right
-            row: 1
-            frames: 7
-        -   state: cast_down
-            row: 2
-            frames: 7
-        -   state: cast_left
-            row: 3
-            frames: 7
-        -   state: thrust_up
-            row: 4
-            frames: 8
-        -   state: thrust_right
-            row: 5
-            frames: 8
-        -   state: thrust_down
-            row: 6
-            frames: 8
-        -   state: thrust_left
-            row: 7
-            frames: 8
-        -   state: walk_up
-            row: 8
-            frames: 9
-        -   state: walk_right
-            row: 9
-            frames: 9
-        -   state: walk_down
-            row: 10
-            frames: 9
-        -   state: walk_left
-            row: 11 
-            frames: 9
-        -   state: run_up
-            row: 8
-            frames: 9
-        -   state: run_right
-            row: 9
-            frames: 9
-        -   state: run_down
-            row: 10
-            frames: 9
-        -   state: run_left
-            row: 11 
-            frames: 9
-        -   state: slash_up
-            row: 12
-            frames: 6
-        -   state: slash_right
-            row: 13
-            frames: 6
-        -   state: slash_down
-            row: 14
-            frames: 6
-        -   state: slash_left
-            row: 15
-            frames: 6
-        -   state: shoot_up
-            row: 16
-            frames: 13
-        -   state: shoot_right
-            row: 17
-            frames: 13
-        -   state: shoot_down
-            row: 18
-            frames: 13
-        -   state: shoot_left
-            row: 19
-            frames: 13
-        -   state: death
-            row: 20
-            frames: 6
 
 esmeralda:
     sheets:
@@ -126,9 +172,6 @@ esmeralda:
         - head_female_hair_braid_red.png
         - legs_pants_blue.png
         - torso_female_shirt_blue.png
-    size:
-        w: 64
-        h: 64
     properties:
         hitboxes:
             strut:
@@ -159,19 +202,6 @@ esmeralda:
             two:
                 x: 900
                 y: 1800
-        blocking_states:
-            - thrust_up
-            - thrust_down
-            - thrust_left
-            - thrust_right
-            - slash_up
-            - slash_down
-            - slash_left
-            - slash_right
-            - death
-        null_states:
-            - use
-            - interact
         intents:
             -   plot: a
                 intent: one
@@ -189,65 +219,10 @@ esmeralda:
                         content: C
                     -   type: action
                         content: A
-    states:
-        -   state: thrust_up
-            row: 4
-            frames: 8
-        -   state: thrust_right
-            row: 5
-            frames: 8
-        -   state: thrust_down
-            row: 6
-            frames: 8
-        -   state: thrust_left
-            row: 7
-            frames: 8
-        -   state: walk_up
-            row: 8
-            frames: 9
-        -   state: walk_right
-            row: 11
-            frames: 9
-        -   state: walk_down
-            row: 10
-            frames: 9
-        -   state: walk_left
-            row: 9
-            frames: 9
-        -   state: run_up
-            row: 8
-            frames: 9
-        -   state: run_right
-            row: 9
-            frames: 9
-        -   state: run_down
-            row: 10
-            frames: 9
-        -   state: run_left
-            row: 11 
-            frames: 9
-        -   state: slash_up
-            row: 12
-            frames: 6
-        -   state: slash_right
-            row: 13
-            frames: 6
-        -   state: slash_down
-            row: 14
-            frames: 6
-        -   state: slash_left
-            row: 15
-            frames: 6
-        -   state: death
-            row: 20
-            frames: 6
 
 skeleton:
     sheets:
         - monster_skeleton_white.png
-    size:
-        w: 64
-        h: 64
     properties:
         hitboxes:
             strut:
@@ -278,15 +253,6 @@ skeleton:
             two:
                 x: 500
                 y: 300
-        blocking_states:
-            - thrust_up
-            - thrust_down
-            - thrust_left
-            - thrust_right
-            - death
-        null_states:
-            - use
-            - interact
         intents:
             -   plot: a
                 intent: hero
@@ -311,31 +277,3 @@ skeleton:
             -   plot: b
                 target: esmeralda
                 goal: death
-    states:
-        -   state: thrust_up
-            row: 4
-            frames: 8
-        -   state: thrust_right
-            row: 5
-            frames: 8
-        -   state: thrust_down
-            row: 6
-            frames: 8
-        -   state: thrust_left
-            row: 7
-            frames: 8
-        -   state: walk_up
-            row: 8
-            frames: 9
-        -   state: walk_right
-            row: 11
-            frames: 9
-        -   state: walk_down
-            row: 10
-            frames: 9
-        -   state: walk_left
-            row: 9
-            frames: 9
-        -   state: death
-            row: 20
-            frames: 6

@@ -166,18 +166,23 @@ class Conf():
             sprites_conf = self._entity_configuration('sprites')
 
             for sprite_key, sprite_conf in sprites_conf.items():
+                if sprite_key in ['state', 'size']:
+                    continue
+
                 self.sprite_property_conf[sprite_key] = sprite_conf['properties']
                 self.sprite_sheet_conf[sprite_key] = {
                     'sheets': sprite_conf['sheets'],
-                    'size': sprite_conf['size']
+                    'size': sprites_conf['size']
                 }
-                self.sprite_state_conf[sprite_key] = {}
-                for map in sprite_conf['states']:
-                    self.sprite_state_conf[sprite_key][map['state']] = {
-                        'frames': map['frames'],
-                        'row': map['row']
-                    }
 
+            self.sprite_state_conf = sprites_conf['state']
+
+            self.sprite_state_conf['animate_states'] =  {
+                    state['state']: {
+                        'row': state['row'],
+                        'frames': state['frames']
+                    } for state in self.sprite_state_conf['animate_states']
+                }
         return self.sprite_state_conf, self.sprite_property_conf, self.sprite_sheet_conf
 
 

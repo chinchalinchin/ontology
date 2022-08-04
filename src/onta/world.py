@@ -448,7 +448,7 @@ class World():
         """
         Map user input to new hero state, apply state action and iterate state frame.
         """
-        if self.hero['state'] not in self.sprite_properties['hero']['blocking_states']:
+        if self.hero['state'] not in self.sprite_state_conf['blocking_states']:
             if 'run' in self.hero['state']:
                 speed = self.sprite_properties['hero']['run']
             else:
@@ -475,9 +475,9 @@ class World():
                 self.hero['position']['y'] += speed
 
             elif user_input['nw'] or user_input['w'] or user_input['sw']:
-                if self.hero['state'] != 'walk_right':
+                if self.hero['state'] != 'walk_left':
                     self.hero['frame'] = 0
-                    self.hero['state'] = 'walk_right'
+                    self.hero['state'] = 'walk_left'
 
                 else:
                     self.hero['frame'] += 1
@@ -497,9 +497,9 @@ class World():
                     self.hero['position']['x'] -= speed
 
             elif user_input['se'] or user_input['e'] or user_input['ne']:
-                if self.hero['state'] != 'walk_left':
+                if self.hero['state'] != 'walk_right':
                     self.hero['frame'] = 0
-                    self.hero['state'] = 'walk_left'
+                    self.hero['state'] = 'walk_right'
                 else:
                     self.hero['frame'] += 1
 
@@ -517,7 +517,9 @@ class World():
                 elif user_input['e']:
                     self.hero['position']['x'] += speed
 
-        if self.hero['frame'] >= self.sprite_state_conf['hero'][self.hero['state']]['frames']:
+        if self.hero['frame'] >= self.sprite_state_conf['animate_states'][
+            self.hero['state']
+        ]['frames']:
             self.hero['frame'] = 0
 
 
@@ -534,8 +536,11 @@ class World():
 
         for sprite_key, sprite in self.npcs.items():
             sprite_props = self.sprite_properties[sprite_key]
+            sprite_paths = list(self.sprite_properties[sprite_key]['paths'].keys())
+            sprite_intents = self._sprite_intent(sprite_key)
 
-            if sprite['state'] not in self.sprite_properties[sprite_key]['blocking_states']:
+
+            if sprite['state'] not in self.sprite_state_conf['blocking_states']:
                 if 'run' in sprite['state']:
                     speed = sprite_props['run']
                 else:
@@ -550,15 +555,14 @@ class World():
                 elif sprite['state'] == 'walk_down':
                     sprite['position']['y'] += speed
 
-            sprite['frame'] += 1
-
             if self.iterations % sprite_props['poll'] == 0:
+                sprite_pos = (
+                    sprite['position']['x'], 
+                    sprite['position']['y']
+                )
                 
-                sprite_pos = (sprite['position']['x'], sprite['position']['y'])
-                intents = self._sprite_intent(sprite_key)
-                
-                for intent in intents:
-                    if intent['intent'] not in list(self.sprite_properties[sprite_key]['paths'].keys()):
+                for intent in sprite_intents:
+                    if intent['intent'] not in sprite_paths:
                         # if intent is sprite location based
 
                         log.debug(f'Checking {sprite_key} plot {self.plot} {intent["intent"]} intent conditions...', 
@@ -589,9 +593,12 @@ class World():
                     
                 self._reorient(sprite_key)
 
-
-            if sprite['frame'] >= self.sprite_state_conf[sprite_key][sprite['state']]['frames']:
-                sprite['frame'] = 0
+            if sprite['state'] in self.sprite_state_conf['animate_states']:
+                sprite['frame'] += 1
+                if sprite['frame'] >= self.sprite_state_conf['animate_states'][
+                    sprite['state']
+                ]['frames']:
+                    sprite['frame'] = 0
 
 
     def _reorient(

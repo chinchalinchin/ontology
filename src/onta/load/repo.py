@@ -461,30 +461,45 @@ class Repo():
                 sheets.append(sheet_img)
                 
             frames = 0
-            for state_key, state_conf in states_conf[sprite_key].items():
-                state_row, state_frames = state_conf['row'], state_conf['frames']
+            for state_key, state_conf in states_conf['animate_states'].items():
+                state_row, state_frames = (
+                    state_conf['row'], 
+                    state_conf['frames']
+                )
                 frames += state_frames
                 self.sprites[sprite_key][state_key] = []
 
                 start_y = state_row * sprite_dim[1]
+
                 for i in range(state_frames):
                     start_x = i*sprite_dim[0]
-                    crop_box = (start_x, start_y, 
-                        start_x + sprite_dim[0], start_y + sprite_dim[1])
+                    crop_box = (
+                        start_x, 
+                        start_y, 
+                        start_x + sprite_dim[0], 
+                        start_y + sprite_dim[1]
+                    )
                     
                     crop_sheets = []
 
                     for sheet in sheets:
-                        crop_sheets.append(sheet.crop(crop_box))
+                        crop_sheets.append(
+                            sheet.crop(crop_box)
+                        )
                 
                     sprite_state_frame = gui.new_image(sprite_dim)
 
                     for sheet in crop_sheets:
-                        sprite_state_frame.paste(sheet, (0,0), sheet)
+                        sprite_state_frame.paste(
+                            sheet, 
+                            (0,0), 
+                            sheet
+                        )
 
                     self.sprites[sprite_key][state_key].append(sprite_state_frame)
 
-            log.debug(f'{sprite_key} configuration: states - {len(self.sprites[sprite_key])}, frames - {frames}', 'Repo._init_sprites')
+            log.debug(f'{sprite_key} configuration: states - {len(self.sprites[sprite_key])}, \
+                frames - {frames}', 'Repo._init_sprites')
 
 
     def get_form_frame(
