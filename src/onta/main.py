@@ -5,7 +5,8 @@ from typing import Tuple
 import PySide6.QtWidgets as QtWidgets
 from PIL import Image
 
-import onta.interface as interface
+import onta.engine.interface.hud as hud
+import onta.engine.interface.menu as menu
 import onta.device as device
 import onta.view as view
 import onta.control as control
@@ -25,9 +26,9 @@ def create(args) -> Tuple[
     world.World,
     view.Renderer,
     repo.Repo,
-    interface.HUD,
+    hud.HUD,
     device.Device,
-    interface.Menu
+    menu.Menu
 ]:
     log.debug('Pulling device information...', 'create')
     player_device = device.Device(
@@ -45,13 +46,13 @@ def create(args) -> Tuple[
     game_world = world.World(args.ontology)
 
     log.debug('Initializing HUD...', 'create')
-    headsup_display = interface.HUD(
+    headsup_display = hud.HUD(
         player_device, 
         args.ontology
     )
 
     log.debug('Initializing Menu...', 'create')
-    menu = interface.Menu(
+    pause_menu = menu.Menu(
         player_device,
         args.ontology
     )
@@ -64,7 +65,7 @@ def create(args) -> Tuple[
     )
 
     return controller, game_world, render_engine, \
-            asset_repository, headsup_display, player_device, menu
+            asset_repository, headsup_display, player_device, pause_menu
 
 
 def start(ontology_path: str) -> None:
@@ -101,8 +102,8 @@ def do(
     game_world: world.World, 
     render_engine: view.Renderer, 
     asset_repository: repo.Repo,
-    headsup_display: interface.HUD,
-    menu: interface.Menu
+    headsup_display: hud.HUD,
+    pause_menu: menu.Menu
 ) -> None:
     ms_per_frame = (1/settings.FPS)*1000
 
@@ -118,15 +119,15 @@ def do(
         # scripts.apply_scripts(game_world, 'pre_update')
 
         if user_input['menu']:
-            menu.toggle_menu()
+            pause_menu.toggle_menu()
         
-        if not menu.menu_activated:
+        if not pause_menu.menu_activated:
             game_world.iterate(user_input)
             headsup_display.update(game_world)
 
         else:
             # TODO: catch result in variable
-            menu.update(user_input)
+            pause_menu.update(user_input)
             controller.consume_all()
             
             # TODO: pass menu result back to game world
@@ -143,7 +144,7 @@ def do(
             game_world, 
             game_view, 
             headsup_display,
-            menu,
+            pause_menu,
             asset_repository
         )
 

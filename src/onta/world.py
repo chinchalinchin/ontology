@@ -6,7 +6,7 @@ import onta.util.logger as logger
 import onta.engine.calculator as calculator
 import onta.engine.collisions as collisions
 import onta.engine.paths as paths
-import onta.engine.tasks as tasks
+import onta.engine.formulae as formulae
 
 log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
@@ -327,7 +327,7 @@ class World():
             self.tilesets, 
             self.strutsets, 
             self.platesets
-        ) = tasks.decompose_compositions_into_sets(
+        ) = formulae.decompose_compositions_into_sets(
             self.layers,
             self.compositions,
             self.composite_conf,

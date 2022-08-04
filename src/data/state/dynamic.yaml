@@ -11,27 +11,33 @@ hero:
     thrust: spear
     slash: sword
     shoot: bow
+  armor: bronze
   packs:
     bag: shrapnel_bomb
     belt: arrow
   health:
     current: 4
     max: 10
-  equipment:
-    bow: True
-    axe: False
-    knife: False
-    pickaxe: False
-    sword: True
-    warhammer: False
-    blood_magic: False
-    cane: False
-    shovel: True
-    spear: True
-    emblem_shield: False
-    falcon_shield: False
-    leather_shield: False
   inventory:
+    armor:
+      bronze: True
+      gold: False
+      plate: False
+    shield:
+      emblem_shield: False
+      falcon_shield: False
+      leather_shield: False
+    equipment:
+      bow: True
+      axe: False
+      knife: False
+      pickaxe: False
+      sword: True
+      warhammer: False
+      blood_magic: False
+      cane: False
+      shovel: True
+      spear: True
     bag:
       shrapnel_bomb: null
       rope: null
@@ -76,6 +82,7 @@ npcs:
       thrust: null
       slash: null
       shoot: null
+    armor: null
     packs:
       bag: null
       belt: null
@@ -83,6 +90,54 @@ npcs:
     health:
       current: 100
       max: 100
+    inventory:
+      armor:
+        bronze: True
+        gold: False
+        plate: False
+      shield:
+        emblem_shield: False
+        falcon_shield: False
+        leather_shield: False
+      equipment:
+        bow: False
+        axe: False
+        knife: True
+        pickaxe: False
+        sword: False
+        warhammer: False
+        blood_magic: False
+        cane: False
+        shovel: False
+        spear: False
+      bag:
+        shrapnel_bomb: null
+        rope: null
+        portal_gate: null
+        smoke_bomb: null
+        spindle_seed: null
+        resource_seed: null
+        bottle_a: null
+        bottle_b: null
+        bottle_c: null
+      belt:
+        arrow: null
+        fire_arrow: null
+        magic_arrow: null
+        bolt: null
+        precise_bolt: null
+        poison_bolt: null
+      wallet:
+        coin: null
+        key: null
+      pocket:
+        produce: null
+        herb: null
+        meat: null
+        ore: null
+        crystal: null
+        pendant: null
+
   skeleton:
     position:
       x: 500
@@ -98,6 +153,7 @@ npcs:
       thrust: null
       slash: null
       shoot: null
+    armor: gold
     packs:
       bag: null
       belt: null
@@ -105,3 +161,50 @@ npcs:
     health:
       current: 100
       max: 100
+    inventory:
+      armor:
+        bronze: False
+        gold: True
+        plate: False
+      shield:
+        emblem_shield: False
+        falcon_shield: False
+        leather_shield: False
+      equipment:
+        bow: False
+        axe: True
+        knife: False
+        pickaxe: False
+        sword: False
+        warhammer: False
+        blood_magic: False
+        cane: False
+        shovel: False
+        spear: False
+      bag:
+        shrapnel_bomb: null
+        rope: null
+        portal_gate: null
+        smoke_bomb: null
+        spindle_seed: null
+        resource_seed: null
+        bottle_a: null
+        bottle_b: null
+        bottle_c: null
+      belt:
+        arrow: null
+        fire_arrow: null
+        magic_arrow: null
+        bolt: null
+        precise_bolt: null
+        poison_bolt: null
+      wallet:
+        coin: null
+        key: null
+      pocket:
+        produce: null
+        herb: null
+        meat: null
+        ore: null
+        crystal: null
+        pendant: null

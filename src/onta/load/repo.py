@@ -13,6 +13,7 @@ log = logger.Logger('onta.repo', settings.LOG_LEVEL)
 STATIC_ASSETS_TYPES = [ 'tiles', 'struts', 'plates' ]
 SWITCH_PLATES_TYPES = [ 'container', 'pressure', 'gate' ]
 AVATAR_TYPES = [ 'armor', 'equipment', 'inventory', 'quantity' ]
+APPAREL_TYPES = [ 'armor', 'equipment' ]
 
 class Repo():
 
@@ -20,8 +21,9 @@ class Repo():
     struts = {}
     plates = {}
     tracks = {}
+    pixies = {}
+    nymphs = {}
     sprites = {}
-    effects = {}
     avatars = {}
     bottles = {}
     mirrors = {}

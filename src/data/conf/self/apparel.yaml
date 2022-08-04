@@ -122,6 +122,7 @@ equipment:
       - thrust_down
       - thrust_left
       - thrust_right
+shield:
   emblem_shield:
     sheets:
       - emblem_shield.png

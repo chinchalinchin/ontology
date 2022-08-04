@@ -7,7 +7,8 @@ from PIL import Image
 import onta.device as device
 import onta.settings as settings
 import onta.world as world
-import onta.interface as interface
+import onta.engine.interface.hud as hud
+import onta.engine.interface.menu as menu
 import onta.engine.calculator as calculator
 import onta.load.repo as repo
 import onta.util.logger as logger
@@ -68,7 +69,11 @@ class Renderer():
 
 
     @staticmethod
-    def calculate_crop_box(screen_dim: tuple, world_dim: tuple, hero_pt: tuple):
+    def calculate_crop_box(
+        screen_dim: tuple, 
+        world_dim: tuple, 
+        hero_pt: tuple
+    ) -> tuple:
         left_breakpoint = screen_dim[0]/2
         right_breakpoint = world_dim[0] - screen_dim[0]/2
         top_breakpoint = screen_dim[1]/2
@@ -94,7 +99,9 @@ class Renderer():
 
 
     @staticmethod
-    def render_ordered_dict(unordered_dict):
+    def render_ordered_dict(
+        unordered_dict
+    ) -> OrderedDict:
         # doesnt work. need to rethink this entirely.
         render_map = {}
         ordered_dict = OrderedDict()
@@ -135,33 +142,65 @@ class Renderer():
         self._render_sets(game_world, repository)
 
 
-    def _render_tiles(self, game_world: world.World, repository: repo.Repo) -> None:
-        log.debug('Rendering tile sets', 'Repo._render_tiles')
+    def _render_tiles(
+        self, 
+        game_world: world.World, 
+        repository: repo.Repo
+    ) -> None:
+        log.debug(
+            'Rendering tile sets', 
+            'Repo._render_tiles'
+        )
 
         for layer in game_world.layers:
             for group_key, group_conf in game_world.get_tilesets(layer).items():
-                log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
+                log.debug(
+                    f'Rendering {group_key} tiles', 
+                    'Repo._render_tiles'
+                )
 
-                group_tile = repository.get_form_frame('tiles', group_key)
+                group_tile = repository.get_form_frame(
+                    'tiles', 
+                    group_key
+                )
                 for set_conf in group_conf['sets']:
                     start = calculator.scale(
-                        (set_conf['start']['x'], set_conf['start']['y']), 
+                        (
+                            set_conf['start']['x'], 
+                            set_conf['start']['y']
+                        ), 
                         game_world.tile_dimensions,
                         set_conf['start']['units']
                     )
-                    set_dim = (set_conf['multiply']['w'], set_conf['multiply']['h'])
+                    set_dim = (
+                        set_conf['multiply']['w'], 
+                        set_conf['multiply']['h']
+                    )
 
-                    log.debug(f'Rendering group set at {start[0], start[1]} with dimensions {set_dim[0], set_dim[1]}', 'Repo._render_tiles')
+                    log.debug(
+                        f'Rendering group set at {start[0], start[1]} with dimensions {set_dim[0], set_dim[1]}', 
+                        'Repo._render_tiles'
+                    )
                     
                     for i in range(set_dim[0]):
                         for j in range(set_dim[1]):
-                            dim = (start[0] + game_world.tile_dimensions[0]*i, 
-                                start[1] + game_world.tile_dimensions[1]*j)
+                            dim = (
+                                start[0] + game_world.tile_dimensions[0]*i, 
+                                start[1] + game_world.tile_dimensions[1]*j
+                            )
 
                             if set_conf.get('cover'):
-                                self.static_cover_frame[layer].paste(group_tile, dim, group_tile)
+                                self.static_cover_frame[layer].paste(
+                                    group_tile, 
+                                    dim, 
+                                    group_tile
+                                )
                             else:
-                                self.static_back_frame[layer].paste(group_tile, dim, group_tile)
+                                self.static_back_frame[layer].paste(
+                                    group_tile, 
+                                    dim, 
+                                    group_tile
+                                )
 
 
     def _render_sets(self, game_world: world.World, repository: repo.Repo):
@@ -309,9 +348,10 @@ class Renderer():
             )
 
 
+
     def _render_slots(
         self, 
-        headsup_display: interface.HUD, 
+        headsup_display: hud.HUD, 
         repository: repo.Repo
     ) -> None:
         rendering_points = headsup_display.get_rendering_points('slot')
@@ -371,7 +411,7 @@ class Renderer():
     
     def _render_mirrors(
         self, 
-        headsup_display: interface.HUD, 
+        headsup_display: hud.HUD, 
         repository: repo.Repo
     ) -> None:
 
@@ -393,12 +433,12 @@ class Renderer():
 
     def _render_packs(
         self, 
-        headsup_display: interface.HUD, 
+        headsup_display: hud.HUD, 
         repository: repo.Repo
     ) -> None:
 
         # avatar rendering points include slot avatars and wallet avatars...
-        for pack_key in interface.PACK_TYPES:
+        for pack_key in hud.PACK_TYPES:
             pack_map = headsup_display.get_frame_map(pack_key)
             pack_rendering_points = headsup_display.get_rendering_points(pack_key)
 
@@ -418,7 +458,7 @@ class Renderer():
 
     def _render_avatars(
         self,
-        headsup_display: interface.HUD,
+        headsup_display: hud.HUD,
         repository: repo.Repo
     ) -> None:
 
@@ -458,7 +498,7 @@ class Renderer():
 
     def _render_menu(
         self, 
-        menu: interface.Menu, 
+        menu: menu.Menu, 
         repository: repo.Repo
     ) -> None:
         # TODO: alpha and overlay should be part of configuration or styles
@@ -494,8 +534,8 @@ class Renderer():
         self, 
         game_world: world.World, 
         repository: repo.Repo, 
-        headsup_display: interface.HUD, 
-        menu: interface.Menu,
+        headsup_display: hud.HUD, 
+        menu: menu.Menu,
         crop: bool = True, 
         layer: str = None
     ) -> Image.Image:
@@ -582,8 +622,8 @@ class Renderer():
         self, 
         game_world: world.World, 
         view_widget: QtWidgets.QWidget, 
-        headsup_display: interface.HUD,
-        menu: interface.Menu,
+        headsup_display: hud.HUD,
+        menu: menu.Menu,
         repository: repo.Repo
     ) -> QtWidgets.QWidget: 
         """_summary_

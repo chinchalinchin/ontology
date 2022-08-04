@@ -3,7 +3,7 @@ import onta.util.logger as logger
 import onta.engine.calculator as calculator
 
 
-log = logger.Logger('onta.world.tasks', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
 
 
 def decompose_compositions_into_sets(
