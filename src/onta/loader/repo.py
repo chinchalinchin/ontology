@@ -97,14 +97,11 @@ class Repo():
         """
 
         for asset_type in STATIC_ASSETS_TYPES:
-            log.debug(
-                f'Initializing {asset_type} assets...', 
-                'Repo._init_static_assets'
-            )
+            log.debug(f'Initializing {asset_type} assets...',  'Repo._init_form_assets')
 
             if asset_type == 'tiles':
                 assets_conf = config.load_tile_configuration()
-                w, h = ( assets_conf.tile.w, assets_conf.tile.h )
+                w, h = assets_conf.tile.w, assets_conf.tile.h
             elif asset_type == 'struts':
                 asset_props, assets_conf = config.load_strut_configuration()
             elif asset_type == 'plates':
@@ -114,7 +111,7 @@ class Repo():
                 # need tile dimensions here...but tile dimensions don't exist until world
                 # pulls static state...
                 if asset_type != 'tiles':
-                    w, h = ( asset_conf.size.w, asset_conf.size.h )
+                    w, h = asset_conf.size.w, asset_conf.size.h
 
                 if asset_conf.get('path'):
                     if asset_type == 'plates' and \
@@ -128,7 +125,7 @@ class Repo():
                             asset_conf.position.off_position.y
                         )
                     else:
-                        x, y = ( asset_conf.position.x, asset_conf.position.y )
+                        x, y = asset_conf.position.x, asset_conf.position.y
 
                     if asset_type == 'tiles':
                         image_path = os.path.join(
@@ -149,7 +146,7 @@ class Repo():
                             asset_conf.path
                         )
 
-                    buffer = gui.open_image( image_path )
+                    buffer = gui.open_image(image_path)
 
                     log.debug(
                         f"{asset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
@@ -247,8 +244,8 @@ class Repo():
                 if not slot or not slot.get('path'):
                     continue
 
-                w, h = ( slot.size.w, slot.size.h )   
-                x, y = ( slot.position.x, slot.position.y)
+                w, h = slot.size.w, slot.size.h   
+                x, y = slot.position.x, slot.position.ys
 
                 buffer = gui.open_image(
                     os.path.join(
@@ -267,10 +264,7 @@ class Repo():
                 buffer = buffer.crop(( x, y, w + x, h + y ))
 
                 if slot_key == 'cap':
-                    adjust = \
-                        self.adjust_cap_rotation(
-                            slot_conf.cap.definition
-                        )
+                    adjust = self.adjust_cap_rotation(slot_conf.cap.definition)
                     setattr(
                         self.slots.get(size),
                         slot_key,
@@ -294,10 +288,7 @@ class Repo():
                         })
                     )
                 elif slot_key == 'buffer':
-                    adjust = \
-                        self.adjust_buffer_rotation(
-                            slot_conf.buffer.definition 
-                        )
+                    adjust = self.adjust_buffer_rotation(slot_conf.buffer.definition)
                     setattr(
                         self.slots.get(size),
                         slot_key,
@@ -340,8 +331,8 @@ class Repo():
                         if not component.get('path'):
                             continue
 
-                        ( x, y ) = ( component.position.x, component.position.y)
-                        ( w, h ) = ( component.size.w, component.size.h )
+                        x, y = component.position.x, component.position.y
+                        w, h = component.size.w, component.size.h
                         
                         buffer = gui.open_image(
                             os.path.join(
@@ -384,9 +375,7 @@ class Repo():
                 setattr(
                     self.avatars.get(avatarset_key),
                     avatar_key,
-                    buffer.crop(
-                        ( x, y, w + x, h + y )
-                    )
+                    buffer.crop(( x, y, w + x, h + y ))
                 )
 
         # Bottle Configuration is slightly different, so I wonder if I should separate them
@@ -481,7 +470,7 @@ class Repo():
 
         for sprite_key, sheet_conf in sheets_conf.items():
             setattr(self.sprites.base, sprite_key, munch.Munch({}))
-            setattr(self.sprite.accents, sprite_key, munch.Munch({}))
+            setattr(self.sprites.accents, sprite_key, munch.Munch({}))
             accent_sheets = []
 
             base_img = gui.open_image(
@@ -540,15 +529,15 @@ class Repo():
                     for sheet in accent_crop_sheets:
                         sprite_accent_frame.paste(sheet, ( 0,0 ), sheet)
 
-                    self.sprite.base.get(sprite_key).get(state_key).append(
+                    self.sprites.base.get(sprite_key).get(state_key).append(
                         sprite_base_frame
                     )
-                    self.sprite.accents.get(sprite_key).get(state_key).append(
+                    self.sprites.accents.get(sprite_key).get(state_key).append(
                         sprite_accent_frame
                     )
 
             log.debug(
-                f'{sprite_key} configuration: states - {len(self.sprite.bases.get(sprite_key))}, \
+                f'{sprite_key} configuration: states - {len(self.sprites.bases.get(sprite_key))}, \
                 frames - {frames}', 
                 'Repo._init_entity_assets'
             )
@@ -720,5 +709,5 @@ class Repo():
             self.apparel.get(set_key).get(apparel_key) and \
             self.apparel.get(set_key).get(apparel_key).get(state_key):
             # TODO: check if frame index is less than state frames?
-            return self.apparel[set_key][apparel_key][state_key][frame_index]
+            return self.apparel.get(set_key).get(apparel_key).get(state_key).get(frame_index)
         pass

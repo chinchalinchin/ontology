@@ -31,8 +31,7 @@ class Conf():
         """
         Initializes a `onta.loader.conf.Conf` object with the user provided _ontology_ path. If not path is provided, the path defaults to `onta.settings.DEFAULT_DIR`, i.e. the installation's tutorial _ontology_.
         """
-        self.conf_dir = os.path.join(
-            data_dir, *settings.CONF_PATH)
+        self.conf_dir = os.path.join(data_dir, *settings.CONF_PATH)
     
     def __configuration(
         self, 
@@ -48,16 +47,10 @@ class Conf():
         :return: Configuration formatted into dictionary.
         :rtype: dict
         """
-        conf_path = os.path.join(
-            self.conf_dir, 
-            group_key,
-            f'{type_key}.yaml'
-        )
+        conf_path = os.path.join(self.conf_dir, group_key, f'{type_key}.yaml')
         with open(conf_path, 'r') as infile:
             conf = munch.munchify(
-                yaml.safe_load(
-                    infile
-                )
+                yaml.safe_load(infile)
             )
         return conf
 
@@ -72,10 +65,7 @@ class Conf():
         :return: _Self_ configuration formatted into dictionary.
         :rtype: dict
         """
-        return self.__configuration(
-            type_key, 
-            'self'
-        )
+        return self.__configuration(type_key, 'self')
 
     def _form_configuration(
         self, 
@@ -88,10 +78,7 @@ class Conf():
         :return: _Form_ configuration formatted into dictionary
         :rtype: dict
         """
-        return self.__configuration(
-            type_key, 
-            'forms'
-        )
+        return self.__configuration(type_key, 'forms')
 
 
     def _entity_configuration(
@@ -105,10 +92,7 @@ class Conf():
         :return: _Entity_ configuration formatted into dictionary.
         :rtype: dict
         """
-        return self.__configuration(
-            type_key, 
-            'entities'
-        )
+        return self.__configuration(type_key, 'entities')
 
 
     def _dialectic_configuration(
@@ -122,10 +106,7 @@ class Conf():
         :return: _Dialectic_ configuration formatted into dictionary.
         :rtype: dict
         """
-        return self.__configuration(
-            type_key, 
-            'dialectics'
-        )
+        return self.__configuration(type_key, 'dialectics')
 
 
     def load_control_configuration(
@@ -226,47 +207,30 @@ class Conf():
             sprites_conf = self._entity_configuration('sprites')
 
             for sprite_key, sprite_conf in sprites_conf.items():
-                if sprite_key in [
-                    'state', 
-                    'size'
-                ]:
+                if sprite_key in [ 'state', 'size' ]:
                     continue
                 
-                setattr(
-                    self.sprite_property_conf,
-                    sprite_key,
-                    sprite_conf.properties
-                )
-                setattr(
-                    self.sprite_sheet_conf,
-                    sprite_key,
-                    sprite_conf.sheets
-                )
+                setattr(self.sprite_property_conf, sprite_key, sprite_conf.properties)
+                setattr(self.sprite_sheet_conf, sprite_key, sprite_conf.sheets)
 
-            self.sprite_state_conf = sprites_conf.state
             setattr(
                 self.sprite_state_conf,
                 'animate_states',
                 munch.Munch({
                     state_conf.state: munch.Munch({
-                        'row': state_conf.row,
-                        'frames': state_conf.frames
+                        'row': state_conf.row, 'frames': state_conf.frames
                     }) 
-                    for state_conf
-                    in self.sprite_state_conf.animate_states
+                    for state_conf in self.sprite_state_conf.animate_states
                 })
             )
-
+            self.sprite_state_conf = sprites_conf.state
             self.sprite_size = sprites_conf.size
 
         return (
             self.sprite_state_conf, 
             self.sprite_property_conf, 
             self.sprite_sheet_conf, 
-            (
-                self.sprite_size.w,
-                self.sprite_size.h
-            )
+            ( self.sprite_size.w, self.sprite_size.h)
         )
 
 
@@ -283,30 +247,22 @@ class Conf():
         .. note::
             Both `onta.world.World` and `onta.loader.repo.Repo` require the dimensions of a _Strut_, e.g. its (_w_, _h_) tuple, for calculations. Rather than dispensing with the separation between sheet and property configuration, this value is added to both configuration dictionary. A little bit of redundancy can be a good thing...
         """
-        if not self.strut_property_conf or \
-            not self.strut_sheet_conf:
+        if not self.strut_property_conf or not self.strut_sheet_conf:
             struts_conf = self._form_configuration('struts')
 
-            for strut_key, strut_conf in struts_conf.items():
-                setattr(
-                    self.strut_property_conf,
-                    strut_key,
-                    strut_conf.properties
-                )
-                self.strut_property_conf.get(strut_key).size = strut_conf.size 
+            for strut_key, strut in struts_conf.items():
+                setattr(self.strut_property_conf, strut_key, strut.properties)
+                setattr(self.strut_property_conf.get(strut_key), 'size', strut.size) 
                 setattr(
                     self.strut_sheet_conf,
                     strut_key,
                     munch.Munch({
-                        key: val for key, val in strut_conf.items()
+                        key: val for key, val in strut.items()
                         if key != 'properties'
                     })
                 )
 
-        return (
-            self.strut_property_conf, 
-            self.strut_sheet_conf
-        )
+        return ( self.strut_property_conf, self.strut_sheet_conf )
 
 
     def load_plate_configuration(
@@ -320,28 +276,20 @@ class Conf():
         .. note::
             - Size is _both_ a game property and an image configuration property.
         """
-        if not self.plate_property_conf or \
-            not self.plate_sheet_conf:
+        if not self.plate_property_conf or not self.plate_sheet_conf:
 
             plates_conf = self._form_configuration('plates')
 
             for plate_key, plate_conf in plates_conf.items():
-                setattr(
-                    self.plate_property_conf,
-                    plate_key,
-                    plate_conf.properties
-                )
-                self.plate_property_conf.get(plate_key).size = plate_conf.size
+                setattr(self.plate_property_conf, plate_key, plate_conf.properties)
+                setattr(self.plate_property_conf.get(plate_key), 'size', plate_conf.size)
                 setattr(
                     self.plate_sheet_conf,
-                    plate_key,
+                    plate_key, 
                     munch.Munch({
                         key: val for key, val in plate_conf.items()
                         if key != 'properties'
                     })
                 )
         
-        return (
-            self.plate_property_conf, 
-            self.plate_sheet_conf
-        )
+        return ( self.plate_property_conf, self.plate_sheet_conf )
