@@ -9,6 +9,7 @@ class Conf():
     """
 
     conf_dir = None
+    sprite_size = {}
     sprite_state_conf = {}
     sprite_property_conf = {}
     sprite_sheet_conf = {}
@@ -161,7 +162,7 @@ class Conf():
             The _Sprite_ configuration is split into the different sections used by different components of the engine, so that irrelevant information isn't passed to components that do not require it. The `onta.world.World` class uses the property and state information to manage _Sprite_ states. The `onta.load.repo.Repo` class uses the state and sheet information to load the spritesheets into memory.
         """    
         if not self.sprite_state_conf or not self.sprite_property_conf \
-            or not self.sprite_sheet_conf:
+            or not self.sprite_sheet_conf or not self.sprite_size:
 
             sprites_conf = self._entity_configuration('sprites')
 
@@ -176,14 +177,21 @@ class Conf():
 
             self.sprite_state_conf = sprites_conf['state']
 
-            # reformat list of dicts into keyed dict
             self.sprite_state_conf['animate_states'] =  {
                     state['state']: {
                         'row': state['row'],
                         'frames': state['frames']
                     } for state in self.sprite_state_conf['animate_states']
                 }
-        return self.sprite_state_conf, self.sprite_property_conf, self.sprite_sheet_conf, sprites_conf['size']
+
+            self.sprite_size = sprites_conf['size']
+
+        return (
+            self.sprite_state_conf, 
+            self.sprite_property_conf, 
+            self.sprite_sheet_conf, 
+            self.sprite_size
+        )
 
 
     def load_strut_configuration(self) -> tuple:

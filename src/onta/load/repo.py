@@ -78,6 +78,10 @@ class Repo():
             config, 
             ontology_path
         )
+        self._init_apparel_assets(
+            config,
+            ontology_path
+        )
         self._init_sense_assets(
             config, 
             ontology_path
@@ -447,48 +451,60 @@ class Repo():
             raw_dim['h']
         )
 
-        equipment_conf = apparel_conf['equipment']
-        self.apparel['equipment'] = {}
+        for set_key in list(apparel_conf.keys()):
 
-        for equip_key, equipment in equipment_conf.items():
-            self.apparel['equipment'][equip_key] = {}
+            set_conf = apparel_conf[set_key]
+            self.apparel[set_key] = {}
 
-            equipment['sheets']
+            for apparel_key, apparel in set_conf.items():
+                self.apparel['equipment'][apparel_key] = {}
 
-            if equipment['animate_states'] == 'all':
-                animate_states = list(states_conf['animate_states'].keys())
-            else:
-                animate_states = equipment['animate_states']
+                sheets = []
+                for sheet in apparel['sheets']:
+                    sheet_path = os.path.join(
+                        ontology_path, 
+                        *settings.APPAREL_PATH, 
+                        sheet
+                    )
+                    sheet_img = Image.open(sheet_path).convert(settings.IMG_MODE)
+                    sheets.append(sheet_img)
 
-            for equip_state in equipment['animate_states']:
-                equip_state_conf = states_conf['animate_states'][equip_state]
-                equip_state_row = equip_state_conf['row']
-                equip_state_frames = equip_state_conf['frames']
+                if apparel['animate_states'] == 'all':
+                    animate_states = list(states_conf['animate_states'].keys())
+                else:
+                    animate_states = apparel['animate_states']
 
+                for equip_state in animate_states:
+                    equip_state_conf = states_conf['animate_states'][equip_state]
+                    equip_state_row = equip_state_conf['row']
+                    equip_state_frames = equip_state_conf['frames']
 
-                self.apparel['equipment'][equip_key][equip_state] = [] 
-                # append frames to list
+                    start_y = equip_state_row * sprite_dim[1]
+                    self.apparel[set_key][apparel_key][equip_state] = [] 
 
-        armor_conf = apparel_conf['armor']
-        self.apparel['armor'] = {}
+                    for i in range(equip_state_frames):
+                        start_x = i*sprite_dim[0]
+                        crop_box = (
+                            start_x, 
+                            start_y, 
+                            start_x + sprite_dim[0], 
+                            start_y + sprite_dim[1]
+                        )
+                        
+                        crop_sheets = [
+                            sheet.crop(crop_box) for sheet in sheets
+                        ]
+                    
+                        equip_state_frame = gui.new_image(sprite_dim)
 
-        for armor_key, armor in armor_conf.items():
-            self.apparel['armor'][armor_key] = {}
+                        for sheet in crop_sheets:
+                            equip_state_frame.paste(
+                                sheet, 
+                                (0,0), 
+                                sheet
+                            )
 
-            armor['sheets']
-            
-            if armor['animate_states'] == 'all':
-                animate_states = list(states_conf['animate_states'].keys())
-            else:
-                animate_states = armor['animate_states']
-
-            for armor_state in animate_states:
-                armor_state_conf = states_conf['animate_states'][armor_state]
-                armor_state_row = armor_state_conf['row']
-                armor_state_frames = armor_state_conf['frames']
-
-                self.apparel['armor'][armor_key][armor_state] = []
-                # append frames to list
+                        self.apparel[set_key][apparel_key][equip_state].append(equip_state_frame) 
 
     def _init_entity_assets(
         self, 
@@ -535,12 +551,9 @@ class Repo():
                         start_y + sprite_dim[1]
                     )
                     
-                    crop_sheets = []
-
-                    for sheet in sheets:
-                        crop_sheets.append(
-                            sheet.crop(crop_box)
-                        )
+                    crop_sheets = [ 
+                        sheet.crop(crop_box) for sheet in sheets 
+                    ]
                 
                     sprite_state_frame = gui.new_image(sprite_dim)
 
@@ -700,12 +713,14 @@ class Repo():
 
     def get_apparel_frame(
         self,
+        set_key: str,
         apparel_key: str,
         state_key: str,
         frame_index: int
     ) -> Union[Image.Image, None]:
-        if self.apparel.get(apparel_key) and \
-            self.apparel[apparel_key].get(state_key):
+        if self.apparel.get(set_key) and \
+            self.apparel[set_key].get(apparel_key) and \
+            self.apparel[set_key][apparel_key].get(state_key):
             # TODO: check if frame index is less than state frames?
-            return self.sprites[apparel_key][state_key][frame_index]
+            return self.sprites[set_key][apparel_key][state_key][frame_index]
         pass
