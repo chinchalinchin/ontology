@@ -328,6 +328,18 @@ class Renderer():
         game_world: world.World, 
         repository: repo.Repo
     ) -> None:
+        """_summary_
+
+        :param game_world: _description_
+        :type game_world: world.World
+        :param repository: _description_
+        :type repository: repo.Repo
+
+        .. note::
+            Base frame gets rendered no matter what, while accent frames only get rendered if sprite does not have armor equipped. If armor is equipped, armor frames are rendered in place.
+        .. note::
+            Equipment frame only gets rendered if it is binded to a sprite state in the apparel configuration file. 
+        """
         sprites = game_world.get_sprites(game_world.layer)
         for sprite_key, sprite in sprites.items():
             sprite_position = gui.int_tuple(
@@ -336,17 +348,20 @@ class Renderer():
                     sprite['position']['y']
                 )
             )
-            sprite_frame = repository.get_sprite_frame(
+
+            # BASE RENDERING
+            sprite_base_frame, sprite_accent_frame = repository.get_sprite_frame(
                 sprite_key, 
                 sprite['state'], 
                 sprite['frame']
             )
             self.world_frame.paste(
-                sprite_frame, 
+                sprite_base_frame, 
                 sprite_position, 
-                sprite_frame
+                sprite_base_frame
             )
 
+            # ARMOR RENDERING
             if sprite['armor']:
                 animate_states = game_world.apparel_state_conf['armor'][
                     sprite['armor']
@@ -372,6 +387,14 @@ class Renderer():
                         sprite_position,
                         armor_frame
                     )
+            else:
+                self.world_frame.paste(
+                    sprite_accent_frame,
+                    sprite_position,
+                    sprite_accent_frame
+                )
+
+            # EQUIPMENT RENDERING
             if any(
                 slot 
                 for slot 

@@ -9,7 +9,8 @@ include src/data/conf/self/*
 
 include src/data/assets/entities/pixies/*
 include src/data/assets/entities/nymphs/*
-include src/data/assets/entities/sprites/*
+include src/data/assets/entities/sprites/bases/*
+include src/data/assets/entities/sprites/accents/*
 
 include src/data/assets/forms/struts/*
 include src/data/assets/forms/tiles/*
