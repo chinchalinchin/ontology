@@ -47,6 +47,21 @@ class World():
     }
     ```
     """
+    apparel_state_conf = {}
+    """
+    ```python
+    self.apparel_state_conf = {
+        'apparel_1': {
+            'animate_states': [
+                'state_1',
+                'state_2',
+                # ...
+            ]
+        },
+        # ...
+    }
+    ```
+    """
     plate_properties = {}
     """
     """
@@ -287,6 +302,7 @@ class World():
             # skipping sheet conf and sprite size
             # NOTE: might need sprite size at some point.
         self.sprite_state_conf, self.sprite_properties, _, _= sprite_conf
+        self.apparel_state_conf = config.load_apparel_configuration()
         self.plate_properties, _ = config.load_plate_configuration()
         self.strut_properties, _ = config.load_strut_configuration()
         self.composite_conf = config.load_composite_configuration()

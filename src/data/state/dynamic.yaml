@@ -153,7 +153,7 @@ npcs:
       thrust: null
       slash: null
       shoot: null
-    armor: gold
+    armor: null
     packs:
       bag: null
       belt: null

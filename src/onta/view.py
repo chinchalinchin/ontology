@@ -347,6 +347,68 @@ class Renderer():
                 sprite_frame
             )
 
+            if sprite['armor']:
+                animate_states = game_world.apparel_state_conf['armor'][
+                    sprite['armor']
+                ]['animate_states']
+
+                if (
+                        isinstance(animate_states, str) and \
+                            animate_states == 'all'
+                    ) or \
+                    (
+                        isinstance(animate_states, list) and \
+                            sprite['state'] in animate_states
+                    ):
+
+                    armor_frame = repository.get_apparel_frame(
+                        'armor',
+                        sprite['armor'],
+                        sprite['state'],
+                        sprite['frame']
+                    )
+                    self.world_frame.paste(
+                        armor_frame,
+                        sprite_position,
+                        armor_frame
+                    )
+            if any(
+                slot 
+                for slot 
+                in sprite['slots'].values()
+            ):
+                enabled = [
+                    slot 
+                    for slot 
+                    in sprite['slots'].values()
+                    if slot
+                ]
+
+                for enabled_equipment in enabled:
+                    animate_states = game_world.apparel_state_conf['equipment'][enabled_equipment]['animate_states']
+
+
+                    if (
+                            isinstance(animate_states, str) and \
+                                animate_states == 'all'
+                        ) or \
+                        (
+                            isinstance(animate_states, list) and \
+                                sprite['state'] in animate_states
+                        ):
+
+                        equipment_frame = repository.get_apparel_frame(
+                            'equipment',
+                            enabled_equipment,
+                            sprite['state'],
+                            sprite['frame']
+                        )
+                        self.world_frame.paste(
+                            equipment_frame,
+                            sprite_position,
+                            equipment_frame
+                        )
+
 
 
     def _render_slots(

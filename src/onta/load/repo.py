@@ -724,5 +724,5 @@ class Repo():
             self.apparel[set_key].get(apparel_key) and \
             self.apparel[set_key][apparel_key].get(state_key):
             # TODO: check if frame index is less than state frames?
-            return self.sprites[set_key][apparel_key][state_key][frame_index]
+            return self.apparel[set_key][apparel_key][state_key][frame_index]
         pass

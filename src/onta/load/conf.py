@@ -124,6 +124,9 @@ class Conf():
         :return: _description_
         :rtype: dict
         """
+        # TODO: separate sheet conf from state conf.
+        #       used in repo to load in assets
+        #       used again in world for state information
         if not self.apparel_conf:
             self.apparel_conf = self._self_configuration('apparel')
         return self.apparel_conf
