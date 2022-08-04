@@ -300,64 +300,58 @@ class HUD():
         """
         log.debug('Initializing mirror positions on device...', 
             'HUD._init_mirror_positions')
-        mirror_styles = self.styles[self.media_size]['mirrors']
+        mirror_styles = self.styles.get(self.media_size).mirrors
         life_rank = (
-            self.properties['mirrors']['life']['columns'],
-            self.properties['mirrors']['life']['rows'],
+            self.properties.mirrors.life.columns,
+            self.properties.mirrors.life.rows,
         )
         # NOTE: dependent on 'unit' and 'empty' being the same dimensions...
         life_dim = (
-            self.hud_conf[self.media_size]['mirrors']['life']['unit']['size']['w'],
-            self.hud_conf[self.media_size]['mirrors']['life']['unit']['size']['h']
+            self.hud_conf.get(self.media_size).mirrors.life.unit.size.w,
+            self.hud_conf.get(self.media_size).mirrors.life.unit.size.h
         )
         margins= (
-            mirror_styles['margins']['w']*player_device.dimensions[0],
-            mirror_styles['margins']['h']*player_device.dimensions[1]
+            mirror_styles.margins.w * player_device.dimensions[0],
+            mirror_styles.margins.h * player_device.dimensions[1]
         )
 
-        if mirror_styles['alignment']['horizontal'] == 'right':
+        if mirror_styles.alignment.horizontal == 'right':
             x_start = player_device.dimensions[0] - \
                 margins[0] - \
-                life_rank[0] * life_dim[0]*(1 + mirror_styles['padding']['w']) 
-        elif mirror_styles['alignment']['horizontal'] == 'left':
+                life_rank[0] * life_dim[0]*(1 + mirror_styles.padding.w) 
+        elif mirror_styles.alignment.horizontal == 'left':
             x_start = margins[0]
         else: # center
             x_start = (player_device.dimensions[0] - \
-                life_rank[0] * life_dim[0] *(1 + mirror_styles['padding']['w']))/2
+                life_rank[0] * life_dim[0] *(1 + mirror_styles.padding.w))/2
         
-        if mirror_styles['alignment']['vertical'] == 'top':
+        if mirror_styles.alignment.vertical == 'top':
             y_start = margins[1]
-        elif mirror_styles['alignment']['vertical'] == 'bottom':
+        elif mirror_styles.alignment.vertical == 'bottom':
             y_start = player_device.dimensions[1] - \
                 margins[1] - \
-                life_rank[1] * life_dim[1] * (1 + mirror_styles['padding']['h'])
+                life_rank[1] * life_dim[1] * (1 + mirror_styles.padding.h)
         else: # center
             y_start = (player_device.dimensions[1] - \
-                life_rank[1] * life_dim[1] * (1 + mirror_styles['padding']['h']))/2
+                life_rank[1] * life_dim[1] * (1 + mirror_styles.padding.h))/2
 
 
-        if mirror_styles['stack'] == 'vertical':
-            life_rank = (
-                life_rank[1],
-                life_rank[0]
-            )
+        if mirror_styles.stack == 'vertical':
+            life_rank = (life_rank[1], life_rank[0])
             
         for row in range(life_rank[1]):
             for col in range(life_rank[0]):
 
                 if (row+1)*col == 0:
                     self.life_rendering_points.append(
-                        (
-                            x_start, 
-                            y_start
-                        )
+                        ( x_start, y_start)
                     )
                 else:
-                    if mirror_styles['stack'] == 'horizontal':
+                    if mirror_styles.stack == 'horizontal':
                         self.life_rendering_points.append(
                             (
                                 self.life_rendering_points[(row+1)*col - 1][0] + \
-                                    life_dim[0]*(1+mirror_styles['padding']['w']),
+                                    life_dim[0]*(1+mirror_styles.padding.w),
                                 self.life_rendering_points[(row+1)*col - 1][1]
                             )
                         )
@@ -367,7 +361,7 @@ class HUD():
                                 self.life_rendering_points[(row+1)*col - 1][0] + \
                                     life_dim[0],
                                 self.life_rendering_points[(row+1)*col - 1][1] + \
-                                    life_dim[1]*(1+mirror_styles['padding']['h'])
+                                    life_dim[1]*(1+mirror_styles.padding.h)
                             )
                         )
 
@@ -378,36 +372,35 @@ class HUD():
         self, 
         player_device: device.Device
     ) -> None:
-        log.debug('Initializing slot positions on device...', 
-            'HUD._init_slot_positions')
+        log.debug('Initializing slot positions on device...', 'HUD._init_slot_positions')
 
-        slots_total = self.properties['slots']['total']
-        slot_styles = self.styles[self.media_size]['slots']
-        x_margins = slot_styles['margins']['w']*player_device.dimensions[0]
-        y_margins = slot_styles['margins']['h']*player_device.dimensions[1]
+        slots_total = self.properties.slots.total
+        slot_styles = self.styles.get(self.media_size).slots
+        x_margins = slot_styles.margins.w * player_device.dimensions[0]
+        y_margins = slot_styles.margins.h * player_device.dimensions[1]
 
         cap_dim = static.rotate_dimensions(
-            self.hud_conf[self.media_size]['slots']['cap'],
-            self.styles[self.media_size]['slots']['stack']
+            self.hud_conf.get(self.media_size).slots.cap,
+            self.styles.get(self.media_size).slots.stack
         )
         buffer_dim = static.rotate_dimensions(
-            self.hud_conf[self.media_size]['slots']['buffer'],
-            self.styles[self.media_size]['slots']['stack']
+            self.hud_conf.get(self.media_size).slots.buffer,
+            self.styles.get(self.media_size).slots.stack
         )
         # NOTE: dependent on 'disabled', 'enabled' and 'active' 
         #       being the same dimensions...
         slot_dim = (
-            self.hud_conf[self.media_size]['slots']['disabled']['size']['w'],
-            self.hud_conf[self.media_size]['slots']['disabled']['size']['h']
+            self.hud_conf.get(self.media_size).slots.disabled.size.w,
+            self.hud_conf.get(self.media_size).slots.disabled.size.h
         )
 
-        if slot_styles['alignment']['horizontal'] == 'right':
+        if slot_styles.alignment.horizontal == 'right':
             x_start = player_device.dimensions[0] \
                 - x_margins \
                 - slots_total*slot_dim[0] \
                 - (slots_total-1)*buffer_dim[0] \
                 - 2*cap_dim[0]
-        elif slot_styles['alignment']['horizontal'] == 'center':
+        elif slot_styles.alignment.horizontal == 'center':
             x_start = (player_device.dimensions[0] \
                 - slots_total*slot_dim[0] \
                 - (slots_total-1)*buffer_dim[0] \
@@ -417,18 +410,18 @@ class HUD():
             x_start = x_margins
 
                 
-        if slot_styles['alignment']['vertical'] == 'bottom':
-            if slot_styles['stack'] == 'horizontal':
+        if slot_styles.alignment.vertical == 'bottom':
+            if slot_styles.stack == 'horizontal':
                 y_start = player_device.dimensions[1] \
                     - y_margins \
                     - slot_dim[1] 
-            elif slot_styles['stack'] == 'vertical':
+            elif slot_styles.stack == 'vertical':
                 y_start = player_device.dimensions[1] \
                     - y_margins \
                     - slots_total*slot_dim[1] \
                     - (slots_total-1)*buffer_dim[1] \
                     - 2*cap_dim[1]
-        elif slot_styles['alignment']['vertical'] == 'center':
+        elif slot_styles.alignment.vertical == 'center':
             y_start = (player_device.dimensions[1] \
                 - slots_total*slot_dim[1] \
                 - (slots_total-1)*buffer_dim[1] \
@@ -440,28 +433,22 @@ class HUD():
         # cap, slot, buffer, slot, buffer, slot, buffer, slot, cap
         # number of slots + number of buffers + number of caps
         num = slots_total + (slots_total - 1) + 2
-        if slot_styles['stack'] == 'horizontal':
+        if slot_styles.stack == 'horizontal':
             buffer_correction = (slot_dim[1] - buffer_dim[1])/2
             cap_correction = (slot_dim[1] - cap_dim[1])/2 
 
             for i in range(num):
                 if i == 0: # cap
                     self.slot_rendering_points.append(
-                        (
-                            x_start, 
-                            y_start + cap_correction
-                        )
+                        ( x_start, y_start + cap_correction )
                     )
                 elif i == 1: # slot
                     self.slot_rendering_points.append(
-                        (
-                            self.slot_rendering_points[i-1][0] + cap_dim[0], 
-                            y_start
-                        )
+                        ( self.slot_rendering_points[i-1][0] + cap_dim[0], y_start )
                     )
                 elif i == num - 1: # cap
                     self.slot_rendering_points.append(
-                        (
+                        ( 
                             self.slot_rendering_points[i-1][0] + slot_dim[0], 
                             y_start + cap_correction
                         )
@@ -475,32 +462,20 @@ class HUD():
                     )
                 else: # slot
                     self.slot_rendering_points.append(
-                        (
-                            self.slot_rendering_points[i-1][0] + buffer_dim[0], 
-                            y_start
-                        )
+                        ( self.slot_rendering_points[i-1][0] + buffer_dim[0], y_start )
                     )
 
-        elif slot_styles['stack'] == 'vertical':
+        elif slot_styles.stack == 'vertical':
             buffer_correction = (slot_dim[0] - buffer_dim[0])/2
             cap_correction = (slot_dim[0] - cap_dim[0])/2
             for i in range(num):
                 if i == 0: # cap
                     self.slot_rendering_points.append(
-                        (
-                            x_start + cap_correction, 
-                            y_start
-                        )
+                        ( x_start + cap_correction, y_start )
                     )
                 elif i == 1: # slot
                     self.slot_rendering_points.append(
-                        (
-                            x_start,
-                            self.slot_rendering_points[i-1][1] + cap_dim[1]
-                        )
-                    )
-                    self.slot_rendering_points.append(
-                        'disabled'
+                        ( x_start, self.slot_rendering_points[i-1][1] + cap_dim[1] )
                     )
                 elif i == num - 1: # cap
                     self.slot_rendering_points.append(
@@ -523,9 +498,6 @@ class HUD():
                             self.slot_rendering_points[i-1][1] + buffer_dim[1]
                         )
                     )
-                    self.slot_rendering_points.append(
-                        'disabled'
-                    )
 
     
     def _init_internal_state(
@@ -541,12 +513,10 @@ class HUD():
             This method is only used when the class is constructed, since the _World_ at that point is not well defined, (and anyway is not passed into the constructor), so `HUD` properties are hydrated directly from state file on initialization.
         """
         dynamic_state = state_ao.get_state('dynamic')
-        self.slots = dynamic_state['hero']['slots']
-        self.equipment = dynamic_state['hero']['inventory']['equipment']
-        self.packs = dynamic_state['hero']['packs']
-        self.mirrors = {
-            'life': dynamic_state['hero']['health']
-        }
+        self.slots = dynamic_state.hero.slots
+        self.equipment = dynamic_state.hero.inventory.equipment
+        self.packs = dynamic_state.hero.packs
+        setattr(self.mirrors, 'life', dynamic_state.hero.health)
 
         self._calculate_slot_frame_map()
         for pack_key in PACK_TYPES:
@@ -573,18 +543,14 @@ class HUD():
         #           same dimensions...
         slot_dim = self.get_slot_dimensions()
 
-        for i, slot_key in enumerate(self.properties['slots']['maps']):
+        for i, slot_key in enumerate(self.properties.slots.maps):
             if self.slots.get(slot_key):
                 slot_point = self.slot_rendering_points[
                     avatar_render_map[slot_key]
                 ]
                 avatar_dim = (
-                    self.avatar_conf['equipment'][
-                        self.slots[slot_key]
-                    ]['size']['w'],
-                    self.avatar_conf['equipment'][
-                        self.slots[slot_key]
-                    ]['size']['h']
+                    self.avatar_conf.equipment.get(self.slots.get(slot_key)).size.w,
+                    self.avatar_conf.equipment.get(self.slots.get(slot_key)).size.h
                 )
                 self.avatar_rendering_points.append(
                     (
@@ -592,18 +558,14 @@ class HUD():
                         slot_point[1] + ( slot_dim[1] - avatar_dim[1] ) / 2
                     )
                 )
-                self.avatar_frame_map[i] = self.slots[slot_key]
+                setattr(self.avatar_frame_map, i, self.slots.get(slot_key))
             else:
                 self.avatar_rendering_points.append(None)
-                self.avatar_frame_map[i] = None
+                setattr(self.avatar_frame_map, i, None)
         
         avatar_dim = (
-            self.avatar_conf['inventory'][
-                self.packs['bag']
-            ]['size']['w'],
-            self.avatar_conf['inventory'][
-                self.packs['bag']
-            ]['size']['h']
+            self.avatar_conf.inventory.get(self.packs.bag).size.w,
+            self.avatar_conf.inventory.get(self.packs.bag).size.h
         )
         bag_point = self.bag_rendering_points[0]
         bag_dim = self.get_bag_dimensions()
@@ -613,18 +575,15 @@ class HUD():
                 bag_point[1] + ( bag_dim[1] - avatar_dim[1] ) / 2
             )
         )
-        self.avatar_frame_map[
-            len(self.avatar_frame_map)
-        ] = self.packs['bag']
-
+        setattr(
+            self.avatar_frame_map,
+            len(self.avatar_frame_map),
+            self.packs.bag
+        )
 
         avatar_dim = (
-            self.avatar_conf['inventory'][
-                self.packs['belt']
-            ]['size']['w'],
-            self.avatar_conf['inventory'][
-                self.packs['belt']
-            ]['size']['h']
+            self.avatar_conf.inventory.get(self.packs.belt).size.w,
+            self.avatar_conf.inventory.get(self.packs.belt).size.h
         )
         belt_point = self.belt_rendering_points[0]
         belt_dim = self.get_belt_dimensions()
@@ -634,24 +593,25 @@ class HUD():
                 belt_point[1] + ( belt_dim[1] - avatar_dim[1] ) / 2
             )
         )
-        self.avatar_frame_map[
-            len(self.avatar_frame_map)
-        ] = self.packs['belt']
-
+        setattr(
+            self.avatar_frame_map,
+            len(self.avatar_frame_map),
+            self.packs.belt
+        )
         # TODO: wallet avatar rendering points
 
 
     def _calculate_slot_frame_map(
         self
-    ) -> dict:
+    ) -> munch.Munch:
         # TODO: need to calculate disabled slots from hero state
         #          i.e. will need to pull hero equipment, group by state binding
         #               and see if groups contain enabled equipment
         # TODO: use active if hero currently in that state!!!
-        self.slot_frame_map = {
+        self.slot_frame_map = munch.Munch({
             key: 'disabled' if val is None else 'enabled' 
             for key, val in self.slots.items()
-        }
+        })
 
 
     def _calculate_mirror_frame_map(
@@ -659,33 +619,33 @@ class HUD():
         mirror_key: str
     ) -> dict:
         if mirror_key == 'life':
-            self.life_frame_map = {
-                i: 'unit' if i <= self.mirrors['life']['current'] - 1 else 'empty'
-                for i in range(self.properties['mirrors']['life']['bounds'])
-                if i <= self.mirrors['life']['max'] - 1
-            }
+            self.life_frame_map = munch.Munch({
+                i: 'unit' if i <= self.mirrors.life.current - 1 else 'empty'
+                for i in range(self.properties.mirrors.life.bounds)
+                if i <= self.mirrors.life.max - 1
+            })
 
 
     def _calculate_pack_frame_map(
         self, 
         pack_key: str
     ) -> dict:
-        packset = self.hud_conf[self.media_size]['packs'][pack_key]
+        packset = self.hud_conf.get(self.media_size).packs.get(pack_key)
         if pack_key in ['bag', 'belt']:
             if pack_key == 'bag':
-                self.bag_frame_map = {
+                self.bag_frame_map = munch.Munch({
                     i: key for i, key in enumerate(packset)
-                }
+                })
             else:
-                self.belt_frame_map = {
+                self.belt_frame_map = munch.Munch({
                     i: key for i, key in enumerate(packset)
-                }
+                })
         # TODO: some other way to do this...
         elif pack_key == 'wallet':
-            self.wallet_frame_map = {
+            self.wallet_frame_map = munch.Munch({
                 0: 'display',
                 1: 'display'
-            }
+            })
 
 
     def _calcualte_avatar_frame_map(
@@ -698,7 +658,7 @@ class HUD():
     def get_frame_map(
         self, 
         hud_key: str
-    ) -> list:
+    ) -> munch.Munch:
         if hud_key == 'life':
             return self.life_frame_map
         if hud_key == 'bag':
@@ -716,7 +676,7 @@ class HUD():
     def get_cap_directions(
         self
     ) -> str:
-        if self.styles[self.media_size]['slots']['stack'] == 'horizontal':
+        if self.styles.get(self.media_size).slots.stack == 'horizontal':
             return ('left', 'right')
         return ('up', 'down')
 
@@ -724,14 +684,14 @@ class HUD():
     def get_buffer_direction(
         self
     ) -> str:
-        return self.styles[self.media_size]['slots']['stack']
+        return self.styles.get(self.media_size).slots.stack
 
 
     def get_buffer_dimensions(
         self
     ) -> tuple:
         return static.rotate_dimensions(
-            self.hud_conf[self.media_size]['slots']['buffer']
+            self.hud_conf.get(self.media_size).slots.buffer
         )
 
 
@@ -739,7 +699,7 @@ class HUD():
         self
     ) -> tuple:
         return static.rotate_dimensions(
-            self.hud_conf[self.media_size]['slots']['cap']
+            self.hud_conf.get(self.media_size).slots.cap
         )
 
 
@@ -747,21 +707,18 @@ class HUD():
         self
     ) -> tuple:
         if not self.bag_dimensions:
-            bagset = self.hud_conf[self.media_size]['packs']['bag']
+            bagset = self.hud_conf.get(self.media_size).packs.bag
 
             total_bag_width = 0
             for bag_piece in bagset.values():
-                total_bag_width += bag_piece['size']['w']
+                total_bag_width += bag_piece.size.w
 
             # dependent on both pieces being the same height
             # i.e., the pack sheet can only be broken in the 
             # horizontal direction
-            total_bag_height = bagset[list(bagset.keys())[0]]['size']['h']
+            total_bag_height = bagset.get(list(bagset.keys())[0]).size.h
 
-            self.bag_dimensions = (
-                total_bag_width,
-                total_bag_height
-            )
+            self.bag_dimensions = ( total_bag_width, total_bag_height )
         return self.bag_dimensions
 
 
@@ -769,17 +726,14 @@ class HUD():
         self
     ) -> tuple:
         if not self.belt_dimensions:
-            beltset = self.hud_conf[self.media_size]['packs']['belt']
+            beltset = self.hud_conf.get(self.media_size).packs.belt
 
             total_belt_width = 0
             for belt_piece in beltset.values():
-                total_belt_width += belt_piece['size']['w']
-            total_belt_height = beltset[list(beltset.keys())[0]]['size']['h']
+                total_belt_width += belt_piece.getsize.w
+            total_belt_height = beltset.get(list(beltset.keys())[0]).size.h
 
-            self.belt_dimensions = (
-                total_belt_width,
-                total_belt_height
-            )
+            self.belt_dimensions = ( total_belt_width, total_belt_height )
         return self.belt_dimensions
 
 
@@ -788,8 +742,8 @@ class HUD():
     ) -> tuple:
         if not self.wallet_dimensions:
             self.wallet_dimensions = (
-                self.hud_conf[self.media_size]['packs']['wallet']['display']['size']['w'], 
-                self.hud_conf[self.media_size]['packs']['wallet']['display']['size']['h']
+                self.hud_conf.get(self.media_size).packs.wallet.display.size.w, 
+                self.hud_conf.get(self.media_size).packs.wallet.display.size.h
             )
         return self.wallet_dimensions
 
@@ -797,7 +751,7 @@ class HUD():
     def get_rendering_points(
         self, 
         interface_key: str
-    ) -> Union[list, tuple]:
+    ) -> list:
         if interface_key  == 'slot':
             return self.slot_rendering_points
         elif interface_key == 'life':
@@ -816,8 +770,8 @@ class HUD():
         self
     ) -> tuple:
         return (
-            self.hud_conf[self.media_size]['slots']['disabled']['size']['w'], 
-            self.hud_conf[self.media_size]['slots']['disabled']['size']['h']
+            self.hud_conf.get(self.media_size).slots.disabled.size.w, 
+            self.hud_conf.get(self.media_size).slots.disabled.size.h
         )
 
 
@@ -826,22 +780,22 @@ class HUD():
         game_world: world.World
     ) ->  None:
         avatar_touched = False
-        if self.slots != game_world.hero['slots']:
-            self.slots = game_world.hero['slots'].copy()
+        if self.slots != game_world.hero.slots:
+            self.slots = game_world.hero.slots.copy()
             self._calculate_slot_frame_map()
             avatar_touched = True
 
-        if self.mirrors['life'] != game_world.hero['health']:
-            self.mirrors['life'] = game_world.hero['health'].copy()
+        if self.mirrors.life != game_world.hero.health:
+            setattr(self.mirrors, 'life', game_world.hero.health.copy())
             self._calculate_mirror_frame_map('life')
 
-        if self.packs['bag'] != game_world.hero['packs']['bag']:
-            self.packs['bag'] = game_world.hero['packs']['bag']
+        if self.packs.bag != game_world.hero.packs.bag:
+            setattr(self.packs, 'bag', game_world.hero.packs.bag)
             self._calculate_pack_frame_map('bag')
             avatar_touched = True
         
-        if self.packs['belt'] != game_world.hero['packs']['belt']:
-            self.packs['belt'] = game_world.hero['packs']['belt']
+        if self.packs.belt != game_world.hero.packs.belt:
+            self.packs.belt = game_world.hero.packs.belt
             self._calculate_pack_frame_map('belt')
             avatar_touched = True
 
