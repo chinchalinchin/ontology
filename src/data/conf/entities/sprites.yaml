@@ -10,7 +10,7 @@ state:
         -   cast_right
         -   thrust_up
         -   thrust_down
-        -   thurst_right
+        -   thrust_right
         -   thrust_left
         -   slash_up
         -   slash_down
@@ -32,7 +32,7 @@ state:
         -   use
         -   shield
         -   death
-    composition:
+    decomposition:
         action:
             -   cast
             -   thrust
@@ -46,7 +46,11 @@ state:
             -   left
             -   right
         end:
-            -   death    
+            -   death
+        null:
+            -   use
+            -   interact
+            -   shield    
     blocking_states:
         -   cast_up
         -   cast_down

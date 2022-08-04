@@ -28,7 +28,7 @@ class Repo():
     menus = {}
     slots = {}
     packs = {}
-    equipment = {}
+    apparel = {}
 
 
     @staticmethod
@@ -432,6 +432,24 @@ class Repo():
         # conceptually...
         # TODO: !!!
         bottle_conf = avatar_conf['avatars']['bottles']
+
+
+    def _init_apparel_assets(
+        self,
+        config: conf.Conf,
+        ontology_path: str
+    ) -> None:
+        apparel_conf = config.load_apparel_configuration()
+        states_conf, _, sheets_conf = config.load_sprite_configuration()
+
+        equipment_conf = apparel_conf['equipment']
+        armor_conf = apparel_conf['armor']
+
+
+        self.apparel = {
+            'armor': {},
+            'equipment': {}
+        }
 
 
     def _init_entity_assets(

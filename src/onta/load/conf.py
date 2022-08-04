@@ -21,7 +21,7 @@ class Conf():
     sense_conf = {}
     avatar_conf = {}
     composite_conf = {}
-    equipment_con = {}
+    apparel_conf = {}
 
     def __init__(self, data_dir = settings.DEFAULT_DIR):
         """
@@ -117,17 +117,17 @@ class Conf():
         return self.avatar_conf
 
 
-    def load_equipment_configuration(self) -> dict:
-        """Returns the parsed _Equipment_ configuration from the _data/conf/self/equipment.yaml_ file.
+    def load_apparel_configuration(self) -> dict:
+        """_summary_
 
-        :return: _Equipment_ specific configurations
+        :return: _description_
         :rtype: dict
         """
-        if not self.equipment_conf:
-            self.equipment_conf = self._self_configuration('equipment')
-        return self.equipment_conf
+        if not self.apparel_conf:
+            self.apparel_conf = self._self_configuration('apparel')
+        return self.apparel_conf
 
-
+        
     def load_composite_configuration(self) -> dict:
         """Returns the parsed _Composite_ configuration from the _data/conf/forms/composite.yaml_.file.
 

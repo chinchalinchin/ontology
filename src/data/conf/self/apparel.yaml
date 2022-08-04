@@ -2,68 +2,138 @@ equipment:
   bow:
     sheets: 
       - shoot_bow.png
-    state: shoot
+    animate_states:
+      - shoot_up
+      - shoot_down
+      - shoot_left
+      - shoot_right
+  crossbow:
+    sheets:
+      - thrust_crossbow.png
+    animate_states:
+      - thrust_up
+      - thrust_down
+      - thrust_left
+      - thrust_right
+      - walk_up
+      - walk_down
+      - walk_left
+      - walk_right
   axe:
     sheets: 
       - slash_axe.png
-    state: slash
-
+    animate_states: 
+      - slash_up
+      - slash_down
+      - slash_left
+      - slash_right
+      - walk_up
+      - walk_down
+      - walk_left
+      - walk_right
   knife:
     sheets: 
       - slash_knife.png
-    state: slash
-
+    animate_states:
+      - slash_up
+      - slash_down
+      - slash_left
+      - slash_right
+      - walk_up
+      - walk_down
+      - walk_left
+      - walk_right
   pickaxe:
     sheets: 
       - slash_pickaxe.png
-    state: slash
-
+    animate_states:
+      - slash_up
+      - slash_down
+      - slash_left
+      - slash_right
+      - walk_up
+      - walk_down
+      - walk_left
+      - walk_right
   sword:
     sheets:
       - slash_sword.png
-    state: slash
-
+    animate_states:
+      - slash_up
+      - slash_down
+      - slash_left
+      - slash_right
   warhammer:
     sheets:
       - slash_warhammer.png
-    state: slash
-
+    animate_states:
+      - slash_up
+      - slash_down
+      - slash_left
+      - slash_right
   blood_magic:
     sheets:
       - cast_bleeding_eye.png
       - cast_bloody_mouth.png
-    state: cast
-
+    aniamte_states:
+      - cast_down
+      - cast_left
+      - cast_right
+      - thrust_down
+      - thrust_left
+      - thrust_right
+      - walk_down
+      - walk_left
+      - walk_right
+      - slash_down
+      - slash_right
+      - slash_left
+      - shoot_down
+      - shoot_left
+      - shoot_right
   cane:
     sheets:
       - thrust_cane.png
-    state: thrust
-
+    animate_states:
+      - thrust_up
+      - thrust_down
+      - thrust_right
+      - thrust_left
+      - walk_left
+      - walk_right
+      - walk_down
   shovel:
     sheets:
       - thrust_shovel.png
-    state: thrust
-
+    animate_states:
+      - thrust_up
+      - thrust_down
+      - thrust_left
+      - thrust_right
+      - walk_up
+      - walk_down
+      - walk_left
+      - walk_right
   spear:
     sheets:
       - thrust_spear.png
-    state: thrust
-
+    animate_states:
+      - thrust_up
+      - thrust_down
+      - thrust_left
+      - thrust_right
   emblem_shield:
     sheets:
       - shield_emblem.png
-    state: shield
-
+    animate_states: all
   falcon_shield:
     sheets:
       - shield_falcon.png
-    state: shield
-
+    animate_states: all
   leather_shield:
     sheets:
       - shield_leather.png
-    state: shield
-
+    animate_states: all
 armor:
   bronze:
     sheets:
@@ -72,6 +142,7 @@ armor:
       - helmet_bronze.png
       - shoulders_bronze.png
       - gloves_leather.png
+    animate_states: all
   gold:
     sheets:
       - boots_sandals.png
@@ -79,6 +150,7 @@ armor:
       - helmet_gold.png
       - shoulders_gold.png
       - gloves_leather.png
+    animate_states: all
   plate:
     sheets:
       - boots_plate.png
@@ -87,3 +159,4 @@ armor:
       - greaves_plate.png
       - helmet_plate.png
       - shoulders_plate.png
+    animate_states: all
