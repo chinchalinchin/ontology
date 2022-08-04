@@ -152,12 +152,6 @@ state:
 
 
 hero:
-    ## should look like this:
-    #   sheets:
-    #       base: str
-    #       accents:
-    #           - str
-    #           # ..
     sheets:
         base: human_male_ivory.png
         accents:

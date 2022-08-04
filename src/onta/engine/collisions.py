@@ -63,6 +63,13 @@ def calculate_set_hitbox(
     return None
 
 
+def calculate_attackbox(
+
+) -> tuple:
+    # TODO:
+    pass
+
+
 def detect_collision(
     sprite_hitbox: tuple, 
     hitbox_list: list

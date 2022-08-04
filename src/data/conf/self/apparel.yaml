@@ -1,76 +1,4 @@
 equipment:
-  bow:
-    sheets: 
-      - bow.png
-    animate_states:
-      - shoot_up
-      - shoot_down
-      - shoot_left
-      - shoot_right
-  crossbow:
-    sheets:
-      - crossbow.png
-    animate_states:
-      - thrust_up
-      - thrust_down
-      - thrust_left
-      - thrust_right
-      - walk_up
-      - walk_down
-      - walk_left
-      - walk_right
-  axe:
-    sheets: 
-      - axe.png
-    animate_states: 
-      - slash_up
-      - slash_down
-      - slash_left
-      - slash_right
-      - walk_up
-      - walk_down
-      - walk_left
-      - walk_right
-  knife:
-    sheets: 
-      - knife.png
-    animate_states:
-      - slash_up
-      - slash_down
-      - slash_left
-      - slash_right
-      - walk_up
-      - walk_down
-      - walk_left
-      - walk_right
-  pickaxe:
-    sheets: 
-      - pickaxe.png
-    animate_states:
-      - slash_up
-      - slash_down
-      - slash_left
-      - slash_right
-      - walk_up
-      - walk_down
-      - walk_left
-      - walk_right
-  sword:
-    sheets:
-      - sword.png
-    animate_states:
-      - slash_up
-      - slash_down
-      - slash_left
-      - slash_right
-  warhammer:
-    sheets:
-      - warhammer.png
-    animate_states:
-      - slash_up
-      - slash_down
-      - slash_left
-      - slash_right
   blood_magic:
     sheets:
       - blood_magic_eyes.png
@@ -91,6 +19,509 @@ equipment:
       - shoot_down
       - shoot_left
       - shoot_right
+    action: cast
+    type: projectile
+    properties:
+      ammo: 
+        blood_summon:
+          speed:
+          distance:
+          power:
+          hitbox:
+            up:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            down:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            left:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            right:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+              right:
+      release_frame: 
+  bow:
+    sheets: 
+      - bow.png
+    animate_states:
+      - shoot_up
+      - shoot_down
+      - shoot_left
+      - shoot_right
+    action: shoot
+    type: projectile
+    properties:
+      ammo: 
+        arrow:
+          speed:
+          distance:
+          power:
+          hitbox:
+            up:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            down:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            left:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            right:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+              right:
+        fire_arrow:
+          speed:
+          distance:
+          power:
+          hitbox:
+            up:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            down:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            left:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            right:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+              right:
+        magic_arrow:
+          speed:
+          distance:
+          power:
+          hitbox:
+            up:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            down:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            left:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            right:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+              right:
+      release_frame: 
+  crossbow:
+    sheets:
+      - crossbow.png
+    animate_states:
+      - thrust_up
+      - thrust_down
+      - thrust_left
+      - thrust_right
+      - walk_up
+      - walk_down
+      - walk_left
+      - walk_right
+    action: thrust
+    type: projectile
+    properties:
+      release_frame: 
+      ammo: 
+        bolt:
+          speed:
+          distance:
+          power:
+          hitbox:
+            up:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            down:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            left:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            right:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+              right:
+        precise_bolt:
+          speed:
+          distance:
+          power:
+          hitbox:
+            up:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            down:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            left:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            right:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+        poison_bolt:
+          speed:
+          distance:
+          power:
+          hitbox:
+            up:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            down:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            left:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+            right:
+              offset:
+                x:
+                y:
+              size:
+                w:
+                h:
+  axe:
+    sheets: 
+      - axe.png
+    animate_states: 
+      - slash_up
+      - slash_down
+      - slash_left
+      - slash_right
+      - walk_up
+      - walk_down
+      - walk_left
+      - walk_right
+    action: slash
+    type: blunt
+    properties:
+      attack_frames:
+        - 
+        -
+      power:
+      hitbox: 
+        up:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        down:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        left:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        right:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+  knife:
+    sheets: 
+      - knife.png
+    animate_states:
+      - slash_up
+      - slash_down
+      - slash_left
+      - slash_right
+      - walk_up
+      - walk_down
+      - walk_left
+      - walk_right
+    type: blunt
+    action: slash
+    properties:
+      attack_frames:
+        - 
+        -
+      power:
+      hitbox: 
+        up:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        down:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        left:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        right:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+  pickaxe:
+    sheets: 
+      - pickaxe.png
+    animate_states:
+      - slash_up
+      - slash_down
+      - slash_left
+      - slash_right
+      - walk_up
+      - walk_down
+      - walk_left
+      - walk_right
+    type: blunt
+    action: slash
+    properties:
+      attack_frames:
+        - 
+        -
+      power:
+      hitbox: 
+        up:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        down:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        left:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        right:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+  sword:
+    sheets:
+      - sword.png
+    animate_states:
+      - slash_up
+      - slash_down
+      - slash_left
+      - slash_right
+    action: slash
+    type: blunt
+    properties:
+      attack_frames:
+        - 
+        -
+      power:
+      hitbox: 
+        up:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        down:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        left:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        right:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+  warhammer:
+    sheets:
+      - warhammer.png
+    animate_states:
+      - slash_up
+      - slash_down
+      - slash_left
+      - slash_right
+    action: slash
+    type: blunt
+    properties:
+      attack_frames:
+        - 
+        -
+      power:
+      hitbox: 
+        up:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        down:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        left:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        right:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
   cane:
     sheets:
       - cane.png
@@ -102,6 +533,42 @@ equipment:
       - walk_left
       - walk_right
       - walk_down
+    action: thrust
+    type: blunt
+    properties:
+      attack_frames:
+        - 
+        -
+      power:
+      hitbox: 
+        up:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        down:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        left:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        right:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
   shovel:
     sheets:
       - shovel.png
@@ -114,6 +581,42 @@ equipment:
       - walk_down
       - walk_left
       - walk_right
+    action: thrust
+    type: blunt
+    properties:
+      attack_frames:
+        - 
+        -
+      power:
+      hitbox: 
+        up:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        down:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        left:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        right:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
   spear:
     sheets:
       - spear.png
@@ -122,6 +625,44 @@ equipment:
       - thrust_down
       - thrust_left
       - thrust_right
+    action: thrust
+    type: blunt
+    properties:
+      attack_frames:
+        - 
+        -
+      power:
+      hitbox: 
+        up:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        down:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        left:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+        right:
+          offset:
+            x:
+            y:
+          size:
+            w:
+            h:
+
+
 shield:
   emblem_shield:
     sheets:
@@ -135,6 +676,8 @@ shield:
     sheets:
       - leather_shield.png
     animate_states: all
+
+
 armor:
   bronze:
     sheets:
@@ -144,6 +687,9 @@ armor:
       - bronze_shoulders.png
       - leather_gloves.png
     animate_states: all
+    properties:
+      slowdown: 0.10
+      resistance: 0.25
   gold:
     sheets:
       - sandals.png
@@ -152,6 +698,9 @@ armor:
       - gold_shoulders.png
       - leather_gloves.png
     animate_states: all
+    properties:
+      slowdown: 0.20
+      resistance: 0.5
   plate:
     sheets:
       - plate_boots.png
@@ -161,3 +710,6 @@ armor:
       - plate_helmet.png
       - plate_shoulders.png
     animate_states: all
+    properties:
+      slowdown: 0.30
+      resistance: 0.75
