@@ -443,14 +443,30 @@ class Repo():
         states_conf, _, sheets_conf = config.load_sprite_configuration()
 
         equipment_conf = apparel_conf['equipment']
+        self.apparel['equipment'] = {}
+
+        for equip_key, equipment in equipment_conf.items():
+            if equipment['animate_states'] == 'all':
+                # do something
+                continue
+
+            for equip_state in equipment['animate_states']:
+                equip_state_conf = states_conf['animate_states'][equip_state]
+                equip_state_row = equip_state_conf['row']
+                equip_state_frames = equip_state_conf['frames']
+
         armor_conf = apparel_conf['armor']
+        self.apparel['armor'] = {}
 
+        for armor_key, armor in armor_conf.items():
+            if armor['animate_states'] == 'all':
+                # do something
+                continue
 
-        self.apparel = {
-            'armor': {},
-            'equipment': {}
-        }
-
+            for armor_state in armor['animate_states']:
+                armor_state_conf = states_conf['animate_states'][armor_state]
+                armor_state_row = armor_state_conf['row']
+                armor_state_frames = armor_state_conf['frames']
 
     def _init_entity_assets(
         self, 
