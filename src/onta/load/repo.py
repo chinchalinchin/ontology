@@ -442,8 +442,8 @@ class Repo():
         apparel_conf = config.load_apparel_configuration()
         states_conf, _, sheets_conf, raw_dim = config.load_sprite_configuration()
         sprite_dim = (
-            raw_dim['size']['w'], 
-            raw_dim['size']['h']
+            raw_dim['w'], 
+            raw_dim['h']
         )
 
         equipment_conf = apparel_conf['equipment']
@@ -488,8 +488,8 @@ class Repo():
 
         states_conf, _, sheets_conf, raw_dim = config.load_sprite_configuration()
         sprite_dim = (
-            raw_dim['size']['w'], 
-            raw_dim['size']['h']
+            raw_dim['w'], 
+            raw_dim['h']
         )
 
         for sprite_key, sheet_conf in sheets_conf.items():
