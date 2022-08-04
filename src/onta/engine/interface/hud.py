@@ -1,5 +1,6 @@
-
 from typing import Union
+
+import munch
 import onta.settings as settings
 import onta.device as device
 import onta.world as world
@@ -20,45 +21,42 @@ class HUD():
         Frame maps and frame rendering points are kept as separate data structures due to the fact that frame maps are dynamically update according to the world state, whereas rendering points are static.
     """
 
-    hud_conf = {}
+    hud_conf = munch.Munch({})
     """
     ```python
     ```
     """
-    avatar_conf = {}
-    # NOTE: not sure if its the best idea storing this in HUD, the information
-    #       implicitly exists in repo already, but then would need a reference
-    #       to repo in HUD, so...this seems to be the ideal solution.
+    avatar_conf = munch.Munch({})
     """
     ```python
     ```
     """
-    styles = {}
+    styles = munch.Munch({})
     """
     ```python
     ```
     """
-    properties = {}
+    properties = munch.Munch({})
     """
     ```python
     ```
     """
-    slots = {}
+    slots = munch.Munch({})
     """
     ```python
     ```
     """
-    mirrors = {}
+    mirrors = munch.Munch({})
     """
     ```python
     ```
     """
-    packs = {}
+    packs = munch.Munch({})
     """
     ```python
     ```
     """
-    equipment = {}
+    equipment = munch.Munch({})
     """
     ```python
     ```
@@ -113,13 +111,13 @@ class HUD():
     ]
     ```
     """
-    avatar_frame_map = {}
-    pack_frame_map = {}
-    slot_frame_map = {}
-    life_frame_map = {}
-    belt_frame_map = {}
-    bag_frame_map = {}
-    wallet_frame_map = {}
+    avatar_frame_map = munch.Munch({})
+    pack_frame_map = munch.Munch({})
+    slot_frame_map = munch.Munch({})
+    life_frame_map = munch.Munch({})
+    belt_frame_map = munch.Munch({})
+    bag_frame_map = munch.Munch({})
+    wallet_frame_map = munch.Munch({})
 
     slot_dimensions = None
     bag_dimensions = None
@@ -169,20 +167,18 @@ class HUD():
         """
         sense_config = config.load_sense_configuration()
 
-        self.styles = sense_config['styles']
-        self.hud_conf = sense_config['hud']
-        self.sizes = sense_config['sizes']
-        self.breakpoints = static.format_breakpoints(
-            sense_config['breakpoints']
-        )
-        self.properties = sense_config['properties']
+        self.styles = sense_config.styles
+        self.hud_conf = sense_config.hud
+        self.sizes = sense_config.sizes
+        self.breakpoints = static.format_breakpoints(sense_config.breakpoints)
+        self.properties = sense_config.properties
         self.media_size = static.find_media_size(
             player_device, 
             self.sizes, 
             self.breakpoints
         )
 
-        self.avatar_conf = config.load_avatar_configuration()['avatars']
+        self.avatar_conf = config.load_avatar_configuration().avatars
 
 
     def _init_pack_positions(
@@ -198,13 +194,13 @@ class HUD():
             The necessity of open source assets imposes some obscurity on the proceedings. Essentially, each type of pack is composed of different pieces and is defined differently in the asset sheet, i.e. each pack type needs treated slightly differently when constructing its rendering position. See documentation for more information.
         """
         pack_margins = (
-            self.styles[self.media_size]['packs']['margins']['w'], 
-            self.styles[self.media_size]['packs']['margins']['h']
+            self.styles.get(self.media_size).packs.margins.w, 
+            self.styles.get(self.media_size).packs.margins.h
         )
-        pack_horizontal_align = self.styles[self.media_size]['packs']['alignment']['horizontal']
-        pack_vertical_align = self.styles[self.media_size]['packs']['alignment']['vertical']
+        pack_horizontal_align = self.styles.get(self.media_size).packs.alignment.horizontal
+        pack_vertical_align = self.styles.get(self.media_size).packs.alignment.vertical
 
-        bagset = self.hud_conf[self.media_size]['packs']['bag']
+        bagset = self.hud_conf.get(self.media_size).packs.bag
         bag_dim = self.get_bag_dimensions()
 
         # (0, left), (1, right)
@@ -225,9 +221,9 @@ class HUD():
                 x = self.bag_rendering_points[i-1][0] + prev_w
                 y = self.bag_rendering_points[i-1][1]
             self.bag_rendering_points.append((x,y))
-            prev_w = bag_piece['size']['w']
+            prev_w = bag_piece.size.w
 
-        beltset = self.hud_conf[self.media_size]['packs']['belt']
+        beltset = self.hud_conf.get(self.media_size).packs.belt
         belt_dim = self.get_belt_dimensions()
 
         # belt initial position only affected by pack vertical alignment
@@ -250,7 +246,7 @@ class HUD():
             self.belt_rendering_points.append(
                 (x,y)
             )
-            prev_w = belt_piece['size']['w']
+            prev_w = belt_piece.size.w
         
 
         wallet_dim = self.get_wallet_dimensions()
