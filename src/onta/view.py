@@ -149,38 +149,24 @@ class Renderer():
         game_world: world.World, 
         repository: repo.Repo
     ) -> None:
-        log.debug(
-            'Rendering tile sets', 
-            'Repo._render_tiles'
-        )
+        log.debug('Rendering tile sets', 'Repo._render_tiles')
 
         for layer in game_world.layers:
             for group_key, group_conf in game_world.get_tilesets(layer).items():
-                log.debug(
-                    f'Rendering {group_key} tiles', 
-                    'Repo._render_tiles'
-                )
+                log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
 
-                group_tile = repository.get_form_frame(
-                    'tiles', 
-                    group_key
-                )
-                for set_conf in group_conf['sets']:
+                group_tile = repository.get_form_frame('tiles', group_key)
+
+                for set_conf in group_conf.sets:
                     start = calculator.scale(
-                        (
-                            set_conf['start']['x'], 
-                            set_conf['start']['y']
-                        ), 
+                        ( set_conf.start.x, set_conf.start.y ), 
                         game_world.tile_dimensions,
-                        set_conf['start']['units']
+                        set_conf.start.units
                     )
-                    set_dim = (
-                        set_conf['multiply']['w'], 
-                        set_conf['multiply']['h']
-                    )
+                    set_dim = ( set_conf.multiply.w, set_conf.multiply.h)
 
                     log.debug(
-                        f'Rendering group set at {start[0], start[1]} with dimensions {set_dim[0], set_dim[1]}', 
+                        f'Rendering group set at {start} with dimensions {set_dim}', 
                         'Repo._render_tiles'
                     )
                     
@@ -236,7 +222,7 @@ class Renderer():
             for group_key, group_conf in unordered_groups.items():
                 if group_key in strut_keys or \
                     (game_world.plate_properties.get(group_key) and \
-                        game_world.plate_properties[group_key]['type'] == 'door'):
+                        game_world.plate_properties.get(group_key).type == 'door'):
 
                     log.debug(f'Rendering {group_key} struts', 'Repo._render_static_sets')
 
@@ -247,28 +233,16 @@ class Renderer():
 
                     for set_conf in group_conf['sets']:
                         start = calculator.scale(
-                            (
-                                set_conf['start']['x'], 
-                                set_conf['start']['y']
-                            ), 
+                            ( set_conf.start.x, set_conf.start.y ), 
                             game_world.tile_dimensions,
-                            set_conf['start']['units']
+                            set_conf.start.units
                         )
-                        log.debug(f'Rendering group set at {start[0], start[1]}', 
-                            'Repo._render_static_sets')
+                        log.debug(f'Rendering group set at {start}', 'Repo._render_static_sets')
 
                         if set_conf.get('cover'):
-                            self.static_cover_frame[layer].paste(
-                                group_frame, 
-                                start, 
-                                group_frame
-                            )
+                            self.static_cover_frame.get(layer).paste(group_frame, start, group_frame)
                         else:
-                            self.static_back_frame[layer].paste(
-                                group_frame, 
-                                start, 
-                                group_frame
-                            )
+                            self.static_back_frame.get(layer).paste(group_frame, start, group_frame)
     
 
     def _render_typed_platesets(
@@ -282,40 +256,25 @@ class Renderer():
         for group_key, group_conf in render_map.items():
             group_frame = repository.get_form_frame('plates', group_key)
 
-            for i, set_conf in enumerate(group_conf['sets']):
+            for i, set_conf in enumerate(group_conf.sets):
                 start = calculator.scale(
-                    (
-                        set_conf['start']['x'], 
-                        set_conf['start']['y']
-                    ), 
+                    ( set_conf.start.x, set_conf.start.y), 
                     game_world.tile_dimensions,
-                    set_conf['start']['units']
+                    set_conf.start.units
                 )
 
-                group_type = game_world.plate_properties[group_key]["type"]
+                group_type = game_world.plate_properties.group_key.type
                 log.infinite(f'Rendering "{group_type}" plate set at {start}', 
                     'Repo._render_typed_plates')
 
                 if group_type not in SWITCH_PLATES:
-                    self.world_frame.paste(
-                        group_frame, 
-                        start, 
-                        group_frame
-                    )
+                    self.world_frame.paste(group_frame, start, group_frame)
 
                 else:
                     if game_world.switch_map[game_world.layer][group_key][i]:
-                        self.world_frame.paste(
-                            group_frame['on'], 
-                            start, 
-                            group_frame['on']
-                        )
+                        self.world_frame.paste(group_frame.on, start, group_frame.on)
                     else: 
-                        self.world_frame.paste(
-                            group_frame['off'], 
-                            start, 
-                            group_frame['off'] 
-                        )
+                        self.world_frame.paste(group_frame.off, start, group_frame.off)
 
 
     def _render_static(
@@ -326,19 +285,13 @@ class Renderer():
         if cover:
             self.world_frame.paste(
                 self.static_cover_frame.get(layer_key), 
-                (
-                    0,
-                    0
-                ), 
+                ( 0,0 ), 
                 self.static_cover_frame.get(layer_key)
             )
         else:
             self.world_frame.paste(
                 self.static_back_frame.get(layer_key), 
-                (
-                    0,
-                    0
-                ), 
+                ( 0, 0 ), 
                 self.static_back_frame.get(layer_key)
             )
 
@@ -363,10 +316,7 @@ class Renderer():
         sprites = game_world.get_sprites(game_world.layer)
         for sprite_key, sprite in sprites.items():
             sprite_position = gui.int_tuple(
-                (
-                    sprite.position.x,
-                    sprite.position.y
-                )
+                ( sprite.position.x, sprite.position.y )
             )
 
             # BASE RENDERING
@@ -375,26 +325,15 @@ class Renderer():
                 sprite.state, 
                 sprite.frame
             )
-            self.world_frame.paste(
-                sprite_base_frame, 
-                sprite_position, 
-                sprite_base_frame
-            )
+            self.world_frame.paste( sprite_base_frame, sprite_position, sprite_base_frame)
 
             # ARMOR RENDERING
             if sprite.armor:
-                animate_states = game_world.apparel_state_conf.armor.get(
-                    sprite.armor
-                ).animate_states
+                animate_states = \
+                    game_world.apparel_state_conf.armor.get(sprite.armor).animate_states
 
-                if (
-                        isinstance(animate_states, str) and \
-                            animate_states == 'all'
-                    ) or \
-                    (
-                        isinstance(animate_states, list) and \
-                            sprite.state in animate_states
-                    ):
+                if (isinstance(animate_states, str) and animate_states == 'all') or \
+                    (isinstance(animate_states, list) and sprite.state in animate_states):
 
                     armor_frame = repository.get_apparel_frame(
                         'armor',
@@ -402,45 +341,21 @@ class Renderer():
                         sprite.state,
                         sprite.frame
                     )
-                    self.world_frame.paste(
-                        armor_frame,
-                        sprite_position,
-                        armor_frame
-                    )
+                    self.world_frame.paste(armor_frame, sprite_position, armor_frame)
             elif sprite_accent_frame:
-                self.world_frame.paste(
-                    sprite_accent_frame,
-                    sprite_position,
-                    sprite_accent_frame
-                )
+                self.world_frame.paste(sprite_accent_frame, sprite_position, sprite_accent_frame)
 
             # EQUIPMENT RENDERING
-            if any(
-                slot 
-                for slot 
-                in sprite.slots.values()
-            ):
-                enabled = [
-                    slot 
-                    for slot 
-                    in sprite.slots.values()
-                    if slot
-                ]
+            if any(slot for slot in sprite.slots.values()):
+                enabled = [ slot for slot in sprite.slots.values() if slot ]
 
                 for enabled_equipment in enabled:
-                    animate_states = game_world.apparel_state_conf.equipment.get(
-                        enabled_equipment
-                    ).animate_states
+                    animate_states = \
+                        game_world.apparel_state_conf.equipment.get(enabled_equipment).animate_states
 
 
-                    if (
-                            isinstance(animate_states, str) and \
-                                animate_states == 'all'
-                        ) or \
-                        (
-                            isinstance(animate_states, list) and \
-                                sprite.state in animate_states
-                        ):
+                    if (isinstance(animate_states, str) and animate_states == 'all') or \
+                        (isinstance(animate_states, list) and sprite.state in animate_states):
 
                         equipment_frame = repository.get_apparel_frame(
                             'equipment',
@@ -448,11 +363,7 @@ class Renderer():
                             sprite.state,
                             sprite.frame
                         )
-                        self.world_frame.paste(
-                            equipment_frame,
-                            sprite_position,
-                            equipment_frame
-                        )
+                        self.world_frame.paste(equipment_frame, sprite_position, equipment_frame)
 
 
 
@@ -467,53 +378,33 @@ class Renderer():
         buffer_dir = headsup_display.get_buffer_direction()
 
         # slot names
-        render_order = iter(
-            headsup_display.properties.slots.maps
-        )
+        render_order = iter(headsup_display.properties.slots.maps)
 
-        cap_frames = repository.get_slot_frames(
-            headsup_display.media_size, 
-            'cap'
-        )
-        buffer_frames = repository.get_slot_frames(
-            headsup_display.media_size, 
-            'buffer'
+        cap_frames = repository.get_slot_frames(headsup_display.media_size, 'cap')
+        buffer_frames = repository.get_slot_frames(headsup_display.media_size, 'buffer'
         )
         # TODO: I don't like the view creating the data structure here...
         # this should be done in repo...
-        slot_frames = {
-            'enabled': repository.get_slot_frames(
-                headsup_display.media_size, 
-                'enabled'
-            ),
-            'disabled':  repository.get_slot_frames(
-                headsup_display.media_size, 
-                'disabled'
-            ),
-            'active': repository.get_slot_frames(
-                headsup_display.media_size, 
-                'active'
-            )
-        }
+        slot_frames = munch.Munch({
+            'enabled': repository.get_slot_frames(headsup_display.media_size, 'enabled'),
+            'disabled':  repository.get_slot_frames(headsup_display.media_size, 'disabled'),
+            'active': repository.get_slot_frames(headsup_display.media_size, 'active')
+        })
 
         # cap, then alternate buffer and slot until last cap
         for i, render_point in enumerate(rendering_points):
             if i == 0:
-                render_frame = cap_frames[cap_dir[0]]
+                render_frame = cap_frames.get(cap_dir[0])
             elif i == len(rendering_points) -1:
-                render_frame = cap_frames[cap_dir[1]]
+                render_frame = cap_frames.get(cap_dir[1])
             elif i % 2 == 0:
-                render_frame = buffer_frames[buffer_dir]
+                render_frame = buffer_frames.get(buffer_dir)
             else:
                 render_key = next(render_order)
                 # map from slot name -> slot state -> slot frame
-                render_frame = slot_frames[headsup_display.get_frame_map('slot')[render_key]]
+                render_frame = slot_frames.get(headsup_display.get_frame_map('slot').get(render_key))
 
-            self.world_frame.paste(
-                render_frame, 
-                gui.int_tuple(render_point), 
-                render_frame
-            )
+            self.world_frame.paste(render_frame, gui.int_tuple(render_point), render_frame)
 
     
     def _render_mirrors(

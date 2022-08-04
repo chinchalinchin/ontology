@@ -578,7 +578,7 @@ class Repo():
         self, 
         breakpoint_key: str, 
         component_key: str
-    ) -> Union[Image.Image, None]:
+    ) -> Union[munch.Munch, None]:
         """_summary_
 
         :param breakpoint_key: _description_
