@@ -1,7 +1,7 @@
 equipment:
   bow:
     sheets: 
-      - shoot_bow.png
+      - bow.png
     animate_states:
       - shoot_up
       - shoot_down
@@ -9,7 +9,7 @@ equipment:
       - shoot_right
   crossbow:
     sheets:
-      - thrust_crossbow.png
+      - crossbow.png
     animate_states:
       - thrust_up
       - thrust_down
@@ -21,7 +21,7 @@ equipment:
       - walk_right
   axe:
     sheets: 
-      - slash_axe.png
+      - axe.png
     animate_states: 
       - slash_up
       - slash_down
@@ -33,7 +33,7 @@ equipment:
       - walk_right
   knife:
     sheets: 
-      - slash_knife.png
+      - knife.png
     animate_states:
       - slash_up
       - slash_down
@@ -45,7 +45,7 @@ equipment:
       - walk_right
   pickaxe:
     sheets: 
-      - slash_pickaxe.png
+      - pickaxe.png
     animate_states:
       - slash_up
       - slash_down
@@ -57,7 +57,7 @@ equipment:
       - walk_right
   sword:
     sheets:
-      - slash_sword.png
+      - sword.png
     animate_states:
       - slash_up
       - slash_down
@@ -65,7 +65,7 @@ equipment:
       - slash_right
   warhammer:
     sheets:
-      - slash_warhammer.png
+      - warhammer.png
     animate_states:
       - slash_up
       - slash_down
@@ -73,8 +73,8 @@ equipment:
       - slash_right
   blood_magic:
     sheets:
-      - cast_bleeding_eye.png
-      - cast_bloody_mouth.png
+      - blood_magic_eyes.png
+      - blood_magic_mouth.png
     aniamte_states:
       - cast_down
       - cast_left
@@ -93,7 +93,7 @@ equipment:
       - shoot_right
   cane:
     sheets:
-      - thrust_cane.png
+      - cane.png
     animate_states:
       - thrust_up
       - thrust_down
@@ -104,7 +104,7 @@ equipment:
       - walk_down
   shovel:
     sheets:
-      - thrust_shovel.png
+      - shovel.png
     animate_states:
       - thrust_up
       - thrust_down
@@ -116,7 +116,7 @@ equipment:
       - walk_right
   spear:
     sheets:
-      - thrust_spear.png
+      - spear.png
     animate_states:
       - thrust_up
       - thrust_down
@@ -124,39 +124,39 @@ equipment:
       - thrust_right
   emblem_shield:
     sheets:
-      - shield_emblem.png
+      - emblem_shield.png
     animate_states: all
   falcon_shield:
     sheets:
-      - shield_falcon.png
+      - falcon_shield.png
     animate_states: all
   leather_shield:
     sheets:
-      - shield_leather.png
+      - leather_shield.png
     animate_states: all
 armor:
   bronze:
     sheets:
-      - boots_sandals.png
-      - chest_bronze.png
-      - helmet_bronze.png
-      - shoulders_bronze.png
-      - gloves_leather.png
+      - sandals.png
+      - bronze_chest.png
+      - bronze_helmet.png
+      - bronze_shoulders.png
+      - leather_gloves.png
     animate_states: all
   gold:
     sheets:
-      - boots_sandals.png
-      - chest_gold.png
-      - helmet_gold.png
-      - shoulders_gold.png
-      - gloves_leather.png
+      - sandals.png
+      - gold_chest.png
+      - gold_helmet.png
+      - gold_shoulders.png
+      - leather_gloves.png
     animate_states: all
   plate:
     sheets:
-      - boots_plate.png
-      - chest_plate.png
-      - gloves_plate.png
-      - greaves_plate.png
-      - helmet_plate.png
-      - shoulders_plate.png
+      - plate_boots.png
+      - plate_chest.png
+      - plate_gloves.png
+      - plate_greaves.png
+      - plate_helmet.png
+      - plate_shoulders.png
     animate_states: all

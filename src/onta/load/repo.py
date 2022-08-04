@@ -440,7 +440,8 @@ class Repo():
         ontology_path: str
     ) -> None:
         apparel_conf = config.load_apparel_configuration()
-        states_conf, _, sheets_conf, raw_dim = config.load_sprite_configuration()
+        # NOTE: skip properties and sheet configuration
+        states_conf, _, _, raw_dim = config.load_sprite_configuration()
         sprite_dim = (
             raw_dim['w'], 
             raw_dim['h']
@@ -450,6 +451,10 @@ class Repo():
         self.apparel['equipment'] = {}
 
         for equip_key, equipment in equipment_conf.items():
+            self.apparel['equipment'][equip_key] = {}
+
+            equipment['sheets']
+
             if equipment['animate_states'] == 'all':
                 animate_states = list(states_conf['animate_states'].keys())
             else:
@@ -461,12 +466,17 @@ class Repo():
                 equip_state_frames = equip_state_conf['frames']
 
 
-                self.apparel['equipment'][equip_state] = None # cropped image
+                self.apparel['equipment'][equip_key][equip_state] = [] 
+                # append frames to list
 
         armor_conf = apparel_conf['armor']
         self.apparel['armor'] = {}
 
         for armor_key, armor in armor_conf.items():
+            self.apparel['armor'][armor_key] = {}
+
+            armor['sheets']
+            
             if armor['animate_states'] == 'all':
                 animate_states = list(states_conf['animate_states'].keys())
             else:
@@ -477,7 +487,8 @@ class Repo():
                 armor_state_row = armor_state_conf['row']
                 armor_state_frames = armor_state_conf['frames']
 
-                self.apparel['armor'][armor_state] = None # cropped image
+                self.apparel['armor'][armor_key][armor_state] = []
+                # append frames to list
 
     def _init_entity_assets(
         self, 
@@ -665,22 +676,36 @@ class Repo():
 
     def get_sprite_frame(
         self, 
-        sprite: str, 
-        state: str, 
-        frame: int
+        sprite_key: str, 
+        state_key: str, 
+        frame_index: int
     ) -> Union[Image.Image, None]:
         """Return the _Sprite frame corresponding to a given state and a frame iteration.
 
-        :param sprite: _Sprite_ lookup key
-        :type sprite: str
-        :param state: State lookup key 
-        :type state: str
-        :param frame: Frame iteration lookup index; this variable represents which frame in the state animation the sprite is currently in.
-        :type frame: int
-        :return: An image representing the approprite _Sprite_ state frame.
+        :param sprite_key: _Sprite_ lookup key
+        :type sprite_key: str
+        :param state_key: State lookup key 
+        :type state_key: str
+        :param frame_index: Frame iteration lookup index; this variable represents which frame in the state animation the sprite is currently in.
+        :type frame_index: int
+        :return: An image representing the appropriate _Sprite_ state frame, or `None` if frame doesn't exist.
         :rtype: Union[Image.Image, None]
         """
-        if self.sprites.get(sprite) and \
-            self.sprites[sprite].get(state):
-            return self.sprites[sprite][state][frame]
+        if self.sprites.get(sprite_key) and \
+            self.sprites[sprite_key].get(state_key):
+            # TODO: check if frame index is less than state frames?
+            return self.sprites[sprite_key][state_key][frame_index]
         return None
+
+
+    def get_apparel_frame(
+        self,
+        apparel_key: str,
+        state_key: str,
+        frame_index: int
+    ) -> Union[Image.Image, None]:
+        if self.apparel.get(apparel_key) and \
+            self.apparel[apparel_key].get(state_key):
+            # TODO: check if frame index is less than state frames?
+            return self.sprites[apparel_key][state_key][frame_index]
+        pass
