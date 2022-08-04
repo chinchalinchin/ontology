@@ -127,7 +127,7 @@ class Conf():
             self.apparel_conf = self._self_configuration('apparel')
         return self.apparel_conf
 
-        
+
     def load_composite_configuration(self) -> dict:
         """Returns the parsed _Composite_ configuration from the _data/conf/forms/composite.yaml_.file.
 
@@ -171,19 +171,19 @@ class Conf():
 
                 self.sprite_property_conf[sprite_key] = sprite_conf['properties']
                 self.sprite_sheet_conf[sprite_key] = {
-                    'sheets': sprite_conf['sheets'],
-                    'size': sprites_conf['size']
+                    'sheets': sprite_conf['sheets']
                 }
 
             self.sprite_state_conf = sprites_conf['state']
 
+            # reformat list of dicts into keyed dict
             self.sprite_state_conf['animate_states'] =  {
                     state['state']: {
                         'row': state['row'],
                         'frames': state['frames']
                     } for state in self.sprite_state_conf['animate_states']
                 }
-        return self.sprite_state_conf, self.sprite_property_conf, self.sprite_sheet_conf
+        return self.sprite_state_conf, self.sprite_property_conf, self.sprite_sheet_conf, sprites_conf['size']
 
 
     def load_strut_configuration(self) -> tuple:

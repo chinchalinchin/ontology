@@ -440,33 +440,44 @@ class Repo():
         ontology_path: str
     ) -> None:
         apparel_conf = config.load_apparel_configuration()
-        states_conf, _, sheets_conf = config.load_sprite_configuration()
+        states_conf, _, sheets_conf, raw_dim = config.load_sprite_configuration()
+        sprite_dim = (
+            raw_dim['size']['w'], 
+            raw_dim['size']['h']
+        )
 
         equipment_conf = apparel_conf['equipment']
         self.apparel['equipment'] = {}
 
         for equip_key, equipment in equipment_conf.items():
             if equipment['animate_states'] == 'all':
-                # do something
-                continue
+                animate_states = list(states_conf['animate_states'].keys())
+            else:
+                animate_states = equipment['animate_states']
 
             for equip_state in equipment['animate_states']:
                 equip_state_conf = states_conf['animate_states'][equip_state]
                 equip_state_row = equip_state_conf['row']
                 equip_state_frames = equip_state_conf['frames']
 
+
+                self.apparel['equipment'][equip_state] = None # cropped image
+
         armor_conf = apparel_conf['armor']
         self.apparel['armor'] = {}
 
         for armor_key, armor in armor_conf.items():
             if armor['animate_states'] == 'all':
-                # do something
-                continue
+                animate_states = list(states_conf['animate_states'].keys())
+            else:
+                animate_states = armor['animate_states']
 
-            for armor_state in armor['animate_states']:
+            for armor_state in animate_states:
                 armor_state_conf = states_conf['animate_states'][armor_state]
                 armor_state_row = armor_state_conf['row']
                 armor_state_frames = armor_state_conf['frames']
+
+                self.apparel['armor'][armor_state] = None # cropped image
 
     def _init_entity_assets(
         self, 
@@ -475,14 +486,13 @@ class Repo():
     ) -> None:
         log.debug('Initializing sprite assets...', 'Repo._init_sprite_assets')
 
-        states_conf, _, sheets_conf = config.load_sprite_configuration()
+        states_conf, _, sheets_conf, raw_dim = config.load_sprite_configuration()
+        sprite_dim = (
+            raw_dim['size']['w'], 
+            raw_dim['size']['h']
+        )
 
         for sprite_key, sheet_conf in sheets_conf.items():
-            sprite_dim = (
-                sheets_conf[sprite_key]['size']['w'], 
-                sheets_conf[sprite_key]['size']['h']
-            )
-            
             sheets, self.sprites[sprite_key] = [], {}
 
             for sheet in sheet_conf['sheets']:

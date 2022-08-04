@@ -284,7 +284,9 @@ class World():
         """
         log.debug('Initializing world configuration...', 'World._init_conf')
         sprite_conf = config.load_sprite_configuration()
-        self.sprite_state_conf, self.sprite_properties, _ = sprite_conf
+            # skipping sheet conf and sprite size
+            # NOTE: might need sprite size at some point.
+        self.sprite_state_conf, self.sprite_properties, _, _= sprite_conf
         self.plate_properties, _ = config.load_plate_configuration()
         self.strut_properties, _ = config.load_strut_configuration()
         self.composite_conf = config.load_composite_configuration()
