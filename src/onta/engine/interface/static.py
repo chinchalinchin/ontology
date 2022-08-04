@@ -1,3 +1,5 @@
+import munch
+
 from onta import device
 
 
@@ -12,12 +14,12 @@ def format_breakpoints(
     :rtype: list
     """
     return [
-        (break_point['w'], break_point['h']) 
+        (break_point.w, break_point.h) 
             for break_point in break_points
     ]
 
 def rotate_dimensions(
-    rotator: dict, 
+    rotator: munch.Munch, 
     direction: str
 ) -> tuple:
     """The width and height of a cap relative to a direction, `vertical` or `horizontal`.
@@ -29,28 +31,16 @@ def rotate_dimensions(
     :return: _description_
     :rtype: _type_
     """
-    if rotator['definition'] in ['left', 'right', 'horizontal']:
+    if rotator.definition in ['left', 'right', 'horizontal']:
         if direction =='horizontal':
-            return (
-                rotator['size']['w'], 
-                rotator['size']['h']
-            )
+            return ( rotator.size.w, rotator.size.h )
         if direction == 'vertical':
-            return (
-                rotator['size']['h'], 
-                rotator['size']['w']
-            )
-    elif rotator['definition'] in ['up', 'down', 'vertical']:
+            return ( rotator.size.h, rotator.size.w )
+    elif rotator.definition in ['up', 'down', 'vertical']:
         if direction == 'horizontal':
-            return (
-                rotator['size']['h'], 
-                rotator['size']['w']
-            )
+            return ( rotator.size.h, rotator.size.w )
         if direction == 'vertical':
-            return (
-                rotator['size']['w'], 
-                rotator['size']['h']
-            )
+            return ( rotator.size.w, rotator.size.h )
 
 def find_media_size(
     player_device: device.Device, 
