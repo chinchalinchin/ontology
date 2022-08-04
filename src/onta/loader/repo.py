@@ -610,34 +610,50 @@ class Repo():
         avatar_conf = config.load_avatar_configuration()
 
         for avatarset_key in AVATAR_TYPES:
-            self.avatars[avatarset_key] = {}
+            setattr(
+                self.avatars,
+                avatarset_key,
+                munch.Munch({})
+            )
 
-            for avatar_key, avatar in avatar_conf['avatars'][avatarset_key].items():
-                if not avatar or avatar.get('path') is None:
+            for avatar_key, avatar in avatar_conf.avatars.get(avatarset_key).items():
+                if not avatar or \
+                    not avatar.get('path'):
                     continue
 
                 x,y = (
-                    avatar['position']['x'],
-                    avatar['position']['y']
+                    avatar.position.x,
+                    avatar.position.y
                 )
                 w,h = (
-                    avatar['size']['w'],
-                    avatar['size']['h']
+                    avatar.size.w,
+                    avatar.size.h
                 )
                 image_path = os.path.join(
                     ontology_path,
                     *settings.AVATAR_PATH,
-                    avatar['path']
+                    avatar.path
                 )
-                buffer = Image.open(image_path).convert(settings.IMG_MODE)
-                self.avatars[avatarset_key][avatar_key] = buffer.crop(
-                    (x,y,w+x,h+y)
+                buffer = gui.open_image(
+                    image_path
+                )
+                setattr(
+                    self.avatars.get(avatarset_key),
+                    avatar_key,
+                    buffer.crop(
+                        (
+                            x,
+                            y,
+                            w + x,
+                            h + y
+                        )
+                    )
                 )
 
         # Bottle Configuration is slightly different, so I wonder if I should separate them
         # conceptually...
         # TODO: !!!
-        bottle_conf = avatar_conf['avatars']['bottles']
+        bottle_conf = avatar_conf.avatars.bottles
 
 
     def _init_apparel_assets(
@@ -645,46 +661,67 @@ class Repo():
         config: conf.Conf,
         ontology_path: str
     ) -> None:
-        apparel_conf = config.load_apparel_configuration()
-        # NOTE: skip properties and sheet configuration
-        states_conf, _, _, raw_dim = config.load_sprite_configuration()
-        sprite_dim = (
-            raw_dim['w'], 
-            raw_dim['h']
-        )
+        apparel_conf = \
+            config.load_apparel_configuration()
+        states_conf, _, _, sprite_dim = \
+            config.load_sprite_configuration()
 
-        for set_key in list(apparel_conf.keys()):
-
-            set_conf = apparel_conf[set_key]
-            self.apparel[set_key] = {}
+        for set_key, set_conf in apparel_conf.items():
+            setattr(
+                self.apparel,
+                set_key,
+                munch.Munch({})
+            )
 
             for apparel_key, apparel in set_conf.items():
-                self.apparel[set_key][apparel_key] = {}
+                setattr(
+                    self.apparel.get(
+                        set_key
+                    ),
+                    apparel_key,
+                    munch.Munch({})
+                )
 
                 sheets = []
-                for sheet in apparel['sheets']:
-                    sheet_path = os.path.join(
-                        ontology_path, 
-                        *settings.APPAREL_PATH, 
-                        sheet
+                for sheet in apparel.sheets:
+                    sheet_img = gui.open_image(
+                        os.path.join(
+                            ontology_path, 
+                            *settings.APPAREL_PATH, 
+                            sheet
+                        )
                     )
-                    sheet_img = Image.open(sheet_path).convert(settings.IMG_MODE)
                     sheets.append(sheet_img)
 
-                if apparel['animate_states'] == 'all':
-                    animate_states = list(states_conf['animate_states'].keys())
+                if apparel.animate_states == 'all':
+                    animate_states = list(
+                        states_conf.animate_states.keys()
+                    )
                 else:
-                    animate_states = apparel['animate_states']
+                    animate_states = apparel.animate_states
 
                 for equip_state in animate_states:
-                    equip_state_conf = states_conf['animate_states'][equip_state]
-                    equip_state_row = equip_state_conf['row']
-                    equip_state_frames = equip_state_conf['frames']
+                    equip_state_conf = states_conf.animate_states.get(
+                        equip_state
+                    )
+                    equip_state_row = equip_state_conf.row
+                    equip_state_frames = equip_state_conf.frames
 
                     start_y = equip_state_row * sprite_dim[1]
-                    self.apparel[set_key][apparel_key][equip_state] = [] 
 
-                    for i in range(equip_state_frames):
+                    setattr(
+                        self.apparel.get(
+                            set_key
+                        ).get(
+                            apparel_key
+                        ),
+                        equip_state,
+                        []
+                    )
+
+                    for i in range(
+                        equip_state_frames
+                    ):
                         start_x = i*sprite_dim[0]
                         crop_box = (
                             start_x, 
@@ -694,19 +731,35 @@ class Repo():
                         )
                         
                         crop_sheets = [
-                            sheet.crop(crop_box) for sheet in sheets
+                            sheet.crop(
+                                crop_box
+                            ) for sheet 
+                            in sheets
                         ]
                     
-                        equip_state_frame = gui.new_image(sprite_dim)
+                        equip_state_frame = gui.new_image(
+                            sprite_dim
+                        )
 
                         for sheet in crop_sheets:
                             equip_state_frame.paste(
                                 sheet, 
-                                (0,0), 
+                                (
+                                    0,
+                                    0
+                                ), 
                                 sheet
                             )
 
-                        self.apparel[set_key][apparel_key][equip_state].append(equip_state_frame) 
+                        self.apparel.get(
+                            set_key
+                        ).get(
+                            apparel_key
+                        ).get(
+                            equip_state
+                        ).append(
+                            equip_state_frame
+                        ) 
 
     def _init_entity_assets(
         self, 
@@ -718,35 +771,48 @@ class Repo():
             'Repo._init_entity_assets'
         )
 
-        states_conf, _, sheets_conf, raw_dim = config.load_sprite_configuration()
-        sprite_dim = (
-            raw_dim.w, 
-            raw_dim.h
+        states_conf, _, sheets_conf, sprite_dim = config.load_sprite_configuration()
+
+        setattr(
+            self.sprites,
+            'base',
+            munch.Munch({})
+        )
+        setattr(
+            self.sprites,
+            'accents',
+            munch.Munch({})
         )
 
         for sprite_key, sheet_conf in sheets_conf.items():
-            accent_sheets = []
-            self.sprite_bases[sprite_key] = {}
-            self.sprite_accents[sprite_key] = {}
-
-            base_path = os.path.join(
-                ontology_path,
-                *settings.SPRITE_BASE_PATH,
-                sheet_conf.base
+            setattr(
+                self.sprites.base,
+                sprite_key,
+                munch.Munch({})
             )
+            setattr(
+                self.sprite.accents,
+                sprite_key,
+                munch.Munch({})
+            )
+            accent_sheets = []
+
             base_img = gui.open_image(
-                base_path
+                os.path.join(
+                    ontology_path,
+                    *settings.SPRITE_BASE_PATH,
+                    sheet_conf.base
+                )
             )
 
             if sheet_conf.get('accents'):
                 for sheet in sheet_conf.accents:
-                    sheet_path = os.path.join(
-                        ontology_path, 
-                        *settings.SPRITE_ACCENT_PATH, 
-                        sheet
-                    )
                     sheet_img = gui.open_image(
-                        sheet_path
+                        os.path.join(
+                            ontology_path, 
+                            *settings.SPRITE_ACCENT_PATH, 
+                            sheet
+                        )
                     )
                     accent_sheets.append(
                         sheet_img
@@ -760,9 +826,16 @@ class Repo():
                 )
                 frames += state_frames
 
-                self.sprite_bases[sprite_key][state_key] = []
-                self.sprite_accents[sprite_key][state_key] = []
-
+                setattr(
+                    self.sprites.base.get(sprite_key),
+                    state_key,
+                    []
+                )
+                setattr(
+                    self.sprites.accents.get(sprite_key),
+                    state_key,
+                    []
+                )
                 start_y = state_row * sprite_dim[1]
 
                 for i in range(state_frames):
@@ -774,15 +847,20 @@ class Repo():
                         start_y + sprite_dim[1]
                     )
 
-                    sprite_base_frame = base_img.crop(crop_box)
+                    sprite_base_frame = base_img.crop(
+                        crop_box
+                    )
                     
                     accent_crop_sheets = [ 
-                        sheet.crop(crop_box) 
-                        for sheet 
+                        sheet.crop(
+                            crop_box
+                        ) for sheet 
                         in accent_sheets 
                     ]
                 
-                    sprite_accent_frame = gui.new_image(sprite_dim)
+                    sprite_accent_frame = gui.new_image(
+                        sprite_dim
+                    )
 
                     for sheet in accent_crop_sheets:
                         sprite_accent_frame.paste(
@@ -791,15 +869,15 @@ class Repo():
                             sheet
                         )
 
-                    self.sprite_bases[sprite_key][state_key].append(
+                    self.sprite.base.get(sprite_key).get(state_key).append(
                         sprite_base_frame
                     )
-                    self.sprite_accents[sprite_key][state_key].append(
+                    self.sprite.accents.get(sprite_key).get(state_key).append(
                         sprite_accent_frame
                     )
 
             log.debug(
-                f'{sprite_key} configuration: states - {len(self.sprite_bases[sprite_key])}, \
+                f'{sprite_key} configuration: states - {len(self.sprite.bases.get(sprite_key))}, \
                 frames - {frames}', 
                 'Repo._init_entity_assets'
             )
@@ -940,17 +1018,23 @@ class Repo():
         :rtype: Union[Image.Image, None]
         """
         if (
-                self.sprite_bases.get(sprite_key) and \
-                    self.sprite_accents.get(sprite_key)
+                self.sprites.base.get(sprite_key) and \
+                    self.sprites.accents.get(sprite_key)
             ) and (
-                self.sprite_bases[sprite_key].get(state_key) and \
-                    self.sprite_accents[sprite_key].get(state_key)
+                self.sprites.base.get(sprite_key).get(state_key) and \
+                    self.sprites.accents(sprite_key).get(state_key)
             ):
                 # TODO: check if frame index is less than state frames?
                 return (
-                    self.sprite_bases[sprite_key][state_key][frame_index],
-                    self.sprite_accents[sprite_key][state_key][frame_index]
+                    self.sprites.base.get(sprite_key).get(state_key)[frame_index],
+                    self.sprites.accents.get(sprite_key).get(state_key)[frame_index]
                 )
+        elif self.sprites.base.get(sprite_key) and \
+            self.sprites.base.get(sprite_key).get(state_key):
+            return (
+                self.sprites.bases.get(sprite_key).get(state_key)[frame_index],
+                None
+            )
         return (None, None)
 
 

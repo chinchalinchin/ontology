@@ -263,7 +263,10 @@ class Conf():
             self.sprite_state_conf, 
             self.sprite_property_conf, 
             self.sprite_sheet_conf, 
-            self.sprite_size
+            (
+                self.sprite_size.w,
+                self.sprite_size.h
+            )
         )
 
 

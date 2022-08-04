@@ -1,6 +1,8 @@
 import sys
 from collections import OrderedDict
 
+import munch
+
 from PySide6 import QtWidgets, QtGui
 from PIL import Image
 
@@ -57,13 +59,13 @@ class Renderer():
     player_device = None
     """
     """
-    static_cover_frame = None
-    """
-    """
-    static_back_frame = None
-    """
-    """
     world_frame = None
+    """
+    """
+    static_cover_frame = munch.Munch({})
+    """
+    """
+    static_back_frame = munch.Munch({})
     """
     """
 
@@ -203,7 +205,11 @@ class Renderer():
                                 )
 
 
-    def _render_sets(self, game_world: world.World, repository: repo.Repo):
+    def _render_sets(
+        self, 
+        game_world: world.World, 
+        repository: repo.Repo
+    ) -> None:
         """Renders static sets onto the static world frames. This method is only called once per session, when the game engine is initializing.
 
         :param game_world: _description_
@@ -265,7 +271,11 @@ class Renderer():
                             )
     
 
-    def _render_typed_platesets(self, game_world: world.World, repository: repo.Repo):
+    def _render_typed_platesets(
+        self, 
+        game_world: world.World, 
+        repository: repo.Repo
+    ) -> None:
         unordered_groups = game_world.get_platesets(game_world.layer)
         render_map = self.render_ordered_dict(unordered_groups)
 
@@ -308,18 +318,28 @@ class Renderer():
                         )
 
 
-    def _render_static(self, layer, cover: bool = False):
+    def _render_static(
+        self, 
+        layer_key: str, 
+        cover: bool = False
+    ):
         if cover:
             self.world_frame.paste(
-                self.static_cover_frame[layer], 
-                (0,0), 
-                self.static_cover_frame[layer]
+                self.static_cover_frame.get(layer_key), 
+                (
+                    0,
+                    0
+                ), 
+                self.static_cover_frame.get(layer_key)
             )
         else:
             self.world_frame.paste(
-                self.static_back_frame[layer], 
-                (0,0), 
-                self.static_back_frame[layer]
+                self.static_back_frame.get(layer_key), 
+                (
+                    0,
+                    0
+                ), 
+                self.static_back_frame.get(layer_key)
             )
 
 
@@ -344,16 +364,16 @@ class Renderer():
         for sprite_key, sprite in sprites.items():
             sprite_position = gui.int_tuple(
                 (
-                    sprite['position']['x'],
-                    sprite['position']['y']
+                    sprite.position.x,
+                    sprite.position.y
                 )
             )
 
             # BASE RENDERING
             sprite_base_frame, sprite_accent_frame = repository.get_sprite_frame(
                 sprite_key, 
-                sprite['state'], 
-                sprite['frame']
+                sprite.state, 
+                sprite.frame
             )
             self.world_frame.paste(
                 sprite_base_frame, 
@@ -362,10 +382,10 @@ class Renderer():
             )
 
             # ARMOR RENDERING
-            if sprite['armor']:
-                animate_states = game_world.apparel_state_conf['armor'][
-                    sprite['armor']
-                ]['animate_states']
+            if sprite.armor:
+                animate_states = game_world.apparel_state_conf.armor.get(
+                    sprite.armor
+                ).animate_states
 
                 if (
                         isinstance(animate_states, str) and \
@@ -373,21 +393,21 @@ class Renderer():
                     ) or \
                     (
                         isinstance(animate_states, list) and \
-                            sprite['state'] in animate_states
+                            sprite.state in animate_states
                     ):
 
                     armor_frame = repository.get_apparel_frame(
                         'armor',
-                        sprite['armor'],
-                        sprite['state'],
-                        sprite['frame']
+                        sprite.armor,
+                        sprite.state,
+                        sprite.frame
                     )
                     self.world_frame.paste(
                         armor_frame,
                         sprite_position,
                         armor_frame
                     )
-            else:
+            elif sprite_accent_frame:
                 self.world_frame.paste(
                     sprite_accent_frame,
                     sprite_position,
@@ -398,17 +418,19 @@ class Renderer():
             if any(
                 slot 
                 for slot 
-                in sprite['slots'].values()
+                in sprite.slots.values()
             ):
                 enabled = [
                     slot 
                     for slot 
-                    in sprite['slots'].values()
+                    in sprite.slots.values()
                     if slot
                 ]
 
                 for enabled_equipment in enabled:
-                    animate_states = game_world.apparel_state_conf['equipment'][enabled_equipment]['animate_states']
+                    animate_states = game_world.apparel_state_conf.equipment.get(
+                        enabled_equipment
+                    ).animate_states
 
 
                     if (
@@ -417,14 +439,14 @@ class Renderer():
                         ) or \
                         (
                             isinstance(animate_states, list) and \
-                                sprite['state'] in animate_states
+                                sprite.state in animate_states
                         ):
 
                         equipment_frame = repository.get_apparel_frame(
                             'equipment',
                             enabled_equipment,
-                            sprite['state'],
-                            sprite['frame']
+                            sprite.state,
+                            sprite.frame
                         )
                         self.world_frame.paste(
                             equipment_frame,
@@ -446,7 +468,7 @@ class Renderer():
 
         # slot names
         render_order = iter(
-            headsup_display.properties['slots']['maps']
+            headsup_display.properties.slots.maps
         )
 
         cap_frames = repository.get_slot_frames(
