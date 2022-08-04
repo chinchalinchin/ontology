@@ -9,20 +9,20 @@ class Conf():
     """
 
     conf_dir = None
-    sprite_size = {}
-    sprite_state_conf = {}
-    sprite_property_conf = {}
-    sprite_sheet_conf = {}
-    strut_property_conf = {}
-    strut_sheet_conf = {}
-    plate_property_conf = {}
-    plate_sheet_conf = {}
-    tile_sheet_conf = {}
-    control_conf = {}
-    sense_conf = {}
-    avatar_conf = {}
-    composite_conf = {}
-    apparel_conf = {}
+    sprite_size = munch.Munch({})
+    sprite_state_conf = munch.Munch({})
+    sprite_property_conf = munch.Munch({})
+    sprite_sheet_conf = munch.Munch({})
+    strut_property_conf = munch.Munch({})
+    strut_sheet_conf = munch.Munch({})
+    plate_property_conf = munch.Munch({})
+    plate_sheet_conf = munch.Munch({})
+    tile_sheet_conf = munch.Munch({})
+    control_conf = munch.Munch({})
+    sense_conf = munch.Munch({})
+    avatar_conf = munch.Munch({})
+    composite_conf = munch.Munch({})
+    apparel_conf = munch.Munch({})
 
     def __init__(
         self, 
@@ -136,7 +136,7 @@ class Conf():
         :return: _Control_ specific configurations.
         :rtype: _type_
         """
-        if not self.control_conf:
+        if len(self.control_conf) == 0:
             self.control_conf = self._self_configuration('controls')
         return self.control_conf
 
@@ -159,7 +159,7 @@ class Conf():
     def load_avatar_configuration(
         self
     ) -> munch.Munch:
-        if not self.avatar_conf:
+        if len(self.avatar_conf) == 0:
             self.avatar_conf = self._self_configuration('avatars')
         return self.avatar_conf
 
@@ -175,7 +175,7 @@ class Conf():
         # TODO: separate sheet conf from state conf.
         #       used in repo to load in assets
         #       used again in world for state information
-        if not self.apparel_conf:
+        if len(self.apparel_conf) == 0:
             self.apparel_conf = self._self_configuration('apparel')
         return self.apparel_conf
 
@@ -188,7 +188,7 @@ class Conf():
         :return: _Composite_ specific configurations
         :rtype: dict
         """
-        if not self.composite_conf:
+        if len(self.composite_conf) == 0:
             self.composite_conf = self._form_configuration('composite')
         return self.composite_conf
 
@@ -202,7 +202,7 @@ class Conf():
         :rtype: dict
         """
 
-        if not self.tile_sheet_conf:
+        if len(self.tile_sheet_conf) == 0:
             self.tile_sheet_conf = self._form_configuration('tiles')
         return self.tile_sheet_conf
 
@@ -218,32 +218,46 @@ class Conf():
         .. note:
             The _Sprite_ configuration is split into the different sections used by different components of the engine, so that irrelevant information isn't passed to components that do not require it. The `onta.world.World` class uses the property and state information to manage _Sprite_ states. The `onta.loader.repo.Repo` class uses the state and sheet information to load the spritesheets into memory.
         """    
-        if not self.sprite_state_conf or \
-            not self.sprite_property_conf or \
-            not self.sprite_sheet_conf or \
+        if len(self.sprite_state_conf) == 0 or \
+            len(self.sprite_property_conf) == 0 or \
+            len(self.sprite_sheet_conf) == 0 or \
             not self.sprite_size:
 
             sprites_conf = self._entity_configuration('sprites')
 
             for sprite_key, sprite_conf in sprites_conf.items():
-                if sprite_key in ['state', 'size']:
+                if sprite_key in [
+                    'state', 
+                    'size'
+                ]:
                     continue
+                
+                setattr(
+                    self.sprite_property_conf,
+                    sprite_key,
+                    sprite_conf.properties
+                )
+                setattr(
+                    self.sprite_sheet_conf,
+                    sprite_key,
+                    sprite_conf.sheets
+                )
 
-                self.sprite_property_conf[sprite_key] = sprite_conf['properties']
-                self.sprite_sheet_conf[sprite_key] = {
-                    'sheets': sprite_conf['sheets']
-                }
+            self.sprite_state_conf = sprites_conf.state
+            setattr(
+                self.sprite_state_conf,
+                'animate_states',
+                munch.Munch({
+                    state_conf.state: munch.Munch({
+                        'row': state_conf.row,
+                        'frames': state_conf.frames
+                    }) 
+                    for state_conf
+                    in self.sprite_state_conf.animate_states
+                })
+            )
 
-            self.sprite_state_conf = sprites_conf['state']
-
-            self.sprite_state_conf['animate_states'] =  {
-                    state['state']: {
-                        'row': state['row'],
-                        'frames': state['frames']
-                    } for state in self.sprite_state_conf['animate_states']
-                }
-
-            self.sprite_size = sprites_conf['size']
+            self.sprite_size = sprites_conf.size
 
         return (
             self.sprite_state_conf, 

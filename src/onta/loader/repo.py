@@ -1,6 +1,7 @@
 import os
 from typing import Union
 from PIL import Image
+import munch
 
 import onta.settings as settings
 import onta.loader.conf as conf
@@ -17,24 +18,25 @@ APPAREL_TYPES = [ 'armor', 'equipment' ]
 
 class Repo():
 
-    tiles = {}
-    struts = {}
-    plates = {}
-    tracks = {}
-    pixies = {}
-    nymphs = {}
-    sprites = {}
+    tiles = munch.Munch({})
+    struts = munch.Munch({})
+    plates = munch.Munch({})
+    tracks = munch.Munch({})
+    pixies = munch.Munch({})
+    nymphs = munch.Munch({})
+    sprites = munch.Munch({})
 
+    # todo: base and accent attr
     sprite_bases = {}
     sprite_accents = {}
     
-    avatars = {}
-    bottles = {}
-    mirrors = {}
-    menus = {}
-    slots = {}
-    packs = {}
-    apparel = {}
+    avatars = munch.Munch({})
+    bottles = munch.Munch({})
+    mirrors = munch.Munch({})
+    menus = munch.Munch({})
+    slots = munch.Munch({})
+    packs = munch.Munch({})
+    apparel = munch.Munch({})
 
 
     @staticmethod
@@ -65,6 +67,11 @@ class Repo():
         if direction == 'vertical':
             return (0, 90)
         return (90, 0)
+
+
+    @staticmethod
+    def open_image():
+        pass
 
 
     def __init__(
@@ -115,11 +122,17 @@ class Repo():
         """
 
         for asset_type in STATIC_ASSETS_TYPES:
-            log.debug(f'Initializing {asset_type} assets...', 'Repo._init_static_assets')
+            log.debug(
+                f'Initializing {asset_type} assets...', 
+                'Repo._init_static_assets'
+            )
 
             if asset_type == 'tiles':
                 assets_conf = config.load_tile_configuration()
-                w, h = assets_conf['tile']['w'], assets_conf['tile']['h']
+                w, h = (
+                    assets_conf.tile.w, 
+                    assets_conf.tile.h
+                )
             elif asset_type == 'struts':
                 asset_props, assets_conf = config.load_strut_configuration()
             elif asset_type == 'plates':
@@ -129,72 +142,162 @@ class Repo():
                 # need tile dimensions here...but tile dimensions don't exist until world
                 # pulls static state...
                 if asset_type != 'tiles':
-                    w, h = asset_conf['size']['w'], asset_conf['size']['h']
+                    w, h = (
+                        asset_conf.size.w, 
+                        asset_conf.size.h
+                    )
 
                 if asset_conf.get('path'):
-                    if asset_type == 'plates' and asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
-                        on_x, on_y = asset_conf['position']['on_position']['x'], asset_conf['position']['on_position']['y']
-                        off_x, off_y = asset_conf['position']['off_position']['x'], asset_conf['position']['off_position']['y']
+                    if asset_type == 'plates' and \
+                        asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
+                        on_x, on_y = (
+                            asset_conf.position.on_position.x, 
+                            asset_conf.position.on_position.y
+                        )
+                        off_x, off_y = (
+                            asset_conf.position.off_position.x, 
+                            asset_conf.position.off_position.y
+                        )
                     else:
-                        x, y = asset_conf['position']['x'], asset_conf['position']['y']
+                        x, y = (
+                            asset_conf.position.x, 
+                            asset_conf.position.y
+                        )
 
                     if asset_type == 'tiles':
                         image_path = os.path.join(
                             ontology_path, 
                             *settings.TILE_PATH, 
-                            asset_conf['path']
+                            asset_conf.path
                         )
                     elif asset_type == 'struts':
                         image_path = os.path.join(
                             ontology_path, 
                             *settings.STRUT_PATH, 
-                            asset_conf['path']
+                            asset_conf.path
                         )
                     elif asset_type == 'plates':                         
                         image_path = os.path.join(
                             ontology_path, 
                             *settings.PLATE_PATH, 
-                            asset_conf['path']
+                            asset_conf.path
                         )
 
-                    buffer = Image.open(image_path).convert(settings.IMG_MODE)
+                    buffer = gui.open_image(
+                        image_path
+                    )
 
-                    log.debug( f"{asset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                        'Repo._init_static_assets')
+                    log.debug(
+                        f"{asset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                        'Repo._init_static_assets'
+                    )
 
                     if asset_type == 'tiles':
-                        self.tiles[asset_key] = buffer.crop((x,y,w+x,h+y))
+                        setattr(
+                            self.tiles,
+                            asset_key,
+                            buffer.crop(
+                                (
+                                    x,
+                                    y,
+                                    w + x,
+                                    h + y
+                                )
+                            )
+                        )
                     elif asset_type == 'struts':
-                        self.struts[asset_key] = buffer.crop((x,y,w+x,h+y))
+                        setattr(
+                            self.struts,
+                            asset_key,
+                            buffer.crop(
+                                (
+                                    x,
+                                    y,
+                                    w + x,
+                                    h + y
+                                )
+                            )
+                        )
                     elif asset_type == 'plates':
                         if asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
-                            self.plates[asset_key] = {
-                                'on': buffer.crop((on_x,on_y,w+on_x,h+on_y)),
-                                'off': buffer.crop((off_x,off_y,w+off_x,h+off_y))
-                            }
+                            setattr(
+                                self.plates,
+                                asset_key,
+                                munch.Munch({
+                                    'on': buffer.crop(
+                                        (
+                                            on_x,
+                                            on_y,
+                                            w + on_x,
+                                            h + on_y)
+                                    ),
+                                    'off': buffer.crop(
+                                        (
+                                            off_x,
+                                            off_y,
+                                            w + off_x,
+                                            h + off_y
+                                        )
+                                    )
+                                })
+                            )
                         else:
-                            self.plates[asset_key] = buffer.crop((x,y,w+x,h+y))
+                            setattr(
+                                self.plates,
+                                asset_key,
+                                buffer.crop(
+                                    (
+                                        x,
+                                        y,
+                                        w + x,
+                                        h + y
+                                    )
+                                )
+                            )
                         
                 elif asset_conf.get('channels'):
                     channels = (
-                        asset_conf['channels']['r'], 
-                        asset_conf['channels']['g'],
-                        asset_conf['channels']['b'],
-                        asset_conf['channels']['a']
+                        asset_conf.channels.r, 
+                        asset_conf.channels.g,
+                        asset_conf.channels.b,
+                        asset_conf.channels.a
                     )
-                    buffer = Image.new(settings.IMG_MODE, (w,h), channels)
+                    buffer = gui.channels(
+                        (
+                            w,
+                            h
+                        ),
+                        channels
+                    )
+
                     if asset_type == 'tiles':
-                        self.tiles[asset_key] = buffer
+                        setattr(
+                            self.tiles,
+                            asset_key,
+                            buffer
+                        )
                     elif asset_type == 'struts':
-                        self.struts[asset_key] = buffer
+                        setattr(
+                            self.struts,
+                            asset_key,
+                            buffer
+                        )
                     elif asset_type == 'plates':
                         if asset_props[asset_key].get('type') in SWITCH_PLATES_TYPES:
-                            self.plates[asset_key] = {
-                                'on': buffer,
-                                'off': buffer
-                            }
+                            setattr(
+                                self.plates,
+                                asset_key,
+                                munch.Munch({
+                                    'on': buffer,
+                                    'off': buffer
+                                })
+                            )
                         else:
-                            self.plates[asset_key] = buffer
+                            setattr(
+                                self.plates,
+                                asset_key,
+                                buffer
+                            )
  
 
     def _init_sense_assets(
@@ -212,13 +315,41 @@ class Repo():
         .. note::
             A _Slot_ is defined in a single direction, but used in multiple directions. When styles are applied the engine will need to be aware which direction the definition is in, so it can rotate the _Slot_ component to its appropriate position based on the declared style. In other words, _Slot_\s are a pain.
         """
+        log.debug(
+            f'Initializing sense assets...', 
+            'Repo._init_sense_assets'
+        )
+
         interface_conf = config.load_sense_configuration()
 
-        for size in interface_conf['sizes']:
-            self.slots[size]= {}
+        for size in interface_conf.sizes:
 
-            slotset = interface_conf['hud'][size]['slots']
-            log.debug(f'Initializing slot assets...', 'Repo._init_interface_assets')
+            if not self.slots.get(size):
+                setattr(
+                    self.slots,
+                    size,
+                    munch.Munch({})
+                )
+            if not self.mirrors.get(size):
+                setattr(
+                    self.mirrors,
+                    size,
+                    munch.Munch({})
+                )
+            if not self.packs.get(size):
+                setattr(
+                    self.packs,
+                    size,
+                    munch.Munch({})
+                )
+            if not self.menus.get(size):
+                setattr(
+                    self.menus,
+                    size,
+                    munch.Munch({})
+                )
+
+            slotset = interface_conf.hud.get(size).slots
             
             ## SLOT INITIALIZATION
             #   NOTE: for (disabled, {slot}), (enabled, {slot}), (active, {slot}), 
@@ -228,76 +359,100 @@ class Repo():
                     continue
 
                 w, h = (
-                    slot['size']['w'], 
-                    slot['size']['h']
+                    slot.size.w, 
+                    slot.size.h
                 )   
                 x, y = (
-                    slot['position']['x'], 
-                    slot['position']['y']
+                    slot.position.x, 
+                    slot.position.y
                 )
 
-                image_path = os.path.join(
-                    ontology_path,
-                    *settings.SENSES_PATH,
-                    slot['path']
+                buffer = gui.open_image(
+                    os.path.join(
+                        ontology_path,
+                        *settings.SENSES_PATH,
+                        slot.path
+                    )
                 )
-                buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
-                log.debug( f"Slot {slot_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                    'Repo._init_interface_assets')
+                log.debug( 
+                    f"Slot {slot_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                    'Repo._init_interface_assets'
+                )
 
-                slot_conf = interface_conf['hud'][size]['slots']
+                slot_conf = interface_conf.hud.get(size).slots
                 buffer = buffer.crop(
-                    (x,y,w+x,h+y)
+                    (
+                        x,
+                        y,
+                        w + x,
+                        h + y
+                    )
                 )
 
                 # this is annoying, but necessary to allow slots to be rotated...
                 if slot_key == 'cap':
-                    (down_adjust, left_adjust, right_adjust, up_adjust) = \
+                    adjust = \
                         self.adjust_cap_rotation(
-                            slot_conf['cap']['definition']
+                            slot_conf.cap.definition
                         )
-                    self.slots[size][slot_key] = {
-                        'up': buffer.rotate(
-                            up_adjust,
-                            expand=True
-                        ),
-                        'left': buffer.rotate(
-                            left_adjust,
-                            expand=True
-                        ),
-                        'right': buffer.rotate(
-                            right_adjust,
-                            expand=True
-                        ),
-                        'down': buffer.rotate(
-                            down_adjust,
-                            expand=True
-                        )
-                    }
-                elif slot_key == 'buffer':
-                    (vertical_adjust, horizontal_adjust) = \
-                        self.adjust_buffer_rotation(
-                        slot_conf['buffer']['definition']  
+                    setattr(
+                        self.slots.get(size),
+                        slot_key,
+                        munch.Munch({
+                            'down': buffer.rotate(
+                                adjust[0],
+                                expand=True
+                            ),
+                            'left': buffer.rotate(
+                                adjust[1],
+                                expand=True
+                            ),
+                            'right': buffer.rotate(
+                                adjust[2],
+                                expand=True
+                            ),
+                            'up': buffer.rotate(
+                                adjust[3],
+                                expand=True
+                            ),
+                        })
                     )
-                    self.slots[size][slot_key] = {
-                        'vertical': buffer.rotate(
-                            vertical_adjust,
-                            expand=True
-                        ),
-                        'horizontal': buffer.rotate(
-                            horizontal_adjust,
-                            expand=True
+                elif slot_key == 'buffer':
+                    adjust = \
+                        self.adjust_buffer_rotation(
+                            slot_conf.buffer.definition 
                         )
-                    }
-                elif slot_key in ['disabled', 'enabled', 'active']:
-                    self.slots[size][slot_key] = buffer
+                    setattr(
+                        self.slots.get(size),
+                        slot_key,
+                        munch.Munch({
+                            'vertical': buffer.rotate(
+                            adjust[0],
+                            expand=True
+                            ),
+                            'horizontal': buffer.rotate(
+                                adjust[1],
+                                expand=True
+                            )
+                        })
+                    )
+                elif slot_key in [
+                    'disabled', 
+                    'enabled', 
+                    'active'
+                ]:
+                    setattr(
+                        self.slots.get(size),
+                        slot_key,
+                        buffer
+                    )
 
             ########################
             # TODO: everything ever slot can be parameterized in a loop to condense this method
             #       However, should it be parameterized?
-            self.mirrors[size] = {}
-            mirror_set = interface_conf['hud'][size]['mirrors']
+
+            mirror_set = interface_conf.hud.get(size).mirrors
 
             ## MIRROR INITIALIZATION
             # NOTE: For (life, {mirror}), (magic, {mirror})
@@ -305,7 +460,12 @@ class Repo():
                 if not mirror:
                     continue
 
-                self.mirrors[size][mirror_key] = {}
+                if not self.mirrors.get(size).get(mirror_key):
+                    setattr(
+                        self.mirrors.get(size),
+                        mirror_key,
+                        munch.Munch({})
+                    )
                 
                 # for (unit, fill), (empty, fill)
                 for fill_key, fill in mirror.items():
@@ -313,28 +473,37 @@ class Repo():
                         continue
 
                     x,y = (
-                        fill['position']['x'], 
-                        fill['position']['y']
+                        fill.position.x, 
+                        fill.position.y
                     )
                     w, h = (
-                        fill['size']['w'], 
-                        fill['size']['h']
+                        fill.size.w, 
+                        fill.size.h
                     )
                     
-                    image_path = os.path.join(
-                        ontology_path,
-                        *settings.SENSES_PATH,
-                        fill['path']
+                    buffer = gui.open_image(
+                        os.path.join(
+                            ontology_path,
+                            *settings.SENSES_PATH,
+                            fill.path
+                        )
                     )
-                    buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
-                    self.mirrors[size][mirror_key][fill_key] = buffer.crop(
-                        (x,y,w+x,h+y)
+                    setattr(
+                        self.mirrors.get(size).get(mirror_key),
+                        fill_key,
+                        buffer.crop(
+                            (
+                                x,
+                                y,
+                                w + x,
+                                h + y
+                            )
+                        )
                     )
             ########################
 
-            self.packs[size]= {}
-            pack_set = interface_conf['hud'][size]['packs']
+            pack_set = interface_conf.hud.get(size).packs
 
             ## PACK INITIALIZATION
             # (bag, pack), (belt, pack), (wallet, pack)
@@ -342,35 +511,49 @@ class Repo():
                 if not pack:
                     continue
 
-                self.packs[size][pack_key] = {}
+                if not self.packs.get(size).get(pack_key):
+                    setattr(
+                        self.packs.get(size),
+                        pack_key,
+                        munch.Munch({})
+                    )
 
                 for piece_key, piece in pack.items():
                     if not piece.get('path'):
                         continue
 
                     x, y = (
-                        piece['position']['x'], 
-                        piece['position']['y']
+                        piece.position.x, 
+                        piece.position.y
                     )
                     w, h = (
-                        piece['size']['w'], 
-                        piece['size']['h']
+                        piece.size.w, 
+                        piece.size.h
                     )
 
-                    image_path = os.path.join(
-                        ontology_path,
-                        *settings.SENSES_PATH,
-                        piece['path']
+                    buffer = gui.open_image(
+                        os.path.join(
+                            ontology_path,
+                            *settings.SENSES_PATH,
+                            piece.path
+                        )
                     )
-                    buffer = Image.open(image_path).convert(settings.IMG_MODE)
 
-                    self.packs[size][pack_key][piece_key] = buffer.crop(
-                        (x,y,w+x,h+y)
+                    setattr(
+                        self.packs.get(size).get(pack_key),
+                        piece_key,
+                        buffer.crop(
+                            (
+                                x,
+                                y,
+                                w + x,
+                                h + y
+                            )
+                        )
                     )
             ########################
 
-            self.menus[size] = {}
-            button_set = interface_conf['menu'][size]['button']
+            button_set = interface_conf.menu.get(size).button
 
             ## BUTTON INITIALIZATION
             # for (enabled, button), (active, button), (disabled, button)
@@ -378,30 +561,43 @@ class Repo():
                 if not button:
                     continue
 
-                self.menus[size][button_key] = {}
+                if not self.menus.get(size).get(button_key):
+                    setattr(
+                        self.menus.get(size),
+                        button_key,
+                        munch.Munch({})
+                    )
                 
                 # for (left, piece), (right, piece), (middle, piece)
                 for piece_key, piece in button.items():
                     if not piece.get('path'):
                         continue
                     x,y = (
-                        piece['position']['x'], 
-                        piece['position']['y']
+                        piece.position.x, 
+                        piece.position.y
                     )
                     w,h = (
-                        piece['size']['w'], 
-                        piece['size']['h']
+                        piece.size.w, 
+                        piece.size.h
                     )
-
-                    image_path = os.path.join(
-                        ontology_path,
-                        *settings.SENSES_PATH,
-                        piece['path']
+                    buffer = gui.open_image(
+                        os.path.join(
+                            ontology_path,
+                            *settings.SENSES_PATH,
+                            piece.path
+                        )
                     )
-                    buffer = Image.open(image_path).convert(settings.IMG_MODE)
-
-                    self.menus[size][button_key][piece_key] = buffer.crop(
-                        (x,y,w+x,h+y)
+                    setattr(
+                        self.menus.get(size).get(button_key),
+                        piece_key,
+                        buffer.crop(
+                            (
+                                x,
+                                y,
+                                w + x,
+                                h + y
+                            )
+                        )
                     )
             ##########################
 
@@ -524,8 +720,8 @@ class Repo():
 
         states_conf, _, sheets_conf, raw_dim = config.load_sprite_configuration()
         sprite_dim = (
-            raw_dim['w'], 
-            raw_dim['h']
+            raw_dim.w, 
+            raw_dim.h
         )
 
         for sprite_key, sheet_conf in sheets_conf.items():
@@ -536,25 +732,31 @@ class Repo():
             base_path = os.path.join(
                 ontology_path,
                 *settings.SPRITE_BASE_PATH,
-                sheet_conf['sheets']['base']
+                sheet_conf.base
             )
-            base_img = Image.open(base_path).convert(settings.IMG_MODE)
+            base_img = gui.open_image(
+                base_path
+            )
 
-            if sheet_conf['sheets'].get('accents'):
-                for sheet in sheet_conf['sheets']['accents']:
+            if sheet_conf.get('accents'):
+                for sheet in sheet_conf.accents:
                     sheet_path = os.path.join(
                         ontology_path, 
                         *settings.SPRITE_ACCENT_PATH, 
                         sheet
                     )
-                    sheet_img = Image.open(sheet_path).convert(settings.IMG_MODE)
-                    accent_sheets.append(sheet_img)
+                    sheet_img = gui.open_image(
+                        sheet_path
+                    )
+                    accent_sheets.append(
+                        sheet_img
+                    )
                 
             frames = 0
-            for state_key, state_conf in states_conf['animate_states'].items():
+            for state_key, state_conf in states_conf.animate_states.items():
                 state_row, state_frames = (
-                    state_conf['row'], 
-                    state_conf['frames']
+                    state_conf.row, 
+                    state_conf.frames
                 )
                 frames += state_frames
 

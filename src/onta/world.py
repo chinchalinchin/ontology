@@ -38,7 +38,7 @@ class World():
     """
 
     # CONFIGURATION FIELDS
-    composite_conf = None
+    composite_conf = munch.Munch({})
     """
     ```python
     self.composite_conf = munch.Munch({
@@ -46,7 +46,7 @@ class World():
     })
     ```
     """
-    sprite_state_conf = None
+    sprite_state_conf = munch.Munch({})
     """
     Holds sprite state configuration information.
 
@@ -60,7 +60,7 @@ class World():
     })
     ```
     """
-    apparel_state_conf = None
+    apparel_state_conf = munch.Munch({})
     """
     ```python
     self.apparel_state_conf = munch.Munch({
@@ -75,7 +75,7 @@ class World():
     })
     ```
     """
-    plate_properties = {}
+    plate_properties = munch.Munch({})
     """
     ```python
     self.plate_properties = munch.Munch({
@@ -83,7 +83,7 @@ class World():
     })
     ```
     """
-    strut_properties = {}
+    strut_properties = munch.Munch({})
     """
     Holds strut property configuration information
     ```python
@@ -95,7 +95,7 @@ class World():
     })
     ```
     """
-    sprite_properties = {}
+    sprite_properties = munch.Munch({})
     """
     ```python
     self.sprite_properties = munch.Munch({
@@ -112,7 +112,7 @@ class World():
     ```
     """
     # FORM SET FIELDS
-    tilesets = {}
+    tilesets = munch.Munch({})
     """
     ```python
     self.tilesets = munch.Munch({
@@ -133,7 +133,7 @@ class World():
     })
     ```
     """
-    strutsets = {}
+    strutsets = munch.Munch({})
     """
     ```python
     self.strutsets = munch.Munch({
@@ -156,7 +156,7 @@ class World():
     })
     ```
     """
-    platesets = {}
+    platesets = munch.Munch({})
     """
     ```python
     self.platesets = munch.Munch({
@@ -179,7 +179,7 @@ class World():
     })
     ```
     """
-    compositions = {}
+    compositions = munch.Munch({})
     """
     ```python
     self.compositions = munch.Munch({
@@ -220,7 +220,7 @@ class World():
     ```
     """
     # SPRITE SET FIELDS
-    hero = {}
+    hero = munch.Munch({})
     """
     ```python
     self.hero = munch.Munch({
@@ -233,7 +233,7 @@ class World():
     })
     ```
     """
-    npcs = {}
+    npcs = munch.Munch({})
     """
     ```python
     self.npcs = munch.Munch({
@@ -273,10 +273,10 @@ class World():
         # ...
     ]
     """
-    switch_map = None
+    switch_map = munch.Munch({})
     """
     ```python
-    self.switch_map = {
+    self.switch_map = munch.Munch({
         'layer_1': {
             'switch_key_1': {
                 'switch_set_index_1': bool_1, # bool
@@ -286,7 +286,7 @@ class World():
             # ...
         },
         # ...
-    }
+    })
     ```
     """
     iterations = 0
@@ -491,24 +491,6 @@ class World():
     def _generate_switch_map(
         self
     ) -> None:
-        """_summary_
-
-        .. note::
-            ```python
-            self.switch_map = {
-                'layer_1': {
-                    'switch_key_1': {
-                        'switch_set_index_1': bool_1, # bool
-                        'switch_set_index_2': bool_2, # bool
-                        # ...
-                    },
-                    # ...
-                },
-                # ...
-            }
-            ```
-        """
-        self.switch_map = {}
         for layer in self.layers:
             switches =  self.get_typed_platesets(
                 layer, 
@@ -520,13 +502,20 @@ class World():
                 layer, 
                 'gate'
             )
-            switch_indices = [ switch.index for switch in switches]
-            self.switch_map[layer] = {
-                switch.key: {
-                    index: False for index in switch_indices
-                } for switch in switches
-            }
-
+            switch_indices = [ 
+                switch.index 
+                for switch 
+                in switches 
+            ]
+            setattr(
+                self.switch_map,
+                layer,
+                munch.Munch({
+                    switch.key: {
+                        index: False for index in switch_indices
+                    } for switch in switches
+                })
+            )
 
     def _init_dynamic_state(
         self, 
@@ -769,7 +758,9 @@ class World():
             Technically, there is overlap here. Since sprite is checked against every other sprite for collisions, there are Pn = n!/(n-2)! permutations, but Cn = n!/(2!(n-2)!) distinct combinations. Therefore, Pn - Cn checks are unneccesary. To circumvent this problem (sort of), a collision map is kept internally within this method to keep track of which sprite-to-sprite collisions have already taken place. However, whether or not this is worth the effort, since the map has to be traversed when it is initialized, is an open question? 
         """
 
-        collision_map = collisions.generate_collision_map(self.npcs)
+        collision_map = collisions.generate_collision_map(
+            self.npcs
+        )
 
         for sprite_key, sprite in self.get_sprites().items():
 
@@ -803,7 +794,7 @@ class World():
                 for hitbox_key in ['sprite', 'strut']:
 
                     exclusions = [ sprite_key ]
-                    for key, val in collision_map[sprite_key].items():
+                    for key, val in collision_map.get(sprite_key).items():
                         if val:
                             exclusions.append(key)
 
@@ -863,10 +854,11 @@ class World():
                         )
 
                     for key, val in collision_map.copy().items():
-                        if key not in exclusions and key == sprite_key:
+                        if key not in exclusions and \
+                            key == sprite_key:
                             for nest_key in val.keys():
-                                collision_map[key][nest_key] = True
-                                collision_map[nest_key][key] = True
+                                collision_map.key.nest_key = True
+                                collision_map.nest_key.key = True
 
 
             # mass plate collision detection

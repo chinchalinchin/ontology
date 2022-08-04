@@ -15,26 +15,26 @@ log = logger.Logger('onta.engine.collisions', settings.LOG_LEVEL)
 ######################
 
 def generate_collision_map(
-    npcs: dict
-) -> dict:
+    npcs: munch.Munch
+) -> munch.Munch:
     """_summary_
 
     :param npcs: _description_
-    :type npcs: dict
+    :type npcs: munch.Munch
     :return: _description_
-    :rtype: dict
+    :rtype: munch.Munch
     """
-    collision_map = { 
-        npc_1_key: {
+    collision_map = munch.Munch({ 
+        npc_1_key: munch.Munch({
             npc_2_key: False for npc_2_key in npcs.keys()
-        } for npc_1_key in npcs.keys()
-    }
+        }) for npc_1_key in npcs.keys()
+    })
     return collision_map
 
 
 def calculate_set_hitbox(
     set_hitbox: tuple, 
-    set_conf: dict, 
+    set_conf: munch.Munch, 
     tile_dim: tuple
 ) -> Union[tuple, None]:
     """_summary_
@@ -42,7 +42,7 @@ def calculate_set_hitbox(
     :param set_hitbox: _description_
     :type set_hitbox: tuple
     :param set_conf: _description_
-    :type set_conf: dict
+    :type set_conf: munch.Munch
     :param tile_dim: _description_
     :type tile_dim: tuple
     :return: _description_
@@ -51,17 +51,17 @@ def calculate_set_hitbox(
     if set_hitbox:
         x,y = calculator.scale(
             (
-                set_conf['start']['x'],
-                set_conf['start']['y']
+                set_conf.start.x,
+                set_conf.start.y
             ),
             tile_dim,
-            set_conf['start']['units']
+            set_conf.start.units
         )
         hitbox = (
-            x + set_hitbox['offset']['x'], 
-            y + set_hitbox['offset']['y'],
-            set_hitbox['size']['w'],
-            set_hitbox['size']['h']
+            x + set_hitbox.offset.x, 
+            y + set_hitbox.offset.y,
+            set_hitbox.size.w,
+            set_hitbox.size.h
         )
         return hitbox
     return None
@@ -74,8 +74,8 @@ def calculate_sprite_hitbox(
     ) -> Union[tuple, None]:
         """_summary_
 
-        :param sprite_key: _description_
-        :type sprite_key: str
+        :param sprite: _description_
+        :type sprite: munch.Munch
         :param hitbox_key: _description_
         :type hitbox_key: str
         :return: _description_
@@ -94,6 +94,7 @@ def calculate_sprite_hitbox(
         )
         return calc_hitbox
 
+
 def calculate_attackbox(
 
 ) -> tuple:
@@ -108,11 +109,11 @@ def detect_collision(
     """Determines if a sprite's hitbox has collided with a list of hitboxes
 
     :param sprite_hitbox: _description_
-    :type sprite_hitbox: _type_
+    :type sprite_hitbox: tuple
     :param hitbox_list: _description_
-    :type hitbox_list: _type_
+    :type hitbox_list: list
     :return: _description_
-    :rtype: _type_
+    :rtype: bool
 
     .. note::
         This method assumes it only cares _if_ a collision occurs, not with _what_ the collision occurs. The hitbox list is traversed and if any one of the contained hitboxes intersects the sprite, `True` is returned. If none of the hitboxes in the list intersect the given sprite, `False` is returned.
@@ -129,8 +130,11 @@ def detect_collision(
             ):
             # NOTE: return true once collision is detected. it doesn't matter where it occurs, 
             #       only what direction the hero is travelling...
-            log.verbose(f'Detected sprite hitbox {sprite_hitbox} collision with hitbox at {hitbox}', 
-                'detect_collision')
+            # TODO: fix that!
+            log.verbose(
+                f'Detected sprite hitbox {sprite_hitbox} collision with hitbox at {hitbox}', 
+                'detect_collision'
+            )
             return True
     return False
 
@@ -141,49 +145,53 @@ def detect_collision(
 
 
 def recoil_sprite(
-    sprite: dict, 
-    sprite_props: dict
+    sprite: munch.Munch, 
+    sprite_props: munch.Munch
 ) -> None:
-    if 'down' in sprite['state']:
-        sprite['position']['y'] -= sprite_props['collide']
-    elif 'left' in sprite['state']:
-        sprite['position']['x'] -= sprite_props['collide']
-    elif 'right' in sprite['state']:
-        sprite['position']['x'] += sprite_props['collide']
+    """_summary_
+
+    :param sprite: _description_
+    :type sprite: munch.Munch
+    :param sprite_props: _description_
+    :type sprite_props: munch.Munch
+    """
+    if 'down' in sprite.state:
+        sprite.position.y -= sprite_props.collide
+    elif 'left' in sprite.state:
+        sprite.position.x -= sprite_props.collide
+    elif 'right' in sprite.state:
+        sprite.position.x += sprite_props.collide
     else:
-        sprite['position']['y'] += sprite_props['collide']
+        sprite.position.y += sprite_props.collide
 
 def recoil_plate(
-    plate: dict, 
-    sprite: dict, 
-    sprite_props: dict, 
+    plate: munch.Munch, 
+    sprite: munch.Munch, 
+    sprite_props: munch.Munch, 
     hero_flag: bool
 ) -> None:
     """_summary_
 
     :param plate: _description_
-    :type plate: _type_
+    :type plate: munch.Munch
     :param sprite: _description_
-    :type sprite: _type_
+    :type sprite: munch.Munch
     :param sprite_props: _description_
-    :type sprite_props: _type_
+    :type sprite_props: munch.Munch
     :param hero_flag: _description_
-    :type hero_flag: _type_
-
-    .. note::
-        I am unsure where the mismatch between sprite left vs. hero right and sprite right vs. hero left comes from...I think it may have to do with the control mapping vs. the direction of the _(x,y)_ rendering plane, i.e. positive y is in the down direction...Until I discover the source of the error, this method needs an additional check when recoiling to left or right.
+    :type hero_flag: bool
     """
-    if 'down' in sprite['state']:
-        plate['start']['y'] += sprite_props['collide']
-    elif 'left' in sprite['state']:
+    if 'down' in sprite.state:
+        plate.start.y += sprite_props.collide
+    elif 'left' in sprite.state:
         if hero_flag:
-            plate['start']['x'] += sprite_props['collide']
+            plate.start.x += sprite_props.collide
         else:
-            plate['start']['x'] -= sprite_props['collide']
-    elif 'right' in sprite['state']:
+            plate.start.x -= sprite_props.collide
+    elif 'right' in sprite.state:
         if hero_flag:
-            plate['start']['x'] -= sprite_props['collide']
+            plate.start.x -= sprite_props.collide
         else:
-            plate['start']['x'] += sprite_props['collide']
+            plate.start.x += sprite_props.collide
     else:
-        plate['start']['y'] -= sprite_props['collide']
+        plate.start.y -= sprite_props.collide
