@@ -252,6 +252,8 @@ skeleton:
         run: 2
         collide: 5
         poll: 50
+
+        # THESE ARE NOT CONFIGURATION PROPERTIES, THEY ARE STATE INFORMATION
         paths:
             one:
                 x: 700
