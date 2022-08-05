@@ -100,20 +100,8 @@ npcs:
     intents:
       -   plot: a
           intent: one
-          dialogue:
-              -   type: converse
-                  content: esmeralda_a
-              -   type: action
-                  content: esmeralda_a
       -   plot: b
           intent: one
-          dialogue:
-              -   type: converse
-                  content: B
-              -   type: converse
-                  content: C
-              -   type: action
-                  content: A
     desires: 
       -   plot:
           target:
@@ -200,19 +188,15 @@ npcs:
         -   plot: a
             intent: hero
             type: sprite
-            dialogue: null
         -   plot: a
             intent: esmeralda
             type: sprite
-            dialogue: null
         -   plot: b
             intent: two
             type: path
-            dialogue: null
         -   plot: b
             intent: esmeralda
             type: sprite
-            dialogue:  null
     desire:
         -   plot: a
             target: hero

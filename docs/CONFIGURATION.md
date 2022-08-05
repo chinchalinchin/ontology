@@ -199,9 +199,8 @@ As mentioned in previous section, each in-game element builds up complexity on t
         - str
       intents:
         - plot: str
-          intent: str
-          dialogue:
-            - str
+          mode: str
+          content: 
   sheets:
     - str
     - str
@@ -212,7 +211,7 @@ As mentioned in previous section, each in-game element builds up complexity on t
         
 ```
 
-- **properties.intents**: A _Sprite_'s `intents` describes its available decision tree. Each `intent` is associated with a `plot` defined in _data/conf/plots.yaml_. When the world enters this `plot`, the `intents` associated with this `plot` become available to the _Sprite_.
+- **properties.intents**: A _Sprite_'s `intents` describes its available decision tree. Each _Intent_ is associated with a `plot` defined in _data/conf/plots.yaml_. When the world enters this `plot`, the `intents` associated with this `plot` become available to the _Sprite_.
 
 **Notes**: Sprites are the most complex object in the game.
 

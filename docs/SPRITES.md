@@ -30,8 +30,106 @@ See [Configuration](./CONFIGURATION.md#equipment) for more information on _Equip
 
 ## Intents
 
-See [Plotting](./PLOTTING.md) for more information on _Plots_.
+User input never directly touches a sprite state. Instead, user input is mapped into an _Intent_. Part of the _World_ update iteration is applying _Sprite_ _Intent_\s to change the world state information, and this process also by necessiry handles the player input once its been mapped to an _Intent_. 
 
+In addition to _Intent_\s that map directly to user input, there are also _Intent_\s that describe how non-playable character _Sprite_\s states evolve. Take note, there is no inherent difference in how an _Intent_ modifies a _Sprite_, whether its an NPC or the player, *but* there are certain _Intent_\s that are never applied to the player sprite. This will become clear as an _Intent_ is more carefully defined.
+
+Each _Intent_ is described by a combination of the properties: `plot`, `mode`, `goal` and `condition`.
+
+There are four `mode`s of _Intent_\s (for now): `dynamic_translation`, `static_translation`, `interaction` and `transition`. 
+
+A _Intent_ is associated with a specific _Plot_ through its `plot` property. When the world state enters a _Plot_, a new set of _Intent_\s open up to it. The `plot`property determines when an _Intent_ is applicable over the course a game. See [Plotting](./PLOTTING.md) for more information on _Plots_.
+
+The `goal` of an _Intent_ describes just that, what the _Intent_ **intends** to do. The value and meaning of this property will change depending on the `mode` of the _Intent_. THe `goal`s of various `mode`s are described in the next sections.
+
+A `condition` is a nested object that describes when an _Intent_ obtains, i.e. when it is executed and used to update the world state information. Because it is more complex, it will be described it more detail in the next section, before proceeding onto describing the different `mode`s of _Intent_\s.
+
+### Conditions
+
+A `condition` is composed of a `quantifier`, a `predicate`, and a `subject`.
+
+`quantifier` can take on the values: ``all`, `any` or `none`. This operation is applied to the `subject`, to arrive at a domain upon which the `predicate` can in turn operate, to arrive at whether or not the _Intent_ obtains and can thus be applied to the world state.
+
+TODO: THIS ISN'T WELL THOUGHT OUT YET, NEEDS REFINED *********************************
+
+
+### Static Translation
+
+A `translate` _Intent mode_ maps directly to changing the sprite's positional information, i.e. moving in one of the directions: `north`, `south`, `west`, `east`, `northwest`, `northeast`, `southwest` and `southeast`. 
+
+```yaml
+-   name: '?'
+    plot: a
+    mode: translation
+    state: static
+    goal: <path_name>
+    condition: null
+```
+
+**NOTE**: The `<path_name>` referenced in the `goal` property must be defined in the _Sprite_'s dynamic state informatmion.
+
+
+### Dynamic Translation
+
+```yaml
+-   name: '?'
+    plot: a
+    mode: translation
+    state: dynamic
+    goal: <sprite_name>
+    condition: 
+        predicate: otherwise | aware | danger
+        quantifier: all | any | none
+        subject: <sprite_name>
+```
+
+**NOTE**:
+
+### Static Interaction
+
+```yaml
+-   name: '?'
+    plot: a
+    mode: interaction
+    state: dynamic
+    goal: <plate_name>
+    condition: 
+        predicate: otherwise | aware | danger
+        quantifier: all | any | none
+        subject: <plate_name>
+```
+
+**NOTE**: The `predicate` of `danger` does not have a meaning here.
+
+### Dynamic Interaction
+
+```yaml
+-   name: '?'
+    plot: a
+    mode: interaction
+    state: dynamic
+    goal: <sprite_name>
+    condition: 
+        proposition: otherwise | aware | danger
+        quantifier: all | any | none
+        subject: <sprite_name>
+```
+
+**NOTE**: An `interaction` _Intent_, when it obtains, creates and appends a prioritized `
+
+### Transition
+
+A `transition` _Intent_ describes how a _Sprite_ goes from one state action to another state action.
+
+```yaml
+-   plot: a
+    mode: transition
+    goal: <state_name>
+    condition: 
+        predicate: 
+        quantifier: 
+        subject: 
+```
 ## Desires
 
 See [Plotting](./PLOTTING.md) for more information on _Plots_.

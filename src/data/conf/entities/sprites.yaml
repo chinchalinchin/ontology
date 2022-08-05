@@ -167,9 +167,11 @@ hero:
                 size:
                     w: 19
                     h: 61
+            strut: null
         walk: 3
         run: 5
         collide: 6
+        poll: null
 
 esmeralda:
     sheets:
@@ -201,30 +203,6 @@ esmeralda:
         run: 2
         collide: 5
         poll: 100
-        paths:
-            one:
-                x: 550
-                y: 1200
-            two:
-                x: 900
-                y: 1800
-        intents:
-            -   plot: a
-                intent: one
-                dialogue:
-                    -   type: converse
-                        content: esmeralda_a
-                    -   type: action
-                        content: esmeralda_a
-            -   plot: b
-                intent: one
-                dialogue:
-                    -   type: converse
-                        content: B
-                    -   type: converse
-                        content: C
-                    -   type: action
-                        content: A
 
 skeleton:
     sheets:
@@ -252,36 +230,3 @@ skeleton:
         run: 2
         collide: 5
         poll: 50
-
-        # THESE ARE NOT CONFIGURATION PROPERTIES, THEY ARE STATE INFORMATION
-        paths:
-            one:
-                x: 700
-                y: 600
-            two:
-                x: 500
-                y: 300
-        intents:
-            -   plot: a
-                intent: hero
-                type: sprite
-                dialogue: null
-            -   plot: a
-                intent: esmeralda
-                type: sprite
-                dialogue: null
-            -   plot: b
-                intent: two
-                type: path
-                dialogue: null
-            -   plot: b
-                intent: esmeralda
-                type: sprite
-                dialogue:  null
-        desire:
-            -   plot: a
-                target: hero
-                goal: death
-            -   plot: b
-                target: esmeralda
-                goal: death

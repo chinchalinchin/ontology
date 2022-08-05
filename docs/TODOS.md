@@ -130,3 +130,10 @@ have a layer that processes user_input into hero intents and then update method 
     sprite.intent == north
 
 in other words, user input operates on sprite intents, sprite intents operate on sprite state.
+
+
+- REMEMBER. ANYTHING THAT CHANGES OVER THE COURSE OF THE GAME IS DYNAMIC STATE INFORMATION. DISTINCTION BETWEEN STATIC STATE AND CONFIGURATION: STATIC STATE DIRECTLY MAPS TO ON-SCREEN REPRESENTATION. THINGS WITHOUT STATE DO NOT GET RENDERED!!!
+
+- perhaps subsume `radii.aware` into intents?
+
+- idea: keep the previous world state in read only variable to be able to compare when filtering intents, so sprites "remember".
