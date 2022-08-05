@@ -242,7 +242,7 @@ class Menu():
     def _calculate_button_frame_map(
         self
     ) -> list:
-        # NOTE: frame changes 
+        # NOTE **: frame changes ... 
         frame_map = []
         for piece_conf in self.buttons.values():
             for piece_state in piece_conf.values():
@@ -254,7 +254,7 @@ class Menu():
     def _calculate_button_piece_map(
         self
     ) -> list:
-        # pieces stay the same ...
+        # NOTE **: ...but pieces stay the same ...
         if not self.piece_maps.get('button'):
             piece_map = []
             for piece_conf in self.buttons.values():
