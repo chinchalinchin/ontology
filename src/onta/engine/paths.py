@@ -2,7 +2,7 @@ import munch
 
 import onta.settings as settings
 import onta.engine.collisions as collisions
-import onta.engine.calculator as calculator
+import onta.engine.static.calculator as calculator
 import onta.util.logger as logger
 
 log = logger.Logger('onta.engine.paths', settings.LOG_LEVEL)

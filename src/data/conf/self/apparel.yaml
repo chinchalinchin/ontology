@@ -27,7 +27,7 @@ equipment:
           speed:
           distance:
           power:
-          hitbox:
+          attackbox:
             up:
               offset:
                 x:
@@ -74,7 +74,7 @@ equipment:
           speed:
           distance:
           power:
-          hitbox:
+          attackbox:
             up:
               offset:
                 x:
@@ -108,7 +108,7 @@ equipment:
           speed:
           distance:
           power:
-          hitbox:
+          attackbox:
             up:
               offset:
                 x:
@@ -142,7 +142,7 @@ equipment:
           speed:
           distance:
           power:
-          hitbox:
+          attackbox:
             up:
               offset:
                 x:
@@ -194,7 +194,7 @@ equipment:
           speed:
           distance:
           power:
-          hitbox:
+          attackbox:
             up:
               offset:
                 x:
@@ -228,7 +228,7 @@ equipment:
           speed:
           distance:
           power:
-          hitbox:
+          attackbox:
             up:
               offset:
                 x:
@@ -261,7 +261,7 @@ equipment:
           speed:
           distance:
           power:
-          hitbox:
+          attackbox:
             up:
               offset:
                 x:
@@ -309,7 +309,7 @@ equipment:
         - 
         -
       power:
-      hitbox: 
+      attackbox: 
         up:
           offset:
             x:
@@ -357,7 +357,7 @@ equipment:
         - 
         -
       power:
-      hitbox: 
+      attackbox: 
         up:
           offset:
             x:
@@ -405,7 +405,7 @@ equipment:
         - 
         -
       power:
-      hitbox: 
+      attackbox: 
         up:
           offset:
             x:
@@ -449,7 +449,7 @@ equipment:
         - 
         -
       power:
-      hitbox: 
+      attackbox: 
         up:
           offset:
             x:
@@ -493,7 +493,7 @@ equipment:
         - 
         -
       power:
-      hitbox: 
+      attackbox: 
         up:
           offset:
             x:
@@ -540,7 +540,7 @@ equipment:
         - 
         -
       power:
-      hitbox: 
+      attackbox: 
         up:
           offset:
             x:
@@ -588,7 +588,7 @@ equipment:
         - 
         -
       power:
-      hitbox: 
+      attackbox: 
         up:
           offset:
             x:
@@ -632,7 +632,7 @@ equipment:
         - 
         -
       power:
-      hitbox: 
+      attackbox: 
         up:
           offset:
             x:

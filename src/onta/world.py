@@ -7,10 +7,11 @@ import onta.settings as settings
 import onta.loader.state as state
 import onta.loader.conf as conf
 import onta.util.logger as logger
-import onta.engine.calculator as calculator
 import onta.engine.collisions as collisions
 import onta.engine.paths as paths
-import onta.engine.formulae as formulae
+import onta.engine.static.formulae as formulae
+import onta.engine.static.calculator as calculator
+
 
 log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
@@ -470,7 +471,7 @@ class World():
         """
         Map user input to new hero state, apply state action and iterate state frame.
         """
-        direction = self.hero.state.split('_')[-1]
+        action, direction = formulae.decompose_hero_state(self.hero.state)
 
         if self.hero.state not in self.sprite_state_conf.blocking_states:
             if 'run' in self.hero.state:
@@ -881,8 +882,33 @@ class World():
     def _combat(
         self
     ) -> None:
-        pass
 
+        if any(action in self.hero.state for action in ['cast', 'shoot', 'slash', 'thrust']):
+            act, direct = formulae.decompose_hero_state(self.hero.state) 
+            equip_key = self.hero.slots.get(act)            
+            if equip_key is not None:
+                attack_box = None
+                if self.apparel_state_conf.equipment.get(equip_key).type == 'projectile':
+                    ammo_types = list(
+                        self.apparel_state_conf.equipment.get(
+                            equip_key).properties.ammo.keys()
+                    )
+                    if self.hero.packs.belt in ammo_types:
+                        attack_box = collisions.calculate_attackbox(
+                            self.hero,
+                            direct,
+                            self.apparel_state_conf.equipment.get(equip_key).properties.ammo.get(
+                                self.hero.packs.belt).attackbox
+                        )
+                elif self.apparel_state_conf.equipment.get(equip_key).type == 'blunt':
+                    attack_box = collisions.calculate_attackbox(
+                        self.hero,
+                        direct,
+                        self.apparel_state_conf.equipment.get(equip_key).properties.attackbox
+                    )
+            
+            # can't use collision sets, since they include struts, etc. how about target sets?
+            # can't. need to know identity of which sprite the hero is combatting with...
 
     def _collision_sets_relative_to(
         self, 

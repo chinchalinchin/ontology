@@ -18,6 +18,7 @@ def format_breakpoints(
             for break_point in break_points
     ]
 
+
 def rotate_dimensions(
     rotator: munch.Munch, 
     direction: str
@@ -41,6 +42,7 @@ def rotate_dimensions(
             return ( rotator.size.h, rotator.size.w )
         if direction == 'vertical':
             return ( rotator.size.w, rotator.size.h )
+
 
 def find_media_size(
     player_device: device.Device, 

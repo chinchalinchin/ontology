@@ -7,7 +7,7 @@ import onta.world as world
 import onta.loader.conf as conf
 import onta.loader.state as state
 import onta.util.logger as logger
-import onta.engine.interface.static as static
+import onta.engine.interface.display as display
 
 log = logger.Logger('onta.engine.interface.hud', settings.LOG_LEVEL)
 
@@ -170,9 +170,9 @@ class HUD():
         self.styles = sense_config.styles
         self.hud_conf = sense_config.hud
         self.sizes = sense_config.sizes
-        self.breakpoints = static.format_breakpoints(sense_config.breakpoints)
+        self.breakpoints = display.format_breakpoints(sense_config.breakpoints)
         self.properties = sense_config.properties
-        self.media_size = static.find_media_size(
+        self.media_size = display.find_media_size(
             player_device, 
             self.sizes, 
             self.breakpoints
@@ -379,11 +379,11 @@ class HUD():
         x_margins = slot_styles.margins.w * player_device.dimensions[0]
         y_margins = slot_styles.margins.h * player_device.dimensions[1]
 
-        cap_dim = static.rotate_dimensions(
+        cap_dim = display.rotate_dimensions(
             self.hud_conf.get(self.media_size).slots.cap,
             self.styles.get(self.media_size).slots.stack
         )
-        buffer_dim = static.rotate_dimensions(
+        buffer_dim = display.rotate_dimensions(
             self.hud_conf.get(self.media_size).slots.buffer,
             self.styles.get(self.media_size).slots.stack
         )
@@ -690,7 +690,7 @@ class HUD():
     def get_buffer_dimensions(
         self
     ) -> tuple:
-        return static.rotate_dimensions(
+        return display.rotate_dimensions(
             self.hud_conf.get(self.media_size).slots.buffer
         )
 
@@ -698,7 +698,7 @@ class HUD():
     def get_cap_dimensions(
         self
     ) -> tuple:
-        return static.rotate_dimensions(
+        return display.rotate_dimensions(
             self.hud_conf.get(self.media_size).slots.cap
         )
 

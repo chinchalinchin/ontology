@@ -2,11 +2,13 @@ import munch
 
 import onta.settings as settings
 import onta.util.logger as logger
-import onta.engine.calculator as calculator
+import onta.engine.static.calculator as calculator
 
 
 log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
 
+def decompose_hero_state(hero_state: str) -> tuple:
+    return tuple(hero_state.split('_'))
 
 def decompose_compositions_into_sets(
     layers: list,

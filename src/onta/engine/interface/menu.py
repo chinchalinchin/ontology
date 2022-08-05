@@ -8,7 +8,7 @@ import onta.device as device
 import onta.loader.conf as conf
 import onta.loader.state as state
 import onta.util.logger as logger
-import onta.engine.interface.static as static
+import onta.engine.interface.display as display
 
 log = logger.Logger('onta.engine.interface.menu', settings.LOG_LEVEL)
 
@@ -38,7 +38,7 @@ class Menu():
         config = conf.Conf(ontology_path)
         state_ao = state.State(ontology_path).get_state('dynamic')
         self._init_conf(config)
-        self.media_size = static.find_media_size(
+        self.media_size = display.find_media_size(
             player_device, 
             self.sizes, 
             self.breakpoints
@@ -56,7 +56,7 @@ class Menu():
         self.sizes = configure.sizes
         self.styles = configure.styles
         self.properties = configure.properties.menu
-        self.breakpoints = static.format_breakpoints(configure.breakpoints)
+        self.breakpoints = display.format_breakpoints(configure.breakpoints)
         self.tabs = munch.Munch({
             button_name: {} for button_name in self.properties.button.buttons
         })

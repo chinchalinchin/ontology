@@ -4,7 +4,7 @@ import munch
 
 
 import onta.settings as settings
-import onta.engine.calculator as calculator
+import onta.engine.static.calculator as calculator
 import onta.util.logger as logger
 
 log = logger.Logger('onta.engine.collisions', settings.LOG_LEVEL)
@@ -93,7 +93,9 @@ def calculate_sprite_hitbox(
 
 
 def calculate_attackbox(
-
+    sprite: munch.Munch,
+    direction: str,
+    attack_props: munch.Munch
 ) -> tuple:
     # TODO:
     pass
