@@ -117,4 +117,16 @@ THAT PREVIOUS ONE FIRST
 
 - conf directory is parameterized, parameterize asset directory too. will probably require wrapping in object.
 
-- hair should be hidden if wearing an armor set. will need to adjust sprite sheet config to specify which layer of sheet goes where.
+- what if, instead of the player sprite reacting directly to user input, sprites were written to react to intents? that way, hero could be treated along with npcs. each update method would parse through sprite intents and map them to state changes.
+
+example.
+
+instead of 
+
+    user_input == north
+
+have a layer that processes user_input into hero intents and then update method of,
+
+    sprite.intent == north
+
+in other words, user input operates on sprite intents, sprite intents operate on sprite state.
