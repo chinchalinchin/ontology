@@ -118,7 +118,7 @@ def do(
             # # construct npc state from game world info
         # scripts.apply_scripts(game_world, 'pre_update')
 
-        if user_input['menu']:
+        if user_input.menu:
             pause_menu.toggle_menu()
         
         if not pause_menu.menu_activated:
@@ -133,7 +133,7 @@ def do(
             # TODO: pass menu result back to game world
             # for updating hero state
 
-        if user_input['hud']:
+        if user_input.get('hud'):
             headsup_display.toggle_hud()
             
 

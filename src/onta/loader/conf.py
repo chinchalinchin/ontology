@@ -206,6 +206,9 @@ class Conf():
 
             sprites_conf = self._entity_configuration('sprites')
 
+            self.sprite_state_conf = sprites_conf.state
+            self.sprite_size = sprites_conf.size
+
             for sprite_key, sprite_conf in sprites_conf.items():
                 if sprite_key in [ 'state', 'size' ]:
                     continue
@@ -213,6 +216,7 @@ class Conf():
                 setattr(self.sprite_property_conf, sprite_key, sprite_conf.properties)
                 setattr(self.sprite_sheet_conf, sprite_key, sprite_conf.sheets)
 
+            # TODO: ? It may be better to leave unformatted...
             setattr(
                 self.sprite_state_conf,
                 'animate_states',
@@ -223,9 +227,6 @@ class Conf():
                     for state_conf in self.sprite_state_conf.animate_states
                 })
             )
-            self.sprite_state_conf = sprites_conf.state
-            self.sprite_size = sprites_conf.size
-
         return (
             self.sprite_state_conf, 
             self.sprite_property_conf, 

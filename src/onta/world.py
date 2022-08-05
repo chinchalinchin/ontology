@@ -402,11 +402,17 @@ class World():
                             self.tile_dimensions
                         )
                         if static_set == 'strutset' :
-                            self.strutsets.get(layer).get(set_key).sets[i].hitbox = \
+                            setattr(
+                                self.strutsets.get(layer).get(set_key).sets[i],
+                                'hitbox',
                                 set_hitbox
+                            )
                         elif static_set == 'plateset':
-                            self.platesets.get(layer).get(set_key).sets[i].hitbox = \
+                            setattr(
+                                self.platesets.get(layer).get(set_key).sets[i],
+                                'hitbox',
                                 set_hitbox
+                            )
             
             world_bounds = [
                 ( 0, 0, self.dimensions[0], 1 ), 
@@ -772,8 +778,8 @@ class World():
                         if key not in exclusions and \
                             key == sprite_key:
                             for nest_key in val.keys():
-                                collision_map.get(key).get(nest_key) = True
-                                collision_map.get(nest_key).get(key) = True
+                                setattr(collision_map.get(key), nest_key, True)
+                                setattr(collision_map.get(nest_key), key, True)
 
 
             # mass plate collision detection
@@ -1059,31 +1065,27 @@ class World():
     def get_strutsets(
         self, 
         layer: str
-    ) -> dict:
+    ) -> munch.Munch:
         if self.strutsets.get(layer) is None:
             setattr(self.strutsets, layer, munch.Munch({}))
-        return {
+        return munch.Munch({
             key: val
             for key, val in self.strutsets.get(layer).items()
             if key not in STRUT_META
-        }
+        })
     
 
     def get_platesets(
         self, 
         layer: str
-    ) -> dict:
+    ) -> munch.Munch:
         if self.platesets.get(layer) is None:
-            setattr(
-                self.strutsets,
-                layer,
-                munch.Munch({})
-            )        
-        return {
+            setattr(self.platesets, layer, munch.Munch({}))        
+        return munch.Munch({
             key: val
             for key, val in self.platesets.get(layer).items()
             if key not in PLATE_META
-        }
+        })
 
 
     def get_typed_platesets(
@@ -1122,7 +1124,7 @@ class World():
         layer: str, 
         plate_key: str, 
         index: int
-    ) -> dict:
+    ) -> munch.Munch:
         """_summary_
 
         :param layer: _description_
@@ -1140,7 +1142,7 @@ class World():
     def get_sprites(
         self, 
         layer: str= None
-    ) -> dict:
+    ) -> munch.Munch:
         """Get all _Sprite_\s.
 
         :param layer: Filter sprites by given layer, defaults to None
@@ -1164,8 +1166,7 @@ class World():
     ) -> munch.Munch:
         return munch.Munch({
             key: val
-            for key, val 
-            in self.npcs.items()
+            for key, val in self.npcs.items()
             if val.layer == layer
         })
 

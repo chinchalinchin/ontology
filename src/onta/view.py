@@ -462,20 +462,20 @@ class Renderer():
 
         avatar_rendering_points = headsup_display.get_rendering_points('avatar')
         avatar_frame_map = headsup_display.get_frame_map('avatar')
-        avatar_set_map = {
+        avatar_set_map = munch.Munch({
             'equipment': 4, # slots 
             'inventory': 8 # slots + wallets + belt + bag
-        }
+        })
 
         for i, render_point in enumerate(avatar_rendering_points):
             if not render_point or not avatar_frame_map[i]:
                 continue
 
-            if i < avatar_set_map['equipment'] and \
-                i < avatar_set_map['inventory']:
+            if i < avatar_set_map.equipment and \
+                i < avatar_set_map.inventory:
                 set_key = 'equipment'
-            elif i >= avatar_set_map['equipment'] and \
-                i < avatar_set_map['inventory']:
+            elif i >= avatar_set_map.equipment and \
+                i < avatar_set_map.inventory:
                 set_key = 'inventory'
             else: 
                 set_key = None
@@ -501,15 +501,9 @@ class Renderer():
     ) -> None:
         # TODO: alpha and overlay should be part of configuration or styles
         gui.replace_alpha(self.world_frame, 127)
-        overlay = gui.channels(
-            self.player_device.dimensions, 
-            MATERIAL_BLUE_900
-        )
-        self.world_frame.paste(
-            overlay,
-            (0,0),
-            overlay
-        )
+        overlay = gui.channels(self.player_device.dimensions, MATERIAL_BLUE_900)
+
+        self.world_frame.paste(overlay, ( 0,0 ), overlay)
 
         btn_rendering_points = menu.get_rendering_points('button')
         
@@ -556,31 +550,19 @@ class Renderer():
             layer_buffer = game_world.layer
             game_world.layer = layer
 
-        self._render_static(
-            game_world.layer, 
-            False
-        )
-        self._render_typed_platesets(
-            game_world, 
-            repository
-        )
-        self._render_sprites(
-            game_world, 
-            repository
-        )
-        self._render_static(
-            game_world.layer, 
-            True
-        )
+        self._render_static(game_world.layer, False)
+        self._render_typed_platesets(game_world, repository)
+        self._render_sprites(game_world, repository)
+        self._render_static(game_world.layer, True)
 
         if layer is not None:
             game_world.layer = layer_buffer
             
         if crop:
             world_dim = game_world.dimensions
-            hero_pt = (
-                game_world.hero['position']['x'], 
-                game_world.hero['position']['y']
+            hero_pt = ( 
+                game_world.hero.position.x, 
+                game_world.hero.position.y
             )
             crop_box = self.calculate_crop_box(
                 self.player_device.dimensions, 
@@ -590,28 +572,13 @@ class Renderer():
             self.world_frame = self.world_frame.crop(crop_box)
         
         if menu.menu_activated:
-            self._render_menu(
-                menu, 
-                repository
-            )
+            self._render_menu(menu, repository)
 
         if headsup_display.hud_activated:
-            self._render_slots(
-                headsup_display, 
-                repository
-            )
-            self._render_mirrors(
-                headsup_display, 
-                repository
-            )
-            self._render_packs(
-                headsup_display, 
-                repository
-            )
-            self._render_avatars(
-                headsup_display, 
-                repository
-            )
+            self._render_slots(headsup_display, repository)
+            self._render_mirrors(headsup_display, repository)
+            self._render_packs(headsup_display, repository)
+            self._render_avatars(headsup_display, repository)
 
         return self.world_frame
 

@@ -38,9 +38,9 @@ class Repo():
     def adjust_cap_rotation(
         direction: str
     ) -> tuple:
-        """_summary_
+        """Static method to calculate the amount of rotation necessary to align slot cap with style alignment, depending on which direction the slot cap was defined in, i.e. if the slot cap was extracted from the asset file pointing to the left, this same piece can be rotated and reused, rather than extracting multiple assets.
 
-        :param direction: _description_
+        :param direction: The direction of the slot cap direction.
         :type direction: str
         :return: (up_adjust, left_adjust, right_adjust, down_adjust)
         :rtype: tuple
@@ -70,7 +70,7 @@ class Repo():
     ) -> None:
         """
         .. note::
-            No reference is kept to `ontology_path`; it is passed to initialize methods and released.
+            No reference is kept to `ontology_path`; it is passed to initialization methods and released.
         """
         config = conf.Conf(ontology_path)
         self._init_form_assets(config, ontology_path)
@@ -149,7 +149,7 @@ class Repo():
                     buffer = gui.open_image(image_path)
 
                     log.debug(
-                        f"{asset_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                        f"{asset_key}: size - {buffer.size}, mode - {buffer.mode}", 
                         'Repo._init_static_assets'
                     )
 
@@ -235,7 +235,8 @@ class Repo():
                 setattr(self.packs, size, munch.Munch({}))
             if not self.menus.get(size):
                 setattr(self.menus, size, munch.Munch({}))
-            
+            if not self.menus.get(size).get('button'):
+                pass
             ## SLOT INITIALIZATION
             #   NOTE: for (disabled, {slot}), (enabled, {slot}), (active, {slot}), 
             #               (cap, {slot}), (buffer, {slot})
@@ -245,7 +246,7 @@ class Repo():
                     continue
 
                 w, h = slot.size.w, slot.size.h   
-                x, y = slot.position.x, slot.position.ys
+                x, y = slot.position.x, slot.position.y
 
                 buffer = gui.open_image(
                     os.path.join(
@@ -257,7 +258,7 @@ class Repo():
 
                 log.debug( 
                     f"Slot {slot_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                    'Repo._init_interface_assets'
+                    'Repo._init_sense_assets'
                 )
 
                 slot_conf = interface_conf.hud.get(size).slots
@@ -269,22 +270,10 @@ class Repo():
                         self.slots.get(size),
                         slot_key,
                         munch.Munch({
-                            'down': buffer.rotate(
-                                adjust[0],
-                                expand=True
-                            ),
-                            'left': buffer.rotate(
-                                adjust[1],
-                                expand=True
-                            ),
-                            'right': buffer.rotate(
-                                adjust[2],
-                                expand=True
-                            ),
-                            'up': buffer.rotate(
-                                adjust[3],
-                                expand=True
-                            ),
+                            'down': buffer.rotate(adjust[0], expand=True),
+                            'left': buffer.rotate(adjust[1], expand=True),
+                            'right': buffer.rotate(adjust[2], expand=True),
+                            'up': buffer.rotate(adjust[3], expand=True),
                         })
                     )
                 elif slot_key == 'buffer':
@@ -293,14 +282,8 @@ class Repo():
                         self.slots.get(size),
                         slot_key,
                         munch.Munch({
-                            'vertical': buffer.rotate(
-                            adjust[0],
-                            expand=True
-                            ),
-                            'horizontal': buffer.rotate(
-                                adjust[1],
-                                expand=True
-                            )
+                            'vertical': buffer.rotate(adjust[0], expand=True),
+                            'horizontal': buffer.rotate(adjust[1], expand=True)
                         })
                     )
                 elif slot_key in [ 'disabled',  'enabled', 'active' ]:
@@ -310,21 +293,20 @@ class Repo():
             for set_type in ['mirror', 'pack', 'button']:
                 if set_type == 'mirror':
                     iter_set = interface_conf.hud.get(size).mirrors
+                    save_set = self.mirrors
                 elif set_type == 'pack':
                     iter_set = interface_conf.hud.get(size).packs
+                    save_set = self.packs
                 elif set_type == 'button':
                     iter_set = interface_conf.menu.get(size).button
-
-                for set_key, set_conf in iter_set.items().copy():
+                    save_set = self.menus
+                    
+                for set_key, set_conf in iter_set.items():
                     if not set_conf:
                         continue
 
-                    if not iter_set.get(size).get(set_key):
-                        setattr(
-                            self.mirrors.get(size),
-                            set_key,
-                            munch.Munch({})
-                        )
+                    if not save_set.get(set_key):
+                        setattr(save_set.get(size), set_key, munch.Munch({}))
                     
                     # for (unit, fill), (empty, fill)
                     for component_key, component in set_conf.items():
@@ -342,8 +324,12 @@ class Repo():
                             )
                         )
 
+                        log.debug( 
+                            f"{set_type} {set_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                            'Repo._init_sense_assets'
+                        )
                         setattr(
-                            iter_set.get(size).get(set_key),
+                            save_set.get(size).get(set_key),
                             component_key,
                             buffer.crop(( x, y, w + x, h + y))
                         )
@@ -537,8 +523,7 @@ class Repo():
                     )
 
             log.debug(
-                f'{sprite_key} configuration: states - {len(self.sprites.bases.get(sprite_key))}, \
-                frames - {frames}', 
+                f'{sprite_key}: states - {len(self.sprites.base.get(sprite_key))}, frames - {frames}', 
                 'Repo._init_entity_assets'
             )
 

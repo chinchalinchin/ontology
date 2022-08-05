@@ -558,10 +558,10 @@ class HUD():
                         slot_point[1] + ( slot_dim[1] - avatar_dim[1] ) / 2
                     )
                 )
-                setattr(self.avatar_frame_map, i, self.slots.get(slot_key))
+                setattr(self.avatar_frame_map, str(i), self.slots.get(slot_key))
             else:
                 self.avatar_rendering_points.append(None)
-                setattr(self.avatar_frame_map, i, None)
+                setattr(self.avatar_frame_map, str(i), None)
         
         avatar_dim = (
             self.avatar_conf.inventory.get(self.packs.bag).size.w,
@@ -577,7 +577,7 @@ class HUD():
         )
         setattr(
             self.avatar_frame_map,
-            len(self.avatar_frame_map),
+            str(len(self.avatar_frame_map)),
             self.packs.bag
         )
 
@@ -595,7 +595,7 @@ class HUD():
         )
         setattr(
             self.avatar_frame_map,
-            len(self.avatar_frame_map),
+            str(len(self.avatar_frame_map)),
             self.packs.belt
         )
         # TODO: wallet avatar rendering points
@@ -730,7 +730,7 @@ class HUD():
 
             total_belt_width = 0
             for belt_piece in beltset.values():
-                total_belt_width += belt_piece.getsize.w
+                total_belt_width += belt_piece.size.w
             total_belt_height = beltset.get(list(beltset.keys())[0]).size.h
 
             self.belt_dimensions = ( total_belt_width, total_belt_height )

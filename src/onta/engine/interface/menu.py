@@ -55,12 +55,11 @@ class Menu():
         self.menu_conf = configure.menu
         self.sizes = configure.sizes
         self.styles = configure.styles
-        self.properties = config.properties.menu
-        self.breakpoints = static.format_breakpoints(config.breakpoints)
-        self.tabs = {
-            button_name: {} 
-            for button_name in self.properties.button.buttons
-        }
+        self.properties = configure.properties.menu
+        self.breakpoints = static.format_breakpoints(configure.breakpoints)
+        self.tabs = munch.Munch({
+            button_name: {} for button_name in self.properties.button.buttons
+        })
 
 
     def _init_menu_positions(
@@ -81,10 +80,8 @@ class Menu():
 
         # [ (left_w, left_h), (middle_w, middle_h), (right_w, right_h) ]
         dims = [
-            ( 
-                button_conf.get(piece).size.w,
-                button_conf.get(piece).size.h
-            ) for piece in self.properties.button.pieces
+            ( button_conf.get(piece).size.w, button_conf.get(piece).size.h ) 
+            for piece in self.properties.button.pieces
         ]
 
         full_width = 0
@@ -102,18 +99,18 @@ class Menu():
 
                 if menu_stack == 'vertical':
                     if i == 0 and j == 0:
-                        x = (1 - menu_margins[0])*player_device.dimensions[0] - full_width
-                        y = menu_margins[1]*player_device.dimensions[1]
+                        x = (1 - menu_margins[0]) * player_device.dimensions[0] - full_width
+                        y = menu_margins[1] * player_device.dimensions[1]
                     else:
                         if j == 0:
                             x = self.button_rendering_points[0][0]
                             y = self.button_rendering_points[0][1] + \
-                                (1+menu_padding[1])*i*dims[0][1]
+                                (1 + menu_padding[1] ) * i * dims[0][1]
                         else:
                             x = self.button_rendering_points[j-1][0] + \
                                 dims[j-1][0]
                             y = self.button_rendering_points[j-1][1] + \
-                                (1+menu_padding[1])*i*dims[j-1][1]
+                                (1 + menu_padding[1]) * i * dims[j-1][1]
 
                 elif menu_stack == 'horizontal':
                     if i == 0 and j == 0:
@@ -122,7 +119,7 @@ class Menu():
                     else:
                         if j == 0 :
                             x = self.button_rendering_points[0][0] + \
-                                i*(full_width + menu_padding[0])
+                                i * (full_width + menu_padding[0])
                             y = self.button_rendering_points[0][1]
                         else:
                             x = self.button_rendering_points[len(self.button_rendering_points)-1][0] + dims[j-1][0]
