@@ -51,14 +51,14 @@ avatars:
       size:
         w: 16
         h: 17
-    sword:
-      path: equipment.png
+    shortsword:
+      path: avatar_sheet.png
       position:
-        x: 320
-        y: 0
+        x: 3
+        y: 173
       size:
-        w: 32
-        h: 32
+        w: 27
+        h: 27
     axe: 
       path: equipment.png
       position:

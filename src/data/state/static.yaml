@@ -184,7 +184,7 @@ layers:
               units: absolute
               x: 600
               y: 800
-            content: sword
+            content: shortsword
       stone_switch:
         order: 3
         sets:

@@ -8,8 +8,8 @@ hero:
   plot: a
   slots:
     cast: null
-    thrust: spear
-    slash: sword
+    thrust: crossbow
+    slash: warhammer
     shoot: bow
   armor: bronze
   packs:
@@ -32,7 +32,7 @@ hero:
       axe: False
       knife: False
       pickaxe: False
-      sword: True
+      shortsword: True
       warhammer: False
       blood_magic: False
       cane: False
@@ -104,7 +104,7 @@ npcs:
         axe: False
         knife: True
         pickaxe: False
-        sword: False
+        shortsword: False
         warhammer: False
         blood_magic: False
         cane: False
@@ -175,7 +175,7 @@ npcs:
         axe: True
         knife: False
         pickaxe: False
-        sword: False
+        shortsword: False
         warhammer: False
         blood_magic: False
         cane: False

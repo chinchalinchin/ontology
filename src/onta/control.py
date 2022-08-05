@@ -8,22 +8,6 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.control', settings.LOG_LEVEL)
 
-# TODO: generate this by traversing controls config
-CONTROLS = [
-    'space', 
-    'alt_left', 
-    'ctrl_left', 
-    'shift_left', 
-    'tab', 
-    'up', 
-    'left', 
-    'right', 
-    'down', 
-    'e', 
-    'h', 
-    'q', 
-    'w'
-]
 
 class Controller():
 
@@ -31,7 +15,9 @@ class Controller():
     keys = munch.Munch({})
 
     @staticmethod
-    def map_key(key):
+    def map_key(
+        key
+    ) -> str:
         try:
             char_pressed = key.char
             return char_pressed
@@ -56,34 +42,49 @@ class Controller():
                 return 'down'
             return 'unmapped'
 
-    def __init__(self, ontology_path = settings.DEFAULT_DIR):
+    def __init__(
+        self, 
+        ontology_path = settings.DEFAULT_DIR
+    ) -> None:
         self.control_conf = conf.Conf(ontology_path).load_control_configuration()
         self.keys = munch.munchify({ 
-            key: False for key in CONTROLS
+            key: False for key in self.control_conf.valid
         })
         self._register_listener()
         self._start_listener()
         
 
-    def _on_press(self, key):
+    def _on_press(
+        self, 
+        key
+    ) -> None:
         setattr(self.keys, self.map_key(key), True)
         
             
-    def _on_release(self, key):
+    def _on_release(
+        self, 
+        key
+    ) -> None:
         setattr(self.keys, self.map_key(key), False)
 
 
-    def _register_listener(self):
+    def _register_listener(
+        self
+    ) -> None:
         log.debug('Registering keyboard listeners...', 'Controller._register_listener')
         self.listener = keyboard.Listener(
             on_press=self._on_press,
             on_release=self._on_release
         )
 
-    def _start_listener(self):
+    def _start_listener(
+        self
+    ) -> None:
        self.listener.start()
 
-    def _direction(self):
+    def _direction(
+        self
+    ) -> munch.Munch:
         directions = self.control_conf.directions
         direction_flags, dirs = {}, 0
 
@@ -106,7 +107,9 @@ class Controller():
        
         return munch.Munch(direction_flags)
 
-    def _actions(self):
+    def _actions(
+        self
+    ) -> munch.Munch:
         actions = self.control_conf.actions
         action_flags, acts = {}, 0
         for action_key, action_conf in actions.items():
@@ -129,7 +132,9 @@ class Controller():
                         
         return munch.Munch(action_flags) 
 
-    def consume(self):
+    def consume(
+        self
+    ) -> munch.Munch:
         user_input = self._direction()
         user_input.update(self._actions())
 
@@ -140,9 +145,19 @@ class Controller():
         return user_input
 
 
-    def consume_all(self):
-        self.keys = munch.munchify({ 
-            key: False for key in CONTROLS
+    def consume_all(
+        self
+    ) -> munch.Munch:
+        """_summary_
+
+        :return: _description_
+        :rtype: munch.Munch
+
+        .. note::
+            There is no recursion/nesting in `self.keys`, so just instantiate a `munch.Munch` with one level of keys to avoid recursively `munch.munchify` issue.
+        """
+        self.keys = munch.Munch({ 
+            key: False for key in self.control_conf.valid
         })
         
 

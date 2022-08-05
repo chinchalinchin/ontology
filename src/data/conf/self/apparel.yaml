@@ -434,9 +434,9 @@ equipment:
           size:
             w:
             h:
-  sword:
+  shortsword:
     sheets:
-      - sword.png
+      - shortsword.png
     animate_states:
       - slash_up
       - slash_down

@@ -1,3 +1,17 @@
+valid:
+  - up
+  - left
+  - right
+  - down
+  - tab
+  - z
+  - x
+  - ctrl_left
+  - alt_left
+  - shift_left
+  - space
+  - v
+
 directions:
   north:
     input:
@@ -37,18 +51,22 @@ directions:
     precedence: 7
 
 actions:
+  menu:
+    input: 
+      - tab
+    precedence: 0
+  hud: 
+    input:
+      - v
+    precedence: 1
   interact:
     input:
-      - e
-    precedence: 4
+      - z
+    precedence: 3
   use:
     input:
-      - w
-    precedence: 5
-  jump:
-    input:
-      - space
-    precedence: 3
+      - x
+    precedence: 4
   sprint:
     input:
       - tab
@@ -56,29 +74,25 @@ actions:
   slash:
     input:
       - ctrl_left
-    precedence: 6
+    precedence: 5
   thrust:
     input:
       - alt_left
-    precedence: 7
+    precedence: 6
   shoot:
     input:
       - shift_left
-    precedence: 8
+    precedence: 7
   cast:
     input:
-      - tab
-    precedence: 9
-  hud: 
-    input:
-      - h
-    precedence: 1
-  menu:
-    input: 
-      - q
-    precedence: 0
+      - space
+    precedence: 8
     
 consumable:
   - interact
   - hud
   - menu
+  - slash
+  - shoot
+  - thrust
+  - cast
