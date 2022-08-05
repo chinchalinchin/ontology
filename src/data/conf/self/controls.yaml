@@ -1,36 +1,36 @@
 directions:
-  n:
+  north:
     input:
       - up
     precedence: 0
-  nw:
+  northwest:
     input:
       - up
       - left
     precedence: 4
-  w:
+  west:
     input:
       - left
     precedence: 1
-  sw:
+  southwest:
     input:
       - down
       - left
     precedence: 5
-  s:
+  south:
     input:
       - down
     precedence: 2
-  se:
+  southeast:
     input:
       - down
       - right
     precedence: 6
-  e:
+  east:
     input:
       - right
     precedence: 3
-  ne:
+  northeast:
     input:
       - up
       - right

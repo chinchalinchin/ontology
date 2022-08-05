@@ -470,13 +470,37 @@ class World():
         """
         Map user input to new hero state, apply state action and iterate state frame.
         """
+        direction = self.hero.state.split('_')[-1]
+
         if self.hero.state not in self.sprite_state_conf.blocking_states:
             if 'run' in self.hero.state:
                 speed = self.sprite_properties.hero.run
             else:
                 speed = self.sprite_properties.hero.walk
 
-            if user_input['n']:
+            if user_input.slash:
+                # the additional check here isn't technically necessary since
+                #   'slash', 'thrust', 'shoot' and 'cast' are blocking states
+                if 'slash' not in self.hero.state:
+                    self.hero.frame = 0
+                self.hero.state = f'slash_{direction}'
+
+            elif user_input.thrust:
+                if 'thrust' not in self.hero.state:
+                    self.hero.frame = 0
+                self.hero.state = f'thrust_{direction}'
+
+            elif user_input.shoot:
+                if 'shoot' not in self.hero.state:
+                    self.hero.frame = 0
+                self.hero.state = f'shoot_{direction}'
+
+            elif user_input.cast:
+                if 'cast' not in self.hero.state:
+                    self.hero.frame = 0
+                self.hero.state = f'cast_{direction}'
+
+            elif user_input.north:
                 if self.hero.state != 'walk_up':
                     self.hero.frame = 0
                     self.hero.state = 'walk_up'
@@ -484,65 +508,67 @@ class World():
                 else:
                     self.hero.frame += 1
 
-                self.hero['position']['y'] -= speed
+                self.hero.position.y -= speed
 
-            elif user_input['s']:
+            elif user_input.south:
                 if self.hero.state != 'walk_down':
                     self.hero.frame = 0
                     self.hero.state = 'walk_down'
-
-                else:
+                else: 
                     self.hero.frame += 1
 
                 self.hero.position.y += speed
 
-            elif user_input['nw'] or user_input['w'] or user_input['sw']:
+            elif user_input.northwest or user_input.west or user_input.southwest:
                 if self.hero.state != 'walk_left':
                     self.hero.frame = 0
                     self.hero.state = 'walk_left'
-
                 else:
-                    self.hero.frame += 1
+                    self.hero.frame +=1
 
-                if user_input['nw'] or user_input['sw']:    
+                if user_input.northwest or user_input.southwest:    
                     proj = calculator.projection()
 
-                    if user_input['nw']:
+                    if user_input.northwest:
                         self.hero.position.x -= speed*proj[0]
                         self.hero.position.y -= speed*proj[1]
 
-                    elif user_input['sw']:
+                    elif user_input.southwest:
                         self.hero.position.x -= speed*proj[0]
                         self.hero.position.y += speed*proj[1]
 
-                elif user_input['w']:
+                elif user_input.west:
                     self.hero.position.x -= speed
 
-            elif user_input['se'] or user_input['e'] or user_input['ne']:
+            elif user_input.southeast or user_input.east or user_input.northeast:
                 if self.hero.state != 'walk_right':
                     self.hero.frame = 0
                     self.hero.state = 'walk_right'
                 else:
                     self.hero.frame += 1
 
-                if user_input['se'] or user_input['ne']:
+                if user_input.southeast or user_input.northeast:
                     proj = calculator.projection()
 
-                    if user_input['se']:
+                    if user_input.southeast:
                         self.hero.position.x += speed*proj[0]
                         self.hero.position.y += speed*proj[1]
 
-                    elif user_input['ne']:
+                    elif user_input.northeast:
                         self.hero.position.x += speed*proj[0]
                         self.hero.position.y -= speed*proj[1]
 
-                elif user_input['e']:
+                elif user_input.east:
                     self.hero.position.x += speed
 
-        if self.hero.frame >= self.sprite_state_conf.animate_states.get(
-            self.hero.state
-        ).frames:
+        else:
+            self.hero.frame += 1
+
+        if self.hero.frame >= self.sprite_state_conf.animate_states.get(self.hero.state).frames:
             self.hero.frame = 0
+
+            if self.hero.state in self.sprite_state_conf.blocking_states:
+                self.hero.state = f'walk_{direction}'
 
 
     def _update_sprites(
