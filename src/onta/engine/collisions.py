@@ -151,9 +151,9 @@ def recoil_sprite(
     if 'down' in sprite.state:
         sprite.position.y -= sprite_props.collide
     elif 'left' in sprite.state:
-        sprite.position.x -= sprite_props.collide
-    elif 'right' in sprite.state:
         sprite.position.x += sprite_props.collide
+    elif 'right' in sprite.state:
+        sprite.position.x -= sprite_props.collide
     else:
         sprite.position.y += sprite_props.collide
 
@@ -161,7 +161,6 @@ def recoil_plate(
     plate: munch.Munch, 
     sprite: munch.Munch, 
     sprite_props: munch.Munch, 
-    hero_flag: bool
 ) -> None:
     """_summary_
 
@@ -177,14 +176,8 @@ def recoil_plate(
     if 'down' in sprite.state:
         plate.start.y += sprite_props.collide
     elif 'left' in sprite.state:
-        if hero_flag:
-            plate.start.x += sprite_props.collide
-        else:
-            plate.start.x -= sprite_props.collide
+        plate.start.x -= sprite_props.collide
     elif 'right' in sprite.state:
-        if hero_flag:
-            plate.start.x -= sprite_props.collide
-        else:
-            plate.start.x += sprite_props.collide
+        plate.start.x += sprite_props.collide
     else:
         plate.start.y -= sprite_props.collide

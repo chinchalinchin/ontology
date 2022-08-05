@@ -231,7 +231,7 @@ class Renderer():
                     else:
                         group_frame = repository.get_form_frame('plates', group_key)
 
-                    for set_conf in group_conf['sets']:
+                    for set_conf in group_conf.sets:
                         start = calculator.scale(
                             ( set_conf.start.x, set_conf.start.y ), 
                             game_world.tile_dimensions,
@@ -263,15 +263,14 @@ class Renderer():
                     set_conf.start.units
                 )
 
-                group_type = game_world.plate_properties.group_key.type
+                group_type = game_world.plate_properties.get(group_key).type
                 log.infinite(f'Rendering "{group_type}" plate set at {start}', 
                     'Repo._render_typed_plates')
 
                 if group_type not in SWITCH_PLATES:
                     self.world_frame.paste(group_frame, start, group_frame)
-
                 else:
-                    if game_world.switch_map[game_world.layer][group_key][i]:
+                    if game_world.switch_map.get(game_world.layer).get(group_key)[i]:
                         self.world_frame.paste(group_frame.on, start, group_frame.on)
                     else: 
                         self.world_frame.paste(group_frame.off, start, group_frame.off)
@@ -468,7 +467,7 @@ class Renderer():
         })
 
         for i, render_point in enumerate(avatar_rendering_points):
-            if not render_point or not avatar_frame_map[i]:
+            if not render_point or not avatar_frame_map[str(i)]:
                 continue
 
             if i < avatar_set_map.equipment and \
@@ -485,7 +484,7 @@ class Renderer():
 
             avatar_frame = repository.get_avatar_frame(
                 set_key,
-                avatar_frame_map[i]
+                avatar_frame_map[str(i)]
             )
             self.world_frame.paste(
                 avatar_frame,

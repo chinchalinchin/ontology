@@ -220,10 +220,10 @@ class Conf():
             setattr(
                 self.sprite_state_conf,
                 'animate_states',
-                munch.Munch({
-                    state_conf.state: munch.Munch({
+                munch.munchify({
+                    state_conf.state:{
                         'row': state_conf.row, 'frames': state_conf.frames
-                    }) 
+                    }
                     for state_conf in self.sprite_state_conf.animate_states
                 })
             )
@@ -257,7 +257,7 @@ class Conf():
                 setattr(
                     self.strut_sheet_conf,
                     strut_key,
-                    munch.Munch({
+                    munch.munchify({
                         key: val for key, val in strut.items()
                         if key != 'properties'
                     })
@@ -287,7 +287,7 @@ class Conf():
                 setattr(
                     self.plate_sheet_conf,
                     plate_key, 
-                    munch.Munch({
+                    munch.munchify({
                         key: val for key, val in plate_conf.items()
                         if key != 'properties'
                     })

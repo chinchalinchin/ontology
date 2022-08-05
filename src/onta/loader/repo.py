@@ -667,7 +667,7 @@ class Repo():
         if self.sprites.base.get(sprite_key) and \
             self.sprites.accents.get(sprite_key) and \
             self.sprites.base.get(sprite_key).get(state_key) and \
-            self.sprites.accents(sprite_key).get(state_key):
+            self.sprites.accents.get(sprite_key).get(state_key):
 
                 # TODO: check if frame index is less than state frames?
                 return (
@@ -694,5 +694,5 @@ class Repo():
             self.apparel.get(set_key).get(apparel_key) and \
             self.apparel.get(set_key).get(apparel_key).get(state_key):
             # TODO: check if frame index is less than state frames?
-            return self.apparel.get(set_key).get(apparel_key).get(state_key).get(frame_index)
+            return self.apparel.get(set_key).get(apparel_key).get(state_key)[frame_index]
         pass

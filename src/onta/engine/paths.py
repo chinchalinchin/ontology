@@ -138,7 +138,7 @@ def concat_dynamic_paths(
     if sprite.path.current == 'hero':
         setattr(
             pathset, 
-            hero,
+            sprite.path.current,
             munch.Munch({ 
                 'x': hero.position.x, 'y': hero.position.y
             })

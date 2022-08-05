@@ -58,7 +58,7 @@ class Controller():
 
     def __init__(self, ontology_path = settings.DEFAULT_DIR):
         self.control_conf = conf.Conf(ontology_path).load_control_configuration()
-        self.keys = munch.Munch({ 
+        self.keys = munch.munchify({ 
             key: False for key in CONTROLS
         })
         self._register_listener()
@@ -100,9 +100,11 @@ class Controller():
                 if dir_flag and directions.get(dir_key).precedence >= precedence:
                     precedence = directions.get(dir_key).precedence
                     activated_key = dir_key
-            direction_flags = { key: True if key == activated_key else False for key in direction_flags.keys() }
+            direction_flags = munch.Munch({ 
+                key: True if key == activated_key else False for key in direction_flags.keys() 
+            })
        
-        return direction_flags
+        return munch.Munch(direction_flags)
 
     def _actions(self):
         actions = self.control_conf.actions
@@ -125,7 +127,7 @@ class Controller():
                 key: True if key == activated_key else False for key in action_flags.keys() 
             }
                         
-        return action_flags 
+        return munch.Munch(action_flags) 
 
     def consume(self):
         user_input = self._direction()
@@ -139,7 +141,7 @@ class Controller():
 
 
     def consume_all(self):
-        self.keys = munch.Munch({ 
+        self.keys = munch.munchify({ 
             key: False for key in CONTROLS
         })
         

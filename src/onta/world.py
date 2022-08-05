@@ -453,17 +453,13 @@ class World():
         """
         Initialize the state for dynamic in-game elements, i.e. elements that move and are interactable.
         """
-        log.debug(
-            f'Initalizing dynamic world state...', 
-            'World._init_dynamic_state'
-        )
+        log.debug(f'Initalizing dynamic world state...', 'World._init_dynamic_state')
         dynamic_state = state_ao.get_state('dynamic')
         self.hero = dynamic_state.hero
         self.layer = dynamic_state.hero.layer
         self.plot = dynamic_state.hero.plot
-        self.npcs = dynamic_state.get(
-            'npcs'
-        ) if dynamic_state.get('npcs') is not None \
+        self.npcs = dynamic_state.get('npcs') \
+            if dynamic_state.get('npcs') is not None \
             else munch.Munch({})
 
 
@@ -543,7 +539,7 @@ class World():
                 elif user_input['e']:
                     self.hero.position.x += speed
 
-        if self.hero.frame >= self.sprite_state_con.animate_states.get(
+        if self.hero.frame >= self.sprite_state_conf.animate_states.get(
             self.hero.state
         ).frames:
             self.hero.frame = 0
@@ -595,7 +591,7 @@ class World():
                     if sprite_intent.intent not in sprite_paths:
                         # if intent is sprite location based
 
-                        log.debug(
+                        log.infinite(
                             f'Checking {sprite_key} plot {self.plot} {sprite_intent.intent} intent conditions...', 
                             'World.update_sprites'
                         )
@@ -708,10 +704,9 @@ class World():
 
                 for collision_set in collision_sets:
                     if collisions.detect_collision(sprite_hitbox, collision_set):
-                        collisions.recoil_sprite(
-                            sprite, 
-                            self.sprite_properties.get(sprite_key)
-                        )
+                        log.debug(f'Player collision at ({self.hero.position.x}, {self.hero.position.y})',
+                            'World._physics')
+                        collisions.recoil_sprite(sprite, self.sprite_properties.get(sprite_key))
 
             # sprite collision detection
             else:
@@ -784,14 +779,12 @@ class World():
 
             # mass plate collision detection
             masses = self.platesets.get(self.layer).masses.copy()
-            hero_flag = sprite_key == 'hero'
             for mass in masses:
                 if collisions.detect_collision(mass.hitbox, [ sprite_hitbox ]):
                     plate = self.get_plate(self.layer, mass.key, mass.index)
                     collisions.recoil_plate(
                         plate, sprite, 
                         self.sprite_properties.get(sprite_key),
-                        hero_flag
                     )
                     setattr(
                         plate,
@@ -1068,7 +1061,7 @@ class World():
     ) -> munch.Munch:
         if self.strutsets.get(layer) is None:
             setattr(self.strutsets, layer, munch.Munch({}))
-        return munch.Munch({
+        return munch.munchify({
             key: val
             for key, val in self.strutsets.get(layer).items()
             if key not in STRUT_META
@@ -1081,7 +1074,7 @@ class World():
     ) -> munch.Munch:
         if self.platesets.get(layer) is None:
             setattr(self.platesets, layer, munch.Munch({}))        
-        return munch.Munch({
+        return munch.munchify({
             key: val
             for key, val in self.platesets.get(layer).items()
             if key not in PLATE_META
@@ -1136,7 +1129,7 @@ class World():
         :return: _description_
         :rtype: dict
         """
-        return self.platesets.get(layer).get(plate_key).sets.get(index)
+        return self.platesets.get(layer).get(plate_key).sets[index]
 
 
     def get_sprites(
@@ -1149,10 +1142,14 @@ class World():
         :type layer: str, optional
         :return: All sprites, or all sprites on a given layer if `layer` is provided.
         :rtype: dict
+
+        .. note::
+            This method returns a dict by design, since a Munch would copy the data, but leave the original unaltered. This method
+            exposes sprites for alterations. It must be used with care.
         """
-        spriteset = munch.Munch({ 
+        spriteset ={ 
             'hero': self.hero 
-        })
+        }
         if layer is None:
             spriteset.update(self.npcs)
         else: 
@@ -1164,7 +1161,7 @@ class World():
         self, 
         layer: str
     ) -> munch.Munch:
-        return munch.Munch({
+        return munch.munchify({
             key: val
             for key, val in self.npcs.items()
             if val.layer == layer
@@ -1188,7 +1185,7 @@ class World():
     ) -> None:
         self.hero.layer = self.layer
         self.hero.plot = self.plot
-        dynamic_conf = munch.Munch({ 
+        dynamic_conf = munch.munchify({ 
             'hero': self.hero,
             'npcs': self.npcs,
         })
