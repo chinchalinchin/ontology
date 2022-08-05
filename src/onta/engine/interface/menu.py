@@ -178,7 +178,7 @@ class Menu():
             self.buttons,
             button_key,
             munch.Munch({
-                piece: 'disabled' for piece in self.properties['button']['pieces']
+                piece: 'disabled' for piece in self.properties.button.pieces
             })
         )
 
@@ -196,7 +196,7 @@ class Menu():
             self.buttons,
             button_key,
             munch.Munch({
-                piece: 'enabled' for piece in self.properties['button']['pieces']
+                piece: 'enabled' for piece in self.properties.button.pieces
             })
         )
 
@@ -242,18 +242,19 @@ class Menu():
     def _calculate_button_frame_map(
         self
     ) -> list:
-        if not self.frame_maps.get('button'):
-            frame_map = []
-            for piece_conf in self.buttons.values():
-                for piece_state in piece_conf.values():
-                    frame_map.append(piece_state)
-            setattr(self.frame_maps, 'button', frame_map)
+        # NOTE: frame changes 
+        frame_map = []
+        for piece_conf in self.buttons.values():
+            for piece_state in piece_conf.values():
+                frame_map.append(piece_state)
+        setattr(self.frame_maps, 'button', frame_map)
         return self.frame_maps.button
 
 
     def _calculate_button_piece_map(
         self
     ) -> list:
+        # pieces stay the same ...
         if not self.piece_maps.get('button'):
             piece_map = []
             for piece_conf in self.buttons.values():
@@ -288,9 +289,9 @@ class Menu():
 
     def update(
         self, 
-        user_input: dict
+        user_input: munch.Munch
     ) -> None:
-        if user_input['n']:
+        if user_input.north:
             self._increment_active_button()
-        elif user_input['s']:
+        elif user_input.south:
             self._decrement_active_button()

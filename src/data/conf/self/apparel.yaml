@@ -682,6 +682,7 @@ armor:
   bronze:
     sheets:
       - sandals.png
+      - kilt.png
       - bronze_chest.png
       - bronze_helmet.png
       - bronze_shoulders.png
@@ -693,6 +694,7 @@ armor:
   gold:
     sheets:
       - sandals.png
+      - kilt.png
       - gold_chest.png
       - gold_helmet.png
       - gold_shoulders.png

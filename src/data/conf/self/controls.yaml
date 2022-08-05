@@ -6,6 +6,8 @@ valid:
   - tab
   - z
   - x
+  - c
+  - q
   - ctrl_left
   - alt_left
   - shift_left
@@ -57,8 +59,12 @@ actions:
     precedence: 0
   hud: 
     input:
-      - v
+      - q
     precedence: 1
+  sprint:
+    input:
+      - v
+    precedence: 2
   interact:
     input:
       - z
@@ -67,26 +73,26 @@ actions:
     input:
       - x
     precedence: 4
-  sprint:
+  shield: 
     input:
-      - tab
-    precedence: 2
+      - c
+    precedence: 5
   slash:
     input:
-      - ctrl_left
-    precedence: 5
+      - space
+    precedence: 6
   thrust:
     input:
       - alt_left
-    precedence: 6
+    precedence: 7
   shoot:
     input:
       - shift_left
-    precedence: 7
+    precedence: 8
   cast:
     input:
-      - space
-    precedence: 8
+      - ctrl_left
+    precedence: 9
     
 consumable:
   - interact
