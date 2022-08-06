@@ -1,6 +1,28 @@
 import math
 
 
+def center(
+    dim: tuple
+) -> tuple:
+    return (dim[0] + dim[2] /2, dim[1] + dim[3]/2)
+
+
+def angle_relative_to_horizon(
+    point: tuple,
+) -> float:
+
+    norm = distance(point, ( 0,0 ))
+    dot_prod = point[0] / norm
+
+    if dot_prod == 0:
+        return 0
+
+    if point[0] > 0 and point[1] > 0 or \
+        point[0] < 0 and point[1] > 0:
+        return 180 * math.acos(dot_prod) / math.pi
+    return 360 - 180 * math.acos(dot_prod) / math.pi
+
+
 def projection(
     angle:float = 45
 ) -> tuple:
@@ -16,7 +38,7 @@ def distance(
 ) -> float:
     dx = a[0] - b[0]
     dy = a[1] - b[1]
-    return math.sqrt(dx*dx + dy*dy)
+    return math.sqrt(dx ** 2 + dy ** 2)
 
 
 def intersection(

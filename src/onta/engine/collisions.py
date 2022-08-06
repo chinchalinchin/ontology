@@ -125,12 +125,13 @@ def detect_collision(
             # NOTE: return true once collision is detected. it doesn't matter where it occurs, 
             #       only what direction the hero is travelling...
             # TODO: fix that!
+            printable_hitbox = tuple(round(dim) for dim in sprite_hitbox)
             log.debug(
-                f'Detected sprite hitbox {sprite_hitbox} collision with hitbox at {hitbox}', 
+                f'Detected sprite hitbox {printable_hitbox} collision with hitbox at {hitbox}', 
                 'detect_collision'
             )
-            return True
-    return False
+            return hitbox
+    return None
 
 
 ############################
@@ -140,7 +141,9 @@ def detect_collision(
 
 def recoil_sprite(
     sprite: munch.Munch, 
-    sprite_props: munch.Munch
+    sprite_dim: tuple,
+    sprite_props: munch.Munch,
+    collision_box: tuple
 ) -> None:
     """_summary_
 
@@ -149,20 +152,39 @@ def recoil_sprite(
     :param sprite_props: _description_
     :type sprite_props: munch.Munch
     """
-    log.debug('Recoiling sprite...', 'recoil_sprite')
-    if 'down' in sprite.stature.direction:
-        sprite.position.y -= sprite_props.speed.collide
-    elif 'left' in sprite.stature.direction:
-        sprite.position.x += sprite_props.speed.collide
-    elif 'right' in sprite.stature.direction:
-        sprite.position.x -= sprite_props.speed.collide
-    else:
-        sprite.position.y += sprite_props.speed.collide
+    sprite_box = (
+        sprite.position.x, 
+        sprite.position.y,
+        sprite_dim[0],
+        sprite_dim[1]
+    )
+    sprite_center = calculator.center(sprite_box)
+    collision_center = calculator.center(collision_box)
+
+    # the direction depends on the angle between the centers...
+
+
+    if sprite.position.y > collision_box[1]:
+        # above and to the left
+        if sprite.position.x < collision_box[0]:
+            return
+        # above and to the right
+
+        return
+    # below and to the left
+    elif sprite.position.x < collision_box[0]:
+        return
+
+    # below and to the right
+    return
+
 
 def recoil_plate(
     plate: munch.Munch, 
     sprite: munch.Munch, 
+    sprite_dim: tuple,
     sprite_props: munch.Munch, 
+    collision_box: tuple
 ) -> None:
     """_summary_
 

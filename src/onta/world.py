@@ -259,13 +259,19 @@ class World():
     dimensions = None
     """
     ```python
-    self.dimensions = (w, h) # tuple
+    self.dimensions = ( w, h ) # tuple
     ```
     """
     tile_dimensions = None
     """
     ```python
-    self.tile_dimensions = (w, h) # tuple
+    self.tile_dimensions = ( w, h ) # tuple
+    ```
+    """
+    sprite_dimensions = None
+    """
+    ```python
+    self.sprite_dimensions = (  w, h )
     ```
     """
     layer = None
@@ -323,7 +329,7 @@ class World():
         """
         log.debug('Initializing world configuration...', '_init_conf')
         sprite_conf = config.load_sprite_configuration()
-        self.sprite_stature, self.sprite_properties, _, _ = sprite_conf
+        self.sprite_stature, self.sprite_properties, _, self.sprite_dimensions = sprite_conf
         self.apparel_stature = config.load_apparel_configuration()
         self.plate_properties, _ = config.load_plate_configuration()
         self.strut_properties, _ = config.load_strut_configuration()
@@ -735,11 +741,16 @@ class World():
                              '_physics')
 
                 for collision_set in collision_sets:
-                    if collisions.detect_collision(sprite_hitbox, collision_set):
-                        log.debug(f'Player collision at ({self.hero.position.x}, {self.hero.position.y})',
+                    collision_box = collisions.detect_collision(sprite_hitbox, collision_set)
+                    if collision_box:
+                        log.debug(f'Player collision at ({round(self.hero.position.x)}, {round(self.hero.position.y)})',
                                   '_physics')
                         collisions.recoil_sprite(
-                            sprite, self.sprite_properties.get(sprite_key))
+                            sprite, 
+                            self.sprite_dimensions,
+                            self.sprite_properties.get(sprite_key),
+                            collision_box
+                        )
 
             # sprite collision detection
             else:
@@ -767,11 +778,13 @@ class World():
 
                     collided = False
                     for collision_set in collision_sets:
-                        if collisions.detect_collision(sprite_hitbox, collision_set):
+                        collision_box = collisions.detect_collision(sprite_hitbox, collision_set)
+                        if collision_box:
                             collided = True
                             collisions.recoil_sprite(
                                 sprite,
-                                self.sprite_properties.get(sprite_key)
+                                self.sprite_properties.get(sprite_key),
+                                collision_box
                             )
                     if collided:
                         # recalculate hitbox after sprite recoils
@@ -808,11 +821,13 @@ class World():
             # mass plate collision detection
             masses = self.platesets.get(self.layer).masses.copy()
             for mass in masses:
-                if collisions.detect_collision(mass.hitbox, [sprite_hitbox]):
+                collision_box = collisions.detect_collision(mass.hitbox, [sprite_hitbox])
+                if collision_box:
                     plate = self.get_plate(self.layer, mass.key, mass.index)
                     collisions.recoil_plate(
                         plate, sprite,
                         self.sprite_properties.get(sprite_key),
+                        collision_box
                     )
                     setattr(
                         plate,

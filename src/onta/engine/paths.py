@@ -96,7 +96,7 @@ def reorient(
     least_direction_distance = calculator.distance(( 0,0 ), world_dim)
 
     printable_possiblities = { key: round(value) for key, value in possibilities.items() }
-    log.debug(f'Reorientation possibility map: {printable_possiblities}', 'reorient')
+    log.debug(f'Reorientation possibility-distance map: {printable_possiblities}', 'reorient')
 
     for key, possibility in possibilities.items():
         if possibility < least_direction_distance:
