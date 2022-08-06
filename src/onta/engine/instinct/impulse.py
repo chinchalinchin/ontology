@@ -24,6 +24,8 @@ def move(
     sprite: munch.Munch,
     sprite_props: munch.Munch
 ) -> None:
+    print(sprite.stature)
+    
     if sprite.stature.action == 'run':
         speed = sprite_props.speed.run
     elif sprite.stature.action == 'walk':

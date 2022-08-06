@@ -41,34 +41,33 @@ stature:
             -   hate
             -   surprise
             -   confusion
-        properties:
-            end: death
-            singular:
-                -   use
-                -   interact
-                -   guard 
-            directed:
-                -   cast
-                -   thrust
-                -   slash
-                -   shoot
-                -   walk
-                -   run
-            blocking:
-                -   cast
-                -   thrust
-                -   slash
-                -   shoot
-                -   guard
-                -   death
-            animate:
-                -   cast
-                -   thrust
-                -   slash
-                -   shoot
-                -   walk
-                -   run
-                -   death
+        end: death
+        singular:
+            -   use
+            -   interact
+            -   guard 
+        directed:
+            -   cast
+            -   thrust
+            -   slash
+            -   shoot
+            -   walk
+            -   run
+        blocking:
+            -   cast
+            -   thrust
+            -   slash
+            -   shoot
+            -   guard
+            -   death
+        animate:
+            -   cast
+            -   thrust
+            -   slash
+            -   shoot
+            -   walk
+            -   run
+            -   death
     animate_map:
         cast_up:
             row: 0

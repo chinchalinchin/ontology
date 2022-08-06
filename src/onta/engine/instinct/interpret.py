@@ -6,12 +6,6 @@ def map_input_to_intent(
     sprite_stature: munch.Munch,
     user_input: munch.Munch
 ) -> munch.Munch:
-    # current values
-    hero.stature.action
-    # will need direction if user input is a singular intent (use, interact, guard)
-    hero.stature.direction
-    hero.stature.emotion
-
     # only one direction can be enabled at a time, so this is equivalent to finding the direction
     enabled_direction = [
         direction for direction, flag in user_input.items() 
@@ -52,12 +46,12 @@ def map_input_to_intent(
         intention = 'move'
         action = 'walk' if not user_input.sprint else 'sprint'
         direction = enabled_direction.pop()
-        expression = hero.statue.expression
+        expression = hero.stature.expression
 
     if enabled_expressions:
         expression = enabled_expressions.pop()
     else:
-        expression = hero.statue.expression
+        expression = hero.stature.expression
 
 
     return munch.Munch({

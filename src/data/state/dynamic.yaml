@@ -212,8 +212,8 @@ npcs:
       stature: null
     desires:
       - plot: a
-        target: hero
         mode: engage
+        target: hero
         conditions:
           - aware
       - plot: a
@@ -228,8 +228,8 @@ npcs:
         conditions:
           - always
       - plot: b
-        target: esmeralda
         mode: engage
+        target: esmeralda
         conditions:
           - aware
     inventory:

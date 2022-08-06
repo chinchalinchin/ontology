@@ -119,30 +119,29 @@ def reorient(
 
 
 def concat_dynamic_paths(
-    sprite: munch.Munch, 
-    static_pathset: munch.Munch, 
+    sprite: munch.Munch,
     hero: munch.Munch, 
     npcs: munch.Munch
 ) -> munch.Munch:
-    pathset = static_pathset.copy()
+    pathset = sprite.memory.paths.copy()
     npc_keys = list(npcs.keys())
 
-    if sprite.path.current == 'hero':
+    if sprite.path == 'hero':
         setattr(
             pathset, 
-            sprite.path.current,
+            sprite.path,
             munch.Munch({ 
                 'x': hero.position.x, 'y': hero.position.y
             })
         )
 
-    elif sprite.path.current in npc_keys:
+    elif sprite.path in npc_keys:
         setattr(
             pathset,
-            sprite.path.current,
+            sprite.path,
             munch.Munch({
-                'x': npcs.get(sprite.path.current).position.x,
-                'y': npcs.get(sprite.path.current).position.y
+                'x': npcs.get(sprite.path).position.x,
+                'y': npcs.get(sprite.path).position.y
             })
         )
 

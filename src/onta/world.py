@@ -479,11 +479,15 @@ class World():
         :param user_input: _description_
         :type user_input: munch.Munch
         """
-        self.hero.intent = interpret.map_input_to_intent(self.hero, user_input)
+        self.hero.intent = interpret.map_input_to_intent(
+            self.hero, 
+            self.sprite_stature,
+            user_input
+        )
 
         for sprite_key, sprite in self.npcs.items():
             sprite_props = self.sprite_properties.get(sprite_key)
-            sprite_desires = self._sprite_desires(sprite_key)
+            sprite_desires = self._sprite_desires(sprite)
             sprite_pos = ( sprite.position.x, sprite.position.y)
 
             # TODO: order desires? 
@@ -502,7 +506,7 @@ class World():
                             desire_pos = impulse.locate_desire(
                                 sprite_desire.target, 
                                 self.get_sprites(),
-                                self.sprite_properties.get(sprite_key).paths
+                                sprite.memory.paths
                             )
                             distance = calculator.distance(
                                 desire_pos, 
@@ -535,6 +539,7 @@ class World():
                                 'World._ruminate'
                             )
                                 # reorient changes sprite intent under the hood
+                            sprite.path = sprite_desire.target
                             self._reorient(sprite_key)
                             break
                             
@@ -569,7 +574,7 @@ class World():
 
         for sprite_key, sprite in self.get_sprites().items():
             if not sprite.intent or \
-                sprite.stature.action in self.sprite_stature.decomposition.properties.blocking:
+                sprite.stature.action in self.sprite_stature.decomposition.blocking:
                 # NOTE: if sprite in blocking stature, no intent is transmitted or consumed
                 continue
 
@@ -632,7 +637,7 @@ class World():
                     self.layer = self.hero.layer
 
 
-            if sprite.stature.action in self.sprite_stature.decomposition.properties.animate:
+            if sprite.stature.action in self.sprite_stature.decomposition.animate:
                 sprite.frame += 1
 
                 # construct sprite stature string
@@ -665,8 +670,7 @@ class World():
         )
         
         pathset = paths.concat_dynamic_paths(
-            sprite, 
-            self.sprite_properties.get(sprite_key).paths, 
+            sprite,
             self.hero, 
             self.npcs, 
         )
@@ -675,8 +679,8 @@ class World():
             sprite,
             sprite_hitbox,
             collision_sets, 
-            pathset.get(sprite.path.current),
-            self.sprite_properties.get(sprite_key).collide,
+            pathset.get(sprite.path),
+            self.sprite_properties.get(sprite_key).speed.collide,
             self.dimensions
         )
 
@@ -758,23 +762,22 @@ class World():
                         )
 
                         # if current path is sprite based...
-                        if sprite.path.current in list(self.sprite_properties.keys()):
+                        if sprite.path in list(self.sprite_properties.keys()):
                             pathset = paths.concat_dynamic_paths(
                                 sprite,
-                                self.sprite_properties.get(sprite_key).paths,
                                 self.hero,
                                 self.npcs,
                             )
                         # else just use the static props paths...
                         else:
-                            pathset = self.sprite_properties.get(sprite_key).paths
+                            pathset = self.sprite_properties.get(sprite_key).memory.paths
 
                         paths.reorient(
                             sprite,
                             sprite_hitbox,
                             collision_sets, 
-                            pathset.get(sprite.path.current),
-                            self.sprite_properties.get(sprite_key).collide,
+                            pathset.get(sprite.path),
+                            self.sprite_properties.get(sprite_key).speed.collide,
                             self.dimensions
                         )
 
@@ -947,23 +950,18 @@ class World():
 
     def _sprite_desires(
         self, 
-        sprite_key: str
+        sprite: munch.Munch
     ) -> Union[list, None]:
         """_summary_
 
-        :param sprite_key: _description_
-        :type sprite_key: str
+        :param sprite: _description_
+        :type sprite: munch.Munch
         :return: _description_
         :rtype: Union[list, None]
         """
-        if sprite_key != 'hero':
-            return list(
-                filter(
-                    lambda x: x.plot == self.plot, 
-                    self.sprite_properties.get(sprite_key).desires
-                )
-            )
-        return None
+        return list(
+            filter(lambda x: x.plot == self.plot, sprite.desires)
+        )
 
 
     def get_formset(

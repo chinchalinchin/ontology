@@ -8,9 +8,19 @@ import onta.engine.static.calculator as calculator
 log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
 
 def construct_animate_statures(
-    sprite_props: munch.Munch
-) -> munch.Munch:
-    pass
+    stature_props: munch.Munch
+):
+    animate_statures = []
+    for action in stature_props.decomposition.animate:
+        if action != stature_props.decomposition.end:
+            for direction in stature_props.decomposition.directions.real:
+                animate_statures.append(
+                    settings.SEP.join([action, direction])
+                )
+        else:
+            animate_statures.append(action)
+
+    return animate_statures
 
 def compose_animate_stature(
     sprite: munch.Munch,
@@ -28,16 +38,14 @@ def compose_animate_stature(
     .. note::
         The diagonal directions get collapsed into a single direction due to the spritesheet specifications. If, in the future, spritesheets with a more robust frameset are added, this method will need updated to reflect the new directions available.
     """
-    stature_props.decomposition.properties
-
-    if sprite.stature.action in stature_props.decomposition.properties.singular or \
-        sprite.stature.action in stature_props.decomposition.properties.end:
+    if sprite.stature.action in stature_props.decomposition.singular or \
+        sprite.stature.action in stature_props.decomposition.end:
         return sprite.stature.action
     elif sprite.stature.direction in [ 'up_left', 'down_left' ]:
-        return settings.SEP.join(sprite.stature.action, 'left')
+        return settings.SEP.join([sprite.stature.action, 'left'])
     elif sprite.stature.direction in [ 'up_right', 'down_right']:
-        return settings.SEP.join(sprite.stature.action ,'right')
-    return settings.SEP.join(sprite.stature.action, sprite.stature.direction)
+        return settings.SEP.join([sprite.stature.action ,'right'])
+    return settings.SEP.join([sprite.stature.action, sprite.stature.direction])
 
 
 def decompose_animate_stature(

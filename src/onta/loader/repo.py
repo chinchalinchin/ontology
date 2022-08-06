@@ -5,6 +5,9 @@ import munch
 
 import onta.settings as settings
 import onta.loader.conf as conf
+
+import onta.engine.static.formulae as formulae
+
 import onta.util.logger as logger
 import onta.util.gui as gui
 
@@ -403,18 +406,10 @@ class Repo():
                     )
 
                 if apparel.animate_statures == 'all':
-                    pass
+                    animate_statures = formulae.construct_animate_statures(stature)
 
-                    # animate_statures = list(stature.animate_statures.keys())
-                    # this is (cast, thrust, shoot, slash, walk, run, death)
-                    # this needs to be condensed down to animate_statures
-
-
-
-                    # TODO: !!!
                 else:
                     animate_statures = apparel.animate_statures
-
 
                 for equip_stature in animate_statures:
                     equip_stature_conf = stature.animate_map.get(equip_stature)
