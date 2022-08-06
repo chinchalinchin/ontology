@@ -288,7 +288,7 @@ class Menu():
         self, 
         user_input: munch.Munch
     ) -> None:
-        if user_input.north:
+        if user_input.up:
             self._increment_active_button()
-        elif user_input.south:
+        elif user_input.down:
             self._decrement_active_button()

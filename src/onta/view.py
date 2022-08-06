@@ -170,7 +170,7 @@ class Renderer():
                     )
                     set_dim = ( set_conf.multiply.w, set_conf.multiply.h)
 
-                    log.debug(
+                    log.verbose(
                         f'Rendering group set at {start} with dimensions {set_dim}', 
                         'Repo._render_tiles'
                     )
@@ -242,7 +242,7 @@ class Renderer():
                             game_world.tile_dimensions,
                             set_conf.start.units
                         )
-                        log.debug(f'Rendering group set at {start}', 'Repo._render_static_sets')
+                        log.verbose(f'Rendering group set at {start}', 'Repo._render_static_sets')
 
                         if set_conf.get('cover'):
                             self.static_cover_frame.get(layer).paste(group_frame, start, group_frame)
@@ -269,7 +269,7 @@ class Renderer():
                 )
 
                 group_type = game_world.plate_properties.get(group_key).type
-                log.infinite(f'Rendering "{group_type}" plate set at {start}', 
+                log.verbose(f'Rendering {group_type} plate set at {start}', 
                     'Repo._render_typed_plates')
 
                 if group_type not in SWITCH_PLATES:
@@ -322,7 +322,7 @@ class Renderer():
             sprite_position = gui.int_tuple(
                 ( sprite.position.x, sprite.position.y )
             )
-            sprite_stature_key = formulae.compose_animate_stature_key(
+            sprite_stature_key = formulae.compose_animate_stature(
                 sprite,
                 game_world.sprite_stature
             )
@@ -337,7 +337,7 @@ class Renderer():
             # ARMOR RENDERING
             if sprite.armor:
                 animate_statures = \
-                    game_world.apparel_state_conf.armor.get(sprite.armor).animate_stature
+                    game_world.apparel_stature.armor.get(sprite.armor).animate_statures
 
                 if (isinstance(animate_statures, str) and animate_statures == 'all') or \
                     (isinstance(animate_statures, list) and sprite_stature_key in animate_statures):
@@ -359,7 +359,7 @@ class Renderer():
 
                 for enabled_equipment in enabled:
                     animate_statures = \
-                        game_world.apparel_state_conf.equipment.get(enabled_equipment).animate_statures
+                        game_world.apparel_stature.equipment.get(enabled_equipment).animate_statures
 
 
                     if (isinstance(animate_statures, str) and animate_statures == 'all') or \
@@ -368,7 +368,7 @@ class Renderer():
                         equipment_frame = repository.get_apparel_frame(
                             'equipment',
                             enabled_equipment,
-                            sprite.state,
+                            sprite_stature_key,
                             sprite.frame
                         )
                         self.world_frame.paste(equipment_frame, sprite_position, equipment_frame)

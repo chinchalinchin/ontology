@@ -137,3 +137,5 @@ in other words, user input operates on sprite intents, sprite intents operate on
 - perhaps subsume `radii.aware` into intents?
 
 - idea: keep the previous world state in read only variable to be able to compare when filtering intents, so sprites "remember".
+
+- todo: should initialize common calculations in some sort of cache. like the distance from (0,0) to (world_h, world_w), cos(45), sin(45), etc.

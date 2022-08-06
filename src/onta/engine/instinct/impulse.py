@@ -1,3 +1,4 @@
+from typing import Union
 import munch
 
 import onta.settings as settings
@@ -6,16 +7,28 @@ import onta.engine.collisions as collisions
 import onta.engine.static.calculator as calculator
 import onta.engine.static.formulae as formulae
 
+import onta.util.logger as logger
 
 
-def locate_desire(target, sprites, paths):
+log = logger.Logger('onta.world.instinct.impulses', settings.LOG_LEVEL)
+
+
+def locate_desire(
+    target, 
+    sprites, 
+    paths
+) -> Union[tuple, None]:
     # TODO: take into account sprite layer and target layer, will need to pass in sprite
+    log.debug(f'Searching for {target}', 'locate_desire')
+
     if target in list(sprites.keys()):
+        log.debug('Target is dynamic, retrieving sprite position...', 'locate_desire')
         return (
             sprites.get(target).position.x, 
             sprites.get(target).position.y
         )
     elif target in list(paths.keys()):
+        log.debug('Target is static, retrieving path...', 'locate_desire')
         return ( paths.get(target).x, paths.get(target).y)
     return None
 
@@ -24,7 +37,6 @@ def move(
     sprite: munch.Munch,
     sprite_props: munch.Munch
 ) -> None:
-    print(sprite.stature)
     
     if sprite.stature.action == 'run':
         speed = sprite_props.speed.run
@@ -32,7 +44,7 @@ def move(
         speed = sprite_props.speed.walk
 
     if sprite.stature.direction == 'up':
-        sprite.stature.y -= speed
+        sprite.position.y -= speed
 
     elif sprite.stature.direction  ==  'up_left':
         proj = calculator.projection()
@@ -40,7 +52,7 @@ def move(
         sprite.position.y -= speed*proj[1]
 
     elif sprite.stature.direction == 'left':
-        pass
+       sprite.position.x -= speed
 
     elif sprite.stature.direction == 'down_left':
         proj = calculator.projection()
@@ -70,28 +82,28 @@ def combat(
     apparel_stature
 ) -> None: 
     # will probably need more input here for other sprites, combat attack boxes, etc...
-    if any(action in sprite.state for action in ['cast', 'shoot', 'slash', 'thrust']):
-        act, direct = formulae.decompose_animate_stature(sprite.state) 
-        equip_key = sprite.slots.get(act)            
-        if equip_key is not None:
-            attack_box = None
-            if apparel_stature.equipment.get(equip_key).type == 'projectile':
-                ammo_types = list(
-                    apparel_stature.equipment.get(equip_key).properties.ammo.keys()
-                )
-                if sprite.packs.belt in ammo_types:
-                    attack_box = collisions.calculate_attackbox(
-                        sprite,
-                        direct,
-                        apparel_stature.equipment.get(equip_key).properties.ammo.get(
-                            sprite.packs.belt).attackbox
-                    )
-            elif apparel_stature.equipment.get(equip_key).type == 'blunt':
+    if any(action in sprite.stature.action for action in ['cast', 'shoot', 'slash', 'thrust']):
+        equip_key = sprite.slots.get(sprite.stature.action)
+
+        if equip_key is None:
+            return        
+            
+        attack_box = None
+        if apparel_stature.equipment.get(equip_key).type == 'projectile':
+            ammo_types = list(
+                apparel_stature.equipment.get(equip_key).properties.ammo.keys()
+            )
+            if sprite.packs.belt in ammo_types:
                 attack_box = collisions.calculate_attackbox(
                     sprite,
-                    direct,
-                    apparel_stature.equipment.get(equip_key).properties.attackbox
+                    apparel_stature.equipment.get(equip_key).properties.ammo.get(
+                        sprite.packs.belt).attackbox
                 )
+        elif apparel_stature.equipment.get(equip_key).type == 'blunt':
+            attack_box = collisions.calculate_attackbox(
+                sprite,
+                apparel_stature.equipment.get(equip_key).properties.attackbox
+            )
 
 def express(
     sprite,

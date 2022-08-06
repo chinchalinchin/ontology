@@ -2,6 +2,14 @@ import datetime
 
 class Logger():
 
+    levels = [
+        'MAXIMUM_OVERDRIVE',
+        'INFINITE',
+        'VERBOSE',
+        'DEBUG',
+        'INFO',
+    ]
+
     def __init__(self, location, log_level="INFO"):
         self.location = location
         self.log_level = log_level
@@ -17,17 +25,22 @@ class Logger():
         self.comment(msg, method, 'ERROR',)
 
     def info(self, msg, method):
-        if self.log_level in ['INFO', 'DEBUG', 'VERBOSE', 'INFINITE']:
-            self.comment(msg, method, 'INFO')
+        if self.log_level in self.levels:
+            self.comment(msg, method, self.levels[4])
 
     def debug(self, msg, method):
-        if self.log_level in ['DEBUG', 'VERBOSE', 'INFINITE']:
-            self.comment(msg, method, 'DEBUG')
+        if self.log_level in self.levels[:4]:
+            self.comment(msg, method, self.levels[3])
 
     def verbose(self, msg, method):
-        if self.log_level in ['VERBOSE', 'INFINITE']:
-            self.comment(msg, method, 'VERBOSE')
+        if self.log_level in self.levels[:3]:
+            self.comment(msg, method, self.levels[2])
 
     def infinite(self, msg, method):
-        if self.log_level == 'INFINITE':
-            self.comment(msg, method, 'INFINITE')
+        if self.log_level in self.levels[:2]:
+            self.comment(msg, method, self.levels[1])
+
+    def maximum_overdrive(self, msg, method):
+        if self.log_level in self.levels[:1]:
+            self.comment(msg, method, self.levels[0])
+

@@ -158,8 +158,8 @@ def do(
         sleep_time = ms_per_frame - diff
 
         if sleep_time >= 0:
-            log.infinite(f'Loop time delta: {diff} ms', 'do')
-            log.infinite(f'Sleeping excess period - delta: {sleep_time}', 'do')
+            log.maximum_overdrive(f'Loop time delta: {diff} ms', 'do')
+            log.maximum_overdrive(f'Sleeping excess period - delta: {sleep_time}', 'do')
             time.sleep(sleep_time/1000)
 
 def entrypoint() -> None:

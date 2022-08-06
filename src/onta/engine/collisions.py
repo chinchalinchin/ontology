@@ -94,7 +94,6 @@ def calculate_sprite_hitbox(
 
 def calculate_attackbox(
     sprite: munch.Munch,
-    direction: str,
     attack_props: munch.Munch
 ) -> tuple:
     # TODO:
@@ -126,7 +125,7 @@ def detect_collision(
             # NOTE: return true once collision is detected. it doesn't matter where it occurs, 
             #       only what direction the hero is travelling...
             # TODO: fix that!
-            log.verbose(
+            log.debug(
                 f'Detected sprite hitbox {sprite_hitbox} collision with hitbox at {hitbox}', 
                 'detect_collision'
             )
@@ -150,11 +149,12 @@ def recoil_sprite(
     :param sprite_props: _description_
     :type sprite_props: munch.Munch
     """
-    if 'down' in sprite.state:
+    log.debug('Recoiling sprite...', 'recoil_sprite')
+    if 'down' in sprite.stature.direction:
         sprite.position.y -= sprite_props.speed.collide
-    elif 'left' in sprite.state:
+    elif 'left' in sprite.stature.direction:
         sprite.position.x += sprite_props.speed.collide
-    elif 'right' in sprite.state:
+    elif 'right' in sprite.stature.direction:
         sprite.position.x -= sprite_props.speed.collide
     else:
         sprite.position.y += sprite_props.speed.collide
@@ -175,11 +175,11 @@ def recoil_plate(
     :param hero_flag: _description_
     :type hero_flag: bool
     """
-    if 'down' in sprite.state:
+    if 'down' in sprite.stature.direction:
         plate.start.y += sprite_props.speed.collide
-    elif 'left' in sprite.state:
+    elif 'left' in sprite.stature.direction:
         plate.start.x -= sprite_props.speed.collide
-    elif 'right' in sprite.state:
+    elif 'right' in sprite.stature.direction:
         plate.start.x += sprite_props.speed.collide
     else:
         plate.start.y -= sprite_props.speed.collide

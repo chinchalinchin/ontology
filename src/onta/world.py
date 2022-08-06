@@ -9,7 +9,7 @@ import onta.loader.state as state
 import onta.loader.conf as conf
 
 import onta.engine.collisions as collisions
-import onta.engine.instinct.interpret as interpret 
+import onta.engine.instinct.interpret as interpret
 import onta.engine.instinct.impulse as impulse
 import onta.engine.paths as paths
 import onta.engine.static.formulae as formulae
@@ -21,23 +21,24 @@ import onta.util.logger as logger
 log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
 PLATE_META = [
-    'doors', 
-    'containers', 
-    'pressures', 
+    'doors',
+    'containers',
+    'pressures',
     'masses'
 ]
-STRUT_META =  [
+STRUT_META = [
     'hitboxes'
 ]
 
-FORM_TYPES = [ 
-    'tiles', 
-    'struts', 
+FORM_TYPES = [
+    'tiles',
+    'struts',
     'plates'
 ]
 ENTITY_TYPES = [
     'sprites'
 ]
+
 
 class World():
     """
@@ -66,10 +67,10 @@ class World():
     })
     ```
     """
-    apparel_state_conf = munch.Munch({})
+    apparel_stature = munch.Munch({})
     """
     ```python
-    self.apparel_state_conf = munch.Munch({
+    self.apparel_stature = munch.Munch({
         'apparel_1': {
             'animate_states': [
                 'state_1',
@@ -298,7 +299,7 @@ class World():
     iterations = 0
 
     def __init__(
-        self, 
+        self,
         ontology_path: str = settings.DEFAULT_DIR
     ) -> None:
         """
@@ -313,48 +314,47 @@ class World():
         self._init_static_state(state_ao)
         self._init_dynamic_state(state_ao)
 
-
     def _init_conf(
-        self, 
+        self,
         config: conf.Conf
     ) -> None:
         """ 
         Initialize configuration properties for in-game elements in the memory.
         """
-        log.debug('Initializing world configuration...', 'World._init_conf')
+        log.debug('Initializing world configuration...', '_init_conf')
         sprite_conf = config.load_sprite_configuration()
-        self.sprite_stature, self.sprite_properties, _, _= sprite_conf
-        self.apparel_state_conf = config.load_apparel_configuration()
+        self.sprite_stature, self.sprite_properties, _, _ = sprite_conf
+        self.apparel_stature = config.load_apparel_configuration()
         self.plate_properties, _ = config.load_plate_configuration()
         self.strut_properties, _ = config.load_strut_configuration()
         self.composite_conf = config.load_composite_configuration()
         tile_conf = config.load_tile_configuration()
-        self.tile_dimensions = ( tile_conf.tile.w, tile_conf.tile.h )
-
+        self.tile_dimensions = (tile_conf.tile.w, tile_conf.tile.h)
 
     def _init_static_state(
-        self, 
+        self,
         state_ao: state.State
     ) -> None:
         """
         Initialize the state for static in-game elements, i.e. elements that do not move and are not interactable.
         """
-        log.debug(f'Initializing simple static world state...', 'World._init_static_state')
+        log.debug(f'Initializing simple static world state...',
+                  '_init_static_state')
         static_conf = state_ao.get_state('static')
 
         self.dimensions = calculator.scale(
-            ( static_conf.world.size.w, static_conf.world.size.h ),
+            (static_conf.world.size.w, static_conf.world.size.h),
             self.tile_dimensions,
             static_conf.world.size.units
         )
 
         for asset_type, asset_set in zip(
-            [ 'tiles', 'struts', 'plates', 'compositions' ],
-            [ self.tilesets, self.strutsets, self.platesets, self.compositions ]
+            ['tiles', 'struts', 'plates', 'compositions'],
+            [self.tilesets, self.strutsets, self.platesets, self.compositions]
         ):
             for layer_key, layer_conf in static_conf['layers'].items():
                 self.layers.append(layer_key)
-                setattr(asset_set,layer_key,layer_conf.get(asset_type))
+                setattr(asset_set, layer_key, layer_conf.get(asset_type))
 
         self.tilesets, self.strutsets, self.platesets = \
             formulae.decompose_compositions_into_sets(
@@ -370,7 +370,6 @@ class World():
         self._generate_stationary_hitboxes()
         self._generate_switch_map()
 
-
     def _generate_stationary_hitboxes(
         self
     ) -> None:
@@ -381,8 +380,8 @@ class World():
             All of the strut hitboxes are condensed into a list in `self.strutsets['hitboxes']`, so that strut hitboxes only need calculated once.
         """
         log.debug(
-            f'Calculating stationary hitbox locations...', 
-            'World._generate_stationary_hitboxes'
+            f'Calculating stationary hitbox locations...',
+            '_generate_stationary_hitboxes'
         )
         for layer in self.layers:
             for static_set in ['strutset', 'plateset']:
@@ -393,21 +392,21 @@ class World():
                 elif static_set == 'plateset':
                     iter_set = self.get_platesets(layer).copy()
                     props = self.plate_properties
-                
+
                 for set_key, set_conf in iter_set.items():
                     log.debug(
-                        f'Initializing {static_set} {set_key} hitboxes', 
-                        'World._generate_stationary_hitboxes'
+                        f'Initializing {static_set} {set_key} hitboxes',
+                        '_generate_stationary_hitboxes'
                     )
 
                     for i, set_conf in enumerate(set_conf.sets):
 
                         set_hitbox = collisions.calculate_set_hitbox(
-                            props.get(set_key).hitbox, 
-                            set_conf, 
+                            props.get(set_key).hitbox,
+                            set_conf,
                             self.tile_dimensions
                         )
-                        if static_set == 'strutset' :
+                        if static_set == 'strutset':
                             setattr(
                                 self.strutsets.get(layer).get(set_key).sets[i],
                                 'hitbox',
@@ -419,29 +418,33 @@ class World():
                                 'hitbox',
                                 set_hitbox
                             )
-            
-            world_bounds = [
-                ( 0, 0, self.dimensions[0], 1 ), 
-                ( 0, 0, 1, self.dimensions[1] ),
-                ( self.dimensions[0], 0, 1, self.dimensions[1] ),
-                ( 0, self.dimensions[1], self.dimensions[0], 1 )
-            ]
-            
-            self.strutsets.get(layer).hitboxes = world_bounds + self._strut_hitboxes(layer)
-            self.platesets.get(layer).doors = self.get_typed_platesets(layer, 'door')
-            self.platesets.get(layer).containers = self.get_typed_platesets(layer, 'container')
-            self.platesets.get(layer).pressures = self.get_typed_platesets(layer,  'pressure')
-            self.platesets.get(layer).masses = self.get_typed_platesets(layer,  'mass')
 
+            world_bounds = [
+                (0, 0, self.dimensions[0], 1),
+                (0, 0, 1, self.dimensions[1]),
+                (self.dimensions[0], 0, 1, self.dimensions[1]),
+                (0, self.dimensions[1], self.dimensions[0], 1)
+            ]
+
+            self.strutsets.get(layer).hitboxes = world_bounds + \
+                self._strut_hitboxes(layer)
+            self.platesets.get(
+                layer).doors = self.get_typed_platesets(layer, 'door')
+            self.platesets.get(layer).containers = self.get_typed_platesets(
+                layer, 'container')
+            self.platesets.get(layer).pressures = self.get_typed_platesets(
+                layer,  'pressure')
+            self.platesets.get(
+                layer).masses = self.get_typed_platesets(layer,  'mass')
 
     def _generate_switch_map(
         self
     ) -> None:
         for layer in self.layers:
-            switches =  self.get_typed_platesets(layer, 'pressure') + \
+            switches = self.get_typed_platesets(layer, 'pressure') + \
                 self.get_typed_platesets(layer, 'container') + \
                 self.get_typed_platesets(layer,  'gate')
-            switch_indices = [ switch.index for switch in switches ]
+            switch_indices = [switch.index for switch in switches]
             setattr(
                 self.switch_map,
                 layer,
@@ -452,15 +455,15 @@ class World():
                 })
             )
 
-
     def _init_dynamic_state(
-        self, 
+        self,
         state_ao: state.State
     ) -> None:
         """
         Initialize the state for dynamic in-game elements, i.e. elements that move and are interactable.
         """
-        log.debug(f'Initalizing dynamic world state...', 'World._init_dynamic_state')
+        log.debug(f'Initalizing dynamic world state...',
+                  '_init_dynamic_state')
         dynamic_state = state_ao.get_state('dynamic')
         self.hero = dynamic_state.hero
         self.layer = dynamic_state.hero.layer
@@ -468,7 +471,6 @@ class World():
         self.npcs = dynamic_state.get('npcs') \
             if dynamic_state.get('npcs') is not None \
             else munch.Munch({})
-
 
     def _ruminate(
         self,
@@ -480,7 +482,7 @@ class World():
         :type user_input: munch.Munch
         """
         self.hero.intent = interpret.map_input_to_intent(
-            self.hero, 
+            self.hero,
             self.sprite_stature,
             user_input
         )
@@ -488,70 +490,73 @@ class World():
         for sprite_key, sprite in self.npcs.items():
             sprite_props = self.sprite_properties.get(sprite_key)
             sprite_desires = self._sprite_desires(sprite)
-            sprite_pos = ( sprite.position.x, sprite.position.y)
+            sprite_pos = (sprite.position.x, sprite.position.y)
 
-            # TODO: order desires? 
+            # TODO: order desires?
 
             update_flag = self.iterations % sprite_props.poll == 0
 
             for sprite_desire in sprite_desires:
-                
+
+                if sprite_desire.plot != self.plot or sprite.intent:
+                    continue
+
                 if update_flag:
                     log.infinite(
-                        f'Checking {sprite_key} {sprite_desire.mode} desire mode conditions...', 
-                        'World._ruminate'
+                        f'Checking {sprite_key} {sprite_desire.mode} desire conditions...',
+                        '_ruminate'
                     )
                     if sprite_desire.mode == 'approach':
                         if 'aware' in sprite_desire.conditions:
                             desire_pos = impulse.locate_desire(
-                                sprite_desire.target, 
+                                sprite_desire.target,
                                 self.get_sprites(),
                                 sprite.memory.paths
                             )
                             distance = calculator.distance(
-                                desire_pos, 
+                                desire_pos,
                                 sprite_pos
                             )
                             if distance <= sprite_props.radii.aware.approach \
-                                and sprite.path != sprite_desire.target:
-                                
+                                    and sprite.path != sprite_desire.target:
+
                                 log.debug(
-                                    f'Applying {sprite_key} {sprite_desire.mode} desire mode...', 
-                                    'World._ruminate'
+                                    f'{sprite_key} aware of {sprite_desire.target}...',
+                                    '_ruminate'
                                 )
                                 sprite.path = sprite_desire.target
-                                    # reorient changes sprite intent under the hood
                                 self._reorient(sprite_key)
                                 break
 
                             elif distance >= sprite_props.radii.aware.approach \
-                                and sprite.path == sprite_desire.target:
+                                    and sprite.path == sprite_desire.target:
 
                                 log.debug(
-                                    f'Conditions lost for {sprite_key} {sprite_desire.mode} desire mode', 
-                                    'World._ruminate'
+                                    f'{sprite_key} unaware of {sprite_desire.target}...',
+                                    '_ruminate'
                                 )
                                 sprite.path = None
+                                continue
 
                         elif 'always' in sprite_desire.conditions:
                             log.debug(
-                                f'Applying {sprite_key} {sprite_desire.mode} desire mode...', 
-                                'World._ruminate'
+                                f'{sprite_key} always desires {sprite_desire.mode} {sprite_desire.target}...',
+                                '_ruminate'
                             )
-                                # reorient changes sprite intent under the hood
                             sprite.path = sprite_desire.target
                             self._reorient(sprite_key)
                             break
-                            
+
                     elif sprite_desire.mode == 'engage':
                         pass
 
                 else:
-                    log.infinite(f'Passing {sprite_key} memory intent {sprite.memory.intention} to next intent',
-                        'World._ruminate')
                     # ensure sprite has intent for next iteration
-                    sprite.intent = sprite.memory.intent
-
+                    if sprite.memory and \
+                        sprite.memory.intent and sprite.memory.intent.intention:
+                        log.verbose(f'{sprite_key} remembers {sprite.memory.intent.intention} intention',
+                                     '_ruminate')
+                        sprite.intent = sprite.memory.intent
 
     # calculate rest of sprite intents from desires
 
@@ -559,7 +564,7 @@ class World():
         self
     ):
         """Transmit _Sprite Intent_ to the _Sprite_ stature and then consume _Intent_
-        
+
         .. note::
             A _Sprite Intent_ is an in-game data structure used to transmit _Sprite_ stature changes to the _World_ state. If the _Sprite_ represents the player, the _Intent_ was formed from user input. If the _Sprite_ represents a non-playable character (NPC), the _Intent_ was formed from _Sprite Desires_. See documentation for more information.
 
@@ -574,32 +579,40 @@ class World():
 
         for sprite_key, sprite in self.get_sprites().items():
             if not sprite.intent or \
-                sprite.stature.action in self.sprite_stature.decomposition.blocking:
+                    sprite.stature.action in self.sprite_stature.decomposition.blocking:
                 # NOTE: if sprite in blocking stature, no intent is transmitted or consumed
                 continue
 
+            log.infinite(
+                f'Applying intent {sprite.intent.intention} to {sprite_key}\'s stature: {sprite.stature.intention}',
+                '_intend'
+            )
+
             if sprite.intent.intention != sprite.stature.intention:
+                log.verbose(f'Switching {sprite_key} intention from {sprite.stature.intention} to {sprite.intent.intention}',
+                            '_intend')
                 sprite.stature.intention = sprite.intent.intention
 
             if sprite.intent.get('action') and \
-                sprite.intent.action != sprite.stature.action:
-                    sprite.frame = 0
-                    sprite.stature.action = sprite.intent.action
+                    sprite.intent.action != sprite.stature.action:
+                sprite.frame = 0
+                sprite.stature.action = sprite.intent.action
 
             if sprite.intent.get('direction') and \
-                sprite.intent.direction != sprite.stature.direction:
+                    sprite.intent.direction != sprite.stature.direction:
                 sprite.stature.direction = sprite.intent.direction
 
             if sprite.intent.get('expression') and \
-                sprite.intent.expression != sprite.stature.expression:
+                    sprite.intent.expression != sprite.stature.expression:
                 sprite.stature.expression = sprite.intent.expression
 
             if sprite_key != 'hero':
                 sprite.memory.intent = sprite.intent
 
+            log.infinite(f'{sprite_key} stature post intent application: {sprite.stature.intention}',
+                         '_intend'
+                         )
             sprite.intent = None
-
-
 
     def _act(
         self
@@ -607,89 +620,89 @@ class World():
         for sprite_key, sprite in self.get_sprites().items():
             if sprite.stature.intention == 'move':
                 impulse.move(
-                    sprite, 
+                    sprite,
                     self.sprite_properties.get(sprite_key)
                 )
 
             elif sprite.stature.intention == 'combat':
                 impulse.combat(
-                    sprite, 
-                    self.sprite_properties.get(sprite_key)
+                    sprite,
+                    self.sprite_properties.get(sprite_key),
+                    self.apparel_stature
                 )
 
             elif sprite.stature.intention == 'express':
                 impulse.express(
-                    sprite, 
+                    sprite,
                     self.sprite_properties.get(sprite_key)
                 )
 
             elif sprite.stature.intention == 'operate':
                 impulse.operate(
-                    sprite, 
+                    sprite,
                     self.sprite_properties.get(sprite_key),
                     self.platesets.get(sprite.layer),
                     self.plate_properties,
-                    self.switch_map  
+                    self.switch_map
                 )
 
                 # NOTE: operating can change the hero's layer...
                 if sprite_key == 'hero' and self.hero.layer != self.layer:
                     self.layer = self.hero.layer
 
-
             if sprite.stature.action in self.sprite_stature.decomposition.animate:
                 sprite.frame += 1
 
                 # construct sprite stature string
-                sprite_stature_key = formulae.compose_animate_stature_key(
-                    sprite,
-                    self.sprite_properties.get(sprite_key)
-                )
+                sprite_stature_key = formulae.compose_animate_stature(
+                    sprite, self.sprite_stature)
                 if sprite.frame >= self.sprite_stature.animate_map.get(sprite_stature_key).frames:
                     sprite.frame = 0
+                    if sprite.stature.action in self.sprite_stature.decomposition.blocking:
+                        sprite.stature.action = 'walk'
                     # if sprite was in blocking state, set to walk_direction
 
-
     def _reorient(
-        self, 
+        self,
         sprite_key: str
     ) -> None:
 
         sprite = self.npcs.get(sprite_key)
 
         sprite_hitbox = collisions.calculate_sprite_hitbox(
-            sprite, 
+            sprite,
             'strut',
             self.sprite_properties.get(sprite_key)
         )
 
         collision_sets = self._collision_sets_relative_to(
-            sprite_key, 
-            sprite.layer, 
+            sprite_key,
+            sprite.layer,
             'strut'
         )
-        
-        pathset = paths.concat_dynamic_paths(
-            sprite,
-            self.hero, 
-            self.npcs, 
+
+        path = impulse.locate_desire(
+            sprite.path,
+            self.get_sprites(),
+            sprite.memory.paths
         )
+
+        log.debug(f'Reorienting {sprite_key} to {path}', '_reorient')
 
         paths.reorient(
             sprite,
             sprite_hitbox,
-            collision_sets, 
-            pathset.get(sprite.path),
+            collision_sets,
+            path,
             self.sprite_properties.get(sprite_key).speed.collide,
             self.dimensions
         )
-
 
     def _physics(
         self
     ) -> None:
         """
-        
+
         .. note::
             Keep in mind, the sprite collision doesn't care what sprite or strut with which the sprite collided, only what direction the sprite was travelling when the collision happened. The door hit detection, however, _is_ aware of what door with which the player is colliding, in order to locate the world layer to which the door is connected.
         .. note::
@@ -703,29 +716,31 @@ class World():
             # hero collision detection
             if sprite_key == 'hero':
                 sprite_hitbox = collisions.calculate_sprite_hitbox(
-                    self.hero, 
+                    self.hero,
                     'sprite',
                     self.sprite_properties.get('hero')
                 )
                 collision_sets = self._collision_sets_relative_to(
-                    'hero', 
+                    'hero',
                     self.layer,
                     'sprite'
                 )
 
-                log.infinite('Checking "hero" for collisions...', '_apply_physics')
+                log.infinite('Checking hero for collisions...',
+                             '_physics')
 
                 for collision_set in collision_sets:
                     if collisions.detect_collision(sprite_hitbox, collision_set):
                         log.debug(f'Player collision at ({self.hero.position.x}, {self.hero.position.y})',
-                            'World._physics')
-                        collisions.recoil_sprite(sprite, self.sprite_properties.get(sprite_key))
+                                  '_physics')
+                        collisions.recoil_sprite(
+                            sprite, self.sprite_properties.get(sprite_key))
 
             # sprite collision detection
             else:
                 for hitbox_key in ['sprite', 'strut']:
 
-                    exclusions = [ sprite_key ]
+                    exclusions = [sprite_key]
                     for key, val in collision_map.get(sprite_key).items():
                         if val:
                             exclusions.append(key)
@@ -737,65 +752,61 @@ class World():
                     )
 
                     collision_sets = self._collision_sets_relative_to(
-                        sprite_key, 
+                        sprite_key,
                         sprite.layer,
                         hitbox_key
                     )
 
-                    log.infinite(f'Checking"{sprite_key}" with hitbox {sprite_hitbox} \
-                        for {hitbox_key} collisions...', '_apply_physics')
+                    log.infinite(f'Checking {sprite_key} for {hitbox_key} collisions...',
+                                 '_physics')
 
                     collided = False
                     for collision_set in collision_sets:
                         if collisions.detect_collision(sprite_hitbox, collision_set):
-                            collided =True
+                            collided = True
                             collisions.recoil_sprite(
-                                sprite, 
+                                sprite,
                                 self.sprite_properties.get(sprite_key)
                             )
                     if collided:
-                            # recalculate hitbox after sprite recoils
+                        # recalculate hitbox after sprite recoils
                         sprite_hitbox = collisions.calculate_sprite_hitbox(
                             sprite,
                             hitbox_key,
                             self.sprite_properties.get(sprite_key)
                         )
 
-                        # if current path is sprite based...
-                        if sprite.path in list(self.sprite_properties.keys()):
-                            pathset = paths.concat_dynamic_paths(
-                                sprite,
-                                self.hero,
-                                self.npcs,
-                            )
-                        # else just use the static props paths...
-                        else:
-                            pathset = self.sprite_properties.get(sprite_key).memory.paths
+                        path = impulse.locate_desire(
+                            sprite.path,
+                            self.get_sprites(),
+                            sprite.memory.paths
+                        )
+                        log.debug(f'Reorienting {sprite_key} with path {sprite.path}',
+                                    '_physics')
 
                         paths.reorient(
                             sprite,
                             sprite_hitbox,
-                            collision_sets, 
-                            pathset.get(sprite.path),
+                            collision_sets,
+                            path,
                             self.sprite_properties.get(sprite_key).speed.collide,
                             self.dimensions
                         )
 
                     for key, val in collision_map.copy().items():
                         if key not in exclusions and \
-                            key == sprite_key:
+                                key == sprite_key:
                             for nest_key in val.keys():
                                 setattr(collision_map.get(key), nest_key, True)
                                 setattr(collision_map.get(nest_key), key, True)
 
-
             # mass plate collision detection
             masses = self.platesets.get(self.layer).masses.copy()
             for mass in masses:
-                if collisions.detect_collision(mass.hitbox, [ sprite_hitbox ]):
+                if collisions.detect_collision(mass.hitbox, [sprite_hitbox]):
                     plate = self.get_plate(self.layer, mass.key, mass.index)
                     collisions.recoil_plate(
-                        plate, sprite, 
+                        plate, sprite,
                         self.sprite_properties.get(sprite_key),
                     )
                     setattr(
@@ -808,17 +819,16 @@ class World():
                         )
                     )
                     self.platesets.get(self.layer).masses = self.get_typed_platesets(
-                        self.layer, 
+                        self.layer,
                         'mass'
                     )
 
         # TODO: plate-to-plate collisions, plate-to-strut collisions
 
-
     def _collision_sets_relative_to(
-        self, 
-        sprite_key: str, 
-        layer_key: str, 
+        self,
+        sprite_key: str,
+        layer_key: str,
         hitbox_key: str
     ) -> list:
         """Returns a list of the typed hitbox a given sprite can possibly collide with on a given layer. 
@@ -835,35 +845,35 @@ class World():
         .. note::
             This method inherently takes into account a sprite's layer when determining the collision sets it must consider.
         """
-        # TODO: I think it would be simpler to return a list (well, it definitely would). would need to unpack each individual list and append 
+        # TODO: I think it would be simpler to return a list (well, it definitely would). would need to unpack each individual list and append
         # elements. would also need to examine how this method gets invoked and whether it truly would be simpler...
         # if so, change name to _collision_set_relative_to()
         npc_hitboxes = self._sprite_hitboxes(
-            hitbox_key, 
-            layer_key, 
-            [ sprite_key ]
+            hitbox_key,
+            layer_key,
+            [sprite_key]
         )
 
         collision_sets = []
         if npc_hitboxes is not None:
             collision_sets.append(npc_hitboxes)
 
-        if (hitbox_key =='strut' or sprite_key == 'hero' ) \
-             and self.strutsets.get(layer_key).hitboxes is not None:
+        if (hitbox_key == 'strut' or sprite_key == 'hero') \
+                and self.strutsets.get(layer_key).hitboxes is not None:
             collision_sets.append(
                 self.strutsets.get(layer_key).hitboxes
             )
 
-        if (hitbox_key =='strut' or sprite_key == 'hero' ) \
-             and self.platesets.get(layer_key).containers is not None:
-             collision_sets.append(
-                [ container.hitbox for container in self.platesets.get(layer_key).containers ]
+        if (hitbox_key == 'strut' or sprite_key == 'hero') \
+                and self.platesets.get(layer_key).containers is not None:
+            collision_sets.append(
+                [container.hitbox for container in self.platesets.get(
+                    layer_key).containers]
             )
         return collision_sets
 
-
     def _strut_hitboxes(
-        self, 
+        self,
         layer: str
     ) -> list:
         """_summary_
@@ -880,10 +890,9 @@ class World():
                 strut_hitboxes.append(strut.hitbox)
         return strut_hitboxes
 
-
     def _sprite_hitbox(
-        self, 
-        sprite_key: str, 
+        self,
+        sprite_key: str,
         hitbox_key: str
     ) -> Union[tuple, None]:
         """_summary_
@@ -905,7 +914,8 @@ class World():
             sprite = self.npcs.get(sprite_key)
 
         if sprite is not None:
-            raw_hitbox = self.sprite_properties.get(sprite_key).hitboxes.get(hitbox_key)
+            raw_hitbox = self.sprite_properties.get(
+                sprite_key).hitboxes.get(hitbox_key)
             calc_hitbox = (
                 sprite.position.x + raw_hitbox.offset.x,
                 sprite.position.y + raw_hitbox.offset.y,
@@ -915,11 +925,10 @@ class World():
             return calc_hitbox
         return None
 
-
     def _sprite_hitboxes(
-        self, 
-        hitbox_key: str, 
-        layer: str, 
+        self,
+        hitbox_key: str,
+        layer: str,
         exclude: list = None
     ) -> list:
         """_summary_
@@ -935,9 +944,9 @@ class World():
         """
         calculated = []
 
-        for sprite_key, sprite in  self.get_npcs(layer).items():
+        for sprite_key, sprite in self.get_npcs(layer).items():
             if exclude is None or \
-                sprite_key not in exclude:
+                    sprite_key not in exclude:
                 calculated.append(
                     collisions.calculate_sprite_hitbox(
                         sprite,
@@ -947,9 +956,8 @@ class World():
                 )
         return calculated
 
-
     def _sprite_desires(
-        self, 
+        self,
         sprite: munch.Munch
     ) -> Union[list, None]:
         """_summary_
@@ -963,9 +971,8 @@ class World():
             filter(lambda x: x.plot == self.plot, sprite.desires)
         )
 
-
     def get_formset(
-        self, 
+        self,
         formset_key: str
     ) -> munch.Munch:
         """_summary_
@@ -976,39 +983,37 @@ class World():
         :rtype: dict
         """
         if formset_key in [
-            'tile', 
+            'tile',
             'tiles',
             'tileset',
             'tilesets'
         ]:
             return self.tilesets
         elif formset_key in [
-            'strut', 
+            'strut',
             'struts',
             'strutset',
             'strutsets'
         ]:
             return self.strutsets
         elif formset_key in [
-            'plate', 
+            'plate',
             'plates'
             'plateset',
             'platesets'
         ]:
             return self.platesets
 
-
     def get_tilesets(
-        self, 
+        self,
         layer: str
     ) -> munch.Munch:
         if self.tilesets.get(layer) is None:
             setattr(self.tilesets, layer, munch.Munch({}))
         return self.tilesets.get(layer)
 
-
     def get_strutsets(
-        self, 
+        self,
         layer: str
     ) -> munch.Munch:
         if self.strutsets.get(layer) is None:
@@ -1018,24 +1023,22 @@ class World():
             for key, val in self.strutsets.get(layer).items()
             if key not in STRUT_META
         })
-    
 
     def get_platesets(
-        self, 
+        self,
         layer: str
     ) -> munch.Munch:
         if self.platesets.get(layer) is None:
-            setattr(self.platesets, layer, munch.Munch({}))        
+            setattr(self.platesets, layer, munch.Munch({}))
         return munch.munchify({
             key: val
             for key, val in self.platesets.get(layer).items()
             if key not in PLATE_META
         })
 
-
     def get_typed_platesets(
-        self, 
-        layer: str, 
+        self,
+        layer: str,
         plateset_type: str
     ) -> list:
         """_summary_
@@ -1063,11 +1066,10 @@ class World():
                 )
         return typed_platesets
 
-
     def get_plate(
-        self, 
-        layer: str, 
-        plate_key: str, 
+        self,
+        layer: str,
+        plate_key: str,
         index: int
     ) -> munch.Munch:
         """_summary_
@@ -1083,10 +1085,9 @@ class World():
         """
         return self.platesets.get(layer).get(plate_key).sets[index]
 
-
     def get_sprites(
-        self, 
-        layer: str= None
+        self,
+        layer: str = None
     ) -> munch.Munch:
         """Get all _Sprite_\s.
 
@@ -1099,18 +1100,17 @@ class World():
             This method returns a dict by design, since a Munch would copy the data, but leave the original unaltered. This method
             exposes sprites for alterations. It must be used with care.
         """
-        spriteset ={ 
-            'hero': self.hero 
+        spriteset = {
+            'hero': self.hero
         }
         if layer is None:
             spriteset.update(self.npcs)
-        else: 
+        else:
             spriteset.update(self.get_npcs(layer))
         return spriteset
 
-
     def get_npcs(
-        self, 
+        self,
         layer: str
     ) -> munch.Munch:
         return munch.munchify({
@@ -1119,9 +1119,8 @@ class World():
             if val.layer == layer
         })
 
-
     def get_sprite(
-        self, 
+        self,
         sprite_key: str
     ) -> munch.Munch:
         if sprite_key == 'hero':
@@ -1130,22 +1129,20 @@ class World():
             return self.npcs.get(sprite_key)
         return None
 
-
     def save(
-        self, 
+        self,
         state_ao: state.State
     ) -> None:
         self.hero.layer = self.layer
         self.hero.plot = self.plot
-        dynamic_conf = munch.munchify({ 
+        dynamic_conf = munch.munchify({
             'hero': self.hero,
             'npcs': self.npcs,
         })
         state_ao.save_state('dynamic', dynamic_conf)
 
-
     def iterate(
-        self, 
+        self,
         user_input: dict
     ) -> None:
         """Update the _World_ state.

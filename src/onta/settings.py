@@ -4,7 +4,6 @@ import os
 
 # TODO: will need to wrap this in an object and allow user to base in data_dir if I want ontologies to be completely passed in through command line
 
-SEP = "_"
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 """Directory containing the root module of the project"""
 
@@ -82,14 +81,17 @@ APPAREL_PATH = [
 # Debug Configuration
 
 LOG_LEVEL = os.environ.setdefault('LOG_LEVEL', 'DEBUG')
-"""Log level for capturing stdout"""
+"""Log level for capturing stdout
+
+Allowable values: `NONE`, `INFO`, `DEBUG`, `VERBOSE`, `INFINITE`, `MAXIMUM_OVERDRIVE`.
+"""
 
 # GUI Configuration
 
-SCREEN_DEFAULT_WIDTH = int(os.environ.setdefault('SCREEN_WIDTH', '800'))
+SCREEN_DEFAULT_WIDTH = int(os.environ.setdefault('SCREEN_WIDTH', '600'))
 """Default GUI width"""
 
-SCREEN_DEFAULT_HEIGHT = int(os.environ.setdefault('SCREEN_HEIGHT', '600'))
+SCREEN_DEFAULT_HEIGHT = int(os.environ.setdefault('SCREEN_HEIGHT', '400'))
 """Default GUI height"""
 
 # Rendering Configuration
@@ -111,3 +113,10 @@ see [PIL docs](https://pillow.readthedocs.io/en/stable/handbook/concepts.html#mo
 FPS=30
 """Framerate for the rendering engine"""
 
+# Application Configuration
+
+SEP = "_"
+
+DEFAULT_SPRITE_ACTION = "walk"
+
+DEFAULT_SPRITE_DIRECTION = "down"

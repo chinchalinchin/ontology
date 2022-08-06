@@ -3,7 +3,8 @@ size:
     h: 64
  
 
-stature:
+stature: 
+    default: walk_down
     intentions:
         -   move
         -   operate

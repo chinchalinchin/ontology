@@ -31,8 +31,6 @@ def reorient(
     :param world_dim: _description_
     :type world_dim: tuple
     """
-    goal_point = ( goal.x, goal.y )
-
     new_up = (
         hitbox[0], 
         hitbox[1] - 2*speed - 1, 
@@ -78,40 +76,41 @@ def reorient(
 
     possibilities = {}
 
-    log.verbose('Determining which directions are valid for reorientation...', 'reorient')
+    log.debug('Determining which directions are valid for reorientation...', 'reorient')
 
     if up_valid:
         log.verbose('Up valid!', 'reorient')
-        possibilities['up'] = calculator.distance(new_up, goal_point)
+        possibilities['up'] = calculator.distance(new_up, goal)
     if left_valid:
         log.verbose('Left valid!', 'reorient')
-        possibilities['left'] = calculator.distance(new_left, goal_point)
+        possibilities['left'] = calculator.distance(new_left, goal)
     if right_valid:
         log.verbose('Right valid!', 'reorient')
-        possibilities['right'] = calculator.distance(new_right, goal_point)
+        possibilities['right'] = calculator.distance(new_right, goal)
     if down_valid:
         log.verbose('Down valid!', 'reorient')
-        possibilities['down'] = calculator.distance(new_down, goal_point)
+        possibilities['down'] = calculator.distance(new_down, goal)
     # TODO: diagonals
 
     least_direction = None
     least_direction_distance = calculator.distance(( 0,0 ), world_dim)
 
-    log.verbose(f'Reorientation possibility map: {possibilities}', 'reorient')
+    printable_possiblities = { key: round(value) for key, value in possibilities.items() }
+    log.debug(f'Reorientation possibility map: {printable_possiblities}', 'reorient')
 
     for key, possibility in possibilities.items():
         if possibility < least_direction_distance:
             least_direction_distance = possibility
             least_direction = key
 
-    log.verbose(f'Choice to minimize distance: {least_direction}', 'reorient')
+    log.debug(f'Choice to minimize distance: {least_direction}', 'reorient')
 
     setattr(
         sprite,
         'intent',
         munch.Munch({
             'intention': 'move',
-            'action': sprite.stature.action,
+            'action': 'walk',
             'direction': least_direction,
             'expression': sprite.stature.expression
         })
