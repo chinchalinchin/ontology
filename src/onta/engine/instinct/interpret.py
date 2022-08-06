@@ -15,7 +15,10 @@ def map_input_to_intent(
     # only one direction can be enabled at a time, so this is equivalent to finding the direction
     enabled_direction = [
         direction for direction, flag in user_input.items() 
-        if flag and direction in sprite_stature.decomposition.directions
+        if flag and direction in (
+            sprite_stature.decomposition.directions.real + \
+            sprite_stature.decomposition.directions.composite
+        )
     ]
     # only one action can be enabled at a time, so this is equivalent to finding the action
     enabled_action = [ 

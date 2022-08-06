@@ -322,7 +322,7 @@ class Renderer():
             sprite_position = gui.int_tuple(
                 ( sprite.position.x, sprite.position.y )
             )
-            sprite_stature_key = formulae.compose_sprite_stature_key(
+            sprite_stature_key = formulae.compose_animate_stature_key(
                 sprite,
                 game_world.sprite_stature
             )

@@ -22,14 +22,17 @@ stature:
             -   interact
             -   guard
         directions:
-            -   up
-            -   down
-            -   left
-            -   right
-            -   up_left
-            -   up_right
-            -   down_left
-            -   down_right
+            real:
+                -   up
+                -   down
+                -   left
+                -   right
+            composite:
+                -   up_left
+                -   up_right
+                -   down_left
+                -   down_right
+        
         expressions:
             -   anger
             -   joy

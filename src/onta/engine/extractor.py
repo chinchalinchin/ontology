@@ -1,0 +1,1 @@
+# switch map, stationary hitboxes, etc.

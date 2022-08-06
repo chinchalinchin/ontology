@@ -22,6 +22,7 @@ hero:
   memory:
     stature: null
     paths: null
+    intent: null
   health:
     current: 4
     max: 10
@@ -117,6 +118,8 @@ npcs:
         two:
             x: 900
             y: 1800
+      stature: null
+      intent: null
     desires: 
       -   plot: a
           mode: approach
@@ -205,6 +208,8 @@ npcs:
         two:
             x: 500
             y: 1800
+      intent: null
+      stature: null
     desires:
       - plot: a
         target: hero

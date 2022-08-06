@@ -378,7 +378,7 @@ class Repo():
 
 
         apparel_conf = config.load_apparel_configuration()
-        states_conf, _, _, sprite_dim = config.load_sprite_configuration()
+        stature, _, _, sprite_dim = config.load_sprite_configuration()
 
         for set_key, set_conf in apparel_conf.items():
             setattr(self.apparel, set_key, munch.Munch({}))
@@ -402,25 +402,34 @@ class Repo():
                         )
                     )
 
-                if apparel.animate_states == 'all':
-                    animate_states = list(states_conf.animate_states.keys())
+                if apparel.animate_statures == 'all':
+                    pass
+
+                    # animate_statures = list(stature.animate_statures.keys())
+                    # this is (cast, thrust, shoot, slash, walk, run, death)
+                    # this needs to be condensed down to animate_statures
+
+
+
+                    # TODO: !!!
                 else:
-                    animate_states = apparel.animate_states
+                    animate_statures = apparel.animate_statures
 
-                for equip_state in animate_states:
-                    equip_state_conf = states_conf.animate_states.get(equip_state)
-                    equip_state_row = equip_state_conf.row
-                    equip_state_frames = equip_state_conf.frames
 
-                    start_y = equip_state_row * sprite_dim[1]
+                for equip_stature in animate_statures:
+                    equip_stature_conf = stature.animate_map.get(equip_stature)
+                    equip_stature_row = equip_stature_conf.row
+                    equip_stature_frames = equip_stature_conf.frames
+
+                    start_y = equip_stature_row * sprite_dim[1]
 
                     setattr(
                         self.apparel.get(set_key).get(apparel_key),
-                        equip_state,
+                        equip_stature,
                         []
                     )
 
-                    for i in range(equip_state_frames):
+                    for i in range(equip_stature_frames):
                         start_x = i*sprite_dim[0]
                         crop_box = (
                             start_x, 
@@ -431,13 +440,13 @@ class Repo():
                         
                         crop_sheets = [ sheet.crop(crop_box) for sheet in sheets ]
                     
-                        equip_state_frame = gui.new_image(sprite_dim)
+                        equip_stature_frame = gui.new_image(sprite_dim)
 
                         for sheet in crop_sheets:
-                            equip_state_frame.paste(sheet, ( 0,0 ), sheet)
+                            equip_stature_frame.paste(sheet, ( 0,0 ), sheet)
 
-                        self.apparel.get(set_key).get(apparel_key).get(equip_state
-                        ).append(equip_state_frame) 
+                        self.apparel.get(set_key).get(apparel_key).get(equip_stature
+                        ).append(equip_stature_frame) 
 
     def _init_entity_assets(
         self, 

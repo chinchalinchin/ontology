@@ -61,6 +61,7 @@ def move(
         sprite.position.x += speed*proj[0]
         sprite.position.y -= speed*proj[1]
 
+
 def combat(
     sprite,
     sprite_props,
@@ -68,7 +69,7 @@ def combat(
 ) -> None: 
     # will probably need more input here for other sprites, combat attack boxes, etc...
     if any(action in sprite.state for action in ['cast', 'shoot', 'slash', 'thrust']):
-        act, direct = formulae.decompose_hero_state(sprite.state) 
+        act, direct = formulae.decompose_animate_stature(sprite.state) 
         equip_key = sprite.slots.get(act)            
         if equip_key is not None:
             attack_box = None
@@ -99,9 +100,9 @@ def express(
 def operate(
     sprite: munch.Munch,
     sprite_props: munch.Munch,
-    platesets: munch.Munch, # platesets.get(self.layer)
-    plate_props: munch.munch, #plate_properties
-    switch_map: munch.Munch, # switch_map
+    platesets: munch.Munch, 
+    plate_props: munch.Munch,
+    switch_map: munch.Munch,
 ) -> None:
 
     sprite_hitbox = collisions.calculate_sprite_hitbox(

@@ -452,6 +452,7 @@ class World():
                 })
             )
 
+
     def _init_dynamic_state(
         self, 
         state_ao: state.State
@@ -487,15 +488,16 @@ class World():
 
             # TODO: order desires? 
 
-            if self.iterations % sprite_props.poll == 0:                
-                for i, sprite_desire in enumerate(sprite_desires):
-                    
+            update_flag = self.iterations % sprite_props.poll == 0
+
+            for sprite_desire in sprite_desires:
+                
+                if update_flag:
+                    log.infinite(
+                        f'Checking {sprite_key} {sprite_desire.mode} desire mode conditions...', 
+                        'World._ruminate'
+                    )
                     if sprite_desire.mode == 'approach':
-                        log.infinite(
-                            f'Checking {sprite_key} {sprite_desire.mode} desire mode conditions...', 
-                            'World._ruminate'
-                        )
-                        
                         if 'aware' in sprite_desire.conditions:
                             desire_pos = impulse.locate_desire(
                                 sprite_desire.target, 
@@ -523,7 +525,7 @@ class World():
 
                                 log.debug(
                                     f'Conditions lost for {sprite_key} {sprite_desire.mode} desire mode', 
-                                    'World.update_sprites'
+                                    'World._ruminate'
                                 )
                                 sprite.path = None
 
@@ -535,13 +537,18 @@ class World():
                                 # reorient changes sprite intent under the hood
                             self._reorient(sprite_key)
                             break
-
-
+                            
                     elif sprite_desire.mode == 'engage':
                         pass
 
+                else:
+                    log.infinite(f'Passing {sprite_key} memory intent {sprite.memory.intention} to next intent',
+                        'World._ruminate')
+                    # ensure sprite has intent for next iteration
+                    sprite.intent = sprite.memory.intent
 
-        # calculate rest of sprite intents from desires
+
+    # calculate rest of sprite intents from desires
 
     def _intend(
         self
@@ -582,7 +589,11 @@ class World():
                 sprite.intent.expression != sprite.stature.expression:
                 sprite.stature.expression = sprite.intent.expression
 
+            if sprite_key != 'hero':
+                sprite.memory.intent = sprite.intent
+
             sprite.intent = None
+
 
 
     def _act(
@@ -625,7 +636,7 @@ class World():
                 sprite.frame += 1
 
                 # construct sprite stature string
-                sprite_stature_key = formulae.compose_sprite_stature_key(
+                sprite_stature_key = formulae.compose_animate_stature_key(
                     sprite,
                     self.sprite_properties.get(sprite_key)
                 )

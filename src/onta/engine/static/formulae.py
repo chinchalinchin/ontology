@@ -7,10 +7,15 @@ import onta.engine.static.calculator as calculator
 
 log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
 
-def compose_sprite_stature_key(
+def construct_animate_statures(
+    sprite_props: munch.Munch
+) -> munch.Munch:
+    pass
+
+def compose_animate_stature(
     sprite: munch.Munch,
     stature_props: munch.Munch
-):
+) -> str:
     """_summary_
 
     :param sprite: _description_
@@ -35,12 +40,11 @@ def compose_sprite_stature_key(
     return settings.SEP.join(sprite.stature.action, sprite.stature.direction)
 
 
-def decompose_sprite_stature_key(
+def decompose_animate_stature(
     sprite_stature:str
 ):
-    sprite_stature.split(settings.SEP)
-
-    return
+    split = sprite_stature.split(settings.SEP)
+    return (split[0], split[1])
 
 def decompose_compositions_into_sets(
     layers: list,
