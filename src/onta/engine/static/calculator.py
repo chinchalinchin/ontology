@@ -7,20 +7,23 @@ def center(
     return (dim[0] + dim[2] /2, dim[1] + dim[3]/2)
 
 
-def angle_relative_to_horizon(
+def angle_relative_to_center(
     point: tuple,
+    center: tuple = (0,0)
 ) -> float:
 
-    norm = distance(point, ( 0,0 ))
-    dot_prod = point[0] / norm
+    norm = distance(point, center)
+    delta = ( point[0] - center[0], point[1] - center[1] )
 
-    if dot_prod == 0:
+    cosine = delta[0] / norm
+
+    if cosine == 0:
         return 0
 
-    if point[0] > 0 and point[1] > 0 or \
-        point[0] < 0 and point[1] > 0:
-        return 180 * math.acos(dot_prod) / math.pi
-    return 360 - 180 * math.acos(dot_prod) / math.pi
+    if delta[0] > 0 and delta[1] > 0 or \
+        delta[0] < 0 and delta[1] > 0:
+        return 180 * math.acos(cosine) / math.pi
+    return 360 - 180 * math.acos(cosine) / math.pi
 
 
 def projection(

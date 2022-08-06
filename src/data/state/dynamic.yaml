@@ -3,10 +3,10 @@ hero:
     x: 550
     y: 1700
   stature:
-    intention:
-    expression:
-    direction:
-    action:
+    intention: null
+    expression: null
+    direction: down
+    action: walk
   frame: 0
   layer: one
   plot: a

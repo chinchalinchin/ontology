@@ -161,22 +161,37 @@ def recoil_sprite(
     sprite_center = calculator.center(sprite_box)
     collision_center = calculator.center(collision_box)
 
-    # the direction depends on the angle between the centers...
+    angle = calculator.angle_relative_to_center(sprite_center, collision_center)
+    proj = calculator.projection()
 
+    # add 22.5
+    if angle >= 337.5 or (angle >= 0 and angle<22.5):
+        sprite.position.x += sprite_props.speed.collide
 
-    if sprite.position.y > collision_box[1]:
-        # above and to the left
-        if sprite.position.x < collision_box[0]:
-            return
-        # above and to the right
+    elif angle >= 22.5 and angle < 67.5:
+        sprite.position.x += sprite_props.speed.collide * proj[0]
+        sprite.position.y += sprite_props.speed.collide * proj[1]
 
-        return
-    # below and to the left
-    elif sprite.position.x < collision_box[0]:
-        return
+    elif angle >= 67.5 and angle < 112.5:
+        sprite.position.y += sprite_props.speed.collide
 
-    # below and to the right
-    return
+    elif angle >= 112.5 and angle < 157.5:
+        sprite.position.x -= sprite_props.speed.collide * proj[0]
+        sprite.position.y += sprite_props.speed.collide * proj[1]
+
+    elif angle >= 157.5 and angle < 202.5:
+        sprite.position.x -= sprite_props.speed.collide
+
+    elif angle >= 202.5 and angle < 247.5:
+        sprite.position.x -= sprite_props.speed.collide * proj[0]
+        sprite.position.y -= sprite_props.speed.collide * proj[1]
+
+    elif angle >= 247.5 and angle < 292.5:
+        sprite.position.y -= sprite_props.speed.collide
+
+    elif angle >= 292.5 and angle < 337.5:
+        sprite.position.y -= sprite_props.speed.collide * proj[0]
+        sprite.position.x += sprite_props.speed.collide * proj[1]
 
 
 def recoil_plate(

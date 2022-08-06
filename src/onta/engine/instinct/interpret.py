@@ -1,6 +1,12 @@
 
 import munch
 
+import onta.settings as settings
+
+import onta.util.logger as logger
+
+log = logger.Logger('onta.engine.instinct.interpret', settings.LOG_LEVEL)
+
 def map_input_to_intent(
     hero: munch.Munch,
     sprite_stature: munch.Munch,
@@ -38,21 +44,24 @@ def map_input_to_intent(
         direction = hero.stature.direction
         if user_input.use or user_input.interact:
             intention = 'operate'
+            log.verbose(f'Mapping player input to intention: {intention}', 'map_input_to_intent')
+
         elif user_input.slash or user_input.thrust or user_input.shoot or \
             user_input.cast or user_input.guard:
             intention = 'combat'
+            log.verbose(f'Mapping player input to intention: {intention}', 'map_input_to_intent')
 
     elif enabled_direction:
         intention = 'move'
         action = 'walk' if not user_input.sprint else 'sprint'
         direction = enabled_direction.pop()
         expression = hero.stature.expression
-
+        log.maximum_overdrive(f'Mapping player input to intention: {intention}', 'map_input_to_intent')
+        
     if enabled_expressions:
         expression = enabled_expressions.pop()
     else:
         expression = hero.stature.expression
-
 
     return munch.Munch({
         'intention': intention,

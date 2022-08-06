@@ -666,7 +666,8 @@ class World():
 
                 # construct sprite stature string
                 sprite_stature_key = formulae.compose_animate_stature(
-                    sprite, self.sprite_stature)
+                    sprite, self.sprite_stature
+                )
                 if sprite.frame >= self.sprite_stature.animate_map.get(sprite_stature_key).frames:
                     sprite.frame = 0
                     if sprite.stature.action in self.sprite_stature.decomposition.blocking:
@@ -783,6 +784,7 @@ class World():
                             collided = True
                             collisions.recoil_sprite(
                                 sprite,
+                                self.sprite_dimensions,
                                 self.sprite_properties.get(sprite_key),
                                 collision_box
                             )
