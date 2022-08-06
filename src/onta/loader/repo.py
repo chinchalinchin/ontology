@@ -449,7 +449,7 @@ class Repo():
             'Repo._init_entity_assets'
         )
 
-        states_conf, _, sheets_conf, sprite_dim = config.load_sprite_configuration()
+        stature_conf, _, sheets_conf, sprite_dim = config.load_sprite_configuration()
 
         setattr(self.sprites, 'base', munch.Munch({}))
         setattr(self.sprites, 'accents', munch.Munch({}))
@@ -480,22 +480,22 @@ class Repo():
                     )
                 
             frames = 0
-            for state_key, state_conf in states_conf.animate_states.items():
-                frames += state_conf.frames
+            for stature_key, stature in stature_conf.animate_map.items():
+                frames += stature.frames
 
                 setattr(
                     self.sprites.base.get(sprite_key),
-                    state_key,
+                    stature_key,
                     []
                 )
                 setattr(
                     self.sprites.accents.get(sprite_key),
-                    state_key,
+                    stature_key,
                     []
                 )
-                start_y = state_conf.row * sprite_dim[1]
+                start_y = stature.row * sprite_dim[1]
 
-                for i in range(state_conf.frames):
+                for i in range(stature.frames):
                     start_x = i*sprite_dim[0]
                     crop_box = (
                         start_x, 
@@ -515,10 +515,10 @@ class Repo():
                     for sheet in accent_crop_sheets:
                         sprite_accent_frame.paste(sheet, ( 0,0 ), sheet)
 
-                    self.sprites.base.get(sprite_key).get(state_key).append(
+                    self.sprites.base.get(sprite_key).get(stature_key).append(
                         sprite_base_frame
                     )
-                    self.sprites.accents.get(sprite_key).get(state_key).append(
+                    self.sprites.accents.get(sprite_key).get(stature_key).append(
                         sprite_accent_frame
                     )
 
@@ -650,15 +650,15 @@ class Repo():
     def get_sprite_frame(
         self, 
         sprite_key: str, 
-        state_key: str, 
+        stature_key: str, 
         frame_index: int
     ) -> Union[tuple, None]:
         """Return the _Sprite frame corresponding to a given state and a frame iteration.
 
         :param sprite_key: _Sprite_ lookup key
         :type sprite_key: str
-        :param state_key: State lookup key 
-        :type state_key: str
+        :param stature_key: State lookup key 
+        :type stature_key: str
         :param frame_index: Frame iteration lookup index; this variable represents which frame in the state animation the sprite is currently in.
         :type frame_index: int
         :return: An image representing the appropriate _Sprite_ state frame, or `None` if frame doesn't exist.
@@ -666,18 +666,18 @@ class Repo():
         """
         if self.sprites.base.get(sprite_key) and \
             self.sprites.accents.get(sprite_key) and \
-            self.sprites.base.get(sprite_key).get(state_key) and \
-            self.sprites.accents.get(sprite_key).get(state_key):
+            self.sprites.base.get(sprite_key).get(stature_key) and \
+            self.sprites.accents.get(sprite_key).get(stature_key):
 
                 # TODO: check if frame index is less than state frames?
                 return (
-                    self.sprites.base.get(sprite_key).get(state_key)[frame_index],
-                    self.sprites.accents.get(sprite_key).get(state_key)[frame_index]
+                    self.sprites.base.get(sprite_key).get(stature_key)[frame_index],
+                    self.sprites.accents.get(sprite_key).get(stature_key)[frame_index]
                 )
         elif self.sprites.base.get(sprite_key) and \
-            self.sprites.base.get(sprite_key).get(state_key):
+            self.sprites.base.get(sprite_key).get(stature_key):
             return (
-                self.sprites.bases.get(sprite_key).get(state_key)[frame_index],
+                self.sprites.bases.get(sprite_key).get(stature_key)[frame_index],
                 None
             )
         return (None, None)

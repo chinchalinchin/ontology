@@ -7,9 +7,9 @@ import onta.world as world
 import onta.loader.conf as conf
 import onta.loader.state as state
 import onta.util.logger as logger
-import onta.engine.interface.display as display
+import onta.engine.senses.display as display
 
-log = logger.Logger('onta.engine.interface.hud', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.senses.hud', settings.LOG_LEVEL)
 
 PACK_TYPES = [ 'bag', 'belt', 'wallet' ]
 MIRROR_TYPES = [ 'life', 'magic' ]

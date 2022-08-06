@@ -3,7 +3,7 @@ equipment:
     sheets:
       - blood_magic_eyes.png
       - blood_magic_mouth.png
-    animate_states:
+    animate_statures:
       - cast_down
       - cast_left
       - cast_right
@@ -61,7 +61,7 @@ equipment:
   bow:
     sheets: 
       - bow.png
-    animate_states:
+    animate_statures:
       - shoot_up
       - shoot_down
       - shoot_left
@@ -176,7 +176,7 @@ equipment:
   crossbow:
     sheets:
       - crossbow.png
-    animate_states:
+    animate_statures:
       - thrust_up
       - thrust_down
       - thrust_left
@@ -293,7 +293,7 @@ equipment:
   axe:
     sheets: 
       - axe.png
-    animate_states: 
+    animate_statures: 
       - slash_up
       - slash_down
       - slash_left
@@ -341,7 +341,7 @@ equipment:
   knife:
     sheets: 
       - knife.png
-    animate_states:
+    animate_statures:
       - slash_up
       - slash_down
       - slash_left
@@ -389,7 +389,7 @@ equipment:
   pickaxe:
     sheets: 
       - pickaxe.png
-    animate_states:
+    animate_statures:
       - slash_up
       - slash_down
       - slash_left
@@ -437,7 +437,7 @@ equipment:
   shortsword:
     sheets:
       - shortsword.png
-    animate_states:
+    animate_statures:
       - slash_up
       - slash_down
       - slash_left
@@ -481,7 +481,7 @@ equipment:
   warhammer:
     sheets:
       - warhammer.png
-    animate_states:
+    animate_statures:
       - slash_up
       - slash_down
       - slash_left
@@ -525,7 +525,7 @@ equipment:
   cane:
     sheets:
       - cane.png
-    animate_states:
+    animate_statures:
       - thrust_up
       - thrust_down
       - thrust_right
@@ -572,7 +572,7 @@ equipment:
   shovel:
     sheets:
       - shovel.png
-    animate_states:
+    animate_statures:
       - thrust_up
       - thrust_down
       - thrust_left
@@ -620,7 +620,7 @@ equipment:
   spear:
     sheets:
       - spear.png
-    animate_states:
+    animate_statures:
       - thrust_up
       - thrust_down
       - thrust_left
@@ -667,15 +667,15 @@ shield:
   emblem_shield:
     sheets:
       - emblem_shield.png
-    animate_states: all
+    animate_statures: all
   falcon_shield:
     sheets:
       - falcon_shield.png
-    animate_states: all
+    animate_statures: all
   leather_shield:
     sheets:
       - leather_shield.png
-    animate_states: all
+    animate_statures: all
 
 
 armor:
@@ -687,7 +687,7 @@ armor:
       - bronze_helmet.png
       - bronze_shoulders.png
       - leather_gloves.png
-    animate_states: all
+    animate_statures: all
     properties:
       slowdown: 0.10
       resistance: 0.25
@@ -699,7 +699,7 @@ armor:
       - gold_helmet.png
       - gold_shoulders.png
       - leather_gloves.png
-    animate_states: all
+    animate_statures: all
     properties:
       slowdown: 0.20
       resistance: 0.5
@@ -711,7 +711,7 @@ armor:
       - plate_greaves.png
       - plate_helmet.png
       - plate_shoulders.png
-    animate_states: all
+    animate_statures: all
     properties:
       slowdown: 0.30
       resistance: 0.75

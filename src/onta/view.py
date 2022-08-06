@@ -9,10 +9,15 @@ from PIL import Image
 import onta.device as device
 import onta.settings as settings
 import onta.world as world
-import onta.engine.interface.hud as hud
-import onta.engine.interface.menu as menu
+
+import onta.engine.senses.hud as hud
+import onta.engine.senses.menu as menu
+
 import onta.engine.static.calculator as calculator
+import onta.engine.static.formulae as formulae
+
 import onta.loader.repo as repo
+
 import onta.util.logger as logger
 import onta.util.gui as gui
 
@@ -317,30 +322,34 @@ class Renderer():
             sprite_position = gui.int_tuple(
                 ( sprite.position.x, sprite.position.y )
             )
-
+            sprite_stature_key = formulae.compose_sprite_stature_key(
+                sprite,
+                game_world.sprite_stature
+            )
             # BASE RENDERING
             sprite_base_frame, sprite_accent_frame = repository.get_sprite_frame(
                 sprite_key, 
-                sprite.state, 
+                sprite_stature_key, 
                 sprite.frame
             )
             self.world_frame.paste( sprite_base_frame, sprite_position, sprite_base_frame)
 
             # ARMOR RENDERING
             if sprite.armor:
-                animate_states = \
-                    game_world.apparel_state_conf.armor.get(sprite.armor).animate_states
+                animate_statures = \
+                    game_world.apparel_state_conf.armor.get(sprite.armor).animate_stature
 
-                if (isinstance(animate_states, str) and animate_states == 'all') or \
-                    (isinstance(animate_states, list) and sprite.state in animate_states):
+                if (isinstance(animate_statures, str) and animate_statures == 'all') or \
+                    (isinstance(animate_statures, list) and sprite_stature_key in animate_statures):
 
                     armor_frame = repository.get_apparel_frame(
                         'armor',
                         sprite.armor,
-                        sprite.state,
+                        sprite_stature_key,
                         sprite.frame
                     )
                     self.world_frame.paste(armor_frame, sprite_position, armor_frame)
+
             elif sprite_accent_frame:
                 self.world_frame.paste(sprite_accent_frame, sprite_position, sprite_accent_frame)
 
@@ -349,12 +358,12 @@ class Renderer():
                 enabled = [ slot for slot in sprite.slots.values() if slot ]
 
                 for enabled_equipment in enabled:
-                    animate_states = \
-                        game_world.apparel_state_conf.equipment.get(enabled_equipment).animate_states
+                    animate_statures = \
+                        game_world.apparel_state_conf.equipment.get(enabled_equipment).animate_statures
 
 
-                    if (isinstance(animate_states, str) and animate_states == 'all') or \
-                        (isinstance(animate_states, list) and sprite.state in animate_states):
+                    if (isinstance(animate_statures, str) and animate_statures == 'all') or \
+                        (isinstance(animate_statures, list) and sprite_stature_key in animate_statures):
 
                         equipment_frame = repository.get_apparel_frame(
                             'equipment',

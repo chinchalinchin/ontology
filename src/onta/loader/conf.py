@@ -10,7 +10,7 @@ class Conf():
 
     conf_dir = None
     sprite_size = munch.Munch({})
-    sprite_state_conf = munch.Munch({})
+    sprite_stature_conf = munch.Munch({})
     sprite_property_conf = munch.Munch({})
     sprite_sheet_conf = munch.Munch({})
     strut_property_conf = munch.Munch({})
@@ -193,42 +193,29 @@ class Conf():
     ) -> munch.Munch:
         """Returns the parsed _Sprite_ configuration from the _data/conf/entities/sprites.yaml_ file.
 
-        :return: _Sprite_ specific configurations parsed into `(sprite_state_conf, sprite_property_conf, sprite_sheet_conf)`-tuple
+        :return: _Sprite_ specific configurations parsed into `(sprite_stature_conf, sprite_property_conf, sprite_sheet_conf, sprite_dimensions)`-tuple
         :rtype: tuple
 
         .. note:
             The _Sprite_ configuration is split into the different sections used by different components of the engine, so that irrelevant information isn't passed to components that do not require it. The `onta.world.World` class uses the property and state information to manage _Sprite_ states. The `onta.loader.repo.Repo` class uses the state and sheet information to load the spritesheets into memory.
         """    
-        if len(self.sprite_state_conf) == 0 or \
+        if len(self.sprite_stature_conf) == 0 or \
             len(self.sprite_property_conf) == 0 or \
             len(self.sprite_sheet_conf) == 0 or \
             not self.sprite_size:
 
             sprites_conf = self._entity_configuration('sprites')
 
-            self.sprite_state_conf = sprites_conf.state
+            self.sprite_stature_conf = sprites_conf.stature
             self.sprite_size = sprites_conf.size
 
-            for sprite_key, sprite_conf in sprites_conf.items():
-                if sprite_key in [ 'state', 'size' ]:
-                    continue
-                
+            for sprite_key, sprite_conf in sprites_conf.sprites.items():
                 setattr(self.sprite_property_conf, sprite_key, sprite_conf.properties)
                 setattr(self.sprite_sheet_conf, sprite_key, sprite_conf.sheets)
 
-            # TODO: ? It may be better to leave unformatted...
-            setattr(
-                self.sprite_state_conf,
-                'animate_states',
-                munch.munchify({
-                    state_conf.state:{
-                        'row': state_conf.row, 'frames': state_conf.frames
-                    }
-                    for state_conf in self.sprite_state_conf.animate_states
-                })
-            )
+    
         return (
-            self.sprite_state_conf, 
+            self.sprite_stature_conf, 
             self.sprite_property_conf, 
             self.sprite_sheet_conf, 
             ( self.sprite_size.w, self.sprite_size.h)

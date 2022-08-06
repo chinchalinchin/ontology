@@ -2,7 +2,11 @@ hero:
   position:
     x: 550
     y: 1700
-  state: walk_down
+  stature:
+    intention:
+    emotion:
+    direction:
+    action:
   frame: 0
   layer: one
   plot: a
@@ -15,9 +19,21 @@ hero:
   packs:
     bag: shrapnel_bomb
     belt: arrow
+  memory:
+    stature: null
+    paths: null
   health:
     current: 4
     max: 10
+  intents: null
+  desires: null
+    # INTENTS ARE GENERATED IN-GAME, BUT HAVE THE FOLLOWING STRUCTURE:
+    # - action:
+    #   direction:
+    #   emotion:
+    # - action:
+    #   direction:
+    #   emotion:
   inventory:
     armor:
       bronze: True
@@ -71,10 +87,13 @@ npcs:
     position:
       x: 900
       y: 1800
-    state: walk_down
-    path: 
-      current: one
-      previous: null
+    stature:
+      intention:
+      emotion:
+      direction:
+      action:
+    intent: null
+    path: null
     frame: 0
     layer: one
     slots:
@@ -90,22 +109,20 @@ npcs:
     health:
       current: 100
       max: 100
-    paths:
-      one:
-          x: 550
-          y: 1200
-      two:
-          x: 900
-          y: 1800
-    intents:
-      -   plot: a
-          intent: one
-      -   plot: b
-          intent: one
+    memory:
+      paths:
+        one:
+            x: 550
+            y: 1200
+        two:
+            x: 900
+            y: 1800
     desires: 
-      -   plot:
-          target:
-          goal:
+      -   plot: a
+          mode: approach
+          target: one
+          conditions:
+            -
     inventory:
       armor:
         bronze: True
@@ -158,10 +175,13 @@ npcs:
     position:
       x: 500
       y: 800
-    state: walk_down
-    path: 
-      current: one
-      previous: null
+    stature:
+      intention:
+      emotion:
+      direction:
+      action:
+    intent: null
+    path: null
     frame: 0
     layer: one
     slots:
@@ -177,33 +197,36 @@ npcs:
     health:
       current: 100
       max: 100
-    paths:
-            one:
-                x: 700
-                y: 600
-            two:
-                x: 500
-                y: 300
-    intents:
-        -   plot: a
-            intent: hero
-            type: sprite
-        -   plot: a
-            intent: esmeralda
-            type: sprite
-        -   plot: b
-            intent: two
-            type: path
-        -   plot: b
-            intent: esmeralda
-            type: sprite
-    desire:
-        -   plot: a
-            target: hero
-            goal: death
-        -   plot: b
-            target: esmeralda
-            goal: death
+    memory:
+      paths:
+        one:
+            x: 700
+            y: 600
+        two:
+            x: 500
+            y: 1800
+    desires:
+      - plot: a
+        target: hero
+        mode: engage
+        conditions:
+          - aware
+      - plot: a
+        mode: approach
+        target: hero
+        conditions:
+          - aware
+        success: 
+      - plot: a
+        mode: approach
+        target: two
+        conditions:
+          - always
+      - plot: b
+        target: esmeralda
+        mode: engage
+        conditions:
+          - aware
     inventory:
       armor:
         bronze: False

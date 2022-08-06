@@ -4,14 +4,19 @@ import munch
 
 
 import onta.settings as settings
+
 import onta.loader.state as state
 import onta.loader.conf as conf
-import onta.util.logger as logger
+
 import onta.engine.collisions as collisions
+import onta.engine.instinct.interpret as interpret 
+import onta.engine.instinct.impulse as impulse
 import onta.engine.paths as paths
 import onta.engine.static.formulae as formulae
 import onta.engine.static.calculator as calculator
+import onta.engine.static.logic as logic
 
+import onta.util.logger as logger
 
 log = logger.Logger('onta.world', settings.LOG_LEVEL)
 
@@ -47,12 +52,12 @@ class World():
     })
     ```
     """
-    sprite_state_conf = munch.Munch({})
+    sprite_stature = munch.Munch({})
     """
-    Holds sprite state configuration information.
+    Holds sprite stature information.
 
     ```python
-    self.sprite_state_conf = munch.Munch({
+    self.sprite_stature = munch.Munch({
         'sprite_1': {
             'state_1': state_1_frames, # int
             'state_2': state_2_frames, # int
@@ -318,7 +323,7 @@ class World():
         """
         log.debug('Initializing world configuration...', 'World._init_conf')
         sprite_conf = config.load_sprite_configuration()
-        self.sprite_state_conf, self.sprite_properties, _, _= sprite_conf
+        self.sprite_stature, self.sprite_properties, _, _= sprite_conf
         self.apparel_state_conf = config.load_apparel_configuration()
         self.plate_properties, _ = config.load_plate_configuration()
         self.strut_properties, _ = config.load_strut_configuration()
@@ -464,203 +469,168 @@ class World():
             else munch.Munch({})
 
 
-    def _update_hero(
-        self, 
-        user_input: dict
-    ) -> None: 
+    def _ruminate(
+        self,
+        user_input: munch.Munch
+    ):
+        """Creates the _Sprite Intent_\s.
+
+        :param user_input: _description_
+        :type user_input: munch.Munch
         """
-        Map user input to new hero state, apply state action and iterate state frame.
-        """
-        action, direction = formulae.decompose_hero_state(self.hero.state)
-
-        if self.hero.state not in self.sprite_state_conf.blocking_states:
-            if 'run' in self.hero.state:
-                speed = self.sprite_properties.hero.run
-            else:
-                speed = self.sprite_properties.hero.walk
-
-            if user_input.slash:
-                # the additional check here isn't technically necessary since
-                #   'slash', 'thrust', 'shoot' and 'cast' are blocking states
-                if 'slash' not in self.hero.state:
-                    self.hero.frame = 0
-                self.hero.state = f'slash_{direction}'
-
-            elif user_input.thrust:
-                if 'thrust' not in self.hero.state:
-                    self.hero.frame = 0
-                self.hero.state = f'thrust_{direction}'
-
-            elif user_input.shoot:
-                if 'shoot' not in self.hero.state:
-                    self.hero.frame = 0
-                self.hero.state = f'shoot_{direction}'
-
-            elif user_input.cast:
-                if 'cast' not in self.hero.state:
-                    self.hero.frame = 0
-                self.hero.state = f'cast_{direction}'
-
-            elif user_input.north:
-                if self.hero.state != 'walk_up':
-                    self.hero.frame = 0
-                    self.hero.state = 'walk_up'
-
-                else:
-                    self.hero.frame += 1
-
-                self.hero.position.y -= speed
-
-            elif user_input.south:
-                if self.hero.state != 'walk_down':
-                    self.hero.frame = 0
-                    self.hero.state = 'walk_down'
-                else: 
-                    self.hero.frame += 1
-
-                self.hero.position.y += speed
-
-            elif user_input.northwest or user_input.west or user_input.southwest:
-                if self.hero.state != 'walk_left':
-                    self.hero.frame = 0
-                    self.hero.state = 'walk_left'
-                else:
-                    self.hero.frame +=1
-
-                if user_input.northwest or user_input.southwest:    
-                    proj = calculator.projection()
-
-                    if user_input.northwest:
-                        self.hero.position.x -= speed*proj[0]
-                        self.hero.position.y -= speed*proj[1]
-
-                    elif user_input.southwest:
-                        self.hero.position.x -= speed*proj[0]
-                        self.hero.position.y += speed*proj[1]
-
-                elif user_input.west:
-                    self.hero.position.x -= speed
-
-            elif user_input.southeast or user_input.east or user_input.northeast:
-                if self.hero.state != 'walk_right':
-                    self.hero.frame = 0
-                    self.hero.state = 'walk_right'
-                else:
-                    self.hero.frame += 1
-
-                if user_input.southeast or user_input.northeast:
-                    proj = calculator.projection()
-
-                    if user_input.southeast:
-                        self.hero.position.x += speed*proj[0]
-                        self.hero.position.y += speed*proj[1]
-
-                    elif user_input.northeast:
-                        self.hero.position.x += speed*proj[0]
-                        self.hero.position.y -= speed*proj[1]
-
-                elif user_input.east:
-                    self.hero.position.x += speed
-
-        else:
-            self.hero.frame += 1
-
-        if self.hero.frame >= self.sprite_state_conf.animate_states.get(self.hero.state).frames:
-            self.hero.frame = 0
-
-            if self.hero.state in self.sprite_state_conf.blocking_states:
-                self.hero.state = f'walk_{direction}'
-
-
-    def _update_sprites(
-        self
-    ) -> None:
-        """
-        Maps npc state to in-game action, applies action and then iterates npc state frame.
-
-        .. note::
-            This method is essentially an interface between the sprite state and the game world. It determines what happens to a sprite once it is in a state. It has nothing to say about how to came to be in that state, and only what happens when it is there.
-        """
-
+        self.hero.intent = interpret.map_input_to_intent(self.hero, user_input)
 
         for sprite_key, sprite in self.npcs.items():
             sprite_props = self.sprite_properties.get(sprite_key)
-            sprite_paths = list(
-                self.sprite_properties.get(sprite_key).paths.keys()
-            )
-            sprite_intents = self._sprite_intent(
-                sprite_key
-            )
+            sprite_desires = self._sprite_desires(sprite_key)
+            sprite_pos = ( sprite.position.x, sprite.position.y)
 
+            # TODO: order desires? 
 
-            if sprite.state not in self.sprite_state_conf.blocking_states:
-                if 'run' in sprite.state:
-                    speed = sprite_props.run
-                else:
-                    speed = sprite_props.walk
-
-                if sprite.state == 'walk_up':
-                    sprite.position.y -= speed
-                elif sprite.state == 'walk_left':
-                    sprite.position.x -= speed
-                elif sprite.state == 'walk_right':
-                    sprite.position.x += speed
-                elif sprite.state == 'walk_down':
-                    sprite.position.y += speed
-
-            if self.iterations % sprite_props.poll == 0:
-                sprite_pos = (
-                    sprite.position.x, 
-                    sprite.position.y
-                )
-                
-                for sprite_intent in sprite_intents:
-                    if sprite_intent.intent not in sprite_paths:
-                        # if intent is sprite location based
-
-                        log.infinite(
-                            f'Checking {sprite_key} plot {self.plot} {sprite_intent.intent} intent conditions...', 
-                            'World.update_sprites'
-                        )
-                        intent_pos = paths.locate_intent(
-                            sprite_intent.intent, 
-                            self.hero, 
-                            self.npcs, 
-                            self.sprite_properties.get(sprite_key).paths
-                        )
-                        distance = calculator.distance(
-                            intent_pos, 
-                            sprite_pos
-                        )
-
-                        if distance <= sprite_props.radii.aware \
-                            and sprite.path.current != sprite_intent.intent:
-                            
-                            log.debug(
-                                f'Applying {sprite_key} {sprite_intent.intent} intent at {intent_pos}...', 
-                                'World._update_sprites'
-                            )
-                            sprite.path.previous = sprite.path.current
-                            sprite.path.current = sprite_intent.intent
-
-                        elif distance >= sprite_props.radii.aware \
-                            and sprite.path.current == sprite_intent.intent:
-
-                            log.debug(
-                                f'Resetting {sprite_key} memory to {sprite.path.previous}', 
-                                'World.update_sprites'
-                            )
-                            sprite.path.current = sprite.path.previous
-                            sprite.path.previous = sprite_intent.intent
+            if self.iterations % sprite_props.poll == 0:                
+                for i, sprite_desire in enumerate(sprite_desires):
                     
+                    if sprite_desire.mode == 'approach':
+                        log.infinite(
+                            f'Checking {sprite_key} {sprite_desire.mode} desire mode conditions...', 
+                            'World._ruminate'
+                        )
+
+                        sprite_desire.conditions
+                        
+                        if 'aware' in sprite_desire.conditions:
+                            desire_pos = impulse.locate_desire(
+                                sprite_desire.target, 
+                                self.get_sprites(),
+                                self.sprite_properties.get(sprite_key).paths
+                            )
+                            distance = calculator.distance(
+                                desire_pos, 
+                                sprite_pos
+                            )
+                            if distance <= sprite_props.radii.aware.approach \
+                                and sprite.path != sprite_desire.target:
+                                
+                                log.debug(
+                                    f'Applying {sprite_key} {sprite_desire.mode} desire mode...', 
+                                    'World._ruminate'
+                                )
+                                sprite.path = sprite_desire.target
+                                    # reorient changes sprite intent under the hood
+                                self._reorient(sprite_key)
+                                break
+
+                            elif distance >= sprite_props.radii.aware.approach \
+                                and sprite.path == sprite_desire.target:
+
+                                log.debug(
+                                    f'Conditions lost for {sprite_key} {sprite_desire.mode} desire mode', 
+                                    'World.update_sprites'
+                                )
+                                sprite.path = None
+
+                        elif 'always' in sprite_desire.conditions:
+                            log.debug(
+                                f'Applying {sprite_key} {sprite_desire.mode} desire mode...', 
+                                'World._ruminate'
+                            )
+                                # reorient changes sprite intent under the hood
+                            self._reorient(sprite_key)
+                            break
+
+
+                    elif sprite_desire.mode == 'engage':
+                        pass
+
+
+        # calculate rest of sprite intents from desires
+
+    def _intend(
+        self
+    ):
+        """Transmit _Sprite Intent_ to the _Sprite_ stature and then consume _Intent_
+        
+        .. note::
+            A _Sprite Intent_ is an in-game data structure used to transmit _Sprite_ stature changes to the _World_ state. If the _Sprite_ represents the player, the _Intent_ was formed from user input. If the _Sprite_ represents a non-playable character (NPC), the _Intent_ was formed from _Sprite Desires_. See documentation for more information.
+
+            ```python
+            sprite.intent = munch.Munch({
+                'intention': intention, # str
+                'action': action, # str
+                'direction': direction, # str
+                'emotion': emotion, #
+            })
+        """
+
+        for sprite_key, sprite in self.get_sprites().items():
+            if not sprite.intent or \
+                sprite.stature.action in self.sprite_stature.decomposition.properties.blocking:
+                # NOTE: if sprite in blocking stature, no intent is transmitted or consumed
+                continue
+
+            if sprite.intent.intention != sprite.stature.intention:
+                sprite.stature.intention = sprite.intent.intention
+
+            if sprite.intent.get('action') and \
+                sprite.intent.action != sprite.stature.action:
+                    sprite.frame = 0
+                    sprite.stature.action = sprite.intent.action
+
+            if sprite.intent.get('direction') and \
+                sprite.intent.direction != sprite.stature.direction:
+                sprite.stature.direction = sprite.intent.direction
+
+            if sprite.intent.get('emotion') and \
+                sprite.intent.emotion != sprite.stature.emotion:
+                sprite.stature.emotion = sprite.intent.emotion
+
+            sprite.intent = None
+
+    def _act(
+        self
+    ):
+        for sprite_key, sprite in self.get_sprites().items():
+            if sprite.stature.intention == 'move':
+                impulse.move(
+                    sprite, 
+                    self.sprite_properties.get(sprite_key)
+                )
                 self._reorient(sprite_key)
 
-            if sprite.state in self.sprite_state_conf.animate_states:
+
+            elif sprite.stature.intention == 'combat':
+                impulse.combat(
+                    sprite, 
+                    self.sprite_properties.get(sprite_key)
+                )
+
+            elif sprite.stature.intention == 'express':
+                impulse.express(
+                    sprite, 
+                    self.sprite_properties.get(sprite_key)
+                )
+
+            elif sprite.stature.intention == 'operate':
+                impulse.operate(
+                    sprite, 
+                    self.sprite_properties.get(sprite_key),
+                    self.platesets.get(sprite.layer),
+                    self.plate_properties,
+                    self.switch_map  
+                )
+
+                # NOTE: operating can change the hero's layer...
+                if sprite_key == 'hero' and self.hero.layer != self.layer:
+                    self.layer = self.hero.layer
+
+
+            if sprite.stature.action in self.sprite_stature.decomposition.properties.animate:
                 sprite.frame += 1
-                if sprite.frame >= self.sprite_state_conf.animate_states.get(
-                    sprite.state
-                ).frames:
+
+                # construct sprite stature string
+                if sprite.frame > self.sprite_stature.animate_map.get():
                     sprite.frame = 0
+                    # if sprite was in blocking state, set to walk_direction
 
 
     def _reorient(
@@ -830,86 +800,6 @@ class World():
         # TODO: plate-to-plate collisions, plate-to-strut collisions
 
 
-    def _interaction(
-        self, 
-        user_input: dict
-    ) -> None:
-        """_summary_
-
-        :param user_input: Dictionary containing the user input keys mapped to their corresponding _directions_ and _actions_, i.e. the result of calling `onta.control.Controller().poll()`
-        :type user_input: dict
-
-        .. note::
-            Collisions with containers are based on their calculated hitboxes, whereas interactions with containers are based on their actual dimensions.
-        """
-        if user_input['interact']:
-            hero_hitbox = collisions.calculate_sprite_hitbox(
-                self.hero,
-                'sprite',
-                self.sprite_properties.get('hero')
-            )
-
-            triggered = False
-            for door in self.platesets.get(self.layer).doors:
-                if collisions.detect_collision(
-                    hero_hitbox,
-                    [ door.hitbox ]
-                ):
-                    self.layer = door.content
-                    self.hero.layer = door.content
-                    triggered = True
-                    break
-
-            if not triggered:
-                for container in self.platesets.get(self.layer).containers:
-                    key, index = container.key, container.index
-                    modified_hitbox = (
-                        container.position.x, 
-                        container.position.y,
-                        self.plate_properties.get(key).size.w,
-                        self.plate_properties.get(key).size.h    
-                    )
-                    if not self.switch_map.get(self.layer).get(key).get(index) and \
-                        collisions.detect_collision(hero_hitbox,[ modified_hitbox ]):
-                        self.switch_map[self.layer][key][index] = True
-                        triggered = True
-                        # TODO: deliver item to hero via content
-                        break
-                    
-            # TODO: gate and pressure interaction implementation
-
-
-    def _combat(
-        self
-    ) -> None:
-
-        if any(action in self.hero.state for action in ['cast', 'shoot', 'slash', 'thrust']):
-            act, direct = formulae.decompose_hero_state(self.hero.state) 
-            equip_key = self.hero.slots.get(act)            
-            if equip_key is not None:
-                attack_box = None
-                if self.apparel_state_conf.equipment.get(equip_key).type == 'projectile':
-                    ammo_types = list(
-                        self.apparel_state_conf.equipment.get(
-                            equip_key).properties.ammo.keys()
-                    )
-                    if self.hero.packs.belt in ammo_types:
-                        attack_box = collisions.calculate_attackbox(
-                            self.hero,
-                            direct,
-                            self.apparel_state_conf.equipment.get(equip_key).properties.ammo.get(
-                                self.hero.packs.belt).attackbox
-                        )
-                elif self.apparel_state_conf.equipment.get(equip_key).type == 'blunt':
-                    attack_box = collisions.calculate_attackbox(
-                        self.hero,
-                        direct,
-                        self.apparel_state_conf.equipment.get(equip_key).properties.attackbox
-                    )
-            
-            # can't use collision sets, since they include struts, etc. how about target sets?
-            # can't. need to know identity of which sprite the hero is combatting with...
-
     def _collision_sets_relative_to(
         self, 
         sprite_key: str, 
@@ -1043,7 +933,7 @@ class World():
         return calculated
 
 
-    def _sprite_intent(
+    def _sprite_desires(
         self, 
         sprite_key: str
     ) -> Union[list, None]:
@@ -1058,7 +948,7 @@ class World():
             return list(
                 filter(
                     lambda x: x.plot == self.plot, 
-                    self.sprite_properties.get(sprite_key).intents
+                    self.sprite_properties.get(sprite_key).desires
                 )
             )
         return None
@@ -1253,10 +1143,8 @@ class World():
         :param user_input: Map of user input `bool`s
         :type user_input: dict
         """
-
-        self._update_sprites()
-        self._update_hero(user_input)
+        self._ruminate(user_input)
+        self._intend()
+        self._act()
         self._physics()
-        self._combat()
-        self._interaction(user_input)
         self.iterations += 1

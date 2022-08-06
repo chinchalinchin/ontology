@@ -14,39 +14,48 @@ valid:
   - space
   - v
 
+emotions:
+  anger:
+  joy:
+  sadness:
+  love:
+  hate:
+  surprise:
+  confusion:
+  
 directions:
-  north:
+  up:
     input:
       - up
     precedence: 0
-  northwest:
+  up_left:
     input:
       - up
       - left
     precedence: 4
-  west:
+  left:
     input:
       - left
     precedence: 1
-  southwest:
+  down_left:
     input:
       - down
       - left
     precedence: 5
-  south:
+  down:
     input:
       - down
     precedence: 2
-  southeast:
+  down_right:
     input:
       - down
       - right
     precedence: 6
-  east:
+  right:
     input:
       - right
     precedence: 3
-  northeast:
+  up_right:
     input:
       - up
       - right
@@ -73,7 +82,7 @@ actions:
     input:
       - x
     precedence: 4
-  shield: 
+  guard: 
     input:
       - c
     precedence: 5

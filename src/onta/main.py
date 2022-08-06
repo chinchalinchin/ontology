@@ -5,18 +5,20 @@ from typing import Tuple
 import PySide6.QtWidgets as QtWidgets
 from PIL import Image
 
-import onta.engine.interface.hud as hud
-import onta.engine.interface.menu as menu
 import onta.device as device
 import onta.view as view
 import onta.control as control
 import onta.settings as settings
 import onta.world as world
+
+import onta.engine.senses.hud as hud
+import onta.engine.senses.menu as menu
+
 import onta.loader.repo as repo
+
 import onta.util.logger as logger
 import onta.util.helper as helper
 import onta.util.cli as cli
-
 
 log = logger.Logger('onta.main', settings.LOG_LEVEL)
 

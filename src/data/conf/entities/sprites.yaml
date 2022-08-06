@@ -1,232 +1,239 @@
 size:
     w: 64
     h: 64
+ 
 
-state:
-    all:
-        -   cast_up
-        -   cast_down
-        -   cast_left
-        -   cast_right
-        -   thrust_up
-        -   thrust_down
-        -   thrust_right
-        -   thrust_left
-        -   slash_up
-        -   slash_down
-        -   slash_right
-        -   slash_left
-        -   shoot_up
-        -   shoot_down
-        -   shoot_left
-        -   shoot_right
-        -   walk_up
-        -   walk_down
-        -   walk_left
-        -   walk_right
-        -   run_up
-        -   run_down
-        -   run_left
-        -   run_right
-        -   interact
-        -   use
-        -   shield
-        -   death
+stature:
+    intentions:
+        -   move
+        -   operate
+        -   combat
+        -   express
     decomposition:
-        action:
+        actions:
             -   cast
             -   thrust
             -   slash
             -   shoot
             -   walk
             -   run
-        direction:
+            -   death
+            -   use
+            -   interact
+            -   guard
+        directions:
             -   up
             -   down
             -   left
             -   right
-        end:
-            -   death
-        null:
-            -   use
-            -   interact
-            -   shield    
-    blocking_states:
-        -   cast_up
-        -   cast_down
-        -   cast_left
-        -   cast_right
-        -   thrust_up
-        -   thrust_down
-        -   thrust_left
-        -   thrust_right
-        -   slash_up
-        -   slash_down
-        -   slash_left
-        -   slash_right
-        -   shoot_up
-        -   shoot_down
-        -   shoot_left
-        -   shoot_right
-        -   death
-    null_states:
-        -   interact
-        -   use
-        -   shield
-    animate_states:
-        -   state: cast_up
+            -   up_left
+            -   up_right
+            -   down_left
+            -   down_right
+        emotions:
+            -   anger
+            -   joy
+            -   sadness
+            -   love
+            -   hate
+            -   surprise
+            -   confusion
+        properties:
+            end: death
+            singular:
+                -   use
+                -   interact
+                -   guard 
+            directed:
+                -   cast
+                -   thrust
+                -   slash
+                -   shoot
+                -   walk
+                -   run
+            blocking:
+                -   cast
+                -   thrust
+                -   slash
+                -   shoot
+                -   guard
+                -   death
+            animate:
+                -   cast
+                -   thrust
+                -   slash
+                -   shoot
+                -   walk
+                -   run
+                -   death
+    animate_map:
+        cast_up:
             row: 0
             frames: 7
-        -   state: cast_left
+        cast_left:
             row: 1
             frames: 7
-        -   state: cast_down
+        cast_down:
             row: 2
             frames: 7
-        -   state: cast_right
+        cast_right:
             row: 3
             frames: 7
-        -   state: thrust_up
+        thrust_up:
             row: 4
             frames: 8
-        -   state: thrust_left
+        thrust_left:
             row: 5
             frames: 8
-        -   state: thrust_down
+        thrust_down:
             row: 6
             frames: 8
-        -   state: thrust_right
+        thrust_right:
             row: 7
             frames: 8
-        -   state: walk_up
+        walk_up:
             row: 8
             frames: 9
-        -   state: walk_left
+        walk_left:
             row: 9
             frames: 9
-        -   state: walk_down
+        walk_down:
             row: 10
             frames: 9
-        -   state: walk_right
+        walk_right:
             row: 11 
             frames: 9
-        -   state: run_up
+        run_up:
             row: 8
             frames: 9
-        -   state: run_left
+        run_left:
             row: 9
             frames: 9
-        -   state: run_down
+        run_down:
             row: 10
             frames: 9
-        -   state: run_rigt
+        run_right:
             row: 11 
             frames: 9
-        -   state: slash_up
+        slash_up:
             row: 12
             frames: 6
-        -   state: slash_left
+        slash_left:
             row: 13
             frames: 6
-        -   state: slash_down
+        slash_down:
             row: 14
             frames: 6
-        -   state: slash_right
+        slash_right:
             row: 15
             frames: 6
-        -   state: shoot_up
+        shoot_up:
             row: 16
             frames: 13
-        -   state: shoot_left
+        shoot_left:
             row: 17
             frames: 13
-        -   state: shoot_down
+        shoot_down:
             row: 18
             frames: 13
-        -   state: shoot_right
+        shoot_right:
             row: 19
             frames: 13
-        -   state: death
+        death:
             row: 20
             frames: 6
 
+sprites:
+    hero:
+        sheets:
+            base: human_male_ivory.png
+            accents:
+                -   hair_messy_red.png
+                -   pants_green.png
+                -   shirt_male_green.png
+        properties:
+            hitboxes:
+                sprite:
+                    offset:
+                        x: 23
+                        y: 3
+                    size:
+                        w: 19
+                        h: 61
+                strut: null
+            speed:
+                walk: 3
+                run: 5
+                collide: 6
+            poll: null
 
-hero:
-    sheets:
-        base: human_male_ivory.png
-        accents:
-            -   hair_messy_red.png
-            -   pants_green.png
-            -   shirt_male_green.png
-    properties:
-        hitboxes:
-            sprite:
-                offset:
-                    x: 23
-                    y: 3
-                size:
-                    w: 19
-                    h: 61
-            strut: null
-        walk: 3
-        run: 5
-        collide: 6
-        poll: null
+    esmeralda:
+        sheets:
+            base: human_female_ivory.png
+            accents:
+                -   hair_braid_red.png
+                -   pants_blue.png
+                -   shirt_female_blue.png
+        properties:
+            hitboxes:
+                strut:
+                    offset:
+                        x: 23
+                        y: 3
+                    size:
+                        w: 19
+                        h: 61
+                sprite:
+                    offset:
+                        x: 23
+                        y: 18
+                    size: 
+                        w: 23
+                        h: 15
+            radii:
+                aware: 
+                    approach: 50
+                    flee: 100
+                    engage: 15
+                    defend: 10
+                    converse: 15
+                    acquire: 10
+            speed:
+                walk: 0.5
+                run: 2
+                collide: 5
+            poll: 100
 
-esmeralda:
-    sheets:
-        base: human_female_ivory.png
-        accents:
-            -   hair_braid_red.png
-            -   pants_blue.png
-            -   shirt_female_blue.png
-    properties:
-        hitboxes:
-            strut:
-                offset:
-                    x: 23
-                    y: 3
-                size:
-                    w: 19
-                    h: 61
-            sprite:
-                offset:
-                    x: 23
-                    y: 18
-                size: 
-                    w: 23
-                    h: 15
-        radii:
-            aware: 50
-            attack: 10
-        walk: 0.5
-        run: 2
-        collide: 5
-        poll: 100
-
-skeleton:
-    sheets:
-        base: monster_skeleton_white.png
-    properties:
-        hitboxes:
-            strut:
-                offset:
-                    x: 23
-                    y: 3
-                size:
-                    w: 19
-                    h: 61
-            sprite:
-                offset:
-                    x: 23
-                    y: 18
-                size: 
-                    w: 23
-                    h: 15
-        radii:
-            aware: 250
-            attack: 15
-        walk: 1
-        run: 2
-        collide: 5
-        poll: 50
+    skeleton:
+        sheets:
+            base: monster_skeleton_white.png
+        properties:
+            hitboxes:
+                strut:
+                    offset:
+                        x: 23
+                        y: 3
+                    size:
+                        w: 19
+                        h: 61
+                sprite:
+                    offset:
+                        x: 23
+                        y: 18
+                    size: 
+                        w: 23
+                        h: 15
+            radii:
+                aware: 
+                    approach: 250
+                    flee: 100
+                    engage: 15
+                    defend: 10
+                    converse: 15
+                    acquire: 10
+                    
+            speed:
+                walk: 1
+                run: 2
+                collide: 5
+            poll: 50

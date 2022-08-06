@@ -1,6 +1,3 @@
-
-from typing import Union
-
 import munch
 
 import onta.settings as settings
@@ -8,9 +5,9 @@ import onta.device as device
 import onta.loader.conf as conf
 import onta.loader.state as state
 import onta.util.logger as logger
-import onta.engine.interface.display as display
+import onta.engine.senses.display as display
 
-log = logger.Logger('onta.engine.interface.menu', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.senses.menu', settings.LOG_LEVEL)
 
 
 class Menu():

@@ -92,38 +92,28 @@ def reorient(
         log.verbose('Down valid!', 'reorient')
         possibilities['down'] = calculator.distance(new_down, goal_point)
 
-    least_state = None
-    least_state_distance = calculator.distance(( 0,0 ), world_dim)
+    least_direction = None
+    least_direction_distance = calculator.distance(( 0,0 ), world_dim)
 
     log.verbose(f'Reorientation possibility map: {possibilities}', 'reorient')
 
     for key, possibility in possibilities.items():
-        if possibility < least_state_distance:
-            least_state_distance = possibility
-            least_state = key
+        if possibility < least_direction_distance:
+            least_direction_distance = possibility
+            least_direction = key
 
-    log.verbose(f'Choice to minimize distance: {least_state}', 'reorient')
+    log.verbose(f'Choice to minimize distance: {least_direction}', 'reorient')
 
-    if least_state == 'up':
-        if 'walk' in sprite.state:
-            sprite.state = 'walk_up'
-        elif 'run' in sprite.state:
-            sprite['state'] = 'run_up'
-    elif least_state == 'down':
-        if 'walk' in sprite.state:
-            sprite.state = 'walk_down'
-        elif 'run' in sprite.state:
-            sprite.state = 'run_down'
-    elif least_state == 'left':
-        if 'walk' in sprite.state:
-            sprite.state = 'walk_left'
-        elif 'run' in sprite.state:
-            sprite.state = 'run_left'
-    elif least_state == 'right':
-        if 'walk' in sprite.state:
-            sprite.state = 'walk_right'
-        elif 'run' in sprite.state:
-            sprite.state = 'run_right'
+    setattr(
+        sprite,
+        'intent',
+        munch.Munch({
+            'intention': 'move',
+            'action': sprite.stature.action,
+            'direction': least_direction,
+            'emotion': None
+        })
+    )
 
 
 def concat_dynamic_paths(
@@ -155,18 +145,3 @@ def concat_dynamic_paths(
         )
 
     return pathset
-
-
-def locate_intent(intent, hero, npcs, paths):
-    if intent == 'hero':
-        return ( hero.position.x, hero.position.y)
-    elif intent in list(npcs.keys()):
-        return (
-            npcs.get(intent).position.x, 
-            npcs.get(intent).position.y
-        )
-    elif intent in list(paths.keys()):
-        return (
-            paths.get(intent).x, 
-            paths.get(intent).y
-        )
