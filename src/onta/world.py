@@ -618,11 +618,14 @@ class World():
         self
     ):
         for sprite_key, sprite in self.get_sprites().items():
+            animate = False
+
             if sprite.stature.intention == 'move':
                 impulse.move(
                     sprite,
                     self.sprite_properties.get(sprite_key)
                 )
+                animate = True
 
             elif sprite.stature.intention == 'combat':
                 impulse.combat(
@@ -630,6 +633,7 @@ class World():
                     self.sprite_properties.get(sprite_key),
                     self.apparel_stature
                 )
+                animate = True
 
             elif sprite.stature.intention == 'express':
                 impulse.express(
@@ -650,7 +654,8 @@ class World():
                 if sprite_key == 'hero' and self.hero.layer != self.layer:
                     self.layer = self.hero.layer
 
-            if sprite.stature.action in self.sprite_stature.decomposition.animate:
+            #if sprite.stature.action in self.sprite_stature.decomposition.animate:
+            if animate:
                 sprite.frame += 1
 
                 # construct sprite stature string
