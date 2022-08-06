@@ -517,18 +517,18 @@ class World():
                                 desire_pos,
                                 sprite_pos
                             )
-                            if distance <= sprite_props.radii.aware.approach \
-                                    and sprite.path != sprite_desire.target:
+                            if distance <= sprite_props.radii.aware.approach:
 
                                 log.debug(
                                     f'{sprite_key} aware of {sprite_desire.target}...',
                                     '_ruminate'
                                 )
-                                sprite.path = sprite_desire.target
+                                if sprite.path != sprite_desire.target:
+                                    sprite.path = sprite_desire.target
                                 self._reorient(sprite_key)
                                 break
 
-                            elif distance >= sprite_props.radii.aware.approach \
+                            elif distance > sprite_props.radii.aware.approach \
                                     and sprite.path == sprite_desire.target:
 
                                 log.debug(
@@ -554,7 +554,7 @@ class World():
                     # ensure sprite has intent for next iteration
                     if sprite.memory and \
                         sprite.memory.intent and sprite.memory.intent.intention:
-                        log.verbose(f'{sprite_key} remembers {sprite.memory.intent.intention} intention',
+                        log.infinite(f'{sprite_key} remembers {sprite.memory.intent.intention} intention',
                                      '_ruminate')
                         sprite.intent = sprite.memory.intent
 

@@ -269,7 +269,7 @@ class Renderer():
                 )
 
                 group_type = game_world.plate_properties.get(group_key).type
-                log.verbose(f'Rendering {group_type} plate set at {start}', 
+                log.infinite(f'Rendering {group_type} plate set at {start}', 
                     'Repo._render_typed_plates')
 
                 if group_type not in SWITCH_PLATES:

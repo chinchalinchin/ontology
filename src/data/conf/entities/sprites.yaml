@@ -195,7 +195,7 @@ sprites:
                         h: 15
             radii:
                 aware: 
-                    approach: 50
+                    approach: 200
                     flee: 100
                     engage: 15
                     defend: 10
@@ -228,7 +228,7 @@ sprites:
                         h: 15
             radii:
                 aware: 
-                    approach: 250
+                    approach: 150
                     flee: 100
                     engage: 15
                     defend: 10
