@@ -74,6 +74,7 @@ def reorient(
         not collisions.detect_collision(new_down, collision_set) 
         for collision_set in collision_sets
     )
+    # TODO: diagonals
 
     possibilities = {}
 
@@ -91,6 +92,7 @@ def reorient(
     if down_valid:
         log.verbose('Down valid!', 'reorient')
         possibilities['down'] = calculator.distance(new_down, goal_point)
+    # TODO: diagonals
 
     least_direction = None
     least_direction_distance = calculator.distance(( 0,0 ), world_dim)
@@ -111,7 +113,7 @@ def reorient(
             'intention': 'move',
             'action': sprite.stature.action,
             'direction': least_direction,
-            'emotion': None
+            'expression': sprite.stature.expression
         })
     )
 

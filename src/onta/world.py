@@ -495,8 +495,6 @@ class World():
                             f'Checking {sprite_key} {sprite_desire.mode} desire mode conditions...', 
                             'World._ruminate'
                         )
-
-                        sprite_desire.conditions
                         
                         if 'aware' in sprite_desire.conditions:
                             desire_pos = impulse.locate_desire(
@@ -580,11 +578,12 @@ class World():
                 sprite.intent.direction != sprite.stature.direction:
                 sprite.stature.direction = sprite.intent.direction
 
-            if sprite.intent.get('emotion') and \
-                sprite.intent.emotion != sprite.stature.emotion:
-                sprite.stature.emotion = sprite.intent.emotion
+            if sprite.intent.get('expression') and \
+                sprite.intent.expression != sprite.stature.expression:
+                sprite.stature.expression = sprite.intent.expression
 
             sprite.intent = None
+
 
     def _act(
         self
@@ -595,8 +594,6 @@ class World():
                     sprite, 
                     self.sprite_properties.get(sprite_key)
                 )
-                self._reorient(sprite_key)
-
 
             elif sprite.stature.intention == 'combat':
                 impulse.combat(
@@ -628,7 +625,11 @@ class World():
                 sprite.frame += 1
 
                 # construct sprite stature string
-                if sprite.frame > self.sprite_stature.animate_map.get():
+                sprite_stature_key = formulae.compose_sprite_stature_key(
+                    sprite,
+                    self.sprite_properties.get(sprite_key)
+                )
+                if sprite.frame >= self.sprite_stature.animate_map.get(sprite_stature_key).frames:
                     sprite.frame = 0
                     # if sprite was in blocking state, set to walk_direction
 

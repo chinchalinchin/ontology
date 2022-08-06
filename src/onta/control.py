@@ -135,6 +135,14 @@ class Controller():
     def consume(
         self
     ) -> munch.Munch:
+        """_summary_
+
+        :return: _description_
+        :rtype: munch.Munch
+
+        .. note::
+            Both directions, actions and expression can be enabled simultaneously, but within each grouping there can only be one enabled control.
+        """
         user_input = self._direction()
         user_input.update(self._actions())
 

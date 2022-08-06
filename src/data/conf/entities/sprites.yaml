@@ -30,7 +30,7 @@ stature:
             -   up_right
             -   down_left
             -   down_right
-        emotions:
+        expressions:
             -   anger
             -   joy
             -   sadness

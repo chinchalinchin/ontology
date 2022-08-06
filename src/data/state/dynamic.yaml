@@ -4,7 +4,7 @@ hero:
     y: 1700
   stature:
     intention:
-    emotion:
+    expression:
     direction:
     action:
   frame: 0
@@ -89,7 +89,7 @@ npcs:
       y: 1800
     stature:
       intention:
-      emotion:
+      expression:
       direction:
       action:
     intent: null
@@ -177,7 +177,7 @@ npcs:
       y: 800
     stature:
       intention:
-      emotion:
+      expression:
       direction:
       action:
     intent: null
