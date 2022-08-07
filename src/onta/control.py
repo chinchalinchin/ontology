@@ -148,6 +148,7 @@ class Controller():
 
         for consume in self.control_conf.consumable:
             if user_input.get(consume):
+                log.debug(f'Consuming {consume}', 'consume')
                 for input in self.control_conf.actions.get(consume).input:
                     setattr(self.keys, input, False)
         return user_input

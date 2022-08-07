@@ -104,6 +104,7 @@ actions:
     precedence: 9
     
 consumable:
+  - use
   - interact
   - hud
   - menu

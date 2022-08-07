@@ -492,6 +492,7 @@ class World():
             if dynamic_state.get('npcs') is not None \
             else munch.Munch({})
 
+
     def _ruminate(
         self,
         user_input: munch.Munch
@@ -662,6 +663,7 @@ class World():
                 )
 
             elif sprite.stature.intention == 'operate':
+                # well, what differentiates using and operaitng then?
                 impulse.operate(
                     sprite,
                     self.sprite_properties.get(sprite_key),
@@ -669,6 +671,7 @@ class World():
                     self.plate_properties,
                     self.switch_map
                 )
+                sprite.stature.intention = None
 
                 # NOTE: operating can change the hero's layer...
                 if sprite_key == 'hero' and self.hero.layer != self.layer:
