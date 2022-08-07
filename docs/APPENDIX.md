@@ -8,6 +8,7 @@ All of the game assets were retrieved from [OpenGameArt](https://opengameart). S
 - [Hyptosis](http://www.lorestrome.com/pixel_archive/main.htm)
 - [Matthew Pablo](https://opengameart.org/users/matthew-pablo)
 - [ScratchIO](https://opengameart.org/users/scratchio)
+- [Johannes Sjölund (wulax)](https://opengameart.org/users/tskaufma)
 
 # Documentation
 
