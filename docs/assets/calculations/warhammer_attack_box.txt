@@ -1,0 +1,38 @@
+warhammer
+	up:
+		frame 3: (192, 768)
+		frame 4: (256, 768)
+
+		atkbox_3: (211, 779)
+		atkbox_4: (286, 780)
+		
+		offset_3: (19, 11)
+		offset_4: (30, 12)
+	left: 
+		frame 3: (192, 832)
+		frame 4: (256, 832)
+
+		atkbox_3: (193, 875) 
+		atkbox_4: (256, 859)
+		
+		offset_3: (1, 43)
+		offset_4: (0, 27)
+	down:
+		frame 3: (192, 896)
+		frame 4: (256, 896)
+
+		atkbox_3: (209, 937)
+		atkbox_4: (296, 947)
+		
+		offset_3: (17, 41)
+		offset_4: (40, 51)
+	right:
+		frame 3: (192, 960)
+		frame 4: (256, 960)
+
+		atkbox_3: (238, 1003)
+		atkbox_4: (309, 986)
+
+		offset_3: (46, 43)
+		offset_4: (53, 26)
+		

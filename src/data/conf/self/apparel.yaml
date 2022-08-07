@@ -305,39 +305,69 @@ equipment:
     action: slash
     type: blunt
     properties:
-      attack_frames:
-        - 
-        -
       power:
       attackbox: 
         up:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          up:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:    
         down:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         left:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         right:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
   knife:
     sheets: 
       - knife.png
@@ -352,40 +382,68 @@ equipment:
       - walk_right
     type: blunt
     action: slash
-    properties:
-      attack_frames:
-        - 
-        -
       power:
       attackbox: 
         up:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:    
         down:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         left:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         right:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
   pickaxe:
     sheets: 
       - pickaxe.png
@@ -401,39 +459,68 @@ equipment:
     type: blunt
     action: slash
     properties:
-      attack_frames:
-        - 
-        -
       power:
       attackbox: 
         up:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:    
         down:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         left:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         right:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
   shortsword:
     sheets:
       - shortsword.png
@@ -451,33 +538,65 @@ equipment:
       power:
       attackbox: 
         up:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:    
         down:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         left:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         right:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
   warhammer:
     sheets:
       - warhammer.png
@@ -489,39 +608,68 @@ equipment:
     action: slash
     type: blunt
     properties:
-      attack_frames:
-        - 3
-        - 4
       power: 5
-      attackbox: 
+      attackboxes: 
         up:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x: 19
+              y: 11
+            size:
+              w: 21
+              h: 13
+          - frame: 4
+            offset:
+              x: 30
+              y: 12
+            size:
+              w: 19
+              h: 12
         down:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x: 17
+              y: 41
+            size:
+              w: 11
+              h: 16
+          - frame: 4
+            offset:
+              x: 40
+              y: 51
+            size:
+              w: 16
+              h: 11
         left:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x: 1
+              y: 43
+            size:
+              w: 16
+              h: 17
+          - frame: 4
+            offset:
+              x: 0
+              y: 27
+            size:
+              w: 11
+              h: 16
         right:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x: 46
+              y: 43
+            size:
+              w: 11
+              h: 16
+          - frame: 4
+            offset:
+              x: 53
+              y: 26
+            size:
+              w: 17
+              h: 17
   cane:
     sheets:
       - cane.png
@@ -536,39 +684,68 @@ equipment:
     action: thrust
     type: blunt
     properties:
-      attack_frames:
-        - 
-        -
       power:
       attackbox: 
         up:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:    
         down:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         left:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         right:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
   shovel:
     sheets:
       - shovel.png
@@ -584,39 +761,68 @@ equipment:
     action: thrust
     type: blunt
     properties:
-      attack_frames:
-        - 
-        -
       power:
       attackbox: 
         up:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:    
         down:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         left:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         right:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
   spear:
     sheets:
       - spear.png
@@ -628,39 +834,68 @@ equipment:
     action: thrust
     type: blunt
     properties:
-      attack_frames:
-        - 
-        -
       power:
       attackbox: 
         up:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:    
         down:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         left:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:  
         right:
-          offset:
-            x:
-            y:
-          size:
-            w:
-            h:
+          - frame: 3
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
+          - frame: 4
+            offset:
+              x:
+              y:
+            size:
+              w:
+              h:
 
 
 shield:
