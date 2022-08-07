@@ -28,13 +28,6 @@ hero:
     max: 10
   intents: null
   desires: null
-    # INTENTS ARE GENERATED IN-GAME, BUT HAVE THE FOLLOWING STRUCTURE:
-    # - action:
-    #   direction:
-    #   emotion:
-    # - action:
-    #   direction:
-    #   emotion:
   inventory:
     armor:
       bronze: True

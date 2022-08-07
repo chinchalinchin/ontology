@@ -154,11 +154,11 @@ class Renderer():
         game_world: world.World, 
         repository: repo.Repo
     ) -> None:
-        log.debug('Rendering tile sets', 'Repo._render_tiles')
+        log.debug('Rendering tile sets', '_render_tiles')
 
         for layer in game_world.layers:
             for group_key, group_conf in game_world.get_tilesets(layer).items():
-                log.debug(f'Rendering {group_key} tiles', 'Repo._render_tiles')
+                log.debug(f'Rendering {group_key} tiles', '_render_tiles')
 
                 group_tile = repository.get_form_frame('tiles', group_key)
 
@@ -172,7 +172,7 @@ class Renderer():
 
                     log.verbose(
                         f'Rendering group set at {start} with dimensions {set_dim}', 
-                        'Repo._render_tiles'
+                        '_render_tiles'
                     )
                     
                     for i in range(set_dim[0]):
@@ -188,8 +188,9 @@ class Renderer():
                                     dim, 
                                     group_tile
                                 )
-                            else:
-                                self.static_back_frame[layer].paste(
+                                continue
+                            
+                            self.static_back_frame[layer].paste(
                                     group_tile, 
                                     dim, 
                                     group_tile
@@ -211,7 +212,7 @@ class Renderer():
         .. note:
             Only _Doors_ are considered static platesets. All other types of plates need to be re-rendered. Therefore, this method will only render _Door_\s.
         """
-        log.debug('Rendering strut and plate sets', 'Repo._render_static_sets')
+        log.debug('Rendering strut and plate sets', '_render_sets')
     
         for layer in game_world.layers:
             strutsets =  game_world.get_strutsets(layer)
@@ -229,7 +230,7 @@ class Renderer():
                     (game_world.plate_properties.get(group_key) and \
                         game_world.plate_properties.get(group_key).type == 'door'):
 
-                    log.debug(f'Rendering {group_key} struts', 'Repo._render_static_sets')
+                    log.debug(f'Rendering {group_key} struts', '_render_sets')
 
                     if group_key in strut_keys:
                         group_frame = repository.get_form_frame('struts', group_key)
@@ -242,12 +243,18 @@ class Renderer():
                             game_world.tile_dimensions,
                             set_conf.start.units
                         )
-                        log.verbose(f'Rendering group set at {start}', 'Repo._render_static_sets')
+                        log.verbose(f'Rendering group set at {start}', '_render_static_sets')
 
                         if set_conf.get('cover'):
-                            self.static_cover_frame.get(layer).paste(group_frame, start, group_frame)
-                        else:
-                            self.static_back_frame.get(layer).paste(group_frame, start, group_frame)
+                            self.static_cover_frame.get(layer).alpha_composite(
+                                group_frame, 
+                                start, 
+                            )
+                            continue
+                        self.static_back_frame.get(layer).alpha_composite(
+                            group_frame, 
+                            start, 
+                        )
     
 
     def _render_typed_platesets(
@@ -270,15 +277,15 @@ class Renderer():
 
                 group_type = game_world.plate_properties.get(group_key).type
                 log.infinite(f'Rendering {group_type} plate set at {start}', 
-                    'Repo._render_typed_plates')
+                    '_render_typed_plates')
 
                 if group_type not in SWITCH_PLATES:
                     self.world_frame.paste(group_frame, start, group_frame)
-                else:
-                    if game_world.switch_map.get(game_world.layer).get(group_key)[i]:
-                        self.world_frame.paste(group_frame.on, start, group_frame.on)
-                    else: 
-                        self.world_frame.paste(group_frame.off, start, group_frame.off)
+                    continue
+                if game_world.switch_map.get(game_world.layer).get(group_key)[i]:
+                    self.world_frame.paste(group_frame.on, start, group_frame.on)
+                    continue
+                self.world_frame.paste(group_frame.off, start, group_frame.off)
 
 
     def _render_static(
@@ -287,13 +294,12 @@ class Renderer():
         cover: bool = False
     ):
         if cover:
-            self.world_frame.paste(
+            return self.world_frame.paste(
                 self.static_cover_frame.get(layer_key), 
                 ( 0,0 ), 
                 self.static_cover_frame.get(layer_key)
             )
-        else:
-            self.world_frame.paste(
+        return self.world_frame.paste(
                 self.static_back_frame.get(layer_key), 
                 ( 0, 0 ), 
                 self.static_back_frame.get(layer_key)

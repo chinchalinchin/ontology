@@ -100,7 +100,7 @@ class Repo():
         """
 
         for asset_type in STATIC_ASSETS_TYPES:
-            log.debug(f'Initializing {asset_type} assets...',  'Repo._init_form_assets')
+            log.debug(f'Initializing {asset_type} assets...',  '_init_form_assets')
 
             if asset_type == 'tiles':
                 assets_conf = config.load_tile_configuration()
@@ -153,7 +153,7 @@ class Repo():
 
                     log.debug(
                         f"{asset_key}: size - {buffer.size}, mode - {buffer.mode}", 
-                        'Repo._init_static_assets'
+                        '_init_static_assets'
                     )
 
                     if asset_type == 'tiles':
@@ -224,7 +224,7 @@ class Repo():
         .. note::
             A _Slot_ is defined in a single direction, but used in multiple directions. When styles are applied the engine will need to be aware which direction the definition is in, so it can rotate the _Slot_ component to its appropriate position based on the declared style. In other words, _Slot_\s are a pain.
         """
-        log.debug(f'Initializing sense assets...', 'Repo._init_sense_assets')
+        log.debug(f'Initializing sense assets...', '_init_sense_assets')
 
         interface_conf = config.load_sense_configuration()
 
@@ -261,7 +261,7 @@ class Repo():
 
                 log.debug( 
                     f"Slot {slot_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                    'Repo._init_sense_assets'
+                    '_init_sense_assets'
                 )
 
                 slot_conf = interface_conf.hud.get(size).slots
@@ -329,7 +329,7 @@ class Repo():
 
                         log.debug( 
                             f"{set_type} {set_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                            'Repo._init_sense_assets'
+                            '_init_sense_assets'
                         )
                         setattr(
                             save_set.get(size).get(set_key),
@@ -450,7 +450,7 @@ class Repo():
     ) -> None:
         log.debug(
             'Initializing entity assets...', 
-            'Repo._init_entity_assets'
+            '_init_entity_assets'
         )
 
         stature_conf, _, sheets_conf, sprite_dim = config.load_sprite_configuration()
@@ -528,7 +528,7 @@ class Repo():
 
             log.debug(
                 f'{sprite_key}: states - {len(self.sprites.base.get(sprite_key))}, frames - {frames}', 
-                'Repo._init_entity_assets'
+                '_init_entity_assets'
             )
 
 

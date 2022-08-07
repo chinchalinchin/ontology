@@ -13,8 +13,6 @@
 - if sprite aware: train model: if iteration == learning_rate or something, then apply prediction
 
 
-- The essence of the collision bug is due to the diagonal directions. When only four directions, no bugs. But because recoil is based on direction of sprite, and diagonal movement mixes orthogonal directions with left and right, result in recoil not knowing which direction to send the sprite. Only applies to hero since that is the only sprite that can move diagonally.
-
 - Make Conf and State wrapper classes singletons (so conf is not loaded over and over again)
 
 
