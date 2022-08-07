@@ -834,7 +834,7 @@ class World():
                                 setattr(collision_map.get(key), nest_key, True)
                                 setattr(collision_map.get(nest_key), key, True)
 
-            # mass plate collision detection
+            # mass collision detection
             masses = self.platesets.get(self.layer).masses.copy()
             for mass in masses:
                 collision_box = collisions.detect_collision(mass.hitbox, [sprite_hitbox])
@@ -861,7 +861,37 @@ class World():
                         'mass'
                     )
 
+        for layer in self.layers:
+            mass_hitbxes = [
+                mass.hitbox for mass in self.platesets.get(self.layer).masses
+            ]
+            pressures = self.platesets.get(layer).pressures
+
+            
+            for pressure in pressures:
+                collision_box = collisions.detect_collision(pressure.hitbox, mass_hitbxes)
+                if collision_box and \
+                    not self.switch_map.get(pressure.key).get(pressure.index):
+                    setattr(
+                        self.switch_map.get(pressure.key),
+                        pressure.index,
+                        True
+                    )
+                    pressure.content
+                    # use content to retrieve gate connection and switch on gate
+                elif not collision_box and \
+                        self.switch_map.get(pressure.key).get(pressure.index):
+                    setattr(
+                        self.switch_map.get(pressure.key),
+                        pressure.index,
+                        False
+                    )
+                    pressure.content
+                    # use content to retrieve gate connection and switch off gate
+                    
         # TODO: plate-to-plate collisions, plate-to-strut collisions
+            # in order to do mass-to-mass collisions efficiently, will need a collision map
+            # like with sprites, but the rub here is the keys are {mass_key}_{mass_index}
 
     def _collision_sets_relative_to(
         self,
@@ -910,6 +940,7 @@ class World():
             )
         return collision_sets
 
+
     def _strut_hitboxes(
         self,
         layer: str
@@ -927,6 +958,7 @@ class World():
             for strut in sets:
                 strut_hitboxes.append(strut.hitbox)
         return strut_hitboxes
+
 
     def _sprite_hitbox(
         self,
@@ -963,6 +995,7 @@ class World():
             return calc_hitbox
         return None
 
+
     def _sprite_hitboxes(
         self,
         hitbox_key: str,
@@ -994,6 +1027,7 @@ class World():
                 )
         return calculated
 
+
     def _sprite_desires(
         self,
         sprite: munch.Munch
@@ -1008,6 +1042,7 @@ class World():
         return list(
             filter(lambda x: x.plot == self.plot, sprite.desires)
         )
+
 
     def get_formset(
         self,
@@ -1042,6 +1077,7 @@ class World():
         ]:
             return self.platesets
 
+
     def get_tilesets(
         self,
         layer: str
@@ -1049,6 +1085,7 @@ class World():
         if self.tilesets.get(layer) is None:
             setattr(self.tilesets, layer, munch.Munch({}))
         return self.tilesets.get(layer)
+
 
     def get_strutsets(
         self,
@@ -1062,6 +1099,7 @@ class World():
             if key not in STRUT_META
         })
 
+
     def get_platesets(
         self,
         layer: str
@@ -1073,6 +1111,7 @@ class World():
             for key, val in self.platesets.get(layer).items()
             if key not in PLATE_META
         })
+
 
     def get_typed_platesets(
         self,
@@ -1103,6 +1142,7 @@ class World():
                     })
                 )
         return typed_platesets
+
 
     def get_plate(
         self,

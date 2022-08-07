@@ -77,36 +77,6 @@ class Renderer():
 
 
     @staticmethod
-    def calculate_crop_box(
-        screen_dim: tuple, 
-        world_dim: tuple, 
-        hero_pt: tuple
-    ) -> tuple:
-        left_breakpoint = screen_dim[0]/2
-        right_breakpoint = world_dim[0] - screen_dim[0]/2
-        top_breakpoint = screen_dim[1]/2
-        bottom_breakpoint = world_dim[1] - screen_dim[1]/2
-
-        if hero_pt[0] >= 0 and hero_pt[0] <= left_breakpoint:
-            crop_x = 0
-        elif hero_pt[0] > right_breakpoint:
-            crop_x = world_dim[0] - screen_dim[0]
-        else:
-            crop_x = hero_pt[0] - screen_dim[0]/2
-
-        if hero_pt[1] >= 0 and hero_pt[1] <= top_breakpoint:
-            crop_y = 0
-        elif hero_pt[1] > bottom_breakpoint:
-            crop_y = world_dim[1] - screen_dim[1]
-        else:
-            crop_y = hero_pt[1] - screen_dim[1]/2
-
-        crop_width = crop_x + screen_dim[0]
-        crop_height = crop_y + screen_dim[1]
-        return (crop_x, crop_y, crop_width, crop_height)
-
-
-    @staticmethod
     def render_ordered_dict(
         unordered_dict
     ) -> OrderedDict:
@@ -284,8 +254,28 @@ class Renderer():
                     game_world.tile_dimensions,
                     set_conf.start.units
                 )
+                object_dim = (
+                    start[0],
+                    start[1],
+                    group_frame.size[0],
+                    group_frame.size[1]
+                )
+                player_dim = (
+                    game_world.hero.position.x,
+                    game_world.hero.position.y,
+                    game_world.sprite_dimensions[0],
+                    game_world.sprite_dimensions[1]
+                )
 
-                log.maximum_overdrive(f'Rendering at {start}', '_render_variable_plates')
+                if not formulae.on_screen(
+                    player_dim, 
+                    object_dim, 
+                    self.player_device.dimensions, 
+                    game_world.dimensions
+                ):
+                    continue 
+
+                log.infinite(f'Rendering at {start}', '_render_variable_plates')
 
                 if group_type not in SWITCH_PLATES_TYPES:
                     self.world_frame.alpha_composite(group_frame, start)
@@ -333,6 +323,7 @@ class Renderer():
         sprites = game_world.get_sprites(game_world.layer)
         for sprite_key, sprite in sprites.items():
             sprite_position = gui.int_tuple(( sprite.position.x, sprite.position.y ))
+
             sprite_stature_key = formulae.compose_animate_stature(
                 sprite,
                 game_world.sprite_stature
@@ -343,7 +334,29 @@ class Renderer():
                 sprite_stature_key, 
                 sprite.frame
             )
-            self.world_frame.paste( sprite_base_frame, sprite_position, sprite_base_frame)
+
+            sprite_dim = (
+                sprite_position[0],
+                sprite_position[1],
+                sprite_base_frame.size[0],
+                sprite_base_frame.size[1]
+            )
+            player_dim = (
+                game_world.hero.position.x,
+                game_world.hero.position.y,
+                game_world.sprite_dimensions[0],
+                game_world.sprite_dimensions[1]
+            )
+
+            if not formulae.on_screen(
+                player_dim,
+                sprite_dim,
+                self.player_device.dimensions,
+                game_world.dimensions,
+            ):
+                continue
+
+            self.world_frame.alpha_composite(sprite_base_frame, sprite_position)
 
             # ARMOR RENDERING
             if sprite.armor:
@@ -581,7 +594,7 @@ class Renderer():
                 game_world.hero.position.x, 
                 game_world.hero.position.y
             )
-            crop_box = self.calculate_crop_box(
+            crop_box = formulae.screen_crop_box(
                 self.player_device.dimensions, 
                 world_dim, 
                 hero_pt

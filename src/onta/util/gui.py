@@ -32,5 +32,6 @@ def replace_alpha(
 def channels(dim, channels):
     return Image.new(settings.IMG_MODE, dim, channels)
 
+
 def int_tuple(tup: tuple) -> tuple:
     return ( int(tup[0]), int(tup[1]))
