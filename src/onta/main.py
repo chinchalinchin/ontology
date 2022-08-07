@@ -4,6 +4,7 @@ from typing import Tuple
 
 import PySide6.QtWidgets as QtWidgets
 from PIL import Image
+from jinja2 import PrefixLoader
 
 import onta.device as device
 import onta.view as view
@@ -108,9 +109,13 @@ def do(
     pause_menu: menu.Menu
 ) -> None:
     ms_per_frame = (1/settings.FPS)*1000
+    no_delays_per_yield = 16
+    max_frame_skips = 5
+    over_sleep, no_delays, excess = 0, 0, 0
+
+    start_time = helper.current_ms_time()
 
     while True:
-        start_time = helper.current_ms_time()
 
         user_input = controller.poll()
 
@@ -155,12 +160,27 @@ def do(
         
         end_time = helper.current_ms_time()
         diff = end_time - start_time
-        sleep_time = ms_per_frame - diff
+        sleep_time = ms_per_frame - diff - over_sleep
 
         if sleep_time >= 0:
             log.maximum_overdrive(f'Loop time delta: {diff} ms', 'do')
             log.maximum_overdrive(f'Sleeping excess period - delta: {sleep_time}', 'do')
             time.sleep(sleep_time/1000)
+            over_sleep = helper.current_ms_time() - end_time - sleep_time
+        else:
+            excess -= sleep_time
+            no_delays += 1
+            if no_delays >= no_delays_per_yield:
+                time.sleep(0)
+                no_delays = 0
+
+        start_time = helper.current_ms_time()
+        skips = 0
+        while ( (excess>ms_per_frame) and (skips < max_frame_skips)):
+            excess -= ms_per_frame
+            game_world.iterate(user_input)
+            skips += 1
+            
 
 def entrypoint() -> None:
     args = cli.parse_cli_args()

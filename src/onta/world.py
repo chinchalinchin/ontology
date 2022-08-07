@@ -304,6 +304,7 @@ class World():
     """
     iterations = 0
 
+
     def __init__(
         self,
         ontology_path: str = settings.DEFAULT_DIR
@@ -319,6 +320,7 @@ class World():
         self._init_conf(config)
         self._init_static_state(state_ao)
         self._init_dynamic_state(state_ao)
+
 
     def _init_conf(
         self,
@@ -336,6 +338,7 @@ class World():
         self.composite_conf = config.load_composite_configuration()
         tile_conf = config.load_tile_configuration()
         self.tile_dimensions = (tile_conf.tile.w, tile_conf.tile.h)
+
 
     def _init_static_state(
         self,
@@ -376,6 +379,7 @@ class World():
         self._generate_stationary_hitboxes()
         self._generate_switch_map()
 
+
     def _generate_stationary_hitboxes(
         self
     ) -> None:
@@ -400,7 +404,7 @@ class World():
                     props = self.plate_properties
 
                 for set_key, set_conf in iter_set.items():
-                    log.debug(
+                    log.verbose(
                         f'Initializing {static_set} {set_key} hitboxes',
                         '_generate_stationary_hitboxes'
                     )
@@ -418,30 +422,39 @@ class World():
                                 'hitbox',
                                 set_hitbox
                             )
-                        elif static_set == 'plateset':
-                            setattr(
-                                self.platesets.get(layer).get(set_key).sets[i],
-                                'hitbox',
-                                set_hitbox
-                            )
+                            continue
+                        setattr(
+                            self.platesets.get(layer).get(set_key).sets[i],
+                            'hitbox',
+                            set_hitbox
+                        )
 
             world_bounds = [
-                (0, 0, self.dimensions[0], 1),
-                (0, 0, 1, self.dimensions[1]),
-                (self.dimensions[0], 0, 1, self.dimensions[1]),
-                (0, self.dimensions[1], self.dimensions[0], 1)
+                ( 0, 0, self.dimensions[0], 1 ),
+                ( 0, 0, 1, self.dimensions[1] ),
+                ( self.dimensions[0], 0, 1, self.dimensions[1] ),
+                ( 0, self.dimensions[1], self.dimensions[0], 1 )
             ]
 
             self.strutsets.get(layer).hitboxes = world_bounds + \
                 self._strut_hitboxes(layer)
-            self.platesets.get(
-                layer).doors = self.get_typed_platesets(layer, 'door')
+            self.platesets.get(layer).doors = self.get_typed_platesets(
+                layer, 
+                'door'
+            )
             self.platesets.get(layer).containers = self.get_typed_platesets(
-                layer, 'container')
+                layer, 
+                'container'
+            )
             self.platesets.get(layer).pressures = self.get_typed_platesets(
-                layer,  'pressure')
-            self.platesets.get(
-                layer).masses = self.get_typed_platesets(layer,  'mass')
+                layer,  
+                'pressure'
+            )
+            self.platesets.get(layer).masses = self.get_typed_platesets(
+                layer,  
+                'mass'
+            )
+
 
     def _generate_switch_map(
         self
@@ -460,6 +473,7 @@ class World():
                     } for switch in switches
                 })
             )
+
 
     def _init_dynamic_state(
         self,
