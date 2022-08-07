@@ -22,7 +22,7 @@ import onta.util.logger as logger
 import onta.util.gui as gui
 
 
-SWITCH_PLATES = ['container', 'pressure', 'gate']
+STATIC_PLATES = [ 'door' ]
 MATERIAL_BLUE_900 = (20, 67, 142, 175)
 
 log = logger.Logger('onta.view', settings.LOG_LEVEL)
@@ -171,7 +171,7 @@ class Renderer():
                     set_dim = ( set_conf.multiply.w, set_conf.multiply.h)
 
                     log.verbose(
-                        f'Rendering group set at {start} with dimensions {set_dim}', 
+                        f'Rendering at {start} with dimensions {set_dim}', 
                         '_render_tiles'
                     )
                     
@@ -228,14 +228,11 @@ class Renderer():
             for group_key, group_conf in unordered_groups.items():
                 if group_key in strut_keys or \
                     (game_world.plate_properties.get(group_key) and \
-                        game_world.plate_properties.get(group_key).type == 'door'):
+                        game_world.plate_properties.get(group_key).type in STATIC_PLATES):
 
-                    log.debug(f'Rendering {group_key} struts', '_render_sets')
-
-                    if group_key in strut_keys:
-                        group_frame = repository.get_form_frame('struts', group_key)
-                    else:
-                        group_frame = repository.get_form_frame('plates', group_key)
+                    group_type="strut" if group_key in strut_keys else "plate"
+                    group_frame = repository.get_form_frame(group_type, group_key)
+                    log.debug(f'Rendering {group_type} {group_key}s', '_render_sets')
 
                     for set_conf in group_conf.sets:
                         start = calculator.scale(
@@ -243,7 +240,7 @@ class Renderer():
                             game_world.tile_dimensions,
                             set_conf.start.units
                         )
-                        log.verbose(f'Rendering group set at {start}', '_render_static_sets')
+                        log.verbose(f'Rendering at {start}', '_sets')
 
                         if set_conf.get('cover'):
                             self.static_cover_frame.get(layer).alpha_composite(
@@ -257,17 +254,19 @@ class Renderer():
                         )
     
 
-    def _render_typed_platesets(
+    def _render_variable_platesets(
         self, 
         game_world: world.World, 
         repository: repo.Repo
     ) -> None:
         unordered_groups = game_world.get_platesets(game_world.layer)
-        game_world.get_typed_platesets()
         render_map = self.render_ordered_dict(unordered_groups)
 
         for group_key, group_conf in render_map.items():
             group_frame = repository.get_form_frame('plates', group_key)
+            group_type = game_world.plate_properties.get(group_key).type
+
+            log.debug(f'Rendering {group_type} {group_key} plates', '_render_variable_platesets')
 
             for i, set_conf in enumerate(group_conf.sets):
                 start = calculator.scale(
@@ -276,13 +275,14 @@ class Renderer():
                     set_conf.start.units
                 )
 
-                group_type = game_world.plate_properties.get(group_key).type
-                log.infinite(f'Rendering {group_type} plate set at {start}', 
-                    '_render_typed_plates')
-
-                if group_type not in SWITCH_PLATES:
+                if group_type == 'door':
                     # self.world_frame.alpha_composite(group_frame, start)
                     continue
+
+                log.verbose(f'Rendering at {start}', '_render_variable_plates')
+
+                print(game_world.switch_map)
+
                 if game_world.switch_map.get(game_world.layer).get(group_key)[i]:
                     self.world_frame.alpha_composite(group_frame.on, start)
                     continue
@@ -562,7 +562,7 @@ class Renderer():
             game_world.layer = layer
 
         self._render_static(game_world.layer, False)
-        self._render_typed_platesets(game_world, repository)
+        self._render_variable_platesets(game_world, repository)
         self._render_sprites(game_world, repository)
         self._render_static(game_world.layer, True)
 
