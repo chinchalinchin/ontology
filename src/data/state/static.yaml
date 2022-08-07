@@ -219,7 +219,7 @@ layers:
         sets:
           - start:
               units: absolute
-              x: 1600
+              x: 1500
               y: 1000
       tree_patch:
         order: 6

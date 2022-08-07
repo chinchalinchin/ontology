@@ -132,6 +132,28 @@ castle:
             x: 159
             y: 0
           cover: false
+    castle_turret_block:
+      sets:
+        - start:
+            units: absolute
+            x: -64
+            y: 26
+          cover: false
+        - start:
+            units: absolute
+            x: -64
+            y: -22
+          cover: false
+        - start:
+            units: absolute
+            x: 254
+            y: 26
+          cover: false
+        - start:
+            units: absolute
+            x: 254
+            y: -22
+          cover: false
   plates:
     embedded_switch:
       sets:

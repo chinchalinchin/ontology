@@ -139,6 +139,42 @@ castle_door_arch:
   channels: null
   properties:
     hitbox: null
+
+castle_turret_block:
+  path: castle.png
+  position:
+    x: 64
+    y: 704
+  size:
+    w: 64
+    h: 64
+  channels: null
+  properties:
+    hitbox:
+      offset: 
+        x: 2
+        y: 0
+      size:
+        w: 60
+        h: 34
+
+castle_turret_top:
+  path: castle.png
+  position:
+    x: 0
+    y: 633
+  size:
+    w: 64
+    h: 71
+  channels: null
+  properties:
+    hitbox:
+      offset:
+        x: 0
+        y: 61
+      size:
+        w: 64
+        h: 10
   
 castle_wall:
   path: castle.png
