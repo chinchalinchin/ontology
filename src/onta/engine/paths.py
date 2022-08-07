@@ -57,26 +57,26 @@ def reorient(
     )
 
     up_valid = all(
-        not collisions.detect_collision(new_up, collision_set) 
+        not collisions.detect_collision('sprite', new_up, collision_set) 
         for collision_set in collision_sets
     )
     left_valid = all(
-        not collisions.detect_collision(new_left, collision_set) 
+        not collisions.detect_collision('sprite', new_left, collision_set) 
         for collision_set in collision_sets
     )
     right_valid = all(
-        not collisions.detect_collision(new_right, collision_set) 
+        not collisions.detect_collision('sprite', new_right, collision_set) 
         for collision_set in collision_sets
     )
     down_valid = all(
-        not collisions.detect_collision(new_down, collision_set) 
+        not collisions.detect_collision('sprite', new_down, collision_set) 
         for collision_set in collision_sets
     )
     # TODO: diagonals
 
     possibilities = {}
 
-    log.debug('Determining which directions are valid for reorientation...', 'reorient')
+    log.verbose('Determining which directions are valid for reorientation...', 'reorient')
 
     if up_valid:
         log.verbose('Up valid!', 'reorient')
@@ -96,14 +96,14 @@ def reorient(
     least_direction_distance = calculator.distance(( 0,0 ), world_dim)
 
     printable_possiblities = { key: round(value) for key, value in possibilities.items() }
-    log.debug(f'Reorientation possibility-distance map: {printable_possiblities}', 'reorient')
+    log.verbose(f'Reorientation possibility-distance map: {printable_possiblities}', 'reorient')
 
     for key, possibility in possibilities.items():
         if possibility < least_direction_distance:
             least_direction_distance = possibility
             least_direction = key
 
-    log.debug(f'Choice to minimize distance: {least_direction}', 'reorient')
+    log.verbose(f'Choice to minimize distance: {least_direction}', 'reorient')
 
     setattr(
         sprite,

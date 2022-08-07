@@ -19,16 +19,16 @@ def locate_desire(
     paths
 ) -> Union[tuple, None]:
     # TODO: take into account sprite layer and target layer, will need to pass in sprite
-    log.debug(f'Searching for {target}', 'locate_desire')
+    log.verbose(f'Searching for {target}', 'locate_desire')
 
     if target in list(sprites.keys()):
-        log.debug('Target is dynamic, retrieving sprite position...', 'locate_desire')
+        log.verbose('Target is dynamic, retrieving sprite position...', 'locate_desire')
         return (
             sprites.get(target).position.x, 
             sprites.get(target).position.y
         )
     elif target in list(paths.keys()):
-        log.debug('Target is static, retrieving path...', 'locate_desire')
+        log.verbose('Target is static, retrieving path...', 'locate_desire')
         return ( paths.get(target).x, paths.get(target).y)
     return None
 
@@ -102,7 +102,7 @@ def combat(
         elif apparel_stature.equipment.get(equip_key).type == 'blunt':
             attack_box = collisions.calculate_attackbox(
                 sprite,
-                apparel_stature.equipment.get(equip_key).properties.attackbox
+                apparel_stature.equipment.get(equip_key).properties.attackboxes
             )
 
 def express(
@@ -128,7 +128,7 @@ def operate(
     triggered = False
 
     for door in platesets.doors:
-        if collisions.detect_collision(sprite_hitbox, [ door.hitbox ] ):
+        if collisions.detect_collision(door.key, sprite_hitbox, [ door.hitbox ] ):
             sprite.layer = door.content
             triggered = True
             break
@@ -143,8 +143,13 @@ def operate(
                 plate_props.get(key).size.h    
             )
             if not switch_map.get(sprite.layer).get(key).get(index) and \
-                collisions.detect_collision(sprite_hitbox,[ modified_hitbox ]):
-                switch_map[sprite.layer][key][index] = True
+                collisions.detect_collision(key, sprite_hitbox,[ modified_hitbox ]):
+                log.debug('Detected sprite container operation', 'operate')
+                setattr(
+                    switch_map.get(sprite.layer).get(key),
+                    str(index),
+                    True
+                )
                 triggered = True
 
                 # TODO: deliver item to sprite via content

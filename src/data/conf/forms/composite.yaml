@@ -169,7 +169,7 @@ castle:
             units: absolute
             x: 96
             y: 16
-          cover: false
+          cover: true
           content: castle_connection
 
 tree_patch:

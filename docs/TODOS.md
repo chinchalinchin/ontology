@@ -94,8 +94,6 @@ THAT PREVIOUS ONE FIRST
 
 - world bounds have problems with new collision detection. will need to treat separately.
 
-- there is jerkiness to the animation. i think perhaps updates are taking too long? loop appears to be taking 28 - 32 ms to update on average.
-
-- really need to figure out render order map...
-
 - discovery sound when pressure plate is pressed and gate opens somewhere...
+
+- mass plates will need different types of hitboxes for player and pressure plate collisions. otherwise, the interaction feels off and behaves strange. 

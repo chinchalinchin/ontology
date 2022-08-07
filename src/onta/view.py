@@ -228,14 +228,15 @@ class Renderer():
     def _render_variable_platesets(
         self, 
         game_world: world.World, 
-        repository: repo.Repo
+        repository: repo.Repo,
+        crop: bool
     ) -> None:
         unordered_groups = game_world.get_platesets(game_world.layer)
         render_map = self.render_ordered_dict(unordered_groups)
 
-        # render_map not working...
-
-        for group_key, group_conf in unordered_groups.items():
+        # and anyway, plates need rendered by type.
+        #   first pressures and then everything else
+        for group_key, group_conf in render_map.items():
             group_frame = repository.get_form_frame('plates', group_key)
             group_type = game_world.plate_properties.get(group_key).type
 
@@ -254,12 +255,20 @@ class Renderer():
                     game_world.tile_dimensions,
                     set_conf.start.units
                 )
-                object_dim = (
-                    start[0],
-                    start[1],
-                    group_frame.size[0],
-                    group_frame.size[1]
-                )
+                if group_type not in SWITCH_PLATES_TYPES:
+                    object_dim = (
+                        start[0],
+                        start[1],
+                        group_frame.size[0],
+                        group_frame.size[1]
+                    )
+                else:
+                    object_dim = (
+                        start[0],
+                        start[1],
+                        group_frame.on.size[0],
+                        group_frame.on.size[1]
+                    )
                 player_dim = (
                     game_world.hero.position.x,
                     game_world.hero.position.y,
@@ -267,7 +276,7 @@ class Renderer():
                     game_world.sprite_dimensions[1]
                 )
 
-                if not formulae.on_screen(
+                if crop and not formulae.on_screen(
                     player_dim, 
                     object_dim, 
                     self.player_device.dimensions, 
@@ -281,7 +290,7 @@ class Renderer():
                     self.world_frame.alpha_composite(group_frame, start)
                     continue
 
-                if game_world.switch_map.get(game_world.layer).get(group_key)[i]:
+                if game_world.switch_map.get(game_world.layer).get(group_key).get(str(i)):
                     self.world_frame.alpha_composite(group_frame.on, start)
                     continue
                 self.world_frame.alpha_composite(group_frame.off, start)
@@ -306,7 +315,8 @@ class Renderer():
     def _render_sprites(
         self,
         game_world: world.World, 
-        repository: repo.Repo
+        repository: repo.Repo,
+        crop: bool
     ) -> None:
         """_summary_
 
@@ -348,7 +358,7 @@ class Renderer():
                 game_world.sprite_dimensions[1]
             )
 
-            if not formulae.on_screen(
+            if crop and not formulae.on_screen(
                 player_dim,
                 sprite_dim,
                 self.player_device.dimensions,
@@ -581,8 +591,8 @@ class Renderer():
             game_world.layer = layer
 
         self._render_static(game_world.layer, False)
-        self._render_variable_platesets(game_world, repository)
-        self._render_sprites(game_world, repository)
+        self._render_variable_platesets(game_world, repository, crop)
+        self._render_sprites(game_world, repository, crop)
         self._render_static(game_world.layer, True)
 
         if layer is not None:

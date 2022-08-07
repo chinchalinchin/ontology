@@ -347,8 +347,7 @@ class World():
         """
         Initialize the state for static in-game elements, i.e. elements that do not move and are not interactable.
         """
-        log.debug(f'Initializing simple static world state...',
-                  '_init_static_state')
+        log.debug(f'Initializing simple static world state...', '_init_static_state')
         static_conf = state_ao.get_state('static')
 
         self.dimensions = calculator.scale(
@@ -357,12 +356,13 @@ class World():
             static_conf.world.size.units
         )
 
-        for asset_type, asset_set in zip(
-            ['tiles', 'struts', 'plates', 'compositions'],
-            [self.tilesets, self.strutsets, self.platesets, self.compositions]
-        ):
-            for layer_key, layer_conf in static_conf['layers'].items():
-                self.layers.append(layer_key)
+        for layer_key, layer_conf in static_conf.layers.items():
+            self.layers.append(layer_key)
+
+            for asset_type, asset_set in zip(
+                ['tiles', 'struts', 'plates', 'compositions'],
+                [self.tilesets, self.strutsets, self.platesets, self.compositions]
+            ):
                 setattr(asset_set, layer_key, layer_conf.get(asset_type))
 
         self.tilesets, self.strutsets, self.platesets = \
@@ -467,9 +467,9 @@ class World():
             setattr(
                 self.switch_map,
                 layer,
-                munch.Munch({
+                munch.munchify({
                     switch.key: {
-                        index: False for index in switch_indices
+                        str(index): False for index in switch_indices
                     } for switch in switches
                 })
             )
@@ -559,7 +559,7 @@ class World():
                                 continue
 
                         elif 'always' in sprite_desire.conditions:
-                            log.debug(
+                            log.verbose(
                                 f'{sprite_key} always desires {sprite_desire.mode} {sprite_desire.target}...',
                                 '_ruminate'
                             )
@@ -713,7 +713,7 @@ class World():
             sprite.memory.paths
         )
 
-        log.debug(f'Reorienting {sprite_key} to {path}', '_reorient')
+        log.verbose(f'Reorienting {sprite_key} to {path}', '_reorient')
 
         paths.reorient(
             sprite,
@@ -756,7 +756,11 @@ class World():
                              '_physics')
 
                 for collision_set in collision_sets:
-                    collision_box = collisions.detect_collision(sprite_hitbox, collision_set)
+                    collision_box = collisions.detect_collision(
+                        sprite_key, 
+                        sprite_hitbox, 
+                        collision_set
+                    )
                     if collision_box:
                         log.debug(f'Player collision at ({round(self.hero.position.x)}, {round(self.hero.position.y)})',
                                   '_physics')
@@ -793,7 +797,11 @@ class World():
 
                     collided = False
                     for collision_set in collision_sets:
-                        collision_box = collisions.detect_collision(sprite_hitbox, collision_set)
+                        collision_box = collisions.detect_collision(
+                            sprite_key,
+                            sprite_hitbox, 
+                            collision_set
+                        )
                         if collision_box:
                             collided = True
                             collisions.recoil_sprite(
@@ -837,7 +845,7 @@ class World():
             # mass collision detection
             masses = self.platesets.get(self.layer).masses.copy()
             for mass in masses:
-                collision_box = collisions.detect_collision(mass.hitbox, [sprite_hitbox])
+                collision_box = collisions.detect_collision(mass.key, mass.hitbox, [sprite_hitbox])
                 if collision_box:
                     plate = self.get_plate(self.layer, mass.key, mass.index)
                     collisions.recoil_plate(
@@ -862,36 +870,43 @@ class World():
                     )
 
         for layer in self.layers:
-            mass_hitbxes = [
-                mass.hitbox for mass in self.platesets.get(self.layer).masses
-            ]
+            mass_hitboxes = [ mass.hitbox for mass in self.platesets.get(layer).masses ]
             pressures = self.platesets.get(layer).pressures
 
-            
+            if not (mass_hitboxes and pressures):
+                continue
+
             for pressure in pressures:
-                collision_box = collisions.detect_collision(pressure.hitbox, mass_hitbxes)
+                collision_box = collisions.detect_collision(
+                    pressure.key, 
+                    pressure.hitbox, 
+                    mass_hitboxes
+                )
                 if collision_box and \
-                    not self.switch_map.get(pressure.key).get(pressure.index):
+                    not self.switch_map.get(layer).get(pressure.key).get(str(pressure.index)):
+                    log.debug(f'Switching pressure plate {pressure.key} on', '_physics')
                     setattr(
-                        self.switch_map.get(pressure.key),
-                        pressure.index,
+                        self.switch_map.get(layer).get(pressure.key),
+                        str(pressure.index),
                         True
                     )
-                    pressure.content
-                    # use content to retrieve gate connection and switch on gate
                 elif not collision_box and \
-                        self.switch_map.get(pressure.key).get(pressure.index):
+                    self.switch_map.get(layer).get(pressure.key).get(str(pressure.index)):
+                    log.debug(f'Switching pressure plate {pressure.key} off', '_physics')
                     setattr(
-                        self.switch_map.get(pressure.key),
-                        pressure.index,
+                        self.switch_map.get(layer).get(pressure.key),
+                        str(pressure.index),
                         False
                     )
-                    pressure.content
                     # use content to retrieve gate connection and switch off gate
+    
                     
         # TODO: plate-to-plate collisions, plate-to-strut collisions
             # in order to do mass-to-mass collisions efficiently, will need a collision map
             # like with sprites, but the rub here is the keys are {mass_key}_{mass_index}
+            # i.e., collision map? 
+            #   layer -> first_mass_key -> first_mass_index
+            #         -> second_mass_key -> second_mass_index
 
     def _collision_sets_relative_to(
         self,
@@ -938,6 +953,7 @@ class World():
                 [container.hitbox for container in self.platesets.get(
                     layer_key).containers]
             )
+            # doesn't add pressures, gates, doors or masses, as they are handled separately
         return collision_sets
 
 

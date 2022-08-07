@@ -47,7 +47,8 @@ def distance(
 
 def intersection(
     rect_a: tuple, 
-    rect_b: tuple
+    rect_b: tuple,
+    log_it: bool = False
 ) -> bool:
     """Determines if two rectangles intersect. Rectangles are defined by the coordinate of the upper-left corner (as viewed in screen units, where the down is the positive y-direction), and its dimensions (i.e., width and height)
 

@@ -101,13 +101,16 @@ def calculate_attackbox(
 
 
 def detect_collision(
-    sprite_hitbox: tuple, 
+    object_key: str,
+    object_hitbox: tuple, 
     hitbox_list: list
 ) -> bool:
     """Determines if a sprite's hitbox has collided with a list of hitboxes
 
-    :param sprite_hitbox: _description_
-    :type sprite_hitbox: tuple
+    :param object_key: 
+    :type object_key: str
+    :param object_hitbox: _description_
+    :type object_hitbox: tuple
     :param hitbox_list: _description_
     :type hitbox_list: list
     :return: _description_
@@ -121,13 +124,11 @@ def detect_collision(
     """
 
     for hitbox in hitbox_list:
-        if hitbox and calculator.intersection(sprite_hitbox, hitbox):
-            # NOTE: return true once collision is detected. it doesn't matter where it occurs, 
-            #       only what direction the hero is travelling...
-            # TODO: fix that!
-            printable_hitbox = tuple(round(dim) for dim in sprite_hitbox)
+        if hitbox and calculator.intersection(object_hitbox, hitbox):
+            printbox = tuple(round(dim) for dim in object_hitbox)
+            printbox_dos = tuple(round(dim) for dim in hitbox)
             log.debug(
-                f'Detected sprite hitbox {printable_hitbox} collision with hitbox at {hitbox}', 
+                f'Detected {object_key} hitbox {printbox} collision with hitbox at {printbox_dos}', 
                 'detect_collision'
             )
             return hitbox

@@ -96,7 +96,7 @@ wooden_barrel:
         y: 0
       size:
         w: 24
-        h: 20
+        h: 15
     type: mass
   
 # GATES
@@ -182,5 +182,11 @@ embedded_switch:
     h: 16
   channels: null
   properties:
-    hitbox: null
+    hitbox:
+      offset:
+        x: 2
+        y: 2
+      size: 
+        w: 12
+        h: 8
     type: pressure
