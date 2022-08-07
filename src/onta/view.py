@@ -23,6 +23,7 @@ import onta.util.gui as gui
 
 
 STATIC_PLATES = [ 'door' ]
+SWITCH_PLATES_TYPES = [ "pressure", "container", "gate" ]
 MATERIAL_BLUE_900 = (20, 67, 142, 175)
 
 log = logger.Logger('onta.view', settings.LOG_LEVEL)
@@ -266,6 +267,9 @@ class Renderer():
             group_frame = repository.get_form_frame('plates', group_key)
             group_type = game_world.plate_properties.get(group_key).type
 
+            if group_type in STATIC_PLATES:
+                continue
+
             log.debug(f'Rendering {group_type} {group_key} plates', '_render_variable_platesets')
 
             for i, set_conf in enumerate(group_conf.sets):
@@ -275,13 +279,11 @@ class Renderer():
                     set_conf.start.units
                 )
 
-                if group_type == 'door':
-                    # self.world_frame.alpha_composite(group_frame, start)
-                    continue
-
                 log.verbose(f'Rendering at {start}', '_render_variable_plates')
 
-                print(game_world.switch_map)
+                if group_type not in SWITCH_PLATES_TYPES:
+                    self.world_frame.alpha_composite(group_frame, start)
+                    continue
 
                 if game_world.switch_map.get(game_world.layer).get(group_key)[i]:
                     self.world_frame.alpha_composite(group_frame.on, start)
@@ -324,9 +326,7 @@ class Renderer():
         """
         sprites = game_world.get_sprites(game_world.layer)
         for sprite_key, sprite in sprites.items():
-            sprite_position = gui.int_tuple(
-                ( sprite.position.x, sprite.position.y )
-            )
+            sprite_position = gui.int_tuple(( sprite.position.x, sprite.position.y ))
             sprite_stature_key = formulae.compose_animate_stature(
                 sprite,
                 game_world.sprite_stature
