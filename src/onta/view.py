@@ -159,7 +159,7 @@ class Renderer():
 
         for layer in game_world.layers:
             for group_key, group_conf in game_world.get_tilesets(layer).items():
-                log.debug(f'Rendering {group_key} tiles', '_render_tiles')
+                log.verbose(f'Rendering {group_key} tiles', '_render_tiles')
 
                 group_tile = repository.get_form_frame('tiles', group_key)
 
@@ -263,14 +263,20 @@ class Renderer():
         unordered_groups = game_world.get_platesets(game_world.layer)
         render_map = self.render_ordered_dict(unordered_groups)
 
-        for group_key, group_conf in render_map.items():
+        # render_map not working...
+
+        for group_key, group_conf in unordered_groups.items():
             group_frame = repository.get_form_frame('plates', group_key)
             group_type = game_world.plate_properties.get(group_key).type
+
 
             if group_type in STATIC_PLATES:
                 continue
 
-            log.debug(f'Rendering {group_type} {group_key} plates', '_render_variable_platesets')
+            log.infinite(
+                f'Rendering {group_type} {group_key} plates', 
+                '_render_variable_platesets'
+            )
 
             for i, set_conf in enumerate(group_conf.sets):
                 start = calculator.scale(
@@ -279,7 +285,7 @@ class Renderer():
                     set_conf.start.units
                 )
 
-                log.verbose(f'Rendering at {start}', '_render_variable_plates')
+                log.maximum_overdrive(f'Rendering at {start}', '_render_variable_plates')
 
                 if group_type not in SWITCH_PLATES_TYPES:
                     self.world_frame.alpha_composite(group_frame, start)

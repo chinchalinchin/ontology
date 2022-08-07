@@ -98,7 +98,26 @@ wooden_barrel:
         w: 24
         h: 20
     type: mass
-    
+  
+# GATES
+
+castle_gate:
+  path: castle_gate.png
+  position:
+    on_position:
+      x: 64
+      y: 0
+    off_position:
+      x: 0
+      y: 0
+  size:
+    w: 64
+    h: 64
+  channels: null
+  properties:
+    hitbox: null
+    type: gate
+
 # CONTAINERS
 
 plain_chest:

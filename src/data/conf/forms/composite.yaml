@@ -104,6 +104,52 @@ house_interior:
           cover: true
           content: one
 
+castle:
+  struts:
+    castle_door_outlet:
+      sets:
+        - start:
+            units: absolute
+            x: 95
+            y: 16
+          cover: true
+    castle_door_arch:
+      sets:
+        - start:
+            units: absolute
+            x: 95
+            y: 0
+          cover: true
+    castle_wall:
+      sets:
+        - start:
+            units: absolute
+            x: 0
+            y: 0
+          cover: false
+        - start:
+            units: absolute
+            x: 159
+            y: 0
+          cover: false
+  plates:
+    embedded_switch:
+      sets:
+        - start:
+            units: absolute
+            x: 70
+            y: 200
+          cover: false
+          content: castle_connection
+    castle_gate:
+      sets:
+        - start:
+            units: absolute
+            x: 96
+            y: 16
+          cover: false
+          content: castle_connection
+
 tree_patch:
   struts:
     tree_trunk:

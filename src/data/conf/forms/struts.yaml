@@ -1,3 +1,5 @@
+# HOUSE STRUTS
+
 house_exterior_wall:
   path: house.png
   position:
@@ -112,6 +114,52 @@ house_window:
   properties:
     hitbox: null
 
+# CASTLE STRUTS
+
+castle_door_outlet:
+  path: castle.png
+  position:
+    x: 256
+    y: 448
+  size:
+    w: 64
+    h: 64
+  channels: null
+  properties:
+    hitbox: null
+
+castle_door_arch:
+  path: castle.png
+  position:
+    x: 1
+    y: 416
+  size:
+    w: 94
+    h: 16
+  channels: null
+  properties:
+    hitbox: null
+  
+castle_wall:
+  path: castle.png
+  position:
+    x: 0
+    y: 416
+  size: 
+    w: 96
+    h: 80
+  channels: null
+  properties:
+    hitbox:
+      offset: 
+        x: 5
+        y: 0
+      size:
+        w: 90
+        h: 60
+
+# TREE STRUTS
+
 tree_trunk:
   path: trunk.png
   position: 
@@ -142,6 +190,8 @@ tree_top:
   properties:
     hitbox: null
 
+# CITY STRUTS
+
 pavement:
   path: city.png
   position:
@@ -153,6 +203,9 @@ pavement:
   channels: null
   properties:
     hitbox: null
+
+
+# GRAVEYARD STRUTS
 
 burial_pit:
   path: graveyard.png
@@ -219,6 +272,9 @@ grave_marker:
       size:
         w: 25
         h: 25
+
+
+# BRIDGE STRUTS
 
 vertical_wood_bridge_left:
   path: village.png

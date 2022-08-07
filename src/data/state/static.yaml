@@ -214,8 +214,15 @@ layers:
               units: absolute
               x: 1350
               y: 1600
-      tree_patch:
+      castle:
         order: 5
+        sets:
+          - start:
+              units: absolute
+              x: 1600
+              y: 1000
+      tree_patch:
+        order: 6
         sets:
           - start:
               units: absolute
@@ -237,9 +244,8 @@ layers:
               units: absolute
               x: 700 
               y: 1300
-
       horizontal_pavement:
-        order: 6
+        order: 7
         sets:
           - start:
               units: absolute
@@ -250,7 +256,7 @@ layers:
               x: 1088
               y: 1815
       grave:
-        order: 7
+        order: 8
         sets:
           - start:
               units: absolute
@@ -273,7 +279,7 @@ layers:
               x: 630
               y: 1170
       vertical_wood_bridge:
-        order: 8
+        order: 9
         sets:
           - start:
               units: absolute
