@@ -24,10 +24,10 @@ inside_door:
     w: 32
     h: 48
   channels:
-    r: 255
-    g: 255
-    b: 0
-    a: 64
+    r: 245
+    g: 245
+    b: 140
+    a: 8
   properties:
     hitbox: 
       offset:

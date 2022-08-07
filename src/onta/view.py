@@ -280,12 +280,12 @@ class Renderer():
                     '_render_typed_plates')
 
                 if group_type not in SWITCH_PLATES:
-                    self.world_frame.paste(group_frame, start, group_frame)
+                    self.world_frame.alpha_composite(group_frame, start)
                     continue
                 if game_world.switch_map.get(game_world.layer).get(group_key)[i]:
-                    self.world_frame.paste(group_frame.on, start, group_frame.on)
+                    self.world_frame.alpha_composite(group_frame.on, start)
                     continue
-                self.world_frame.paste(group_frame.off, start, group_frame.off)
+                self.world_frame.alpha_composite(group_frame.off, start)
 
 
     def _render_static(
@@ -294,15 +294,13 @@ class Renderer():
         cover: bool = False
     ):
         if cover:
-            return self.world_frame.paste(
+            return self.world_frame.alpha_composite(
                 self.static_cover_frame.get(layer_key), 
-                ( 0,0 ), 
-                self.static_cover_frame.get(layer_key)
+                ( 0,0 ),
             )
-        return self.world_frame.paste(
+        return self.world_frame.alpha_composite(
                 self.static_back_frame.get(layer_key), 
-                ( 0, 0 ), 
-                self.static_back_frame.get(layer_key)
+                ( 0, 0 ),
             )
 
 
@@ -354,10 +352,10 @@ class Renderer():
                         sprite_stature_key,
                         sprite.frame
                     )
-                    self.world_frame.paste(armor_frame, sprite_position, armor_frame)
+                    self.world_frame.alpha_composite(armor_frame, sprite_position)
 
             elif sprite_accent_frame:
-                self.world_frame.paste(sprite_accent_frame, sprite_position, sprite_accent_frame)
+                self.world_frame.alpha_composite(sprite_accent_frame, sprite_position)
 
             # EQUIPMENT RENDERING
             if any(slot for slot in sprite.slots.values()):
@@ -377,7 +375,7 @@ class Renderer():
                             sprite_stature_key,
                             sprite.frame
                         )
-                        self.world_frame.paste(equipment_frame, sprite_position, equipment_frame)
+                        self.world_frame.alpha_composite(equipment_frame, sprite_position)
 
 
 
@@ -416,9 +414,14 @@ class Renderer():
             else:
                 render_key = next(render_order)
                 # map from slot name -> slot state -> slot frame
-                render_frame = slot_frames.get(headsup_display.get_frame_map('slot').get(render_key))
+                render_frame = slot_frames.get(
+                    headsup_display.get_frame_map('slot').get(render_key)
+                )
 
-            self.world_frame.paste(render_frame, gui.int_tuple(render_point), render_frame)
+            self.world_frame.alpha_composite(
+                render_frame, 
+                gui.int_tuple(render_point)
+            )
 
     
     def _render_mirrors(
@@ -436,11 +439,7 @@ class Renderer():
                 frame_key
             )
             render_point = rendering_points[i]
-            self.world_frame.paste(
-                life_frame,
-                gui.int_tuple(render_point),
-                life_frame
-            )
+            self.world_frame.alpha_composite(life_frame, gui.int_tuple(render_point),)
 
 
     def _render_packs(
@@ -461,10 +460,9 @@ class Renderer():
                     pack_key,
                     pack_map[i]
                 )
-                self.world_frame.paste(
-                    pack_frame,
-                    gui.int_tuple(render_point),
-                    pack_frame
+                self.world_frame.alpha_composite(
+                    pack_frame, 
+                    gui.int_tuple(render_point)
                 )
 
 
@@ -501,10 +499,9 @@ class Renderer():
                 set_key,
                 avatar_frame_map[str(i)]
             )
-            self.world_frame.paste(
+            self.world_frame.alpha_composite(
                 avatar_frame,
                 gui.int_tuple(render_point),
-                avatar_frame
             )
 
 
@@ -529,10 +526,9 @@ class Renderer():
                 btn_frame_map[i],
                 btn_piece_map[i]
             )
-            self.world_frame.paste(
+            self.world_frame.alpha_composite(
                 render_frame,
                 gui.int_tuple(render_point),
-                render_frame
             )
 
 

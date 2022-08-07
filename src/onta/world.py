@@ -827,7 +827,9 @@ class World():
                 if collision_box:
                     plate = self.get_plate(self.layer, mass.key, mass.index)
                     collisions.recoil_plate(
-                        plate, sprite,
+                        plate, 
+                        sprite,
+                        self.sprite_dimensions,
                         self.sprite_properties.get(sprite_key),
                         collision_box
                     )
