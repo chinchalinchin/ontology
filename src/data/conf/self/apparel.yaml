@@ -308,7 +308,6 @@ equipment:
       power:
       attackbox: 
         up:
-          up:
           - frame: 3
             offset:
               x:
@@ -382,13 +381,14 @@ equipment:
       - walk_right
     type: blunt
     action: slash
+    properties:
       power:
       attackbox: 
         up:
           - frame: 3
             offset:
-              x:
-              y:
+              x: null
+              y: 
             size:
               w:
               h:

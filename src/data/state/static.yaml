@@ -162,15 +162,23 @@ layers:
     struts:
     plates:
       obelisk:
-        order: 0
+        order: 4
         sets:
           - start:
               units: absolute
               x: 500
               y: 1265
             content: 5
+      wooden_barrel:
+        order: 3
+        sets:
+          - start:
+              units: absolute
+              x: 1800
+              y: 1640
+            content: 2
       plain_chest:
-        order: 1
+        order: 2
         sets:
           - start:
               units: absolute
@@ -178,15 +186,16 @@ layers:
               y: 1750
             content: potion
       sword_stone:
-        order: 2
+        order: 1
         sets:
           - start:
               units: absolute
               x: 600
               y: 800
             content: shortsword
-      stone_switch:
-        order: 3
+      # Pretty sure switches will need rendered before masses,
+      embedded_switch:
+        order: 0
         sets:
           - start:
               units:

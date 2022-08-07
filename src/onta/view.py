@@ -263,6 +263,7 @@ class Renderer():
         repository: repo.Repo
     ) -> None:
         unordered_groups = game_world.get_platesets(game_world.layer)
+        game_world.get_typed_platesets()
         render_map = self.render_ordered_dict(unordered_groups)
 
         for group_key, group_conf in render_map.items():
@@ -280,7 +281,7 @@ class Renderer():
                     '_render_typed_plates')
 
                 if group_type not in SWITCH_PLATES:
-                    self.world_frame.alpha_composite(group_frame, start)
+                    # self.world_frame.alpha_composite(group_frame, start)
                     continue
                 if game_world.switch_map.get(game_world.layer).get(group_key)[i]:
                     self.world_frame.alpha_composite(group_frame.on, start)

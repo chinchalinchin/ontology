@@ -1,5 +1,7 @@
+# DOORS
+
 house_door:
-  path: doors.png
+  path: doorsheet.png
   position: 
     x: 32
     y: 80
@@ -38,6 +40,8 @@ inside_door:
         h: 48
     type: door
 
+# MASSES
+
 obelisk:
   path: statues.png
   position:
@@ -75,6 +79,27 @@ statue:
         w: 26
         h: 34
     type: mass
+
+wooden_barrel:
+  path: barrel.png
+  position:
+    x: 2
+    y: 10
+  size:
+    w: 28
+    h: 38
+  channels: null
+  properties:
+    hitbox:
+      offset:
+        x: 2
+        y: 0
+      size:
+        w: 24
+        h: 20
+    type: mass
+    
+# CONTAINERS
 
 plain_chest:
   path: chest_rounded.png
@@ -121,16 +146,18 @@ sword_stone:
         w: 22
         h: 20
     type: container
-        
-stone_switch:
-  path: various_continued.png
+
+# PRESSURES
+
+embedded_switch:
+  path: switchsheet.png
   position:
     on_position:
-      x: 400
-      y: 688
+      x: 144
+      y: 113
     off_position:
-      x: 432
-      y: 576
+      x: 176
+      y: 1
   size:
     w: 16
     h: 16
@@ -138,5 +165,3 @@ stone_switch:
   properties:
     hitbox: null
     type: pressure
-
-

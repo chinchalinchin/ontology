@@ -91,3 +91,9 @@ THAT PREVIOUS ONE FIRST
 - idea: keep the previous world state in read only variable to be able to compare when filtering intents, so sprites "remember".
 
 - todo: should initialize common calculations in some sort of cache. like the distance from (0,0) to (world_h, world_w), cos(45), sin(45), etc.
+
+- world bounds have problems with new collision detection. will need to treat separately.
+
+- there is jerkiness to the animation. i think perhaps updates are taking too long? loop appears to be taking 28 - 32 ms to update on average.
+
+- doors are rendering each loop. this shouldn't happen. they are static plates...
