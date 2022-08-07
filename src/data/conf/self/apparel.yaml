@@ -490,9 +490,9 @@ equipment:
     type: blunt
     properties:
       attack_frames:
-        - 
-        -
-      power:
+        - 3
+        - 4
+      power: 5
       attackbox: 
         up:
           offset:
