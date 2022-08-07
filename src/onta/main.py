@@ -163,20 +163,23 @@ def do(
         sleep_time = ms_per_frame - diff - over_sleep
 
         if sleep_time >= 0:
-            log.maximum_overdrive(f'Loop time delta: {diff} ms', 'do')
+            log.maximum_overdrive(f'Loop iteration too short -  delta: {diff} ms', 'do')
             log.maximum_overdrive(f'Sleeping excess period - delta: {sleep_time}', 'do')
             time.sleep(sleep_time/1000)
             over_sleep = helper.current_ms_time() - end_time - sleep_time
         else:
+            log.maximum_overdrive(f'Loop iteration too long - delta: {sleep_time}', 'do')
             excess -= sleep_time
             no_delays += 1
             if no_delays >= no_delays_per_yield:
+                log.maximum_overdrive(f'Yielding thread', 'do')
                 time.sleep(0)
                 no_delays = 0
 
         start_time = helper.current_ms_time()
         skips = 0
         while ( (excess>ms_per_frame) and (skips < max_frame_skips)):
+            log.maximum_overdrive(f'Updating world to catch up', 'do')
             excess -= ms_per_frame
             game_world.iterate(user_input)
             skips += 1
