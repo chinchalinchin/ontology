@@ -30,7 +30,6 @@ def create(args) -> Tuple[
     view.Renderer,
     repo.Repo,
     hud.HUD,
-    device.Device,
     menu.Menu
 ]:
     log.debug('Pulling device information...', 'create')
@@ -64,25 +63,26 @@ def create(args) -> Tuple[
     render_engine = view.Renderer(
         game_world, 
         asset_repository, 
-        player_device
+        player_device,
+        args.debug
     )
 
     return controller, game_world, render_engine, \
-            asset_repository, headsup_display, player_device, pause_menu
+            asset_repository, headsup_display, pause_menu
 
 
 def start(
     args
 ) -> None:
-    cntl, wrld, eng, rep, hd, dv, mn = create(args)
+    cntl, wrld, eng, rep, hd, mn = create(args)
 
     log.debug('Creating GUI...', 'start')
-    app, vw = view.get_app(), view.get_view(dv)
+    app, vw = view.get_app(), eng.get_view()
 
     log.debug('Threading game...', 'start')
     game_loop = threading.Thread(
         target=do, 
-        args=(vw,cntl,wrld,eng,rep,hd,mn, args.debug), 
+        args=(vw,cntl,wrld,eng,rep,hd,mn,args.debug), 
         daemon=True
     )
 
@@ -96,7 +96,7 @@ def render(
     args
 ) -> Image.Image:
     # TODO: use args.width and args.height to adjust crop box for render method...
-    _, wld, eng, rep, hd, _, mn = create(args)
+    _, wld, eng, rep, hd, mn = create(args)
     hd.hud_activated = args.hud
     return eng.render(wld, rep, hd, mn, args.crop, args.layer)
 
@@ -114,10 +114,6 @@ def do(
     pause_menu: menu.Menu,
     debug: bool = False
 ) -> None:
-
-    if debug:
-        debug_view = view.get_debug_view()
-        debug_view.show()
 
     ms_per_frame = (1/settings.FPS)*1000
     no_delays_per_yield = 16
@@ -158,20 +154,23 @@ def do(
         # scripts.apply_scripts(game_world, 'pre_render')
 
         if debug:
-            view.update_debug_view(
-                debug_view,
-                game_world,
+            render_engine.view(
+                game_world, 
+                game_view, 
+                headsup_display,
+                pause_menu,
+                asset_repository,
                 user_input
             )
-
-        render_engine.view(
-            game_world, 
-            game_view, 
-            headsup_display,
-            pause_menu,
-            asset_repository
-        )
-
+        else:
+            render_engine.view(
+                game_world, 
+                game_view, 
+                headsup_display,
+                pause_menu,
+                asset_repository,
+                None
+            )
         # # post_loop hook here
         # scripts.apply_scripts(game_world, 'post_loop')
         

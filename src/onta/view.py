@@ -1,9 +1,9 @@
 import sys
 from collections import OrderedDict
-import functools
 import munch
+import threading
 
-from PySide6 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui, QtCore
 from PIL import Image
 
 import onta.device as device
@@ -20,6 +20,7 @@ import onta.loader.repo as repo
 
 import onta.util.logger as logger
 import onta.util.gui as gui
+import onta.util.debug as debug
 
 
 STATIC_PLATES = [ 'door' ]
@@ -58,66 +59,23 @@ def position(
     return view_widget
 
 
-def get_view(
-    player_device: device.Device
-) -> QtWidgets.QWidget:
-    view_widget, view_layout, view_frame = \
-            QtWidgets.QWidget(), QtWidgets.QVBoxLayout(),  QtWidgets.QLabel()
-    view_widget.resize(*player_device.dimensions)
-    view_layout.addWidget(view_frame)
-    view_widget.setLayout(view_layout)
-    return position(view_widget)
+class Debugger(QtCore.QObject):
+    update = QtCore.Signal(bool)
 
+    def start(self):
+        threading.Timer(0.2, self._execute).start()
 
-def _debug_template(
-    game_world: world.World,
-    user_input: munch.Munch
-):
-    return f"""
-        <h1>Game</h1>
-        <h2>World State</h2>
-        <h3>Player State</h3>
-        <ul>
-            <li>player.frame: {game_world.hero.frame}</li>
-            <li>player.intent: {game_world.hero.intent}</li>
-            <li>player.stature.intention: {game_world.hero.stature.intention}</li>
-            <li>player.stature.action: {game_world.hero.stature.action}</li>
-            <li>player.stature.direction: {game_world.hero.stature.direction}</li>
-            <li>player.stature.expression: {game_world.hero.stature.expression}</li>
-        </ul>
-        <h2>Controller</h2>
-        <h3>Action</h3>
-        <ul>
-            <li>controls.slash: {user_input.slash}</li>
-            <li>controls.thrust: {user_input.thrust}</li>
-            <li>controls.shoot: {user_input.shoot}</li>
-            <li>controls.cast: {user_input.cast}</li>
-        </ul>
-    """
-
-
-def get_debug_view(
-) -> QtWidgets.QWidget:
-    debug_widget, debug_layout, debug_frame = \
-            QtWidgets.QWidget(), QtWidgets.QVBoxLayout(), QtWidgets.QLabel()
-    debug_layout.addWidget(debug_frame)
-    debug_widget.setLayout(debug_layout)
-    debug_widget.resize(250,250)
-    return position(debug_widget, 'bottom_left')
-
-
-def update_debug_view(
-    debug_view: QtWidgets.QWidget,
-    game_world: world.World,
-    user_input: munch.Munch
-) -> QtWidgets.QWidget:
-    template = _debug_template(game_world, user_input)
-    debug_view.layout().itemAt(0).widget().setText(template)
-    return debug_view
+    def _execute(self):
+        threading.Timer(0.2, self._execute).start()
+        self.update.emit(True)
 
 class Renderer():
     """_summary_
     """
+
+    debug = False
+    debug_worker = None
+    debug_templates = munch.Munch({})
 
     last_layer = None
     player_device = None
@@ -154,11 +112,40 @@ class Renderer():
         return ordered_dict
 
 
+    @staticmethod
+    def generate_debug_template(
+        game_world: world.World,
+        user_input: munch.Munch
+    ):
+        return f"""
+            <h1>Game</h1>
+            <h2>World State</h2>
+            <h3>Player State</h3>
+            <ul>
+                <li>player.frame: {game_world.hero.frame}</li>
+                <li>player.intent: {game_world.hero.intent}</li>
+                <li>player.stature.intention: {game_world.hero.stature.intention}</li>
+                <li>player.stature.action: {game_world.hero.stature.action}</li>
+                <li>player.stature.direction: {game_world.hero.stature.direction}</li>
+                <li>player.stature.expression: {game_world.hero.stature.expression}</li>
+            </ul>
+            <h2>Controller</h2>
+            <h3>Action</h3>
+            <ul>
+                <li>controls.slash: {user_input.slash}</li>
+                <li>controls.thrust: {user_input.thrust}</li>
+                <li>controls.shoot: {user_input.shoot}</li>
+                <li>controls.cast: {user_input.cast}</li>
+            </ul>
+        """
+
+
     def __init__(
         self, 
         game_world: world.World, 
         repository: repo.Repo, 
-        player_device: device.Device
+        player_device: device.Device,
+        debug: bool = False
     ):
         """
         .. note:
@@ -177,6 +164,7 @@ class Renderer():
 
         self._render_tiles(game_world, repository)
         self._render_sets(game_world, repository)
+        self.debug = debug
 
 
     def _render_tiles(
@@ -623,6 +611,14 @@ class Renderer():
                 gui.int_tuple(render_point),
             )
 
+    @QtCore.Slot()
+    def _update_debug_view(
+        self,
+        view_widget: QtWidgets.QWidget
+    ):
+        debug_layout = view_widget.layout().itemAt(1).widget().layout()
+        debug_layout.itemAt(0).widget().setText(self.debug_templates.player_state)
+        debug_layout.itemAt(1).widget().setText(self.debug_templates.control_state)
 
     def render(
         self, 
@@ -684,6 +680,39 @@ class Renderer():
 
         return self.world_frame
 
+
+    def get_view(
+        self
+    ) -> QtWidgets.QWidget:
+        view_widget, view_layout, view_frame = \
+                QtWidgets.QWidget(), QtWidgets.QVBoxLayout(),  QtWidgets.QLabel()
+        view_widget.resize(*self.player_device.dimensions)
+        view_frame.setSizePolicy(QtWidgets.QSizePolicy(
+                QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+        view_layout.addWidget(view_frame)
+
+        if self.debug:
+            debug_frame = QtWidgets.QWidget()
+            debug_layout = QtWidgets.QHBoxLayout()
+            debug_layout.addWidget(QtWidgets.QLabel())
+            debug_layout.addWidget(QtWidgets.QLabel())
+            debug_frame.setLayout(debug_layout)
+            debug_frame.setSizePolicy(QtWidgets.QSizePolicy(
+                QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
+            view_layout.addWidget(debug_frame)
+
+            self.debug_worker = Debugger()
+            self.debug_worker.update.connect(
+                (lambda i: lambda: self._update_debug_view(i))(view_widget)
+            )
+            self.debug_worker.start()
+
+            # grab view, connect worker to debug that constantly rerender template, have template get updated in main loop
+
+        view_widget.setLayout(view_layout)
+        return position(view_widget)
+
+
     # Rendering connection to GUI
     def view(
         self, 
@@ -691,7 +720,8 @@ class Renderer():
         view_widget: QtWidgets.QWidget, 
         headsup_display: hud.HUD,
         menu: menu.Menu,
-        repository: repo.Repo
+        repository: repo.Repo,
+        user_input: munch.Munch = None
     ) -> QtWidgets.QWidget: 
         """_summary_
 
@@ -719,4 +749,17 @@ class Renderer():
 
         view_frame = view_widget.layout().itemAt(0).widget() 
         view_frame.setPixmap(pix)
+
+        if user_input: # then debugging
+            setattr(
+                self.debug_templates, 
+                'player_state', 
+                debug.generate_player_template(game_world)
+            )
+            setattr(
+                self.debug_templates, 
+                'control_state',
+                debug.generate_input_template(user_input)
+            )
+
         return view_widget
