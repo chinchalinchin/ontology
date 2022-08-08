@@ -1,10 +1,3 @@
-- ups vs fps
-
-- exiting a door has a problem with collision engine, since when you exit you will most likely be intersecting with outside object, but facing the wrong way you would approach it in-layer. thus, the character sprite slides over the hitbox.
-
-- when rendering, should check if element intersects with crop box to determine whether or not to proceed with rendering, i.e. only render on screen elements. already inherently does this with layers. need an additional positional check.
-
-- allow sprites to create their own intents if attacked by another sprite, i.e. add intent of attacking_sprite to sprite['intents']
 
 - add `looper` property to sprite definitions to allow developers to turn off game loop physics and interactions for that sprite. lets scripts completely control the sprite state.
 
@@ -12,9 +5,7 @@
 
 - if sprite aware: train model: if iteration == learning_rate or something, then apply prediction
 
-
 - Make Conf and State wrapper classes singletons (so conf is not loaded over and over again)
-
 
 - Every sprite has a sell interaction with whatever is in their bag or belt.
 
@@ -95,5 +86,3 @@ THAT PREVIOUS ONE FIRST
 - world bounds have problems with new collision detection. will need to treat separately.
 
 - discovery sound when pressure plate is pressed and gate opens somewhere...
-
-- mass plates will need different types of hitboxes for player and pressure plate collisions. otherwise, the interaction feels off and behaves strange. 

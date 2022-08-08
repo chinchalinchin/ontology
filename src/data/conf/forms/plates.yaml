@@ -29,7 +29,7 @@ inside_door:
     r: 245
     g: 245
     b: 140
-    a: 8
+    a: 32
   properties:
     hitbox: 
       offset:
@@ -110,17 +110,17 @@ wooden_barrel:
       sprite:
         offset:
           x: 2
-          y: 0
+          y: 4
         size:
           w: 24
-          h: 15
+          h: 11
       strut:
         offset:
           x: 2
-          y: 0
+          y: 20
         size:
           w: 24
-          h: 30
+          h: 18
     type: mass
   
 # GATES
@@ -208,9 +208,9 @@ embedded_switch:
   properties:
     hitbox:
       offset:
-        x: 2
-        y: 2
+        x: 4
+        y: 4
       size: 
-        w: 12
+        w: 8
         h: 8
     type: pressure
