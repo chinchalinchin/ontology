@@ -1,6 +1,6 @@
 import threading
 import time
-from typing import Tuple
+from typing import Tuple, Union
 
 import PySide6.QtWidgets as QtWidgets
 from PIL import Image
@@ -82,7 +82,7 @@ def start(
     log.debug('Threading game...', 'start')
     game_loop = threading.Thread(
         target=do, 
-        args=(vw,cntl,wrld,eng,rep,hd, mn, args.debug), 
+        args=(vw,cntl,wrld,eng,rep,hd,mn, args.debug), 
         daemon=True
     )
 
@@ -156,13 +156,14 @@ def do(
 
         # # pre_render hook here
         # scripts.apply_scripts(game_world, 'pre_render')
+
         if debug:
             view.update_debug_view(
                 debug_view,
                 game_world,
                 user_input
             )
-            
+
         render_engine.view(
             game_world, 
             game_view, 
@@ -179,8 +180,7 @@ def do(
         sleep_time = ms_per_frame - diff - over_sleep
 
         if sleep_time >= 0:
-            log.maximum_overdrive(f'Loop iteration too short -  delta: {diff} ms', 'do')
-            log.maximum_overdrive(f'Sleeping excess period - delta: {sleep_time}', 'do')
+            log.maximum_overdrive(f'Loop iteration too short -  delta: {sleep_time} ms', 'do')
             time.sleep(sleep_time/1000)
             over_sleep = helper.current_ms_time() - end_time - sleep_time
         else:

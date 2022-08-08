@@ -46,9 +46,9 @@ def position(
     if position == 'center':
         position = QtGui.QScreen.availableGeometry(
             QtWidgets.QApplication.primaryScreen()).center()
-    elif position == 'bottom':
+    elif position == 'bottom_left':
         position = QtGui.QScreen.availableGeometry(
-            QtWidgets.QApplication.primaryScreen()).bottom()
+            QtWidgets.QApplication.primaryScreen()).bottomLeft()
 
     geo = view_widget.frameGeometry()
     geo.moveCenter(position)
@@ -69,22 +69,51 @@ def get_view(
     return position(view_widget)
 
 
-def get_debug_view(
-    player_device: device.Device
-) -> QtWidgets.QWidget:
-    debug_widget, debug_layout = \
-            QtWidgets.QWidget(), QtWidgets.QVBoxLayout(),  QtWidgets.QLabel()
+def _debug_template(
+    game_world: world.World,
+    user_input: munch.Munch
+):
+    return f"""
+        <h1>Game</h1>
+        <h2>World State</h2>
+        <h3>Player State</h3>
+        <ul>
+            <li>player.frame: {game_world.hero.frame}</li>
+            <li>player.intent: {game_world.hero.intent}</li>
+            <li>player.stature.intention: {game_world.hero.stature.intention}</li>
+            <li>player.stature.action: {game_world.hero.stature.action}</li>
+            <li>player.stature.direction: {game_world.hero.stature.direction}</li>
+            <li>player.stature.expression: {game_world.hero.stature.expression}</li>
+        </ul>
+        <h2>Controller</h2>
+        <h3>Action</h3>
+        <ul>
+            <li>controls.slash: {user_input.slash}</li>
+            <li>controls.thrust: {user_input.thrust}</li>
+            <li>controls.shoot: {user_input.shoot}</li>
+            <li>controls.cast: {user_input.cast}</li>
+        </ul>
+    """
 
-    return position(debug_widget, 'bottom')
+
+def get_debug_view(
+) -> QtWidgets.QWidget:
+    debug_widget, debug_layout, debug_frame = \
+            QtWidgets.QWidget(), QtWidgets.QVBoxLayout(), QtWidgets.QLabel()
+    debug_layout.addWidget(debug_frame)
+    debug_widget.setLayout(debug_layout)
+    debug_widget.resize(250,250)
+    return position(debug_widget, 'bottom_left')
 
 
 def update_debug_view(
     debug_view: QtWidgets.QWidget,
     game_world: world.World,
     user_input: munch.Munch
-):
-    pass
-
+) -> QtWidgets.QWidget:
+    template = _debug_template(game_world, user_input)
+    debug_view.layout().itemAt(0).widget().setText(template)
+    return debug_view
 
 class Renderer():
     """_summary_

@@ -7,6 +7,7 @@ hero:
     expression: null
     direction: down
     action: walk
+  intent: null
   frame: 0
   layer: one
   plot: a
@@ -26,7 +27,6 @@ hero:
   health:
     current: 4
     max: 10
-  intents: null
   desires: null
   inventory:
     armor:
