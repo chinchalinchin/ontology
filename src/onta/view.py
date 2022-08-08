@@ -1,6 +1,6 @@
 import sys
 from collections import OrderedDict
-
+import functools
 import munch
 
 from PySide6 import QtWidgets, QtGui
@@ -62,6 +62,7 @@ class Renderer():
     """_summary_
     """
 
+    last_layer = None
     player_device = None
     """
     """
@@ -106,6 +107,7 @@ class Renderer():
         .. note:
             No references are kept to `static_world` or `repository`.
         """
+        self.last_layer = game_world.layer
         self.player_device = player_device
         self.static_cover_frame = {
             layer: gui.new_image(game_world.dimensions) 
@@ -301,11 +303,14 @@ class Renderer():
         layer_key: str, 
         cover: bool = False
     ):
+
         if cover:
             return self.world_frame.alpha_composite(
                 self.static_cover_frame.get(layer_key), 
                 ( 0,0 ),
             )
+
+        self.world_frame = gui.new_image(self.static_back_frame.get(layer_key).size)
         return self.world_frame.alpha_composite(
                 self.static_back_frame.get(layer_key), 
                 ( 0, 0 ),
@@ -584,7 +589,6 @@ class Renderer():
         :return: _description_
         :rtype: _type_
         """
-        self.world_frame = gui.new_image(game_world.dimensions)
 
         if layer is not None:
             layer_buffer = game_world.layer
@@ -597,6 +601,7 @@ class Renderer():
 
         if layer is not None:
             game_world.layer = layer_buffer
+            self.last_layer = game_world.layer
             
         if crop:
             world_dim = game_world.dimensions
