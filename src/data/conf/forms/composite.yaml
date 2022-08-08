@@ -106,6 +106,40 @@ house_interior:
 
 castle:
   struts:
+    castle_wall:
+      sets:
+        - start:
+            units: absolute
+            x: 0
+            y: 0
+          cover: false
+        - start:
+            units: absolute
+            x: 159
+            y: 0
+          cover: false
+        - start: 
+            units: absolute
+            x: -100
+            y: -150
+          cover: false
+        - start:
+            units: absolute
+            x: 259
+            y: -150
+          cover: false
+    castle_wall_top:
+      sets:
+        - start:
+            units: absolute
+            x: 0
+            y: -32
+          cover: true
+        - start:
+            units: absolute
+            x: 159
+            y: -32
+          cover: true
     castle_door_outlet:
       sets:
         - start:
@@ -126,37 +160,6 @@ castle:
             units: absolute
             x: 95
             y: -24
-          cover: true
-    # castle_door_arch:
-    #   sets:
-    #     - start:
-    #         units: absolute
-    #         x: 95
-    #         y: 0
-    #       cover: true
-    castle_wall:
-      sets:
-        - start:
-            units: absolute
-            x: 0
-            y: 0
-          cover: false
-        - start:
-            units: absolute
-            x: 159
-            y: 0
-          cover: false
-    castle_wall_top:
-      sets:
-        - start:
-            units: absolute
-            x: 0
-            y: -32
-          cover: true
-        - start:
-            units: absolute
-            x: 159
-            y: -32
           cover: true
     castle_turret_block:
       sets:
