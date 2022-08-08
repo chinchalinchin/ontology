@@ -43,6 +43,14 @@ def parse_cli_args():
         dest="crop"
     )
     parser.add_argument(
+        '-db',
+        '--db',
+        '-debug',
+        '--debug',
+        action='store_true',
+        dest="debug"
+    )
+    parser.add_argument(
         '-sw',
         '--sw',
         '-screen-width',

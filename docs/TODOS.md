@@ -86,3 +86,5 @@ THAT PREVIOUS ONE FIRST
 - world bounds have problems with new collision detection. will need to treat separately.
 
 - discovery sound when pressure plate is pressed and gate opens somewhere...
+
+- debug widget that shows state information

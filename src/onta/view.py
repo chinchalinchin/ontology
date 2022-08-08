@@ -39,23 +39,51 @@ def quit(app: QtWidgets.QApplication) -> None:
     sys.exit(app.exec_())
 
 
+def position(
+    view_widget: QtWidgets.QWidget,
+    position: str = 'center'
+):
+    if position == 'center':
+        position = QtGui.QScreen.availableGeometry(
+            QtWidgets.QApplication.primaryScreen()).center()
+    elif position == 'bottom':
+        position = QtGui.QScreen.availableGeometry(
+            QtWidgets.QApplication.primaryScreen()).bottom()
+
+    geo = view_widget.frameGeometry()
+    geo.moveCenter(position)
+    view_widget.move(geo.topLeft())
+    QtGui.QScreen.availableGeometry(
+        QtWidgets.QApplication.primaryScreen()).bottom()
+    return view_widget
+
+
 def get_view(
     player_device: device.Device
 ) -> QtWidgets.QWidget:
     view_widget, view_layout, view_frame = \
             QtWidgets.QWidget(), QtWidgets.QVBoxLayout(),  QtWidgets.QLabel()
-
     view_widget.resize(*player_device.dimensions)
     view_layout.addWidget(view_frame)
     view_widget.setLayout(view_layout)
+    return position(view_widget)
 
-    center = QtGui.QScreen.availableGeometry(
-        QtWidgets.QApplication.primaryScreen()).center()
-    geo = view_widget.frameGeometry()
-    geo.moveCenter(center)
-    view_widget.move(geo.topLeft())
 
-    return view_widget
+def get_debug_view(
+    player_device: device.Device
+) -> QtWidgets.QWidget:
+    debug_widget, debug_layout = \
+            QtWidgets.QWidget(), QtWidgets.QVBoxLayout(),  QtWidgets.QLabel()
+
+    return position(debug_widget, 'bottom')
+
+
+def update_debug_view(
+    debug_view: QtWidgets.QWidget,
+    game_world: world.World,
+    user_input: munch.Munch
+):
+    pass
 
 
 class Renderer():

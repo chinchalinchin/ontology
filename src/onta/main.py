@@ -71,8 +71,10 @@ def create(args) -> Tuple[
             asset_repository, headsup_display, player_device, pause_menu
 
 
-def start(ontology_path: str) -> None:
-    cntl, wrld, eng, rep, hd, dv, mn = create(ontology_path)
+def start(
+    args
+) -> None:
+    cntl, wrld, eng, rep, hd, dv, mn = create(args)
 
     log.debug('Creating GUI...', 'start')
     app, vw = view.get_app(), view.get_view(dv)
@@ -80,7 +82,7 @@ def start(ontology_path: str) -> None:
     log.debug('Threading game...', 'start')
     game_loop = threading.Thread(
         target=do, 
-        args=(vw,cntl,wrld,eng,rep,hd, mn), 
+        args=(vw,cntl,wrld,eng,rep,hd, mn, args.debug), 
         daemon=True
     )
 
@@ -99,6 +101,9 @@ def render(
     return eng.render(wld, rep, hd, mn, args.crop, args.layer)
 
 
+def debug():
+    pass
+
 def do(
     game_view: QtWidgets.QWidget, 
     controller: control.Controller, 
@@ -106,13 +111,18 @@ def do(
     render_engine: view.Renderer, 
     asset_repository: repo.Repo,
     headsup_display: hud.HUD,
-    pause_menu: menu.Menu
+    pause_menu: menu.Menu,
+    debug: bool = False
 ) -> None:
+
+    if debug:
+        debug_view = view.get_debug_view()
+        debug_view.show()
+
     ms_per_frame = (1/settings.FPS)*1000
     no_delays_per_yield = 16
     max_frame_skips = 5
     over_sleep, no_delays, excess = 0, 0, 0
-
     start_time = helper.current_ms_time()
 
     while True:
@@ -146,7 +156,13 @@ def do(
 
         # # pre_render hook here
         # scripts.apply_scripts(game_world, 'pre_render')
-
+        if debug:
+            view.update_debug_view(
+                debug_view,
+                game_world,
+                user_input
+            )
+            
         render_engine.view(
             game_world, 
             game_view, 
