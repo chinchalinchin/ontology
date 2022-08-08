@@ -1,5 +1,5 @@
+import functools
 import math
-
 
 def center(
     dim: tuple
@@ -27,6 +27,7 @@ def angle_relative_to_center(
     return 360 - 180 * math.acos(cosine) / math.pi
 
 
+@functools.lru_cache(maxsize=128)
 def projection(
     angle:float = 45
 ) -> tuple:

@@ -1,5 +1,6 @@
 
 import os
+
 import munch
 import yaml
 
@@ -14,6 +15,7 @@ class State():
         data_dir = settings.DEFAULT_DIR
     ) -> None:
         self.state_dir = os.path.join(data_dir, *settings.STATE_PATH)
+
 
     def get_state(
         self, 

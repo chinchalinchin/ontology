@@ -1,4 +1,5 @@
 import os
+import functools
 from typing import Union
 from PIL import Image
 import munch
@@ -443,6 +444,7 @@ class Repo():
                         self.apparel.get(set_key).get(apparel_key).get(equip_stature
                         ).append(equip_stature_frame) 
 
+
     def _init_entity_assets(
         self, 
         config: conf.Conf, 
@@ -532,6 +534,7 @@ class Repo():
             )
 
 
+    @functools.lru_cache(maxsize=1024)
     def get_form_frame(
         self, 
         form_key: str, 
@@ -546,6 +549,7 @@ class Repo():
         return None
 
 
+    @functools.lru_cache(maxsize=128)
     def get_avatar_frame(
         self,
         avatar_set: str,
@@ -563,6 +567,7 @@ class Repo():
         return None
     
 
+    @functools.lru_cache(maxsize=8)
     def get_slot_frames(
         self, 
         breakpoint_key: str, 
@@ -582,6 +587,7 @@ class Repo():
         return None
         
 
+    @functools.lru_cache(maxsize=8)
     def get_pack_frame(
         self, 
         breakpoint_key: str, 
@@ -605,6 +611,7 @@ class Repo():
         return None
 
 
+    @functools.lru_cache(maxsize=8)
     def get_mirror_frame(
         self, 
         breakpoint_key: str, 
@@ -628,6 +635,7 @@ class Repo():
         return None
 
 
+    @functools.lru_cache(maxsize=64)
     def get_menu_frame(
         self, 
         breakpoint_key: str, 
@@ -651,6 +659,7 @@ class Repo():
         return None
 
 
+    @functools.lru_cache(maxsize=1024)
     def get_sprite_frame(
         self, 
         sprite_key: str, 
@@ -687,6 +696,7 @@ class Repo():
         return (None, None)
 
 
+    @functools.lru_cache(maxsize=1024)
     def get_apparel_frame(
         self,
         set_key: str,

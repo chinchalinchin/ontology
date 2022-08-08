@@ -54,6 +54,7 @@ class Conf():
             )
         return conf
 
+
     def _self_configuration(
         self, 
         type_key: str
@@ -66,6 +67,7 @@ class Conf():
         :rtype: dict
         """
         return self.__configuration(type_key, 'self')
+
 
     def _form_configuration(
         self, 

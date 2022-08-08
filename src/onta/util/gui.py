@@ -1,3 +1,5 @@
+import functools
+
 from PIL import Image
 import PySide6.QtGui as QtGui
 
@@ -29,6 +31,7 @@ def replace_alpha(
     return img.putalpha(alpha)
 
 
+@functools.lru_cache(maxsize=100)
 def channels(dim, channels):
     return Image.new(settings.IMG_MODE, dim, channels)
 

@@ -12,8 +12,6 @@
 # NOTE: hour determines then number of iterations in an in-game hour
     # 18000 = 30 FPS * 60 SPM * 10 Min
   
-# TODO: ??? possibly separate FPS from UPS.
-
 world:
   size:
     # 1920 by 1920
@@ -193,9 +191,8 @@ layers:
               x: 600
               y: 800
             content: shortsword
-      # Pretty sure switches will need rendered before masses,
       embedded_switch:
-        order: 0
+        order: 0 # switches need rendered before masses
         sets:
           - start:
               units: absolute

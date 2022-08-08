@@ -1,3 +1,4 @@
+import functools
 import munch
 
 import onta.settings as settings
@@ -60,10 +61,9 @@ def on_screen(
     crop_box = screen_crop_box(screen_dim, world_dim, player_dim)
     return calculator.intersection(crop_box, object_dim)
 
-
 def construct_animate_statures(
     stature_props: munch.Munch
-):
+) -> list:
     animate_statures = []
     for action in stature_props.decomposition.animate:
         if action != stature_props.decomposition.end:
@@ -75,7 +75,6 @@ def construct_animate_statures(
             animate_statures.append(action)
 
     return animate_statures
-
 
 def compose_animate_stature(
     sprite: munch.Munch,
@@ -105,10 +104,10 @@ def compose_animate_stature(
         return settings.SEP.join([sprite.stature.action ,'right'])
     return settings.SEP.join([sprite.stature.action, sprite.stature.direction])
 
-
+@functools.lru_cache(maxsize=128)
 def decompose_animate_stature(
     sprite_stature:str
-):
+) -> tuple:
     split = sprite_stature.split(settings.SEP)
     return (split[0], split[1])
 
