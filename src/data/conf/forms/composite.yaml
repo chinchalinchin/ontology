@@ -113,13 +113,27 @@ castle:
             x: 95
             y: 16
           cover: true
-    castle_door_arch:
+    castle_overhang:
       sets:
         - start:
             units: absolute
             x: 95
             y: 0
           cover: true
+    castle_door_cap:
+      sets:
+        - start:
+            units: absolute
+            x: 95
+            y: -24
+          cover: true
+    # castle_door_arch:
+    #   sets:
+    #     - start:
+    #         units: absolute
+    #         x: 95
+    #         y: 0
+    #       cover: true
     castle_wall:
       sets:
         - start:
@@ -132,6 +146,18 @@ castle:
             x: 159
             y: 0
           cover: false
+    castle_wall_top:
+      sets:
+        - start:
+            units: absolute
+            x: 0
+            y: -32
+          cover: true
+        - start:
+            units: absolute
+            x: 159
+            y: -32
+          cover: true
     castle_turret_block:
       sets:
         - start:
@@ -153,6 +179,18 @@ castle:
             units: absolute
             x: 254
             y: -22
+          cover: false
+    castle_turret_top:
+      sets:
+        - start:
+            units: absolute
+            x: -64
+            y: -86
+          cover: false
+        - start:
+            units: absolute
+            x: 254
+            y: -86
           cover: false
   plates:
     embedded_switch:

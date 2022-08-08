@@ -116,6 +116,30 @@ house_window:
 
 # CASTLE STRUTS
 
+castle_overhang:
+  path: castle.png
+  position:
+    x: 96
+    y: 448
+  size:
+    w: 64
+    h: 16
+  channels: null
+  properties:
+    hitbox: null
+
+castle_door_cap:
+  path: castle.png
+  position:
+    x: 0
+    y: 232
+  size: 
+    w: 64
+    h: 24
+  channels: null
+  properties:
+    hitbox: null
+
 castle_door_outlet:
   path: castle.png
   position:
@@ -138,7 +162,13 @@ castle_door_arch:
     h: 16
   channels: null
   properties:
-    hitbox: null
+    hitbox:
+      offset: 
+        x: 0
+        y: 0
+      size: 
+        w: 94
+        h: 8
 
 castle_turret_block:
   path: castle.png
@@ -193,6 +223,18 @@ castle_wall:
       size:
         w: 90
         h: 60
+
+castle_wall_top:
+  path: castle.png
+  position:
+    x: 0
+    y: 256
+  size:
+    w: 96
+    h: 32
+  channels: null
+  properties:
+    hitbox: null
 
 # TREE STRUTS
 

@@ -611,6 +611,7 @@ class Renderer():
                 gui.int_tuple(render_point),
             )
 
+
     @QtCore.Slot()
     def _update_debug_view(
         self,
@@ -619,6 +620,7 @@ class Renderer():
         debug_layout = view_widget.layout().itemAt(1).widget().layout()
         debug_layout.itemAt(0).widget().setText(self.debug_templates.player_state)
         debug_layout.itemAt(1).widget().setText(self.debug_templates.control_state)
+
 
     def render(
         self, 
