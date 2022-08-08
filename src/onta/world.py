@@ -618,6 +618,7 @@ class World():
                                      '_ruminate')
                         sprite.intent = sprite.memory.intent
 
+
     # calculate rest of sprite intents from desires
 
     def _intend(
@@ -673,6 +674,7 @@ class World():
                          '_intend'
                          )
             sprite.intent = None
+
 
     def _act(
         self
@@ -730,6 +732,7 @@ class World():
                         sprite.stature.action = 'walk'
                     # if sprite was in blocking state, set to walk_direction
 
+
     def _reorient(
         self,
         sprite_key: str
@@ -765,6 +768,7 @@ class World():
             self.sprite_properties.get(sprite_key).speed.collide,
             self.dimensions
         )
+
 
     def _physics(
         self
@@ -947,6 +951,18 @@ class World():
                         str(pressure.index),
                         True
                     )
+                    connected_gate = self._gate_connection(
+                        layer,
+                        pressure
+                    )
+                    if not connected_gate:
+                        continue
+                    setattr(
+                        self.switch_map.get(layer).get(connected_gate.key),
+                        str(connected_gate.index),
+                        True
+                    )
+
                 elif not collision_box and \
                     self.switch_map.get(layer).get(pressure.key).get(str(pressure.index)):
                     log.debug(f'Switching pressure plate {pressure.key} off', '_physics')
@@ -955,7 +971,17 @@ class World():
                         str(pressure.index),
                         False
                     )
-                    # use content to retrieve gate connection and switch off gate
+                    connected_gate = self._gate_connection(
+                        layer,
+                        pressure
+                    )
+                    if not connected_gate:
+                        continue
+                    setattr(
+                        self.switch_map.get(layer).get(connected_gate.key),
+                        str(connected_gate.index),
+                        False
+                    )
     
                     
         # TODO: plate-to-plate collisions, plate-to-strut collisions
@@ -964,6 +990,7 @@ class World():
             # i.e., collision map? 
             #   layer -> first_mass_key -> first_mass_index
             #         -> second_mass_key -> second_mass_index
+
 
     def _collision_sets_relative_to(
         self,
@@ -1101,6 +1128,18 @@ class World():
         return calculated
 
 
+    def _gate_connection(
+        self,
+        layer,
+        pressure
+    ):
+        connected_gate = [
+            munch.Munch({'key': gate.key, 'index': gate.index})
+            for gate in self.get_typed_platesets(layer, 'gate')
+            if gate.content == pressure.content 
+        ]
+        return connected_gate.pop()
+
     def _sprite_desires(
         self,
         sprite: munch.Munch
@@ -1199,6 +1238,18 @@ class World():
         :type plateset_type: str
         :return: _description_
         :rtype: list
+
+        ```python
+        typed_plates = [
+            {
+                'key': key,
+                'index': index,
+                'hitbox': hitbox
+                'content': content,
+                'position': position
+            }
+        ]
+        ```
         """
         typed_platesets = []
         for plate_key, plate_conf in self.get_platesets(layer).items():
