@@ -53,12 +53,20 @@ obelisk:
   channels: null
   properties:
     hitbox:
-      offset:
-        x: 2
-        y: 0
-      size:
-        w: 24
-        h: 35
+      sprite:
+        offset:
+          x: 2
+          y: 0
+        size:
+          w: 24
+          h: 35
+      strut:
+        offset:
+          x: 0
+          y: 0
+        size:
+          w: 24
+          h: 50
     type: mass
 
 statue:
@@ -72,12 +80,20 @@ statue:
   channels: null
   properties:
     hitbox:
-      offset:
-        x: 2
-        y: 0
-      size:
-        w: 26
-        h: 34
+      sprite:
+        offset:
+          x: 2
+          y: 0
+        size:
+          w: 26
+          h: 34
+      strut:
+        offset:
+          x: 2
+          y: 0
+        size:
+          w: 24
+          h: 50
     type: mass
 
 wooden_barrel:
@@ -91,12 +107,20 @@ wooden_barrel:
   channels: null
   properties:
     hitbox:
-      offset:
-        x: 2
-        y: 0
-      size:
-        w: 24
-        h: 15
+      sprite:
+        offset:
+          x: 2
+          y: 0
+        size:
+          w: 24
+          h: 15
+      strut:
+        offset:
+          x: 2
+          y: 0
+        size:
+          w: 24
+          h: 30
     type: mass
   
 # GATES

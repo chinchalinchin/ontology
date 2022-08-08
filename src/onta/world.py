@@ -274,6 +274,17 @@ class World():
     self.sprite_dimensions = (  w, h )
     ```
     """
+    world_bounds = None
+    """
+    ```python
+    self.world_bounds = (
+        left_bound, # tuple (x,y,w,h)
+        top_bound, # tuple (x,y,w,h)
+        right_bound, # tuple (x,y,w,h)
+        down_bound # tuple(x,y,w,h)
+    )
+    ```
+    """
     layer = None
     """
     self.layer = 'one' # str
@@ -411,6 +422,34 @@ class World():
 
                     for i, set_conf in enumerate(set_conf.sets):
 
+                        if props.get(set_key).get('type') == 'mass':
+                            set_sprite_hitbox = collisions.calculate_set_hitbox(
+                                props.get(set_key).hitbox.sprite,
+                                set_conf,
+                                self.tile_dimensions
+                            )
+                            set_strut_hitbox = collisions.calculate_set_hitbox(
+                                props.get(set_key).hitbox.strut,
+                                set_conf,
+                                self.tile_dimensions
+                            )
+                            setattr(
+                                self.platesets.get(layer).get(set_key).sets[i],
+                                'hitbox',
+                                munch.Munch({})
+                            )
+                            setattr(
+                                self.platesets.get(layer).get(set_key).sets[i].hitbox,
+                                'sprite',
+                                set_sprite_hitbox
+                            )
+                            setattr(
+                                self.platesets.get(layer).get(set_key).sets[i].hitbox,
+                                'strut',
+                                set_strut_hitbox
+                            )
+                            continue
+
                         set_hitbox = collisions.calculate_set_hitbox(
                             props.get(set_key).hitbox,
                             set_conf,
@@ -429,15 +468,15 @@ class World():
                             set_hitbox
                         )
 
-            world_bounds = [
+            # TODO : world bounds need to be treated separated
+            self.world_bounds = [
                 ( 0, 0, self.dimensions[0], 1 ),
                 ( 0, 0, 1, self.dimensions[1] ),
                 ( self.dimensions[0], 0, 1, self.dimensions[1] ),
                 ( 0, self.dimensions[1], self.dimensions[0], 1 )
             ]
 
-            self.strutsets.get(layer).hitboxes = world_bounds + \
-                self._strut_hitboxes(layer)
+            self.strutsets.get(layer).hitboxes = self._strut_hitboxes(layer)
             self.platesets.get(layer).doors = self.get_typed_platesets(
                 layer, 
                 'door'
@@ -848,7 +887,11 @@ class World():
             # mass collision detection
             masses = self.platesets.get(self.layer).masses.copy()
             for mass in masses:
-                collision_box = collisions.detect_collision(mass.key, mass.hitbox, [sprite_hitbox])
+                collision_box = collisions.detect_collision(
+                    mass.key, 
+                    mass.hitbox.sprite, 
+                    [sprite_hitbox]
+                )
                 if collision_box:
                     plate = self.get_plate(self.layer, mass.key, mass.index)
                     collisions.recoil_plate(
@@ -859,10 +902,19 @@ class World():
                         collision_box
                     )
                     setattr(
-                        plate,
-                        'hitbox',
+                        plate.hitbox,
+                        'sprite',
                         collisions.calculate_set_hitbox(
-                            self.plate_properties.get(mass.key).hitbox,
+                            self.plate_properties.get(mass.key).hitbox.sprite,
+                            plate,
+                            self.tile_dimensions
+                        )
+                    )
+                    setattr(
+                        plate.hitbox,
+                        'strut',
+                        collisions.calculate_set_hitbox(
+                            self.plate_properties.get(mass.key).hitbox.strut,
                             plate,
                             self.tile_dimensions
                         )
@@ -873,7 +925,9 @@ class World():
                     )
 
         for layer in self.layers:
-            mass_hitboxes = [ mass.hitbox for mass in self.platesets.get(layer).masses ]
+            mass_hitboxes = [ 
+                mass.hitbox.strut for mass in self.platesets.get(layer).masses 
+            ]
             pressures = self.platesets.get(layer).pressures
 
             if not (mass_hitboxes and pressures):
