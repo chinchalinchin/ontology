@@ -1037,6 +1037,11 @@ class World():
                 [container.hitbox for container in self.platesets.get(
                     layer_key).containers]
             )
+            collision_sets.append([ 
+                gate.hitbox
+                for gate in self.get_typed_platesets(layer_key, 'gate')
+                if not self.switch_map.get(layer_key).get(gate.key).get(str(gate.index))
+            ])
             # doesn't add pressures, gates, doors or masses, as they are handled separately
         return collision_sets
 
@@ -1132,13 +1137,15 @@ class World():
         self,
         layer,
         pressure
-    ):
+    ) -> Union[munch.Munch, None]:
         connected_gate = [
             munch.Munch({'key': gate.key, 'index': gate.index})
             for gate in self.get_typed_platesets(layer, 'gate')
             if gate.content == pressure.content 
         ]
-        return connected_gate.pop()
+        if connected_gate:
+            return connected_gate.pop()
+        return None
 
     def _sprite_desires(
         self,

@@ -139,7 +139,13 @@ castle_gate:
     h: 64
   channels: null
   properties:
-    hitbox: null
+    hitbox: 
+      offset:
+        x: 0
+        y: 0
+      size:
+        w: 64
+        h: 34
     type: gate
 
 # CONTAINERS
