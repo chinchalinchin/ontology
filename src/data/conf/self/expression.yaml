@@ -1,0 +1,71 @@
+anger:
+  path: expressionsheet.png
+  position:
+    x: 18
+    y: 0
+  size:
+    w: 16
+    h: 16
+
+confusion:
+  path: expressionsheet.png
+  position:
+    x: 54
+    y: 0
+  size:
+    w: 16
+    h: 16
+
+joy:
+  path: expressionsheet.png
+  position:
+    x: 36
+    y: 18
+  size:
+    w: 16
+    h: 16
+
+sadness:
+  path: expressionsheet.png
+  position: 
+    x: 0
+    y: 38
+  size:
+    w: 16
+    h: 16
+
+surprise:
+  path: expressionsheet.png
+  position:
+    x: 18
+    y: 36
+  size: 
+    w: 16
+    h: 16
+
+love:
+  path: expressionsheet.png
+  position:
+    x: 0
+    y: 56
+  size:
+    w: 9
+    h: 8
+
+hate:
+  path: expressionsheet.png
+  position:
+    x: 0
+    y: 0
+  size:
+    w: 15
+    h: 16
+  
+help:
+  path: expressionsheet.png
+  position:
+    x: 36
+    y: 0
+  size:
+    w: 16
+    h: 16

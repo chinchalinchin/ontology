@@ -33,7 +33,9 @@ log = logger.Logger('onta.view', settings.LOG_LEVEL)
 # GUI Handlers
 
 def get_app() -> QtWidgets.QApplication:
-    return QtWidgets.QApplication([])    
+    app = QtWidgets.QApplication([])
+    app.installEventFilter(KeyEater())
+    return app
 
 
 def quit(app: QtWidgets.QApplication) -> None:
@@ -68,6 +70,25 @@ class Debugger(QtCore.QObject):
     def _execute(self):
         threading.Timer(0.2, self._execute).start()
         self.update.emit(True)
+
+
+class KeyEater(QtCore.QObject):
+    def eventFilter(self, obj, event):
+        print('eating key')
+        return True
+
+class NoKeyWidget(QtWidgets.QWidget):
+
+    def __init__(self):
+        super().__init__()
+        self.installEventFilter(self)
+
+    # TODO: doesn't eat keys...tabs still tab when player is walking...
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.KeyPress:
+            return True
+        return False
+
 
 class Renderer():
     """_summary_
@@ -110,34 +131,6 @@ class Renderer():
                 ordered_dict[render_map[order]] = unordered_dict[render_map[order]]
         
         return ordered_dict
-
-
-    @staticmethod
-    def generate_debug_template(
-        game_world: world.World,
-        user_input: munch.Munch
-    ):
-        return f"""
-            <h1>Game</h1>
-            <h2>World State</h2>
-            <h3>Player State</h3>
-            <ul>
-                <li>player.frame: {game_world.hero.frame}</li>
-                <li>player.intent: {game_world.hero.intent}</li>
-                <li>player.stature.intention: {game_world.hero.stature.intention}</li>
-                <li>player.stature.action: {game_world.hero.stature.action}</li>
-                <li>player.stature.direction: {game_world.hero.stature.direction}</li>
-                <li>player.stature.expression: {game_world.hero.stature.expression}</li>
-            </ul>
-            <h2>Controller</h2>
-            <h3>Action</h3>
-            <ul>
-                <li>controls.slash: {user_input.slash}</li>
-                <li>controls.thrust: {user_input.thrust}</li>
-                <li>controls.shoot: {user_input.shoot}</li>
-                <li>controls.cast: {user_input.cast}</li>
-            </ul>
-        """
 
 
     def __init__(
@@ -617,9 +610,36 @@ class Renderer():
         self,
         view_widget: QtWidgets.QWidget
     ):
+        """Use the current value for `self.debug_templates` to populate the debug widget. This method is slotted into the debug widget when it is instaniated in `self.get_view`.
+
+        :param view_widget: The widget upon which the world frame widget and the debug widget are being rendered. 
+        :type view_widget: QtWidgets.QWidget
+        
+        .. note::
+            View hierarchy
+            world_view -> vbox layout
+                qlabel
+                    pixmap
+            debug_view -> hbox layout
+                qlabel
+                qlabel
+                qgroupbox -> vbox layout
+                    qradio
+                    qradio
+        """
+        # view:
+        #   world_view
+        #       -> qlabel 
+        #           -> pixmap
+        #   debug_view 
+        #       -> hbox layout
+        #           -> qlabel
+        #           -> qlabel
+        #           -> QGroupBox  
         debug_layout = view_widget.layout().itemAt(1).widget().layout()
         debug_layout.itemAt(0).widget().setText(self.debug_templates.player_state)
         debug_layout.itemAt(1).widget().setText(self.debug_templates.control_state)
+        debug_layout.itemAt(2).widget().setText(self.debug_templates.world_state)
 
 
     def render(
@@ -686,30 +706,29 @@ class Renderer():
     def get_view(
         self
     ) -> QtWidgets.QWidget:
-        view_widget, view_layout, view_frame = \
-                QtWidgets.QWidget(), QtWidgets.QVBoxLayout(),  QtWidgets.QLabel()
+        view_widget, view_layout = \
+                NoKeyWidget(), QtWidgets.QVBoxLayout()
+        view_frame = QtWidgets.QLabel(view_widget)
         view_widget.resize(*self.player_device.dimensions)
         view_frame.setSizePolicy(QtWidgets.QSizePolicy(
                 QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
         view_layout.addWidget(view_frame)
 
         if self.debug:
-            debug_frame = QtWidgets.QWidget()
+            debug_frame = QtWidgets.QWidget(view_widget)
             debug_layout = QtWidgets.QHBoxLayout()
+            debug_layout.addWidget(QtWidgets.QLabel())
             debug_layout.addWidget(QtWidgets.QLabel())
             debug_layout.addWidget(QtWidgets.QLabel())
             debug_frame.setLayout(debug_layout)
             debug_frame.setSizePolicy(QtWidgets.QSizePolicy(
                 QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
             view_layout.addWidget(debug_frame)
-
             self.debug_worker = Debugger()
             self.debug_worker.update.connect(
                 (lambda i: lambda: self._update_debug_view(i))(view_widget)
             )
             self.debug_worker.start()
-
-            # grab view, connect worker to debug that constantly rerender template, have template get updated in main loop
 
         view_widget.setLayout(view_layout)
         return position(view_widget)
@@ -762,6 +781,11 @@ class Renderer():
                 self.debug_templates, 
                 'control_state',
                 debug.generate_input_template(user_input)
+            )
+            setattr(
+                self.debug_templates,
+                'world_state',
+                debug.generate_world_template(game_world)
             )
 
         return view_widget

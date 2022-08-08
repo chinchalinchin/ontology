@@ -261,10 +261,10 @@ avatars:
     coin:
       path: coin.png
       position:
-        x: 135
+        x: 0
         y: 0
       size:
-        w: 18
+        w: 19
         h: 18
     key: 
       path: equipment.png
@@ -355,45 +355,3 @@ avatars:
       size:
         w: 12
         h: 14
-  bottles:
-    bottle:
-      path:
-      position:
-        x:
-        y:
-      size:
-        w:
-        h:
-    contents:
-      green:
-        path:
-        position:
-          x:
-          y:
-        size:
-          w:
-          h:
-      blue:
-        path:
-        position:
-          x:
-          y:
-        size:
-          w:
-          h:
-      purple:
-        path:
-        position:
-          x:
-          y:
-        size:
-          w:
-          h:
-      orange:
-        path:
-        position:
-          x:
-          y:
-        size:
-          w:
-          h:
