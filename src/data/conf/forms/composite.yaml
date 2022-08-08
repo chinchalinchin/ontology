@@ -140,6 +140,72 @@ castle:
             x: 159
             y: -32
           cover: true
+    castle_walkway_left:
+      sets:
+        - start:
+            units: absolute
+            x: -100
+            y: -269
+          cover: false
+        - start:
+            units: absolute
+            x: -100
+            y: -230
+          cover: false
+        - start:
+            units: absolute
+            x: -100
+            y: -191
+          cover: false
+    castle_walkway_right:
+      sets:
+        - start:
+            units: absolute
+            x: 331
+            y: -269
+          cover: false
+        - start:
+            units: absolute
+            x: 331
+            y: -230
+          cover: false
+        - start:
+            units: absolute
+            x: 331
+            y: -191
+          cover: false
+    castle_walkway_vertical_safety:
+      sets:
+        - start:
+            units: absolute
+            x: -109
+            y: -269
+          cover: false
+        - start:
+            units: absolute
+            x: -109
+            y: -230
+          cover: false
+        - start:
+            units: absolute
+            x: -109
+            y: -191
+          cover: false
+        - start:
+            units: absolute
+            x: 349
+            y: -269
+          cover: false
+        - start:
+            units: absolute
+            x: 349
+            y: -230
+          cover: false
+        - start:
+            units: absolute
+            x: 349
+            y: -191
+          cover: false
     castle_door_outlet:
       sets:
         - start:

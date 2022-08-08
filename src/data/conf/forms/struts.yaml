@@ -1,5 +1,77 @@
 # HOUSE STRUTS
 
+hitbox_small: # patch up any holes in the struts...
+  size:
+    w: 32
+    h: 32
+  channels:
+    r: 0
+    g: 0
+    b: 0
+    a: 0
+  properties:
+    hitbox:
+      offset:
+        x: 0
+        y: 0
+      size:
+        w: 32
+        h: 32
+
+hitbox_large: # patch up any holes in the struts...
+  size:
+    w: 64
+    h: 64
+  channels:
+    r: 0
+    g: 0
+    b: 0
+    a: 0
+  properties:
+    hitbox:
+      offset:
+        x: 0
+        y: 0
+      size:
+        w: 64
+        h: 64
+
+hitbox_vertical: # patch up any holes in the struts...
+  size:
+    w: 32
+    h: 64
+  channels:
+    r: 0
+    g: 0
+    b: 0
+    a: 0
+  properties:
+    hitbox:
+      offset:
+        x: 0
+        y: 0
+      size:
+        w: 32
+        h: 64
+
+hitbox_horizontal: # patch up any holes in the struts...
+  size:
+    w: 64
+    h: 32
+  channels:
+    r: 0
+    g: 0
+    b: 0
+    a: 0
+  properties:
+    hitbox:
+      offset:
+        x: 0
+        y: 0
+      size:
+        w: 64
+        h: 32
+
 house_exterior_wall:
   path: house.png
   position:
@@ -205,7 +277,49 @@ castle_turret_top:
       size:
         w: 64
         h: 10
-  
+
+castle_walkway_left:
+  path: castle.png
+  position:
+    x: 184
+    y: 375
+  size:
+    w: 24
+    h: 57
+  channels: null
+  properties:
+    hitbox: null
+
+castle_walkway_right:
+  path: castle.png
+  position:
+    x: 208
+    y: 375
+  size:
+    w: 24
+    h: 57
+  channels: null
+  properties:
+    hitbox: null
+
+castle_walkway_vertical_safety:
+  path: castle.png
+  position:
+    x: 175
+    y: 375
+  size:
+    w: 9
+    h: 57
+  channels: null
+  properties:
+    hitbox: 
+      offset: 
+        x: 0
+        y: 0
+      size:
+        w: 9
+        h: 57
+
 castle_wall:
   path: castle.png
   position:
