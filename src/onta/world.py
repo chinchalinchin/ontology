@@ -649,7 +649,6 @@ class World():
                 self.sprite_properties.get(sprite_key),
                 self.platesets,
                 self.plate_properties,
-                self.layer,
                 self.tile_dimensions
             )
                 # recalculate plate meta after alteration
