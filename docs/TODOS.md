@@ -5,12 +5,9 @@
 
 - if sprite aware: train model: if iteration == learning_rate or something, then apply prediction
 
-- Make Conf and State wrapper classes singletons (so conf is not loaded over and over again)
-
 - Every sprite has a sell interaction with whatever is in their bag or belt.
 
 - Special entity type: merchant. Merchant acts as an interface between sprites and "economy". 
-
 
 UPDATE: REPLACE intents with desires
     
@@ -76,14 +73,9 @@ THAT PREVIOUS ONE FIRST
 
 - make a sheet of all the singleton objects in the avatars folder. edit and crop nymph sheets to be same size, i.e. rows and columns, not necessarily dimensions, although dimensions would be nice.
 
-
 - conf directory is parameterized, parameterize asset directory too. will probably require wrapping in object.
 
 - idea: keep the previous world state in read only variable to be able to compare when filtering intents, so sprites "remember".
-
-- todo: should initialize common calculations in some sort of cache. like the distance from (0,0) to (world_h, world_w), cos(45), sin(45), etc.
-
-- world bounds have problems with new collision detection. will need to treat separately.
 
 - discovery sound when pressure plate is pressed and gate opens somewhere...
 

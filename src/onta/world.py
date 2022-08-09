@@ -231,7 +231,8 @@ class World():
                 ( 0, self.dimensions[1], self.dimensions[0], 1 )
             ]
 
-            self.strutsets.get(layer).hitboxes = self._strut_hitboxes(layer)
+            self.strutsets.get(layer).hitboxes = self._strut_hitboxes(layer) + \
+                self.world_bounds
             self.platesets.get(layer).doors = self.get_typed_platesets(
                 layer, 
                 'door'
