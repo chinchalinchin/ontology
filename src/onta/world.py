@@ -447,9 +447,10 @@ class World():
 
             elif sprite.stature.intention == 'combat':
                 impulse.combat(
+                    sprite_key,
                     sprite,
-                    self.sprite_properties.get(sprite_key),
-                    self.apparel_stature
+                    self.apparel_stature,
+                    self.get_sprites(sprite.layer)
                 )
                 animate = True
 
@@ -460,7 +461,7 @@ class World():
                 )
 
             elif sprite.stature.intention == 'operate':
-                # well, what differentiates using and operaitng then?
+                # well, what differentiates using and interacting then?
                 impulse.operate(
                     sprite,
                     self.sprite_properties.get(sprite_key),
@@ -474,7 +475,6 @@ class World():
                 if sprite_key == 'hero' and self.hero.layer != self.layer:
                     self.layer = self.hero.layer
 
-            #if sprite.stature.action in self.sprite_stature.decomposition.animate:
             if animate:
                 sprite.frame += 1
 
@@ -486,7 +486,6 @@ class World():
                     sprite.frame = 0
                     if sprite.stature.action in self.sprite_stature.decomposition.blocking:
                         sprite.stature.action = 'walk'
-                    # if sprite was in blocking state, set to walk_direction
 
 
     def _reorient(
@@ -645,44 +644,19 @@ class World():
                                 setattr(collision_map.get(nest_key), key, True)
 
             # mass collision detection
-            masses = self.platesets.get(self.layer).masses.copy()
-            for mass in masses:
-                collision_box = collisions.detect_collision(
-                    mass.key, 
-                    mass.hitbox.sprite, 
-                    [sprite_hitbox]
-                )
-                if collision_box:
-                    plate = self.get_plate(self.layer, mass.key, mass.index)
-                    collisions.recoil_plate(
-                        plate, 
-                        sprite,
-                        self.sprite_dimensions,
-                        self.sprite_properties.get(sprite_key),
-                        collision_box
-                    )
-                    setattr(
-                        plate.hitbox,
-                        'sprite',
-                        collisions.calculate_set_hitbox(
-                            self.plate_properties.get(mass.key).hitbox.sprite,
-                            plate,
-                            self.tile_dimensions
-                        )
-                    )
-                    setattr(
-                        plate.hitbox,
-                        'strut',
-                        collisions.calculate_set_hitbox(
-                            self.plate_properties.get(mass.key).hitbox.strut,
-                            plate,
-                            self.tile_dimensions
-                        )
-                    )
-                    self.platesets.get(self.layer).masses = self.get_typed_platesets(
-                        self.layer,
-                        'mass'
-                    )
+            collisions.detect_layer_sprite_to_mass_collision(
+                sprite,
+                self.sprite_properties.get(sprite_key),
+                self.platesets,
+                self.plate_properties,
+                self.layer,
+                self.tile_dimensions
+            )
+                # recalculate plate meta after alteration
+            self.platesets.get(sprite.layer).masses = self.get_typed_platesets(
+                sprite.layer,
+                'mass'
+            )
 
         for layer in self.layers:
             mass_hitboxes = [ 
@@ -693,51 +667,12 @@ class World():
             if not (mass_hitboxes and pressures):
                 continue
 
-            for pressure in pressures:
-                collision_box = collisions.detect_collision(
-                    pressure.key, 
-                    pressure.hitbox, 
-                    mass_hitboxes
-                )
-                if collision_box and \
-                    not self.switch_map.get(layer).get(pressure.key).get(str(pressure.index)):
-                    log.debug(f'Switching pressure plate {pressure.key} on', '_physics')
-                    setattr(
-                        self.switch_map.get(layer).get(pressure.key),
-                        str(pressure.index),
-                        True
-                    )
-                    connected_gate = self._gate_connection(
-                        layer,
-                        pressure
-                    )
-                    if not connected_gate:
-                        continue
-                    setattr(
-                        self.switch_map.get(layer).get(connected_gate.key),
-                        str(connected_gate.index),
-                        True
-                    )
-
-                elif not collision_box and \
-                    self.switch_map.get(layer).get(pressure.key).get(str(pressure.index)):
-                    log.debug(f'Switching pressure plate {pressure.key} off', '_physics')
-                    setattr(
-                        self.switch_map.get(layer).get(pressure.key),
-                        str(pressure.index),
-                        False
-                    )
-                    connected_gate = self._gate_connection(
-                        layer,
-                        pressure
-                    )
-                    if not connected_gate:
-                        continue
-                    setattr(
-                        self.switch_map.get(layer).get(connected_gate.key),
-                        str(connected_gate.index),
-                        False
-                    )
+            collisions.detect_layer_pressure(
+                mass_hitboxes,
+                pressures,
+                self.switch_map.get(layer),
+                self.get_gates()
+            )
     
                     
         # TODO: plate-to-plate collisions, plate-to-strut collisions
@@ -903,6 +838,7 @@ class World():
             return connected_gate.pop()
         return None
 
+
     def _sprite_desires(
         self,
         sprite: munch.Munch
@@ -1064,6 +1000,16 @@ class World():
         """
         return self.platesets.get(layer).get(plate_key).sets[index]
 
+
+    def get_gates(
+        self
+    ) -> list:
+        gates = []
+        for nested_layer in self.layers:
+            gates = gates + self.get_typed_platesets(nested_layer, 'gate')
+        return gates
+
+
     def get_sprites(
         self,
         layer: str = None
@@ -1098,6 +1044,7 @@ class World():
             if val.layer == layer
         })
 
+
     def get_sprite(
         self,
         sprite_key: str
@@ -1107,6 +1054,7 @@ class World():
         elif sprite_key in list(self.npcs.keys()):
             return self.npcs.get(sprite_key)
         return None
+
 
     def save(
         self,
@@ -1119,6 +1067,7 @@ class World():
             'npcs': self.npcs,
         })
         state_ao.save_state('dynamic', dynamic_conf)
+
 
     def iterate(
         self,

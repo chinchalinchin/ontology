@@ -306,7 +306,7 @@ equipment:
     type: blunt
     properties:
       power:
-      attackbox: 
+      attackboxes: 
         up:
           - frame: 3
             offset:

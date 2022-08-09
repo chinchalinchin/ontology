@@ -12,7 +12,7 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.world.instinct.impulses', settings.LOG_LEVEL)
 
-
+# NOTE: these methdods alter position, but not the sprite stature.
 def locate_desire(
     target, 
     sprites, 
@@ -77,9 +77,10 @@ def move(
 
 
 def combat(
+    sprite_key,
     sprite,
-    sprite_props,
-    apparel_stature
+    apparel_stature,
+    target_sprites
 ) -> None: 
     # will probably need more input here for other sprites, combat attack boxes, etc...
     if any(action in sprite.stature.action for action in ['cast', 'shoot', 'slash', 'thrust']):
@@ -94,16 +95,25 @@ def combat(
                 apparel_stature.equipment.get(equip_key).properties.ammo.keys()
             )
             if sprite.packs.belt in ammo_types:
-                attack_box = collisions.calculate_attackbox(
+                # will need to somehow save when the arrow was fired, to calculate distance
+                # world.projectiles = [{ key: key, index: index, TTL: int, speed: int}]
+                #   where every iteration TTL decrements by one.
+                attack_box = collisions.calculate_projectile_attackbox(
                     sprite,
                     apparel_stature.equipment.get(equip_key).properties.ammo.get(
                         sprite.packs.belt).attackbox
                 )
         elif apparel_stature.equipment.get(equip_key).type == 'blunt':
-            attack_box = collisions.calculate_attackbox(
+            attack_box = collisions.calculate_blunt_attackbox(
                 sprite,
                 apparel_stature.equipment.get(equip_key).properties.attackboxes
             )
+            if attack_box:
+                for target_key, target in target_sprites.items():
+                    if target_key == sprite_key:
+                        continue
+                    
+            return
 
 def express(
     sprite,

@@ -92,11 +92,50 @@ def calculate_sprite_hitbox(
         return calc_hitbox
 
 
-def calculate_attackbox(
+def calculate_blunt_attackbox(
     sprite: munch.Munch,
-    attack_props: munch.Munch
+    directional_atkboxes: munch.Munch
 ) -> tuple:
-    # TODO:
+    """Calculate the attack hitbox for an _Equpiment Apparel_ of type `blunt` based on the direction of the provided _Sprite_.
+
+    :param sprite: _description_
+    :type sprite: munch.Munch
+    :param attack_props: _description_
+    :type attack_props: munch.Munch
+    :return: _description_
+    :rtype: tuple
+    """
+    atkbox_frames = [ 
+        directed_box 
+        for directed_box
+        in directional_atkboxes.get(sprite.stature.direction)
+        if directed_box.frame == sprite.frame
+    ]
+    if atkbox_frames:
+        atkbox =atkbox_frames.pop()
+        return  (
+            sprite.position.x + atkbox.offset.x,
+            sprite.position.y + atkbox.offset.y,
+            atkbox.size.w,
+            atkbox.size.h
+        )
+    return None
+
+
+def calculate_projectile_attackbox(
+    sprite: munch.Munch,
+    directional_atkboxes: munch.Munch
+) -> tuple:
+    """Calculate the attack hitbox for an _Equpiment Apparel_ of type `blunt` based on the direction of the provided _Sprite_.
+
+    :param sprite: _description_
+    :type sprite: munch.Munch
+    :param attack_props: _description_
+    :type attack_props: munch.Munch
+    :return: _description_
+    :rtype: tuple
+    """
+    atkboxes = directional_atkboxes.get(sprite.stature.direction)
     pass
 
 
@@ -245,9 +284,7 @@ def recoil_sprite(
 def recoil_plate(
     plate: munch.Munch, 
     sprite: munch.Munch, 
-    sprite_dim: tuple,
     sprite_props: munch.Munch, 
-    collision_box: tuple
 ) -> None:
     """_summary_
 
@@ -268,3 +305,114 @@ def recoil_plate(
         plate.start.x += sprite_props.speed.collide
     else:
         plate.start.y -= sprite_props.speed.collide
+
+
+def detect_layer_pressure(
+    hitbox,
+    layer_pressures, # self.platesets.get(layer).pressures
+    layer_switch_map, #self.switch_map.get(layer)
+    gates, # self.get_typed_platesets(layer, 'gate') ## HOWEVER, this would presume gates 
+    # can only be connected to plates on same layer. needs gates from ALL layers.
+) -> None:
+    for pressure in layer_pressures:
+        if isinstance(hitbox, tuple):
+            collision_box = detect_collision(
+                pressure.key, 
+                pressure.hitbox, 
+                [ hitbox ]
+            )
+        elif isinstance(hitbox, list):
+            collision_box = detect_collision(
+                pressure.key, 
+                pressure.hitbox, 
+                hitbox
+            )
+        else:
+            raise ValueError('Hitbox is not of type tuple or list')
+
+        if collision_box and \
+            not layer_switch_map.get(pressure.key).get(str(pressure.index)):
+            log.debug(f'Switching pressure plate {pressure.key} on', '_physics')
+            setattr(
+                layer_switch_map.get(pressure.key),
+                str(pressure.index),
+                True
+            )
+            connected_gate = [
+                munch.Munch({'key': gate.key, 'index': gate.index})
+                for gate in gates
+                if gate.content == pressure.content 
+            ]
+            if not connected_gate:
+                continue
+            connection = connected_gate.pop()
+            setattr(
+                layer_switch_map.get(connection.key),
+                str(connection.index),
+                True
+            )
+
+        elif not collision_box and \
+            layer_switch_map.get(pressure.key).get(str(pressure.index)):
+            log.debug(f'Switching pressure plate {pressure.key} off', '_physics')
+            setattr(
+                layer_switch_map.get(pressure.key),
+                str(pressure.index),
+                False
+            )
+            connected_gate = [
+                munch.Munch({'key': gate.key, 'index': gate.index})
+                for gate in gates
+                if gate.content == pressure.content 
+            ]
+            if not connected_gate:
+                continue
+            connection = connected_gate.pop()
+            setattr(
+                layer_switch_map.get(connection.key),
+                str(connection.index),
+                False
+            )
+
+
+def detect_layer_sprite_to_mass_collision(
+
+    sprite,
+    sprite_props, #self.sprite_properties.get(sprite_key)
+    platesets, # self.platesets
+    plate_props, # self.plate_properties
+    tile_dimensions,
+) -> None:
+    sprite_hitbox = calculate_sprite_hitbox(sprite, 'sprite', sprite_props)
+    masses = platesets.get(sprite.layer).masses.copy()
+    for mass in masses:
+        collision_box = detect_collision(
+            mass.key, 
+            mass.hitbox.sprite, 
+            [sprite_hitbox]
+        )
+        if collision_box:
+            plate = platesets.get(sprite.layer).get(mass.key).sets[mass.index]
+            recoil_plate(
+                plate, 
+                sprite,
+                sprite_props,
+            )
+            setattr(
+                plate.hitbox,
+                'sprite',
+                calculate_set_hitbox(
+                    plate_props.get(mass.key).hitbox.sprite,
+                    plate,
+                    tile_dimensions
+                )
+            )
+            setattr(
+                plate.hitbox,
+                'strut',
+                calculate_set_hitbox(
+                    plate_props.get(mass.key).hitbox.strut,
+                    plate,
+                    tile_dimensions
+                )
+            )
