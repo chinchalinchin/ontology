@@ -161,43 +161,85 @@ def recoil_sprite(
     )
     sprite_center = calculator.center(sprite_box)
     collision_center = calculator.center(collision_box)
+    speed = sprite_props.speed.collide
 
     angle = calculator.angle_relative_to_center(sprite_center, collision_center)
     proj = calculator.projection()
 
-    # add 22.5
+
+    if sprite_center[0] < collision_box[0]:
+        if sprite_center[1] > collision_box[1]+collision_box[3]:
+            # from below and the left
+            sprite.position.x -= proj[0] * speed
+            sprite.position.y += proj[1] * speed
+            return
+        elif sprite_center[1] < collision_box[1]:
+            # from above and the left
+            sprite.position.x -= proj[0] * speed
+            sprite.position.y -= proj[1] * speed
+            return
+        # from the left
+        sprite.position.x -= speed
+        return
+
+    elif sprite_center[0] > collision_box[0] + collision_box[2]:
+        if sprite_center[1] > collision_box[1]+collision_box[3]:
+            # from below and the right
+            sprite.position.x += proj[0] * speed
+            sprite.position.y += proj[1] * speed
+            return
+        elif sprite_center[1] < collision_box[1]:
+            # from above and the right
+            sprite.position.x += proj[0] * speed
+            sprite.position.y -= proj[1] * speed
+            return
+        # from the right
+        sprite.position.x += proj[0] * speed
+        return
+
+    else: # the center
+        if sprite_center[1] > collision_box[1]+collision_box[3]:
+            # from below
+            sprite.position.y += proj[1] * speed
+            return
+        # from above
+        sprite.position.y -= proj[1] * speed
+        return
+
+
+    # ANGLE BASED DETECTION
     # think about what happens if sprite collides with large object.
     # large object eclipses sprite, and causes sprite to move in direction 
     # that doesn't look right. the angle is not the way to do this...
     # has to be done with coordinates, case by case.
     
-    if angle >= 337.5 or (angle >= 0 and angle<22.5):
-        sprite.position.x += sprite_props.speed.collide
+    # if angle >= 337.5 or (angle >= 0 and angle<22.5):
+    #     sprite.position.x += sprite_props.speed.collide
 
-    elif angle >= 22.5 and angle < 67.5:
-        sprite.position.x += sprite_props.speed.collide * proj[0]
-        sprite.position.y += sprite_props.speed.collide * proj[1]
+    # elif angle >= 22.5 and angle < 67.5:
+    #     sprite.position.x += sprite_props.speed.collide * proj[0]
+    #     sprite.position.y += sprite_props.speed.collide * proj[1]
 
-    elif angle >= 67.5 and angle < 112.5:
-        sprite.position.y += sprite_props.speed.collide
+    # elif angle >= 67.5 and angle < 112.5:
+    #     sprite.position.y += sprite_props.speed.collide
 
-    elif angle >= 112.5 and angle < 157.5:
-        sprite.position.x -= sprite_props.speed.collide * proj[0]
-        sprite.position.y += sprite_props.speed.collide * proj[1]
+    # elif angle >= 112.5 and angle < 157.5:
+    #     sprite.position.x -= sprite_props.speed.collide * proj[0]
+    #     sprite.position.y += sprite_props.speed.collide * proj[1]
 
-    elif angle >= 157.5 and angle < 202.5:
-        sprite.position.x -= sprite_props.speed.collide
+    # elif angle >= 157.5 and angle < 202.5:
+    #     sprite.position.x -= sprite_props.speed.collide
 
-    elif angle >= 202.5 and angle < 247.5:
-        sprite.position.x -= sprite_props.speed.collide * proj[0]
-        sprite.position.y -= sprite_props.speed.collide * proj[1]
+    # elif angle >= 202.5 and angle < 247.5:
+    #     sprite.position.x -= sprite_props.speed.collide * proj[0]
+    #     sprite.position.y -= sprite_props.speed.collide * proj[1]
 
-    elif angle >= 247.5 and angle < 292.5:
-        sprite.position.y -= sprite_props.speed.collide
+    # elif angle >= 247.5 and angle < 292.5:
+    #     sprite.position.y -= sprite_props.speed.collide
 
-    elif angle >= 292.5 and angle < 337.5:
-        sprite.position.y -= sprite_props.speed.collide * proj[0]
-        sprite.position.x += sprite_props.speed.collide * proj[1]
+    # elif angle >= 292.5 and angle < 337.5:
+    #     sprite.position.y -= sprite_props.speed.collide * proj[0]
+    #     sprite.position.x += sprite_props.speed.collide * proj[1]
 
 
 def recoil_plate(

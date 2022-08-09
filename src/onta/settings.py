@@ -110,7 +110,7 @@ Color channels for a blank screen for the given rendering mode. If `IMG_MODE == 
 see [PIL docs](https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes) for more information.
 """
 
-FPS=30
+FPS=26
 """Framerate for the rendering engine"""
 
 # Application Configuration
