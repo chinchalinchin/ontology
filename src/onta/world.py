@@ -576,6 +576,7 @@ class World():
             else:
                 for hitbox_key in ['sprite', 'strut']:
 
+                    ## CAN HERE...(see below)
                     exclusions = [sprite_key]
                     for key, val in collision_map.get(sprite_key).items():
                         if val:
@@ -642,6 +643,7 @@ class World():
                             for nest_key in val.keys():
                                 setattr(collision_map.get(key), nest_key, True)
                                 setattr(collision_map.get(nest_key), key, True)
+                    ## ...TO HERE BE MODULARIZED INTO COLLISION MODULE?
 
             # mass collision detection
             collisions.detect_layer_sprite_to_mass_collision(
@@ -682,6 +684,7 @@ class World():
             #         -> second_mass_key -> second_mass_index
 
 
+    # TODO: candidate for collisions module
     def _collision_sets_relative_to(
         self,
         sprite_key: str,
@@ -821,21 +824,6 @@ class World():
                     )
                 )
         return calculated
-
-
-    def _gate_connection(
-        self,
-        layer,
-        pressure
-    ) -> Union[munch.Munch, None]:
-        connected_gate = [
-            munch.Munch({'key': gate.key, 'index': gate.index})
-            for gate in self.get_typed_platesets(layer, 'gate')
-            if gate.content == pressure.content 
-        ]
-        if connected_gate:
-            return connected_gate.pop()
-        return None
 
 
     def _sprite_desires(
@@ -1032,6 +1020,7 @@ class World():
         else:
             spriteset.update(self.get_npcs(layer))
         return spriteset
+
 
     def get_npcs(
         self,
