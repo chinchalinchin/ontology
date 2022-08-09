@@ -44,275 +44,30 @@ class World():
     """
     """
 
+    ## See /docs/DATA_STRUCTURES.md for more information on 
+    ##  the following fields.
     # CONFIGURATION FIELDS
     composite_conf = munch.Munch({})
-    """
-    ```python
-    self.composite_conf = munch.Munch({
-
-    })
-    ```
-    """
     sprite_stature = munch.Munch({})
-    """
-    Holds sprite stature information.
-
-    ```python
-    self.sprite_stature = munch.Munch({
-        'sprite_1': {
-            'state_1': state_1_frames, # int
-            'state_2': state_2_frames, # int
-            # ..
-        },
-    })
-    ```
-    """
     apparel_stature = munch.Munch({})
-    """
-    ```python
-    self.apparel_stature = munch.Munch({
-        'apparel_1': {
-            'animate_states': [
-                'state_1',
-                'state_2',
-                # ...
-            ]
-        },
-        # ...
-    })
-    ```
-    """
     plate_properties = munch.Munch({})
-    """
-    ```python
-    self.plate_properties = munch.Munch({
-
-    })
-    ```
-    """
     strut_properties = munch.Munch({})
-    """
-    Holds strut property configuration information
-    ```python
-    self.strut_properties = munch.Munch({
-        'strut_1': {
-            'hitbox_1': hitbox_dim, # tuple
-            # ...
-        }
-    })
-    ```
-    """
     sprite_properties = munch.Munch({})
-    """
-    ```python
-    self.sprite_properties = munch.Munch({
-        'sprite_1': {
-            'walk': walk, # int,
-            'run': run, # int,
-            'collide': collide, # int
-            'size': (w, h), # tuple
-            'hitbox': (offset_x, offset_y, width, height), # tuple
-            'blocking_states': [ block_state_1, block_state_2, ], # list(str)
-            # ...
-        },
-    })
-    ```
-    """
-    # FORM SET FIELDS
+    # STATE FIELDS
     tilesets = munch.Munch({})
-    """
-    ```python
-    self.tilesets = munch.Munch({
-        'layer_1': {
-            'tile_1': {
-                'sets': [
-                    { 
-                        'start': {
-                            'units': units, # bool
-                            'x': x, # int
-                            'y': y, # int
-                        },
-                        'cover': cover, # bool
-                    }
-                ]
-            },
-        }
-    })
-    ```
-    """
     strutsets = munch.Munch({})
-    """
-    ```python
-    self.strutsets = munch.Munch({
-        'layer_1': {
-            'strut_1': {
-                'sets': [
-                    { 
-                        'start': {
-                            'units': units, # bool
-                            'x': x, # int
-                            'y': y, # int
-                        },
-                        'cover': cover, # bool
-                        'hitbox': (hx, hy, hw, hh), # tuple(int, int, int, int)
-
-                    }
-                ]
-            },
-        },
-    })
-    ```
-    """
     platesets = munch.Munch({})
-    """
-    ```python
-    self.platesets = munch.Munch({
-        'layer_1': {
-            'strut_1': {
-                'sets': [
-                    { 
-                        'start': {
-                            'units': units, # bool
-                            'x': x, # int
-                            'y': y, # int
-                        },
-                        'hitbox': (hx, hy, hw, hh), # tuple(int, int, int, int)
-                        'cover': cover, # bool
-                        'content': content, # str
-                    }
-                ]
-            },
-        },
-    })
-    ```
-    """
     compositions = munch.Munch({})
-    """
-    ```python
-    self.compositions = munch.Munch({
-        'compose_1': {
-            'tiles': {
-                'tile_1': {
-                    'sets': [
-                        {
-                            'start': {
-                                'x': x, # int
-                                'y': y, # int
-                            },
-                            'cover': cover
-                        }
-                    ]
-                },
-                # ...
-            }
-            'struts': {
-                'strut_1':{
-                    'sets': [
-                        {
-                            'start': {
-                                'x': x, #int
-                                'y': y, #int
-                            },
-                            'cover': cover, # bool
-                        }
-                    ]
-                },
-                # ...
-            },
-            'plates': {
-                # ...
-            },
-        }
-    })
-    ```
-    """
-    # SPRITE SET FIELDS
     hero = munch.Munch({})
-    """
-    ```python
-    self.hero = munch.Munch({
-        'position': {
-            'x': x, # float,
-            'y': y, # float
-        },
-        'state': state, # str,
-        'frame': frame, # int
-    })
-    ```
-    """
     npcs = munch.Munch({})
-    """
-    ```python
-    self.npcs = munch.Munch({
-        'npc_1': {
-            'position: {
-                'x': x, # float
-                'y': y, # float
-            },
-            'state': state, # string
-            'frame': frame, # int
-        },
-    })
-    ```
-    """
-    # OTHER FIELDS
-    dimensions = None
-    """
-    ```python
-    self.dimensions = ( w, h ) # tuple
-    ```
-    """
-    tile_dimensions = None
-    """
-    ```python
-    self.tile_dimensions = ( w, h ) # tuple
-    ```
-    """
-    sprite_dimensions = None
-    """
-    ```python
-    self.sprite_dimensions = (  w, h )
-    ```
-    """
-    world_bounds = None
-    """
-    ```python
-    self.world_bounds = (
-        left_bound, # tuple (x,y,w,h)
-        top_bound, # tuple (x,y,w,h)
-        right_bound, # tuple (x,y,w,h)
-        down_bound # tuple(x,y,w,h)
-    )
-    ```
-    """
-    layer = None
-    """
-    self.layer = 'one' # str
-    """
-    layers = []
-    """
-    self.layers = [
-        'one', # str
-        'two', # str
-        # ...
-    ]
-    """
     switch_map = munch.Munch({})
-    """
-    ```python
-    self.switch_map = munch.Munch({
-        'layer_1': {
-            'switch_key_1': {
-                'switch_set_index_1': bool_1, # bool
-                'switch_set_index_2': bool_2, # bool
-                # ...
-            },
-            # ...
-        },
-        # ...
-    })
-    ```
-    """
+    layer = None
+    layers = []
+    # META FIELDS
+    dimensions = None
+    tile_dimensions = None
+    sprite_dimensions = None
+    world_bounds = None
     iterations = 0
 
 
@@ -1210,6 +965,13 @@ class World():
         self,
         layer: str
     ) -> munch.Munch:
+        """Returns all struts on a given layer of the _World_.
+
+        :param layer: The layer from which to retrieve strutsets.
+        :type layer: str
+        :return: Munchified strutsets
+        :rtype: munch.Munch
+        """
         if self.strutsets.get(layer) is None:
             setattr(self.strutsets, layer, munch.Munch({}))
         return munch.munchify({
@@ -1223,6 +985,13 @@ class World():
         self,
         layer: str
     ) -> munch.Munch:
+        """Returns all plates, regardless of type, on a given layer of the _World_.
+
+        :param layer: The layer from which to retrieve platesets.
+        :type layer: str
+        :return: Munchified platesets
+        :rtype: munch.Munch
+        """
         if self.platesets.get(layer) is None:
             setattr(self.platesets, layer, munch.Munch({}))
         return munch.munchify({
@@ -1239,11 +1008,11 @@ class World():
     ) -> list:
         """_summary_
 
-        :param layer: _description_
+        :param layer: The _World_ layer from which to retrieve platesets.
         :type layer: str
-        :param plateset_type: _description_
+        :param plateset_type: The type of plateset to retrieve. Allowable values: `gate`, `pressure`, `mass`, `door`, `container`.
         :type plateset_type: str
-        :return: _description_
+        :return: A formatted list of platesets matching the passed in type.
         :rtype: list
 
         ```python

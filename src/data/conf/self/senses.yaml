@@ -6,6 +6,15 @@ breakpoints:
   - w: 800
     h: 600
 
+transparency: 127
+
+theme:
+  overlay:
+    r: 20
+    g: 67
+    b: 142
+    a: 175
+
 styles:
   small:
     slots:

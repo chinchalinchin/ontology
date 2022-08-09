@@ -30,7 +30,6 @@ class Repo():
     nymphs = munch.Munch({})
     sprites = munch.Munch({})
     avatars = munch.Munch({})
-    bottles = munch.Munch({})
     mirrors = munch.Munch({})
     menus = munch.Munch({})
     slots = munch.Munch({})
@@ -368,11 +367,6 @@ class Repo():
                     buffer.crop(( x, y, w + x, h + y ))
                 )
 
-        # Bottle Configuration is slightly different, so I wonder if I should separate them
-        # conceptually...
-        # TODO: !!!
-        bottle_conf = avatar_conf.avatars.bottles
-
 
     def _init_apparel_assets(
         self,
@@ -450,10 +444,7 @@ class Repo():
         config: conf.Conf, 
         ontology_path: str
     ) -> None:
-        log.debug(
-            'Initializing entity assets...', 
-            '_init_entity_assets'
-        )
+        log.debug('Initializing entity assets...', '_init_entity_assets')
 
         stature_conf, _, sheets_conf, sprite_dim = config.load_sprite_configuration()
 

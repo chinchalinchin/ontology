@@ -180,32 +180,32 @@ castle:
             units: absolute
             x: -109
             y: -269
-          cover: false
+          cover: true
         - start:
             units: absolute
             x: -109
             y: -230
-          cover: false
+          cover: true
         - start:
             units: absolute
             x: -109
             y: -191
-          cover: false
+          cover: true
         - start:
             units: absolute
             x: 349
             y: -269
-          cover: false
+          cover: true
         - start:
             units: absolute
             x: 349
             y: -230
-          cover: false
+          cover: true
         - start:
             units: absolute
             x: 349
             y: -191
-          cover: false
+          cover: true
     castle_door_outlet:
       sets:
         - start:

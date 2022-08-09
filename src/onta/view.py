@@ -1,5 +1,6 @@
 import sys
 from collections import OrderedDict
+from django.shortcuts import render
 import munch
 import threading
 
@@ -74,8 +75,8 @@ class Debugger(QtCore.QObject):
 
 class KeyEater(QtCore.QObject):
     def eventFilter(self, obj, event):
-        print('eating key')
         return True
+
 
 class NoKeyWidget(QtWidgets.QWidget):
 
@@ -100,17 +101,9 @@ class Renderer():
 
     last_layer = None
     player_device = None
-    """
-    """
     world_frame = None
-    """
-    """
     static_cover_frame = munch.Munch({})
-    """
-    """
     static_back_frame = munch.Munch({})
-    """
-    """
 
 
     @staticmethod
@@ -122,9 +115,7 @@ class Renderer():
         ordered_dict = OrderedDict()
 
         if len(unordered_dict)>0:
-            for dict_key, dict_value in unordered_dict.items():
-                render_map[dict_value['order']] = dict_key
-
+            render_map = { val['order']: key for key, val in unordered_dict.items() }
             ordered_map = list(render_map.keys())
             ordered_map.sort()
             for order in ordered_map:
@@ -547,6 +538,7 @@ class Renderer():
 
         avatar_rendering_points = headsup_display.get_rendering_points('avatar')
         avatar_frame_map = headsup_display.get_frame_map('avatar')
+        # TODO: there has to be a way of calculating this...
         avatar_set_map = munch.Munch({
             'equipment': 4, # slots 
             'inventory': 8 # slots + wallets + belt + bag
@@ -583,9 +575,12 @@ class Renderer():
         menu: menu.Menu, 
         repository: repo.Repo
     ) -> None:
-        # TODO: alpha and overlay should be part of configuration or styles
-        gui.replace_alpha(self.world_frame, 127)
-        overlay = gui.channels(self.player_device.dimensions, MATERIAL_BLUE_900)
+
+        gui.replace_alpha(self.world_frame, menu.alpha)
+        overlay = gui.channels(
+            self.player_device.dimensions, 
+            menu.theme.overlay
+        )
 
         self.world_frame.paste(overlay, ( 0,0 ), overlay)
 

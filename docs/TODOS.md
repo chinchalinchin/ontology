@@ -87,4 +87,4 @@ THAT PREVIOUS ONE FIRST
 
 - discovery sound when pressure plate is pressed and gate opens somewhere...
 
-- debug widget that shows state information
+- it might be better to add another nest in the asset directory structure, so compositions can be specified in separate files, otherwise composite.yaml is going to be huge. Plus, it promotes "modularity" of the composition.

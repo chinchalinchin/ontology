@@ -166,6 +166,11 @@ def recoil_sprite(
     proj = calculator.projection()
 
     # add 22.5
+    # think about what happens if sprite collides with large object.
+    # large object eclipses sprite, and causes sprite to move in direction 
+    # that doesn't look right. the angle is not the way to do this...
+    # has to be done with coordinates, case by case.
+    
     if angle >= 337.5 or (angle >= 0 and angle<22.5):
         sprite.position.x += sprite_props.speed.collide
 

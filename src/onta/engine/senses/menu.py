@@ -18,6 +18,7 @@ class Menu():
     tabs = munch.Munch({})
     properties = munch.Munch({})
     styles = munch.Munch({})
+    theme = munch.Munch({})
     sizes = []
     breakpoints = []
     button_rendering_points = []
@@ -25,6 +26,8 @@ class Menu():
     active_button = None
     active_tab = None
     media_size = None
+    alpha = None
+
 
 
     def __init__(
@@ -53,9 +56,12 @@ class Menu():
         self.sizes = configure.sizes
         self.styles = configure.styles
         self.properties = configure.properties.menu
+        self.alpha = configure.transparency
+        self.theme = display.construct_themes(configure.theme)
         self.breakpoints = display.format_breakpoints(configure.breakpoints)
         self.tabs = munch.Munch({
-            button_name: {} for button_name in self.properties.button.buttons
+            button_name: munch.Munch({}) 
+            for button_name in self.properties.button.buttons
         })
 
 
