@@ -231,8 +231,9 @@ class World():
                 ( 0, self.dimensions[1], self.dimensions[0], 1 )
             ]
 
-            self.strutsets.get(layer).hitboxes = self._strut_hitboxes(layer) + \
-                self.world_bounds
+            self.strutsets.get(layer).hitboxes = collisions.calculate_strut_hitboxes(
+                self.strutsets.get(layer)
+            ) + self.world_bounds
             self.platesets.get(layer).doors = self.get_typed_platesets(
                 layer, 
                 'door'
@@ -375,8 +376,6 @@ class World():
                         sprite.intent = sprite.memory.intent
 
 
-    # calculate rest of sprite intents from desires
-
     def _intend(
         self
     ):
@@ -494,19 +493,19 @@ class World():
     ) -> None:
 
         sprite = self.npcs.get(sprite_key)
-
         sprite_hitbox = collisions.calculate_sprite_hitbox(
             sprite,
             'strut',
             self.sprite_properties.get(sprite_key)
         )
-
-        collision_sets = self._collision_sets_relative_to(
-            sprite_key,
-            sprite.layer,
-            'strut'
+        collision_set = collisions.collision_set_relative_to(
+            'strut',
+            None,
+            self.strutsets.get(sprite.layer).hitboxes,
+            self.platesets.get(sprite.layer).containers,
+            self.get_typed_platesets(sprite.layer, 'gate'),
+            self.switch_map.get(sprite.layer)
         )
-
         path = impulse.locate_desire(
             sprite.path,
             self.get_sprites(),
@@ -518,7 +517,7 @@ class World():
         paths.reorient(
             sprite,
             sprite_hitbox,
-            collision_sets,
+            collision_set,
             path,
             self.sprite_properties.get(sprite_key).speed.collide,
             self.dimensions
@@ -536,90 +535,73 @@ class World():
             Technically, there is overlap here. Since sprite is checked against every other sprite for collisions, there are Pn = n!/(n-2)! permutations, but Cn = n!/(2!(n-2)!) distinct combinations. Therefore, Pn - Cn checks are unneccesary. To circumvent this problem (sort of), a collision map is kept internally within this method to keep track of which sprite-to-sprite collisions have already taken place. However, whether or not this is worth the effort, since the map has to be traversed when it is initialized, is an open question? 
         """
 
-        collision_map = collisions.generate_collision_map(self.npcs)
+        collision_map = collisions.generate_collision_map(
+            self.get_sprites()
+        )
 
         for sprite_key, sprite in self.get_sprites().items():
+            for hitbox_key in ['strut', 'sprite']:
+                exclusions = [ sprite_key ]
+                if hitbox_key == 'sprite':
+                    exclusions += [
+                        key for key,val in collision_map.get(sprite_key).items() if val
+                    ]
 
-            # hero collision detection
-            if sprite_key == 'hero':
                 sprite_hitbox = collisions.calculate_sprite_hitbox(
-                    self.hero,
-                    'sprite',
-                    self.sprite_properties.get('hero')
-                )
-                collision_sets = self._collision_sets_relative_to(
-                    'hero',
-                    self.layer,
-                    'sprite'
+                    sprite,
+                    hitbox_key,
+                    self.sprite_properties.get(sprite_key)
                 )
 
-                log.infinite('Checking hero for collisions...',
-                             '_physics')
+                if sprite_hitbox is None:
+                    continue
 
-                for collision_set in collision_sets:
-                    collision_box = collisions.detect_collision(
-                        sprite_key, 
-                        sprite_hitbox, 
-                        collision_set
+                other_sprite_hitboxes = collisions.calculate_sprite_hitboxes(
+                    self.get_sprites(sprite.layer),
+                    self.sprite_properties,
+                    hitbox_key,
+                    exclusions
+                )
+                # collisions_set will exclude struts and plates when 
+                # hitbox_key == 'sprite' and exclude sprites when 
+                # hitbox_key == 'strut'
+                collision_set = collisions.collision_set_relative_to(
+                    hitbox_key,
+                    other_sprite_hitboxes,
+                    self.strutsets.get(sprite.layer).hitboxes,
+                    self.platesets.get(sprite.layer).containers,
+                    self.get_typed_platesets(sprite.layer, 'gate'),
+                    self.switch_map.get(sprite.layer)
+                )
+
+                log.infinite(
+                    f'Checking {sprite_key} for {hitbox_key} collisions...',
+                    '_physics'
+                )
+
+                collision_box = collisions.detect_collision(
+                    sprite_key, 
+                    sprite_hitbox, 
+                    collision_set
+                )
+
+                if collision_box:
+                    log.debug(
+                        f'{sprite_key} collision at ({round(sprite.position.x)}, {round(sprite.position.y)})',
+                        '_physics'
                     )
-                    if collision_box:
-                        log.debug(f'Player collision at ({round(self.hero.position.x)}, {round(self.hero.position.y)})',
-                                  '_physics')
-                        collisions.recoil_sprite(
-                            sprite, 
-                            self.sprite_dimensions,
-                            self.sprite_properties.get(sprite_key),
-                            collision_box
-                        )
-
-            # sprite collision detection
-            else:
-                for hitbox_key in ['sprite', 'strut']:
-
-                    ## CAN HERE...(see below)
-                    exclusions = [sprite_key]
-                    for key, val in collision_map.get(sprite_key).items():
-                        if val:
-                            exclusions.append(key)
-
-                    sprite_hitbox = collisions.calculate_sprite_hitbox(
-                        sprite,
-                        hitbox_key,
-                        self.sprite_properties.get(sprite_key)
+                    collisions.recoil_sprite(
+                        sprite, 
+                        self.sprite_dimensions,
+                        self.sprite_properties.get(sprite_key),
+                        collision_box
                     )
-
-                    collision_sets = self._collision_sets_relative_to(
-                        sprite_key,
-                        sprite.layer,
-                        hitbox_key
-                    )
-
-                    log.infinite(f'Checking {sprite_key} for {hitbox_key} collisions...',
-                                 '_physics')
-
-                    collided = False
-                    for collision_set in collision_sets:
-                        collision_box = collisions.detect_collision(
-                            sprite_key,
-                            sprite_hitbox, 
-                            collision_set
-                        )
-                        if collision_box:
-                            collided = True
-                            collisions.recoil_sprite(
-                                sprite,
-                                self.sprite_dimensions,
-                                self.sprite_properties.get(sprite_key),
-                                collision_box
-                            )
-                    if collided:
-                        # recalculate hitbox after sprite recoils
+                    if sprite_key != "hero":
                         sprite_hitbox = collisions.calculate_sprite_hitbox(
                             sprite,
                             hitbox_key,
                             self.sprite_properties.get(sprite_key)
                         )
-
                         path = impulse.locate_desire(
                             sprite.path,
                             self.get_sprites(),
@@ -627,23 +609,22 @@ class World():
                         )
                         log.debug(f'Reorienting {sprite_key} with path {sprite.path}',
                                     '_physics')
-
                         paths.reorient(
                             sprite,
                             sprite_hitbox,
-                            collision_sets,
+                            collision_set,
                             path,
                             self.sprite_properties.get(sprite_key).speed.collide,
                             self.dimensions
                         )
 
+                if hitbox_key == 'sprite':
                     for key, val in collision_map.copy().items():
                         if key not in exclusions and \
                                 key == sprite_key:
                             for nest_key in val.keys():
                                 setattr(collision_map.get(key), nest_key, True)
                                 setattr(collision_map.get(nest_key), key, True)
-                    ## ...TO HERE BE MODULARIZED INTO COLLISION MODULE?
 
             # mass collision detection
             collisions.detect_layer_sprite_to_mass_collision(
@@ -653,7 +634,7 @@ class World():
                 self.plate_properties,
                 self.tile_dimensions
             )
-                # recalculate plate meta after alteration
+            # recalculate plate meta after alteration
             self.platesets.get(sprite.layer).masses = self.get_typed_platesets(
                 sprite.layer,
                 'mass'
@@ -682,148 +663,6 @@ class World():
             # i.e., collision map? 
             #   layer -> first_mass_key -> first_mass_index
             #         -> second_mass_key -> second_mass_index
-
-
-    # TODO: candidate for collisions module
-    def _collision_sets_relative_to(
-        self,
-        sprite_key: str,
-        layer_key: str,
-        hitbox_key: str
-    ) -> list:
-        """Returns a list of the typed hitbox a given sprite can possibly collide with on a given layer. 
-
-        :param sprite: _description_
-        :type sprite: str
-        :param sprite_key: _description_
-        :type sprite_key: str
-        :param hitbox_key: _description_
-        :type hitbox_key: str
-        :return: list of lists containing the possible collision hitboxes
-        :rtype: list
-
-        .. note::
-            This method inherently takes into account a sprite's layer when determining the collision sets it must consider.
-        """
-        # TODO: I think it would be simpler to return a list (well, it definitely would). would need to unpack each individual list and append
-        # elements. would also need to examine how this method gets invoked and whether it truly would be simpler...
-        # if so, change name to _collision_set_relative_to()
-        npc_hitboxes = self._sprite_hitboxes(
-            hitbox_key,
-            layer_key,
-            [sprite_key]
-        )
-
-        collision_sets = []
-        if npc_hitboxes is not None:
-            collision_sets.append(npc_hitboxes)
-
-        if (hitbox_key == 'strut' or sprite_key == 'hero') \
-                and self.strutsets.get(layer_key).hitboxes is not None:
-            collision_sets.append(
-                self.strutsets.get(layer_key).hitboxes
-            )
-
-        if (hitbox_key == 'strut' or sprite_key == 'hero') \
-                and self.platesets.get(layer_key).containers is not None:
-            collision_sets.append(
-                [container.hitbox for container in self.platesets.get(
-                    layer_key).containers]
-            )
-            collision_sets.append([ 
-                gate.hitbox
-                for gate in self.get_typed_platesets(layer_key, 'gate')
-                if not self.switch_map.get(layer_key).get(gate.key).get(str(gate.index))
-            ])
-            # doesn't add pressures, gates, doors or masses, as they are handled separately
-        return collision_sets
-
-
-    def _strut_hitboxes(
-        self,
-        layer: str
-    ) -> list:
-        """_summary_
-
-        :param layer: _description_
-        :type layer: str
-        :return: _description_
-        :rtype: list
-        """
-        strut_hitboxes = []
-        for strut_conf in self.get_strutsets(layer).values():
-            sets = strut_conf.sets
-            for strut in sets:
-                strut_hitboxes.append(strut.hitbox)
-        return strut_hitboxes
-
-
-    def _sprite_hitbox(
-        self,
-        sprite_key: str,
-        hitbox_key: str
-    ) -> Union[tuple, None]:
-        """_summary_
-
-        :param sprite_key: _description_
-        :type sprite_key: str
-        :param hitbox_key: _description_
-        :type hitbox_key: str
-        :return: _description_
-        :rtype: Union[tuple, None]
-
-        .. note::
-            A sprite's hitbox dimensions are fixed, but the actual hitbox coordinates depend on the position of the sprite. This method must be called each iteration of the world loop, so the newest coordinates of the hitbox are retrieved.
-        """
-        sprite = None
-        if sprite_key == 'hero':
-            sprite = self.hero
-        else:
-            sprite = self.npcs.get(sprite_key)
-
-        if sprite is not None:
-            raw_hitbox = self.sprite_properties.get(
-                sprite_key).hitboxes.get(hitbox_key)
-            calc_hitbox = (
-                sprite.position.x + raw_hitbox.offset.x,
-                sprite.position.y + raw_hitbox.offset.y,
-                raw_hitbox.size.w,
-                raw_hitbox.size.h
-            )
-            return calc_hitbox
-        return None
-
-
-    def _sprite_hitboxes(
-        self,
-        hitbox_key: str,
-        layer: str,
-        exclude: list = None
-    ) -> list:
-        """_summary_
-
-        :param hitbox_key: _description_
-        :type hitbox_key: str
-        :param layer: _description_
-        :type layer: str
-        :param exclude: _description_, defaults to None
-        :type exclude: list, optional
-        :return: _description_
-        :rtype: list
-        """
-        calculated = []
-
-        for sprite_key, sprite in self.get_npcs(layer).items():
-            if exclude is None or \
-                    sprite_key not in exclude:
-                calculated.append(
-                    collisions.calculate_sprite_hitbox(
-                        sprite,
-                        hitbox_key,
-                        self.sprite_properties.get(sprite_key)
-                    )
-                )
-        return calculated
 
 
     def _sprite_desires(
@@ -955,16 +794,25 @@ class World():
         for plate_key, plate_conf in self.get_platesets(layer).items():
             if self.plate_properties.get(plate_key).type != plateset_type:
                 continue
-            for i, plate in enumerate(plate_conf.sets):
-                typed_platesets.append(
-                    munch.Munch({
-                        'key': plate_key,
-                        'index': i,
-                        'hitbox': plate.hitbox,
-                        'content': plate.content,
-                        'position': plate.start
-                    })
-                )
+            # for i, plate in enumerate(plate_conf.sets):
+            #     typed_platesets.append(
+            #         munch.Munch({
+            #             'key': plate_key,
+            #             'index': i,
+            #             'hitbox': plate.hitbox,
+            #             'content': plate.content,
+            #             'position': plate.start
+            #         })
+            #     )
+            typed_platesets += [ 
+                munch.Munch({
+                    'key': plate_key,
+                    'index': i,
+                    'hitbox': plate.hitbox,
+                    'content': plate.content,
+                    'position': plate.start
+                }) for i, plate in enumerate(plate_conf.sets)
+            ]
         return typed_platesets
 
 

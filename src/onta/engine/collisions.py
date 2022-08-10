@@ -64,11 +64,28 @@ def calculate_set_hitbox(
     return None
 
 
+def calculate_strut_hitboxes(
+    strutsets
+) -> list:
+    """_summary_
+
+    :param layer: _description_
+    :type layer: str
+    :return: _description_
+    :rtype: list
+    """
+    strut_hitboxes = []
+    for strut_conf in strutsets.values():
+        strut_hitboxes += [
+            strut.hitbox for strut in strut_conf.sets
+        ]
+    return strut_hitboxes
+
 def calculate_sprite_hitbox(
-        sprite: munch.Munch, 
-        hitbox_key: str,
-        sprite_props: munch.Munch
-    ) -> Union[tuple, None]:
+    sprite: munch.Munch, 
+    hitbox_key: str,
+    sprite_props: munch.Munch
+) -> Union[tuple, None]:
         """_summary_
 
         :param sprite: _description_
@@ -83,6 +100,8 @@ def calculate_sprite_hitbox(
         """
         
         raw_hitbox = sprite_props.hitboxes.get(hitbox_key)
+        if raw_hitbox is None:
+            return raw_hitbox
         calc_hitbox = (
             sprite.position.x + raw_hitbox.offset.x,
             sprite.position.y + raw_hitbox.offset.y,
@@ -90,6 +109,33 @@ def calculate_sprite_hitbox(
             raw_hitbox.size.h
         )
         return calc_hitbox
+
+
+def calculate_sprite_hitboxes(
+    sprites, # self.get_sprites(layer)
+    sprites_props, #self.sprite_properties
+    hitbox_key: str,
+    exclude: list = None
+) -> list:
+    """_summary_
+
+    :param hitbox_key: _description_
+    :type hitbox_key: str
+    :param layer: _description_
+    :type layer: str
+    :param exclude: _description_, defaults to None
+    :type exclude: list, optional
+    :return: _description_
+    :rtype: list
+    """
+    return [
+        calculate_sprite_hitbox(
+            sprite,
+            hitbox_key, 
+            sprites_props.get(sprite_key)
+        ) for sprite_key, sprite in sprites.items()
+        if exclude is None or sprite_key not in exclude
+    ]
 
 
 def calculate_blunt_attackbox(
@@ -137,6 +183,51 @@ def calculate_projectile_attackbox(
     """
     atkboxes = directional_atkboxes.get(sprite.stature.direction)
     pass
+
+
+def collision_set_relative_to(
+    hitbox_key: str,
+    npc_hitboxes: munch.Munch,
+    strut_hitboxes: munch.Munch, # strutsets.get(layer_key).hitboxes
+    container_hitboxes: munch.Munch, # platesets.get(layer_key).containeers
+    gates: munch.Munch, #  self.get_typed_platesets(layer_key, 'gate')
+    switch_map: munch.Munch, # self.switch_map(layer)
+) -> list:
+    """Returns a list of the typed hitbox a given sprite can possibly collide with on a given layer. 
+
+    :param sprite: _description_
+    :type sprite: str
+    :param sprite_key: _description_
+    :type sprite_key: str
+    :param hitbox_key: _description_
+    :type hitbox_key: str
+    :return: list of lists containing the possible collision hitboxes
+    :rtype: list
+
+    .. note::
+        Doesn't add pressure, doors or masses to the collision set, as they are handled separately in the game loop.
+    """
+
+    collision_sets = []
+    if (hitbox_key == 'sprite') \
+        and npc_hitboxes is not None:
+        collision_sets += npc_hitboxes
+
+    if (hitbox_key == 'strut') \
+            and strut_hitboxes is not None:
+        collision_sets += strut_hitboxes
+
+    if (hitbox_key == 'strut') \
+         and container_hitboxes is not None:
+        collision_sets += [
+            container.hitbox for container in container_hitboxes
+        ]
+        collision_sets += [ 
+            gate.hitbox for gate in gates
+            if not switch_map.get(gate.key).get(str(gate.index))
+        ]
+        # doesn't add pressures, doors or masses, as they are handled separately
+    return collision_sets
 
 
 def detect_collision(
@@ -309,10 +400,9 @@ def recoil_plate(
 
 def detect_layer_pressure(
     hitbox,
-    layer_pressures, # self.platesets.get(layer).pressures
-    layer_switch_map, #self.switch_map.get(layer)
-    gates, # self.get_typed_platesets(layer, 'gate') ## HOWEVER, this would presume gates 
-    # can only be connected to plates on same layer. needs gates from ALL layers.
+    layer_pressures, 
+    layer_switch_map,
+    gates,
 ) -> None:
     for pressure in layer_pressures:
         if isinstance(hitbox, tuple):
@@ -376,11 +466,10 @@ def detect_layer_pressure(
 
 
 def detect_layer_sprite_to_mass_collision(
-
     sprite,
-    sprite_props, #self.sprite_properties.get(sprite_key)
-    platesets, # self.platesets
-    plate_props, # self.plate_properties
+    sprite_props,
+    platesets,
+    plate_props,
     tile_dimensions,
 ) -> None:
     sprite_hitbox = calculate_sprite_hitbox(sprite, 'sprite', sprite_props)

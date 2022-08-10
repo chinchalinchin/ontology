@@ -163,7 +163,13 @@ sprites:
                     size:
                         w: 19
                         h: 61
-                strut: null
+                strut:
+                    offset:
+                        x: 23
+                        y: 3
+                    size:
+                        w: 19
+                        h: 61
             speed:
                 walk: 3
                 run: 5

@@ -11,7 +11,7 @@ log = logger.Logger('onta.engine.paths', settings.LOG_LEVEL)
 def reorient(
     sprite: munch.Munch, 
     hitbox: tuple, 
-    collision_sets: list, 
+    collision_set: list, 
     goal: tuple, 
     speed: int, 
     world_dim: tuple
@@ -56,22 +56,11 @@ def reorient(
         hitbox[3]
     )
 
-    up_valid = all(
-        not collisions.detect_collision('sprite', new_up, collision_set) 
-        for collision_set in collision_sets
-    )
-    left_valid = all(
-        not collisions.detect_collision('sprite', new_left, collision_set) 
-        for collision_set in collision_sets
-    )
-    right_valid = all(
-        not collisions.detect_collision('sprite', new_right, collision_set) 
-        for collision_set in collision_sets
-    )
-    down_valid = all(
-        not collisions.detect_collision('sprite', new_down, collision_set) 
-        for collision_set in collision_sets
-    )
+    up_valid = not collisions.detect_collision('sprite', new_up, collision_set) 
+    left_valid =  not collisions.detect_collision('sprite', new_left, collision_set) 
+    right_valid = not collisions.detect_collision('sprite', new_right, collision_set) 
+    down_valid = not collisions.detect_collision('sprite', new_down, collision_set) 
+
     # TODO: diagonals
 
     possibilities = {}
