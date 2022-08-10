@@ -73,7 +73,7 @@ THAT PREVIOUS ONE FIRST
 
 - make a sheet of all the singleton objects in the avatars folder. edit and crop nymph sheets to be same size, i.e. rows and columns, not necessarily dimensions, although dimensions would be nice.
 
-- conf directory is parameterized, parameterize asset directory too. will probably require wrapping in object.
+- conf directory is parameterized, parameterize asset directory too. will probably require wrapping in object... I think it already is????
 
 - idea: keep the previous world state in read only variable to be able to compare when filtering intents, so sprites "remember".
 
