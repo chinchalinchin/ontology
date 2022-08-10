@@ -83,3 +83,14 @@ THAT PREVIOUS ONE FIRST
 
 - world.projectiles = [{ key: key, index: index, TTL: int, speed: int}]
     where every iteration TTL decrements by one.
+
+- intents group sprite statures into common update patterns. `move` and `combat` collapse `walk_*` and the animate `action` states into two intents. `operate` is too vague to hold both `use` and `interact`, though. They need to be separate intents. `defend` will also probably have to be a separate intent, since it is fundamentally different from `combat` (is it?)
+
+
+
+- order to todos:
+    1. get combat working
+    2. get shield and defend/shield interation working
+    2. separate use and interact "operate" intents into separate intention categories. 
+    2. baublize inventory
+    3. inventory and equipment submenus

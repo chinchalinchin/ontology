@@ -795,16 +795,6 @@ class World():
         for plate_key, plate_conf in self.get_platesets(layer).items():
             if self.plate_properties.get(plate_key).type != plateset_type:
                 continue
-            # for i, plate in enumerate(plate_conf.sets):
-            #     typed_platesets.append(
-            #         munch.Munch({
-            #             'key': plate_key,
-            #             'index': i,
-            #             'hitbox': plate.hitbox,
-            #             'content': plate.content,
-            #             'position': plate.start
-            #         })
-            #     )
             typed_platesets += [ 
                 munch.Munch({
                     'key': plate_key,
