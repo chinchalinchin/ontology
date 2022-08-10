@@ -350,8 +350,8 @@ class Repo():
         for express_key, expression in expression_conf.items():
             if not expression or not expression.get('path'):
                 continue
-            x,y = { expression.position.x, expression.position.y }
-            w, h = { expression.size.w, expression.size.h }
+            x,y = ( expression.position.x, expression.position.y )
+            w, h = ( expression.size.w, expression.size.h )
             buffer = gui.open_image(
                 os.path.join(
                     ontology_path,
@@ -552,7 +552,7 @@ class Repo():
             )
 
 
-    @functools.lru_cache(max_size=20)
+    @functools.lru_cache(maxsize=20)
     def get_expression_frame(
         self,
         express_key

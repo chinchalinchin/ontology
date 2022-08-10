@@ -81,7 +81,7 @@ APPAREL_PATH = [
 EXPRESSION_PATH =[
     'assets',
     'self',
-    'apparel'
+    'expressions'
 ]
 
 # Debug Configuration
