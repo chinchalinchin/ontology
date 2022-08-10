@@ -1,40 +1,71 @@
 # Sprites
 
-_Sprite_ are complex. By far, a _Sprite_ state trajectory is the most complex data structure in the game. So, with that mind, this section is about nothing but _Sprite_\s. 
+_Sprite_ are complex.  By far, a _Sprite_ `stature` trajectory is the most complex data structure in the game, in terms of how it is processed and transformed over the course of a game loop iteration. In order to truly understand _onta_, you need to understand how a sprite `stature` interacts with the _World_ update method that is called each game loop.
 
-At any moment in time, a _Sprite_ state can be resolved down into three main components that determine what animation is being used to represent the _Sprite_ onscreen. There are other factors beyond these three core attributes, such as slotted _Equipment_ or _Armor_, but all other attributes that affect rendering are optional; every _Sprite_ rendering is dependent on the existence of these three values. These three values, taken together, are essentially a key used to retrieve the current _Sprite_ frame, i.e.,
+So, with that mind, this section is about nothing but _Sprite_\s. 
+
+
+## Sheets
+
+You can find an example spritesheet layout in _/docs/assets/spritesheet_layout.xcf_ (TODO: provide link once hosted). This diagram provides details and labels for the various spritesheet properties. The different layers of the image also include other important information, such as_Sprite_ `attackboxes` coordinates, which will be covered in later sections.
+
+
+## Frame
+
+At any moment in time, a _Sprite_'s on-screen image can be resolved down into four main components that determine what rectangular area in a spritesheet is being used to represent the _Sprite_ onscreen. There are other factors beyond these four core attributes, such as slotted _Equipment_ or _Armor_, but all other attributes that affect rendering are optional; every _Sprite_ rendering is dependent on the existence of atleast these four attributes. The values of these attributes, taken together, are a key used to retrieve the current _Sprite_ frame, i.e.,
 
 ```python
 from onta.loader.repo import Repo
 
 sprite_frame = Repo('/path/to/ontology').get_sprite_frame(
-    action_key, 
-    direction_key,
-    emotion_key
+    sprite_key,
+    stature_key,
+    frame_index
+    expression_key = None, # TODO: implement this
 )
 ```
 
-## Actions
+The `sprite_key` determines which spritesheets are pulled from the asset _Repo_ to form the character base. The `stature_key` and `frame_index` determines which row and column of the spritesheet is cropped to the _Sprite_'s position onscreen. The `expression_key` is an optional key that, if included, will render an _Expression_ atop the _Sprite_ frame.
 
-A _Sprite_ `action` describes what it is doing in the world. 
+## Stature
 
-Five of the _Sprite_ `actions`, (`cast`, `thrust`, `shoot`, `slash` and `shield`) are mapped to equipment _slots_. When a _Sprite_ has an _Equipment_ equipped to a _slot_ (slotted), this appends a spritesheet onto the existing spritesheets for a _Sprite_ and alters the engine calculations for player attack hitboxes and damage: When the player frame is rendered, the _Equipment_ frame will be rendered on top; when the player attacks, the _Equipment_ hitbox is appended to the player position. See [Configuration](./CONFIGURATION.md#equipment) for more information on _Equipment_.
+A _Sprite_ `stature` is part of the _World_'s dynamic state, meaning its value changes over the course of the game. `stature` itself is an object that can be described in terms of four subcomponents.
 
+### Actions
+
+A _Sprite_ `stature.action` describes what it is doing in the world. 
+
+Five of the _Sprite_ `action`s, `cast`, `thrust`, `shoot`, `slash` and `shield`, are mapped to equipment _slots_. When a _Sprite_ has an _Equipment_ equipped to a _Slot_ (slotted), this appends a spritesheet onto the existing spritesheets for a _Sprite_ and alters the engine calculations for player attack hitboxes and damage: When the player frame is rendered, the _Equipment_ frame will be rendered on top; when the player attacks, the _Equipment_ hitbox is appended to the player position. See [Configuration](./CONFIGURATION.md#equipment) for more information on _Equipment_ and _Slots_.
+
+The other _Sprite_ `action`s, `use` and `interact`, do not map directly to an animate `stature`, meaning when the _Sprite_ `action` is set to this value, the _Sprite_ will not be animated on screen, but rendered at a static position. `stature`s without animation mapping are called _singular_ `stature`s.
 
 **Values**: `cast`, `slash`, `thrust`, `shoot`, `shield`, `use`, `interact`
 
-## Directions
+A comparison with the included spritesheet diagram shows an animate _Sprite_ `action` determines the grouping of rows in the spritesheet to use for the onscreen representation.
 
-A _Sprite_ `direction` describes where sprite is facing or travelling.
+### Directions
+
+A _Sprite_ `stature.direction` describes where sprite is facing or travelling.
+
 
 **Values**: `up`, `down`, `left`, `right`, `up_left`, `up_right`, `down_left`, `down_right`
 
-## Emotions
+* Real Directions: The directions `up`, `down`, `left` and `right` are said to be _real_, because 
+* Composite Directions: The directions `up_left`, `up_right`, `down_left` and `down_right` are said to be _composite_, meaning these  
 
-A _Sprite_ `emotion` describes how a sprite "feels".
+### Expressions
+
+A _Sprite_ `stature.expression` describes how a sprite "feels". To be more concrete, it affects which _Expression_ is rendered on top of the _Sprite_ frame. That cosmetic alteration belies a hidden complexity, though, as an _Expression_ is the result of calculations involving _Sprite Desires_, _Plots_ and their corresponding transformations relative to the current _World_ state. A _Sprite Expression_ is a dynamic property that symbolizes the internal mechanics of a _Sprite_, or atleast that is its intention.
 
 **Values**: `anger`, `joy`, `sadness`, `love`, `hate`, `surprise`, `confusion`
 
+### Intentions
+
+In addition to the three main animate `stature` properties in a _Sprite_, there is another, hidden property that secretly drives the sprite animation. In order to generalize the _World_ `update()` method across player and non-player _Sprite_\s (NPCs), the `update()` method consumes a _Sprite_ `intent` and transforms it into a `stature.intention`. This `intention` is the "motive" force propelling _Sprite_\s through their animate `statures`. 
+
+A _Sprite_ `intention` can be thought of a vessel that receives `intent` and then updates the _Sprite_ stature until the `intention` is exhausted, at which point another `intent` will be inserted into the _Sprite_ `intention`. 
+
+More information about _Intent_\s is found in the sections below. 
 
 ## Paths
 

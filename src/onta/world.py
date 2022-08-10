@@ -484,6 +484,7 @@ class World():
                 if sprite.frame >= self.sprite_stature.animate_map.get(sprite_stature_key).frames:
                     sprite.frame = 0
                     if sprite.stature.action in self.sprite_stature.decomposition.blocking:
+                        sprite.stature.intention = None
                         sprite.stature.action = 'walk'
 
 

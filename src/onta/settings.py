@@ -78,6 +78,12 @@ APPAREL_PATH = [
     'apparel'
 ]
 
+EXPRESSION_PATH =[
+    'assets',
+    'self',
+    'apparel'
+]
+
 # Debug Configuration
 
 LOG_LEVEL = os.environ.setdefault('LOG_LEVEL', 'DEBUG')

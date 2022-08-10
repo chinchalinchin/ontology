@@ -30,6 +30,7 @@ class Repo():
     nymphs = munch.Munch({})
     sprites = munch.Munch({})
     avatars = munch.Munch({})
+    expressions = munch.Munch({})
     mirrors = munch.Munch({})
     menus = munch.Munch({})
     slots = munch.Munch({})
@@ -81,6 +82,7 @@ class Repo():
         self._init_apparel_assets(config, ontology_path)
         self._init_sense_assets(config, ontology_path)
         self._init_avatar_assets(config, ontology_path)
+        self._init_expression_assets(config, ontology_path)
 
 
     def _init_form_assets(
@@ -338,6 +340,31 @@ class Repo():
                         )
 
 
+    def _init_expression_assets(
+        self,
+        config: conf.Conf,
+        ontology_path: str
+    ) -> None:
+        expression_conf = config.load_expression_configuration()
+
+        for express_key, expression in expression_conf.items():
+            if not expression or not expression.get('path'):
+                continue
+            x,y = { expression.position.x, expression.position.y }
+            w, h = { expression.size.w, expression.size.h }
+            buffer = gui.open_image(
+                os.path.join(
+                    ontology_path,
+                    *settings.EXPRESSION_PATH,
+                    expression.path
+                )
+            )
+            setattr(
+                self.expressions,
+                express_key,
+                buffer.crop(( x, y, x + w, y + h))
+            )
+
     def _init_avatar_assets(
         self, 
         config: conf.Conf, 
@@ -525,6 +552,14 @@ class Repo():
             )
 
 
+    @functools.lru_cache(max_size=20)
+    def get_expression_frame(
+        self,
+        express_key
+    ) -> Union[Image.Image, None]:
+        return self.expressions.get(express_key)
+
+
     @functools.lru_cache(maxsize=1024)
     def get_form_frame(
         self, 
@@ -700,4 +735,4 @@ class Repo():
             self.apparel.get(set_key).get(apparel_key).get(state_key):
             # TODO: check if frame index is less than state frames?
             return self.apparel.get(set_key).get(apparel_key).get(state_key)[frame_index]
-        pass
+        return None

@@ -21,6 +21,7 @@ class Conf():
     control_conf = munch.Munch({})
     sense_conf = munch.Munch({})
     avatar_conf = munch.Munch({})
+    expression_conf = munch.Munch({})
     composite_conf = munch.Munch({})
     apparel_conf = munch.Munch({})
 
@@ -45,7 +46,7 @@ class Conf():
         :param species: Group of configuraiton being retrieved.
         :type species: str
         :return: Configuration formatted into dictionary.
-        :rtype: dict
+        :rtype: munch.Munch
         """
         conf_path = os.path.join(self.conf_dir, group_key, f'{type_key}.yaml')
         with open(conf_path, 'r') as infile:
@@ -64,7 +65,7 @@ class Conf():
         :param type_key: Key for the type of configuration being retrieved.
         :type type_key: str
         :return: _Self_ configuration formatted into dictionary.
-        :rtype: dict
+        :rtype: munch.Munch
         """
         return self.__configuration(type_key, 'self')
 
@@ -78,7 +79,7 @@ class Conf():
         :param type_key: Key for the type of configuration being retrieved.
         :type type_key: str
         :return: _Form_ configuration formatted into dictionary
-        :rtype: dict
+        :rtype: munch.Munch
         """
         return self.__configuration(type_key, 'forms')
 
@@ -92,7 +93,7 @@ class Conf():
         :param type_key: Key for the type of configuration being retrieved.
         :type type_key: str
         :return: _Entity_ configuration formatted into dictionary.
-        :rtype: dict
+        :rtype: munch.Munch
         """
         return self.__configuration(type_key, 'entities')
 
@@ -106,7 +107,7 @@ class Conf():
         :param type_key: Key for the type of configuration being retrieved.
         :type type_key: str
         :return: _Dialectic_ configuration formatted into dictionary.
-        :rtype: dict
+        :rtype: munch.Munch
         """
         return self.__configuration(type_key, 'dialectics')
 
@@ -116,12 +117,25 @@ class Conf():
     ) -> munch.Munch:
         """Returns the parsed _Control_ configuration from the _data/conf/self/controls.yaml_ file.
 
-        :return: _Control_ specific configurations.
-        :rtype: _type_
+        :return: _Control_ configuration.
+        :rtype: munch.Munch
         """
         if len(self.control_conf) == 0:
             self.control_conf = self._self_configuration('controls')
         return self.control_conf
+
+
+    def load_expression_configuration(
+        self
+    ) -> munch.Munch:
+        """Returns the parsed _Expression_ configuration from the _data/conf/self/expressions.yaml_ file.
+
+        :return: _Expression_ configuration.
+        :rtype: munch.Munch
+        """
+        if len(self.expression_conf) == 0:
+            self.expression_conf = self._self_configuration('expressions')
+        return self.expression_conf
 
 
     def load_sense_configuration(
@@ -129,9 +143,8 @@ class Conf():
     ) -> munch.Munch:
         """Returns the parsed _Slot_, _Mirror_ and _Packs_ (collectively known as the _Interface_) configuration from the _data/conf/self/senses.yaml_ file.
 
-        :return: _Interface_ specific configurations.
-        :rtype: dict
-
+        :return: _Sense_ configurations.
+        :rtype: munch.Munch
         """
         # TODO: mismatch between senses and interface naming scheme...
         if not self.sense_conf:
@@ -142,6 +155,11 @@ class Conf():
     def load_avatar_configuration(
         self
     ) -> munch.Munch:
+        """Returns the parsed _Avatar_ configuration from the _data/conf/self/avatars.yaml_ file.
+
+        :return: _Avatar_ configuration.
+        :rtype: munch.Munch
+        """
         if len(self.avatar_conf) == 0:
             self.avatar_conf = self._self_configuration('avatars')
         return self.avatar_conf
@@ -150,10 +168,10 @@ class Conf():
     def load_apparel_configuration(
         self
     ) -> munch.Munch:
-        """_summary_
+        """Returns the parsed _Apparel_ configuration from the _data/conf/self/apparel.yaml_ file.
 
-        :return: _description_
-        :rtype: dict
+        :return: _Apparel_ configuration.
+        :rtype: munch.Munch
         """
         # TODO: separate sheet conf from state conf.
         #       used in repo to load in assets
@@ -168,8 +186,8 @@ class Conf():
     ) -> munch.Munch:
         """Returns the parsed _Composite_ configuration from the _data/conf/forms/composite.yaml_.file.
 
-        :return: _Composite_ specific configurations
-        :rtype: dict
+        :return: _Composite_ configuration
+        :rtype: munch.Munch
         """
         if len(self.composite_conf) == 0:
             self.composite_conf = self._form_configuration('composite')
@@ -181,8 +199,8 @@ class Conf():
     ) -> munch.Munch:
         """Returns the parsed _Tile_ configuration from the _data/conf/forms/tiles.yaml_ file
 
-        :return: _Tile_ specific configurations
-        :rtype: dict
+        :return: _Tile_ configuration
+        :rtype: munch.Munch
         """
 
         if len(self.tile_sheet_conf) == 0:
