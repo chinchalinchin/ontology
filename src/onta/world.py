@@ -293,7 +293,7 @@ class World():
         self,
         user_input: munch.Munch
     ):
-        """Creates the _Sprite Intent_\s.
+        """Create the _Sprite Intent_\s based on user input in the case of the player _Sprite and _Desires_ in the case of non-playable characters (_NPCs_) .
 
         :param user_input: _description_
         :type user_input: munch.Munch

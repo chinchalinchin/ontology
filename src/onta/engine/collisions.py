@@ -75,9 +75,9 @@ def calculate_strut_hitboxes(
     :rtype: list
     """
     strut_hitboxes = []
-    for strut_conf in strutsets.values():
+    for strutset in strutsets.values():
         strut_hitboxes += [
-            strut.hitbox for strut in strut_conf.sets
+            strut.hitbox for strut in strutset.sets
         ]
     return strut_hitboxes
 
