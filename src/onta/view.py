@@ -1,6 +1,5 @@
 import sys
 from collections import OrderedDict
-from django.shortcuts import render
 import munch
 import threading
 

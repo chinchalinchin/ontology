@@ -4,7 +4,6 @@ from typing import Tuple, Union
 
 import PySide6.QtWidgets as QtWidgets
 from PIL import Image
-from jinja2 import PrefixLoader
 
 import onta.device as device
 import onta.view as view
