@@ -457,6 +457,15 @@ class Renderer():
                         )
                         self.world_frame.alpha_composite(equipment_frame, sprite_position)
 
+            if sprite.stature.expression:
+                expression_frame = repository.get_expression_frame(
+                    sprite.stature.expression
+                )
+                position = (
+                    sprite.position.x + ( game_world.sprite_dimensions[0] - expression_frame.size[0] ) / 2,
+                    sprite.position.y
+                )
+                self.world_frame.alpha_composite(expression_frame, gui.int_tuple(position))
 
     def _render_projectiles(
         self,
@@ -494,6 +503,7 @@ class Renderer():
                 projectile_frame, 
                 (projectile_dim[0], projectile_dim[1])
             )
+
 
     def _render_slots(
         self, 

@@ -30,14 +30,14 @@ def locate_desire(
 
     log.verbose(f'Searching for {target}', 'locate_desire')
 
-    invert = True if target.split(' ')[0] == 'not' else False
+    flee = True if target.split(' ')[0] == 'flee' else False
     
-    if invert:
+    if flee:
         target = target.split(' ')[-1]
 
     if target in list(sprites.keys()):
         log.verbose('Target is dynamic, retrieving sprite position...', 'locate_desire')
-        if invert:
+        if flee:
             return (
                 2*sprite.position.x - sprites.get(target).position.x,
                 2*sprite.position.y - sprites.get(target).position.y,
@@ -49,7 +49,7 @@ def locate_desire(
         )
     elif target in list(sprite.memory.paths.keys()):
         log.verbose('Target is static, retrieving path...', 'locate_desire')
-        if invert: 
+        if flee: 
             return (
                 2*sprite.position.x - sprite.memory.paths.get(target).position.x,
                 2*sprite.position.y - sprite.memory.paths.get(target).position.y
@@ -126,7 +126,7 @@ def combat(
 
             if sprite.packs.belt in apparel_props.equipment.get(equip_key).properties.ammo and \
                 sprite.frame == apparel_props.equipment.get(equip_key).properties.release:
-                
+
                 atkbox = collisions.calculate_projectile_attackbox(
                     sprite,
                     projectile_props.get(sprite.packs.belt).attackboxes

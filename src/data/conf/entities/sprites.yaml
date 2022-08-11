@@ -217,7 +217,7 @@ sprites:
             radii:
                 aware: 
                     approach: 200
-                    flee: 100
+                    flee: 200
                     engage: 15
                     defend: 10
                     converse: 15

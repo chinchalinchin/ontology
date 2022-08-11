@@ -326,9 +326,18 @@ class World():
                         f'Checking {sprite_key} {sprite_desire.mode} desire conditions...',
                         '_ruminate'
                     )
+
+                    # if approach desired...
                     if sprite_desire.mode == 'approach':
+                        # ...and not currently fleeing
+                        if sprite.path is not None and 'flee' in sprite.path:
+                            continue
+
+                        # ...then evaluate the conditions for approach
                         for condition in sprite_desire.conditions:
+
                             if condition.function == 'aware':
+
                                 desire_pos = impulse.locate_desire(
                                     sprite_desire.target,
                                     sprite,
@@ -338,6 +347,7 @@ class World():
                                     desire_pos,
                                     sprite_pos
                                 )
+
                                 if distance <= sprite_props.radii.aware.approach:
 
                                     log.debug(
@@ -371,18 +381,57 @@ class World():
                     elif sprite_desire.mode == 'engage':
                         pass
 
+                    elif sprite_desire.mode == 'flee':
+                        print('here')
+                        print(sprite.path)
+                        # if not fleeing, then don't need to check aware condition
+                        if 'flee' not in sprite.path:
+                            continue
+
+                        target_key = sprite.path.split(' ')[-1]
+                        target = self.get_sprites().get(target_key)
+
+                        distance = calculator.distance(
+                            (target.position.x, target.position.y),
+                            (sprite.position.x, sprite.position.y)
+                        )
+
+                        print(target.position)
+                        print(distance)
+
+                        log.debug(F'{sprite_key} fleeing {target_key}, checking if safe...', '_ruminate')
+
+                        if distance > sprite_props.radii.aware.flee:
+                            log.debug(
+                                f'{sprite_key} lost sight of {target_key}, resetting stature...',
+                                '_ruminate'
+                            )
+                            # pick random point to reorient towards until next update catches
+                            # approach desire
+                            setattr(sprite, 'path', list(sprite.memory.paths.keys())[-1])
+                            setattr(sprite, 'stature', sprite.memory.stature)
+                            setattr(sprite.stature, 'expression', None)
+                            setattr(sprite.memory, 'stature', None)
+                            self._reorient(sprite_key)
+                            break
+                            
+
                 else:
                     if sprite_desire.mode == 'flee':
                         for condition in sprite_desire.conditions:
                             if condition.function == 'expression_equals' and \
                                 condition.value == sprite.stature.expression:
+
+                                setattr(sprite.memory, 'stature', sprite.stature)
                                 sprite.stature.action = 'run'
+
                                 if sprite_desire.target == 'attention':
-                                    sprite.path = f'not {sprite.stature.attention}'
+                                    sprite.path = f'flee {sprite.stature.attention}'
                                 else:
-                                    sprite.path = f'not {sprite_desire.target}'
+                                    sprite.path = f'flee {sprite_desire.target}'
+
                                 log.debug(
-                                    f'{sprite_key} expression is {condition.value}, fleeing {sprite.path}',
+                                    f'{sprite_key} expression is {condition.value}, fleeing {sprite_desire.target}...',
                                     '_ruminate'
                                 )
                                 self._reorient(sprite_key, 'run')
