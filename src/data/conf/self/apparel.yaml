@@ -746,6 +746,9 @@ armor:
       resistance: 0.5
   plate:
     sheets:
+      - undershoes.png
+      - undershirt.png
+      - underpants.png
       - plate_boots.png
       - plate_chest.png
       - plate_gloves.png
