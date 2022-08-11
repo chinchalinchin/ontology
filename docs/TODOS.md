@@ -96,3 +96,5 @@ THAT PREVIOUS ONE FIRST
 
 
 - up attack boxes need offset up a little bit in the up direction and down in the down direction. the feel isn't quite right in that direction.
+
+- need to separate sprite name from sprite type so dynamic state can reference the same sprite definition.

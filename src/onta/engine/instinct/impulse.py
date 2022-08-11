@@ -129,7 +129,7 @@ def combat(
                 return
 
             for target_key, target in target_sprites.items():
-                if target_key == sprite_key:
+                if target_key == sprite_key or target.layer != sprite.layer:
                     continue
 
                 target_hitbox = collisions.calculate_sprite_hitbox(
