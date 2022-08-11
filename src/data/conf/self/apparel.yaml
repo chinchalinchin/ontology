@@ -69,11 +69,11 @@ equipment:
     action: shoot
     type: projectile
     properties:
+      release: 3
       ammo: 
         - arrow
         - fire_arrow
         - magic_arrow
-      release_frame: 
   crossbow:
     sheets:
       - crossbow.png
@@ -89,7 +89,7 @@ equipment:
     action: thrust
     type: projectile
     properties:
-      release_frame: 
+      release: 3
       ammo: 
         - bolt
         - precise_bolt

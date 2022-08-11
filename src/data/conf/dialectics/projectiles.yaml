@@ -8,38 +8,39 @@ arrow:
     w: 41
     h: 10
   properties:
-    speed:
-    distance:
-    power:
+    speed: 10
+    distance: 250
+    power: 5
     attackboxes:
       up:
+        # offset is only relative to initial position
         offset:
-          x:
-          y:
+          x: 27
+          y: 0
         size:
-          w:
-          h:
+          w: 10
+          h: 41
       down:
         offset:
-          x:
-          y:
+          x: 27
+          y: 0
         size:
-          w:
-          h:
+          w: 10
+          h: 41
       left:
         offset:
-          x:
-          y:
+          x: 0
+          y: 27
         size:
-          w:
-          h:
+          w: 41
+          h: 10
       right:
         offset:
-          x:
-          y:
+          x: 0
+          y: 27
         size:
-          w:
-          h:
+          w: 41
+          h: 10
 
 fire_arrow:
   path: arrow_fire.png

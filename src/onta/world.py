@@ -101,7 +101,7 @@ class World():
         sprite_conf = config.load_sprite_configuration()
         self.sprite_stature, self.sprite_properties, _, self.sprite_dimensions = sprite_conf
         self.apparel_properties = config.load_apparel_configuration()
-        self.projectile_properties, _ = config.load_projectile_configuration
+        self.projectile_properties, _ = config.load_projectile_configuration()
         self.plate_properties, _ = config.load_plate_configuration()
         self.strut_properties, _ = config.load_strut_configuration()
         self.composite_conf = config.load_composite_configuration()
@@ -693,8 +693,33 @@ class World():
     
 
         # PROJECTILE-TO-SPRITE, PROJECTILE-TO-STRUT COLLISIONS
-        
-               
+        removals = []
+        for i, projectile in enumerate(self.projectiles):
+            collisions.project(projectile)
+
+            if calculator.distance(projectile.current, projectile.origin) > projectile.distance:
+                removals.append(i)
+                continue
+
+            for target_key, target in self.get_sprites().items():
+                if projectile.layer == target.layer:
+                    continue
+                target_hitbox = collisions.calculate_sprite_hitbox(
+                    target,
+                    'attack',
+                    self.sprite_properties.get(target_key)
+                )
+                collision_box = collisions.detect_collision(
+                    projectile.key, 
+                    projectile.attackbox,
+                    [ target_hitbox ]
+                )
+                if collision_box:
+                    log.debug(f'{projectile.key} struck true on {target_key}')
+
+        for removed in removals:
+            del self.projectiles[removed]
+
         # TODO: plate-to-plate collisions, plate-to-strut collisions
             # in order to do mass-to-mass collisions efficiently, will need a collision map
             # like with sprites, but the rub here is the keys are {mass_key}_{mass_index}

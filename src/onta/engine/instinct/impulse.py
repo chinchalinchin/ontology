@@ -113,7 +113,6 @@ def combat(
     target_sprites,
     projectiles,
     projectile_props
-    # will need to pass in `projectiles`
 ) -> None: 
     if any(action in sprite.stature.action for action in ['cast', 'shoot', 'slash', 'thrust']):
         equip_key = sprite.slots.get(sprite.stature.action)
@@ -124,24 +123,24 @@ def combat(
             return        
                     
         if apparel_props.equipment.get(equip_key).type == 'projectile':
-            ammo_types = list(
-                apparel_props.equipment.get(equip_key).properties.ammo.keys()
-            )
 
-            if sprite.packs.belt in ammo_types and \
-                sprite.frame in apparel_props.equipment.get(equip_key).properties.release_frame:
+            if sprite.packs.belt in apparel_props.equipment.get(equip_key).properties.ammo and \
+                sprite.frame == apparel_props.equipment.get(equip_key).properties.release:
+                
+                atkbox = collisions.calculate_projectile_attackbox(
+                    sprite,
+                    projectile_props.get(sprite.packs.belt).attackboxes
+                )
                 projectiles.append(
                     munch.Munch({
                         'key': sprite.packs.belt,
+                        'layer': sprite.layer,
                         'direction': sprite.stature.direction,
                         'speed': projectile_props.get(sprite.packs.belt).speed,
                         'distance': projectile_props.get(sprite.packs.belt).distance,
-                        'origin': ( sprite.position.x, sprite.position.y ),
-                        'current': ( sprite.position.x, sprite.position.y ),
-                        'attackbox': collisions.calculate_projectile_attackbox(
-                            sprite,
-                            projectile_props.get(sprite.packs.belt).attackboxes
-                        )
+                        'origin': ( atkbox[0], atkbox[1] ),
+                        'current': ( atkbox[0], atkbox[1] ),
+                        'attackbox': atkbox
                     })
                 )
 

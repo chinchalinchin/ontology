@@ -476,12 +476,11 @@ class Renderer():
                 projectile.direction
             )
             projectile_dim = (
-                projectile.current.x,
-                projectile.current.y,
-                game_world.projectile_properties.get(projectile).size.w,
-                game_world.projectile_properties.get(projectile).size.h
+                projectile.current[0],
+                projectile.current[1],
+                game_world.projectile_properties.get(projectile.key).size.w,
+                game_world.projectile_properties.get(projectile.key).size.h
             )
-
 
             if crop and not formulae.on_screen(
                 player_dim,
@@ -720,6 +719,7 @@ class Renderer():
         self._render_static(game_world.layer, False)
         self._render_variable_platesets(game_world, repository, crop)
         self._render_sprites(game_world, repository, crop)
+        self._render_projectiles(game_world, repository, crop)
         self._render_static(game_world.layer, True)
 
         if layer is not None:

@@ -170,7 +170,7 @@ def calculate_blunt_attackbox(
 
 def calculate_projectile_attackbox(
     sprite: munch.Munch,
-    directional_atkboxes: munch.Munch
+    directional_atkboxes: munch.Munch,
 ) -> tuple:
     """Calculate the attack hitbox for an _Equpiment Apparel_ of type `blunt` based on the direction of the provided _Sprite_.
 
@@ -182,14 +182,19 @@ def calculate_projectile_attackbox(
     :rtype: tuple
     """
     raw_atkbox = directional_atkboxes.get(sprite.stature.direction)
+
     if raw_atkbox is None:
         return raw_atkbox
+
     format_atkbox = (
-        raw_atkbox.offset.x,
-        raw_atkbox.offset.y,
+        sprite.position.x + raw_atkbox.offset.x,
+        sprite.position.y + raw_atkbox.offset.y,
         raw_atkbox.size.w,
         raw_atkbox.size.h
     )
+    print(sprite.position)
+    print(raw_atkbox)
+    print(format_atkbox)
     return format_atkbox
 
 
@@ -276,6 +281,58 @@ def detect_collision(
 ############################
 ### STATE ALTERING FUNCTIONS
 ############################
+
+
+def project(
+    projectile: munch.Munch
+) -> None:
+    if projectile.direction == 'up':
+        setattr(
+            projectile,
+            'current',
+            (
+                projectile.current[0], 
+                projectile.current[1] - projectile.speed
+            )
+        )
+    elif projectile.direction == 'left':
+        setattr(
+            projectile,
+            'current',
+            (
+                projectile.current[0] - projectile.speed,
+                projectile.current[1]
+            )
+        )
+    elif projectile.direction == 'down':
+        setattr(
+            projectile,
+            'current',
+            (
+                projectile.current[0],
+                projectile.current[1] + projectile.speed
+            )
+        )
+    elif projectile.direction == 'right':
+        setattr(
+            projectile,
+            'current',
+            (
+                projectile.current[0] + projectile.speed,
+                projectile.current[1]
+            )
+        )
+
+    setattr(
+        projectile,
+        'attackbox',
+        ( 
+            projectile.current[0], 
+            projectile.current[1], 
+            projectile.attackbox[2],
+            projectile.attackbox[3]
+        )
+    )
 
 
 def recoil_sprite(

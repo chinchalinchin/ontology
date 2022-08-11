@@ -51,7 +51,7 @@ def generate_world_template(
     projectile_str = ""
     if game_world.projectiles:
         for i, p in enumerate(game_world.projectiles):
-            projectile_str += f'<li> world.projectiles[{i}].current: {p.curren}'
+            projectile_str += f'<li> world.projectiles[{i}].current: {p.current}'
 
     if enabled_switch_str:
         if projectile_str:
