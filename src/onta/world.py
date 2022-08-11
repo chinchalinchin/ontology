@@ -49,7 +49,7 @@ class World():
     # CONFIGURATION FIELDS
     composite_conf = munch.Munch({})
     sprite_stature = munch.Munch({})
-    apparel_stature = munch.Munch({})
+    apparel_properties = munch.Munch({})
     plate_properties = munch.Munch({})
     strut_properties = munch.Munch({})
     sprite_properties = munch.Munch({})
@@ -98,7 +98,7 @@ class World():
         log.debug('Initializing world configuration...', '_init_conf')
         sprite_conf = config.load_sprite_configuration()
         self.sprite_stature, self.sprite_properties, _, self.sprite_dimensions = sprite_conf
-        self.apparel_stature = config.load_apparel_configuration()
+        self.apparel_properties = config.load_apparel_configuration()
         self.plate_properties, _ = config.load_plate_configuration()
         self.strut_properties, _ = config.load_strut_configuration()
         self.composite_conf = config.load_composite_configuration()
@@ -445,13 +445,18 @@ class World():
                 animate = True
 
             elif sprite.stature.intention == 'combat':
+                print(self.npcs.get('esmeralda').position)
                 impulse.combat(
                     sprite_key,
                     sprite,
-                    self.apparel_stature,
-                    self.get_sprites(sprite.layer)
+                    self.sprite_properties,
+                    self.sprite_dimensions,
+                    self.apparel_properties,
+                    self.get_sprites()
                 )
                 animate = True
+                print(self.npcs.get('esmeralda').position)
+
 
             elif sprite.stature.intention == 'express':
                 impulse.express(
@@ -558,14 +563,14 @@ class World():
                     continue
 
                 other_sprite_hitboxes = collisions.calculate_sprite_hitboxes(
-                    self.get_sprites(sprite.layer),
+                    self.get_sprites(sprite.layer), # can use read-only here since just calculating
                     self.sprite_properties,
                     hitbox_key,
                     exclusions
                 )
-                # collisions_set will exclude struts and plates when 
-                # hitbox_key == 'sprite' and exclude sprites when 
-                # hitbox_key == 'strut'
+                    # collisions_set will exclude struts and plates when 
+                    # hitbox_key == 'sprite' and exclude sprites when 
+                    # hitbox_key == 'strut'
                 collision_set = collisions.collision_set_relative_to(
                     hitbox_key,
                     other_sprite_hitboxes,
@@ -594,7 +599,7 @@ class World():
                     collisions.recoil_sprite(
                         sprite, 
                         self.sprite_dimensions,
-                        self.sprite_properties.get(sprite_key),
+                        self.sprite_properties.get(sprite_key).speed.collide,
                         collision_box
                     )
                     if sprite_key != "hero":
@@ -847,9 +852,8 @@ class World():
         :return: All sprites, or all sprites on a given layer if `layer` is provided.
         :rtype: dict
 
-        .. note::
-            This method returns a dict by design, since a Munch would copy the data, but leave the original unaltered. This method
-            exposes sprites for alterations. It must be used with care.
+        .. warning::
+            This method creates a copy of `self.npcs` if `layer is not None`. If you modify any attributes on the return value when a `layer` is provided, it will not update the _Sprite_'s corresponding attribute in the world state. In order to alter the _Sprite_ state information, you **cannot** specify the layer. Specifying the `layer` is intended to be a **READ-ONLY** operation, called from the `view.Renderer` class when rendering _Sprite_ positions on screen.
         """
         spriteset = {
             'hero': self.hero
@@ -865,6 +869,16 @@ class World():
         self,
         layer: str
     ) -> munch.Munch:
+        """ This method is **READ-ONLY**.
+
+        :param layer: _description_
+        :type layer: str
+        :return: _description_
+        :rtype: munch.Munch
+
+        .. warning::
+            This method creates a copy of `self.npcs`. If you modify any attributes on the return value, it will not update the _Sprite_'s corresponding attribute in the world state.
+        """
         return munch.munchify({
             key: val
             for key, val in self.npcs.items()

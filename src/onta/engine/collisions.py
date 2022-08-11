@@ -142,13 +142,13 @@ def calculate_blunt_attackbox(
     sprite: munch.Munch,
     directional_atkboxes: munch.Munch
 ) -> tuple:
-    """Calculate the attack hitbox for an _Equpiment Apparel_ of type `blunt` based on the direction of the provided _Sprite_.
+    """Calculate the attack hitbox for an _Equpiment Apparel_ of type `blunt` based on the direction and current frame of the provided _Sprite_.
 
     :param sprite: _description_
     :type sprite: munch.Munch
     :param attack_props: _description_
     :type attack_props: munch.Munch
-    :return: _description_
+    :return: The current attackbox for an _Sprite_ engaged in combat. **NOTE**: If the _Sprite_ `frame` does not map to any frames of the _Equipment_, i.e. the animation has not yet gotten to the point where an attackbox exists, this method will return `None`
     :rtype: tuple
     """
     atkbox_frames = [ 
@@ -234,7 +234,7 @@ def detect_collision(
     object_key: str,
     object_hitbox: tuple, 
     hitbox_list: list
-) -> bool:
+) -> Union[tuple, None]:
     """Determines if a sprite's hitbox has collided with a list of hitboxes
 
     :param object_key: 
@@ -243,8 +243,8 @@ def detect_collision(
     :type object_hitbox: tuple
     :param hitbox_list: _description_
     :type hitbox_list: list
-    :return: _description_
-    :rtype: bool
+    :return: The hitbox with which the `object` collided, `None` otherwise
+    :rtype: Union[tuple, None]
 
     .. note::
         This method assumes it only cares _if_ a collision occurs, not with _what_ the collision occurs. The hitbox list is traversed and if any one of the contained hitboxes intersects the sprite, `True` is returned. If none of the hitboxes in the list intersect the given sprite, `False` is returned.
@@ -273,15 +273,19 @@ def detect_collision(
 def recoil_sprite(
     sprite: munch.Munch, 
     sprite_dim: tuple,
-    sprite_props: munch.Munch,
+    sprite_speed: munch.Munch,
     collision_box: tuple
 ) -> None:
-    """_summary_
+    """Recoil a _Sprite_ based on the direction of its collision with the passed-in `collision_box`.
 
-    :param sprite: _description_
+    :param sprite: _Sprite_ to be recoiled.
     :type sprite: munch.Munch
-    :param sprite_props: _description_
+    :param sprite_dim:
+    :type sprite_dim: tuple
+    :param sprite_props: Properties for passed-in _Sprite_.
     :type sprite_props: munch.Munch
+    :param collision_box: The hitbox off of which the _Sprite_ is recoiling.
+    :type collision_box: tuple
     """
     sprite_box = (
         sprite.position.x, 
@@ -290,86 +294,47 @@ def recoil_sprite(
         sprite_dim[1]
     )
     sprite_center = calculator.center(sprite_box)
-    collision_center = calculator.center(collision_box)
-    speed = sprite_props.speed.collide
 
-    angle = calculator.angle_relative_to_center(sprite_center, collision_center)
     proj = calculator.projection()
-
 
     if sprite_center[0] < collision_box[0]:
         if sprite_center[1] > collision_box[1]+collision_box[3]:
-            # from below and the left
-            sprite.position.x -= proj[0] * speed
-            sprite.position.y += proj[1] * speed
+            log.debug('Recoiling sprite to the bottom left', 'recoil_sprite')
+            sprite.position.x -= proj[0] * sprite_speed
+            sprite.position.y += proj[1] * sprite_speed
             return
         elif sprite_center[1] < collision_box[1]:
-            # from above and the left
-            sprite.position.x -= proj[0] * speed
-            sprite.position.y -= proj[1] * speed
+            log.debug('Recoiling sprite to the top left', 'recoil_sprite')
+            sprite.position.x -= proj[0] * sprite_speed
+            sprite.position.y -= proj[1] * sprite_speed
             return
-        # from the left
-        sprite.position.x -= speed
+        log.debug('Recoiling sprite to the left', 'recoil_sprite')
+        sprite.position.x -= sprite_speed
         return
 
     elif sprite_center[0] > collision_box[0] + collision_box[2]:
         if sprite_center[1] > collision_box[1]+collision_box[3]:
-            # from below and the right
-            sprite.position.x += proj[0] * speed
-            sprite.position.y += proj[1] * speed
+            log.debug('Recoiling sprite to the bottom right', 'recoil_sprite')
+            sprite.position.x += proj[0] * sprite_speed
+            sprite.position.y += proj[1] * sprite_speed
             return
         elif sprite_center[1] < collision_box[1]:
-            # from above and the right
-            sprite.position.x += proj[0] * speed
-            sprite.position.y -= proj[1] * speed
+            log.debug('Recoiling sprite to the top right', 'recoil_sprite')
+            sprite.position.x += proj[0] * sprite_speed
+            sprite.position.y -= proj[1] * sprite_speed
             return
-        # from the right
-        sprite.position.x += proj[0] * speed
+        log.debug('Recoiling sprite to the right', 'recoil_sprite')
+        sprite.position.x += proj[0] * sprite_speed
         return
 
     else: # the center
         if sprite_center[1] > collision_box[1]+collision_box[3]:
-            # from below
-            sprite.position.y += proj[1] * speed
+            log.debug('Recoiling sprite to the bottom', 'recoil_sprite')
+            sprite.position.y += proj[1] * sprite_speed
             return
-        # from above
-        sprite.position.y -= proj[1] * speed
+        log.debug('Recoiling sprite to the top', 'recoil_sprite')
+        sprite.position.y -= proj[1] * sprite_speed
         return
-
-
-    # ANGLE BASED DETECTION
-    # think about what happens if sprite collides with large object.
-    # large object eclipses sprite, and causes sprite to move in direction 
-    # that doesn't look right. the angle is not the way to do this...
-    # has to be done with coordinates, case by case.
-    
-    # if angle >= 337.5 or (angle >= 0 and angle<22.5):
-    #     sprite.position.x += sprite_props.speed.collide
-
-    # elif angle >= 22.5 and angle < 67.5:
-    #     sprite.position.x += sprite_props.speed.collide * proj[0]
-    #     sprite.position.y += sprite_props.speed.collide * proj[1]
-
-    # elif angle >= 67.5 and angle < 112.5:
-    #     sprite.position.y += sprite_props.speed.collide
-
-    # elif angle >= 112.5 and angle < 157.5:
-    #     sprite.position.x -= sprite_props.speed.collide * proj[0]
-    #     sprite.position.y += sprite_props.speed.collide * proj[1]
-
-    # elif angle >= 157.5 and angle < 202.5:
-    #     sprite.position.x -= sprite_props.speed.collide
-
-    # elif angle >= 202.5 and angle < 247.5:
-    #     sprite.position.x -= sprite_props.speed.collide * proj[0]
-    #     sprite.position.y -= sprite_props.speed.collide * proj[1]
-
-    # elif angle >= 247.5 and angle < 292.5:
-    #     sprite.position.y -= sprite_props.speed.collide
-
-    # elif angle >= 292.5 and angle < 337.5:
-    #     sprite.position.y -= sprite_props.speed.collide * proj[0]
-    #     sprite.position.x += sprite_props.speed.collide * proj[1]
 
 
 def recoil_plate(

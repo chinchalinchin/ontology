@@ -1,3 +1,12 @@
+"""
+# onta.engine.instinct.impulse
+
+A module for transforming _Sprite_ `intent` into in-game action. 
+
+.. note:: 
+    * The functions in this module may alter the `position` of a _Sprite_, but they will never alter the `stature` of a _Sprite_.
+"""
+
 from typing import Union
 import munch
 
@@ -5,20 +14,20 @@ import onta.settings as settings
 
 import onta.engine.collisions as collisions
 import onta.engine.static.calculator as calculator
-import onta.engine.static.formulae as formulae
 
 import onta.util.logger as logger
 
 
 log = logger.Logger('onta.world.instinct.impulses', settings.LOG_LEVEL)
 
-# NOTE: these methdods alter position, but not the sprite stature.
+
 def locate_desire(
     target, 
     sprites, 
     paths
 ) -> Union[tuple, None]:
     # TODO: take into account sprite layer and target layer, will need to pass in sprite
+
     log.verbose(f'Searching for {target}', 'locate_desire')
 
     if target in list(sprites.keys()):
@@ -79,48 +88,86 @@ def move(
 def combat(
     sprite_key,
     sprite,
-    apparel_stature,
+    sprites_props,
+    sprite_dim,
+    apparel_props,
     target_sprites
 ) -> None: 
-    # will probably need more input here for other sprites, combat attack boxes, etc...
     if any(action in sprite.stature.action for action in ['cast', 'shoot', 'slash', 'thrust']):
         equip_key = sprite.slots.get(sprite.stature.action)
 
         if equip_key is None:
+            # NOTE: this means if sprite doesn't have equipment, they can't engage in combat.
+            #           is that what you want ... ? what about good, ol' fashioned fisticuffs?
             return        
-            
-        attack_box = None
-        if apparel_stature.equipment.get(equip_key).type == 'projectile':
+                    
+        if apparel_props.equipment.get(equip_key).type == 'projectile':
             ammo_types = list(
-                apparel_stature.equipment.get(equip_key).properties.ammo.keys()
+                apparel_props.equipment.get(equip_key).properties.ammo.keys()
             )
+
             if sprite.packs.belt in ammo_types:
                 # will need to somehow save when the arrow was fired, to calculate distance
                 # world.projectiles = [{ key: key, index: index, TTL: int, speed: int}]
                 #   where every iteration TTL decrements by one.
                 attack_box = collisions.calculate_projectile_attackbox(
                     sprite,
-                    apparel_stature.equipment.get(equip_key).properties.ammo.get(
+                    apparel_props.equipment.get(equip_key).properties.ammo.get(
                         sprite.packs.belt).attackbox
                 )
-        elif apparel_stature.equipment.get(equip_key).type == 'blunt':
+
+        
+        elif apparel_props.equipment.get(equip_key).type == 'blunt':
+
             attack_box = collisions.calculate_blunt_attackbox(
                 sprite,
-                apparel_stature.equipment.get(equip_key).properties.attackboxes
+                apparel_props.equipment.get(equip_key).properties.attackboxes
             )
-            if attack_box:
-                for target_key, target in target_sprites.items():
-                    if target_key == sprite_key:
-                        continue
-                    
-            return
 
+            if not attack_box:
+                return
+
+            for target_key, target in target_sprites.items():
+                if target_key == sprite_key:
+                    continue
+
+                target_hitbox = collisions.calculate_sprite_hitbox(
+                    target,
+                    'sprite',
+                    sprites_props.get(target_key)
+                )
+
+                if not target_hitbox:
+                    continue
+
+                collision_box = collisions.detect_collision(
+                    equip_key, 
+                    attack_box, 
+                    [target_hitbox]
+                )
+
+                if not collision_box:
+                    continue
+
+                print(apparel_props.equipment.get(equip_key).properties.collide)
+                print(target.position)
+                collisions.recoil_sprite(
+                    target,
+                    sprite_dim,
+                    apparel_props.equipment.get(equip_key).properties.collide,
+                    attack_box
+                )
+                print(target.position)
+
+                
 def express(
     sprite,
     sprite_props
 ) -> None:
     pass
 
+
+# TODO: separate use from interact
 def operate(
     sprite: munch.Munch,
     sprite_props: munch.Munch,

@@ -155,7 +155,7 @@ class Repo():
 
                     log.debug(
                         f"{asset_key}: size - {buffer.size}, mode - {buffer.mode}", 
-                        '_init_static_assets'
+                        '_init_form_assets'
                     )
 
                     if asset_type == 'tiles':
@@ -560,7 +560,7 @@ class Repo():
         return self.expressions.get(express_key)
 
 
-    @functools.lru_cache(maxsize=1024)
+    @functools.lru_cache(maxsize=128)
     def get_form_frame(
         self, 
         form_key: str, 

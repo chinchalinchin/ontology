@@ -609,6 +609,7 @@ equipment:
     type: blunt
     properties:
       power: 5
+      collide: 20
       attackboxes: 
         up:
           - frame: 3
@@ -835,6 +836,7 @@ equipment:
     type: blunt
     properties:
       power:
+      collide: 20
       attackbox: 
         up:
           - frame: 3

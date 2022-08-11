@@ -123,6 +123,22 @@ class Renderer():
         return ordered_dict
 
 
+    @staticmethod
+    def render_sprite_dict(
+        unordered_sprites
+    ) -> OrderedDict:
+        # doesn't matter, as long as player is last
+        ordered_sprites = OrderedDict({
+            sprite_key: sprite 
+            for sprite_key, sprite in unordered_sprites.items()
+            if sprite_key != 'hero'
+        })
+        ordered_sprites.update({
+            'hero': unordered_sprites.get('hero')
+        })
+        return ordered_sprites
+
+
     def __init__(
         self, 
         game_world: world.World, 
@@ -363,8 +379,10 @@ class Renderer():
         .. note::
             Equipment frame only gets rendered if it is binded to a sprite state in the apparel configuration file. 
         """
-        sprites = game_world.get_sprites(game_world.layer)
-        for sprite_key, sprite in sprites.items():
+        unordered_sprites = game_world.get_sprites(game_world.layer)
+        ordered_sprites = self.render_sprite_dict(unordered_sprites)
+
+        for sprite_key, sprite in ordered_sprites.items():
             sprite_position = gui.int_tuple(( sprite.position.x, sprite.position.y ))
 
             sprite_stature_key = formulae.compose_animate_stature(
@@ -404,7 +422,7 @@ class Renderer():
             # ARMOR RENDERING
             if sprite.armor:
                 animate_statures = \
-                    game_world.apparel_stature.armor.get(sprite.armor).animate_statures
+                    game_world.apparel_properties.armor.get(sprite.armor).animate_statures
 
                 if (isinstance(animate_statures, str) and animate_statures == 'all') or \
                     (isinstance(animate_statures, list) and sprite_stature_key in animate_statures):
@@ -426,7 +444,7 @@ class Renderer():
 
                 for enabled_equipment in enabled:
                     animate_statures = \
-                        game_world.apparel_stature.equipment.get(enabled_equipment).animate_statures
+                        game_world.apparel_properties.equipment.get(enabled_equipment).animate_statures
 
 
                     if (isinstance(animate_statures, str) and animate_statures == 'all') or \

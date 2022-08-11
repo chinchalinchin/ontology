@@ -26,12 +26,12 @@ self.sprite_stature = munch.Munch({
 })
 ```
 
-* apparel_stature
+* apparel_properties
 
 Ingested from _data/conf/apparel.yaml_.
 
 ```python
-self.apparel_stature = munch.Munch({
+self.apparel_properties = munch.Munch({
     'apparel_1': {
         'animate_states': [
             'state_1',
