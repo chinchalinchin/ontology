@@ -333,6 +333,11 @@ class World():
                         # ...and not currently fleeing
                         if sprite.path is not None and 'flee' in sprite.path:
                             continue
+                        
+                        # ...or engaged in combat
+                        if sprite.stature.action in self.sprite_stature.decomposition.combat \
+                            and sprite.frame != 0:
+                            continue
 
                         # ...then evaluate the conditions for approach
                         for condition in sprite_desire.conditions:
@@ -352,12 +357,22 @@ class World():
                                 if distance <= sprite_props.radii.aware.approach:
 
                                     log.debug(
-                                        f'{sprite_key} aware of {sprite_desire.target}...',
+                                        f'{sprite_key} aware of {sprite_desire.target} and approaching...',
                                         '_ruminate'
                                     )
                                     if sprite.path != sprite_desire.target:
                                         sprite.path = sprite_desire.target
-                                    self._reorient(sprite_key)
+                                    new_direction = self._reorient(sprite_key)
+                                    setattr(
+                                        sprite,
+                                        'intent',
+                                        munch.Munch({
+                                            'intention': 'move',
+                                            'action': 'walk',
+                                            'direction': new_direction,
+                                            'expression': sprite.stature.expression
+                                        })
+                                    )
                                     break
 
                                 elif distance > sprite_props.radii.aware.approach \
@@ -368,7 +383,6 @@ class World():
                                         '_ruminate'
                                     )
                                     sprite.path = None
-                                    continue
 
                             elif condition.function == 'always':
                                 log.verbose(
@@ -376,14 +390,70 @@ class World():
                                     '_ruminate'
                                 )
                                 sprite.path = sprite_desire.target
-                                self._reorient(sprite_key)
+                                new_direction = self._reorient(sprite_key)
+                                setattr(
+                                    sprite,
+                                    'intent',
+                                    munch.Munch({
+                                        'intention': 'move',
+                                        'action': 'walk',
+                                        'direction': new_direction,
+                                        'expression': sprite.stature.expression
+                                    })
+                                )
                                 break
 
-                    elif sprite_desire.mode == 'engage':
-                        pass
 
+                    # if engage desired...
+                    elif sprite_desire.mode == 'engage':
+                        if sprite.path is not None and 'flee' in sprite.path:
+                            continue
+
+                        for condition in sprite_desire.conditions:
+
+                            if condition.function == 'aware':
+                                log.infinite(f'{sprite_key} desires to engage {sprite_desire.target}', '_ruminate')
+                                desire_pos = impulse.locate_desire(
+                                    sprite_desire.target,
+                                    sprite,
+                                    self.get_sprites(),
+                                )
+                                distance = calculator.distance(
+                                    desire_pos,
+                                    sprite_pos
+                                )
+                                if distance <= sprite_props.radii.aware.engage and \
+                                    sprite.stature.action not in self.sprite_stature.decomposition.combat:
+
+                                    log.debug(
+                                        f'{sprite_key} aware of {sprite_desire.target} and engaging...',
+                                        '_ruminate'
+                                    )
+                                    # TODO: determine which slots are available for action
+                                    setattr(sprite.memory, 'stature', sprite.stature)
+                                    setattr(
+                                        sprite,
+                                        'intent',
+                                        munch.Munch({
+                                            'intention': 'combat',
+                                            # TODO: this
+                                            'action': 'slash',
+                                            'direction': sprite.stature.direction,
+                                            'expression': sprite.stature.expression
+                                        })
+                                    )
+                                    break
+                                elif distance > sprite_props.radii.aware.engage :
+                                    log.debug(
+                                        f'{sprite_key} unaware of {sprite_desire.target}, so not engaging...',
+                                        '_ruminate'
+                                    )
+                                    setattr(sprite, 'intent', sprite.memory.stature)
+                                    setattr(sprite.memory, 'stature', None)
+
+                    # if flee desired...
                     elif sprite_desire.mode == 'flee':
-                        # if not fleeing, then don't need to check aware condition
+                        # if not fleeing, then don't check aware condition
                         if 'flee' not in sprite.path:
                             continue
 
@@ -402,13 +472,23 @@ class World():
                                 f'{sprite_key} lost sight of {target_key}, resetting stature...',
                                 '_ruminate'
                             )
-                            # pick last path to reorient towards until next update catches
-                            # approach desire
+                                # pick last path to reorient towards until next update catches approach desire
                             setattr(sprite, 'path', list(sprite.memory.paths.keys())[-1])
                             setattr(sprite, 'stature', sprite.memory.stature)
                             setattr(sprite.stature, 'expression', None)
                             setattr(sprite.memory, 'stature', None)
-                            self._reorient(sprite_key)
+                            # needs to be called after path is set
+                            new_direction = self._reorient(sprite_key)
+                            setattr(
+                                sprite,
+                                'intent',
+                                munch.Munch({
+                                    'intention': 'move',
+                                    'action': 'run',
+                                    'direction': new_direction,
+                                    'expression': sprite.stature.expression
+                                })
+                            )
                             break
                             
                 # update immediate desires
@@ -432,7 +512,18 @@ class World():
                                     else:
                                         sprite.path = f'flee {sprite_desire.target}'
 
-                                    self._reorient(sprite_key, 'run')
+                                    new_direction = self._reorient(sprite_key, 'run')
+                                    setattr(
+                                        sprite,
+                                        'intent',
+                                        munch.Munch({
+                                            'intention': 'move',
+                                            'action': 'run',
+                                            'direction': new_direction,
+                                            'expression': sprite.stature.expression
+                                        })
+                                    )
+                                    
                                 break
 
             # ensure sprite has intent for next iteration
@@ -562,13 +653,11 @@ class World():
                     sprite.frame = 0
                     if sprite.stature.action in self.sprite_stature.decomposition.blocking:
                         sprite.stature.intention = None
-                        sprite.stature.action = 'walk'
 
 
     def _reorient(
         self,
         sprite_key: str,
-        action: str = 'walk'
     ) -> None:
 
         sprite = self.npcs.get(sprite_key)
@@ -593,14 +682,12 @@ class World():
 
         log.verbose(f'Reorienting {sprite_key} to {goal}', '_reorient')
 
-        paths.reorient(
-            sprite,
+        return paths.reorient(
             sprite_hitbox,
             collision_set,
             goal,
             self.sprite_properties.get(sprite_key).speed.collide,
             self.dimensions,
-            action
         )
 
 
@@ -690,13 +777,22 @@ class World():
                         )
                         log.debug(f'Reorienting {sprite_key} with path {sprite.path}',
                                     '_physics')
-                        paths.reorient(
-                            sprite,
+                        new_direction = paths.reorient(
                             sprite_hitbox,
                             collision_set,
                             path,
                             self.sprite_properties.get(sprite_key).speed.collide,
                             self.dimensions
+                        )
+                        setattr(
+                            sprite,
+                            'intent',
+                            munch.Munch({
+                                'intention': 'move',
+                                'action': sprite.stature.action,
+                                'direction': new_direction,
+                                'expression': sprite.stature.expression
+                            })
                         )
 
                 if hitbox_key == 'sprite':

@@ -193,7 +193,7 @@ npcs:
     slots:
       cast: null
       thrust: null
-      slash: null
+      slash: warhammer
       shoot: null
     armor: null
     packs:
@@ -230,6 +230,11 @@ npcs:
         target: two
         conditions:
           - function: always
+      - plot: a
+        mode: approach
+        target: one
+        condition:
+          - function: aware
       - plot: b
         mode: engage
         target: esmeralda

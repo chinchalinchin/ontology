@@ -7,15 +7,14 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.engine.paths', settings.LOG_LEVEL)
 
+## "STATIC" FUNCTIONS
 
 def reorient(
-    sprite: munch.Munch, 
     hitbox: tuple, 
     collision_set: list, 
     goal: tuple, 
     speed: int, 
     world_dim: tuple,
-    action: str = 'walk'
 ) -> None:
     new_up = (
         hitbox[0], 
@@ -80,16 +79,7 @@ def reorient(
 
     log.verbose(f'Choice to minimize distance: {least_direction}', 'reorient')
 
-    setattr(
-        sprite,
-        'intent',
-        munch.Munch({
-            'intention': 'move',
-            'action': action,
-            'direction': least_direction,
-            'expression': sprite.stature.expression
-        })
-    )
+    return least_direction
 
 
 def concat_dynamic_paths(

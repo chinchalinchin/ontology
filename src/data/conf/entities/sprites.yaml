@@ -69,6 +69,12 @@ stature:
             -   walk
             -   run
             -   death
+        combat:
+            - cast
+            - thrust
+            - slash
+            - shoot
+            - guard
     animate_map:
         cast_up:
             row: 0
@@ -258,7 +264,7 @@ sprites:
                 aware: 
                     approach: 150
                     flee: 100
-                    engage: 15
+                    engage: 64
                     defend: 10
                     converse: 15
                     acquire: 10
