@@ -445,7 +445,6 @@ class World():
                 animate = True
 
             elif sprite.stature.intention == 'combat':
-                print(self.npcs.get('esmeralda').position)
                 impulse.combat(
                     sprite_key,
                     sprite,
@@ -455,7 +454,6 @@ class World():
                     self.get_sprites()
                 )
                 animate = True
-                print(self.npcs.get('esmeralda').position)
 
 
             elif sprite.stature.intention == 'express':

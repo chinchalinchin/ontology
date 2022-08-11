@@ -93,3 +93,6 @@ THAT PREVIOUS ONE FIRST
     2. separate use and interact "operate" intents into separate intention categories. 
     2. baublize inventory
     3. inventory and equipment submenus
+
+
+- up attack boxes need offset up a little bit in the up direction and down in the down direction. the feel isn't quite right in that direction.

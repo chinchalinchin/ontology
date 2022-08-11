@@ -150,15 +150,12 @@ def combat(
                 if not collision_box:
                     continue
 
-                print(apparel_props.equipment.get(equip_key).properties.collide)
-                print(target.position)
                 collisions.recoil_sprite(
                     target,
                     sprite_dim,
                     apparel_props.equipment.get(equip_key).properties.collide,
                     attack_box
                 )
-                print(target.position)
 
                 
 def express(
