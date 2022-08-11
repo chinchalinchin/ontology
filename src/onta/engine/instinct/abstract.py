@@ -66,7 +66,7 @@ def approach(
                     })
                 )
                 setattr(sprite.memory, 'intent', None)
-                return False
+                return True
 
             elif distance > sprite_props.radii.aware.approach \
                     and sprite.path == sprite_desire.target:
