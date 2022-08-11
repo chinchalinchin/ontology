@@ -572,6 +572,7 @@ class World():
             self.get_sprites()
         )
 
+        # SPRITE-TO-SPRITE, SPRITE-TO-STRUT COLLISIONS
         for sprite_key, sprite in self.get_sprites().items():
             for hitbox_key in ['strut', 'sprite']:
                 exclusions = [ sprite_key ]
@@ -673,6 +674,7 @@ class World():
                 'mass'
             )
 
+        # MASS-TO-PLATE COLLISIONS
         for layer in self.layers:
             mass_hitboxes = [ 
                 mass.hitbox.strut for mass in self.platesets.get(layer).masses 
@@ -689,7 +691,10 @@ class World():
                 self.get_gates()
             )
     
-                    
+
+        # PROJECTILE-TO-SPRITE, PROJECTILE-TO-STRUT COLLISIONS
+        
+               
         # TODO: plate-to-plate collisions, plate-to-strut collisions
             # in order to do mass-to-mass collisions efficiently, will need a collision map
             # like with sprites, but the rub here is the keys are {mass_key}_{mass_index}
