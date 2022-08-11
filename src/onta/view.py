@@ -380,6 +380,12 @@ class Renderer():
         """
         unordered_sprites = game_world.get_sprites(game_world.layer)
         ordered_sprites = self.render_sprite_dict(unordered_sprites)
+        player_dim = (
+            game_world.hero.position.x,
+            game_world.hero.position.y,
+            game_world.sprite_dimensions[0],
+            game_world.sprite_dimensions[1]
+        )
 
         for sprite_key, sprite in ordered_sprites.items():
             sprite_position = gui.int_tuple(( sprite.position.x, sprite.position.y ))
@@ -400,12 +406,6 @@ class Renderer():
                 sprite_position[1],
                 sprite_base_frame.size[0],
                 sprite_base_frame.size[1]
-            )
-            player_dim = (
-                game_world.hero.position.x,
-                game_world.hero.position.y,
-                game_world.sprite_dimensions[0],
-                game_world.sprite_dimensions[1]
             )
 
             if crop and not formulae.on_screen(
@@ -457,6 +457,44 @@ class Renderer():
                         )
                         self.world_frame.alpha_composite(equipment_frame, sprite_position)
 
+
+    def _render_projectiles(
+        self,
+        game_world: world.World,
+        repository: repo.Repo,
+        crop: bool
+    ) -> None:
+        player_dim = (
+            game_world.hero.position.x,
+            game_world.hero.position.y,
+            game_world.sprite_dimensions[0],
+            game_world.sprite_dimensions[1]
+        )
+        for projectile in game_world.projectiles:
+            projectile_frame = repository.get_projectile_frame(
+                projectile.key, 
+                projectile.direction
+            )
+            projectile_dim = (
+                projectile.current.x,
+                projectile.current.y,
+                game_world.projectile_properties.get(projectile).size.w,
+                game_world.projectile_properties.get(projectile).size.h
+            )
+
+
+            if crop and not formulae.on_screen(
+                player_dim,
+                projectile_dim,
+                self.player_device.dimensions,
+                game_world.dimensions,
+            ):
+                continue
+
+            self.world_frame.alpha_composite(
+                projectile_frame, 
+                (projectile_dim[0], projectile_dim[1])
+            )
 
     def _render_slots(
         self, 

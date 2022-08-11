@@ -18,11 +18,12 @@ class Conf():
     plate_property_conf = munch.Munch({})
     plate_sheet_conf = munch.Munch({})
     tile_sheet_conf = munch.Munch({})
+    projectile_property_conf = munch.Munch({})
+    projectile_img_conf = munch.Munch({})
     control_conf = munch.Munch({})
     sense_conf = munch.Munch({})
     avatar_conf = munch.Munch({})
     expression_conf = munch.Munch({})
-    projectile_conf = munch.Munch({})
     composite_conf = munch.Munch({})
     apparel_conf = munch.Munch({})
 
@@ -111,19 +112,6 @@ class Conf():
         :rtype: munch.Munch
         """
         return self.__configuration(type_key, 'dialectics')
-
-
-    def load_projectile_configuration(
-        self
-    ) -> munch.Munch:
-        """Returns the parsed _Projectile_ configuration from the _data/conf/self/controls.yaml_ file.
-
-        :return: _Projectile_ configuration.
-        :rtype: munch.Munch
-        """
-        if len(self.projectile_conf) == 0:
-            self.projectile_conf = self._dialectic_configuration('projectiles')
-        return self.projectile_conf
 
 
     def load_control_configuration(
@@ -222,6 +210,42 @@ class Conf():
         return self.tile_sheet_conf
 
 
+    def load_projectile_configuration(
+        self
+    ) -> munch.Munch:
+        """Returns the parsed _Projectile_ configuration from the _data/conf/self/controls.yaml_ file.
+
+        :return: _Projectile_ configuration.
+        :rtype: munch.Munch
+        """
+        if len(self.projectile_property_conf) == 0 or \
+            len(self.projectile_img_conf) == 0:
+            projectiles_conf = self._dialectic_configuration('projectiles')
+
+            for project_key, projectile_conf in projectiles_conf.items():
+                setattr(
+                    self.projectile_property_conf, 
+                    project_key, 
+                    projectile_conf.properties
+                )
+                setattr(
+                    self.projectile_property_conf.get(project_key),
+                    'size',
+                    projectile_conf.size
+                )
+                setattr(
+                    self.projectile_img_conf,
+                    project_key,
+                    munch.munchify({
+                        key: value for key, value in projectile_conf.items()
+                        if key != 'properties'
+                    })
+                )
+        return (
+            self.projectile_property_conf, 
+            self.projectile_img_conf
+        )
+
     def load_sprite_configuration(
         self
     ) -> munch.Munch:
@@ -273,8 +297,16 @@ class Conf():
             struts_conf = self._form_configuration('struts')
 
             for strut_key, strut in struts_conf.items():
-                setattr(self.strut_property_conf, strut_key, strut.properties)
-                setattr(self.strut_property_conf.get(strut_key), 'size', strut.size) 
+                setattr(
+                    self.strut_property_conf, 
+                    strut_key, 
+                    strut.properties
+                )
+                setattr(
+                    self.strut_property_conf.get(strut_key), 
+                    'size',
+                    strut.size
+                ) 
                 setattr(
                     self.strut_sheet_conf,
                     strut_key,

@@ -7,7 +7,7 @@
 * composite_conf
 
 ```python
-self.composite_conf = munch.Munch({
+self.composite_conf = munch.munchify({
 
 })
 ```
@@ -17,7 +17,7 @@ self.composite_conf = munch.Munch({
 Ingested from _data/conf/sprites.yaml_.
 
 ```python
-self.sprite_stature = munch.Munch({
+self.sprite_stature = munch.munchify({
     'sprite_1': {
         'state_1': state_1_frames, # int
         'state_2': state_2_frames, # int
@@ -31,7 +31,7 @@ self.sprite_stature = munch.Munch({
 Ingested from _data/conf/apparel.yaml_.
 
 ```python
-self.apparel_properties = munch.Munch({
+self.apparel_properties = munch.munchify({
     'apparel_1': {
         'animate_states': [
             'state_1',
@@ -48,7 +48,7 @@ self.apparel_properties = munch.Munch({
 Ingested from _data/conf/plates.yaml_.
 
 ```python
-self.plate_properties = munch.Munch({
+self.plate_properties = munch.munchify({
 
 })
 ```
@@ -58,7 +58,7 @@ self.plate_properties = munch.Munch({
 Ingested from _data/conf/struts.yaml_
 
 ```python
-self.strut_properties = munch.Munch({
+self.strut_properties = munch.munchIfy({
     'strut_1': {
         'hitbox_1': hitbox_dim, # tuple
         # ...
@@ -69,7 +69,7 @@ self.strut_properties = munch.Munch({
 * sprite_properties
 
 ```python
-self.sprite_properties = munch.Munch({
+self.sprite_properties = munch.munchify({
     'sprite_1': {
         'speed':{
             'walk': walk, # int
@@ -85,6 +85,39 @@ self.sprite_properties = munch.Munch({
 })
 ```
 
+* projectile_properties
+
+```python
+self.projectile_properties = munch.munchify({
+    'projectile_1': {
+        'speed': speed, # int
+        'distance': distance, # int,
+        'power': power, # int,
+        'attackboxes': {
+            'up': {
+                'offset': {
+                    'x': x, # int,
+                    'y': y, # int
+                },
+                'size': {
+                    'w': w, # int
+                    'h': h, # int
+                }
+            },
+            'down': {
+                # ...
+            },
+            'right': {
+                #...
+            },
+            'left': {
+                # ...
+            }
+        }
+    },
+    # ...
+})
+```
 ### State
 
 * tilesets
@@ -197,7 +230,7 @@ self.compositions = munch.Munch({
 * hero
 
 ```python
-self.hero = munch.Munch({
+self.hero = munch.munchify({
     'position': {
         'x': x, # float,
         'y': y, # float
@@ -214,7 +247,7 @@ self.hero = munch.Munch({
 * npcs
 
 ```python
-self.npcs = munch.Munch({
+self.npcs = munch.munchify({
     'npc_1': {
         'position: {
             'x': x, # float
@@ -226,8 +259,22 @@ self.npcs = munch.Munch({
 })
 ```
 
-### Other
+* projectiles
 
+```python
+self.projectiles = [
+    munch.munchify({
+        'key': key, # str
+        'direction': direction, # str,
+        'layer': layer, # str
+        'distance': distance, # int
+        'speed': speed, # int
+        'origin': origin, # tuple
+        'current': current, # tuple
+    }),
+    # ...
+]
+```
  ```python
 self.dimensions = ( w, h ) # tuple
 ```

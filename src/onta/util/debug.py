@@ -48,7 +48,20 @@ def generate_world_template(
     for key, ind in enabled_switches.items():
         enabled_switch_str += f"<li> world.switch_map: {key}({ind})</li>\n"
 
+    projectile_str = ""
+    if game_world.projectiles:
+        for i, p in enumerate(game_world.projectiles):
+            projectile_str += f'<li> world.projectiles[{i}].current: {p.curren}'
+
     if enabled_switch_str:
+        if projectile_str:
+            return f"""
+            <h5>World</h5>
+            <ul style="font-size: small">    
+                {enabled_switch_str}
+                {projectile_str}
+            </ul>
+            """
         return f"""
         <h5>World</h5>
         <ul style="font-size: small">    

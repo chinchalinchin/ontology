@@ -158,7 +158,7 @@ def calculate_blunt_attackbox(
         if directed_box.frame == sprite.frame
     ]
     if atkbox_frames:
-        atkbox =atkbox_frames.pop()
+        atkbox = atkbox_frames.pop()
         return  (
             sprite.position.x + atkbox.offset.x,
             sprite.position.y + atkbox.offset.y,
@@ -181,8 +181,16 @@ def calculate_projectile_attackbox(
     :return: _description_
     :rtype: tuple
     """
-    atkboxes = directional_atkboxes.get(sprite.stature.direction)
-    pass
+    raw_atkbox = directional_atkboxes.get(sprite.stature.direction)
+    if raw_atkbox is None:
+        return raw_atkbox
+    format_atkbox = (
+        raw_atkbox.offset.x,
+        raw_atkbox.offset.y,
+        raw_atkbox.size.w,
+        raw_atkbox.size.h
+    )
+    return format_atkbox
 
 
 def collision_set_relative_to(

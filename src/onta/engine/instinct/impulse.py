@@ -39,8 +39,8 @@ def locate_desire(
         log.verbose('Target is dynamic, retrieving sprite position...', 'locate_desire')
         if invert:
             return (
-                sprite.position.x - sprites.get(target).position.x,
-                sprite.position.y - sprites.get(target).position.y,
+                2*sprite.position.x - sprites.get(target).position.x,
+                2*sprite.position.y - sprites.get(target).position.y,
 
             )
         return (
@@ -51,8 +51,8 @@ def locate_desire(
         log.verbose('Target is static, retrieving path...', 'locate_desire')
         if invert: 
             return (
-                sprite.position.x - sprite.memory.paths.get(target).position.x,
-                sprite.position.y - sprite.memory.paths.get(target).position.y,
+                2*sprite.position.x - sprite.memory.paths.get(target).position.x,
+                2*sprite.position.y - sprite.memory.paths.get(target).position.y
             )
         return ( 
             sprite.memory.paths.get(target).x, 
@@ -111,6 +111,8 @@ def combat(
     sprite_dim,
     apparel_props,
     target_sprites,
+    projectiles,
+    projectile_props
     # will need to pass in `projectiles`
 ) -> None: 
     if any(action in sprite.stature.action for action in ['cast', 'shoot', 'slash', 'thrust']):
@@ -126,14 +128,21 @@ def combat(
                 apparel_props.equipment.get(equip_key).properties.ammo.keys()
             )
 
-            if sprite.packs.belt in ammo_types:
-                # will need to somehow save when the arrow was fired, to calculate distance
-                # world.projectiles = [{ key: key, index: index, max_distance: int, speed: int, current:tuple, origin: tuple}]
-                #   where every iteration distance(current,origin)<max_distance to survive
-                attack_box = collisions.calculate_projectile_attackbox(
-                    sprite,
-                    apparel_props.equipment.get(equip_key).properties.ammo.get(
-                        sprite.packs.belt).attackbox
+            if sprite.packs.belt in ammo_types and \
+                sprite.frame in apparel_props.equipment.get(equip_key).properties.release_frame:
+                projectiles.append(
+                    munch.Munch({
+                        'key': sprite.packs.belt,
+                        'direction': sprite.stature.direction,
+                        'speed': projectile_props.get(sprite.packs.belt).speed,
+                        'distance': projectile_props.get(sprite.packs.belt).distance,
+                        'origin': ( sprite.position.x, sprite.position.y ),
+                        'current': ( sprite.position.x, sprite.position.y ),
+                        'attackbox': collisions.calculate_projectile_attackbox(
+                            sprite,
+                            projectile_props.get(sprite.packs.belt).attackboxes
+                        )
+                    })
                 )
 
         

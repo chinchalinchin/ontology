@@ -53,6 +53,7 @@ class World():
     plate_properties = munch.Munch({})
     strut_properties = munch.Munch({})
     sprite_properties = munch.Munch({})
+    projectile_properties = munch.Munch({})
     # STATE FIELDS
     tilesets = munch.Munch({})
     strutsets = munch.Munch({})
@@ -63,6 +64,7 @@ class World():
     switch_map = munch.Munch({})
     layer = None
     layers = []
+    projectiles = []
     # META FIELDS
     dimensions = None
     tile_dimensions = None
@@ -99,6 +101,7 @@ class World():
         sprite_conf = config.load_sprite_configuration()
         self.sprite_stature, self.sprite_properties, _, self.sprite_dimensions = sprite_conf
         self.apparel_properties = config.load_apparel_configuration()
+        self.projectile_properties, _ = config.load_projectile_configuration
         self.plate_properties, _ = config.load_plate_configuration()
         self.strut_properties, _ = config.load_strut_configuration()
         self.composite_conf = config.load_composite_configuration()
@@ -469,11 +472,17 @@ class World():
                     self.sprite_properties,
                     self.sprite_dimensions,
                     self.apparel_properties,
-                    self.get_sprites()
+                    self.get_sprites(),
+                    self.projectiles,
+                    self.projectile_properties
                 )
                 animate = True
 
+            elif sprite.stature.intention == 'defend':
+                pass
 
+            # reorient sets an intention with an expression, therefore
+            #       does an 'express' intention make sense?
             elif sprite.stature.intention == 'express':
                 impulse.express(
                     sprite,

@@ -11,7 +11,7 @@ arrow:
     speed:
     distance:
     power:
-    attackbox:
+    attackboxes:
       up:
         offset:
           x:
@@ -97,7 +97,7 @@ magic_arrow:
     speed:
     distance:
     power:
-    attackbox:
+    attackboxes:
       up:
         offset:
           x:
@@ -140,7 +140,7 @@ bolt:
     speed:
     distance:
     power:
-    attackbox:
+    attackboxes:
       up:
         offset:
           x:
@@ -183,7 +183,7 @@ precise_bolt:
     speed:
     distance:
     power:
-    attackbox:
+    attackboxes:
       up:
         offset:
           x:
@@ -226,7 +226,7 @@ poison_bolt:
     speed:
     distance:
     power:
-    attackbox:
+    attackboxes:
       up:
         offset:
           x:

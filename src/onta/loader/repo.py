@@ -40,7 +40,7 @@ class Repo():
 
 
     @staticmethod
-    def adjust_cap_rotation(
+    def adjust_directional_rotation(
         direction: str
     ) -> tuple:
         """Static method to calculate the amount of rotation necessary to align slot cap with style alignment, depending on which direction the slot cap was defined in, i.e. if the slot cap was extracted from the asset file pointing to the left, this same piece can be rotated and reused, rather than extracting multiple assets.
@@ -61,7 +61,7 @@ class Repo():
         return ( 180, 270, 90, 0 )
 
     @staticmethod
-    def adjust_buffer_rotation(
+    def adjust_alignment_rotation(
         direction: str
     ) -> tuple:
         if direction == 'vertical':
@@ -272,7 +272,7 @@ class Repo():
                 buffer = buffer.crop(( x, y, w + x, h + y ))
 
                 if slot_key == 'cap':
-                    adjust = self.adjust_cap_rotation(slot_conf.cap.definition)
+                    adjust = self.adjust_directional_rotation(slot_conf.cap.definition)
                     setattr(
                         self.slots.get(size),
                         slot_key,
@@ -284,7 +284,7 @@ class Repo():
                         })
                     )
                 elif slot_key == 'buffer':
-                    adjust = self.adjust_buffer_rotation(slot_conf.buffer.definition)
+                    adjust = self.adjust_alignment_rotation(slot_conf.buffer.definition)
                     setattr(
                         self.slots.get(size),
                         slot_key,
@@ -347,7 +347,7 @@ class Repo():
         config: conf.Conf,
         ontology_path: str
     ) -> None:
-        projectile_conf = config.load_projectile_configuration()
+        _, projectile_conf = config.load_projectile_configuration()
 
         for project_key, projectile in projectile_conf.items():
             if not projectile or not projectile.get('path'):
@@ -361,20 +361,20 @@ class Repo():
                     projectile.path
                 )
             )
-            projectile.definition
 
+            buffer.crop(( x, y, w + x, h + y ))
 
-
-
-
-            # TODO: need to rotate based on the definition, like with slots
-
-
-
-
-
-
-
+            adjust = self.adjust_directional_rotation(projectile.definition)
+            setattr(
+                self.projectiles,
+                project_key,
+                munch.Munch({
+                    'down': buffer.rotate(adjust[0], expand=True),
+                    'left': buffer.rotate(adjust[1], expand=True),
+                    'right': buffer.rotate(adjust[2], expand=True),
+                    'up': buffer.rotate(adjust[3], expand=True),
+                })
+            )
 
 
     def _init_expression_assets(
