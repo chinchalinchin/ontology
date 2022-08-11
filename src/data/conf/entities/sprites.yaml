@@ -170,6 +170,13 @@ sprites:
                     size:
                         w: 19
                         h: 61
+                attack:
+                    offset:
+                        x: 0
+                        y: 0
+                    size:
+                        w: 64
+                        h: 64
             speed:
                 walk: 3
                 run: 5
@@ -199,6 +206,13 @@ sprites:
                     size: 
                         w: 23
                         h: 15
+                attack:
+                    offset:
+                        x: 0
+                        y: 0
+                    size:
+                        w: 64
+                        h: 64
             radii:
                 aware: 
                     approach: 200
@@ -232,6 +246,13 @@ sprites:
                     size: 
                         w: 23
                         h: 15
+                attack:
+                    offset:
+                        x: 0
+                        y: 0
+                    size:
+                        w: 64
+                        h: 64
             radii:
                 aware: 
                     approach: 150

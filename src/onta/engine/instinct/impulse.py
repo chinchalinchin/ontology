@@ -134,7 +134,7 @@ def combat(
 
                 target_hitbox = collisions.calculate_sprite_hitbox(
                     target,
-                    'sprite',
+                    'attack',
                     sprites_props.get(target_key)
                 )
 
@@ -144,7 +144,7 @@ def combat(
                 collision_box = collisions.detect_collision(
                     equip_key, 
                     attack_box, 
-                    [target_hitbox]
+                    [ target_hitbox ]
                 )
 
                 if not collision_box:
