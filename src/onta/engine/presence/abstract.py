@@ -1,14 +1,14 @@
 from typing import Callable
 import munch
 
-import onta.engine.instinct.impulse as impulse
+import onta.engine.presence.impulse as impulse
 import onta.engine.static.calculator as calculator
 
 import onta.settings as settings
 
 import onta.util.logger as logger
 
-log = logger.Logger('onta.engine.instinct.abstract', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.presence.abstract', settings.LOG_LEVEL)
 
 def approach(
     sprite_key: str,

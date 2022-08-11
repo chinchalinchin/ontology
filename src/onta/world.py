@@ -9,9 +9,9 @@ import onta.loader.state as state
 import onta.loader.conf as conf
 
 import onta.engine.collisions as collisions
-import onta.engine.instinct.abstract as abstract
-import onta.engine.instinct.interpret as interpret
-import onta.engine.instinct.impulse as impulse
+import onta.engine.presence.abstract as abstract
+import onta.engine.presence.interpret as interpret
+import onta.engine.presence.impulse as impulse
 import onta.engine.paths as paths
 import onta.engine.static.formulae as formulae
 import onta.engine.static.calculator as calculator

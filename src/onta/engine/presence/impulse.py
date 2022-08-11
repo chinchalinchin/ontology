@@ -1,5 +1,5 @@
 """
-# onta.engine.instinct.impulse
+# onta.engine.presence.impulse
 
 A module for transforming _Sprite_ `intent` into in-game action. 
 
@@ -18,7 +18,7 @@ import onta.engine.static.calculator as calculator
 import onta.util.logger as logger
 
 
-log = logger.Logger('onta.world.instinct.impulses', settings.LOG_LEVEL)
+log = logger.Logger('onta.world.presence.impulses', settings.LOG_LEVEL)
 
 
 def locate_desire(
