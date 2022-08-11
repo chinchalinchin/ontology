@@ -187,14 +187,11 @@ def calculate_projectile_attackbox(
         return raw_atkbox
 
     format_atkbox = (
-        sprite.position.x + raw_atkbox.offset.x,
-        sprite.position.y + raw_atkbox.offset.y,
+        int(sprite.position.x + raw_atkbox.offset.x),
+        int(sprite.position.y + raw_atkbox.offset.y),
         raw_atkbox.size.w,
         raw_atkbox.size.h
     )
-    print(sprite.position)
-    print(raw_atkbox)
-    print(format_atkbox)
     return format_atkbox
 
 
