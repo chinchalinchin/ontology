@@ -22,6 +22,7 @@ class Conf():
     sense_conf = munch.Munch({})
     avatar_conf = munch.Munch({})
     expression_conf = munch.Munch({})
+    projectile_conf = munch.Munch({})
     composite_conf = munch.Munch({})
     apparel_conf = munch.Munch({})
 
@@ -110,6 +111,19 @@ class Conf():
         :rtype: munch.Munch
         """
         return self.__configuration(type_key, 'dialectics')
+
+
+    def load_projectile_configuration(
+        self
+    ) -> munch.Munch:
+        """Returns the parsed _Projectile_ configuration from the _data/conf/self/controls.yaml_ file.
+
+        :return: _Projectile_ configuration.
+        :rtype: munch.Munch
+        """
+        if len(self.projectile_conf) == 0:
+            self.projectile_conf = self._self_configuration('projectiles')
+        return self.projectile_conf
 
 
     def load_control_configuration(

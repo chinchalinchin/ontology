@@ -84,6 +84,12 @@ EXPRESSION_PATH =[
     'expressions'
 ]
 
+PROJECTILE_PATH = [
+    'assets',
+    'dialectics',
+    'projectiles'
+]
+
 # Debug Configuration
 
 LOG_LEVEL = os.environ.setdefault('LOG_LEVEL', 'DEBUG')

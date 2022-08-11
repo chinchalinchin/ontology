@@ -31,6 +31,7 @@ class Repo():
     sprites = munch.Munch({})
     avatars = munch.Munch({})
     expressions = munch.Munch({})
+    projectiles = munch.Munch({})
     mirrors = munch.Munch({})
     menus = munch.Munch({})
     slots = munch.Munch({})
@@ -83,6 +84,7 @@ class Repo():
         self._init_sense_assets(config, ontology_path)
         self._init_avatar_assets(config, ontology_path)
         self._init_expression_assets(config, ontology_path)
+        self._init_projectile_assets(config, ontology_path)
 
 
     def _init_form_assets(
@@ -340,6 +342,29 @@ class Repo():
                         )
 
 
+    def _init_projectile_assets(
+        self,
+        config: conf.Conf,
+        ontology_path: str
+    ) -> None:
+        projectile_conf = config.load_projectile_configuration()
+
+        for project_key, projectile in projectile_conf.items():
+            if not projectile or not projectile.get('path'):
+                continue
+            x,y = ( projectile.position.x, projectile.position.y )
+            w, h = ( projectile.size.w, projectile.size.h )
+            buffer = gui.open_image(
+                os.path.join(
+                    ontology_path,
+                    *settings.PROJECTILE_PATH,
+                    projectile.path
+                )
+            )
+            projectile.definition
+            # TODO: need to rotate based on the definition, like with slots
+
+
     def _init_expression_assets(
         self,
         config: conf.Conf,
@@ -550,6 +575,17 @@ class Repo():
                 f'{sprite_key}: states - {len(self.sprites.base.get(sprite_key))}, frames - {frames}', 
                 '_init_entity_assets'
             )
+
+
+    @functools.lru_cache(maxsize=48)
+    def get_projectile_frame(
+        self,
+        project_key,
+        project_direction
+    ) -> Union[Image.Image, None]:
+        if self.projectiles.get(project_key):
+            return self.projectiles.get(project_key).get(project_direction)
+        return None
 
 
     @functools.lru_cache(maxsize=20)
