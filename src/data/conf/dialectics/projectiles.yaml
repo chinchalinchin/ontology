@@ -1,4 +1,4 @@
- arrow:
+arrow:
   path: arrow.png
   definition: left
   position:
@@ -40,7 +40,6 @@
         size:
           w:
           h:
-        right:
 
 fire_arrow:
   path: arrow_fire.png
@@ -127,10 +126,10 @@ magic_arrow:
         size:
           w:
           h:
-        right:
 
 bolt:
   path: bolt.png
+  definition: left
   position:
     x: 0
     y: 0
@@ -173,6 +172,7 @@ bolt:
 
 precise_bolt:
   path: bolt_precise.png
+  definition: left
   position:
     x: 0
     y: 0
@@ -215,6 +215,7 @@ precise_bolt:
 
 poison_bolt:
   path: bolt_poison.png
+  definition: left
   position:
     x: 0
     y: 0
