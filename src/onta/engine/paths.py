@@ -14,23 +14,9 @@ def reorient(
     collision_set: list, 
     goal: tuple, 
     speed: int, 
-    world_dim: tuple
+    world_dim: tuple,
+    action: str = 'walk'
 ) -> None:
-    """_summary_
-
-    :param sprite: _description_
-    :type sprite: dict
-    :param hitbox: _description_
-    :type hitbox: tuple
-    :param collision_sets: _description_
-    :type collision_sets: list
-    :param goal: _description_
-    :type goal: tuple
-    :param speed: _description_
-    :type speed: int
-    :param world_dim: _description_
-    :type world_dim: tuple
-    """
     new_up = (
         hitbox[0], 
         hitbox[1] - 2*speed - 1, 
@@ -99,7 +85,7 @@ def reorient(
         'intent',
         munch.Munch({
             'intention': 'move',
-            'action': 'walk',
+            'action': action,
             'direction': least_direction,
             'expression': sprite.stature.expression
         })

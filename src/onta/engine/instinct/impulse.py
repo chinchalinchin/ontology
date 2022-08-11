@@ -28,32 +28,35 @@ def locate_desire(
 ) -> Union[tuple, None]:
     # TODO: take into account sprite layer and target layer, will need to pass in sprite
 
-    log.verbose(f'Searching for {target.path}', 'locate_desire')
+    log.verbose(f'Searching for {target}', 'locate_desire')
 
-    invert = True if target.path.split(' ')[0] == 'not' else False
-        
-    if target.path in list(sprites.keys()):
+    invert = True if target.split(' ')[0] == 'not' else False
+    
+    if invert:
+        target = target.split(' ')[-1]
+
+    if target in list(sprites.keys()):
         log.verbose('Target is dynamic, retrieving sprite position...', 'locate_desire')
         if invert:
             return (
-                sprite.position.x - sprites.get(target.path).position.x,
-                sprite.position.y - sprites.get(target.path).position.y,
+                sprite.position.x - sprites.get(target).position.x,
+                sprite.position.y - sprites.get(target).position.y,
 
             )
         return (
-            sprites.get(target.path).position.x, 
-            sprites.get(target.path).position.y
+            sprites.get(target).position.x, 
+            sprites.get(target).position.y
         )
-    elif sprite.path in list(sprite.memory.paths.keys()):
+    elif target in list(sprite.memory.paths.keys()):
         log.verbose('Target is static, retrieving path...', 'locate_desire')
         if invert: 
             return (
-                sprite.position.x - sprite.memory.paths.get(target.path).position.x,
-                sprite.position.y - sprite.memory.paths.get(target.path).position.y,
+                sprite.position.x - sprite.memory.paths.get(target).position.x,
+                sprite.position.y - sprite.memory.paths.get(target).position.y,
             )
         return ( 
-            sprite.memory.paths.get(target.path).x, 
-            sprite.memory.paths.get(target.path).y
+            sprite.memory.paths.get(target).x, 
+            sprite.memory.paths.get(target).y
         )
     return None
 

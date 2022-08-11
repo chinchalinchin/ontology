@@ -368,28 +368,30 @@ class World():
                     elif sprite_desire.mode == 'engage':
                         pass
 
-                    elif sprite_desire.mode == 'flee':
-                        if condition.function == 'expression_equals' and \
-                            condition.value == sprite.stature.expression:
-                            
-                            if sprite_desire.target == 'attention':
-                                sprite.path = f'not {sprite.stature.attention}'
-                            else:
-                                sprite.path = f'not {sprite_desire.target}'
-                            log.debug(
-                                f'{sprite_key} expression is {condition.value}, fleeing {sprite.path}',
-                                '_ruminate'
-                            )
-                            self._reorient(sprite_key)
-                            break
-
                 else:
-                    # ensure sprite has intent for next iteration
-                    if sprite.memory and \
-                        sprite.memory.intent and sprite.memory.intent.intention:
-                        log.infinite(f'{sprite_key} remembers {sprite.memory.intent.intention} intention',
-                                     '_ruminate')
-                        sprite.intent = sprite.memory.intent
+                    if sprite_desire.mode == 'flee':
+                        for condition in sprite_desire.conditions:
+                            if condition.function == 'expression_equals' and \
+                                condition.value == sprite.stature.expression:
+                                sprite.stature.action = 'run'
+                                if sprite_desire.target == 'attention':
+                                    sprite.path = f'not {sprite.stature.attention}'
+                                else:
+                                    sprite.path = f'not {sprite_desire.target}'
+                                log.debug(
+                                    f'{sprite_key} expression is {condition.value}, fleeing {sprite.path}',
+                                    '_ruminate'
+                                )
+                                self._reorient(sprite_key, 'run')
+                                break
+
+            # ensure sprite has intent for next iteration
+            if not sprite.intent and \
+                sprite.memory and \
+                sprite.memory.intent and sprite.memory.intent.intention:
+                log.infinite(f'{sprite_key} remembers {sprite.memory.intent.intention} intention',
+                                '_ruminate')
+                sprite.intent = sprite.memory.intent
 
 
     def _intend(
@@ -509,7 +511,8 @@ class World():
 
     def _reorient(
         self,
-        sprite_key: str
+        sprite_key: str,
+        action: str = 'walk'
     ) -> None:
 
         sprite = self.npcs.get(sprite_key)
@@ -526,21 +529,22 @@ class World():
             self.get_typed_platesets(sprite.layer, 'gate'),
             self.switch_map.get(sprite.layer)
         )
-        path = impulse.locate_desire(
+        goal = impulse.locate_desire(
             sprite.path,
             sprite,
             self.get_sprites(),
         )
 
-        log.verbose(f'Reorienting {sprite_key} to {path}', '_reorient')
+        log.verbose(f'Reorienting {sprite_key} to {goal}', '_reorient')
 
         paths.reorient(
             sprite,
             sprite_hitbox,
             collision_set,
-            path,
+            goal,
             self.sprite_properties.get(sprite_key).speed.collide,
-            self.dimensions
+            self.dimensions,
+            action
         )
 
 
