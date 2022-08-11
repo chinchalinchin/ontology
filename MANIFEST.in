@@ -1,16 +1,14 @@
-include src/version.txt
-
-include src/data/state/*
-
-include src/data/conf/dialectics/*
-include src/data/conf/entities/*
-include src/data/conf/forms/*
-include src/data/conf/self/*
-
 include src/data/assets/entities/pixies/*
 include src/data/assets/entities/nymphs/*
 include src/data/assets/entities/sprites/bases/*
 include src/data/assets/entities/sprites/accents/*
+
+include src/data/assets/dialects/alchemy/*
+include src/data/assets/dialectics/choice/*
+include src/data/assets/dialectics/cooking/*
+include src/data/assets/dialectics/crafts/*
+include src/data/assets/dialectics/dialogue/*
+include src/data/assets/dialectics/projectiles/*
 
 include src/data/assets/forms/struts/*
 include src/data/assets/forms/tiles/*
@@ -22,5 +20,14 @@ include src/data/assets/self/avatars/*
 include src/data/assets/self/expressions/*
 
 include src/data/assets/sounds/*
+
+include src/data/conf/dialectics/*
+include src/data/conf/entities/*
+include src/data/conf/forms/*
+include src/data/conf/self/*
+
+include src/data/state/*
+
+include src/version.txt
 
 exclude src/onta/tests/**
