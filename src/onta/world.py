@@ -9,12 +9,12 @@ import onta.loader.state as state
 import onta.loader.conf as conf
 
 import onta.engine.collisions as collisions
+import onta.engine.instinct.abstract as abstract
 import onta.engine.instinct.interpret as interpret
 import onta.engine.instinct.impulse as impulse
 import onta.engine.paths as paths
 import onta.engine.static.formulae as formulae
 import onta.engine.static.calculator as calculator
-import onta.engine.static.logic as logic
 
 import onta.util.logger as logger
 
@@ -331,80 +331,17 @@ class World():
                         '_ruminate'
                     )
 
-                    # if approach desired...
-                    if sprite_desire.mode == 'approach':
-                        # ...and not currently fleeing
-                        if sprite.path is not None and 'flee' in sprite.path:
-                            continue
-                        
-                        # ...or engaged in combat
-                        if sprite.stature.action in self.sprite_stature.decomposition.combat \
-                            and sprite.frame != 0:
-                            continue
-
-                        # ...then evaluate the conditions for approach
-                        for condition in sprite_desire.conditions:
-
-                            if condition.function == 'aware':
-
-                                desire_pos = impulse.locate_desire(
-                                    sprite_desire.target,
-                                    sprite,
-                                    self.get_sprites(),
-                                )
-                                distance = calculator.distance(
-                                    desire_pos,
-                                    sprite_pos
-                                )
-
-                                if distance <= sprite_props.radii.aware.approach:
-
-                                    log.debug(
-                                        f'{sprite_key} aware of {sprite_desire.target} and approaching...',
-                                        '_ruminate'
-                                    )
-                                    if sprite.path != sprite_desire.target:
-                                        sprite.path = sprite_desire.target
-                                    new_direction = self._reorient(sprite_key)
-                                    setattr(
-                                        sprite,
-                                        'intent',
-                                        munch.Munch({
-                                            'intention': 'move',
-                                            'action': 'walk',
-                                            'direction': new_direction,
-                                            'expression': sprite.stature.expression
-                                        })
-                                    )
-                                    break
-
-                                elif distance > sprite_props.radii.aware.approach \
-                                        and sprite.path == sprite_desire.target:
-
-                                    log.debug(
-                                        f'{sprite_key} unaware of {sprite_desire.target}...',
-                                        '_ruminate'
-                                    )
-                                    sprite.path = None
-
-                            elif condition.function == 'always':
-                                log.verbose(
-                                    f'{sprite_key} always desires {sprite_desire.mode} {sprite_desire.target}...',
-                                    '_ruminate'
-                                )
-                                sprite.path = sprite_desire.target
-                                new_direction = self._reorient(sprite_key)
-                                setattr(
-                                    sprite,
-                                    'intent',
-                                    munch.Munch({
-                                        'intention': 'move',
-                                        'action': 'walk',
-                                        'direction': new_direction,
-                                        'expression': sprite.stature.expression
-                                    })
-                                )
-                                break
+                    if sprite_desire.mode == 'approach' and \
+                        abstract.approach(
+                           sprite_key,
+                           sprite,
+                           sprite_desire,
+                           self.sprite_stature,
+                           self.sprite_properties.get(sprite_key),
+                           self.get_sprites(),
+                           self._reorient
+                       ):
+                           break
 
 
                     # if engage desired...
@@ -444,6 +381,7 @@ class World():
                                             'expression': sprite.stature.expression
                                         })
                                     )
+                                    setattr(sprite.memory, 'intent', None)
                                     break
                                 elif distance > sprite_props.radii.aware.engage :
                                     log.debug(
@@ -475,21 +413,20 @@ class World():
                             )
                                 # pick last path to reorient towards until next update catches approach desire
                             setattr(sprite, 'path', list(sprite.memory.paths.keys())[-1])
-                            setattr(sprite, 'stature', sprite.memory.stature)
-                            setattr(sprite.stature, 'expression', None)
-                            setattr(sprite.memory, 'stature', None)
-                            # needs to be called after path is set
+                                # _reorient needs to be called after path is set
                             new_direction = self._reorient(sprite_key)
                             setattr(
                                 sprite,
                                 'intent',
                                 munch.Munch({
                                     'intention': 'move',
-                                    'action': 'run',
+                                    'action': 'walk',
                                     'direction': new_direction,
-                                    'expression': sprite.stature.expression
+                                    'expression': None
                                 })
                             )
+                            setattr(sprite.memory, 'stature', None)
+                            setattr(sprite.memory, 'intent', None)
                             break
                             
                 # update immediate desires
@@ -524,6 +461,7 @@ class World():
                                             'expression': sprite.stature.expression
                                         })
                                     )
+                                    setattr(sprite.memory, 'intent', None)
                                     
                                 break
 
@@ -565,6 +503,7 @@ class World():
                 '_intend'
             )
 
+            # null intentions allowed
             if sprite.intent.intention != sprite.stature.intention:
                 log.verbose(f'Switching {sprite_key} intention from {sprite.stature.intention} to {sprite.intent.intention}',
                             '_intend')
@@ -579,8 +518,8 @@ class World():
                     sprite.intent.direction != sprite.stature.direction:
                 sprite.stature.direction = sprite.intent.direction
 
-            if sprite.intent.get('expression') and \
-                    sprite.intent.expression != sprite.stature.expression:
+            # null expresions allowed
+            if sprite.intent.expression != sprite.stature.expression:
                 sprite.stature.expression = sprite.intent.expression
 
             if sprite_key != 'hero' and not sprite.memory.intent:
@@ -655,6 +594,8 @@ class World():
                     sprite.frame = 0
                     if sprite.stature.action in self.sprite_stature.decomposition.blocking:
                         sprite.stature.intention = None
+                        # have to set the action to a non-blocking action
+                        sprite.stature.action = 'walk'
 
 
     def _reorient(

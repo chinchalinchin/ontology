@@ -15,7 +15,7 @@ def reorient(
     goal: tuple, 
     speed: int, 
     world_dim: tuple,
-) -> None:
+) -> str:
     new_up = (
         hitbox[0], 
         hitbox[1] - 2*speed - 1, 
