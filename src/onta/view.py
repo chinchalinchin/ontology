@@ -109,7 +109,6 @@ class Renderer():
     def render_ordered_dict(
         unordered_dict
     ) -> OrderedDict:
-        # doesnt work. need to rethink this entirely.
         render_map = {}
         ordered_dict = OrderedDict()
 
@@ -457,7 +456,6 @@ class Renderer():
                             sprite.frame
                         )
                         self.world_frame.alpha_composite(equipment_frame, sprite_position)
-
 
 
     def _render_slots(

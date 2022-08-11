@@ -91,7 +91,8 @@ def combat(
     sprites_props,
     sprite_dim,
     apparel_props,
-    target_sprites
+    target_sprites,
+    # will need to pass in `projectiles`
 ) -> None: 
     if any(action in sprite.stature.action for action in ['cast', 'shoot', 'slash', 'thrust']):
         equip_key = sprite.slots.get(sprite.stature.action)
@@ -108,8 +109,8 @@ def combat(
 
             if sprite.packs.belt in ammo_types:
                 # will need to somehow save when the arrow was fired, to calculate distance
-                # world.projectiles = [{ key: key, index: index, TTL: int, speed: int}]
-                #   where every iteration TTL decrements by one.
+                # world.projectiles = [{ key: key, index: index, max_distance: int, speed: int, current:tuple, origin: tuple}]
+                #   where every iteration distance(current,origin)<max_distance to survive
                 attack_box = collisions.calculate_projectile_attackbox(
                     sprite,
                     apparel_props.equipment.get(equip_key).properties.ammo.get(
