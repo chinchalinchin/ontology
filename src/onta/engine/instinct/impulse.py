@@ -22,23 +22,39 @@ log = logger.Logger('onta.world.instinct.impulses', settings.LOG_LEVEL)
 
 
 def locate_desire(
-    target, 
+    target,
+    sprite,
     sprites, 
-    paths
 ) -> Union[tuple, None]:
     # TODO: take into account sprite layer and target layer, will need to pass in sprite
 
-    log.verbose(f'Searching for {target}', 'locate_desire')
+    log.verbose(f'Searching for {target.path}', 'locate_desire')
 
-    if target in list(sprites.keys()):
+    invert = True if target.path.split(' ')[0] == 'not' else False
+        
+    if target.path in list(sprites.keys()):
         log.verbose('Target is dynamic, retrieving sprite position...', 'locate_desire')
+        if invert:
+            return (
+                sprite.position.x - sprites.get(target.path).position.x,
+                sprite.position.y - sprites.get(target.path).position.y,
+
+            )
         return (
-            sprites.get(target).position.x, 
-            sprites.get(target).position.y
+            sprites.get(target.path).position.x, 
+            sprites.get(target.path).position.y
         )
-    elif target in list(paths.keys()):
+    elif sprite.path in list(sprite.memory.paths.keys()):
         log.verbose('Target is static, retrieving path...', 'locate_desire')
-        return ( paths.get(target).x, paths.get(target).y)
+        if invert: 
+            return (
+                sprite.position.x - sprite.memory.paths.get(target.path).position.x,
+                sprite.position.y - sprite.memory.paths.get(target.path).position.y,
+            )
+        return ( 
+            sprite.memory.paths.get(target.path).x, 
+            sprite.memory.paths.get(target.path).y
+        )
     return None
 
 
@@ -155,6 +171,19 @@ def combat(
                     sprite_dim,
                     apparel_props.equipment.get(equip_key).properties.collide,
                     attack_box
+                )
+
+                # if target not in combat
+                setattr(
+                    target.stature,
+                    'expression',
+                    'surprise'
+                )
+                # if target not focused on sprite
+                setattr(
+                    target.stature,
+                    'attention',
+                    sprite_key
                 )
 
                 

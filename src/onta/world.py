@@ -324,48 +324,64 @@ class World():
                         '_ruminate'
                     )
                     if sprite_desire.mode == 'approach':
-                        if 'aware' in sprite_desire.conditions:
-                            desire_pos = impulse.locate_desire(
-                                sprite_desire.target,
-                                self.get_sprites(),
-                                sprite.memory.paths
-                            )
-                            distance = calculator.distance(
-                                desire_pos,
-                                sprite_pos
-                            )
-                            if distance <= sprite_props.radii.aware.approach:
+                        for condition in sprite_desire.conditions:
+                            if condition.function == 'aware':
+                                desire_pos = impulse.locate_desire(
+                                    sprite_desire.target,
+                                    sprite,
+                                    self.get_sprites(),
+                                )
+                                distance = calculator.distance(
+                                    desire_pos,
+                                    sprite_pos
+                                )
+                                if distance <= sprite_props.radii.aware.approach:
 
-                                log.debug(
-                                    f'{sprite_key} aware of {sprite_desire.target}...',
+                                    log.debug(
+                                        f'{sprite_key} aware of {sprite_desire.target}...',
+                                        '_ruminate'
+                                    )
+                                    if sprite.path != sprite_desire.target:
+                                        sprite.path = sprite_desire.target
+                                    self._reorient(sprite_key)
+                                    break
+
+                                elif distance > sprite_props.radii.aware.approach \
+                                        and sprite.path == sprite_desire.target:
+
+                                    log.debug(
+                                        f'{sprite_key} unaware of {sprite_desire.target}...',
+                                        '_ruminate'
+                                    )
+                                    sprite.path = None
+                                    continue
+
+                            elif condition.function == 'always':
+                                log.verbose(
+                                    f'{sprite_key} always desires {sprite_desire.mode} {sprite_desire.target}...',
                                     '_ruminate'
                                 )
-                                if sprite.path != sprite_desire.target:
-                                    sprite.path = sprite_desire.target
+                                sprite.path = sprite_desire.target
                                 self._reorient(sprite_key)
                                 break
 
-                            elif distance > sprite_props.radii.aware.approach \
-                                    and sprite.path == sprite_desire.target:
-
-                                log.debug(
-                                    f'{sprite_key} unaware of {sprite_desire.target}...',
-                                    '_ruminate'
-                                )
-                                sprite.path = None
-                                continue
-
-                        elif 'always' in sprite_desire.conditions:
-                            log.verbose(
-                                f'{sprite_key} always desires {sprite_desire.mode} {sprite_desire.target}...',
-                                '_ruminate'
-                            )
-                            sprite.path = sprite_desire.target
-                            self._reorient(sprite_key)
-                            break
-
                     elif sprite_desire.mode == 'engage':
                         pass
+
+                    elif sprite_desire.mode == 'flee':
+                        if condition.function == 'expression_equals' and \
+                            condition.value == sprite.stature.expression:
+                            
+                            if sprite_desire.target == 'attention':
+                                sprite.path = f'not {sprite.stature.attention}'
+                            else:
+                                sprite.path = f'not {sprite_desire.target}'
+                            log.debug(
+                                f'{sprite_key} expression is {condition.value}, fleeing {sprite.path}',
+                                '_ruminate'
+                            )
+                            self._reorient(sprite_key)
+                            break
 
                 else:
                     # ensure sprite has intent for next iteration
@@ -512,8 +528,8 @@ class World():
         )
         path = impulse.locate_desire(
             sprite.path,
+            sprite,
             self.get_sprites(),
-            sprite.memory.paths
         )
 
         log.verbose(f'Reorienting {sprite_key} to {path}', '_reorient')
@@ -608,8 +624,8 @@ class World():
                         )
                         path = impulse.locate_desire(
                             sprite.path,
+                            sprite,
                             self.get_sprites(),
-                            sprite.memory.paths
                         )
                         log.debug(f'Reorienting {sprite_key} with path {sprite.path}',
                                     '_physics')

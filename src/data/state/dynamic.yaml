@@ -3,6 +3,7 @@ hero:
     x: 1350
     y: 1760
   stature:
+    attention: null
     intention: null
     expression: null
     direction: down
@@ -82,6 +83,7 @@ npcs:
       x: 900
       y: 1800
     stature:
+      attention:
       intention:
       expression:
       direction:
@@ -114,11 +116,18 @@ npcs:
       stature: null
       intent: null
     desires: 
-      -   plot: a
-          mode: approach
-          target: one
-          conditions:
-            - always
+      - plot: a
+        mode: approach
+        target: one
+        conditions:
+          - function: always
+      - plot: a
+        mode: flee
+        target: attention
+        conditions:
+          - function: expression_equals
+            value: surprise
+
     inventory:
       armor:
         bronze: True
@@ -172,6 +181,7 @@ npcs:
       x: 500
       y: 800
     stature:
+      attention: 
       intention:
       expression:
       direction:
@@ -208,23 +218,23 @@ npcs:
         mode: engage
         target: hero
         conditions:
-          - aware
+          - function: aware
       - plot: a
         mode: approach
         target: hero
         conditions:
-          - aware
+          - function: aware
         success: 
       - plot: a
         mode: approach
         target: two
         conditions:
-          - always
+          - function: always
       - plot: b
         mode: engage
         target: esmeralda
         conditions:
-          - aware
+          - function: aware
     inventory:
       armor:
         bronze: False
