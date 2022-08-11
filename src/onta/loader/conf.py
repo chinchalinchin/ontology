@@ -122,7 +122,7 @@ class Conf():
         :rtype: munch.Munch
         """
         if len(self.projectile_conf) == 0:
-            self.projectile_conf = self._self_configuration('projectiles')
+            self.projectile_conf = self._dialectic_configuration('projectiles')
         return self.projectile_conf
 
 
