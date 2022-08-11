@@ -1,0 +1,256 @@
+ arrow:
+  path: arrow.png
+  definition: left
+  position:
+    x: 0
+    y: 0
+  size:
+    w: 41
+    h: 10
+  properties:
+    speed:
+    distance:
+    power:
+    attackbox:
+      up:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      down:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      left:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      right:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+        right:
+
+fire_arrow:
+  path: arrow_fire.png
+  definition: left
+  position:
+    x: 0
+    y: 0
+  size:
+    w: 31
+    h: 18
+  properties:
+    speed:
+    distance:
+    power:
+    attackboxes:
+      up:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      down:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      left:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      right:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+
+magic_arrow:
+  path: arrow_magic.png
+  definition: left
+  position:
+    x: 0
+    y: 0
+  size:
+    w: 30
+    h: 21
+  properties:
+    speed:
+    distance:
+    power:
+    attackbox:
+      up:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      down:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      left:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      right:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+        right:
+
+bolt:
+  path: bolt.png
+  position:
+    x: 0
+    y: 0
+  size:
+    w: 32
+    h: 10
+  properties:
+    speed:
+    distance:
+    power:
+    attackbox:
+      up:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      down:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      left:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      right:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+
+precise_bolt:
+  path: bolt_precise.png
+  position:
+    x: 0
+    y: 0
+  size:
+    w: 24
+    h: 9
+  properties:
+    speed:
+    distance:
+    power:
+    attackbox:
+      up:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      down:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      left:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      right:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+
+poison_bolt:
+  path: bolt_poison.png
+  position:
+    x: 0
+    y: 0
+  size:
+    w: 24
+    h: 17
+  properties:
+    speed:
+    distance:
+    power:
+    attackbox:
+      up:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      down:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      left:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:
+      right:
+        offset:
+          x:
+          y:
+        size:
+          w:
+          h:

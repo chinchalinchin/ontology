@@ -261,7 +261,6 @@ sprites:
                     defend: 10
                     converse: 15
                     acquire: 10
-                    
             speed:
                 walk: 1
                 run: 2
