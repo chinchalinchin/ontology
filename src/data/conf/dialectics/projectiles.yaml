@@ -16,7 +16,7 @@ arrow:
         # offset is only relative to initial position
         offset:
           x: 27
-          y: 0
+          y: -10
         size:
           w: 10
           h: 41
