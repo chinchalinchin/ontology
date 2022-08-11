@@ -18,6 +18,7 @@ include src/data/assets/self/senses/*
 include src/data/assets/self/apparel/*
 include src/data/assets/self/avatars/*
 include src/data/assets/self/expressions/*
+include src/data/assets/self/portraits/*
 
 include src/data/assets/sounds/*
 
