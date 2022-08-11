@@ -100,7 +100,7 @@ Allowable values: `NONE`, `INFO`, `DEBUG`, `VERBOSE`, `INFINITE`, `MAXIMUM_OVERD
 
 # GUI Configuration
 
-SCREEN_DEFAULT_WIDTH = int(os.environ.setdefault('SCREEN_WIDTH', '600'))
+SCREEN_DEFAULT_WIDTH = int(os.environ.setdefault('SCREEN_WIDTH', '800'))
 """Default GUI width"""
 
 SCREEN_DEFAULT_HEIGHT = int(os.environ.setdefault('SCREEN_HEIGHT', '400'))

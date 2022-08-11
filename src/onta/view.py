@@ -90,6 +90,22 @@ class NoKeyWidget(QtWidgets.QWidget):
         return False
 
 
+class ScrollLabel(QtWidgets.QScrollArea):
+ 
+    def __init__(self, *args, **kwargs):
+        QtWidgets.QScrollArea.__init__(self, *args, **kwargs)
+        self.setWidgetResizable(True)
+        content = QtWidgets.QWidget(self)
+        self.setWidget(content)
+        lay = QtWidgets.QVBoxLayout(content)
+        self.label = QtWidgets.QLabel(content)
+        self.label.setAlignment(QtGui.Qt.AlignLeft | QtGui.Qt.AlignTop)
+        self.label.setWordWrap(True)
+        lay.addWidget(self.label)
+ 
+    def setText(self, text):
+        self.label.setText(text)
+
 class Renderer():
     """_summary_
     """
@@ -775,9 +791,9 @@ class Renderer():
         if self.debug:
             debug_frame = QtWidgets.QWidget(view_widget)
             debug_layout = QtWidgets.QHBoxLayout()
-            debug_layout.addWidget(QtWidgets.QLabel())
-            debug_layout.addWidget(QtWidgets.QLabel())
-            debug_layout.addWidget(QtWidgets.QLabel())
+            debug_layout.addWidget(ScrollLabel())
+            debug_layout.addWidget(ScrollLabel())
+            debug_layout.addWidget(ScrollLabel())
             debug_frame.setLayout(debug_layout)
             debug_frame.setSizePolicy(QtWidgets.QSizePolicy(
                 QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))

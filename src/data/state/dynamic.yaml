@@ -233,7 +233,7 @@ npcs:
       - plot: a
         mode: approach
         target: one
-        condition:
+        conditions:
           - function: aware
       - plot: b
         mode: engage

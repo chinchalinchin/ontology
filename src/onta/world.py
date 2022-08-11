@@ -314,11 +314,14 @@ class World():
 
             # TODO: order desires?
 
+            if sprite.intent:
+                continue
+
             update_flag = self.iterations % sprite_props.poll == 0
 
             for sprite_desire in sprite_desires:
 
-                if sprite_desire.plot != self.plot or sprite.intent:
+                if sprite_desire.plot != self.plot:
                     continue
 
                 # update delayed desires
@@ -430,7 +433,6 @@ class World():
                                         '_ruminate'
                                     )
                                     # TODO: determine which slots are available for action
-                                    setattr(sprite.memory, 'stature', sprite.stature)
                                     setattr(
                                         sprite,
                                         'intent',
@@ -448,8 +450,7 @@ class World():
                                         f'{sprite_key} unaware of {sprite_desire.target}, so not engaging...',
                                         '_ruminate'
                                     )
-                                    setattr(sprite, 'intent', sprite.memory.stature)
-                                    setattr(sprite.memory, 'stature', None)
+                                    setattr(sprite, 'intent', None)
 
                     # if flee desired...
                     elif sprite_desire.mode == 'flee':
@@ -512,7 +513,7 @@ class World():
                                     else:
                                         sprite.path = f'flee {sprite_desire.target}'
 
-                                    new_direction = self._reorient(sprite_key, 'run')
+                                    new_direction = self._reorient(sprite_key)
                                     setattr(
                                         sprite,
                                         'intent',
@@ -533,6 +534,7 @@ class World():
                 log.infinite(f'{sprite_key} remembers {sprite.memory.intent.intention} intention',
                                 '_ruminate')
                 sprite.intent = sprite.memory.intent
+                sprite.memory.intent = None
 
 
     def _intend(
@@ -581,7 +583,7 @@ class World():
                     sprite.intent.expression != sprite.stature.expression:
                 sprite.stature.expression = sprite.intent.expression
 
-            if sprite_key != 'hero':
+            if sprite_key != 'hero' and not sprite.memory.intent:
                 sprite.memory.intent = sprite.intent
 
             log.infinite(f'{sprite_key} stature post intent application: {sprite.stature.intention}',
@@ -794,6 +796,7 @@ class World():
                                 'expression': sprite.stature.expression
                             })
                         )
+                        setattr(sprite.memory, 'intent', None)
 
                 if hitbox_key == 'sprite':
                     for key, val in collision_map.copy().items():
