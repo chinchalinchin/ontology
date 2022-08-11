@@ -184,6 +184,7 @@ sprites:
             poll: null
 
     esmeralda:
+        portrait: female_00
         sheets:
             base: human_female_ivory.png
             accents:

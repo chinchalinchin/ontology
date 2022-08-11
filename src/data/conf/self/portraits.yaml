@@ -1,0 +1,35 @@
+female_00:
+  path: female_00.png
+  position:
+    primary:
+      x:
+      y:
+    secondary:
+      x:
+      y:
+    tertiary:
+      x:
+      y:
+    quarternary:
+      x:
+      y:
+  size:
+    w:
+    h:
+  properties:
+    primary:
+      expressions:
+        - sadness
+        - help
+    secondary:
+      expressions:
+        - confusion
+        - surprise
+    tertiary:
+      expressions:
+        - joy
+        - love
+   quarternary:
+      expressions:
+        - anger
+        - hate
