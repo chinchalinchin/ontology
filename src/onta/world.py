@@ -9,9 +9,9 @@ import onta.loader.state as state
 import onta.loader.conf as conf
 
 import onta.engine.collisions as collisions
-import onta.engine.presence.abstract as abstract
-import onta.engine.presence.interpret as interpret
-import onta.engine.presence.impulse as impulse
+import onta.engine.dasein.abstract as abstract
+import onta.engine.dasein.interpret as interpret
+import onta.engine.dasein.impulse as impulse
 import onta.engine.paths as paths
 import onta.engine.static.formulae as formulae
 import onta.engine.static.calculator as calculator
@@ -310,7 +310,6 @@ class World():
         for sprite_key, sprite in self.npcs.items():
             sprite_props = self.sprite_properties.get(sprite_key)
             sprite_desires = self._sprite_desires(sprite)
-            sprite_pos = (sprite.position.x, sprite.position.y)
 
             # TODO: order desires?
 
@@ -324,15 +323,17 @@ class World():
                 if sprite_desire.plot != self.plot:
                     continue
 
+                instruction = None
+                
                 # update delayed desires
                 if update_flag:
                     log.infinite(
-                        f'Checking {sprite_key} {sprite_desire.mode} desire conditions...',
+                        f'Polling {sprite_key}\'s delayed {sprite_desire.mode} desire conditions...',
                         '_ruminate'
                     )
 
-                    if sprite_desire.mode == 'approach' and \
-                        abstract.approach(
+                    if sprite_desire.mode == 'approach':
+                        instruction = abstract.approach(
                            sprite_key,
                            sprite,
                            sprite_desire,
@@ -340,139 +341,44 @@ class World():
                            self.sprite_properties.get(sprite_key),
                            self.get_sprites(),
                            self._reorient
-                       ):
-                           break
-
-
-                    # if engage desired...
-                    elif sprite_desire.mode == 'engage':
-                        if sprite.path is not None and 'flee' in sprite.path:
-                            continue
-
-                        for condition in sprite_desire.conditions:
-
-                            if condition.function == 'aware':
-                                log.infinite(f'{sprite_key} desires to engage {sprite_desire.target}', '_ruminate')
-                                desire_pos = impulse.locate_desire(
-                                    sprite_desire.target,
-                                    sprite,
-                                    self.get_sprites(),
-                                )
-                                distance = calculator.distance(
-                                    desire_pos,
-                                    sprite_pos
-                                )
-                                if distance <= sprite_props.radii.aware.engage and \
-                                    sprite.stature.action not in self.sprite_stature.decomposition.combat:
-
-                                    log.debug(
-                                        f'{sprite_key} aware of {sprite_desire.target} and engaging...',
-                                        '_ruminate'
-                                    )
-                                    # TODO: determine which slots are available for action
-                                    setattr(
-                                        sprite,
-                                        'intent',
-                                        munch.Munch({
-                                            'intention': 'combat',
-                                            # TODO: this
-                                            'action': 'slash',
-                                            'direction': sprite.stature.direction,
-                                            'expression': sprite.stature.expression
-                                        })
-                                    )
-                                    setattr(sprite.memory, 'intent', None)
-                                    break
-                                elif distance > sprite_props.radii.aware.engage :
-                                    log.debug(
-                                        f'{sprite_key} unaware of {sprite_desire.target}, so not engaging...',
-                                        '_ruminate'
-                                    )
-                                    setattr(sprite, 'intent', None)
-
-                    # if flee desired...
-                    elif sprite_desire.mode == 'flee':
-                        # if not fleeing, then don't check aware condition
-                        if 'flee' not in sprite.path:
-                            continue
-
-                        target_key = sprite.path.split(' ')[-1]
-                        target = self.get_sprites().get(target_key)
-
-                        distance = calculator.distance(
-                            (target.position.x, target.position.y),
-                            (sprite.position.x, sprite.position.y)
                         )
 
-                        log.debug(F'{sprite_key} fleeing {target_key}, checking if safe...', '_ruminate')
+                    elif sprite_desire.mode == 'engage':
+                        instruction = abstract.engage(
+                            sprite_key,
+                            sprite,
+                            sprite_desire,
+                            self.sprite_stature,
+                            self.sprite_properties.get(sprite_key),
+                            self.get_sprites()
+                        )
 
-                        if distance > sprite_props.radii.aware.flee:
-                            log.debug(
-                                f'{sprite_key} lost sight of {target_key}, resetting stature...',
-                                '_ruminate'
-                            )
-                                # pick last path to reorient towards until next update catches approach desire
-                            setattr(sprite, 'path', list(sprite.memory.paths.keys())[-1])
-                                # _reorient needs to be called after path is set
-                            new_direction = self._reorient(sprite_key)
-                            setattr(
-                                sprite,
-                                'intent',
-                                munch.Munch({
-                                    'intention': 'move',
-                                    'action': 'walk',
-                                    'direction': new_direction,
-                                    'expression': None
-                                })
-                            )
-                            setattr(sprite.memory, 'stature', None)
-                            setattr(sprite.memory, 'intent', None)
-                            break
-                            
+                    elif sprite_desire.mode == 'flee':
+                        instruction = abstract.can_unflee(
+                            sprite_key,
+                            sprite,
+                            sprite_props,
+                            self.get_sprites(),
+                            self._reorient
+                        )
+                    
                 # update immediate desires
                 else:
                     if sprite_desire.mode == 'flee':
-                        for condition in sprite_desire.conditions:
-                            if condition.function == 'expression_equals' and \
-                                condition.value == sprite.stature.expression:
+                        instruction = abstract.flee(
+                            sprite_key,
+                            sprite,
+                            sprite_desire,
+                            self._reorient
+                        )
 
-                                setattr(sprite.memory, 'stature', sprite.stature)
-                                sprite.stature.action = 'run'
-
-                                if 'flee' not in sprite.path:
-                                    log.debug(
-                                        f'{sprite_key} expression is {condition.value}, fleeing {sprite_desire.target}...',
-                                        '_ruminate'
-                                    )
-
-                                    if sprite_desire.target == 'attention':
-                                        sprite.path = f'flee {sprite.stature.attention}'
-                                    else:
-                                        sprite.path = f'flee {sprite_desire.target}'
-
-                                    new_direction = self._reorient(sprite_key)
-                                    setattr(
-                                        sprite,
-                                        'intent',
-                                        munch.Munch({
-                                            'intention': 'move',
-                                            'action': 'run',
-                                            'direction': new_direction,
-                                            'expression': sprite.stature.expression
-                                        })
-                                    )
-                                    setattr(sprite.memory, 'intent', None)
-                                    
-                                break
-
+                if instruction and instruction == 'break':
+                    break
+                if instruction and instruction == 'continue':
+                    continue
+                        
             # ensure sprite has intent for next iteration
-            if not sprite.intent and \
-                sprite.memory and \
-                sprite.memory.intent and sprite.memory.intent.intention:
-                log.infinite(f'{sprite_key} remembers {sprite.memory.intent.intention} intention',
-                                '_ruminate')
-                sprite.intent = sprite.memory.intent
-                sprite.memory.intent = None
+            abstract.remember(sprite_key, sprite)
 
 
     def _intend(

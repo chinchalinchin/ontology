@@ -5,7 +5,7 @@ import onta.settings as settings
 
 import onta.util.logger as logger
 
-log = logger.Logger('onta.engine.presence.interpret', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.dasein.interpret', settings.LOG_LEVEL)
 
 def map_input_to_intent(
     hero: munch.Munch,

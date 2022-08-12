@@ -5,7 +5,17 @@ import onta.settings as settings
 
 
 def parse_cli_args():
-    parser = argparse.ArgumentParser()
+    # TODO: implement hierarchy of commands with subparsers:
+    #       onta start
+    #               --ontology <>
+    #               --debug
+    #       onta render
+    #               --ontology <>
+    #               --render <>
+    #               --layer <>
+    #               --hud <>
+    #               --crop
+    parser = argparse.ArgumentParser(description="An LPC compliant game engine")
     parser.add_argument(
         '-o',
         '--o',
@@ -15,6 +25,7 @@ def parse_cli_args():
         type=str,
         dest='ontology',
         default=str(settings.DEFAULT_DIR),
+        help="Path to an ontology. If passed in, this path will override the default directory used for assets and configuration"
     )
     parser.add_argument(
         '-r',
@@ -24,6 +35,7 @@ def parse_cli_args():
         nargs="?",
         type=str,
         dest="render",
+        help="Path to a rendering location. If passed in, the game loop will not start and the world will be rendered to location provided."
     )
     parser.add_argument(
         '-l',
@@ -32,7 +44,8 @@ def parse_cli_args():
         '--layer',
         nargs="?",
         type=str,
-        dest="layer"
+        dest="layer",
+        help="Name of the layer to render."
     )
     parser.add_argument(
         '-cr',
@@ -40,7 +53,8 @@ def parse_cli_args():
         '-crop',
         '--crop',
         action='store_true',
-        dest="crop"
+        dest="crop",
+        help="If passed in, rendered game world frame will be cropped to screen dimensions."
     )
     parser.add_argument(
         '-db',
@@ -48,7 +62,8 @@ def parse_cli_args():
         '-debug',
         '--debug',
         action='store_true',
-        dest="debug"
+        dest="debug",
+        help="Start the game loop in debug mode"
     )
     parser.add_argument(
         '-sw',
@@ -59,6 +74,7 @@ def parse_cli_args():
         type=int,
         dest='width',
         default=settings.SCREEN_DEFAULT_WIDTH,
+        help="Set the screen width"
     )
     parser.add_argument(
         '-sh',
@@ -69,6 +85,7 @@ def parse_cli_args():
         type=int,
         dest='height',
         default=settings.SCREEN_DEFAULT_HEIGHT,
+        help="Set the screen height"
     )
     parser.add_argument(
         '-hud',
@@ -76,6 +93,7 @@ def parse_cli_args():
         '-heads-up',
         '--heads-up',
         action='store_true',
-        dest="hud"
+        dest="hud",
+        help="If passed in,the HUD will be added to the render"
     )
     return parser.parse_args()
