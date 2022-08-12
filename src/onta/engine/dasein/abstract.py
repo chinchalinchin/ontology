@@ -137,7 +137,7 @@ def attempt_unapproach(
         for condition in
         sprite_desire.conditions
     )
-    
+
     if distance > sprite_props.radii.aware.approach \
         and sprite.stature.attention == sprite_desire.target \
         and not always_flag:
@@ -238,6 +238,7 @@ def attempt_unengage(
             'attempt_unengage'
         )
         setattr(sprite, 'intent', sprite.memory.intent)
+        setattr(sprite.intent, 'expression', None)
         setattr(sprite.memory, 'intent', None)
     return 'continue'
 
