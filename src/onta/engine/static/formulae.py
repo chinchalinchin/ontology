@@ -39,6 +39,7 @@ def screen_crop_box(
     return (crop_x, crop_y, crop_width, crop_height)
 
 
+@functools.lru_cache(maxsize=100)
 def on_screen(
     player_dim: tuple,
     object_dim: tuple,
@@ -124,7 +125,8 @@ def compose_animate_stature(
         sprite.stature.direction
     ])
 
-@functools.lru_cache(maxsize=128)
+
+@functools.lru_cache(maxsize=100)
 def decompose_animate_stature(
     sprite_stature:str
 ) -> tuple:

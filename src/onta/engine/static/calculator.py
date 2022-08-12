@@ -1,6 +1,8 @@
 import functools
 import math
 
+
+@functools.lru_cache(maxsize=100)
 def center(
     dim: tuple
 ) -> tuple:
@@ -8,6 +10,7 @@ def center(
 
 
 
+@functools.lru_cache(maxsize=100)
 def angle_relative_to_center(
     point: tuple,
     center: tuple = (0,0)
@@ -27,7 +30,7 @@ def angle_relative_to_center(
     return 360 - 180 * math.acos(cosine) / math.pi
 
 
-@functools.lru_cache(maxsize=128)
+@functools.lru_cache(maxsize=100)
 def projection(
     angle:float = 45
 ) -> tuple:
@@ -37,6 +40,7 @@ def projection(
     )
 
 
+@functools.lru_cache(maxsize=100)
 def distance(
     a: tuple, 
     b: tuple
@@ -46,10 +50,10 @@ def distance(
     return math.sqrt(dx ** 2 + dy ** 2)
 
 
+@functools.lru_cache(maxsize=100)
 def intersection(
     rect_a: tuple, 
     rect_b: tuple,
-    log_it: bool = False
 ) -> bool:
     """Determines if two rectangles intersect. Rectangles are defined by the coordinate of the upper-left corner (as viewed in screen units, where the down is the positive y-direction), and its dimensions (i.e., width and height)
 
@@ -94,7 +98,7 @@ def intersection(
 
     return True
 
-
+@functools.lru_cache(maxsize=100)
 def scale(
     point: tuple, 
     factor: tuple, 
