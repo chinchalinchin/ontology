@@ -31,7 +31,8 @@ def approach(
     reorient_function: Callable[[str], str]
 ) -> Union[Literal['continue'], Literal['break']]:
     # ...if currently fleeing
-    if sprite.path is not None and 'flee' in sprite.path:
+    if sprite.stature.attention is not None and \
+        'flee' in sprite.stature.attention:
         return 'continue'
     
     # ...or in combat
@@ -237,8 +238,12 @@ def attempt_unengage(
             f'{sprite_key} unaware of {sprite_desire.target}, so not engaging...',
             'attempt_unengage'
         )
-        setattr(sprite, 'intent', sprite.memory.intent)
-        setattr(sprite.intent, 'expression', None)
+        if sprite.memory.intent:
+            setattr(sprite, 'intent', sprite.memory.intent)
+            setattr(sprite.intent, 'expression', None)
+        else:
+            setattr(sprite, 'intent', None)
+
         setattr(sprite.memory, 'intent', None)
     return 'continue'
 
@@ -256,7 +261,7 @@ def flee(
 
             setattr(sprite.memory, 'stature', sprite.stature)
 
-            if 'flee' not in sprite.path:
+            if 'flee' not in sprite.stature.attention:
                 log.debug(
                     f'{sprite_key} expression is {condition.value}, fleeing {sprite_desire.target}...',
                     'flee'
@@ -273,7 +278,9 @@ def flee(
                         'intention': 'move',
                         'action': 'run',
                         'direction': new_direction,
-                        'expression': sprite.stature.expression
+                        'expression': sprite.stature.expression,
+                        'disposition': sprite.stature.disposition,
+                        'attention': target
                     })
                 )
                 setattr(sprite.memory, 'intent', sprite.stature)
@@ -290,10 +297,10 @@ def attempt_unflee(
     sprites: munch.Munch,
     reorient_function: Callable[[str], str]
 ) -> Literal['continue']:
-    if 'flee' not in sprite.path:
+    if 'flee' not in sprite.stature.attention:
         return 'continue'
 
-    target_key = sprite.path.split(' ')[-1]
+    target_key = sprite.stature.attention.split(' ')[-1]
     target = sprites.get(target_key)
 
     distance = calculator.distance(
@@ -312,11 +319,8 @@ def attempt_unflee(
             'attempt-unflee'
         )
 
-        if sprite.memory.intent and sprite.memory.intent.attention:
-            target = sprite.memory.intent.attention
-            setattr(sprite.memory, 'intent', None)
-        else:
-            target = list(sprite.memory.paths.keys())[-1]
+        
+        target = list(sprite.memory.paths.keys())[-1]
 
         new_direction = reorient_function(sprite_key, target)
         setattr(
@@ -326,7 +330,9 @@ def attempt_unflee(
                 'intention': 'move',
                 'action': 'walk',
                 'direction': new_direction,
-                'expression': None
+                'expression': None,
+                'attention': target,
+                'disposition': sprite.stature.disposition
             })
         )
     return 'continue'

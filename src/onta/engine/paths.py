@@ -50,19 +50,19 @@ def reorient(
 
     possibilities = {}
 
-    log.verbose('Determining which directions are valid for reorientation...', 'reorient')
+    log.infinite('Determining which directions are valid for reorientation...', 'reorient')
 
     if up_valid:
-        log.verbose('Up valid!', 'reorient')
+        log.infinite('Up valid!', 'reorient')
         possibilities['up'] = calculator.distance(new_up, goal)
     if left_valid:
-        log.verbose('Left valid!', 'reorient')
+        log.infinite('Left valid!', 'reorient')
         possibilities['left'] = calculator.distance(new_left, goal)
     if right_valid:
-        log.verbose('Right valid!', 'reorient')
+        log.infinite('Right valid!', 'reorient')
         possibilities['right'] = calculator.distance(new_right, goal)
     if down_valid:
-        log.verbose('Down valid!', 'reorient')
+        log.infinite('Down valid!', 'reorient')
         possibilities['down'] = calculator.distance(new_down, goal)
     # TODO: diagonals
 

@@ -4,7 +4,7 @@
 A module for transforming _Sprite_ `intent` into in-game action. 
 
 .. note:: 
-    * The functions in this module may alter the `position` of a _Sprite_, but they will never alter the `stature` of a _Sprite_.
+    * The functions in this module may alter the `position` of a _Sprite_, but they will never alter the `stature` of a _Sprite_. In certain cases, it may alter the `intent` of a _Sprite_ as well, as in the case of combat, when a sprite has to react next iteration.
 """
 
 from typing import Union
@@ -51,8 +51,8 @@ def locate_desire(
         log.verbose('Target is static, retrieving path...', 'locate_desire')
         if flee: 
             return (
-                2*sprite.position.x - sprite.memory.paths.get(target).position.x,
-                2*sprite.position.y - sprite.memory.paths.get(target).position.y
+                2*sprite.position.x - sprite.memory.paths.get(target).x,
+                2*sprite.position.y - sprite.memory.paths.get(target).y
             )
         return ( 
             sprite.memory.paths.get(target).x, 
@@ -73,14 +73,17 @@ def move(
 
     if sprite.stature.direction == 'up':
         sprite.position.y -= speed
+        return
 
     elif sprite.stature.direction  ==  'up_left':
         proj = calculator.projection()
         sprite.position.x -= speed*proj[0]
         sprite.position.y -= speed*proj[1]
+        return
 
     elif sprite.stature.direction == 'left':
        sprite.position.x -= speed
+       return
 
     elif sprite.stature.direction == 'down_left':
         proj = calculator.projection()
@@ -89,11 +92,13 @@ def move(
 
     elif sprite.stature.direction == 'down':
         sprite.position.y += speed
+        return
 
     elif sprite.stature.direction == 'down_right':
         proj = calculator.projection()
         sprite.position.x += speed*proj[0]
         sprite.position.y += speed*proj[1]
+        return
 
     elif sprite.stature.direction == 'right':
         sprite.position.x += speed
@@ -102,6 +107,8 @@ def move(
         proj = calculator.projection()  
         sprite.position.x += speed*proj[0]
         sprite.position.y -= speed*proj[1]
+        return
+    return
 
 
 def combat(
@@ -115,7 +122,8 @@ def combat(
     projectile_props: munch.Munch,
     target_sprites: munch.Munch,
 ) -> None: 
-    if any(action in sprite.stature.action for action in sprite_stature.decomposition.combat):
+    if any(action in sprite.stature.action 
+            for action in sprite_stature.decomposition.combat):
         equip_key = sprite.slots.get(sprite.stature.action)
 
         if equip_key is None:
@@ -193,17 +201,36 @@ def combat(
                     target.get('path') and \
                         sprite_key not in target.path
                 ) or (
-                    target.stature.attention and \
+                    target.stature.get('attention') and \
                         sprite_key not in target.stature.attention
                 ):
-                    setattr(target.stature, 'expression', 'surprise')
+                    expression = 'surprise'
+                else:
+                    expression = 'anger'
+
                 # however, what is player attacks friendly sprite
                 # that is already focused on player?
                 # then sprite will be aware and not in combat, but 
                 # should nevertheless be surprised.
 
-                if target.stature.attention != sprite_key:
-                    setattr(target.stature, 'attention', sprite_key)
+                if not target.stature.get('attention') or \
+                    target.stature.attention != sprite_key:
+                    attention = sprite_key
+                else:
+                    attention = target.stature.attention
+
+                setattr(
+                    target,
+                    'intent',
+                    munch.Munch({
+                        'intention': target.stature.intention,
+                        'action': target.stature.action,
+                        'direction': target.stature.direction,
+                        'expression': expression,
+                        'attention': attention,
+                        'disposition': target.stature.disposition
+                    })
+                )
 
                 
 def express(

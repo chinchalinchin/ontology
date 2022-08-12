@@ -316,7 +316,8 @@ class World():
             if sprite.intent:
                 continue
 
-            update_flag = self.iterations % sprite_props.poll == 0
+            first_octave = self.iterations % sprite_props.poll.enter == 0
+            second_octave = self.iterations % sprite_props.poll.exit == 0
 
             for sprite_desire in sprite_desires:
 
@@ -326,7 +327,7 @@ class World():
                 instruction = None
 
                 # update delayed desires
-                if update_flag:
+                if first_octave:
                     log.infinite(
                         f'Polling {sprite_key}\'s delayed {sprite_desire.mode} desire conditions...',
                         '_ruminate'
@@ -363,7 +364,7 @@ class World():
                         )
                     
                 # update immediate desires
-                else:
+                elif second_octave:
                     if sprite_desire.mode == 'approach':
                         instruction = abstract.attempt_unapproach(
                             sprite_key,
@@ -388,13 +389,13 @@ class World():
                             self.get_sprites()
                         )
 
-                if instruction and instruction == 'break':
-                    break
-                if instruction and instruction == 'continue':
+                if not instruction or instruction == 'continue':
                     continue
+                if instruction == 'break':
+                    break
                         
             # ensure sprite has intent for next iteration
-            abstract.remember(sprite_key, sprite)
+            # abstract.remember(sprite_key, sprite)
 
 
     def _intend(
@@ -418,6 +419,7 @@ class World():
         for sprite_key, sprite in self.get_sprites().items():
             if not sprite.intent or \
                     sprite.stature.action in self.sprite_stature.decomposition.blocking:
+                # NOTE: sprites intents will be altered by impulse module
                 # NOTE: if sprite in blocking stature, no intent is transmitted or consumed
                 continue
 
@@ -452,9 +454,6 @@ class World():
             # null expresions allowed
             if sprite.intent.expression != sprite.stature.expression:
                 sprite.stature.expression = sprite.intent.expression
-
-            if sprite_key != 'hero' and not sprite.memory.intent:
-                sprite.memory.intent = sprite.intent
 
             log.infinite(f'{sprite_key} stature post intent application: {sprite.stature.intention}',
                          '_intend'
@@ -667,10 +666,11 @@ class World():
                                 'intention': 'move',
                                 'action': sprite.stature.action,
                                 'direction': new_direction,
-                                'expression': sprite.stature.expression
+                                'expression': sprite.stature.expression,
+                                'attention': sprite.stature.attention,
+                                'disposition': sprite.stature.disposition
                             })
                         )
-                        setattr(sprite.memory, 'intent', None)
 
                 if hitbox_key == 'sprite':
                     for key, val in collision_map.copy().items():
