@@ -354,7 +354,7 @@ class World():
                         )
 
                     elif sprite_desire.mode == 'flee':
-                        instruction = abstract.can_unflee(
+                        instruction = abstract.attempt_unflee(
                             sprite_key,
                             sprite,
                             sprite_props,
@@ -364,12 +364,28 @@ class World():
                     
                 # update immediate desires
                 else:
-                    if sprite_desire.mode == 'flee':
+                    if sprite_desire.mode == 'approach':
+                        instruction = abstract.attempt_unapproach(
+                            sprite_key,
+                            sprite,
+                            sprite_props,
+                            sprite_desire,
+                            self.get_sprites()
+                        )
+                    elif sprite_desire.mode == 'flee':
                         instruction = abstract.flee(
                             sprite_key,
                             sprite,
                             sprite_desire,
                             self._reorient
+                        )
+                    elif sprite_desire.mode == 'engage':
+                        instruction = abstract.attempt_unengage(
+                            sprite_key,
+                            sprite,
+                            sprite_props,
+                            sprite_desire,
+                            self.get_sprites()
                         )
 
                 if instruction and instruction == 'break':
@@ -424,6 +440,14 @@ class World():
             if sprite.intent.get('direction') and \
                     sprite.intent.direction != sprite.stature.direction:
                 sprite.stature.direction = sprite.intent.direction
+            
+            if sprite.intent.get('attention') and \
+                    sprite.intent.attention != sprite.stature.attention:
+                sprite.stature.attention = sprite.intent.attention
+
+            if sprite.intent.get('disposition') and \
+                    sprite.intent.disposition != sprite.stature.disposition:
+                sprite.stature.disposition = sprite.intent.disposition
 
             # null expresions allowed
             if sprite.intent.expression != sprite.stature.expression:
@@ -509,6 +533,7 @@ class World():
     def _reorient(
         self,
         sprite_key: str,
+        target_key: str,
     ) -> None:
 
         sprite = self.npcs.get(sprite_key)
@@ -526,7 +551,7 @@ class World():
             self.switch_map.get(sprite.layer)
         )
         goal = impulse.locate_desire(
-            sprite.path,
+            target_key,
             sprite,
             self.get_sprites(),
         )
@@ -622,7 +647,7 @@ class World():
                             self.sprite_properties.get(sprite_key)
                         )
                         path = impulse.locate_desire(
-                            sprite.path,
+                            sprite.stature.attention,
                             sprite,
                             self.get_sprites(),
                         )

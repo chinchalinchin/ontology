@@ -23,7 +23,6 @@ hero:
     bag: shrapnel_bomb
     belt: arrow
   memory:
-    stature: null
     paths: null
     intent: null
   health:
@@ -84,7 +83,6 @@ npcs:
         two:
           x: 900
           y: 1800
-      stature: null
       intent: null
     desires: 
       - plot: a
@@ -151,7 +149,6 @@ npcs:
         two:
           x: 500
           y: 1800
-      intent: null
       stature: null
     desires:
       - plot: a
