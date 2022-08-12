@@ -92,17 +92,37 @@ def compose_animate_stature(
     .. note::
         The diagonal directions get collapsed into a single direction due to the spritesheet specifications. If, in the future, spritesheets with a more robust frameset are added, this method will need updated to reflect the new directions available.
     """
+    up_left = settings.SEP.join(['up', 'left'])
+    down_left = settings.SEP.join(['down', 'left'])
+    up_right = settings.SEP.join(['up', 'right'])
+    down_right = settings.SEP.join(['down', 'right'])
+
     if not sprite.stature or not sprite.stature.action:
         # default state. setting?
-        return settings.SEP.join([settings.DEFAULT_SPRITE_ACTION, settings.DEFAULT_SPRITE_DIRECTION])
+        return settings.SEP.join([ 
+            settings.DEFAULT_SPRITE_ACTION, 
+            settings.DEFAULT_SPRITE_DIRECTION
+        ])
     if sprite.stature.action in stature_props.decomposition.singular or \
         sprite.stature.action in stature_props.decomposition.end:
-        return settings.SEP.join([settings.DEFAULT_SPRITE_ACTION, sprite.stature.direction])
-    elif sprite.stature.direction in [ 'up_left', 'down_left' ]:
-        return settings.SEP.join([sprite.stature.action, 'left'])
-    elif sprite.stature.direction in [ 'up_right', 'down_right']:
-        return settings.SEP.join([sprite.stature.action ,'right'])
-    return settings.SEP.join([sprite.stature.action, sprite.stature.direction])
+        return settings.SEP.join([
+            settings.DEFAULT_SPRITE_ACTION, 
+            sprite.stature.direction
+        ])
+    elif sprite.stature.direction in [ up_left, down_left ]:
+        return settings.SEP.join([
+            sprite.stature.action, 
+            'left'
+        ])
+    elif sprite.stature.direction in [ up_right, down_right ]:
+        return settings.SEP.join([
+            sprite.stature.action ,
+            'right'
+        ])
+    return settings.SEP.join([
+        sprite.stature.action, 
+        sprite.stature.direction
+    ])
 
 @functools.lru_cache(maxsize=128)
 def decompose_animate_stature(

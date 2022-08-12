@@ -68,7 +68,7 @@ def move(
     
     if sprite.stature.action == 'run':
         speed = sprite_props.speed.run
-    elif sprite.stature.action == 'walk':
+    else:
         speed = sprite_props.speed.walk
 
     if sprite.stature.direction == 'up':
@@ -105,16 +105,17 @@ def move(
 
 
 def combat(
-    sprite_key,
-    sprite,
-    sprites_props,
-    sprite_dim,
-    apparel_props,
-    target_sprites,
-    projectiles,
-    projectile_props
+    sprite_key: str,
+    sprite: munch.Munch,
+    sprite_stature: munch.Munch,
+    sprites_props: munch.Munch,
+    sprite_dim: tuple,
+    apparel_props: munch.Munch,
+    projectiles: list,
+    projectile_props: munch.Munch,
+    target_sprites: munch.Munch,
 ) -> None: 
-    if any(action in sprite.stature.action for action in ['cast', 'shoot', 'slash', 'thrust']):
+    if any(action in sprite.stature.action for action in sprite_stature.decomposition.combat):
         equip_key = sprite.slots.get(sprite.stature.action)
 
         if equip_key is None:
@@ -184,18 +185,25 @@ def combat(
                     attack_box
                 )
 
-                # if target not in combat
-                setattr(
-                    target.stature,
-                    'expression',
-                    'surprise'
-                )
-                # if target not focused on sprite
-                setattr(
-                    target.stature,
-                    'attention',
-                    sprite_key
-                )
+                # if target not in combat or otherwise aware of hero
+                if not any(
+                    action in target.stature.action 
+                    for action in sprite_stature.decomposition.combat
+                ) or (
+                    target.get('path') and \
+                        sprite_key not in target.path
+                ) or (
+                    target.stature.attention and \
+                        sprite_key not in target.stature.attention
+                ):
+                    setattr(target.stature, 'expression', 'surprise')
+                # however, what is player attacks friendly sprite
+                # that is already focused on player?
+                # then sprite will be aware and not in combat, but 
+                # should nevertheless be surprised.
+
+                if target.stature.attention != sprite_key:
+                    setattr(target.stature, 'attention', sprite_key)
 
                 
 def express(

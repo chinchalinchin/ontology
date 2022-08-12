@@ -324,7 +324,7 @@ class World():
                     continue
 
                 instruction = None
-                
+
                 # update delayed desires
                 if update_flag:
                     log.infinite(
@@ -394,10 +394,11 @@ class World():
                 'intention': intention, # str
                 'action': action, # str
                 'direction': direction, # str
-                'emotion': emotion, #
+                'expression': expression, #
             })
         """
-
+        # what about attention?
+        
         for sprite_key, sprite in self.get_sprites().items():
             if not sprite.intent or \
                     sprite.stature.action in self.sprite_stature.decomposition.blocking:
@@ -454,12 +455,13 @@ class World():
                 impulse.combat(
                     sprite_key,
                     sprite,
+                    self.sprite_stature,
                     self.sprite_properties,
                     self.sprite_dimensions,
                     self.apparel_properties,
-                    self.get_sprites(),
                     self.projectiles,
-                    self.projectile_properties
+                    self.projectile_properties,
+                    self.get_sprites()
                 )
                 animate = True
 

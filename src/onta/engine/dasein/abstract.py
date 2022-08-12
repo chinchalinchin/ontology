@@ -62,6 +62,11 @@ def approach(
                 if sprite.path != sprite_desire.target:
                     sprite.path = sprite_desire.target
 
+                if sprite.stature.disposition == 'friendly':
+                    setattr(sprite.stature, 'expression', 'joy')
+                elif sprite.stature.disposition == 'aggressive':
+                    setattr(sprite.stature, 'expression', 'hate')
+
                 new_direction = reorient_function(sprite_key)
                 setattr(
                     sprite,
@@ -85,6 +90,7 @@ def approach(
                 )
                 setattr(sprite, 'path', None)
                 setattr(sprite.memory, 'intent', None)
+                setattr(sprite.stature, 'expression', None)
                 
 
         elif condition.function == 'always':

@@ -3,6 +3,7 @@ hero:
     x: 1350
     y: 1760
   stature:
+    disposition: null
     attention: null
     intention: null
     expression: null
@@ -15,7 +16,7 @@ hero:
   slots:
     cast: null
     thrust: crossbow
-    slash: warhammer
+    slash: shortsword
     shoot: bow
   armor: plate
   packs:
@@ -30,52 +31,21 @@ hero:
     max: 10
   desires: null
   inventory:
-    armor:
-      bronze: True
-      gold: False
-      plate: False
-    shield:
-      emblem_shield: False
-      falcon_shield: False
-      leather_shield: False
-    equipment:
-      bow: True
-      axe: False
-      knife: False
-      pickaxe: False
-      shortsword: True
-      warhammer: False
-      blood_magic: False
-      cane: False
-      shovel: True
-      spear: True
-    bag:
-      shrapnel_bomb: null
-      rope: null
-      portal_gate: null
-      smoke_bomb: null
-      spindle_seed: null
-      resource_seed: null
-      bottle_a: null
-      bottle_b: null
-      bottle_c: null
-    belt:
-      arrow: null
-      fire_arrow: null
-      magic_arrow: null
-      bolt: null
-      precise_bolt: null
-      poison_bolt: null
     wallet:
       coin: null
       key: null
+    armor:
+      - 
+    shield:
+      - 
+    equipment:
+      -
+    bag:
+      - 
+    belt:
+      - 
     pocket:
-      produce: null
-      herb: null
-      meat: null
-      ore: null
-      crystal: null
-      pendant: null
+      -
 
 npcs: 
   esmeralda:
@@ -83,11 +53,12 @@ npcs:
       x: 900
       y: 1800
     stature:
-      attention:
-      intention:
-      expression:
-      direction:
-      action:
+      disposition: friendly
+      attention: null
+      intention: null
+      expression: null
+      direction: null
+      action: null
     intent: null
     path: null
     frame: 0
@@ -127,65 +98,34 @@ npcs:
         conditions:
           - function: expression_equals
             value: surprise
-
     inventory:
-      armor:
-        bronze: True
-        gold: False
-        plate: False
-      shield:
-        emblem_shield: False
-        falcon_shield: False
-        leather_shield: False
-      equipment:
-        bow: False
-        axe: False
-        knife: True
-        pickaxe: False
-        shortsword: False
-        warhammer: False
-        blood_magic: False
-        cane: False
-        shovel: False
-        spear: False
-      bag:
-        shrapnel_bomb: null
-        rope: null
-        portal_gate: null
-        smoke_bomb: null
-        spindle_seed: null
-        resource_seed: null
-        bottle_a: null
-        bottle_b: null
-        bottle_c: null
-      belt:
-        arrow: null
-        fire_arrow: null
-        magic_arrow: null
-        bolt: null
-        precise_bolt: null
-        poison_bolt: null
       wallet:
         coin: null
         key: null
+      armor:
+        - 
+      shield:
+        - 
+      equipment:
+        -
+      bag:
+        - 
+      belt:
+        - 
       pocket:
-        produce: null
-        herb: null
-        meat: null
-        ore: null
-        crystal: null
-        pendant: null
+        -
 
   skeleton:
     position:
       x: 500
       y: 800
     stature:
-      attention: 
-      intention:
-      expression:
-      direction:
-      action:
+      disposition: aggressive
+      attention: null
+      intention: null
+      expression: null
+      direction: null
+      action: null
     intent: null
     path: null
     frame: 0
@@ -226,64 +166,33 @@ npcs:
           - function: aware
         success: 
       - plot: a
-        mode: approach
-        target: two
+        mode: engage
+        target: esmeralda
         conditions:
-          - function: always
+          - function: aware
       - plot: a
         mode: approach
         target: one
         conditions:
           - function: aware
-      - plot: b
-        mode: engage
-        target: esmeralda
+      - plot: a
+        mode: approach
+        target: two
         conditions:
-          - function: aware
+          - function: always
     inventory:
-      armor:
-        bronze: False
-        gold: True
-        plate: False
-      shield:
-        emblem_shield: False
-        falcon_shield: False
-        leather_shield: False
-      equipment:
-        bow: False
-        axe: True
-        knife: False
-        pickaxe: False
-        shortsword: False
-        warhammer: False
-        blood_magic: False
-        cane: False
-        shovel: False
-        spear: False
-      bag:
-        shrapnel_bomb: null
-        rope: null
-        portal_gate: null
-        smoke_bomb: null
-        spindle_seed: null
-        resource_seed: null
-        bottle_a: null
-        bottle_b: null
-        bottle_c: null
-      belt:
-        arrow: null
-        fire_arrow: null
-        magic_arrow: null
-        bolt: null
-        precise_bolt: null
-        poison_bolt: null
       wallet:
         coin: null
         key: null
+      armor:
+        - 
+      shield:
+        - 
+      equipment:
+        -
+      bag:
+        - 
+      belt:
+        - 
       pocket:
-        produce: null
-        herb: null
-        meat: null
-        ore: null
-        crystal: null
-        pendant: null
+        -

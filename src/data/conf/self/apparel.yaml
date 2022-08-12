@@ -23,41 +23,7 @@ equipment:
     type: projectile
     properties:
       ammo: 
-        blood_summon:
-          speed:
-          distance:
-          power:
-          attackbox:
-            up:
-              offset:
-                x:
-                y:
-              size:
-                w:
-                h:
-            down:
-              offset:
-                x:
-                y:
-              size:
-                w:
-                h:
-            left:
-              offset:
-                x:
-                y:
-              size:
-                w:
-                h:
-            right:
-              offset:
-                x:
-                y:
-              size:
-                w:
-                h:
-              right:
-      release_frame: 
+        - blood_summon
   bow:
     sheets: 
       - bow.png
@@ -264,7 +230,7 @@ equipment:
     action: slash
     properties:
       power:
-      attackbox: 
+      attackboxes: 
         up:
           - frame: 3
             offset:
@@ -336,71 +302,97 @@ equipment:
     action: slash
     type: blunt
     properties:
-      attack_frames:
-        - 
-        -
-      power:
-      attackbox: 
+      power: 2
+      collide: 10
+      attackboxes: 
         up:
           - frame: 3
             offset:
-              x:
-              y:
+              x: 9
+              y: 39
             size:
-              w:
-              h:
+              w: 21
+              h: 4
           - frame: 4
             offset:
-              x:
-              y:
+              x: 34
+              y: 14
             size:
-              w:
-              h:    
+              w: 18
+              h: 19
+          - frame: 5
+            offset:
+              x: 49
+              y: 16
+            size:
+              w: 7
+              h: 21  
         down:
           - frame: 3
             offset:
-              x:
-              y:
+              x: 14
+              y: 46
             size:
-              w:
-              h:
+              w: 24
+              h: 4
           - frame: 4
             offset:
-              x:
-              y:
+              x: 37
+              y: 45
             size:
-              w:
-              h:  
+              w: 15
+              h: 16
+          - frame: 5
+            offset: 
+              x: 52
+              y: 44
+            size:
+              w: 6
+              h: 18
         left:
           - frame: 3
             offset:
-              x:
-              y:
+              x: 12
+              y: 45
             size:
-              w:
-              h:
+              w: 6
+              h: 19
           - frame: 4
             offset:
-              x:
-              y:
+              x: 0
+              y: 31
             size:
-              w:
-              h:  
+              w: 14
+              h: 14
+          - frame: 5
+            offset:
+              x: 0
+              y: 18
+            size:
+              w: 16
+              h: 17
         right:
           - frame: 3
             offset:
-              x:
-              y:
+              x: 47
+              y: 46
             size:
-              w:
-              h:
+              w: 5
+              h: 18
           - frame: 4
             offset:
-              x:
-              y:
+              x: 52
+              y: 31
             size:
-              w:
-              h:
+              w: 12
+              h: 14
+          - frame: 5
+            offset:
+              x: 49
+              y: 18
+            size:
+              w: 15
+              h: 17
   warhammer:
     sheets:
       - warhammer.png
@@ -490,7 +482,7 @@ equipment:
     type: blunt
     properties:
       power:
-      attackbox: 
+      attackboxes: 
         up:
           - frame: 3
             offset:
@@ -567,7 +559,7 @@ equipment:
     type: blunt
     properties:
       power:
-      attackbox: 
+      attackboxes: 
         up:
           - frame: 3
             offset:
@@ -641,7 +633,7 @@ equipment:
     properties:
       power:
       collide: 20
-      attackbox: 
+      attackboxes: 
         up:
           - frame: 3
             offset:

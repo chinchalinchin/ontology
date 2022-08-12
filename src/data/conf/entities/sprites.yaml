@@ -7,7 +7,9 @@ stature:
     default: walk_down
     intentions:
         -   move
-        -   operate
+        -   use
+        -   interact
+        -   defend
         -   combat
         -   express
     decomposition:
@@ -183,6 +185,7 @@ sprites:
                     size:
                         w: 64
                         h: 64
+            radii: null
             speed:
                 walk: 3
                 run: 5
