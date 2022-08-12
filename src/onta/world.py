@@ -601,7 +601,7 @@ class World():
                 collision_box = collisions.detect_collision(
                     sprite_key, 
                     sprite_hitbox, 
-                    collision_set
+                    tuple(collision_set)
                 )
 
                 if collision_box:
@@ -707,7 +707,7 @@ class World():
                 collision_box = collisions.detect_collision(
                     projectile.key, 
                     projectile.attackbox,
-                    [ target_hitbox ]
+                    tuple([ target_hitbox ])
                 )
                 if collision_box:
                     log.debug(f'{projectile.key} struck true on {target_key}')

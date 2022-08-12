@@ -172,7 +172,7 @@ def combat(
                 collision_box = collisions.detect_collision(
                     equip_key, 
                     attack_box, 
-                    [ target_hitbox ]
+                    tuple([ target_hitbox ])
                 )
 
                 if not collision_box:
@@ -231,7 +231,7 @@ def operate(
     triggered = False
 
     for door in platesets.doors:
-        if collisions.detect_collision(door.key, sprite_hitbox, [ door.hitbox ] ):
+        if collisions.detect_collision(door.key, sprite_hitbox, tuple([ door.hitbox ]) ):
             sprite.layer = door.content
             triggered = True
             break
@@ -246,7 +246,7 @@ def operate(
                 plate_props.get(key).size.h    
             )
             if not switch_map.get(sprite.layer).get(key).get(index) and \
-                collisions.detect_collision(key, sprite_hitbox,[ modified_hitbox ]):
+                collisions.detect_collision(key, sprite_hitbox, tuple([ modified_hitbox ])):
                 log.debug('Detected sprite container operation', 'operate')
                 setattr(
                     switch_map.get(sprite.layer).get(key),

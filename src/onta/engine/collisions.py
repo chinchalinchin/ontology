@@ -1,3 +1,4 @@
+import functools
 from typing import Union
 
 import munch
@@ -80,6 +81,7 @@ def calculate_strut_hitboxes(
             strut.hitbox for strut in strutset.sets
         ]
     return strut_hitboxes
+
 
 def calculate_sprite_hitbox(
     sprite: munch.Munch, 
@@ -240,10 +242,11 @@ def collision_set_relative_to(
     return collision_sets
 
 
+@functools.lru_cache(maxsize=100)
 def detect_collision(
     object_key: str,
     object_hitbox: tuple, 
-    hitbox_list: list
+    hitbox_list_tuple: tuple
 ) -> Union[tuple, None]:
     """Determines if a sprite's hitbox has collided with a list of hitboxes
 
@@ -252,7 +255,7 @@ def detect_collision(
     :param object_hitbox: _description_
     :type object_hitbox: tuple
     :param hitbox_list: _description_
-    :type hitbox_list: list
+    :type hitbox_list_tuple: tuple
     :return: The hitbox with which the `object` collided, `None` otherwise
     :rtype: Union[tuple, None]
 
@@ -262,7 +265,7 @@ def detect_collision(
     .. todo::
         Modify this to return the direction of the collision. Need to recoil sprite based on where the collision came from, not which direction the sprite is heading...
     """
-
+    hitbox_list = list(hitbox_list_tuple)
     for hitbox in hitbox_list:
         if hitbox and calculator.intersection(object_hitbox, hitbox):
             printbox = tuple(round(dim) for dim in object_hitbox)
@@ -432,17 +435,18 @@ def detect_layer_pressure(
     gates,
 ) -> None:
     for pressure in layer_pressures:
+
         if isinstance(hitbox, tuple):
             collision_box = detect_collision(
                 pressure.key, 
                 pressure.hitbox, 
-                [ hitbox ]
+                tuple([ hitbox ])
             )
         elif isinstance(hitbox, list):
             collision_box = detect_collision(
                 pressure.key, 
                 pressure.hitbox, 
-                hitbox
+                tuple(hitbox)
             )
         else:
             raise ValueError('Hitbox is not of type tuple or list')
@@ -505,7 +509,7 @@ def detect_layer_sprite_to_mass_collision(
         collision_box = detect_collision(
             mass.key, 
             mass.hitbox.sprite, 
-            [sprite_hitbox]
+            tuple([sprite_hitbox])
         )
         if collision_box:
             plate = platesets.get(sprite.layer).get(mass.key).sets[mass.index]
