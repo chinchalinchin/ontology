@@ -627,7 +627,7 @@ class Repo():
         return None
 
 
-    @functools.lru_cache(maxsize=128)
+    @functools.lru_cache(maxsize=64)
     def get_avatar_frame(
         self,
         avatar_set: str,

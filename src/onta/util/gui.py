@@ -33,7 +33,7 @@ def replace_alpha(
     return img.putalpha(alpha)
 
 
-@functools.lru_cache(maxsize=100)
+@functools.lru_cache(maxsize=5)
 def channels(dim, channels):
     return Image.new(settings.IMG_MODE, dim, channels)
 

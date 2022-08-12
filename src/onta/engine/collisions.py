@@ -242,7 +242,7 @@ def collision_set_relative_to(
     return collision_sets
 
 
-@functools.lru_cache(maxsize=100)
+@functools.lru_cache(maxsize=10)
 def detect_collision(
     object_key: str,
     object_hitbox: tuple, 

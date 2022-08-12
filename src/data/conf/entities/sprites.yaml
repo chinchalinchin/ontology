@@ -236,8 +236,8 @@ sprites:
                 run: 2
                 collide: 5
             poll: 
-                enter: 100
-                exit: 50
+                enter: 50
+                exit: 15
 
     skeleton:
         sheets:
@@ -278,5 +278,5 @@ sprites:
                 run: 2
                 collide: 5
             poll: 
-                enter: 100
-                exit: 50
+                enter: 50
+                exit: 15

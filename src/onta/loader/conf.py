@@ -37,7 +37,6 @@ class Conf():
         """
         self.conf_dir = os.path.join(data_dir, *settings.CONF_PATH)
     
-    @functools.lru_cache(maxsize=200)
     def __configuration(
         self, 
         type_key: str, 
@@ -59,7 +58,6 @@ class Conf():
             )
         return conf
 
-    @functools.lru_cache(maxsize=10)
     def _self_configuration(
         self, 
         type_key: str
@@ -73,7 +71,6 @@ class Conf():
         """
         return self.__configuration(type_key, 'self')
 
-    @functools.lru_cache(maxsize=10)
     def _form_configuration(
         self, 
         type_key: str
@@ -87,7 +84,6 @@ class Conf():
         """
         return self.__configuration(type_key, 'forms')
 
-    @functools.lru_cache(maxsize=10)
     def _entity_configuration(
         self, 
         type_key: str
@@ -102,7 +98,6 @@ class Conf():
         return self.__configuration(type_key, 'entities')
 
 
-    @functools.lru_cache(maxsize=10)
     def _dialectic_configuration(
         self, 
         type_key: str
@@ -117,7 +112,6 @@ class Conf():
         return self.__configuration(type_key, 'dialectics')
 
 
-    @functools.lru_cache(maxsize=10)
     def load_control_configuration(
         self
     ) -> munch.Munch:
@@ -131,7 +125,6 @@ class Conf():
         return self.control_conf
 
 
-    @functools.lru_cache(maxsize=10)
     def load_expression_configuration(
         self
     ) -> munch.Munch:
@@ -145,7 +138,6 @@ class Conf():
         return self.expression_conf
 
 
-    @functools.lru_cache(maxsize=10)
     def load_sense_configuration(
         self
     ) -> munch.Munch:
@@ -160,7 +152,6 @@ class Conf():
         return self.sense_conf
 
 
-    @functools.lru_cache(maxsize=10)
     def load_avatar_configuration(
         self
     ) -> munch.Munch:
@@ -174,7 +165,6 @@ class Conf():
         return self.avatar_conf
 
 
-    @functools.lru_cache(maxsize=10)
     def load_apparel_configuration(
         self
     ) -> munch.Munch:
@@ -191,7 +181,6 @@ class Conf():
         return self.apparel_conf
 
 
-    @functools.lru_cache(maxsize=10)
     def load_composite_configuration(
         self
     ) -> munch.Munch:
@@ -205,7 +194,6 @@ class Conf():
         return self.composite_conf
 
 
-    @functools.lru_cache(maxsize=10)
     def load_tile_configuration(
         self
     ) -> munch.Munch:
@@ -220,7 +208,6 @@ class Conf():
         return self.tile_sheet_conf
 
 
-    @functools.lru_cache(maxsize=10)
     def load_projectile_configuration(
         self
     ) -> munch.Munch:
@@ -258,7 +245,6 @@ class Conf():
         )
 
 
-    @functools.lru_cache(maxsize=10)
     def load_sprite_configuration(
         self
     ) -> munch.Munch:
@@ -293,7 +279,6 @@ class Conf():
         )
 
 
-    @functools.lru_cache(maxsize=10)
     def load_strut_configuration(
         self
     ) -> tuple:
@@ -333,7 +318,6 @@ class Conf():
         return ( self.strut_property_conf, self.strut_sheet_conf )
 
 
-    @functools.lru_cache(maxsize=10)
     def load_plate_configuration(
         self
     ) -> tuple:
