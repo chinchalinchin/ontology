@@ -1,5 +1,4 @@
 import sys
-from collections import OrderedDict
 import munch
 import threading
 
@@ -9,15 +8,11 @@ from PIL import Image
 import onta.device as device
 import onta.settings as settings
 import onta.world as world
-
 import onta.engine.senses.hud as hud
 import onta.engine.senses.menu as menu
-
 import onta.engine.static.calculator as calculator
 import onta.engine.static.formulae as formulae
-
 import onta.loader.repo as repo
-
 import onta.util.logger as logger
 import onta.util.gui as gui
 import onta.util.debug as debug
@@ -34,7 +29,6 @@ log = logger.Logger('onta.view', settings.LOG_LEVEL)
 
 def get_app() -> QtWidgets.QApplication:
     app = QtWidgets.QApplication([])
-    app.installEventFilter(KeyEater())
     return app
 
 
@@ -61,6 +55,8 @@ def position(
     return view_widget
 
 
+# GUI Widgets & Workers
+
 class Debugger(QtCore.QObject):
     update = QtCore.Signal(bool)
 
@@ -70,24 +66,6 @@ class Debugger(QtCore.QObject):
     def _execute(self):
         threading.Timer(0.2, self._execute).start()
         self.update.emit(True)
-
-
-class KeyEater(QtCore.QObject):
-    def eventFilter(self, obj, event):
-        return True
-
-
-class NoKeyWidget(QtWidgets.QWidget):
-
-    def __init__(self):
-        super().__init__()
-        self.installEventFilter(self)
-
-    # TODO: doesn't eat keys...tabs still tab when player is walking...
-    def eventFilter(self, obj, event):
-        if event.type() == QtCore.QEvent.KeyPress:
-            return True
-        return False
 
 
 class ScrollLabel(QtWidgets.QScrollArea):
@@ -106,6 +84,7 @@ class ScrollLabel(QtWidgets.QScrollArea):
     def setText(self, text):
         self.label.setText(text)
 
+
 class Renderer():
     """_summary_
     """
@@ -118,40 +97,7 @@ class Renderer():
     player_device = None
     world_frame = None
     static_cover_frame = munch.Munch({})
-    static_back_frame = munch.Munch({})
-
-
-    @staticmethod
-    def render_ordered_dict(
-        unordered_dict
-    ) -> OrderedDict:
-        render_map = {}
-        ordered_dict = OrderedDict()
-
-        if len(unordered_dict)>0:
-            render_map = { val['order']: key for key, val in unordered_dict.items() }
-            ordered_map = list(render_map.keys())
-            ordered_map.sort()
-            for order in ordered_map:
-                ordered_dict[render_map[order]] = unordered_dict[render_map[order]]
-        
-        return ordered_dict
-
-
-    @staticmethod
-    def render_sprite_dict(
-        unordered_sprites
-    ) -> OrderedDict:
-        # doesn't matter, as long as player is last
-        ordered_sprites = OrderedDict({
-            sprite_key: sprite 
-            for sprite_key, sprite in unordered_sprites.items()
-            if sprite_key != 'hero'
-        })
-        ordered_sprites.update({
-            'hero': unordered_sprites.get('hero')
-        })
-        return ordered_sprites
+    static_back_frame = munch.Munch({})    
 
 
     def __init__(
@@ -253,7 +199,7 @@ class Renderer():
             unordered_groups = strutsets
             unordered_groups.update(platesets)
 
-            render_map = self.render_ordered_dict(unordered_groups)
+            render_map = gui.order_render_dict(unordered_groups)
             # TODO: render map doesn't work...should be able to iterate over it instaed of 
             # unordered groups
 
@@ -293,7 +239,7 @@ class Renderer():
         crop: bool
     ) -> None:
         unordered_groups = game_world.get_platesets(game_world.layer)
-        render_map = self.render_ordered_dict(unordered_groups)
+        render_map = gui.order_render_dict(unordered_groups)
 
         # and anyway, plates need rendered by type.
         #   first pressures and then everything else
@@ -395,7 +341,7 @@ class Renderer():
             Equipment frame only gets rendered if it is binded to a sprite state in the apparel configuration file. 
         """
         unordered_sprites = game_world.get_sprites(game_world.layer)
-        ordered_sprites = self.render_sprite_dict(unordered_sprites)
+        ordered_sprites = gui.order_sprite_dict(unordered_sprites)
         player_dim = (
             game_world.hero.position.x,
             game_world.hero.position.y,
@@ -482,6 +428,7 @@ class Renderer():
                     sprite.position.y
                 )
                 self.world_frame.alpha_composite(expression_frame, gui.int_tuple(position))
+
 
     def _render_projectiles(
         self,
@@ -781,7 +728,7 @@ class Renderer():
         self
     ) -> QtWidgets.QWidget:
         view_widget, view_layout = \
-                NoKeyWidget(), QtWidgets.QVBoxLayout()
+                QtWidgets.QWidget(), QtWidgets.QVBoxLayout()
         view_frame = QtWidgets.QLabel(view_widget)
         view_widget.resize(*self.player_device.dimensions)
         view_frame.setSizePolicy(QtWidgets.QSizePolicy(

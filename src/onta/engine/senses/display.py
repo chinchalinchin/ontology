@@ -1,4 +1,6 @@
+import functools
 import munch
+import numba
 
 from onta import device
 

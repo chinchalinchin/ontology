@@ -1,5 +1,6 @@
 import functools
 import munch
+import numba
 
 import onta.settings as settings
 import onta.util.logger as logger
@@ -8,12 +9,13 @@ import onta.engine.static.calculator as calculator
 
 log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
 
-
+@functools.lru_cache(maxsize=100)
+@numba.jit(nopython=True, nogil=True)
 def screen_crop_box(
-        screen_dim: tuple, 
-        world_dim: tuple, 
-        hero_pt: tuple
-    ) -> tuple:
+    screen_dim: tuple, 
+    world_dim: tuple, 
+    hero_pt: tuple
+) -> tuple:
     # TODO: should be based on hero's center, not top left corner
     left_breakpoint = screen_dim[0]/2
     right_breakpoint = world_dim[0] - screen_dim[0]/2
@@ -127,6 +129,7 @@ def compose_animate_stature(
 
 
 @functools.lru_cache(maxsize=100)
+@numba.jit(nopython=True, nogil=True, parallel=True)
 def decompose_animate_stature(
     sprite_stature:str
 ) -> tuple:

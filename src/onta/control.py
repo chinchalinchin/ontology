@@ -1,4 +1,7 @@
+import functools
+from typing import Any, Literal, Union
 import munch
+import numba
 
 from pynput import keyboard
 
@@ -9,38 +12,50 @@ import onta.util.logger as logger
 log = logger.Logger('onta.control', settings.LOG_LEVEL)
 
 
+@functools.lru_cache(maxsize=15)
+def map_key(
+    key: Any
+) -> Union[
+    str,
+    Literal["space"],
+    Literal["alt_left"],
+    Literal["ctrl_left"],
+    Literal["shift_left"],
+    Literal["tab"],
+    Literal["up"],
+    Literal["down"],
+    Literal["right"],
+    Literal["down"]
+]:
+    try:
+        char_pressed = key.char
+        return char_pressed
+    except AttributeError:
+        if key == keyboard.Key.space:
+            return 'space'
+        if key == keyboard.Key.alt_l:
+            return 'alt_left'
+        if key == keyboard.Key.ctrl_l:
+            return 'ctrl_left'
+        if key == keyboard.Key.shift_l:
+            return 'shift_left'
+        if key == keyboard.Key.tab:
+            return 'tab'
+        if key == keyboard.Key.up:
+            return 'up'
+        if key == keyboard.Key.left:
+            return 'left'
+        if key == keyboard.Key.right:
+            return 'right'
+        if key == keyboard.Key.down:
+            return 'down'
+        return 'unmapped'
+
 class Controller():
 
     listener = None
     keys = munch.Munch({})
 
-    @staticmethod
-    def map_key(
-        key
-    ) -> str:
-        try:
-            char_pressed = key.char
-            return char_pressed
-        except AttributeError:
-            if key == keyboard.Key.space:
-                return 'space'
-            if key == keyboard.Key.alt_l:
-                return 'alt_left'
-            if key == keyboard.Key.ctrl_l:
-                return 'ctrl_left'
-            if key == keyboard.Key.shift_l:
-                return 'shift_left'
-            if key == keyboard.Key.tab:
-                return 'tab'
-            if key == keyboard.Key.up:
-                return 'up'
-            if key == keyboard.Key.left:
-                return 'left'
-            if key == keyboard.Key.right:
-                return 'right'
-            if key == keyboard.Key.down:
-                return 'down'
-            return 'unmapped'
 
     def __init__(
         self, 
@@ -58,14 +73,14 @@ class Controller():
         self, 
         key
     ) -> None:
-        setattr(self.keys, self.map_key(key), True)
+        setattr(self.keys, map_key(key), True)
         
             
     def _on_release(
         self, 
         key
     ) -> None:
-        setattr(self.keys, self.map_key(key), False)
+        setattr(self.keys, map_key(key), False)
 
 
     def _register_listener(

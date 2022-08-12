@@ -50,34 +50,23 @@ def reorient(
 
     possibilities = {}
 
-    log.infinite('Determining which directions are valid for reorientation...', 'reorient')
-
     if up_valid:
-        log.infinite('Up valid!', 'reorient')
         possibilities['up'] = calculator.distance(new_up, goal)
     if left_valid:
-        log.infinite('Left valid!', 'reorient')
         possibilities['left'] = calculator.distance(new_left, goal)
     if right_valid:
-        log.infinite('Right valid!', 'reorient')
         possibilities['right'] = calculator.distance(new_right, goal)
     if down_valid:
-        log.infinite('Down valid!', 'reorient')
         possibilities['down'] = calculator.distance(new_down, goal)
     # TODO: diagonals
 
     least_direction = None
     least_direction_distance = calculator.distance(( 0,0 ), world_dim)
 
-    printable_possiblities = { key: round(value) for key, value in possibilities.items() }
-    log.verbose(f'Reorientation possibility-distance map: {printable_possiblities}', 'reorient')
-
     for key, possibility in possibilities.items():
         if possibility < least_direction_distance:
             least_direction_distance = possibility
             least_direction = key
-
-    log.verbose(f'Choice to minimize distance: {least_direction}', 'reorient')
 
     return least_direction
 

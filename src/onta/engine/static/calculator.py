@@ -1,16 +1,17 @@
 import functools
 import math
-
+import numba
 
 @functools.lru_cache(maxsize=100)
+@numba.jit(nopython=True, nogil=True)
 def center(
     dim: tuple
 ) -> tuple:
     return (dim[0] + dim[2] /2, dim[1] + dim[3]/2)
 
 
-
 @functools.lru_cache(maxsize=100)
+@numba.jit(nopython=True, nogil=True)
 def angle_relative_to_center(
     point: tuple,
     center: tuple = (0,0)
@@ -31,6 +32,7 @@ def angle_relative_to_center(
 
 
 @functools.lru_cache(maxsize=100)
+@numba.jit(nopython=True, nogil=True)
 def projection(
     angle:float = 45
 ) -> tuple:
@@ -39,8 +41,8 @@ def projection(
         math.sin(angle*math.pi/180)
     )
 
-
 @functools.lru_cache(maxsize=100)
+@numba.jit(nopython=True, nogil=True)
 def distance(
     a: tuple, 
     b: tuple
@@ -51,6 +53,7 @@ def distance(
 
 
 @functools.lru_cache(maxsize=100)
+@numba.jit(nopython=True, nogil=True)
 def intersection(
     rect_a: tuple, 
     rect_b: tuple,
@@ -99,6 +102,7 @@ def intersection(
     return True
 
 @functools.lru_cache(maxsize=100)
+@numba.jit(nopython=True, nogil=True)
 def scale(
     point: tuple, 
     factor: tuple, 

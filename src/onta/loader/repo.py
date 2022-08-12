@@ -3,6 +3,7 @@ import functools
 from typing import Union
 from PIL import Image
 import munch
+import numba
 
 import onta.settings as settings
 import onta.loader.conf as conf
@@ -19,6 +20,39 @@ STATIC_ASSETS_TYPES = [ 'tiles', 'struts', 'plates' ]
 SWITCH_PLATES_TYPES = [ 'container', 'pressure', 'gate' ]
 AVATAR_TYPES = [ 'armor', 'equipment', 'inventory', 'quantity' ]
 APPAREL_TYPES = [ 'armor', 'equipment' ]
+
+
+@functools.lru_cache(maxsize=4)
+@numba.jit(nopython=True, nogil=True)
+def adjust_directional_rotation(
+    direction: str
+) -> tuple:
+    """Static method to calculate the amount of rotation necessary to align slot cap with style alignment, depending on which direction the slot cap was defined in, i.e. if the slot cap was extracted from the asset file pointing to the left, this same piece can be rotated and reused, rather than extracting multiple assets.
+
+    :param direction: The direction of the slot cap direction.
+    :type direction: str
+    :return: (up_adjust, left_adjust, right_adjust, down_adjust)
+    :rtype: tuple
+    """
+    # I am convinced there is an easier way to calculate this using arcosine and arcsine,
+    # but i don't feel like thinking about domains and ranges right now...
+    if direction == 'left':
+        return ( 90, 0, 180, 270 )
+    elif direction == 'right':
+        return ( 270, 180, 0, 90 )
+    elif direction == 'up':
+        return ( 0, 90,  270, 180 )
+    return ( 180, 270, 90, 0 )
+
+
+@functools.lru_cache(maxsize=2)
+@numba.jit(nopython=True, nogil=True)
+def adjust_alignment_rotation(
+    direction: str
+) -> tuple:
+    if direction == 'vertical':
+        return (0, 90)
+    return (90, 0)
 
 class Repo():
 
@@ -37,36 +71,6 @@ class Repo():
     slots = munch.Munch({})
     packs = munch.Munch({})
     apparel = munch.Munch({})
-
-
-    @staticmethod
-    def adjust_directional_rotation(
-        direction: str
-    ) -> tuple:
-        """Static method to calculate the amount of rotation necessary to align slot cap with style alignment, depending on which direction the slot cap was defined in, i.e. if the slot cap was extracted from the asset file pointing to the left, this same piece can be rotated and reused, rather than extracting multiple assets.
-
-        :param direction: The direction of the slot cap direction.
-        :type direction: str
-        :return: (up_adjust, left_adjust, right_adjust, down_adjust)
-        :rtype: tuple
-        """
-        # I am convinced there is an easier way to calculate this using arcosine and arcsine,
-        # but i don't feel like thinking about domains and ranges right now...
-        if direction == 'left':
-            return ( 90, 0, 180, 270 )
-        elif direction == 'right':
-            return ( 270, 180, 0, 90 )
-        elif direction == 'up':
-            return ( 0, 90,  270, 180 )
-        return ( 180, 270, 90, 0 )
-
-    @staticmethod
-    def adjust_alignment_rotation(
-        direction: str
-    ) -> tuple:
-        if direction == 'vertical':
-            return (0, 90)
-        return (90, 0)
 
 
     def __init__(
@@ -272,7 +276,7 @@ class Repo():
                 buffer = buffer.crop(( x, y, w + x, h + y ))
 
                 if slot_key == 'cap':
-                    adjust = self.adjust_directional_rotation(slot_conf.cap.definition)
+                    adjust = adjust_directional_rotation(slot_conf.cap.definition)
                     setattr(
                         self.slots.get(size),
                         slot_key,
@@ -284,7 +288,7 @@ class Repo():
                         })
                     )
                 elif slot_key == 'buffer':
-                    adjust = self.adjust_alignment_rotation(slot_conf.buffer.definition)
+                    adjust = adjust_alignment_rotation(slot_conf.buffer.definition)
                     setattr(
                         self.slots.get(size),
                         slot_key,
@@ -364,7 +368,7 @@ class Repo():
 
             buffer.crop(( x, y, w + x, h + y ))
 
-            adjust = self.adjust_directional_rotation(projectile.definition)
+            adjust = adjust_directional_rotation(projectile.definition)
             setattr(
                 self.projectiles,
                 project_key,

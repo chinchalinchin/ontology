@@ -989,7 +989,7 @@ class World():
 
     def iterate(
         self,
-        user_input: dict
+        user_input: munch.Munch
     ) -> None:
         """Update the _World_ state.
 
