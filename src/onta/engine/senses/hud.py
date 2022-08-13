@@ -236,59 +236,43 @@ class HUD():
             self.styles.get(self.media_size).packs.margins.w, 
             self.styles.get(self.media_size).packs.margins.h
         )
-        pack_horizontal_align = self.styles.get(self.media_size).packs.alignment.horizontal
-        pack_vertical_align = self.styles.get(self.media_size).packs.alignment.vertical
-
+        pack_horizontal_align = self.styles.get(
+            self.media_size).packs.alignment.horizontal
+        pack_vertical_align = self.styles.get(
+            self.media_size).packs.alignment.vertical
         bagset = self.hud_conf.get(self.media_size).packs.bag
-        bag_dim = self.get_bag_dimensions()
-
-        # (0, left), (1, right)
-        for i, bag_piece in enumerate(bagset.values()):
-            if i == 0:
-                if pack_horizontal_align == 'left':
-                    x = pack_margins[0] * player_device.dimensions[0]
-                elif pack_horizontal_align == 'right':
-                    x = ( 1 - pack_margins[0] ) * player_device.dimensions[0] - \
-                        bag_dim[0]
-
-                if pack_vertical_align == 'top':
-                    y = pack_margins[1]*player_device.dimensions[1]
-                elif pack_vertical_align == 'bottom':
-                    y = ( 1 - pack_margins[0] ) * player_device.dimensions[1] - \
-                        bag_dim[0]
-            else:
-                x = self.bag_rendering_points[i-1][0] + prev_w
-                y = self.bag_rendering_points[i-1][1]
-            self.bag_rendering_points.append((x,y))
-            prev_w = bag_piece.size.w
-
         beltset = self.hud_conf.get(self.media_size).packs.belt
-        belt_dim = self.get_belt_dimensions()
-
-        # belt initial position only affected by pack vertical alignment
-        for i, belt_piece in enumerate(beltset.values()):
-            if i == 0:
-                if pack_horizontal_align == 'left':
-                    # dependent on bag height > belt height
-                    x = self.bag_rendering_points[0][0] + \
-                            ( 1 + pack_margins[0] ) * bag_dim[0]
-                    y = self.bag_rendering_points[0][1] + \
-                            ( bag_dim[1] - belt_dim[1] )/2
-                elif pack_horizontal_align == 'right':
-                    x = self.bag_rendering_points[0][0] - \
-                            ( 1 + pack_margins[0] ) * bag_dim[0]
-                    y = self.bag_rendering_points[0][1] + \
-                            ( bag_dim[1] - belt_dim[1] )/2  
-            else:
-                x = self.belt_rendering_points[i-1][0] + prev_w
-                y = self.belt_rendering_points[i-1][1]
-            self.belt_rendering_points.append(
-                (x,y)
-            )
-            prev_w = belt_piece.size.w
-        
-
+        bag_dim = self.get_bag_dimensions()
         wallet_dim = self.get_wallet_dimensions()
+        belt_dim = self.get_belt_dimensions()
+        bag_piece_sizes = tuple([
+            (bag_piece.size.w, bag_piece.size.h)
+            for bag_piece in list(bagset.values())
+        ])
+        belt_piece_sizes = tuple([
+            (belt_piece.size.w, belt_piece.size.h)
+            for belt_piece in list(beltset.values())
+        ])
+
+        self.bag_rendering_points = formulae.bag_coordinates(
+            bag_piece_sizes,
+            bag_dim,
+            pack_horizontal_align,
+            pack_vertical_align,
+            pack_margins,
+            player_device.dimensions,
+        )
+
+        self.belt_rendering_points = formulae.belt_coordinates(
+            self.bag_rendering_points[0],
+            belt_piece_sizes,
+            belt_dim,
+            pack_horizontal_align,
+            pack_margins,
+            bag_dim,
+            bag_dim
+        )
+        
 
         if pack_horizontal_align == 'left':
             self.wallet_rendering_points.append(

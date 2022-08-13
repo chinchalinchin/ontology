@@ -106,10 +106,10 @@ def tile_coordinates(
     set_dim: tuple,
     start: tuple,
     tile_dimensions: tuple
-):
+) -> list:
     dims = []
-    for i in numba.prange(set_dim[0]):
-        for j in numba.prange(set_dim[1]):
+    for i in range(set_dim[0]):
+        for j in range(set_dim[1]):
             dims.append(
                 (
                     start[0] + tile_dimensions[0]*i, 
@@ -117,6 +117,80 @@ def tile_coordinates(
                 )
             )
     return dims
+
+
+@numba.jit(nopython=True, nogil=True, fastmath=True)
+def bag_coordinates(
+    piece_sizes: tuple,
+    pack_dim: tuple,
+    horizontal_align: str,
+    vertical_align: str,
+    margin_percents: tuple,
+    margin_ref: tuple
+):
+    render_points = list()
+    prev_w = 0
+
+    # (0, (left.w, left.h)), (1, (right.w, right.h)) ...
+    for i, piece_size in enumerate(piece_sizes):
+        if i == 0:
+            if horizontal_align == 'left':
+                x = margin_percents[0] * margin_ref[0]
+
+            elif horizontal_align == 'right':
+                x = ( 1 - margin_percents[0] ) * margin_ref[0] - \
+                    pack_dim[0]
+
+            if vertical_align == 'top':
+                y = margin_percents[1] * margin_ref[1]
+
+            elif vertical_align == 'bottoms':
+                y = ( 1 - margin_percents[0] ) * margin_ref[1] - \
+                    pack_dim[0]
+
+        else:
+            x = render_points[i-1][0] + prev_w
+            y = render_points[i-1][1]
+        render_points.append((x,y))
+        prev_w = piece_size[0]
+
+    return render_points
+
+
+@numba.jit(nopython=True, nogil=True, fastmath=True)
+def belt_coordinates(
+    initial_position: tuple,
+    piece_sizes: tuple,
+    pack_dim: tuple,
+    horizontal_align: str,
+    margin_percents: tuple,
+    margin_ref: tuple,
+    centering: tuple
+) -> list:
+    render_points = list()
+    prev_w = 0
+    # belt initial position only affected by pack vertical alignment
+    for i, piece_size in enumerate(piece_sizes):
+        if i == 0:
+            if horizontal_align == 'left':
+                # dependent on bag height > belt height
+                x = initial_position[0] + \
+                        ( 1 + margin_percents[0] ) * margin_ref[0]
+                y = initial_position[1] + \
+                        ( centering[1] - pack_dim[1] )/2
+
+            elif horizontal_align == 'right':
+                x = initial_position[0] - \
+                        ( 1 + margin_percents[0] ) * margin_ref[0]
+                y = initial_position[1] + \
+                        ( centering[1] - pack_dim[1] )/2  
+        else:
+            x = render_points[i-1][0] + prev_w
+            y = render_points[i-1][1]
+        render_points.append((x,y))
+        prev_w = piece_size[0]
+    
+    return render_points
 
 
 @numba.jit(nopython=True, nogil=True, fastmath=True)
@@ -154,8 +228,8 @@ def mirror_coordinates(
     if stack== 'vertical':
         life_rank = (life_rank[1], life_rank[0])
         
-    for row in numba.prange(life_rank[1]):
-        for col in numba.prange(life_rank[0]):
+    for row in range(life_rank[1]):
+        for col in range(life_rank[0]):
 
             if (row+1)*col == 0:
                 render_points.append(
@@ -199,7 +273,7 @@ def slot_avatar_coordinates(
     slot_dim: tuple,
     bag_dim: tuple,
     belt_dim: tuple,
-):
+) -> list:
     render_points = list()
     
     for slot_key in iter(map_tuple):
@@ -560,9 +634,22 @@ def decompose_compositions_into_sets(
 def _init_jit():
     log.debug('Initializing JIT functions...', '_init_jit')
 
-    screen_crop_box((1,2),(1,2),(1,2))
-    on_screen((0,1), (0,1,2,3), (1,2), (1,2))
-    tile_coordinates((1,2),(1,2),(1,2))
+    screen_crop_box(
+        (1,2),
+        (1,2),
+        (1,2)
+    )
+    on_screen(
+        (0,1),
+        (0,1,2,3), 
+        (1,2), 
+        (1,2)
+    )
+    tile_coordinates(
+        (1,2),
+        (1,2),
+        (1,2)
+    )
     slot_avatar_coordinates(
         (('slash','sword'),),
         (('sword',10,10),),
@@ -577,6 +664,16 @@ def _init_jit():
         (1,2),
         (3,4),
         (5,6)
+    )
+    mirror_coordinates(
+        (1,2),
+        'right',
+        'top',
+        'vertical',
+        (1,2),
+        (1,2),
+        (1,2),
+        (1,2)
     )
     decompose_animate_stature('test_state')
 
