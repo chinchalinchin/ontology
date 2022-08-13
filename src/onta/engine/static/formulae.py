@@ -63,6 +63,24 @@ def on_screen(
     crop_box = screen_crop_box(screen_dim, world_dim, player_dim)
     return calculator.intersection(crop_box, object_dim)
 
+
+@numba.jit(nopython=True, nogil=True, fastmath=True)
+def tile_coordinates(
+    set_dim: tuple,
+    start: tuple,
+    tile_dimensions: tuple
+):
+    dims = []
+    for i in range(set_dim[0]):
+        for j in range(set_dim[1]):
+            dims.append(
+                (
+                    start[0] + tile_dimensions[0]*i, 
+                    start[1] + tile_dimensions[1]*j
+                )
+            )
+    return dims
+
 def construct_animate_statures(
     stature_props: munch.Munch
 ) -> list:

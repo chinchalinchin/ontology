@@ -4,11 +4,12 @@ import munch
 import numba
 
 from PIL import Image
-import PySide6.QtGui as QtGui
-
 from PIL.ImageQt import ImageQt
 
+import PySide6.QtGui as QtGui
+
 import onta.settings as settings
+
 
 def convert_to_gui(cropped: Image.Image):
     return QtGui.QPixmap.fromImage(ImageQt(cropped))
@@ -56,6 +57,7 @@ def order_sprite_dict(
         'hero': unordered_sprites.get('hero')
     })
     return ordered_sprites
+
 
 def order_render_dict(
     unordered_dict: munch.Munch

@@ -210,16 +210,16 @@ def collision_set_relative_to(
     """
 
     collision_sets = []
-    if (hitbox_key == 'sprite') \
-        and npc_hitboxes is not None:
+    if hitbox_key == 'sprite' and \
+        npc_hitboxes is not None:
         collision_sets += npc_hitboxes
 
-    if (hitbox_key == 'strut') \
-            and strut_hitboxes is not None:
+    if hitbox_key == 'strut' and \
+            strut_hitboxes is not None:
         collision_sets += strut_hitboxes
 
-    if (hitbox_key == 'strut') \
-         and container_hitboxes is not None:
+    if hitbox_key == 'strut' and \
+        container_hitboxes is not None:
         collision_sets += [
             container.hitbox for container in container_hitboxes
         ]

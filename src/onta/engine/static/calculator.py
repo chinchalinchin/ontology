@@ -3,6 +3,8 @@ from typing import Union
 import numba
 
 
+# TODO: aot compilation
+
 @numba.jit(nopython=True, nogil=True, fastmath=True)
 def center(
     dim: tuple

@@ -1,3 +1,4 @@
+from calendar import c
 import sys
 import munch
 import threading
@@ -153,26 +154,25 @@ class Renderer():
                         '_render_tiles'
                     )
                     
-                    for i in range(set_dim[0]):
-                        for j in range(set_dim[1]):
-                            dim = (
-                                start[0] + game_world.tile_dimensions[0]*i, 
-                                start[1] + game_world.tile_dimensions[1]*j
+                    coordinates = formulae.tile_coordinates(
+                        set_dim,
+                        start,
+                        game_world.tile_dimensions
+                    )
+                    for coord in coordinates:
+                        if set_conf.get('cover'):
+                            self.static_cover_frame[layer].paste(
+                                group_tile, 
+                                coord, 
+                                group_tile
                             )
-
-                            if set_conf.get('cover'):
-                                self.static_cover_frame[layer].paste(
-                                    group_tile, 
-                                    dim, 
-                                    group_tile
-                                )
-                                continue
-                            
-                            self.static_back_frame[layer].paste(
-                                    group_tile, 
-                                    dim, 
-                                    group_tile
-                                )
+                            continue
+                        
+                        self.static_back_frame[layer].paste(
+                            group_tile, 
+                            coord, 
+                            group_tile
+                        )
 
 
     def _render_sets(
