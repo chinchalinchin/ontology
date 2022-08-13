@@ -273,38 +273,38 @@ def slot_coordinates(
 
     if horizontal_align == 'right':
         x_start = device_dim[0] \
-            - margins[0] \
-            - slots_total*slot_dim[0] \
-            - (slots_total-1)*buffer_dim[0] \
-            - 2*cap_dim[0]
+            - margins[0] * device_dim[0] \
+            - slots_total * slot_dim[0] \
+            - ( slots_total - 1 ) * buffer_dim[0] \
+            - 2 * cap_dim[0]
     elif horizontal_align == 'center':
-        x_start = (device_dim[0] \
+        x_start = ( device_dim[0] \
             - slots_total*slot_dim[0] \
-            - (slots_total-1)*buffer_dim[0] \
-            - 2*cap_dim[0])/2
+            - ( slots_total-1)*buffer_dim[0] \
+            - 2*cap_dim[0] )/2
             
     else: # left
-        x_start = margins[0]
+        x_start = margins[0] * device_dim[0]
 
             
     if vertical_align == 'bottom':
         if stack == 'horizontal':
             y_start = device_dim[1] \
-                - margins[1] \
+                - margins[1] * device_dim[1] \
                 - slot_dim[1] 
         elif stack == 'vertical':
             y_start = device_dim[1] \
-                - margins[1] \
-                - slots_total*slot_dim[1] \
-                - (slots_total-1)*buffer_dim[1] \
-                - 2*cap_dim[1]
+                - margins[1] * device_dim[1] \
+                - slots_total * slot_dim[1] \
+                - ( slots_total - 1 ) * buffer_dim[1] \
+                - 2 * cap_dim[1]
     elif vertical_align == 'center':
         y_start = (device_dim[1] \
-            - slots_total*slot_dim[1] \
-            - (slots_total-1)*buffer_dim[1] \
-            - 2*cap_dim[1])/2
+            - slots_total * slot_dim[1] \
+            - (slots_total - 1 ) * buffer_dim[1] \
+            - 2 * cap_dim[1] )/2
     else: # top
-        y_start = margins[1]
+        y_start = margins[1] * device_dim[1]
 
     # 0    1     2       3     4       5     6       7     8
     # cap, slot, buffer, slot, buffer, slot, buffer, slot, cap
@@ -471,6 +471,7 @@ def slot_avatar_coordinates(
 
 
 @functools.lru_cache(maxsize=200)
+@numba.jit(nopython=True, nogil=True, fastmath=True)
 def plate_coordinates(
     group_conf: tuple,
     player_dim: tuple,
@@ -521,7 +522,7 @@ def plate_coordinates(
             continue 
         
         coords.append((i, start[0], start[1]))
-    return tuple(coords)
+    return coords
 
 
 def construct_animate_statures(
@@ -796,6 +797,36 @@ def _init_jit():
         (1,2),
         (1,2)
     )
-    decompose_animate_stature('test_state')
+    bag_coordinates(
+        ((1,2),),
+        (1,2),
+        'left',
+        'top',
+        (1,2),
+        (1,2)
+    )
+    belt_coordinates(
+        (1,1),
+        ((1,2),),
+        (1,2),
+        'left',
+        (1,2),
+        (1,2),
+        (1,2)
+    )
+    slot_coordinates(
+        1,
+        (1,2),
+        (1,2),
+        (1,2),
+        (1,2),
+        'left',
+        'top',
+        'vertical',
+        (1,2)
+    )
+    decompose_animate_stature(
+        'test_state'
+    )
 
 _init_jit()

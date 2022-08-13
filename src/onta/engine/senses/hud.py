@@ -241,11 +241,14 @@ class HUD():
             self.media_size).packs.alignment.horizontal
         pack_vertical_align = self.styles.get(
             self.media_size).packs.alignment.vertical
+
         bagset = self.hud_conf.get(self.media_size).packs.bag
         beltset = self.hud_conf.get(self.media_size).packs.belt
+
         bag_dim = self.get_bag_dimensions()
         wallet_dim = self.get_wallet_dimensions()
         belt_dim = self.get_belt_dimensions()
+
         bag_piece_sizes = tuple([
             (bag_piece.size.w, bag_piece.size.h)
             for bag_piece in list(bagset.values())
@@ -275,6 +278,7 @@ class HUD():
         )
         
 
+        # TODO: jit it
         if pack_horizontal_align == 'left':
             self.wallet_rendering_points.append(
                 (
@@ -431,7 +435,7 @@ class HUD():
             ('shoot', 5),
             ('slash',7 )
         )
-        
+
         # NOTE: all in service of JiT (just-in-time) and LRU cache...
         render_tuples = formulae.slot_avatar_coordinates(
             self._immute_slots(), 
