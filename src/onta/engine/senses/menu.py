@@ -100,6 +100,7 @@ class Menu():
             # j gives you index for the piece dim in dims
             for j in range(len(button_conf)):
 
+                # TODO: CANDIDATES FOR JITTING? Only needs calculated once, though.
                 if menu_stack == 'vertical':
                     if i == 0 and j == 0:
                         x = (1 - menu_margins[0]) * player_device.dimensions[0] - full_width

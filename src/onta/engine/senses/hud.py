@@ -1,6 +1,7 @@
 from typing import Union
 
 import munch
+from onta.engine.static import formulae
 import onta.settings as settings
 import onta.device as device
 import onta.world as world
@@ -151,6 +152,44 @@ class HUD():
         self._init_pack_positions(player_device)
         self._init_internal_state(state_ao)
         self._calculate_avatar_positions()
+
+
+    def _immute_slots(
+        self
+    ):
+        return tuple([ 
+            ( key, value ) 
+            if value else
+            ( key , 'null' )
+            for key, value in self.slots.items()
+        ])
+
+
+    def _immute_equipment_size(
+        self
+    ):
+        return tuple([
+            (
+                equip_key, 
+                equip.size.w, 
+                equip.size.h
+            )
+            for equip_key, equip in self.avatar_conf.equipment.items()
+            if equip is not None and equip.get('size') is not None
+        ])
+
+    def _immute_inventory_size(
+        self
+    ):
+        return tuple([
+            (
+                invent_key, 
+                invent.size.w, 
+                invent.size.h
+            )
+            for invent_key, invent in self.avatar_conf.inventory.items()
+            if invent is not None and invent.get('size') is not None
+        ])
 
 
     def _init_conf(
@@ -528,70 +567,56 @@ class HUD():
     def _calculate_avatar_positions(
         self
     ) -> None:
-        """Calculate each _Slot_, _Pack_ and _Wallet_ avatar position
+        """Calculate each _Slot_, _Pack_ and _Wallet_ avatar positions
         """
+        # tuple arguments for numba.jit and lru_cache
+        avatar_tuple =(
+            ('cast', 1),
+            ('thrust', 3),
+            ('shoot', 5),
+            ('slash',7 )
+        )
 
-        # TODO: someway to calculate this ... ?
-        avatar_render_map = {
-            'cast': 1,
-            'thrust': 3,
-            'shoot': 5,
-            'slash': 7,
-        }
+        # # caching ain't easy...
+        render_tuples = formulae.slot_avatar_coordinates(
+            self._immute_slots(),
+            tuple(self.slot_rendering_points),
+            self.get_slot_dimensions(),
+            tuple(self.properties.slots.maps),
+            self._immute_equipment_size(),
+            self._immute_inventory_size(),
+            avatar_tuple,
+            self.packs.bag,
+            self.get_bag_dimensions(),
+            tuple(self.bag_rendering_points),
+            self.packs.belt,
+            self.get_belt_dimensions(),
+            tuple(self.belt_rendering_points)
+        )
+        self.avatar_rendering_points = []
 
-        # NOTE: dependent on 'disabled', 'enabled' and 'active' being the 
-        #           same dimensions...
-        slot_dim = self.get_slot_dimensions()
+        for i in range(len(render_tuples)):
 
-        for i, slot_key in enumerate(self.properties.slots.maps):
-            if self.slots.get(slot_key):
-                slot_point = self.slot_rendering_points[
-                    avatar_render_map[slot_key]
-                ]
-                avatar_dim = (
-                    self.avatar_conf.equipment.get(self.slots.get(slot_key)).size.w,
-                    self.avatar_conf.equipment.get(self.slots.get(slot_key)).size.h
-                )
+            if render_tuples[i][0] != -1:
                 self.avatar_rendering_points.append(
-                    (
-                        slot_point[0] + ( slot_dim[0] - avatar_dim[0] ) / 2,
-                        slot_point[1] + ( slot_dim[1] - avatar_dim[1] ) / 2
-                    )
+                    render_tuples[i]
                 )
-                setattr(self.avatar_frame_map, str(i), self.slots.get(slot_key))
             else:
-                self.avatar_rendering_points.append(None)
-                setattr(self.avatar_frame_map, str(i), None)
-        
-        avatar_dim = (
-            self.avatar_conf.inventory.get(self.packs.bag).size.w,
-            self.avatar_conf.inventory.get(self.packs.bag).size.h
-        )
-        bag_point = self.bag_rendering_points[0]
-        bag_dim = self.get_bag_dimensions()
-        self.avatar_rendering_points.append(
-            (
-                bag_point[0] + ( bag_dim[0] - avatar_dim[0] ) / 2,
-                bag_point[1] + ( bag_dim[1] - avatar_dim[1] ) / 2
-            )
-        )
+                self.avatar_rendering_points.append(
+                    None
+                )
+            
+            if i < len(self.properties.slots.maps):
+                setattr(
+                    self.avatar_frame_map, 
+                    str(i), 
+                    self.slots.get(self.properties.slots.maps[i])
+                )
+
         setattr(
             self.avatar_frame_map,
             str(len(self.avatar_frame_map)),
             self.packs.bag
-        )
-
-        avatar_dim = (
-            self.avatar_conf.inventory.get(self.packs.belt).size.w,
-            self.avatar_conf.inventory.get(self.packs.belt).size.h
-        )
-        belt_point = self.belt_rendering_points[0]
-        belt_dim = self.get_belt_dimensions()
-        self.avatar_rendering_points.append(
-            (
-                belt_point[0] + ( belt_dim[0] - avatar_dim[0] ) / 2,
-                belt_point[1] + ( belt_dim[1] - avatar_dim[1] ) / 2
-            )
         )
         setattr(
             self.avatar_frame_map,

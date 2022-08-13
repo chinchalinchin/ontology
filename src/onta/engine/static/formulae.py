@@ -11,6 +11,33 @@ log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
 
 
 @numba.jit(nopython=True, nogil=True, fastmath=True)
+def filter_nested_tuple_by_value(
+    nested_tuple: tuple, 
+    filter_value: str
+) -> tuple:
+    filtered = [
+        tup
+        for tup in iter(nested_tuple)
+        if tup[0] == filter_value
+    ]
+    
+    return filtered
+
+@numba.jit(nopython=True, nogil=True, fastmath=True)
+def filter_nested_tuple_by_index(
+    nested_tuple: tuple, 
+    filter_index: int, 
+) -> tuple:
+    filtered = [
+        tup
+        for i, tup in enumerate(iter(nested_tuple))
+        if i == filter_index
+    ]
+
+    return filtered
+
+
+@numba.jit(nopython=True, nogil=True, fastmath=True)
 def screen_crop_box(
     screen_dim: tuple, 
     world_dim: tuple, 
@@ -91,6 +118,97 @@ def tile_coordinates(
     return dims
 
 
+@numba.jit(nopython=True, nogil=True, fastmath=True)
+def slot_avatar_coordinates(
+    slots_tuple: tuple,
+    slot_points_tuple: tuple,
+    slot_dim: tuple,
+    map_tuple: tuple, 
+    equip_tuple: tuple,
+    invent_tuple: tuple,
+    avatar_tuple: tuple,
+    bag: str,
+    bag_dim: tuple,
+    bag_points_tuple: tuple,
+    belt: str,
+    belt_dim: tuple,
+    belt_points_tuple: tuple,
+):
+    render_points = list()
+    
+    for slot_key in iter(map_tuple):
+
+        slot = filter_nested_tuple_by_value(
+            slots_tuple,
+            slot_key
+        ).pop()
+
+        # slot[0] = cast | thrust | slash | shoot
+        # slot[1] = equipment_name
+        if slot and slot[1] != 'null':
+            avatar = filter_nested_tuple_by_value(
+                avatar_tuple, 
+                slot_key
+            )
+
+            equipment = filter_nested_tuple_by_value(
+                equip_tuple,
+                slot[1]
+            )
+
+            if avatar and equipment:
+                equipment = equipment.pop()
+                avatar = avatar.pop()
+
+                slot_point = filter_nested_tuple_by_index(
+                    slot_points_tuple,
+                    avatar[1]
+                ).pop()  
+
+                if slot_point:              
+                    render_points.append(
+                        (
+                            ( slot_point[0] + ( slot_dim[0] - equipment[1] ) / 2 ),
+                            ( slot_point[1] + ( slot_dim[1] - equipment[2] ) / 2 )
+                        )
+                    )
+                    continue
+
+        render_points.append(( -1, -1 ))
+
+    inventory = filter_nested_tuple_by_value(
+        invent_tuple,
+        bag
+    ).pop()
+
+    if inventory:
+        render_points.append(
+            (
+                ( bag_points_tuple[0][0] + ( bag_dim[0] - inventory[1] ) / 2 ),
+                ( bag_points_tuple[0][1] + ( bag_dim[1] - inventory[2] ) / 2 )
+            )
+        )
+    else:
+        render_points.append(( -1, -1 ))
+
+    inventory = filter_nested_tuple_by_value(
+        invent_tuple,
+        belt
+    ).pop()
+
+    if inventory:
+        render_points.append(
+            (
+                ( belt_points_tuple[0][0] + ( belt_dim[0] - inventory[1] ) / 2 ), 
+                ( belt_points_tuple[0][1] + ( belt_dim[1] - inventory[2] ) / 2 )
+            )
+        )        
+    else:
+        render_points.append(( -1, -1 ))
+
+    return render_points
+
+
 @functools.lru_cache(maxsize=200)
 def plate_coordinates(
     group_conf: tuple,
@@ -143,7 +261,6 @@ def plate_coordinates(
         
         coords.append((i, start[0], start[1]))
     return tuple(coords)
-
 
 
 def construct_animate_statures(

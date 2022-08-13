@@ -593,15 +593,20 @@ class Renderer():
         })
 
         for i, render_point in enumerate(avatar_rendering_points):
-            if not render_point or not avatar_frame_map[str(i)]:
+            if not render_point:
                 continue
 
             if i < avatar_set_map.equipment and \
                 i < avatar_set_map.inventory:
+                
+                if not avatar_frame_map[str(i)]:
+                    continue
                 set_key = 'equipment'
+
             elif i >= avatar_set_map.equipment and \
                 i < avatar_set_map.inventory:
                 set_key = 'inventory'
+
             else: 
                 set_key = None
 
