@@ -108,8 +108,8 @@ def tile_coordinates(
     tile_dimensions: tuple
 ):
     dims = []
-    for i in range(set_dim[0]):
-        for j in range(set_dim[1]):
+    for i in numba.prange(set_dim[0]):
+        for j in numba.prange(set_dim[1]):
             dims.append(
                 (
                     start[0] + tile_dimensions[0]*i, 
@@ -119,6 +119,71 @@ def tile_coordinates(
     return dims
 
 
+@numba.jit(nopython=True, nogil=True, fastmath=True)
+def mirror_coordinates(
+    device_dim: tuple,
+    horizontal_align: str,
+    vertical_align: str,
+    stack: str,
+    margins: tuple,
+    padding: tuple,
+    life_rank: tuple,
+    life_dim: tuple
+):
+    render_points = list()
+
+    if horizontal_align == 'right':
+        x_start = device_dim[0] - margins[0] - \
+            life_rank[0] * life_dim[0]*(1 + padding[0]) 
+    elif horizontal_align == 'left':
+        x_start = margins[0]
+    else: # center
+        x_start = (device_dim[0] - \
+            life_rank[0] * life_dim[0] *(1 + padding[0]))/2
+    
+    if vertical_align == 'top':
+        y_start = margins[1]
+    elif vertical_align == 'bottom':
+        y_start = device_dim[1] - margins[1] - \
+            life_rank[1] * life_dim[1] * (1 + padding[1])
+    else: # center
+        y_start = (device_dim[1] - \
+            life_rank[1] * life_dim[1] * (1 + padding[1]))/2
+
+
+    if stack== 'vertical':
+        life_rank = (life_rank[1], life_rank[0])
+        
+    for row in numba.prange(life_rank[1]):
+        for col in numba.prange(life_rank[0]):
+
+            if (row+1)*col == 0:
+                render_points.append(
+                    ( x_start, y_start)
+                )
+                continue
+            elif stack == 'horizontal':
+                render_points.append(
+                    (
+                        render_points[(row+1)*col - 1][0] + \
+                            life_dim[0]*(1+padding[0]),
+                        render_points[(row+1)*col - 1][1]
+                    )
+                )
+                continue
+            render_points.append(
+                (
+                    render_points[(row+1)*col - 1][0] + \
+                        life_dim[0],
+                    render_points[(row+1)*col - 1][1] + \
+                        life_dim[1]*(1+padding[1])
+                )
+            )
+            continue
+    return render_points
+
+
+@functools.lru_cache(maxsize=100)
 @numba.jit(nopython=True, nogil=True, fastmath=True)
 def slot_avatar_coordinates(
     slots_tuple: tuple,
@@ -142,11 +207,11 @@ def slot_avatar_coordinates(
         slot = filter_nested_tuple_by_value(
             slots_tuple,
             slot_key
-        ).pop()
+        )
 
         # slot[0] = cast | thrust | slash | shoot
         # slot[1] = equipment_name
-        if slot and slot[1] != 'null':
+        if slot and slot[0][1] != 'null':
             avatar = filter_nested_tuple_by_value(
                 avatar_tuple, 
                 slot_key
@@ -154,23 +219,23 @@ def slot_avatar_coordinates(
 
             equipment = filter_nested_tuple_by_value(
                 equip_tuple,
-                slot[1]
+                slot[0][1]
             )
 
             if avatar and equipment:
-                equipment = equipment.pop()
-                avatar = avatar.pop()
+                equipment = equipment
+                avatar = avatar
 
                 slot_point = filter_nested_tuple_by_index(
                     slot_points_tuple,
-                    avatar[1]
-                ).pop()  
+                    avatar[0][1]
+                )
 
                 if slot_point:              
                     render_points.append(
                         (
-                            ( slot_point[0] + ( slot_dim[0] - equipment[1] ) / 2 ),
-                            ( slot_point[1] + ( slot_dim[1] - equipment[2] ) / 2 )
+                            ( slot_point[0][0] + ( slot_dim[0] - equipment[0][1] ) / 2 ),
+                            ( slot_point[0][1] + ( slot_dim[1] - equipment[0][2] ) / 2 )
                         )
                     )
                     continue
@@ -180,13 +245,13 @@ def slot_avatar_coordinates(
     inventory = filter_nested_tuple_by_value(
         invent_tuple,
         bag
-    ).pop()
+    )
 
     if inventory:
         render_points.append(
             (
-                ( bag_points_tuple[0][0] + ( bag_dim[0] - inventory[1] ) / 2 ),
-                ( bag_points_tuple[0][1] + ( bag_dim[1] - inventory[2] ) / 2 )
+                ( bag_points_tuple[0][0] + ( bag_dim[0] - inventory[0][1] ) / 2 ),
+                ( bag_points_tuple[0][1] + ( bag_dim[1] - inventory[0][2] ) / 2 )
             )
         )
     else:
@@ -195,13 +260,13 @@ def slot_avatar_coordinates(
     inventory = filter_nested_tuple_by_value(
         invent_tuple,
         belt
-    ).pop()
+    )
 
     if inventory:
         render_points.append(
             (
-                ( belt_points_tuple[0][0] + ( belt_dim[0] - inventory[1] ) / 2 ), 
-                ( belt_points_tuple[0][1] + ( belt_dim[1] - inventory[2] ) / 2 )
+                ( belt_points_tuple[0][0] + ( belt_dim[0] - inventory[0][1] ) / 2 ), 
+                ( belt_points_tuple[0][1] + ( belt_dim[1] - inventory[0][2] ) / 2 )
             )
         )        
     else:
@@ -498,6 +563,21 @@ def _init_jit():
     screen_crop_box((1,2),(1,2),(1,2))
     on_screen((0,1), (0,1,2,3), (1,2), (1,2))
     tile_coordinates((1,2),(1,2),(1,2))
+    slot_avatar_coordinates(
+        (('slash','sword'),),
+        (('sword',10,10),),
+        (('item',10,10),),
+        ((1,2),),
+        ((1,2),(3,4),),
+        ((1,2),(3,4),),
+        ('slash'),
+        (('slash',1),),
+        'item',
+        'arrow',
+        (1,2),
+        (3,4),
+        (5,6)
+    )
     decompose_animate_stature('test_state')
 
 _init_jit()

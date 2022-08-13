@@ -353,56 +353,21 @@ class HUD():
             mirror_styles.margins.w * player_device.dimensions[0],
             mirror_styles.margins.h * player_device.dimensions[1]
         )
+        padding = (
+            mirror_styles.padding.w,
+            mirror_styles.padding.h
+        )
 
-        if mirror_styles.alignment.horizontal == 'right':
-            x_start = player_device.dimensions[0] - \
-                margins[0] - \
-                life_rank[0] * life_dim[0]*(1 + mirror_styles.padding.w) 
-        elif mirror_styles.alignment.horizontal == 'left':
-            x_start = margins[0]
-        else: # center
-            x_start = (player_device.dimensions[0] - \
-                life_rank[0] * life_dim[0] *(1 + mirror_styles.padding.w))/2
-        
-        if mirror_styles.alignment.vertical == 'top':
-            y_start = margins[1]
-        elif mirror_styles.alignment.vertical == 'bottom':
-            y_start = player_device.dimensions[1] - \
-                margins[1] - \
-                life_rank[1] * life_dim[1] * (1 + mirror_styles.padding.h)
-        else: # center
-            y_start = (player_device.dimensions[1] - \
-                life_rank[1] * life_dim[1] * (1 + mirror_styles.padding.h))/2
-
-
-        if mirror_styles.stack == 'vertical':
-            life_rank = (life_rank[1], life_rank[0])
-            
-        for row in range(life_rank[1]):
-            for col in range(life_rank[0]):
-
-                if (row+1)*col == 0:
-                    self.life_rendering_points.append(
-                        ( x_start, y_start)
-                    )
-                else:
-                    if mirror_styles.stack == 'horizontal':
-                        self.life_rendering_points.append(
-                            (
-                                self.life_rendering_points[(row+1)*col - 1][0] + \
-                                    life_dim[0]*(1+mirror_styles.padding.w),
-                                self.life_rendering_points[(row+1)*col - 1][1]
-                            )
-                        )
-                    else:
-                        self.life_rendering_points.append(
-                            (
-                                self.life_rendering_points[(row+1)*col - 1][0] + \
-                                    life_dim[0],
-                                self.life_rendering_points[(row+1)*col - 1][1] + \
-                                    life_dim[1]*(1+mirror_styles.padding.h)
-                            )
-                        )
+        self.life_rendering_points = formulae.mirror_coordinates(
+            player_device.dimensions,
+            mirror_styles.alignment.horizontal,
+            mirror_styles.alignment.vertical,
+            mirror_styles.stack,
+            margins,
+            padding,
+            life_rank,
+            life_dim
+        )
 
         self.life_rendering_points.reverse()
             
@@ -671,13 +636,6 @@ class HUD():
                 0: 'display',
                 1: 'display'
             })
-
-
-    def _calcualte_avatar_frame_map(
-        self,
-    ) -> dict:
-        # start with slots...
-        pass
 
 
     def get_frame_map(

@@ -128,6 +128,7 @@ def any_intersections(
         Modify this to return the direction of the collision. Need to recoil sprite based on where the collision came from, not which direction the sprite is heading...
 
     """
+    # use numba.prange here 
     for other_rect in list(rectangle_tuplized_list):
         if intersection(rectangle, other_rect):
             return other_rect
