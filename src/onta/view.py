@@ -132,6 +132,14 @@ class Renderer():
         game_world: world.World, 
         repository: repo.Repo
     ) -> None:
+        """Renders static tilesets onto the static world frames. This method is only called once per session, when the game engine is initializing.
+
+
+        :param game_world: _description_
+        :type game_world: world.World
+        :param repository: _description_
+        :type repository: repo.Repo
+        """
         log.debug('Rendering tile sets', '_render_tiles')
 
         for layer in game_world.layers:
@@ -179,7 +187,7 @@ class Renderer():
         game_world: world.World, 
         repository: repo.Repo
     ) -> None:
-        """Renders static sets onto the static world frames. This method is only called once per session, when the game engine is initializing.
+        """Renders static strutsets (and door platesets) onto the static world frames. This method is only called once per session, when the game engine is initializing.
 
         :param game_world: _description_
         :type game_world: world.World
@@ -187,7 +195,7 @@ class Renderer():
         :type repository: repo.Repo
 
         .. note:
-            Only _Doors_ are considered static platesets. All other types of plates need to be re-rendered. Therefore, this method will only render _Door_\s.
+            Only _Doors_ are considered static platesets. All other types of plates need to be re-rendered. Therefore, this method will only render _Door_ plates. It makes it a bit awkward in terms of logic, but results in better performance. Otherwise, doors would be re-rendered every cycle in `_render_variable_platesets`.
         """
         log.debug('Rendering strut and plate sets', '_render_sets')
     

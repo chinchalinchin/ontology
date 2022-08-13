@@ -136,6 +136,14 @@ def plate_coordinates(
     return tuple(coords)
 
 
+@numba.jit(nopython=True, nogil=True, parallel=True)
+def decompose_animate_stature(
+    sprite_stature:str
+) -> tuple:
+    split = sprite_stature.split(settings.SEP)
+    return (split[0], split[1])
+
+
 def construct_animate_statures(
     stature_props: munch.Munch
 ) -> list:
@@ -199,15 +207,6 @@ def compose_animate_stature(
         sprite.stature.action, 
         sprite.stature.direction
     ])
-
-
-@functools.lru_cache(maxsize=50)
-@numba.jit(nopython=True, nogil=True, parallel=True)
-def decompose_animate_stature(
-    sprite_stature:str
-) -> tuple:
-    split = sprite_stature.split(settings.SEP)
-    return (split[0], split[1])
 
 
 def decompose_compositions_into_sets(
