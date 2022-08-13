@@ -120,6 +120,7 @@ properties:
       pieces:
         - container
         - unit
+  
   packs:
     bag:
       pieces:
@@ -132,7 +133,7 @@ properties:
     wallet:
       pieces:
         - display
-  avatars: null
+  
   menu:
     button:
       buttons:
@@ -442,6 +443,82 @@ menu:
           size:
             w: 41
             h: 28
+    bauble:
+      enabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 574
+            y: 286
+          size:
+            w: 38
+            h: 40
+        middle:
+          path: slotsheet.png
+          position:
+            x: 613 
+            y: 286
+          size:
+            w: 36
+            h: 40
+        right:
+          path: slotsheet.png
+          position:
+            x: 650
+            y: 286
+          size:
+            w: 38
+            h: 40
+      disabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 574
+            y: 329
+          size:
+            w: 38
+            h: 40
+        middle:
+          path: slotsheet.png
+          position:
+            x: 613 
+            y: 329
+          size:
+            w: 36
+            h: 40
+        right:
+          path: slotsheet.png
+          position:
+            x: 650
+            y: 329
+          size:
+            w: 38
+            h: 40
+      active:
+        left:
+          path: slotsheet.png
+          position:
+            x: 574
+            y: 372
+          size:
+            w: 38
+            h: 40
+        middle:
+          path: slotsheet.png
+          position:
+            x: 613 
+            y: 372
+          size:
+            w: 36
+            h: 40
+        right:
+          path: slotsheet.png
+          position:
+            x: 650
+            y: 372
+          size:
+            w: 38
+            h: 40
   large:
     button:
       enabled:
@@ -519,6 +596,80 @@ menu:
           size:
             w: 41
             h: 28
-
-    
+    bauble:
+      enabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 574
+            y: 286
+          size:
+            w: 38
+            h: 40
+        middle:
+          path: slotsheet.png
+          position:
+            x: 613 
+            y: 286
+          size:
+            w: 36
+            h: 40
+        right:
+          path: slotsheet.png
+          position:
+            x: 650
+            y: 286
+          size:
+            w: 38
+            h: 40
+      disabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 574
+            y: 329
+          size:
+            w: 38
+            h: 40
+        middle:
+          path: slotsheet.png
+          position:
+            x: 613 
+            y: 329
+          size:
+            w: 36
+            h: 40
+        right:
+          path: slotsheet.png
+          position:
+            x: 650
+            y: 329
+          size:
+            w: 38
+            h: 40
+      active:
+        left:
+          path: slotsheet.png
+          position:
+            x: 574
+            y: 372
+          size:
+            w: 38
+            h: 40
+        middle:
+          path: slotsheet.png
+          position:
+            x: 613 
+            y: 372
+          size:
+            w: 36
+            h: 40
+        right:
+          path: slotsheet.png
+          position:
+            x: 650
+            y: 372
+          size:
+            w: 38
+            h: 40
       
