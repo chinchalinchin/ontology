@@ -569,7 +569,7 @@ class HUD():
     ) -> None:
         """Calculate each _Slot_, _Pack_ and _Wallet_ avatar positions
         """
-        # tuple arguments for numba.jit and lru_cache
+        # TODO: must be a better way to calculate this...
         avatar_tuple =(
             ('cast', 1),
             ('thrust', 3),
@@ -577,21 +577,21 @@ class HUD():
             ('slash',7 )
         )
 
-        # # caching ain't easy...
+            # jitting ain't easy...
         render_tuples = formulae.slot_avatar_coordinates(
-            self._immute_slots(),
-            tuple(self.slot_rendering_points),
-            self.get_slot_dimensions(),
-            tuple(self.properties.slots.maps),
+            self._immute_slots(), 
             self._immute_equipment_size(),
             self._immute_inventory_size(),
-            avatar_tuple,
-            self.packs.bag,
-            self.get_bag_dimensions(),
+            tuple(self.slot_rendering_points),
             tuple(self.bag_rendering_points),
-            self.packs.belt,
+            tuple(self.belt_rendering_points),
+            tuple(self.properties.slots.maps),
+            avatar_tuple, 
+            self.packs.bag,
+            self.packs.belt, 
+            self.get_slot_dimensions(),
+            self.get_bag_dimensions(),
             self.get_belt_dimensions(),
-            tuple(self.belt_rendering_points)
         )
         self.avatar_rendering_points = []
 

@@ -23,6 +23,7 @@ def filter_nested_tuple_by_value(
     
     return filtered
 
+
 @numba.jit(nopython=True, nogil=True, fastmath=True)
 def filter_nested_tuple_by_index(
     nested_tuple: tuple, 
@@ -121,18 +122,18 @@ def tile_coordinates(
 @numba.jit(nopython=True, nogil=True, fastmath=True)
 def slot_avatar_coordinates(
     slots_tuple: tuple,
-    slot_points_tuple: tuple,
-    slot_dim: tuple,
-    map_tuple: tuple, 
     equip_tuple: tuple,
     invent_tuple: tuple,
+    slot_points_tuple: tuple,
+    bag_points_tuple: tuple,
+    belt_points_tuple: tuple,
+    map_tuple: tuple,
     avatar_tuple: tuple,
     bag: str,
-    bag_dim: tuple,
-    bag_points_tuple: tuple,
     belt: str,
+    slot_dim: tuple,
+    bag_dim: tuple,
     belt_dim: tuple,
-    belt_points_tuple: tuple,
 ):
     render_points = list()
     
