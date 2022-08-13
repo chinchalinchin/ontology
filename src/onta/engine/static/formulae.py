@@ -9,6 +9,7 @@ import onta.engine.static.calculator as calculator
 
 log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
 
+
 @numba.jit(nopython=True, nogil=True, fastmath=True)
 def screen_crop_box(
     screen_dim: tuple, 
@@ -62,6 +63,14 @@ def on_screen(
     """
     crop_box = screen_crop_box(screen_dim, world_dim, player_dim)
     return calculator.intersection(crop_box, object_dim)
+
+
+@numba.jit(nopython=True, nogil=True)
+def decompose_animate_stature(
+    sprite_stature:str
+) -> tuple:
+    split = sprite_stature.split(settings.SEP)
+    return (split[0], split[1])
 
 
 @numba.jit(nopython=True, nogil=True, fastmath=True)
@@ -135,13 +144,6 @@ def plate_coordinates(
         coords.append((i, start[0], start[1]))
     return tuple(coords)
 
-
-@numba.jit(nopython=True, nogil=True, parallel=True)
-def decompose_animate_stature(
-    sprite_stature:str
-) -> tuple:
-    split = sprite_stature.split(settings.SEP)
-    return (split[0], split[1])
 
 
 def construct_animate_statures(
@@ -370,3 +372,14 @@ def decompose_compositions_into_sets(
                         decomposition[2] = buffer_sets
     
     return (decomposition[0], decomposition[1], decomposition[2])
+
+
+def _init_jit():
+    log.debug('Initializing JIT functions...', '_init_jit')
+
+    screen_crop_box((1,2),(1,2),(1,2))
+    on_screen((0,1), (0,1,2,3), (1,2), (1,2))
+    tile_coordinates((1,2),(1,2),(1,2))
+    decompose_animate_stature('test_state')
+
+_init_jit()

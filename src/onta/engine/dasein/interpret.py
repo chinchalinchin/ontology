@@ -7,6 +7,7 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.engine.dasein.interpret', settings.LOG_LEVEL)
 
+
 def map_input_to_intent(
     hero: munch.Munch,
     sprite_stature: munch.Munch,

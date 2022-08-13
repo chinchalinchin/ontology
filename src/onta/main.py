@@ -100,9 +100,6 @@ def render(
     return eng.render(wld, rep, hd, mn, args.crop, args.layer)
 
 
-def debug():
-    pass
-
 def do(
     game_view: QtWidgets.QWidget, 
     controller: control.Controller, 
@@ -151,25 +148,25 @@ def do(
 
         # # pre_render hook here
         # scripts.apply_scripts(game_world, 'pre_render')
-
-        if debug:
-            render_engine.view(
-                game_world, 
-                game_view, 
-                headsup_display,
-                pause_menu,
-                asset_repository,
-                user_input
-            )
-        else:
-            render_engine.view(
-                game_world, 
-                game_view, 
-                headsup_display,
-                pause_menu,
-                asset_repository,
-                None
-            )
+        if game_world.iterations not in range(settings.FPS):
+            if debug:
+                render_engine.view(
+                    game_world, 
+                    game_view, 
+                    headsup_display,
+                    pause_menu,
+                    asset_repository,
+                    user_input
+                )
+            else:
+                render_engine.view(
+                    game_world, 
+                    game_view, 
+                    headsup_display,
+                    pause_menu,
+                    asset_repository,
+                    None
+                )
         # # post_loop hook here
         # scripts.apply_scripts(game_world, 'post_loop')
         

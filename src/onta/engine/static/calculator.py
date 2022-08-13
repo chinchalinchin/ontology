@@ -2,8 +2,11 @@ import math
 from typing import Union
 import numba
 
+import onta.settings as settings
+import onta.util.logger as logger
 
-# TODO: aot compilation
+
+log = logger.Logger('onta.engine.static', settings.LOG_LEVEL)
 
 @numba.jit(nopython=True, nogil=True, fastmath=True)
 def center(
@@ -151,3 +154,19 @@ def scale(
     if units == 'tiles':
         return (point[0]*factor[0], point[1]*factor[1])
     return point
+
+
+def _init_jit():
+    log.debug('Initializing JIT functions...', '_init_jit')
+    
+    center((1,2,3,4))
+    angle_relative_to_center((0,1))
+    projection()
+    distance((1,2),(3,4))
+    intersection((1,2,3,4), (5,6,7,8)),
+    any_intersections((1,2,3,4), 
+        tuple([(1,2,3,4), (5,6,7,8)])
+    )
+    scale((1,2),(3,4))
+
+_init_jit()

@@ -121,6 +121,7 @@ class Repo():
             for asset_key, asset_conf in assets_conf.items():
                 # need tile dimensions here...but tile dimensions don't exist until world
                 # pulls static state...
+
                 if asset_type != 'tiles':
                     w, h = asset_conf.size.w, asset_conf.size.h
 
