@@ -167,7 +167,7 @@ def engage(
     sprites: munch.Munch,
 ) -> Union[Literal['continue'], Literal['break']]:
 
-    if sprite.path is not None and 'flee' in sprite.path:
+    if sprite.stature.attention is not None and 'flee' in sprite.stature.attention:
         return 'continue'
 
     sprite_pos = (sprite.position.x, sprite.position.y)

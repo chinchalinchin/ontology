@@ -649,7 +649,7 @@ class World():
                             sprite,
                             self.get_sprites(),
                         )
-                        log.debug(f'Reorienting {sprite_key} with path {sprite.path}',
+                        log.debug(f'Reorienting {sprite_key} with path {sprite.stature.attention}',
                                     '_physics')
                         new_direction = paths.reorient(
                             sprite_hitbox,

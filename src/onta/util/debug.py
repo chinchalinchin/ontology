@@ -11,26 +11,15 @@ def generate_player_template(
         npc_str += f"<h5>{npc_key}</h5>\n"
         npc_str += "<ul style=\"font-size:small\">\n"
         npc_str += f"<li>sprite.frame: {npc.frame}</li>\n"
+        npc_str += f"<li>sprite.stature.attention: {npc.stature.attention}</li>\n"
+        npc_str += f"<li>sprite.stature.disposition: {npc.stature.disposition}</li>"
         npc_str += f"<li>sprite.stature.intention: {npc.stature.intention}</li>\n"
         npc_str += f"<li>sprite.stature.action: {npc.stature.action}</li>\n"
         npc_str += f"<li>sprite.stature.direction: {npc.stature.direction}</li>\n"
         npc_str += f"<li>sprite.stature.expression: {npc.stature.expression}</li>\n"
-        npc_str += f"<li>sprite.path: {npc.path} </li>\n"
         npc_str += "</ul>\n"
 
-    if npc_str:
-        return f"""
-            <h5>Player</h5>
-            <ul style="font-size: small">
-                <li>player.frame: {game_world.hero.frame}</li>
-                <li>player.stature.intention: {game_world.hero.stature.intention}</li>
-                <li>player.stature.action: {game_world.hero.stature.action}</li>
-                <li>player.stature.direction: {game_world.hero.stature.direction}</li>
-                <li>player.stature.expression: {game_world.hero.stature.expression}</li>
-            </ul>
-            {npc_str}
-        """
-    return f"""
+    player_str = f"""
         <h5>Player</h5>
         <ul style="font-size: small">
             <li>player.frame: {game_world.hero.frame}</li>
@@ -40,6 +29,12 @@ def generate_player_template(
             <li>player.stature.expression: {game_world.hero.stature.expression}</li>
         </ul>
     """
+    if npc_str:
+        return f"""
+            {player_str}
+            {npc_str}
+        """
+    return player_str
 
 def generate_input_template(
     user_input: munch.Munch

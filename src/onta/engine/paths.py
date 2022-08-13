@@ -77,24 +77,23 @@ def concat_dynamic_paths(
     npcs: munch.Munch
 ) -> munch.Munch:
     pathset = sprite.memory.paths.copy()
-    npc_keys = list(npcs.keys())
 
-    if sprite.path == 'hero':
+    if sprite.stature.attention == 'hero':
         setattr(
             pathset, 
-            sprite.path,
+            sprite.stature.attention,
             munch.Munch({ 
                 'x': hero.position.x, 'y': hero.position.y
             })
         )
 
-    elif sprite.path in npc_keys:
+    elif sprite.stature.attention in list(npcs.keys()):
         setattr(
             pathset,
-            sprite.path,
+            sprite.stature.attention,
             munch.Munch({
-                'x': npcs.get(sprite.path).position.x,
-                'y': npcs.get(sprite.path).position.y
+                'x': npcs.get(sprite.stature.attention).position.x,
+                'y': npcs.get(sprite.stature.attention).position.y
             })
         )
 
