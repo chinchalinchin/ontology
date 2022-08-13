@@ -519,6 +519,75 @@ menu:
           size:
             w: 38
             h: 40
+    label:
+      enabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 634
+            y: 118
+          size:
+            w: 24
+            h: 24
+        middle:
+          path: slotsheet.png
+          position:
+            x: 659
+            y: 118
+          size:
+            w: 23
+            h: 24
+        right:
+          path: slotsheet.png
+          position:
+            x: 683
+            y: 118
+          size:
+            w: 25
+            h: 24
+      disabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 632
+            y: 143
+          size:
+            w: 24
+            h: 24
+        middle:
+          path: slotsheet.png
+          position:
+            x: 659
+            y: 143
+          size:
+            w: 23
+            h: 24
+        right:
+          path: slotsheet.png
+          position:
+            x: 683
+            y: 143
+          size:
+            w: 25
+            h: 24
+    indicator:
+      enabled:
+        path: slotsheet.png
+        position:
+          x: 818
+          y: 122
+        size:
+          w: 12
+          h: 12
+      disabled:
+        path: slotsheet.png
+        position:
+          x: 831
+          y: 122
+        size:
+          w: 12
+          h: 12
+  
   large:
     button:
       enabled:
@@ -672,4 +741,73 @@ menu:
           size:
             w: 38
             h: 40
+    label:
+      enabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 634
+            y: 118
+          size:
+            w: 24
+            h: 24
+        middle:
+          path: slotsheet.png
+          position:
+            x: 659
+            y: 118
+          size:
+            w: 23
+            h: 24
+        right:
+          path: slotsheet.png
+          position:
+            x: 683
+            y: 118
+          size:
+            w: 25
+            h: 24
+      disabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 632
+            y: 143
+          size:
+            w: 24
+            h: 24
+        middle:
+          path: slotsheet.png
+          position:
+            x: 659
+            y: 143
+          size:
+            w: 23
+            h: 24
+        right:
+          path: slotsheet.png
+          position:
+            x: 683
+            y: 143
+          size:
+            w: 25
+            h: 24
+    indicator:
+      enabled:
+        path: slotsheet.png
+        position:
+          x: 818
+          y: 122
+        size:
+          w: 12
+          h: 12
+      disabled:
+        path: slotsheet.png
+        position:
+          x: 831
+          y: 122
+        size:
+          w: 12
+          h: 12
+
       
