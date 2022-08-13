@@ -252,12 +252,20 @@ def detect_collision(
     .. todo::
         Modify this to return the direction of the collision. Need to recoil sprite based on where the collision came from, not which direction the sprite is heading...
     """
+    if not hitbox_list:
+        return False
+
     no_nulls = [
         hitbox
         for hitbox
         in hitbox_list
         if hitbox is not None
+            and None not in list(hitbox)
     ]
+
+    if not no_nulls:
+        return False
+
     return calculator.any_intersections(
         object_hitbox,
         tuple(no_nulls)

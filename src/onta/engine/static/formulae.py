@@ -9,7 +9,6 @@ import onta.engine.static.calculator as calculator
 
 log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
 
-@functools.lru_cache(maxsize=5)
 @numba.jit(nopython=True, nogil=True, fastmath=True)
 def screen_crop_box(
     screen_dim: tuple, 
@@ -41,7 +40,7 @@ def screen_crop_box(
     return (crop_x, crop_y, crop_width, crop_height)
 
 
-@functools.lru_cache(maxsize=5)
+@numba.jit(nopython=True, nogil=True, fastmath=True)
 def on_screen(
     player_dim: tuple,
     object_dim: tuple,
