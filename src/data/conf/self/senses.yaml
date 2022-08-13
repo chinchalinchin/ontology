@@ -572,22 +572,39 @@ menu:
             h: 24
     indicator:
       enabled:
-        path: slotsheet.png
-        position:
-          x: 818
-          y: 122
-        size:
-          w: 12
-          h: 12
+        main:
+          path: slotsheet.png
+          position:
+            x: 818
+            y: 122
+          size:
+            w: 12
+            h: 12
+        frame:
+          path: slotsheet.png
+          position:
+            x: 762
+            y: 86
+          size:
+            w: 24
+            h: 24
       disabled:
-        path: slotsheet.png
-        position:
-          x: 831
-          y: 122
-        size:
-          w: 12
-          h: 12
-  
+        main:
+          path: slotsheet.png
+          position:
+            x: 831
+            y: 122
+          size:
+            w: 12
+            h: 12
+        frame:
+          path: slotsheet.png
+          position:
+            x: 762
+            y: 86
+          size:
+            w: 24
+            h: 24
   large:
     button:
       enabled:
@@ -794,20 +811,38 @@ menu:
             h: 24
     indicator:
       enabled:
-        path: slotsheet.png
-        position:
-          x: 818
-          y: 122
-        size:
-          w: 12
-          h: 12
+        main:
+          path: slotsheet.png
+          position:
+            x: 818
+            y: 122
+          size:
+            w: 12
+            h: 12
+        frame:
+          path: slotsheet.png
+          position:
+            x: 762
+            y: 86
+          size:
+            w: 24
+            h: 24
       disabled:
-        path: slotsheet.png
-        position:
-          x: 831
-          y: 122
-        size:
-          w: 12
-          h: 12
+        main:
+          path: slotsheet.png
+          position:
+            x: 831
+            y: 122
+          size:
+            w: 12
+            h: 12
+        frame:
+          path: slotsheet.png
+          position:
+            x: 762
+            y: 86
+          size:
+            w: 24
+            h: 24
 
       

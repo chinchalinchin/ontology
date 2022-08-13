@@ -1,5 +1,6 @@
 import os
 import functools
+import sys
 from typing import Union
 from PIL import Image
 import munch
@@ -16,10 +17,46 @@ import onta.util.gui as gui
 
 log = logger.Logger('onta.repo', settings.LOG_LEVEL)
 
-STATIC_ASSETS_TYPES = [ 'tiles', 'struts', 'plates' ]
-SWITCH_PLATES_TYPES = [ 'container', 'pressure', 'gate' ]
-AVATAR_TYPES = [ 'armor', 'equipment', 'inventory', 'quantity' ]
-APPAREL_TYPES = [ 'armor', 'equipment' ]
+# TODO: either a general typing.yaml or else each .yaml needs to specify types somehow.
+
+STATIC_ASSETS_TYPES = [ 
+    'tiles', 
+    'struts', 
+    'plates' 
+]
+SWITCH_PLATES_TYPES = [ 
+    'container', 
+    'pressure', 
+    'gate' 
+]
+AVATAR_TYPES = [ 
+    'armor', 
+    'equipment', 
+    'inventory', 
+    'quantity' 
+]
+APPAREL_TYPES = [ 
+    'armor', 
+    'equipment' 
+]
+PIECEWISE_SENSE_TYPES = [
+    'mirror', 
+    'pack', 
+    'button', 
+    'bauble', 
+    'label', 
+    'indicator'
+    ]
+STYLED_SENSE_TYPES = [ 
+    'slot'
+]
+DIRECTIONAL_TYPE_DEFINTIONS = [
+    'cap'
+]
+ALIGNMENT_TYPE_DEFINITIONS = [
+    'buffer'
+]
+
 
 
 @functools.lru_cache(maxsize=4)
@@ -247,62 +284,64 @@ class Repo():
                 setattr(self.packs, size, munch.Munch({}))
             if not self.menus.get(size):
                 setattr(self.menus, size, munch.Munch({}))
-            if not self.menus.get(size).get('button'):
-                pass
-            ## SLOT INITIALIZATION
-            #   NOTE: for (disabled, {slot}), (enabled, {slot}), (active, {slot}), 
-            #               (cap, {slot}), (buffer, {slot})
-            #   NOTE: slots are unique and have to be treated separately
-            for slot_key, slot in interface_conf.hud.get(size).slots.items():
-                if not slot or not slot.get('path'):
-                    continue
 
-                w, h = slot.size.w, slot.size.h   
-                x, y = slot.position.x, slot.position.y
 
-                buffer = gui.open_image(
-                    os.path.join(
-                        ontology_path,
-                        *settings.SENSES_PATH,
-                        slot.path
+            ## STYLED INITIALIZATION
+            for set_type in STYLED_SENSE_TYPES:
+                if set_type == 'slot':
+                    iter_set = interface_conf.hud.get(size).slots
+                    save_set = self.slots
+
+                for set_key, set_conf in iter_set.items():
+                    if not set_conf or not set_conf.get('path'):
+                        continue
+
+                    w, h = set_conf.size.w, set_conf.size.h   
+                    x, y = set_conf.position.x, set_conf.position.y
+
+                    buffer = gui.open_image(
+                        os.path.join(
+                            ontology_path,
+                            *settings.SENSES_PATH,
+                            set_conf.path
+                        )
                     )
-                )
 
-                log.debug( 
-                    f"Slot {slot_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
-                    '_init_sense_assets'
-                )
-
-                slot_conf = interface_conf.hud.get(size).slots
-                buffer = buffer.crop(( x, y, w + x, h + y ))
-
-                if slot_key == 'cap':
-                    adjust = adjust_directional_rotation(slot_conf.cap.definition)
-                    setattr(
-                        self.slots.get(size),
-                        slot_key,
-                        munch.Munch({
-                            'down': buffer.rotate(adjust[0], expand=True),
-                            'left': buffer.rotate(adjust[1], expand=True),
-                            'right': buffer.rotate(adjust[2], expand=True),
-                            'up': buffer.rotate(adjust[3], expand=True),
-                        })
+                    log.debug( 
+                        f"{set_type} {set_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                        '_init_sense_assets'
                     )
-                elif slot_key == 'buffer':
-                    adjust = adjust_alignment_rotation(slot_conf.buffer.definition)
-                    setattr(
-                        self.slots.get(size),
-                        slot_key,
-                        munch.Munch({
-                            'vertical': buffer.rotate(adjust[0], expand=True),
-                            'horizontal': buffer.rotate(adjust[1], expand=True)
-                        })
-                    )
-                elif slot_key in [ 'disabled',  'enabled', 'active' ]:
-                    setattr(self.slots.get(size), slot_key, buffer)
 
-            ########################
-            for set_type in ['mirror', 'pack', 'button']:
+                    buffer = buffer.crop(( x, y, w + x, h + y ))
+
+                    if set_key in DIRECTIONAL_TYPE_DEFINTIONS:
+                        adjust = adjust_directional_rotation(set_conf.definition)
+                        setattr(
+                            save_set.get(size),
+                            set_key,
+                            munch.Munch({
+                                'down': buffer.rotate(adjust[0], expand=True),
+                                'left': buffer.rotate(adjust[1], expand=True),
+                                'right': buffer.rotate(adjust[2], expand=True),
+                                'up': buffer.rotate(adjust[3], expand=True),
+                            })
+                        )
+                        continue
+                    elif set_key in ALIGNMENT_TYPE_DEFINITIONS:
+                        adjust = adjust_alignment_rotation(set_conf.definition)
+                        setattr(
+                            save_set.get(size),
+                            set_key,
+                            munch.Munch({
+                                'vertical': buffer.rotate(adjust[0], expand=True),
+                                'horizontal': buffer.rotate(adjust[1], expand=True)
+                            })
+                        )
+                        continue
+                    setattr(self.slots.get(size), set_key, buffer)
+
+            ## EVERYTHING ELSE
+            for set_type in PIECEWISE_SENSE_TYPES:
                 if set_type == 'mirror':
                     iter_set = interface_conf.hud.get(size).mirrors
                     save_set = self.mirrors
@@ -312,7 +351,17 @@ class Repo():
                 elif set_type == 'button':
                     iter_set = interface_conf.menu.get(size).button
                     save_set = self.menus
+                elif set_type == 'bauble':
+                    iter_set = interface_conf.menu.get(size).bauble
+                    save_set = self.menus
+                elif set_type == 'label':
+                    iter_set = interface_conf.menu.get(size).label
+                    save_set = self.menus
+                elif set_type == 'indicator':
+                    iter_set = interface_conf.menu.get(size).indicator
+                    save_set = self.menus
                     
+
                 for set_key, set_conf in iter_set.items():
                     if not set_conf:
                         continue
