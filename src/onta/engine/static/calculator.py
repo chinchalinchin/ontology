@@ -1,17 +1,16 @@
-import functools
 import math
+from typing import Union
 import numba
 
-@functools.lru_cache(maxsize=5)
-@numba.jit(nopython=True, nogil=True)
+
+@numba.jit(nopython=True, nogil=True, fastmath=True)
 def center(
     dim: tuple
 ) -> tuple:
     return (dim[0] + dim[2] /2, dim[1] + dim[3]/2)
 
 
-@functools.lru_cache(maxsize=10)
-@numba.jit(nopython=True, nogil=True)
+@numba.jit(nopython=True, nogil=True, fastmath=True)
 def angle_relative_to_center(
     point: tuple,
     center: tuple = (0,0)
@@ -31,8 +30,7 @@ def angle_relative_to_center(
     return 360 - 180 * math.acos(cosine) / math.pi
 
 
-@functools.lru_cache(maxsize=5)
-@numba.jit(nopython=True, nogil=True)
+@numba.jit(nopython=True, nogil=True, fastmath=True)
 def projection(
     angle:float = 45
 ) -> tuple:
@@ -41,8 +39,8 @@ def projection(
         math.sin(angle*math.pi/180)
     )
 
-@functools.lru_cache(maxsize=5)
-@numba.jit(nopython=True, nogil=True)
+
+@numba.jit(nopython=True, nogil=True, fastmath=True)
 def distance(
     a: tuple, 
     b: tuple
@@ -52,8 +50,7 @@ def distance(
     return math.sqrt(dx ** 2 + dy ** 2)
 
 
-@functools.lru_cache(maxsize=5)
-@numba.jit(nopython=True, nogil=True)
+@numba.jit(nopython=True, nogil=True, fastmath=True)
 def intersection(
     rect_a: tuple, 
     rect_b: tuple,
@@ -101,8 +98,38 @@ def intersection(
 
     return True
 
-@functools.lru_cache(maxsize=5)
-@numba.jit(nopython=True, nogil=True)
+
+@numba.jit(nopython=True, nogil=True, fastmath=True)
+def any_intersections(
+    rectangle: tuple, 
+    rectangle_tuplized_list: tuple
+) -> Union[tuple, None]:
+    """Determines if a sprite's hitbox has collided with a list of hitboxes
+
+    :param object_key: 
+    :type object_key: str
+    :param object_hitbox: _description_
+    :type object_hitbox: tuple
+    :param hitbox_list: _description_
+    :type hitbox_list_tuple: tuple
+    :return: The hitbox with which the `object` collided, `None` otherwise
+    :rtype: Union[tuple, None]
+
+    .. note::
+        This method assumes it only cares _if_ a collision occurs, not with _what_ the collision occurs. The hitbox list is traversed and if any one of the contained hitboxes intersects the sprite, `True` is returned. If none of the hitboxes in the list intersect the given sprite, `False` is returned.
+    .. note:: 
+        The argument is passed in as a tuple because immutability is a requirement for caching.
+    .. todo::
+        Modify this to return the direction of the collision. Need to recoil sprite based on where the collision came from, not which direction the sprite is heading...
+
+    """
+    for other_rect in list(rectangle_tuplized_list):
+        if intersection(rectangle, other_rect):
+            return other_rect
+    return None
+
+
+@numba.jit(nopython=True, nogil=True, fastmath=True)
 def scale(
     point: tuple, 
     factor: tuple, 

@@ -34,21 +34,10 @@ def generate_collision_map(
 
 
 def calculate_set_hitbox(
-    set_hitbox: tuple, 
-    set_conf: munch.Munch, 
+    set_hitbox: tuple,
+    set_conf: munch.Munch,
     tile_dim: tuple
-) -> Union[tuple, None]:
-    """_summary_
-
-    :param set_hitbox: _description_
-    :type set_hitbox: tuple
-    :param set_conf: _description_
-    :type set_conf: munch.Munch
-    :param tile_dim: _description_
-    :type tile_dim: tuple
-    :return: _description_
-    :rtype: Union[tuple, None]
-    """
+):
     if set_hitbox:
         x,y = calculator.scale(
             ( set_conf.start.x, set_conf.start.y ),
@@ -56,8 +45,8 @@ def calculate_set_hitbox(
             set_conf.start.units
         )
         hitbox = (
-            x + set_hitbox.offset.x, 
-            y + set_hitbox.offset.y,
+            int(x + set_hitbox.offset.x), 
+            int(y + set_hitbox.offset.y),
             set_hitbox.size.w,
             set_hitbox.size.h
         )
@@ -105,8 +94,8 @@ def calculate_sprite_hitbox(
         if raw_hitbox is None:
             return raw_hitbox
         calc_hitbox = (
-            sprite.position.x + raw_hitbox.offset.x,
-            sprite.position.y + raw_hitbox.offset.y,
+            int(sprite.position.x + raw_hitbox.offset.x),
+            int(sprite.position.y + raw_hitbox.offset.y),
             raw_hitbox.size.w,
             raw_hitbox.size.h
         )
@@ -162,8 +151,8 @@ def calculate_blunt_attackbox(
     if atkbox_frames:
         atkbox = atkbox_frames.pop()
         return  (
-            sprite.position.x + atkbox.offset.x,
-            sprite.position.y + atkbox.offset.y,
+            int(sprite.position.x + atkbox.offset.x),
+            int(sprite.position.y + atkbox.offset.y),
             atkbox.size.w,
             atkbox.size.h
         )
@@ -242,11 +231,9 @@ def collision_set_relative_to(
     return collision_sets
 
 
-@functools.lru_cache(maxsize=10)
 def detect_collision(
-    object_key: str,
     object_hitbox: tuple, 
-    hitbox_list_tuple: tuple
+    hitbox_list: list
 ) -> Union[tuple, None]:
     """Determines if a sprite's hitbox has collided with a list of hitboxes
 
@@ -265,17 +252,16 @@ def detect_collision(
     .. todo::
         Modify this to return the direction of the collision. Need to recoil sprite based on where the collision came from, not which direction the sprite is heading...
     """
-    hitbox_list = list(hitbox_list_tuple)
-    for hitbox in hitbox_list:
-        if hitbox and calculator.intersection(object_hitbox, hitbox):
-            printbox = tuple(round(dim) for dim in object_hitbox)
-            printbox_dos = tuple(round(dim) for dim in hitbox)
-            log.debug(
-                f'Detected {object_key} hitbox {printbox} collision with hitbox at {printbox_dos}', 
-                'detect_collision'
-            )
-            return hitbox
-    return None
+    no_nulls = [
+        hitbox
+        for hitbox
+        in hitbox_list
+        if hitbox is not None
+    ]
+    return calculator.any_intersections(
+        object_hitbox,
+        tuple(no_nulls)
+    )
 
 
 ############################
@@ -438,15 +424,13 @@ def detect_layer_pressure(
 
         if isinstance(hitbox, tuple):
             collision_box = detect_collision(
-                pressure.key, 
                 pressure.hitbox, 
-                tuple([ hitbox ])
+                [ hitbox ]
             )
         elif isinstance(hitbox, list):
             collision_box = detect_collision(
-                pressure.key, 
                 pressure.hitbox, 
-                tuple(hitbox)
+                hitbox
             )
         else:
             raise ValueError('Hitbox is not of type tuple or list')
@@ -507,9 +491,8 @@ def detect_layer_sprite_to_mass_collision(
     masses = platesets.get(sprite.layer).masses.copy()
     for mass in masses:
         collision_box = detect_collision(
-            mass.key, 
             mass.hitbox.sprite, 
-            tuple([sprite_hitbox])
+            [sprite_hitbox]
         )
         if collision_box:
             plate = platesets.get(sprite.layer).get(mass.key).sets[mass.index]

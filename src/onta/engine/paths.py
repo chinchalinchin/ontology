@@ -41,10 +41,10 @@ def reorient(
         hitbox[3]
     )
 
-    up_valid = not collisions.detect_collision('sprite', new_up, tuple(collision_set)) 
-    left_valid =  not collisions.detect_collision('sprite', new_left, tuple(collision_set)) 
-    right_valid = not collisions.detect_collision('sprite', new_right, tuple(collision_set)) 
-    down_valid = not collisions.detect_collision('sprite', new_down, tuple(collision_set)) 
+    up_valid = not collisions.detect_collision(new_up, collision_set)
+    left_valid =  not collisions.detect_collision(new_left, collision_set) 
+    right_valid = not collisions.detect_collision(new_right, collision_set) 
+    down_valid = not collisions.detect_collision(new_down, collision_set) 
 
     # TODO: diagonals
 

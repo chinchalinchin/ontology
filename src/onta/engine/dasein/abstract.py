@@ -301,12 +301,18 @@ def attempt_unflee(
         return 'continue'
 
     target_key = sprite.stature.attention.split(' ')[-1]
-    target = sprites.get(target_key)
-
-    distance = calculator.distance(
-        (target.position.x, target.position.y),
-        (sprite.position.x, sprite.position.y)
-    )
+    if target_key in list(sprites.keys()):
+        target = sprites.get(target_key)
+        distance = calculator.distance(
+            (target.position.x, target.position.y),
+            (sprite.position.x, sprite.position.y)
+        )
+    else:
+        target = sprite.memory.paths.get(target_key)
+        distance = calculator.distance(
+            (target.x, target.y),
+            (sprite.position.x, sprite.position.y)
+        )
 
     log.debug(
         f'{sprite_key} fleeing {target_key}, checking if safe...', 
