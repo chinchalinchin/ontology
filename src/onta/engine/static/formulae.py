@@ -144,9 +144,9 @@ def bag_coordinates(
             if vertical_align == 'top':
                 y = margin_percents[1] * margin_ref[1]
 
-            elif vertical_align == 'bottoms':
+            elif vertical_align == 'bottom':
                 y = ( 1 - margin_percents[0] ) * margin_ref[1] - \
-                    pack_dim[0]
+                    pack_dim[1]
 
         else:
             x = render_points[i-1][0] + prev_w
@@ -254,6 +254,127 @@ def mirror_coordinates(
                 )
             )
             continue
+    return render_points
+
+
+@numba.jit(nopython=True, nogil=True, fastmath=True)
+def slot_coordinates(
+    slots_total: int,
+    slot_dim: tuple,
+    buffer_dim: tuple,
+    cap_dim: tuple,
+    device_dim: tuple,
+    horizontal_align: str,
+    vertical_align: str,
+    stack: str,
+    margins: tuple
+) -> list:
+    render_points = list()
+
+    if horizontal_align == 'right':
+        x_start = device_dim[0] \
+            - margins[0] \
+            - slots_total*slot_dim[0] \
+            - (slots_total-1)*buffer_dim[0] \
+            - 2*cap_dim[0]
+    elif horizontal_align == 'center':
+        x_start = (device_dim[0] \
+            - slots_total*slot_dim[0] \
+            - (slots_total-1)*buffer_dim[0] \
+            - 2*cap_dim[0])/2
+            
+    else: # left
+        x_start = margins[0]
+
+            
+    if vertical_align == 'bottom':
+        if stack == 'horizontal':
+            y_start = device_dim[1] \
+                - margins[1] \
+                - slot_dim[1] 
+        elif stack == 'vertical':
+            y_start = device_dim[1] \
+                - margins[1] \
+                - slots_total*slot_dim[1] \
+                - (slots_total-1)*buffer_dim[1] \
+                - 2*cap_dim[1]
+    elif vertical_align == 'center':
+        y_start = (device_dim[1] \
+            - slots_total*slot_dim[1] \
+            - (slots_total-1)*buffer_dim[1] \
+            - 2*cap_dim[1])/2
+    else: # top
+        y_start = margins[1]
+
+    # 0    1     2       3     4       5     6       7     8
+    # cap, slot, buffer, slot, buffer, slot, buffer, slot, cap
+    # number of slots + number of buffers + number of caps
+    num = slots_total + (slots_total - 1) + 2
+    if stack == 'horizontal':
+        buffer_correction = (slot_dim[1] - buffer_dim[1])/2
+        cap_correction = (slot_dim[1] - cap_dim[1])/2 
+
+        for i in range(num):
+            if i == 0: # cap
+                render_points.append(
+                    ( x_start, y_start + cap_correction )
+                )
+            elif i == 1: # slot
+                render_points.append(
+                    ( render_points[i-1][0] + cap_dim[0], y_start )
+                )
+            elif i == num - 1: # cap
+                render_points.append(
+                    ( 
+                        render_points[i-1][0] + slot_dim[0], 
+                        y_start + cap_correction
+                    )
+                )
+            elif i % 2 == 0: # buffer
+                render_points.append(
+                    (
+                        render_points[i-1][0] + slot_dim[0], 
+                        y_start + buffer_correction
+                    )
+                )
+            else: # slot
+                render_points.append(
+                    ( render_points[i-1][0] + buffer_dim[0], y_start )
+                )
+
+    elif stack == 'vertical':
+        buffer_correction = (slot_dim[0] - buffer_dim[0])/2
+        cap_correction = (slot_dim[0] - cap_dim[0])/2
+        for i in range(num):
+            if i == 0: # cap
+                render_points.append(
+                    ( x_start + cap_correction, y_start )
+                )
+            elif i == 1: # slot
+                render_points.append(
+                    ( x_start, render_points[i-1][1] + cap_dim[1] )
+                )
+            elif i == num - 1: # cap
+                render_points.append(
+                    (
+                        x_start + cap_correction,
+                        render_points[i-1][1] + slot_dim[1]
+                    )
+                )
+            elif i % 2 == 0: # buffer
+                render_points.append(
+                    (
+                        x_start + buffer_correction,
+                        render_points[i-1][1] + slot_dim[1]
+                    )
+                )
+            else: # slot
+                render_points.append(
+                    (
+                        x_start,
+                        render_points[i-1][1] + buffer_dim[1]
+                    )
+                )
     return render_points
 
 

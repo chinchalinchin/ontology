@@ -178,6 +178,7 @@ class HUD():
             if equip is not None and equip.get('size') is not None
         ])
 
+
     def _immute_inventory_size(
         self
     ):
@@ -364,9 +365,10 @@ class HUD():
 
         slots_total = self.properties.slots.total
         slot_styles = self.styles.get(self.media_size).slots
-        x_margins = slot_styles.margins.w * player_device.dimensions[0]
-        y_margins = slot_styles.margins.h * player_device.dimensions[1]
-
+        margins = (
+            slot_styles.margins.w,
+            slot_styles.margins.h
+        )
         cap_dim = display.rotate_dimensions(
             self.hud_conf.get(self.media_size).slots.cap,
             self.styles.get(self.media_size).slots.stack
@@ -375,117 +377,21 @@ class HUD():
             self.hud_conf.get(self.media_size).slots.buffer,
             self.styles.get(self.media_size).slots.stack
         )
-        # NOTE: dependent on 'disabled', 'enabled' and 'active' 
-        #       being the same dimensions...
         slot_dim = (
             self.hud_conf.get(self.media_size).slots.disabled.size.w,
             self.hud_conf.get(self.media_size).slots.disabled.size.h
         )
-
-        if slot_styles.alignment.horizontal == 'right':
-            x_start = player_device.dimensions[0] \
-                - x_margins \
-                - slots_total*slot_dim[0] \
-                - (slots_total-1)*buffer_dim[0] \
-                - 2*cap_dim[0]
-        elif slot_styles.alignment.horizontal == 'center':
-            x_start = (player_device.dimensions[0] \
-                - slots_total*slot_dim[0] \
-                - (slots_total-1)*buffer_dim[0] \
-                - 2*cap_dim[0])/2
-                
-        else: # left
-            x_start = x_margins
-
-                
-        if slot_styles.alignment.vertical == 'bottom':
-            if slot_styles.stack == 'horizontal':
-                y_start = player_device.dimensions[1] \
-                    - y_margins \
-                    - slot_dim[1] 
-            elif slot_styles.stack == 'vertical':
-                y_start = player_device.dimensions[1] \
-                    - y_margins \
-                    - slots_total*slot_dim[1] \
-                    - (slots_total-1)*buffer_dim[1] \
-                    - 2*cap_dim[1]
-        elif slot_styles.alignment.vertical == 'center':
-            y_start = (player_device.dimensions[1] \
-                - slots_total*slot_dim[1] \
-                - (slots_total-1)*buffer_dim[1] \
-                - 2*cap_dim[1])/2
-        else: # top
-            y_start = y_margins
-
-        # 0    1     2       3     4       5     6       7     8
-        # cap, slot, buffer, slot, buffer, slot, buffer, slot, cap
-        # number of slots + number of buffers + number of caps
-        num = slots_total + (slots_total - 1) + 2
-        if slot_styles.stack == 'horizontal':
-            buffer_correction = (slot_dim[1] - buffer_dim[1])/2
-            cap_correction = (slot_dim[1] - cap_dim[1])/2 
-
-            for i in range(num):
-                if i == 0: # cap
-                    self.slot_rendering_points.append(
-                        ( x_start, y_start + cap_correction )
-                    )
-                elif i == 1: # slot
-                    self.slot_rendering_points.append(
-                        ( self.slot_rendering_points[i-1][0] + cap_dim[0], y_start )
-                    )
-                elif i == num - 1: # cap
-                    self.slot_rendering_points.append(
-                        ( 
-                            self.slot_rendering_points[i-1][0] + slot_dim[0], 
-                            y_start + cap_correction
-                        )
-                    )
-                elif i % 2 == 0: # buffer
-                    self.slot_rendering_points.append(
-                        (
-                            self.slot_rendering_points[i-1][0] + slot_dim[0], 
-                            y_start + buffer_correction
-                        )
-                    )
-                else: # slot
-                    self.slot_rendering_points.append(
-                        ( self.slot_rendering_points[i-1][0] + buffer_dim[0], y_start )
-                    )
-
-        elif slot_styles.stack == 'vertical':
-            buffer_correction = (slot_dim[0] - buffer_dim[0])/2
-            cap_correction = (slot_dim[0] - cap_dim[0])/2
-            for i in range(num):
-                if i == 0: # cap
-                    self.slot_rendering_points.append(
-                        ( x_start + cap_correction, y_start )
-                    )
-                elif i == 1: # slot
-                    self.slot_rendering_points.append(
-                        ( x_start, self.slot_rendering_points[i-1][1] + cap_dim[1] )
-                    )
-                elif i == num - 1: # cap
-                    self.slot_rendering_points.append(
-                        (
-                            x_start + cap_correction,
-                            self.slot_rendering_points[i-1][1] + slot_dim[1]
-                        )
-                    )
-                elif i % 2 == 0: # buffer
-                    self.slot_rendering_points.append(
-                        (
-                            x_start + buffer_correction,
-                            self.slot_rendering_points[i-1][1] + slot_dim[1]
-                        )
-                    )
-                else: # slot
-                    self.slot_rendering_points.append(
-                        (
-                            x_start,
-                            self.slot_rendering_points[i-1][1] + buffer_dim[1]
-                        )
-                    )
+        self.slot_rendering_points = formulae.slot_coordinates(
+            slots_total,
+            slot_dim,
+            buffer_dim,
+            cap_dim,
+            player_device.dimensions,
+            slot_styles.alignment.horizontal,
+            slot_styles.alignment.vertical,
+            slot_styles.stack,
+            margins
+        )
 
     
     def _init_internal_state(
@@ -525,8 +431,8 @@ class HUD():
             ('shoot', 5),
             ('slash',7 )
         )
-
-            # jitting ain't easy...
+        
+        # NOTE: all in service of JiT (just-in-time) and LRU cache...
         render_tuples = formulae.slot_avatar_coordinates(
             self._immute_slots(), 
             self._immute_equipment_size(),
