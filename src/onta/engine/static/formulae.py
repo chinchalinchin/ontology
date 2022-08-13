@@ -3,7 +3,6 @@ import munch
 import numba
 
 import onta.settings as settings
-from onta.util.helper import freezeargs
 import onta.util.logger as logger
 import onta.engine.static.calculator as calculator
 
@@ -83,12 +82,11 @@ def tile_coordinates(
     return dims
 
 
-@freezeargs
 @functools.lru_cache(maxsize=200)
 def plate_coordinates(
-    group_conf: tuple, # group_conf.sets
+    group_conf: tuple,
     player_dim: tuple,
-    group_frame_dim: tuple, #group_frame.size/group_frame.on.size
+    group_frame_dim: tuple, 
     tile_dim: tuple,
     world_dim: tuple,
     device_dim: tuple,
@@ -115,7 +113,7 @@ def plate_coordinates(
     coords = []
     for i, set_conf in enumerate(iter(group_conf)):
         start = calculator.scale(
-            ( set_conf[0], set_conf[1]), 
+            ( set_conf[0], set_conf[1] ), 
             tile_dim,
             set_conf[2]
         )
@@ -152,6 +150,7 @@ def construct_animate_statures(
             animate_statures.append(action)
 
     return animate_statures
+
 
 def compose_animate_stature(
     sprite: munch.Munch,
