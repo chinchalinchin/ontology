@@ -1,9 +1,42 @@
 from math import trunc, log10, floor
+import functools
+from frozendict import frozendict
 import numba
 
 import time
 
 from typing import Dict, List, Tuple
+
+
+def freezeargs(func):
+    """Transform mutable dictionnary
+    Into immutable
+    Useful to be compatible with cache
+
+    .. todo::
+        need to recurse
+    """
+
+    @functools.wraps(func)
+    def wrapped(*args, **kwargs):
+        args = tuple(
+            [   
+                frozendict(arg) 
+                if isinstance(arg, dict) 
+                else tuple(arg) 
+                if isinstance(arg, list)
+                else arg
+                for arg in args
+            ]
+        )
+        kwargs = {
+            k: frozendict(v) 
+            if isinstance(v, dict)
+            else v 
+            for k, v in kwargs.items()
+        }
+        return func(*args, **kwargs)
+    return wrapped
 
 
 def current_ms_time():

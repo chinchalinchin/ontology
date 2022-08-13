@@ -1,4 +1,3 @@
-from calendar import c
 import sys
 import munch
 import threading
@@ -239,7 +238,13 @@ class Renderer():
         crop: bool
     ) -> None:
         unordered_groups = game_world.get_platesets(game_world.layer)
-        render_map = gui.order_render_dict(unordered_groups)
+        render_map = gui.order_render_dict(unordered_groups)    
+        player_dim = (
+            game_world.hero.position.x,
+            game_world.hero.position.y,
+            game_world.sprite_dimensions[0],
+            game_world.sprite_dimensions[1]
+        )
 
         # and anyway, plates need rendered by type.
         #   first pressures and then everything else
@@ -251,56 +256,66 @@ class Renderer():
             if group_type in STATIC_PLATES:
                 continue
 
+            if group_type not in SWITCH_PLATES_TYPES:
+                group_dim = (
+                    group_frame.size[0],
+                    group_frame.size[1]
+                )
+            else:
+                group_dim = (
+                    group_frame.on.size[0],
+                    group_frame.on.size[1]
+                )
+    
             log.infinite(
                 f'Rendering {group_type} {group_key} plates', 
                 '_render_variable_platesets'
             )
 
-            for i, set_conf in enumerate(group_conf.sets):
-                start = calculator.scale(
-                    ( set_conf.start.x, set_conf.start.y), 
-                    game_world.tile_dimensions,
+            cacheable_group_conf = tuple([
+                (
+                    set_conf.start.x,
+                    set_conf.start.y, 
                     set_conf.start.units
                 )
-                if group_type not in SWITCH_PLATES_TYPES:
-                    object_dim = (
-                        start[0],
-                        start[1],
-                        group_frame.size[0],
-                        group_frame.size[1]
-                    )
-                else:
-                    object_dim = (
-                        start[0],
-                        start[1],
-                        group_frame.on.size[0],
-                        group_frame.on.size[1]
-                    )
-                player_dim = (
-                    game_world.hero.position.x,
-                    game_world.hero.position.y,
-                    game_world.sprite_dimensions[0],
-                    game_world.sprite_dimensions[1]
+                for set_conf in group_conf['sets']
+            ])
+
+            coordinates = list(
+                formulae.plate_coordinates(
+                    cacheable_group_conf,
+                    player_dim,
+                    group_dim,
+                    game_world.tile_dimensions,
+                    game_world.dimensions,
+                    self.player_device.dimensions,
+                    crop
                 )
+            )
 
-                if crop and not formulae.on_screen(
-                    player_dim, 
-                    object_dim, 
-                    self.player_device.dimensions, 
-                    game_world.dimensions
-                ):
-                    continue 
+            for coord in coordinates:
 
-                log.infinite(f'Rendering at {start}', '_render_variable_plates')
+                log.infinite(f'Rendering at ({coord[1]},{coord[2]}', '_render_variable_plates')
 
                 if group_type not in SWITCH_PLATES_TYPES:
-                    self.world_frame.alpha_composite(group_frame, start)
+                    self.world_frame.alpha_composite(
+                        group_frame, 
+                        ( coord[1], coord[2] )
+                    )
                     continue
 
-                if game_world.switch_map.get(game_world.layer).get(group_key).get(str(i)):
-                    self.world_frame.alpha_composite(group_frame.on, start)
+                if game_world.switch_map.get(game_world.layer).get(group_key).get(
+                    str(coord[0])    
+                ):
+                    self.world_frame.alpha_composite(
+                        group_frame.on, 
+                        ( coord[1], coord[2] )
+                    )
                     continue
-                self.world_frame.alpha_composite(group_frame.off, start)
+                self.world_frame.alpha_composite(
+                    group_frame.off, 
+                    ( coord[1], coord[2] )
+                )
 
 
     def _render_static(

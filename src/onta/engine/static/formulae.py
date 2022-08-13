@@ -3,6 +3,7 @@ import munch
 import numba
 
 import onta.settings as settings
+from onta.util.helper import freezeargs
 import onta.util.logger as logger
 import onta.engine.static.calculator as calculator
 
@@ -80,6 +81,62 @@ def tile_coordinates(
                 )
             )
     return dims
+
+
+@freezeargs
+@functools.lru_cache(maxsize=200)
+def plate_coordinates(
+    group_conf: tuple, # group_conf.sets
+    player_dim: tuple,
+    group_frame_dim: tuple, #group_frame.size/group_frame.on.size
+    tile_dim: tuple,
+    world_dim: tuple,
+    device_dim: tuple,
+    crop: bool
+) -> tuple:
+    """_summary_
+
+    :param group_configuration: _description_
+    :type group_configuration: dict
+    :param group_frame_dim: _description_
+    :type group_frame_dim: tuple
+    :param world_dim: _description_
+    :type world_dim: tuple
+    :param device_dim: _description_
+    :type device_dim: tuple
+    :param crop: _description_
+    :type crop: bool
+    :return: _description_
+    :rtype: list
+
+    .. note:: 
+        The first field in each element of the returned list is the index of the group frame.
+    """
+    coords = []
+    for i, set_conf in enumerate(iter(group_conf)):
+        start = calculator.scale(
+            ( set_conf[0], set_conf[1]), 
+            tile_dim,
+            set_conf[2]
+        )
+        object_dim = (
+            start[0],
+            start[1],
+            group_frame_dim[0],
+            group_frame_dim[1]
+        )
+
+        if crop and not on_screen(
+            player_dim, 
+            object_dim, 
+            device_dim, 
+            world_dim
+        ):
+            continue 
+        
+        coords.append((i, start[0], start[1]))
+    return tuple(coords)
+
 
 def construct_animate_statures(
     stature_props: munch.Munch
