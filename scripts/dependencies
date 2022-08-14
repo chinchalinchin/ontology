@@ -1,0 +1,14 @@
+#!/bin/bash
+
+apt update -y
+apt install -y libjpeg-dev \
+                zlib1g \
+                libtiff-dev \
+                libfreetype6-dev \
+                liblcms2-utils \
+                libwebp-dev \
+                libpng-dev \
+                libz-dev \
+                tcl-dev \
+                libraqm-dev \
+                libxcb-util-dev
