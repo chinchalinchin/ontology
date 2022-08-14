@@ -4,19 +4,18 @@ import munch
 
 
 import onta.settings as settings
-
 import onta.loader.state as state
 import onta.loader.conf as conf
-
 import onta.engine.collisions as collisions
 import onta.engine.dasein.abstract as abstract
 import onta.engine.dasein.interpret as interpret
 import onta.engine.dasein.impulse as impulse
 import onta.engine.static.paths as paths
-import onta.engine.static.calculator as calculator
 import onta.engine.static.composition as composition
-
 import onta.util.logger as logger
+
+import onta.engine.static.cc_calculator as calculator
+
 
 log = logger.Logger('onta.world', settings.LOG_LEVEL)
 

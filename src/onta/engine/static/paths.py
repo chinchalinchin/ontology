@@ -3,8 +3,8 @@ from numba.pycc import CC
 from numba import njit
 
 import onta.settings as settings
-import onta.engine.static.calculator as calculator
 import onta.util.logger as logger
+import onta.engine.static.calculator as calculator
 
 log = logger.Logger('onta.engine.static.paths', settings.LOG_LEVEL)
 

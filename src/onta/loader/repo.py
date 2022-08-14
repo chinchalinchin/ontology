@@ -1,16 +1,14 @@
 import os
 import functools
-import sys
 from typing import Union
+
 from PIL import Image
 import munch
 import numba
 
 import onta.settings as settings
 import onta.loader.conf as conf
-
 import onta.engine.static.composition as composition
-
 import onta.util.logger as logger
 import onta.util.gui as gui
 

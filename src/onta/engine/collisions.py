@@ -3,8 +3,9 @@ from typing import Union
 import munch
 
 import onta.settings as settings
-import onta.engine.static.calculator as calculator
 import onta.util.logger as logger
+
+import onta.engine.static.cc_calculator as calculator
 
 log = logger.Logger('onta.engine.collisions', settings.LOG_LEVEL)
 

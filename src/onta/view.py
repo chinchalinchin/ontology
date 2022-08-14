@@ -11,12 +11,13 @@ import onta.settings as settings
 import onta.world as world
 import onta.engine.senses.hud as hud
 import onta.engine.senses.menu as menu
-import onta.engine.static.calculator as calculator
-import onta.engine.static.formulae as formulae
 import onta.loader.repo as repo
 import onta.util.logger as logger
 import onta.util.gui as gui
 import onta.util.debug as debug
+
+import onta.engine.static.cc_calculator as calculator
+import onta.engine.static.cc_formulae as formulae
 
 
 STATIC_PLATES = [ 'door' ]

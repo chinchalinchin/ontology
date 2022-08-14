@@ -9,12 +9,11 @@ The goal of this module is to map _Sprite_ `desires` to a _Sprite_ `intent`. Eac
 from typing import Callable, Literal, Union
 import munch
 
-import onta.engine.dasein.impulse as impulse
-import onta.engine.static.calculator as calculator
-
 import onta.settings as settings
-
+import onta.engine.dasein.impulse as impulse
 import onta.util.logger as logger
+
+import onta.engine.static.cc_calculator as calculator
 
 log = logger.Logger('onta.engine.dasein.abstract', settings.LOG_LEVEL)
 

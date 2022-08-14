@@ -31,5 +31,3 @@ include src/data/conf/self/*
 include src/data/state/*
 
 include src/version.txt
-
-exclude src/onta/tests/**

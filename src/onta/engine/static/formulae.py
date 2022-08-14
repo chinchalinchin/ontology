@@ -5,13 +5,12 @@ import onta.settings as settings
 import onta.util.logger as logger
 import onta.engine.static.calculator as calculator
 
-
-cc = CC("formulae")
+cc_formulae = CC("cc_formulae")
 
 log = logger.Logger('onta.engine.static.formulae', settings.LOG_LEVEL)
 
 @njit
-@cc.export(
+@cc_formulae.export(
     'screen_crop_box',
     'UniTuple(float64,4)(UniTuple(float64,2),UniTuple(float64,2),UniTuple(float64,2))'
 )
@@ -45,7 +44,7 @@ def screen_crop_box(
     return (crop_x, crop_y, crop_width, crop_height)
 
 @njit
-@cc.export(
+@cc_formulae .export(
     'on_screen',
     'boolean(UniTuple(float64,4),UniTuple(float64,4),UniTuple(float64,2),UniTuple(float64,2))'
 )
@@ -73,7 +72,7 @@ def on_screen(
 
 
 @njit
-@cc.export(
+@cc_formulae.export(
     'tile_coordinates',
     'List(UniTuple(int64,2))(UniTuple(int64,2),UniTuple(int64,2),UniTuple(int64,2))'
 )
@@ -95,7 +94,7 @@ def tile_coordinates(
 
 
 @njit
-@cc.export(
+@cc_formulae.export(
     'plate_coordinates',
     'List(Tuple((int64,float64,float64)),reflected=False)(List(Tuple((float64,float64,unicode_type)),reflected=False),UniTuple(float64,4),UniTuple(float64,2),UniTuple(int64,2),UniTuple(int64,2),UniTuple(int64,2),boolean)'
 )
