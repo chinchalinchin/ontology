@@ -258,7 +258,7 @@ class HUD():
             for belt_piece in list(beltset.values())
         ])
 
-        self.bag_rendering_points = formulae.bag_coordinates(
+        self.bag_rendering_points = display.bag_coordinates(
             bag_piece_sizes,
             bag_dim,
             pack_horizontal_align,
@@ -267,7 +267,7 @@ class HUD():
             player_device.dimensions,
         )
 
-        self.belt_rendering_points = formulae.belt_coordinates(
+        self.belt_rendering_points = display.belt_coordinates(
             self.bag_rendering_points[0],
             belt_piece_sizes,
             belt_dim,
@@ -347,7 +347,7 @@ class HUD():
             mirror_styles.padding.h
         )
 
-        self.life_rendering_points = formulae.mirror_coordinates(
+        self.life_rendering_points = display.mirror_coordinates(
             player_device.dimensions,
             mirror_styles.alignment.horizontal,
             mirror_styles.alignment.vertical,
@@ -385,7 +385,7 @@ class HUD():
             self.hud_conf.get(self.media_size).slots.disabled.size.w,
             self.hud_conf.get(self.media_size).slots.disabled.size.h
         )
-        self.slot_rendering_points = formulae.slot_coordinates(
+        self.slot_rendering_points = display.slot_coordinates(
             slots_total,
             slot_dim,
             buffer_dim,
@@ -437,7 +437,7 @@ class HUD():
         )
 
         # NOTE: all in service of JiT (just-in-time) and LRU cache...
-        render_tuples = formulae.slot_avatar_coordinates(
+        render_tuples = display.avatar_coordinates(
             self._immute_slots(), 
             self._immute_equipment_size(),
             self._immute_inventory_size(),

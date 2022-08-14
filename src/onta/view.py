@@ -289,8 +289,7 @@ class Renderer():
                 for set_conf in group_conf['sets']
             ])
 
-            coordinates = list(
-                formulae.plate_coordinates(
+            coordinates = formulae.plate_coordinates(
                     cacheable_group_conf,
                     player_dim,
                     group_dim,
@@ -299,7 +298,6 @@ class Renderer():
                     self.player_device.dimensions,
                     crop
                 )
-            )
 
             for coord in coordinates:
 
