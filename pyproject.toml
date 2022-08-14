@@ -1,2 +1,3 @@
-requires = ["setuptools", "wheel"]
+[build-system]
+requires = ["munch","numba","setuptools", "wheel"]
 build-backend = "setuptools.build_meta"

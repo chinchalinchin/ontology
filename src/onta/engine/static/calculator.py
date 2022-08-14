@@ -222,5 +222,3 @@ def scale(
         return (point[0]*factor[0], point[1]*factor[1])
     return point
 
-
-cc.compile()

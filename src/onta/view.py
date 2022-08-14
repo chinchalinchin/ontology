@@ -280,17 +280,17 @@ class Renderer():
                 '_render_variable_platesets'
             )
 
-            cacheable_group_conf = tuple([
+            typeable_group_conf = [
                 (
                     set_conf.start.x,
                     set_conf.start.y, 
                     set_conf.start.units
                 )
                 for set_conf in group_conf['sets']
-            ])
+            ]
 
             coordinates = formulae.plate_coordinates(
-                    cacheable_group_conf,
+                    typeable_group_conf,
                     player_dim,
                     group_dim,
                     game_world.tile_dimensions,

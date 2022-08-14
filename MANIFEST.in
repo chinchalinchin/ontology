@@ -2,6 +2,7 @@ include src/data/assets/entities/pixies/*
 include src/data/assets/entities/nymphs/*
 include src/data/assets/entities/sprites/bases/*
 include src/data/assets/entities/sprites/accents/*
+include src/data/assets/entities/sprites/apparel/*
 
 include src/data/assets/dialects/alchemy/*
 include src/data/assets/dialectics/choice/*
@@ -9,16 +10,15 @@ include src/data/assets/dialectics/cooking/*
 include src/data/assets/dialectics/crafts/*
 include src/data/assets/dialectics/dialogue/*
 include src/data/assets/dialectics/projectiles/*
+include src/data/assets/dialectics/expressions/*
+include src/data/assets/dialectics/portraits/*
 
 include src/data/assets/forms/struts/*
 include src/data/assets/forms/tiles/*
 include src/data/assets/forms/plates/*
 
 include src/data/assets/self/senses/*
-include src/data/assets/self/apparel/*
 include src/data/assets/self/avatars/*
-include src/data/assets/self/expressions/*
-include src/data/assets/self/portraits/*
 
 include src/data/assets/sounds/*
 

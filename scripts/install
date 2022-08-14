@@ -4,6 +4,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PROJECT_DIR=$SCRIPT_DIR/..
 BUILD_DIR=$PROJECT_DIR/dist
 SRC_DIR=$PROJECT_DIR/src
+VENV_DIR=$PROJECT_DIR/.venv/bin
 
 VERSION="$(cat $SRC_DIR/version.txt)"
 
@@ -17,6 +18,10 @@ if [ -d $SRC_DIC/ontology.egg-info ]
 then
     rm -r $SRC_DIR/ontology.egg-info
 fi
+
+source $VENV_DIR/activate
+
+pip3 install -r requirements.txt
 
 pip3 uninstall -y ontology
 

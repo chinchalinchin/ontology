@@ -1,4 +1,3 @@
-import functools
 import munch
 import numba
 from numba.pycc import CC
@@ -10,7 +9,7 @@ import onta.engine.static.calculator as calculator
 
 cc = CC("formulae")
 
-log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.static.formulae', settings.LOG_LEVEL)
 
 @numba.jit(
     nopython=True, 
@@ -18,7 +17,10 @@ log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
     fastmath=True,
     cache=True
 )
-@cc.export('screen_crop_box',)
+@cc.export(
+    'screen_crop_box',
+    'UniTuple(float64,4)(UniTuple(float64,2),UniTuple(float64,2),UniTuple(float64,2))'
+)
 def screen_crop_box(
     screen_dim: tuple, 
     world_dim: tuple, 
@@ -55,7 +57,10 @@ def screen_crop_box(
     fastmath=True,
     cache=True
 )
-@cc.export('on_screen',)
+@cc.export(
+    'on_screen',
+    'boolean(UniTuple(float64,2),UniTuple(float64,4),UniTuple(float64,2),UniTuple(float64,2))'
+)
 def on_screen(
     player_dim: tuple,
     object_dim: tuple,
@@ -97,16 +102,18 @@ def tile_coordinates(
     return dims
 
 
-@functools.lru_cache(maxsize=200)
 @numba.jit(
     nopython=True, 
     nogil=True, 
     fastmath=True,
     cache=True
 )
-@cc.export('plate_coordinates',)
+@cc.export(
+    'plate_coordinates',
+    'List(Tuple((int64,float64,float64)),reflected=False)(List(Tuple((float64,float64,unicode_type)),reflected=False),UniTuple(float64,2),UniTuple(float64,2),UniTuple(float64,2),UniTuple(float64,2),UniTuple(float64,2),boolean)'
+)
 def plate_coordinates(
-    group_conf: tuple,
+    group_conf: list,
     player_dim: tuple,
     group_frame_dim: tuple, 
     tile_dim: tuple,
@@ -162,7 +169,7 @@ def plate_coordinates(
     nogil=True,
     cache=True
 )
-@cc.export('decompose_animate_stature', )
+@cc.export('decompose_animate_stature', 'UniTuple(unicode_type,2)(unicode_type)')
 def decompose_animate_stature(
     sprite_stature:str
 ) -> tuple:
@@ -396,26 +403,3 @@ def decompose_compositions_into_sets(
                         decomposition[2] = buffer_sets
     
     return (decomposition[0], decomposition[1], decomposition[2])
-
-
-# def _init_jit():
-#     log.debug('Initializing JIT functions...', '_init_jit')
-
-#     screen_crop_box(
-#         (1,2),
-#         (1,2),
-#         (1,2)
-#     )
-#     on_screen(
-#         (0,1),
-#         (0,1,2,3), 
-#         (1,2), 
-#         (1,2)
-#     )
-#     decompose_animate_stature(
-#         'test_state'
-#     )
-
-# _init_jit()
-
-cc.compile()

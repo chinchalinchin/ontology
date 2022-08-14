@@ -37,6 +37,14 @@ SPRITE_ACCENT_PATH = [
     'sprites',
     'accents'
 ]
+
+SPRITE_APPAREL_PATH = [
+    'assets',
+    'entities',
+    'sprites',
+    'apparel'
+]
+
 TILE_PATH = [ 
     'assets', 
     'forms', 
@@ -72,15 +80,9 @@ AVATAR_PATH = [
     'avatars'
 ]
 
-APPAREL_PATH = [
-    'assets',
-    'self',
-    'apparel'
-]
-
 EXPRESSION_PATH =[
     'assets',
-    'self',
+    'dialectics',
     'expressions'
 ]
 

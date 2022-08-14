@@ -125,19 +125,6 @@ class Conf():
         return self.control_conf
 
 
-    def load_expression_configuration(
-        self
-    ) -> munch.Munch:
-        """Returns the parsed _Expression_ configuration from the _data/conf/self/expressions.yaml_ file.
-
-        :return: _Expression_ configuration.
-        :rtype: munch.Munch
-        """
-        if len(self.expression_conf) == 0:
-            self.expression_conf = self._self_configuration('expressions')
-        return self.expression_conf
-
-
     def load_sense_configuration(
         self
     ) -> munch.Munch:
@@ -163,22 +150,6 @@ class Conf():
         if len(self.avatar_conf) == 0:
             self.avatar_conf = self._self_configuration('avatars')
         return self.avatar_conf
-
-
-    def load_apparel_configuration(
-        self
-    ) -> munch.Munch:
-        """Returns the parsed _Apparel_ configuration from the _data/conf/self/apparel.yaml_ file.
-
-        :return: _Apparel_ configuration.
-        :rtype: munch.Munch
-        """
-        # TODO: separate sheet conf from state conf.
-        #       used in repo to load in assets
-        #       used again in world for state information
-        if len(self.apparel_conf) == 0:
-            self.apparel_conf = self._self_configuration('apparel')
-        return self.apparel_conf
 
 
     def load_composite_configuration(
@@ -207,6 +178,18 @@ class Conf():
             self.tile_sheet_conf = self._form_configuration('tiles')
         return self.tile_sheet_conf
 
+
+    def load_expression_configuration(
+        self
+    ) -> munch.Munch:
+        """Returns the parsed _Expression_ configuration from the _data/conf/self/expressions.yaml_ file.
+
+        :return: _Expression_ configuration.
+        :rtype: munch.Munch
+        """
+        if len(self.expression_conf) == 0:
+            self.expression_conf = self._dialectic_configuration('expressions')
+        return self.expression_conf
 
     def load_projectile_configuration(
         self
@@ -244,6 +227,21 @@ class Conf():
             self.projectile_img_conf
         )
 
+
+    def load_apparel_configuration(
+        self
+    ) -> munch.Munch:
+        """Returns the parsed _Apparel_ configuration from the _data/conf/self/apparel.yaml_ file.
+
+        :return: _Apparel_ configuration.
+        :rtype: munch.Munch
+        """
+        # TODO: separate sheet conf from state conf.
+        #       used in repo to load in assets
+        #       used again in world for state information
+        if len(self.apparel_conf) == 0:
+            self.apparel_conf = self._entity_configuration('apparel')
+        return self.apparel_conf
 
     def load_sprite_configuration(
         self

@@ -467,6 +467,7 @@ class Repo():
                 buffer.crop(( x, y, x + w, y + h))
             )
 
+
     def _init_avatar_assets(
         self, 
         config: conf.Conf, 
@@ -523,7 +524,7 @@ class Repo():
                         gui.open_image(
                             os.path.join(
                                 ontology_path, 
-                                *settings.APPAREL_PATH, 
+                                *settings.SPRITE_APPAREL_PATH, 
                                 sheet
                             )
                         )
