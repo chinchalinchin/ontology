@@ -120,7 +120,7 @@ def do(
 
     while True:
 
-        if game_world.iterations not in range(3*settings.FPS):
+        if game_world.iterations not in range(2*settings.FPS):
 
             user_input = controller.poll()
 

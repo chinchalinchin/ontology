@@ -12,6 +12,7 @@ All of the game assets were retrieved from [OpenGameArt](https://opengameart). S
 
 # Documentation
 
+- [Numba](https://numba.pydata.org/numba-doc/dev/index.html)
 - [Pillow](https://pillow.readthedocs.io/en/stable/index.html)
 - [Pynput](https://pynput.readthedocs.io/en/latest/)
 - [PySide6](https://doc.qt.io/qtforpython/PySide6/QtWidgets/index.html#module-PySide6.QtWidgets)
@@ -25,3 +26,4 @@ All of the game assets were retrieved from [OpenGameArt](https://opengameart). S
 # References
 
 - [Dyjsktra's Algorithm]()
+- [Numba Distribution Gotcha](https://numba.pydata.org/numba-doc/dev/user/faq.html#can-i-freeze-an-application-which-uses-numba)

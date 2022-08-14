@@ -6,11 +6,15 @@ import onta.settings as settings
 import onta.util.logger as logger
 import onta.engine.static.calculator as calculator
 
-
 log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
 
 
-@numba.jit(nopython=True, nogil=True, fastmath=True)
+@numba.jit(
+    nopython=True, 
+    nogil=True, 
+    fastmath=True,
+    cache=True
+)
 def screen_crop_box(
     screen_dim: tuple, 
     world_dim: tuple, 
@@ -41,7 +45,12 @@ def screen_crop_box(
     return (crop_x, crop_y, crop_width, crop_height)
 
 
-@numba.jit(nopython=True, nogil=True, fastmath=True)
+@numba.jit(
+    nopython=True, 
+    nogil=True, 
+    fastmath=True,
+    cache=True
+)
 def on_screen(
     player_dim: tuple,
     object_dim: tuple,
@@ -84,7 +93,12 @@ def tile_coordinates(
 
 
 @functools.lru_cache(maxsize=200)
-@numba.jit(nopython=True, nogil=True, fastmath=True)
+@numba.jit(
+    nopython=True, 
+    nogil=True, 
+    fastmath=True,
+    cache=True
+)
 def plate_coordinates(
     group_conf: tuple,
     player_dim: tuple,
@@ -137,7 +151,11 @@ def plate_coordinates(
         coords.append((i, start[0], start[1]))
     return coords
 
-@numba.jit(nopython=True, nogil=True)
+@numba.jit(
+    nopython=True, 
+    nogil=True,
+    cache=True
+)
 def decompose_animate_stature(
     sprite_stature:str
 ) -> tuple:

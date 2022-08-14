@@ -1,28 +1,51 @@
 import math
 from typing import Union
 import numba
+from numba.pycc import CC
 
 import onta.settings as settings
 import onta.util.logger as logger
 
+cc = CC('calculator')
 
-log = logger.Logger('onta.engine.static', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.static.calculator', settings.LOG_LEVEL)
 
-@numba.jit(nopython=True, nogil=True, fastmath=True)
+@numba.jit(
+    nopython=True, 
+    nogil=True, 
+    fastmath=True,
+    cache=True
+)
+@cc.export(
+    'center', 
+    'UniTuple(float64,2)(UniTuple(float64,4))'
+)
 def center(
     dim: tuple
 ) -> tuple:
     return (dim[0] + dim[2] /2, dim[1] + dim[3]/2)
 
 
-@numba.jit(nopython=True, nogil=True, fastmath=True)
+@numba.jit(
+    nopython=True, 
+    nogil=True, 
+    fastmath=True,
+    cache=True
+)
+@cc.export(
+    'angle_relative_to_center', 
+    'float64(UniTuple(float64,2),UniTuple(float64,2))'
+)
 def angle_relative_to_center(
     point: tuple,
     center: tuple = (0,0)
 ) -> float:
 
     norm = distance(point, center)
-    delta = ( point[0] - center[0], point[1] - center[1] )
+    delta = ( 
+        point[0] - center[0], 
+        point[1] - center[1] 
+    )
 
     cosine = delta[0] / norm
 
@@ -35,7 +58,16 @@ def angle_relative_to_center(
     return 360 - 180 * math.acos(cosine) / math.pi
 
 
-@numba.jit(nopython=True, nogil=True, fastmath=True)
+@numba.jit(
+    nopython=True, 
+    nogil=True, 
+    fastmath=True,
+    cache=True
+)
+@cc.export(
+    'projection', 
+    'UniTuple(float64,2)(float64)'
+)
 def projection(
     angle:float = 45
 ) -> tuple:
@@ -45,7 +77,16 @@ def projection(
     )
 
 
-@numba.jit(nopython=True, nogil=True, fastmath=True)
+@numba.jit(
+    nopython=True, 
+    nogil=True, 
+    fastmath=True,
+    cache=True
+)
+@cc.export(
+    'distance', 
+    'float64(UniTuple(float64,2),UniTuple(float64,2))'
+)
 def distance(
     a: tuple, 
     b: tuple
@@ -55,7 +96,15 @@ def distance(
     return math.sqrt(dx ** 2 + dy ** 2)
 
 
-@numba.jit(nopython=True, nogil=True, fastmath=True)
+@numba.jit(
+    nopython=True, 
+    nogil=True, 
+    fastmath=True
+)
+@cc.export(
+    'intersection', 
+    'boolean(UniTuple(float64,4),UniTuple(float64,4))'
+)
 def intersection(
     rect_a: tuple, 
     rect_b: tuple,
@@ -104,13 +153,21 @@ def intersection(
     return True
 
 
-@numba.jit(nopython=True, nogil=True, fastmath=True)
+@numba.jit(
+    nopython=True, 
+    nogil=True, 
+    fastmath=True,
+    cache=True
+)
+@cc.export(
+    'any_intersections', 
+    'optional(UniTuple(float64,4))(UniTuple(float64,4),List(UniTuple(float64,4)))'
+)
 def any_intersections(
     rectangle: tuple, 
-    rectangle_tuplized_list: tuple
+    rectangle_list: list
 ) -> Union[tuple, None]:
     """Determines if a sprite's hitbox has collided with a list of hitboxes
-
     :param object_key: 
     :type object_key: str
     :param object_hitbox: _description_
@@ -129,13 +186,22 @@ def any_intersections(
 
     """
     # use numba.prange here 
-    for other_rect in list(rectangle_tuplized_list):
+    for other_rect in rectangle_list:
         if intersection(rectangle, other_rect):
             return other_rect
     return None
 
 
-@numba.jit(nopython=True, nogil=True, fastmath=True)
+@numba.jit(
+    nopython=True, 
+    nogil=True, 
+    fastmath=True,
+    cache=True
+)
+@cc.export(
+    'scale', 
+    'UniTuple(float64,2)(UniTuple(float64,2),UniTuple(float64,2),unicode_type)'
+)
 def scale(
     point: tuple, 
     factor: tuple, 
@@ -157,17 +223,18 @@ def scale(
     return point
 
 
-def _init_jit():
-    log.debug('Initializing JIT functions...', '_init_jit')
+# def _init_jit():
+#     log.debug('Initializing JIT functions...', '_init_jit')
     
-    center((1,2,3,4))
-    angle_relative_to_center((0,1))
-    projection()
-    distance((1,2),(3,4))
-    intersection((1,2,3,4), (5,6,7,8)),
-    any_intersections((1,2,3,4), 
-        tuple([(1,2,3,4), (5,6,7,8)])
-    )
-    scale((1,2),(3,4))
+#     center((1,2,3,4))
+#     angle_relative_to_center((0,1))
+#     projection()
+#     distance((1,2),(3,4))
+#     intersection((1,2,3,4), (5,6,7,8)),
+#     any_intersections((1,2,3,4), 
+#         tuple([(1,2,3,4), (5,6,7,8)])
+#     )
+#     scale((1,2),(3,4))
 
-_init_jit()
+# _init_jit()
+cc.compile()
