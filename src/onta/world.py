@@ -15,6 +15,7 @@ import onta.engine.dasein.impulse as impulse
 import onta.engine.paths as paths
 import onta.engine.static.formulae as formulae
 import onta.engine.static.calculator as calculator
+import onta.engine.static.composition as composition
 
 import onta.util.logger as logger
 
@@ -135,7 +136,7 @@ class World():
                 setattr(asset_set, layer_key, layer_conf.get(asset_type))
 
         self.tilesets, self.strutsets, self.platesets = \
-            formulae.decompose_compositions_into_sets(
+            composition.decompose_compositions_into_sets(
                 self.layers,
                 self.compositions,
                 self.composite_conf,
@@ -518,7 +519,7 @@ class World():
                 sprite.frame += 1
 
                 # construct sprite stature string
-                sprite_stature_key = formulae.compose_animate_stature(
+                sprite_stature_key = composition.compose_animate_stature(
                     sprite, self.sprite_stature
                 )
                 if sprite.frame >= self.sprite_stature.animate_map.get(sprite_stature_key).frames:

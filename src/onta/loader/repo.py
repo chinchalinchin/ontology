@@ -9,7 +9,7 @@ import numba
 import onta.settings as settings
 import onta.loader.conf as conf
 
-import onta.engine.static.formulae as formulae
+import onta.engine.static.composition as composition
 
 import onta.util.logger as logger
 import onta.util.gui as gui
@@ -531,7 +531,7 @@ class Repo():
                     )
 
                 if apparel.animate_statures == 'all':
-                    animate_statures = formulae.construct_animate_statures(stature)
+                    animate_statures = composition.construct_animate_statures(stature)
 
                 else:
                     animate_statures = apparel.animate_statures

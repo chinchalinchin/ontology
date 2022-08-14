@@ -6,6 +6,7 @@ from PySide6 import QtWidgets, QtGui, QtCore
 from PIL import Image
 
 import onta.device as device
+from onta.engine.static import composition
 import onta.settings as settings
 import onta.world as world
 import onta.engine.senses.hud as hud
@@ -373,7 +374,7 @@ class Renderer():
         for sprite_key, sprite in ordered_sprites.items():
             sprite_position = gui.int_tuple(( sprite.position.x, sprite.position.y ))
 
-            sprite_stature_key = formulae.compose_animate_stature(
+            sprite_stature_key = composition.compose_animate_stature(
                 sprite,
                 game_world.sprite_stature
             )
