@@ -97,7 +97,7 @@ properties:
     pieces:
       - cap
       - buffer
-      - emabled
+      - enabled
       - active
       - disabled
     maps:
@@ -136,17 +136,42 @@ properties:
   
   menu:
     button:
-      buttons:
-        - equipment
-        - inventory
-        - status
-        - map
-        - save
-        - load
       pieces: 
         - left
         - middle
         - right
+    tabs:
+      combat:
+        layout: vertical
+        components:
+          - component: bauble
+            label: slash
+          - component: bauble
+            label: thrust
+          - component: bauble
+            label: shoot
+          - component: bauble
+            label: cast
+      equipment:
+        layout: vertical
+        components:
+          - component: bauble
+            label: armor
+          - component: bauble
+            label: shield
+          - component: bauble
+            label: bag
+          - component: bauble
+            label: belt
+      inventory:
+        layout: vertical
+        components:
+      map:
+        layout: entire
+        components: 
+          - component: map
+            label: map
+
 
 hud:
   small:

@@ -642,6 +642,7 @@ class Renderer():
         for i, render_point in enumerate(btn_rendering_points):
             render_frame = repository.get_menu_frame(
                 menu.media_size, 
+                'button',
                 btn_frame_map[i],
                 btn_piece_map[i]
             )

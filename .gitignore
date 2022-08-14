@@ -8,3 +8,4 @@
 src/ontology.egg-info
 
 log
+.venv

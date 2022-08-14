@@ -4,7 +4,6 @@ import munch
 import numba
 
 from onta import device
-from onta.engine.static import calculator, formulae
 import onta.util.helper as helper
 
 def construct_themes(

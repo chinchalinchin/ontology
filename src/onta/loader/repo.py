@@ -308,7 +308,7 @@ class Repo():
                     )
 
                     log.debug( 
-                        f"{set_type} {set_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                        f"{size} {set_type} {set_key}: size - {buffer.size}, mode - {buffer.mode}", 
                         '_init_sense_assets'
                     )
 
@@ -361,14 +361,18 @@ class Repo():
                     iter_set = interface_conf.menu.get(size).indicator
                     save_set = self.menus
                     
+                if set_type in ['bauble', 'button', 'indicator', 'label']:
+                    setattr(save_set.get(size), set_type, munch.Munch({}))
 
                 for set_key, set_conf in iter_set.items():
                     if not set_conf:
                         continue
-
-                    if not save_set.get(set_key):
-                        setattr(save_set.get(size), set_key, munch.Munch({}))
                     
+                    if set_type in ['bauble', 'button', 'indicator', 'label']:
+                        setattr(save_set.get(size).get(set_type), set_key, munch.Munch({}))
+                    else:
+                        setattr(save_set.get(size), set_key, munch.Munch({}))                        
+
                     # for (unit, fill), (empty, fill)
                     for component_key, component in set_conf.items():
                         if not component.get('path'):
@@ -386,14 +390,21 @@ class Repo():
                         )
 
                         log.debug( 
-                            f"{set_type} {set_key} configuration: size - {buffer.size}, mode - {buffer.mode}", 
+                            f"{size} {set_type} {set_key} {component_key}: size - {buffer.size}, mode - {buffer.mode}", 
                             '_init_sense_assets'
                         )
-                        setattr(
-                            save_set.get(size).get(set_key),
-                            component_key,
-                            buffer.crop(( x, y, w + x, h + y))
-                        )
+                        if set_type in ['bauble', 'button', 'indicator', 'label']:
+                            setattr(
+                                save_set.get(size).get(set_type).get(set_key),
+                                component_key,
+                                buffer.crop(( x, y, w + x, h + y))
+                            )
+                        else:
+                            setattr(
+                                save_set.get(size).get(set_key),
+                                component_key,
+                                buffer.crop(( x, y, w + x, h + y))
+                            )
 
 
     def _init_projectile_assets(
@@ -768,6 +779,7 @@ class Repo():
         self, 
         breakpoint_key: str, 
         component_key: str, 
+        status_key: str,
         piece_key: str
     ) -> Union[Image.Image, None]:
         """_summary_
@@ -782,8 +794,11 @@ class Repo():
         :rtype: Union[Image.Image, None]
         """
         if self.menus.get(breakpoint_key) and \
-            self.menus.get(breakpoint_key).get(component_key):
-            return self.menus.get(breakpoint_key).get(component_key).get(piece_key)
+            self.menus.get(breakpoint_key).get(component_key) and \
+            self.menus.get(breakpoint_key).get(component_key).get(status_key):
+
+            return self.menus.get(breakpoint_key).get(component_key).get(
+                status_key).get(piece_key)
         return None
 
 

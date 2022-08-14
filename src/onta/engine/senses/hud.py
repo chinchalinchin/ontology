@@ -1,7 +1,6 @@
 from typing import Union
 
 import munch
-from onta.engine.static import formulae
 import onta.settings as settings
 import onta.device as device
 import onta.world as world
@@ -12,7 +11,7 @@ import onta.engine.senses.display as display
 
 log = logger.Logger('onta.engine.senses.hud', settings.LOG_LEVEL)
 
-PACK_TYPES = [ 'bag', 'belt', 'wallet' ]
+PACK_TYPES = [ 'bag', 'belt' ]
 MIRROR_TYPES = [ 'life', 'magic' ]
 
 class HUD():
@@ -456,6 +455,7 @@ class HUD():
 
         for i in range(len(render_tuples)):
 
+            # -1 is how numba functions return nulls
             if render_tuples[i][0] != -1:
                 self.avatar_rendering_points.append(
                     render_tuples[i]

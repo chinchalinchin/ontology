@@ -1,6 +1,7 @@
+from random import randint
 import threading
 import time
-from typing import Tuple, Union
+from typing import Tuple
 
 import PySide6.QtWidgets as QtWidgets
 from PIL import Image
@@ -119,36 +120,37 @@ def do(
 
     while True:
 
-        user_input = controller.poll()
-
-        # # pre_update hook here
-            # # need:
-            # # scripts/npc.py:state_handler
-            # # construct npc state from game world info
-        # scripts.apply_scripts(game_world, 'pre_update')
-
-        if user_input.menu:
-            pause_menu.toggle_menu()
-        
-        if not pause_menu.menu_activated:
-            game_world.iterate(user_input)
-            headsup_display.update(game_world)
-
-        else:
-            # TODO: catch result in variable
-            pause_menu.update(user_input)
-            controller.consume_all()
-            
-            # TODO: pass menu result back to game world
-            # for updating hero state
-
-        if user_input.get('hud'):
-            headsup_display.toggle_hud()
-            
-
-        # # pre_render hook here
-        # scripts.apply_scripts(game_world, 'pre_render')
         if game_world.iterations not in range(settings.FPS):
+
+            user_input = controller.poll()
+
+            # # pre_update hook here
+                # # need:
+                # # scripts/npc.py:state_handler
+                # # construct npc state from game world info
+            # scripts.apply_scripts(game_world, 'pre_update')
+
+            if user_input.menu:
+                pause_menu.toggle_menu()
+            
+            if not pause_menu.menu_activated:
+                game_world.iterate(user_input)
+                headsup_display.update(game_world)
+
+            else:
+                # TODO: catch result in variable
+                pause_menu.update(user_input)
+                controller.consume_all()
+                
+                # TODO: pass menu result back to game world
+                # for updating hero state
+
+            if user_input.get('hud'):
+                headsup_display.toggle_hud()
+                
+
+            # # pre_render hook here
+            # scripts.apply_scripts(game_world, 'pre_render')
             if debug:
                 render_engine.view(
                     game_world, 
@@ -167,6 +169,13 @@ def do(
                     asset_repository,
                     None
                 )
+        else:
+            # send some input to the world to wake up the JIT functions
+            user_input = controller.poll()
+            direction = [ 'left', 'right', 'up', 'down' ][randint(0,3)]
+            setattr(user_input, direction, True)
+            game_world.iterate(user_input)
+
         # # post_loop hook here
         # scripts.apply_scripts(game_world, 'post_loop')
         

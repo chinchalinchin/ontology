@@ -6,6 +6,7 @@ import onta.loader.conf as conf
 import onta.loader.state as state
 import onta.util.logger as logger
 import onta.engine.senses.display as display
+import onta.engine.senses.tab as tab
 
 log = logger.Logger('onta.engine.senses.menu', settings.LOG_LEVEL)
 
@@ -15,7 +16,16 @@ class Menu():
     piece_maps = munch.Munch({})
     menu_conf = munch.Munch({})
     buttons = munch.Munch({})
-    tabs = munch.Munch({})
+    """
+    self.buttons = {
+        'tab_1': {
+            'left': 'enabled',
+            'middle': 'enabled',
+            'right': 'enabled'
+        },
+        # ...
+    }
+    """
     properties = munch.Munch({})
     styles = munch.Munch({})
     theme = munch.Munch({})
@@ -27,8 +37,10 @@ class Menu():
     active_tab = None
     media_size = None
     alpha = None
+    
 
-
+    # TODO: what is tabs going to be???
+    tabs = munch.Munch({})
 
     def __init__(
         self, 
@@ -44,6 +56,7 @@ class Menu():
             self.breakpoints
         )
         self._init_menu_positions(player_device)
+        self._init_tabs(player_device)
         self._init_buttons(state_ao)
 
 
@@ -59,10 +72,6 @@ class Menu():
         self.alpha = configure.transparency
         self.theme = display.construct_themes(configure.theme)
         self.breakpoints = display.format_breakpoints(configure.breakpoints)
-        self.tabs = munch.Munch({
-            button_name: munch.Munch({}) 
-            for button_name in self.properties.button.buttons
-        })
 
 
     def _init_menu_positions(
@@ -94,7 +103,7 @@ class Menu():
 
         # self.button_rendering_points => len() == len(buttons)*len(pieces)
         # for (0, equipment), (1, inventory), (2, status), ...
-        for i in range(len(self.properties.button.buttons)):
+        for i in range(len(self.properties.tabs)):
 
             # for (0, left), (1, middle), (2, right)
             # j gives you index for the piece dim in dims
@@ -132,6 +141,23 @@ class Menu():
                 self.button_rendering_points.append((x,y))
 
 
+    def _init_tabs(
+        self,
+        player_device: device.Device
+    ):
+        for tab_key, tab_conf in self.properties.tabs.items():
+            setattr(
+                self.tabs,
+                tab_key,
+                tab.Tab(
+                    tab_conf.components,
+                    self.styles.get(self.media_size).menu.stack,
+                    self.button_rendering_points[0],
+                    player_device
+                )
+            )
+
+
     def _init_buttons(
         self, 
         state_ao: state.State
@@ -143,7 +169,9 @@ class Menu():
         """
         # TODO: calculate based on state information
 
-        for i, name in enumerate(self.properties.button.buttons):
+        # NOTE: this is what creates `self.buttons`
+        #       `self.buttons`
+        for i, name in enumerate(list(self.properties.tabs.keys())):
             if i == 0:
                 self._activate_button(name)
                 self.active_button = i
@@ -210,15 +238,16 @@ class Menu():
     ) -> None:
         """_summary_
         """
+        button_list = list(self.properties.tabs.keys())
         ## TODO: skip disabled buttons
         previous_active = self.active_button
         self.active_button -= 1
 
         if self.active_button < 0:
-            self.active_button = len(self.properties.button.buttons) - 1
+            self.active_button = len(button_list) - 1
         
-        self._enable_button(self.properties.button.buttons[previous_active])
-        self._activate_button(self.properties.button.buttons[self.active_button])
+        self._enable_button(button_list[previous_active])
+        self._activate_button(button_list[self.active_button])
 
 
     def _decrement_active_button(
@@ -226,15 +255,16 @@ class Menu():
     ) -> None:
         """_summary_
         """
+        button_list = list(self.properties.tabs.keys())
         ## TODO: skip disabled buttons
         previous_active = self.active_button
         self.active_button += 1
 
-        if self.active_button > len(self.properties.button.buttons) - 1:
+        if self.active_button > len(button_list) - 1:
             self.active_button = 0
         
-        self._enable_button(self.properties.button.buttons[previous_active])
-        self._activate_button(self.properties.button.buttons[self.active_button])
+        self._enable_button(button_list[previous_active])
+        self._activate_button(button_list[self.active_button])
 
 
     def execute_active_button(
