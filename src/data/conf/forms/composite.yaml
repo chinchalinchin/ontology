@@ -64,8 +64,8 @@ house_interior:
       sets:
         - start:
             units: absolute
-            x: 0 # 186
-            y: 0 # 46
+            x: 0
+            y: 0
           cover: false
         - start:
             units: absolute

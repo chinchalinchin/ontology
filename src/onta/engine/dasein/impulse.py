@@ -76,7 +76,7 @@ def move(
         return
 
     elif sprite.stature.direction  ==  'up_left':
-        proj = calculator.projection()
+        proj = calculator.projection(45)
         sprite.position.x -= speed*proj[0]
         sprite.position.y -= speed*proj[1]
         return
@@ -86,7 +86,7 @@ def move(
        return
 
     elif sprite.stature.direction == 'down_left':
-        proj = calculator.projection()
+        proj = calculator.projection(45)
         sprite.position.x -= speed*proj[0]
         sprite.position.y += speed*proj[1]
 
@@ -95,7 +95,7 @@ def move(
         return
 
     elif sprite.stature.direction == 'down_right':
-        proj = calculator.projection()
+        proj = calculator.projection(45)
         sprite.position.x += speed*proj[0]
         sprite.position.y += speed*proj[1]
         return
@@ -104,7 +104,7 @@ def move(
         sprite.position.x += speed
 
     elif sprite.stature.direction == 'up_right':
-        proj = calculator.projection()  
+        proj = calculator.projection(45)  
         sprite.position.x += speed*proj[0]
         sprite.position.y -= speed*proj[1]
         return

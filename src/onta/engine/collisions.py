@@ -1,4 +1,3 @@
-import functools
 from typing import Union
 
 import munch
@@ -55,7 +54,7 @@ def calculate_set_hitbox(
 
 
 def calculate_strut_hitboxes(
-    strutsets
+    strutsets: munch.Munch
 ) -> list:
     """_summary_
 
@@ -103,8 +102,8 @@ def calculate_sprite_hitbox(
 
 
 def calculate_sprite_hitboxes(
-    sprites, # self.get_sprites(layer)
-    sprites_props, #self.sprite_properties
+    sprites: munch.Munch, 
+    sprites_props: munch.Munch,
     hitbox_key: str,
     exclude: list = None
 ) -> list:
@@ -231,6 +230,7 @@ def collision_set_relative_to(
     return collision_sets
 
 
+
 def detect_collision(
     object_hitbox: tuple, 
     hitbox_list: list
@@ -268,7 +268,7 @@ def detect_collision(
 
     return calculator.any_intersections(
         object_hitbox,
-        tuple(no_nulls)
+        no_nulls
     )
 
 
@@ -354,7 +354,7 @@ def recoil_sprite(
     )
     sprite_center = calculator.center(sprite_box)
 
-    proj = calculator.projection()
+    proj = calculator.projection(45)
 
     if sprite_center[0] < collision_box[0]:
         if sprite_center[1] > collision_box[1]+collision_box[3]:

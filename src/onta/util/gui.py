@@ -24,7 +24,7 @@ def open_image(
 def new_image(
     dim: tuple
 ) -> Image.Image:
-    return Image.new(settings.IMG_MODE, dim, settings.IMG_BLANK)
+    return Image.new(settings.IMG_MODE, int_tuple(dim), settings.IMG_BLANK)
 
 
 def replace_alpha(
@@ -36,7 +36,7 @@ def replace_alpha(
 
 @functools.lru_cache(maxsize=5)
 def channels(dim, channels):
-    return Image.new(settings.IMG_MODE, dim, channels)
+    return Image.new(settings.IMG_MODE, int_tuple(dim), channels)
 
 
 @numba.jit(nopython=True, nogil=True)

@@ -58,7 +58,7 @@ def screen_crop_box(
 )
 @cc.export(
     'on_screen',
-    'boolean(UniTuple(float64,2),UniTuple(float64,4),UniTuple(float64,2),UniTuple(float64,2))'
+    'boolean(UniTuple(float64,4),UniTuple(float64,4),UniTuple(float64,2),UniTuple(float64,2))'
 )
 def on_screen(
     player_dim: tuple,
@@ -91,7 +91,7 @@ def on_screen(
 )
 @cc.export(
     'tile_coordinates',
-    'List(UniTuple(float64,2))(UniTuple(int64,2),UniTuple(float64,2),UniTuple(int64,2))'
+    'List(UniTuple(int64,2))(UniTuple(int64,2),UniTuple(int64,2),UniTuple(int64,2))'
 )
 def tile_coordinates(
     set_dim: tuple,
@@ -118,7 +118,7 @@ def tile_coordinates(
 )
 @cc.export(
     'plate_coordinates',
-    'List(Tuple((int64,float64,float64)),reflected=False)(List(Tuple((float64,float64,unicode_type)),reflected=False),UniTuple(float64,2),UniTuple(float64,2),UniTuple(float64,2),UniTuple(float64,2),UniTuple(float64,2),boolean)'
+    'List(Tuple((int64,float64,float64)),reflected=False)(List(Tuple((float64,float64,unicode_type)),reflected=False),UniTuple(float64,4),UniTuple(float64,2),UniTuple(int64,2),UniTuple(int64,2),UniTuple(int64,2),boolean)'
 )
 def plate_coordinates(
     group_conf: list,

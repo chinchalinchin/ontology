@@ -290,6 +290,9 @@ class Renderer():
                 for set_conf in group_conf['sets']
             ]
 
+            if not typeable_group_conf:
+                continue
+
             coordinates = formulae.plate_coordinates(
                     typeable_group_conf,
                     player_dim,
@@ -300,14 +303,16 @@ class Renderer():
                     crop
                 )
 
+            # NOTE: due to player interaction, plate coordinates can be floats.
+            #       therefore, cast to ints before passing to PIL.
             for coord in coordinates:
 
-                log.infinite(f'Rendering at ({coord[1]},{coord[2]}', '_render_variable_plates')
+                log.infinite(f'Rendering at ({coord[1]},{coord[2]})', '_render_variable_plateset')
 
                 if group_type not in SWITCH_PLATES_TYPES:
                     self.world_frame.alpha_composite(
                         group_frame, 
-                        ( coord[1], coord[2] )
+                        gui.int_tuple(( coord[1], coord[2] ))
                     )
                     continue
 
@@ -316,12 +321,12 @@ class Renderer():
                 ):
                     self.world_frame.alpha_composite(
                         group_frame.on, 
-                        ( coord[1], coord[2] )
+                        gui.int_tuple(( coord[1], coord[2] ))
                     )
                     continue
                 self.world_frame.alpha_composite(
                     group_frame.off, 
-                    ( coord[1], coord[2] )
+                    gui.int_tuple(( coord[1], coord[2] ))
                 )
 
 

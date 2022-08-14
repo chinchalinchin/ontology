@@ -69,7 +69,7 @@ def angle_relative_to_center(
     'UniTuple(float64,2)(float64)'
 )
 def projection(
-    angle:float = 45
+    angle: float
 ) -> tuple:
     return (
         math.cos(angle*math.pi/180), 
@@ -200,7 +200,7 @@ def any_intersections(
 )
 @cc.export(
     'scale', 
-    'UniTuple(float64,2)(UniTuple(float64,2),UniTuple(float64,2),unicode_type)'
+    'UniTuple(int64,2)(UniTuple(int64,2),UniTuple(int64,2),unicode_type)'
 )
 def scale(
     point: tuple, 

@@ -51,13 +51,13 @@ def reorient(
     possibilities = {}
 
     if up_valid:
-        possibilities['up'] = calculator.distance(new_up, goal)
+        possibilities['up'] = calculator.distance(new_up[:2], goal)
     if left_valid:
-        possibilities['left'] = calculator.distance(new_left, goal)
+        possibilities['left'] = calculator.distance(new_left[:2], goal)
     if right_valid:
-        possibilities['right'] = calculator.distance(new_right, goal)
+        possibilities['right'] = calculator.distance(new_right[:2], goal)
     if down_valid:
-        possibilities['down'] = calculator.distance(new_down, goal)
+        possibilities['down'] = calculator.distance(new_down[:2], goal)
     # TODO: diagonals
 
     least_direction = None
