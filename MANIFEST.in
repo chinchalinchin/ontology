@@ -31,3 +31,7 @@ include src/data/conf/self/*
 include src/data/state/*
 
 include src/version.txt
+
+include src/onta/engine/static/cc_calculator.cpython-38-x86_64-linux-gnu.so
+include src/onta/engine/static/cc_formulae.cpython-38-x86_64-linux-gnu.so
+include src/onta/engine/static/cc_paths.cpython-38-x86_64-linux-gnu.so

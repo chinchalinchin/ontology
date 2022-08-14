@@ -8,4 +8,7 @@
 src/ontology.egg-info
 
 log
+build
 .venv
+
+**/*.so

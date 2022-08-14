@@ -7,6 +7,7 @@ from numba.pycc import CC
 import onta.settings as settings
 import onta.util.logger as logger
 
+
 cc_calculator = CC('cc_calculator')
 
 log = logger.Logger('onta.engine.static.calculator', settings.LOG_LEVEL)
