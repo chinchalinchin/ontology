@@ -1,6 +1,6 @@
 import math
 from typing import Union
-import numba
+from numba import njit
 from numba.pycc import CC
 
 import onta.settings as settings
@@ -10,12 +10,8 @@ cc = CC('calculator')
 
 log = logger.Logger('onta.engine.static.calculator', settings.LOG_LEVEL)
 
-@numba.jit(
-    nopython=True, 
-    nogil=True, 
-    fastmath=True,
-    cache=True
-)
+
+@njit
 @cc.export(
     'center', 
     'UniTuple(float64,2)(UniTuple(float64,4))'
@@ -26,12 +22,7 @@ def center(
     return (dim[0] + dim[2] /2, dim[1] + dim[3]/2)
 
 
-@numba.jit(
-    nopython=True, 
-    nogil=True, 
-    fastmath=True,
-    cache=True
-)
+@njit
 @cc.export(
     'angle_relative_to_center', 
     'float64(UniTuple(float64,2),UniTuple(float64,2))'
@@ -58,12 +49,7 @@ def angle_relative_to_center(
     return 360 - 180 * math.acos(cosine) / math.pi
 
 
-@numba.jit(
-    nopython=True, 
-    nogil=True, 
-    fastmath=True,
-    cache=True
-)
+@njit
 @cc.export(
     'projection', 
     'UniTuple(float64,2)(float64)'
@@ -77,12 +63,7 @@ def projection(
     )
 
 
-@numba.jit(
-    nopython=True, 
-    nogil=True, 
-    fastmath=True,
-    cache=True
-)
+@njit
 @cc.export(
     'distance', 
     'float64(UniTuple(float64,2),UniTuple(float64,2))'
@@ -95,12 +76,7 @@ def distance(
     dy = a[1] - b[1]
     return math.sqrt(dx ** 2 + dy ** 2)
 
-
-@numba.jit(
-    nopython=True, 
-    nogil=True, 
-    fastmath=True
-)
+@njit
 @cc.export(
     'intersection', 
     'boolean(UniTuple(float64,4),UniTuple(float64,4))'
@@ -153,12 +129,7 @@ def intersection(
     return True
 
 
-@numba.jit(
-    nopython=True, 
-    nogil=True, 
-    fastmath=True,
-    cache=True
-)
+@njit
 @cc.export(
     'any_intersections', 
     'optional(UniTuple(float64,4))(UniTuple(float64,4),List(UniTuple(float64,4)))'
@@ -191,13 +162,7 @@ def any_intersections(
             return other_rect
     return (-1,-1,-1,-1)
 
-
-@numba.jit(
-    nopython=True, 
-    nogil=True, 
-    fastmath=True,
-    cache=True
-)
+@njit
 @cc.export(
     'scale', 
     'UniTuple(int64,2)(UniTuple(int64,2),UniTuple(int64,2),unicode_type)'

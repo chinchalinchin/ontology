@@ -236,7 +236,7 @@ sprites:
                 run: 2
                 collide: 5
             poll: 
-                enter: 50
+                enter: 70
                 exit: 15
 
     skeleton:
@@ -278,5 +278,5 @@ sprites:
                 run: 2
                 collide: 5
             poll: 
-                enter: 50
+                enter: 70
                 exit: 15

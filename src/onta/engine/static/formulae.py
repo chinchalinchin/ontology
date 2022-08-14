@@ -1,4 +1,4 @@
-import numba
+from numba import njit
 from numba.pycc import CC
 
 import onta.settings as settings
@@ -10,12 +10,7 @@ cc = CC("formulae")
 
 log = logger.Logger('onta.engine.static.formulae', settings.LOG_LEVEL)
 
-@numba.jit(
-    nopython=True, 
-    nogil=True, 
-    fastmath=True,
-    cache=True
-)
+@njit
 @cc.export(
     'screen_crop_box',
     'UniTuple(float64,4)(UniTuple(float64,2),UniTuple(float64,2),UniTuple(float64,2))'
@@ -49,13 +44,7 @@ def screen_crop_box(
     crop_height = crop_y + screen_dim[1]
     return (crop_x, crop_y, crop_width, crop_height)
 
-
-@numba.jit(
-    nopython=True, 
-    nogil=True, 
-    fastmath=True,
-    cache=True
-)
+@njit
 @cc.export(
     'on_screen',
     'boolean(UniTuple(float64,4),UniTuple(float64,4),UniTuple(float64,2),UniTuple(float64,2))'
@@ -83,12 +72,7 @@ def on_screen(
     return calculator.intersection(crop_box, object_dim)
 
 
-@numba.jit(
-    nopython=True, 
-    nogil=True, 
-    fastmath=True,
-    cache=True
-)
+@njit
 @cc.export(
     'tile_coordinates',
     'List(UniTuple(int64,2))(UniTuple(int64,2),UniTuple(int64,2),UniTuple(int64,2))'
@@ -110,12 +94,7 @@ def tile_coordinates(
     return dims
 
 
-@numba.jit(
-    nopython=True, 
-    nogil=True, 
-    fastmath=True,
-    cache=True
-)
+@njit
 @cc.export(
     'plate_coordinates',
     'List(Tuple((int64,float64,float64)),reflected=False)(List(Tuple((float64,float64,unicode_type)),reflected=False),UniTuple(float64,4),UniTuple(float64,2),UniTuple(int64,2),UniTuple(int64,2),UniTuple(int64,2),boolean)'

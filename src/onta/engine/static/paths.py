@@ -1,6 +1,6 @@
 
-import numba
 from numba.pycc import CC
+from numba import njit
 
 import onta.settings as settings
 import onta.engine.static.calculator as calculator
@@ -11,12 +11,7 @@ log = logger.Logger('onta.engine.static.paths', settings.LOG_LEVEL)
 cc = CC('paths')
 
 
-@numba.jit(
-    nopython=True,
-    nogil=True,
-    fastmath=True,
-    cache=True
-)
+@njit
 @cc.export(
     'reorient',
     'unicode_type(UniTuple(float64,4),List(UniTuple(float64,4)),UniTuple(float64,2),int64,UniTuple(int64,2))'
