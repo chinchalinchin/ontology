@@ -26,8 +26,8 @@ class Logger():
     def comment(self, msg, method, level="INFO"):
         # now = datetime.datetime.now()
         # dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        print(">> ", level, ':', f'{self.location}.{method}')
-        print('\t\t\t\t\t', msg)
+        print(">> ", level, ':', f'{self.location}.{method}:')
+        print('\t\t\t\t\t\t\t', msg)
 
 
     def error(self, msg, method):

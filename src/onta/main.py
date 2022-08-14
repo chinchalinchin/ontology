@@ -120,7 +120,7 @@ def do(
 
     while True:
 
-        if game_world.iterations not in range(settings.FPS):
+        if game_world.iterations not in range(3*settings.FPS):
 
             user_input = controller.poll()
 
@@ -169,40 +169,42 @@ def do(
                     asset_repository,
                     None
                 )
+
+            # # post_loop hook here
+            # scripts.apply_scripts(game_world, 'post_loop')
+            
+            end_time = helper.current_ms_time()
+            diff = end_time - start_time
+            sleep_time = ms_per_frame - diff - over_sleep
+
+            if sleep_time >= 0:
+                log.maximum_overdrive(f'Loop iteration too short -  delta: {sleep_time} ms', 'do')
+                time.sleep(sleep_time/1000)
+                over_sleep = helper.current_ms_time() - end_time - sleep_time
+            else:
+                log.maximum_overdrive(f'Loop iteration too long - delta: {sleep_time} ms', 'do')
+                excess -= sleep_time
+                no_delays += 1
+                if no_delays >= no_delays_per_yield:
+                    log.maximum_overdrive(f'Yielding thread', 'do')
+                    time.sleep(0)
+                    no_delays = 0
+
+            start_time = helper.current_ms_time()
+            skips = 0
+            while ( (excess>ms_per_frame) and (skips < max_frame_skips)):
+                log.maximum_overdrive(f'Updating world to catch up', 'do')
+                excess -= ms_per_frame
+                game_world.iterate(user_input)
+                skips += 1
+
         else:
             # send some input to the world to wake up the JIT functions
+            # the diagonals, in particular, seem to cause hiccups in the first few seconds
             user_input = controller.poll()
-            direction = [ 'left', 'right', 'up', 'down' ][randint(0,3)]
+            direction = [ 'up_left', 'up_right', 'down_right', 'down_left' ][randint(0,3)]
             setattr(user_input, direction, True)
             game_world.iterate(user_input)
-
-        # # post_loop hook here
-        # scripts.apply_scripts(game_world, 'post_loop')
-        
-        end_time = helper.current_ms_time()
-        diff = end_time - start_time
-        sleep_time = ms_per_frame - diff - over_sleep
-
-        if sleep_time >= 0:
-            log.maximum_overdrive(f'Loop iteration too short -  delta: {sleep_time} ms', 'do')
-            time.sleep(sleep_time/1000)
-            over_sleep = helper.current_ms_time() - end_time - sleep_time
-        else:
-            log.maximum_overdrive(f'Loop iteration too long - delta: {sleep_time}', 'do')
-            excess -= sleep_time
-            no_delays += 1
-            if no_delays >= no_delays_per_yield:
-                log.maximum_overdrive(f'Yielding thread', 'do')
-                time.sleep(0)
-                no_delays = 0
-
-        start_time = helper.current_ms_time()
-        skips = 0
-        while ( (excess>ms_per_frame) and (skips < max_frame_skips)):
-            log.maximum_overdrive(f'Updating world to catch up', 'do')
-            excess -= ms_per_frame
-            game_world.iterate(user_input)
-            skips += 1
             
 
 def entrypoint() -> None:
