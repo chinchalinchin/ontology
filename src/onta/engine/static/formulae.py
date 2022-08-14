@@ -1,13 +1,16 @@
 import functools
 import munch
 import numba
+from numba.pycc import CC
 
 import onta.settings as settings
 import onta.util.logger as logger
 import onta.engine.static.calculator as calculator
 
-log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
 
+cc = CC("formulae")
+
+log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
 
 @numba.jit(
     nopython=True, 
@@ -15,6 +18,7 @@ log = logger.Logger('onta.engine.formulae', settings.LOG_LEVEL)
     fastmath=True,
     cache=True
 )
+@cc.export('screen_crop_box',)
 def screen_crop_box(
     screen_dim: tuple, 
     world_dim: tuple, 
@@ -51,6 +55,7 @@ def screen_crop_box(
     fastmath=True,
     cache=True
 )
+@cc.export('on_screen',)
 def on_screen(
     player_dim: tuple,
     object_dim: tuple,
@@ -99,6 +104,7 @@ def tile_coordinates(
     fastmath=True,
     cache=True
 )
+@cc.export('plate_coordinates',)
 def plate_coordinates(
     group_conf: tuple,
     player_dim: tuple,
@@ -156,6 +162,7 @@ def plate_coordinates(
     nogil=True,
     cache=True
 )
+@cc.export('decompose_animate_stature', )
 def decompose_animate_stature(
     sprite_stature:str
 ) -> tuple:
@@ -391,22 +398,24 @@ def decompose_compositions_into_sets(
     return (decomposition[0], decomposition[1], decomposition[2])
 
 
-def _init_jit():
-    log.debug('Initializing JIT functions...', '_init_jit')
+# def _init_jit():
+#     log.debug('Initializing JIT functions...', '_init_jit')
 
-    screen_crop_box(
-        (1,2),
-        (1,2),
-        (1,2)
-    )
-    on_screen(
-        (0,1),
-        (0,1,2,3), 
-        (1,2), 
-        (1,2)
-    )
-    decompose_animate_stature(
-        'test_state'
-    )
+#     screen_crop_box(
+#         (1,2),
+#         (1,2),
+#         (1,2)
+#     )
+#     on_screen(
+#         (0,1),
+#         (0,1,2,3), 
+#         (1,2), 
+#         (1,2)
+#     )
+#     decompose_animate_stature(
+#         'test_state'
+#     )
 
-_init_jit()
+# _init_jit()
+
+cc.compile()

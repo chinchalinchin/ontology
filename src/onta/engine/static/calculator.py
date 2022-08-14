@@ -223,18 +223,4 @@ def scale(
     return point
 
 
-# def _init_jit():
-#     log.debug('Initializing JIT functions...', '_init_jit')
-    
-#     center((1,2,3,4))
-#     angle_relative_to_center((0,1))
-#     projection()
-#     distance((1,2),(3,4))
-#     intersection((1,2,3,4), (5,6,7,8)),
-#     any_intersections((1,2,3,4), 
-#         tuple([(1,2,3,4), (5,6,7,8)])
-#     )
-#     scale((1,2),(3,4))
-
-# _init_jit()
 cc.compile()
