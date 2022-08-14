@@ -1,7 +1,6 @@
 from typing import Union
 
 import munch
-import numba
 
 import onta.settings as settings
 import onta.engine.static.calculator as calculator
@@ -227,8 +226,14 @@ def collision_set_relative_to(
             if not switch_map.get(gate.key).get(str(gate.index))
         ]
         # doesn't add pressures, doors or masses, as they are handled separately
+    
+    collision_sets = [
+        box 
+        for box in collision_sets 
+        if box is not None 
+        and None not in box
+    ]
     return collision_sets
-
 
 
 def detect_collision(
@@ -252,25 +257,19 @@ def detect_collision(
     .. todo::
         Modify this to return the direction of the collision. Need to recoil sprite based on where the collision came from, not which direction the sprite is heading...
     """
-    if not hitbox_list:
-        return False
+    if not hitbox_list or None in hitbox_list:
+        return None
 
-    no_nulls = [
-        hitbox
-        for hitbox
-        in hitbox_list
-        if hitbox is not None
-            and None not in list(hitbox)
-    ]
-
-    if not no_nulls:
-        return False
-
-    return calculator.any_intersections(
+    compile_result = calculator.any_intersections(
         object_hitbox,
-        no_nulls
+        hitbox_list
     )
 
+    # compiled version returns all -1 instead of None to avoid type-check problems
+    if all(el == -1 for el in iter(compile_result)):
+        return None
+
+    return compile_result
 
 ############################
 ### STATE ALTERING FUNCTIONS

@@ -1,12 +1,11 @@
 import munch
 
 import onta.settings as settings
-
 import onta.util.logger as logger
 import onta.engine.static.calculator as calculator
 
-
 log = logger.Logger('onta.engine.static.composition', settings.LOG_LEVEL)
+
 
 def decompose_animate_stature(
     sprite_stature:str
@@ -52,7 +51,9 @@ def compose_animate_stature(
     up_right = settings.SEP.join(['up', 'right'])
     down_right = settings.SEP.join(['down', 'right'])
 
-    if not sprite.stature or not sprite.stature.action:
+    if not sprite.stature or \
+        not sprite.stature.action or \
+        not sprite.stature.direction:
         # default state. setting?
         return settings.SEP.join([ 
             settings.DEFAULT_SPRITE_ACTION, 

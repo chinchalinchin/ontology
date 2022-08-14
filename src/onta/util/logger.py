@@ -58,3 +58,8 @@ class Logger():
         if self.log_level in self.levels[:1]:
             self.comment(msg, method, self.levels[0])
 
+    def timer(self, msg):
+        if self.log_level == 'TIMER':
+            self.comment(msg, 'debug', 'TIMER')
+
+

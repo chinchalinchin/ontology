@@ -189,7 +189,7 @@ def any_intersections(
     for other_rect in rectangle_list:
         if intersection(rectangle, other_rect):
             return other_rect
-    return None
+    return (-1,-1,-1,-1)
 
 
 @numba.jit(

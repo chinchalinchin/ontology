@@ -112,6 +112,7 @@ def do(
     debug: bool = False
 ) -> None:
 
+    loading = True
     ms_per_frame = (1/settings.FPS)*1000
     no_delays_per_yield = 16
     max_frame_skips = 5
@@ -120,7 +121,7 @@ def do(
 
     while True:
 
-        if game_world.iterations not in range(2*settings.FPS):
+        if not loading:
 
             user_input = controller.poll()
 
@@ -178,22 +179,22 @@ def do(
             sleep_time = ms_per_frame - diff - over_sleep
 
             if sleep_time >= 0:
-                log.maximum_overdrive(f'Loop iteration too short -  delta: {sleep_time} ms', 'do')
+                log.timer(f'Loop iteration too short -  delta: {sleep_time} ms')
                 time.sleep(sleep_time/1000)
                 over_sleep = helper.current_ms_time() - end_time - sleep_time
             else:
-                log.maximum_overdrive(f'Loop iteration too long - delta: {sleep_time} ms', 'do')
+                log.timer(f'Loop iteration too long - delta: {sleep_time} ms')
                 excess -= sleep_time
                 no_delays += 1
                 if no_delays >= no_delays_per_yield:
-                    log.maximum_overdrive(f'Yielding thread', 'do')
+                    log.timer(f'Yielding thread')
                     time.sleep(0)
                     no_delays = 0
 
             start_time = helper.current_ms_time()
             skips = 0
             while ( (excess>ms_per_frame) and (skips < max_frame_skips)):
-                log.maximum_overdrive(f'Updating world to catch up', 'do')
+                log.timer(f'Updating world to catch up')
                 excess -= ms_per_frame
                 game_world.iterate(user_input)
                 skips += 1
@@ -201,6 +202,9 @@ def do(
         else:
             # send some input to the world to wake up the JIT functions
             # the diagonals, in particular, seem to cause hiccups in the first few seconds
+            if game_world.iterations not in range(5):
+                loading = False
+                
             user_input = controller.poll()
             direction = [ 'up_left', 'up_right', 'down_right', 'down_left' ][randint(0,3)]
             setattr(user_input, direction, True)

@@ -1,14 +1,26 @@
-import munch
+
+import numba
+from numba.pycc import CC
 
 import onta.settings as settings
-import onta.engine.collisions as collisions
 import onta.engine.static.calculator as calculator
 import onta.util.logger as logger
 
-log = logger.Logger('onta.engine.paths', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.static.paths', settings.LOG_LEVEL)
 
-## "STATIC" FUNCTIONS
+cc = CC('paths')
 
+
+@numba.jit(
+    nopython=True,
+    nogil=True,
+    fastmath=True,
+    cache=True
+)
+@cc.export(
+    'reorient',
+    'unicode_type(UniTuple(float64,4),List(UniTuple(float64,4)),UniTuple(float64,2),int64,UniTuple(int64,2))'
+)
 def reorient(
     hitbox: tuple, 
     collision_set: list, 
@@ -41,11 +53,48 @@ def reorient(
         hitbox[3]
     )
 
-    up_valid = not collisions.detect_collision(new_up, collision_set)
-    left_valid =  not collisions.detect_collision(new_left, collision_set) 
-    right_valid = not collisions.detect_collision(new_right, collision_set) 
-    down_valid = not collisions.detect_collision(new_down, collision_set) 
+    # compiled version returns all -1 instead of None to avoid type-check problems
 
+    up_result = calculator.any_intersections(
+        new_up, 
+        collision_set
+    )
+    up_valid = len([
+        el 
+        for el in iter(up_result)
+        if el == -1
+    ]) > 0
+
+    left_result = calculator.any_intersections(
+        new_left, 
+        collision_set
+    )
+    left_valid = len([
+        el 
+        for el in iter(left_result)
+        if el == -1
+    ]) > 0
+
+
+    right_result = calculator.any_intersections(
+        new_right, 
+        collision_set
+    )
+    right_valid = len([
+        el 
+        for el in iter(right_result)
+        if el == -1
+    ]) > 0
+
+    down_result = calculator.any_intersections(
+        new_down, 
+        collision_set
+    )
+    down_valid = len([
+        el 
+        for el in iter(down_result)
+        if el == -1
+    ]) > 0
     # TODO: diagonals
 
     possibilities = {}
@@ -60,7 +109,7 @@ def reorient(
         possibilities['down'] = calculator.distance(new_down[:2], goal)
     # TODO: diagonals
 
-    least_direction = None
+    least_direction = ''
     least_direction_distance = calculator.distance(( 0,0 ), world_dim)
 
     for key, possibility in possibilities.items():
@@ -69,32 +118,3 @@ def reorient(
             least_direction = key
 
     return least_direction
-
-
-def concat_dynamic_paths(
-    sprite: munch.Munch,
-    hero: munch.Munch, 
-    npcs: munch.Munch
-) -> munch.Munch:
-    pathset = sprite.memory.paths.copy()
-
-    if sprite.stature.attention == 'hero':
-        setattr(
-            pathset, 
-            sprite.stature.attention,
-            munch.Munch({ 
-                'x': hero.position.x, 'y': hero.position.y
-            })
-        )
-
-    elif sprite.stature.attention in list(npcs.keys()):
-        setattr(
-            pathset,
-            sprite.stature.attention,
-            munch.Munch({
-                'x': npcs.get(sprite.stature.attention).position.x,
-                'y': npcs.get(sprite.stature.attention).position.y
-            })
-        )
-
-    return pathset

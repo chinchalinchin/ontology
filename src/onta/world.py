@@ -12,8 +12,7 @@ import onta.engine.collisions as collisions
 import onta.engine.dasein.abstract as abstract
 import onta.engine.dasein.interpret as interpret
 import onta.engine.dasein.impulse as impulse
-import onta.engine.paths as paths
-import onta.engine.static.formulae as formulae
+import onta.engine.static.paths as paths
 import onta.engine.static.calculator as calculator
 import onta.engine.static.composition as composition
 
