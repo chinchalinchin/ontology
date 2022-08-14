@@ -19,6 +19,8 @@ then
     rm -r $SRC_DIR/ontology.egg-info
 fi
 
+python $SCRIPT_DIR/compile.py
+
 source $VENV_DIR/activate
 
 pip3 install -r requirements.txt
@@ -29,5 +31,7 @@ python3 -m build
 
 cd $BUILD_DIR
 
+pip install "ontology-$VERSION-py3-none-any.whl"
+
 # TODO: how to get architecture
-pip3 install "ontology-$VERSION-cp38-cp38-linux_x86_64.whl"
+# pip3 install "ontology-$VERSION-cp38-cp38-linux_x86_64.whl"
