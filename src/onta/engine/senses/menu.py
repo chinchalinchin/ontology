@@ -7,6 +7,7 @@ import onta.loader.state as state
 import onta.util.logger as logger
 import onta.engine.senses.display as display
 import onta.engine.senses.tab as tab
+
 import onta.engine.static.formulae as formulae
 
 log = logger.Logger('onta.engine.senses.menu', settings.LOG_LEVEL)
