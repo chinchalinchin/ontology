@@ -278,7 +278,7 @@ class HUD():
         )
         
 
-        # TODO: jit it
+        # TODO: jit/cythonize it
         if pack_horizontal_align == 'left':
             self.wallet_rendering_points.append(
                 (

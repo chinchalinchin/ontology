@@ -18,16 +18,16 @@ def filter_nested_tuple(
     :param filter_value: _description_
     :type filter_value: str
     :return: _description_
-    :rtype: tuple
+    :rtype: tuple 
 
     .. note:: 
         Assumes the first element of the tuple is the index.
     """
-    filtered = [
+    filtered = tuple(
         tup
         for tup in iter(nested_tuple)
         if tup[0] == filter_value
-    ]
+    )
     
     return filtered
 

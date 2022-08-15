@@ -3,7 +3,7 @@ import munch
 import onta.settings as settings
 import onta.util.logger as logger
 
-import onta.engine.static.cc_calculator as calculator
+import onta.engine.static.calculator as calculator
 
 log = logger.Logger('onta.engine.static.composition', settings.LOG_LEVEL)
 
