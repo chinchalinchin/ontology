@@ -23,7 +23,7 @@ python3 -m build
 
 cd $BUILD_DIR
 
-pip3 install "ontology-$VERSION-py3-none-any.whl"
+pip3 install "ontology-$VERSION-py3-none-any.whl" --force-reinstall
 
 # TODO: how to get architecture
 # pip3 install "ontology-$VERSION-cp38-cp38-linux_x86_64.whl"

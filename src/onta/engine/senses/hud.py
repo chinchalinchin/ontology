@@ -157,18 +157,18 @@ class HUD():
     def _immute_slots(
         self
     ):
-        return tuple([ 
+        return tuple(
             ( key, value ) 
             if value else
             ( key , 'null' )
             for key, value in self.slots.items()
-        ])
+        )
 
 
     def _immute_equipment_size(
         self
     ):
-        return tuple([
+        return tuple(
             (
                 equip_key, 
                 equip.size.w, 
@@ -176,13 +176,13 @@ class HUD():
             )
             for equip_key, equip in self.avatar_conf.equipment.items()
             if equip is not None and equip.get('size') is not None
-        ])
+        )
 
 
     def _immute_inventory_size(
         self
     ):
-        return tuple([
+        return tuple(
             (
                 invent_key, 
                 invent.size.w, 
@@ -190,7 +190,7 @@ class HUD():
             )
             for invent_key, invent in self.avatar_conf.inventory.items()
             if invent is not None and invent.get('size') is not None
-        ])
+        )
 
 
     def _init_conf(
@@ -444,6 +444,11 @@ class HUD():
             ('slash',7 )
         )
 
+        print(self._immute_slots())
+        print(self._immute_equipment_size())
+        print(self._immute_inventory_size())
+        print(tuple(self.properties.slots.maps)) 
+        print(avatar_tuple)
         # NOTE: all in service of immutability and LRU cache...
         render_tuples = formulae.avatar_coordinates(
             self._immute_slots(), 

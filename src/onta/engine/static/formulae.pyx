@@ -1,5 +1,3 @@
-import functools
-
 import onta.settings as settings
 import onta.util.logger as logger
 import onta.engine.static.calculator as calculator
@@ -23,13 +21,15 @@ def filter_nested_tuple(
     .. note:: 
         Assumes the first element of the tuple is the index.
     """
+    iter_tup = iter(nested_tuple)
     filtered = tuple(
         tup
-        for tup in iter(nested_tuple)
+        for tup in iter_tup
         if tup[0] == filter_value
     )
     
     return filtered
+
 
 def screen_crop_box(
     screen_dim: tuple, 
@@ -443,7 +443,6 @@ def slot_coordinates(
     return render_points
 
 
-@functools.lru_cache(maxsize=100)
 def avatar_coordinates(
     slots_tuple: tuple,
     equip_tuple: tuple,
@@ -462,7 +461,6 @@ def avatar_coordinates(
     render_points = list()
     
     for slot_key in iter(map_tuple):
-
         slot = filter_nested_tuple(
             slots_tuple,
             slot_key
@@ -472,7 +470,7 @@ def avatar_coordinates(
         # slot[1] = equipment_name
         if slot and slot[0][1] != 'null':
             avatar = filter_nested_tuple(
-                avatar_tuple, 
+                avatar_tuple,
                 slot_key
             )
 
