@@ -5,12 +5,12 @@ import onta.device as device
 import onta.loader.conf as conf
 import onta.loader.state as state
 import onta.util.logger as logger
-import onta.engine.senses.display as display
-import onta.engine.senses.tab as tab
+import onta.engine.qualia.display as display
+import onta.engine.qualia.tab as tab
 
 import onta.engine.static.formulae as formulae
 
-log = logger.Logger('onta.engine.senses.menu', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.qualia.menu', settings.LOG_LEVEL)
 
 
 class Menu():
@@ -66,7 +66,7 @@ class Menu():
         self, 
         config: conf.Conf
     ) -> None:
-        configure = config.load_sense_configuration()
+        configure = config.load_qualia_configuration()
         self.menu_conf = configure.menu
         self.sizes = configure.sizes
         self.styles = configure.styles

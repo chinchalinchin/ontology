@@ -13,6 +13,7 @@ import munch
 import onta.settings as settings
 
 import onta.engine.collisions as collisions
+import onta.engine.noumena.substrata as substrata
 import onta.engine.static.calculator as calculator
 
 import onta.util.logger as logger
@@ -168,10 +169,10 @@ def combat(
                 if target_key == sprite_key or target.layer != sprite.layer:
                     continue
 
-                target_hitbox = collisions.calculate_sprite_hitbox(
-                    target,
+                target_hitbox = substrata.sprite_hitbox(
+                    munch.unmunchify(target),
                     'attack',
-                    sprites_props.get(target_key)
+                    munch.unmunchify(sprites_props.get(target_key))
                 )
 
                 if not target_hitbox:
@@ -248,7 +249,7 @@ def operate(
     switch_map: munch.Munch,
 ) -> None:
 
-    sprite_hitbox = collisions.calculate_sprite_hitbox(
+    sprite_hitbox = substrata.sprite_hitbox(
         sprite,
         'sprite',
         sprite_props

@@ -5,14 +5,12 @@ import munch
 import onta.settings as settings
 import onta.util.logger as logger
 
+import onta.engine.noumena.substrata as substrata
 import onta.engine.static.calculator as calculator
+
 
 log = logger.Logger('onta.engine.collisions', settings.LOG_LEVEL)
 
-
-######################
-### "STATIC" FUNCTIONS
-######################
 
 def generate_collision_map(
     npcs: munch.Munch
@@ -30,102 +28,6 @@ def generate_collision_map(
         }) for npc_1_key in npcs.keys()
     })
     return collision_map
-
-
-def calculate_set_hitbox(
-    set_hitbox: tuple,
-    set_conf: munch.Munch,
-    tile_dim: tuple
-):
-    if set_hitbox:
-        x,y = calculator.scale(
-            ( set_conf.start.x, set_conf.start.y ),
-            tile_dim,
-            set_conf.start.units
-        )
-        hitbox = (
-            int(x + set_hitbox.offset.x), 
-            int(y + set_hitbox.offset.y),
-            set_hitbox.size.w,
-            set_hitbox.size.h
-        )
-        return hitbox
-    return None
-
-
-def calculate_strut_hitboxes(
-    strutsets: munch.Munch
-) -> list:
-    """_summary_
-
-    :param layer: _description_
-    :type layer: str
-    :return: _description_
-    :rtype: list
-    """
-    strut_hitboxes = []
-    for strutset in strutsets.values():
-        strut_hitboxes += [
-            strut.hitbox for strut in strutset.sets
-        ]
-    return strut_hitboxes
-
-
-def calculate_sprite_hitbox(
-    sprite: munch.Munch, 
-    hitbox_key: str,
-    sprite_props: munch.Munch
-) -> Union[tuple, None]:
-        """_summary_
-
-        :param sprite: _description_
-        :type sprite: munch.Munch
-        :param hitbox_key: _description_
-        :type hitbox_key: str
-        :return: _description_
-        :rtype: Union[tuple, None]
-
-        .. note::
-            A sprite's hitbox dimensions are fixed, but the actual hitbox coordinates depend on the position of the sprite. This method must be called each iteration of the world loop, so the newest coordinates of the hitbox are retrieved.
-        """
-        
-        raw_hitbox = sprite_props.hitboxes.get(hitbox_key)
-        if raw_hitbox is None:
-            return raw_hitbox
-        calc_hitbox = (
-            int(sprite.position.x + raw_hitbox.offset.x),
-            int(sprite.position.y + raw_hitbox.offset.y),
-            raw_hitbox.size.w,
-            raw_hitbox.size.h
-        )
-        return calc_hitbox
-
-
-def calculate_sprite_hitboxes(
-    sprites: munch.Munch, 
-    sprites_props: munch.Munch,
-    hitbox_key: str,
-    exclude: list = None
-) -> list:
-    """_summary_
-
-    :param hitbox_key: _description_
-    :type hitbox_key: str
-    :param layer: _description_
-    :type layer: str
-    :param exclude: _description_, defaults to None
-    :type exclude: list, optional
-    :return: _description_
-    :rtype: list
-    """
-    return [
-        calculate_sprite_hitbox(
-            sprite,
-            hitbox_key, 
-            sprites_props.get(sprite_key)
-        ) for sprite_key, sprite in sprites.items()
-        if exclude is None or sprite_key not in exclude
-    ]
 
 
 def calculate_blunt_attackbox(
@@ -267,14 +169,11 @@ def detect_collision(
     )
 
     # compiled version returns all -1 instead of None to avoid type-check problems
+        # TODO: that was for numba, not cython
     if all(el == -1 for el in iter(compile_result)):
         return None
 
     return compile_result
-
-############################
-### STATE ALTERING FUNCTIONS
-############################
 
 
 def project(
@@ -495,7 +394,11 @@ def detect_layer_sprite_to_mass_collision(
     plate_props,
     tile_dimensions,
 ) -> None:
-    sprite_hitbox = calculate_sprite_hitbox(sprite, 'sprite', sprite_props)
+    sprite_hitbox = substrata.sprite_hitbox(
+        munch.unmunchify(sprite), 
+        'sprite', 
+        munch.unmunchify(sprite_props)
+    )
     masses = platesets.get(sprite.layer).masses.copy()
     for mass in masses:
         collision_box = detect_collision(
@@ -512,18 +415,18 @@ def detect_layer_sprite_to_mass_collision(
             setattr(
                 plate.hitbox,
                 'sprite',
-                calculate_set_hitbox(
-                    plate_props.get(mass.key).hitbox.sprite,
-                    plate,
+                substrata.set_hitbox(
+                    munch.unmunchify(plate_props.get(mass.key).hitbox.sprite),
+                    munch.unmunchify(plate),
                     tile_dimensions
                 )
             )
             setattr(
                 plate.hitbox,
                 'strut',
-                calculate_set_hitbox(
-                    plate_props.get(mass.key).hitbox.strut,
-                    plate,
+                substrata.set_hitbox(
+                    munch.unmunchify(plate_props.get(mass.key).hitbox.strut),
+                    munch.unmunchify(plate),
                     tile_dimensions
                 )
             )

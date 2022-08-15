@@ -6,15 +6,20 @@ import munch
 import onta.settings as settings
 import onta.loader.state as state
 import onta.loader.conf as conf
+
 import onta.engine.collisions as collisions
+
 import onta.engine.dasein.abstract as abstract
 import onta.engine.dasein.interpret as interpret
 import onta.engine.dasein.impulse as impulse
 import onta.engine.composition as composition
-import onta.util.logger as logger
+
+import onta.engine.noumena.substrata as substrata
 
 import onta.engine.static.calculator as calculator
 import onta.engine.static.paths as paths
+
+import onta.util.logger as logger
 
 
 log = logger.Logger('onta.world', settings.LOG_LEVEL)
@@ -161,80 +166,33 @@ class World():
             f'Calculating stationary hitbox locations...',
             '_generate_stationary_hitboxes'
         )
+        self.world_bounds = [
+            ( 0, 0, self.dimensions[0], 1 ),
+            ( 0, 0, 1, self.dimensions[1] ),
+            ( self.dimensions[0], 0, 1, self.dimensions[1] ),
+            ( 0, self.dimensions[1], self.dimensions[0], 1 )
+        ]
+        strut_dicts = munch.unmunchify(self.strutsets)
+        plate_dicts = munch.unmunchify(self.platesets)
+
+        strut_prop_dict = munch.unmunchify(self.strut_properties)
+        plate_prop_dict = munch.unmunchify(self.plate_properties)
+
+        strut_dicts, plate_dicts = substrata.stationary_hitboxes(
+            self.layers,
+            self.tile_dimensions,
+            strut_dicts,
+            plate_dicts,
+            strut_prop_dict,
+            plate_prop_dict
+        )
+
+        self.platesets = munch.munchify(plate_dicts)
+        self.strutsets = munch.munchify(strut_dicts)
+
         for layer in self.layers:
-            for static_set in ['strutset', 'plateset']:
-
-                if static_set == 'strutset':
-                    iter_set = self.get_strutsets(layer).copy()
-                    props = self.strut_properties
-                elif static_set == 'plateset':
-                    iter_set = self.get_platesets(layer).copy()
-                    props = self.plate_properties
-
-                for set_key, set_conf in iter_set.items():
-                    log.verbose(
-                        f'Initializing {static_set} {set_key} hitboxes',
-                        '_generate_stationary_hitboxes'
-                    )
-
-                    for i, set_conf in enumerate(set_conf.sets):
-
-                        if props.get(set_key).get('type') == 'mass':
-                            set_sprite_hitbox = collisions.calculate_set_hitbox(
-                                props.get(set_key).hitbox.sprite,
-                                set_conf,
-                                self.tile_dimensions
-                            )
-                            set_strut_hitbox = collisions.calculate_set_hitbox(
-                                props.get(set_key).hitbox.strut,
-                                set_conf,
-                                self.tile_dimensions
-                            )
-                            setattr(
-                                self.platesets.get(layer).get(set_key).sets[i],
-                                'hitbox',
-                                munch.Munch({})
-                            )
-                            setattr(
-                                self.platesets.get(layer).get(set_key).sets[i].hitbox,
-                                'sprite',
-                                set_sprite_hitbox
-                            )
-                            setattr(
-                                self.platesets.get(layer).get(set_key).sets[i].hitbox,
-                                'strut',
-                                set_strut_hitbox
-                            )
-                            continue
-
-                        set_hitbox = collisions.calculate_set_hitbox(
-                            props.get(set_key).hitbox,
-                            set_conf,
-                            self.tile_dimensions
-                        )
-                        if static_set == 'strutset':
-                            setattr(
-                                self.strutsets.get(layer).get(set_key).sets[i],
-                                'hitbox',
-                                set_hitbox
-                            )
-                            continue
-                        setattr(
-                            self.platesets.get(layer).get(set_key).sets[i],
-                            'hitbox',
-                            set_hitbox
-                        )
-
-            # TODO : world bounds need to be treated separated
-            self.world_bounds = [
-                ( 0, 0, self.dimensions[0], 1 ),
-                ( 0, 0, 1, self.dimensions[1] ),
-                ( self.dimensions[0], 0, 1, self.dimensions[1] ),
-                ( 0, self.dimensions[1], self.dimensions[0], 1 )
-            ]
-
-            self.strutsets.get(layer).hitboxes = collisions.calculate_strut_hitboxes(
-                self.strutsets.get(layer)
+            self.strutsets.get(layer).hitboxes = substrata.strut_hitboxes(
+                strut_dicts.get(layer)
             ) + self.world_bounds
             self.platesets.get(layer).doors = self.get_typed_platesets(
                 layer, 
@@ -252,6 +210,7 @@ class World():
                 layer,  
                 'mass'
             )
+
 
 
     def _generate_switch_map(
@@ -328,7 +287,7 @@ class World():
                 # update delayed desires
                 if first_octave:
                     log.infinite(
-                        f'Polling {sprite_key}\'s delayed {sprite_desire.mode} desire conditions...',
+                        f'Polling {sprite_key}\'s first octave {sprite_desire.mode} desire conditions...',
                         '_ruminate'
                     )
 
@@ -364,6 +323,11 @@ class World():
                     
                 # update immediate desires
                 elif second_octave:
+                    log.infinite(
+                        f'Polling {sprite_key}\'s second octave {sprite_desire.mode} desire conditions...',
+                        '_ruminate'
+                    )
+
                     if sprite_desire.mode == 'approach':
                         instruction = abstract.attempt_unapproach(
                             sprite_key,
@@ -535,10 +499,10 @@ class World():
     ) -> None:
 
         sprite = self.npcs.get(sprite_key)
-        sprite_hitbox = collisions.calculate_sprite_hitbox(
-            sprite,
+        sprite_hitbox = substrata.sprite_hitbox(
+            munch.unmunchify(sprite),
             'strut',
-            self.sprite_properties.get(sprite_key)
+            munch.unmunchify(self.sprite_properties.get(sprite_key))
         )
         collision_set = collisions.collision_set_relative_to(
             'strut',
@@ -589,18 +553,18 @@ class World():
                         key for key,val in collision_map.get(sprite_key).items() if val
                     ]
 
-                sprite_hitbox = collisions.calculate_sprite_hitbox(
-                    sprite,
+                sprite_hitbox = substrata.sprite_hitbox(
+                    munch.unmunchify(sprite),
                     hitbox_key,
-                    self.sprite_properties.get(sprite_key)
+                    munch.unmunchify(self.sprite_properties.get(sprite_key))
                 )
 
                 if sprite_hitbox is None:
                     continue
 
-                other_sprite_hitboxes = collisions.calculate_sprite_hitboxes(
-                    self.get_sprites(sprite.layer), # can use read-only here since just calculating
-                    self.sprite_properties,
+                other_sprite_hitboxes = substrata.sprite_hitboxes(
+                    munch.unmunchify(self.get_sprites(sprite.layer)), # can use read-only here since just calculating
+                    munch.unmunchify(self.sprite_properties),
                     hitbox_key,
                     exclusions
                 )
@@ -625,6 +589,7 @@ class World():
                     sprite_hitbox, 
                     collision_set
                 )
+                
 
                 if collision_box:
                     log.debug(
@@ -638,10 +603,10 @@ class World():
                         collision_box
                     )
                     if sprite_key != "hero":
-                        sprite_hitbox = collisions.calculate_sprite_hitbox(
-                            sprite,
+                        sprite_hitbox = substrata.sprite_hitbox(
+                            munch.unmunchify(sprite),
                             hitbox_key,
-                            self.sprite_properties.get(sprite_key)
+                            munch.unmunchify(self.sprite_properties.get(sprite_key))
                         )
                         path = impulse.locate_desire(
                             sprite.stature.attention,
@@ -722,10 +687,10 @@ class World():
             for target_key, target in self.get_sprites().items():
                 if projectile.layer == target.layer:
                     continue
-                target_hitbox = collisions.calculate_sprite_hitbox(
-                    target,
+                target_hitbox = substrata.sprite_hitbox(
+                    munch.unmunchify(target),
                     'attack',
-                    self.sprite_properties.get(target_key)
+                    munch.unmunchify(self.sprite_properties.get(target_key))
                 )
                 collision_box = collisions.detect_collision(
                     projectile.attackbox,

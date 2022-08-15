@@ -9,8 +9,8 @@ import onta.device as device
 import onta.settings as settings
 import onta.world as world
 from onta.engine import composition
-import onta.engine.senses.hud as hud
-import onta.engine.senses.menu as menu
+import onta.engine.qualia.hud as hud
+import onta.engine.qualia.menu as menu
 import onta.loader.repo as repo
 import onta.util.logger as logger
 import onta.util.gui as gui

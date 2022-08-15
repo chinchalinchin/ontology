@@ -66,10 +66,10 @@ PLATE_PATH = [
 ]
 """Array containing path parts relative to ontology directory leading to platesheet directory"""
 
-SENSES_PATH = [
+QUALIA_PATH = [
     'assets',
     'self',
-    'senses'
+    'qualia'
 ]
 """
 """

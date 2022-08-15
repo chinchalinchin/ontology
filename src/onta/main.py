@@ -12,8 +12,8 @@ import onta.control as control
 import onta.settings as settings
 import onta.world as world
 
-import onta.engine.senses.hud as hud
-import onta.engine.senses.menu as menu
+import onta.engine.qualia.hud as hud
+import onta.engine.qualia.menu as menu
 
 import onta.loader.repo as repo
 

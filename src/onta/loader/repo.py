@@ -117,7 +117,7 @@ class Repo():
         self._init_form_assets(config, ontology_path)
         self._init_entity_assets(config, ontology_path)
         self._init_apparel_assets(config, ontology_path)
-        self._init_sense_assets(config, ontology_path)
+        self._init_qualia_assets(config, ontology_path)
         self._init_avatar_assets(config, ontology_path)
         self._init_expression_assets(config, ontology_path)
         self._init_projectile_assets(config, ontology_path)
@@ -250,7 +250,7 @@ class Repo():
                             setattr(self.plates, asset_key, buffer)
  
 
-    def _init_sense_assets(
+    def _init_qualia_assets(
         self, 
         config: conf.Conf, 
         ontology_path: str
@@ -265,9 +265,9 @@ class Repo():
         .. note::
             A _Slot_ is defined in a single direction, but used in multiple directions. When styles are applied the engine will need to be aware which direction the definition is in, so it can rotate the _Slot_ component to its appropriate position based on the declared style. In other words, _Slot_\s are a pain.
         """
-        log.debug(f'Initializing sense assets...', '_init_sense_assets')
+        log.debug(f'Initializing qualia assets...', '_init_qualia_assets')
 
-        interface_conf = config.load_sense_configuration()
+        interface_conf = config.load_qualia_configuration()
 
         for size in interface_conf.sizes:
 
@@ -297,7 +297,7 @@ class Repo():
                     buffer = gui.open_image(
                         os.path.join(
                             ontology_path,
-                            *settings.SENSES_PATH,
+                            *settings.QUALIA_PATH,
                             set_conf.path
                         )
                     )
@@ -379,7 +379,7 @@ class Repo():
                         buffer = gui.open_image(
                             os.path.join(
                                 ontology_path,
-                                *settings.SENSES_PATH,
+                                *settings.QUALIA_PATH,
                                 component.path
                             )
                         )

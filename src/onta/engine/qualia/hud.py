@@ -8,9 +8,9 @@ import onta.world as world
 import onta.loader.conf as conf
 import onta.loader.state as state
 import onta.util.logger as logger
-import onta.engine.senses.display as display
+import onta.engine.qualia.display as display
 
-log = logger.Logger('onta.engine.senses.hud', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.qualia.hud', settings.LOG_LEVEL)
 
 PACK_TYPES = [ 'bag', 'belt' ]
 MIRROR_TYPES = [ 'life', 'magic' ]
@@ -205,12 +205,14 @@ class HUD():
         :param player_device: _description_
         :type player_device: device.Device
         """
-        sense_config = config.load_sense_configuration()
+        sense_config = config.load_qualia_configuration()
 
         self.styles = sense_config.styles
         self.hud_conf = sense_config.hud
         self.sizes = sense_config.sizes
-        self.breakpoints = display.format_breakpoints(sense_config.breakpoints)
+        self.breakpoints = display.format_breakpoints(
+            sense_config.breakpoints
+        )
         self.properties = sense_config.properties
         self.media_size = formulae.find_media_size(
             player_device.dimensions, 

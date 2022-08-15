@@ -124,17 +124,17 @@ class Conf():
         return self.control_conf
 
 
-    def load_sense_configuration(
+    def load_qualia_configuration(
         self
     ) -> munch.Munch:
-        """Returns the parsed _Slot_, _Mirror_ and _Packs_ (collectively known as the _Interface_) configuration from the _data/conf/self/senses.yaml_ file.
+        """Returns the parsed _Slot_, _Mirror_ and _Packs_ (collectively known as the _Interface_) configuration from the _data/conf/self/qualia.yaml_ file.
 
         :return: _Sense_ configurations.
         :rtype: munch.Munch
         """
-        # TODO: mismatch between senses and interface naming scheme...
+        # TODO: mismatch between qualia and interface naming scheme...
         if not self.sense_conf:
-            self.sense_conf = self._self_configuration('senses')
+            self.sense_conf = self._self_configuration('qualia')
         return self.sense_conf
 
 

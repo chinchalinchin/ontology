@@ -17,7 +17,7 @@ include src/data/assets/forms/struts/*
 include src/data/assets/forms/tiles/*
 include src/data/assets/forms/plates/*
 
-include src/data/assets/self/senses/*
+include src/data/assets/self/qualia/*
 include src/data/assets/self/avatars/*
 
 include src/data/assets/sounds/music/*
@@ -32,4 +32,5 @@ include src/data/state/*
 
 include src/version.txt
 
+include src/onta/engine/noumena/*.so
 include src/onta/engine/static/*.so
