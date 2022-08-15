@@ -249,14 +249,14 @@ class HUD():
         wallet_dim = self.get_wallet_dimensions()
         belt_dim = self.get_belt_dimensions()
 
-        bag_piece_sizes = tuple([
+        bag_piece_sizes = tuple(
             (bag_piece.size.w, bag_piece.size.h)
             for bag_piece in list(bagset.values())
-        ])
-        belt_piece_sizes = tuple([
+        )
+        belt_piece_sizes = tuple(
             (belt_piece.size.w, belt_piece.size.h)
             for belt_piece in list(beltset.values())
-        ])
+        )
 
         self.bag_rendering_points = formulae.bag_coordinates(
             bag_piece_sizes,
@@ -276,41 +276,14 @@ class HUD():
             bag_dim,
             bag_dim
         )
-        
-
-        # TODO: jit/cythonize it
-        if pack_horizontal_align == 'left':
-            self.wallet_rendering_points.append(
-                (
-                    self.belt_rendering_points[0][0] + \
-                        (
-                            belt_dim[0] + pack_margins[0] * ( bag_dim[0] + belt_dim[0] )
-                        ),
-                    self.bag_rendering_points[0][1] + \
-                        (
-                            belt_dim[1] - wallet_dim[1] * (2 + pack_margins[1]) 
-                        )/2
-                )
-            )
-        elif pack_horizontal_align == 'right':
-            self.wallet_rendering_points.append(
-                (
-                    self.bag_rendering_points[0][0] - \
-                        (
-                            belt_dim[0] + pack_margins[0] * ( bag_dim[0] + belt_dim[0] )
-                        ) - wallet_dim[0],
-                    self.bag_rendering_points[0][1] + \
-                        (
-                            belt_dim[1] - wallet_dim[1] * ( 2 + pack_margins[1] )
-                        ) / 2
-                )
-            )
-        self.wallet_rendering_points.append(
-            (
-                self.wallet_rendering_points[0][0],
-                self.wallet_rendering_points[0][1] + \
-                    ( 1 + pack_margins[1] ) * wallet_dim[0]
-            )
+        self.wallter_rendering_points = formulae.wallet_coordinates(
+            self.belt_rendering_points[0],
+            self.bag_rendering_points[0],
+            bag_dim,
+            belt_dim,
+            wallet_dim,
+            pack_horizontal_align,
+            pack_margins
         )
 
 

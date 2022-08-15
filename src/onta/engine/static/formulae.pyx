@@ -76,8 +76,15 @@ def on_screen(
     :return: _description_
     :rtype: bool
     """
-    crop_box = screen_crop_box(screen_dim, world_dim, player_dim)
-    return calculator.intersection(crop_box, object_dim)
+    crop_box = screen_crop_box(
+        screen_dim, 
+        world_dim, 
+        player_dim
+    )
+    return calculator.intersection(
+        crop_box, 
+        object_dim
+    )
 
 
 def tile_coordinates(
@@ -251,8 +258,52 @@ def belt_coordinates(
     return render_points
 
 
-# only needs called once, so no jit.
-# see next note, though
+def wallet_coordinates(
+    belt_point: tuple, #belt_rendering_points[0]
+    bag_point: tuple, # bag_rendering_points[0]
+    bag_dim: tuple,
+    belt_dim: tuple,
+    wallet_dim: tuple,
+    horizontal_align: str,
+    pack_margins: tuple,
+) -> list:
+    render_points = list()
+
+    if horizontal_align == 'left':
+        render_points.append(
+            (
+                belt_point[0] + \
+                    (
+                        belt_dim[0] + pack_margins[0] * ( bag_dim[0] + belt_dim[0] )
+                    ),
+                bag_point[1] + \
+                    (
+                        belt_dim[1] - wallet_dim[1] * (2 + pack_margins[1]) 
+                    )/2
+            )
+        )
+    else:
+        render_points.append(
+            (
+                bag_point[0] - \
+                    (
+                        belt_dim[0] + pack_margins[0] * ( bag_dim[0] + belt_dim[0] )
+                    ) - wallet_dim[0],
+                bag_point[1] + \
+                    (
+                        belt_dim[1] - wallet_dim[1] * ( 2 + pack_margins[1] )
+                    ) / 2
+            )
+        )
+    render_points.append(
+        (
+            render_points[0][0],
+            render_points[0][1] + \
+                ( 1 + pack_margins[1] ) * wallet_dim[0]
+        )
+    )
+    return render_points
+    
 def mirror_coordinates(
     device_dim: tuple,
     horizontal_align: str,
@@ -262,7 +313,7 @@ def mirror_coordinates(
     padding: tuple,
     life_rank: tuple,
     life_dim: tuple
-):
+) -> list:
     render_points = list()
 
     if horizontal_align == 'right':
