@@ -13,7 +13,7 @@ import munch
 import onta.settings as settings
 
 import onta.engine.collisions as collisions
-import onta.engine.static.cc_calculator as calculator
+import onta.engine.static.calculator as calculator
 
 import onta.util.logger as logger
 

@@ -1,14 +1,3 @@
-import numba
-from numba.experimental import jitclass
-
-
-spec = [
-    ('levels', numba.types.List(numba.types.string)), 
-    ('location', numba.types.string),
-    ('log_level', numba.types.string), 
-]
-
-@jitclass(spec)
 class Logger():
 
     def __init__(self, location, log_level="INFO"):

@@ -1,7 +1,6 @@
 from collections import OrderedDict
 import functools
 import munch
-import numba
 
 from PIL import Image
 from PIL.ImageQt import ImageQt
@@ -39,7 +38,6 @@ def channels(dim, channels):
     return Image.new(settings.IMG_MODE, int_tuple(dim), channels)
 
 
-@numba.jit(nopython=True, nogil=True)
 def int_tuple(tup: tuple) -> tuple:
     return ( int(tup[0]), int(tup[1]) )
 

@@ -1,6 +1,7 @@
 from typing import Union
 
 import munch
+from onta.engine.static import formulae
 import onta.settings as settings
 import onta.device as device
 import onta.world as world
@@ -257,7 +258,7 @@ class HUD():
             for belt_piece in list(beltset.values())
         ])
 
-        self.bag_rendering_points = display.bag_coordinates(
+        self.bag_rendering_points = formulae.bag_coordinates(
             bag_piece_sizes,
             bag_dim,
             pack_horizontal_align,
@@ -266,7 +267,7 @@ class HUD():
             player_device.dimensions,
         )
 
-        self.belt_rendering_points = display.belt_coordinates(
+        self.belt_rendering_points = formulae.belt_coordinates(
             self.bag_rendering_points[0],
             belt_piece_sizes,
             belt_dim,
@@ -346,7 +347,7 @@ class HUD():
             mirror_styles.padding.h
         )
 
-        self.life_rendering_points = display.mirror_coordinates(
+        self.life_rendering_points = formulae.mirror_coordinates(
             player_device.dimensions,
             mirror_styles.alignment.horizontal,
             mirror_styles.alignment.vertical,
@@ -372,19 +373,27 @@ class HUD():
             slot_styles.margins.w,
             slot_styles.margins.h
         )
-        cap_dim = display.rotate_dimensions(
-            self.hud_conf.get(self.media_size).slots.cap,
+        cap_dim = formulae.rotate_dimensions(
+            (
+                self.hud_conf.get(self.media_size).slots.cap.size.w,
+                self.hud_conf.get(self.media_size).slots.cap.size.h
+            ),
+            self.hud_conf.get(self.media_size).slots.cap.definition,
             self.styles.get(self.media_size).slots.stack
         )
-        buffer_dim = display.rotate_dimensions(
-            self.hud_conf.get(self.media_size).slots.buffer,
+        buffer_dim = formulae.rotate_dimensions(
+            (
+                self.hud_conf.get(self.media_size).slots.buffer.size.w,
+                self.hud_conf.get(self.media_size).slots.buffer.size.h
+            ),
+            self.hud_conf.get(self.media_size).slots.buffer.definition,
             self.styles.get(self.media_size).slots.stack
         )
         slot_dim = (
             self.hud_conf.get(self.media_size).slots.disabled.size.w,
             self.hud_conf.get(self.media_size).slots.disabled.size.h
         )
-        self.slot_rendering_points = display.slot_coordinates(
+        self.slot_rendering_points = formulae.slot_coordinates(
             slots_total,
             slot_dim,
             buffer_dim,
@@ -435,8 +444,8 @@ class HUD():
             ('slash',7 )
         )
 
-        # NOTE: all in service of JiT (just-in-time) and LRU cache...
-        render_tuples = display.avatar_coordinates(
+        # NOTE: all in service of immutability and LRU cache...
+        render_tuples = formulae.avatar_coordinates(
             self._immute_slots(), 
             self._immute_equipment_size(),
             self._immute_inventory_size(),
@@ -562,22 +571,6 @@ class HUD():
         self
     ) -> str:
         return self.styles.get(self.media_size).slots.stack
-
-
-    def get_buffer_dimensions(
-        self
-    ) -> tuple:
-        return display.rotate_dimensions(
-            self.hud_conf.get(self.media_size).slots.buffer
-        )
-
-
-    def get_cap_dimensions(
-        self
-    ) -> tuple:
-        return display.rotate_dimensions(
-            self.hud_conf.get(self.media_size).slots.cap
-        )
 
 
     def get_bag_dimensions(

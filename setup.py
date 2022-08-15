@@ -1,23 +1,29 @@
 from setuptools import setup
+from Cython.Build import cythonize
 
-import sys
 import os
 
-script_path = os.path.dirname(os.path.realpath(__file__))
-
-sys.path.insert(0, os.path.join(script_path,'src'))
-
-from onta.engine.static.calculator import cc_calculator
-from onta.engine.static.formulae import cc_formulae
-from onta.engine.static.paths import cc_paths
-
-# doesn't work. 
-# tracking on: https://numba.discourse.group/t/setuptools-cant-find-my-gcc-compiler/1506/2
+script_path = os.path.dirname(
+    os.path.realpath(__file__)
+)
+static_path = os.path.join(
+    script_path,
+    'src',
+    'onta',
+    'engine',
+    'static'
+)
 
 setup(
     ext_modules=[
-        cc_calculator.distutils_extension(),
-        cc_formulae.distutils_extension(),
-        cc_paths.distutils_extension(),
+        cythonize(
+            os.path.join(static_path, 'calculator.pyx')
+        ),
+        cythonize(
+            os.path.join(static_path, 'formulae.pyx')
+        ),
+        cythonize(
+            os.path.join(static_path, 'paths.pyx')
+        ),
     ]
 )

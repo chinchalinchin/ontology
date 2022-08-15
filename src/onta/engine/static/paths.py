@@ -1,21 +1,11 @@
 
-from numba.pycc import CC
-from numba import njit
-
 import onta.settings as settings
 import onta.util.logger as logger
 import onta.engine.static.calculator as calculator
 
 log = logger.Logger('onta.engine.static.paths', settings.LOG_LEVEL)
 
-cc_paths = CC('cc_paths')
 
-
-@njit
-@cc_paths.export(
-    'reorient',
-    'unicode_type(UniTuple(float64,4),List(UniTuple(float64,4)),UniTuple(float64,2),int64,UniTuple(int64,2))'
-)
 def reorient(
     hitbox: tuple, 
     collision_set: list, 

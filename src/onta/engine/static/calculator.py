@@ -1,34 +1,19 @@
 import math
 from typing import Union
 
-from numba import njit
-from numba.pycc import CC
-
 import onta.settings as settings
 import onta.util.logger as logger
 
 
-cc_calculator = CC('cc_calculator')
-
 log = logger.Logger('onta.engine.static.calculator', settings.LOG_LEVEL)
 
 
-@njit
-@cc_calculator.export(
-    'center', 
-    'UniTuple(float64,2)(UniTuple(float64,4))'
-)
 def center(
     dim: tuple
 ) -> tuple:
     return (dim[0] + dim[2] /2, dim[1] + dim[3]/2)
 
 
-@njit
-@cc_calculator.export(
-    'angle_relative_to_center', 
-    'float64(UniTuple(float64,2),UniTuple(float64,2))'
-)
 def angle_relative_to_center(
     point: tuple,
     center: tuple = (0,0)
@@ -51,11 +36,6 @@ def angle_relative_to_center(
     return 360 - 180 * math.acos(cosine) / math.pi
 
 
-@njit
-@cc_calculator.export(
-    'projection', 
-    'UniTuple(float64,2)(float64)'
-)
 def projection(
     angle: float
 ) -> tuple:
@@ -64,12 +44,6 @@ def projection(
         math.sin(angle*math.pi/180)
     )
 
-
-@njit
-@cc_calculator.export(
-    'distance', 
-    'float64(UniTuple(float64,2),UniTuple(float64,2))'
-)
 def distance(
     a: tuple, 
     b: tuple
@@ -78,11 +52,7 @@ def distance(
     dy = a[1] - b[1]
     return math.sqrt(dx ** 2 + dy ** 2)
 
-@njit
-@cc_calculator.export(
-    'intersection', 
-    'boolean(UniTuple(float64,4),UniTuple(float64,4))'
-)
+
 def intersection(
     rect_a: tuple, 
     rect_b: tuple,
@@ -131,11 +101,6 @@ def intersection(
     return True
 
 
-@njit
-@cc_calculator.export(
-    'any_intersections', 
-    'optional(UniTuple(float64,4))(UniTuple(float64,4),List(UniTuple(float64,4)))'
-)
 def any_intersections(
     rectangle: tuple, 
     rectangle_list: list
@@ -164,11 +129,7 @@ def any_intersections(
             return other_rect
     return (-1,-1,-1,-1)
 
-@njit
-@cc_calculator.export(
-    'scale', 
-    'UniTuple(int64,2)(UniTuple(int64,2),UniTuple(int64,2),unicode_type)'
-)
+
 def scale(
     point: tuple, 
     factor: tuple, 

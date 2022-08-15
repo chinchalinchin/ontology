@@ -6,18 +6,17 @@ from PySide6 import QtWidgets, QtGui, QtCore
 from PIL import Image
 
 import onta.device as device
-from onta.engine.static import composition
 import onta.settings as settings
 import onta.world as world
+from onta.engine import composition
+import onta.engine.static.calculator as calculator
+import onta.engine.static.formulae as formulae
 import onta.engine.senses.hud as hud
 import onta.engine.senses.menu as menu
 import onta.loader.repo as repo
 import onta.util.logger as logger
 import onta.util.gui as gui
 import onta.util.debug as debug
-
-import onta.engine.static.cc_calculator as calculator
-import onta.engine.static.cc_formulae as formulae
 
 
 STATIC_PLATES = [ 'door' ]
