@@ -12,3 +12,5 @@ from onta.engine.static.paths import cc_paths
 cc_calculator.compile()
 cc_formulae.compile()
 cc_paths.compile()
+
+# why not work now?

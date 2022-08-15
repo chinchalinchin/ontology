@@ -1,9 +1,13 @@
-FROM python:3.8
+FROM python:3.8.13
 
-RUN cd /home/ && \
-    git clone https://github.com/chinchalinchin/ontology.git && \
-    cd ontology && \
-    pip install -r requirements.txt
+RUN /usr/local/bin/python -m pip install --upgrade pip && \
+    cd /home/ && \
+    git clone https://github.com/chinchalinchin/ontology.git 
+
+WORKDIR /home/ontology
+
+RUN pip install -r requirements.txt
+
 
 
 
