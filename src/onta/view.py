@@ -292,7 +292,7 @@ class Renderer():
 
             if not typeable_group_conf:
                 continue
-            
+
             coordinates = formulae.plate_coordinates(
                     typeable_group_conf,
                     player_dim,
