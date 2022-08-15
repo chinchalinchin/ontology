@@ -1,6 +1,5 @@
 import munch
 
-from onta import device
 
 def construct_themes(
     themes:munch.Munch
@@ -42,24 +41,3 @@ def format_breakpoints(
             for break_point in break_points
     ]
 
-def find_media_size(
-    player_device: device.Device, 
-    sizes: list, 
-    breakpoints: list
-) -> str:
-    """Iterate through ordered breakpoints and compare to screen dimensions until media size is found.
-
-    :param player_device: Object representing the player device.
-    :type player_device: device.Device
-    :param sizes: List of sizes for the breakpoints, i.e. `len(sizes) == len(breakpoints) - 1`. So, if `sizes = ['small', 'large']` and `breakpoints = [(800,600)]`, then if the screen is (600,400), the size 'small' will be selected, where if screen is (900, 500) the size 'large' will be selected. 
-    :type sizes: list
-    :param breakpoints: List of tuples representing the points at which styles and layouts shift to accomodate a new screen sie.
-    :type breakpoints: list
-    :return: The name of the size within the breakpoint.
-    :rtype: str
-    """
-    dim = player_device.dimensions
-    for i, break_point in enumerate(breakpoints):
-        if dim[0] < break_point[0] and dim[1] < break_point[1]:
-            return sizes[i]
-    return sizes[len(sizes)-1]

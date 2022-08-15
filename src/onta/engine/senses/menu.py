@@ -7,6 +7,7 @@ import onta.loader.state as state
 import onta.util.logger as logger
 import onta.engine.senses.display as display
 import onta.engine.senses.tab as tab
+import onta.engine.static.formulae as formulae
 
 log = logger.Logger('onta.engine.senses.menu', settings.LOG_LEVEL)
 
@@ -50,8 +51,8 @@ class Menu():
         config = conf.Conf(ontology_path)
         state_ao = state.State(ontology_path).get_state('dynamic')
         self._init_conf(config)
-        self.media_size = display.find_media_size(
-            player_device, 
+        self.media_size = formulae.find_media_size(
+            player_device.dimensions, 
             self.sizes, 
             self.breakpoints
         )
@@ -100,45 +101,16 @@ class Menu():
         for dim in dims:
             full_width += dim[0]
 
-
-        # self.button_rendering_points => len() == len(buttons)*len(pieces)
-        # for (0, equipment), (1, inventory), (2, status), ...
-        for i in range(len(self.properties.tabs)):
-
-            # for (0, left), (1, middle), (2, right)
-            # j gives you index for the piece dim in dims
-            for j in range(len(button_conf)):
-
-                # TODO: CANDIDATES FOR JITTING? Only needs calculated once, though.
-                if menu_stack == 'vertical':
-                    if i == 0 and j == 0:
-                        x = (1 - menu_margins[0]) * player_device.dimensions[0] - full_width
-                        y = menu_margins[1] * player_device.dimensions[1]
-                    else:
-                        if j == 0:
-                            x = self.button_rendering_points[0][0]
-                            y = self.button_rendering_points[0][1] + \
-                                (1 + menu_padding[1] ) * i * dims[0][1]
-                        else:
-                            x = self.button_rendering_points[j-1][0] + \
-                                dims[j-1][0]
-                            y = self.button_rendering_points[j-1][1] + \
-                                (1 + menu_padding[1]) * i * dims[j-1][1]
-
-                elif menu_stack == 'horizontal':
-                    if i == 0 and j == 0:
-                        x = menu_margins[0]*player_device.dimensions[0]
-                        y = menu_margins[1]*player_device.dimensions[1]
-                    else:
-                        if j == 0 :
-                            x = self.button_rendering_points[0][0] + \
-                                i * (full_width + menu_padding[0])
-                            y = self.button_rendering_points[0][1]
-                        else:
-                            x = self.button_rendering_points[len(self.button_rendering_points)-1][0] + dims[j-1][0]
-                            y = self.button_rendering_points[j-1][1]
-            
-                self.button_rendering_points.append((x,y))
+        self.button_rendering_points = formulae.button_coordinates(
+            dims,
+            len(self.properties.tabs),
+            len(button_conf),
+            full_width,
+            player_device.dimensions,
+            menu_stack,
+            menu_margins,
+            menu_padding
+        )
 
 
     def _init_tabs(

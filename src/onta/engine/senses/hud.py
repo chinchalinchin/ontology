@@ -212,8 +212,8 @@ class HUD():
         self.sizes = sense_config.sizes
         self.breakpoints = display.format_breakpoints(sense_config.breakpoints)
         self.properties = sense_config.properties
-        self.media_size = display.find_media_size(
-            player_device, 
+        self.media_size = formulae.find_media_size(
+            player_device.dimensions, 
             self.sizes, 
             self.breakpoints
         )

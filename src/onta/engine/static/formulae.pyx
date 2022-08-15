@@ -27,6 +27,29 @@ def filter_nested_tuple(
     return None
 
 
+def find_media_size(
+    device_dim: tuple, 
+    sizes: list, 
+    breakpoints: list
+) -> str:
+    """Iterate through ordered breakpoints and compare to screen dimensions until media size is found.
+
+    :param player_device: Object representing the player device.
+    :type player_device: device.Device
+    :param sizes: List of sizes for the breakpoints, i.e. `len(sizes) == len(breakpoints) - 1`. So, if `sizes = ['small', 'large']` and `breakpoints = [(800,600)]`, then if the screen is (600,400), the size 'small' will be selected, where if screen is (900, 500) the size 'large' will be selected. 
+    :type sizes: list
+    :param breakpoints: List of tuples representing the points at which styles and layouts shift to accomodate a new screen sie.
+    :type breakpoints: list
+    :return: The name of the size within the breakpoint.
+    :rtype: str
+    """
+    for i, break_point in enumerate(breakpoints):
+        if device_dim[0] < break_point[0] and \
+            device_dim[1] < break_point[1]:
+            return sizes[i]
+    return sizes[len(sizes)-1]
+
+
 def screen_crop_box(
     screen_dim: tuple, 
     world_dim: tuple, 
@@ -85,6 +108,31 @@ def on_screen(
         crop_box, 
         object_dim
     )
+
+
+def rotate_dimensions(
+    rotator: tuple, 
+    definition: str,
+    direction: str
+) -> tuple:
+    """The width and height of a cap relative to a direction, `vertical` or `horizontal`.
+
+    :param cap: _description_
+    :type cap: _type_
+    :param direction: _description_
+    :type direction: _type_
+    :return: _description_
+    :rtype: _type_
+    """
+    if definition in ['left', 'right', 'horizontal'] and \
+        direction == 'vertical':
+        return ( rotator[1], rotator[0] )
+
+    elif definition in ['up', 'down', 'vertical'] and \
+        direction == 'horizontal':
+        return ( rotator[1], rotator[0] )
+
+    return rotator
 
 
 def tile_coordinates(
@@ -155,32 +203,6 @@ def plate_coordinates(
         
         coords.append((i, start[0], start[1]))
     return coords
-
-
-def rotate_dimensions(
-    rotator: tuple, 
-    definition: str,
-    direction: str
-) -> tuple:
-    """The width and height of a cap relative to a direction, `vertical` or `horizontal`.
-
-    :param cap: _description_
-    :type cap: _type_
-    :param direction: _description_
-    :type direction: _type_
-    :return: _description_
-    :rtype: _type_
-    """
-    if definition in ['left', 'right', 'horizontal'] and \
-        direction == 'vertical':
-        return ( rotator[1], rotator[0] )
-
-    elif definition in ['up', 'down', 'vertical'] and \
-        direction == 'horizontal':
-        return ( rotator[1], rotator[0] )
-
-    return rotator
-
 
 
 # only needs called once, so no jit.
@@ -303,7 +325,8 @@ def wallet_coordinates(
         )
     )
     return render_points
-    
+
+
 def mirror_coordinates(
     device_dim: tuple,
     horizontal_align: str,
@@ -367,9 +390,6 @@ def mirror_coordinates(
     return render_points
 
 
-# no jit or cache...
-# only needs called once, unless user is given ability to restyle hud?
-#   not a bad idea...
 def slot_coordinates(
     slots_total: int,
     slot_dim: tuple,
@@ -453,40 +473,41 @@ def slot_coordinates(
                 render_points.append(
                     ( render_points[i-1][0] + buffer_dim[0], y_start )
                 )
+        return render_points
 
-    elif stack == 'vertical':
-        buffer_correction = (slot_dim[0] - buffer_dim[0])/2
-        cap_correction = (slot_dim[0] - cap_dim[0])/2
-        for i in range(num):
-            if i == 0: # cap
-                render_points.append(
-                    ( x_start + cap_correction, y_start )
+    # vertical
+    buffer_correction = (slot_dim[0] - buffer_dim[0])/2
+    cap_correction = (slot_dim[0] - cap_dim[0])/2
+    for i in range(num):
+        if i == 0: # cap
+            render_points.append(
+                ( x_start + cap_correction, y_start )
+            )
+        elif i == 1: # slot
+            render_points.append(
+                ( x_start, render_points[i-1][1] + cap_dim[1] )
+            )
+        elif i == num - 1: # cap
+            render_points.append(
+                (
+                    x_start + cap_correction,
+                    render_points[i-1][1] + slot_dim[1]
                 )
-            elif i == 1: # slot
-                render_points.append(
-                    ( x_start, render_points[i-1][1] + cap_dim[1] )
+            )
+        elif i % 2 == 0: # buffer
+            render_points.append(
+                (
+                    x_start + buffer_correction,
+                    render_points[i-1][1] + slot_dim[1]
                 )
-            elif i == num - 1: # cap
-                render_points.append(
-                    (
-                        x_start + cap_correction,
-                        render_points[i-1][1] + slot_dim[1]
-                    )
+            )
+        else: # slot
+            render_points.append(
+                (
+                    x_start,
+                    render_points[i-1][1] + buffer_dim[1]
                 )
-            elif i % 2 == 0: # buffer
-                render_points.append(
-                    (
-                        x_start + buffer_correction,
-                        render_points[i-1][1] + slot_dim[1]
-                    )
-                )
-            else: # slot
-                render_points.append(
-                    (
-                        x_start,
-                        render_points[i-1][1] + buffer_dim[1]
-                    )
-                )
+            )
     return render_points
 
 
@@ -575,3 +596,52 @@ def avatar_coordinates(
     return render_points
 
 
+def button_coordinates(
+    button_dims: list,
+    num_buttons: int,
+    num_pieces: int, #len(button_conf),
+    full_width: int,
+    device_dim: tuple,
+    menu_stack: str,
+    menu_margins: tuple,
+    menu_padding: tuple
+) -> list:
+    render_points = list()
+    # self.button_rendering_points => len() == len(buttons)*len(pieces)
+    # for (0, equipment), (1, inventory), (2, status), ...
+    for i in range(num_buttons):
+
+        # for (0, left), (1, middle), (2, right)
+        # j gives you index for the piece dim in dims
+        for j in range(num_pieces):
+
+            if menu_stack == 'vertical':
+                if i == 0 and j == 0:
+                    x = (1 - menu_margins[0]) * device_dim[0] - full_width
+                    y = menu_margins[1] * device_dim[1]
+                else:
+                    if j == 0:
+                        x = render_points[0][0]
+                        y = render_points[0][1] + \
+                            (1 + menu_padding[1] ) * i * button_dims[0][1]
+                    else:
+                        x = render_points[j-1][0] + \
+                            button_dims[j-1][0]
+                        y = render_points[j-1][1] + \
+                            (1 + menu_padding[1]) * i * button_dims[j-1][1]
+
+            else: # horizontal
+                if i == 0 and j == 0:
+                    x = menu_margins[0] * device_dim[0]
+                    y = menu_margins[1] * device_dim[1]
+                else:
+                    if j == 0 :
+                        x = render_points[0][0] + \
+                            i * (full_width + menu_padding[0])
+                        y = render_points[0][1]
+                    else:
+                        x = render_points[len(render_points)-1][0] + button_dims[j-1][0]
+                        y = render_points[j-1][1]
+        
+            render_points.append((x,y))
+    return render_points
