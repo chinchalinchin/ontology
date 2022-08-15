@@ -32,4 +32,4 @@ include src/data/state/*
 
 include src/version.txt
 
-include src/onta/engine/static/*.pyx
+include src/onta/engine/static/*.so

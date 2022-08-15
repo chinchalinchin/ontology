@@ -281,18 +281,25 @@ class Renderer():
                 '_render_variable_platesets'
             )
 
-            typeable_group_conf = [
+            typeable_group_conf = tuple(
                 (
                     set_conf.start.x,
                     set_conf.start.y, 
                     set_conf.start.units
                 )
                 for set_conf in group_conf['sets']
-            ]
+            )
 
             if not typeable_group_conf:
                 continue
 
+            print(typeable_group_conf)
+            print(player_dim)
+            print(group_dim)
+            print(game_world.tile_dimensions)
+            print(game_world.dimensions)
+            print(self.player_device.dimensions)
+            print(crop)
             coordinates = formulae.plate_coordinates(
                     typeable_group_conf,
                     player_dim,

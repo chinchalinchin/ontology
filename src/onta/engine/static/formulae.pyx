@@ -98,7 +98,7 @@ def tile_coordinates(
 
 
 def plate_coordinates(
-    group_conf: list,
+    group_conf: tuple,
     player_dim: tuple,
     group_frame_dim: tuple, 
     tile_dim: tuple,
