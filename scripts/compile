@@ -7,6 +7,4 @@ VENV_DIR=$PROJECT_DIR/.venv/bin
 
 source $VENV_DIR/activate
 
-pip install -r $PROJECT_DIR/requirements.txt
-
-cynthonize $SRC_DIR/onta/engine/static/*.pyx
+cynthonize -i $SRC_DIR/onta/engine/static/*.pyx

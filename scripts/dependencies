@@ -1,6 +1,8 @@
 #!/bin/bash
 
 apt update -y
+
+# Python Image Library (PIL/Pillow)
 apt install -y libjpeg-dev \
                 zlib1g \
                 libtiff-dev \
@@ -12,3 +14,5 @@ apt install -y libjpeg-dev \
                 tcl-dev \
                 libraqm-dev \
                 libxcb-util-dev
+
+# PySide6

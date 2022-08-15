@@ -12,6 +12,7 @@ All of the game assets were retrieved from [OpenGameArt](https://opengameart). S
 
 # Documentation
 
+- [Cython](https://cython.readthedocs.io/en/stable/index.html)
 - [Numba](https://numba.pydata.org/numba-doc/dev/index.html)
 - [Pillow](https://pillow.readthedocs.io/en/stable/index.html)
 - [Pynput](https://pynput.readthedocs.io/en/latest/)

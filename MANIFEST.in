@@ -32,6 +32,4 @@ include src/data/state/*
 
 include src/version.txt
 
-include src/onta/engine/static/calculator.cpython-38-x86_64-linux-gnu.so
-include src/onta/engine/static/formulae.cpython-38-x86_64-linux-gnu.so
-include src/onta/engine/static/paths.cpython-38-x86_64-linux-gnu.so
+include src/onta/engine/static/*.pyx

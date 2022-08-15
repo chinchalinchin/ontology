@@ -21,14 +21,10 @@ def filter_nested_tuple(
     .. note:: 
         Assumes the first element of the tuple is the index.
     """
-    iter_tup = iter(nested_tuple)
-    filtered = tuple(
-        tup
-        for tup in iter_tup
-        if tup[0] == filter_value
-    )
-    
-    return filtered
+    for i in range(len(nested_tuple)):
+        if nested_tuple[i][0] == filter_value:
+            return nested_tuple[i]
+    return None
 
 
 def screen_crop_box(
@@ -109,7 +105,7 @@ def plate_coordinates(
     world_dim: tuple,
     device_dim: tuple,
     crop: bool
-) -> tuple:
+) -> list:
     """_summary_
 
     :param group_configuration: _description_
@@ -128,12 +124,12 @@ def plate_coordinates(
     .. note:: 
         The first field in each element of the returned list is the index of the group frame.
     """
-    coords = []
-    for i, set_conf in enumerate(iter(group_conf)):
+    coords = list()
+    for i in range(len(group_conf)):
         start = calculator.scale(
-            ( set_conf[0], set_conf[1] ), 
+            ( group_conf[i][0], group_conf[i][1] ), 
             tile_dim,
-            set_conf[2]
+            group_conf[i][2]
         )
         object_dim = (
             start[0],
@@ -468,7 +464,7 @@ def avatar_coordinates(
 
         # slot[0] = cast | thrust | slash | shoot
         # slot[1] = equipment_name
-        if slot and slot[0][1] != 'null':
+        if slot and slot[1] != 'null':
             avatar = filter_nested_tuple(
                 avatar_tuple,
                 slot_key
@@ -476,19 +472,19 @@ def avatar_coordinates(
 
             equipment = filter_nested_tuple(
                 equip_tuple,
-                slot[0][1]
+                slot[1]
             )
 
             if avatar and equipment:
                 equipment = equipment
                 avatar = avatar
 
-                slot_point = slot_points_tuple[avatar[0][1]]
+                slot_point = slot_points_tuple[avatar[1]]
 
                 render_points.append(
                     (
-                        ( slot_point[0] + ( slot_dim[0] - equipment[0][1] ) / 2 ),
-                        ( slot_point[1] + ( slot_dim[1] - equipment[0][2] ) / 2 )
+                        ( slot_point[0] + ( slot_dim[0] - equipment[1] ) / 2 ),
+                        ( slot_point[1] + ( slot_dim[1] - equipment[2] ) / 2 )
                     )
                 )
                 continue
@@ -503,8 +499,8 @@ def avatar_coordinates(
     if inventory:
         render_points.append(
             (
-                ( bag_points_tuple[0][0] + ( bag_dim[0] - inventory[0][1] ) / 2 ),
-                ( bag_points_tuple[0][1] + ( bag_dim[1] - inventory[0][2] ) / 2 )
+                ( bag_points_tuple[0][0] + ( bag_dim[0] - inventory[1] ) / 2 ),
+                ( bag_points_tuple[0][1] + ( bag_dim[1] - inventory[2] ) / 2 )
             )
         )
     else:
@@ -518,8 +514,8 @@ def avatar_coordinates(
     if inventory:
         render_points.append(
             (
-                ( belt_points_tuple[0][0] + ( belt_dim[0] - inventory[0][1] ) / 2 ), 
-                ( belt_points_tuple[0][1] + ( belt_dim[1] - inventory[0][2] ) / 2 )
+                ( belt_points_tuple[0][0] + ( belt_dim[0] - inventory[1] ) / 2 ), 
+                ( belt_points_tuple[0][1] + ( belt_dim[1] - inventory[2] ) / 2 )
             )
         )        
     else:

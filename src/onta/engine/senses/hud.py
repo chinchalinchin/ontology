@@ -449,6 +449,11 @@ class HUD():
         print(self._immute_inventory_size())
         print(tuple(self.properties.slots.maps)) 
         print(avatar_tuple)
+        print(self.packs.bag)
+        print(self.packs.belt)
+        print(self.get_slot_dimensions())
+        print(self.get_bag_dimensions())
+        print(self.get_belt_dimensions())
         # NOTE: all in service of immutability and LRU cache...
         render_tuples = formulae.avatar_coordinates(
             self._immute_slots(), 
