@@ -1,7 +1,6 @@
 import functools
 from typing import Any, Literal, Union
 import munch
-import numba
 
 from pynput import keyboard
 

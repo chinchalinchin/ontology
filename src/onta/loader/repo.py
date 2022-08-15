@@ -4,7 +4,6 @@ from typing import Union
 
 from PIL import Image
 import munch
-import numba
 
 import onta.settings as settings
 import onta.loader.conf as conf
@@ -58,7 +57,6 @@ ALIGNMENT_TYPE_DEFINITIONS = [
 
 
 @functools.lru_cache(maxsize=4)
-@numba.jit(nopython=True, nogil=True)
 def adjust_directional_rotation(
     direction: str
 ) -> tuple:
@@ -81,7 +79,6 @@ def adjust_directional_rotation(
 
 
 @functools.lru_cache(maxsize=2)
-@numba.jit(nopython=True, nogil=True)
 def adjust_alignment_rotation(
     direction: str
 ) -> tuple:
