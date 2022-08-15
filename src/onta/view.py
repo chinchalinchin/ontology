@@ -9,8 +9,6 @@ import onta.device as device
 import onta.settings as settings
 import onta.world as world
 from onta.engine import composition
-import onta.engine.static.calculator as calculator
-import onta.engine.static.formulae as formulae
 import onta.engine.senses.hud as hud
 import onta.engine.senses.menu as menu
 import onta.loader.repo as repo
@@ -18,6 +16,9 @@ import onta.util.logger as logger
 import onta.util.gui as gui
 import onta.util.debug as debug
 
+import onta.engine.static.calculator as calculator
+import onta.engine.static.formulae as formulae
+import onta.engine.static.render as rendering
 
 STATIC_PLATES = [ 'door' ]
 SWITCH_PLATES_TYPES = [ "pressure", "container", "gate" ]
@@ -169,17 +170,17 @@ class Renderer():
                     )
                     for coord in coordinates:
                         if set_conf.get('cover'):
-                            self.static_cover_frame[layer].paste(
-                                group_tile, 
-                                coord, 
-                                group_tile
+                            rendering.render_paste(
+                                self.static_cover_frame.get(layer),
+                                group_tile,
+                                coord
                             )
                             continue
                         
-                        self.static_back_frame[layer].paste(
-                            group_tile, 
-                            coord, 
-                            group_tile
+                        rendering.render_paste(
+                            self.static_back_frame.get(layer),
+                            group_tile,
+                            coord
                         )
 
 
@@ -229,14 +230,16 @@ class Renderer():
                         log.verbose(f'Rendering at {start}', '_sets')
 
                         if set_conf.get('cover'):
-                            self.static_cover_frame.get(layer).alpha_composite(
-                                group_frame, 
-                                start, 
+                            rendering.render_composite(
+                                self.static_cover_frame.get(layer),
+                                group_frame,
+                                start
                             )
                             continue
-                        self.static_back_frame.get(layer).alpha_composite(
-                            group_frame, 
-                            start, 
+                        rendering.render_composite(
+                            self.static_back_frame.get(layer),
+                            group_frame,
+                            start
                         )
     
 
@@ -310,8 +313,9 @@ class Renderer():
                 log.infinite(f'Rendering at ({coord[1]},{coord[2]})', '_render_variable_plateset')
 
                 if group_type not in SWITCH_PLATES_TYPES:
-                    self.world_frame.alpha_composite(
-                        group_frame, 
+                    rendering.render_composite(
+                        self.world_frame,
+                        group_frame,
                         gui.int_tuple(( coord[1], coord[2] ))
                     )
                     continue
@@ -319,13 +323,16 @@ class Renderer():
                 if game_world.switch_map.get(game_world.layer).get(group_key).get(
                     str(coord[0])    
                 ):
-                    self.world_frame.alpha_composite(
-                        group_frame.on, 
+                    rendering.render_composite(
+                        self.world_frame,
+                        group_frame.on,
                         gui.int_tuple(( coord[1], coord[2] ))
                     )
                     continue
-                self.world_frame.alpha_composite(
-                    group_frame.off, 
+
+                rendering.render_composite(
+                    self.world_frame,
+                    group_frame.off,
                     gui.int_tuple(( coord[1], coord[2] ))
                 )
 
@@ -334,19 +341,22 @@ class Renderer():
         self, 
         layer_key: str, 
         cover: bool = False
-    ):
+    ) -> None:
 
         if cover:
-            return self.world_frame.alpha_composite(
-                self.static_cover_frame.get(layer_key), 
-                ( 0,0 ),
+            return rendering.render_composite(
+                self.world_frame,
+                self.static_cover_frame.get(layer_key),
+                ( 0,0 )
             )
 
         self.world_frame = gui.new_image(self.static_back_frame.get(layer_key).size)
-        return self.world_frame.alpha_composite(
-                self.static_back_frame.get(layer_key), 
-                ( 0, 0 ),
-            )
+
+        return rendering.render_composite(
+            self.world_frame,
+            self.static_back_frame.get(layer_key),
+            ( 0, 0 )
+        )
 
 
     def _render_sprites(
@@ -405,7 +415,11 @@ class Renderer():
             ):
                 continue
 
-            self.world_frame.alpha_composite(sprite_base_frame, sprite_position)
+            rendering.render_composite(
+                self.world_frame,
+                sprite_base_frame,
+                sprite_position
+            )
 
             # ARMOR RENDERING
             if sprite.armor:
@@ -421,10 +435,18 @@ class Renderer():
                         sprite_stature_key,
                         sprite.frame
                     )
-                    self.world_frame.alpha_composite(armor_frame, sprite_position)
+                    rendering.render_composite(
+                        self.world_frame,
+                        armor_frame,
+                        sprite_position
+                    )
 
             elif sprite_accent_frame:
-                self.world_frame.alpha_composite(sprite_accent_frame, sprite_position)
+                rendering.render_composite(
+                    self.world_frame,
+                    sprite_accent_frame,
+                    sprite_position
+                )
 
             # EQUIPMENT RENDERING
             if any(slot for slot in sprite.slots.values()):
@@ -444,7 +466,11 @@ class Renderer():
                             sprite_stature_key,
                             sprite.frame
                         )
-                        self.world_frame.alpha_composite(equipment_frame, sprite_position)
+                        rendering.render_composite(
+                            self.world_frame,
+                            equipment_frame,
+                            sprite_position
+                        )
 
             if sprite.stature.expression:
                 expression_frame = repository.get_expression_frame(
@@ -454,7 +480,11 @@ class Renderer():
                     sprite.position.x + ( game_world.sprite_dimensions[0] - expression_frame.size[0] ) / 2,
                     sprite.position.y
                 )
-                self.world_frame.alpha_composite(expression_frame, gui.int_tuple(position))
+                rendering.render_composite(
+                    self.world_frame,
+                    expression_frame,
+                    gui.int_tuple(position)
+                )
 
 
     def _render_projectiles(
@@ -489,8 +519,9 @@ class Renderer():
             ):
                 continue
 
-            self.world_frame.alpha_composite(
-                projectile_frame, 
+            rendering.render_composite(
+                self.world_frame,
+                projectile_frame,
                 (projectile_dim[0], projectile_dim[1])
             )
 
@@ -534,8 +565,9 @@ class Renderer():
                     headsup_display.get_frame_map('slot').get(render_key)
                 )
 
-            self.world_frame.alpha_composite(
-                render_frame, 
+            rendering.render_composite(
+                self.world_frame,
+                render_frame,
                 gui.int_tuple(render_point)
             )
 
@@ -555,7 +587,11 @@ class Renderer():
                 frame_key
             )
             render_point = rendering_points[i]
-            self.world_frame.alpha_composite(life_frame, gui.int_tuple(render_point),)
+            rendering.render_composite(
+                self.world_frame,
+                life_frame,
+                gui.int_tuple(render_point)
+            )
 
 
     def _render_packs(
@@ -576,8 +612,9 @@ class Renderer():
                     pack_key,
                     pack_map[i]
                 )
-                self.world_frame.alpha_composite(
-                    pack_frame, 
+                rendering.render_composite(
+                    self.world_frame,
+                    pack_frame,
                     gui.int_tuple(render_point)
                 )
 
@@ -621,9 +658,10 @@ class Renderer():
                 set_key,
                 avatar_frame_map[str(i)]
             )
-            self.world_frame.alpha_composite(
+            rendering.render_composite(
+                self.world_frame,
                 avatar_frame,
-                gui.int_tuple(render_point),
+                gui.int_tuple(render_point)
             )
 
 
@@ -652,9 +690,10 @@ class Renderer():
                 btn_frame_map[i],
                 btn_piece_map[i]
             )
-            self.world_frame.alpha_composite(
+            rendering.render_composite(
+                self.world_frame,
                 render_frame,
-                gui.int_tuple(render_point),
+                gui.int_tuple(render_point)
             )
 
 
