@@ -16,8 +16,8 @@ import onta.engine.composition as composition
 
 import onta.engine.noumena.substrata as substrata
 
-import onta.engine.static.calculator as calculator
-import onta.engine.static.paths as paths
+import onta.engine.facticity.calculator as calculator
+import onta.engine.facticity.paths as paths
 
 import onta.util.logger as logger
 

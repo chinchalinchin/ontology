@@ -5,8 +5,8 @@ import munch
 import onta.settings as settings
 import onta.util.logger as logger
 
+import onta.engine.facticity.calculator as calculator
 import onta.engine.noumena.substrata as substrata
-import onta.engine.static.calculator as calculator
 
 
 log = logger.Logger('onta.engine.collisions', settings.LOG_LEVEL)
@@ -28,63 +28,6 @@ def generate_collision_map(
         }) for npc_1_key in npcs.keys()
     })
     return collision_map
-
-
-def calculate_blunt_attackbox(
-    sprite: munch.Munch,
-    directional_atkboxes: munch.Munch
-) -> tuple:
-    """Calculate the attack hitbox for an _Equpiment Apparel_ of type `blunt` based on the direction and current frame of the provided _Sprite_.
-
-    :param sprite: _description_
-    :type sprite: munch.Munch
-    :param attack_props: _description_
-    :type attack_props: munch.Munch
-    :return: The current attackbox for an _Sprite_ engaged in combat. **NOTE**: If the _Sprite_ `frame` does not map to any frames of the _Equipment_, i.e. the animation has not yet gotten to the point where an attackbox exists, this method will return `None`
-    :rtype: tuple
-    """
-    atkbox_frames = [ 
-        directed_box 
-        for directed_box
-        in directional_atkboxes.get(sprite.stature.direction)
-        if directed_box.frame == sprite.frame
-    ]
-    if atkbox_frames:
-        atkbox = atkbox_frames.pop()
-        return  (
-            int(sprite.position.x + atkbox.offset.x),
-            int(sprite.position.y + atkbox.offset.y),
-            atkbox.size.w,
-            atkbox.size.h
-        )
-    return None
-
-
-def calculate_projectile_attackbox(
-    sprite: munch.Munch,
-    directional_atkboxes: munch.Munch,
-) -> tuple:
-    """Calculate the attack hitbox for an _Equpiment Apparel_ of type `blunt` based on the direction of the provided _Sprite_.
-
-    :param sprite: _description_
-    :type sprite: munch.Munch
-    :param attack_props: _description_
-    :type attack_props: munch.Munch
-    :return: _description_
-    :rtype: tuple
-    """
-    raw_atkbox = directional_atkboxes.get(sprite.stature.direction)
-
-    if raw_atkbox is None:
-        return raw_atkbox
-
-    format_atkbox = (
-        int(sprite.position.x + raw_atkbox.offset.x),
-        int(sprite.position.y + raw_atkbox.offset.y),
-        raw_atkbox.size.w,
-        raw_atkbox.size.h
-    )
-    return format_atkbox
 
 
 def collision_set_relative_to(

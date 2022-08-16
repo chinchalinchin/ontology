@@ -33,4 +33,4 @@ include src/data/state/*
 include src/version.txt
 
 include src/onta/engine/noumena/*.so
-include src/onta/engine/static/*.so
+include src/onta/engine/facticity/*.so

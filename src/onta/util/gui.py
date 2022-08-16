@@ -10,7 +10,32 @@ import PySide6.QtGui as QtGui
 import onta.settings as settings
 
 
-def convert_to_gui(cropped: Image.Image):
+def render_paste(
+    canvas: Image.Image,
+    frame: Image.Image,
+    coordinates: tuple
+) -> None:
+    return canvas.paste(
+        frame,
+        coordinates,
+        frame
+    )
+
+
+def render_composite(
+    canvas: Image.Image,
+    frame: Image.Image,
+    coordinates: tuple
+) -> None:
+    return canvas.alpha_composite(
+        frame, 
+        coordinates 
+    )
+
+
+def convert_to_gui(
+    cropped: Image.Image
+) -> QtGui.QPixmap:
     return QtGui.QPixmap.fromImage(ImageQt(cropped))
 
 
@@ -23,7 +48,11 @@ def open_image(
 def new_image(
     dim: tuple
 ) -> Image.Image:
-    return Image.new(settings.IMG_MODE, int_tuple(dim), settings.IMG_BLANK)
+    return Image.new(
+        settings.IMG_MODE, 
+        int_tuple(dim), 
+        settings.IMG_BLANK
+)
 
 
 def replace_alpha(
@@ -35,7 +64,11 @@ def replace_alpha(
 
 @functools.lru_cache(maxsize=5)
 def channels(dim, channels):
-    return Image.new(settings.IMG_MODE, int_tuple(dim), channels)
+    return Image.new(
+        settings.IMG_MODE, 
+        int_tuple(dim), 
+        channels
+    )
 
 
 def int_tuple(tup: tuple) -> tuple:

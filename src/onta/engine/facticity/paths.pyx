@@ -1,9 +1,9 @@
 
 import onta.settings as settings
 import onta.util.logger as logger
-import onta.engine.static.calculator as calculator
+import onta.engine.facticity.calculator as calculator
 
-log = logger.Logger('onta.engine.static.paths', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.facticity.paths', settings.LOG_LEVEL)
 
 
 def reorient(

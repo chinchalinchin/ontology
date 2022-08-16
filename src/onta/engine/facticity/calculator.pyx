@@ -5,7 +5,7 @@ import onta.settings as settings
 import onta.util.logger as logger
 
 
-log = logger.Logger('onta.engine.static.calculator', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.facticity.calculator', settings.LOG_LEVEL)
 
 
 def center(

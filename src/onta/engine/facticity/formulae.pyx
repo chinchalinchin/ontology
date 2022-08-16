@@ -1,11 +1,12 @@
 import onta.settings as settings
 import onta.util.logger as logger
-import onta.engine.static.calculator as calculator
 
-log = logger.Logger('onta.engine.static.formulae', settings.LOG_LEVEL)
+import onta.engine.facticity.calculator as calculator
+
+log = logger.Logger('onta.engine.facticity.formulae', settings.LOG_LEVEL)
 
 
-def filter_nested_tuple(
+def _filter_nested_tuple(
     nested_tuple: tuple, 
     filter_value: str
 ) -> tuple:
@@ -529,7 +530,7 @@ def avatar_coordinates(
     render_points = list()
     
     for slot_key in iter(map_tuple):
-        slot = filter_nested_tuple(
+        slot = _filter_nested_tuple(
             slots_tuple,
             slot_key
         )
@@ -537,12 +538,12 @@ def avatar_coordinates(
         # slot[0] = cast | thrust | slash | shoot
         # slot[1] = equipment_name
         if slot and slot[1] != 'null':
-            avatar = filter_nested_tuple(
+            avatar = _filter_nested_tuple(
                 avatar_tuple,
                 slot_key
             )
 
-            equipment = filter_nested_tuple(
+            equipment = _filter_nested_tuple(
                 equip_tuple,
                 slot[1]
             )
@@ -563,7 +564,7 @@ def avatar_coordinates(
 
         render_points.append(( -1, -1 ))
 
-    inventory = filter_nested_tuple(
+    inventory = _filter_nested_tuple(
         invent_tuple,
         bag
     )
@@ -578,7 +579,7 @@ def avatar_coordinates(
     else:
         render_points.append(( -1, -1 ))
 
-    inventory = filter_nested_tuple(
+    inventory = _filter_nested_tuple(
         invent_tuple,
         belt
     )

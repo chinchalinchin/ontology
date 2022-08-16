@@ -13,8 +13,10 @@ import munch
 import onta.settings as settings
 
 import onta.engine.collisions as collisions
+
+# compiled functions
 import onta.engine.noumena.substrata as substrata
-import onta.engine.static.calculator as calculator
+import onta.engine.facticity.calculator as calculator
 
 import onta.util.logger as logger
 
@@ -137,9 +139,9 @@ def combat(
             if sprite.packs.belt in apparel_props.equipment.get(equip_key).properties.ammo and \
                 sprite.frame == apparel_props.equipment.get(equip_key).properties.release:
 
-                atkbox = collisions.calculate_projectile_attackbox(
-                    sprite,
-                    projectile_props.get(sprite.packs.belt).attackboxes
+                atkbox = substrata.projectile_attackbox(
+                    munch.unmunchify(sprite),
+                    munch.unmunchify(projectile_props.get(sprite.packs.belt).attackboxes)
                 )
                 projectiles.append(
                     munch.Munch({
@@ -157,9 +159,9 @@ def combat(
         
         elif apparel_props.equipment.get(equip_key).type == 'blunt':
 
-            attack_box = collisions.calculate_blunt_attackbox(
-                sprite,
-                apparel_props.equipment.get(equip_key).properties.attackboxes
+            attack_box = substrata.attackbox(
+                munch.unmunchify(sprite),
+                munch.unmunchify(apparel_props.equipment.get(equip_key).properties.attackboxes)
             )
 
             if not attack_box:
@@ -250,9 +252,9 @@ def operate(
 ) -> None:
 
     sprite_hitbox = substrata.sprite_hitbox(
-        sprite,
+        munch.unmunchify(sprite),
         'sprite',
-        sprite_props
+        munch.unmunchify(sprite_props)
     )
 
     triggered = False

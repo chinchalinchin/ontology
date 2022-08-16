@@ -1,7 +1,6 @@
 from typing import Union
 
 import munch
-from onta.engine.static import formulae
 import onta.settings as settings
 import onta.device as device
 import onta.world as world
@@ -9,6 +8,8 @@ import onta.loader.conf as conf
 import onta.loader.state as state
 import onta.util.logger as logger
 import onta.engine.qualia.display as display
+
+from onta.engine.facticity import formulae
 
 log = logger.Logger('onta.engine.qualia.hud', settings.LOG_LEVEL)
 

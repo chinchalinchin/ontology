@@ -8,7 +8,7 @@ import onta.util.logger as logger
 import onta.engine.qualia.display as display
 import onta.engine.qualia.tab as tab
 
-import onta.engine.static.formulae as formulae
+import onta.engine.facticity.formulae as formulae
 
 log = logger.Logger('onta.engine.qualia.menu', settings.LOG_LEVEL)
 
