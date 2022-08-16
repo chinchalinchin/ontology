@@ -78,7 +78,10 @@ class Menu():
             self.breakpoints
         )
         self._init_menu_positions(player_device)
-        self._init_tabs(player_device)
+        self._init_tabs(
+            player_device,
+            state_ao
+        )
         self._init_buttons(state_ao)
 
 
@@ -135,13 +138,14 @@ class Menu():
 
     def _init_tabs(
         self,
-        player_device: device.Device
+        player_device: device.Device,
+        state_ao: state.State
     ):
         # need statuses, pieces and sizes from the following confs
         # in order to initialize a Tab
         components_conf = munch.Munch({
             'bauble': self.menu_conf.get(self.media_size).bauble,
-            'indiccator': self.menu_conf.get(self.media_size).indicator,
+            'indicator': self.menu_conf.get(self.media_size).indicator,
             'label': self.menu_conf.get(self.media_size).label
         })
 
@@ -156,7 +160,8 @@ class Menu():
         ).size.h
         button_dim = (full_width, full_height)
 
-        menu_stack = self.styles.get(self.media_size).menu.stack
+        menu_styles = self.styles.get(self.media_size).menu
+
         for tab_key, tab_conf in self.properties.tabs.items():
             setattr(
                 self.tabs,
@@ -165,7 +170,7 @@ class Menu():
                     tab_key,
                     tab_conf,
                     components_conf,
-                    menu_stack,
+                    menu_styles,
                     self.button_rendering_points[0],
                     button_dim,
                     player_device.dimensions,
