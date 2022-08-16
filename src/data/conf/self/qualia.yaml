@@ -141,7 +141,7 @@ properties:
         - middle
         - right
     tabs:
-      combat:
+      armory:
         - component: bauble
           label: slash
         - component: bauble

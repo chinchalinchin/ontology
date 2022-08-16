@@ -2,9 +2,6 @@
 import munch
 
 
-import onta.device as device
-
-
 class Tab():
 
     baubles = None
@@ -14,16 +11,21 @@ class Tab():
         self, 
         name: str,
         components: list, 
+        components_conf: munch.Munch,
         stack_style: str, 
         alignment_reference: tuple,
+        alignment_dim: tuple,
         device_dim: tuple
     ) -> None:
         self.name = name
         self.components = components
+        self.components_conf = components_conf
         self.stack_style = stack_style
         self.alignment_ref = alignment_reference
+        self.alignment_dim = alignment_dim
         self.device_dim = device_dim
         self._init_components()
+
 
     def _init_components(
         self

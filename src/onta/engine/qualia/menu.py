@@ -92,8 +92,12 @@ class Menu():
         self.styles = configure.styles
         self.properties = configure.properties.menu
         self.alpha = configure.transparency
-        self.theme = display.construct_themes(configure.theme)
-        self.breakpoints = display.format_breakpoints(configure.breakpoints)
+        self.theme = display.construct_themes(
+            configure.theme
+        )
+        self.breakpoints = display.format_breakpoints(
+            configure.breakpoints
+        )
 
 
     def _init_menu_positions(
@@ -135,10 +139,24 @@ class Menu():
     ):
         # need statuses, pieces and sizes from the following confs
         # in order to initialize a Tab
-        self.menu_conf.get(self.media_size).bauble
-        self.menu_conf.get(self.media_size).indicator
-        self.menu_conf.get(self.media_size).label
+        components_conf = munch.Munch({
+            'bauble': self.menu_conf.get(self.media_size).bauble,
+            'indiccator': self.menu_conf.get(self.media_size).indicator,
+            'label': self.menu_conf.get(self.media_size).label
+        })
 
+        # all button component pieces have the same pieces, so any will do...
+        button_conf = self.menu_conf.get(self.media_size).button.enabled
+        full_width = sum(
+            button_conf.get(piece).size.w 
+            for piece in self.properties.button.pieces
+        )
+        full_height = button_conf.get(
+            self.properties.button.pieces[0]
+        ).size.h
+        button_dim = (full_width, full_height)
+
+        menu_stack = self.styles.get(self.media_size).menu.stack
         for tab_key, tab_conf in self.properties.tabs.items():
             setattr(
                 self.tabs,
@@ -146,8 +164,10 @@ class Menu():
                 tab.Tab(
                     tab_key,
                     tab_conf,
-                    self.styles.get(self.media_size).menu.stack,
+                    components_conf,
+                    menu_stack,
                     self.button_rendering_points[0],
+                    button_dim,
                     player_device.dimensions,
                 )
             )
@@ -341,7 +361,7 @@ class Menu():
             self._cancel_active_button()
             return
 
-        if self.active_tab.name == 'combat':
+        if self.active_tab.name == 'armory':
             pass
         if self.active_tab.name == 'equipment':
             pass
