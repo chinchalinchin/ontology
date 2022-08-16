@@ -123,7 +123,7 @@ def do(
 
         if not loading:
 
-            user_input = controller.poll()
+            user_input, menu_input = controller.poll()
 
             # # pre_update hook here
                 # # need:
@@ -140,8 +140,7 @@ def do(
 
             else:
                 # TODO: catch result in variable
-                pause_menu.update(user_input)
-                controller.consume_all()
+                pause_menu.update(menu_input)
                 
                 # TODO: pass menu result back to game world
                 # for updating hero state
@@ -152,6 +151,7 @@ def do(
 
             # # pre_render hook here
             # scripts.apply_scripts(game_world, 'pre_render')
+
             if debug:
                 render_engine.view(
                     game_world, 
@@ -167,8 +167,7 @@ def do(
                     game_view, 
                     headsup_display,
                     pause_menu,
-                    asset_repository,
-                    None
+                    asset_repository
                 )
 
             # # post_loop hook here
@@ -200,15 +199,10 @@ def do(
                 skips += 1
 
         else:
-            # send some input to the world to wake up the JIT functions
-            # the diagonals, in particular, seem to cause hiccups in the first few seconds
+            # TODO: loading screen...
+
             if game_world.iterations not in range(5):
                 loading = False
-                
-            user_input = controller.poll()
-            direction = [ 'up_left', 'up_right', 'down_right', 'down_left' ][randint(0,3)]
-            setattr(user_input, direction, True)
-            game_world.iterate(user_input)
             
 
 def entrypoint() -> None:

@@ -1,7 +1,6 @@
 import functools
-from typing import Any, Literal, Union
+from typing import Any, Literal, Tuple, Union
 import munch
-import numba
 
 from pynput import keyboard
 
@@ -97,6 +96,9 @@ class Controller():
     ) -> None:
        self.listener.start()
 
+    # TODO: _directions, _actions and _meditatiosn are the exact same form...
+    #           CANDIDATE FOR REFACTORING...
+
     def _direction(
         self
     ) -> munch.Munch:
@@ -147,9 +149,35 @@ class Controller():
                         
         return munch.Munch(action_flags) 
 
-    def consume(
+    def _meditations(
         self
     ) -> munch.Munch:
+        meditations = self.control_conf.meditations
+        med_flags, meds = {}, 0
+
+        for med_key, med_conf in meditations.items():
+            input_combo = med_conf.input
+            med_flags[med_key] = all(self.keys.get(key) for key in input_combo)
+            if med_flags[med_key]:
+                meds += 1
+
+        if meds > 1:
+            precedence, activated_key = 0, None
+            for med_key, med_flag in med_flags.copy().items():
+                if med_flag and meditations.get(med_key).precedence >= precedence:
+                    precedence = meditations.get(med_key).precedence
+                    activated_key = med_key
+
+            med_flags = {
+                key: True if key == activated_key else False for key in med_flags.keys()
+            }
+
+        return munch.Munch(med_flags)
+
+
+    def consume(
+        self
+    ) -> Tuple[munch.Munch]:
         """_summary_
 
         :return: _description_
@@ -159,14 +187,22 @@ class Controller():
             Both directions, actions and expression can be enabled simultaneously, but within each grouping there can only be one enabled control.
         """
         user_input = self._direction()
+        menu_input = user_input.copy()
         user_input.update(self._actions())
+        menu_input.update(self._meditations())
 
+        # there is an inherent assumption in this loop that directions are not consumable.
+        #   is that what you want?
         for consume in self.control_conf.consumable:
             if user_input.get(consume):
                 log.debug(f'Consuming {consume} user input', 'consume')
                 for input in self.control_conf.actions.get(consume).input:
                     setattr(self.keys, input, False)
-        return user_input
+            if menu_input.get(consume):
+                log.debug(f'Consuming {consume} menu input', 'consume')
+                for input in self.control_conf.meditations.get(consume).input:
+                    setattr(self.keys, input, False)
+        return user_input, menu_input
 
 
     def consume_all(
@@ -185,5 +221,5 @@ class Controller():
         })
         
 
-    def poll(self):
+    def poll(self) -> tuple:
         return self.consume()

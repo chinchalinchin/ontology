@@ -535,8 +535,8 @@ def avatar_coordinates(
             slot_key
         )
 
-        # slot[0] = cast | thrust | slash | shoot
-        # slot[1] = equipment_name
+        # slot[0] = cast | thrust | slash | shoot 
+        # slot[1] = equipment_name | null
         if slot and slot[1] != 'null':
             avatar = _filter_nested_tuple(
                 avatar_tuple,
@@ -549,9 +549,6 @@ def avatar_coordinates(
             )
 
             if avatar and equipment:
-                equipment = equipment
-                avatar = avatar
-
                 slot_point = slot_points_tuple[avatar[1]]
 
                 render_points.append(
@@ -600,14 +597,15 @@ def avatar_coordinates(
 def button_coordinates(
     button_dims: list,
     num_buttons: int,
-    num_pieces: int, #len(button_conf),
-    full_width: int,
+    num_pieces: int,
     device_dim: tuple,
     menu_stack: str,
     menu_margins: tuple,
     menu_padding: tuple
 ) -> list:
     render_points = list()
+    full_width = sum(dim[0] for dim in button_dims)
+
     # self.button_rendering_points => len() == len(buttons)*len(pieces)
     # for (0, equipment), (1, inventory), (2, status), ...
     for i in range(num_buttons):

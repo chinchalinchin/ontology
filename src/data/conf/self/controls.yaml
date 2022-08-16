@@ -14,7 +14,30 @@ valid:
   - space
   - v
 
-emotions:
+meditations:
+  execute:
+    input:
+      - space
+    precedence: 2
+  reverse:
+    input:
+      - tab
+    precedence: 1
+  ponder: # basically a menu tooltip
+    input:
+      - shift
+    precedence: 0
+  increment:
+    input:
+      - up
+    precedence: 3
+  decrement:
+    input:
+      - down
+    precedence: 4
+
+
+expressions:
   anger:
   joy:
   sadness:
@@ -104,6 +127,7 @@ actions:
     precedence: 9
     
 consumable:
+  # actions
   - use
   - interact
   - hud
@@ -112,3 +136,9 @@ consumable:
   - shoot
   - thrust
   - cast
+  # meditations
+  - execute
+  - reverse
+  - ponder
+  - increment
+  - decrement

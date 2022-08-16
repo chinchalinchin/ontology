@@ -16,7 +16,27 @@ log = logger.Logger('onta.engine.qualia.menu', settings.LOG_LEVEL)
 class Menu():
     frame_maps = munch.Munch({})
     piece_maps = munch.Munch({})
+
     menu_conf = munch.Munch({})
+    """
+    self.menu_conf = {
+        'media_size_1': {
+            'button': {
+                # ...
+            },
+            'bauble': {
+                # ...
+            },
+            'label': {
+                # ...
+            },
+            'indicator' : {
+                # ...
+            }
+        },
+        # ...
+    }
+    """
     buttons = munch.Munch({})
     """
     self.buttons = {
@@ -98,15 +118,10 @@ class Menu():
             for piece in self.properties.button.pieces
         ]
 
-        full_width = 0
-        for dim in dims:
-            full_width += dim[0]
-
         self.button_rendering_points = formulae.button_coordinates(
             dims,
             len(self.properties.tabs),
             len(button_conf),
-            full_width,
             player_device.dimensions,
             menu_stack,
             menu_margins,
@@ -118,15 +133,22 @@ class Menu():
         self,
         player_device: device.Device
     ):
+        # need statuses, pieces and sizes from the following confs
+        # in order to initialize a Tab
+        self.menu_conf.get(self.media_size).bauble
+        self.menu_conf.get(self.media_size).indicator
+        self.menu_conf.get(self.media_size).label
+
         for tab_key, tab_conf in self.properties.tabs.items():
             setattr(
                 self.tabs,
                 tab_key,
                 tab.Tab(
-                    tab_conf.components,
+                    tab_key,
+                    tab_conf,
                     self.styles.get(self.media_size).menu.stack,
                     self.button_rendering_points[0],
-                    player_device
+                    player_device.dimensions,
                 )
             )
 
@@ -211,7 +233,7 @@ class Menu():
     ) -> None:
         """_summary_
         """
-        button_list = list(self.properties.tabs.keys())
+        button_list = list(self.tabs.keys())
         ## TODO: skip disabled buttons
         previous_active = self.active_button
         self.active_button -= 1
@@ -228,7 +250,7 @@ class Menu():
     ) -> None:
         """_summary_
         """
-        button_list = list(self.properties.tabs.keys())
+        button_list = list(self.tabs.keys())
         ## TODO: skip disabled buttons
         previous_active = self.active_button
         self.active_button += 1
@@ -240,11 +262,17 @@ class Menu():
         self._activate_button(button_list[self.active_button])
 
 
-    def execute_active_button(
-        self
-    ):
-        pass
+    def _execute_active_button(
+        self,
+    ) -> None:
+        activate_tab_key = list(self.tabs.keys())[self.active_button]
+        self.active_tab = self.tabs.get(activate_tab_key)
 
+
+    def _cancel_active_button(
+        self,
+    ) -> None:
+        pass
 
     def _calculate_button_frame_map(
         self
@@ -296,9 +324,28 @@ class Menu():
 
     def update(
         self, 
-        user_input: munch.Munch
+        menu_input: munch.Munch
     ) -> None:
-        if user_input.up:
-            self._increment_active_button()
-        elif user_input.down:
-            self._decrement_active_button()
+        # controls when traversing main button stack
+        if self.active_tab is None:
+            if menu_input.increment:
+                self._increment_active_button()
+            elif menu_input.decrement:
+                self._decrement_active_button()
+            elif menu_input.execute:
+                self._execute_active_button()
+            return
+
+        # controls when traversing tab stacks
+        if menu_input.reverse:
+            self._cancel_active_button()
+            return
+
+        if self.active_tab.name == 'combat':
+            pass
+        if self.active_tab.name == 'equipment':
+            pass
+        if self.active_tab.name == 'inventory':
+            pass
+        if self.active_tab.name == 'map':
+            pass

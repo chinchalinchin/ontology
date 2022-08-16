@@ -7,18 +7,22 @@ import onta.device as device
 
 class Tab():
 
+    baubles = None
+    displays = None
 
     def __init__(
         self, 
-        components: munch.Munch, 
+        name: str,
+        components: list, 
         stack_style: str, 
         alignment_reference: tuple,
-        player_device: device.Device
+        device_dim: tuple
     ) -> None:
+        self.name = name
         self.components = components
         self.stack_style = stack_style
         self.alignment_ref = alignment_reference
-        self.player_device = player_device
+        self.device_dim = device_dim
         self._init_components()
 
     def _init_components(
@@ -27,12 +31,23 @@ class Tab():
         if not self.components:
             return
             
-        for component in self.components:
+        for i, component in enumerate(self.components):
             if not component:
                 continue
 
-            if component.component == 'bauble':
-                component.label
+            self.alignment_ref
+            self.player_device
 
-            elif component.component == 'map':
-                component.label
+            if self.stack_style == 'vertical':
+                if component.component == 'bauble':
+                    component.label
+
+                elif component.component == 'map':
+                    component.label
+
+            elif self.stack_style == 'horizontal':
+                if component.component == 'bauble':
+                    component.label
+
+                elif component.component == 'map':
+                    component.label

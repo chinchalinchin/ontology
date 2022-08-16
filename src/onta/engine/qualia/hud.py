@@ -412,7 +412,7 @@ class HUD():
     ) -> None:
         """Calculate each _Slot_, _Pack_ and _Wallet_ avatar positions
         """
-        # TODO: must be a better way to calculate this...
+        # TODO: must be a way to calculate this rather than declare it...
         avatar_tuple =(
             ('cast', 1),
             ('thrust', 3),
@@ -420,7 +420,7 @@ class HUD():
             ('slash',7 )
         )
 
-        # NOTE: all in service of immutability and LRU cache...
+        # NOTE: this ugliness is all in service of immutability...
         render_tuples = formulae.avatar_coordinates(
             self._immute_slots(), 
             self._immute_equipment_size(),
