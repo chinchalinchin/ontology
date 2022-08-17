@@ -681,14 +681,15 @@ class Renderer():
 
         self.world_frame.paste(overlay, ( 0,0 ), overlay)
 
+            # TODO: fix menu typing...
         btn_render_pts = menu.rendering_points('button')
         
         btn_frame_map, btn_piece_map = menu.button_maps()
 
         for i, render_point in enumerate(btn_render_pts):
-            render_frame = repository.get_menu_frame(
+            render_frame = repository.get_pieced_menu_frame(
                 menu.media_size, 
-                'button',
+                'thought',
                 btn_frame_map[i],
                 btn_piece_map[i]
             )
@@ -706,7 +707,7 @@ class Renderer():
                 baub_frame_map, baub_piece_map = activated_tab.bauble_maps()
                 
                 for i, render_point in enumerate(baub_render_pts):
-                    render_frame = repository.get_menu_frame(
+                    render_frame = repository.get_pieced_menu_frame(
                         menu.media_size,
                         'bauble',
                         baub_frame_map[i],

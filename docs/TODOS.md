@@ -100,3 +100,5 @@ THAT PREVIOUS ONE FIRST
 - need to separate sprite name from sprite type so dynamic state can reference the same sprite definition.
 
 - the frame and piece maps in hud, menu and tab are really attributes of the component themselves. They don't need to be, and indeed shouldn't be, defined as separate fields in these classes. Whether or not it takes up more memory is an open question, but it ccertainly makes everythign less readable.
+
+- need avatars for each bauble label

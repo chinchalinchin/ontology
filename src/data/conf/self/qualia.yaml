@@ -536,7 +536,7 @@ menu:
           size:
             w: 38
             h: 40
-    label:
+    aside:
       enabled:
         left:
           path: slotsheet.png
@@ -587,7 +587,7 @@ menu:
           size:
             w: 25
             h: 24
-    indicator:
+    focus:
       enabled:
         main:
           path: slotsheet.png
@@ -622,8 +622,25 @@ menu:
           size:
             w: 24
             h: 24
+    concept:
+      path:
+      position:
+        x:
+        y:
+      size:
+        w:
+        h:
+    conception:
+      path:
+      position:
+        x:
+        y:
+      size:
+        w:
+        h:
+
   large:
-    button:
+    thought:
       enabled:
         left: 
           path: slotsheet.png
@@ -775,7 +792,7 @@ menu:
           size:
             w: 38
             h: 40
-    label:
+    aside:
       enabled:
         left:
           path: slotsheet.png
@@ -826,7 +843,7 @@ menu:
           size:
             w: 25
             h: 24
-    indicator:
+    focus:
       enabled:
         main:
           path: slotsheet.png
@@ -861,5 +878,20 @@ menu:
           size:
             w: 24
             h: 24
-
+    concept:
+      path:
+      position:
+        x:
+        y:
+      size:
+        w:
+        h:
+    conception:
+      path:
+      position:
+        x:
+        y:
+      size:
+        w:
+        h:
       

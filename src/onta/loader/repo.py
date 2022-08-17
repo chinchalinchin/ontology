@@ -36,21 +36,25 @@ APPAREL_TYPES = [
     'armor', 
     'equipment' 
 ]
-PIECEWISE_SENSE_TYPES = [
+PIECEWISE_QUALIA_TYPES = [
     'mirror', 
     'pack', 
-    'button', 
+    'thought', 
     'bauble', 
-    'label', 
-    'indicator'
-    ]
-STYLED_SENSE_TYPES = [ 
+    'aside', 
+    'focus'
+]
+STYLED_QUALIA_TYPES = [ 
     'slot'
 ]
-DIRECTIONAL_TYPE_DEFINTIONS = [
+SIMPLE_QUALIA_TYPES=[
+    'concept',
+    'conception'
+]
+DIRECTIONAL_PIECE_DEFINTIONS = [
     'cap'
 ]
-ALIGNMENT_TYPE_DEFINITIONS = [
+ALIGNMENT_PIECE_DEFINITIONS = [
     'buffer'
 ]
 
@@ -101,7 +105,8 @@ class Repo():
     expressions = munch.Munch({})
     projectiles = munch.Munch({})
     mirrors = munch.Munch({})
-    menus = munch.Munch({})
+    qualia = munch.Munch({})
+    # slots and packs are treated separately from other qualia since they are HUD.
     slots = munch.Munch({})
     packs = munch.Munch({})
     apparel = munch.Munch({})
@@ -284,7 +289,7 @@ class Repo():
 
 
             ## STYLED INITIALIZATION
-            for set_type in STYLED_SENSE_TYPES:
+            for set_type in STYLED_QUALIA_TYPES:
                 if set_type == 'slot':
                     iter_set = interface_conf.hud.get(size).slots
                     save_set = self.slots
@@ -311,7 +316,7 @@ class Repo():
 
                     buffer = buffer.crop(( x, y, w + x, h + y ))
 
-                    if set_key in DIRECTIONAL_TYPE_DEFINTIONS:
+                    if set_key in DIRECTIONAL_PIECE_DEFINTIONS:
                         adjust = adjust_directional_rotation(set_conf.definition)
                         setattr(
                             save_set.get(size),
@@ -324,7 +329,7 @@ class Repo():
                             })
                         )
                         continue
-                    elif set_key in ALIGNMENT_TYPE_DEFINITIONS:
+                    elif set_key in ALIGNMENT_PIECE_DEFINITIONS:
                         adjust = adjust_alignment_rotation(set_conf.definition)
                         setattr(
                             save_set.get(size),
@@ -337,37 +342,40 @@ class Repo():
                         continue
                     setattr(self.slots.get(size), set_key, buffer)
 
-            ## EVERYTHING ELSE
-            for set_type in PIECEWISE_SENSE_TYPES:
+            ## PIECEWISE DEFINITIONS
+            for set_type in PIECEWISE_QUALIA_TYPES:
+                # TODO: collapse this conditional into: iter_set = interface_conf.hud | menu.get(size).get(set_type)
+                #           by defining and passing the proper literals...
                 if set_type == 'mirror':
                     iter_set = interface_conf.hud.get(size).mirrors
                     save_set = self.mirrors
                 elif set_type == 'pack':
                     iter_set = interface_conf.hud.get(size).packs
                     save_set = self.packs
-                elif set_type == 'button':
-                    iter_set = interface_conf.menu.get(size).button
-                    save_set = self.menus
+                elif set_type == 'thought':
+                    iter_set = interface_conf.menu.get(size).thought
+                    save_set = self.qualia
                 elif set_type == 'bauble':
                     iter_set = interface_conf.menu.get(size).bauble
-                    save_set = self.menus
-                elif set_type == 'label':
-                    iter_set = interface_conf.menu.get(size).label
-                    save_set = self.menus
+                    save_set = self.qualia
+                elif set_type == 'aside':
+                    iter_set = interface_conf.menu.get(size).aside
+                    save_set = self.qualia
                 elif set_type == 'indicator':
-                    iter_set = interface_conf.menu.get(size).indicator
-                    save_set = self.menus
+                    iter_set = interface_conf.menu.get(size).focus
+                    save_set = self.qualia
                     
-                if set_type in ['bauble', 'button', 'indicator', 'label']:
+                if set_type in [ 'bauble', 'thought', 'focus', 'aside' ]:
                     setattr(save_set.get(size), set_type, munch.Munch({}))
 
+                # (enabled, conf), (disbled, conf), ...
                 for set_key, set_conf in iter_set.items():
                     if not set_conf:
                         continue
                     
-                    if set_type in ['bauble', 'button', 'indicator', 'label']:
+                    if set_type in [ 'bauble', 'thought', 'focus', 'aside' ]:
                         setattr(save_set.get(size).get(set_type), set_key, munch.Munch({}))
-                    else:
+                    else: # HUD qualia ('mirror', 'pack')
                         setattr(save_set.get(size), set_key, munch.Munch({}))                        
 
                     # for (unit, fill), (empty, fill)
@@ -390,18 +398,34 @@ class Repo():
                             f"{size} {set_type} {set_key} {component_key}: size - {buffer.size}, mode - {buffer.mode}", 
                             '_init_sense_assets'
                         )
-                        if set_type in ['bauble', 'button', 'indicator', 'label']:
+                        if set_type in [ 'bauble', 'thought', 'focus', 'aside' ]:
                             setattr(
                                 save_set.get(size).get(set_type).get(set_key),
                                 component_key,
                                 buffer.crop(( x, y, w + x, h + y))
                             )
-                        else:
+                        else: # HUD qualia ('mirror', 'pack')
                             setattr(
                                 save_set.get(size).get(set_key),
                                 component_key,
                                 buffer.crop(( x, y, w + x, h + y))
                             )
+            
+            ## SIMPLE DEFINITIONS
+            for set_type in SIMPLE_QUALIA_TYPES:
+                if set_type == 'concept':
+                    simple_set = interface_conf.menu.get(size).heading
+
+                elif set_type == 'conception':
+                    simple_set = interface_conf.menu.get(size).selection
+
+                if not simple_set.get('path'):
+                    continue
+            
+                x, y = simple_set.position.x, simple_set.position.y
+                w, h = simple_set.size.w, simple_set.size.h
+
+                # simple qualia need to be stored and retrieved dirrecently if doing it this way.
 
 
     def _init_projectile_assets(
@@ -753,7 +777,7 @@ class Repo():
         self, 
         breakpoint_key: str, 
         component_key: str, 
-        frame_key: str
+        fill_key: str
     ) -> Union[Image.Image, None]:
         """_summary_
 
@@ -768,12 +792,12 @@ class Repo():
         """
         if self.mirrors.get(breakpoint_key) and \
             self.mirrors.get(breakpoint_key).get(component_key):
-            return self.mirrors.get(breakpoint_key).get(component_key).get(frame_key)
+            return self.mirrors.get(breakpoint_key).get(component_key).get(fill_key)
         return None
 
 
     @functools.lru_cache(maxsize=64)
-    def get_menu_frame(
+    def get_pieced_menu_frame(
         self, 
         breakpoint_key: str, 
         component_key: str, 
@@ -797,6 +821,17 @@ class Repo():
 
             return self.menus.get(breakpoint_key).get(component_key).get(
                 status_key).get(piece_key)
+        return None
+
+
+    @functools.lru_cache(maxsize=64)
+    def get_simple_menu_frame(
+        self,
+        breakpoint_key,
+        component_key
+    ) -> Union[Image.Image, None]:
+        if self.menus.get(breakpoint_key):
+            return self.menus.get(breakpoint_key).get(component_key)
         return None
 
 
