@@ -1,3 +1,4 @@
+from typing import Union
 import munch
 
 import onta.settings as settings
@@ -356,28 +357,34 @@ class Menu():
 
     def update(
         self, 
-        menu_input: munch.Munch
+        menu_input: Union[munch.Munch, None]
     ) -> None:
-        # controls when traversing main button stack
-        if self.active_tab is None:
-            if menu_input.increment:
-                self._increment_active_button()
-            elif menu_input.decrement:
-                self._decrement_active_button()
-            elif menu_input.execute:
-                self._execute_active_button()
-            return
+        if menu_input:
+            
+            if menu_input.arise:
+                self.toggle_menu()
+                return
 
-        # controls when traversing tab stacks
-        if menu_input.reverse:
-            self._cancel_active_button()
-            return
+            # controls when traversing main button stack
+            if self.active_tab is None:
+                if menu_input.increment:
+                    self._increment_active_button()
+                elif menu_input.decrement:
+                    self._decrement_active_button()
+                elif menu_input.execute:
+                    self._execute_active_button()
+                return
 
-        if self.active_tab.name == 'armory':
-            pass
-        if self.active_tab.name == 'equipment':
-            pass
-        if self.active_tab.name == 'inventory':
-            pass
-        if self.active_tab.name == 'map':
-            pass
+            # controls when traversing tab stacks
+            if menu_input.reverse:
+                self._cancel_active_button()
+                return
+
+            if self.active_tab.name == 'armory':
+                pass
+            if self.active_tab.name == 'equipment':
+                pass
+            if self.active_tab.name == 'inventory':
+                pass
+            if self.active_tab.name == 'map':
+                pass

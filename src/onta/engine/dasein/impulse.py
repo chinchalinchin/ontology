@@ -159,7 +159,7 @@ def combat(
         
         elif apparel_props.equipment.get(equip_key).type == 'blunt':
 
-            attack_box = substrata.attackbox(
+            attack_box = substrata.blunt_attackbox(
                 munch.unmunchify(sprite),
                 munch.unmunchify(apparel_props.equipment.get(equip_key).properties.attackboxes)
             )

@@ -178,7 +178,7 @@ class Controller():
     def consume(
         self,
         paused: bool
-    ) -> Tuple[munch.Munch]:
+    ) -> tuple:
         """_summary_
 
         :return: _description_
@@ -187,15 +187,19 @@ class Controller():
         .. note::
             Both directions, actions and expression can be enabled simultaneously, but within each grouping there can only be one enabled control.
         """
-        user_input = self._direction()
-        menu_input = user_input.copy()
-        user_input.update(self._actions())
-        menu_input.update(self._meditations())
+        game_input = self._direction()
+
+        if paused:
+            # create menu_input before game_input gets updated with actions
+            menu_input = game_input.copy()
+            menu_input.update(self._meditations())
+
+        game_input.update(self._actions())
 
         # there is an inherent assumption in this loop that directions are not consumable.
         #   is that what you want?
         for consume in self.control_conf.consumable:
-            if not paused and user_input.get(consume):
+            if not paused and game_input.get(consume):
                 log.debug(f'Consuming {consume} user input', 'consume')
                 for input in self.control_conf.actions.get(consume).input:
                     setattr(self.keys, input, False)
@@ -204,7 +208,11 @@ class Controller():
                 log.debug(f'Consuming {consume} menu input', 'consume')
                 for input in self.control_conf.meditations.get(consume).input:
                     setattr(self.keys, input, False)
-        return user_input, menu_input
+
+        if paused:
+            return game_input, menu_input
+            
+        return game_input, None
 
 
     def consume_all(

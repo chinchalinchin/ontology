@@ -15,17 +15,21 @@ valid:
   - v
 
 meditations:
+  arise:
+    input:
+      - tab
+    precedence: 5
   execute:
     input:
       - space
     precedence: 2
   reverse:
     input:
-      - tab
+      - alt_left
     precedence: 1
   ponder: # basically a menu tooltip
     input:
-      - shift
+      - shift_left
     precedence: 0
   increment:
     input:
@@ -137,6 +141,7 @@ consumable:
   - thrust
   - cast
   # meditations
+  - arise
   - execute
   - reverse
   - ponder

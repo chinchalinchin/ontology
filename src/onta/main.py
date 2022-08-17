@@ -123,7 +123,7 @@ def do(
 
         if not loading:
 
-            user_input, menu_input = controller.poll(
+            game_input, menu_input = controller.poll(
                 pause_menu.menu_activated
             )
 
@@ -133,21 +133,25 @@ def do(
                 # # construct npc state from game world info
             # scripts.apply_scripts(game_world, 'pre_update')
 
-            if user_input.menu:
+            if not pause_menu.menu_activated and game_input.menu:
                 pause_menu.toggle_menu()
             
             if not pause_menu.menu_activated:
-                game_world.iterate(user_input)
+                game_world.iterate(game_input)
                 headsup_display.update(game_world)
 
             else:
                 # TODO: catch result in variable
                 pause_menu.update(menu_input)
                 
+                if not pause_menu.menu_activated:
+                    controller.consume_all()
+
                 # TODO: pass menu result back to game world
                 # for updating hero state
 
-            if user_input.get('hud'):
+
+            if game_input.get('hud'):
                 headsup_display.toggle_hud()
                 
 
@@ -161,7 +165,7 @@ def do(
                     headsup_display,
                     pause_menu,
                     asset_repository,
-                    user_input
+                    game_input
                 )
             else:
                 render_engine.view(
@@ -183,6 +187,7 @@ def do(
                 log.timer(f'Loop iteration too short -  delta: {sleep_time} ms')
                 time.sleep(sleep_time/1000)
                 over_sleep = helper.current_ms_time() - end_time - sleep_time
+
             else:
                 log.timer(f'Loop iteration too long - delta: {sleep_time} ms')
                 excess -= sleep_time
@@ -194,10 +199,10 @@ def do(
 
             start_time = helper.current_ms_time()
             skips = 0
-            while ( (excess>ms_per_frame) and (skips < max_frame_skips)):
+            while ( (excess>ms_per_frame) and (skips < max_frame_skips) ):
                 log.timer(f'Updating world to catch up')
                 excess -= ms_per_frame
-                game_world.iterate(user_input)
+                game_world.iterate(game_input)
                 skips += 1
 
         else:

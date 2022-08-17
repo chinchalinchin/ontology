@@ -783,11 +783,12 @@ class Renderer():
             layer_buffer = game_world.layer
             game_world.layer = layer
 
-        self._render_static(game_world.layer, False)
-        self._render_variable_platesets(game_world, repository, crop)
-        self._render_sprites(game_world, repository, crop)
-        self._render_projectiles(game_world, repository, crop)
-        self._render_static(game_world.layer, True)
+        if not menu.menu_activated:
+            self._render_static(game_world.layer, False)
+            self._render_variable_platesets(game_world, repository, crop)
+            self._render_sprites(game_world, repository, crop)
+            self._render_projectiles(game_world, repository, crop)
+            self._render_static(game_world.layer, True)
 
         if layer is not None:
             game_world.layer = layer_buffer
