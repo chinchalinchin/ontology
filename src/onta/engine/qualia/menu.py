@@ -162,20 +162,22 @@ class Menu():
 
         menu_styles = self.styles.get(self.media_size).menu
 
-        for tab_key, tab_conf in self.properties.tabs.items():
-            setattr(
-                self.tabs,
+        tabs = [
+            tab.Tab(
                 tab_key,
-                tab.Tab(
-                    tab_key,
-                    tab_conf,
-                    components_conf,
-                    menu_styles,
-                    self.button_rendering_points[0],
-                    button_dim,
-                    player_device.dimensions,
-                )
-            )
+                tab_conf,
+                components_conf,
+                menu_styles,
+                self.button_rendering_points[0],
+                button_dim,
+                player_device.dimensions,
+                state_ao,
+            ) for tab_key, tab_conf in self.properties.tabs.items()
+        ]
+
+        for i, tab_key in enumerate(self.properties.tabs.keys()):
+            log.debug(f'Creating {tab_key} tab...', 'Menu._init_tabs')
+            setattr(self.tabs, tab_key, tabs[i])
 
 
     def _init_buttons(
@@ -297,7 +299,8 @@ class Menu():
     def _cancel_active_button(
         self,
     ) -> None:
-        pass
+        self.active_tab = None
+
 
     def _calculate_button_frame_map(
         self
@@ -324,6 +327,10 @@ class Menu():
         return self.piece_maps.button
 
 
+    def active_tab_key(self) -> str:
+        return list(self.tabs.keys())[self.active_button]
+
+
     def button_maps(
         self
     ) -> tuple:
@@ -339,7 +346,7 @@ class Menu():
         self.menu_activated = not self.menu_activated
 
 
-    def get_rendering_points(
+    def rendering_points(
         self, 
         interface_key: str
     ) -> list:

@@ -88,6 +88,8 @@ def adjust_alignment_rotation(
 
 class Repo():
 
+    # TODO: be careful with closures. 
+
     tiles = munch.Munch({})
     struts = munch.Munch({})
     plates = munch.Munch({})

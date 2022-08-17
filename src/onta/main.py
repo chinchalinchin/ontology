@@ -123,7 +123,9 @@ def do(
 
         if not loading:
 
-            user_input, menu_input = controller.poll()
+            user_input, menu_input = controller.poll(
+                pause_menu.menu_activated
+            )
 
             # # pre_update hook here
                 # # need:
@@ -199,10 +201,10 @@ def do(
                 skips += 1
 
         else:
-            # TODO: loading screen...
+            # TODO: loading functionality and screen...
 
-            if game_world.iterations not in range(5):
-                loading = False
+            time.sleep(1)
+            loading = False
             
 
 def entrypoint() -> None:

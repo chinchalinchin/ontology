@@ -396,7 +396,7 @@ class HUD():
         """
         dynamic_state = state_ao.get_state('dynamic')
         self.slots = dynamic_state.hero.slots
-        self.equipment = dynamic_state.hero.inventory.equipment
+        self.equipment = dynamic_state.hero.capital.equipment
         self.packs = dynamic_state.hero.packs
         setattr(self.mirrors, 'life', dynamic_state.hero.health)
 

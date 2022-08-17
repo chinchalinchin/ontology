@@ -176,7 +176,8 @@ class Controller():
 
 
     def consume(
-        self
+        self,
+        paused: bool
     ) -> Tuple[munch.Munch]:
         """_summary_
 
@@ -194,11 +195,12 @@ class Controller():
         # there is an inherent assumption in this loop that directions are not consumable.
         #   is that what you want?
         for consume in self.control_conf.consumable:
-            if user_input.get(consume):
+            if not paused and user_input.get(consume):
                 log.debug(f'Consuming {consume} user input', 'consume')
                 for input in self.control_conf.actions.get(consume).input:
                     setattr(self.keys, input, False)
-            if menu_input.get(consume):
+
+            if paused and menu_input.get(consume):
                 log.debug(f'Consuming {consume} menu input', 'consume')
                 for input in self.control_conf.meditations.get(consume).input:
                     setattr(self.keys, input, False)
@@ -221,5 +223,5 @@ class Controller():
         })
         
 
-    def poll(self) -> tuple:
-        return self.consume()
+    def poll(self, paused) -> tuple:
+        return self.consume(paused)

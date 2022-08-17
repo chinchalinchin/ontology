@@ -91,6 +91,8 @@ class Renderer():
     """_summary_
     """
 
+    # TODO: be careful with closures. 
+
     debug = False
     debug_worker = None
     debug_templates = munch.Munch({})
@@ -679,11 +681,11 @@ class Renderer():
 
         self.world_frame.paste(overlay, ( 0,0 ), overlay)
 
-        btn_rendering_points = menu.get_rendering_points('button')
+        btn_render_pts = menu.rendering_points('button')
         
         btn_frame_map, btn_piece_map = menu.button_maps()
 
-        for i, render_point in enumerate(btn_rendering_points):
+        for i, render_point in enumerate(btn_render_pts):
             render_frame = repository.get_menu_frame(
                 menu.media_size, 
                 'button',
@@ -695,6 +697,26 @@ class Renderer():
                 render_frame,
                 gui.int_tuple(render_point)
             )
+
+        if menu.active_tab:
+            activated_tab = menu.tabs.get(menu.active_tab_key())
+
+            if activated_tab.has_baubles():
+                baub_render_pts = activated_tab.rendering_points('bauble')
+                baub_frame_map, baub_piece_map = activated_tab.bauble_maps()
+                
+                for i, render_point in enumerate(baub_render_pts):
+                    render_frame = repository.get_menu_frame(
+                        menu.media_size,
+                        'bauble',
+                        baub_frame_map[i],
+                        baub_piece_map[i]
+                    )
+                    gui.render_composite(
+                        self.world_frame,
+                        render_frame,
+                        gui.int_tuple(render_point)
+                    )
 
 
     @QtCore.Slot()

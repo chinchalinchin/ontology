@@ -48,6 +48,8 @@ class World():
     """
     """
 
+    # TODO: be careful with closures. 
+    
     ## See /docs/DATA_STRUCTURES.md for more information on 
     ##  the following fields.
     # CONFIGURATION FIELDS
