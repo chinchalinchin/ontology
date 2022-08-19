@@ -594,9 +594,9 @@ def avatar_coordinates(
     return render_points
 
 
-def button_coordinates(
-    button_dims: list,
-    num_buttons: int,
+def idea_coordinates(
+    idea_dims: list,
+    num_ideas: int,
     num_pieces: int,
     device_dim: tuple,
     menu_stack: str,
@@ -604,11 +604,11 @@ def button_coordinates(
     menu_padding: tuple
 ) -> list:
     render_points = list()
-    full_width = sum(dim[0] for dim in button_dims)
+    full_width = sum(dim[0] for dim in idea_dims)
 
-    # self.button_rendering_points => len() == len(buttons)*len(pieces)
+    # idea_rendering_points => len() == len(ideas)*len(pieces)
     # for (0, equipment), (1, inventory), (2, status), ...
-    for i in range(num_buttons):
+    for i in range(num_ideas):
 
         # for (0, left), (1, middle), (2, right)
         # j gives you index for the piece dim in dims
@@ -622,12 +622,12 @@ def button_coordinates(
                     if j == 0:
                         x = render_points[0][0]
                         y = render_points[0][1] + \
-                            (1 + menu_padding[1] ) * i * button_dims[0][1]
+                            (1 + menu_padding[1] ) * i * idea_dims[0][1]
                     else:
                         x = render_points[j-1][0] + \
-                            button_dims[j-1][0]
+                            idea_dims[j-1][0]
                         y = render_points[j-1][1] + \
-                            (1 + menu_padding[1]) * i * button_dims[j-1][1]
+                            (1 + menu_padding[1]) * i * idea_dims[j-1][1]
 
             else: # horizontal
                 if i == 0 and j == 0:
@@ -639,7 +639,7 @@ def button_coordinates(
                             i * (full_width + menu_padding[0])
                         y = render_points[0][1]
                     else:
-                        x = render_points[len(render_points)-1][0] + button_dims[j-1][0]
+                        x = render_points[len(render_points)-1][0] + idea_dims[j-1][0]
                         y = render_points[j-1][1]
         
             render_points.append((x,y))

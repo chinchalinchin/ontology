@@ -8,7 +8,7 @@ import onta.util.logger as logger
 
 log = logger.Logger('onta.engine.qualia.tab', settings.LOG_LEVEL)
 
-class Tab():
+class Thought():
 
     def __init__(
         self, 
@@ -59,13 +59,13 @@ class Tab():
 
         display_num = 0
 
-        log.debug(f'Initializing {self.name} tab...', 'Tab._init_components')
+        log.debug(f'Initializing {self.name} thought...', 'Thought._init_components')
 
         for i, component in enumerate(self.components):
             if not component:
                 continue
 
-            log.debug(f'Initializing {component.label} {component.component}', 'Tab._init_components')
+            log.debug(f'Initializing {component.label} {component.component}', 'Thought._init_components')
             if component.component == 'bauble':
                 setattr(
                     self.baubles,

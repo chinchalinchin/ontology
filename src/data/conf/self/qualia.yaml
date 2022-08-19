@@ -135,12 +135,12 @@ properties:
         - display
   
   menu:
-    button:
+    ideas:
       pieces: 
         - left
         - middle
         - right
-    tabs:
+    thoughts:
       armory:
         - component: bauble
           label: slash
@@ -384,7 +384,8 @@ hud:
 
 menu:
   small:
-    button:
+    # styled components
+    idea:
       enabled:
         left: 
           path: slotsheet.png
@@ -460,6 +461,7 @@ menu:
           size:
             w: 41
             h: 28
+    # piecewise compnents
     bauble:
       enabled:
         left:
@@ -622,25 +624,26 @@ menu:
           size:
             w: 24
             h: 24
+    # simple components
     concept:
-      path:
+      path: scrolls.png
       position:
-        x:
-        y:
+        x: 163
+        y: 32
       size:
-        w:
-        h:
+        w: 90
+        h: 96
     conception:
       path:
       position:
-        x:
-        y:
+        x: 32
+        y: 224
       size:
-        w:
-        h:
+        w: 96
+        h: 96
 
   large:
-    thought:
+    idea: # button
       enabled:
         left: 
           path: slotsheet.png
@@ -716,7 +719,7 @@ menu:
           size:
             w: 41
             h: 28
-    bauble:
+    bauble: # inventory
       enabled:
         left:
           path: slotsheet.png
@@ -792,7 +795,7 @@ menu:
           size:
             w: 38
             h: 40
-    aside:
+    aside: # tooltip
       enabled:
         left:
           path: slotsheet.png
@@ -843,7 +846,7 @@ menu:
           size:
             w: 25
             h: 24
-    focus:
+    focus: # paginator
       enabled:
         main:
           path: slotsheet.png
@@ -878,20 +881,22 @@ menu:
           size:
             w: 24
             h: 24
-    concept:
+    # simple components
+    concept: # heading
+      path: scrolls.png
+      position:
+        x: 163
+        y: 32
+      size:
+        w: 90
+        h: 96
+    conception: # subheading
       path:
       position:
-        x:
-        y:
+        x: 32
+        y: 224
       size:
-        w:
-        h:
-    conception:
-      path:
-      position:
-        x:
-        y:
-      size:
-        w:
+        w: 96
+        h: 96
         h:
       

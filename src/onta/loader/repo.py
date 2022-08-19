@@ -39,7 +39,7 @@ APPAREL_TYPES = [
 PIECEWISE_QUALIA_TYPES = [
     'mirror', 
     'pack', 
-    'thought', 
+    'idea', 
     'bauble', 
     'aside', 
     'focus'
@@ -284,8 +284,8 @@ class Repo():
                 setattr(self.mirrors, size, munch.Munch({}))
             if not self.packs.get(size):
                 setattr(self.packs, size, munch.Munch({}))
-            if not self.menus.get(size):
-                setattr(self.menus, size, munch.Munch({}))
+            if not self.qualia.get(size):
+                setattr(self.qualia, size, munch.Munch({}))
 
 
             ## STYLED INITIALIZATION
@@ -352,8 +352,8 @@ class Repo():
                 elif set_type == 'pack':
                     iter_set = interface_conf.hud.get(size).packs
                     save_set = self.packs
-                elif set_type == 'thought':
-                    iter_set = interface_conf.menu.get(size).thought
+                elif set_type == 'idea':
+                    iter_set = interface_conf.menu.get(size).idea
                     save_set = self.qualia
                 elif set_type == 'bauble':
                     iter_set = interface_conf.menu.get(size).bauble
@@ -414,10 +414,10 @@ class Repo():
             ## SIMPLE DEFINITIONS
             for set_type in SIMPLE_QUALIA_TYPES:
                 if set_type == 'concept':
-                    simple_set = interface_conf.menu.get(size).heading
+                    simple_set = interface_conf.menu.get(size).concept
 
                 elif set_type == 'conception':
-                    simple_set = interface_conf.menu.get(size).selection
+                    simple_set = interface_conf.menu.get(size).conception
 
                 if not simple_set.get('path'):
                     continue
@@ -797,7 +797,7 @@ class Repo():
 
 
     @functools.lru_cache(maxsize=64)
-    def get_pieced_menu_frame(
+    def get_piecewise_qualia_frame(
         self, 
         breakpoint_key: str, 
         component_key: str, 
@@ -815,23 +815,23 @@ class Repo():
         :return: _description_
         :rtype: Union[Image.Image, None]
         """
-        if self.menus.get(breakpoint_key) and \
-            self.menus.get(breakpoint_key).get(component_key) and \
-            self.menus.get(breakpoint_key).get(component_key).get(status_key):
+        if self.qualia.get(breakpoint_key) and \
+            self.qualia.get(breakpoint_key).get(component_key) and \
+            self.qualia.get(breakpoint_key).get(component_key).get(status_key):
 
-            return self.menus.get(breakpoint_key).get(component_key).get(
+            return self.qualia.get(breakpoint_key).get(component_key).get(
                 status_key).get(piece_key)
         return None
 
 
     @functools.lru_cache(maxsize=64)
-    def get_simple_menu_frame(
+    def get_simple_qualia_frame(
         self,
         breakpoint_key,
         component_key
     ) -> Union[Image.Image, None]:
-        if self.menus.get(breakpoint_key):
-            return self.menus.get(breakpoint_key).get(component_key)
+        if self.qualia.get(breakpoint_key):
+            return self.qualia.get(breakpoint_key).get(component_key)
         return None
 
 

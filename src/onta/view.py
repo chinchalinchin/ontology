@@ -682,16 +682,16 @@ class Renderer():
         self.world_frame.paste(overlay, ( 0,0 ), overlay)
 
             # TODO: fix menu typing...
-        btn_render_pts = menu.rendering_points('button')
+        idea_render_pts = menu.rendering_points('idea')
         
-        btn_frame_map, btn_piece_map = menu.button_maps()
+        idea_frame_map, idea_piece_map = menu.button_maps()
 
-        for i, render_point in enumerate(btn_render_pts):
-            render_frame = repository.get_pieced_menu_frame(
+        for i, render_point in enumerate(idea_render_pts):
+            render_frame = repository.get_piecewise_qualia_frame(
                 menu.media_size, 
-                'thought',
-                btn_frame_map[i],
-                btn_piece_map[i]
+                'idea',
+                idea_frame_map[i],
+                idea_piece_map[i]
             )
             gui.render_composite(
                 self.world_frame,
@@ -699,15 +699,15 @@ class Renderer():
                 gui.int_tuple(render_point)
             )
 
-        if menu.active_tab:
-            activated_tab = menu.tabs.get(menu.active_tab_key())
+        if menu.active_thought:
+            activated_thought = menu.get_active_thought()
 
-            if activated_tab.has_baubles():
-                baub_render_pts = activated_tab.rendering_points('bauble')
-                baub_frame_map, baub_piece_map = activated_tab.bauble_maps()
+            if activated_thought.has_baubles():
+                baub_render_pts = activated_thought.rendering_points('bauble')
+                baub_frame_map, baub_piece_map = activated_thought.bauble_maps()
                 
                 for i, render_point in enumerate(baub_render_pts):
-                    render_frame = repository.get_pieced_menu_frame(
+                    render_frame = repository.get_piecewise_qualia_frame(
                         menu.media_size,
                         'bauble',
                         baub_frame_map[i],

@@ -7,7 +7,7 @@ import onta.loader.conf as conf
 import onta.loader.state as state
 import onta.util.logger as logger
 import onta.engine.qualia.display as display
-import onta.engine.qualia.tab as tab
+import onta.engine.qualia.thought as thought
 
 import onta.engine.facticity.formulae as formulae
 
@@ -38,10 +38,19 @@ class Menu():
         # ...
     }
     """
-    buttons = munch.Munch({})
+    thoughts = munch.Munch({})
     """
-    self.buttons = {
-        'tab_1': {
+    self.thoughts = {
+        'thought_1': {
+            # ...
+        },
+        # ...
+    }
+    """
+    ideas = munch.Munch({})
+    """
+    self.ideas = {
+        'thought_1': {
             'left': 'enabled',
             'middle': 'enabled',
             'right': 'enabled'
@@ -49,15 +58,16 @@ class Menu():
         # ...
     }
     """
+    idea_rendering_points = []
+    active_idea = None
+    active_thought = None
+
     properties = munch.Munch({})
     styles = munch.Munch({})
     theme = munch.Munch({})
     sizes = []
     breakpoints = []
-    button_rendering_points = []
     menu_activated = False
-    active_button = None
-    active_tab = None
     media_size = None
     alpha = None
     
@@ -78,12 +88,12 @@ class Menu():
             self.sizes, 
             self.breakpoints
         )
-        self._init_menu_positions(player_device)
-        self._init_tabs(
+        self._init_idea_positions(player_device)
+        self._init_thoughts(
             player_device,
             state_ao
         )
-        self._init_buttons(state_ao)
+        self._init_ideas(state_ao)
 
 
     def _init_conf(
@@ -104,7 +114,7 @@ class Menu():
         )
 
 
-    def _init_menu_positions(
+    def _init_idea_positions(
         self, 
         player_device: device.Device
     ) -> None:
@@ -117,19 +127,20 @@ class Menu():
             self.styles.get(self.media_size).menu.padding.h
         )
         menu_stack = self.styles.get(self.media_size).menu.stack
-        # all button component pieces have the same pieces, so any will do...
-        button_conf = self.menu_conf.get(self.media_size).button.enabled
+        # all idea component pieces have the same pieces, so any will do...
+        idea_conf = self.menu_conf.get(self.media_size).idea.enabled
 
+        # NOTE: ideas are "thought" buttons
         # [ (left_w, left_h), (middle_w, middle_h), (right_w, right_h) ]
         dims = [
-            ( button_conf.get(piece).size.w, button_conf.get(piece).size.h ) 
-            for piece in self.properties.button.pieces
+            ( idea_conf.get(piece).size.w, idea_conf.get(piece).size.h ) 
+            for piece in self.properties.ideas.pieces
         ]
 
-        self.button_rendering_points = formulae.button_coordinates(
+        self.idea_rendering_points = formulae.idea_coordinates(
             dims,
-            len(self.properties.tabs),
-            len(button_conf),
+            len(self.properties.thoughts),
+            len(idea_conf),
             player_device.dimensions,
             menu_stack,
             menu_margins,
@@ -137,7 +148,7 @@ class Menu():
         )
 
 
-    def _init_tabs(
+    def _init_thoughts(
         self,
         player_device: device.Device,
         state_ao: state.State
@@ -146,42 +157,42 @@ class Menu():
         # in order to initialize a Tab
         components_conf = munch.Munch({
             'bauble': self.menu_conf.get(self.media_size).bauble,
-            'indicator': self.menu_conf.get(self.media_size).indicator,
-            'label': self.menu_conf.get(self.media_size).label
+            'focus': self.menu_conf.get(self.media_size).focus,
+            'aside': self.menu_conf.get(self.media_size).aside
         })
 
         # all button component pieces have the same pieces, so any will do...
-        button_conf = self.menu_conf.get(self.media_size).button.enabled
+        idea_conf = self.menu_conf.get(self.media_size).idea.enabled
         full_width = sum(
-            button_conf.get(piece).size.w 
-            for piece in self.properties.button.pieces
+            idea_conf.get(piece).size.w 
+            for piece in self.properties.ideas.pieces
         )
-        full_height = button_conf.get(
-            self.properties.button.pieces[0]
+        full_height = idea_conf.get(
+            self.properties.ideas.pieces[0]
         ).size.h
-        button_dim = (full_width, full_height)
+        idea_dim = (full_width, full_height)
 
         menu_styles = self.styles.get(self.media_size).menu
 
-        tabs = [
-            tab.Tab(
-                tab_key,
-                tab_conf,
+        thoughts = [
+            thought.Thought(
+                thought_key,
+                thought_conf,
                 components_conf,
                 menu_styles,
-                self.button_rendering_points[0],
-                button_dim,
+                self.idea_rendering_points[0],
+                idea_dim,
                 player_device.dimensions,
                 state_ao,
-            ) for tab_key, tab_conf in self.properties.tabs.items()
+            ) for thought_key, thought_conf in self.properties.thoughts.items()
         ]
 
-        for i, tab_key in enumerate(self.properties.tabs.keys()):
-            log.debug(f'Creating {tab_key} tab...', 'Menu._init_tabs')
-            setattr(self.tabs, tab_key, tabs[i])
+        for i, thought_key in enumerate(self.properties.thoughts.keys()):
+            log.debug(f'Creating {thought_key} thought...', 'Menu._init_tabs')
+            setattr(self.thoughts, thought_key, thoughts[i])
 
 
-    def _init_buttons(
+    def _init_ideas(
         self, 
         state_ao: state.State
     ) -> None:
@@ -192,152 +203,157 @@ class Menu():
         """
         # TODO: calculate based on state information
 
-        # NOTE: this is what creates `self.buttons`
-        #       `self.buttons`
-        for i, name in enumerate(list(self.properties.tabs.keys())):
+        # NOTE: this is what creates `self.thoughts`
+        #       `self.thoughts`
+        for i, name in enumerate(list(self.properties.thoughts.keys())):
             if i == 0:
-                self._activate_button(name)
-                self.active_button = i
+                self._activate_idea(name)
+                self.active_idea = i
             else:
-                self._enable_button(name)
+                self._enable_idea(name)
 
 
-    def _activate_button(
+    def _activate_idea(
         self, 
-        button_key: str
+        idea_key: str
     ) -> None:
         """_summary_
 
-        :param button_key: _description_
-        :type button_key: str
+        :param idea_key: _description_
+        :type idea_key: str
         """
         setattr(
-            self.buttons,
-            button_key,
+            self.ideas,
+            idea_key,
             munch.Munch({
-                piece: 'active' for piece in self.properties.button.pieces
+                piece: 'active' for piece in self.properties.ideas.pieces
             })
         )
 
 
-    def _disable_button(
+    def _disable_idea(
         self, 
-        button_key: str
+        idea_key: str
     ) -> None:
         """_summary_
 
-        :param button_key: _description_
-        :type button_key: str
+        :param idea_key: _description_
+        :type idea_key: str
         """
         setattr(
-            self.buttons,
-            button_key,
+            self.ideas,
+            idea_key,
             munch.Munch({
-                piece: 'disabled' for piece in self.properties.button.pieces
+                piece: 'disabled' for piece in self.properties.ideas.pieces
             })
         )
 
 
-    def _enable_button(
+    def _enable_idea(
         self, 
-        button_key: str
+        idea_key: str
     ) -> None:
         """_summary_
 
-        :param button_key: _description_
-        :type button_key: str
+        :param idea_key: _description_
+        :type idea_key: str
         """
         setattr(
-            self.buttons,
-            button_key,
+            self.ideas,
+            idea_key,
             munch.Munch({
-                piece: 'enabled' for piece in self.properties.button.pieces
+                piece: 'enabled' for piece in self.properties.ideas.pieces
             })
         )
 
 
-    def _increment_active_button(
+    def _increment_active_idea(
         self
     ) -> None:
         """_summary_
         """
-        button_list = list(self.tabs.keys())
-        ## TODO: skip disabled buttons
-        previous_active = self.active_button
-        self.active_button -= 1
+        idea_list = list(self.thoughts.keys())
+        ## TODO: skip disabled idea buttons
+        previous_active = self.active_idea
+        self.active_idea -= 1
 
-        if self.active_button < 0:
-            self.active_button = len(button_list) - 1
+        if self.active_idea < 0:
+            self.active_idea = len(idea_list) - 1
         
-        self._enable_button(button_list[previous_active])
-        self._activate_button(button_list[self.active_button])
+        self._enable_idea(idea_list[previous_active])
+        self._activate_idea(idea_list[self.active_idea])
 
 
-    def _decrement_active_button(
+    def _decrement_active_idea(
         self
     ) -> None:
         """_summary_
         """
-        button_list = list(self.tabs.keys())
+        idea_list = list(self.thoughts.keys())
         ## TODO: skip disabled buttons
-        previous_active = self.active_button
-        self.active_button += 1
+        previous_active = self.active_idea
+        self.active_idea += 1
 
-        if self.active_button > len(button_list) - 1:
-            self.active_button = 0
+        if self.active_idea > len(idea_list) - 1:
+            self.active_idea = 0
         
-        self._enable_button(button_list[previous_active])
-        self._activate_button(button_list[self.active_button])
+        self._enable_idea(idea_list[previous_active])
+        self._activate_idea(idea_list[self.active_idea])
 
 
-    def _execute_active_button(
+    def _ponder_active_idea(
         self,
     ) -> None:
-        activate_tab_key = list(self.tabs.keys())[self.active_button]
-        self.active_tab = self.tabs.get(activate_tab_key)
+        activate_thought_key = list(self.thoughts.keys())[self.active_idea]
+        self.active_thought = self.thoughts.get(activate_thought_key)
 
 
-    def _cancel_active_button(
+    def _forget_active_idea(
         self,
     ) -> None:
-        self.active_tab = None
+        self.active_thought = None
 
 
-    def _calculate_button_frame_map(
+    def _calculate_idea_frame_map(
         self
     ) -> list:
         # NOTE **: frame changes ... 
         frame_map = []
-        for piece_conf in self.buttons.values():
+        for piece_conf in self.ideas.values():
             for piece_state in piece_conf.values():
                 frame_map.append(piece_state)
-        setattr(self.frame_maps, 'button', frame_map)
-        return self.frame_maps.button
+        setattr(self.frame_maps, 'idea', frame_map)
+        return self.frame_maps.idea
 
 
-    def _calculate_button_piece_map(
+    def _calculate_idea_piece_map(
         self
     ) -> list:
         # NOTE **: ...but pieces stay the same ...
-        if not self.piece_maps.get('button'):
+        if not self.piece_maps.get('idea'):
             piece_map = []
-            for piece_conf in self.buttons.values():
+            for piece_conf in self.ides.values():
                 for piece_key in piece_conf.keys():
                     piece_map.append(piece_key)
-            setattr(self.piece_maps, 'button', piece_map)
-        return self.piece_maps.button
+            setattr(self.piece_maps, 'idea', piece_map)
+        return self.piece_maps.idea
 
 
-    def active_tab_key(self) -> str:
-        return list(self.tabs.keys())[self.active_button]
+    def active_thought_key(self) -> str:
+        return list(self.tabs.keys())[self.active_idea]
 
+
+    def get_active_thought(self):
+        return self.thoughts.get(
+            self.active_thought_key()
+        )
 
     def button_maps(
         self
     ) -> tuple:
         return (
-            self._calculate_button_frame_map(), 
-            self._calculate_button_piece_map()
+            self._calculate_idea_frame_map(), 
+            self._calculate_idea_piece_map()
         )
 
 
@@ -351,8 +367,8 @@ class Menu():
         self, 
         interface_key: str
     ) -> list:
-        if interface_key in [ 'button', 'buttons' ]:
-            return self.button_rendering_points
+        if interface_key in [ 'idea', 'ideas' ]:
+            return self.idea_rendering_points
 
 
     def update(
@@ -368,16 +384,16 @@ class Menu():
             # controls when traversing main button stack
             if self.active_tab is None:
                 if menu_input.increment:
-                    self._increment_active_button()
+                    self._increment_active_idea()
                 elif menu_input.decrement:
-                    self._decrement_active_button()
+                    self._decrement_active_idea()
                 elif menu_input.execute:
-                    self._execute_active_button()
+                    self._ponder_active_idea()
                 return
 
             # controls when traversing tab stacks
             if menu_input.reverse:
-                self._cancel_active_button()
+                self._forget_active_idea()
                 return
 
             if self.active_tab.name == 'armory':
