@@ -150,6 +150,8 @@ def projectile_attackbox(
         raw_atkbox.size.h
     )
     return format_atkbox
+
+    
 def sprite_hitbox(
     sprite: dict, 
     hitbox_key: str,

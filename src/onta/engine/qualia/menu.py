@@ -22,16 +22,16 @@ class Menu():
     """
     self.menu_conf = {
         'media_size_1': {
-            'button': {
+            'idea': {
                 # ...
             },
             'bauble': {
                 # ...
             },
-            'label': {
+            'aside': {
                 # ...
             },
-            'indicator' : {
+            'focus' : {
                 # ...
             }
         },
@@ -62,6 +62,7 @@ class Menu():
     active_idea = None
     active_thought = None
 
+    avatar_conf = munch.Munch({})
     properties = munch.Munch({})
     styles = munch.Munch({})
     theme = munch.Munch({})
@@ -112,6 +113,8 @@ class Menu():
         self.breakpoints = display.format_breakpoints(
             configure.breakpoints
         )
+        self.avatar_conf = config.load_avatar_configuration().avatars
+
 
 
     def _init_idea_positions(
@@ -158,7 +161,9 @@ class Menu():
         components_conf = munch.Munch({
             'bauble': self.menu_conf.get(self.media_size).bauble,
             'focus': self.menu_conf.get(self.media_size).focus,
-            'aside': self.menu_conf.get(self.media_size).aside
+            'aside': self.menu_conf.get(self.media_size).aside,
+            'concept': self.menu_conf.get(self.media_size).concept,
+            'conception': self.menu_conf.get(self.media_size).conception
         })
 
         # all button component pieces have the same pieces, so any will do...
@@ -174,22 +179,23 @@ class Menu():
 
         menu_styles = self.styles.get(self.media_size).menu
 
-        thoughts = [
-            thought.Thought(
-                thought_key,
-                thought_conf,
-                components_conf,
-                menu_styles,
-                self.idea_rendering_points[0],
-                idea_dim,
-                player_device.dimensions,
-                state_ao,
-            ) for thought_key, thought_conf in self.properties.thoughts.items()
-        ]
-
-        for i, thought_key in enumerate(self.properties.thoughts.keys()):
+        for thought_key, thought_conf in enumerate(self.properties.thoughts.items()):
             log.debug(f'Creating {thought_key} thought...', 'Menu._init_tabs')
-            setattr(self.thoughts, thought_key, thoughts[i])
+            setattr(
+                self.thoughts, 
+                thought_key,
+                thought.Thought(
+                    thought_key,
+                    thought_conf,
+                    components_conf,
+                    menu_styles,
+                    self.avatar_conf,
+                    self.idea_rendering_points[0],
+                    idea_dim,
+                    player_device.dimensions,
+                    state_ao,
+                )
+            )
 
 
     def _init_ideas(

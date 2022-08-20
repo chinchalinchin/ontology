@@ -512,7 +512,7 @@ def slot_coordinates(
     return render_points
 
 
-def avatar_coordinates(
+def slot_avatar_coordinates(
     slots_tuple: tuple,
     equip_tuple: tuple,
     invent_tuple: tuple,

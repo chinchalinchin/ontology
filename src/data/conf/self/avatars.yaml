@@ -1,7 +1,7 @@
 # avatars do not get styles applied, so separate config seems appropriate
 
 avatars:
-  armor:
+  equipment:
     plate:
       path: equipment.png
       position:
@@ -26,7 +26,24 @@ avatars:
       size:
         w:
         h:
-  equipment:
+    emblem_shield: null
+    falcon_shield: 
+      path: equipment.png
+      position:
+        x: 37
+        y: 230
+      size:
+        w: 22
+        h: 26
+    leather_shield: 
+      path: equipment.png
+      position: 
+        x: 69
+        y: 7
+      size:
+        w: 21
+        h: 25
+  armory:
     bow:
       path: items.png
       position:
@@ -107,23 +124,6 @@ avatars:
       size:
         w: 29
         h: 29
-    emblem_shield: null
-    falcon_shield: 
-      path: equipment.png
-      position:
-        x: 37
-        y: 230
-      size:
-        w: 22
-        h: 26
-    leather_shield: 
-      path: equipment.png
-      position: 
-        x: 69
-        y: 7
-      size:
-        w: 21
-        h: 25
     blood_magic:
       path: equipment.png
       position:

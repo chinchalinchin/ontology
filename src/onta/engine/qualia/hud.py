@@ -421,7 +421,7 @@ class HUD():
         )
 
         # NOTE: this ugliness is all in service of immutability...
-        render_tuples = formulae.avatar_coordinates(
+        render_tuples = formulae.slot_avatar_coordinates(
             self._immute_slots(), 
             self._immute_equipment_size(),
             self._immute_inventory_size(),
