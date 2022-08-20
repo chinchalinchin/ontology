@@ -6,7 +6,7 @@ import onta.settings as settings
 import onta.loader.state as state
 import onta.util.logger as logger 
 
-log = logger.Logger('onta.engine.qualia.tab', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.qualia.thought', settings.LOG_LEVEL)
 
 class Thought():
 
@@ -31,48 +31,100 @@ class Thought():
 
         # Define in __init__ to avoid closure since tabs are created in loop by Menu
         self.baubles = munch.Munch({})
-        self.displays = munch.Munch({})
-        self.indicators = munch.Munch({})
-        self.labels = munch.Munch({})
-
         self.bauble_render_points = []
-        self.display_render_points = []
-        self.indicator_render_points = []
-        self.label_render_points = []
-
         self.bauble_frame_map = []
         self.bauble_piece_map = []
-
         self.bauble_scroll_num = None
 
-        self.heading_points = []
+        self.asides = munch.Munch({})
+        self.aside_render_points = []
+
+        self.displays = munch.Munch({})
+        self.display_render_points = []
+
+        self.focii = munch.Munch({})
+        self.focus_render_points = []
+
+        self.concepts = munch.Munch({})
+        self.concept_render_points = []
+
+
+        self.conceptions = munch.Munch({})
+        self.conception_render_points = []
 
         self._init_components(state_ao)
 
+    def _init_player_mapping(
+        self,
+        state_ao: state.State
+    ) -> None:
+        for comp in self.components:
+            comp.label, comp.component
+            hero_capital = state_ao.get_state('dynamic').get('hero').get('capital')
+
+            if comp.component == 'bauble':
+                if comp.label in ['slash', 'thrust', 'shoot', 'cast']:
+                    component_armory_avatars = [
+                        arm.component 
+                        for arm in hero_capital.get('armory')
+                        if arm.label == comp.label
+                    ]
+
+                    pass
 
     def _init_components(
         self,
         state_ao: state.State
     ) -> None:
+        """_summary_
+
+        :param state_ao: _description_
+        :type state_ao: state.State
+
+        .. note::
+            The label of a bauble must map to the possible label in a _Sprite_'s `capital`, i.e. `equipment[].label`, `armory[].label`, `inventory.label`, etc.
+        .. note::
+            In other words, the possible values of `component.label` are `armor | shield | thrust | shoot | slash | cast | bag | belt`. TODO: there will probably be more to add here.
+        """
         if not self.components:
             return
 
         display_num = 0
 
         log.debug(f'Initializing {self.name} thought...', 'Thought._init_components')
+        
+        hero_capital = state_ao.get_state('dynamic').get('hero').get('capital')
 
         for i, component in enumerate(self.components):
+
+            
             if not component:
                 continue
 
             log.debug(f'Initializing {component.label} {component.component}', 'Thought._init_components')
             if component.component == 'bauble':
+                if component.label in ['slash', 'thrust', 'shoot', 'cast']:
+                    iter_set = hero_capital.get('armory')
+                elif component.label in ['armor', 'shield']:
+                    iter_set = hero_capital.get('equipment')
+                elif component.label in ['bag', 'belt']:
+                    iter_set = hero_capital.get('inventory')
+
+                component_avatars = [
+                    arm.component 
+                    for arm in iter_set
+                    if arm.label == component.label
+                ]
+
                 setattr(
-                    self.baubles,
-                    component.label,
-                    None
+                        self.baubles,
+                        component.label,
+                        component_avatars
                 )
-                # TODO: set baubles based on player state
+
+                # How to set this up so the bauble row length
+                # is fit to the number of items in the player's
+                # state?
 
             elif component.component == 'display':
                 display_num += 1
@@ -85,6 +137,7 @@ class Thought():
         
         if len(self.baubles) > 0:
             self._init_bauble_positions()
+            self._init_bauble_avatar_positions()
 
         # TODO: what to do if both baubles and diplay?
 
@@ -202,9 +255,15 @@ class Thought():
                 print(self.bauble_render_points)
 
 
-    def _calculate_bauble_frame_map(self):
+    def _init_bauble_avatar_positions(
+        self
+    ) -> None:
         pass
+
+
+    def _calculate_bauble_avatar_map(self):
         self.baubles.keys() # bauble labels
+        # need to 
 
 
     def has_baubles(self):
