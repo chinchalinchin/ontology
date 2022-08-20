@@ -11,22 +11,29 @@ avatars:
         w: 30
         h: 19
     gold:
-      path:
+      path: armor_gold.png
       position:
-        x:
-        y:
+        x: 0
+        y: 0
       size:
-        w:
-        h:
+        w: 18
+        h: 16
     bronze:
       path:
       position:
-        x:
-        y:
+        x: 0
+        y: 0
       size:
-        w:
-        h:
-    emblem_shield: null
+        w: 18
+        h: 17
+    emblem_shield: 
+      path: shield_emblem.png
+      position:
+        x: 0
+        y: 0
+      size:
+        w: 21
+        h: 27
     falcon_shield: 
       path: equipment.png
       position:

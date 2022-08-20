@@ -684,7 +684,7 @@ class Renderer():
             # TODO: fix menu typing...
         idea_render_pts = menu.rendering_points('idea')
         
-        idea_frame_map, idea_piece_map = menu.button_maps()
+        idea_frame_map, idea_piece_map = menu.idea_maps()
 
         for i, render_point in enumerate(idea_render_pts):
             render_frame = repository.get_piecewise_qualia_frame(
@@ -703,8 +703,8 @@ class Renderer():
             activated_thought = menu.get_active_thought()
 
             if activated_thought.has_baubles():
-                baub_render_pts = activated_thought.rendering_points('bauble')
-                baub_frame_map, baub_piece_map = activated_thought.bauble_maps()
+                baub_render_pts, avtr_render_pts = activated_thought.rendering_points('bauble')
+                baub_frame_map, baub_piece_map, baub_avtr_map = activated_thought.bauble_maps()
                 
                 for i, render_point in enumerate(baub_render_pts):
                     render_frame = repository.get_piecewise_qualia_frame(
@@ -718,6 +718,17 @@ class Renderer():
                         render_frame,
                         gui.int_tuple(render_point)
                     )
+                    if baub_avtr_map[i] is not None:
+                        avatar_frame = repository.get_avatar_frame(
+                            'equipment', # TODO: need to parameterize this somehow
+                            baub_avtr_map[i]
+
+                        )
+                        gui.render_composite(
+                            self.world_frame,
+                            avatar_frame,
+                            gui.int_tuple(avtr_render_pts[i])
+                        )
 
 
     @QtCore.Slot()

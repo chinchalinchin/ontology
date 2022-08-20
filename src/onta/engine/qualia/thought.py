@@ -1,6 +1,7 @@
 
 from typing import Union
 import munch
+from onta import world
 
 import onta.settings as settings
 import onta.loader.state as state
@@ -88,15 +89,16 @@ class Thought():
 
         display_num = 0
 
-        log.debug(f'Initializing {self.name} thought...', 'Thought._init_components')
+        log.debug(f'Initializing {self.name} thought...', 'Thought._calculate_components')
         
-        for i, component in enumerate(self.components):
+        for component in self.components:
 
             
             if not component:
                 continue
 
-            log.debug(f'Initializing {component.label} {component.component}', 'Thought._init_components')
+            log.debug(f'Initializing {component.label} {component.component}', 'Thought._calculate_components')
+
             if component.component == 'bauble':
                 if component.label in ['slash', 'thrust', 'shoot', 'cast']:
                     iter_set = player_capital.get('armory')
@@ -120,9 +122,6 @@ class Thought():
                     })
                 )
 
-                # How to set this up so the bauble row length
-                # is fit to the number of items in the player's
-                # state?
 
             elif component.component == 'display':
                 display_num += 1
@@ -136,6 +135,8 @@ class Thought():
         if len(self.baubles) > 0:
             self._calculate_bauble_positions()
             self._calculate_bauble_avatar_positions()
+            self._calculate_bauble_frame_map()
+            self._calculate_bauble_avatar_map()
 
         # TODO: what to do if both baubles and diplay?
 
@@ -297,16 +298,14 @@ class Thought():
                 if added == self.bauble_scroll_num:
                     break
             
-            if self.bauble_scroll_num > added:
-                while self.bauble_scroll_num > added:
-                    self.bauble_avatar_render_points.append(None)
-                    added + 1
+            while self.bauble_scroll_num > added:
+                self.bauble_avatar_render_points.append(None)
+                added + 1
      
 
     def _calculate_bauble_avatar_map(self):
         for bauble_conf in self.baubles.values():
             added = 0
-            total_baubles = len(bauble_conf.enabled)
 
             for avatar_key in bauble_conf.enabled:
                 self.bauble_avatar_map.append(avatar_key)
@@ -315,42 +314,73 @@ class Thought():
                 if added == self.bauble_scroll_num:
                     break
 
-            if self.bauble_scroll_num > added:
-                while self.bauble_scroll_num > total_baubles:
-                    self.bauble_avatar_map.append(None)
+            while self.bauble_scroll_num > added:
+                self.bauble_avatar_map.append(None)
+                added += 1
 
             # TODO: will need the current world state to update grab player's capital
-
-        self.baubles.keys() # bauble labels
-        # need to  
+ 
 
     def _calculate_bauble_frame_map(self):
-        for bauble_label, bauble_conf in self.baubles.items():
-            pass
+        for bauble_conf in self.baubles.values():
+            selected = bauble_conf.selected
+            added = 0
+
+            for avatar_key in bauble_conf.enabled:
+                added += 1
+                if avatar_key == selected:
+                    self.bauble_frame_map.append('active')
+                    continue
+
+                self.bauble_frame_map.append('enabled')
+
+                if added == self.bauble_scroll_num:
+                    break
+
+            while self.bauble_scroll_num > added:
+                self.bauble_frame_map.append('disabled')
+
             # TODO: need to ensure teh selected bauble for a bauble_label has its frame
             # set to active
 
-    def has_baubles(self):
+
+    def has_baubles(
+        self
+    ) -> tuple:
         return len(self.baubles) > 0
 
 
-    def bauble_maps(self):
-        return self.bauble_frame_map, self.bauble_piece_map, self.bauble_avatar_map
+    def bauble_maps(
+        self
+    )-> tuple:
+        return (
+            self.bauble_frame_map, 
+            self.bauble_piece_map, 
+            self.bauble_avatar_map
+        )
 
 
     def rendering_points(
         self,
         component_key: str
-    ) -> Union[list, None]:
+    ) -> Union[tuple, None]:
         if component_key == 'bauble':
-            return self.bauble_render_points
+            return (
+                self.bauble_render_points, 
+                self.bauble_avatar_render_points
+            )
         return None
 
 
     def update(
-        self
+        self,
+        game_world: world.World
     ):
-        # TODO:
-        # if some condition to prevent too many updates
+        self._calculate_components(
+            game_world.hero.capital
+        )
+
+        # TODO: if some condition to prevent too many updates
+
         self._calculate_bauble_frame_map()
         self._calculate_bauble_avatar_map()

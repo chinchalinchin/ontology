@@ -273,7 +273,7 @@ class Menu():
         )
 
 
-    def _increment_active_idea(
+    def _increment_idea(
         self
     ) -> None:
         """_summary_
@@ -290,7 +290,7 @@ class Menu():
         self._activate_idea(idea_list[self.active_idea])
 
 
-    def _decrement_active_idea(
+    def _decrement_idea(
         self
     ) -> None:
         """_summary_
@@ -307,14 +307,14 @@ class Menu():
         self._activate_idea(idea_list[self.active_idea])
 
 
-    def _ponder_active_idea(
+    def _ideate(
         self,
     ) -> None:
         activate_thought_key = list(self.thoughts.keys())[self.active_idea]
         self.active_thought = self.thoughts.get(activate_thought_key)
 
 
-    def _forget_active_idea(
+    def _forget(
         self,
     ) -> None:
         self.active_thought = None
@@ -345,16 +345,21 @@ class Menu():
         return self.piece_maps.idea
 
 
-    def active_thought_key(self) -> str:
+    def _active_thought_key(
+        self
+    ) -> str:
         return list(self.tabs.keys())[self.active_idea]
 
 
-    def get_active_thought(self):
+    def get_active_thought(
+        self
+    ) -> thought.Thought:
         return self.thoughts.get(
-            self.active_thought_key()
+            self._active_thought_key()
         )
 
-    def button_maps(
+
+    def idea_maps(
         self
     ) -> tuple:
         return (
@@ -390,16 +395,16 @@ class Menu():
             # controls when traversing main button stack
             if self.active_tab is None:
                 if menu_input.increment:
-                    self._increment_active_idea()
+                    self._increment_idea()
                 elif menu_input.decrement:
-                    self._decrement_active_idea()
+                    self._decrement_idea()
                 elif menu_input.execute:
-                    self._ponder_active_idea()
+                    self._ideate()
                 return
 
             # controls when traversing tab stacks
             if menu_input.reverse:
-                self._forget_active_idea()
+                self._forget()
                 return
 
             if self.active_tab.name == 'armory':
