@@ -384,7 +384,7 @@ tree_top:
 
 # CITY STRUTS
 
-pavement:
+city_pavement:
   path: city.png
   position:
     x: 32
@@ -399,7 +399,7 @@ pavement:
 
 # GRAVEYARD STRUTS
 
-burial_pit:
+grave_burial_pit:
   path: graveyard.png
   position:
     x: 2
@@ -417,7 +417,7 @@ burial_pit:
         w: 52
         h: 15
 
-headstone:
+grave_headstone:
   path: graveyard.png
   position:
     x: 10
@@ -429,23 +429,6 @@ headstone:
   properties: 
     hitbox: null
 
-obelisk:
-  path: city.png
-  position:
-    x: 740  
-    y: 101
-  size:
-    w: 24
-    h: 59
-  channels: null
-  properties:
-    hitbox:
-      offset:
-        x: 2
-        y: 0
-      size:
-        w: 24
-        h: 35
 
 grave_marker:
   path: graveyard.png
@@ -468,7 +451,7 @@ grave_marker:
 
 # BRIDGE STRUTS
 
-vertical_wood_bridge_left:
+wood_bridge_vertical_left:
   path: village.png
   position:
     x: 448
@@ -486,7 +469,7 @@ vertical_wood_bridge_left:
         w: 6
         h: 87
 
-vertical_wood_bridge_right:
+wood_bridge_vertical_right:
   path: village.png
   position:
     x: 496

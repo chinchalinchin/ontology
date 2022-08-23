@@ -338,7 +338,7 @@ tree_patch:
 
 horizontal_pavement:
   struts:
-    pavement:
+    city_pavement:
       sets:
         - start:
             units: absolute
@@ -358,14 +358,14 @@ horizontal_pavement:
 
 grave:
   struts:
-    headstone:
+    grave_headstone:
       sets:
         - start:
             units: absolute
             x: 8
             y: 0
           cover: true
-    burial_pit:
+    grave_burial_pit:
       sets:
         - start:
             units: absolute
@@ -373,16 +373,16 @@ grave:
             y: 31
           cover: false 
 
-vertical_wood_bridge:
+wood_bridge_vertical:
   struts:
-    vertical_wood_bridge_left:
+    wood_bridge_vertical_left:
       sets:
         - start:
             units: absolute
             x: 0
             y: 0
           cover: false
-    vertical_wood_bridge_right:
+    wood_bridge_vertical_right:
       sets:
         - start: 
             units: absolute
