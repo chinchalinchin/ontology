@@ -82,7 +82,7 @@ class Menu():
         ontology_path: str = settings.DEFAULT_DIR
     ) -> None:
         config = conf.Conf(ontology_path)
-        state_ao = state.State(ontology_path).get_state('dynamic')
+        state_ao = state.State(ontology_path)
         self._init_conf(config)
         self.media_size = formulae.find_media_size(
             player_device.dimensions, 
@@ -179,7 +179,7 @@ class Menu():
 
         menu_styles = self.styles.get(self.media_size).menu
 
-        for thought_key, thought_conf in enumerate(self.properties.thoughts.items()):
+        for thought_key, thought_conf in self.properties.thoughts.items():
             log.debug(f'Creating {thought_key} thought...', 'Menu._init_tabs')
             setattr(
                 self.thoughts, 
@@ -338,7 +338,7 @@ class Menu():
         # NOTE **: ...but pieces stay the same ...
         if not self.piece_maps.get('idea'):
             piece_map = []
-            for piece_conf in self.ides.values():
+            for piece_conf in self.ideas.values():
                 for piece_key in piece_conf.keys():
                     piece_map.append(piece_key)
             setattr(self.piece_maps, 'idea', piece_map)
@@ -348,7 +348,7 @@ class Menu():
     def _active_thought_key(
         self
     ) -> str:
-        return list(self.tabs.keys())[self.active_idea]
+        return list(self.thoughts.keys())[self.active_idea]
 
 
     def get_active_thought(
@@ -393,7 +393,7 @@ class Menu():
                 return
 
             # controls when traversing main button stack
-            if self.active_tab is None:
+            if self.active_thought is None:
                 if menu_input.increment:
                     self._increment_idea()
                 elif menu_input.decrement:
@@ -407,11 +407,11 @@ class Menu():
                 self._forget()
                 return
 
-            if self.active_tab.name == 'armory':
+            if self.active_thought.name == 'armory':
                 pass
-            if self.active_tab.name == 'equipment':
+            if self.active_thought.name == 'equipment':
                 pass
-            if self.active_tab.name == 'inventory':
+            if self.active_thought.name == 'inventory':
                 pass
-            if self.active_tab.name == 'map':
+            if self.active_thought.name == 'map':
                 pass

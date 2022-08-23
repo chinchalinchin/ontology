@@ -166,7 +166,7 @@ class HUD():
         )
 
 
-    def _immute_equipment_size(
+    def _immute_armory_size(
         self
     ):
         return tuple(
@@ -175,7 +175,7 @@ class HUD():
                 equip.size.w, 
                 equip.size.h
             )
-            for equip_key, equip in self.avatar_conf.equipment.items()
+            for equip_key, equip in self.avatar_conf.armory.items()
             if equip is not None and equip.get('size') is not None
         )
 
@@ -423,7 +423,7 @@ class HUD():
         # NOTE: this ugliness is all in service of immutability...
         render_tuples = formulae.slot_avatar_coordinates(
             self._immute_slots(), 
-            self._immute_equipment_size(),
+            self._immute_armory_size(),
             self._immute_inventory_size(),
             tuple(self.slot_rendering_points),
             tuple(self.bag_rendering_points),

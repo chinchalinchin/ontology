@@ -627,35 +627,40 @@ class Renderer():
         repository: repo.Repo
     ) -> None:
 
+        # TODO: this is only hud avatars. should orchestrate all hud rendering methods through a single method
+
         avatar_rendering_points = headsup_display.get_rendering_points('avatar')
         avatar_frame_map = headsup_display.get_frame_map('avatar')
         # TODO: there has to be a way of calculating this...
         avatar_set_map = munch.Munch({
-            'equipment': 4, # slots 
+            'armory': 4, # slots 
             'inventory': 8 # slots + wallets + belt + bag
         })
 
         for i, render_point in enumerate(avatar_rendering_points):
-            if not render_point:
+            if not render_point or not avatar_frame_map[str(i)]:
                 continue
 
-            if i < avatar_set_map.equipment and \
+            if i < avatar_set_map.armory and \
                 i < avatar_set_map.inventory:
-                
-                if not avatar_frame_map[str(i)]:
-                    continue
-                set_key = 'equipment'
 
-            elif i >= avatar_set_map.equipment and \
+                set_key = 'armory'
+
+            elif i >= avatar_set_map.armory and \
                 i < avatar_set_map.inventory:
+
                 set_key = 'inventory'
 
             else: 
+
                 set_key = None
 
             if not set_key:
                 continue
 
+            print('slot avatars')
+            print(set_key,
+                avatar_frame_map[str(i)])
             avatar_frame = repository.get_avatar_frame(
                 set_key,
                 avatar_frame_map[str(i)]
@@ -705,8 +710,11 @@ class Renderer():
             if activated_thought.has_baubles():
                 baub_render_pts, avtr_render_pts = activated_thought.rendering_points('bauble')
                 baub_frame_map, baub_piece_map, baub_avtr_map = activated_thought.bauble_maps()
-                
-                for i, render_point in enumerate(baub_render_pts):
+
+                for i, render_point in enumerate(baub_render_pts):                    
+                    if not baub_frame_map[i] or not baub_piece_map[i]:
+                        continue
+
                     render_frame = repository.get_piecewise_qualia_frame(
                         menu.media_size,
                         'bauble',
@@ -718,18 +726,31 @@ class Renderer():
                         render_frame,
                         gui.int_tuple(render_point)
                     )
-                    if baub_avtr_map[i] is not None:
-                        avatar_frame = repository.get_avatar_frame(
-                            'equipment', # TODO: need to parameterize this somehow
-                            baub_avtr_map[i]
 
-                        )
-                        gui.render_composite(
-                            self.world_frame,
-                            avatar_frame,
-                            gui.int_tuple(avtr_render_pts[i])
-                        )
+                    if not baub_avtr_map[i]:
+                        # NOTE: evalute separately since baubles don't necessarily contain avatars
+                        continue
 
+                    
+                    avatarset_key = activated_thought.map_avatar_to_set(baub_avtr_map[i])
+
+                    print('bauble avatars')
+                    print(avatarset_key, baub_avtr_map[i])
+                    print(avtr_render_pts[i])
+
+                    avatar_frame = repository.get_avatar_frame(
+                        avatarset_key,
+                        baub_avtr_map[i]
+                    )
+                    avatar_frame.show()
+                    gui.render_composite(
+                        self.world_frame,
+                        avatar_frame,
+                        gui.int_tuple(avtr_render_pts[i])
+                    )
+                    
+                import sys
+                sys.exit()
 
     @QtCore.Slot()
     def _update_debug_view(

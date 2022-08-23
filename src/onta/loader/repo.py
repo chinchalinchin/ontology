@@ -27,7 +27,7 @@ SWITCH_PLATES_TYPES = [
     'gate' 
 ]
 AVATAR_TYPES = [ 
-    'armor', 
+    'armory', 
     'equipment', 
     'inventory', 
     'quantity' 
@@ -114,7 +114,7 @@ class Repo():
 
     def __init__(
         self, 
-        ontology_path: str
+        ontology_path: str = settings.DEFAULT_DIR
     ) -> None:
         """
         .. note::
@@ -361,11 +361,11 @@ class Repo():
                 elif set_type == 'aside':
                     iter_set = interface_conf.menu.get(size).aside
                     save_set = self.qualia
-                elif set_type == 'indicator':
+                elif set_type == 'focus':
                     iter_set = interface_conf.menu.get(size).focus
                     save_set = self.qualia
                     
-                if set_type in [ 'bauble', 'thought', 'focus', 'aside' ]:
+                if set_type in [ 'bauble', 'thought', 'focus', 'aside', 'idea' ]:
                     setattr(save_set.get(size), set_type, munch.Munch({}))
 
                 # (enabled, conf), (disbled, conf), ...
@@ -373,7 +373,7 @@ class Repo():
                     if not set_conf:
                         continue
                     
-                    if set_type in [ 'bauble', 'thought', 'focus', 'aside' ]:
+                    if set_type in [ 'bauble', 'thought', 'focus', 'aside', 'idea']:
                         setattr(save_set.get(size).get(set_type), set_key, munch.Munch({}))
                     else: # HUD qualia ('mirror', 'pack')
                         setattr(save_set.get(size), set_key, munch.Munch({}))                        
@@ -398,7 +398,7 @@ class Repo():
                             f"{size} {set_type} {set_key} {component_key}: size - {buffer.size}, mode - {buffer.mode}", 
                             '_init_sense_assets'
                         )
-                        if set_type in [ 'bauble', 'thought', 'focus', 'aside' ]:
+                        if set_type in [ 'bauble', 'thought', 'focus', 'aside', 'idea' ]:
                             setattr(
                                 save_set.get(size).get(set_type).get(set_key),
                                 component_key,
@@ -426,7 +426,6 @@ class Repo():
                 w, h = simple_set.size.w, simple_set.size.h
 
                 # simple qualia need to be stored and retrieved dirrecently if doing it this way.
-
 
     def _init_projectile_assets(
         self,
@@ -496,10 +495,10 @@ class Repo():
     ) -> None:
         avatar_conf = config.load_avatar_configuration()
 
-        for avatarset_key in AVATAR_TYPES:
+        for avatarset_key, avatarset_conf in avatar_conf.avatars.items():
             setattr(self.avatars, avatarset_key, munch.Munch({}))
 
-            for avatar_key, avatar in avatar_conf.avatars.get(avatarset_key).items():
+            for avatar_key, avatar in avatarset_conf.items():
                 if not avatar or not avatar.get('path'):
                     continue
 
@@ -713,18 +712,22 @@ class Repo():
     @functools.lru_cache(maxsize=64)
     def get_avatar_frame(
         self,
-        avatar_set: str,
-        component_key: str
+        avatarset_key: str,
+        avatar_key: str
     ) -> Union[Image.Image, None]:
-        """_summary_
+        """Retrieve an _Avatar_ frame.
 
-        :param component_key: _description_
-        :type component_key: str
-        :return: _description_
+        :param avatarset_key: `equipment | armory | inventory | quantity`
+        :type avatarset_key: str
+        :param avatar_key: The avatar key under the set to retrieve.
+        :type avatar_key: str
+        :return: _Avatar_ frame image.
         :rtype: Union[Image.Image, None]
         """
-        if self.avatars.get(avatar_set):
-            return self.avatars.get(avatar_set).get(component_key)
+        import pprint
+        pprint.pprint(self.avatars)
+        if self.avatars.get(avatarset_key):
+            return self.avatars.get(avatarset_key).get(avatar_key)
         return None
     
 
@@ -801,7 +804,7 @@ class Repo():
         self, 
         breakpoint_key: str, 
         component_key: str, 
-        status_key: str,
+        frame_key: str,
         piece_key: str
     ) -> Union[Image.Image, None]:
         """_summary_
@@ -810,6 +813,8 @@ class Repo():
         :type breakpoint_key: str
         :param component_key: _description_
         :type component_key: str
+        :param frame_key: _description_
+        :type frame_key: str
         :param piece_key: _description_
         :type piece_key: str
         :return: _description_
@@ -817,10 +822,10 @@ class Repo():
         """
         if self.qualia.get(breakpoint_key) and \
             self.qualia.get(breakpoint_key).get(component_key) and \
-            self.qualia.get(breakpoint_key).get(component_key).get(status_key):
+            self.qualia.get(breakpoint_key).get(component_key).get(frame_key):
 
             return self.qualia.get(breakpoint_key).get(component_key).get(
-                status_key).get(piece_key)
+                frame_key).get(piece_key)
         return None
 
 

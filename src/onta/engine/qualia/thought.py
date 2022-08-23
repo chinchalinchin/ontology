@@ -138,6 +138,11 @@ class Thought():
             self._calculate_bauble_frame_map()
             self._calculate_bauble_avatar_map()
 
+
+        import pprint 
+
+        pprint.pprint(self.baubles)
+
         # TODO: what to do if both baubles and diplay?
 
 
@@ -249,7 +254,10 @@ class Thought():
     def _calculate_bauble_avatar_positions(
         self
     ) -> None:
-        log.debug(f'Calcuating {self.name} bauble avatar positions', '_calculate_bauble_avatar_positions')
+        log.debug(
+            f'Calcuating {self.name} bauble avatar positions', 
+            'Thought._calculate_bauble_avatar_positions'
+        )
         bauble_piece_widths = [ 
             piece.size.w 
             for piece 
@@ -259,17 +267,21 @@ class Thought():
             # NOTE: here is where the height assumption is made. See note in docstring.
         bauble_height = self.components_conf.bauble.enabled.left.size.h
 
+
         for bauble_label, bauble_conf in self.baubles.items():
-            row = filter(
-                lambda x: x.label == bauble_label, 
-                self.components
-            )
+            row = list(
+                filter(
+                    lambda x: x.label == bauble_label, 
+                    self.components
+                )
+            ).pop()
+
             row_index = self.components.index(row)
-            start_index = row_index * len(self.baubles)
+            start_index = row_index * self.bauble_scroll_num
             start_point = self.bauble_render_points[start_index]
             added = 0
 
-            for avatar_key in bauble_conf.enabled:
+            for i, avatar_key in enumerate(bauble_conf.enabled):
                 if bauble_label in ['slash', 'shoot', 'cast', 'thrust']:
                     avatar_dim = (
                         self.avatar_conf.armory.get(avatar_key).size.w,
@@ -288,8 +300,8 @@ class Thought():
 
                 self.bauble_avatar_render_points.append(
                     (
-                        start_point[0] + (bauble_width - avatar_dim[0])/2,
-                        start_point[1] + (bauble_height - avatar_dim[1])/2
+                        start_point[0] + i * bauble_width + ( bauble_width - avatar_dim[0] )/2,
+                        start_point[1] + ( bauble_height - avatar_dim[1] )/2
                     )
                 )
 
@@ -300,7 +312,7 @@ class Thought():
             
             while self.bauble_scroll_num > added:
                 self.bauble_avatar_render_points.append(None)
-                added + 1
+                added += 1
      
 
     def _calculate_bauble_avatar_map(self):
@@ -321,7 +333,9 @@ class Thought():
             # TODO: will need the current world state to update grab player's capital
  
 
-    def _calculate_bauble_frame_map(self):
+    def _calculate_bauble_frame_map(
+        self
+    ) -> None:
         for bauble_conf in self.baubles.values():
             selected = bauble_conf.selected
             added = 0
@@ -339,10 +353,20 @@ class Thought():
 
             while self.bauble_scroll_num > added:
                 self.bauble_frame_map.append('disabled')
+                added += 1
 
             # TODO: need to ensure teh selected bauble for a bauble_label has its frame
             # set to active
 
+
+    def map_avatar_to_set(
+        self, 
+        avatar_key:str
+    ) -> Union[str, None]:
+        for avatarset_key,avatarset_conf in self.avatar_conf.items():
+            if avatar_key in list(avatarset_conf.keys()):
+                return avatarset_key
+        return None
 
     def has_baubles(
         self
