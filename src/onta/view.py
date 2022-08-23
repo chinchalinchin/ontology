@@ -658,9 +658,6 @@ class Renderer():
             if not set_key:
                 continue
 
-            print('slot avatars')
-            print(set_key,
-                avatar_frame_map[str(i)])
             avatar_frame = repository.get_avatar_frame(
                 set_key,
                 avatar_frame_map[str(i)]
@@ -734,24 +731,16 @@ class Renderer():
                     
                     avatarset_key = activated_thought.map_avatar_to_set(baub_avtr_map[i])
 
-                    print('bauble avatars')
-                    print(avatarset_key, baub_avtr_map[i])
-                    print(avtr_render_pts[i])
-
                     avatar_frame = repository.get_avatar_frame(
                         avatarset_key,
                         baub_avtr_map[i]
                     )
-                    avatar_frame.show()
                     gui.render_composite(
                         self.world_frame,
                         avatar_frame,
                         gui.int_tuple(avtr_render_pts[i])
                     )
                     
-                import sys
-                sys.exit()
-
     @QtCore.Slot()
     def _update_debug_view(
         self,
