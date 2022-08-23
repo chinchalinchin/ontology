@@ -22,7 +22,7 @@ house:
             x: 188
             y: 96
           cover: false
-    house_flattop:
+    house_shingle:
       sets:
         - start:
             units: absolute

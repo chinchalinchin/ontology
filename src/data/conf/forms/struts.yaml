@@ -132,7 +132,7 @@ house_roof:
   properties:
     hitbox: null
 
-house_flattop:
+house_shingle:
   path: house.png
   position:
     x: 96

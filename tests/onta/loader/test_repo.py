@@ -64,3 +64,33 @@ def test_get_expression_frame(
     express_frame = repository.get_expression_frame(express_key)
     assert isinstance(express_frame, Image.Image)
     assert express_frame.size == express_dim
+
+@pytest.mark.parametrize('form_key,group_key,dim',[
+    ( 'tile', 'coal' , ( 96, 32 ) ),
+    ( 'tile', 'grass' , ( 96, 32 ) ),
+    ( 'tile', 'mud' , ( 96, 32 ) ),
+    ( 'tile', 'sand' , ( 96, 32 ) ),
+    ( 'tile', 'water' , ( 96, 32 ) ),
+    ( 'tile', 'hole' , ( 96, 32 ) ),
+    ( 'strut', 'hitbox_small' , ( 32, 32 ) ),
+    ( 'strut', 'hitbox_large', ( 64, 64 ) ),
+    ( 'strut', 'hitbox_vertical', ( 32, 64 ) ),
+    ( 'strut', 'hitbox_horizontal', ( 64, 32 ) ),
+    ( 'strut', 'house_exterior_wall', ( 92, 96 ) ),
+    ( 'strut', 'house_interior_wall', ( 96, 105 ) ),
+    ( 'strut', 'house_floor', ( 96, 96 ) ),
+    ( 'strut', 'house_roof', ( 96, 96 ) ),
+    ( 'strut', 'house_shingle', ( 96, 64 ) ),
+    ( 'strut', 'house_steps', ( 32, 24 ) ),
+    ( 'strut', 'house_chimney', ( 22, 45 ) ),
+    ( 'strut', 'house_window', ( 32, 27 ) ),
+])
+def test_get_form_frame(
+    repository,
+    form_key, 
+    group_key, 
+    dim
+):
+    form_frame = repository.get_form_frame(form_key, group_key)
+    assert isinstance(form_frame, Image.Image)
+    assert form_frame.size == dim
