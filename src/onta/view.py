@@ -657,7 +657,7 @@ class Renderer():
 
             if not set_key:
                 continue
-
+        
             avatar_frame = repository.get_avatar_frame(
                 set_key,
                 avatar_frame_map[str(i)]
@@ -667,7 +667,6 @@ class Renderer():
                 avatar_frame,
                 gui.int_tuple(render_point)
             )
-
 
     def _render_menu(
         self, 
@@ -731,6 +730,8 @@ class Renderer():
                     
                     avatarset_key = activated_thought.map_avatar_to_set(baub_avtr_map[i])
 
+                    # HYPOTHESIS: what is happening is: the avatar coordinates are shifted by one slot,
+                    #               and are getting rendered underneath the next bauble...
                     avatar_frame = repository.get_avatar_frame(
                         avatarset_key,
                         baub_avtr_map[i]

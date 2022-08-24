@@ -138,11 +138,6 @@ class Thought():
             self._calculate_bauble_frame_map()
             self._calculate_bauble_avatar_map()
 
-
-        import pprint 
-
-        pprint.pprint(self.baubles)
-
         # TODO: what to do if both baubles and diplay?
 
 
@@ -263,9 +258,12 @@ class Thought():
             for piece 
             in self.components_conf.bauble.enabled.values() 
         ]
-        bauble_width = sum(bauble_piece_widths)
+        total_bauble_width = sum(bauble_piece_widths)
             # NOTE: here is where the height assumption is made. See note in docstring.
         bauble_height = self.components_conf.bauble.enabled.left.size.h
+            # NOTE: bauble pieces have diferent widths, so this will result in a small misalignment
+            #       
+        bauble_width = self.components_conf.bauble.enabled.left.size.w
 
 
         for bauble_label, bauble_conf in self.baubles.items():

@@ -138,16 +138,16 @@ def projectile_attackbox(
     :return: _description_
     :rtype: tuple
     """
-    raw_atkbox = directional_atkboxes.get(sprite.stature.direction)
+    raw_atkbox = directional_atkboxes.get(sprite['stature']['direction'])
 
     if raw_atkbox is None:
         return raw_atkbox
 
     format_atkbox = (
-        int(sprite.position.x + raw_atkbox.offset.x),
-        int(sprite.position.y + raw_atkbox.offset.y),
-        raw_atkbox.size.w,
-        raw_atkbox.size.h
+        int(sprite['position']['x'] + raw_atkbox['offset']['x']),
+        int(sprite['position']['y'] + raw_atkbox['offset']['y']),
+        raw_atkbox['size']['w'],
+        raw_atkbox['size']['h']
     )
     return format_atkbox
 

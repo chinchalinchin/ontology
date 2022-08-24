@@ -724,8 +724,6 @@ class Repo():
         :return: _Avatar_ frame image.
         :rtype: Union[Image.Image, None]
         """
-        import pprint
-        pprint.pprint(self.avatars)
         if self.avatars.get(avatarset_key):
             return self.avatars.get(avatarset_key).get(avatar_key)
         return None
