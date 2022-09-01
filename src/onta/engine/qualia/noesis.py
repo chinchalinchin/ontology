@@ -3,20 +3,26 @@ import munch
 
 import onta.settings as settings
 import onta.device as device
+import onta.world as world
 import onta.loader.conf as conf
 import onta.loader.state as state
 import onta.util.logger as logger
-import onta.engine.qualia.display as display
-import onta.engine.qualia.thought as thought
+import onta.engine.qualia.apriori as apriori
+import onta.engine.qualia.thoughts.bauble as bauble
+import onta.engine.qualia.thoughts.symbol as symbol
 
 import onta.engine.facticity.formulae as formulae
 
 log = logger.Logger('onta.engine.qualia.menu', settings.LOG_LEVEL)
 
+BAUBLE_THOUGHTS = [ 'armory', 'equipment', 'inventory' ]
+SYMBOL_THOUGHTS = [ 'map', 'status' ]
 
-class Menu():
-    frame_maps = munch.Munch({})
-    piece_maps = munch.Munch({})
+class NoeticQuale():
+    """
+    
+    A `NoeticQuale` is essentially an in-game menu; it composed of "ideas", i.e. buttons, the player iterates throguh and then executes. These "ideas" become "thoughts", i.e. submenus, when executed. When an "idea" is executed, focus is shifted to the "thought" until the player pops back into the "idea" selection menu.
+    """
 
     menu_conf = munch.Munch({})
     """
@@ -59,9 +65,10 @@ class Menu():
     }
     """
     idea_rendering_points = []
+    idea_frame_maps = munch.Munch({})
+    idea_piece_maps = munch.Munch({})
     active_idea = None
     active_thought = None
-
     avatar_conf = munch.Munch({})
     properties = munch.Munch({})
     styles = munch.Munch({})
@@ -71,10 +78,6 @@ class Menu():
     menu_activated = False
     media_size = None
     alpha = None
-    
-
-    # TODO: what is tabs going to be???
-    tabs = munch.Munch({})
 
     def __init__(
         self, 
@@ -107,10 +110,10 @@ class Menu():
         self.styles = configure.styles
         self.properties = configure.properties.menu
         self.alpha = configure.transparency
-        self.theme = display.construct_themes(
+        self.theme = apriori.construct_themes(
             configure.theme
         )
-        self.breakpoints = display.format_breakpoints(
+        self.breakpoints = apriori.format_breakpoints(
             configure.breakpoints
         )
         self.avatar_conf = config.load_avatar_configuration().avatars
@@ -130,7 +133,7 @@ class Menu():
             self.styles.get(self.media_size).menu.padding.h
         )
         menu_stack = self.styles.get(self.media_size).menu.stack
-        # all idea component pieces have the same pieces, so any will do...
+        # all idea component pieces have the same dim, so any will do...
         idea_conf = self.menu_conf.get(self.media_size).idea.enabled
 
         # NOTE: ideas are "thought" buttons
@@ -181,21 +184,32 @@ class Menu():
 
         for thought_key, thought_conf in self.properties.thoughts.items():
             log.debug(f'Creating {thought_key} thought...', 'Menu._init_tabs')
-            setattr(
-                self.thoughts, 
-                thought_key,
-                thought.Thought(
+            
+            if thought_key in BAUBLE_THOUGHTS:
+                # TODO:? There is a redundancy here. the class itself knows which thoughts are baubles
+                # through this constant, but the configuration data structure also passes in that information. 
+
+                # this brings up the question. how much of the data should be in the configuration and how much
+                # should be programmatic logic?
+
+                setattr(
+                    self.thoughts, 
                     thought_key,
-                    thought_conf,
-                    components_conf,
-                    menu_styles,
-                    self.avatar_conf,
-                    self.idea_rendering_points[0],
-                    idea_dim,
-                    player_device.dimensions,
-                    state_ao,
+                    bauble.BaubleThought(
+                        thought_key,
+                        thought_conf,
+                        components_conf,
+                        menu_styles,
+                        self.avatar_conf,
+                        self.idea_rendering_points[0],
+                        idea_dim,
+                        player_device.dimensions,
+                        state_ao,
+                    )
                 )
-            )
+            elif thought_key in SYMBOL_THOUGHTS:
+                pass
+                # TODO: this
 
 
     def _init_ideas(
@@ -328,8 +342,8 @@ class Menu():
         for piece_conf in self.ideas.values():
             for piece_state in piece_conf.values():
                 frame_map.append(piece_state)
-        setattr(self.frame_maps, 'idea', frame_map)
-        return self.frame_maps.idea
+        setattr(self.idea_frame_maps, 'idea', frame_map)
+        return self.idea_frame_maps.idea
 
 
     def _calculate_idea_piece_map(
@@ -341,8 +355,8 @@ class Menu():
             for piece_conf in self.ideas.values():
                 for piece_key in piece_conf.keys():
                     piece_map.append(piece_key)
-            setattr(self.piece_maps, 'idea', piece_map)
-        return self.piece_maps.idea
+            setattr(self.idea_piece_maps, 'idea', piece_map)
+        return self.idea_piece_maps.idea
 
 
     def _active_thought_key(
@@ -353,7 +367,8 @@ class Menu():
 
     def get_active_thought(
         self
-    ) -> thought.Thought:
+    ) -> bauble.BaubleThought:
+        # TODO: Union[bauble.BaubleThought, symbol.SymbolThought]
         return self.thoughts.get(
             self._active_thought_key()
         )
@@ -384,7 +399,8 @@ class Menu():
 
     def update(
         self, 
-        menu_input: Union[munch.Munch, None]
+        menu_input: Union[munch.Munch, None],
+        game_world: world.World
     ) -> None:
         if menu_input:
             
@@ -396,22 +412,39 @@ class Menu():
             if self.active_thought is None:
                 if menu_input.increment:
                     self._increment_idea()
+
                 elif menu_input.decrement:
                     self._decrement_idea()
+
                 elif menu_input.execute:
                     self._ideate()
+
                 return
 
-            # controls when traversing tab stacks
-            if menu_input.reverse:
+            if menu_input.reconsider:
                 self._forget()
                 return
 
-            if self.active_thought.name == 'armory':
-                pass
-            if self.active_thought.name == 'equipment':
-                pass
-            if self.active_thought.name == 'inventory':
-                pass
-            if self.active_thought.name == 'map':
+            # controls when traversing tab stacks
+            if isinstance(self.active_thought, bauble.BaubleThought):
+
+                if menu_input.increment:
+                    self.active_thought.deselect_bauble_row()
+                    self.active_thought.increment_bauble_row()
+                    self.active_thought.increment_bauble_selection()
+
+                elif menu_input.decrement:
+                    self.active_thought.deselect_bauble_row()
+                    self.active_thought.decrement_bauble_row()
+                    self.active_thought.increment_bauble_selection()
+
+                elif menu_input.traverse:
+                    self.active_thought.increment_bauble_selection()
+
+                elif menu_input.reverse:
+                    self.active_thought.decrement_bauble_selection()
+
+                return
+
+            elif isinstance(self.active_thought, symbol.SymbolThought):
                 pass

@@ -23,7 +23,7 @@ meditations:
     input:
       - space
     precedence: 2
-  reverse:
+  reconsider:
     input:
       - alt_left
     precedence: 1
@@ -39,6 +39,15 @@ meditations:
     input:
       - down
     precedence: 4
+  traverse:
+    input:
+      - right
+    precedence: 5
+  reverse:
+    input:
+      - left
+    precedence: 6
+  
 
 
 expressions:

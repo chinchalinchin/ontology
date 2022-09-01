@@ -7,16 +7,13 @@ import onta.settings as settings
 import onta.loader.state as state
 import onta.util.logger as logger 
 
-log = logger.Logger('onta.engine.qualia.thought', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.qualia.thoughts.bauble', settings.LOG_LEVEL)
 
+ARMORY_BAUBLES = [ 'slash', 'shoot', 'cast', 'thrust' ]
+EQUIPMENT_BAUBLES = [ 'armor', 'shield' ]
+INVENTORY_BAUBLES = [ 'belt', 'bag' ]
 
-# TODO: should enforce mutual exclusion between bauble type of thoughts and display type of thoughts.
-
-# that way the render poiint methods don't need to worry about what type they are
-#  generating render points for
-
-
-class Thought():
+class BaubleThought():
 
     def __init__(
         self, 
@@ -30,6 +27,7 @@ class Thought():
         device_dim: tuple,
         state_ao: state.State
     ) -> None: 
+        # Define in __init__ to avoid closure since tabs are created in loop by Menu
 
         self.name = name
         self.components = components
@@ -40,7 +38,7 @@ class Thought():
         self.alignment_dim = alignment_dim
         self.device_dim = device_dim
 
-        # Define in __init__ to avoid closure since tabs are created in loop by Menu
+        # NOTE: self.baubles = { 'slash': ..., 'shoot': ..., 'thrust': ..., 'cast': .... }
         self.baubles = munch.Munch({})
         self.bauble_render_points = []
         self.bauble_avatar_render_points = []
@@ -49,14 +47,12 @@ class Thought():
         self.bauble_avatar_map = []
         self.bauble_scroll_num = None
 
+        self.selected_row = 0
         self.asides = munch.Munch({})
         self.aside_render_points = []
 
-        self.displays = munch.Munch({})
-        self.display_render_points = []
-
         self.focii = munch.Munch({})
-        self.focus_render_points = []
+        self.focii_render_points = []
 
         self.concepts = munch.Munch({})
         self.concept_render_points = []
@@ -87,8 +83,6 @@ class Thought():
         if not self.components:
             return
 
-        display_num = 0
-
         log.debug(f'Initializing {self.name} thought...', 'Thought._calculate_components')
         
         for component in self.components:
@@ -99,46 +93,31 @@ class Thought():
 
             log.debug(f'Initializing {component.label} {component.component}', 'Thought._calculate_components')
 
-            if component.component == 'bauble':
-                if component.label in ['slash', 'thrust', 'shoot', 'cast']:
-                    iter_set = player_capital.get('armory')
-                elif component.label in ['armor', 'shield']:
-                    iter_set = player_capital.get('equipment')
-                elif component.label in ['bag', 'belt']:
-                    iter_set = player_capital.get('inventory')
 
-                component_avatars = [
-                    arm.component 
-                    for arm in iter_set
-                    if arm.label == component.label
-                ]
+            # NOTE: bauble-based thought names must correspond to the component of the player capital they operate on.
+            iter_set = player_capital.get(self.name)
 
-                setattr(
-                    self.baubles, 
-                    component.label, 
-                    munch.Munch({
-                        'enabled': component_avatars,
-                        'selected': None,
-                    })
-                )
+            component_avatars = [
+                arm.component 
+                for arm in iter_set
+                if arm.label == component.label
+            ]
 
+            setattr(
+                self.baubles, 
+                component.label, 
+                munch.Munch({
+                    'selectable': component_avatars,
+                    'selected': None,
+                })
+            )
 
-            elif component.component == 'display':
-                display_num += 1
-                setattr(
-                    self.displays,
-                    component.label,
-                    None
-                )
-                # TODO: set display based on player state
         
         if len(self.baubles) > 0:
             self._calculate_bauble_positions()
             self._calculate_bauble_avatar_positions()
             self._calculate_bauble_frame_map()
-            self._calculate_bauble_avatar_map()
-
-        # TODO: what to do if both baubles and diplay?
+            self._calculate_bauble_avatar_map()           
 
 
     # TODO: candidate for cython formulae module
@@ -245,7 +224,7 @@ class Thought():
                     )
                 )
 
-
+    # TODO: candidate for cython formulae module
     def _calculate_bauble_avatar_positions(
         self
     ) -> None:
@@ -280,17 +259,17 @@ class Thought():
             added = 0
 
             for i, avatar_key in enumerate(bauble_conf.enabled):
-                if bauble_label in ['slash', 'shoot', 'cast', 'thrust']:
+                if bauble_label in ARMORY_BAUBLES:
                     avatar_dim = (
                         self.avatar_conf.armory.get(avatar_key).size.w,
                         self.avatar_conf.armory.get(avatar_key).size.h
                     )
-                elif bauble_label in ['armor', 'shield']:
+                elif bauble_label in EQUIPMENT_BAUBLES:
                     avatar_dim = (
                         self.avatar_conf.equipment.get(avatar_key).size.w,
                         self.avatar_conf.equipment.get(avatar_key).size.w,
                     )
-                elif bauble_label in ['bag', 'belt']:
+                elif bauble_label in INVENTORY_BAUBLES:
                     avatar_dim = (
                         self.avatar_conf.inventory.get(avatar_key).size.w,
                         self.avatar_conf.inventory.get(avatar_key).size.h
@@ -313,7 +292,10 @@ class Thought():
                 added += 1
      
 
-    def _calculate_bauble_avatar_map(self):
+    def _calculate_bauble_avatar_map(
+        self
+    ) -> None:
+        self.bauble_avatar_map = []
         for bauble_conf in self.baubles.values():
             added = 0
 
@@ -334,11 +316,12 @@ class Thought():
     def _calculate_bauble_frame_map(
         self
     ) -> None:
+        self.bauble_frame_map = []
         for bauble_conf in self.baubles.values():
             selected = bauble_conf.selected
             added = 0
 
-            for avatar_key in bauble_conf.enabled:
+            for avatar_key in bauble_conf.selectable:
                 added += 1
                 if avatar_key == selected:
                     self.bauble_frame_map.append('active')
@@ -366,11 +349,6 @@ class Thought():
                 return avatarset_key
         return None
 
-    def has_baubles(
-        self
-    ) -> tuple:
-        return len(self.baubles) > 0
-
 
     def bauble_maps(
         self
@@ -393,6 +371,84 @@ class Thought():
             )
         return None
 
+
+    # TODO: what if more avatars than on-screen baubles?
+    def increment_bauble_selection(
+        self,
+    ) -> None:
+        row_key = list(self.baubles.keys())[self.selected_row]
+        row_bauble = self.baubles.get(row_key)
+
+        if not row_bauble.selected:
+            setattr(
+                row_bauble,
+                'selected',
+                row_bauble.selectable[0]
+            )
+            return
+
+        current_index = row_bauble.selectable.index(row_bauble.selected)
+        current_index += 1
+        if current_index > len(row_bauble.selectable) - 1:
+            current_index = 0 
+        setattr(
+            row_bauble,
+            'selected',
+            row_bauble.selectable[current_index]
+
+        )
+
+
+    def decrement_bauble_selection(
+        self
+    ) -> None:
+        row_key = list(self.baubles.keys())[self.selected_row]
+        row_bauble = self.baubles.get(row_key)
+
+        if not row_bauble.selected:
+            setattr(
+                row_bauble,
+                'selected',
+                row_bauble.selectable[-1]
+            )
+            return
+        
+        current_index = row_bauble.selectable.index(row_bauble.selected)
+        current_index -= 1
+        if current_index < 0:
+            current_index = len(row_bauble.selectable) - 1
+        setattr(
+            row_bauble,
+            'selected',
+            row_bauble.selectable[current_index]
+        )
+
+
+    def deselect_bauble_row(
+        self
+    ) -> None:
+        row_key = list(self.baubles.keys())[self.selected_row]
+        row_bauble = self.baubles.get(row_key)
+        setattr(
+            row_bauble,
+            'selected',
+            None
+        )
+        
+    def increment_bauble_row(
+        self
+    ) -> None:
+        self.selected_row += 1
+        if self.selected_row > len(self.baubles) - 1:
+            self.selected_row = 0
+
+
+    def decrement_bauble_row(
+        self
+    ) -> None:
+        self.selected_row -= 1
+        if self.selected_row < 0:
+            self.selected_row = len(self.baubles) - 1
 
     def update(
         self,

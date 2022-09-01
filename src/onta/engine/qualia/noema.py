@@ -7,16 +7,16 @@ import onta.world as world
 import onta.loader.conf as conf
 import onta.loader.state as state
 import onta.util.logger as logger
-import onta.engine.qualia.display as display
+import onta.engine.qualia.apriori as apriori
 
 from onta.engine.facticity import formulae
 
-log = logger.Logger('onta.engine.qualia.hud', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.qualia.noema', settings.LOG_LEVEL)
 
 PACK_TYPES = [ 'bag', 'belt' ]
 MIRROR_TYPES = [ 'life', 'magic' ]
 
-class HUD():
+class SensoryQuale():
     """
     
     .. note::
@@ -211,7 +211,7 @@ class HUD():
         self.styles = sense_config.styles
         self.hud_conf = sense_config.hud
         self.sizes = sense_config.sizes
-        self.breakpoints = display.format_breakpoints(
+        self.breakpoints = apriori.format_breakpoints(
             sense_config.breakpoints
         )
         self.properties = sense_config.properties

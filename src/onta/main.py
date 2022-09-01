@@ -1,4 +1,3 @@
-from random import randint
 import threading
 import time
 from typing import Tuple
@@ -11,15 +10,13 @@ import onta.view as view
 import onta.control as control
 import onta.settings as settings
 import onta.world as world
-
-import onta.engine.qualia.hud as hud
-import onta.engine.qualia.menu as menu
-
 import onta.loader.repo as repo
-
 import onta.util.logger as logger
 import onta.util.helper as helper
 import onta.util.cli as cli
+
+import onta.engine.qualia.noema as noema
+import onta.engine.qualia.noesis as noesis
 
 log = logger.Logger('onta.main', settings.LOG_LEVEL)
 
@@ -29,8 +26,8 @@ def create(args) -> Tuple[
     world.World,
     view.Renderer,
     repo.Repo,
-    hud.HUD,
-    menu.Menu
+    noema.SensoryQuale,
+    noesis.NoeticQuale
 ]:
     log.debug('Pulling device information...', 'create')
     player_device = device.Device(
@@ -48,13 +45,13 @@ def create(args) -> Tuple[
     game_world = world.World(args.ontology)
 
     log.debug('Initializing HUD...', 'create')
-    headsup_display = hud.HUD(
+    headsup_display = noema.SensoryQuale(
         player_device, 
         args.ontology
     )
 
     log.debug('Initializing Menu...', 'create')
-    pause_menu = menu.Menu(
+    pause_menu = noesis.NoeticQuale(
         player_device,
         args.ontology
     )
@@ -107,8 +104,8 @@ def do(
     game_world: world.World, 
     render_engine: view.Renderer, 
     asset_repository: repo.Repo,
-    headsup_display: hud.HUD,
-    pause_menu: menu.Menu,
+    headsup_display: noema.SensoryQuale,
+    pause_menu: noesis.NoeticQuale,
     debug: bool = False
 ) -> None:
 
@@ -142,7 +139,10 @@ def do(
 
             else:
                 # TODO: catch result in variable
-                pause_menu.update(menu_input)
+                pause_menu.update(
+                    menu_input,
+                    game_world
+                )
                 
                 if not pause_menu.menu_activated:
                     controller.consume_all()
@@ -192,6 +192,7 @@ def do(
                 log.timer(f'Loop iteration too long - delta: {sleep_time} ms')
                 excess -= sleep_time
                 no_delays += 1
+
                 if no_delays >= no_delays_per_yield:
                     log.timer(f'Yielding thread')
                     time.sleep(0)

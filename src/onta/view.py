@@ -6,6 +6,7 @@ from PySide6 import QtWidgets, QtGui, QtCore
 from PIL import Image
 
 import onta.device as device
+from onta.engine.qualia.thoughts.bauble import BaubleThought
 import onta.settings as settings
 import onta.world as world
 from onta.engine import composition
@@ -20,8 +21,8 @@ import onta.engine.qualia.menu as menu
 import onta.engine.facticity.calculator as calculator
 import onta.engine.facticity.formulae as formulae
 
-STATIC_PLATES = [ 'door' ]
-SWITCH_PLATES_TYPES = [ "pressure", "container", "gate" ]
+STATIC_PLATE_TYPES = [ 'door' ]
+SWITCH_PLATE_TYPES = [ "pressure", "container", "gate" ]
 MATERIAL_BLUE_900 = (20, 67, 142, 175)
 
 log = logger.Logger('onta.view', settings.LOG_LEVEL)
@@ -212,12 +213,14 @@ class Renderer():
 
             render_map = gui.order_render_dict(unordered_groups)
             # TODO: render map doesn't work...should be able to iterate over it instaed of 
-            # unordered groups
+            # unordered groups,but the independence of plate and strut order needs more thought,
+            # i.e. how to coalesce the separate strut and plate orders?
 
+            # NOTE: this method only renders static plates. See note in docstring.
             for group_key, group_conf in unordered_groups.items():
                 if group_key in strut_keys or \
                     (game_world.plate_properties.get(group_key) and \
-                        game_world.plate_properties.get(group_key).type in STATIC_PLATES):
+                        game_world.plate_properties.get(group_key).type in STATIC_PLATE_TYPES):
 
                     group_type="strut" if group_key in strut_keys else "plate"
                     group_frame = repository.get_form_frame(group_type, group_key)
@@ -267,10 +270,10 @@ class Renderer():
             group_type = game_world.plate_properties.get(group_key).type
 
 
-            if group_type in STATIC_PLATES:
+            if group_type in STATIC_PLATE_TYPES:
                 continue
 
-            if group_type not in SWITCH_PLATES_TYPES:
+            if group_type not in SWITCH_PLATE_TYPES:
                 group_dim = (
                     group_frame.size[0],
                     group_frame.size[1]
@@ -286,6 +289,7 @@ class Renderer():
                 '_render_variable_platesets'
             )
 
+            # NOTE: convert to immutable tuple of tuples for cython static typing
             typeable_group_conf = tuple(
                 (
                     set_conf.start.x,
@@ -298,6 +302,7 @@ class Renderer():
             if not typeable_group_conf:
                 continue
 
+            # NOTE: pass immutable args to cython for static typing
             coordinates = formulae.plate_coordinates(
                     typeable_group_conf,
                     player_dim,
@@ -314,10 +319,11 @@ class Renderer():
 
                 log.infinite(f'Rendering at ({coord[1]},{coord[2]})', '_render_variable_plateset')
 
-                if group_type not in SWITCH_PLATES_TYPES:
+                if group_type not in SWITCH_PLATE_TYPES:
                     gui.render_composite(
                         self.world_frame,
                         group_frame,
+                        # NOTE: coord contains index of plate, so cannot pass it in directly
                         gui.int_tuple(( coord[1], coord[2] ))
                     )
                     continue
@@ -703,7 +709,7 @@ class Renderer():
         if menu.active_thought:
             activated_thought = menu.get_active_thought()
 
-            if activated_thought.has_baubles():
+            if isinstance(activated_thought, BaubleThought):
                 baub_render_pts, avtr_render_pts = activated_thought.rendering_points('bauble')
                 baub_frame_map, baub_piece_map, baub_avtr_map = activated_thought.bauble_maps()
 
@@ -724,14 +730,12 @@ class Renderer():
                     )
 
                     if not baub_avtr_map[i]:
-                        # NOTE: evalute separately since baubles don't necessarily contain avatars
+                        # NOTE: evaluate separately since baubles don't necessarily contain avatars
                         continue
-
                     
+                    # TODO: why is this not hidden behind the thought interface?
                     avatarset_key = activated_thought.map_avatar_to_set(baub_avtr_map[i])
 
-                    # HYPOTHESIS: what is happening is: the avatar coordinates are shifted by one slot,
-                    #               and are getting rendered underneath the next bauble...
                     avatar_frame = repository.get_avatar_frame(
                         avatarset_key,
                         baub_avtr_map[i]

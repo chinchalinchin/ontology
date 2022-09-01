@@ -141,6 +141,9 @@ properties:
         - middle
         - right
     thoughts:
+      # NOTE: bauble-based thoughts must be named
+      #       corresodning to the component of the player
+      #       capital they operate on.
       armory:
         - component: bauble
           label: slash
