@@ -337,7 +337,8 @@ class NoeticQuale():
     def _calculate_idea_frame_map(
         self
     ) -> list:
-        # NOTE **: frame changes ... 
+        # NOTE **: frame changes ..
+        self.idea_frame_map = [] 
         for piece_conf in self.ideas.values():
             for piece_state in piece_conf.values():
                 self.idea_frame_map.append(piece_state)
@@ -425,20 +426,18 @@ class NoeticQuale():
             if isinstance(self.active_thought, bauble.BaubleThought):
 
                 if menu_input.increment:
-                    self.active_thought.deselect_bauble_row()
                     self.active_thought.increment_bauble_row()
-                    self.active_thought.increment_bauble_selection()
 
                 elif menu_input.decrement:
-                    self.active_thought.deselect_bauble_row()
                     self.active_thought.decrement_bauble_row()
-                    self.active_thought.increment_bauble_selection()
 
                 elif menu_input.traverse:
                     self.active_thought.increment_bauble_selection()
 
                 elif menu_input.reverse:
                     self.active_thought.decrement_bauble_selection()
+
+                self.active_thought.update(game_world)
 
                 return
 

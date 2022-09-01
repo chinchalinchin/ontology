@@ -6,16 +6,16 @@ from PySide6 import QtWidgets, QtGui, QtCore
 from PIL import Image
 
 import onta.device as device
-from onta.engine.qualia.thoughts.bauble import BaubleThought
 import onta.settings as settings
 import onta.world as world
-from onta.engine import composition
 import onta.loader.repo as repo
 import onta.util.logger as logger
 import onta.util.gui as gui
 import onta.util.debug as debug
-import onta.engine.qualia.hud as hud
-import onta.engine.qualia.menu as menu
+import onta.engine.composition as composition
+import onta.engine.qualia.thoughts.bauble as bauble
+import onta.engine.qualia.noema as noema
+import onta.engine.qualia.noesis as noesis
 
 # compiled functions
 import onta.engine.facticity.calculator as calculator
@@ -534,28 +534,30 @@ class Renderer():
             )
 
 
-    def _render_slots(
+    def _render_noema(
         self, 
-        headsup_display: hud.HUD, 
+        display: noema.SensoryQuale, 
         repository: repo.Repo
     ) -> None:
-        rendering_points = headsup_display.get_rendering_points('slot')
 
-        cap_dir = headsup_display.get_cap_directions()
-        buffer_dir = headsup_display.get_buffer_direction()
+        ### SLOT RENDERING
+        rendering_points = display.get_rendering_points('slot')
+
+        cap_dir = display.get_cap_directions()
+        buffer_dir = display.get_buffer_direction()
 
         # slot names
-        render_order = iter(headsup_display.properties.slots.maps)
+        render_order = iter(display.properties.slots.maps)
 
-        cap_frames = repository.get_slot_frames(headsup_display.media_size, 'cap')
-        buffer_frames = repository.get_slot_frames(headsup_display.media_size, 'buffer'
+        cap_frames = repository.get_slot_frames(display.media_size, 'cap')
+        buffer_frames = repository.get_slot_frames(display.media_size, 'buffer'
         )
         # TODO: I don't like the view creating the data structure here...
         # this should be done in repo...
         slot_frames = munch.Munch({
-            'enabled': repository.get_slot_frames(headsup_display.media_size, 'enabled'),
-            'disabled':  repository.get_slot_frames(headsup_display.media_size, 'disabled'),
-            'active': repository.get_slot_frames(headsup_display.media_size, 'active')
+            'enabled': repository.get_slot_frames(display.media_size, 'enabled'),
+            'disabled':  repository.get_slot_frames(display.media_size, 'disabled'),
+            'active': repository.get_slot_frames(display.media_size, 'active')
         })
 
         # cap, then alternate buffer and slot until last cap
@@ -570,7 +572,7 @@ class Renderer():
                 render_key = next(render_order)
                 # map from slot name -> slot state -> slot frame
                 render_frame = slot_frames.get(
-                    headsup_display.get_frame_map('slot').get(render_key)
+                    display.get_frame_map('slot').get(render_key)
                 )
 
             gui.render_composite(
@@ -578,19 +580,13 @@ class Renderer():
                 render_frame,
                 gui.int_tuple(render_point)
             )
+        
+        ## MIRROR RENDERING
+        rendering_points = display.get_rendering_points('life')
 
-    
-    def _render_mirrors(
-        self, 
-        headsup_display: hud.HUD, 
-        repository: repo.Repo
-    ) -> None:
-
-        rendering_points = headsup_display.get_rendering_points('life')
-
-        for i, frame_key in headsup_display.get_frame_map('life').items():
+        for i, frame_key in display.get_frame_map('life').items():
             life_frame = repository.get_mirror_frame(
-                headsup_display.media_size, 
+                display.media_size, 
                 'life', 
                 frame_key
             )
@@ -601,22 +597,17 @@ class Renderer():
                 gui.int_tuple(render_point)
             )
 
-
-    def _render_packs(
-        self, 
-        headsup_display: hud.HUD, 
-        repository: repo.Repo
-    ) -> None:
+        ## PACK RENDERING
 
         # avatar rendering points include slot avatars and wallet avatars...
-        for pack_key in hud.PACK_TYPES:
-            pack_map = headsup_display.get_frame_map(pack_key)
-            pack_rendering_points = headsup_display.get_rendering_points(pack_key)
+        for pack_key in noema.PACK_TYPES:
+            pack_map = display.get_frame_map(pack_key)
+            pack_rendering_points = display.get_rendering_points(pack_key)
 
             for i, render_point in enumerate(pack_rendering_points):
                 # offset by slots
                 pack_frame = repository.get_pack_frame(
-                    headsup_display.media_size,
+                    display.media_size,
                     pack_key,
                     pack_map[i]
                 )
@@ -626,17 +617,10 @@ class Renderer():
                     gui.int_tuple(render_point)
                 )
 
+        ## AVATAR RENDERING
 
-    def _render_avatars(
-        self,
-        headsup_display: hud.HUD,
-        repository: repo.Repo
-    ) -> None:
-
-        # TODO: this is only hud avatars. should orchestrate all hud rendering methods through a single method
-
-        avatar_rendering_points = headsup_display.get_rendering_points('avatar')
-        avatar_frame_map = headsup_display.get_frame_map('avatar')
+        avatar_rendering_points = display.get_rendering_points('avatar')
+        avatar_frame_map = display.get_frame_map('avatar')
         # TODO: there has to be a way of calculating this...
         avatar_set_map = munch.Munch({
             'armory': 4, # slots 
@@ -674,9 +658,9 @@ class Renderer():
                 gui.int_tuple(render_point)
             )
 
-    def _render_menu(
+    def _render_noesis(
         self, 
-        menu: menu.Menu, 
+        menu: noesis.NoeticQuale, 
         repository: repo.Repo
     ) -> None:
 
@@ -709,7 +693,7 @@ class Renderer():
         if menu.active_thought:
             activated_thought = menu.get_active_thought()
 
-            if isinstance(activated_thought, BaubleThought):
+            if isinstance(activated_thought, bauble.BaubleThought):
                 baub_render_pts, avtr_render_pts = activated_thought.rendering_points('bauble')
                 baub_frame_map, baub_piece_map, baub_avtr_map = activated_thought.bauble_maps()
 
@@ -787,8 +771,8 @@ class Renderer():
         self, 
         game_world: world.World, 
         repository: repo.Repo, 
-        headsup_display: hud.HUD, 
-        menu: menu.Menu,
+        display: noema.SensoryQuale, 
+        menu: noesis.NoeticQuale,
         crop: bool = True, 
         layer: str = None
     ) -> Image.Image:
@@ -835,13 +819,10 @@ class Renderer():
             self.world_frame = self.world_frame.crop(crop_box)
         
         if menu.menu_activated:
-            self._render_menu(menu, repository)
+            self._render_noesis(menu, repository)
 
-        if headsup_display.hud_activated:
-            self._render_slots(headsup_display, repository)
-            self._render_mirrors(headsup_display, repository)
-            self._render_packs(headsup_display, repository)
-            self._render_avatars(headsup_display, repository)
+        if display.hud_activated:
+            self._render_noema(display, repository)
 
         return self.world_frame
 
@@ -882,8 +863,8 @@ class Renderer():
         self, 
         game_world: world.World, 
         view_widget: QtWidgets.QWidget, 
-        headsup_display: hud.HUD,
-        menu: menu.Menu,
+        display: noema.SensoryQuale,
+        menu: noesis.NoeticQuale,
         repository: repo.Repo,
         user_input: munch.Munch = None
     ) -> QtWidgets.QWidget: 
@@ -905,7 +886,7 @@ class Renderer():
         cropped = self.render(
             game_world, 
             repository, 
-            headsup_display, 
+            display, 
             menu
         )
 

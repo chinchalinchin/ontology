@@ -61,12 +61,12 @@ class BaubleThought():
         self.conceptions = munch.Munch({})
         self.conception_render_points = []
 
-        self._calculate_components(
+        self._init_components(
             state_ao.get_state('dynamic').get('hero').get('capital')
         )
 
 
-    def _calculate_components(
+    def _init_components(
         self,
         player_capital: munch.Munch
     ) -> None:
@@ -117,7 +117,15 @@ class BaubleThought():
             self._calculate_bauble_positions()
             self._calculate_bauble_avatar_positions()
             self._calculate_bauble_frame_map()
-            self._calculate_bauble_avatar_map()           
+            self._calculate_bauble_avatar_map()
+            self.increment_bauble_selection()     
+
+
+    def _update_components(
+        self,
+        player_capital: munch.Munch
+    ) -> None:
+        pass
 
 
     # TODO: candidate for cython formulae module
@@ -133,6 +141,8 @@ class BaubleThought():
         .. note::
             `piece_map` is static. It only needs calculated once, since bauble pieces are always rendered at the same location. However, the `frame_map` and `avatar_map` need recalculated on changes to the player static. In other words, the `piece_map` is calculated within this method, whereas the other maps are calculated in specialized methods that use state information from the _World_.
         """
+        if self.bauble_render_points:
+            return
 
         log.debug(f'Initializing {self.name} bauble positions', '_init_bauble_positions')
         bauble_piece_widths = [ 
@@ -181,7 +191,6 @@ class BaubleThought():
         # what if tab has both baubles and displays? 
         # what if tab has more baubles than can be displayed?
         # how to map player equipment and inventory to bauble?
-
 
         # NOTE:number of bauble rows
         #       -> shifts the y coordinate by row height
@@ -259,7 +268,7 @@ class BaubleThought():
             start_point = self.bauble_render_points[start_index]
             added = 0
 
-            for i, avatar_key in enumerate(bauble_conf.enabled):
+            for i, avatar_key in enumerate(bauble_conf.selectable):
                 if bauble_label in ARMORY_BAUBLES:
                     avatar_dim = (
                         self.avatar_conf.armory.get(avatar_key).size.w,
@@ -300,7 +309,7 @@ class BaubleThought():
         for bauble_conf in self.baubles.values():
             added = 0
 
-            for avatar_key in bauble_conf.enabled:
+            for avatar_key in bauble_conf.selectable:
                 self.bauble_avatar_map.append(avatar_key)
                 added += 1
                 
@@ -337,8 +346,23 @@ class BaubleThought():
                 self.bauble_frame_map.append('disabled')
                 added += 1
 
-            # TODO: need to ensure teh selected bauble for a bauble_label has its frame
-            # set to active
+
+    def _deselect_bauble_row(   
+        self
+    ) -> None:
+        row_key = list(self.baubles.keys())[self.selected_row]
+        row_bauble = self.baubles.get(row_key)
+        setattr(
+            row_bauble,
+            'selected',
+            None
+        )
+
+
+    def _incrementable(
+        self
+    ) -> bool:
+        return all(len(bauble.selectable) > 0 for bauble in self.baubles.items())
 
 
     def map_avatar_to_set(
@@ -377,89 +401,112 @@ class BaubleThought():
     def increment_bauble_selection(
         self,
     ) -> None:
+        if not self._incrementable():
+            return 
+
         row_key = list(self.baubles.keys())[self.selected_row]
         row_bauble = self.baubles.get(row_key)
 
-        if not row_bauble.selected:
+        if len(row_bauble.selectable) > 0:
+            if not row_bauble.selected:
+                
+                setattr(
+                    row_bauble,
+                    'selected',
+                    row_bauble.selectable[0]
+                )
+                return
+
+            current_index = row_bauble.selectable.index(row_bauble.selected)
+            current_index += 1
+            if current_index > len(row_bauble.selectable) - 1:
+                current_index = 0 
             setattr(
                 row_bauble,
                 'selected',
-                row_bauble.selectable[0]
+                row_bauble.selectable[current_index]
+
             )
-            return
-
-        current_index = row_bauble.selectable.index(row_bauble.selected)
-        current_index += 1
-        if current_index > len(row_bauble.selectable) - 1:
-            current_index = 0 
-        setattr(
-            row_bauble,
-            'selected',
-            row_bauble.selectable[current_index]
-
-        )
 
 
     def decrement_bauble_selection(
         self
     ) -> None:
+        if not self._incrementable():
+            return 
+
         row_key = list(self.baubles.keys())[self.selected_row]
         row_bauble = self.baubles.get(row_key)
 
-        if not row_bauble.selected:
+        if len(row_bauble.selectable) > 0:
+            if not row_bauble.selected:
+                setattr(
+                    row_bauble,
+                    'selected',
+                    row_bauble.selectable[-1]
+                )
+                return
+            
+            current_index = row_bauble.selectable.index(row_bauble.selected)
+            current_index -= 1
+            if current_index < 0:
+                current_index = len(row_bauble.selectable) - 1
             setattr(
                 row_bauble,
                 'selected',
-                row_bauble.selectable[-1]
+                row_bauble.selectable[current_index]
             )
-            return
-        
-        current_index = row_bauble.selectable.index(row_bauble.selected)
-        current_index -= 1
-        if current_index < 0:
-            current_index = len(row_bauble.selectable) - 1
-        setattr(
-            row_bauble,
-            'selected',
-            row_bauble.selectable[current_index]
-        )
 
-
-    def deselect_bauble_row(
-        self
-    ) -> None:
-        row_key = list(self.baubles.keys())[self.selected_row]
-        row_bauble = self.baubles.get(row_key)
-        setattr(
-            row_bauble,
-            'selected',
-            None
-        )
         
-    def increment_bauble_row(
-        self
+    def decrement_bauble_row(
+        self,
+        select: bool = True
     ) -> None:
+        if select:
+            self._deselect_bauble_row()
+
         self.selected_row += 1
         if self.selected_row > len(self.baubles) - 1:
             self.selected_row = 0
 
+        row_key = list(self.baubles.keys())[self.selected_row]
+        row_bauble = self.baubles.get(row_key)
 
-    def decrement_bauble_row(
-        self
+        # TODO: there is an infinite recursion here if all baubles are empty...
+        if not row_bauble.selectable:
+            self.decrement_bauble_row(False)
+
+        if select:
+            self.increment_bauble_selection()
+
+
+    def increment_bauble_row(
+        self,
+        select: bool = True
     ) -> None:
+        if select:
+            self._deselect_bauble_row()
+
         self.selected_row -= 1
         if self.selected_row < 0:
             self.selected_row = len(self.baubles) - 1
+
+        row_key = list(self.baubles.keys())[self.selected_row]
+        row_bauble = self.baubles.get(row_key)
+
+        # TODO: there is an infinite recursion here if all baubles are empty...
+        if not row_bauble.selectable:
+            self.increment_bauble_row(False)
+
+        self.increment_bauble_selection()
+
 
     def update(
         self,
         game_world: world.World
     ):
-        self._calculate_components(
+        self._update_components(
             game_world.hero.capital
         )
-
-        # TODO: if some condition to prevent too many updates
-
         self._calculate_bauble_frame_map()
         self._calculate_bauble_avatar_map()
