@@ -215,7 +215,7 @@ class SensoryQuale():
             sense_config.breakpoints
         )
         self.properties = sense_config.properties
-        self.media_size = formulae.find_media_size(
+        self.media_size = apriori.find_media_size(
             player_device.dimensions, 
             self.sizes, 
             self.breakpoints

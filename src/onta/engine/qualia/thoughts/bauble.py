@@ -224,6 +224,7 @@ class BaubleThought():
                     )
                 )
 
+
     # TODO: candidate for cython formulae module
     def _calculate_bauble_avatar_positions(
         self

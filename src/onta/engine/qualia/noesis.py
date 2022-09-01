@@ -65,8 +65,8 @@ class NoeticQuale():
     }
     """
     idea_rendering_points = []
-    idea_frame_maps = munch.Munch({})
-    idea_piece_maps = munch.Munch({})
+    idea_frame_map = []
+    idea_piece_map = []
     active_idea = None
     active_thought = None
     avatar_conf = munch.Munch({})
@@ -87,7 +87,7 @@ class NoeticQuale():
         config = conf.Conf(ontology_path)
         state_ao = state.State(ontology_path)
         self._init_conf(config)
-        self.media_size = formulae.find_media_size(
+        self.media_size = apriori.find_media_size(
             player_device.dimensions, 
             self.sizes, 
             self.breakpoints
@@ -338,25 +338,21 @@ class NoeticQuale():
         self
     ) -> list:
         # NOTE **: frame changes ... 
-        frame_map = []
         for piece_conf in self.ideas.values():
             for piece_state in piece_conf.values():
-                frame_map.append(piece_state)
-        setattr(self.idea_frame_maps, 'idea', frame_map)
-        return self.idea_frame_maps.idea
+                self.idea_frame_map.append(piece_state)
+        return self.idea_frame_map
 
 
     def _calculate_idea_piece_map(
         self
     ) -> list:
         # NOTE **: ...but pieces stay the same ...
-        if not self.piece_maps.get('idea'):
-            piece_map = []
+        if not self.idea_piece_map:
             for piece_conf in self.ideas.values():
                 for piece_key in piece_conf.keys():
-                    piece_map.append(piece_key)
-            setattr(self.idea_piece_maps, 'idea', piece_map)
-        return self.idea_piece_maps.idea
+                    self.idea_piece_map.append(piece_key)
+        return self.idea_piece_map
 
 
     def _active_thought_key(

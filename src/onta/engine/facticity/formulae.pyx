@@ -28,29 +28,6 @@ def _filter_nested_tuple(
     return None
 
 
-def find_media_size(
-    device_dim: tuple, 
-    sizes: list, 
-    breakpoints: list
-) -> str:
-    """Iterate through ordered breakpoints and compare to screen dimensions until media size is found.
-
-    :param player_device: Object representing the player device.
-    :type player_device: device.Device
-    :param sizes: List of sizes for the breakpoints, i.e. `len(sizes) == len(breakpoints) - 1`. So, if `sizes = ['small', 'large']` and `breakpoints = [(800,600)]`, then if the screen is (600,400), the size 'small' will be selected, where if screen is (900, 500) the size 'large' will be selected. 
-    :type sizes: list
-    :param breakpoints: List of tuples representing the points at which styles and layouts shift to accomodate a new screen sie.
-    :type breakpoints: list
-    :return: The name of the size within the breakpoint.
-    :rtype: str
-    """
-    for i, break_point in enumerate(breakpoints):
-        if device_dim[0] < break_point[0] and \
-            device_dim[1] < break_point[1]:
-            return sizes[i]
-    return sizes[len(sizes)-1]
-
-
 def screen_crop_box(
     screen_dim: tuple, 
     world_dim: tuple, 
@@ -644,3 +621,68 @@ def idea_coordinates(
         
             render_points.append((x,y))
     return render_points
+
+
+def bauble_coordinates(
+    bauble_num: int,
+    bauble_scroll_num: int,
+    bauble_height: int,
+    bauble_widths: tuple,
+    bauble_margins: tuple,
+    canvas_start: tuple,
+):
+    render_points = []
+    # NOTE:number of bauble rows
+    #       -> shifts the y coordinate by row height
+    for i in range(bauble_num):
+        # NOTE: number of baubles displayed
+        #       -> determines starting position of pieces
+        for j in range(bauble_scroll_num):
+
+            if j ==  0:
+                render_points.append(
+                    (
+                        canvas_start[0],
+                        canvas_start[1]+ i*(bauble_height + bauble_margins[1])
+                    )
+                )
+                continue
+
+            # NOTE: recall the sum(width(piece)) = width(bauble)
+            #       i.e. only need to accumulate piece width
+
+            if j == 1: # add left piece
+                piece_width = bauble_widths[0]
+            else: # add middle piece
+                piece_width = bauble_widths[1]
+            # don't add right piece width because nothing 
+            # is rendered after that
+
+
+            last_index = len(render_points) - 1
+            render_points.append(
+                (
+                    render_points[last_index][0] + piece_width,
+                    render_points[last_index][1]
+                )
+            )
+        return render_points
+
+
+def bauble_pieces(
+    bauble_num: int,
+    bauble_scroll_num: int
+):
+    piece_map = []
+    for i in range(bauble_num):
+        for j in range(bauble_scroll_num):
+            if j == 0:
+                piece_map.append('left')
+                continue
+
+            if j != bauble_scroll_num - 1:
+                piece_map.append('middle')
+                continue
+
+            piece_map.append('right')
+    return piece_map
