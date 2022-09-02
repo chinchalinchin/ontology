@@ -171,7 +171,8 @@ class BaubleThought():
                 bauble_padding[0],
                 self.alignment_ref[1]
             )
-            self.bauble_scroll_num = int(canvas_dim[0] // bauble_width)
+            self.bauble_scroll_num = int((canvas_dim[0] - canvas_start[0])
+                // max(bauble_piece_widths))
 
         elif self.styles.stack == 'horizontal':
             canvas_dim=(
@@ -185,6 +186,7 @@ class BaubleThought():
                     bauble_padding[1]
             )
             self.bauble_scroll_num = int(canvas_dim[1] // bauble_height)
+
 
         # NOTE:number of bauble rows
         #       -> shifts the y coordinate by row height
