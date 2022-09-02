@@ -362,7 +362,7 @@ class BaubleThought():
     def _incrementable(
         self
     ) -> bool:
-        return all(len(bauble.selectable) > 0 for bauble in self.baubles.items())
+        return any(len(bauble.selectable) > 0 for bauble in self.baubles.values())
 
 
     def map_avatar_to_set(
@@ -403,11 +403,16 @@ class BaubleThought():
     ) -> None:
         if not self._incrementable():
             return 
-
+        
         row_key = list(self.baubles.keys())[self.selected_row]
         row_bauble = self.baubles.get(row_key)
 
         if len(row_bauble.selectable) > 0:
+            log.debug(
+                'Incrementing bauble selection...', 
+                'increment_bauble_selection'
+            )
+
             if not row_bauble.selected:
                 
                 setattr(
@@ -415,17 +420,26 @@ class BaubleThought():
                     'selected',
                     row_bauble.selectable[0]
                 )
+                log.debug(
+                    f'Current selection {row_bauble.selected}', 
+                    'increment_bauble_selection'
+                )
                 return
 
             current_index = row_bauble.selectable.index(row_bauble.selected)
             current_index += 1
             if current_index > len(row_bauble.selectable) - 1:
                 current_index = 0 
+
             setattr(
                 row_bauble,
                 'selected',
                 row_bauble.selectable[current_index]
 
+            )
+            log.debug(
+                f'Current selection {row_bauble.selected}', 
+                'increment_bauble_selection'
             )
 
 
@@ -439,11 +453,20 @@ class BaubleThought():
         row_bauble = self.baubles.get(row_key)
 
         if len(row_bauble.selectable) > 0:
+            log.debug(
+                'Decrementing bauble selection...', 
+                'decrement_bauble_selection'
+            )
+
             if not row_bauble.selected:
                 setattr(
                     row_bauble,
                     'selected',
                     row_bauble.selectable[-1]
+                )
+                log.debug(
+                    f'Current selection {row_bauble.selected}', 
+                    'decrement_bauble_selection'
                 )
                 return
             
@@ -456,14 +479,32 @@ class BaubleThought():
                 'selected',
                 row_bauble.selectable[current_index]
             )
+            log.debug(
+                f'Current selection {row_bauble.selected}', 
+                'decrement_bauble_selection'
+            )
 
         
     def decrement_bauble_row(
         self,
-        select: bool = True
+        select: bool = True,
+        depth: int = 1
     ) -> None:
         if select:
+            log.debug(
+                'Deselecting current bauble row...', 
+                'decrement_bauble_row'
+            )
             self._deselect_bauble_row()
+        else:
+            log.debug(
+                'Recursing through selectable rows...',
+                'decrement_bauble_row'
+            )
+
+        # NOTE: avoid infinite recursion
+        if depth >= len(self.baubles):
+            return
 
         self.selected_row += 1
         if self.selected_row > len(self.baubles) - 1:
@@ -472,9 +513,8 @@ class BaubleThought():
         row_key = list(self.baubles.keys())[self.selected_row]
         row_bauble = self.baubles.get(row_key)
 
-        # TODO: there is an infinite recursion here if all baubles are empty...
         if not row_bauble.selectable:
-            self.decrement_bauble_row(False)
+            self.decrement_bauble_row(False, depth + 1)
 
         if select:
             self.increment_bauble_selection()
@@ -482,10 +522,24 @@ class BaubleThought():
 
     def increment_bauble_row(
         self,
-        select: bool = True
+        select: bool = True,
+        depth: int = 1
     ) -> None:
         if select:
+            log.debug(
+                'Deselecting current bauble row...', 
+                'increment_bauble_row'
+            )
             self._deselect_bauble_row()
+        else:
+            log.debug(
+                'Recursing through selectable rows...',
+                'increment_bauble_row'
+            )
+
+        # NOTE: avoid infinite recursion
+        if depth >= len(self.baubles):
+            return
 
         self.selected_row -= 1
         if self.selected_row < 0:
@@ -496,9 +550,10 @@ class BaubleThought():
 
         # TODO: there is an infinite recursion here if all baubles are empty...
         if not row_bauble.selectable:
-            self.increment_bauble_row(False)
+            self.increment_bauble_row(False, depth + 1)
 
-        self.increment_bauble_selection()
+        if select:
+            self.increment_bauble_selection()
 
 
     def update(
