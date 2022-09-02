@@ -9,7 +9,7 @@ import onta.loader.state as state
 import onta.util.logger as logger
 import onta.engine.qualia.apriori as apriori
 
-from onta.engine.facticity import formulae
+import onta.engine.facticity.formulae as formulae
 
 log = logger.Logger('onta.engine.qualia.noema', settings.LOG_LEVEL)
 

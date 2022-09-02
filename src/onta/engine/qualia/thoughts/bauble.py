@@ -7,6 +7,8 @@ import onta.settings as settings
 import onta.loader.state as state
 import onta.util.logger as logger 
 
+import onta.engine.facticity.formulae as formulae
+
 log = logger.Logger('onta.engine.qualia.thoughts.bauble', settings.LOG_LEVEL)
 
 ARMORY_BAUBLES = [ 'slash', 'shoot', 'cast', 'thrust' ]
@@ -187,6 +189,8 @@ class BaubleThought():
             )
             self.bauble_scroll_num = int(canvas_dim[1] // bauble_height)
 
+
+        # TODO: need to account for position of aside, concepts and focii somehow.
 
         # NOTE:number of bauble rows
         #       -> shifts the y coordinate by row height
