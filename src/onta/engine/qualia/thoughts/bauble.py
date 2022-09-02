@@ -240,17 +240,17 @@ class BaubleThought():
             added = 0
 
             for i, avatar_key in enumerate(bauble_conf.selectable):
-                if bauble_label in ARMORY_BAUBLES:
+                if bauble_label in list(self.avatar_conf.armory.keys()):
                     avatar_dim = (
                         self.avatar_conf.armory.get(avatar_key).size.w,
                         self.avatar_conf.armory.get(avatar_key).size.h
                     )
-                elif bauble_label in EQUIPMENT_BAUBLES:
+                elif bauble_label in list(self.avatar_conf.equipment.keys()):
                     avatar_dim = (
                         self.avatar_conf.equipment.get(avatar_key).size.w,
                         self.avatar_conf.equipment.get(avatar_key).size.w,
                     )
-                elif bauble_label in INVENTORY_BAUBLES:
+                elif bauble_label in list(self.avatar_conf.inventory.keys()):
                     avatar_dim = (
                         self.avatar_conf.inventory.get(avatar_key).size.w,
                         self.avatar_conf.inventory.get(avatar_key).size.h
