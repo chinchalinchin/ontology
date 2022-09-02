@@ -152,6 +152,8 @@ consumable:
   # meditations
   - arise
   - execute
+  - reconsider
+  - traverse
   - reverse
   - ponder
   - increment

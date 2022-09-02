@@ -42,7 +42,13 @@ hero:
     armory:
       - component: crossbow
         label: thrust
+      - component: spear
+        label: thrust
       - component: shortsword
+        label: slash
+      - component: axe
+        label: slash
+      - component: knife
         label: slash
       - component: bow
         label: shoot
