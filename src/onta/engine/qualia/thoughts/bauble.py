@@ -171,7 +171,7 @@ class BaubleThought():
                 bauble_padding[0],
                 self.alignment_ref[1]
             )
-            self.bauble_scroll_num = canvas_dim[1] // bauble_height
+            self.bauble_scroll_num = int(canvas_dim[0] // bauble_width)
 
         elif self.styles.stack == 'horizontal':
             canvas_dim=(
@@ -184,13 +184,7 @@ class BaubleThought():
                 self.alignment_ref[1] + self.alignment_dim[1] + \
                     bauble_padding[1]
             )
-            self.bauble_scroll_num = canvas_dim[0] // bauble_width
-
-        # NOTE: this is a hardcoded layout for bauble-only tab
-
-        # what if tab has both baubles and displays? 
-        # what if tab has more baubles than can be displayed?
-        # how to map player equipment and inventory to bauble?
+            self.bauble_scroll_num = int(canvas_dim[1] // bauble_height)
 
         # NOTE:number of bauble rows
         #       -> shifts the y coordinate by row height

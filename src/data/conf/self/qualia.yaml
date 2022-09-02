@@ -637,7 +637,7 @@ menu:
         w: 90
         h: 96
     conception:
-      path:
+      path: scrolls.png
       position:
         x: 32
         y: 224
@@ -894,7 +894,7 @@ menu:
         w: 90
         h: 96
     conception: # subheading
-      path:
+      path: scrolls.png
       position:
         x: 32
         y: 224
