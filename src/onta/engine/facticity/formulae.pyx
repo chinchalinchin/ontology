@@ -666,7 +666,7 @@ def bauble_coordinates(
                     render_points[last_index][1]
                 )
             )
-        return render_points
+    return render_points
 
 
 def bauble_pieces(

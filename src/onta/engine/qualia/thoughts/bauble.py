@@ -147,11 +147,11 @@ class BaubleThought():
             return
 
         log.debug(f'Initializing {self.name} bauble positions', '_init_bauble_positions')
-        bauble_piece_widths = [ 
+        bauble_piece_widths = tuple(
             piece.size.w 
             for piece 
             in self.components_conf.bauble.enabled.values() 
-        ]
+        )
         bauble_width = sum(bauble_piece_widths)
         # NOTE: here is where the height assumption is made. See note in docstring.
         bauble_height = self.components_conf.bauble.enabled.left.size.h
@@ -192,47 +192,18 @@ class BaubleThought():
 
         # TODO: need to account for position of aside, concepts and focii somehow.
 
-        # NOTE:number of bauble rows
-        #       -> shifts the y coordinate by row height
-        for i in range(len(self.baubles)):
-            # NOTE: number of baubles displayed
-            #       -> determines starting position of pieces
-            for j in range(self.bauble_scroll_num):
-
-                if j ==  0:
-                    self.bauble_render_points.append(
-                        (
-                            canvas_start[0],
-                            canvas_start[1]+ i*(bauble_height + bauble_margins[1])
-                        )
-                    )
-                    self.bauble_piece_map.append('left')
-                    continue
-
-                # NOTE: recall the sum(width(piece)) = width(bauble)
-                #       i.e. only need to accumulate piece width
-
-                if j == 1: # add left piece
-                    piece_width = bauble_piece_widths[0]
-                else: # add middle piece
-                    piece_width = bauble_piece_widths[1]
-                # don't add right piece width because nothing 
-                # is rendered after that
-
-                if j != self.bauble_scroll_num - 1:
-                    self.bauble_piece_map.append('middle')
-                else:
-                    self.bauble_piece_map.append('right')
-
-
-                last_index = len(self.bauble_render_points) - 1
-                self.bauble_render_points.append(
-                    (
-                        self.bauble_render_points[last_index][0] + piece_width,
-                        self.bauble_render_points[last_index][1]
-                    )
-                )
-
+        self.bauble_render_points = formulae.bauble_coordinates(
+            len(self.baubles),
+            self.bauble_scroll_num,
+            bauble_height,
+            bauble_piece_widths,
+            bauble_margins,
+            canvas_start
+        )
+        self.bauble_piece_map = formulae.bauble_pieces(
+            len(self.baubles),
+            self.bauble_scroll_num
+        )
 
     # TODO: candidate for cython formulae module
     def _calculate_bauble_avatar_positions(
