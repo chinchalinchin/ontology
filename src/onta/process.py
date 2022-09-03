@@ -10,13 +10,15 @@ import onta.view as view
 import onta.control as control
 import onta.settings as settings
 import onta.world as world
-import onta.loader.repo as repo
-import onta.util.logger as logger
-import onta.util.helper as helper
-import onta.util.cli as cli
 
-import onta.engine.qualia.noema as noema
-import onta.engine.qualia.noesis as noesis
+import onta.actuality.datum as datum
+
+import onta.metaphysics.logger as logger
+import onta.metaphysics.helper as helper
+import onta.metaphysics.cli as cli
+
+import onta.concrescence.qualia.noema as noema
+import onta.concrescence.qualia.noesis as noesis
 
 log = logger.Logger('onta.main', settings.LOG_LEVEL)
 
@@ -25,53 +27,74 @@ def create(args) -> Tuple[
     control.Controller,
     world.World,
     view.Renderer,
-    repo.Repo,
+    datum.Totality,
     noema.SensoryQuale,
     noesis.NoeticQuale
 ]:
-    log.debug('Pulling device information...', 'create')
+    log.debug(
+        'Pulling device information...', 
+        'create'
+    )
     player_device = device.Device(
         args.width, 
         args.height
     )
 
-    log.debug('Initializing controller...', 'create')
+    log.debug(
+        'Initializing controller...', 
+        'create'
+    )
     controller = control.Controller(args.ontology)
 
-    log.debug('Initializing asset repository...', 'create')
-    asset_repository = repo.Repo(args.ontology)
+    log.debug(
+        'Initializing asset repository...', 
+        'create'
+    )
+    data_totality = datum.Totality(args.ontology)
 
-    log.debug('Initializing game world...', 'create')
+    log.debug(
+        'Initializing game world...', 
+        'create'
+    )
     game_world = world.World(args.ontology)
 
-    log.debug('Initializing HUD...', 'create')
+    log.debug(
+        'Initializing HUD...', 
+        'create'
+    )
     headsup_display = noema.SensoryQuale(
         player_device, 
         args.ontology
     )
 
-    log.debug('Initializing Menu...', 'create')
+    log.debug(
+        'Initializing Menu...', 
+        'create'
+    )
     pause_menu = noesis.NoeticQuale(
         player_device,
         args.ontology
     )
 
-    log.debug('Initializing rendering engine...', 'create')
+    log.debug(
+        'Initializing rendering engine...', 
+        'create'
+    )
     render_engine = view.Renderer(
         game_world, 
-        asset_repository, 
+        data_totality, 
         player_device,
         args.debug
     )
 
     return controller, game_world, render_engine, \
-            asset_repository, headsup_display, pause_menu
+            data_totality, headsup_display, pause_menu
 
 
 def start(
     args
 ) -> None:
-    cntl, wrld, eng, rep, hd, mn = create(args)
+    cntl, wrld, eng, dat, nom, nos = create(args)
 
     log.debug('Creating GUI...', 'start')
     app, vw = view.get_app(), eng.get_view()
@@ -79,7 +102,16 @@ def start(
     log.debug('Threading game...', 'start')
     game_loop = threading.Thread(
         target=do, 
-        args=(vw,cntl,wrld,eng,rep,hd,mn,args.debug), 
+        args=(
+            vw,
+            cntl,
+            wrld,
+            eng,
+            dat,
+            nom,
+            nos,
+            args.debug
+        ), 
         daemon=True
     )
 
@@ -103,7 +135,7 @@ def do(
     controller: control.Controller, 
     game_world: world.World, 
     render_engine: view.Renderer, 
-    asset_repository: repo.Repo,
+    data_totality: datum.Totality,
     display_quale: noema.SensoryQuale,
     pause_quale: noesis.NoeticQuale,
     debug: bool = False
@@ -164,7 +196,7 @@ def do(
                     game_view, 
                     display_quale,
                     pause_quale,
-                    asset_repository,
+                    data_totality,
                     game_input
                 )
             else:
@@ -173,7 +205,7 @@ def do(
                     game_view, 
                     display_quale,
                     pause_quale,
-                    asset_repository
+                    data_totality
                 )
 
             # # post_loop hook here

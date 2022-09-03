@@ -178,7 +178,12 @@ class Conf():
         """
         if len(self.expression_conf) == 0:
             self.expression_conf = self._dialectic_configuration('expressions')
-        return self.expression_conf
+        # NOTE: Expressions do not have properties, so to make return type consistent
+        #       across dialectics, return None for expression properties
+        return (
+            None,
+            self.expression_conf
+        )
 
 
     def load_projectile_configuration(
@@ -327,7 +332,13 @@ class Conf():
 
         if len(self.tile_sheet_conf) == 0:
             self.tile_sheet_conf = self._form_configuration('tiles')
-        return self.tile_sheet_conf
+
+        # NOTE: Tiles do not have properties, so to make return type consistent
+        #       across forms, return None for tile properties
+        return (
+            None,
+            self.tile_sheet_conf
+        )
 
 
     def load_strut_configuration(

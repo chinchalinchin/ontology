@@ -4,15 +4,15 @@ import munch
 
 
 import onta.settings as settings
-import onta.loader.state as state
-import onta.loader.conf as conf
 
-import onta.engine.collisions as collisions
+import onta.actuality.state as state
+import onta.actuality.conf as conf
 
-import onta.engine.dasein.abstract as abstract
-import onta.engine.dasein.interpret as interpret
-import onta.engine.dasein.impulse as impulse
-import onta.engine.composition as composition
+import onta.concretion.collisions as collisions
+import onta.concretion.composition as composition
+import onta.concretion.dasein.abstract as abstract
+import onta.concretion.dasein.interpret as interpret
+import onta.concretion.dasein.impulse as impulse
 
 import onta.engine.noumena.substrata as substrata
 
@@ -111,7 +111,7 @@ class World():
         self.plate_properties, _ = config.load_plate_configuration()
         self.strut_properties, _ = config.load_strut_configuration()
         self.composite_conf = config.load_composite_configuration()
-        tile_conf = config.load_tile_configuration()
+        _, tile_conf = config.load_tile_configuration()
         self.tile_dimensions = (tile_conf.tile.w, tile_conf.tile.h)
 
 

@@ -1,22 +1,32 @@
 from typing import Union
 
 import munch
+
 import onta.settings as settings
 import onta.device as device
 import onta.world as world
-import onta.loader.conf as conf
-import onta.loader.state as state
-import onta.util.logger as logger
-import onta.engine.qualia.apriori as apriori
 
-import onta.engine.facticity.formulae as formulae
+import onta.actuality.conf as conf
+import onta.actuality.state as state
+
+import onta.metaphysics.logger as logger
+
+import onta.concretion.qualia.apriori as apriori
+
+import onta.concretion.facticity.formulae as formulae
 
 log = logger.Logger('onta.engine.qualia.noema', settings.LOG_LEVEL)
 
-PACK_TYPES = [ 'bag', 'belt' ]
-MIRROR_TYPES = [ 'life', 'magic' ]
+PACK_TYPES = [ 
+    'bag', 
+    'belt' 
+]
+MIRROR_TYPES = [ 
+    'life', 
+    'magic' 
+]
 
-class SensoryQuale():
+class NoemicQuale():
     """
     
     .. note::
@@ -206,22 +216,23 @@ class SensoryQuale():
         :param player_device: _description_
         :type player_device: device.Device
         """
-        sense_config = config.load_qualia_configuration()
+        qualia_config = config.load_qualia_configuration()
 
-        self.styles = sense_config.styles
-        self.hud_conf = sense_config.hud
-        self.sizes = sense_config.sizes
+        self.styles = qualia_config.styles
+        self.hud_conf = qualia_config.hud
+        self.sizes = qualia_config.sizes
         self.breakpoints = apriori.format_breakpoints(
-            sense_config.breakpoints
+            qualia_config.breakpoints
         )
-        self.properties = sense_config.properties
+        self.properties = qualia_config.properties
+
         self.media_size = apriori.find_media_size(
             player_device.dimensions, 
             self.sizes, 
             self.breakpoints
         )
 
-        self.avatar_conf = config.load_avatar_configuration().avatars
+        self.avatar_conf = config.load_avatar_configuration()
 
 
     def _init_pack_positions(
@@ -279,7 +290,7 @@ class SensoryQuale():
             bag_dim,
             bag_dim
         )
-        self.wallter_rendering_points = formulae.wallet_coordinates(
+        self.wallet_rendering_points = formulae.wallet_coordinates(
             self.belt_rendering_points[0],
             self.bag_rendering_points[0],
             bag_dim,

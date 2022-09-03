@@ -4,12 +4,15 @@ import munch
 import onta.settings as settings
 import onta.device as device
 import onta.world as world
-import onta.loader.conf as conf
-import onta.loader.state as state
-import onta.util.logger as logger
-import onta.engine.qualia.apriori as apriori
-import onta.engine.qualia.thoughts.bauble as bauble
-import onta.engine.qualia.thoughts.symbol as symbol
+
+import onta.metaphysics.logger as logger
+
+import onta.actuality.conf as conf
+import onta.actuality.state as state
+
+import onta.qualia.apriori as apriori
+import onta.qualia.thoughts.bauble as bauble
+import onta.qualia.thoughts.symbol as symbol
 
 import onta.engine.facticity.formulae as formulae
 
@@ -116,7 +119,7 @@ class NoeticQuale():
         self.breakpoints = apriori.format_breakpoints(
             configure.breakpoints
         )
-        self.avatar_conf = config.load_avatar_configuration().avatars
+        self.avatar_conf = config.load_avatar_configuration()
 
 
 

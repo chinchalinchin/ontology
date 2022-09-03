@@ -5,28 +5,42 @@ import threading
 from PySide6 import QtWidgets, QtGui, QtCore
 from PIL import Image
 
-import onta.device as device
-import onta.settings as settings
+import onta.metaphysics.device as device
+import onta.metaphysics.settings as settings
+import onta.metaphysics.logger as logger
+import onta.metaphysics.gui as gui
+import onta.metaphysics.debug as debug
+
 import onta.world as world
-import onta.loader.repo as repo
-import onta.util.logger as logger
-import onta.util.gui as gui
-import onta.util.debug as debug
-import onta.engine.composition as composition
-import onta.engine.qualia.thoughts.bauble as bauble
-import onta.engine.qualia.noema as noema
-import onta.engine.qualia.noesis as noesis
+
+import onta.actuality.datum as datum
+
+import onta.qualia.thoughts.bauble as bauble
+import onta.qualia.noema as noema
+import onta.qualia.noesis as noesis
+
+import onta.concretion.composition as composition
 
 # compiled functions
-import onta.engine.facticity.calculator as calculator
-import onta.engine.facticity.formulae as formulae
+import onta.concretion.facticity.calculator as calculator
+import onta.concretion.facticity.formulae as formulae
 
-STATIC_PLATE_TYPES = [ 'door' ]
-SWITCH_PLATE_TYPES = [ "pressure", "container", "gate" ]
-MATERIAL_BLUE_900 = (20, 67, 142, 175)
+STATIC_PLATE_TYPES = [ 
+    'door' 
+]
+SWITCH_PLATE_TYPES = [ 
+    'pressure', 
+    'container', 
+    'gate' 
+]
+MATERIAL_BLUE_900 = (
+    20, 
+    67, 
+    142, 
+    175
+)
 
-log = logger.Logger('onta.view', settings.LOG_LEVEL)
-
+log = logger.Logger('onta.gestalt', settings.LOG_LEVEL)
 
 # GUI Handlers
 
@@ -59,6 +73,7 @@ def position(
 
 
 # GUI Widgets & Workers
+
 
 class Debugger(QtCore.QObject):
     update = QtCore.Signal(bool)
@@ -108,7 +123,7 @@ class Renderer():
     def __init__(
         self, 
         game_world: world.World, 
-        repository: repo.Repo, 
+        data_totality: datum.Totality, 
         player_device: device.Device,
         debug: bool = False
     ):
@@ -127,15 +142,21 @@ class Renderer():
             for layer in game_world.layers
         }
 
-        self._render_tiles(game_world, repository)
-        self._render_sets(game_world, repository)
+        self._render_tiles(
+            game_world, 
+            data_totality
+        )
+        self._render_sets(
+            game_world, 
+            data_totality
+        )
         self.debug = debug
 
 
     def _render_tiles(
         self, 
         game_world: world.World, 
-        repository: repo.Repo
+        data_totality: datum.Totality
     ) -> None:
         """Renders static tilesets onto the static world frames. This method is only called once per session, when the game engine is initializing.
 
@@ -151,15 +172,21 @@ class Renderer():
             for group_key, group_conf in game_world.get_tilesets(layer).items():
                 log.verbose(f'Rendering {group_key} tiles', '_render_tiles')
 
-                group_tile = repository.get_form_frame('tiles', group_key)
+                group_tile = data_totality.get_form_frame('tiles', group_key)
 
                 for set_conf in group_conf.sets:
                     start = calculator.scale(
-                        ( set_conf.start.x, set_conf.start.y ), 
+                        ( 
+                            set_conf.start.x, 
+                            set_conf.start.y 
+                        ), 
                         game_world.tile_dimensions,
                         set_conf.start.units
                     )
-                    set_dim = ( set_conf.multiply.w, set_conf.multiply.h)
+                    set_dim = ( 
+                        set_conf.multiply.w, 
+                        set_conf.multiply.h
+                    )
 
                     log.verbose(
                         f'Rendering at {start} with dimensions {set_dim}', 
@@ -190,7 +217,7 @@ class Renderer():
     def _render_sets(
         self, 
         game_world: world.World, 
-        repository: repo.Repo
+        data_totality: datum.Totality
     ) -> None:
         """Renders static strutsets (and door platesets) onto the static world frames. This method is only called once per session, when the game engine is initializing.
 
@@ -221,18 +248,29 @@ class Renderer():
                 if group_key in strut_keys or \
                     (game_world.plate_properties.get(group_key) and \
                         game_world.plate_properties.get(group_key).type in STATIC_PLATE_TYPES):
+                    log.debug(
+                        f'Rendering {group_type} {group_key}s', 
+                        '_render_sets'
+                    )
 
                     group_type="strut" if group_key in strut_keys else "plate"
-                    group_frame = repository.get_form_frame(group_type, group_key)
-                    log.debug(f'Rendering {group_type} {group_key}s', '_render_sets')
+
+                    group_frame = data_totality.get_form_frame(
+                        group_type, group_key)
 
                     for set_conf in group_conf.sets:
                         start = calculator.scale(
-                            ( set_conf.start.x, set_conf.start.y ), 
+                            ( 
+                                set_conf.start.x, 
+                                set_conf.start.y 
+                            ), 
                             game_world.tile_dimensions,
                             set_conf.start.units
                         )
-                        log.verbose(f'Rendering at {start}', '_sets')
+                        log.verbose(
+                            f'Rendering at {start}', 
+                            '_render_sets'
+                        )
 
                         if set_conf.get('cover'):
                             gui.render_composite(
@@ -241,6 +279,7 @@ class Renderer():
                                 start
                             )
                             continue
+
                         gui.render_composite(
                             self.static_back_frame.get(layer),
                             group_frame,
@@ -251,7 +290,7 @@ class Renderer():
     def _render_variable_platesets(
         self, 
         game_world: world.World, 
-        repository: repo.Repo,
+        data_totality: datum.Totality,
         crop: bool
     ) -> None:
         unordered_groups = game_world.get_platesets(game_world.layer)
@@ -266,7 +305,7 @@ class Renderer():
         # and anyway, plates need rendered by type.
         #   first pressures and then everything else
         for group_key, group_conf in render_map.items():
-            group_frame = repository.get_form_frame('plates', group_key)
+            group_frame = data_totality.get_form_frame('plates', group_key)
             group_type = game_world.plate_properties.get(group_key).type
 
 
@@ -317,14 +356,19 @@ class Renderer():
             #       therefore, cast to ints before passing to PIL.
             for coord in coordinates:
 
-                log.infinite(f'Rendering at ({coord[1]},{coord[2]})', '_render_variable_plateset')
+                log.infinite(
+                    f'Rendering at ({coord[1]},{coord[2]})', 
+                    '_render_variable_platesets'
+                )
 
                 if group_type not in SWITCH_PLATE_TYPES:
                     gui.render_composite(
                         self.world_frame,
                         group_frame,
                         # NOTE: coord contains index of plate, so cannot pass it in directly
-                        gui.int_tuple(( coord[1], coord[2] ))
+                        gui.int_tuple(
+                            ( coord[1], coord[2] )
+                        )
                     )
                     continue
 
@@ -334,14 +378,18 @@ class Renderer():
                     gui.render_composite(
                         self.world_frame,
                         group_frame.on,
-                        gui.int_tuple(( coord[1], coord[2] ))
+                        gui.int_tuple(
+                            ( coord[1], coord[2] )
+                        )
                     )
                     continue
 
                 gui.render_composite(
                     self.world_frame,
                     group_frame.off,
-                    gui.int_tuple(( coord[1], coord[2] ))
+                    gui.int_tuple(
+                        ( coord[1], coord[2] )
+                    )
                 )
 
 
@@ -358,7 +406,9 @@ class Renderer():
                 ( 0,0 )
             )
 
-        self.world_frame = gui.new_image(self.static_back_frame.get(layer_key).size)
+        self.world_frame = gui.new_image(
+            self.static_back_frame.get(layer_key).size
+        )
 
         return gui.render_composite(
             self.world_frame,
@@ -370,7 +420,7 @@ class Renderer():
     def _render_sprites(
         self,
         game_world: world.World, 
-        repository: repo.Repo,
+        data_totality: datum.Totality,
         crop: bool
     ) -> None:
         """_summary_
@@ -395,18 +445,24 @@ class Renderer():
         )
 
         for sprite_key, sprite in ordered_sprites.items():
-            sprite_position = gui.int_tuple(( sprite.position.x, sprite.position.y ))
+            sprite_position = gui.int_tuple(
+                ( 
+                    sprite.position.x, 
+                    sprite.position.y 
+                )
+            )
 
             sprite_stature_key = composition.compose_animate_stature(
                 sprite,
                 game_world.sprite_stature
             )
             # BASE RENDERING
-            sprite_base_frame, sprite_accent_frame = repository.get_sprite_frame(
-                sprite_key, 
-                sprite_stature_key, 
-                sprite.frame
-            )
+            sprite_base_frame, sprite_accent_frame = \
+                data_totality.get_sprite_frame(
+                    sprite_key, 
+                    sprite_stature_key, 
+                    sprite.frame
+                )
 
             sprite_dim = (
                 sprite_position[0],
@@ -434,10 +490,12 @@ class Renderer():
                 animate_statures = \
                     game_world.apparel_properties.armor.get(sprite.armor).animate_statures
 
-                if (isinstance(animate_statures, str) and animate_statures == 'all') or \
-                    (isinstance(animate_statures, list) and sprite_stature_key in animate_statures):
+                if (isinstance(animate_statures, str) and \
+                        animate_statures == 'all') or \
+                    (isinstance(animate_statures, list) and \
+                        sprite_stature_key in animate_statures):
 
-                    armor_frame = repository.get_apparel_frame(
+                    armor_frame = data_totality.get_apparel_frame(
                         'armor',
                         sprite.armor,
                         sprite_stature_key,
@@ -465,10 +523,12 @@ class Renderer():
                         game_world.apparel_properties.equipment.get(enabled_equipment).animate_statures
 
 
-                    if (isinstance(animate_statures, str) and animate_statures == 'all') or \
-                        (isinstance(animate_statures, list) and sprite_stature_key in animate_statures):
+                    if (isinstance(animate_statures, str) and \
+                            animate_statures == 'all') or \
+                        (isinstance(animate_statures, list) and \
+                            sprite_stature_key in animate_statures):
 
-                        equipment_frame = repository.get_apparel_frame(
+                        equipment_frame = data_totality.get_apparel_frame(
                             'equipment',
                             enabled_equipment,
                             sprite_stature_key,
@@ -481,11 +541,13 @@ class Renderer():
                         )
 
             if sprite.stature.expression:
-                expression_frame = repository.get_expression_frame(
+                expression_frame = data_totality.get_expression_frame(
                     sprite.stature.expression
                 )
                 position = (
-                    sprite.position.x + ( game_world.sprite_dimensions[0] - expression_frame.size[0] ) / 2,
+                    sprite.position.x + ( 
+                        game_world.sprite_dimensions[0] - expression_frame.size[0] 
+                    ) / 2,
                     sprite.position.y
                 )
                 gui.render_composite(
@@ -498,7 +560,7 @@ class Renderer():
     def _render_projectiles(
         self,
         game_world: world.World,
-        repository: repo.Repo,
+        repository: datum.Totality,
         crop: bool
     ) -> None:
         player_dim = (
@@ -530,14 +592,17 @@ class Renderer():
             gui.render_composite(
                 self.world_frame,
                 projectile_frame,
-                (projectile_dim[0], projectile_dim[1])
+                (
+                    projectile_dim[0], 
+                    projectile_dim[1]
+                )
             )
 
 
     def _render_noema(
         self, 
         display: noema.SensoryQuale, 
-        repository: repo.Repo
+        data_totality: datum.Totality
     ) -> None:
 
         ### SLOT RENDERING
@@ -549,15 +614,29 @@ class Renderer():
         # slot names
         render_order = iter(display.properties.slots.maps)
 
-        cap_frames = repository.get_slot_frames(display.media_size, 'cap')
-        buffer_frames = repository.get_slot_frames(display.media_size, 'buffer'
+        cap_frames = data_totality.get_slot_frames(
+            display.media_size, 
+            'cap'
+        )
+        buffer_frames = data_totality.get_slot_frames(
+            display.media_size, 
+            'buffer'
         )
         # TODO: I don't like the view creating the data structure here...
         # this should be done in repo...
         slot_frames = munch.Munch({
-            'enabled': repository.get_slot_frames(display.media_size, 'enabled'),
-            'disabled':  repository.get_slot_frames(display.media_size, 'disabled'),
-            'active': repository.get_slot_frames(display.media_size, 'active')
+            'enabled': data_totality.get_slot_frames(
+                display.media_size, 
+                'enabled'
+            ),
+            'disabled':  data_totality.get_slot_frames(
+                display.media_size, 
+                'disabled'
+            ),
+            'active': data_totality.get_slot_frames(
+                display.media_size, 
+                'active'
+            )
         })
 
         # cap, then alternate buffer and slot until last cap
@@ -585,7 +664,7 @@ class Renderer():
         rendering_points = display.get_rendering_points('life')
 
         for i, frame_key in display.get_frame_map('life').items():
-            life_frame = repository.get_mirror_frame(
+            life_frame = data_totality.get_mirror_frame(
                 display.media_size, 
                 'life', 
                 frame_key
@@ -605,7 +684,7 @@ class Renderer():
 
             for i, render_point in enumerate(pack_rendering_points):
                 # offset by slots
-                pack_frame = repository.get_pack_frame(
+                pack_frame = data_totality.get_pack_frame(
                     display.media_size,
                     pack_key,
                     pack_map[i]
@@ -646,7 +725,7 @@ class Renderer():
             if not set_key:
                 continue
         
-            avatar_frame = repository.get_avatar_frame(
+            avatar_frame = data_totality.get_avatar_frame(
                 set_key,
                 avatar_frame_map[str(i)]
             )
@@ -659,7 +738,7 @@ class Renderer():
     def _render_noesis(
         self, 
         menu: noesis.NoeticQuale, 
-        repository: repo.Repo
+        data_totality: datum.Totality
     ) -> None:
 
         gui.replace_alpha(self.world_frame, menu.alpha)
@@ -668,15 +747,18 @@ class Renderer():
             menu.theme.overlay
         )
 
-        self.world_frame.paste(overlay, ( 0,0 ), overlay)
+        self.world_frame.paste(
+            overlay, 
+            ( 0,0 ), 
+            overlay
+        )
 
-            # TODO: fix menu typing...
         idea_render_pts = menu.rendering_points('idea')
         
         idea_frame_map, idea_piece_map = menu.idea_maps()
 
         for i, render_point in enumerate(idea_render_pts):
-            render_frame = repository.get_piecewise_qualia_frame(
+            render_frame = data_totality.get_piecewise_qualia_frame(
                 menu.media_size, 
                 'idea',
                 idea_frame_map[i],
@@ -692,14 +774,16 @@ class Renderer():
             activated_thought = menu.get_active_thought()
 
             if isinstance(activated_thought, bauble.BaubleThought):
-                baub_render_pts, avtr_render_pts = activated_thought.rendering_points('bauble')
-                baub_frame_map, baub_piece_map, baub_avtr_map = activated_thought.bauble_maps()
+                baub_render_pts, avtr_render_pts = \
+                    activated_thought.rendering_points('bauble')
+                baub_frame_map, baub_piece_map, baub_avtr_map = \
+                    activated_thought.bauble_maps()
 
                 for i, render_point in enumerate(baub_render_pts):                    
                     if not baub_frame_map[i] or not baub_piece_map[i]:
                         continue
 
-                    render_frame = repository.get_piecewise_qualia_frame(
+                    render_frame = data_totality.get_piecewise_qualia_frame(
                         menu.media_size,
                         'bauble',
                         baub_frame_map[i],
@@ -718,7 +802,7 @@ class Renderer():
                     # TODO: why is this not hidden behind the thought interface?
                     avatarset_key = activated_thought.map_avatar_to_set(baub_avtr_map[i])
 
-                    avatar_frame = repository.get_avatar_frame(
+                    avatar_frame = data_totality.get_avatar_frame(
                         avatarset_key,
                         baub_avtr_map[i]
                     )
@@ -750,15 +834,6 @@ class Renderer():
                     qradio
                     qradio
         """
-        # view:
-        #   world_view
-        #       -> qlabel 
-        #           -> pixmap
-        #   debug_view 
-        #       -> hbox layout
-        #           -> qlabel
-        #           -> qlabel
-        #           -> QGroupBox  
         debug_layout = view_widget.layout().itemAt(1).widget().layout()
         debug_layout.itemAt(0).widget().setText(self.debug_templates.player_state)
         debug_layout.itemAt(1).widget().setText(self.debug_templates.control_state)
@@ -768,8 +843,8 @@ class Renderer():
     def render(
         self, 
         game_world: world.World, 
-        repository: repo.Repo, 
-        display: noema.SensoryQuale, 
+        data_totality: datum.Totality, 
+        display: noema.NoemicQuale, 
         pause: noesis.NoeticQuale,
         crop: bool = True, 
         layer: str = None
@@ -793,11 +868,29 @@ class Renderer():
             game_world.layer = layer
 
         if not pause.quale_activated:
-            self._render_static(game_world.layer, False)
-            self._render_variable_platesets(game_world, repository, crop)
-            self._render_sprites(game_world, repository, crop)
-            self._render_projectiles(game_world, repository, crop)
-            self._render_static(game_world.layer, True)
+            self._render_static(
+                game_world.layer, 
+                False
+            )
+            self._render_variable_platesets(
+                game_world, 
+                data_totality, 
+                crop
+            )
+            self._render_sprites(
+                game_world, 
+                data_totality, 
+                crop
+            )
+            self._render_projectiles(
+                game_world, 
+                data_totality, 
+                crop
+            )
+            self._render_static(
+                game_world.layer, 
+                True
+            )
 
         if layer is not None:
             game_world.layer = layer_buffer
@@ -817,10 +910,16 @@ class Renderer():
             self.world_frame = self.world_frame.crop(crop_box)
         
         if pause.quale_activated:
-            self._render_noesis(pause, repository)
+            self._render_noesis(
+                pause, 
+                data_totality
+            )
 
         if display.hud_activated:
-            self._render_noema(display, repository)
+            self._render_noema(
+                display, 
+                data_totality
+            )
 
         return self.world_frame
 
@@ -832,8 +931,12 @@ class Renderer():
                 QtWidgets.QWidget(), QtWidgets.QVBoxLayout()
         view_frame = QtWidgets.QLabel(view_widget)
         view_widget.resize(*self.player_device.dimensions)
-        view_frame.setSizePolicy(QtWidgets.QSizePolicy(
-                QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding))
+        view_frame.setSizePolicy(
+            QtWidgets.QSizePolicy(
+                QtWidgets.QSizePolicy.Expanding, 
+                QtWidgets.QSizePolicy.Expanding
+            )
+        )
         view_layout.addWidget(view_frame)
 
         if self.debug:
@@ -843,12 +946,18 @@ class Renderer():
             debug_layout.addWidget(ScrollLabel())
             debug_layout.addWidget(ScrollLabel())
             debug_frame.setLayout(debug_layout)
-            debug_frame.setSizePolicy(QtWidgets.QSizePolicy(
-                QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum))
+            debug_frame.setSizePolicy(
+                QtWidgets.QSizePolicy(
+                    QtWidgets.QSizePolicy.Expanding, 
+                    QtWidgets.QSizePolicy.Minimum
+                )
+            )
             view_layout.addWidget(debug_frame)
             self.debug_worker = Debugger()
             self.debug_worker.update.connect(
-                (lambda i: lambda: self._update_debug_view(i))(view_widget)
+                (
+                    lambda i: lambda: self._update_debug_view(i)
+                )(view_widget)
             )
             self.debug_worker.start()
 
@@ -861,9 +970,9 @@ class Renderer():
         self, 
         game_world: world.World, 
         view_widget: QtWidgets.QWidget, 
-        display: noema.SensoryQuale,
+        display: noema.NoemicQuale,
         pause: noesis.NoeticQuale,
-        repository: repo.Repo,
+        data_totality: datum.Totality,
         user_input: munch.Munch = None
     ) -> QtWidgets.QWidget: 
         """_summary_
@@ -885,7 +994,7 @@ class Renderer():
         """
         cropped = self.render(
             game_world, 
-            repository, 
+            data_totality, 
             display, 
             pause
         )

@@ -124,7 +124,7 @@ def adjust_alignment_rotation(
         return ( 0, 90 )
     return ( 90, 0 )
 
-class Repo():
+class Totality():
     # TODO: 
     qualia = munch.Munch({})
     ## 
@@ -132,6 +132,29 @@ class Repo():
     slots = munch.Munch({})
     packs = munch.Munch({})
     avatars = munch.Munch({})
+
+    @staticmethod
+    def map_form_path(
+        asset_type
+    ) -> Union[list, None]:
+        if asset_type == 'tiles':
+            return settings.TILE_PATH
+        if asset_type == 'struts':
+            return settings.STRUT_PATH
+        if asset_type == 'plates': 
+            return settings.PLATE_PATH    
+        return None
+
+    @staticmethod
+    def map_dialectic_path(
+        asset_type
+    ) -> Union[list, None]:
+        if asset_type == 'projectiles':
+            return settings.PROJECTILE_PATH
+        if asset_type == 'expressions':
+            return settings.EXPRESSION_PATH
+        return None
+
 
     def __init__(
         self, 
@@ -203,76 +226,84 @@ class Repo():
     ) -> None:
         """_summary_
 
-        :param config: _description_
+        :param config: Configuration class initialized with the file path.
         :type config: conf.Conf
-        :param ontology_path: _description_
+        :param ontology_path: Root file path.
         :type ontology_path: str
 
         .. note::
-            - Static assets, i.e. _Tile_\s, _Strut_\s & _Plate_\s can be rendered using RGBA channels instead of a cropping a sheet file into an PIL image. If the channels are specified through the configuration file for the appropriate _Form_ asset, the asset frame will be created using through channels. Particularly useful if you need to create an inside door with a transculent light square leading back outside.
+            - Static assets, i.e. _Tile_\s, _Strut_\s & _Plate_\s can be rendered using RGBA channels instead of cropping a sheet file into an PIL image. If the channels are specified through the configuration file for the appropriate _Form_ asset, the asset frame will be created using through channels. Particularly useful if you need to create an inside door with a transculent light square leading back outside.
         """
 
         for asset_type in FORM_TYPES:
-            log.debug(f'Initializing {asset_type} assets...',  '_init_form_assets')
+            log.debug(
+                f'Initializing {asset_type} assets...',  
+                'Repo._init_form_assets'
+            )
 
-            setattr(self.forms, asset_type, munch.Munch({}))
+            setattr(
+                self.forms, 
+                asset_type, 
+                munch.Munch({})
+            )
+            asset_props, assets_conf = \
+                config.load_form_configuration(asset_type)
 
             if asset_type == 'tiles':
-                assets_conf = config.load_tile_configuration()
-                # NOTE: all tiles are the same size...
-                w, h = assets_conf.tile.w, assets_conf.tile.h
-
-            else:
-                asset_props, assets_conf = config.load_form_configuration(asset_type)
+                # NOTE: all tile types are the same size...
+                w, h = assets_conf.size.w, assets_conf.size.h 
 
             for asset_key, asset_conf in assets_conf.items():
+                log.verbose(
+                    f'Initializing {asset_key}...',
+                    'Repo._init_form_assets'
+                )
                 if asset_type != 'tiles':
+                    # NOTE: ...but all other form sizes are dependent on type
                     w, h = asset_conf.size.w, asset_conf.size.h
 
                 if asset_conf.get('path'):
-                    if asset_type == 'plates' and \
-                        asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
-                        on_x, on_y = (
-                            asset_conf.position.on_position.x, 
-                            asset_conf.position.on_position.y
-                        )
-                        off_x, off_y = (
-                            asset_conf.position.off_position.x, 
-                            asset_conf.position.off_position.y
-                        )
-                    else:
-                        x, y = asset_conf.position.x, asset_conf.position.y
+                    # NOTE: if defining form through image file...
 
-                    if asset_type == 'tiles':
-                        asset_path = settings.TILE_PATH
-                    elif asset_type == 'struts':
-                        asset_path = settings.STRUT_PATH
-                    elif asset_type == 'plates': 
-                        asset_path = settings.PLATE_PATH    
+                    form_type_path = self.map_form_path(asset_type)
+                    if not form_type_path:
+                        continue 
 
-                    image_path = os.path.join(
-                        ontology_path, 
-                        *asset_path, 
-                        asset_conf.path
+                    buffer = gui.open_image(
+                        os.path.join(
+                            ontology_path, 
+                            *form_type_path, 
+                            asset_conf.path
+                        )
                     )
 
-                    buffer = gui.open_image(image_path)
-
-                    log.debug(
+                    log.verbose(
                         f"{asset_key}: size - {buffer.size}, mode - {buffer.mode}", 
                         '_init_form_assets'
                     )
 
-                    if asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
+                    if asset_props and \
+                        asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
+
                         setattr(
                             self.forms.get(asset_type),
                             asset_key,
                             munch.Munch({
                                 'on': buffer.crop(
-                                    ( on_x, on_y, w + on_x, h + on_y )
+                                    ( 
+                                        asset_conf.position.on_position.x,
+                                        asset_conf.position.on_position.y, 
+                                        w + asset_conf.position.on_position.x, 
+                                        h + asset_conf.position.on_position.y 
+                                    )
                                 ),
                                 'off': buffer.crop(
-                                    ( off_x, off_y, w + off_x, h + off_y )
+                                    ( 
+                                        asset_conf.position.off_position.x, 
+                                        asset_conf.position.off_position.y, 
+                                        w + asset_conf.position.off_position.x,
+                                        h + asset_conf.position.off_position.y
+                                    )
                                 )
                             })
                         )
@@ -282,12 +313,19 @@ class Repo():
                         self.forms.get(asset_type),
                         asset_key,
                         buffer.crop(
-                            ( x, y, w + x, h + y )
+                            ( 
+                                asset_conf.position.x, 
+                                asset_conf.position.y, 
+                                w + asset_conf.position.x, 
+                                h + asset_conf.position.y
+                            )
                         )
                     )
                     continue
                         
                 elif asset_conf.get('channels'):
+                    # NOTE: ...else if defining form through (R,G,B) channels...
+
                     channels = (
                         asset_conf.channels.r, 
                         asset_conf.channels.g,
@@ -304,9 +342,10 @@ class Repo():
                         setattr(
                             self.forms.get(asset_type),
                             asset_key,
-                            munch.Munch(
-                                { 'on': buffer, 'off': buffer}
-                            )
+                            munch.Munch({ 
+                                'on': buffer, 
+                                'off': buffer
+                            })
                         )
                         continue
 
@@ -324,17 +363,28 @@ class Repo():
     ) -> None:
 
         for asset_type in DIALECTIC_TYPES:
+            log.debug(
+                f'Initializing {asset_type} assets...',
+                'Repo._init_dialectic_assets'
+            )
 
-            setattr(self.dialectics, asset_type, munch.Munch({}))
+            setattr(
+                self.dialectics, 
+                asset_type, 
+                munch.Munch({})
+            )
 
-            if asset_type == 'projectiles':
-                _, assets_conf = config.load_projectile_configuration()
-            elif asset_type == 'expressions':
-                assets_conf = config.load_expression_configuration()
+            _, assets_conf = config.load_dialectic_configuration()
 
             for asset_key, asset_conf in assets_conf.items():
+                log.verbose(
+                    f'Initializing {asset_key} assets...',
+                    'Repo._init_dialectic_assets'
+                )
+
                 if not asset_conf or not asset_conf.get('path'):
                     continue
+                
                 x,y = ( 
                     asset_conf.position.x, 
                     asset_conf.position.y 
@@ -344,24 +394,24 @@ class Repo():
                     asset_conf.size.h 
                 )
 
-                if asset_type == 'projectiles':
-                    asset_path = settings.PROJECTILE_PATH
-                elif asset_type == 'expressions':
-                    asset_path = settings.EXPRESSION_PATH
+                dialectic_type_path = self.map_dialectic_path(asset_type)
+                if not dialectic_type_path:
+                    continue
 
                 buffer = gui.open_image(
                     os.path.join(
                         ontology_path,
-                        *asset_path,
+                        *dialectic_type_path,
                         asset_conf.path
                     )
                 )
 
-                buffer = buffer.crop(( x, y, w + x, h + y ))
+                buffer = buffer.crop(
+                    ( x, y, w + x, h + y )
+                )
 
                 if asset_type == 'projectiles':
                     adjust = adjust_directional_rotation(asset_conf.definition)
-
                     setattr(
                         self.dialectics.get(asset_type),
                         asset_key,
@@ -373,12 +423,12 @@ class Repo():
                         })
                     )
                     continue
-                if asset_type == 'expression':
-                    setattr(
-                        self.dialectics.get(asset_type),
-                        asset_key,
-                        buffer
-                    )
+
+                setattr(
+                    self.dialectics.get(asset_type),
+                    asset_key,
+                    buffer
+                )
 
 
     def _init_self_assets(
@@ -398,17 +448,58 @@ class Repo():
         """
         log.debug(f'Initializing avatar assets...', '_init_qualia_assets')
 
+        for asset_type in SELF_TYPES:
+            assets_conf = config.load_self_configuration(asset_type)
+            setattr(self.selves, asset_type, munch.Munch({}))
+
+            for asset_key, asset_conf in assets_conf.items():
+                if not asset_conf or not asset_conf.get('path'):
+                    continue
+
+                x,y = ( 
+                    asset_conf.position.x, 
+                    asset_conf.position.y 
+                )
+                w,h = ( 
+                    asset_conf.size.w, 
+                    asset_conf.size.h 
+                )
+                buffer = gui.open_image(
+                    os.path.join(
+                        ontology_path,
+                        *settings.AVATAR_PATH,
+                        asset_conf.path
+                    )
+                )
+                setattr(
+                    self.selves.get(asset_type),
+                    asset_key,
+                    buffer.crop(
+                        ( x, y, w + x, h + y )
+                    )
+                )
+
+
+
+
+
         avatar_conf = config.load_avatar_configuration()
 
-        for avatarset_key, avatarset_conf in avatar_conf.avatars.items():
+        for avatarset_key, avatarset_conf in avatar_conf.items():
             setattr(self.avatars, avatarset_key, munch.Munch({}))
 
             for avatar_key, avatar in avatarset_conf.items():
                 if not avatar or not avatar.get('path'):
                     continue
 
-                x,y = ( avatar.position.x, avatar.position.y )
-                w,h = ( avatar.size.w, avatar.size.h )
+                x,y = ( 
+                    avatar.position.x, 
+                    avatar.position.y 
+                )
+                w,h = ( 
+                    avatar.size.w, 
+                    avatar.size.h 
+                )
                 buffer = gui.open_image(
                     os.path.join(
                         ontology_path,
