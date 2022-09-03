@@ -13,7 +13,7 @@ import onta.engine.qualia.thoughts.symbol as symbol
 
 import onta.engine.facticity.formulae as formulae
 
-log = logger.Logger('onta.engine.qualia.menu', settings.LOG_LEVEL)
+log = logger.Logger('onta.engine.qualia.noesis', settings.LOG_LEVEL)
 
 BAUBLE_THOUGHTS = [ 'armory', 'equipment', 'inventory' ]
 SYMBOL_THOUGHTS = [ 'map', 'status' ]
@@ -24,9 +24,9 @@ class NoeticQuale():
     A `NoeticQuale` is essentially an in-game menu; it composed of "ideas", i.e. buttons, the player iterates throguh and then executes. These "ideas" become "thoughts", i.e. submenus, when executed. When an "idea" is executed, focus is shifted to the "thought" until the player pops back into the "idea" selection menu.
     """
 
-    menu_conf = munch.Munch({})
+    quale_conf = munch.Munch({})
     """
-    self.menu_conf = {
+    self.quale_conf = {
         'media_size_1': {
             'idea': {
                 # ...
@@ -75,7 +75,7 @@ class NoeticQuale():
     theme = munch.Munch({})
     sizes = []
     breakpoints = []
-    menu_activated = False
+    quale_activated = False
     media_size = None
     alpha = None
 
@@ -105,10 +105,10 @@ class NoeticQuale():
         config: conf.Conf
     ) -> None:
         configure = config.load_qualia_configuration()
-        self.menu_conf = configure.menu
+        self.quale_conf = configure.noesis
         self.sizes = configure.sizes
         self.styles = configure.styles
-        self.properties = configure.properties.menu
+        self.properties = configure.properties.noesis
         self.alpha = configure.transparency
         self.theme = apriori.construct_themes(
             configure.theme
@@ -124,17 +124,17 @@ class NoeticQuale():
         self, 
         player_device: device.Device
     ) -> None:
-        menu_margins = (
-            self.styles.get(self.media_size).menu.margins.w,
-            self.styles.get(self.media_size).menu.margins.h
+        quale_margins = (
+            self.styles.get(self.media_size).noesis.margins.w,
+            self.styles.get(self.media_size).noesis.margins.h
         )
-        menu_padding = (
-            self.styles.get(self.media_size).menu.padding.w,
-            self.styles.get(self.media_size).menu.padding.h
+        quale_padding = (
+            self.styles.get(self.media_size).noesis.padding.w,
+            self.styles.get(self.media_size).noesis.padding.h
         )
-        menu_stack = self.styles.get(self.media_size).menu.stack
+        quale_stack = self.styles.get(self.media_size).noesis.stack
         # all idea component pieces have the same dim, so any will do...
-        idea_conf = self.menu_conf.get(self.media_size).idea.enabled
+        idea_conf = self.quale_conf.get(self.media_size).idea.enabled
 
         # NOTE: ideas are "thought" buttons
         # [ (left_w, left_h), (middle_w, middle_h), (right_w, right_h) ]
@@ -148,9 +148,9 @@ class NoeticQuale():
             len(self.properties.thoughts),
             len(idea_conf),
             player_device.dimensions,
-            menu_stack,
-            menu_margins,
-            menu_padding
+            quale_stack,
+            quale_margins,
+            quale_padding
         )
 
 
@@ -162,15 +162,15 @@ class NoeticQuale():
         # need statuses, pieces and sizes from the following confs
         # in order to initialize a Tab
         components_conf = munch.Munch({
-            'bauble': self.menu_conf.get(self.media_size).bauble,
-            'focus': self.menu_conf.get(self.media_size).focus,
-            'aside': self.menu_conf.get(self.media_size).aside,
-            'concept': self.menu_conf.get(self.media_size).concept,
-            'conception': self.menu_conf.get(self.media_size).conception
-        })
+            'bauble': self.quale_conf.get(self.media_size).bauble,
+            'focus': self.quale_conf.get(self.media_size).focus,
+            'aside': self.quale_conf.get(self.media_size).aside,
+            'concept': self.quale_conf.get(self.media_size).concept,
+            'conception': self.quale_conf.get(self.media_size).conception
+        }) # TODO: this seems redundant ... ?
 
         # all button component pieces have the same pieces, so any will do...
-        idea_conf = self.menu_conf.get(self.media_size).idea.enabled
+        idea_conf = self.quale_conf.get(self.media_size).idea.enabled
         full_width = sum(
             idea_conf.get(piece).size.w 
             for piece in self.properties.ideas.pieces
@@ -180,10 +180,10 @@ class NoeticQuale():
         ).size.h
         idea_dim = (full_width, full_height)
 
-        menu_styles = self.styles.get(self.media_size).menu
+        quale_styles = self.styles.get(self.media_size).noesis
 
         for thought_key, thought_conf in self.properties.thoughts.items():
-            log.debug(f'Creating {thought_key} thought...', 'Menu._init_tabs')
+            log.debug(f'Creating {thought_key} thought...', 'NoeticQuale._init_tabs')
             
             if thought_key in BAUBLE_THOUGHTS:
                 # TODO:? There is a redundancy here. the class itself knows which thoughts are baubles
@@ -199,7 +199,7 @@ class NoeticQuale():
                         thought_key,
                         thought_conf,
                         components_conf,
-                        menu_styles,
+                        quale_styles,
                         self.avatar_conf,
                         self.idea_rendering_points[0],
                         idea_dim,
@@ -380,10 +380,10 @@ class NoeticQuale():
         )
 
 
-    def toggle_menu(
+    def toggle_quale(
         self
     ) -> None:
-        self.menu_activated = not self.menu_activated
+        self.quale_activated = not self.quale_activated
 
 
     def rendering_points(
@@ -396,45 +396,45 @@ class NoeticQuale():
 
     def update(
         self, 
-        menu_input: Union[munch.Munch, None],
+        quale_input: Union[munch.Munch, None],
         game_world: world.World
     ) -> None:
-        if menu_input:
+        if quale_input:
             
-            if menu_input.arise:
-                self.toggle_menu()
+            if quale_input.arise:
+                self.toggle_quale()
                 return
 
             # controls when traversing main button stack
             if self.active_thought is None:
-                if menu_input.increment:
+                if quale_input.increment:
                     self._increment_idea()
 
-                elif menu_input.decrement:
+                elif quale_input.decrement:
                     self._decrement_idea()
 
-                elif menu_input.execute:
+                elif quale_input.execute:
                     self._ideate()
 
                 return
 
-            if menu_input.reconsider:
+            if quale_input.reconsider:
                 self._forget()
                 return
 
             # controls when traversing tab stacks
             if isinstance(self.active_thought, bauble.BaubleThought):
 
-                if menu_input.increment:
+                if quale_input.increment:
                     self.active_thought.increment_bauble_row()
 
-                elif menu_input.decrement:
+                elif quale_input.decrement:
                     self.active_thought.decrement_bauble_row()
 
-                elif menu_input.traverse:
+                elif quale_input.traverse:
                     self.active_thought.increment_bauble_selection()
 
-                elif menu_input.reverse:
+                elif quale_input.reverse:
                     self.active_thought.decrement_bauble_selection()
 
                 self.active_thought.update(game_world)

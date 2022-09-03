@@ -82,7 +82,7 @@ def compose_animate_stature(
     ])
 
 
-def decompose_compositions_into_sets(
+def decompose_compositions(
     layers: list,
     compositions: munch.Munch,
     composition_conf: munch.Munch,
@@ -126,7 +126,7 @@ def decompose_compositions_into_sets(
     for layer in layers:
         log.verbose(
             f'Searching for composition on layer: {layer}',
-            'decompose_compositions_into_sets'
+            'decompose_compositions'
         )
         if compositions.get(layer) is None:
             continue
@@ -134,7 +134,7 @@ def decompose_compositions_into_sets(
         # for (house, {composition}), (tree_patch, {composition}) ...
         for composite_key, composition in compositions.get(layer).items():
             log.verbose(f'Decomposing {composite_key} composition...', 
-                'decompose_compositions_into_sets')
+                'decompose_compositions')
 
             # NOTE: composition = { 'order': int, 'sets': [ ... ] }
             #           via compose state information (static.yaml)
@@ -150,7 +150,7 @@ def decompose_compositions_into_sets(
                     composeset.start.units
                 )
 
-                # ITERATE OVER COMPOSITION CONFIGURATION FOR EACH STATIC INSERATION
+                # ITERATE OVER COMPOSITION CONFIGURATION FOR EACH STATIC INSERTION
 
                 # NOTE: composition_conf[composite_key] = { 'struts': { ... }, 'plates': { ... } }
                 #           via compose configuration information (composite.yaml)
@@ -158,7 +158,7 @@ def decompose_compositions_into_sets(
                     # NOTE: elementset_conf = { 'element_key': { 'order': int, 'sets': [ ... ] } }
                     #           via compose element configuration (composite.yaml)
                     log.verbose(f'Decomposing {elementset_key}...', 
-                        'decompose_compositions_into_sets')
+                        'decompose_compositions')
 
                     # GRAB EXISTING ASSETS
                     if elementset_key == 'tiles':
@@ -171,7 +171,7 @@ def decompose_compositions_into_sets(
                     for element_key, element in elementset_conf.items():
                         log.verbose(
                             f'Decomposing {element_key}...', 
-                            'decompose_compositions_into_sets'
+                            'decompose_compositions'
                         )
 
                         # NOTE: element['sets'] = [ { 'start': {..}, 'cover': bool } ]
@@ -179,7 +179,7 @@ def decompose_compositions_into_sets(
                         for elementset in element.sets:
                             log.verbose(
                                 f'Inserting {element_key} set', 
-                                'decompose_compositions_into_sets'
+                                'decompose_compositions'
                             )
                             
                             # NOTE elementset = { 'start': { ... }, 'cover': bool }
@@ -192,7 +192,7 @@ def decompose_compositions_into_sets(
                                 setattr(buffer_sets.get(layer), element_key, munch.Munch({}))
 
                             if not buffer_sets.get(layer).get(element_key).get('sets'):
-                                log.verbose('Set empty...', 'decompose_composition_into_sets')
+                                log.verbose('Set empty...', 'decompose_compositions')
                                 setattr(
                                     buffer_sets.get(layer).get(element_key),
                                     'sets',
@@ -203,7 +203,7 @@ def decompose_compositions_into_sets(
                                  buffer_sets.get(layer).get(element_key).get('order') != 0:
                                 log.verbose(
                                     f'Generating render order for new set: {len(buffer_sets.get(layer))}', 
-                                    'decompose_compositions_into_sets')
+                                    'decompose_compositions')
                                 setattr(
                                     buffer_sets.get(layer).get(element_key),
                                     'order',

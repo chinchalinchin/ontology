@@ -248,7 +248,7 @@ class BaubleThought():
                 elif avatar_key in list(self.avatar_conf.equipment.keys()):
                     avatar_dim = (
                         self.avatar_conf.equipment.get(avatar_key).size.w,
-                        self.avatar_conf.equipment.get(avatar_key).size.w,
+                        self.avatar_conf.equipment.get(avatar_key).size.h,
                     )
                 elif avatar_key in list(self.avatar_conf.inventory.keys()):
                     avatar_dim = (

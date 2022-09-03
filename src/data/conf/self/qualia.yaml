@@ -1,3 +1,4 @@
+# a priori
 sizes:
   - small
   - large
@@ -17,35 +18,36 @@ theme:
 
 styles:
   small:
-    slots:
-      margins:
-        w: 0.025
-        h: 0.025
-      stack: horizontal
-      alignment: 
-        vertical: bottom
-        horizontal: left
-      opacity: 0.5
-    mirrors:
-      margins:
-        w: 0.025
-        h: 0.025
-      padding:
-        w: 0.005
-        h: 0.005
-      stack: horizontal
-      alignment:
-        vertical: top
-        horizontal: right
-      opacity: 0.5
-    packs: 
-      margins:
-        w: 0.025
-        h: 0.025
-      alignment:
-        vertical: bottom
-        horizontal: right
-    menu:
+    noema:
+      slots:
+        margins:
+          w: 0.025
+          h: 0.025
+        stack: horizontal
+        alignment: 
+          vertical: bottom
+          horizontal: left
+        opacity: 0.5
+      mirrors:
+        margins:
+          w: 0.025
+          h: 0.025
+        padding:
+          w: 0.005
+          h: 0.005
+        stack: horizontal
+        alignment:
+          vertical: top
+          horizontal: right
+        opacity: 0.5
+      packs: 
+        margins:
+          w: 0.025
+          h: 0.025
+        alignment:
+          vertical: bottom
+          horizontal: right
+    noesis:
       padding:
         w: 0.05
         h: 0.05
@@ -54,35 +56,36 @@ styles:
         h: 0.20
       stack: vertical
   large:
-    slots:
-      margins: 
-        w: 0.025
-        h: 0.025
-      stack: horizontal
-      alignment: 
-        vertical: bottom
-        horizontal: left
-      opacity: 0.5
-    mirrors:
-      margins:
-        w: 0.025
-        h: 0.025
-      padding:
-        w: 0.005
-        h: 0.005
-      stack: horizontal
-      alignment:
-        vertical: top
-        horizontal: right
-      opacity: 0.5
-    packs:
-      margins:
-        w: 0.025
-        h: 0.025
-      alignment:
-        vertical: bottom
-        horizontal: right
-    menu:
+    noema:
+      slots:
+        margins: 
+          w: 0.025
+          h: 0.025
+        stack: horizontal
+        alignment: 
+          vertical: bottom
+          horizontal: left
+        opacity: 0.5
+      mirrors:
+        margins:
+          w: 0.025
+          h: 0.025
+        padding:
+          w: 0.005
+          h: 0.005
+        stack: horizontal
+        alignment:
+          vertical: top
+          horizontal: right
+        opacity: 0.5
+      packs:
+        margins:
+          w: 0.025
+          h: 0.025
+        alignment:
+          vertical: bottom
+          horizontal: right
+    noesis:
       padding:
         w: 0.05
         h: 0.05
@@ -92,55 +95,54 @@ styles:
       stack: vertical
 
 properties:
-  slots: 
-    total: 4
-    pieces:
-      - cap
-      - buffer
-      - enabled
-      - active
-      - disabled
-    maps:
-      - cast
-      - thrust
-      - shoot
-      - slash
-    
-  mirrors:
-    life:
-      columns: 10
-      rows: 1
+  noema:
+    slot: 
+      total: 4
       pieces:
-        - unit
-        - empty
-      bounds: 20
-    magic:
-      columns: 10
-      rows: 1
-      pieces:
-        - container
-        - unit
-  
-  packs:
-    bag:
-      pieces:
-        - left
-        - right
-    belt:
-      pieces:
+        - cap
+        - buffer
         - enabled
+        - active
         - disabled
-    wallet:
-      pieces:
-        - display
-  
-  menu:
-    ideas:
+      maps:
+        - cast
+        - thrust
+        - shoot
+        - slash  
+    mirror:
+      life:
+        columns: 10
+        rows: 1
+        pieces:
+          - unit
+          - empty
+        bounds: 20
+      magic:
+        columns: 10
+        rows: 1
+        pieces:
+          - container
+          - unit    
+    pack:
+      bag:
+        pieces:
+          - left
+          - right
+      belt:
+        pieces:
+          - enabled
+          - disabled
+      wallet:
+        pieces:
+          - display
+    
+  noesis:
+    idea:
       pieces: 
         - left
         - middle
         - right
-    thoughts:
+    thought:
       # NOTE: bauble-based thoughts must be named
       #       corresodning to the component of the player
       #       capital they operate on.
@@ -168,9 +170,9 @@ properties:
           label: map
 
 
-hud:
+noema:
   small:
-    slots:
+    slot:
       enabled:
         path: slotsheet.png
         position:
@@ -213,7 +215,7 @@ hud:
         size:
           w: 4
           h: 32
-    mirrors:
+    mirror:
       life:
         unit: 
           path: hearts.png
@@ -232,41 +234,43 @@ hud:
             w: 16
             h: 16
       magic: null
-    packs:
-      bag: 
-        left:
-          path: slotsheet.png
-          position:
-            x: 16
-            y: 184
-          size:
-            w: 32
-            h: 64
-        right:
-          path: slotsheet.png
-          position:
-            x: 82
-            y: 184
-          size:
-            w: 32
-            h: 64
+    pack:
+      bag:
+        display: 
+          left:
+            path: slotsheet.png
+            position:
+              x: 16
+              y: 184
+            size:
+              w: 32
+              h: 64
+          right:
+            path: slotsheet.png
+            position:
+              x: 82
+              y: 184
+            size:
+              w: 32
+              h: 64
       belt: 
-        left:
-          path: slotsheet.png
-          position:
-            x: 16
-            y: 184
-          size:
-            w: 32
-            h: 64
-        right:
-          path: slotsheet.png
-          position:
-            x: 82
-            y: 184
-          size:
-            w: 32
-            h: 64
+        display:
+          left:
+            path: slotsheet.png
+            position:
+              x: 16
+              y: 184
+            size:
+              w: 32
+              h: 64
+          right:
+            path: slotsheet.png
+            position:
+              x: 82
+              y: 184
+            size:
+              w: 32
+              h: 64
       wallet:
         display:
           path: slotsheet.png
@@ -277,7 +281,7 @@ hud:
             w: 24
             h: 24
   large:
-    slots:
+    slot:
       enabled:
         path: slotsheet.png
         position:
@@ -320,7 +324,7 @@ hud:
         size:
           w: 4
           h: 32
-    mirrors:
+    mirror:
       life:
         unit: 
           path: hearts.png
@@ -340,41 +344,43 @@ hud:
             w: 16
             h: 16
       magic: null
-    packs: 
-      bag: 
-        left:
-          path: slotsheet.png
-          position:
-            x: 16
-            y: 184
-          size:
-            w: 32
-            h: 64
-        right:
-          path: slotsheet.png
-          position:
-            x: 82
-            y: 184
-          size:
-            w: 32
-            h: 64
-      belt: 
-        left:
-          path: slotsheet.png
-          position:
-            x: 16
-            y: 184
-          size:
-            w: 32
-            h: 64
-        right:
-          path: slotsheet.png
-          position:
-            x: 82
-            y: 184
-          size:
-            w: 32
-            h: 64
+    pack: 
+      bag:
+        display:
+          left:
+            path: slotsheet.png
+            position:
+              x: 16
+              y: 184
+            size:
+              w: 32
+              h: 64
+          right:
+            path: slotsheet.png
+            position:
+              x: 82
+              y: 184
+            size:
+              w: 32
+              h: 64
+      belt:
+        display: 
+          left:
+            path: slotsheet.png
+            position:
+              x: 16
+              y: 184
+            size:
+              w: 32
+              h: 64
+          right:
+            path: slotsheet.png
+            position:
+              x: 82
+              y: 184
+            size:
+              w: 32
+              h: 64
       wallet:
         display:
           path: slotsheet.png
@@ -385,7 +391,7 @@ hud:
             w: 24
             h: 24
 
-menu:
+noesis:
   small:
     # styled components
     idea:

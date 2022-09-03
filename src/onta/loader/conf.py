@@ -202,6 +202,7 @@ class Conf():
             len(self.projectile_img_conf) == 0:
             projectiles_conf = self._dialectic_configuration('projectiles')
 
+            # NOTE: separate in-game configuration from image configuration
             for project_key, projectile_conf in projectiles_conf.items():
                 setattr(
                     self.projectile_property_conf, 

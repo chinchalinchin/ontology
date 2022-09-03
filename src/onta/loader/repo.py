@@ -179,23 +179,17 @@ class Repo():
                         x, y = asset_conf.position.x, asset_conf.position.y
 
                     if asset_type == 'tiles':
-                        image_path = os.path.join(
-                            ontology_path, 
-                            *settings.TILE_PATH, 
-                            asset_conf.path
-                        )
+                        asset_path = settings.TILE_PATH
                     elif asset_type == 'struts':
-                        image_path = os.path.join(
-                            ontology_path, 
-                            *settings.STRUT_PATH, 
-                            asset_conf.path
-                        )
-                    elif asset_type == 'plates':                         
-                        image_path = os.path.join(
-                            ontology_path, 
-                            *settings.PLATE_PATH, 
-                            asset_conf.path
-                        )
+                        asset_path = settings.STRUT_PATH
+                    elif asset_type == 'plates': 
+                        asset_path = settings.PLATE_PATH    
+
+                    image_path = os.path.join(
+                        ontology_path, 
+                        *asset_path, 
+                        asset_conf.path
+                    )
 
                     buffer = gui.open_image(image_path)
 
@@ -291,7 +285,7 @@ class Repo():
             ## STYLED INITIALIZATION
             for set_type in STYLED_QUALIA_TYPES:
                 if set_type == 'slot':
-                    iter_set = interface_conf.hud.get(size).slots
+                    iter_set = interface_conf.noema.get(size).slots
                     save_set = self.slots
 
                 for set_key, set_conf in iter_set.items():
@@ -342,27 +336,29 @@ class Repo():
                         continue
                     setattr(self.slots.get(size), set_key, buffer)
 
+            # TODO: mirrors aren't piecewise...
+
             ## PIECEWISE DEFINITIONS
             for set_type in PIECEWISE_QUALIA_TYPES:
                 # TODO: collapse this conditional into: iter_set = interface_conf.hud | menu.get(size).get(set_type)
                 #           by defining and passing the proper literals...
                 if set_type == 'mirror':
-                    iter_set = interface_conf.hud.get(size).mirrors
+                    iter_set = interface_conf.noema.get(size).mirrors
                     save_set = self.mirrors
                 elif set_type == 'pack':
-                    iter_set = interface_conf.hud.get(size).packs
+                    iter_set = interface_conf.noema.get(size).packs
                     save_set = self.packs
                 elif set_type == 'idea':
-                    iter_set = interface_conf.menu.get(size).idea
+                    iter_set = interface_conf.noesis.get(size).idea
                     save_set = self.qualia
                 elif set_type == 'bauble':
-                    iter_set = interface_conf.menu.get(size).bauble
+                    iter_set = interface_conf.noesis.get(size).bauble
                     save_set = self.qualia
                 elif set_type == 'aside':
-                    iter_set = interface_conf.menu.get(size).aside
+                    iter_set = interface_conf.noesis.get(size).aside
                     save_set = self.qualia
                 elif set_type == 'focus':
-                    iter_set = interface_conf.menu.get(size).focus
+                    iter_set = interface_conf.noesis.get(size).focus
                     save_set = self.qualia
                     
                 if set_type in [ 'bauble', 'thought', 'focus', 'aside', 'idea' ]:
@@ -414,16 +410,31 @@ class Repo():
             ## SIMPLE DEFINITIONS
             for set_type in SIMPLE_QUALIA_TYPES:
                 if set_type == 'concept':
-                    simple_set = interface_conf.menu.get(size).concept
+                    simple_set = interface_conf.noesis.get(size).concept
 
                 elif set_type == 'conception':
-                    simple_set = interface_conf.menu.get(size).conception
+                    simple_set = interface_conf.noesis.get(size).conception
 
                 if not simple_set.get('path'):
                     continue
             
                 x, y = simple_set.position.x, simple_set.position.y
                 w, h = simple_set.size.w, simple_set.size.h
+
+                buffer = gui.open_image(
+                    os.path.join(
+                        ontology_path,
+                        *settings.QUALIA_PATH,
+                        set_conf.path
+                    )
+                )
+
+                log.debug( 
+                    f"{size} {set_type} {set_key}: size - {buffer.size}, mode - {buffer.mode}", 
+                    '_init_sense_assets'
+                )
+
+                buffer = buffer.crop(( x, y, w + x, h + y ))
 
                 # simple qualia need to be stored and retrieved dirrecently if doing it this way.
 

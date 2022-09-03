@@ -141,7 +141,7 @@ class World():
                 setattr(asset_set, layer_key, layer_conf.get(asset_type))
 
         self.tilesets, self.strutsets, self.platesets = \
-            composition.decompose_compositions_into_sets(
+            composition.decompose_compositions(
                 self.layers,
                 self.compositions,
                 self.composite_conf,
