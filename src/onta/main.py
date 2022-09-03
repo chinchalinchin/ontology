@@ -104,8 +104,8 @@ def do(
     game_world: world.World, 
     render_engine: view.Renderer, 
     asset_repository: repo.Repo,
-    headsup_display: noema.SensoryQuale,
-    pause_menu: noesis.NoeticQuale,
+    display_quale: noema.SensoryQuale,
+    pause_quale: noesis.NoeticQuale,
     debug: bool = False
 ) -> None:
 
@@ -121,7 +121,7 @@ def do(
         if not loading:
 
             game_input, menu_input = controller.poll(
-                pause_menu.menu_activated
+                pause_quale.quale_activated
             )
 
             # # pre_update hook here
@@ -130,21 +130,21 @@ def do(
                 # # construct npc state from game world info
             # scripts.apply_scripts(game_world, 'pre_update')
 
-            if not pause_menu.menu_activated and game_input.menu:
-                pause_menu.toggle_menu()
+            if not pause_quale.quale_activated and game_input.menu:
+                pause_quale.toggle_quale()
             
-            if not pause_menu.menu_activated:
+            if not pause_quale.quale_activated:
                 game_world.iterate(game_input)
-                headsup_display.update(game_world)
+                display_quale.update(game_world)
 
             else:
                 # TODO: catch result in variable
-                pause_menu.update(
+                pause_quale.update(
                     menu_input,
                     game_world
                 )
                 
-                if not pause_menu.menu_activated:
+                if not pause_quale.quale_activated:
                     controller.consume_all()
 
                 # TODO: pass menu result back to game world
@@ -152,7 +152,7 @@ def do(
 
 
             if game_input.get('hud'):
-                headsup_display.toggle_hud()
+                display_quale.toggle_hud()
                 
 
             # # pre_render hook here
@@ -162,8 +162,8 @@ def do(
                 render_engine.view(
                     game_world, 
                     game_view, 
-                    headsup_display,
-                    pause_menu,
+                    display_quale,
+                    pause_quale,
                     asset_repository,
                     game_input
                 )
@@ -171,8 +171,8 @@ def do(
                 render_engine.view(
                     game_world, 
                     game_view, 
-                    headsup_display,
-                    pause_menu,
+                    display_quale,
+                    pause_quale,
                     asset_repository
                 )
 

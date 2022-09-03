@@ -193,7 +193,7 @@ sprites:
             poll: null
 
     esmeralda:
-        portrait: female_00
+        portrait: female_00.png
         sheets:
             base: human_female_ivory.png
             accents:

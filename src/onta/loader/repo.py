@@ -14,17 +14,44 @@ import onta.util.gui as gui
 
 log = logger.Logger('onta.repo', settings.LOG_LEVEL)
 
-# TODO: either a general typing.yaml or else each .yaml needs to specify types somehow.
+# TODO: too many hardcoded constants. either a general typing.yaml or else each .yaml needs to specify types somehow. also, it should be possible to pull the names of the top level types from the directory itself, i.e. the name of the YAML files. the lower level types should be parseable from the contents of the yaml....
 
-STATIC_ASSETS_TYPES = [ 
+
+## TOP LEVEL TYPES
+FORM_TYPES = [ 
     'tiles', 
     'struts', 
     'plates' 
 ]
-SWITCH_PLATES_TYPES = [ 
-    'container', 
-    'pressure', 
-    'gate' 
+ENTITY_TYPES = [
+    'sprites',
+    # TODO: 'pixies',
+    # TODO: 'nymphs',
+]
+SELF_TYPES = [
+    'avatars',
+    'qualia'
+]
+DIALECTIC_TYPES = [
+    'expressions',
+    'projectiles',
+    # TODO: lots
+]
+
+## SECOND LEVEL TYPES?
+NOEMA_TYPE = [
+    'pack',
+    'bag',
+    'wallet'
+    'slot',
+    'mirror'
+]
+NOESIS_TYPES = [
+    'idea',
+    'concept',
+    'conception',
+    'aside',
+    'focus'
 ]
 AVATAR_TYPES = [ 
     'armory', 
@@ -35,6 +62,13 @@ AVATAR_TYPES = [
 APPAREL_TYPES = [ 
     'armor', 
     'equipment' 
+]
+
+## SPECIAL TYPES ?
+SWITCH_PLATES_TYPES = [ 
+    'container', 
+    'pressure', 
+    'gate' 
 ]
 PIECEWISE_QUALIA_TYPES = [
     'mirror', 
@@ -51,10 +85,10 @@ SIMPLE_QUALIA_TYPES=[
     'concept',
     'conception'
 ]
-DIRECTIONAL_PIECE_DEFINTIONS = [
+DIRECTIONAL_PIECE_TYPES = [
     'cap'
 ]
-ALIGNMENT_PIECE_DEFINITIONS = [
+ALIGNMENT_PIECE_TYPES = [
     'buffer'
 ]
 
@@ -87,30 +121,17 @@ def adjust_alignment_rotation(
     direction: str
 ) -> tuple:
     if direction == 'vertical':
-        return (0, 90)
-    return (90, 0)
+        return ( 0, 90 )
+    return ( 90, 0 )
 
 class Repo():
-
-    # TODO: be careful with closures. 
-
-    tiles = munch.Munch({})
-    struts = munch.Munch({})
-    plates = munch.Munch({})
-    tracks = munch.Munch({})
-    pixies = munch.Munch({})
-    nymphs = munch.Munch({})
-    sprites = munch.Munch({})
-    avatars = munch.Munch({})
-    expressions = munch.Munch({})
-    projectiles = munch.Munch({})
-    mirrors = munch.Munch({})
+    # TODO: 
     qualia = munch.Munch({})
-    # slots and packs are treated separately from other qualia since they are HUD.
+    ## 
+    mirrors = munch.Munch({})
     slots = munch.Munch({})
     packs = munch.Munch({})
-    apparel = munch.Munch({})
-
+    avatars = munch.Munch({})
 
     def __init__(
         self, 
@@ -121,13 +142,58 @@ class Repo():
             No reference is kept to `ontology_path`; it is passed to initialization methods and released.
         """
         config = conf.Conf(ontology_path)
-        self._init_form_assets(config, ontology_path)
-        self._init_entity_assets(config, ontology_path)
-        self._init_apparel_assets(config, ontology_path)
-        self._init_qualia_assets(config, ontology_path)
-        self._init_avatar_assets(config, ontology_path)
-        self._init_expression_assets(config, ontology_path)
-        self._init_projectile_assets(config, ontology_path)
+        self._init_fields()
+        self._init_form_assets(
+            config, 
+            ontology_path
+        )
+        self._init_entity_assets(
+            config, 
+            ontology_path
+        )
+        self._init_self_assets(
+            config, 
+            ontology_path
+        )
+        self._init_dialectic_assets(
+            config, 
+            ontology_path
+        )
+
+
+    def _init_fields(
+        self
+    ) -> None:
+        """
+        
+        .. note::
+            ```python
+            self.forms = {
+                'tiles': { ... },
+                'struts': { ... },
+                'plates': { ... },
+                'tracks': { ... },
+            }
+            self.entities = {
+                'pixies': { ... },
+                'nymphs': { ... },
+                'sprites': { ... },
+            }
+            self.selves = {
+                'avatars': { ... },
+                'qualia': { ... },
+            }
+            self.dialectices = {
+                'expressions': { ... },
+                'projectiles': { ... },
+                'portraits': { ... },
+            }
+            ```
+        """
+        self.forms = munch.Munch({})
+        self.entities = munch.Munch({})
+        self.selves = munch.Munch({})
+        self.dialectics = munch.Munch({})
 
 
     def _init_form_assets(
@@ -146,21 +212,20 @@ class Repo():
             - Static assets, i.e. _Tile_\s, _Strut_\s & _Plate_\s can be rendered using RGBA channels instead of a cropping a sheet file into an PIL image. If the channels are specified through the configuration file for the appropriate _Form_ asset, the asset frame will be created using through channels. Particularly useful if you need to create an inside door with a transculent light square leading back outside.
         """
 
-        for asset_type in STATIC_ASSETS_TYPES:
+        for asset_type in FORM_TYPES:
             log.debug(f'Initializing {asset_type} assets...',  '_init_form_assets')
+
+            setattr(self.forms, asset_type, munch.Munch({}))
 
             if asset_type == 'tiles':
                 assets_conf = config.load_tile_configuration()
+                # NOTE: all tiles are the same size...
                 w, h = assets_conf.tile.w, assets_conf.tile.h
-            elif asset_type == 'struts':
-                asset_props, assets_conf = config.load_strut_configuration()
-            elif asset_type == 'plates':
-                asset_props, assets_conf = config.load_plate_configuration()
+
+            else:
+                asset_props, assets_conf = config.load_form_configuration(asset_type)
 
             for asset_key, asset_conf in assets_conf.items():
-                # need tile dimensions here...but tile dimensions don't exist until world
-                # pulls static state...
-
                 if asset_type != 'tiles':
                     w, h = asset_conf.size.w, asset_conf.size.h
 
@@ -198,34 +263,29 @@ class Repo():
                         '_init_form_assets'
                     )
 
-                    if asset_type == 'tiles':
+                    if asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
                         setattr(
-                            self.tiles,
+                            self.forms.get(asset_type),
                             asset_key,
-                            buffer.crop(( x, y, w + x, h + y ))
+                            munch.Munch({
+                                'on': buffer.crop(
+                                    ( on_x, on_y, w + on_x, h + on_y )
+                                ),
+                                'off': buffer.crop(
+                                    ( off_x, off_y, w + off_x, h + off_y )
+                                )
+                            })
                         )
-                    elif asset_type == 'struts':
-                        setattr(
-                            self.struts,
-                            asset_key,
-                            buffer.crop(( x, y, w + x, h + y ))
+                        continue
+
+                    setattr(
+                        self.forms.get(asset_type),
+                        asset_key,
+                        buffer.crop(
+                            ( x, y, w + x, h + y )
                         )
-                    elif asset_type == 'plates':
-                        if asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
-                            setattr(
-                                self.plates,
-                                asset_key,
-                                munch.Munch({
-                                    'on': buffer.crop(( on_x, on_y, w + on_x, h + on_y )),
-                                    'off': buffer.crop(( off_x, off_y, w + off_x, h + off_y ))
-                                })
-                            )
-                        else:
-                            setattr(
-                                self.plates,
-                                asset_key,
-                                buffer.crop(( x, y, w + x, h + y ))
-                            )
+                    )
+                    continue
                         
                 elif asset_conf.get('channels'):
                     channels = (
@@ -234,24 +294,94 @@ class Repo():
                         asset_conf.channels.b,
                         asset_conf.channels.a
                     )
-                    buffer = gui.channels(( w, h ), channels)
 
-                    if asset_type == 'tiles':
-                        setattr(self.tiles, asset_key, buffer)
-                    elif asset_type == 'struts':
-                        setattr(self.struts, asset_key, buffer)
-                    elif asset_type == 'plates':
-                        if asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
-                            setattr(
-                                self.plates,
-                                asset_key,
-                                munch.Munch({ 'on': buffer, 'off': buffer})
+                    buffer = gui.channels(
+                        ( w, h ), 
+                        channels
+                    )
+
+                    if asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
+                        setattr(
+                            self.forms.get(asset_type),
+                            asset_key,
+                            munch.Munch(
+                                { 'on': buffer, 'off': buffer}
                             )
-                        else:
-                            setattr(self.plates, asset_key, buffer)
- 
+                        )
+                        continue
 
-    def _init_qualia_assets(
+                    setattr(
+                        self.forms.get(asset_type), 
+                        asset_key, 
+                        buffer
+                    )
+
+
+    def _init_dialectic_assets(
+        self,
+        config: conf.Conf,
+        ontology_path: str
+    ) -> None:
+
+        for asset_type in DIALECTIC_TYPES:
+
+            setattr(self.dialectics, asset_type, munch.Munch({}))
+
+            if asset_type == 'projectiles':
+                _, assets_conf = config.load_projectile_configuration()
+            elif asset_type == 'expressions':
+                assets_conf = config.load_expression_configuration()
+
+            for asset_key, asset_conf in assets_conf.items():
+                if not asset_conf or not asset_conf.get('path'):
+                    continue
+                x,y = ( 
+                    asset_conf.position.x, 
+                    asset_conf.position.y 
+                )
+                w, h = ( 
+                    asset_conf.size.w, 
+                    asset_conf.size.h 
+                )
+
+                if asset_type == 'projectiles':
+                    asset_path = settings.PROJECTILE_PATH
+                elif asset_type == 'expressions':
+                    asset_path = settings.EXPRESSION_PATH
+
+                buffer = gui.open_image(
+                    os.path.join(
+                        ontology_path,
+                        *asset_path,
+                        asset_conf.path
+                    )
+                )
+
+                buffer = buffer.crop(( x, y, w + x, h + y ))
+
+                if asset_type == 'projectiles':
+                    adjust = adjust_directional_rotation(asset_conf.definition)
+
+                    setattr(
+                        self.dialectics.get(asset_type),
+                        asset_key,
+                        munch.Munch({
+                            'down': buffer.rotate(adjust[0], expand=True),
+                            'left': buffer.rotate(adjust[1], expand=True),
+                            'right': buffer.rotate(adjust[2], expand=True),
+                            'up': buffer.rotate(adjust[3], expand=True),
+                        })
+                    )
+                    continue
+                if asset_type == 'expression':
+                    setattr(
+                        self.dialectics.get(asset_type),
+                        asset_key,
+                        buffer
+                    )
+
+
+    def _init_self_assets(
         self, 
         config: conf.Conf, 
         ontology_path: str
@@ -266,6 +396,32 @@ class Repo():
         .. note::
             A _Slot_ is defined in a single direction, but used in multiple directions. When styles are applied the engine will need to be aware which direction the definition is in, so it can rotate the _Slot_ component to its appropriate position based on the declared style. In other words, _Slot_\s are a pain.
         """
+        log.debug(f'Initializing avatar assets...', '_init_qualia_assets')
+
+        avatar_conf = config.load_avatar_configuration()
+
+        for avatarset_key, avatarset_conf in avatar_conf.avatars.items():
+            setattr(self.avatars, avatarset_key, munch.Munch({}))
+
+            for avatar_key, avatar in avatarset_conf.items():
+                if not avatar or not avatar.get('path'):
+                    continue
+
+                x,y = ( avatar.position.x, avatar.position.y )
+                w,h = ( avatar.size.w, avatar.size.h )
+                buffer = gui.open_image(
+                    os.path.join(
+                        ontology_path,
+                        *settings.AVATAR_PATH,
+                        avatar.path
+                    )
+                )
+                setattr(
+                    self.avatars.get(avatarset_key),
+                    avatar_key,
+                    buffer.crop(( x, y, w + x, h + y ))
+                )
+
         log.debug(f'Initializing qualia assets...', '_init_qualia_assets')
 
         interface_conf = config.load_qualia_configuration()
@@ -310,7 +466,7 @@ class Repo():
 
                     buffer = buffer.crop(( x, y, w + x, h + y ))
 
-                    if set_key in DIRECTIONAL_PIECE_DEFINTIONS:
+                    if set_key in DIRECTIONAL_PIECE_TYPES:
                         adjust = adjust_directional_rotation(set_conf.definition)
                         setattr(
                             save_set.get(size),
@@ -323,7 +479,7 @@ class Repo():
                             })
                         )
                         continue
-                    elif set_key in ALIGNMENT_PIECE_DEFINITIONS:
+                    elif set_key in ALIGNMENT_PIECE_TYPES:
                         adjust = adjust_alignment_rotation(set_conf.definition)
                         setattr(
                             save_set.get(size),
@@ -439,183 +595,46 @@ class Repo():
                 # simple qualia need to be stored and retrieved dirrecently if doing it this way.
 
 
-    def _init_projectile_assets(
-        self,
-        config: conf.Conf,
-        ontology_path: str
-    ) -> None:
-        _, projectile_conf = config.load_projectile_configuration()
-
-        for project_key, projectile in projectile_conf.items():
-            if not projectile or not projectile.get('path'):
-                continue
-            x,y = ( projectile.position.x, projectile.position.y )
-            w, h = ( projectile.size.w, projectile.size.h )
-            buffer = gui.open_image(
-                os.path.join(
-                    ontology_path,
-                    *settings.PROJECTILE_PATH,
-                    projectile.path
-                )
-            )
-
-            buffer.crop(( x, y, w + x, h + y ))
-
-            adjust = adjust_directional_rotation(projectile.definition)
-            setattr(
-                self.projectiles,
-                project_key,
-                munch.Munch({
-                    'down': buffer.rotate(adjust[0], expand=True),
-                    'left': buffer.rotate(adjust[1], expand=True),
-                    'right': buffer.rotate(adjust[2], expand=True),
-                    'up': buffer.rotate(adjust[3], expand=True),
-                })
-            )
-
-
-    def _init_expression_assets(
-        self,
-        config: conf.Conf,
-        ontology_path: str
-    ) -> None:
-        expression_conf = config.load_expression_configuration()
-
-        for express_key, expression in expression_conf.items():
-            if not expression or not expression.get('path'):
-                continue
-            x,y = ( expression.position.x, expression.position.y )
-            w, h = ( expression.size.w, expression.size.h )
-            buffer = gui.open_image(
-                os.path.join(
-                    ontology_path,
-                    *settings.EXPRESSION_PATH,
-                    expression.path
-                )
-            )
-            setattr(
-                self.expressions,
-                express_key,
-                buffer.crop(( x, y, x + w, y + h))
-            )
-
-
-    def _init_avatar_assets(
-        self, 
-        config: conf.Conf, 
-        ontology_path: str
-    ) -> None:
-        avatar_conf = config.load_avatar_configuration()
-
-        for avatarset_key, avatarset_conf in avatar_conf.avatars.items():
-            setattr(self.avatars, avatarset_key, munch.Munch({}))
-
-            for avatar_key, avatar in avatarset_conf.items():
-                if not avatar or not avatar.get('path'):
-                    continue
-
-                x,y = ( avatar.position.x, avatar.position.y )
-                w,h = ( avatar.size.w, avatar.size.h )
-                buffer = gui.open_image(
-                    os.path.join(
-                        ontology_path,
-                        *settings.AVATAR_PATH,
-                        avatar.path
-                    )
-                )
-                setattr(
-                    self.avatars.get(avatarset_key),
-                    avatar_key,
-                    buffer.crop(( x, y, w + x, h + y ))
-                )
-
-
-    def _init_apparel_assets(
-        self,
-        config: conf.Conf,
-        ontology_path: str
-    ) -> None:
-
-
-        apparel_conf = config.load_apparel_configuration()
-        stature, _, _, sprite_dim = config.load_sprite_configuration()
-
-        for set_key, set_conf in apparel_conf.items():
-            setattr(self.apparel, set_key, munch.Munch({}))
-
-            for apparel_key, apparel in set_conf.items():
-                setattr(
-                    self.apparel.get(set_key),
-                    apparel_key,
-                    munch.Munch({})
-                )
-
-                sheets = []
-                for sheet in apparel.sheets:
-                    sheets.append(
-                        gui.open_image(
-                            os.path.join(
-                                ontology_path, 
-                                *settings.SPRITE_APPAREL_PATH, 
-                                sheet
-                            )
-                        )
-                    )
-
-                if apparel.animate_statures == 'all':
-                    animate_statures = composition.construct_animate_statures(stature)
-
-                else:
-                    animate_statures = apparel.animate_statures
-
-                for equip_stature in animate_statures:
-                    equip_stature_conf = stature.animate_map.get(equip_stature)
-                    equip_stature_row = equip_stature_conf.row
-                    equip_stature_frames = equip_stature_conf.frames
-
-                    start_y = equip_stature_row * sprite_dim[1]
-
-                    setattr(
-                        self.apparel.get(set_key).get(apparel_key),
-                        equip_stature,
-                        []
-                    )
-
-                    for i in range(equip_stature_frames):
-                        start_x = i*sprite_dim[0]
-                        crop_box = (
-                            start_x, 
-                            start_y, 
-                            start_x + sprite_dim[0], 
-                            start_y + sprite_dim[1]
-                        )
-                        
-                        crop_sheets = [ sheet.crop(crop_box) for sheet in sheets ]
-                    
-                        equip_stature_frame = gui.new_image(sprite_dim)
-
-                        for sheet in crop_sheets:
-                            equip_stature_frame.paste(sheet, ( 0,0 ), sheet)
-
-                        self.apparel.get(set_key).get(apparel_key).get(equip_stature
-                        ).append(equip_stature_frame) 
-
-
     def _init_entity_assets(
         self, 
         config: conf.Conf, 
         ontology_path: str
     ) -> None:
-        log.debug('Initializing entity assets...', '_init_entity_assets')
 
-        stature_conf, _, sheets_conf, sprite_dim = config.load_sprite_configuration()
+        ## BASE AND ACCENT INITIALIZATION
+        log.debug(
+            'Initializing base spritesheets...', 
+            'Repo._init_entity_assets'
+        )
+        stature_conf, _, sheets_conf, sprite_dim = \
+            config.load_sprite_configuration()
 
-        setattr(self.sprites, 'base', munch.Munch({}))
-        setattr(self.sprites, 'accents', munch.Munch({}))
+        setattr(
+            self.entities, 
+            'sprites', 
+            munch.Munch({
+                'base': munch.Munch({}),
+                'accents': munch.Munch({})
+            })
+        )
 
         for sprite_key, sheet_conf in sheets_conf.items():
-            setattr(self.sprites.base, sprite_key, munch.Munch({}))
-            setattr(self.sprites.accents, sprite_key, munch.Munch({}))
+            log.verbose(
+                f'Initializing {sprite_key} base sheet...',
+                'Repo._init_entity_assets'
+            )
+
+            setattr(
+                self.entities.sprites.base, 
+                sprite_key, 
+                munch.Munch({})
+            )
+            setattr(
+                self.entities.sprites.accents, 
+                sprite_key, 
+                munch.Munch({})
+            )
+
             accent_sheets = []
 
             base_img = gui.open_image(
@@ -627,6 +646,11 @@ class Repo():
             )
 
             if sheet_conf.get('accents'):
+                log.verbose(
+                    f'Initializing {sprite_key} accent sheets...',
+                    'Repo._init_entity_assets'
+                )
+
                 for sheet in sheet_conf.accents:
                     accent_sheets.append(
                         gui.open_image(
@@ -643,12 +667,12 @@ class Repo():
                 frames += stature.frames
 
                 setattr(
-                    self.sprites.base.get(sprite_key),
+                    self.entities.sprites.base.get(sprite_key),
                     stature_key,
                     []
                 )
                 setattr(
-                    self.sprites.accents.get(sprite_key),
+                    self.entities.sprites.accents.get(sprite_key),
                     stature_key,
                     []
                 )
@@ -674,17 +698,90 @@ class Repo():
                     for sheet in accent_crop_sheets:
                         sprite_accent_frame.paste(sheet, ( 0,0 ), sheet)
 
-                    self.sprites.base.get(sprite_key).get(stature_key).append(
+                    self.entities.sprites.base.get(sprite_key).get(stature_key).append(
                         sprite_base_frame
                     )
-                    self.sprites.accents.get(sprite_key).get(stature_key).append(
+                    self.entities.sprites.accents.get(sprite_key).get(stature_key).append(
                         sprite_accent_frame
                     )
 
             log.debug(
-                f'{sprite_key}: states - {len(self.sprites.base.get(sprite_key))}, frames - {frames}', 
+                f'{sprite_key}: states - {len(self.entities.sprites.base.get(sprite_key))}, frames - {frames}', 
                 '_init_entity_assets'
             )
+
+        ## APPAREL INITIALIZATION
+        log.debug(
+            'Initializing apparel sheets...',
+            'Repo._init_entity_assets'
+        )
+        apparel_conf = config.load_apparel_configuration()
+        setattr(self.entities, 'apparel', munch.Munch({}))
+
+        for set_key, set_conf in apparel_conf.items():
+            setattr(self.entities.apparel, set_key, munch.Munch({}))
+
+            for apparel_key, apparel in set_conf.items():
+                log.verbose(
+                    f'Initializing {set_key} {apparel_key} apparel...',
+                    'Repo._init_entity_assets'
+                )
+                
+                setattr(
+                    self.entities.apparel.get(set_key),
+                    apparel_key,
+                    munch.Munch({})
+                )
+
+                sheets = []
+                for sheet in apparel.sheets:
+                    sheets.append(
+                        gui.open_image(
+                            os.path.join(
+                                ontology_path, 
+                                *settings.SPRITE_APPAREL_PATH, 
+                                sheet
+                            )
+                        )
+                    )
+
+                if apparel.animate_statures == 'all':
+                    animate_statures = composition.construct_animate_statures(stature_conf)
+
+                else:
+                    animate_statures = apparel.animate_statures
+
+                for equip_stature in animate_statures:
+                    equip_stature_conf = stature_conf.animate_map.get(equip_stature)
+                    equip_stature_row = equip_stature_conf.row
+                    equip_stature_frames = equip_stature_conf.frames
+
+                    start_y = equip_stature_row * sprite_dim[1]
+
+                    setattr(
+                        self.entities.apparel.get(set_key).get(apparel_key),
+                        equip_stature,
+                        []
+                    )
+
+                    for i in range(equip_stature_frames):
+                        start_x = i*sprite_dim[0]
+                        crop_box = (
+                            start_x, 
+                            start_y, 
+                            start_x + sprite_dim[0], 
+                            start_y + sprite_dim[1]
+                        )
+                        
+                        crop_sheets = [ sheet.crop(crop_box) for sheet in sheets ]
+                    
+                        equip_stature_frame = gui.new_image(sprite_dim)
+
+                        for sheet in crop_sheets:
+                            equip_stature_frame.paste(sheet, ( 0,0 ), sheet)
+
+                        self.entities.apparel.get(set_key).get(apparel_key).get(equip_stature
+                            ).append(equip_stature_frame) 
 
 
     @functools.lru_cache(maxsize=48)
@@ -693,8 +790,8 @@ class Repo():
         project_key,
         project_direction
     ) -> Union[Image.Image, None]:
-        if self.projectiles.get(project_key):
-            return self.projectiles.get(project_key).get(project_direction)
+        if self.dialectics.projectiles.get(project_key):
+            return self.dialectics.projectiles.get(project_key).get(project_direction)
         return None
 
 
@@ -703,21 +800,17 @@ class Repo():
         self,
         express_key
     ) -> Union[Image.Image, None]:
-        return self.expressions.get(express_key)
+        return self.dialectics.expressions.get(express_key)
 
 
-    @functools.lru_cache(maxsize=128)
+    @functools.lru_cache(maxsize=256)
     def get_form_frame(
         self, 
         form_key: str, 
         group_key: str
     ) -> Union[Image.Image, None]:
-        if form_key in [ 'tiles', 'tile' ]:
-            return self.tiles.get(group_key)
-        if form_key in [ 'struts', 'strut' ]:
-            return self.struts.get(group_key)
-        if form_key in [ 'plates', 'plate' ]:
-            return self.plates.get(group_key)
+        if self.forms.get(form_key):
+            return self.forms.get(form_key).get(group_key)
         return None
 
 
@@ -868,23 +961,26 @@ class Repo():
         :return: An image representing the appropriate _Sprite_ state frame, or `None` if frame doesn't exist.
         :rtype: Union[Image.Image, None]
         """
-        if self.sprites.base.get(sprite_key) and \
-            self.sprites.accents.get(sprite_key) and \
-            self.sprites.base.get(sprite_key).get(stature_key) and \
-            self.sprites.accents.get(sprite_key).get(stature_key):
+        if self.entities.sprites.base.get(sprite_key) and \
+            self.entities.sprites.accents.get(sprite_key) and \
+            self.entities.sprites.base.get(sprite_key).get(stature_key) and \
+            self.entities.sprites.accents.get(sprite_key).get(stature_key):
 
                 # TODO: check if frame index is less than state frames?
                 return (
-                    self.sprites.base.get(sprite_key).get(stature_key)[frame_index],
-                    self.sprites.accents.get(sprite_key).get(stature_key)[frame_index]
+                    self.entities.sprites.base.get(sprite_key).get(stature_key)[frame_index],
+                    self.entities.sprites.accents.get(sprite_key).get(stature_key)[frame_index]
                 )
-        elif self.sprites.base.get(sprite_key) and \
-            self.sprites.base.get(sprite_key).get(stature_key):
+        elif self.entities.sprites.base.get(sprite_key) and \
+            self.entities.sprites.base.get(sprite_key).get(stature_key):
             return (
-                self.sprites.bases.get(sprite_key).get(stature_key)[frame_index],
+                self.entities.sprites.bases.get(sprite_key).get(stature_key)[frame_index],
                 None
             )
-        return (None, None)
+        return (
+            None, 
+            None
+        )
 
 
     @functools.lru_cache(maxsize=1024)
@@ -892,12 +988,12 @@ class Repo():
         self,
         set_key: str,
         apparel_key: str,
-        state_key: str,
+        stature_key: str,
         frame_index: int
     ) -> Union[Image.Image, None]:
-        if self.apparel.get(set_key) and \
-            self.apparel.get(set_key).get(apparel_key) and \
-            self.apparel.get(set_key).get(apparel_key).get(state_key):
+        if self.entities.apparel.get(set_key) and \
+            self.entities.apparel.get(set_key).get(apparel_key) and \
+            self.entities.apparel.get(set_key).get(apparel_key).get(stature_key):
             # TODO: check if frame index is less than state frames?
-            return self.apparel.get(set_key).get(apparel_key).get(state_key)[frame_index]
+            return self.entities.apparel.get(set_key).get(apparel_key).get(stature_key)[frame_index]
         return None

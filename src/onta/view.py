@@ -598,7 +598,6 @@ class Renderer():
             )
 
         ## PACK RENDERING
-
         # avatar rendering points include slot avatars and wallet avatars...
         for pack_key in noema.PACK_TYPES:
             pack_map = display.get_frame_map(pack_key)
@@ -618,7 +617,6 @@ class Renderer():
                 )
 
         ## AVATAR RENDERING
-
         avatar_rendering_points = display.get_rendering_points('avatar')
         avatar_frame_map = display.get_frame_map('avatar')
         # TODO: there has to be a way of calculating this...
@@ -772,7 +770,7 @@ class Renderer():
         game_world: world.World, 
         repository: repo.Repo, 
         display: noema.SensoryQuale, 
-        menu: noesis.NoeticQuale,
+        pause: noesis.NoeticQuale,
         crop: bool = True, 
         layer: str = None
     ) -> Image.Image:
@@ -794,7 +792,7 @@ class Renderer():
             layer_buffer = game_world.layer
             game_world.layer = layer
 
-        if not menu.menu_activated:
+        if not pause.quale_activated:
             self._render_static(game_world.layer, False)
             self._render_variable_platesets(game_world, repository, crop)
             self._render_sprites(game_world, repository, crop)
@@ -818,8 +816,8 @@ class Renderer():
             )
             self.world_frame = self.world_frame.crop(crop_box)
         
-        if menu.menu_activated:
-            self._render_noesis(menu, repository)
+        if pause.quale_activated:
+            self._render_noesis(pause, repository)
 
         if display.hud_activated:
             self._render_noema(display, repository)
@@ -864,7 +862,7 @@ class Renderer():
         game_world: world.World, 
         view_widget: QtWidgets.QWidget, 
         display: noema.SensoryQuale,
-        menu: noesis.NoeticQuale,
+        pause: noesis.NoeticQuale,
         repository: repo.Repo,
         user_input: munch.Munch = None
     ) -> QtWidgets.QWidget: 
@@ -874,12 +872,14 @@ class Renderer():
         :type game_world: world.World
         :param view_widget: _description_
         :type view_widget: QtWidgets.QWidget
-        :param headsup_display: _description_
-        :type headsup_display: interface.HUD
-        :param menu: _description_
-        :type menu: interface.Menu
+        :param display: _description_
+        :type display: noema.SensoryQuale
+        :param pause: _description_
+        :type pause: noesis.NoeticQuale
         :param repository: _description_
         :type repository: repo.Repo
+        :param user_input: _description_, defaults to None
+        :type user_input: munch.Munch, optional
         :return: _description_
         :rtype: QtWidgets.QWidget
         """
@@ -887,7 +887,7 @@ class Renderer():
             game_world, 
             repository, 
             display, 
-            menu
+            pause
         )
 
         pix = gui.convert_to_gui(cropped)

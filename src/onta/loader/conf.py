@@ -111,6 +111,9 @@ class Conf():
         return self.__configuration(type_key, 'dialectics')
 
 
+    ## SELF CONFIGURATION
+
+
     def load_control_configuration(
         self
     ) -> munch.Munch:
@@ -123,7 +126,7 @@ class Conf():
             self.control_conf = self._self_configuration('controls')
         return self.control_conf
 
-
+    
     def load_qualia_configuration(
         self
     ) -> munch.Munch:
@@ -151,31 +154,18 @@ class Conf():
         return self.avatar_conf
 
 
-    def load_composite_configuration(
-        self
+    def load_self_configuration(
+        self,
+        self_type
     ) -> munch.Munch:
-        """Returns the parsed _Composite_ configuration from the _data/conf/forms/composite.yaml_.file.
-
-        :return: _Composite_ configuration
-        :rtype: munch.Munch
-        """
-        if len(self.composite_conf) == 0:
-            self.composite_conf = self._form_configuration('composite')
-        return self.composite_conf
+        # NOTE: generalized method that routes through cache
+        if self_type == 'qualia':
+            return self.load_qualia_configuration()
+        if self_type == 'avatars':
+            return self.load_avatar_configuration()
 
 
-    def load_tile_configuration(
-        self
-    ) -> munch.Munch:
-        """Returns the parsed _Tile_ configuration from the _data/conf/forms/tiles.yaml_ file
-
-        :return: _Tile_ configuration
-        :rtype: munch.Munch
-        """
-
-        if len(self.tile_sheet_conf) == 0:
-            self.tile_sheet_conf = self._form_configuration('tiles')
-        return self.tile_sheet_conf
+    ## DIALECTIC CONFIGURATION
 
 
     def load_expression_configuration(
@@ -189,6 +179,7 @@ class Conf():
         if len(self.expression_conf) == 0:
             self.expression_conf = self._dialectic_configuration('expressions')
         return self.expression_conf
+
 
     def load_projectile_configuration(
         self
@@ -228,6 +219,20 @@ class Conf():
         )
 
 
+    def load_dialectic_configuration(
+        self,
+        dialectic_type
+    ) -> munch.Munch:
+        # NOTE: generalized method that routes through cache
+        if dialectic_type == 'projectciles':
+            return self.load_projectile_configuration()
+        if dialectic_type == 'expressions':
+            return self.load_expression_configuration()
+
+
+    ## ENTITY CONFIGURATION
+
+
     def load_apparel_configuration(
         self
     ) -> munch.Munch:
@@ -242,6 +247,7 @@ class Conf():
         if len(self.apparel_conf) == 0:
             self.apparel_conf = self._entity_configuration('apparel')
         return self.apparel_conf
+
 
     def load_sprite_configuration(
         self
@@ -265,16 +271,63 @@ class Conf():
             self.sprite_size = sprites_conf.size
 
             for sprite_key, sprite_conf in sprites_conf.sprites.items():
-                setattr(self.sprite_property_conf, sprite_key, sprite_conf.properties)
-                setattr(self.sprite_sheet_conf, sprite_key, sprite_conf.sheets)
+                setattr(
+                    self.sprite_property_conf, 
+                    sprite_key, 
+                    sprite_conf.properties
+                )
+                setattr(
+                    self.sprite_sheet_conf, 
+                    sprite_key, 
+                    sprite_conf.sheets
+                )
 
-    
         return (
             self.sprite_stature_conf, 
             self.sprite_property_conf, 
             self.sprite_sheet_conf, 
             ( self.sprite_size.w, self.sprite_size.h)
         )
+
+    
+    def load_entity_configuration(
+        self,
+        entity_type
+    ) -> munch.Munch:
+        # NOTE: generalized method that routes through cache
+        if entity_type == 'sprites':
+            return self.load_sprite_configuration()
+        if entity_type == 'apparel':
+            return self.load_apparel_configuration()
+
+
+    ## FORM CONFIGURATION
+
+    def load_composite_configuration(
+        self
+    ) -> munch.Munch:
+        """Returns the parsed _Composite_ configuration from the _data/conf/forms/composite.yaml_.file.
+
+        :return: _Composite_ configuration
+        :rtype: munch.Munch
+        """
+        if len(self.composite_conf) == 0:
+            self.composite_conf = self._form_configuration('composite')
+        return self.composite_conf
+
+
+    def load_tile_configuration(
+        self
+    ) -> munch.Munch:
+        """Returns the parsed _Tile_ configuration from the _data/conf/forms/tiles.yaml_ file
+
+        :return: _Tile_ configuration
+        :rtype: munch.Munch
+        """
+
+        if len(self.tile_sheet_conf) == 0:
+            self.tile_sheet_conf = self._form_configuration('tiles')
+        return self.tile_sheet_conf
 
 
     def load_strut_configuration(
@@ -313,7 +366,10 @@ class Conf():
                     })
                 )
 
-        return ( self.strut_property_conf, self.strut_sheet_conf )
+        return ( 
+            self.strut_property_conf, 
+            self.strut_sheet_conf 
+        )
 
 
     def load_plate_configuration(
@@ -327,13 +383,22 @@ class Conf():
         .. note::
             - Size is _both_ a game property and an image configuration property.
         """
-        if not self.plate_property_conf or not self.plate_sheet_conf:
+        if not self.plate_property_conf or \
+            not self.plate_sheet_conf:
 
             plates_conf = self._form_configuration('plates')
 
             for plate_key, plate_conf in plates_conf.items():
-                setattr(self.plate_property_conf, plate_key, plate_conf.properties)
-                setattr(self.plate_property_conf.get(plate_key), 'size', plate_conf.size)
+                setattr(
+                    self.plate_property_conf, 
+                    plate_key, 
+                    plate_conf.properties
+                )
+                setattr(
+                    self.plate_property_conf.get(plate_key), 
+                    'size', 
+                    plate_conf.size
+                )
                 setattr(
                     self.plate_sheet_conf,
                     plate_key, 
@@ -343,4 +408,22 @@ class Conf():
                     })
                 )
         
-        return ( self.plate_property_conf, self.plate_sheet_conf )
+        return ( 
+            self.plate_property_conf, 
+            self.plate_sheet_conf 
+        )
+
+
+    def load_form_configuration(
+        self,
+        form_type
+    ) -> munch.Munch:
+        # NOTE: generalized method that routes through cache...
+        if form_type == 'plates':
+            return self.load_plate_configuration()
+
+        if form_type == 'tiles':
+            return self.load_tile_configuration()
+
+        if form_type == 'struts':
+            return self.load_strut_configuration()
