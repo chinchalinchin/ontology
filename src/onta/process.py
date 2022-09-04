@@ -1,35 +1,28 @@
+import PySide6.QtWidgets as QtWidgets
 import threading
 import time
 from typing import Tuple
-
-import PySide6.QtWidgets as QtWidgets
 from PIL import Image
 
-import onta.device as device
-import onta.view as view
-import onta.control as control
-import onta.settings as settings
-import onta.world as world
-
-import onta.actuality.datum as datum
-
-import onta.metaphysics.logger as logger
-import onta.metaphysics.helper as helper
-import onta.metaphysics.cli as cli
-
-import onta.concrescence.qualia.noema as noema
-import onta.concrescence.qualia.noesis as noesis
+from onta \
+    import gestalt, will, world
+from onta.actuality \
+    import datum
+from onta.metaphysics \
+    import device, logger, helper, cli, settings
+from onta.qualia \
+    import intrinsic, extrinsic
 
 log = logger.Logger('onta.main', settings.LOG_LEVEL)
 
 
 def create(args) -> Tuple[
-    control.Controller,
+    will.Will,
     world.World,
-    view.Renderer,
+    gestalt.Renderer,
     datum.Totality,
-    noema.SensoryQuale,
-    noesis.NoeticQuale
+    extrinsic.ExtrinsicQuale,
+    intrinsic.IntrinsicQuale
 ]:
     log.debug(
         'Pulling device information...', 
@@ -44,7 +37,7 @@ def create(args) -> Tuple[
         'Initializing controller...', 
         'create'
     )
-    controller = control.Controller(args.ontology)
+    player_will = will.Will(args.ontology)
 
     log.debug(
         'Initializing asset repository...', 
@@ -62,7 +55,7 @@ def create(args) -> Tuple[
         'Initializing HUD...', 
         'create'
     )
-    headsup_display = noema.SensoryQuale(
+    ex_quale = extrinsic.ExtrinsicQuale(
         player_device, 
         args.ontology
     )
@@ -71,7 +64,7 @@ def create(args) -> Tuple[
         'Initializing Menu...', 
         'create'
     )
-    pause_menu = noesis.NoeticQuale(
+    in_quale = intrinsic.IntrinsicQuale(
         player_device,
         args.ontology
     )
@@ -80,69 +73,92 @@ def create(args) -> Tuple[
         'Initializing rendering engine...', 
         'create'
     )
-    render_engine = view.Renderer(
+    renderer = gestalt.Renderer(
         game_world, 
         data_totality, 
         player_device,
         args.debug
     )
 
-    return controller, game_world, render_engine, \
-            data_totality, headsup_display, pause_menu
+    return player_will, game_world, renderer, \
+            data_totality, ex_quale, in_quale
 
 
 def start(
     args
 ) -> None:
-    cntl, wrld, eng, dat, nom, nos = create(args)
+    player_will, game_world, renderer, \
+        data_totality, ex_quale, in_quale = create(args)
 
-    log.debug('Creating GUI...', 'start')
-    app, vw = view.get_app(), eng.get_view()
+    log.debug(
+        'Creating GUI...', 
+        'start'
+    )
+    app, game_view = (
+        gestalt.get_app(), 
+        renderer.get_view()
+    )
 
-    log.debug('Threading game...', 'start')
+    log.debug(
+        'Threading game...',
+        'start'
+    )
     game_loop = threading.Thread(
         target=do, 
         args=(
-            vw,
-            cntl,
-            wrld,
-            eng,
-            dat,
-            nom,
-            nos,
+            game_view, 
+            player_will, 
+            game_world, 
+            renderer, 
+            data_totality, 
+            ex_quale, 
+            in_quale, 
             args.debug
         ), 
         daemon=True
     )
 
-    log.debug('Starting game loop...', 'start')
-    vw.show()
+    log.debug(
+        'Starting game loop...', 
+        'start'
+    )
+    game_view.show()
     game_loop.start()
-    view.quit(app)
+    gestalt.quit(app)
 
 
 def render(
     args
 ) -> Image.Image:
     # TODO: use args.width and args.height to adjust crop box for render method...
-    _, wld, eng, rep, hd, mn = create(args)
-    hd.hud_activated = args.hud
-    return eng.render(wld, rep, hd, mn, args.crop, args.layer)
+    _, game_world, renderer, \
+        data_totality, ex_quale, in_quale = create(args)
+
+    ex_quale.quale_activated = args.hud
+
+    return renderer.render(
+        game_world, 
+        data_totality, 
+        ex_quale, 
+        in_quale, 
+        args.crop, 
+        args.layer
+    )
 
 
 def do(
     game_view: QtWidgets.QWidget, 
-    controller: control.Controller, 
+    player_will: will.Will, 
     game_world: world.World, 
-    render_engine: view.Renderer, 
+    render_engine: gestalt.Renderer, 
     data_totality: datum.Totality,
-    display_quale: noema.SensoryQuale,
-    pause_quale: noesis.NoeticQuale,
+    display_quale: extrinsic.ExtrinsicQuale,
+    pause_quale: intrinsic.IntrinsicQuale,
     debug: bool = False
 ) -> None:
 
     loading = True
-    ms_per_frame = (1/settings.FPS)*1000
+    ms_per_frame = ( 1 / settings.FPS ) * 1000
     no_delays_per_yield = 16
     max_frame_skips = 5
     over_sleep, no_delays, excess = 0, 0, 0
@@ -152,7 +168,7 @@ def do(
 
         if not loading:
 
-            game_input, menu_input = controller.poll(
+            game_input, menu_input = player_will.poll(
                 pause_quale.quale_activated
             )
 
@@ -177,14 +193,14 @@ def do(
                 )
                 
                 if not pause_quale.quale_activated:
-                    controller.consume_all()
+                    player_will.consume_all()
 
                 # TODO: pass menu result back to game world
                 # for updating hero state
 
 
             if game_input.get('hud'):
-                display_quale.toggle_hud()
+                display_quale.toggle_quale()
                 
 
             # # pre_render hook here
@@ -217,7 +233,7 @@ def do(
 
             if sleep_time >= 0:
                 log.timer(f'Loop iteration too short -  delta: {sleep_time} ms')
-                time.sleep(sleep_time/1000)
+                time.sleep( sleep_time / 1000 )
                 over_sleep = helper.current_ms_time() - end_time - sleep_time
 
             else:
@@ -232,7 +248,11 @@ def do(
 
             start_time = helper.current_ms_time()
             skips = 0
-            while ( (excess>ms_per_frame) and (skips < max_frame_skips) ):
+            
+            while ( 
+                ( excess > ms_per_frame ) and \
+                ( skips < max_frame_skips ) 
+            ):
                 log.timer(f'Updating world to catch up')
                 excess -= ms_per_frame
                 game_world.iterate(game_input)

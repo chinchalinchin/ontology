@@ -1,9 +1,14 @@
 
-import onta.settings as settings
-import onta.util.logger as logger
-import onta.engine.facticity.calculator as calculator
+from onta.metaphysics \
+    import settings, logger
 
-log = logger.Logger('onta.engine.facticity.paths', settings.LOG_LEVEL)
+from onta.concretion.facticity \
+    import gauge
+    
+log = logger.Logger(
+    'onta.concretion.facticity.paths', 
+    settings.LOG_LEVEL
+)
 
 
 def reorient(
@@ -15,87 +20,96 @@ def reorient(
 ) -> str:
     new_up = (
         hitbox[0], 
-        hitbox[1] - 2*speed - 1, 
+        hitbox[1] - 2 * speed - 1, 
         hitbox[2], 
         hitbox[3]
     )
     new_left = (
-        hitbox[0] - 2*speed - 1, 
+        hitbox[0] - 2 * speed - 1, 
         hitbox[1], 
         hitbox[2], 
         hitbox[3]
     )
     new_right = (
-        hitbox[0] + 2*speed + 1, 
+        hitbox[0] + 2 * speed + 1, 
         hitbox[1], 
         hitbox[2], 
         hitbox[3]
     )
     new_down = (
         hitbox[0], 
-        hitbox[1] + 2*speed + 1, 
+        hitbox[1] + 2 * speed + 1, 
         hitbox[2], 
         hitbox[3]
     )
 
     # compiled version returns all -1 instead of None to avoid type-check problems
 
-    up_result = calculator.any_intersections(
+    up_result = gauge.any_intersections(
         new_up, 
         collision_set
     )
     up_valid = len([
         el 
-        for el in iter(up_result)
-        if el == -1
+        for el 
+        in iter(up_result)
+        if el
     ]) > 0
 
-    left_result = calculator.any_intersections(
+    left_result = gauge.any_intersections(
         new_left, 
         collision_set
     )
     left_valid = len([
         el 
-        for el in iter(left_result)
-        if el == -1
+        for el 
+        in iter(left_result)
+        if el
     ]) > 0
 
 
-    right_result = calculator.any_intersections(
+    right_result = gauge.any_intersections(
         new_right, 
         collision_set
     )
     right_valid = len([
         el 
-        for el in iter(right_result)
-        if el == -1
+        for el 
+        in iter(right_result)
+        if el
     ]) > 0
 
-    down_result = calculator.any_intersections(
+    down_result = gauge.any_intersections(
         new_down, 
         collision_set
     )
     down_valid = len([
         el 
-        for el in iter(down_result)
-        if el == -1
+        for el 
+        in iter(down_result)
+        if el
     ]) > 0
+
     # TODO: diagonals
 
     possibilities = {}
 
     if up_valid:
-        possibilities['up'] = calculator.distance(new_up[:2], goal)
+        possibilities['up'] = gauge.distance(new_up[:2], goal)
     if left_valid:
-        possibilities['left'] = calculator.distance(new_left[:2], goal)
+        possibilities['left'] = gauge.distance(new_left[:2], goal)
     if right_valid:
-        possibilities['right'] = calculator.distance(new_right[:2], goal)
+        possibilities['right'] = gauge.distance(new_right[:2], goal)
     if down_valid:
-        possibilities['down'] = calculator.distance(new_down[:2], goal)
+        possibilities['down'] = gauge.distance(new_down[:2], goal)
+        
     # TODO: diagonals
 
     least_direction = ''
-    least_direction_distance = calculator.distance(( 0,0 ), world_dim)
+    least_direction_distance = gauge.distance(
+        ( 0,0 ), 
+        world_dim
+    )
 
     for key, possibility in possibilities.items():
         if possibility < least_direction_distance:

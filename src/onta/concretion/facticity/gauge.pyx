@@ -1,17 +1,21 @@
 import math
 from typing import Union
 
-import onta.settings as settings
-import onta.util.logger as logger
+from onta.metaphysics \
+    import settings, logger
 
-
-log = logger.Logger('onta.engine.facticity.calculator', settings.LOG_LEVEL)
-
+log = logger.Logger(
+    'onta.concretion.facticity.gauge', 
+    settings.LOG_LEVEL
+)
 
 def center(
     dim: tuple
 ) -> tuple:
-    return (dim[0] + dim[2] /2, dim[1] + dim[3]/2)
+    return (
+        dim[0] + dim[2] / 2, 
+        dim[1] + dim[3] / 2
+    )
 
 
 def angle_relative_to_center(
@@ -19,7 +23,10 @@ def angle_relative_to_center(
     center: tuple = (0,0)
 ) -> float:
 
-    norm = distance(point, center)
+    norm = distance(
+        point, 
+        center
+    )
     delta = ( 
         point[0] - center[0], 
         point[1] - center[1] 
@@ -124,9 +131,12 @@ def any_intersections(
 
     """
     for other_rect in rectangle_list:
-        if intersection(rectangle, other_rect):
+        if intersection(
+            rectangle, 
+            other_rect
+        ):
             return other_rect
-    return (-1,-1,-1,-1)
+    return None
 
 
 def scale(

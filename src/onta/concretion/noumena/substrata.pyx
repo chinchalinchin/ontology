@@ -1,7 +1,8 @@
 from typing import Union
 
-import onta.engine.facticity.calculator as calculator
-
+from onta.concretion.facticity \
+    import gauge
+    
 
 def set_hitbox(
     hitbox: dict,
@@ -9,8 +10,11 @@ def set_hitbox(
     tile_dim: tuple
 ):
     if hitbox:
-        x,y = calculator.scale(
-            ( set_conf['start']['x'], set_conf['start']['y'] ),
+        x,y = gauge.scale(
+            ( 
+                set_conf['start']['x'], 
+                set_conf['start']['y'] 
+            ),
             tile_dim,
             set_conf['start']['units']
         )
@@ -204,6 +208,8 @@ def sprite_hitboxes(
             sprite,
             hitbox_key, 
             sprites_props[sprite_key]
-        ) for sprite_key, sprite in sprites.items()
-        if exclude is None or sprite_key not in exclude
+        ) for sprite_key, sprite 
+        in sprites.items()
+        if exclude is None 
+        or sprite_key not in exclude
     ]

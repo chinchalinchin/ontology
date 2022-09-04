@@ -39,14 +39,14 @@ DIALECTIC_TYPES = [
 ]
 
 ## SECOND LEVEL TYPES?
-NOEMA_TYPE = [
+extrinsic_TYPE = [
     'pack',
     'bag',
     'wallet'
     'slot',
     'mirror'
 ]
-NOESIS_TYPES = [
+intrinsic_TYPES = [
     'idea',
     'concept',
     'conception',
@@ -532,7 +532,7 @@ class Totality():
             ## STYLED INITIALIZATION
             for set_type in STYLED_QUALIA_TYPES:
                 if set_type == 'slot':
-                    iter_set = interface_conf.noema.get(size).slots
+                    iter_set = interface_conf.extrinsic.get(size).slots
                     save_set = self.slots
 
                 for set_key, set_conf in iter_set.items():
@@ -590,22 +590,22 @@ class Totality():
                 # TODO: collapse this conditional into: iter_set = interface_conf.hud | menu.get(size).get(set_type)
                 #           by defining and passing the proper literals...
                 if set_type == 'mirror':
-                    iter_set = interface_conf.noema.get(size).mirrors
+                    iter_set = interface_conf.extrinsic.get(size).mirrors
                     save_set = self.mirrors
                 elif set_type == 'pack':
-                    iter_set = interface_conf.noema.get(size).packs
+                    iter_set = interface_conf.extrinsic.get(size).packs
                     save_set = self.packs
                 elif set_type == 'idea':
-                    iter_set = interface_conf.noesis.get(size).idea
+                    iter_set = interface_conf.intrinsic.get(size).idea
                     save_set = self.qualia
                 elif set_type == 'bauble':
-                    iter_set = interface_conf.noesis.get(size).bauble
+                    iter_set = interface_conf.intrinsic.get(size).bauble
                     save_set = self.qualia
                 elif set_type == 'aside':
-                    iter_set = interface_conf.noesis.get(size).aside
+                    iter_set = interface_conf.intrinsic.get(size).aside
                     save_set = self.qualia
                 elif set_type == 'focus':
-                    iter_set = interface_conf.noesis.get(size).focus
+                    iter_set = interface_conf.intrinsic.get(size).focus
                     save_set = self.qualia
                     
                 if set_type in [ 'bauble', 'thought', 'focus', 'aside', 'idea' ]:
@@ -657,10 +657,10 @@ class Totality():
             ## SIMPLE DEFINITIONS
             for set_type in SIMPLE_QUALIA_TYPES:
                 if set_type == 'concept':
-                    simple_set = interface_conf.noesis.get(size).concept
+                    simple_set = interface_conf.intrinsic.get(size).concept
 
                 elif set_type == 'conception':
-                    simple_set = interface_conf.noesis.get(size).conception
+                    simple_set = interface_conf.intrinsic.get(size).conception
 
                 if not simple_set.get('path'):
                     continue

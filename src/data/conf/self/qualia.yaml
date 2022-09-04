@@ -17,8 +17,8 @@ theme:
     a: 175
 
 styles:
-  small:
-    noema:
+  extrinsic:
+    small:
       slots:
         margins:
           w: 0.025
@@ -47,16 +47,7 @@ styles:
         alignment:
           vertical: bottom
           horizontal: right
-    noesis:
-      padding:
-        w: 0.05
-        h: 0.05
-      margins:
-        w: 0.05
-        h: 0.20
-      stack: vertical
-  large:
-    noema:
+    large:
       slots:
         margins: 
           w: 0.025
@@ -85,7 +76,16 @@ styles:
         alignment:
           vertical: bottom
           horizontal: right
-    noesis:
+  intrinsic:
+    small:
+      padding:
+        w: 0.05
+        h: 0.05
+      margins:
+        w: 0.05
+        h: 0.20
+      stack: vertical
+    large:
       padding:
         w: 0.05
         h: 0.05
@@ -95,7 +95,7 @@ styles:
       stack: vertical
 
 properties:
-  noema:
+  extrinsic:
     slot: 
       total: 4
       pieces:
@@ -136,7 +136,7 @@ properties:
         pieces:
           - display
     
-  noesis:
+  intrinsic:
     idea:
       pieces: 
         - left
@@ -170,7 +170,7 @@ properties:
           label: map
 
 
-noema:
+extrinsic:
   small:
     slot:
       enabled:
@@ -391,7 +391,7 @@ noema:
             w: 24
             h: 24
 
-noesis:
+intrinsic:
   small:
     # styled components
     idea:

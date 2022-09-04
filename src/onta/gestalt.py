@@ -1,29 +1,24 @@
 import sys
 import munch
 import threading
-
-from PySide6 import QtWidgets, QtGui, QtCore
+from PySide6 \
+    import QtWidgets, QtGui, QtCore
 from PIL import Image
 
-import onta.metaphysics.device as device
-import onta.metaphysics.settings as settings
-import onta.metaphysics.logger as logger
-import onta.metaphysics.gui as gui
-import onta.metaphysics.debug as debug
-
-import onta.world as world
-
-import onta.actuality.datum as datum
-
-import onta.qualia.thoughts.bauble as bauble
-import onta.qualia.noema as noema
-import onta.qualia.noesis as noesis
-
-import onta.concretion.composition as composition
-
-# compiled functions
-import onta.concretion.facticity.calculator as calculator
-import onta.concretion.facticity.formulae as formulae
+from onta \
+    import world
+from onta.actuality \
+    import datum
+from onta.concretion \
+    import composition
+from onta.concretion.facticity \
+    import gauge, formulae
+from onta.metaphysics \
+    import device, logger, gui, debug, settings
+from onta.qualia \
+    import intrinsic, extrinsic
+from onta.qualia.thoughts \
+    import bauble
 
 STATIC_PLATE_TYPES = [ 
     'door' 
@@ -175,7 +170,7 @@ class Renderer():
                 group_tile = data_totality.get_form_frame('tiles', group_key)
 
                 for set_conf in group_conf.sets:
-                    start = calculator.scale(
+                    start = gauge.scale(
                         ( 
                             set_conf.start.x, 
                             set_conf.start.y 
@@ -259,7 +254,7 @@ class Renderer():
                         group_type, group_key)
 
                     for set_conf in group_conf.sets:
-                        start = calculator.scale(
+                        start = gauge.scale(
                             ( 
                                 set_conf.start.x, 
                                 set_conf.start.y 
@@ -599,9 +594,9 @@ class Renderer():
             )
 
 
-    def _render_noema(
+    def _render_extrinsic_quales(
         self, 
-        display: noema.SensoryQuale, 
+        display: extrinsic.ExtrinsicQuale, 
         data_totality: datum.Totality
     ) -> None:
 
@@ -678,7 +673,7 @@ class Renderer():
 
         ## PACK RENDERING
         # avatar rendering points include slot avatars and wallet avatars...
-        for pack_key in noema.PACK_TYPES:
+        for pack_key in extrinsic.PACK_TYPES:
             pack_map = display.get_frame_map(pack_key)
             pack_rendering_points = display.get_rendering_points(pack_key)
 
@@ -735,9 +730,9 @@ class Renderer():
                 gui.int_tuple(render_point)
             )
 
-    def _render_noesis(
+    def _render_intrinsic_quales(
         self, 
-        menu: noesis.NoeticQuale, 
+        menu: intrinsic.IntrinsicQuale, 
         data_totality: datum.Totality
     ) -> None:
 
@@ -844,8 +839,8 @@ class Renderer():
         self, 
         game_world: world.World, 
         data_totality: datum.Totality, 
-        display: noema.NoemicQuale, 
-        pause: noesis.NoeticQuale,
+        display: extrinsic.ExtrinsicQuale, 
+        pause: intrinsic.IntrinsicQuale,
         crop: bool = True, 
         layer: str = None
     ) -> Image.Image:
@@ -910,13 +905,13 @@ class Renderer():
             self.world_frame = self.world_frame.crop(crop_box)
         
         if pause.quale_activated:
-            self._render_noesis(
+            self._render_intrinsic_quales(
                 pause, 
                 data_totality
             )
 
         if display.hud_activated:
-            self._render_noema(
+            self._render_extrinsic_quales(
                 display, 
                 data_totality
             )
@@ -970,8 +965,8 @@ class Renderer():
         self, 
         game_world: world.World, 
         view_widget: QtWidgets.QWidget, 
-        display: noema.NoemicQuale,
-        pause: noesis.NoeticQuale,
+        display: extrinsic.ExtrinsicQuale,
+        pause: intrinsic.IntrinsicQuale,
         data_totality: datum.Totality,
         user_input: munch.Munch = None
     ) -> QtWidgets.QWidget: 
@@ -982,9 +977,9 @@ class Renderer():
         :param view_widget: _description_
         :type view_widget: QtWidgets.QWidget
         :param display: _description_
-        :type display: noema.SensoryQuale
+        :type display: extrinsic.ExtrinsicQuale
         :param pause: _description_
-        :type pause: noesis.NoeticQuale
+        :type pause: intrinsic.IntrinsicQuale
         :param repository: _description_
         :type repository: repo.Repo
         :param user_input: _description_, defaults to None

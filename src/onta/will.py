@@ -1,14 +1,15 @@
 import functools
-from typing import Any, Literal, Tuple, Union
 import munch
-
+from typing \
+    import Any, Literal, Tuple, Union
 from pynput import keyboard
 
-import onta.settings as settings
-import onta.loader.conf as conf
-import onta.util.logger as logger
+from onta.metaphysics \
+    import settings, logger
+from onta.actuality \
+    import conf
 
-log = logger.Logger('onta.control', settings.LOG_LEVEL)
+log = logger.Logger('onta.will', settings.LOG_LEVEL)
 
 
 @functools.lru_cache(maxsize=15)
@@ -50,7 +51,7 @@ def map_key(
             return 'down'
         return 'unmapped'
 
-class Controller():
+class Will():
 
     listener = None
     keys = munch.Munch({})
@@ -85,7 +86,10 @@ class Controller():
     def _register_listener(
         self
     ) -> None:
-        log.debug('Registering keyboard listeners...', 'Controller._register_listener')
+        log.debug(
+            'Registering keyboard listeners...', 
+            'Will._register_listener'
+        )
         self.listener = keyboard.Listener(
             on_press=self._on_press,
             on_release=self._on_release
@@ -200,19 +204,31 @@ class Controller():
         #   is that what you want?
         for consume in self.control_conf.consumable:
             if not paused and game_input.get(consume):
-                log.debug(f'Consuming {consume} user input', 'consume')
+                log.debug(
+                    f'Consuming {consume} world input', 
+                    'Will.consume'
+                )
                 for input in self.control_conf.actions.get(consume).input:
                     setattr(self.keys, input, False)
 
             if paused and menu_input.get(consume):
-                log.debug(f'Consuming {consume} menu input', 'consume')
+                log.debug(
+                    f'Consuming {consume} menu input', 
+                    'Will.consume'
+                )
                 for input in self.control_conf.meditations.get(consume).input:
                     setattr(self.keys, input, False)
 
         if paused:
-            return game_input, menu_input
+            return (
+                game_input, 
+                menu_input
+            )
             
-        return game_input, None
+        return (
+            game_input, 
+            None
+        )
 
 
     def consume_all(

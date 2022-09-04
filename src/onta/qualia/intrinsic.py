@@ -1,86 +1,39 @@
 from typing import Union
 import munch
 
-import onta.settings as settings
-import onta.device as device
-import onta.world as world
+from onta \
+    import world
+from onta.actuality \
+    import conf, state
+from onta.concretion.facticity \
+    import formulae
+from onta.metaphysics \
+    import device, logger, settings
+from onta.qualia \
+    import apriori
+from onta.qualia.thoughts \
+    import bauble, symbol
 
-import onta.metaphysics.logger as logger
+log = logger.Logger(
+    'onta.qualia.intrinsic', 
+    settings.LOG_LEVEL
+)
 
-import onta.actuality.conf as conf
-import onta.actuality.state as state
+BAUBLE_THOUGHTS = [ 
+    'armory', 
+    'equipment', 
+    'inventory' 
+]
+SYMBOL_THOUGHTS = [ 
+    'map', 
+    'status'
+]
 
-import onta.qualia.apriori as apriori
-import onta.qualia.thoughts.bauble as bauble
-import onta.qualia.thoughts.symbol as symbol
-
-import onta.engine.facticity.formulae as formulae
-
-log = logger.Logger('onta.engine.qualia.noesis', settings.LOG_LEVEL)
-
-BAUBLE_THOUGHTS = [ 'armory', 'equipment', 'inventory' ]
-SYMBOL_THOUGHTS = [ 'map', 'status' ]
-
-class NoeticQuale():
+class IntrinsicQuale():
     """
     
-    A `NoeticQuale` is essentially an in-game menu; it composed of "ideas", i.e. buttons, the player iterates throguh and then executes. These "ideas" become "thoughts", i.e. submenus, when executed. When an "idea" is executed, focus is shifted to the "thought" until the player pops back into the "idea" selection menu.
+    A `IntrinsicQuale` is essentially an in-game menu; it composed of "ideas", i.e. buttons, the player iterates throguh and then executes. These "ideas" become "thoughts", i.e. submenus, when executed. When an "idea" is executed, focus is shifted to the "thought" until the player pops back into the "idea" selection menu.
     """
-
-    quale_conf = munch.Munch({})
-    """
-    self.quale_conf = {
-        'media_size_1': {
-            'idea': {
-                # ...
-            },
-            'bauble': {
-                # ...
-            },
-            'aside': {
-                # ...
-            },
-            'focus' : {
-                # ...
-            }
-        },
-        # ...
-    }
-    """
-    thoughts = munch.Munch({})
-    """
-    self.thoughts = {
-        'thought_1': {
-            # ...
-        },
-        # ...
-    }
-    """
-    ideas = munch.Munch({})
-    """
-    self.ideas = {
-        'thought_1': {
-            'left': 'enabled',
-            'middle': 'enabled',
-            'right': 'enabled'
-        },
-        # ...
-    }
-    """
-    idea_rendering_points = []
-    idea_frame_map = []
-    idea_piece_map = []
-    active_idea = None
-    active_thought = None
-    avatar_conf = munch.Munch({})
-    properties = munch.Munch({})
-    styles = munch.Munch({})
-    theme = munch.Munch({})
-    sizes = []
-    breakpoints = []
-    quale_activated = False
-    media_size = None
-    alpha = None
 
     def __init__(
         self, 
@@ -90,6 +43,7 @@ class NoeticQuale():
         config = conf.Conf(ontology_path)
         state_ao = state.State(ontology_path)
         self._init_conf(config)
+        self._init_fields()
         self.media_size = apriori.find_media_size(
             player_device.dimensions, 
             self.sizes, 
@@ -107,35 +61,95 @@ class NoeticQuale():
         self, 
         config: conf.Conf
     ) -> None:
+        """_summary_
+
+        :param config: _description_
+        :type config: conf.Conf
+
+        .. note::
+            ```python
+            self.quale_conf = {
+                'media_size_1': {
+                    'idea': {
+                        # ...
+                    },
+                    'bauble': {
+                        # ...
+                    },
+                    'aside': {
+                        # ...
+                    },
+                    'focus' : {
+                        # ...
+                    }
+                },
+                # ...
+            }
+            ```
+        """
+        self.avatar_conf = config.load_avatar_configuration()
         configure = config.load_qualia_configuration()
-        self.quale_conf = configure.noesis
+
+        self.quale_conf = configure.intrinsic
         self.sizes = configure.sizes
         self.styles = configure.styles
-        self.properties = configure.properties.noesis
+        self.properties = configure.properties.intrinsic
         self.alpha = configure.transparency
+
         self.theme = apriori.construct_themes(
             configure.theme
         )
         self.breakpoints = apriori.format_breakpoints(
             configure.breakpoints
         )
-        self.avatar_conf = config.load_avatar_configuration()
 
 
+    def _init_fields(
+        self
+    ):
+        """
+        .. note::
+            ```python
+            self.thoughts = {
+                'thought_1': {
+                    # ...
+                },
+                # ...
+            }
+            self.ideas = {
+                'thought_1': {
+                    'left': 'enabled',
+                    'middle': 'enabled',
+                    'right': 'enabled'
+                },
+                # ...
+            }
+            ```
+        """
+        self.thoughts = munch.Munch({})
+        self.ideas = munch.Munch({})
+        self.idea_rendering_points = []
+        self.idea_frame_map = []
+        self.idea_piece_map = []
+        self.active_idea = None
+        self.active_thought = None
+        self.quale_activated = False
+        self.media_size = None
+        self.alpha = None
 
     def _init_idea_positions(
         self, 
         player_device: device.Device
     ) -> None:
         quale_margins = (
-            self.styles.get(self.media_size).noesis.margins.w,
-            self.styles.get(self.media_size).noesis.margins.h
+            self.styles.get(self.media_size).intrinsic.margins.w,
+            self.styles.get(self.media_size).intrinsic.margins.h
         )
         quale_padding = (
-            self.styles.get(self.media_size).noesis.padding.w,
-            self.styles.get(self.media_size).noesis.padding.h
+            self.styles.get(self.media_size).intrinsic.padding.w,
+            self.styles.get(self.media_size).intrinsic.padding.h
         )
-        quale_stack = self.styles.get(self.media_size).noesis.stack
+        quale_stack = self.styles.get(self.media_size).intrinsic.stack
         # all idea component pieces have the same dim, so any will do...
         idea_conf = self.quale_conf.get(self.media_size).idea.enabled
 
@@ -183,10 +197,10 @@ class NoeticQuale():
         ).size.h
         idea_dim = (full_width, full_height)
 
-        quale_styles = self.styles.get(self.media_size).noesis
+        quale_styles = self.styles.get(self.media_size).intrinsic
 
         for thought_key, thought_conf in self.properties.thoughts.items():
-            log.debug(f'Creating {thought_key} thought...', 'NoeticQuale._init_tabs')
+            log.debug(f'Creating {thought_key} thought...', 'IntrinsicQuale._init_tabs')
             
             if thought_key in BAUBLE_THOUGHTS:
                 # TODO:? There is a redundancy here. the class itself knows which thoughts are baubles

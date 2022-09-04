@@ -1,10 +1,13 @@
-import onta.settings as settings
-import onta.util.logger as logger
+from onta.metaphysics \
+    import logger, settings
 
-import onta.engine.facticity.calculator as calculator
+from onta.concretion.facticity \
+    import gauge
 
-log = logger.Logger('onta.engine.facticity.formulae', settings.LOG_LEVEL)
-
+log = logger.Logger(
+    'onta.concretion.facticity.formulae',
+    settings.LOG_LEVEL
+)
 
 def _filter_nested_tuple(
     nested_tuple: tuple, 
@@ -34,10 +37,10 @@ def screen_crop_box(
     hero_pt: tuple
 ) -> tuple:
     # TODO: should be based on hero's center, not top left corner
-    left_breakpoint = screen_dim[0]/2
-    right_breakpoint = world_dim[0] - screen_dim[0]/2
-    top_breakpoint = screen_dim[1]/2
-    bottom_breakpoint = world_dim[1] - screen_dim[1]/2
+    left_breakpoint = screen_dim[0] / 2
+    right_breakpoint = world_dim[0] - screen_dim[0] / 2
+    top_breakpoint = screen_dim[1] / 2
+    bottom_breakpoint = world_dim[1] - screen_dim[1] / 2
 
     if hero_pt[0] >= 0 and hero_pt[0] <= left_breakpoint:
         crop_x = 0
@@ -53,9 +56,12 @@ def screen_crop_box(
     else:
         crop_y = hero_pt[1] - screen_dim[1]/2
 
-    crop_width = crop_x + screen_dim[0]
-    crop_height = crop_y + screen_dim[1]
-    return (crop_x, crop_y, crop_width, crop_height)
+    return (
+        crop_x, 
+        crop_y, 
+        crop_x + screen_dim[0], 
+        crop_y + screen_dim[1]
+    )
 
 
 def on_screen(
@@ -82,7 +88,7 @@ def on_screen(
         world_dim, 
         player_dim
     )
-    return calculator.intersection(
+    return gauge.intersection(
         crop_box, 
         object_dim
     )
@@ -102,13 +108,19 @@ def rotate_dimensions(
     :return: _description_
     :rtype: _type_
     """
-    if definition in ['left', 'right', 'horizontal'] and \
-        direction == 'vertical':
-        return ( rotator[1], rotator[0] )
+    if (    
+            definition in ['left', 'right', 'horizontal'] and \
+            direction == 'vertical'
+        ) or \
+        (
+            definition in ['up', 'down', 'vertical'] and \
+            direction == 'horizontal'
+        ):
 
-    elif definition in ['up', 'down', 'vertical'] and \
-        direction == 'horizontal':
-        return ( rotator[1], rotator[0] )
+        return ( 
+            rotator[1], 
+            rotator[0] 
+        )
 
     return rotator
 
@@ -123,8 +135,8 @@ def tile_coordinates(
         for j in range(set_dim[1]):
             dims.append(
                 (
-                    start[0] + tile_dimensions[0]*i, 
-                    start[1] + tile_dimensions[1]*j
+                    start[0] + tile_dimensions[0] * i, 
+                    start[1] + tile_dimensions[1] * j
                 )
             )
     return dims
@@ -159,8 +171,11 @@ def plate_coordinates(
     """
     coords = list()
     for i in range(len(group_conf)):
-        start = calculator.scale(
-            ( group_conf[i][0], group_conf[i][1] ), 
+        start = gauge.scale(
+            ( 
+                group_conf[i][0], 
+                group_conf[i][1] 
+            ), 
             tile_dim,
             group_conf[i][2]
         )
@@ -179,7 +194,9 @@ def plate_coordinates(
         ):
             continue 
         
-        coords.append((i, start[0], start[1]))
+        coords.append(
+            (i, start[0], start[1])
+        )
     return coords
 
 
@@ -187,8 +204,7 @@ def plate_coordinates(
 def bag_coordinates(
     piece_sizes: tuple,
     pack_dim: tuple,
-    horizontal_align: str,
-    vertical_align: str,
+    align: tuple,
     margin_percents: tuple,
     margin_ref: tuple
 ):
@@ -198,23 +214,24 @@ def bag_coordinates(
     # (0, (left.w, left.h)), (1, (right.w, right.h)) ...
     for i, piece_size in enumerate(piece_sizes):
         if i == 0:
-            if horizontal_align == 'left':
+            if align[0] == 'left':
                 x = margin_percents[0] * margin_ref[0]
 
-            elif horizontal_align == 'right':
+            elif align[0] == 'right':
                 x = ( 1 - margin_percents[0] ) * margin_ref[0] - \
                     pack_dim[0]
 
-            if vertical_align == 'top':
+            if align[1] == 'top':
                 y = margin_percents[1] * margin_ref[1]
 
-            elif vertical_align == 'bottom':
+            elif align[1] == 'bottom':
                 y = ( 1 - margin_percents[0] ) * margin_ref[1] - \
                     pack_dim[1]
 
         else:
             x = render_points[i-1][0] + prev_w
             y = render_points[i-1][1]
+
         render_points.append((x,y))
         prev_w = piece_size[0]
 
@@ -274,11 +291,15 @@ def wallet_coordinates(
             (
                 belt_point[0] + \
                     (
-                        belt_dim[0] + pack_margins[0] * ( bag_dim[0] + belt_dim[0] )
+                        belt_dim[0] + pack_margins[0] * ( 
+                            bag_dim[0] + belt_dim[0] 
+                        )
                     ),
                 bag_point[1] + \
                     (
-                        belt_dim[1] - wallet_dim[1] * (2 + pack_margins[1]) 
+                        belt_dim[1] - wallet_dim[1] * (
+                            2 + pack_margins[1]
+                        ) 
                     )/2
             )
         )
@@ -287,11 +308,15 @@ def wallet_coordinates(
             (
                 bag_point[0] - \
                     (
-                        belt_dim[0] + pack_margins[0] * ( bag_dim[0] + belt_dim[0] )
+                        belt_dim[0] + pack_margins[0] * ( 
+                            bag_dim[0] + belt_dim[0] 
+                        )
                     ) - wallet_dim[0],
                 bag_point[1] + \
                     (
-                        belt_dim[1] - wallet_dim[1] * ( 2 + pack_margins[1] )
+                        belt_dim[1] - wallet_dim[1] * ( 
+                            2 + pack_margins[1] 
+                        )
                     ) / 2
             )
         )
@@ -305,10 +330,9 @@ def wallet_coordinates(
     return render_points
 
 
-def mirror_coordinates(
+def life_mirror_coordinates(
     device_dim: tuple,
-    horizontal_align: str,
-    vertical_align: str,
+    alignment: tuple,
     stack: str,
     margins: tuple,
     padding: tuple,
@@ -317,54 +341,77 @@ def mirror_coordinates(
 ) -> list:
     render_points = list()
 
-    if horizontal_align == 'right':
+    if alignment[0] == 'right':
         x_start = device_dim[0] - margins[0] - \
-            life_rank[0] * life_dim[0]*(1 + padding[0]) 
-    elif horizontal_align == 'left':
+            life_rank[0] * life_dim[0] * ( 
+                1 + padding[0] 
+            ) 
+    elif alignment[0] == 'left':
         x_start = margins[0]
+
     else: # center
         x_start = (device_dim[0] - \
-            life_rank[0] * life_dim[0] *(1 + padding[0]))/2
+            life_rank[0] * life_dim[0] * ( 
+                1 + padding[0] 
+            ) 
+        )/2
     
-    if vertical_align == 'top':
+    if alignment[1] == 'top':
         y_start = margins[1]
-    elif vertical_align == 'bottom':
+
+    elif alignment[1] == 'bottom':
         y_start = device_dim[1] - margins[1] - \
-            life_rank[1] * life_dim[1] * (1 + padding[1])
+            life_rank[1] * life_dim[1] * ( 
+                1 + padding[1] 
+            )
+
     else: # center
-        y_start = (device_dim[1] - \
-            life_rank[1] * life_dim[1] * (1 + padding[1]))/2
+        y_start = ( device_dim[1] - \
+            life_rank[1] * life_dim[1] * ( 
+                1 + padding[1] 
+            ) 
+        )/2
 
 
     if stack== 'vertical':
-        life_rank = (life_rank[1], life_rank[0])
+        life_rank = (
+            life_rank[1], 
+            life_rank[0]
+        )
         
     for row in range(life_rank[1]):
         for col in range(life_rank[0]):
 
-            if (row+1)*col == 0:
+            if ( row + 1 )*col == 0:
                 render_points.append(
-                    ( x_start, y_start)
-                )
-                continue
-            elif stack == 'horizontal':
-                render_points.append(
-                    (
-                        render_points[(row+1)*col - 1][0] + \
-                            life_dim[0]*(1+padding[0]),
-                        render_points[(row+1)*col - 1][1]
+                    ( 
+                        x_start, 
+                        y_start
                     )
                 )
                 continue
+
+            elif stack == 'horizontal':
+                render_points.append(
+                    (
+                        render_points[( row + 1 ) * col - 1][0] + \
+                            life_dim[0] * ( 1 + padding[0] ),
+                        render_points[ ( row + 1 ) * col - 1][1]
+                    )
+                )
+                continue
+
             render_points.append(
                 (
-                    render_points[(row+1)*col - 1][0] + \
+                    render_points[ ( row + 1 ) * col - 1 ][0] + \
                         life_dim[0],
-                    render_points[(row+1)*col - 1][1] + \
-                        life_dim[1]*(1+padding[1])
+                    render_points[ ( row + 1 ) * col - 1 ][1] + \
+                        life_dim[1] * ( 1 + padding[1] )
                 )
             )
             continue
+
+    render_points.reverse()
     return render_points
 
 
@@ -374,30 +421,30 @@ def slot_coordinates(
     buffer_dim: tuple,
     cap_dim: tuple,
     device_dim: tuple,
-    horizontal_align: str,
-    vertical_align: str,
+    alignment: tuple,
+    margins: tuple,
     stack: str,
-    margins: tuple
+
 ) -> list:
     render_points = list()
 
-    if horizontal_align == 'right':
+    if alignment[0] == 'right':
         x_start = device_dim[0] \
             - margins[0] * device_dim[0] \
             - slots_total * slot_dim[0] \
             - ( slots_total - 1 ) * buffer_dim[0] \
             - 2 * cap_dim[0]
-    elif horizontal_align == 'center':
+    elif alignment[0] == 'center':
         x_start = ( device_dim[0] \
             - slots_total*slot_dim[0] \
-            - ( slots_total-1)*buffer_dim[0] \
-            - 2*cap_dim[0] )/2
+            - ( slots_total - 1 ) * buffer_dim[0] \
+            - 2 * cap_dim[0] )/2
             
     else: # left
         x_start = margins[0] * device_dim[0]
 
             
-    if vertical_align == 'bottom':
+    if alignment[1] == 'bottom':
         if stack == 'horizontal':
             y_start = device_dim[1] \
                 - margins[1] * device_dim[1] \
@@ -408,7 +455,7 @@ def slot_coordinates(
                 - slots_total * slot_dim[1] \
                 - ( slots_total - 1 ) * buffer_dim[1] \
                 - 2 * cap_dim[1]
-    elif vertical_align == 'center':
+    elif alignment[1] == 'center':
         y_start = (device_dim[1] \
             - slots_total * slot_dim[1] \
             - (slots_total - 1 ) * buffer_dim[1] \
@@ -419,19 +466,25 @@ def slot_coordinates(
     # 0    1     2       3     4       5     6       7     8
     # cap, slot, buffer, slot, buffer, slot, buffer, slot, cap
     # number of slots + number of buffers + number of caps
-    num = slots_total + (slots_total - 1) + 2
+    num = slots_total + ( slots_total - 1 ) + 2
     if stack == 'horizontal':
-        buffer_correction = (slot_dim[1] - buffer_dim[1])/2
-        cap_correction = (slot_dim[1] - cap_dim[1])/2 
+        buffer_correction = ( slot_dim[1] - buffer_dim[1] )/2
+        cap_correction = ( slot_dim[1] - cap_dim[1] )/2 
 
         for i in range(num):
             if i == 0: # cap
                 render_points.append(
-                    ( x_start, y_start + cap_correction )
+                    ( 
+                        x_start, 
+                        y_start + cap_correction 
+                    )
                 )
             elif i == 1: # slot
                 render_points.append(
-                    ( render_points[i-1][0] + cap_dim[0], y_start )
+                    ( 
+                        render_points[i-1][0] + cap_dim[0], 
+                        y_start 
+                    )
                 )
             elif i == num - 1: # cap
                 render_points.append(
@@ -449,21 +502,31 @@ def slot_coordinates(
                 )
             else: # slot
                 render_points.append(
-                    ( render_points[i-1][0] + buffer_dim[0], y_start )
+                    ( 
+                        render_points[i-1][0] + buffer_dim[0], 
+                        y_start 
+                    )
                 )
         return render_points
 
     # vertical
-    buffer_correction = (slot_dim[0] - buffer_dim[0])/2
-    cap_correction = (slot_dim[0] - cap_dim[0])/2
+    buffer_correction = ( slot_dim[0] - buffer_dim[0] ) / 2
+    cap_correction = ( slot_dim[0] - cap_dim[0] ) / 2
+
     for i in range(num):
         if i == 0: # cap
             render_points.append(
-                ( x_start + cap_correction, y_start )
+                ( 
+                    x_start + cap_correction, 
+                    y_start 
+                )
             )
         elif i == 1: # slot
             render_points.append(
-                ( x_start, render_points[i-1][1] + cap_dim[1] )
+                ( 
+                    x_start, 
+                    render_points[i-1][1] + cap_dim[1] 
+                )
             )
         elif i == num - 1: # cap
             render_points.append(
@@ -504,6 +567,8 @@ def slot_avatar_coordinates(
     bag_dim: tuple,
     belt_dim: tuple,
 ) -> list:
+    """
+    """
     render_points = list()
     
     for slot_key in iter(map_tuple):
@@ -530,13 +595,19 @@ def slot_avatar_coordinates(
 
                 render_points.append(
                     (
-                        ( slot_point[0] + ( slot_dim[0] - equipment[1] ) / 2 ),
-                        ( slot_point[1] + ( slot_dim[1] - equipment[2] ) / 2 )
+                        ( 
+                            slot_point[0] + ( 
+                                slot_dim[0] - equipment[1] ) / 2 
+                        ),
+                        ( 
+                            slot_point[1] + ( 
+                                slot_dim[1] - equipment[2] ) / 2 
+                        )
                     )
                 )
                 continue
 
-        render_points.append(( -1, -1 ))
+        render_points.append(None)
 
     inventory = _filter_nested_tuple(
         invent_tuple,
@@ -546,12 +617,14 @@ def slot_avatar_coordinates(
     if inventory:
         render_points.append(
             (
-                ( bag_points_tuple[0][0] + ( bag_dim[0] - inventory[1] ) / 2 ),
-                ( bag_points_tuple[0][1] + ( bag_dim[1] - inventory[2] ) / 2 )
+                ( bag_points_tuple[0][0] + ( 
+                    bag_dim[0] - inventory[1] ) / 2 ),
+                ( bag_points_tuple[0][1] + ( 
+                    bag_dim[1] - inventory[2] ) / 2 )
             )
         )
     else:
-        render_points.append(( -1, -1 ))
+        render_points.append(None)
 
     inventory = _filter_nested_tuple(
         invent_tuple,
@@ -561,12 +634,14 @@ def slot_avatar_coordinates(
     if inventory:
         render_points.append(
             (
-                ( belt_points_tuple[0][0] + ( belt_dim[0] - inventory[1] ) / 2 ), 
-                ( belt_points_tuple[0][1] + ( belt_dim[1] - inventory[2] ) / 2 )
+                ( belt_points_tuple[0][0] + ( 
+                    belt_dim[0] - inventory[1] ) / 2 ), 
+                ( belt_points_tuple[0][1] + ( 
+                    belt_dim[1] - inventory[2] ) / 2 )
             )
         )        
     else:
-        render_points.append(( -1, -1 ))
+        render_points.append(None)
 
     return render_points
 
@@ -599,12 +674,12 @@ def idea_coordinates(
                     if j == 0:
                         x = render_points[0][0]
                         y = render_points[0][1] + \
-                            (1 + menu_padding[1] ) * i * idea_dims[0][1]
+                            ( 1 + menu_padding[1] ) * i * idea_dims[0][1]
                     else:
                         x = render_points[j-1][0] + \
                             idea_dims[j-1][0]
                         y = render_points[j-1][1] + \
-                            (1 + menu_padding[1]) * i * idea_dims[j-1][1]
+                            ( 1 + menu_padding[1]) * i * idea_dims[j-1][1]
 
             else: # horizontal
                 if i == 0 and j == 0:
@@ -613,7 +688,7 @@ def idea_coordinates(
                 else:
                     if j == 0 :
                         x = render_points[0][0] + \
-                            i * (full_width + menu_padding[0])
+                            i * ( full_width + menu_padding[0] )
                         y = render_points[0][1]
                     else:
                         x = render_points[len(render_points)-1][0] + idea_dims[j-1][0]
@@ -643,7 +718,9 @@ def bauble_coordinates(
                 render_points.append(
                     (
                         canvas_start[0],
-                        canvas_start[1]+ i*(bauble_height + bauble_margins[1])
+                        canvas_start[1]+ i * (
+                            bauble_height + bauble_margins[1]
+                        )
                     )
                 )
                 continue
@@ -659,11 +736,10 @@ def bauble_coordinates(
             # is rendered after that
 
 
-            last_index = len(render_points) - 1
             render_points.append(
                 (
-                    render_points[last_index][0] + piece_width,
-                    render_points[last_index][1]
+                    render_points[len(render_points) - 1][0] + piece_width,
+                    render_points[len(render_points) - 1][1]
                 )
             )
     return render_points

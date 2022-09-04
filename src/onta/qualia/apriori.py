@@ -60,7 +60,9 @@ def format_breakpoints(
     :rtype: list
     """
     return [
-        (break_point.w, break_point.h) 
-            for break_point in break_points
+        (
+            break_point.w, 
+            break_point.h
+        ) for break_point in break_points
     ]
 

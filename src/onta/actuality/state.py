@@ -9,6 +9,7 @@ import onta.settings as settings
 class State():
 
     state_dir = None
+    state_conf = None
 
     def __init__(
         self, 
@@ -21,12 +22,13 @@ class State():
         self, 
         state_type: str
     ) -> munch.Munch:
-        state_path = os.path.join(self.state_dir, f'{state_type}.yaml')
-        with open(state_path, 'r') as infile:
-            conf = munch.munchify(
-                yaml.safe_load(infile)
-            )
-        return conf
+        if self.state_conf is None:
+            state_path = os.path.join(self.state_dir, f'{state_type}.yaml')
+            with open(state_path, 'r') as infile:
+                self.state_conf = munch.munchify(
+                    yaml.safe_load(infile)
+                )
+        return self.state_conf
 
     def save_state(
         self, 
