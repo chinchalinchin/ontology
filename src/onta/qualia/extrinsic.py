@@ -135,17 +135,7 @@ class ExtrinsicQuale():
         self.containers = munch.Munch({})
         self.render_points = munch.Munch({})
         self.frame_maps = munch.Munch({})
-
-        # dimensions
-        # TODO:
         self.dimensions = munch.Munch({})
-        self.slot_dimensions = None
-        self.bag_dimensions = None
-        self.belt_dimensions = None
-        self.wallet_dimensions = None
-        self.life_dimensions = None
-        self.magic_dimensions = None
-        # flags
         self.quale_activated = True
 
 
@@ -168,12 +158,12 @@ class ExtrinsicQuale():
         configure = config.load_qualia_configuration()
 
         self.quale_conf = configure.extrinsic
-        self.styles = configure.styles
+        self.styles = configure.styles.extrinsic
         self.sizes = configure.apriori.sizes
         self.breakpoints = apriori.format_breakpoints(
             configure.apriori.breakpoints
         )
-        self.properties = configure.properties
+        self.properties = configure.properties.extrinsic
 
         self.media_size = apriori.find_media_size(
             player_device.dimensions, 
@@ -242,7 +232,7 @@ class ExtrinsicQuale():
             self.render_points,
             'belt',
             formulae.belt_coordinates(
-                self.bag_render_points[0],
+                self.render_points.bag[0],
                 belt_piece_sizes,
                 self.get_belt_dimensions(),
                 pack_alignment[0],
@@ -256,8 +246,8 @@ class ExtrinsicQuale():
             self.render_points,
             'wallet',
             formulae.wallet_coordinates(
-                self.belt_render_points[0],
-                self.bag_render_points[0],
+                self.render_points.belt[0],
+                self.render_points.bag[0],
                 self.get_bag_dimensions(),
                 self.get_belt_dimensions(),
                 self.get_wallet_dimensions(),
@@ -344,25 +334,25 @@ class ExtrinsicQuale():
 
         cap_dim = formulae.rotate_dimensions(
             (
-                self.hud_conf.get(self.media_size).slot.cap.size.w,
-                self.hud_conf.get(self.media_size).slot.cap.size.h
+                self.quale_conf.get(self.media_size).slot.cap.size.w,
+                self.quale_conf.get(self.media_size).slot.cap.size.h
             ),
-            self.hud_conf.get(self.media_size).slot.cap.definition,
+            self.quale_conf.get(self.media_size).slot.cap.definition,
             self.styles.get(self.media_size).slot.stack
         )
 
         buffer_dim = formulae.rotate_dimensions(
             (
-                self.hud_conf.get(self.media_size).slot.buffer.size.w,
-                self.hud_conf.get(self.media_size).slot.buffer.size.h
+                self.quale_conf.get(self.media_size).slot.buffer.size.w,
+                self.quale_conf.get(self.media_size).slot.buffer.size.h
             ),
-            self.hud_conf.get(self.media_size).slot.buffer.definition,
+            self.quale_conf.get(self.media_size).slot.buffer.definition,
             self.styles.get(self.media_size).slot.stack
         )
 
         slot_dim = (
-            self.hud_conf.get(self.media_size).slot.disabled.size.w,
-            self.hud_conf.get(self.media_size).slot.disabled.size.h
+            self.quale_conf.get(self.media_size).slot.disabled.size.w,
+            self.quale_conf.get(self.media_size).slot.disabled.size.h
         )
 
         setattr(
@@ -432,10 +422,22 @@ class ExtrinsicQuale():
         """
         # TODO: must be a way to calculate this rather than declare it...
         avatar_tuple =(
-            ( 'cast', 1 ),
-            ( 'thrust', 3 ),
-            ( 'shoot', 5 ),
-            ( 'slash', 7 )
+            ( 
+                'cast', 
+                1 
+            ),
+            ( 
+                'thrust', 
+                3 
+            ),
+            ( 
+                'shoot', 
+                5 
+            ),
+            ( 
+                'slash', 
+                7 
+            )
         )
 
         # NOTE: this ugliness is all in service of immutability...
@@ -449,7 +451,7 @@ class ExtrinsicQuale():
                 tuple(self.render_points.slot),
                 tuple(self.render_points.bag),
                 tuple(self.render_points.belt),
-                tuple(self.properties.slots.maps),
+                tuple(self.properties.slot.maps),
                 avatar_tuple, 
                 self.containers.packs.bag,
                 self.containers.packs.belt, 
@@ -462,23 +464,27 @@ class ExtrinsicQuale():
         setattr(self.frame_maps, 'avatar', munch.Munch({}))
 
         for i, _ in enumerate(self.render_points.avatar):
-            if i < len(self.properties.slots.maps):
+            if i < len(self.properties.slot.maps):
                 setattr(
                     self.frame_maps.avatar, 
                     str(i), 
                     self.containers.slots.get(
-                        self.properties.slots.maps[i]
+                        self.properties.slot.maps[i]
                     )
                 )
 
         setattr(
             self.frame_maps.avatar,
-            str(len(self.frame_maps.avatar)),
+            str(
+                len(self.frame_maps.avatar)
+            ),
             self.containers.packs.bag
         )
         setattr(
             self.frame_maps.avatar,
-            str(len(self.frame_maps.avatar)),
+            str(
+                len(self.frame_maps.avatar)
+            ),
             self.containers.packs.belt
         )
         # TODO: wallet avatar rendering points
@@ -531,7 +537,7 @@ class ExtrinsicQuale():
     ) -> dict:
         # TODO: this could be a lookup instead of a switch statement...
         packset = self.quale_conf.get(self.media_size).packs.get(pack_key)
-        if pack_key in ['bag', 'belt']:
+        if pack_key in [ 'bag', 'belt' ]:
             setattr(
                 self.frame_maps,
                 pack_key,
@@ -637,8 +643,8 @@ class ExtrinsicQuale():
                 self.dimensions,
                 'wallet',
                 (
-                    self.hud_conf.get(self.media_size).packs.wallet.display.size.w, 
-                    self.hud_conf.get(self.media_size).packs.wallet.display.size.h
+                    self.quale_conf.get(self.media_size).packs.wallet.display.size.w, 
+                    self.quale_conf.get(self.media_size).packs.wallet.display.size.h
                 )
             )
         return self.dimensions.wallet
@@ -652,8 +658,8 @@ class ExtrinsicQuale():
                 self.dimensions,
                 'slot',
                 (
-                    self.hud_conf.get(self.media_size).slots.disabled.size.w, 
-                    self.hud_conf.get(self.media_size).slots.disabled.size.h
+                    self.quale_conf.get(self.media_size).slots.disabled.size.w, 
+                    self.quale_conf.get(self.media_size).slots.disabled.size.h
                 )
             )
         return self.dimensions.slot
