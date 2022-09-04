@@ -1,10 +1,14 @@
 import onta.world as world
 
 
-def state_map(game_world: world.World):
-    state_keys = list(game_world.sprite_state_conf.keys())
+def stature_map(game_world: world.World):
+    stature_keys = list(
+        game_world.sprite_stature.keys()
+    )
     return {
-        state_key: i for i, state_key in enumerate(state_keys)
+        stature_key: i 
+        for i, stature_key 
+        in enumerate(stature_keys)
     }
 
 
@@ -22,15 +26,25 @@ def predict(game_world: world.World):
         ]
         ```
     """
-    prediction, smap, coefficients = 0, state_map(game_world), model()
+    prediction, smap, coefficients = \
+        0, stature_map(game_world), model()
+
     for coefficient in coefficients:
         if coefficient['sprite_key'] != 'constant':
-            sprite = game_world.get_sprite(coefficient['sprite_key'])
-            mapped_state = smap[sprite['state']]
-            contribution = mapped_state*coefficient
+            sprite = game_world.get_sprite(
+                coefficient['sprite_key']
+            )
+
+            mapped_stature = smap[
+                sprite['state']
+            ]
+
+            contribution = mapped_stature * coefficient
         else:
             contribution = coefficient
+
         prediction += contribution
+
     return prediction
 
 def model():

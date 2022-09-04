@@ -9,7 +9,6 @@ log = logger.Logger(
     settings.LOG_LEVEL
 )
 
-
 def map_input_to_intent(
     hero: munch.Munch,
     sprite_stature: munch.Munch,
