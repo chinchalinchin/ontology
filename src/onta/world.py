@@ -53,11 +53,6 @@ class World():
     strut_properties = munch.Munch({})
     sprite_properties = munch.Munch({})
     projectile_properties = munch.Munch({})
-        # TODO:
-        # composite = munch.Munch({})
-        # stature = munch.Munch({})
-        # properties = munch.Munch({})
-
     # STATE FIELDS
     tilesets = munch.Munch({})
     strutsets = munch.Munch({})
@@ -65,6 +60,7 @@ class World():
     compositions = munch.Munch({})
     hero = munch.Munch({})
     npcs = munch.Munch({})
+    # DERIVATIVE FIELDS
     switch_map = munch.Munch({})
     layer = None
     layers = []
@@ -105,18 +101,24 @@ class World():
             'Initializing world configuration...', 
             'World._init_conf'
         )
-        sprite_conf = config.load_sprite_configuration()
         self.sprite_stature, self.sprite_properties, _, self.sprite_dimensions = \
-            sprite_conf
-        self.apparel_properties = config.load_apparel_configuration()
-        self.projectile_properties, _ = config.load_projectile_configuration()
-        self.plate_properties, _ = config.load_plate_configuration()
-        self.strut_properties, _ = config.load_strut_configuration()
-        self.composite_conf = config.load_composite_configuration()
-        _, tile_conf = config.load_tile_configuration()
+            config.load_sprite_configuration()
+        self.apparel_properties = \
+            config.load_apparel_configuration()
+        self.projectile_properties, _ = \
+            config.load_projectile_configuration()
+        self.plate_properties, _ = \
+            config.load_plate_configuration()
+        self.strut_properties, _ = \
+            config.load_strut_configuration()
+        self.composite_conf = \
+            config.load_composite_configuration()
+        _, tile_conf = \
+            config.load_tile_configuration()
+
         self.tile_dimensions = (
-            tile_conf.tile.w, 
-            tile_conf.tile.h
+            tile_conf.size.w, 
+            tile_conf.size.h
         )
 
 

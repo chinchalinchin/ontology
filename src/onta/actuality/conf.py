@@ -245,7 +245,7 @@ class Conf():
         dialectic_type
     ) -> munch.Munch:
         # NOTE: generalized method that routes through cache
-        if dialectic_type == 'projectciles':
+        if dialectic_type == 'projectiles':
             return self.load_projectile_configuration()
         if dialectic_type == 'expressions':
             return self.load_expression_configuration()

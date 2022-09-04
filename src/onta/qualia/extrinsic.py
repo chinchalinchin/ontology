@@ -330,8 +330,8 @@ class ExtrinsicQuale():
             'ExtrinsicQuale._init_slot_positions'
         )
 
-        slots_total = self.properties.slots.total
-        slot_styles = self.styles.get(self.media_size).slots
+        slots_total = self.properties.slot.total
+        slot_styles = self.styles.get(self.media_size).slot
 
         alignment = (
             slot_styles.alignment.horizontal,
@@ -344,25 +344,25 @@ class ExtrinsicQuale():
 
         cap_dim = formulae.rotate_dimensions(
             (
-                self.hud_conf.get(self.media_size).slots.cap.size.w,
-                self.hud_conf.get(self.media_size).slots.cap.size.h
+                self.hud_conf.get(self.media_size).slot.cap.size.w,
+                self.hud_conf.get(self.media_size).slot.cap.size.h
             ),
-            self.hud_conf.get(self.media_size).slots.cap.definition,
-            self.styles.get(self.media_size).slots.stack
+            self.hud_conf.get(self.media_size).slot.cap.definition,
+            self.styles.get(self.media_size).slot.stack
         )
 
         buffer_dim = formulae.rotate_dimensions(
             (
-                self.hud_conf.get(self.media_size).slots.buffer.size.w,
-                self.hud_conf.get(self.media_size).slots.buffer.size.h
+                self.hud_conf.get(self.media_size).slot.buffer.size.w,
+                self.hud_conf.get(self.media_size).slot.buffer.size.h
             ),
-            self.hud_conf.get(self.media_size).slots.buffer.definition,
-            self.styles.get(self.media_size).slots.stack
+            self.hud_conf.get(self.media_size).slot.buffer.definition,
+            self.styles.get(self.media_size).slot.stack
         )
 
         slot_dim = (
-            self.hud_conf.get(self.media_size).slots.disabled.size.w,
-            self.hud_conf.get(self.media_size).slots.disabled.size.h
+            self.hud_conf.get(self.media_size).slot.disabled.size.w,
+            self.hud_conf.get(self.media_size).slot.disabled.size.h
         )
 
         setattr(

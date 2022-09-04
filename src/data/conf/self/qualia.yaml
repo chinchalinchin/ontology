@@ -17,7 +17,7 @@ apriori:
 styles:
   extrinsic:
     small:
-      slots:
+      slot:
         margins:
           w: 0.025
           h: 0.025
@@ -26,7 +26,7 @@ styles:
           vertical: bottom
           horizontal: left
         opacity: 0.5
-      mirrors:
+      mirror:
         margins:
           w: 0.025
           h: 0.025
@@ -38,7 +38,7 @@ styles:
           vertical: top
           horizontal: right
         opacity: 0.5
-      packs: 
+      pack: 
         margins:
           w: 0.025
           h: 0.025
@@ -46,7 +46,7 @@ styles:
           vertical: bottom
           horizontal: right
     large:
-      slots:
+      slot:
         margins: 
           w: 0.025
           h: 0.025
@@ -55,7 +55,7 @@ styles:
           vertical: bottom
           horizontal: left
         opacity: 0.5
-      mirrors:
+      mirror:
         margins:
           w: 0.025
           h: 0.025
@@ -67,7 +67,7 @@ styles:
           vertical: top
           horizontal: right
         opacity: 0.5
-      packs:
+      pack:
         margins:
           w: 0.025
           h: 0.025
@@ -903,6 +903,4 @@ intrinsic:
         y: 224
       size:
         w: 96
-        h: 96
-        h:
-      
+        h: 96      

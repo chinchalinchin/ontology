@@ -98,63 +98,6 @@ ALIGNMENT_PIECE_TYPES = [
 ]
 
 
-
-@functools.lru_cache(maxsize=4)
-def adjust_directional_rotation(
-    direction: str
-) -> tuple:
-    """Static method to calculate the amount of rotation necessary to align slot cap with style alignment, depending on which direction the slot cap was defined in, i.e. if the slot cap was extracted from the asset file pointing to the left, this same piece can be rotated and reused, rather than extracting multiple assets.
-
-    :param direction: The direction of the slot cap direction.
-    :type direction: str
-    :return: (up_adjust, left_adjust, right_adjust, down_adjust)
-    :rtype: tuple
-    """
-    # I am convinced there is an easier way to calculate this using arcosine and arcsine,
-    # but i don't feel like thinking about domains and ranges right now...
-    if direction == 'left':
-        return ( 
-            90, 
-            0, 
-            180, 
-            270 
-        )
-    elif direction == 'right':
-        return ( 
-            270, 
-            180, 
-            0, 
-            90 
-        )
-    elif direction == 'up':
-        return ( 
-            0, 
-            90,  
-            270, 
-            180 
-        )
-    return ( 
-        180, 
-        270, 
-        90, 
-        0 
-    )
-
-
-@functools.lru_cache(maxsize=2)
-def adjust_alignment_rotation(
-    direction: str
-) -> tuple:
-    if direction == 'vertical':
-        return ( 
-            0, 
-            90 
-        )
-    return ( 
-        90, 
-        0 
-    )
-
 class Totality():
     # TODO: 
     qualia = munch.Munch({})
@@ -165,6 +108,64 @@ class Totality():
     avatars = munch.Munch({})
 
     @staticmethod
+    @functools.lru_cache(maxsize=2)
+    def adjust_alignment_rotation(
+        direction: str
+    ) -> tuple:
+        if direction == 'vertical':
+            return ( 
+                0, 
+                90 
+            )
+        return ( 
+            90, 
+            0 
+        )
+
+    @staticmethod
+    @functools.lru_cache(maxsize=4)
+    def adjust_directional_rotation(
+        direction: str
+    ) -> tuple:
+        """Static method to calculate the amount of rotation necessary to align slot cap with style alignment, depending on which direction the slot cap was defined in, i.e. if the slot cap was extracted from the asset file pointing to the left, this same piece can be rotated and reused, rather than extracting multiple assets.
+
+        :param direction: The direction of the slot cap direction.
+        :type direction: str
+        :return: (up_adjust, left_adjust, right_adjust, down_adjust)
+        :rtype: tuple
+        """
+        # I am convinced there is an easier way to calculate this using arcosine and arcsine,
+        # but i don't feel like thinking about domains and ranges right now...
+        if direction == 'left':
+            return ( 
+                90, 
+                0, 
+                180, 
+                270 
+            )
+        elif direction == 'right':
+            return ( 
+                270, 
+                180, 
+                0, 
+                90 
+            )
+        elif direction == 'up':
+            return ( 
+                0, 
+                90,  
+                270, 
+                180 
+            )
+        return ( 
+            180, 
+            270, 
+            90, 
+            0 
+        )
+
+    @staticmethod
+    @functools.lru_cache(maxsize=4)
     def map_form_path(
         asset_type
     ) -> Union[
@@ -180,6 +181,7 @@ class Totality():
         return None
 
     @staticmethod
+    @functools.lru_cache(maxsize=3)
     def map_dialectic_path(
         asset_type
     ) -> Union[
@@ -401,7 +403,7 @@ class Totality():
 
         for asset_type in DIALECTIC_TYPES:
             log.debug(
-                f'Initializing {asset_type} assets...',
+                f'{asset_type} initialization',
                 'Totality._init_dialectic_assets'
             )
 
@@ -411,7 +413,7 @@ class Totality():
                 munch.Munch({})
             )
 
-            _, assets_conf = config.load_dialectic_configuration()
+            _, assets_conf = config.load_dialectic_configuration(asset_type)
 
             for asset_key, asset_conf in assets_conf.items():
                 log.verbose(
@@ -444,7 +446,7 @@ class Totality():
                 )
 
                 if asset_type == 'projectiles':
-                    adjust = adjust_directional_rotation(asset_conf.definition)
+                    adjust = self.adjust_directional_rotation(asset_conf.definition)
                     setattr(
                         self.dialectics.get(asset_type),
                         asset_key,
@@ -581,7 +583,7 @@ class Totality():
 
         log.debug(
             f'Initializing qualia assets...', 
-            '_init_qualia_assets'
+            'Totality._init_self_assets'
         )
 
         interface_conf = config.load_qualia_configuration()
@@ -637,7 +639,7 @@ class Totality():
 
                     log.debug( 
                         f"{size} {set_type} {set_key}: size - {buffer.size}, mode - {buffer.mode}", 
-                        '_init_sense_assets'
+                        'Totality._init_self_assets'
                     )
 
                     buffer = buffer.crop(
@@ -650,7 +652,7 @@ class Totality():
                     )
 
                     if set_key in DIRECTIONAL_PIECE_TYPES:
-                        adjust = adjust_directional_rotation(set_conf.definition)
+                        adjust = self.adjust_directional_rotation(set_conf.definition)
                         setattr(
                             save_set.get(size),
                             set_key,
@@ -675,7 +677,7 @@ class Totality():
                         )
                         continue
                     elif set_key in ALIGNMENT_PIECE_TYPES:
-                        adjust = adjust_alignment_rotation(set_conf.definition)
+                        adjust = self.adjust_alignment_rotation(set_conf.definition)
                         setattr(
                             save_set.get(size),
                             set_key,
@@ -704,10 +706,10 @@ class Totality():
                 # TODO: collapse this conditional into: iter_set = interface_conf.hud | menu.get(size).get(set_type)
                 #           by defining and passing the proper literals...
                 if set_type == 'mirror':
-                    iter_set = interface_conf.extrinsic.get(size).mirrors
+                    iter_set = interface_conf.extrinsic.get(size).mirror
                     save_set = self.mirrors
                 elif set_type == 'pack':
-                    iter_set = interface_conf.extrinsic.get(size).packs
+                    iter_set = interface_conf.extrinsic.get(size).pack
                     save_set = self.packs
                 elif set_type == 'idea':
                     iter_set = interface_conf.intrinsic.get(size).idea
@@ -723,7 +725,11 @@ class Totality():
                     save_set = self.qualia
                     
                 if set_type in [ 'bauble', 'thought', 'focus', 'aside', 'idea' ]:
-                    setattr(save_set.get(size), set_type, munch.Munch({}))
+                    setattr(
+                        save_set.get(size), 
+                        set_type, 
+                        munch.Munch({})
+                    )
 
                 # (enabled, conf), (disbled, conf), ...
                 for set_key, set_conf in iter_set.items():
@@ -731,9 +737,18 @@ class Totality():
                         continue
                     
                     if set_type in [ 'bauble', 'thought', 'focus', 'aside', 'idea']:
-                        setattr(save_set.get(size).get(set_type), set_key, munch.Munch({}))
+                        setattr(
+                            save_set.get(size).get(set_type), 
+                            set_key, 
+                            munch.Munch({})
+                        )
+
                     else: # HUD qualia ('mirror', 'pack')
-                        setattr(save_set.get(size), set_key, munch.Munch({}))                        
+                        setattr(
+                            save_set.get(size), 
+                            set_key,
+                            munch.Munch({})
+                        )                        
 
                     # for (unit, fill), (empty, fill)
                     for component_key, component in set_conf.items():
@@ -751,7 +766,7 @@ class Totality():
 
                         log.debug( 
                             f"{size} {set_type} {set_key} {component_key}: size - {buffer.size}, mode - {buffer.mode}", 
-                            '_init_sense_assets'
+                            'Totality._init_self_assets'
                         )
                         if set_type in [ 'bauble', 'thought', 'focus', 'aside', 'idea' ]:
                             setattr(
@@ -794,13 +809,13 @@ class Totality():
                     os.path.join(
                         ontology_path,
                         *settings.QUALIA_PATH,
-                        set_conf.path
+                        simple_set.path
                     )
                 )
 
                 log.debug( 
                     f"{size} {set_type} {set_key}: size - {buffer.size}, mode - {buffer.mode}", 
-                    '_init_sense_assets'
+                    'Totality._init_qualia_assets'
                 )
 
                 buffer = buffer.crop(
@@ -929,7 +944,7 @@ class Totality():
 
             log.debug(
                 f'{sprite_key}: states - {len(self.entities.sprites.base.get(sprite_key))}, frames - {frames}', 
-                '_init_entity_assets'
+                'Totality._init_entity_assets'
             )
 
         ## APPAREL INITIALIZATION
