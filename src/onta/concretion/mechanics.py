@@ -1,15 +1,18 @@
-from typing import Union
-
 import munch
+from typing \
+    import Union
 
-import onta.settings as settings
-import onta.util.logger as logger
+from onta.concretion.facticity \
+    import gauge
+from onta.concretion.noumena \
+    import substrata
+from onta.metaphysics \
+    import settings, logger
 
-import onta.engine.facticity.calculator as calculator
-import onta.engine.noumena.substrata as substrata
-
-
-log = logger.Logger('onta.engine.collisions', settings.LOG_LEVEL)
+log = logger.Logger(
+    'onta.concretion.collisions', 
+    settings.LOG_LEVEL
+)
 
 
 def generate_collision_map(
@@ -56,26 +59,36 @@ def collision_set_relative_to(
     collision_sets = []
     if hitbox_key == 'sprite' and \
         npc_hitboxes is not None:
+
         collision_sets += npc_hitboxes
 
     if hitbox_key == 'strut' and \
-            strut_hitboxes is not None:
+        strut_hitboxes is not None:
+
         collision_sets += strut_hitboxes
 
     if hitbox_key == 'strut' and \
         container_hitboxes is not None:
+
         collision_sets += [
-            container.hitbox for container in container_hitboxes
+            container.hitbox 
+            for container 
+            in container_hitboxes
         ]
         collision_sets += [ 
-            gate.hitbox for gate in gates
-            if not switch_map.get(gate.key).get(str(gate.index))
+            gate.hitbox 
+            for gate 
+            in gates
+            if not switch_map.get(gate.key).get(
+                str(gate.index)
+            )
         ]
         # doesn't add pressures, doors or masses, as they are handled separately
     
     collision_sets = [
         box 
-        for box in collision_sets 
+        for box 
+        in collision_sets 
         if box is not None 
         and None not in box
     ]
@@ -106,14 +119,12 @@ def detect_collision(
     if not hitbox_list or None in hitbox_list:
         return None
 
-    compile_result = calculator.any_intersections(
+    compile_result = gauge.any_intersections(
         object_hitbox,
         hitbox_list
     )
 
-    # compiled version returns all -1 instead of None to avoid type-check problems
-        # TODO: that was for numba, not cython
-    if all(el == -1 for el in iter(compile_result)):
+    if all(not el for el in iter(compile_result)):
         return None
 
     return compile_result
@@ -181,11 +192,11 @@ def recoil_sprite(
 
     :param sprite: _Sprite_ to be recoiled.
     :type sprite: munch.Munch
-    :param sprite_dim:
+    :param sprite_dim: _(w, h)_ dimensions of _Sprite_
     :type sprite_dim: tuple
     :param sprite_props: Properties for passed-in _Sprite_.
     :type sprite_props: munch.Munch
-    :param collision_box: The hitbox off of which the _Sprite_ is recoiling.
+    :param collision_box: The hitbox off of which the _Sprite_ is recoiling, _(x,y,w,h)_.
     :type collision_box: tuple
     """
     sprite_box = (
@@ -194,46 +205,70 @@ def recoil_sprite(
         sprite_dim[0],
         sprite_dim[1]
     )
-    sprite_center = calculator.center(sprite_box)
+    sprite_center = gauge.center(sprite_box)
 
-    proj = calculator.projection(45)
+    proj = gauge.projection(45)
 
     if sprite_center[0] < collision_box[0]:
-        if sprite_center[1] > collision_box[1]+collision_box[3]:
-            log.debug('Recoiling sprite to the bottom left', 'recoil_sprite')
+        if sprite_center[1] > collision_box[1] + collision_box[3]:
+            log.debug(
+                'Recoiling sprite to the bottom left', 
+                'recoil_sprite'
+            )
             sprite.position.x -= proj[0] * sprite_speed
             sprite.position.y += proj[1] * sprite_speed
             return
         elif sprite_center[1] < collision_box[1]:
-            log.debug('Recoiling sprite to the top left', 'recoil_sprite')
+            log.debug(
+                'Recoiling sprite to the top left', 
+                'recoil_sprite'
+            )
             sprite.position.x -= proj[0] * sprite_speed
             sprite.position.y -= proj[1] * sprite_speed
             return
-        log.debug('Recoiling sprite to the left', 'recoil_sprite')
+        log.debug(
+            'Recoiling sprite to the left', 
+            'recoil_sprite'
+        )
         sprite.position.x -= sprite_speed
         return
 
     elif sprite_center[0] > collision_box[0] + collision_box[2]:
         if sprite_center[1] > collision_box[1]+collision_box[3]:
-            log.debug('Recoiling sprite to the bottom right', 'recoil_sprite')
+            log.debug(
+                'Recoiling sprite to the bottom right', 
+                'recoil_sprite'
+            )
             sprite.position.x += proj[0] * sprite_speed
             sprite.position.y += proj[1] * sprite_speed
             return
         elif sprite_center[1] < collision_box[1]:
-            log.debug('Recoiling sprite to the top right', 'recoil_sprite')
+            log.debug(
+                'Recoiling sprite to the top right', 
+                'recoil_sprite'
+            )
             sprite.position.x += proj[0] * sprite_speed
             sprite.position.y -= proj[1] * sprite_speed
             return
-        log.debug('Recoiling sprite to the right', 'recoil_sprite')
+        log.debug(
+            'Recoiling sprite to the right', 
+            'recoil_sprite'
+        )
         sprite.position.x += proj[0] * sprite_speed
         return
 
     else: # the center
-        if sprite_center[1] > collision_box[1]+collision_box[3]:
-            log.debug('Recoiling sprite to the bottom', 'recoil_sprite')
+        if sprite_center[1] > collision_box[1] + collision_box[3]:
+            log.debug(
+                'Recoiling sprite to the bottom', 
+                'recoil_sprite'
+            )
             sprite.position.y += proj[1] * sprite_speed
             return
-        log.debug('Recoiling sprite to the top', 'recoil_sprite')
+        log.debug(
+            'Recoiling sprite to the top', 
+            'recoil_sprite'
+        )
         sprite.position.y -= proj[1] * sprite_speed
         return
 
@@ -272,35 +307,51 @@ def detect_layer_pressure(
 ) -> None:
     for pressure in layer_pressures:
 
-        if isinstance(hitbox, tuple):
-            collision_box = detect_collision(
-                pressure.hitbox, 
-                [ hitbox ]
-            )
-        elif isinstance(hitbox, list):
-            collision_box = detect_collision(
-                pressure.hitbox, 
-                hitbox
-            )
-        else:
+        if not ( 
+            isinstance(hitbox, tuple) or
+            isinstance(hitbox, list)
+        ):
             raise ValueError('Hitbox is not of type tuple or list')
 
+        if isinstance(hitbox, tuple):
+            format_hitbox = [ hitbox ]
+        elif isinstance(hitbox, list):
+            format_hitbox = hitbox
+
+        collision_box = detect_collision(
+            pressure.hitbox, 
+            format_hitbox
+        )
+
         if collision_box and \
-            not layer_switch_map.get(pressure.key).get(str(pressure.index)):
-            log.debug(f'Switching pressure plate {pressure.key} on', '_physics')
+            not layer_switch_map.get(pressure.key).get(
+                str(pressure.index)
+            ):
+            log.debug(
+                f'Switching pressure plate {pressure.key} on', 
+                '_detect_layer_pressure'
+            )
+
             setattr(
                 layer_switch_map.get(pressure.key),
                 str(pressure.index),
                 True
             )
+
             connected_gate = [
-                munch.Munch({'key': gate.key, 'index': gate.index})
+                munch.Munch({
+                    'key': gate.key, 
+                    'index': gate.index
+                })
                 for gate in gates
                 if gate.content == pressure.content 
             ]
+
             if not connected_gate:
                 continue
+
             connection = connected_gate.pop()
+
             setattr(
                 layer_switch_map.get(connection.key),
                 str(connection.index),
@@ -308,21 +359,35 @@ def detect_layer_pressure(
             )
 
         elif not collision_box and \
-            layer_switch_map.get(pressure.key).get(str(pressure.index)):
-            log.debug(f'Switching pressure plate {pressure.key} off', '_physics')
+            layer_switch_map.get(pressure.key).get(
+                str(pressure.index)
+            ):
+
+            log.debug(
+                f'Switching pressure plate {pressure.key} off', 
+                '_detect_layer_pressure'
+            )
+
             setattr(
                 layer_switch_map.get(pressure.key),
                 str(pressure.index),
                 False
             )
+
             connected_gate = [
-                munch.Munch({'key': gate.key, 'index': gate.index})
+                munch.Munch({
+                    'key': gate.key, 
+                    'index': gate.index
+                })
                 for gate in gates
                 if gate.content == pressure.content 
             ]
+            
             if not connected_gate:
                 continue
+
             connection = connected_gate.pop()
+
             setattr(
                 layer_switch_map.get(connection.key),
                 str(connection.index),
@@ -331,22 +396,24 @@ def detect_layer_pressure(
 
 
 def detect_layer_sprite_to_mass_collision(
-    sprite,
-    sprite_props,
-    platesets,
-    plate_props,
-    tile_dimensions,
+    sprite: munch.Munch,
+    sprite_props: munch.Munch,
+    platesets: munch.Munch,
+    plate_props: munch.Munch,
+    tile_dimensions: tuple,
 ) -> None:
+
     sprite_hitbox = substrata.sprite_hitbox(
         munch.unmunchify(sprite), 
         'sprite', 
         munch.unmunchify(sprite_props)
     )
     masses = platesets.get(sprite.layer).masses.copy()
+
     for mass in masses:
         collision_box = detect_collision(
             mass.hitbox.sprite, 
-            [sprite_hitbox]
+            [ sprite_hitbox ]
         )
         if collision_box:
             plate = platesets.get(sprite.layer).get(mass.key).sets[mass.index]
@@ -359,7 +426,9 @@ def detect_layer_sprite_to_mass_collision(
                 plate.hitbox,
                 'sprite',
                 substrata.set_hitbox(
-                    munch.unmunchify(plate_props.get(mass.key).hitbox.sprite),
+                    munch.unmunchify(
+                        plate_props.get(mass.key).hitbox.sprite
+                    ),
                     munch.unmunchify(plate),
                     tile_dimensions
                 )
@@ -368,7 +437,9 @@ def detect_layer_sprite_to_mass_collision(
                 plate.hitbox,
                 'strut',
                 substrata.set_hitbox(
-                    munch.unmunchify(plate_props.get(mass.key).hitbox.strut),
+                    munch.unmunchify(
+                        plate_props.get(mass.key).hitbox.strut
+                    ),
                     munch.unmunchify(plate),
                     tile_dimensions
                 )

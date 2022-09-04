@@ -1,7 +1,8 @@
 
 import munch
 
-import onta.world as world
+from onta \
+    import world
 
 def generate_player_template(
     game_world: world.World,

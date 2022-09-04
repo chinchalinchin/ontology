@@ -1,7 +1,7 @@
 import functools
 import munch
 from typing \
-    import Any, Literal, Tuple, Union
+    import Any, Literal, Union
 from pynput import keyboard
 
 from onta.metaphysics \
@@ -9,7 +9,10 @@ from onta.metaphysics \
 from onta.actuality \
     import conf
 
-log = logger.Logger('onta.will', settings.LOG_LEVEL)
+log = logger.Logger(
+    'onta.will', 
+    settings.LOG_LEVEL
+)
 
 
 @functools.lru_cache(maxsize=15)
@@ -53,17 +56,15 @@ def map_key(
 
 class Will():
 
-    listener = None
-    keys = munch.Munch({})
-
-
     def __init__(
         self, 
         ontology_path = settings.DEFAULT_DIR
     ) -> None:
         self.control_conf = conf.Conf(ontology_path).load_control_configuration()
         self.keys = munch.munchify({ 
-            key: False for key in self.control_conf.valid
+            key: False 
+            for key 
+            in self.control_conf.valid
         })
         self._register_listener()
         self._start_listener()
@@ -73,14 +74,22 @@ class Will():
         self, 
         key
     ) -> None:
-        setattr(self.keys, map_key(key), True)
+        setattr(
+            self.keys, 
+            map_key(key), 
+            True
+        )
         
             
     def _on_release(
         self, 
         key
     ) -> None:
-        setattr(self.keys, map_key(key), False)
+        setattr(
+            self.keys,
+            map_key(key), 
+            False
+        )
 
 
     def _register_listener(
@@ -111,7 +120,11 @@ class Will():
 
         for dir_key, dir_conf in directions.items():
             input_combo = dir_conf.input
-            direction_flags[dir_key] = all(self.keys.get(key) for key in input_combo)
+            direction_flags[dir_key] = all(
+                self.keys.get(key) 
+                for key 
+                in input_combo
+            )
             if direction_flags[dir_key]:
                 dirs += 1
 
@@ -119,14 +132,19 @@ class Will():
         if dirs > 1:
             precedence, activated_key = 0, None
             for dir_key, dir_flag in direction_flags.copy().items():
-                if dir_flag and directions.get(dir_key).precedence >= precedence:
+                if dir_flag and \
+                    directions.get(dir_key).precedence >= precedence:
+
                     precedence = directions.get(dir_key).precedence
                     activated_key = dir_key
-            direction_flags = munch.Munch({ 
-                key: True if key == activated_key else False for key in direction_flags.keys() 
-            })
-       
-        return munch.Munch(direction_flags)
+
+        return munch.Munch({ 
+            key: True 
+            if key == activated_key 
+            else False 
+            for key 
+            in direction_flags.keys() 
+        })
 
     def _actions(
         self
@@ -135,7 +153,11 @@ class Will():
         action_flags, acts = {}, 0
         for action_key, action_conf in actions.items():
             input_combo = action_conf.input
-            action_flags[action_key] = all(self.keys.get(key) for key in input_combo)
+            action_flags[action_key] = all(
+                self.keys.get(key) 
+                for key 
+                in input_combo
+            )
             if action_flags[action_key]:
                 acts += 1
 
@@ -143,15 +165,19 @@ class Will():
         if acts > 1:
             precedence, activated_key = 0, None
             for act_key, act_flag in action_flags.copy().items():
-                if act_flag and actions.get(act_key).precedence >= precedence:
+                if act_flag and \
+                    actions.get(act_key).precedence >= precedence:
+
                     precedence = actions.get(act_key).precedence
                     activated_key = act_key
-  
-            action_flags = { 
-                key: True if key == activated_key else False for key in action_flags.keys() 
-            }
-                        
-        return munch.Munch(action_flags) 
+               
+        return munch.Munch({ 
+            key: True 
+            if key == activated_key 
+            else False 
+            for key 
+            in action_flags.keys() 
+        }) 
 
     def _meditations(
         self
@@ -161,22 +187,30 @@ class Will():
 
         for med_key, med_conf in meditations.items():
             input_combo = med_conf.input
-            med_flags[med_key] = all(self.keys.get(key) for key in input_combo)
+            med_flags[med_key] = all(
+                self.keys.get(key) 
+                for key 
+                in input_combo
+            )
             if med_flags[med_key]:
                 meds += 1
 
         if meds > 1:
             precedence, activated_key = 0, None
             for med_key, med_flag in med_flags.copy().items():
-                if med_flag and meditations.get(med_key).precedence >= precedence:
+                if med_flag and \
+                    meditations.get(med_key).precedence >= precedence:
+
                     precedence = meditations.get(med_key).precedence
                     activated_key = med_key
 
-            med_flags = {
-                key: True if key == activated_key else False for key in med_flags.keys()
-            }
-
-        return munch.Munch(med_flags)
+        return munch.Munch({
+                key: True 
+                if key == activated_key 
+                else False 
+                for key 
+                in med_flags.keys()
+            })
 
 
     def consume(
@@ -243,7 +277,9 @@ class Will():
             There is no recursion/nesting in `self.keys`, so just instantiate a `munch.Munch` with one level of keys to avoid recursively `munch.munchify` issue.
         """
         self.keys = munch.Munch({ 
-            key: False for key in self.control_conf.valid
+            key: False 
+            for key 
+            in self.control_conf.valid
         })
         
 

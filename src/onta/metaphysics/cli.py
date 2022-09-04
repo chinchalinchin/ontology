@@ -1,7 +1,7 @@
-
 import argparse
 
-import onta.settings as settings
+from onta.metaphysics \
+    import settings
 
 
 def parse_cli_args():

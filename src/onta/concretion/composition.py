@@ -1,18 +1,24 @@
 import munch
 
-import onta.settings as settings
-import onta.util.logger as logger
+from onta.concretion.facticity \
+    import gauge
+from onta.metaphysics \
+    import settings, logger
 
-import onta.engine.facticity.calculator as calculator
-
-log = logger.Logger('onta.engine.composition', settings.LOG_LEVEL)
+log = logger.Logger(
+    'onta.concretion.composition', 
+    settings.LOG_LEVEL
+)
 
 
 def decompose_animate_stature(
     sprite_stature:str
 ) -> tuple:
     split = sprite_stature.split(settings.SEP)
-    return (split[0], split[1])
+    return (
+        split[0], 
+        split[1]
+    )
 
 
 def construct_animate_statures(
@@ -23,7 +29,10 @@ def construct_animate_statures(
         if action != stature_props.decomposition.end:
             for direction in stature_props.decomposition.directions.real:
                 animate_statures.append(
-                    settings.SEP.join([action, direction])
+                    settings.SEP.join([
+                        action, 
+                        direction
+                    ])
                 )
         else:
             animate_statures.append(action)
@@ -47,10 +56,22 @@ def compose_animate_stature(
     .. note::
         The diagonal directions get collapsed into a single direction due to the spritesheet specifications. If, in the future, spritesheets with a more robust frameset are added, this method will need updated to reflect the new directions available.
     """
-    up_left = settings.SEP.join(['up', 'left'])
-    down_left = settings.SEP.join(['down', 'left'])
-    up_right = settings.SEP.join(['up', 'right'])
-    down_right = settings.SEP.join(['down', 'right'])
+    up_left = settings.SEP.join([
+        'up', 
+        'left'
+    ])
+    down_left = settings.SEP.join([
+        'down', 
+        'left'
+    ])
+    up_right = settings.SEP.join([
+        'up', 
+        'right'
+    ])
+    down_right = settings.SEP.join([
+        'down', 
+        'right'
+    ])
 
     if not sprite.stature or \
         not sprite.stature.action or \
@@ -133,8 +154,10 @@ def decompose_compositions(
 
         # for (house, {composition}), (tree_patch, {composition}) ...
         for composite_key, composition in compositions.get(layer).items():
-            log.verbose(f'Decomposing {composite_key} composition...', 
-                'decompose_compositions')
+            log.verbose(
+                f'Decomposing {composite_key} composition...', 
+                'decompose_compositions'
+            )
 
             # NOTE: composition = { 'order': int, 'sets': [ ... ] }
             #           via compose state information (static.yaml)
@@ -144,8 +167,11 @@ def decompose_compositions(
 
                 # NOTE: composeset = { 'start': { ... } }
                 #           via compose state information (static.yaml)
-                compose_start = calculator.scale(
-                    ( composeset.start.x, composeset.start.y),
+                compose_start = gauge.scale(
+                    ( 
+                        composeset.start.x, 
+                        composeset.start.y
+                    ),
                     tile_dimensions,
                     composeset.start.units
                 )
@@ -157,8 +183,10 @@ def decompose_compositions(
                 for elementset_key, elementset_conf in composition_conf.get(composite_key).items():
                     # NOTE: elementset_conf = { 'element_key': { 'order': int, 'sets': [ ... ] } }
                     #           via compose element configuration (composite.yaml)
-                    log.verbose(f'Decomposing {elementset_key}...', 
-                        'decompose_compositions')
+                    log.verbose(
+                        f'Decomposing {elementset_key}...', 
+                        'decompose_compositions'
+                    )
 
                     # GRAB EXISTING ASSETS
                     if elementset_key == 'tiles':
@@ -169,11 +197,6 @@ def decompose_compositions(
                         buffer_sets = decomposition[2]
 
                     for element_key, element in elementset_conf.items():
-                        log.verbose(
-                            f'Decomposing {element_key}...', 
-                            'decompose_compositions'
-                        )
-
                         # NOTE: element['sets'] = [ { 'start': {..}, 'cover': bool } ]
                         #            via compose element configuration (composite.yaml)
                         for elementset in element.sets:
@@ -192,7 +215,10 @@ def decompose_compositions(
                                 setattr(buffer_sets.get(layer), element_key, munch.Munch({}))
 
                             if not buffer_sets.get(layer).get(element_key).get('sets'):
-                                log.verbose('Set empty...', 'decompose_compositions')
+                                log.verbose(
+                                    'Set empty...', 
+                                    'decompose_compositions'
+                                )
                                 setattr(
                                     buffer_sets.get(layer).get(element_key),
                                     'sets',
@@ -203,7 +229,8 @@ def decompose_compositions(
                                  buffer_sets.get(layer).get(element_key).get('order') != 0:
                                 log.verbose(
                                     f'Generating render order for new set: {len(buffer_sets.get(layer))}', 
-                                    'decompose_compositions')
+                                    'decompose_compositions'
+                                )
                                 setattr(
                                     buffer_sets.get(layer).get(element_key),
                                     'order',
@@ -242,4 +269,8 @@ def decompose_compositions(
                     elif elementset_key == 'plates':
                         decomposition[2] = buffer_sets
     
-    return (decomposition[0], decomposition[1], decomposition[2])
+    return (
+        decomposition[0], 
+        decomposition[1], 
+        decomposition[2]
+    )

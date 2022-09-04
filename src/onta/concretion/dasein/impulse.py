@@ -6,22 +6,22 @@ A module for transforming _Sprite_ `intent` into in-game action.
 .. note:: 
     * The functions in this module may alter the `position` of a _Sprite_, but they will never alter the `stature` of a _Sprite_. In certain cases, it may alter the `intent` of a _Sprite_ as well, as in the case of combat, when a sprite has to react next iteration.
 """
-
-from typing import Union
 import munch
+from typing import Union
 
-import onta.settings as settings
+from onta.concretion \
+    import mechanics
+from onta.concretion.facticity \
+    import gauge
+from onta.concretion.noumena \
+    import substrata
+from onta.metaphysics \
+    import settings, logger
 
-import onta.engine.collisions as collisions
-
-# compiled functions
-import onta.engine.noumena.substrata as substrata
-import onta.engine.facticity.calculator as calculator
-
-import onta.util.logger as logger
-
-
-log = logger.Logger('onta.engine.dasein.impulse', settings.LOG_LEVEL)
+log = logger.Logger(
+    'onta.concretion.dasein.impulse', 
+    settings.LOG_LEVEL
+)
 
 
 def locate_desire(
@@ -31,7 +31,10 @@ def locate_desire(
 ) -> Union[tuple, None]:
     # TODO: take into account sprite layer and target layer, will need to pass in sprite
 
-    log.verbose(f'Searching for {target}', 'locate_desire')
+    log.verbose(
+        f'Searching for {target}', 
+        'locate_desire'
+    )
 
     flee = True if target.split(' ')[0] == 'flee' else False
     
@@ -39,23 +42,30 @@ def locate_desire(
         target = target.split(' ')[-1]
 
     if target in list(sprites.keys()):
-        log.verbose('Target is dynamic, retrieving sprite position...', 'locate_desire')
+        log.verbose(
+            'Target is dynamic, retrieving sprite position...', 
+            'locate_desire'
+        )
         if flee:
             return (
-                2*sprite.position.x - sprites.get(target).position.x,
-                2*sprite.position.y - sprites.get(target).position.y,
-
+                2 * sprite.position.x - sprites.get(target).position.x,
+                2 * sprite.position.y - sprites.get(target).position.y,
             )
+
         return (
             sprites.get(target).position.x, 
             sprites.get(target).position.y
         )
-    elif target in list(sprite.memory.paths.keys()):
-        log.verbose('Target is static, retrieving path...', 'locate_desire')
+
+    if target in list(sprite.memory.paths.keys()):
+        log.verbose(
+            'Target is static, retrieving path...', 
+            'locate_desire'
+        )
         if flee: 
             return (
-                2*sprite.position.x - sprite.memory.paths.get(target).x,
-                2*sprite.position.y - sprite.memory.paths.get(target).y
+                2 * sprite.position.x - sprite.memory.paths.get(target).x,
+                2 * sprite.position.y - sprite.memory.paths.get(target).y
             )
         return ( 
             sprite.memory.paths.get(target).x, 
@@ -78,39 +88,39 @@ def move(
         sprite.position.y -= speed
         return
 
-    elif sprite.stature.direction  ==  'up_left':
-        proj = calculator.projection(45)
+    if sprite.stature.direction  ==  'up_left':
+        proj = gauge.projection(45)
         sprite.position.x -= speed*proj[0]
         sprite.position.y -= speed*proj[1]
         return
 
-    elif sprite.stature.direction == 'left':
+    if sprite.stature.direction == 'left':
        sprite.position.x -= speed
        return
 
-    elif sprite.stature.direction == 'down_left':
-        proj = calculator.projection(45)
+    if sprite.stature.direction == 'down_left':
+        proj = gauge.projection(45)
         sprite.position.x -= speed*proj[0]
         sprite.position.y += speed*proj[1]
+        return
 
-    elif sprite.stature.direction == 'down':
+    if sprite.stature.direction == 'down':
         sprite.position.y += speed
         return
 
-    elif sprite.stature.direction == 'down_right':
-        proj = calculator.projection(45)
+    if sprite.stature.direction == 'down_right':
+        proj = gauge.projection(45)
         sprite.position.x += speed*proj[0]
         sprite.position.y += speed*proj[1]
         return
 
-    elif sprite.stature.direction == 'right':
+    if sprite.stature.direction == 'right':
         sprite.position.x += speed
-
-    elif sprite.stature.direction == 'up_right':
-        proj = calculator.projection(45)  
-        sprite.position.x += speed*proj[0]
-        sprite.position.y -= speed*proj[1]
         return
+
+    proj = gauge.projection(45)  
+    sprite.position.x += speed*proj[0]
+    sprite.position.y -= speed*proj[1]
     return
 
 
@@ -125,8 +135,12 @@ def combat(
     projectile_props: munch.Munch,
     target_sprites: munch.Munch,
 ) -> None: 
-    if any(action in sprite.stature.action 
-            for action in sprite_stature.decomposition.combat):
+    if any(
+        action 
+        in sprite.stature.action 
+        for action 
+        in sprite_stature.decomposition.combat
+    ):
         equip_key = sprite.slots.get(sprite.stature.action)
 
         if equip_key is None:
@@ -141,17 +155,29 @@ def combat(
 
                 atkbox = substrata.projectile_attackbox(
                     munch.unmunchify(sprite),
-                    munch.unmunchify(projectile_props.get(sprite.packs.belt).attackboxes)
+                    munch.unmunchify(projectile_props.get(
+                        sprite.packs.belt
+                    ).attackboxes)
                 )
                 projectiles.append(
                     munch.Munch({
                         'key': sprite.packs.belt,
                         'layer': sprite.layer,
                         'direction': sprite.stature.direction,
-                        'speed': projectile_props.get(sprite.packs.belt).speed,
-                        'distance': projectile_props.get(sprite.packs.belt).distance,
-                        'origin': ( atkbox[0], atkbox[1] ),
-                        'current': ( atkbox[0], atkbox[1] ),
+                        'speed': projectile_props.get(
+                            sprite.packs.belt
+                        ).speed,
+                        'distance': projectile_props.get(
+                            sprite.packs.belt
+                        ).distance,
+                        'origin': ( 
+                            atkbox[0], 
+                            atkbox[1] 
+                        ),
+                        'current': ( 
+                            atkbox[0], 
+                            atkbox[1] 
+                        ),
                         'attackbox': atkbox
                     })
                 )
@@ -161,7 +187,9 @@ def combat(
 
             attack_box = substrata.blunt_attackbox(
                 munch.unmunchify(sprite),
-                munch.unmunchify(apparel_props.equipment.get(equip_key).properties.attackboxes)
+                munch.unmunchify(
+                    apparel_props.equipment.get(equip_key).properties.attackboxes
+                )
             )
 
             if not attack_box:
@@ -180,7 +208,7 @@ def combat(
                 if not target_hitbox:
                     continue
 
-                collision_box = collisions.detect_collision(
+                collision_box = mechanics.detect_collision(
                     attack_box, 
                     [ target_hitbox ]
                 )
@@ -188,7 +216,7 @@ def combat(
                 if not collision_box:
                     continue
 
-                collisions.recoil_sprite(
+                mechanics.recoil_sprite(
                     target,
                     sprite_dim,
                     apparel_props.equipment.get(equip_key).properties.collide,
@@ -197,8 +225,10 @@ def combat(
 
                 # if target not in combat or otherwise aware of hero
                 if not any(
-                    action in target.stature.action 
-                    for action in sprite_stature.decomposition.combat
+                    action 
+                    in target.stature.action 
+                    for action 
+                    in sprite_stature.decomposition.combat
                 ) or (
                     target.get('path') and \
                         sprite_key not in target.path
@@ -260,7 +290,7 @@ def operate(
     triggered = False
 
     for door in platesets.doors:
-        if collisions.detect_collision(
+        if mechanics.detect_collision(
             sprite_hitbox, 
             [ door.hitbox ]
         ):
@@ -278,11 +308,14 @@ def operate(
                 plate_props.get(key).size.h    
             )
             if not switch_map.get(sprite.layer).get(key).get(index) and \
-                collisions.detect_collision(
+                mechanics.detect_collision(
                     sprite_hitbox, 
                     [ modified_hitbox ]
                 ):
-                log.debug('Detected sprite container operation', 'operate')
+                log.debug(
+                    'Detected sprite container operation', 
+                    'operate'
+                )
                 setattr(
                     switch_map.get(sprite.layer).get(key),
                     str(index),

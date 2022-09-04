@@ -1,21 +1,30 @@
-import PySide6.QtWidgets as QtWidgets
 import threading
 import time
-from typing import Tuple
-from PIL import Image
+from typing \
+    import Tuple
+from PIL \
+    import Image
+from PySide6 \
+    import QtWidgets
 
 from onta \
     import gestalt, will, world
 from onta.actuality \
     import datum
 from onta.metaphysics \
-    import device, logger, helper, cli, settings
+    import device, logger, cli, settings
 from onta.qualia \
     import intrinsic, extrinsic
 
-log = logger.Logger('onta.main', settings.LOG_LEVEL)
+log = logger.Logger(
+    'onta.process', 
+    settings.LOG_LEVEL
+)
 
 
+def current_ms_time():
+    return round(time.time() * 1000)
+    
 def create(args) -> Tuple[
     will.Will,
     world.World,
@@ -162,7 +171,7 @@ def do(
     no_delays_per_yield = 16
     max_frame_skips = 5
     over_sleep, no_delays, excess = 0, 0, 0
-    start_time = helper.current_ms_time()
+    start_time = current_ms_time()
 
     while True:
 
@@ -227,14 +236,14 @@ def do(
             # # post_loop hook here
             # scripts.apply_scripts(game_world, 'post_loop')
             
-            end_time = helper.current_ms_time()
+            end_time = current_ms_time()
             diff = end_time - start_time
             sleep_time = ms_per_frame - diff - over_sleep
 
             if sleep_time >= 0:
                 log.timer(f'Loop iteration too short -  delta: {sleep_time} ms')
                 time.sleep( sleep_time / 1000 )
-                over_sleep = helper.current_ms_time() - end_time - sleep_time
+                over_sleep = current_ms_time() - end_time - sleep_time
 
             else:
                 log.timer(f'Loop iteration too long - delta: {sleep_time} ms')
@@ -246,7 +255,7 @@ def do(
                     time.sleep(0)
                     no_delays = 0
 
-            start_time = helper.current_ms_time()
+            start_time = current_ms_time()
             skips = 0
             
             while ( 

@@ -3,19 +3,23 @@
 The goal of this module is to map _Sprite_ `desires` to a _Sprite_ `intent`. Each function in this module will alter and update a _Sprite_ `intent` based on the `conditions` of its `desires`. 
 
 .. warning:: 
-    Beyond altering a _Sprite_ `intent` and `memory.intent`, these functions should not alter any direct state field. The point of this module is set to construct the message in the form of an `intent` the _World_ will process into a state field transformations.
+    Beyond altering a _Sprite_ `intent` and `memory.intent`, these functions should not alter any direct state field. The point of this module is to construct the message in the form of an `intent` the _World_ will process into a state field transformations.
 """
-
-from typing import Callable, Literal, Union
 import munch
+from typing \
+    import Callable, Literal, Union
 
-import onta.settings as settings
-import onta.engine.dasein.impulse as impulse
-import onta.util.logger as logger
+from onta.concretion.dasein \
+    import impulse
+from onta.concretion.facticity \
+    import gauge
+from onta.metaphysics \
+    import settings, logger
 
-import onta.engine.facticity.calculator as calculator
-
-log = logger.Logger('onta.engine.dasein.abstract', settings.LOG_LEVEL)
+log = logger.Logger(
+    'onta.concretion.dasein.abstract', 
+    settings.LOG_LEVEL
+)
 
 
 ### RUMINATIONS
@@ -27,8 +31,14 @@ def approach(
     sprite_stature: munch.Munch,
     sprite_props: munch.Munch,
     sprites: munch.Munch,
-    reorient_function: Callable[[str], str]
-) -> Union[Literal['continue'], Literal['break']]:
+    reorient_function: Callable[
+        [ str ], 
+        str
+    ]
+) -> Union[
+    Literal[ 'continue' ], 
+    Literal[ 'break' ]
+]:
     # ...if currently fleeing
     if sprite.stature.attention is not None and \
         'flee' in sprite.stature.attention:
@@ -38,7 +48,10 @@ def approach(
     if sprite.stature.action in sprite_stature.decomposition.combat:
         return 'continue'
 
-    sprite_pos = (sprite.position.x, sprite.position.y)
+    sprite_pos = (
+        sprite.position.x, 
+        sprite.position.y
+    )
 
     # ...otherwise evaluate the conditions for approach
     for condition in sprite_desire.conditions:
@@ -50,7 +63,7 @@ def approach(
                 sprite,
                 sprites,
             )
-            distance = calculator.distance(
+            distance = gauge.distance(
                 desire_pos,
                 sprite_pos
             )
@@ -70,7 +83,10 @@ def approach(
                     new_expression =  'hate'
 
 
-                new_direction = reorient_function(sprite_key, sprite_desire.target)
+                new_direction = reorient_function(
+                    sprite_key, 
+                    sprite_desire.target
+                )
                 setattr(
                     sprite,
                     'intent',
@@ -83,7 +99,11 @@ def approach(
                         'disposition': sprite.stature.disposition
                     })
                 )
-                setattr(sprite.memory, 'intent', sprite.stature)
+                setattr(
+                    sprite.memory, 
+                    'intent', 
+                    sprite.stature
+                )
                 return 'break'
                 
 
@@ -109,33 +129,43 @@ def approach(
                     'disposition': sprite.stature.disposition
                 })
             )
-            setattr(sprite.memory, 'intent', sprite.stature)
+            setattr(
+                sprite.memory, 
+                'intent', 
+                sprite.stature
+            )
             return 'break'
     return 'continue'
 
 
 def attempt_unapproach(
-    sprite_key,
-    sprite,
-    sprite_props,
-    sprite_desire,
-    sprites
-) -> Literal['continue']:
-    sprite_pos = (sprite.position.x, sprite.position.y)
+    sprite_key: str,
+    sprite: munch.Munch,
+    sprite_props: munch.Munch,
+    sprite_desire: munch.Munch,
+    sprites: munch.Munch
+) -> Literal[ 'continue' ]:
+
+    sprite_pos = (
+        sprite.position.x, 
+        sprite.position.y
+    )
 
     desire_pos = impulse.locate_desire(
         sprite_desire.target,
         sprite,
         sprites,
     )
-    distance = calculator.distance(
+
+    distance = gauge.distance(
         desire_pos,
         sprite_pos
     )
+
     always_flag = any(
         condition.function == 'always'
-        for condition in
-        sprite_desire.conditions
+        for condition 
+        in sprite_desire.conditions
     )
 
     if distance > sprite_props.radii.aware.approach \
@@ -149,10 +179,23 @@ def attempt_unapproach(
         if sprite.memory.intent and \
             sprite.memory.intent.get('attention') and \
             sprite.memory.intent.attention != sprite.intent.attention:
-            setattr(sprite, 'intent', sprite.memory.intent)
-            setattr(sprite.memory, 'intent', None)
+
+            setattr(
+                sprite, 
+                'intent', 
+                sprite.memory.intent
+            )
+            setattr(
+                sprite.memory, 
+                'intent', 
+                None
+            )
         else:
-            setattr(sprite, 'intent', None)
+            setattr(
+                sprite, 
+                'intent', 
+                None
+            )
 
     return "continue"
 
@@ -164,12 +207,19 @@ def engage(
     sprite_stature: munch.Munch,
     sprite_props: munch.Munch,
     sprites: munch.Munch,
-) -> Union[Literal['continue'], Literal['break']]:
+) -> Union[
+    Literal[ 'continue' ], 
+    Literal[ 'break' ]
+]:
 
-    if sprite.stature.attention is not None and 'flee' in sprite.stature.attention:
+    if sprite.stature.attention is not None and \
+        'flee' in sprite.stature.attention:
         return 'continue'
 
-    sprite_pos = (sprite.position.x, sprite.position.y)
+    sprite_pos = (
+        sprite.position.x, 
+        sprite.position.y
+    )
 
     for condition in sprite_desire.conditions:
 
@@ -183,7 +233,7 @@ def engage(
                 sprite,
                 sprites,
             )
-            distance = calculator.distance(
+            distance = gauge.distance(
                 desire_pos,
                 sprite_pos
             )
@@ -195,7 +245,11 @@ def engage(
                     '_ruminate'
                 )
                 # TODO: determine which slots are available for action
-                setattr(sprite.memory, 'intent', sprite.stature)
+                setattr(
+                    sprite.memory, 
+                    'intent', 
+                    sprite.stature
+                )
                 setattr(
                     sprite,
                     'intent',
@@ -214,23 +268,28 @@ def engage(
 
 
 def attempt_unengage(
-    sprite_key,
-    sprite,
-    sprite_props,
-    sprite_desire,
-    sprites,
-) -> Literal['continue']:
-    sprite_pos = (sprite.position.x, sprite.position.y)
+    sprite_key: str,
+    sprite: munch.Munch,
+    sprite_props: munch.Munch,
+    sprite_desire: munch.Munch,
+    sprites: munch.Munch,
+) -> Literal[ 'continue' ]:
+    sprite_pos = (
+        sprite.position.x, 
+        sprite.position.y
+    )
 
     desire_pos = impulse.locate_desire(
         sprite_desire.target,
         sprite,
         sprites,
     )
-    distance = calculator.distance(
+
+    distance = gauge.distance(
         desire_pos,
         sprite_pos
     )
+    
     if distance > sprite_props.radii.aware.engage :
         # need to compare sprite_desire.target to sprite.stature.attention
         log.verbose(
@@ -238,27 +297,53 @@ def attempt_unengage(
             'attempt_unengage'
         )
         if sprite.memory.intent:
-            setattr(sprite, 'intent', sprite.memory.intent)
-            setattr(sprite.intent, 'expression', None)
+            setattr(
+                sprite, 
+                'intent', 
+                sprite.memory.intent
+            )
+            setattr(
+                sprite.intent, 
+                'expression',
+                None
+            )
         else:
-            setattr(sprite, 'intent', None)
+            setattr(
+                sprite, 
+                'intent', 
+                None
+            )
 
-        setattr(sprite.memory, 'intent', None)
+        setattr(
+            sprite.memory, 
+            'intent', 
+            None
+        )
     return 'continue'
 
 
 def flee(
-    sprite_key,
-    sprite,
-    sprite_desire,
-    reorient_function
-) -> Union[Literal['continue'], Literal['break']]:
+    sprite_key: str,
+    sprite: munch.Munch,
+    sprite_desire: munch.Munch,
+    reorient_function: Callable[
+        [ str ], 
+        str
+    ]
+) -> Union[
+    Literal[ 'continue' ], 
+    Literal[ 'break' ]
+]:
     for condition in sprite_desire.conditions:
         
         if condition.function == 'expression_equals' and \
             condition.value == sprite.stature.expression:
 
-            setattr(sprite.memory, 'stature', sprite.stature)
+            setattr(
+                sprite.memory, 
+                'stature', 
+                sprite.stature
+            )
 
             if 'flee' not in sprite.stature.attention:
                 log.debug(
@@ -267,9 +352,13 @@ def flee(
                 )
 
                 target = f'flee {sprite.stature.attention}' \
-                    if sprite_desire.target == 'attention' else f'flee {sprite_desire.target}'
+                    if sprite_desire.target == 'attention' \
+                    else f'flee {sprite_desire.target}'
 
-                new_direction = reorient_function(sprite_key, target)
+                new_direction = reorient_function(
+                    sprite_key, 
+                    target
+                )
                 setattr(
                     sprite,
                     'intent',
@@ -282,7 +371,11 @@ def flee(
                         'attention': target
                     })
                 )
-                setattr(sprite.memory, 'intent', sprite.stature)
+                setattr(
+                    sprite.memory, 
+                    'intent', 
+                    sprite.stature
+                )
                 
             return 'break'
     
@@ -294,23 +387,41 @@ def attempt_unflee(
     sprite: munch.Munch,
     sprite_props: munch.Munch,
     sprites: munch.Munch,
-    reorient_function: Callable[[str], str]
-) -> Literal['continue']:
+    reorient_function: Callable[
+        [ str ], 
+        str
+    ]
+) -> Literal[ 'continue' ]:
+
     if 'flee' not in sprite.stature.attention:
         return 'continue'
 
     target_key = sprite.stature.attention.split(' ')[-1]
+
     if target_key in list(sprites.keys()):
         target = sprites.get(target_key)
-        distance = calculator.distance(
-            (target.position.x, target.position.y),
-            (sprite.position.x, sprite.position.y)
+        dist = gauge.distance(
+            (
+                target.position.x, 
+                target.position.y
+            ),
+            (
+                sprite.position.x, 
+                sprite.position.y
+            )
         )
+
     else:
         target = sprite.memory.paths.get(target_key)
-        distance = calculator.distance(
-            (target.x, target.y),
-            (sprite.position.x, sprite.position.y)
+        dist = gauge.distance(
+            (
+                target.x, 
+                target.y
+            ),
+            (
+                sprite.position.x, 
+                sprite.position.y
+            )
         )
 
     log.debug(
@@ -318,16 +429,18 @@ def attempt_unflee(
         'attempt_unflee'
     )
 
-    if distance > sprite_props.radii.aware.flee:
+    if dist > sprite_props.radii.aware.flee:
         log.debug(
             f'{sprite_key} lost sight of {target_key}, resetting stature...',
-            'attempt-unflee'
+            'attempt_unflee'
         )
-
         
         target = list(sprite.memory.paths.keys())[-1]
 
-        new_direction = reorient_function(sprite_key, target)
+        new_direction = reorient_function(
+            sprite_key, 
+            target
+        )
         setattr(
             sprite,
             'intent',
@@ -357,5 +470,13 @@ def remember(
             f'{sprite_key} remembers {sprite.memory.intent.intention} intention',
             'remember'
         )
-        setattr(sprite, 'intent', sprite.memory.intent)
-        setattr(sprite.memory, 'intent', None)
+        setattr(
+            sprite, 
+            'intent', 
+            sprite.memory.intent
+        )
+        setattr(
+            sprite.memory, 
+            'intent', 
+            None
+        )

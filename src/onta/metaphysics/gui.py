@@ -1,13 +1,16 @@
-from collections import OrderedDict
 import functools
 import munch
+from collections \
+    import OrderedDict
+from PIL \
+    import Image
+from PIL.ImageQt \
+    import ImageQt
+from PySide6 \
+    import QtGui
 
-from PIL import Image
-from PIL.ImageQt import ImageQt
-
-import PySide6.QtGui as QtGui
-
-import onta.settings as settings
+from onta.metaphysics \
+    import settings
 
 
 def render_paste(
@@ -36,7 +39,9 @@ def render_composite(
 def convert_to_gui(
     cropped: Image.Image
 ) -> QtGui.QPixmap:
-    return QtGui.QPixmap.fromImage(ImageQt(cropped))
+    return QtGui.QPixmap.fromImage(
+        ImageQt(cropped)
+    )
 
 
 def open_image(
@@ -63,7 +68,10 @@ def replace_alpha(
 
 
 @functools.lru_cache(maxsize=5)
-def channels(dim, channels):
+def channels(
+    dim: tuple, 
+    channels: tuple
+) -> Image.Image:
     return Image.new(
         settings.IMG_MODE, 
         int_tuple(dim), 
@@ -71,8 +79,13 @@ def channels(dim, channels):
     )
 
 
-def int_tuple(tup: tuple) -> tuple:
-    return ( int(tup[0]), int(tup[1]) )
+def int_tuple(
+    tup: tuple
+) -> tuple:
+    return ( 
+        int(tup[0]), 
+        int(tup[1]) 
+    )
 
 
 def order_sprite_dict(
@@ -81,7 +94,8 @@ def order_sprite_dict(
     # doesn't matter, as long as player is last
     ordered_sprites = OrderedDict({
         sprite_key: sprite 
-        for sprite_key, sprite in unordered_sprites.items()
+        for sprite_key, sprite 
+        in unordered_sprites.items()
         if sprite_key != 'hero'
     })
     ordered_sprites.update({
@@ -99,10 +113,17 @@ def order_render_dict(
     if len(unordered_dict) == 0:
         return OrderedDict({})
 
-    render_map = { val['order']: key for key, val in unordered_dict.items() }
+    render_map = { 
+        val['order']: key 
+        for key, val 
+        in unordered_dict.items() 
+    }
+
     ordered_map = list(render_map.keys())
     ordered_map.sort()
+
     for order in ordered_map:
-        ordered_dict[render_map[order]] = unordered_dict[render_map[order]]
+        ordered_dict[render_map[order]] = \
+            unordered_dict[render_map[order]]
     
     return ordered_dict

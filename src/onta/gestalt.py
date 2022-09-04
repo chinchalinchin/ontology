@@ -28,92 +28,102 @@ SWITCH_PLATE_TYPES = [
     'container', 
     'gate' 
 ]
-MATERIAL_BLUE_900 = (
-    20, 
-    67, 
-    142, 
-    175
+DEBUG_TIMER=0.2
+
+log = logger.Logger(
+    'onta.gestalt', 
+    settings.LOG_LEVEL
 )
 
-log = logger.Logger('onta.gestalt', settings.LOG_LEVEL)
+## GUI Handlers
 
-# GUI Handlers
-
-def get_app() -> QtWidgets.QApplication:
+def get_app(
+) -> QtWidgets.QApplication:
     app = QtWidgets.QApplication([])
     return app
 
 
-def quit(app: QtWidgets.QApplication) -> None:
+def quit(
+    app: QtWidgets.QApplication
+) -> None:
     sys.exit(app.exec_())
 
 
 def position(
     view_widget: QtWidgets.QWidget,
     position: str = 'center'
-):
+) -> QtWidgets.QWidget:
     if position == 'center':
         position = QtGui.QScreen.availableGeometry(
-            QtWidgets.QApplication.primaryScreen()).center()
+            QtWidgets.QApplication.primaryScreen()
+        ).center()
     elif position == 'bottom_left':
         position = QtGui.QScreen.availableGeometry(
-            QtWidgets.QApplication.primaryScreen()).bottomLeft()
+            QtWidgets.QApplication.primaryScreen()
+        ).bottomLeft()
 
     geo = view_widget.frameGeometry()
     geo.moveCenter(position)
     view_widget.move(geo.topLeft())
     QtGui.QScreen.availableGeometry(
-        QtWidgets.QApplication.primaryScreen()).bottom()
+        QtWidgets.QApplication.primaryScreen()
+    ).bottom()
     return view_widget
 
 
-# GUI Widgets & Workers
+## GUI Widgets & Workers
 
 
 class Debugger(QtCore.QObject):
     update = QtCore.Signal(bool)
 
     def start(self):
-        threading.Timer(0.2, self._execute).start()
+        threading.Timer(
+            DEBUG_TIMER, 
+            self._execute
+        ).start()
 
     def _execute(self):
-        threading.Timer(0.2, self._execute).start()
+        threading.Timer(
+            DEBUG_TIMER, 
+            self._execute
+        ).start()
         self.update.emit(True)
 
 
 class ScrollLabel(QtWidgets.QScrollArea):
  
-    def __init__(self, *args, **kwargs):
-        QtWidgets.QScrollArea.__init__(self, *args, **kwargs)
+    def __init__(
+        self, 
+        *args, 
+        **kwargs
+    ):
+        QtWidgets.QScrollArea.__init__(
+            self, 
+            *args, 
+            **kwargs
+        )
         self.setWidgetResizable(True)
         content = QtWidgets.QWidget(self)
         self.setWidget(content)
         lay = QtWidgets.QVBoxLayout(content)
         self.label = QtWidgets.QLabel(content)
-        self.label.setAlignment(QtGui.Qt.AlignLeft | QtGui.Qt.AlignTop)
+        self.label.setAlignment(
+            QtGui.Qt.AlignLeft | QtGui.Qt.AlignTop
+        )
         self.label.setWordWrap(True)
         lay.addWidget(self.label)
  
-    def setText(self, text):
+    def setText(
+        self, 
+        text: str
+    ) -> None:
         self.label.setText(text)
 
 
 class Renderer():
     """_summary_
     """
-
-    # TODO: be careful with closures. 
-
-    debug = False
-    debug_worker = None
-    debug_templates = munch.Munch({})
-
-    last_layer = None
-    player_device = None
-    world_frame = None
-    static_cover_frame = munch.Munch({})
-    static_back_frame = munch.Munch({})    
-
 
     def __init__(
         self, 
@@ -128,14 +138,16 @@ class Renderer():
         """
         self.last_layer = game_world.layer
         self.player_device = player_device
-        self.static_cover_frame = {
+        self.static_cover_frame = munch.Munch({
             layer: gui.new_image(game_world.dimensions) 
-            for layer in game_world.layers
-        }
-        self.static_back_frame = {
+            for layer 
+            in game_world.layers
+        })
+        self.static_back_frame = munch.Munch({
             layer: gui.new_image(game_world.dimensions)
-            for layer in game_world.layers
-        }
+            for layer 
+            in game_world.layers
+        })
 
         self._render_tiles(
             game_world, 
@@ -146,6 +158,9 @@ class Renderer():
             data_totality
         )
         self.debug = debug
+        self.debug_templates = munch.Munch({})
+        self.debug_worker = None
+        self.world_frame = None
 
 
     def _render_tiles(
@@ -165,7 +180,10 @@ class Renderer():
 
         for layer in game_world.layers:
             for group_key, group_conf in game_world.get_tilesets(layer).items():
-                log.verbose(f'Rendering {group_key} tiles', '_render_tiles')
+                log.verbose(
+                    f'Rendering {group_key} tiles', 
+                    'Renderer._render_tiles'
+                )
 
                 group_tile = data_totality.get_form_frame('tiles', group_key)
 
@@ -185,7 +203,7 @@ class Renderer():
 
                     log.verbose(
                         f'Rendering at {start} with dimensions {set_dim}', 
-                        '_render_tiles'
+                        'Renderer._render_tiles'
                     )
                     
                     coordinates = formulae.tile_coordinates(
@@ -224,7 +242,10 @@ class Renderer():
         .. note:
             Only _Doors_ are considered static platesets. All other types of plates need to be re-rendered. Therefore, this method will only render _Door_ plates. It makes it a bit awkward in terms of logic, but results in better performance. Otherwise, doors would be re-rendered every cycle in `_render_variable_platesets`.
         """
-        log.debug('Rendering strut and plate sets', '_render_sets')
+        log.debug(
+            'Rendering strut and plate sets', 
+            'Renderer._render_sets'
+        )
     
         for layer in game_world.layers:
             strutsets =  game_world.get_strutsets(layer)
@@ -241,17 +262,21 @@ class Renderer():
             # NOTE: this method only renders static plates. See note in docstring.
             for group_key, group_conf in unordered_groups.items():
                 if group_key in strut_keys or \
-                    (game_world.plate_properties.get(group_key) and \
-                        game_world.plate_properties.get(group_key).type in STATIC_PLATE_TYPES):
+                    (
+                        game_world.plate_properties.get(group_key) and \
+                        game_world.plate_properties.get(group_key).type in STATIC_PLATE_TYPES
+                    ):
                     log.debug(
                         f'Rendering {group_type} {group_key}s', 
-                        '_render_sets'
+                        'Renderer._render_sets'
                     )
 
                     group_type="strut" if group_key in strut_keys else "plate"
 
                     group_frame = data_totality.get_form_frame(
-                        group_type, group_key)
+                        group_type, 
+                        group_key
+                    )
 
                     for set_conf in group_conf.sets:
                         start = gauge.scale(
@@ -264,7 +289,7 @@ class Renderer():
                         )
                         log.verbose(
                             f'Rendering at {start}', 
-                            '_render_sets'
+                            'Renderer._render_sets'
                         )
 
                         if set_conf.get('cover'):
@@ -300,7 +325,10 @@ class Renderer():
         # and anyway, plates need rendered by type.
         #   first pressures and then everything else
         for group_key, group_conf in render_map.items():
-            group_frame = data_totality.get_form_frame('plates', group_key)
+            group_frame = data_totality.get_form_frame(
+                'plates', 
+                group_key
+            )
             group_type = game_world.plate_properties.get(group_key).type
 
 
@@ -320,7 +348,7 @@ class Renderer():
     
             log.infinite(
                 f'Rendering {group_type} {group_key} plates', 
-                '_render_variable_platesets'
+                'Renderer._render_variable_platesets'
             )
 
             # NOTE: convert to immutable tuple of tuples for cython static typing
@@ -330,7 +358,8 @@ class Renderer():
                     set_conf.start.y, 
                     set_conf.start.units
                 )
-                for set_conf in group_conf['sets']
+                for set_conf 
+                in group_conf['sets']
             )
 
             if not typeable_group_conf:
@@ -338,14 +367,14 @@ class Renderer():
 
             # NOTE: pass immutable args to cython for static typing
             coordinates = formulae.plate_coordinates(
-                    typeable_group_conf,
-                    player_dim,
-                    group_dim,
-                    game_world.tile_dimensions,
-                    game_world.dimensions,
-                    self.player_device.dimensions,
-                    crop
-                )
+                typeable_group_conf,
+                player_dim,
+                group_dim,
+                game_world.tile_dimensions,
+                game_world.dimensions,
+                self.player_device.dimensions,
+                crop
+            )
 
             # NOTE: due to player interaction, plate coordinates can be floats.
             #       therefore, cast to ints before passing to PIL.
@@ -353,7 +382,7 @@ class Renderer():
 
                 log.infinite(
                     f'Rendering at ({coord[1]},{coord[2]})', 
-                    '_render_variable_platesets'
+                    'Renderer._render_variable_platesets'
                 )
 
                 if group_type not in SWITCH_PLATE_TYPES:
@@ -362,7 +391,10 @@ class Renderer():
                         group_frame,
                         # NOTE: coord contains index of plate, so cannot pass it in directly
                         gui.int_tuple(
-                            ( coord[1], coord[2] )
+                            ( 
+                                coord[1], 
+                                coord[2] 
+                            )
                         )
                     )
                     continue
@@ -374,7 +406,10 @@ class Renderer():
                         self.world_frame,
                         group_frame.on,
                         gui.int_tuple(
-                            ( coord[1], coord[2] )
+                            ( 
+                                coord[1], 
+                                coord[2] 
+                            )
                         )
                     )
                     continue
@@ -383,7 +418,10 @@ class Renderer():
                     self.world_frame,
                     group_frame.off,
                     gui.int_tuple(
-                        ( coord[1], coord[2] )
+                        ( 
+                            coord[1], 
+                            coord[2] 
+                        )
                     )
                 )
 
@@ -393,6 +431,18 @@ class Renderer():
         layer_key: str, 
         cover: bool = False
     ) -> None:
+        """_summary_
+
+        :param layer_key: _description_
+        :type layer_key: str
+        :param cover: _description_, defaults to False
+        :type cover: bool, optional
+        :return: _description_
+        :rtype: _type_
+
+        .. note::
+            - This method will create a new `self.world_frame` when `cover == False`, i.e. it will overwrite the current world frame with a blank image when it is redrawing the background.
+        """
 
         if cover:
             return gui.render_composite(
@@ -510,18 +560,37 @@ class Renderer():
                 )
 
             # EQUIPMENT RENDERING
-            if any(slot for slot in sprite.slots.values()):
-                enabled = [ slot for slot in sprite.slots.values() if slot ]
+            if any(
+                slot 
+                for slot 
+                in sprite.slots.values()
+            ):
+                enabled = [ 
+                    slot 
+                    for slot 
+                    in sprite.slots.values() 
+                    if slot 
+                ]
 
                 for enabled_equipment in enabled:
                     animate_statures = \
                         game_world.apparel_properties.equipment.get(enabled_equipment).animate_statures
 
 
-                    if (isinstance(animate_statures, str) and \
-                            animate_statures == 'all') or \
-                        (isinstance(animate_statures, list) and \
-                            sprite_stature_key in animate_statures):
+                    if (
+                            isinstance(
+                                animate_statures, 
+                                str
+                            ) 
+                            and animate_statures == 'all'
+                        ) or \
+                        (   
+                            isinstance(
+                                animate_statures, 
+                                list
+                            ) 
+                            and sprite_stature_key in animate_statures
+                        ):
 
                         equipment_frame = data_totality.get_apparel_frame(
                             'equipment',
@@ -638,10 +707,13 @@ class Renderer():
         for i, render_point in enumerate(rendering_points):
             if i == 0:
                 render_frame = cap_frames.get(cap_dir[0])
+
             elif i == len(rendering_points) -1:
                 render_frame = cap_frames.get(cap_dir[1])
+
             elif i % 2 == 0:
                 render_frame = buffer_frames.get(buffer_dir)
+
             else:
                 render_key = next(render_order)
                 # map from slot name -> slot state -> slot frame
@@ -700,7 +772,8 @@ class Renderer():
         })
 
         for i, render_point in enumerate(avatar_rendering_points):
-            if not render_point or not avatar_frame_map[str(i)]:
+            if not render_point or \
+                not avatar_frame_map[str(i)]:
                 continue
 
             if i < avatar_set_map.armory and \
@@ -732,29 +805,32 @@ class Renderer():
 
     def _render_intrinsic_quales(
         self, 
-        menu: intrinsic.IntrinsicQuale, 
+        in_quale: intrinsic.IntrinsicQuale, 
         data_totality: datum.Totality
     ) -> None:
 
-        gui.replace_alpha(self.world_frame, menu.alpha)
+        gui.replace_alpha(
+            self.world_frame, 
+            in_quale.alpha
+        )
         overlay = gui.channels(
             self.player_device.dimensions, 
-            menu.theme.overlay
+            in_quale.theme.overlay
         )
 
         self.world_frame.paste(
             overlay, 
-            ( 0,0 ), 
+            ( 0, 0 ), 
             overlay
         )
 
-        idea_render_pts = menu.rendering_points('idea')
+        idea_render_pts = in_quale.rendering_points('idea')
         
-        idea_frame_map, idea_piece_map = menu.idea_maps()
+        idea_frame_map, idea_piece_map = in_quale.idea_maps()
 
         for i, render_point in enumerate(idea_render_pts):
             render_frame = data_totality.get_piecewise_qualia_frame(
-                menu.media_size, 
+                in_quale.media_size, 
                 'idea',
                 idea_frame_map[i],
                 idea_piece_map[i]
@@ -765,8 +841,8 @@ class Renderer():
                 gui.int_tuple(render_point)
             )
 
-        if menu.active_thought:
-            activated_thought = menu.get_active_thought()
+        if in_quale.active_thought:
+            activated_thought = in_quale.get_active_thought()
 
             if isinstance(activated_thought, bauble.BaubleThought):
                 baub_render_pts, avtr_render_pts = \
@@ -779,7 +855,7 @@ class Renderer():
                         continue
 
                     render_frame = data_totality.get_piecewise_qualia_frame(
-                        menu.media_size,
+                        in_quale.media_size,
                         'bauble',
                         baub_frame_map[i],
                         baub_piece_map[i]
@@ -830,9 +906,15 @@ class Renderer():
                     qradio
         """
         debug_layout = view_widget.layout().itemAt(1).widget().layout()
-        debug_layout.itemAt(0).widget().setText(self.debug_templates.player_state)
-        debug_layout.itemAt(1).widget().setText(self.debug_templates.control_state)
-        debug_layout.itemAt(2).widget().setText(self.debug_templates.world_state)
+        debug_layout.itemAt(0).widget().setText(
+            self.debug_templates.player_state
+        )
+        debug_layout.itemAt(1).widget().setText(
+            self.debug_templates.control_state
+        )
+        debug_layout.itemAt(2).widget().setText(
+            self.debug_templates.world_state
+        )
 
 
     def render(
@@ -910,7 +992,7 @@ class Renderer():
                 data_totality
             )
 
-        if display.hud_activated:
+        if display.quale_activated:
             self._render_extrinsic_quales(
                 display, 
                 data_totality
@@ -937,9 +1019,15 @@ class Renderer():
         if self.debug:
             debug_frame = QtWidgets.QWidget(view_widget)
             debug_layout = QtWidgets.QHBoxLayout()
-            debug_layout.addWidget(ScrollLabel())
-            debug_layout.addWidget(ScrollLabel())
-            debug_layout.addWidget(ScrollLabel())
+            debug_layout.addWidget(
+                ScrollLabel()
+            )
+            debug_layout.addWidget(
+                ScrollLabel()
+            )
+            debug_layout.addWidget(
+                ScrollLabel()
+            )
             debug_frame.setLayout(debug_layout)
             debug_frame.setSizePolicy(
                 QtWidgets.QSizePolicy(

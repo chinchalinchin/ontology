@@ -4,13 +4,18 @@ import os
 
 # TODO: will need to wrap this in an object and allow user to base in data_dir if I want ontologies to be completely passed in through command line
 
-APP_DIR = os.path.dirname(os.path.abspath(__file__))
+APP_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
 """Directory containing the root module of the project"""
 
 SRC_DIR = os.path.dirname(APP_DIR)
 """Directory containing the project source"""
 
-DEFAULT_DIR = os.path.join(SRC_DIR, 'data')
+DEFAULT_DIR = os.path.join(
+    SRC_DIR, 
+    'data'
+)
 """Directory containg application data"""
 
 CONF_PATH = [ 
@@ -102,10 +107,20 @@ Allowable values: `NONE`, `INFO`, `DEBUG`, `VERBOSE`, `INFINITE`, `MAXIMUM_OVERD
 
 # GUI Configuration
 
-SCREEN_DEFAULT_WIDTH = int(os.environ.setdefault('SCREEN_WIDTH', '800'))
+SCREEN_DEFAULT_WIDTH = int(
+    os.environ.setdefault(
+        'SCREEN_WIDTH', 
+        '800'
+    )
+)
 """Default GUI width"""
 
-SCREEN_DEFAULT_HEIGHT = int(os.environ.setdefault('SCREEN_HEIGHT', '400'))
+SCREEN_DEFAULT_HEIGHT = int(
+    os.environ.setdefault(
+        'SCREEN_HEIGHT', 
+        '400'
+    )
+)
 """Default GUI height"""
 
 # Rendering Configuration
@@ -117,7 +132,12 @@ Rendering mode for application images
 see [PIL docs](https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes) for more information.
 """
 
-IMG_BLANK = (255, 255, 255, 0)
+IMG_BLANK = (
+    255, 
+    255, 
+    255, 
+    0
+)
 """
 Color channels for a blank screen for the given rendering mode. If `IMG_MODE == 'RGB'`, then this should be set to a 3-tuple such as (255,255,255). If `IMG_MODE == 'RGBA'`, then this should be set to (255, 255, 255, 1). And so on for a given image mode.
 
