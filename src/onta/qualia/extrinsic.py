@@ -68,8 +68,10 @@ class ExtrinsicQuale():
                 equip.size.w, 
                 equip.size.h
             )
-            for equip_key, equip in avatar_configuration.armory.items()
-            if equip is not None and equip.get('size') is not None
+            for equip_key, equip 
+            in avatar_configuration.armory.items()
+            if equip is not None 
+            and equip.get('size') is not None
         )
 
 
@@ -167,9 +169,9 @@ class ExtrinsicQuale():
 
         self.quale_conf = configure.extrinsic
         self.styles = configure.styles
-        self.sizes = configure.sizes
+        self.sizes = configure.apriori.sizes
         self.breakpoints = apriori.format_breakpoints(
-            configure.breakpoints
+            configure.apriori.breakpoints
         )
         self.properties = configure.properties
 

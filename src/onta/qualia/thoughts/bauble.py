@@ -1,19 +1,36 @@
 
-from typing import Union
 import munch
-from onta import world
+from typing \
+    import Union
 
-import onta.settings as settings
-import onta.loader.state as state
-import onta.util.logger as logger 
+from onta \
+    import world
+from onta.actuality \
+    import state
+from onta.concretion.facticity \
+    import formulae
+from onta.metaphysics \
+    import settings, logger
 
-import onta.engine.facticity.formulae as formulae
+log = logger.Logger(
+    'onta.qualia.thoughts.bauble', 
+    settings.LOG_LEVEL
+)
 
-log = logger.Logger('onta.engine.qualia.thoughts.bauble', settings.LOG_LEVEL)
-
-ARMORY_BAUBLES = [ 'slash', 'shoot', 'cast', 'thrust' ]
-EQUIPMENT_BAUBLES = [ 'armor', 'shield' ]
-INVENTORY_BAUBLES = [ 'belt', 'bag' ]
+ARMORY_BAUBLES = [ 
+    'slash', 
+    'shoot', 
+    'cast', 
+    'thrust' 
+]
+EQUIPMENT_BAUBLES = [ 
+    'armor', 
+    'shield' 
+]
+INVENTORY_BAUBLES = [ 
+    'belt', 
+    'bag' 
+]
 
 class BaubleThought():
 
@@ -101,7 +118,8 @@ class BaubleThought():
 
             component_avatars = [
                 arm.component 
-                for arm in iter_set
+                for arm 
+                in iter_set
                 if arm.label == component.label
             ]
 

@@ -1,10 +1,10 @@
 
-import os
-
 import munch
+import os
 import yaml
 
-import onta.settings as settings
+from onta.metaphysics \
+    import settings
 
 class State():
 
@@ -15,7 +15,10 @@ class State():
         self, 
         data_dir = settings.DEFAULT_DIR
     ) -> None:
-        self.state_dir = os.path.join(data_dir, *settings.STATE_PATH)
+        self.state_dir = os.path.join(
+            data_dir, 
+            *settings.STATE_PATH
+        )
 
 
     def get_state(
@@ -23,7 +26,11 @@ class State():
         state_type: str
     ) -> munch.Munch:
         if self.state_conf is None:
-            state_path = os.path.join(self.state_dir, f'{state_type}.yaml')
+            state_path = os.path.join(
+                self.state_dir, 
+                f'{state_type}.yaml'
+            )
+            
             with open(state_path, 'r') as infile:
                 self.state_conf = munch.munchify(
                     yaml.safe_load(infile)

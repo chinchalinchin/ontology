@@ -27,8 +27,12 @@ def generate_collision_map(
     """
     collision_map = munch.Munch({ 
         npc_1_key: munch.Munch({
-            npc_2_key: False for npc_2_key in npcs.keys()
-        }) for npc_1_key in npcs.keys()
+            npc_2_key: False 
+            for npc_2_key 
+            in npcs.keys()
+        }) 
+        for npc_1_key 
+        in npcs.keys()
     })
     return collision_map
 

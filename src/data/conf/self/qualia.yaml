@@ -1,20 +1,18 @@
 # a priori
-sizes:
-  - small
-  - large
-
-breakpoints:
-  - w: 800
-    h: 600
-
-transparency: 127
-
-theme:
-  overlay:
-    r: 20
-    g: 67
-    b: 142
-    a: 175
+apriori:
+  sizes:
+    - small
+    - large
+  breakpoints:
+    - w: 800
+      h: 600
+  transparency: 127
+  theme:
+    overlay:
+      r: 20
+      g: 67
+      b: 142
+      a: 175
 
 styles:
   extrinsic:
@@ -168,7 +166,6 @@ properties:
       map: 
         - component: display
           label: map
-
 
 extrinsic:
   small:

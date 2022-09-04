@@ -4,9 +4,13 @@ import os
 
 # TODO: will need to wrap this in an object and allow user to base in data_dir if I want ontologies to be completely passed in through command line
 
-APP_DIR = os.path.dirname(
-    os.path.abspath(__file__)
-)
+APP_DIR = \
+    os.path.dirname(
+        os.path.dirname(
+            os.path.abspath(__file__)
+        )
+    )
+
 """Directory containing the root module of the project"""
 
 SRC_DIR = os.path.dirname(APP_DIR)

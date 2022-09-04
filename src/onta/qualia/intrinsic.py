@@ -91,16 +91,16 @@ class IntrinsicQuale():
         configure = config.load_qualia_configuration()
 
         self.quale_conf = configure.intrinsic
-        self.sizes = configure.sizes
+        self.sizes = configure.aprior.sizes
         self.styles = configure.styles
         self.properties = configure.properties.intrinsic
-        self.alpha = configure.transparency
+        self.alpha = configure.apriori.transparency
 
         self.theme = apriori.construct_themes(
-            configure.theme
+            configure.apriori.theme
         )
         self.breakpoints = apriori.format_breakpoints(
-            configure.breakpoints
+            configure.apriori.breakpoints
         )
 
 

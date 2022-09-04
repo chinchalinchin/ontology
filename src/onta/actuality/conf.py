@@ -1,41 +1,51 @@
 import os
 import yaml
 import munch
-import onta.settings as settings
+
+from onta.metaphysics \
+    import settings
 
 class Conf():
     """
-    Configuration is wrapped in the `onta.loader.conf.Conf` class so a custom _ontology_ at a different location than the default location can be passed into the engine. This object can be a constructed with a path to that _ontology_ to override the preloaded configuration sets.
+    Configuration is wrapped in the `onta.actuality.conf.Conf` class so a custom _ontology_ at a different location than the default location can be passed into the engine. This object can be a constructed with a path to that _ontology_ to override the preloaded configuration sets.
     """
 
-    conf_dir = None
-    sprite_size = munch.Munch({})
-    sprite_stature_conf = munch.Munch({})
-    sprite_property_conf = munch.Munch({})
-    sprite_sheet_conf = munch.Munch({})
-    strut_property_conf = munch.Munch({})
-    strut_sheet_conf = munch.Munch({})
-    plate_property_conf = munch.Munch({})
-    plate_sheet_conf = munch.Munch({})
-    tile_sheet_conf = munch.Munch({})
-    projectile_property_conf = munch.Munch({})
-    projectile_img_conf = munch.Munch({})
-    control_conf = munch.Munch({})
-    sense_conf = munch.Munch({})
-    avatar_conf = munch.Munch({})
-    expression_conf = munch.Munch({})
-    composite_conf = munch.Munch({})
-    apparel_conf = munch.Munch({})
 
     def __init__(
         self, 
         data_dir = settings.DEFAULT_DIR
     ) -> None:
         """
-        Initializes a `onta.loader.conf.Conf` object with the user provided _ontology_ path. If not path is provided, the path defaults to `onta.settings.DEFAULT_DIR`, i.e. the installation's tutorial _ontology_.
+        Initializes a `onta.actuality.conf.Conf` object with the user provided _ontology_ path. If not path is provided, the path defaults to `onta.metaphysics.settings.DEFAULT_DIR`, i.e. the installation's tutorial _ontology_.
         """
-        self.conf_dir = os.path.join(data_dir, *settings.CONF_PATH)
+        self.conf_dir = os.path.join(
+            data_dir, 
+            *settings.CONF_PATH
+        )
+        self._init_fields()
     
+
+    def _init_fields(
+        self
+    ) -> None:
+        self.sprite_size = munch.Munch({})
+        self.sprite_stature_conf = munch.Munch({})
+        self.sprite_property_conf = munch.Munch({})
+        self.sprite_sheet_conf = munch.Munch({})
+        self.strut_property_conf = munch.Munch({})
+        self.strut_sheet_conf = munch.Munch({})
+        self.plate_property_conf = munch.Munch({})
+        self.plate_sheet_conf = munch.Munch({})
+        self.tile_sheet_conf = munch.Munch({})
+        self.projectile_property_conf = munch.Munch({})
+        self.projectile_img_conf = munch.Munch({})
+        self.control_conf = munch.Munch({})
+        self.sense_conf = munch.Munch({})
+        self.avatar_conf = munch.Munch({})
+        self.expression_conf = munch.Munch({})
+        self.composite_conf = munch.Munch({})
+        self.apparel_conf = munch.Munch({})
+
     def __configuration(
         self, 
         type_key: str, 
@@ -50,7 +60,11 @@ class Conf():
         :return: Configuration formatted into dictionary.
         :rtype: munch.Munch
         """
-        conf_path = os.path.join(self.conf_dir, group_key, f'{type_key}.yaml')
+        conf_path = os.path.join(
+            self.conf_dir, 
+            group_key, 
+            f'{type_key}.yaml'
+        )
         with open(conf_path, 'r') as infile:
             conf = munch.munchify(
                 yaml.safe_load(infile)
@@ -61,7 +75,7 @@ class Conf():
         self, 
         type_key: str
     ) -> munch.Munch:
-        """Returns a specific ty
+        """Returns a specific type of configuration from the _data/conf/self_ directory.
 
         :param type_key: Key for the type of configuration being retrieved.
         :type type_key: str
@@ -214,7 +228,9 @@ class Conf():
                     self.projectile_img_conf,
                     project_key,
                     munch.munchify({
-                        key: value for key, value in projectile_conf.items()
+                        key: value 
+                        for key, value 
+                        in projectile_conf.items()
                         if key != 'properties'
                     })
                 )
@@ -291,7 +307,10 @@ class Conf():
             self.sprite_stature_conf, 
             self.sprite_property_conf, 
             self.sprite_sheet_conf, 
-            ( self.sprite_size.w, self.sprite_size.h)
+            ( 
+                self.sprite_size.w, 
+                self.sprite_size.h
+            )
         )
 
     
@@ -372,7 +391,9 @@ class Conf():
                     self.strut_sheet_conf,
                     strut_key,
                     munch.munchify({
-                        key: val for key, val in strut.items()
+                        key: val 
+                        for key, val 
+                        in strut.items()
                         if key != 'properties'
                     })
                 )
@@ -414,7 +435,9 @@ class Conf():
                     self.plate_sheet_conf,
                     plate_key, 
                     munch.munchify({
-                        key: val for key, val in plate_conf.items()
+                        key: val 
+                        for key, val 
+                        in plate_conf.items()
                         if key != 'properties'
                     })
                 )

@@ -1,18 +1,23 @@
-import os
 import functools
-from typing import Union
-
-from PIL import Image
 import munch
+import os
+from typing \
+    import Union
+from PIL \
+    import Image
 
-import onta.settings as settings
-import onta.loader.conf as conf
-import onta.engine.composition as composition
-import onta.util.logger as logger
-import onta.util.gui as gui
+from onta.actuality \
+    import conf
+from onta.concretion \
+    import composition
+from onta.metaphysics \
+    import settings, logger, gui
 
 
-log = logger.Logger('onta.repo', settings.LOG_LEVEL)
+log = logger.Logger(
+    'onta.actuality.datum', 
+    settings.LOG_LEVEL
+)
 
 # TODO: too many hardcoded constants. either a general typing.yaml or else each .yaml needs to specify types somehow. also, it should be possible to pull the names of the top level types from the directory itself, i.e. the name of the YAML files. the lower level types should be parseable from the contents of the yaml....
 
@@ -39,14 +44,14 @@ DIALECTIC_TYPES = [
 ]
 
 ## SECOND LEVEL TYPES?
-extrinsic_TYPE = [
+EXTRINSIC_TYPES = [
     'pack',
     'bag',
     'wallet'
     'slot',
     'mirror'
 ]
-intrinsic_TYPES = [
+INTRINSIC_TYPES = [
     'idea',
     'concept',
     'conception',
@@ -108,12 +113,32 @@ def adjust_directional_rotation(
     # I am convinced there is an easier way to calculate this using arcosine and arcsine,
     # but i don't feel like thinking about domains and ranges right now...
     if direction == 'left':
-        return ( 90, 0, 180, 270 )
+        return ( 
+            90, 
+            0, 
+            180, 
+            270 
+        )
     elif direction == 'right':
-        return ( 270, 180, 0, 90 )
+        return ( 
+            270, 
+            180, 
+            0, 
+            90 
+        )
     elif direction == 'up':
-        return ( 0, 90,  270, 180 )
-    return ( 180, 270, 90, 0 )
+        return ( 
+            0, 
+            90,  
+            270, 
+            180 
+        )
+    return ( 
+        180, 
+        270, 
+        90, 
+        0 
+    )
 
 
 @functools.lru_cache(maxsize=2)
@@ -121,8 +146,14 @@ def adjust_alignment_rotation(
     direction: str
 ) -> tuple:
     if direction == 'vertical':
-        return ( 0, 90 )
-    return ( 90, 0 )
+        return ( 
+            0, 
+            90 
+        )
+    return ( 
+        90, 
+        0 
+    )
 
 class Totality():
     # TODO: 
@@ -136,7 +167,10 @@ class Totality():
     @staticmethod
     def map_form_path(
         asset_type
-    ) -> Union[list, None]:
+    ) -> Union[
+        list, 
+        None
+    ]:
         if asset_type == 'tiles':
             return settings.TILE_PATH
         if asset_type == 'struts':
@@ -148,7 +182,10 @@ class Totality():
     @staticmethod
     def map_dialectic_path(
         asset_type
-    ) -> Union[list, None]:
+    ) -> Union[
+        list, 
+        None
+    ]:
         if asset_type == 'projectiles':
             return settings.PROJECTILE_PATH
         if asset_type == 'expressions':
@@ -238,7 +275,7 @@ class Totality():
         for asset_type in FORM_TYPES:
             log.debug(
                 f'Initializing {asset_type} assets...',  
-                'Repo._init_form_assets'
+                'Totality._init_form_assets'
             )
 
             setattr(
@@ -256,7 +293,7 @@ class Totality():
             for asset_key, asset_conf in assets_conf.items():
                 log.verbose(
                     f'Initializing {asset_key}...',
-                    'Repo._init_form_assets'
+                    'Totality._init_form_assets'
                 )
                 if asset_type != 'tiles':
                     # NOTE: ...but all other form sizes are dependent on type
@@ -365,7 +402,7 @@ class Totality():
         for asset_type in DIALECTIC_TYPES:
             log.debug(
                 f'Initializing {asset_type} assets...',
-                'Repo._init_dialectic_assets'
+                'Totality._init_dialectic_assets'
             )
 
             setattr(
@@ -379,20 +416,11 @@ class Totality():
             for asset_key, asset_conf in assets_conf.items():
                 log.verbose(
                     f'Initializing {asset_key} assets...',
-                    'Repo._init_dialectic_assets'
+                    'Totality._init_dialectic_assets'
                 )
 
                 if not asset_conf or not asset_conf.get('path'):
                     continue
-                
-                x,y = ( 
-                    asset_conf.position.x, 
-                    asset_conf.position.y 
-                )
-                w, h = ( 
-                    asset_conf.size.w, 
-                    asset_conf.size.h 
-                )
 
                 dialectic_type_path = self.map_dialectic_path(asset_type)
                 if not dialectic_type_path:
@@ -407,7 +435,12 @@ class Totality():
                 )
 
                 buffer = buffer.crop(
-                    ( x, y, w + x, h + y )
+                    ( 
+                        asset_conf.position.x, 
+                        asset_conf.position.y, 
+                        asset_conf.size.w + asset_conf.position.x, 
+                        asset_conf.size.h + asset_conf.position.y
+                    )
                 )
 
                 if asset_type == 'projectiles':
@@ -416,10 +449,22 @@ class Totality():
                         self.dialectics.get(asset_type),
                         asset_key,
                         munch.Munch({
-                            'down': buffer.rotate(adjust[0], expand=True),
-                            'left': buffer.rotate(adjust[1], expand=True),
-                            'right': buffer.rotate(adjust[2], expand=True),
-                            'up': buffer.rotate(adjust[3], expand=True),
+                            'down': buffer.rotate(
+                                adjust[0], 
+                                expand=True
+                            ),
+                            'left': buffer.rotate(
+                                adjust[1], 
+                                expand=True
+                            ),
+                            'right': buffer.rotate(
+                                adjust[2], 
+                                expand=True
+                            ),
+                            'up': buffer.rotate(
+                                adjust[3], 
+                                expand=True
+                            ),
                         })
                     )
                     continue
@@ -446,38 +491,56 @@ class Totality():
         .. note::
             A _Slot_ is defined in a single direction, but used in multiple directions. When styles are applied the engine will need to be aware which direction the definition is in, so it can rotate the _Slot_ component to its appropriate position based on the declared style. In other words, _Slot_\s are a pain.
         """
-        log.debug(f'Initializing avatar assets...', '_init_qualia_assets')
+        log.debug(
+            f'Initializing avatar assets...', 
+            'Totality._init_qualia_assets'
+        )
 
-        for asset_type in SELF_TYPES:
-            assets_conf = config.load_self_configuration(asset_type)
-            setattr(self.selves, asset_type, munch.Munch({}))
+        # TODO: 
 
-            for asset_key, asset_conf in assets_conf.items():
-                if not asset_conf or not asset_conf.get('path'):
-                    continue
+        ##  need to make sure to peel off appriorate data structures...
 
-                x,y = ( 
-                    asset_conf.position.x, 
-                    asset_conf.position.y 
-                )
-                w,h = ( 
-                    asset_conf.size.w, 
-                    asset_conf.size.h 
-                )
-                buffer = gui.open_image(
-                    os.path.join(
-                        ontology_path,
-                        *settings.AVATAR_PATH,
-                        asset_conf.path
-                    )
-                )
-                setattr(
-                    self.selves.get(asset_type),
-                    asset_key,
-                    buffer.crop(
-                        ( x, y, w + x, h + y )
-                    )
-                )
+        # for asset_type in SELF_TYPES:
+        #     assets_conf = config.load_self_configuration(asset_type)
+        #     if asset_type == 'qualia':
+        #         assets_conf = munch.Munch({
+        #             asset_key: asset_conf
+        #             for asset_key, asset_conf
+        #             in assets_conf.items()
+        #             if asset_key not in ['']
+        #         })
+
+        #     setattr(
+        #         self.selves, 
+        #         asset_type, 
+        #         munch.Munch({})
+        #     )
+
+        #     for asset_key, asset_conf in assets_conf.items():
+        #         if not asset_conf or not asset_conf.get('path'):
+        #             continue
+
+        #         buffer = gui.open_image(
+        #             os.path.join(
+        #                 ontology_path,
+        #                 *settings.AVATAR_PATH,
+        #                 asset_conf.path
+        #             )
+        #         )
+        #         setattr(
+        #             self.selves.get(asset_type),
+        #             asset_key,
+        #             buffer.crop(
+        #                 ( 
+        #                     asset_conf.position.x,
+        #                     asset_conf.position.y, 
+        #                     asset_conf.size.w + asset_conf.position.x, 
+        #                     asset_conf.size.h + asset_conf.position.y
+        #                 )
+        #             )
+        #         )
+
+
 
 
 
@@ -486,20 +549,16 @@ class Totality():
         avatar_conf = config.load_avatar_configuration()
 
         for avatarset_key, avatarset_conf in avatar_conf.items():
-            setattr(self.avatars, avatarset_key, munch.Munch({}))
+            setattr(
+                self.avatars, 
+                avatarset_key, 
+                munch.Munch({})
+            )
 
             for avatar_key, avatar in avatarset_conf.items():
                 if not avatar or not avatar.get('path'):
                     continue
 
-                x,y = ( 
-                    avatar.position.x, 
-                    avatar.position.y 
-                )
-                w,h = ( 
-                    avatar.size.w, 
-                    avatar.size.h 
-                )
                 buffer = gui.open_image(
                     os.path.join(
                         ontology_path,
@@ -510,37 +569,63 @@ class Totality():
                 setattr(
                     self.avatars.get(avatarset_key),
                     avatar_key,
-                    buffer.crop(( x, y, w + x, h + y ))
+                    buffer.crop(
+                        ( 
+                            avatar.position.x, 
+                            avatar.position.y , 
+                            avatar.size.w + avatar.position.x, 
+                            avatar.size.h + avatar.position.y 
+                        )
+                    )
                 )
 
-        log.debug(f'Initializing qualia assets...', '_init_qualia_assets')
+        log.debug(
+            f'Initializing qualia assets...', 
+            '_init_qualia_assets'
+        )
 
         interface_conf = config.load_qualia_configuration()
 
-        for size in interface_conf.sizes:
+        for size in interface_conf.apriori.sizes:
 
             if not self.slots.get(size):
-                setattr(self.slots, size, munch.Munch({}))
+                setattr(
+                    self.slots, 
+                    size, 
+                    munch.Munch({})
+                )
+
             if not self.mirrors.get(size):
-                setattr(self.mirrors, size, munch.Munch({}))
+                setattr(
+                    self.mirrors, 
+                    size, 
+                    munch.Munch({})
+                )
+
             if not self.packs.get(size):
-                setattr(self.packs, size, munch.Munch({}))
+                setattr(
+                    self.packs, 
+                    size, 
+                    munch.Munch({})
+                )
+
             if not self.qualia.get(size):
-                setattr(self.qualia, size, munch.Munch({}))
+                setattr(
+                    self.qualia, 
+                    size, 
+                    munch.Munch({})
+                )
 
 
             ## STYLED INITIALIZATION
             for set_type in STYLED_QUALIA_TYPES:
                 if set_type == 'slot':
-                    iter_set = interface_conf.extrinsic.get(size).slots
+                    iter_set = interface_conf.extrinsic.get(size).slot
                     save_set = self.slots
 
                 for set_key, set_conf in iter_set.items():
                     if not set_conf or not set_conf.get('path'):
                         continue
-
-                    w, h = set_conf.size.w, set_conf.size.h   
-                    x, y = set_conf.position.x, set_conf.position.y
 
                     buffer = gui.open_image(
                         os.path.join(
@@ -555,7 +640,14 @@ class Totality():
                         '_init_sense_assets'
                     )
 
-                    buffer = buffer.crop(( x, y, w + x, h + y ))
+                    buffer = buffer.crop(
+                        ( 
+                            set_conf.position.x, 
+                            set_conf.position.y, 
+                            set_conf.size.w + set_conf.position.x, 
+                            set_conf.size.h + set_conf.position.y 
+                        )
+                    )
 
                     if set_key in DIRECTIONAL_PIECE_TYPES:
                         adjust = adjust_directional_rotation(set_conf.definition)
@@ -563,10 +655,22 @@ class Totality():
                             save_set.get(size),
                             set_key,
                             munch.Munch({
-                                'down': buffer.rotate(adjust[0], expand=True),
-                                'left': buffer.rotate(adjust[1], expand=True),
-                                'right': buffer.rotate(adjust[2], expand=True),
-                                'up': buffer.rotate(adjust[3], expand=True),
+                                'down': buffer.rotate(
+                                    adjust[0], 
+                                    expand=True
+                                ),
+                                'left': buffer.rotate(
+                                    adjust[1], 
+                                    expand=True
+                                ),
+                                'right': buffer.rotate(
+                                    adjust[2], 
+                                    expand=True
+                                ),
+                                'up': buffer.rotate(
+                                    adjust[3], 
+                                    expand=True
+                                ),
                             })
                         )
                         continue
@@ -576,12 +680,22 @@ class Totality():
                             save_set.get(size),
                             set_key,
                             munch.Munch({
-                                'vertical': buffer.rotate(adjust[0], expand=True),
-                                'horizontal': buffer.rotate(adjust[1], expand=True)
+                                'vertical': buffer.rotate(
+                                    adjust[0], 
+                                    expand=True
+                                ),
+                                'horizontal': buffer.rotate(
+                                    adjust[1], 
+                                    expand=True
+                                )
                             })
                         )
                         continue
-                    setattr(self.slots.get(size), set_key, buffer)
+                    setattr(
+                        self.slots.get(size), 
+                        set_key, 
+                        buffer
+                    )
 
             # TODO: mirrors aren't piecewise...
 
@@ -625,9 +739,7 @@ class Totality():
                     for component_key, component in set_conf.items():
                         if not component.get('path'):
                             continue
-
-                        x, y = component.position.x, component.position.y
-                        w, h = component.size.w, component.size.h
+                        
                         
                         buffer = gui.open_image(
                             os.path.join(
@@ -645,13 +757,26 @@ class Totality():
                             setattr(
                                 save_set.get(size).get(set_type).get(set_key),
                                 component_key,
-                                buffer.crop(( x, y, w + x, h + y))
+                                buffer.crop(
+                                    ( 
+                                        component.position.x, 
+                                        component.position.y, 
+                                        component.size.w + component.position.x, 
+                                        component.size.h + component.position.y)
+                                    )
                             )
                         else: # HUD qualia ('mirror', 'pack')
                             setattr(
                                 save_set.get(size).get(set_key),
                                 component_key,
-                                buffer.crop(( x, y, w + x, h + y))
+                                buffer.crop(
+                                    ( 
+                                        component.position.x, 
+                                        component.position.y, 
+                                        component.size.w + component.position.x, 
+                                        component.size.h + component.position.y
+                                    )
+                                )
                             )
             
             ## SIMPLE DEFINITIONS
@@ -664,9 +789,6 @@ class Totality():
 
                 if not simple_set.get('path'):
                     continue
-            
-                x, y = simple_set.position.x, simple_set.position.y
-                w, h = simple_set.size.w, simple_set.size.h
 
                 buffer = gui.open_image(
                     os.path.join(
@@ -681,7 +803,14 @@ class Totality():
                     '_init_sense_assets'
                 )
 
-                buffer = buffer.crop(( x, y, w + x, h + y ))
+                buffer = buffer.crop(
+                    ( 
+                        simple_set.position.x,
+                        simple_set.position.y,
+                        simple_set.size.w + simple_set.position.x, 
+                        simple_set.size.h + simple_set.position.y
+                    )
+                )
 
                 # simple qualia need to be stored and retrieved dirrecently if doing it this way.
 
@@ -695,7 +824,7 @@ class Totality():
         ## BASE AND ACCENT INITIALIZATION
         log.debug(
             'Initializing base spritesheets...', 
-            'Repo._init_entity_assets'
+            'Totality._init_entity_assets'
         )
         stature_conf, _, sheets_conf, sprite_dim = \
             config.load_sprite_configuration()
@@ -712,7 +841,7 @@ class Totality():
         for sprite_key, sheet_conf in sheets_conf.items():
             log.verbose(
                 f'Initializing {sprite_key} base sheet...',
-                'Repo._init_entity_assets'
+                'Totality._init_entity_assets'
             )
 
             setattr(
@@ -739,7 +868,7 @@ class Totality():
             if sheet_conf.get('accents'):
                 log.verbose(
                     f'Initializing {sprite_key} accent sheets...',
-                    'Repo._init_entity_assets'
+                    'Totality._init_entity_assets'
                 )
 
                 for sheet in sheet_conf.accents:
@@ -767,15 +896,13 @@ class Totality():
                     stature_key,
                     []
                 )
-                start_y = stature.row * sprite_dim[1]
 
                 for i in range(stature.frames):
-                    start_x = i*sprite_dim[0]
                     crop_box = (
-                        start_x, 
-                        start_y, 
-                        start_x + sprite_dim[0], 
-                        start_y + sprite_dim[1]
+                        i * sprite_dim[0], 
+                        stature.row * sprite_dim[1], 
+                        ( i + 1 ) * sprite_dim[0] , 
+                        ( stature.row + 1 ) * sprite_dim[1]
                     )
 
                     sprite_base_frame = base_img.crop(crop_box)
@@ -787,7 +914,11 @@ class Totality():
                     sprite_accent_frame = gui.new_image(sprite_dim)
 
                     for sheet in accent_crop_sheets:
-                        sprite_accent_frame.paste(sheet, ( 0,0 ), sheet)
+                        sprite_accent_frame.paste(
+                            sheet, 
+                            ( 0,0 ), 
+                            sheet
+                        )
 
                     self.entities.sprites.base.get(sprite_key).get(stature_key).append(
                         sprite_base_frame
@@ -804,18 +935,26 @@ class Totality():
         ## APPAREL INITIALIZATION
         log.debug(
             'Initializing apparel sheets...',
-            'Repo._init_entity_assets'
+            'Totality._init_entity_assets'
         )
         apparel_conf = config.load_apparel_configuration()
-        setattr(self.entities, 'apparel', munch.Munch({}))
+        setattr(
+            self.entities, 
+            'apparel', 
+            munch.Munch({})
+        )
 
         for set_key, set_conf in apparel_conf.items():
-            setattr(self.entities.apparel, set_key, munch.Munch({}))
+            setattr(
+                self.entities.apparel, 
+                set_key, 
+                munch.Munch({})
+            )
 
             for apparel_key, apparel in set_conf.items():
                 log.verbose(
                     f'Initializing {set_key} {apparel_key} apparel...',
-                    'Repo._init_entity_assets'
+                    'Totality._init_entity_assets'
                 )
                 
                 setattr(
@@ -843,33 +982,34 @@ class Totality():
                     animate_statures = apparel.animate_statures
 
                 for equip_stature in animate_statures:
-                    equip_stature_conf = stature_conf.animate_map.get(equip_stature)
-                    equip_stature_row = equip_stature_conf.row
-                    equip_stature_frames = equip_stature_conf.frames
-
-                    start_y = equip_stature_row * sprite_dim[1]
-
                     setattr(
                         self.entities.apparel.get(set_key).get(apparel_key),
                         equip_stature,
                         []
                     )
 
-                    for i in range(equip_stature_frames):
-                        start_x = i*sprite_dim[0]
+                    for i in range(stature_conf.animate_map.get(equip_stature).frames):
                         crop_box = (
-                            start_x, 
-                            start_y, 
-                            start_x + sprite_dim[0], 
-                            start_y + sprite_dim[1]
+                            i * sprite_dim[0], 
+                            stature_conf.animate_map.get(equip_stature).row * sprite_dim[1], 
+                            ( i + 1 ) * sprite_dim[0], 
+                            ( stature_conf.animate_map.get(equip_stature).row + 1 ) * sprite_dim[1]
                         )
                         
-                        crop_sheets = [ sheet.crop(crop_box) for sheet in sheets ]
+                        crop_sheets = [ 
+                            sheet.crop(crop_box) 
+                            for sheet 
+                            in sheets 
+                        ]
                     
                         equip_stature_frame = gui.new_image(sprite_dim)
 
                         for sheet in crop_sheets:
-                            equip_stature_frame.paste(sheet, ( 0,0 ), sheet)
+                            equip_stature_frame.paste(
+                                sheet, 
+                                ( 0,0 ), 
+                                sheet
+                            )
 
                         self.entities.apparel.get(set_key).get(apparel_key).get(equip_stature
                             ).append(equip_stature_frame) 
@@ -880,7 +1020,10 @@ class Totality():
         self,
         project_key,
         project_direction
-    ) -> Union[Image.Image, None]:
+    ) -> Union[
+        Image.Image, 
+        None
+    ]:
         if self.dialectics.projectiles.get(project_key):
             return self.dialectics.projectiles.get(project_key).get(project_direction)
         return None
@@ -890,7 +1033,10 @@ class Totality():
     def get_expression_frame(
         self,
         express_key
-    ) -> Union[Image.Image, None]:
+    ) -> Union[
+        Image.Image, 
+        None
+    ]:
         return self.dialectics.expressions.get(express_key)
 
 
@@ -899,7 +1045,10 @@ class Totality():
         self, 
         form_key: str, 
         group_key: str
-    ) -> Union[Image.Image, None]:
+    ) -> Union[
+        Image.Image, 
+        None
+    ]:
         if self.forms.get(form_key):
             return self.forms.get(form_key).get(group_key)
         return None
@@ -910,7 +1059,10 @@ class Totality():
         self,
         avatarset_key: str,
         avatar_key: str
-    ) -> Union[Image.Image, None]:
+    ) -> Union[
+        Image.Image, 
+        None
+    ]:
         """Retrieve an _Avatar_ frame.
 
         :param avatarset_key: `equipment | armory | inventory | quantity`
@@ -930,7 +1082,10 @@ class Totality():
         self, 
         breakpoint_key: str, 
         component_key: str
-    ) -> Union[munch.Munch, None]:
+    ) -> Union[
+        munch.Munch, 
+        None
+    ]:
         """_summary_
 
         :param breakpoint_key: _description_
@@ -951,7 +1106,10 @@ class Totality():
         breakpoint_key: str, 
         component_key: str, 
         piece_key: str
-    ) -> Union[Image.Image, None]:
+    ) -> Union[
+        Image.Image, 
+        None
+    ]:
         """_summary_
 
         :param breakpoint_key: _description_
@@ -975,7 +1133,10 @@ class Totality():
         breakpoint_key: str, 
         component_key: str, 
         fill_key: str
-    ) -> Union[Image.Image, None]:
+    ) -> Union[
+        Image.Image, 
+        None
+    ]:
         """_summary_
 
         :param breakpoint_key: _description_
@@ -1000,7 +1161,10 @@ class Totality():
         component_key: str, 
         frame_key: str,
         piece_key: str
-    ) -> Union[Image.Image, None]:
+    ) -> Union[
+        Image.Image, 
+        None
+    ]:
         """_summary_
 
         :param breakpoint_key: _description_
@@ -1028,7 +1192,10 @@ class Totality():
         self,
         breakpoint_key,
         component_key
-    ) -> Union[Image.Image, None]:
+    ) -> Union[
+        Image.Image, 
+        None
+    ]:
         if self.qualia.get(breakpoint_key):
             return self.qualia.get(breakpoint_key).get(component_key)
         return None
@@ -1040,7 +1207,10 @@ class Totality():
         sprite_key: str, 
         stature_key: str, 
         frame_index: int
-    ) -> Union[tuple, None]:
+    ) -> Union[
+        tuple, 
+        None
+    ]:
         """Return the _Sprite frame corresponding to a given state and a frame iteration.
 
         :param sprite_key: _Sprite_ lookup key
@@ -1081,7 +1251,10 @@ class Totality():
         apparel_key: str,
         stature_key: str,
         frame_index: int
-    ) -> Union[Image.Image, None]:
+    ) -> Union[
+        Image.Image, 
+        None
+    ]:
         if self.entities.apparel.get(set_key) and \
             self.entities.apparel.get(set_key).get(apparel_key) and \
             self.entities.apparel.get(set_key).get(apparel_key).get(stature_key):
