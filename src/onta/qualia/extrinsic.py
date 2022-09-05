@@ -192,16 +192,16 @@ class ExtrinsicQuale():
         )
 
         pack_margins = (
-            self.styles.get(self.media_size).packs.margins.w, 
-            self.styles.get(self.media_size).packs.margins.h
+            self.styles.get(self.media_size).pack.margins.w, 
+            self.styles.get(self.media_size).pack.margins.h
         )
         pack_alignment = (
-            self.styles.get(self.media_size).packs.alignment.horizontal,
-            self.styles.get(self.media_size).packs.alignment.vertical
+            self.styles.get(self.media_size).pack.alignment.horizontal,
+            self.styles.get(self.media_size).pack.alignment.vertical
         )
 
-        bagset = self.quale_conf.get(self.media_size).packs.bag
-        beltset = self.quale_conf.get(self.media_size).packs.belt
+        bagset = self.quale_conf.get(self.media_size).pack.bag.display
+        beltset = self.quale_conf.get(self.media_size).pack.belt.display
 
         bag_piece_sizes = tuple(
             (
@@ -273,24 +273,31 @@ class ExtrinsicQuale():
             'Initializing mirror positions on device...', 
             'ExtrinsicQuale._init_mirror_positions'
         )
-        mirror_styles = self.styles.get(self.media_size).mirrors
+
+        mirror_styles = self.styles.get(self.media_size).mirror
+       
         mirror_alignment = (
-            self.styles.get(self.media_size).mirrors.alignment.horizontal,
-            self.styles.get(self.media_size).mirrors.alignment.vertical
+            self.styles.get(self.media_size).mirror.alignment.horizontal,
+            self.styles.get(self.media_size).mirror.alignment.vertical
         )
+
         life_rank = (
-            self.properties.mirrors.life.columns,
-            self.properties.mirrors.life.rows,
+            self.properties.mirror.life.columns,
+            self.properties.mirror.life.rows,
         )
+
         # NOTE: dependent on 'unit' and 'empty' being the same dimensions...
+
         life_dim = (
-            self.quale_conf.get(self.media_size).mirrors.life.unit.size.w,
-            self.quale_conf.get(self.media_size).mirrors.life.unit.size.h
+            self.quale_conf.get(self.media_size).mirror.life.unit.size.w,
+            self.quale_conf.get(self.media_size).mirror.life.unit.size.h
         )
+
         margins= (
             mirror_styles.margins.w * player_device.dimensions[0],
             mirror_styles.margins.h * player_device.dimensions[1]
         )
+
         padding = (
             mirror_styles.padding.w,
             mirror_styles.padding.h
@@ -445,7 +452,7 @@ class ExtrinsicQuale():
             self.render_points,
             'avatar',
             formulae.slot_avatar_coordinates(
-                ExtrinsicQuale.immute_slots(self.slots), 
+                ExtrinsicQuale.immute_slots(self.containers.slots), 
                 ExtrinsicQuale.immute_armory_size(self.avatar_conf),
                 ExtrinsicQuale.immute_inventory_size(self.avatar_conf),
                 tuple(self.render_points.slot),
@@ -506,7 +513,7 @@ class ExtrinsicQuale():
                 if val is None 
                 else 'enabled' 
                 for key, val 
-                in self.slots.items()
+                in self.containers.slots.items()
             })
         )
 
@@ -521,12 +528,12 @@ class ExtrinsicQuale():
                 'life',
                 munch.Munch({
                     i: 'unit' 
-                    if i <= self.mirrors.life.current - 1 
+                    if i <= self.containers.mirrors.life.current - 1 
                     else 'empty'
                     for i in range(
-                        self.properties.mirrors.life.bounds
+                        self.properties.mirror.life.bounds
                     )
-                    if i <= self.mirrors.life.max - 1
+                    if i <= self.containers.mirrors.life.max - 1
                 })
             )
 
@@ -536,7 +543,7 @@ class ExtrinsicQuale():
         pack_key: str
     ) -> dict:
         # TODO: this could be a lookup instead of a switch statement...
-        packset = self.quale_conf.get(self.media_size).packs.get(pack_key)
+        packset = self.quale_conf.get(self.media_size).pack.get(pack_key)
         if pack_key in [ 'bag', 'belt' ]:
             setattr(
                 self.frame_maps,
@@ -566,7 +573,7 @@ class ExtrinsicQuale():
     def get_cap_directions(
         self
     ) -> str:
-        if self.styles.get(self.media_size).slots.stack == 'horizontal':
+        if self.styles.get(self.media_size).slot.stack == 'horizontal':
             return (
                 'left', 
                 'right'
@@ -580,14 +587,14 @@ class ExtrinsicQuale():
     def get_buffer_direction(
         self
     ) -> str:
-        return self.styles.get(self.media_size).slots.stack
+        return self.styles.get(self.media_size).slot.stack
 
 
     def get_bag_dimensions(
         self
     ) -> tuple:
         if not self.dimensions.get('bag'):
-            bagset = self.quale_conf.get(self.media_size).packs.bag
+            bagset = self.quale_conf.get(self.media_size).pack.bag.display
 
             total_bag_width = 0
             for bag_piece in bagset.values():
@@ -615,7 +622,7 @@ class ExtrinsicQuale():
         self
     ) -> tuple:
         if not self.dimensions.get('belt'):
-            beltset = self.quale_conf.get(self.media_size).packs.belt
+            beltset = self.quale_conf.get(self.media_size).pack.belt.display
 
             total_belt_width = 0
             for belt_piece in beltset.values():
@@ -643,8 +650,8 @@ class ExtrinsicQuale():
                 self.dimensions,
                 'wallet',
                 (
-                    self.quale_conf.get(self.media_size).packs.wallet.display.size.w, 
-                    self.quale_conf.get(self.media_size).packs.wallet.display.size.h
+                    self.quale_conf.get(self.media_size).pack.wallet.display.size.w, 
+                    self.quale_conf.get(self.media_size).pack.wallet.display.size.h
                 )
             )
         return self.dimensions.wallet
@@ -658,11 +665,12 @@ class ExtrinsicQuale():
                 self.dimensions,
                 'slot',
                 (
-                    self.quale_conf.get(self.media_size).slots.disabled.size.w, 
-                    self.quale_conf.get(self.media_size).slots.disabled.size.h
+                    self.quale_conf.get(self.media_size).slot.disabled.size.w, 
+                    self.quale_conf.get(self.media_size).slot.disabled.size.h
                 )
             )
         return self.dimensions.slot
+
 
     def get_render_points(
         self, 

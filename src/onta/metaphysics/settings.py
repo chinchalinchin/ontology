@@ -153,6 +153,8 @@ FPS=26
 
 # Application Configuration
 
+DEBUG_TIMER = 0.2
+
 SEP = "_"
 
 DEFAULT_SPRITE_ACTION = "walk"

@@ -14,21 +14,11 @@ from onta.concretion \
 from onta.concretion.facticity \
     import gauge, formulae
 from onta.metaphysics \
-    import device, logger, gui, debug, settings
+    import device, logger, gui, debug, settings, constants
 from onta.qualia \
     import intrinsic, extrinsic
 from onta.qualia.thoughts \
     import bauble
-
-STATIC_PLATE_TYPES = [ 
-    'door' 
-]
-SWITCH_PLATE_TYPES = [ 
-    'pressure', 
-    'container', 
-    'gate' 
-]
-DEBUG_TIMER=0.2
 
 log = logger.Logger(
     'onta.gestalt', 
@@ -79,13 +69,13 @@ class Debugger(QtCore.QObject):
 
     def start(self):
         threading.Timer(
-            DEBUG_TIMER, 
+            settings.DEBUG_TIMER, 
             self._execute
         ).start()
 
     def _execute(self):
         threading.Timer(
-            DEBUG_TIMER, 
+            settings.DEBUG_TIMER, 
             self._execute
         ).start()
         self.update.emit(True)
@@ -264,15 +254,18 @@ class Renderer():
                 if group_key in strut_keys or \
                     (
                         game_world.plate_properties.get(group_key) and \
-                        game_world.plate_properties.get(group_key).type in STATIC_PLATE_TYPES
+                        game_world.plate_properties.get(group_key).type in \
+                            list(constants.StaticPlateType.__members__.values())
                     ):
-                    log.debug(
+
+                    group_type  = constants.FormType.STRUT.value \
+                        if group_key in strut_keys else \
+                        constants.FormType.PLATE.value 
+
+                    log.verbose(
                         f'Rendering {group_type} {group_key}s', 
                         'Renderer._render_sets'
                     )
-
-                    group_type="strut" if group_key in strut_keys else "plate"
-
                     group_frame = data_totality.get_form_frame(
                         group_type, 
                         group_key
@@ -332,10 +325,14 @@ class Renderer():
             group_type = game_world.plate_properties.get(group_key).type
 
 
-            if group_type in STATIC_PLATE_TYPES:
+            if group_type in list(
+                constants.StaticPlateType.__members__.values()
+            ):
                 continue
 
-            if group_type not in SWITCH_PLATE_TYPES:
+            if group_type not in list(
+                constants.SwitchPlateType.__members__.values()
+            ):
                 group_dim = (
                     group_frame.size[0],
                     group_frame.size[1]
@@ -385,7 +382,9 @@ class Renderer():
                     'Renderer._render_variable_platesets'
                 )
 
-                if group_type not in SWITCH_PLATE_TYPES:
+                if group_type not in list(
+                    list(constants.SwitchPlateType.__members__.values())
+                ):
                     gui.render_composite(
                         self.world_frame,
                         group_frame,

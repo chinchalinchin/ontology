@@ -11,7 +11,7 @@ from onta.actuality \
 from onta.concretion \
     import composition
 from onta.metaphysics \
-    import settings, logger, gui
+    import settings, logger, gui, constants
 
 
 log = logger.Logger(
@@ -24,22 +24,22 @@ log = logger.Logger(
 
 ## TOP LEVEL TYPES
 FORM_TYPES = [ 
-    'tiles', 
-    'struts', 
-    'plates' 
+    'tile', 
+    'strut', 
+    'plate' 
 ]
 ENTITY_TYPES = [
-    'sprites',
-    # TODO: 'pixies',
-    # TODO: 'nymphs',
+    'sprite',
+    # TODO: 'pixie',
+    # TODO: 'nymph',
 ]
 SELF_TYPES = [
-    'avatars',
+    'avatar',
     'qualia'
 ]
 DIALECTIC_TYPES = [
-    'expressions',
-    'projectiles',
+    'expression',
+    'projectile',
     # TODO: lots
 ]
 
@@ -172,11 +172,11 @@ class Totality():
         list, 
         None
     ]:
-        if asset_type == 'tiles':
+        if asset_type == constants.FormType.TILE.value:
             return settings.TILE_PATH
-        if asset_type == 'struts':
+        if asset_type == constants.FormType.STRUT.value:
             return settings.STRUT_PATH
-        if asset_type == 'plates': 
+        if asset_type == constants.FormType.PLATE.value: 
             return settings.PLATE_PATH    
         return None
 
@@ -274,7 +274,9 @@ class Totality():
             - Static assets, i.e. _Tile_\s, _Strut_\s & _Plate_\s can be rendered using RGBA channels instead of cropping a sheet file into an PIL image. If the channels are specified through the configuration file for the appropriate _Form_ asset, the asset frame will be created using through channels. Particularly useful if you need to create an inside door with a transculent light square leading back outside.
         """
 
-        for asset_type in FORM_TYPES:
+        for asset_type in list(
+            constants.FormType.__members__.values()
+        ):
             log.debug(
                 f'Initializing {asset_type} assets...',  
                 'Totality._init_form_assets'
@@ -288,7 +290,7 @@ class Totality():
             asset_props, assets_conf = \
                 config.load_form_configuration(asset_type)
 
-            if asset_type == 'tiles':
+            if asset_type == constants.FormType.TILE.value:
                 # NOTE: all tile types are the same size...
                 w, h = assets_conf.size.w, assets_conf.size.h 
 
@@ -297,7 +299,7 @@ class Totality():
                     f'Initializing {asset_key}...',
                     'Totality._init_form_assets'
                 )
-                if asset_type != 'tiles':
+                if asset_type != constants.FormType.TILE.value:
                     # NOTE: ...but all other form sizes are dependent on type
                     w, h = asset_conf.size.w, asset_conf.size.h
 
@@ -322,7 +324,9 @@ class Totality():
                     )
 
                     if asset_props and \
-                        asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
+                        asset_props.get(asset_key).get('type') in list(
+                            constants.SwitchPlateType.__members__.values()
+                        ):
 
                         setattr(
                             self.forms.get(asset_type),
@@ -377,7 +381,9 @@ class Totality():
                         channels
                     )
 
-                    if asset_props.get(asset_key).get('type') in SWITCH_PLATES_TYPES:
+                    if asset_props.get(asset_key).get('type') in list(
+                        constants.SwitchPlateType.__members__.values()
+                    ):
                         setattr(
                             self.forms.get(asset_type),
                             asset_key,
@@ -401,7 +407,9 @@ class Totality():
         ontology_path: str
     ) -> None:
 
-        for asset_type in DIALECTIC_TYPES:
+        for asset_type in list(
+            constants.DialecticType.__members__.values()
+        ):
             log.debug(
                 f'{asset_type} initialization',
                 'Totality._init_dialectic_assets'
@@ -413,7 +421,8 @@ class Totality():
                 munch.Munch({})
             )
 
-            _, assets_conf = config.load_dialectic_configuration(asset_type)
+            _, assets_conf = \
+                config.load_dialectic_configuration(asset_type)
 
             for asset_key, asset_conf in assets_conf.items():
                 log.verbose(
@@ -445,8 +454,10 @@ class Totality():
                     )
                 )
 
-                if asset_type == 'projectiles':
+                if asset_type == constants.DialecticType.PROJECTILE.value:
+
                     adjust = self.adjust_directional_rotation(asset_conf.definition)
+
                     setattr(
                         self.dialectics.get(asset_type),
                         asset_key,
@@ -470,7 +481,8 @@ class Totality():
                         })
                     )
                     continue
-
+                
+                # else asset_type == 'expression'
                 setattr(
                     self.dialectics.get(asset_type),
                     asset_key,
@@ -498,55 +510,14 @@ class Totality():
             'Totality._init_qualia_assets'
         )
 
-        # TODO: 
+        # NOTE: avatar and qualia data structures are too different to condense initialization into one loop, 
+        #       which begs the questions, should they be grouped into the same hierarchical type?
 
-        ##  need to make sure to peel off appriorate data structures...
-
-        # for asset_type in SELF_TYPES:
-        #     assets_conf = config.load_self_configuration(asset_type)
-        #     if asset_type == 'qualia':
-        #         assets_conf = munch.Munch({
-        #             asset_key: asset_conf
-        #             for asset_key, asset_conf
-        #             in assets_conf.items()
-        #             if asset_key not in ['']
-        #         })
-
-        #     setattr(
-        #         self.selves, 
-        #         asset_type, 
-        #         munch.Munch({})
-        #     )
-
-        #     for asset_key, asset_conf in assets_conf.items():
-        #         if not asset_conf or not asset_conf.get('path'):
-        #             continue
-
-        #         buffer = gui.open_image(
-        #             os.path.join(
-        #                 ontology_path,
-        #                 *settings.AVATAR_PATH,
-        #                 asset_conf.path
-        #             )
-        #         )
-        #         setattr(
-        #             self.selves.get(asset_type),
-        #             asset_key,
-        #             buffer.crop(
-        #                 ( 
-        #                     asset_conf.position.x,
-        #                     asset_conf.position.y, 
-        #                     asset_conf.size.w + asset_conf.position.x, 
-        #                     asset_conf.size.h + asset_conf.position.y
-        #                 )
-        #             )
-        #         )
-
-
-
-
-
-
+        setattr(
+            self.selves,
+            constants.SelfTypes.AVATAR.value,
+            munch.Munch({})
+        )
 
         avatar_conf = config.load_avatar_configuration()
 
@@ -586,10 +557,11 @@ class Totality():
             'Totality._init_self_assets'
         )
 
-        interface_conf = config.load_qualia_configuration()
+        qualia_conf = config.load_qualia_configuration()
 
-        for size in interface_conf.apriori.sizes:
+        for size in qualia_conf.apriori.sizes:
 
+            # EXTRINSIC?
             if not self.slots.get(size):
                 setattr(
                     self.slots, 
@@ -620,11 +592,15 @@ class Totality():
 
 
             ## STYLED INITIALIZATION
-            for set_type in STYLED_QUALIA_TYPES:
-                if set_type == 'slot':
-                    iter_set = interface_conf.extrinsic.get(size).slot
+            for set_type in list(
+                constants.StyledQualiaType.__members__.values()
+            ):
+
+                if set_type == constants.ExtrinsicType.SLOT.value:
+                    iter_set = qualia_conf.extrinsic.get(size).slot
                     save_set = self.slots
 
+                # (cap, set_conf), (buffer, set_conf), (left, set_conf), ...
                 for set_key, set_conf in iter_set.items():
                     if not set_conf or not set_conf.get('path'):
                         continue
@@ -651,7 +627,9 @@ class Totality():
                         )
                     )
 
-                    if set_key in DIRECTIONAL_PIECE_TYPES:
+                    if set_key in list(
+                        constants.DirectionalQualiaPiece.__members__.values()
+                    ):
                         adjust = self.adjust_directional_rotation(set_conf.definition)
                         setattr(
                             save_set.get(size),
@@ -676,7 +654,10 @@ class Totality():
                             })
                         )
                         continue
-                    elif set_key in ALIGNMENT_PIECE_TYPES:
+                    
+                    elif set_key in list(
+                        constants.AlignmentQualiaPiece.__members__.values()
+                    ):
                         adjust = self.adjust_alignment_rotation(set_conf.definition)
                         setattr(
                             save_set.get(size),
@@ -693,6 +674,8 @@ class Totality():
                             })
                         )
                         continue
+
+                    # huh? i think this is wrong.
                     setattr(
                         self.slots.get(size), 
                         set_key, 
@@ -702,29 +685,32 @@ class Totality():
             # TODO: mirrors aren't piecewise...
 
             ## PIECEWISE DEFINITIONS
-            for set_type in PIECEWISE_QUALIA_TYPES:
+            for set_type in list(
+                constants.PiecewiseQualiaType.__members__.values()
+            ):
                 # TODO: collapse this conditional into: iter_set = interface_conf.hud | menu.get(size).get(set_type)
                 #           by defining and passing the proper literals...
-                if set_type == 'mirror':
-                    iter_set = interface_conf.extrinsic.get(size).mirror
+                if set_type == constants.ExtrinsicType.MIRROR.value:
+                    iter_set = qualia_conf.extrinsic.get(size).mirror
                     save_set = self.mirrors
-                elif set_type == 'pack':
-                    iter_set = interface_conf.extrinsic.get(size).pack
+                elif set_type == constants.ExtrinsicType.PACK.value:
+                    iter_set = qualia_conf.extrinsic.get(size).pack
                     save_set = self.packs
-                elif set_type == 'idea':
-                    iter_set = interface_conf.intrinsic.get(size).idea
+                elif set_type == constants.IntrinsicType.IDEA.value:
+                    iter_set = qualia_conf.intrinsic.get(size).idea
                     save_set = self.qualia
-                elif set_type == 'bauble':
-                    iter_set = interface_conf.intrinsic.get(size).bauble
+                elif set_type == constants.IntrinsicType.BAUBLE.value:
+                    iter_set = qualia_conf.intrinsic.get(size).bauble
                     save_set = self.qualia
-                elif set_type == 'aside':
-                    iter_set = interface_conf.intrinsic.get(size).aside
+                elif set_type == constants.IntrinsicType.ASIDE.value:
+                    iter_set = qualia_conf.intrinsic.get(size).aside
                     save_set = self.qualia
-                elif set_type == 'focus':
-                    iter_set = interface_conf.intrinsic.get(size).focus
+                elif set_type == constants.IntrinsicType.FOCUS.value:
+                    iter_set = qualia_conf.intrinsic.get(size).focus
                     save_set = self.qualia
                     
-                if set_type in [ 'bauble', 'thought', 'focus', 'aside', 'idea' ]:
+                # INTRINSIC?
+                if set_type in [ 'bauble', 'focus', 'aside', 'idea' ]:
                     setattr(
                         save_set.get(size), 
                         set_type, 
@@ -736,7 +722,7 @@ class Totality():
                     if not set_conf:
                         continue
                     
-                    if set_type in [ 'bauble', 'thought', 'focus', 'aside', 'idea']:
+                    if set_type in [ 'bauble', 'focus', 'aside', 'idea']:
                         setattr(
                             save_set.get(size).get(set_type), 
                             set_key, 
@@ -768,7 +754,7 @@ class Totality():
                             f"{size} {set_type} {set_key} {component_key}: size - {buffer.size}, mode - {buffer.mode}", 
                             'Totality._init_self_assets'
                         )
-                        if set_type in [ 'bauble', 'thought', 'focus', 'aside', 'idea' ]:
+                        if set_type in [ 'bauble', 'focus', 'aside', 'idea' ]:
                             setattr(
                                 save_set.get(size).get(set_type).get(set_key),
                                 component_key,
@@ -780,7 +766,7 @@ class Totality():
                                         component.size.h + component.position.y)
                                     )
                             )
-                        else: # HUD qualia ('mirror', 'pack')
+                        else: # extrinsic qualia ('mirror', 'pack')
                             setattr(
                                 save_set.get(size).get(set_key),
                                 component_key,
@@ -797,10 +783,10 @@ class Totality():
             ## SIMPLE DEFINITIONS
             for set_type in SIMPLE_QUALIA_TYPES:
                 if set_type == 'concept':
-                    simple_set = interface_conf.intrinsic.get(size).concept
+                    simple_set = qualia_conf.intrinsic.get(size).concept
 
                 elif set_type == 'conception':
-                    simple_set = interface_conf.intrinsic.get(size).conception
+                    simple_set = qualia_conf.intrinsic.get(size).conception
 
                 if not simple_set.get('path'):
                     continue

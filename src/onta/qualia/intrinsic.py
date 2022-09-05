@@ -91,8 +91,8 @@ class IntrinsicQuale():
         configure = config.load_qualia_configuration()
 
         self.quale_conf = configure.intrinsic
-        self.sizes = configure.aprior.sizes
-        self.styles = configure.styles
+        self.sizes = configure.apriori.sizes
+        self.styles = configure.styles.intrinsic
         self.properties = configure.properties.intrinsic
         self.alpha = configure.apriori.transparency
 
@@ -142,30 +142,31 @@ class IntrinsicQuale():
         player_device: device.Device
     ) -> None:
         quale_margins = (
-            self.styles.get(self.media_size).intrinsic.margins.w,
-            self.styles.get(self.media_size).intrinsic.margins.h
+            self.styles.get(self.media_size).margins.w,
+            self.styles.get(self.media_size).margins.h
         )
         quale_padding = (
-            self.styles.get(self.media_size).intrinsic.padding.w,
-            self.styles.get(self.media_size).intrinsic.padding.h
+            self.styles.get(self.media_size).padding.w,
+            self.styles.get(self.media_size).padding.h
         )
-        quale_stack = self.styles.get(self.media_size).intrinsic.stack
-        # all idea component pieces have the same dim, so any will do...
-        idea_conf = self.quale_conf.get(self.media_size).idea.enabled
 
+        # NOTE: all idea component pieces have the same dim, so any will do...
         # NOTE: ideas are "thought" buttons
         # [ (left_w, left_h), (middle_w, middle_h), (right_w, right_h) ]
         dims = [
-            ( idea_conf.get(piece).size.w, idea_conf.get(piece).size.h ) 
-            for piece in self.properties.ideas.pieces
+            ( 
+                self.quale_conf.get(self.media_size).idea.enabled.get(piece).size.w, 
+                self.quale_conf.get(self.media_size).idea.enabled.get(piece).size.h 
+            ) 
+            for piece in self.properties.idea.pieces
         ]
 
         self.idea_rendering_points = formulae.idea_coordinates(
             dims,
-            len(self.properties.thoughts),
-            len(idea_conf),
+            len(self.properties.thought),
+            len(self.quale_conf.get(self.media_size).idea.enabled),
             player_device.dimensions,
-            quale_stack,
+            self.styles.get(self.media_size).stack,
             quale_margins,
             quale_padding
         )
@@ -187,20 +188,23 @@ class IntrinsicQuale():
         }) # TODO: this seems redundant ... ?
 
         # all button component pieces have the same pieces, so any will do...
-        idea_conf = self.quale_conf.get(self.media_size).idea.enabled
         full_width = sum(
-            idea_conf.get(piece).size.w 
-            for piece in self.properties.ideas.pieces
+            self.quale_conf.get(self.media_size).idea.enabled.get(piece).size.w 
+            for piece in self.properties.idea.pieces
         )
-        full_height = idea_conf.get(
-            self.properties.ideas.pieces[0]
+        full_height = self.quale_conf.get(self.media_size).idea.enabled.get(
+            self.properties.idea.pieces[0]
         ).size.h
-        idea_dim = (full_width, full_height)
+        idea_dim = (
+            full_width, 
+            full_height
+        )
 
-        quale_styles = self.styles.get(self.media_size).intrinsic
-
-        for thought_key, thought_conf in self.properties.thoughts.items():
-            log.debug(f'Creating {thought_key} thought...', 'IntrinsicQuale._init_tabs')
+        for thought_key, thought_conf in self.properties.thought.items():
+            log.debug(
+                f'Creating {thought_key} thought...', 
+                'IntrinsicQuale._init_thoughts'
+            )
             
             if thought_key in BAUBLE_THOUGHTS:
                 # TODO:? There is a redundancy here. the class itself knows which thoughts are baubles
@@ -216,7 +220,7 @@ class IntrinsicQuale():
                         thought_key,
                         thought_conf,
                         components_conf,
-                        quale_styles,
+                        self.styles.get(self.media_size),
                         self.avatar_conf,
                         self.idea_rendering_points[0],
                         idea_dim,
@@ -224,8 +228,9 @@ class IntrinsicQuale():
                         state_ao,
                     )
                 )
+
             elif thought_key in SYMBOL_THOUGHTS:
-                pass
+                    pass
                 # TODO: this
 
 
@@ -242,12 +247,12 @@ class IntrinsicQuale():
 
         # NOTE: this is what creates `self.thoughts`
         #       `self.thoughts`
-        for i, name in enumerate(list(self.properties.thoughts.keys())):
+        for i, name in enumerate(list(self.properties.thought.keys())):
             if i == 0:
                 self._activate_idea(name)
                 self.active_idea = i
-            else:
-                self._enable_idea(name)
+                continue
+            self._enable_idea(name)
 
 
     def _activate_idea(
@@ -263,7 +268,9 @@ class IntrinsicQuale():
             self.ideas,
             idea_key,
             munch.Munch({
-                piece: 'active' for piece in self.properties.ideas.pieces
+                piece: 'active' 
+                for piece 
+                in self.properties.idea.pieces
             })
         )
 
@@ -281,7 +288,9 @@ class IntrinsicQuale():
             self.ideas,
             idea_key,
             munch.Munch({
-                piece: 'disabled' for piece in self.properties.ideas.pieces
+                piece: 'disabled' 
+                for piece 
+                in self.properties.idea.pieces
             })
         )
 
@@ -299,7 +308,9 @@ class IntrinsicQuale():
             self.ideas,
             idea_key,
             munch.Munch({
-                piece: 'enabled' for piece in self.properties.ideas.pieces
+                piece: 'enabled' 
+                for piece 
+                in self.properties.idea.pieces
             })
         )
 
@@ -317,8 +328,12 @@ class IntrinsicQuale():
         if self.active_idea < 0:
             self.active_idea = len(idea_list) - 1
         
-        self._enable_idea(idea_list[previous_active])
-        self._activate_idea(idea_list[self.active_idea])
+        self._enable_idea(
+            idea_list[previous_active]
+        )
+        self._activate_idea(
+            idea_list[self.active_idea]
+        )
 
 
     def _decrement_idea(
@@ -334,8 +349,12 @@ class IntrinsicQuale():
         if self.active_idea > len(idea_list) - 1:
             self.active_idea = 0
         
-        self._enable_idea(idea_list[previous_active])
-        self._activate_idea(idea_list[self.active_idea])
+        self._enable_idea(
+            idea_list[previous_active]
+        )
+        self._activate_idea(
+            idea_list[self.active_idea]
+        )
 
 
     def _ideate(
@@ -381,8 +400,10 @@ class IntrinsicQuale():
 
     def get_active_thought(
         self
-    ) -> bauble.BaubleThought:
-        # TODO: Union[bauble.BaubleThought, symbol.SymbolThought]
+    ) -> Union[
+        bauble.BaubleThought,
+        symbol.SymbolThought
+    ]:
         return self.thoughts.get(
             self._active_thought_key()
         )
@@ -413,7 +434,10 @@ class IntrinsicQuale():
 
     def update(
         self, 
-        quale_input: Union[munch.Munch, None],
+        quale_input: Union[
+            munch.Munch,
+            None
+        ],
         game_world: world.World
     ) -> None:
         if quale_input:
@@ -440,7 +464,10 @@ class IntrinsicQuale():
                 return
 
             # controls when traversing tab stacks
-            if isinstance(self.active_thought, bauble.BaubleThought):
+            if isinstance(
+                self.active_thought, 
+                bauble.BaubleThought
+            ):
 
                 if quale_input.increment:
                     self.active_thought.increment_bauble_row()
@@ -458,5 +485,8 @@ class IntrinsicQuale():
 
                 return
 
-            elif isinstance(self.active_thought, symbol.SymbolThought):
+            elif isinstance(
+                self.active_thought, 
+                symbol.SymbolThought
+            ):
                 pass
