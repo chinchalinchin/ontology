@@ -34,44 +34,44 @@ STATE_PATH = [
 
 SPRITE_BASE_PATH = [ 
     'assets', 
-    'entities', 
-    'sprites',
-    'bases'
+    'entity', 
+    'sprite',
+    'base'
 ]
 """Array containing path parts relative to ontology directory leading to spritesheets directory"""
 
 SPRITE_ACCENT_PATH = [
     'assets',
-    'entities',
-    'sprites',
-    'accents'
+    'entity',
+    'sprite',
+    'accent'
 ]
 
 SPRITE_APPAREL_PATH = [
     'assets',
-    'entities',
-    'sprites',
+    'entity',
+    'sprite',
     'apparel'
 ]
 
 TILE_PATH = [ 
     'assets', 
-    'forms', 
-    'tiles' 
+    'form', 
+    'tile' 
 ]
 """Array containing path parts relative to ontology directory leading to tilesheet directory"""
 
 STRUT_PATH = [ 
     'assets', 
-    'forms', 
-    'struts' 
+    'form', 
+    'strut' 
 ]
 """Array containing path parts relative to ontology directory leading to strutsheet directory"""
 
 PLATE_PATH = [ 
     'assets', 
-    'forms', 
-    'plates' 
+    'form', 
+    'plate' 
 ]
 """Array containing path parts relative to ontology directory leading to platesheet directory"""
 
@@ -86,19 +86,19 @@ QUALIA_PATH = [
 AVATAR_PATH = [
     'assets',
     'self',
-    'avatars'
+    'avatar'
 ]
 
 EXPRESSION_PATH =[
     'assets',
     'dialectics',
-    'expressions'
+    'expression'
 ]
 
 PROJECTILE_PATH = [
     'assets',
     'dialectics',
-    'projectiles'
+    'projectile'
 ]
 
 # Debug Configuration

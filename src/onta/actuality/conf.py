@@ -1,9 +1,10 @@
 import os
+from typing import Union
 import yaml
 import munch
 
 from onta.metaphysics \
-    import settings
+    import settings, constants
 
 class Conf():
     """
@@ -39,8 +40,8 @@ class Conf():
         self.tile_sheet_conf = munch.Munch({})
         self.projectile_property_conf = munch.Munch({})
         self.projectile_img_conf = munch.Munch({})
-        self.control_conf = munch.Munch({})
-        self.sense_conf = munch.Munch({})
+        self.will_conf = munch.Munch({})
+        self.qualia_conf = munch.Munch({})
         self.avatar_conf = munch.Munch({})
         self.expression_conf = munch.Munch({})
         self.composite_conf = munch.Munch({})
@@ -65,7 +66,10 @@ class Conf():
             group_key, 
             f'{type_key}.yaml'
         )
-        with open(conf_path, 'r') as infile:
+        with open(
+            conf_path, 
+            'r'
+        ) as infile:
             conf = munch.munchify(
                 yaml.safe_load(infile)
             )
@@ -82,7 +86,10 @@ class Conf():
         :return: _Self_ configuration formatted into dictionary.
         :rtype: munch.Munch
         """
-        return self.__configuration(type_key, 'self')
+        return self.__configuration(
+            type_key, 
+            constants.OntaTypes.SELF.value
+        )
 
     def _form_configuration(
         self, 
@@ -95,7 +102,10 @@ class Conf():
         :return: _Form_ configuration formatted into dictionary
         :rtype: munch.Munch
         """
-        return self.__configuration(type_key, 'forms')
+        return self.__configuration(
+            type_key, 
+            constants.OntaTypes.FORM.value
+        )
 
     def _entity_configuration(
         self, 
@@ -108,7 +118,10 @@ class Conf():
         :return: _Entity_ configuration formatted into dictionary.
         :rtype: munch.Munch
         """
-        return self.__configuration(type_key, 'entities')
+        return self.__configuration(
+            type_key, 
+            constants.OntaTypes.ENTITY.value
+        )
 
 
     def _dialectic_configuration(
@@ -122,23 +135,28 @@ class Conf():
         :return: _Dialectic_ configuration formatted into dictionary.
         :rtype: munch.Munch
         """
-        return self.__configuration(type_key, 'dialectics')
+        return self.__configuration(
+            type_key, 
+            constants.OntaTypes.DIALECTICS.value
+        )
 
 
     ## SELF CONFIGURATION
 
 
-    def load_control_configuration(
+    def load_will_configuration(
         self
     ) -> munch.Munch:
-        """Returns the parsed _Control_ configuration from the _data/conf/self/controls.yaml_ file.
+        """Returns the parsed _Will_ configuration from the _data/conf/self/will.yaml_ file.
 
         :return: _Control_ configuration.
         :rtype: munch.Munch
         """
-        if len(self.control_conf) == 0:
-            self.control_conf = self._self_configuration('controls')
-        return self.control_conf
+        if len(self.will_conf) == 0:
+            self.will_conf = self._self_configuration(
+                constants.SelfTypes.WILL.value
+            )
+        return self.will_conf
 
     
     def load_qualia_configuration(
@@ -150,9 +168,11 @@ class Conf():
         :rtype: munch.Munch
         """
         # TODO: mismatch between qualia and interface naming scheme...
-        if not self.sense_conf:
-            self.sense_conf = self._self_configuration('qualia')
-        return self.sense_conf
+        if not self.qualia_conf:
+            self.qualia_conf = self._self_configuration(
+                constants.SelfTypes.QUALIA.value
+            )
+        return self.qualia_conf
 
 
     def load_avatar_configuration(
@@ -164,19 +184,27 @@ class Conf():
         :rtype: munch.Munch
         """
         if len(self.avatar_conf) == 0:
-            self.avatar_conf = self._self_configuration('avatars')
+            self.avatar_conf = self._self_configuration(
+                constants.SelfTypes.AVATAR.value
+            )
         return self.avatar_conf
 
 
     def load_self_configuration(
         self,
         self_type
-    ) -> munch.Munch:
+    ) -> Union[
+        munch.Munch,
+        None
+    ]:
         # NOTE: generalized method that routes through cache
-        if self_type == 'qualia':
+        if self_type == constants.SelfTypes.QUALIA.value:
             return self.load_qualia_configuration()
-        if self_type == 'avatars':
+        if self_type == constants.SelfTypes.AVATAR.value:
             return self.load_avatar_configuration()
+        if self_type == constants.SelfTypes.WILL.value:
+            return self.load_will_configuration()
+        return None
 
 
     ## DIALECTIC CONFIGURATION
@@ -185,13 +213,15 @@ class Conf():
     def load_expression_configuration(
         self
     ) -> munch.Munch:
-        """Returns the parsed _Expression_ configuration from the _data/conf/self/expressions.yaml_ file.
+        """Returns the parsed _Expression_ configuration from the _data/conf/dialectics/expression.yaml_ file.
 
         :return: _Expression_ configuration.
         :rtype: munch.Munch
         """
         if len(self.expression_conf) == 0:
-            self.expression_conf = self._dialectic_configuration('expressions')
+            self.expression_conf = self._dialectic_configuration(
+                constants.DialecticType.EXPRESSION.value
+            )
         # NOTE: Expressions do not have properties, so to make return type consistent
         #       across dialectics, return None for expression properties
         return (
@@ -203,14 +233,16 @@ class Conf():
     def load_projectile_configuration(
         self
     ) -> munch.Munch:
-        """Returns the parsed _Projectile_ configuration from the _data/conf/self/controls.yaml_ file.
+        """Returns the parsed _Projectile_ configuration from the _data/conf/dialectics/projectile.yaml_ file.
 
         :return: _Projectile_ configuration.
         :rtype: munch.Munch
         """
         if len(self.projectile_property_conf) == 0 or \
             len(self.projectile_img_conf) == 0:
-            projectiles_conf = self._dialectic_configuration('projectiles')
+            projectiles_conf = self._dialectic_configuration(
+                constants.DialecticType.PROJECTILE.value
+            )
 
             # NOTE: separate in-game configuration from image configuration
             for project_key, projectile_conf in projectiles_conf.items():
@@ -243,12 +275,16 @@ class Conf():
     def load_dialectic_configuration(
         self,
         dialectic_type
-    ) -> munch.Munch:
+    ) -> Union[
+        munch.Munch,
+        None
+    ]:
         # NOTE: generalized method that routes through cache
-        if dialectic_type == 'projectiles':
+        if dialectic_type == constants.DialecticType.PROJECTILE.value:
             return self.load_projectile_configuration()
-        if dialectic_type == 'expressions':
+        if dialectic_type == constants.DialecticType.EXPRESSION.value:
             return self.load_expression_configuration()
+        return None
 
 
     ## ENTITY CONFIGURATION
@@ -257,7 +293,7 @@ class Conf():
     def load_apparel_configuration(
         self
     ) -> munch.Munch:
-        """Returns the parsed _Apparel_ configuration from the _data/conf/self/apparel.yaml_ file.
+        """Returns the parsed _Apparel_ configuration from the _data/conf/entity/apparel.yaml_ file.
 
         :return: _Apparel_ configuration.
         :rtype: munch.Munch
@@ -266,14 +302,16 @@ class Conf():
         #       used in repo to load in assets
         #       used again in world for state information
         if len(self.apparel_conf) == 0:
-            self.apparel_conf = self._entity_configuration('apparel')
+            self.apparel_conf = self._entity_configuration(
+                constants.EntityType.APPAREL.value
+            )
         return self.apparel_conf
 
 
     def load_sprite_configuration(
         self
     ) -> munch.Munch:
-        """Returns the parsed _Sprite_ configuration from the _data/conf/entities/sprites.yaml_ file.
+        """Returns the parsed _Sprite_ configuration from the _data/conf/entity/sprite.yaml_ file.
 
         :return: _Sprite_ specific configurations parsed into `(sprite_stature_conf, sprite_property_conf, sprite_sheet_conf, sprite_dimensions)`-tuple
         :rtype: tuple
@@ -286,7 +324,9 @@ class Conf():
             len(self.sprite_sheet_conf) == 0 or \
             not self.sprite_size:
 
-            sprites_conf = self._entity_configuration('sprites')
+            sprites_conf = self._entity_configuration(
+                constants.EntityType.SPRITE.value
+            )
 
             self.sprite_stature_conf = sprites_conf.stature
             self.sprite_size = sprites_conf.size
@@ -317,11 +357,14 @@ class Conf():
     def load_entity_configuration(
         self,
         entity_type
-    ) -> munch.Munch:
+    ) -> Union[
+        munch.Munch,
+        None
+    ]:
         # NOTE: generalized method that routes through cache
-        if entity_type == 'sprites':
+        if entity_type == constants.EntityType.SPRITE.value:
             return self.load_sprite_configuration()
-        if entity_type == 'apparel':
+        if entity_type == constants.EntityType.APPAREL.value:
             return self.load_apparel_configuration()
 
 
@@ -330,27 +373,36 @@ class Conf():
     def load_composite_configuration(
         self
     ) -> munch.Munch:
-        """Returns the parsed _Composite_ configuration from the _data/conf/forms/composite.yaml_.file.
+        """Returns the parsed _Composite_ configuration from the _data/conf/form/composite.yaml_.file.
 
         :return: _Composite_ configuration
         :rtype: munch.Munch
         """
         if len(self.composite_conf) == 0:
-            self.composite_conf = self._form_configuration('composite')
-        return self.composite_conf
+            self.composite_conf = self._form_configuration(
+                constants.FormType.COMPOSITE.value
+            )
+        # NOTE: Compositions do not have properties, so to make return type consistent
+        #       across forms, return None for composition properties
+        return (
+            None,
+            self.composite_conf
+        )
 
 
     def load_tile_configuration(
         self
     ) -> munch.Munch:
-        """Returns the parsed _Tile_ configuration from the _data/conf/forms/tiles.yaml_ file
+        """Returns the parsed _Tile_ configuration from the _data/conf/form/tile.yaml_ file
 
         :return: _Tile_ configuration
         :rtype: munch.Munch
         """
 
         if len(self.tile_sheet_conf) == 0:
-            self.tile_sheet_conf = self._form_configuration('tiles')
+            self.tile_sheet_conf = self._form_configuration(
+                constants.FormType.TILE.value
+            )
 
         # NOTE: Tiles do not have properties, so to make return type consistent
         #       across forms, return None for tile properties
@@ -363,7 +415,7 @@ class Conf():
     def load_strut_configuration(
         self
     ) -> tuple:
-        """Returns the parsed _Strut_ configuration from the _data/conf/forms/struts.yaml_ file.
+        """Returns the parsed _Strut_ configuration from the _data/conf/form/strut.yaml_ file.
 
         :return: _Strut_ specific configurations parsed into `(strut_property_conf, strut_sheet_conf)`-tuple.
         :rtype: tuple
@@ -373,8 +425,11 @@ class Conf():
         .. note::
             Both `onta.world.World` and `onta.loader.repo.Repo` require the dimensions of a _Strut_, e.g. its (_w_, _h_) tuple, for calculations. Rather than dispensing with the separation between sheet and property configuration, this value is added to both configuration dictionary. A little bit of redundancy can be a good thing...
         """
-        if not self.strut_property_conf or not self.strut_sheet_conf:
-            struts_conf = self._form_configuration('struts')
+        if not self.strut_property_conf or \
+            not self.strut_sheet_conf:
+            struts_conf = self._form_configuration(
+                constants.FormType.STRUT.value
+            )
 
             for strut_key, strut in struts_conf.items():
                 setattr(
@@ -407,7 +462,7 @@ class Conf():
     def load_plate_configuration(
         self
     ) -> tuple:
-        """Returns the parsed _Plate_ configuration from the _data/conf/forms/plate.yaml_ file. 
+        """Returns the parsed _Plate_ configuration from the _data/conf/form/plate.yaml_ file. 
 
         :return: _Plate_ specific configurations parsed into `(plate_property_conf, strut_sheet_conf)`-tupe.
         :rtype: tuple
@@ -418,7 +473,9 @@ class Conf():
         if not self.plate_property_conf or \
             not self.plate_sheet_conf:
 
-            plates_conf = self._form_configuration('plates')
+            plates_conf = self._form_configuration(
+                constants.FormType.PLATE.value
+            )
 
             for plate_key, plate_conf in plates_conf.items():
                 setattr(
@@ -451,13 +508,21 @@ class Conf():
     def load_form_configuration(
         self,
         form_type
-    ) -> munch.Munch:
+    ) -> Union[
+        munch.Munch,
+        None
+    ]:
         # NOTE: generalized method that routes through cache...
-        if form_type == 'plates':
+        if form_type == constants.FormType.PLATE.value:
             return self.load_plate_configuration()
 
-        if form_type == 'tiles':
+        if form_type == constants.FormType.TILE.value:
             return self.load_tile_configuration()
 
-        if form_type == 'struts':
+        if form_type == constants.FormType.STRUT.value:
             return self.load_strut_configuration()
+
+        if form_type == constants.FormType.COMPOSITE.value:
+            return self.load_composite_configuration()
+
+        return None

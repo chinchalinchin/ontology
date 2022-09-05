@@ -1,10 +1,10 @@
-# NOTE: rendering order for the individual components (i.e. struts and plates)
+# NOTE: rendering order for the individual components (i.e. strut and plate)
 #       must be defined in the state file for each individual component, even 
 #       if no other instances of that component, besides the composition, are 
 #       present
 
 house:
-  struts:
+  strut:
     house_exterior_wall:
       sets:
         - start:
@@ -48,7 +48,7 @@ house:
             x: 130
             y: 180
           cover: false
-  plates:
+  plate:
     house_door:
       sets:
         - start:
@@ -59,7 +59,7 @@ house:
           content: two
 
 house_interior:
-  struts:
+  strut:
     house_interior_wall:
       sets:
         - start:
@@ -94,7 +94,7 @@ house_interior:
             x: 188
             y: 105
           cover: false
-  plates:
+  plate:
     inside_door:
       sets:
         - start:
@@ -105,7 +105,7 @@ house_interior:
           content: one
 
 castle:
-  struts:
+  strut:
     castle_wall:
       sets:
         - start:
@@ -261,7 +261,7 @@ castle:
             x: 254
             y: -86
           cover: false
-  plates:
+  plate:
     embedded_switch:
       sets:
         - start:
@@ -280,7 +280,7 @@ castle:
           content: castle_connection
 
 tree_patch:
-  struts:
+  strut:
     tree_trunk:
       sets:
         - start:
@@ -337,7 +337,7 @@ tree_patch:
           cover: true
 
 horizontal_pavement:
-  struts:
+  strut:
     city_pavement:
       sets:
         - start:
@@ -357,7 +357,7 @@ horizontal_pavement:
           cover: false
 
 grave:
-  struts:
+  strut:
     grave_headstone:
       sets:
         - start:
@@ -374,7 +374,7 @@ grave:
           cover: false 
 
 wood_bridge_vertical:
-  struts:
+  strut:
     wood_bridge_vertical_left:
       sets:
         - start:

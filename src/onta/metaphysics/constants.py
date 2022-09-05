@@ -1,26 +1,54 @@
 from enum import Enum
 
-# TOP LEVEL TYPES
+#### FIRST LEVEL TYPES
+class OntaTypes(Enum):
+    FORM = 'form'
+    ENTITY = 'entity'
+    SELF = 'self'
+    DIALECTICS = 'dialectics'
+
+#### SECOND LEVEL TYPES
 class FormType(Enum):
     TILE = 'tile'
     STRUT = 'strut'
     PLATE = 'plate'
     # TODO: TRACK = 'track'
+    COMPOSITE = 'composite'
 
 class EntityType(Enum):
     SPRITE = 'sprite'
+    APPAREL = 'apparel'
     # TODO: PIXIE = 'pixie'
     # TODO: NYMPH = 'nypmh'
 
 class SelfTypes(Enum):
     AVATAR = 'avatar'
     QUALIA = 'qualia'
+    WILL = 'will'
 
 class DialecticType(Enum):
     PROJECTILE = 'projectile'
     EXPRESSION = 'expression'
 
-# SECOND LEVEL TYPES
+#### THIRD LEVEL TYPES
+class PlateTypes(Enum):
+    DOOR = 'door'
+    CONTAINER = 'container'
+    GATE = 'gate'
+    PRESSURE = 'pressure'
+    MASS = 'mass'
+
+class AvatarTypes(Enum):
+    ARMORY = 'armory'
+    EQUIPMENT = 'equipment'
+    INVENTORY = 'inventory'
+    QUANTITY = 'quantity'
+
+class ApparelTypes(Enum):
+    ARMOR = 'armor'
+    EQUIPMENT = 'equipment'
+
+#### FOURTH LEVEL TYPES
 class ExtrinsicType(Enum):
     PACK = 'pack'
     BAG = 'bag'
@@ -36,18 +64,7 @@ class IntrinsicType(Enum):
     ASIDE = 'aside'
     FOCUS = 'focus'
 
-class AvatarTypes(Enum):
-    ARMORY = 'armory'
-    EQUIPMENT = 'equipment'
-    INVENTORY = 'inventory'
-    QUANTITY = 'quantity'
-
-class ApparelTypes(Enum):
-    ARMOR = 'armor'
-    EQUIPMENT = 'equipment'
-
-# SPECIAL TYPES
-
+#### DEPENDENT TYPES
 class StaticPlateType(Enum):
     DOOR = 'door'
 
@@ -76,3 +93,17 @@ class DirectionalQualiaPiece(Enum):
 
 class AlignmentQualiaPiece(Enum):
     BUFFER = 'buffer'
+
+## OTHER
+
+class Desires(Enum):
+    APPROACH = 'approach'
+    FLEE = 'flee'
+    ENGAGE = 'engage'
+
+class Intentions(Enum):
+    MOVE = 'move'
+    COMBAT = 'combat'
+    DEFEND = 'defend'
+    EXPRESS = 'express'
+    OPERATE = 'operate'

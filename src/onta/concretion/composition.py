@@ -3,7 +3,7 @@ import munch
 from onta.concretion.facticity \
     import gauge
 from onta.metaphysics \
-    import settings, logger
+    import settings, logger, constants
 
 log = logger.Logger(
     'onta.concretion.composition', 
@@ -87,12 +87,18 @@ def compose_animate_stature(
             settings.DEFAULT_SPRITE_ACTION, 
             sprite.stature.direction
         ])
-    elif sprite.stature.direction in [ up_left, down_left ]:
+    elif sprite.stature.direction in [ 
+        up_left, 
+        down_left 
+    ]:
         return settings.SEP.join([
             sprite.stature.action, 
             'left'
         ])
-    elif sprite.stature.direction in [ up_right, down_right ]:
+    elif sprite.stature.direction in [ 
+        up_right, 
+        down_right 
+    ]:
         return settings.SEP.join([
             sprite.stature.action ,
             'right'
@@ -189,11 +195,11 @@ def decompose_compositions(
                     )
 
                     # GRAB EXISTING ASSETS
-                    if elementset_key == 'tiles':
+                    if elementset_key == constants.FormType.TILE.value:
                         buffer_sets = decomposition[0]
-                    elif elementset_key == 'struts':
+                    elif elementset_key == constants.FormType.STRUT.value:
                         buffer_sets = decomposition[1]
-                    elif elementset_key == 'plates':
+                    elif elementset_key == constants.FormType.PLATE.value:
                         buffer_sets = decomposition[2]
 
                     for element_key, element in elementset_conf.items():
@@ -237,7 +243,7 @@ def decompose_compositions(
                                     len(buffer_sets.get(layer))
                                 )
                     
-                            if elementset_key == 'plates':
+                            if elementset_key == constants.FormType.PLATE.value:
                                 buffer_sets.get(layer).get(element_key).sets.append(
                                     munch.Munch({
                                         'start': {
@@ -262,11 +268,11 @@ def decompose_compositions(
                                     })
                                 )
                         
-                    if elementset_key == 'tiles':
+                    if elementset_key == constants.FormType.TILE.value:
                         decomposition[0] = buffer_sets
-                    elif elementset_key == 'struts':
+                    elif elementset_key == constants.FormType.STRUT.value:
                         decomposition[1] = buffer_sets
-                    elif elementset_key == 'plates':
+                    elif elementset_key == constants.FormType.PLATE.value:
                         decomposition[2] = buffer_sets
     
     return (

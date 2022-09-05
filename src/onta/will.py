@@ -60,7 +60,7 @@ class Will():
         self, 
         ontology_path = settings.DEFAULT_DIR
     ) -> None:
-        self.control_conf = conf.Conf(ontology_path).load_control_configuration()
+        self.control_conf = conf.Conf(ontology_path).load_will_configuration()
         self.keys = munch.munchify({ 
             key: False 
             for key 

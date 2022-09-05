@@ -275,7 +275,10 @@ class Totality():
         """
 
         for asset_type in list(
-            constants.FormType.__members__.values()
+            e.value 
+            for e 
+            in constants.FormType.__members__.values()
+            if e.value != constants.FormType.COMPOSITE.value
         ):
             log.debug(
                 f'Initializing {asset_type} assets...',  
@@ -320,12 +323,14 @@ class Totality():
 
                     log.verbose(
                         f"{asset_key}: size - {buffer.size}, mode - {buffer.mode}", 
-                        '_init_form_assets'
+                        'Totality._init_form_assets'
                     )
 
                     if asset_props and \
                         asset_props.get(asset_key).get('type') in list(
-                            constants.SwitchPlateType.__members__.values()
+                            e.value 
+                            for e 
+                            in constants.SwitchPlateType.__members__.values()
                         ):
 
                         setattr(
@@ -382,7 +387,9 @@ class Totality():
                     )
 
                     if asset_props.get(asset_key).get('type') in list(
-                        constants.SwitchPlateType.__members__.values()
+                        e.value 
+                        for e
+                        in constants.SwitchPlateType.__members__.values()
                     ):
                         setattr(
                             self.forms.get(asset_type),
@@ -408,7 +415,9 @@ class Totality():
     ) -> None:
 
         for asset_type in list(
-            constants.DialecticType.__members__.values()
+            e.value 
+            for e 
+            in constants.DialecticType.__members__.values()
         ):
             log.debug(
                 f'{asset_type} initialization',
@@ -593,7 +602,9 @@ class Totality():
 
             ## STYLED INITIALIZATION
             for set_type in list(
-                constants.StyledQualiaType.__members__.values()
+                e.value 
+                for e
+                in constants.StyledQualiaType.__members__.values()
             ):
 
                 if set_type == constants.ExtrinsicType.SLOT.value:
@@ -628,7 +639,9 @@ class Totality():
                     )
 
                     if set_key in list(
-                        constants.DirectionalQualiaPiece.__members__.values()
+                        e.value
+                        for e
+                        in constants.DirectionalQualiaPiece.__members__.values()
                     ):
                         adjust = self.adjust_directional_rotation(set_conf.definition)
                         setattr(
@@ -656,7 +669,9 @@ class Totality():
                         continue
                     
                     elif set_key in list(
-                        constants.AlignmentQualiaPiece.__members__.values()
+                        e.value 
+                        for e
+                        in constants.AlignmentQualiaPiece.__members__.values()
                     ):
                         adjust = self.adjust_alignment_rotation(set_conf.definition)
                         setattr(
@@ -686,7 +701,9 @@ class Totality():
 
             ## PIECEWISE DEFINITIONS
             for set_type in list(
-                constants.PiecewiseQualiaType.__members__.values()
+                e.value
+                for e
+                in constants.PiecewiseQualiaType.__members__.values()
             ):
                 # TODO: collapse this conditional into: iter_set = interface_conf.hud | menu.get(size).get(set_type)
                 #           by defining and passing the proper literals...
