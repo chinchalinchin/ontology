@@ -166,7 +166,10 @@ class Renderer():
         :param repository: _description_
         :type repository: repo.Repo
         """
-        log.debug('Rendering tile sets', '_render_tiles')
+        log.debug(
+            'Rendering tile sets', 
+            'Renderer._render_tiles'
+        )
 
         for layer in game_world.layers:
             for group_key, group_conf in game_world.get_tilesets(layer).items():
@@ -175,7 +178,10 @@ class Renderer():
                     'Renderer._render_tiles'
                 )
 
-                group_tile = data_totality.get_form_frame('tiles', group_key)
+                group_tile = data_totality.get_form_frame(
+                    constants.FormType.TILE.value, 
+                    group_key
+                )
 
                 for set_conf in group_conf.sets:
                     start = gauge.scale(
@@ -319,7 +325,7 @@ class Renderer():
         #   first pressures and then everything else
         for group_key, group_conf in render_map.items():
             group_frame = data_totality.get_form_frame(
-                'plates', 
+                constants.FormType.PLATE.value, 
                 group_key
             )
             group_type = game_world.plate_properties.get(group_key).type
@@ -540,7 +546,7 @@ class Renderer():
                         sprite_stature_key in animate_statures):
 
                     armor_frame = data_totality.get_apparel_frame(
-                        'armor',
+                        constants.ApparelType.ARMOR.value,
                         sprite.armor,
                         sprite_stature_key,
                         sprite.frame
@@ -592,7 +598,7 @@ class Renderer():
                         ):
 
                         equipment_frame = data_totality.get_apparel_frame(
-                            'equipment',
+                            constants.ApparelType.EQUIPMENT.value,
                             enabled_equipment,
                             sprite_stature_key,
                             sprite.frame
@@ -669,7 +675,9 @@ class Renderer():
     ) -> None:
 
         ### SLOT RENDERING
-        rendering_points = display.get_rendering_points('slot')
+        rendering_points = display.get_rendering_points(
+            constants.ExtrinsicType.SLOT.value
+        )
 
         cap_dir = display.get_cap_directions()
         buffer_dir = display.get_buffer_direction()
@@ -679,27 +687,30 @@ class Renderer():
 
         cap_frames = data_totality.get_slot_frames(
             display.media_size, 
-            'cap'
+            constants.SlotPiece.CAP.value
         )
         buffer_frames = data_totality.get_slot_frames(
             display.media_size, 
-            'buffer'
+            constants.SlotPiece.BUFFER.value
         )
         # TODO: I don't like the view creating the data structure here...
         # this should be done in repo...
         slot_frames = munch.Munch({
-            'enabled': data_totality.get_slot_frames(
-                display.media_size, 
-                'enabled'
-            ),
-            'disabled':  data_totality.get_slot_frames(
-                display.media_size, 
-                'disabled'
-            ),
-            'active': data_totality.get_slot_frames(
-                display.media_size, 
-                'active'
-            )
+            constants.SlotPiece.ENABLED.value: 
+                data_totality.get_slot_frames(
+                    display.media_size, 
+                    constants.SlotPiece.ENABLED.value
+                ),
+            constants.SlotPiece.DISABLED.value:  
+                data_totality.get_slot_frames(
+                    display.media_size, 
+                constants.SlotPiece.DISABLED.value
+                ),
+            constants.SlotPiece.ACTIVE.value: 
+                data_totality.get_slot_frames(
+                    display.media_size, 
+                    constants.SlotPiece.ACTIVE.value
+                )
         })
 
         # cap, then alternate buffer and slot until last cap
@@ -717,7 +728,9 @@ class Renderer():
                 render_key = next(render_order)
                 # map from slot name -> slot state -> slot frame
                 render_frame = slot_frames.get(
-                    display.get_frame_map('slot').get(render_key)
+                    display.get_frame_map(
+                        constants.ExtrinsicType.SLOT.value
+                    ).get(render_key)
                 )
 
             gui.render_composite(
@@ -727,12 +740,16 @@ class Renderer():
             )
         
         ## MIRROR RENDERING
-        rendering_points = display.get_rendering_points('life')
+        rendering_points = display.get_rendering_points(
+            constants.MirrorType.LIFE.value
+        )
 
-        for i, frame_key in display.get_frame_map('life').items():
+        for i, frame_key in display.get_frame_map(
+            constants.MirrorType.LIFE.value
+        ).items():
             life_frame = data_totality.get_mirror_frame(
                 display.media_size, 
-                'life', 
+                constants.MirrorType.LIFE.value, 
                 frame_key
             )
             render_point = rendering_points[i]
@@ -762,12 +779,16 @@ class Renderer():
                 )
 
         ## AVATAR RENDERING
-        avatar_rendering_points = display.get_rendering_points('avatar')
-        avatar_frame_map = display.get_frame_map('avatar')
+        avatar_rendering_points = display.get_rendering_points(
+            constants.SelfTypes.AVATAR.value
+        )
+        avatar_frame_map = display.get_frame_map(
+            constants.SelfTypes.AVATAR.value
+        )
         # TODO: there has to be a way of calculating this...
         avatar_set_map = munch.Munch({
-            'armory': 4, # slots 
-            'inventory': 8 # slots + wallets + belt + bag
+            constants.AvatarType.ARMORY.value: 4, # slots 
+            constants.AvatarType.INVENTORY.value: 8 # slots + wallets + belt + bag
         })
 
         for i, render_point in enumerate(avatar_rendering_points):
@@ -778,12 +799,12 @@ class Renderer():
             if i < avatar_set_map.armory and \
                 i < avatar_set_map.inventory:
 
-                set_key = 'armory'
+                set_key = constants.AvatarType.ARMORY.value
 
             elif i >= avatar_set_map.armory and \
                 i < avatar_set_map.inventory:
 
-                set_key = 'inventory'
+                set_key = constants.AvatarType.INVENTORY.value
 
             else: 
 
@@ -823,14 +844,16 @@ class Renderer():
             overlay
         )
 
-        idea_render_pts = in_quale.rendering_points('idea')
+        idea_render_pts = in_quale.rendering_points(
+            constants.IntrinsicType.IDEA.value
+        )
         
         idea_frame_map, idea_piece_map = in_quale.idea_maps()
 
         for i, render_point in enumerate(idea_render_pts):
             render_frame = data_totality.get_piecewise_qualia_frame(
                 in_quale.media_size, 
-                'idea',
+                constants.IntrinsicType.IDEA.value,
                 idea_frame_map[i],
                 idea_piece_map[i]
             )
@@ -845,7 +868,9 @@ class Renderer():
 
             if isinstance(activated_thought, bauble.BaubleThought):
                 baub_render_pts, avtr_render_pts = \
-                    activated_thought.rendering_points('bauble')
+                    activated_thought.rendering_points(
+                        constants.IntrinsicType.BAUBLE.value
+                    )
                 baub_frame_map, baub_piece_map, baub_avtr_map = \
                     activated_thought.bauble_maps()
 
@@ -855,7 +880,7 @@ class Renderer():
 
                     render_frame = data_totality.get_piecewise_qualia_frame(
                         in_quale.media_size,
-                        'bauble',
+                        constants.IntrinsicType.BAUBLE.value,
                         baub_frame_map[i],
                         baub_piece_map[i]
                     )

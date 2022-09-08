@@ -31,22 +31,23 @@ class DialecticType(Enum):
     EXPRESSION = 'expression'
 
 #### THIRD LEVEL TYPES
-class PlateTypes(Enum):
+class PlateType(Enum):
     DOOR = 'door'
     CONTAINER = 'container'
     GATE = 'gate'
     PRESSURE = 'pressure'
     MASS = 'mass'
 
-class AvatarTypes(Enum):
+class AvatarType(Enum):
     ARMORY = 'armory'
     EQUIPMENT = 'equipment'
     INVENTORY = 'inventory'
     QUANTITY = 'quantity'
 
-class ApparelTypes(Enum):
+class ApparelType(Enum):
     ARMOR = 'armor'
     EQUIPMENT = 'equipment'
+    SHIELD = 'shield'
 
 #### FOURTH LEVEL TYPES
 class ExtrinsicType(Enum):
@@ -63,6 +64,16 @@ class IntrinsicType(Enum):
     CONCEPTION = 'conception'
     ASIDE = 'aside'
     FOCUS = 'focus'
+
+#### FIFTH LEVEL TYPES
+class PackType(Enum):
+    BAG = 'bag'
+    BELT = 'belt'
+
+class MirrorType(Enum):
+    LIFE = 'life'
+    MAGIC = 'magic'
+
 
 #### DEPENDENT TYPES
 class StaticPlateType(Enum):
@@ -94,6 +105,14 @@ class DirectionalQualiaPiece(Enum):
 class AlignmentQualiaPiece(Enum):
     BUFFER = 'buffer'
 
+## DECOMPOSITIONS
+
+class SlotPiece(Enum):
+    CAP = 'cap'
+    BUFFER = 'buffer'
+    ENABLED = 'enabled'
+    DISABLED = 'disabled'
+    ACTIVE = 'active'
 ## OTHER
 
 class Desires(Enum):
