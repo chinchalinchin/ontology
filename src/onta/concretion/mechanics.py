@@ -120,7 +120,9 @@ def detect_collision(
     .. todo::
         Modify this to return the direction of the collision. Need to recoil sprite based on where the collision came from, not which direction the sprite is heading...
     """
-    if not hitbox_list or None in hitbox_list:
+    if not hitbox_list or \
+        None in hitbox_list:
+        # Possible BUG here. If None is in hitbox list, the rest of the list still needs evaluated, does it not?
         return None
 
     compile_result = gauge.any_intersections(
@@ -128,7 +130,12 @@ def detect_collision(
         hitbox_list
     )
 
-    if all(not el for el in iter(compile_result)):
+    if not compile_result or \
+        all(
+            not el 
+            for el 
+            in iter(compile_result)
+        ):
         return None
 
     return compile_result

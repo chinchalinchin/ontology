@@ -75,7 +75,7 @@ class MirrorType(Enum):
     MAGIC = 'magic'
 
 
-#### DEPENDENT TYPES
+### DEPENDENT TYPES
 class StaticPlateType(Enum):
     DOOR = 'door'
 
@@ -106,15 +106,14 @@ class AlignmentQualiaPiece(Enum):
     BUFFER = 'buffer'
 
 ## DECOMPOSITIONS
-
 class SlotPiece(Enum):
     CAP = 'cap'
     BUFFER = 'buffer'
     ENABLED = 'enabled'
     DISABLED = 'disabled'
     ACTIVE = 'active'
-## OTHER
 
+## OTHER
 class Desires(Enum):
     APPROACH = 'approach'
     FLEE = 'flee'

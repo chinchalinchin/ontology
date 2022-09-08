@@ -330,14 +330,22 @@ class Renderer():
             )
             group_type = game_world.plate_properties.get(group_key).type
 
+            log.infinite(
+                f'Rendering {group_type} {group_key} plates', 
+                'Renderer._render_variable_platesets'
+            )
 
             if group_type in list(
-                constants.StaticPlateType.__members__.values()
+                e.value 
+                for e 
+                in constants.StaticPlateType.__members__.values()
             ):
                 continue
 
             if group_type not in list(
-                constants.SwitchPlateType.__members__.values()
+                e.value 
+                for e
+                in constants.SwitchPlateType.__members__.values()
             ):
                 group_dim = (
                     group_frame.size[0],
@@ -349,11 +357,6 @@ class Renderer():
                     group_frame.on.size[1]
                 )
     
-            log.infinite(
-                f'Rendering {group_type} {group_key} plates', 
-                'Renderer._render_variable_platesets'
-            )
-
             # NOTE: convert to immutable tuple of tuples for cython static typing
             typeable_group_conf = tuple(
                 (
@@ -389,7 +392,9 @@ class Renderer():
                 )
 
                 if group_type not in list(
-                    list(constants.SwitchPlateType.__members__.values())
+                    e.value 
+                    for e
+                    in constants.SwitchPlateType.__members__.values()
                 ):
                     gui.render_composite(
                         self.world_frame,
@@ -675,7 +680,7 @@ class Renderer():
     ) -> None:
 
         ### SLOT RENDERING
-        rendering_points = display.get_rendering_points(
+        rendering_points = display.get_render_points(
             constants.ExtrinsicType.SLOT.value
         )
 
@@ -683,7 +688,7 @@ class Renderer():
         buffer_dir = display.get_buffer_direction()
 
         # slot names
-        render_order = iter(display.properties.slots.maps)
+        render_order = iter(display.properties.slot.maps)
 
         cap_frames = data_totality.get_slot_frames(
             display.media_size, 
@@ -740,7 +745,7 @@ class Renderer():
             )
         
         ## MIRROR RENDERING
-        rendering_points = display.get_rendering_points(
+        rendering_points = display.get_render_points(
             constants.MirrorType.LIFE.value
         )
 
@@ -761,15 +766,15 @@ class Renderer():
 
         ## PACK RENDERING
         # avatar rendering points include slot avatars and wallet avatars...
-        for pack_key in extrinsic.PACK_TYPES:
-            pack_map = display.get_frame_map(pack_key)
-            pack_rendering_points = display.get_rendering_points(pack_key)
+        for pack_key in constants.PackType.__members__.values():
+            pack_map = display.get_frame_map(pack_key.value)
+            pack_rendering_points = display.get_render_points(pack_key.value)
 
             for i, render_point in enumerate(pack_rendering_points):
                 # offset by slots
                 pack_frame = data_totality.get_pack_frame(
                     display.media_size,
-                    pack_key,
+                    pack_key.value,
                     pack_map[i]
                 )
                 gui.render_composite(
@@ -779,7 +784,7 @@ class Renderer():
                 )
 
         ## AVATAR RENDERING
-        avatar_rendering_points = display.get_rendering_points(
+        avatar_rendering_points = display.get_render_points(
             constants.SelfTypes.AVATAR.value
         )
         avatar_frame_map = display.get_frame_map(

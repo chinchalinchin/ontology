@@ -128,9 +128,13 @@ class Will():
             if direction_flags[dir_key]:
                 dirs += 1
 
-        # ensure precedence is enforced if overlap
+        activated_key = None
+
+        if dirs == 1:
+            activated_key = list(direction_flags.keys())[-1]
+
         if dirs > 1:
-            precedence, activated_key = 0, None
+            precedence = 0
             for dir_key, dir_flag in direction_flags.copy().items():
                 if dir_flag and \
                     directions.get(dir_key).precedence >= precedence:
@@ -161,9 +165,13 @@ class Will():
             if action_flags[action_key]:
                 acts += 1
 
-        # ensure precedence is enforced if overlap
+        activated_key = None
+
+        if acts == 1:
+            activated_key = list(action_flags.keys())[-1]
+
         if acts > 1:
-            precedence, activated_key = 0, None
+            precedence = 0
             for act_key, act_flag in action_flags.copy().items():
                 if act_flag and \
                     actions.get(act_key).precedence >= precedence:
@@ -195,8 +203,13 @@ class Will():
             if med_flags[med_key]:
                 meds += 1
 
-        if meds > 1:
-            precedence, activated_key = 0, None
+        activated_key = None
+
+        if meds == 1:
+            activated_key = list(med_flags.keys())[-1]
+
+        elif meds > 1:
+            precedence = 0
             for med_key, med_flag in med_flags.copy().items():
                 if med_flag and \
                     meditations.get(med_key).precedence >= precedence:

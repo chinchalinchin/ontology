@@ -43,52 +43,57 @@ def reorient(
         hitbox[3]
     )
 
-    # compiled version returns all -1 instead of None to avoid type-check problems
+    up_valid, down_valid, left_valid, right_valid = (False,) * 4
 
     up_result = gauge.any_intersections(
         new_up, 
         collision_set
     )
-    up_valid = len([
-        el 
-        for el 
-        in iter(up_result)
-        if el
-    ]) > 0
+    if up_result:
+        up_valid = len([
+            el 
+            for el 
+            in iter(up_result)
+            if el
+        ]) > 0
 
     left_result = gauge.any_intersections(
         new_left, 
         collision_set
     )
-    left_valid = len([
-        el 
-        for el 
-        in iter(left_result)
-        if el
-    ]) > 0
+
+    if left_result:
+        left_valid = len([
+            el 
+            for el 
+            in iter(left_result)
+            if el
+        ]) > 0
 
 
     right_result = gauge.any_intersections(
         new_right, 
         collision_set
     )
-    right_valid = len([
-        el 
-        for el 
-        in iter(right_result)
-        if el
-    ]) > 0
+    if right_result:
+        right_valid = len([
+            el 
+            for el 
+            in iter(right_result)
+            if el
+        ]) > 0
 
     down_result = gauge.any_intersections(
         new_down, 
         collision_set
     )
-    down_valid = len([
-        el 
-        for el 
-        in iter(down_result)
-        if el
-    ]) > 0
+    if down_result:
+        down_valid = len([
+            el 
+            for el 
+            in iter(down_result)
+            if el
+        ]) > 0
 
     # TODO: diagonals
 
@@ -105,7 +110,7 @@ def reorient(
         
     # TODO: diagonals
 
-    least_direction = ''
+    least_direction = 'up'
     least_direction_distance = gauge.distance(
         ( 0,0 ), 
         world_dim
