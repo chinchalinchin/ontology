@@ -88,6 +88,8 @@ def on_screen(
         world_dim, 
         player_dim
     )
+    # TODO: There may be a bug here, since it is rendering variable platesets
+    #        that are not on screen...
     return gauge.intersection(
         crop_box, 
         object_dim
@@ -169,6 +171,8 @@ def plate_coordinates(
     .. note:: 
         The first field in each element of the returned list is the index of the group frame.
     """
+    # TODO: I don't think crop should be passed in here. the view should handle
+    # on screen calculations...
     coords = list()
     for i in range(len(group_conf)):
         start = gauge.scale(

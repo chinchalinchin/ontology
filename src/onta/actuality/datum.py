@@ -1139,6 +1139,7 @@ class Totality():
         :return: _description_
         :rtype: Union[Image.Image, None]
         """
+        print(self.packs)
         if self.packs.get(breakpoint_key) and \
             self.packs.get(breakpoint_key).get(component_key):
             return self.packs.get(breakpoint_key).get(component_key).get(piece_key)

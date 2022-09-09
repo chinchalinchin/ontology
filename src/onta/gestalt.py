@@ -321,6 +321,9 @@ class Renderer():
             game_world.sprite_dimensions[1]
         )
 
+        # TODO: what if not on screen? currently being handled by formulae
+        #       module, but should be handled in this method.
+
         # and anyway, plates need rendered by type.
         #   first pressures and then everything else
         for group_key, group_conf in render_map.items():
@@ -718,6 +721,7 @@ class Renderer():
                 )
         })
 
+
         # cap, then alternate buffer and slot until last cap
         for i, render_point in enumerate(rendering_points):
             if i == 0:
@@ -738,6 +742,11 @@ class Renderer():
                     ).get(render_key)
                 )
 
+                log.infinite(
+                    f'Rendering {render_key} slot...',
+                    'Renderer._render_extrinsic_quales'
+                )
+
             gui.render_composite(
                 self.world_frame,
                 render_frame,
@@ -747,6 +756,11 @@ class Renderer():
         ## MIRROR RENDERING
         rendering_points = display.get_render_points(
             constants.MirrorType.LIFE.value
+        )
+
+        log.infinite(
+            f'Rendering {constants.MirrorType.LIFE.value} mirrors...',
+            'Renderer._render_extrinsic_quales'
         )
 
         for i, frame_key in display.get_frame_map(
@@ -767,11 +781,17 @@ class Renderer():
         ## PACK RENDERING
         # avatar rendering points include slot avatars and wallet avatars...
         for pack_key in constants.PackType.__members__.values():
+            log.infinite(
+                f'Rendering {pack_key.value} pack...',
+                'Renderer._render_extrinsic_quales'
+            )
+
             pack_map = display.get_frame_map(pack_key.value)
             pack_rendering_points = display.get_render_points(pack_key.value)
 
             for i, render_point in enumerate(pack_rendering_points):
                 # offset by slots
+
                 pack_frame = data_totality.get_pack_frame(
                     display.media_size,
                     pack_key.value,
@@ -817,6 +837,11 @@ class Renderer():
 
             if not set_key:
                 continue
+
+            log.infinite(
+                f'Rendering {set_key} avatar...',
+                'Renderer._render_extrinsic_quales'
+            )
         
             avatar_frame = data_totality.get_avatar_frame(
                 set_key,
