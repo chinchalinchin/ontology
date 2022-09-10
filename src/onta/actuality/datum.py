@@ -594,7 +594,7 @@ class Totality():
                         })
                 
                     setattr(
-                        self.selves.get(constants.SelfType.QUALIA.value).get(size).get(family),
+                        self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
                         quale_key,
                         buffer
                     )
@@ -953,6 +953,53 @@ class Totality():
 
 
     @functools.lru_cache(maxsize=64)
+    def get_simple_qualia_frame(
+        self,
+        component_key
+    ) -> Union[
+        Image.Image, 
+        None
+    ]:
+        return self.selves.qualia.get(component_key)
+
+
+    @functools.lru_cache(maxsize=64)
+    def get_rotatable_qualia_frame(
+        self,
+        component_key,
+        direction_key,
+    ) -> Union[
+        Image.Image,
+        None
+    ]:
+        return None
+
+
+    @functools.lru_cache(maxsize=64)
+    def get_fillable_qualia_frame(
+        self,
+        component_key,
+        fill_key
+    ) -> Union[
+        Image.Image,
+        None
+    ]:
+        pass
+
+
+    @functools.lru_cache(maxsize=64)
+    def get_traversable_qualia_frame(
+        self,
+        component_key,
+        status_key
+    ) -> Union[
+        Image.Image,
+        None
+    ]:
+        pass
+
+
+    @functools.lru_cache(maxsize=64)
     def get_piecewise_qualia_frame(
         self, 
         breakpoint_key: str, 
@@ -963,39 +1010,6 @@ class Totality():
         Image.Image, 
         None
     ]:
-        """_summary_
-
-        :param breakpoint_key: _description_
-        :type breakpoint_key: str
-        :param component_key: _description_
-        :type component_key: str
-        :param frame_key: _description_
-        :type frame_key: str
-        :param piece_key: _description_
-        :type piece_key: str
-        :return: _description_
-        :rtype: Union[Image.Image, None]
-        """
-        if self.qualia.get(breakpoint_key) and \
-            self.qualia.get(breakpoint_key).get(component_key) and \
-            self.qualia.get(breakpoint_key).get(component_key).get(frame_key):
-
-            return self.qualia.get(breakpoint_key).get(component_key).get(
-                frame_key).get(piece_key)
-        return None
-
-
-    @functools.lru_cache(maxsize=64)
-    def get_simple_qualia_frame(
-        self,
-        breakpoint_key,
-        component_key
-    ) -> Union[
-        Image.Image, 
-        None
-    ]:
-        if self.qualia.get(breakpoint_key):
-            return self.qualia.get(breakpoint_key).get(component_key)
         return None
 
 
