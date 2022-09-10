@@ -19,94 +19,7 @@ log = logger.Logger(
     settings.LOG_LEVEL
 )
 
-# TODO: too many hardcoded constants. either a general typing.yaml or else each .yaml needs to specify types somehow. also, it should be possible to pull the names of the top level types from the directory itself, i.e. the name of the YAML files. the lower level types should be parseable from the contents of the yaml....
-
-
-## TOP LEVEL TYPES
-FORM_TYPES = [ 
-    'tile', 
-    'strut', 
-    'plate' 
-]
-ENTITY_TYPES = [
-    'sprite',
-    # TODO: 'pixie',
-    # TODO: 'nymph',
-]
-SELF_TYPES = [
-    'avatar',
-    'qualia'
-]
-DIALECTIC_TYPES = [
-    'expression',
-    'projectile',
-    # TODO: lots
-]
-
-## SECOND LEVEL TYPES?
-EXTRINSIC_TYPES = [
-    'pack',
-    'bag',
-    'wallet'
-    'slot',
-    'mirror'
-]
-INTRINSIC_TYPES = [
-    'idea',
-    'concept',
-    'conception',
-    'aside',
-    'focus'
-]
-AVATAR_TYPES = [ 
-    'armory', 
-    'equipment', 
-    'inventory', 
-    'quantity' 
-]
-APPAREL_TYPES = [ 
-    'armor', 
-    'equipment' 
-]
-
-## SPECIAL TYPES ?
-SWITCH_PLATES_TYPES = [ 
-    'container', 
-    'pressure', 
-    'gate' 
-]
-PIECEWISE_QUALIA_TYPES = [
-    'mirror', 
-    'pack', 
-    'idea', 
-    'bauble', 
-    'aside', 
-    'focus'
-]
-STYLED_QUALIA_TYPES = [ 
-    'slot'
-]
-SIMPLE_QUALIA_TYPES=[
-    'concept',
-    'conception'
-]
-DIRECTIONAL_PIECE_TYPES = [
-    'cap'
-]
-ALIGNMENT_PIECE_TYPES = [
-    'buffer'
-]
-
-
 class Totality():
-    # TODO: 
-    qualia = munch.Munch({})
-    ## 
-    mirrors = munch.Munch({})
-    slots = munch.Munch({})
-    packs = munch.Munch({})
-    avatars = munch.Munch({})
-
     @staticmethod
     @functools.lru_cache(maxsize=2)
     def adjust_alignment_rotation(
@@ -514,13 +427,14 @@ class Totality():
         .. note::
             A _Slot_ is defined in a single direction, but used in multiple directions. When styles are applied the engine will need to be aware which direction the definition is in, so it can rotate the _Slot_ component to its appropriate position based on the declared style. In other words, _Slot_\s are a pain.
         """
+        # NOTE: avatar and qualia data structures are too different to condense initialization into one loop, 
+        #       which begs the questions, should they be grouped into the same hierarchical type?
+
+
         log.debug(
             f'Initializing avatar assets...', 
             'Totality._init_qualia_assets'
         )
-
-        # NOTE: avatar and qualia data structures are too different to condense initialization into one loop, 
-        #       which begs the questions, should they be grouped into the same hierarchical type?
 
         setattr(
             self.selves,
