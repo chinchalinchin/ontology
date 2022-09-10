@@ -542,7 +542,7 @@ class Totality():
                                 quale_key,
                                 buffer
                             )
-                            
+
                         elif def_type == 'rotatable':
                             if not quale_conf or not quale_conf.get('path'):
                                 continue
@@ -610,10 +610,13 @@ class Totality():
 
                         elif def_type == 'fillable':
                             pass
+
                         elif def_type == 'traversable':
                             pass
+
                         elif def_type == 'piecewise':
                             pass
+                        
                         elif def_type == 'piecewise_traversable':
                             pass
 
