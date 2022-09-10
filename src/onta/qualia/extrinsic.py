@@ -9,7 +9,7 @@ from onta.actuality \
 from onta.concretion.facticity \
     import formulae
 from onta.metaphysics \
-    import logger, settings, device
+    import logger, settings, device, constants
 from onta.qualia \
     import apriori
 
@@ -17,18 +17,6 @@ log = logger.Logger(
     'onta.concretion.qualia.extrinsic', 
     settings.LOG_LEVEL
 )
-
-PACK_TYPES = [ 
-    'bag', 
-    'belt' 
-]
-MIRROR_TYPES = [ 
-    'life', 
-    'magic' 
-]
-
-# TODO: change referenes to hud...
-
 
 class ExtrinsicQuale():
     """
@@ -99,7 +87,10 @@ class ExtrinsicQuale():
         config = conf.Conf(ontology_path)
         state_ao = state.State(ontology_path)
         self._init_fields()
-        self._init_conf(config, player_device)
+        self._init_conf(
+            config, 
+            player_device
+        )
         self._init_slot_positions(player_device)
         self._init_mirror_positions(player_device)
         self._init_pack_positions(player_device)
@@ -131,7 +122,6 @@ class ExtrinsicQuale():
                 # ...
             ```
         """
-
         self.containers = munch.Munch({})
         self.render_points = munch.Munch({})
         self.frame_maps = munch.Munch({})
@@ -157,19 +147,18 @@ class ExtrinsicQuale():
         """
         configure = config.load_qualia_configuration()
 
-        self.quale_conf = configure.extrinsic
-        self.styles = configure.styles.extrinsic
+        self.quale_conf = configure.qualia
         self.sizes = configure.apriori.sizes
         self.breakpoints = apriori.format_breakpoints(
             configure.apriori.breakpoints
-        )
-        self.properties = configure.properties.extrinsic
-
+        )    
         self.media_size = apriori.find_media_size(
             player_device.dimensions, 
             self.sizes, 
             self.breakpoints
         )
+        self.properties = configure.properties
+        self.styles = configure.styles.get(self.media_size)
 
         self.avatar_conf = config.load_avatar_configuration()
 
@@ -192,16 +181,16 @@ class ExtrinsicQuale():
         )
 
         pack_margins = (
-            self.styles.get(self.media_size).pack.margins.w, 
-            self.styles.get(self.media_size).pack.margins.h
+            self.styles.pack.margins.w, 
+            self.styles.pack.margins.h
         )
         pack_alignment = (
-            self.styles.get(self.media_size).pack.alignment.horizontal,
-            self.styles.get(self.media_size).pack.alignment.vertical
+            self.styles.pack.alignment.horizontal,
+            self.styles.pack.alignment.vertical
         )
 
-        bagset = self.quale_conf.get(self.media_size).pack.bag.display
-        beltset = self.quale_conf.get(self.media_size).pack.belt.display
+        bagset = self.quale_conf.piecwise.bag
+        beltset = self.quale_conf.piecewise.belt
 
         bag_piece_sizes = tuple(
             (
@@ -218,7 +207,7 @@ class ExtrinsicQuale():
 
         setattr(
             self.render_points,
-            'bag',
+            constants.QualiaType.BAG.value,
             formulae.bag_coordinates(
                 bag_piece_sizes,
                 self.get_bag_dimensions(),
@@ -230,7 +219,7 @@ class ExtrinsicQuale():
 
         setattr(
             self.render_points,
-            'belt',
+            constants.QualiaType.BELT.value,
             formulae.belt_coordinates(
                 self.render_points.bag[0],
                 belt_piece_sizes,
@@ -244,7 +233,7 @@ class ExtrinsicQuale():
 
         setattr(
             self.render_points,
-            'wallet',
+            constants.QualiaType.WALLET.value,
             formulae.wallet_coordinates(
                 self.render_points.belt[0],
                 self.render_points.bag[0],

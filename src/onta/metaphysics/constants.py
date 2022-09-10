@@ -63,7 +63,6 @@ class PlateFamilies(Enum):
     STATIC = 'static'
     SWITCH = 'switch'
     MASS = 'mass'
-
 class QualiaFamilies(Enum):
     SIMPLE = 'simple'
     ROTATABLE = 'rotatable'
@@ -71,7 +70,6 @@ class QualiaFamilies(Enum):
     PIECEWISE = 'piecewise'
     PIECEWISE_STATEFUL = 'piecewise_stateful'
     PACK = 'pack'
-
 ######## SECOND LEVEL
     ## PLATES
 class StaticPlateFamily(Enum):
@@ -98,6 +96,9 @@ class PackQualiaFamily(Enum):
     BAG = 'bag'
     BELT = 'belt'
     WALLET = 'wallet'
+class MeasureQualiaFamily(Enum):
+    MIRROR = "mirror"
+    METER = "meter"
 
 ## DECOMPOSITIONS
 class SlotPiece(Enum):

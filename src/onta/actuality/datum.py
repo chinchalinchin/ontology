@@ -514,19 +514,17 @@ class Totality():
                         'Totality._init_self_assets'
                     )
 
-                    buffer = buffer.crop(
-                        ( 
-                            quale_conf.position.x, 
-                            quale_conf.position.y, 
-                            quale_conf.size.w + quale_conf.position.x, 
-                            quale_conf.size.h + quale_conf.position.y 
-                        )
-                    )
-
                     setattr(
                         self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
                         quale_key,
-                        buffer
+                        buffer.crop(
+                            ( 
+                                quale_conf.position.x, 
+                                quale_conf.position.y, 
+                                quale_conf.size.w + quale_conf.position.x, 
+                                quale_conf.size.h + quale_conf.position.y 
+                            )
+                        )
                     )
 
                 elif family_key == constants.QualiaFamilies.ROTATABLE.value:
@@ -616,19 +614,18 @@ class Totality():
                             f"{family_key} {quale_key} {state_key}: size - {buffer.size}, mode - {buffer.mode}", 
                             'Totality._init_self_assets'
                         )
-                        buffer = buffer.crop(
-                            ( 
-                                state_conf.position.x, 
-                                state_conf.position.y, 
-                                state_conf.size.w + state_conf.position.x, 
-                                state_conf.size.h + state_conf.position.y 
-                            )
-                        )
 
                         setattr(
                             self.selves.get(constants.SelfType.QUALIA.value).get(family_key).get(quale_key),
                             state_key,
-                            buffer
+                            buffer.crop(
+                                ( 
+                                    state_conf.position.x, 
+                                    state_conf.position.y, 
+                                    state_conf.size.w + state_conf.position.x, 
+                                    state_conf.size.h + state_conf.position.y 
+                                )
+                            )
                         )
 
                 elif family_key == constants.QualiaFamilies.PIECEWISE.value:
@@ -655,19 +652,17 @@ class Totality():
                             'Totality._init_self_assets'
                         )
 
-                        buffer = buffer.crop(
-                            ( 
-                                piece_conf.position.x, 
-                                piece_conf.position.y, 
-                                piece_conf.size.w + piece_conf.position.x, 
-                                piece_conf.size.h + piece_conf.position.y 
-                            )
-                        )
-
                         setattr(
                             self.selves.get(constants.SelfType.QUALIA.value).get(family_key).get(quale_key),
                             piece_key,
-                            buffer
+                            buffer.crop(
+                                ( 
+                                    piece_conf.position.x, 
+                                    piece_conf.position.y, 
+                                    piece_conf.size.w + piece_conf.position.x, 
+                                    piece_conf.size.h + piece_conf.position.y 
+                                )
+                            )
                         )
                 
                 elif family_key == constants.QualiaFamilies.PIECEWISE_STATEFUL.value:
@@ -700,7 +695,10 @@ class Totality():
                                 'Totality._init_self_assets'
                             )
 
-                            buffer = buffer.crop(
+                            setattr(
+                                self.selves.get(constants.SelfType.QUALIA.value).get(family_key).get(quale_key).get(state_key),
+                                piece_key,
+                                buffer.crop(
                                 ( 
                                     piece_conf.position.x, 
                                     piece_conf.position.y, 
@@ -708,11 +706,6 @@ class Totality():
                                     piece_conf.size.h + piece_conf.position.y 
                                 )
                             )
-
-                            setattr(
-                                self.selves.get(constants.SelfType.QUALIA.value).get(family_key).get(quale_key).get(state_key),
-                                piece_key,
-                                buffer
                             )
 
 
@@ -973,8 +966,8 @@ class Totality():
         :return: _Avatar_ frame image.
         :rtype: Union[Image.Image, None]
         """
-        if self.avatars.get(set_key):
-            return self.avatars.get(set_key).get(avatar_key)
+        if self.selves.avatars.get(set_key):
+            return self.selves.avatars.get(set_key).get(avatar_key)
         return None
 
 
