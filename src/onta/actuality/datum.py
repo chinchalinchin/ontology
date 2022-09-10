@@ -488,137 +488,128 @@ class Totality():
 
         qualia_conf = config.load_qualia_configuration().qualia
 
-        for size, quale_families in qualia_conf.items():
+        for family_key, family_conf in qualia_conf.items():
             setattr(
                 self.selves.get(constants.SelfType.QUALIA.value),
-                size,
+                family_key,
                 munch.Munch({})
             )
 
-            # (extrinsic, conf), (intrinsic, conf), ...
-            for family, definition in quale_families.items():
+            for quale_key, quale_conf in family_conf.items():
                 setattr(
-                    self.selves.get(constants.SelfType.QUALIA.value).get(size),
-                    family,
+                    self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
+                    quale_key,
                     munch.Munch({})
                 )
 
-                # (simple, conf), (fillable, conf)....
-                for def_type, quales in definition.items():
+                if family_key == 'simple':
+                    if not quale_conf or not quale_conf.get('path'):
+                        continue
 
-                    # NOTE: dependent on the quale family and def_type
-                    #       e.g., (wallet, conf), (cap, conf), (buffer, conf), ..
-                    #       or     (bag, conf), (belt, conf)
-                    for quale_key, quale_conf in quales.items():
+                    buffer = gui.open_image(
+                        os.path.join(
+                            ontology_path,
+                            *settings.QUALIA_PATH,
+                            quale_conf.path
+                        )
+                    )
 
-                        if def_type == 'simple':
-                            if not quale_conf or not quale_conf.get('path'):
-                                continue
+                    log.debug( 
+                        f"{family_key} {quale_key}: size - {buffer.size}, mode - {buffer.mode}", 
+                        'Totality._init_self_assets'
+                    )
 
-                            buffer = gui.open_image(
-                                os.path.join(
-                                    ontology_path,
-                                    *settings.QUALIA_PATH,
-                                    quale_conf.path
-                                )
+                    buffer = buffer.crop(
+                        ( 
+                            quale_conf.position.x, 
+                            quale_conf.position.y, 
+                            quale_conf.size.w + quale_conf.position.x, 
+                            quale_conf.size.h + quale_conf.position.y 
+                        )
+                    )
+
+                    setattr(
+                        self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
+                        quale_key,
+                        buffer
+                    )
+
+                elif family_key == 'rotatable':
+                    if not quale_conf or not quale_conf.get('path'):
+                        continue
+
+                    buffer = gui.open_image(
+                        os.path.join(
+                            ontology_path,
+                            *settings.QUALIA_PATH,
+                            quale_conf.path
+                        )
+                    )
+
+                    log.debug( 
+                        f"{family_key} {quale_key}: size - {buffer.size}, mode - {buffer.mode}", 
+                        'Totality._init_self_assets'
+                    )
+
+                    buffer = buffer.crop(
+                        ( 
+                            quale_conf.position.x, 
+                            quale_conf.position.y, 
+                            quale_conf.size.w + quale_conf.position.x, 
+                            quale_conf.size.h + quale_conf.position.y 
+                        )
+                    )
+
+                    if quale_conf.get('rotation') == 'directional':
+                        adjust = self.adjust_directional_rotation(quale_conf.definition)
+                        buffer = munch.Munch({
+                            'down': buffer.rotate(
+                                adjust[0], 
+                                expand=True
+                            ),
+                            'left': buffer.rotate(
+                                adjust[1], 
+                                expand=True
+                            ),
+                            'right': buffer.rotate(
+                                adjust[2], 
+                                expand=True
+                            ),
+                            'up': buffer.rotate(
+                                adjust[3], 
+                                expand=True
+                            ),
+                        })
+                    elif quale_conf.get('rotation') == 'alignment':
+                        adjust = self.adjust_alignment_rotation(quale_conf.definition)
+                        buffer = munch.Munch({
+                            'vertical': buffer.rotate(
+                                adjust[0], 
+                                expand=True
+                            ),
+                            'horizontal': buffer.rotate(
+                                adjust[1], 
+                                expand=True
                             )
+                        })
+                
+                    setattr(
+                        self.selves.get(constants.SelfType.QUALIA.value).get(size).get(family),
+                        quale_key,
+                        buffer
+                    )
 
-                            log.debug( 
-                                f"{size} {family} {quale_key}: size - {buffer.size}, mode - {buffer.mode}", 
-                                'Totality._init_self_assets'
-                            )
+                elif family_key == 'fillable':
+                    pass
 
-                            buffer = buffer.crop(
-                                ( 
-                                    quale_conf.position.x, 
-                                    quale_conf.position.y, 
-                                    quale_conf.size.w + quale_conf.position.x, 
-                                    quale_conf.size.h + quale_conf.position.y 
-                                )
-                            )
+                elif family_key == 'traversable':
+                    pass
 
-                            setattr(
-                                self.selves.get(constants.SelfType.QUALIA.value).get(size).get(family),
-                                quale_key,
-                                buffer
-                            )
-
-                        elif def_type == 'rotatable':
-                            if not quale_conf or not quale_conf.get('path'):
-                                continue
-
-                            buffer = gui.open_image(
-                                os.path.join(
-                                    ontology_path,
-                                    *settings.QUALIA_PATH,
-                                    quale_conf.path
-                                )
-                            )
-
-                            log.debug( 
-                                f"{size} {family} {quale_key}: size - {buffer.size}, mode - {buffer.mode}", 
-                                'Totality._init_self_assets'
-                            )
-
-                            buffer = buffer.crop(
-                                ( 
-                                    quale_conf.position.x, 
-                                    quale_conf.position.y, 
-                                    quale_conf.size.w + quale_conf.position.x, 
-                                    quale_conf.size.h + quale_conf.position.y 
-                                )
-                            )
-
-                            if quale_conf.get('rotation') == 'directional':
-                                adjust = self.adjust_directional_rotation(quale_conf.definition)
-                                buffer = munch.Munch({
-                                    'down': buffer.rotate(
-                                        adjust[0], 
-                                        expand=True
-                                    ),
-                                    'left': buffer.rotate(
-                                        adjust[1], 
-                                        expand=True
-                                    ),
-                                    'right': buffer.rotate(
-                                        adjust[2], 
-                                        expand=True
-                                    ),
-                                    'up': buffer.rotate(
-                                        adjust[3], 
-                                        expand=True
-                                    ),
-                                })
-                            elif quale_conf.get('rotation') == 'alignment':
-                                adjust = self.adjust_alignment_rotation(quale_conf.definition)
-                                buffer = munch.Munch({
-                                    'vertical': buffer.rotate(
-                                        adjust[0], 
-                                        expand=True
-                                    ),
-                                    'horizontal': buffer.rotate(
-                                        adjust[1], 
-                                        expand=True
-                                    )
-                                })
-                        
-                            setattr(
-                                self.selves.get(constants.SelfType.QUALIA.value).get(size).get(family),
-                                quale_key,
-                                buffer
-                            )
-
-                        elif def_type == 'fillable':
-                            pass
-
-                        elif def_type == 'traversable':
-                            pass
-
-                        elif def_type == 'piecewise':
-                            pass
-                        
-                        elif def_type == 'piecewise_traversable':
-                            pass
+                elif family_key == 'piecewise':
+                    pass
+                
+                elif family_key == 'piecewise_traversable':
+                    pass
 
 
     def _init_entity_assets(

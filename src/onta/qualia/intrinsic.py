@@ -137,6 +137,7 @@ class IntrinsicQuale():
         self.media_size = None
         self.alpha = None
 
+
     def _init_idea_positions(
         self, 
         player_device: device.Device
@@ -254,12 +255,14 @@ class IntrinsicQuale():
                 continue
             self._enable_idea(name)
 
+
     def _idea_pieces(
         self
     ) -> list:
         return list(
             self.quale_conf.piecewise_traverseable.idea.enabled.keys()
         )
+
 
     def _activate_idea(
         self, 
