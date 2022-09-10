@@ -158,7 +158,7 @@ class IntrinsicQuale():
                 self.quale_conf.get(self.media_size).idea.enabled.get(piece).size.w, 
                 self.quale_conf.get(self.media_size).idea.enabled.get(piece).size.h 
             ) 
-            for piece in self.properties.idea.pieces
+            for piece in list(self.quale_conf.piecewise_traverseable.idea.enabled.keys())
         ]
 
         self.idea_rendering_points = formulae.idea_coordinates(
@@ -190,10 +190,10 @@ class IntrinsicQuale():
         # all button component pieces have the same pieces, so any will do...
         full_width = sum(
             self.quale_conf.get(self.media_size).idea.enabled.get(piece).size.w 
-            for piece in self.properties.idea.pieces
+            for piece in list(self.quale_conf.piecewise_traverseable.idea.enabled.keys())
         )
         full_height = self.quale_conf.get(self.media_size).idea.enabled.get(
-            self.properties.idea.pieces[0]
+            list(self.quale_conf.piecewise_traverseable.idea.enabled.keys())[0]
         ).size.h
         idea_dim = (
             full_width, 
@@ -254,6 +254,12 @@ class IntrinsicQuale():
                 continue
             self._enable_idea(name)
 
+    def _idea_pieces(
+        self
+    ) -> list:
+        return list(
+            self.quale_conf.piecewise_traverseable.idea.enabled.keys()
+        )
 
     def _activate_idea(
         self, 
@@ -270,7 +276,7 @@ class IntrinsicQuale():
             munch.Munch({
                 piece: 'active' 
                 for piece 
-                in self.properties.idea.pieces
+                in self._idea_pieces()
             })
         )
 
@@ -290,7 +296,7 @@ class IntrinsicQuale():
             munch.Munch({
                 piece: 'disabled' 
                 for piece 
-                in self.properties.idea.pieces
+                in self._idea_pieces()
             })
         )
 
@@ -310,7 +316,7 @@ class IntrinsicQuale():
             munch.Munch({
                 piece: 'enabled' 
                 for piece 
-                in self.properties.idea.pieces
+                in self._idea_pieces()
             })
         )
 

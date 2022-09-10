@@ -444,14 +444,14 @@ class Totality():
 
         avatar_conf = config.load_avatar_configuration()
 
-        for avatarset_key, avatarset_conf in avatar_conf.items():
+        for set_key, set_conf in avatar_conf.items():
             setattr(
-                self.avatars, 
-                avatarset_key, 
+                self.selves.get(constants.SelfType.AVATAR.value), 
+                set_key, 
                 munch.Munch({})
             )
 
-            for avatar_key, avatar in avatarset_conf.items():
+            for avatar_key, avatar in set_conf.items():
                 if not avatar or not avatar.get('path'):
                     continue
 
@@ -463,7 +463,7 @@ class Totality():
                     )
                 )
                 setattr(
-                    self.avatars.get(avatarset_key),
+                    self.selves.get(constants.SelfType.AVATAR.value).get(set_key),
                     avatar_key,
                     buffer.crop(
                         ( 
