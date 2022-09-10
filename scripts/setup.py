@@ -4,5 +4,5 @@ from Cython.Build import cythonize
 
 setup(
     zip_safe=False,
-    ext_modules=cythonize(["src/onta/engine/static/*.pyx"])
+    ext_modules=cythonize(["*.pyx"])
 )

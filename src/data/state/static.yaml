@@ -23,7 +23,7 @@ world:
 
 layers:
   one:
-    tiles:
+    tile:
       water:
         sets:
           # top
@@ -157,8 +157,8 @@ layers:
               w: 5
               h: 45
             cover: false
-    struts:
-    plates:
+    strut:
+    plate:
       obelisk:
         order: 4
         sets:
@@ -199,7 +199,7 @@ layers:
               x: 1800
               y: 1600
             content: connection_a
-    compositions:
+    composite:
       house:
         order: 0
         sets:
@@ -275,7 +275,7 @@ layers:
               units: absolute
               x: 630
               y: 1170
-      vertical_wood_bridge:
+      wood_bridge_vertical:
         order: 5
         sets:
           - start:
@@ -296,7 +296,7 @@ layers:
               y: 1539
       
   two:
-    tiles:
+    tile:
       hole:
         sets:
           - start:
@@ -307,9 +307,9 @@ layers:
               w: 20
               h: 60
             cover: false
-    struts:
-    plates:
-    compositions:
+    strut:
+    plate:
+    composite:
       house_interior:
         order: 0
         sets:

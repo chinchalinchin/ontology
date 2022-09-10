@@ -1,23 +1,23 @@
+import munch
 from typing import Union
 
-import munch
+from onta.actuality \
+    import state, conf
+from onta.concretion \
+    import mechanics, composition
+from onta.concretion.dasein \
+    import abstract, interpret, impulse
+from onta.concretion.facticity \
+    import gauge, paths
+from onta.concretion.noumena \
+    import substrata
+from onta.metaphysics \
+    import settings, logger, constants
 
-
-import onta.settings as settings
-import onta.loader.state as state
-import onta.loader.conf as conf
-import onta.engine.collisions as collisions
-import onta.engine.dasein.abstract as abstract
-import onta.engine.dasein.interpret as interpret
-import onta.engine.dasein.impulse as impulse
-import onta.engine.composition as composition
-import onta.util.logger as logger
-
-import onta.engine.static.calculator as calculator
-import onta.engine.static.paths as paths
-
-
-log = logger.Logger('onta.world', settings.LOG_LEVEL)
+log = logger.Logger(
+    'onta.world', 
+    settings.LOG_LEVEL
+)
 
 PLATE_META = [
     'doors',
@@ -40,11 +40,11 @@ ENTITY_TYPES = [
 
 
 class World():
-    """
-    """
-
+    # TODO: be careful with closures. 
+    
     ## See /docs/DATA_STRUCTURES.md for more information on 
     ##  the following fields.
+
     # CONFIGURATION FIELDS
     composite_conf = munch.Munch({})
     sprite_stature = munch.Munch({})
@@ -60,6 +60,7 @@ class World():
     compositions = munch.Munch({})
     hero = munch.Munch({})
     npcs = munch.Munch({})
+    # DERIVATIVE FIELDS
     switch_map = munch.Munch({})
     layer = None
     layers = []
@@ -96,16 +97,29 @@ class World():
         """ 
         Initialize configuration properties for in-game elements in the memory.
         """
-        log.debug('Initializing world configuration...', '_init_conf')
-        sprite_conf = config.load_sprite_configuration()
-        self.sprite_stature, self.sprite_properties, _, self.sprite_dimensions = sprite_conf
-        self.apparel_properties = config.load_apparel_configuration()
-        self.projectile_properties, _ = config.load_projectile_configuration()
-        self.plate_properties, _ = config.load_plate_configuration()
-        self.strut_properties, _ = config.load_strut_configuration()
-        self.composite_conf = config.load_composite_configuration()
-        tile_conf = config.load_tile_configuration()
-        self.tile_dimensions = (tile_conf.tile.w, tile_conf.tile.h)
+        log.debug(
+            'Initializing world configuration...', 
+            'World._init_conf'
+        )
+        self.sprite_stature, self.sprite_properties, _, self.sprite_dimensions = \
+            config.load_sprite_configuration()
+        self.apparel_properties = \
+            config.load_apparel_configuration()
+        self.projectile_properties, _ = \
+            config.load_projectile_configuration()
+        self.plate_properties, _ = \
+            config.load_plate_configuration()
+        self.strut_properties, _ = \
+            config.load_strut_configuration()
+        _, self.composite_conf = \
+            config.load_composite_configuration()
+        _, tile_conf = \
+            config.load_tile_configuration()
+
+        self.tile_dimensions = (
+            tile_conf.size.w, 
+            tile_conf.size.h
+        )
 
 
     def _init_static_state(
@@ -115,11 +129,17 @@ class World():
         """
         Initialize the state for static in-game elements, i.e. elements that do not move and are not interactable.
         """
-        log.debug(f'Initializing simple static world state...', '_init_static_state')
+        log.debug(
+            f'Initializing simple static world state...', 
+            'World._init_static_state'
+        )
         static_conf = state_ao.get_state('static')
 
-        self.dimensions = calculator.scale(
-            (static_conf.world.size.w, static_conf.world.size.h),
+        self.dimensions = gauge.scale(
+            (
+                static_conf.world.size.w, 
+                static_conf.world.size.h
+            ),
             self.tile_dimensions,
             static_conf.world.size.units
         )
@@ -128,13 +148,17 @@ class World():
             self.layers.append(layer_key)
 
             for asset_type, asset_set in zip(
-                ['tiles', 'struts', 'plates', 'compositions'],
-                [self.tilesets, self.strutsets, self.platesets, self.compositions]
+                [ e.value for e in constants.FormType.__members__.values() ],
+                [ self.tilesets, self.strutsets, self.platesets, self.compositions ]
             ):
-                setattr(asset_set, layer_key, layer_conf.get(asset_type))
+                setattr(
+                    asset_set, 
+                    layer_key, 
+                    layer_conf.get(asset_type)
+                )
 
         self.tilesets, self.strutsets, self.platesets = \
-            composition.decompose_compositions_into_sets(
+            composition.decompose_compositions(
                 self.layers,
                 self.compositions,
                 self.composite_conf,
@@ -159,116 +183,101 @@ class World():
         """
         log.debug(
             f'Calculating stationary hitbox locations...',
-            '_generate_stationary_hitboxes'
+            'World._generate_stationary_hitboxes'
         )
+        self.world_bounds = [
+            ( 
+                0,
+                0, 
+                self.dimensions[0], 
+                1 
+            ),
+            ( 
+                0, 
+                0, 
+                1, 
+                self.dimensions[1] 
+            ),
+            ( 
+                self.dimensions[0], 
+                0, 
+                1, 
+                self.dimensions[1] ),
+            ( 
+                0, 
+                self.dimensions[1], 
+                self.dimensions[0], 
+                1 
+            )
+        ]
+        strut_dicts = munch.unmunchify(self.strutsets)
+        plate_dicts = munch.unmunchify(self.platesets)
+
+        strut_prop_dict = munch.unmunchify(self.strut_properties)
+        plate_prop_dict = munch.unmunchify(self.plate_properties)
+
+        strut_dicts, plate_dicts = substrata.stationary_hitboxes(
+            self.layers,
+            self.tile_dimensions,
+            strut_dicts,
+            plate_dicts,
+            strut_prop_dict,
+            plate_prop_dict
+        )
+
+        self.platesets = munch.munchify(plate_dicts)
+        self.strutsets = munch.munchify(strut_dicts)
+
         for layer in self.layers:
-            for static_set in ['strutset', 'plateset']:
-
-                if static_set == 'strutset':
-                    iter_set = self.get_strutsets(layer).copy()
-                    props = self.strut_properties
-                elif static_set == 'plateset':
-                    iter_set = self.get_platesets(layer).copy()
-                    props = self.plate_properties
-
-                for set_key, set_conf in iter_set.items():
-                    log.verbose(
-                        f'Initializing {static_set} {set_key} hitboxes',
-                        '_generate_stationary_hitboxes'
-                    )
-
-                    for i, set_conf in enumerate(set_conf.sets):
-
-                        if props.get(set_key).get('type') == 'mass':
-                            set_sprite_hitbox = collisions.calculate_set_hitbox(
-                                props.get(set_key).hitbox.sprite,
-                                set_conf,
-                                self.tile_dimensions
-                            )
-                            set_strut_hitbox = collisions.calculate_set_hitbox(
-                                props.get(set_key).hitbox.strut,
-                                set_conf,
-                                self.tile_dimensions
-                            )
-                            setattr(
-                                self.platesets.get(layer).get(set_key).sets[i],
-                                'hitbox',
-                                munch.Munch({})
-                            )
-                            setattr(
-                                self.platesets.get(layer).get(set_key).sets[i].hitbox,
-                                'sprite',
-                                set_sprite_hitbox
-                            )
-                            setattr(
-                                self.platesets.get(layer).get(set_key).sets[i].hitbox,
-                                'strut',
-                                set_strut_hitbox
-                            )
-                            continue
-
-                        set_hitbox = collisions.calculate_set_hitbox(
-                            props.get(set_key).hitbox,
-                            set_conf,
-                            self.tile_dimensions
-                        )
-                        if static_set == 'strutset':
-                            setattr(
-                                self.strutsets.get(layer).get(set_key).sets[i],
-                                'hitbox',
-                                set_hitbox
-                            )
-                            continue
-                        setattr(
-                            self.platesets.get(layer).get(set_key).sets[i],
-                            'hitbox',
-                            set_hitbox
-                        )
-
-            # TODO : world bounds need to be treated separated
-            self.world_bounds = [
-                ( 0, 0, self.dimensions[0], 1 ),
-                ( 0, 0, 1, self.dimensions[1] ),
-                ( self.dimensions[0], 0, 1, self.dimensions[1] ),
-                ( 0, self.dimensions[1], self.dimensions[0], 1 )
-            ]
-
-            self.strutsets.get(layer).hitboxes = collisions.calculate_strut_hitboxes(
-                self.strutsets.get(layer)
+            self.strutsets.get(layer).hitboxes = substrata.strut_hitboxes(
+                strut_dicts.get(layer)
             ) + self.world_bounds
             self.platesets.get(layer).doors = self.get_typed_platesets(
                 layer, 
-                'door'
+                constants.PlateType.DOOR.value
             )
             self.platesets.get(layer).containers = self.get_typed_platesets(
                 layer, 
-                'container'
+                constants.PlateType.CONTAINER.value
             )
             self.platesets.get(layer).pressures = self.get_typed_platesets(
                 layer,  
-                'pressure'
+                constants.PlateType.PRESSURE.value
             )
             self.platesets.get(layer).masses = self.get_typed_platesets(
                 layer,  
-                'mass'
+                constants.PlateType.MASS.value
             )
+
 
 
     def _generate_switch_map(
         self
     ) -> None:
         for layer in self.layers:
-            switches = self.get_typed_platesets(layer, 'pressure') + \
-                self.get_typed_platesets(layer, 'container') + \
-                self.get_typed_platesets(layer,  'gate')
-            switch_indices = [switch.index for switch in switches]
+            switches = []
+            for e in constants.SwitchPlateType.__members__.values():
+                switches += self.get_typed_platesets(
+                    layer,
+                    e.value
+                )
+
+            switch_indices = [
+                switch.index 
+                for switch 
+                in switches
+            ]
             setattr(
                 self.switch_map,
                 layer,
                 munch.munchify({
                     switch.key: {
-                        str(index): False for index in switch_indices
-                    } for switch in switches
+                        str(index): False 
+                        for index 
+                        in switch_indices
+                    } 
+                    for switch 
+                    in switches
                 })
             )
 
@@ -280,8 +289,10 @@ class World():
         """
         Initialize the state for dynamic in-game elements, i.e. elements that move and are interactable.
         """
-        log.debug(f'Initalizing dynamic world state...',
-                  '_init_dynamic_state')
+        log.debug(
+            f'Initalizing dynamic world state...',
+            'World._init_dynamic_state'
+        )
         dynamic_state = state_ao.get_state('dynamic')
         self.hero = dynamic_state.hero
         self.layer = dynamic_state.hero.layer
@@ -328,11 +339,11 @@ class World():
                 # update delayed desires
                 if first_octave:
                     log.infinite(
-                        f'Polling {sprite_key}\'s delayed {sprite_desire.mode} desire conditions...',
-                        '_ruminate'
+                        f'Polling {sprite_key}\'s first octave {sprite_desire.mode} desire conditions...',
+                        'World._ruminate'
                     )
 
-                    if sprite_desire.mode == 'approach':
+                    if sprite_desire.mode == constants.Desires.APPROACH.value:
                         instruction = abstract.approach(
                            sprite_key,
                            sprite,
@@ -343,7 +354,7 @@ class World():
                            self._reorient
                         )
 
-                    elif sprite_desire.mode == 'engage':
+                    elif sprite_desire.mode == constants.Desires.ENGAGE.value:
                         instruction = abstract.engage(
                             sprite_key,
                             sprite,
@@ -353,7 +364,7 @@ class World():
                             self.get_sprites()
                         )
 
-                    elif sprite_desire.mode == 'flee':
+                    elif sprite_desire.mode == constants.Desires.FLEE.value:
                         instruction = abstract.attempt_unflee(
                             sprite_key,
                             sprite,
@@ -364,7 +375,12 @@ class World():
                     
                 # update immediate desires
                 elif second_octave:
-                    if sprite_desire.mode == 'approach':
+                    log.infinite(
+                        f'Polling {sprite_key}\'s second octave {sprite_desire.mode} desire conditions...',
+                        'World._ruminate'
+                    )
+
+                    if sprite_desire.mode == constants.Desires.APPROACH.value:
                         instruction = abstract.attempt_unapproach(
                             sprite_key,
                             sprite,
@@ -372,14 +388,14 @@ class World():
                             sprite_desire,
                             self.get_sprites()
                         )
-                    elif sprite_desire.mode == 'flee':
+                    elif sprite_desire.mode == constants.Desires.FLEE.value:
                         instruction = abstract.flee(
                             sprite_key,
                             sprite,
                             sprite_desire,
                             self._reorient
                         )
-                    elif sprite_desire.mode == 'engage':
+                    elif sprite_desire.mode == constants.Desires.ENGAGE.value:
                         instruction = abstract.attempt_unengage(
                             sprite_key,
                             sprite,
@@ -390,6 +406,7 @@ class World():
 
                 if not instruction or instruction == 'continue':
                     continue
+
                 if instruction == 'break':
                     break
                         
@@ -424,13 +441,15 @@ class World():
 
             log.infinite(
                 f'Applying intent {sprite.intent.intention} to {sprite_key}\'s stature: {sprite.stature.intention}',
-                '_intend'
+                'World._intend'
             )
 
             # null intentions allowed
             if sprite.intent.intention != sprite.stature.intention:
-                log.verbose(f'Switching {sprite_key} intention from {sprite.stature.intention} to {sprite.intent.intention}',
-                            '_intend')
+                log.verbose(
+                    f'Switching {sprite_key} intention from {sprite.stature.intention} to {sprite.intent.intention}',
+                    'World._intend'
+                )
                 sprite.stature.intention = sprite.intent.intention
 
             if sprite.intent.get('action') and \
@@ -454,9 +473,10 @@ class World():
             if sprite.intent.expression != sprite.stature.expression:
                 sprite.stature.expression = sprite.intent.expression
 
-            log.infinite(f'{sprite_key} stature post intent application: {sprite.stature.intention}',
-                         '_intend'
-                         )
+            log.infinite(
+                f'{sprite_key} stature post intent application: {sprite.stature.intention}',
+                'World._intend'
+            )
             sprite.intent = None
 
 
@@ -466,14 +486,14 @@ class World():
         for sprite_key, sprite in self.get_sprites().items():
             animate = False
 
-            if sprite.stature.intention == 'move':
+            if sprite.stature.intention == constants.Intentions.MOVE.value:
                 impulse.move(
                     sprite,
                     self.sprite_properties.get(sprite_key)
                 )
                 animate = True
 
-            elif sprite.stature.intention == 'combat':
+            elif sprite.stature.intention == constants.Intentions.COMBAT.value:
                 impulse.combat(
                     sprite_key,
                     sprite,
@@ -487,18 +507,18 @@ class World():
                 )
                 animate = True
 
-            elif sprite.stature.intention == 'defend':
+            elif sprite.stature.intention == constants.Intentions.DEFEND.value:
                 pass
 
             # reorient sets an intention with an expression, therefore
             #       does an 'express' intention make sense?
-            elif sprite.stature.intention == 'express':
+            elif sprite.stature.intention == constants.Intentions.EXPRESS.value:
                 impulse.express(
                     sprite,
                     self.sprite_properties.get(sprite_key)
                 )
 
-            elif sprite.stature.intention == 'operate':
+            elif sprite.stature.intention == constants.Intentions.OPERATE:
                 # well, what differentiates using and interacting then?
                 impulse.operate(
                     sprite,
@@ -535,17 +555,22 @@ class World():
     ) -> None:
 
         sprite = self.npcs.get(sprite_key)
-        sprite_hitbox = collisions.calculate_sprite_hitbox(
-            sprite,
-            'strut',
-            self.sprite_properties.get(sprite_key)
+        sprite_hitbox = substrata.sprite_hitbox(
+            munch.unmunchify(sprite),
+            constants.FormType.STRUT.value,
+            munch.unmunchify(
+                self.sprite_properties.get(sprite_key)
+            )
         )
-        collision_set = collisions.collision_set_relative_to(
-            'strut',
+        collision_set = mechanics.collision_set_relative_to(
+            constants.FormType.STRUT.value,
             None,
             self.strutsets.get(sprite.layer).hitboxes,
             self.platesets.get(sprite.layer).containers,
-            self.get_typed_platesets(sprite.layer, 'gate'),
+            self.get_typed_platesets(
+                sprite.layer, 
+                constants.PlateType.GATE
+            ),
             self.switch_map.get(sprite.layer)
         )
         goal = impulse.locate_desire(
@@ -554,7 +579,10 @@ class World():
             self.get_sprites(),
         )
 
-        log.verbose(f'Reorienting {sprite_key} to {goal}', '_reorient')
+        log.verbose(
+            f'Reorienting {sprite_key} to {goal}', 
+            'World._reorient'
+        )
 
         return paths.reorient(
             sprite_hitbox,
@@ -576,80 +604,98 @@ class World():
             Technically, there is overlap here. Since sprite is checked against every other sprite for collisions, there are Pn = n!/(n-2)! permutations, but Cn = n!/(2!(n-2)!) distinct combinations. Therefore, Pn - Cn checks are unneccesary. To circumvent this problem (sort of), a collision map is kept internally within this method to keep track of which sprite-to-sprite collisions have already taken place. However, whether or not this is worth the effort, since the map has to be traversed when it is initialized, is an open question? 
         """
 
-        collision_map = collisions.generate_collision_map(
+        collision_map = mechanics.generate_collision_map(
             self.get_sprites()
         )
 
         # SPRITE-TO-SPRITE, SPRITE-TO-STRUT COLLISIONS
         for sprite_key, sprite in self.get_sprites().items():
-            for hitbox_key in ['strut', 'sprite']:
+            for hitbox_key in [
+                constants.FormType.STRUT.value, 
+                constants.EntityType.SPRITE.value
+            ]:
                 exclusions = [ sprite_key ]
-                if hitbox_key == 'sprite':
+                if hitbox_key == constants.EntityType.SPRITE.value:
                     exclusions += [
-                        key for key,val in collision_map.get(sprite_key).items() if val
+                        key 
+                        for key, val 
+                        in collision_map.get(sprite_key).items() 
+                        if val
                     ]
 
-                sprite_hitbox = collisions.calculate_sprite_hitbox(
-                    sprite,
+                sprite_hitbox = substrata.sprite_hitbox(
+                    munch.unmunchify(sprite),
                     hitbox_key,
-                    self.sprite_properties.get(sprite_key)
+                    munch.unmunchify(
+                        self.sprite_properties.get(sprite_key)
+                    )
                 )
 
                 if sprite_hitbox is None:
                     continue
 
-                other_sprite_hitboxes = collisions.calculate_sprite_hitboxes(
-                    self.get_sprites(sprite.layer), # can use read-only here since just calculating
-                    self.sprite_properties,
+                other_sprite_hitboxes = substrata.sprite_hitboxes(
+                    munch.unmunchify(
+                        self.get_sprites(sprite.layer)
+                    ), # can use read-only here since just calculating
+                    munch.unmunchify(self.sprite_properties),
                     hitbox_key,
                     exclusions
                 )
                     # collisions_set will exclude struts and plates when 
                     # hitbox_key == 'sprite' and exclude sprites when 
                     # hitbox_key == 'strut'
-                collision_set = collisions.collision_set_relative_to(
+                collision_set = mechanics.collision_set_relative_to(
                     hitbox_key,
                     other_sprite_hitboxes,
                     self.strutsets.get(sprite.layer).hitboxes,
                     self.platesets.get(sprite.layer).containers,
-                    self.get_typed_platesets(sprite.layer, 'gate'),
+                    self.get_typed_platesets(
+                        sprite.layer, 
+                        constants.PlateType.GATE.value
+                    ),
                     self.switch_map.get(sprite.layer)
                 )
 
                 log.infinite(
                     f'Checking {sprite_key} for {hitbox_key} collisions...',
-                    '_physics'
+                    'World._physics'
                 )
 
-                collision_box = collisions.detect_collision(
+                collision_box = mechanics.detect_collision(
                     sprite_hitbox, 
                     collision_set
                 )
+                
 
                 if collision_box:
                     log.debug(
                         f'{sprite_key} collision at ({round(sprite.position.x)}, {round(sprite.position.y)})',
-                        '_physics'
+                        'World._physics'
                     )
-                    collisions.recoil_sprite(
+                    mechanics.recoil_sprite(
                         sprite, 
                         self.sprite_dimensions,
                         self.sprite_properties.get(sprite_key).speed.collide,
                         collision_box
                     )
                     if sprite_key != "hero":
-                        sprite_hitbox = collisions.calculate_sprite_hitbox(
-                            sprite,
+                        sprite_hitbox = substrata.sprite_hitbox(
+                            munch.unmunchify(sprite),
                             hitbox_key,
-                            self.sprite_properties.get(sprite_key)
+                            munch.unmunchify(
+                                self.sprite_properties.get(sprite_key)
+                            )
                         )
                         path = impulse.locate_desire(
                             sprite.stature.attention,
                             sprite,
                             self.get_sprites(),
                         )
-                        log.debug(f'Reorienting {sprite_key} with path {sprite.stature.attention}',
-                                    '_physics')
+                        log.debug(
+                            f'Reorienting {sprite_key} with path {sprite.stature.attention}',
+                            'World._physics'
+                        )
                         new_direction = paths.reorient(
                             sprite_hitbox,
                             collision_set,
@@ -670,16 +716,24 @@ class World():
                             })
                         )
 
-                if hitbox_key == 'sprite':
+                if hitbox_key == constants.EntityType.SPRITE.value:
                     for key, val in collision_map.copy().items():
                         if key not in exclusions and \
                                 key == sprite_key:
                             for nest_key in val.keys():
-                                setattr(collision_map.get(key), nest_key, True)
-                                setattr(collision_map.get(nest_key), key, True)
+                                setattr(
+                                    collision_map.get(key), 
+                                    nest_key, 
+                                    True
+                                )
+                                setattr(
+                                    collision_map.get(nest_key), 
+                                    key, 
+                                    True
+                                )
 
             # mass collision detection
-            collisions.detect_layer_sprite_to_mass_collision(
+            mechanics.detect_layer_sprite_to_mass_collision(
                 sprite,
                 self.sprite_properties.get(sprite_key),
                 self.platesets,
@@ -689,20 +743,22 @@ class World():
             # recalculate plate meta after alteration
             self.platesets.get(sprite.layer).masses = self.get_typed_platesets(
                 sprite.layer,
-                'mass'
+                constants.PlateType.MASS.value
             )
 
         # MASS-TO-PLATE COLLISIONS
         for layer in self.layers:
             mass_hitboxes = [ 
-                mass.hitbox.strut for mass in self.platesets.get(layer).masses 
+                mass.hitbox.strut 
+                for mass 
+                in self.platesets.get(layer).masses 
             ]
             pressures = self.platesets.get(layer).pressures
 
             if not (mass_hitboxes and pressures):
                 continue
 
-            collisions.detect_layer_pressure(
+            mechanics.detect_layer_pressure(
                 mass_hitboxes,
                 pressures,
                 self.switch_map.get(layer),
@@ -713,26 +769,35 @@ class World():
         # PROJECTILE-TO-SPRITE, PROJECTILE-TO-STRUT COLLISIONS
         removals = []
         for i, projectile in enumerate(self.projectiles):
-            collisions.project(projectile)
+            mechanics.project(projectile)
 
-            if calculator.distance(projectile.current, projectile.origin) > projectile.distance:
+            if gauge.distance(
+                projectile.current, 
+                projectile.origin
+            ) > projectile.distance:
                 removals.append(i)
                 continue
 
             for target_key, target in self.get_sprites().items():
                 if projectile.layer == target.layer:
                     continue
-                target_hitbox = collisions.calculate_sprite_hitbox(
-                    target,
+
+                target_hitbox = substrata.sprite_hitbox(
+                    munch.unmunchify(target),
                     'attack',
-                    self.sprite_properties.get(target_key)
+                    munch.unmunchify(
+                        self.sprite_properties.get(target_key)
+                    )
                 )
-                collision_box = collisions.detect_collision(
+                collision_box = mechanics.detect_collision(
                     projectile.attackbox,
                     [ target_hitbox ]
                 )
                 if collision_box:
-                    log.debug(f'{projectile.key} struck true on {target_key}')
+                    log.debug(
+                        f'{projectile.key} struck true on {target_key}'
+                        'World._physics'
+                    )
 
         for removed in removals:
             del self.projectiles[removed]
@@ -748,7 +813,10 @@ class World():
     def _sprite_desires(
         self,
         sprite: munch.Munch
-    ) -> Union[list, None]:
+    ) -> Union[
+        list, 
+        None
+    ]:
         """_summary_
 
         :param sprite: _description_
@@ -757,7 +825,10 @@ class World():
         :rtype: Union[list, None]
         """
         return list(
-            filter(lambda x: x.plot == self.plot, sprite.desires)
+            filter(
+                lambda x: x.plot == self.plot, 
+                sprite.desires
+            )
         )
 
 
@@ -772,26 +843,11 @@ class World():
         :return: _description_
         :rtype: dict
         """
-        if formset_key in [
-            'tile',
-            'tiles',
-            'tileset',
-            'tilesets'
-        ]:
+        if formset_key == constants.FormType.TILE.value:
             return self.tilesets
-        elif formset_key in [
-            'strut',
-            'struts',
-            'strutset',
-            'strutsets'
-        ]:
+        if formset_key == constants.FormType.STRUT.value:
             return self.strutsets
-        elif formset_key in [
-            'plate',
-            'plates'
-            'plateset',
-            'platesets'
-        ]:
+        elif formset_key == constants.FormType.PLATE.value:
             return self.platesets
 
 
@@ -800,7 +856,11 @@ class World():
         layer: str
     ) -> munch.Munch:
         if self.tilesets.get(layer) is None:
-            setattr(self.tilesets, layer, munch.Munch({}))
+            setattr(
+                self.tilesets, 
+                layer, 
+                munch.Munch({})
+            )
         return self.tilesets.get(layer)
 
 
@@ -816,10 +876,16 @@ class World():
         :rtype: munch.Munch
         """
         if self.strutsets.get(layer) is None:
-            setattr(self.strutsets, layer, munch.Munch({}))
+            setattr(
+                self.strutsets, 
+                layer, 
+                munch.Munch({})
+            )
+
         return munch.munchify({
             key: val
-            for key, val in self.strutsets.get(layer).items()
+            for key, val
+            in self.strutsets.get(layer).items()
             if key not in STRUT_META
         })
 
@@ -836,10 +902,15 @@ class World():
         :rtype: munch.Munch
         """
         if self.platesets.get(layer) is None:
-            setattr(self.platesets, layer, munch.Munch({}))
+            setattr(
+                self.platesets, 
+                layer, 
+                munch.Munch({})
+            )
         return munch.munchify({
             key: val
-            for key, val in self.platesets.get(layer).items()
+            for key, val 
+            in self.platesets.get(layer).items()
             if key not in PLATE_META
         })
 
@@ -874,6 +945,7 @@ class World():
         for plate_key, plate_conf in self.get_platesets(layer).items():
             if self.plate_properties.get(plate_key).type != plateset_type:
                 continue
+
             typed_platesets += [ 
                 munch.Munch({
                     'key': plate_key,
@@ -881,7 +953,8 @@ class World():
                     'hitbox': plate.hitbox,
                     'content': plate.content,
                     'position': plate.start
-                }) for i, plate in enumerate(plate_conf.sets)
+                }) for i, plate 
+                in enumerate(plate_conf.sets)
             ]
         return typed_platesets
 
@@ -911,7 +984,10 @@ class World():
     ) -> list:
         gates = []
         for nested_layer in self.layers:
-            gates = gates + self.get_typed_platesets(nested_layer, 'gate')
+            gates = gates + self.get_typed_platesets(
+                nested_layer, 
+                constants.PlateType.GATE.value
+            )
         return gates
 
 
@@ -929,13 +1005,15 @@ class World():
         .. warning::
             This method creates a copy of `self.npcs` if `layer is not None`. If you modify any attributes on the return value when a `layer` is provided, it will not update the _Sprite_'s corresponding attribute in the world state. In order to alter the _Sprite_ state information, you **cannot** specify the layer. Specifying the `layer` is intended to be a **READ-ONLY** operation, called from the `view.Renderer` class when rendering _Sprite_ positions on screen.
         """
-        spriteset = {
+        spriteset = munch.Munch({
             'hero': self.hero
-        }
+        })
+
         if layer is None:
             spriteset.update(self.npcs)
-        else:
-            spriteset.update(self.get_npcs(layer))
+            return spriteset
+        
+        spriteset.update(self.get_npcs(layer))
         return spriteset
 
 
@@ -953,9 +1031,11 @@ class World():
         .. warning::
             This method creates a copy of `self.npcs`. If you modify any attributes on the return value, it will not update the _Sprite_'s corresponding attribute in the world state.
         """
+        # TODO: is it necessary to call munchify? shouldn't all nested props already be munched?
         return munch.munchify({
             key: val
-            for key, val in self.npcs.items()
+            for key, val 
+            in self.npcs.items()
             if val.layer == layer
         })
 
@@ -966,8 +1046,10 @@ class World():
     ) -> munch.Munch:
         if sprite_key == 'hero':
             return self.hero
+
         elif sprite_key in list(self.npcs.keys()):
             return self.npcs.get(sprite_key)
+
         return None
 
 
@@ -977,11 +1059,15 @@ class World():
     ) -> None:
         self.hero.layer = self.layer
         self.hero.plot = self.plot
+        # TODO: is it necessary to call munchify? shouldn't all nested props already be munched?
         dynamic_conf = munch.munchify({
             'hero': self.hero,
             'npcs': self.npcs,
         })
-        state_ao.save_state('dynamic', dynamic_conf)
+        state_ao.save_state(
+            'dynamic', 
+            dynamic_conf
+        )
 
 
     def iterate(

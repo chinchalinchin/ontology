@@ -1,0 +1,906 @@
+# a priori
+apriori:
+  sizes:
+    - small
+    - large
+  breakpoints:
+    - w: 800
+      h: 600
+  transparency: 127
+  theme:
+    overlay:
+      r: 20
+      g: 67
+      b: 142
+      a: 175
+
+styles:
+  extrinsic:
+    small:
+      slot:
+        margins:
+          w: 0.025
+          h: 0.025
+        stack: horizontal
+        alignment: 
+          vertical: bottom
+          horizontal: left
+        opacity: 0.5
+      mirror:
+        margins:
+          w: 0.025
+          h: 0.025
+        padding:
+          w: 0.005
+          h: 0.005
+        stack: horizontal
+        alignment:
+          vertical: top
+          horizontal: right
+        opacity: 0.5
+      pack: 
+        margins:
+          w: 0.025
+          h: 0.025
+        alignment:
+          vertical: bottom
+          horizontal: right
+    large:
+      slot:
+        margins: 
+          w: 0.025
+          h: 0.025
+        stack: horizontal
+        alignment: 
+          vertical: bottom
+          horizontal: left
+        opacity: 0.5
+      mirror:
+        margins:
+          w: 0.025
+          h: 0.025
+        padding:
+          w: 0.005
+          h: 0.005
+        stack: horizontal
+        alignment:
+          vertical: top
+          horizontal: right
+        opacity: 0.5
+      pack:
+        margins:
+          w: 0.025
+          h: 0.025
+        alignment:
+          vertical: bottom
+          horizontal: right
+  intrinsic:
+    small:
+      padding:
+        w: 0.05
+        h: 0.05
+      margins:
+        w: 0.05
+        h: 0.20
+      stack: vertical
+    large:
+      padding:
+        w: 0.05
+        h: 0.05
+      margins:
+        w: 0.05
+        h: 0.20
+      stack: vertical
+
+properties:
+  extrinsic:
+    slot: 
+      total: 4
+      pieces:
+        - cap
+        - buffer
+        - enabled
+        - active
+        - disabled
+      maps:
+        - cast
+        - thrust
+        - shoot
+        - slash  
+    mirror:
+      life:
+        columns: 10
+        rows: 1
+        pieces:
+          - unit
+          - empty
+        bounds: 20
+      magic:
+        columns: 10
+        rows: 1
+        pieces:
+          - container
+          - unit    
+    pack:
+      bag:
+        pieces:
+          - left
+          - right
+      belt:
+        pieces:
+          - enabled
+          - disabled
+      wallet:
+        pieces:
+          - display
+    
+  intrinsic:
+    idea:
+      pieces: 
+        - left
+        - middle
+        - right
+    thought:
+      # NOTE: bauble-based thoughts must be named
+      #       corresodning to the component of the player
+      #       capital they operate on.
+      armory:
+        - component: bauble
+          label: slash
+        - component: bauble
+          label: thrust
+        - component: bauble
+          label: shoot
+        - component: bauble
+          label: cast
+      equipment:
+        - component: bauble
+          label: armor
+        - component: bauble
+          label: shield
+        - component: bauble
+          label: bag
+        - component: bauble
+          label: belt
+      inventory: null
+      map: 
+        - component: display
+          label: map
+
+extrinsic:
+  small:
+    slot:
+      enabled:
+        path: slotsheet.png
+        position:
+          x: 30
+          y: 288
+        size:
+          w: 40
+          h: 40
+      disabled:
+        path: slotsheet.png
+        position:
+          x: 30
+          y: 329
+        size:
+          w: 40
+          h: 40
+      active:
+        path: slotsheet.png
+        position:
+          x: 30
+          y: 370
+        size:
+          w: 40
+          h: 40
+      cap:
+        path: slotsheet.png
+        definition: left
+        position:
+          x: 14
+          y: 296
+        size:
+          w: 16
+          h: 24
+      buffer:
+        path: slotsheet.png
+        definition: horizontal
+        position:
+          x: 116
+          y: 292
+        size:
+          w: 4
+          h: 32
+    mirror:
+      life:
+        unit: 
+          path: hearts.png
+          position: 
+            x: 0
+            y: 0
+          size: 
+            w: 16
+            h: 16
+        empty:
+          path: hearts.png
+          position: 
+            x: 48
+            y: 0
+          size: 
+            w: 16
+            h: 16
+      magic: null
+    pack:
+      bag:
+        display: 
+          left:
+            path: slotsheet.png
+            position:
+              x: 16
+              y: 184
+            size:
+              w: 32
+              h: 64
+          right:
+            path: slotsheet.png
+            position:
+              x: 82
+              y: 184
+            size:
+              w: 32
+              h: 64
+      belt: 
+        display:
+          left:
+            path: slotsheet.png
+            position:
+              x: 16
+              y: 184
+            size:
+              w: 32
+              h: 64
+          right:
+            path: slotsheet.png
+            position:
+              x: 82
+              y: 184
+            size:
+              w: 32
+              h: 64
+      wallet:
+        display:
+          path: slotsheet.png
+          position:
+            x: 762
+            y: 86
+          size:
+            w: 24
+            h: 24
+  large:
+    slot:
+      enabled:
+        path: slotsheet.png
+        position:
+          x: 30
+          y: 288
+        size:
+          w: 40
+          h: 40
+      disabled:
+        path: slotsheet.png
+        position:
+          x: 30
+          y: 329
+        size:
+          w: 40
+          h: 40
+      active:
+        path: slotsheet.png
+        position:
+          x: 30
+          y: 370
+        size:
+          w: 40
+          h: 40
+      cap:
+        path: slotsheet.png
+        definition: left
+        position:
+          x: 14
+          y: 296
+        size:
+          w: 16
+          h: 24
+      buffer:
+        path: slotsheet.png
+        definition: horizontal
+        position:
+          x: 116
+          y: 292
+        size:
+          w: 4
+          h: 32
+    mirror:
+      life:
+        unit: 
+          path: hearts.png
+          position: 
+            x: 0
+            y: 0
+          size: 
+            w: 16
+            h: 16
+          channels: null
+        empty:
+          path: hearts.png
+          position: 
+            x: 48
+            y: 0
+          size: 
+            w: 16
+            h: 16
+      magic: null
+    pack: 
+      bag:
+        display:
+          left:
+            path: slotsheet.png
+            position:
+              x: 16
+              y: 184
+            size:
+              w: 32
+              h: 64
+          right:
+            path: slotsheet.png
+            position:
+              x: 82
+              y: 184
+            size:
+              w: 32
+              h: 64
+      belt:
+        display: 
+          left:
+            path: slotsheet.png
+            position:
+              x: 16
+              y: 184
+            size:
+              w: 32
+              h: 64
+          right:
+            path: slotsheet.png
+            position:
+              x: 82
+              y: 184
+            size:
+              w: 32
+              h: 64
+      wallet:
+        display:
+          path: slotsheet.png
+          position:
+            x: 762
+            y: 86
+          size:
+            w: 24
+            h: 24
+
+intrinsic:
+  small:
+    # styled components
+    idea:
+      enabled:
+        left: 
+          path: slotsheet.png
+          position:
+            x: 633
+            y: 23
+          size:
+            w: 41
+            h: 28
+        middle:
+          path: slotsheet.png
+          position:
+            x: 675
+            y: 23
+          size:
+            w: 40
+            h: 28
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 23
+          size:
+            w: 40
+            h: 28
+      active:
+        left: 
+          path: slotsheet.png
+          position:
+            x: 633
+            y: 53
+          size:
+            w: 41
+            h: 28
+        middle:
+          path: slotsheet.png
+          position:
+            x: 675 
+            y: 53
+          size:
+            w: 40
+            h: 28
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 53
+          size:
+            w: 41
+            h: 28 
+      disabled:
+        left: 
+          path: slotsheet.png
+          position:
+            x: 633
+            y: 83
+          size:
+            w: 41
+            h: 28
+        middle:
+          path:
+          position:
+            x: 675
+            y: 83
+          size:
+            w: 40
+            h: 28
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 83
+          size:
+            w: 41
+            h: 28
+    # piecewise compnents
+    bauble:
+      enabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 574
+            y: 286
+          size:
+            w: 38
+            h: 40
+        middle:
+          path: slotsheet.png
+          position:
+            x: 613 
+            y: 286
+          size:
+            w: 36
+            h: 40
+        right:
+          path: slotsheet.png
+          position:
+            x: 650
+            y: 286
+          size:
+            w: 38
+            h: 40
+      disabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 574
+            y: 329
+          size:
+            w: 38
+            h: 40
+        middle:
+          path: slotsheet.png
+          position:
+            x: 613 
+            y: 329
+          size:
+            w: 36
+            h: 40
+        right:
+          path: slotsheet.png
+          position:
+            x: 650
+            y: 329
+          size:
+            w: 38
+            h: 40
+      active:
+        left:
+          path: slotsheet.png
+          position:
+            x: 574
+            y: 372
+          size:
+            w: 38
+            h: 40
+        middle:
+          path: slotsheet.png
+          position:
+            x: 613 
+            y: 372
+          size:
+            w: 36
+            h: 40
+        right:
+          path: slotsheet.png
+          position:
+            x: 650
+            y: 372
+          size:
+            w: 38
+            h: 40
+    aside:
+      enabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 634
+            y: 118
+          size:
+            w: 24
+            h: 24
+        middle:
+          path: slotsheet.png
+          position:
+            x: 659
+            y: 118
+          size:
+            w: 23
+            h: 24
+        right:
+          path: slotsheet.png
+          position:
+            x: 683
+            y: 118
+          size:
+            w: 25
+            h: 24
+      disabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 632
+            y: 143
+          size:
+            w: 24
+            h: 24
+        middle:
+          path: slotsheet.png
+          position:
+            x: 659
+            y: 143
+          size:
+            w: 23
+            h: 24
+        right:
+          path: slotsheet.png
+          position:
+            x: 683
+            y: 143
+          size:
+            w: 25
+            h: 24
+    focus:
+      enabled:
+        main:
+          path: slotsheet.png
+          position:
+            x: 818
+            y: 122
+          size:
+            w: 12
+            h: 12
+        frame:
+          path: slotsheet.png
+          position:
+            x: 762
+            y: 86
+          size:
+            w: 24
+            h: 24
+      disabled:
+        main:
+          path: slotsheet.png
+          position:
+            x: 831
+            y: 122
+          size:
+            w: 12
+            h: 12
+        frame:
+          path: slotsheet.png
+          position:
+            x: 762
+            y: 86
+          size:
+            w: 24
+            h: 24
+    # simple components
+    concept:
+      path: scrolls.png
+      position:
+        x: 163
+        y: 32
+      size:
+        w: 90
+        h: 96
+    conception:
+      path: scrolls.png
+      position:
+        x: 32
+        y: 224
+      size:
+        w: 96
+        h: 96
+
+  large:
+    idea: # button
+      enabled:
+        left: 
+          path: slotsheet.png
+          position:
+            x: 633
+            y: 23
+          size:
+            w: 41
+            h: 28
+        middle:
+          path: slotsheet.png
+          position:
+            x: 675
+            y: 23
+          size:
+            w: 40
+            h: 28
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 23
+          size:
+            w: 40
+            h: 28
+      active:
+        left: 
+          path: slotsheet.png
+          position:
+            x: 633
+            y: 53
+          size:
+            w: 41
+            h: 28
+        middle:
+          path: slotsheet.png
+          position:
+            x: 675 
+            y: 53
+          size:
+            w: 40
+            h: 28
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 53
+          size:
+            w: 41
+            h: 28 
+      disabled:
+        left: 
+          path: slotsheet.png
+          position:
+            x: 633
+            y: 83
+          size:
+            w: 41
+            h: 28
+        middle:
+          path:
+          position:
+            x: 675
+            y: 83
+          size:
+            w: 40
+            h: 28
+        right:
+          path: slotsheet.png
+          position:
+            x: 716
+            y: 83
+          size:
+            w: 41
+            h: 28
+    bauble: # inventory
+      enabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 574
+            y: 286
+          size:
+            w: 38
+            h: 40
+        middle:
+          path: slotsheet.png
+          position:
+            x: 613 
+            y: 286
+          size:
+            w: 36
+            h: 40
+        right:
+          path: slotsheet.png
+          position:
+            x: 650
+            y: 286
+          size:
+            w: 38
+            h: 40
+      disabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 574
+            y: 329
+          size:
+            w: 38
+            h: 40
+        middle:
+          path: slotsheet.png
+          position:
+            x: 613 
+            y: 329
+          size:
+            w: 36
+            h: 40
+        right:
+          path: slotsheet.png
+          position:
+            x: 650
+            y: 329
+          size:
+            w: 38
+            h: 40
+      active:
+        left:
+          path: slotsheet.png
+          position:
+            x: 574
+            y: 372
+          size:
+            w: 38
+            h: 40
+        middle:
+          path: slotsheet.png
+          position:
+            x: 613 
+            y: 372
+          size:
+            w: 36
+            h: 40
+        right:
+          path: slotsheet.png
+          position:
+            x: 650
+            y: 372
+          size:
+            w: 38
+            h: 40
+    aside: # tooltip
+      enabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 634
+            y: 118
+          size:
+            w: 24
+            h: 24
+        middle:
+          path: slotsheet.png
+          position:
+            x: 659
+            y: 118
+          size:
+            w: 23
+            h: 24
+        right:
+          path: slotsheet.png
+          position:
+            x: 683
+            y: 118
+          size:
+            w: 25
+            h: 24
+      disabled:
+        left:
+          path: slotsheet.png
+          position:
+            x: 632
+            y: 143
+          size:
+            w: 24
+            h: 24
+        middle:
+          path: slotsheet.png
+          position:
+            x: 659
+            y: 143
+          size:
+            w: 23
+            h: 24
+        right:
+          path: slotsheet.png
+          position:
+            x: 683
+            y: 143
+          size:
+            w: 25
+            h: 24
+    focus: # paginator
+      enabled:
+        main:
+          path: slotsheet.png
+          position:
+            x: 818
+            y: 122
+          size:
+            w: 12
+            h: 12
+        frame:
+          path: slotsheet.png
+          position:
+            x: 762
+            y: 86
+          size:
+            w: 24
+            h: 24
+      disabled:
+        main:
+          path: slotsheet.png
+          position:
+            x: 831
+            y: 122
+          size:
+            w: 12
+            h: 12
+        frame:
+          path: slotsheet.png
+          position:
+            x: 762
+            y: 86
+          size:
+            w: 24
+            h: 24
+    # simple components
+    concept: # heading
+      path: scrolls.png
+      position:
+        x: 163
+        y: 32
+      size:
+        w: 90
+        h: 96
+    conception: # subheading
+      path: scrolls.png
+      position:
+        x: 32
+        y: 224
+      size:
+        w: 96
+        h: 96      

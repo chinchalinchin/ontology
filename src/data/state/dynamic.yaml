@@ -19,31 +19,45 @@ hero:
     slash: shortsword
     shoot: bow
   armor: plate
+  shield: falcon_shield
   packs:
     bag: shrapnel_bomb
     belt: arrow
-  memory:
-    paths: null
-    intent: null
   health:
     current: 4
     max: 10
+  memory:
+    paths: null
+    intent: null
   desires: null
-  inventory:
+  capital:
     wallet:
       coin: null
       key: null
-    armor:
-      - 
-    shield:
-      - 
     equipment:
-      -
-    bag:
-      - 
-    belt:
-      - 
-    pocket:
+      - component: plate
+        label: armor
+      - component: falcon_shield
+        label: shield
+    armory:
+      - component: crossbow
+        label: thrust
+      - component: spear
+        label: thrust
+      - component: shortsword
+        label: slash
+      - component: axe
+        label: slash
+      - component: knife
+        label: slash
+      - component: bow
+        label: shoot
+    inventory:
+      - component: shrapnel_bomb
+        label: bag
+      - component: arrow
+        label: belt
+    resources:
       -
 
 npcs: 
@@ -67,6 +81,7 @@ npcs:
       slash: null
       shoot: null
     armor: null
+    shield: null
     packs:
       bag: null
       belt: null
@@ -95,21 +110,14 @@ npcs:
         conditions:
           - function: expression_equals
             value: surprise
-    inventory:
+    capital:
       wallet:
         coin: null
         key: null
-      armor:
-        - 
-      shield:
-        - 
-      equipment:
-        -
-      bag:
-        - 
-      belt:
-        - 
-      pocket:
+      equipment: null
+      armory: null
+      inventory: null
+      resources: null
         -
 
   skeleton:
@@ -132,6 +140,7 @@ npcs:
       slash: warhammer
       shoot: null
     armor: null
+    shield: null
     packs:
       bag: null
       belt: null
@@ -175,19 +184,12 @@ npcs:
         target: two
         conditions:
           - function: always
-    inventory:
+    capital:
       wallet:
         coin: null
         key: null
-      armor:
-        - 
-      shield:
-        - 
-      equipment:
-        -
-      bag:
-        - 
-      belt:
-        - 
-      pocket:
+      equipment: null
+      armory: null
+      inventory: null
+      resources: null
         -

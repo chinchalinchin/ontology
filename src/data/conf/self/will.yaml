@@ -1,0 +1,160 @@
+valid:
+  - up
+  - left
+  - right
+  - down
+  - tab
+  - z
+  - x
+  - c
+  - q
+  - ctrl_left
+  - alt_left
+  - shift_left
+  - space
+  - v
+
+meditations:
+  arise:
+    input:
+      - tab
+    precedence: 5
+  execute:
+    input:
+      - space
+    precedence: 2
+  reconsider:
+    input:
+      - alt_left
+    precedence: 1
+  ponder: # basically a menu tooltip
+    input:
+      - shift_left
+    precedence: 0
+  increment:
+    input:
+      - up
+    precedence: 3
+  decrement:
+    input:
+      - down
+    precedence: 4
+  traverse:
+    input:
+      - right
+    precedence: 5
+  reverse:
+    input:
+      - left
+    precedence: 6
+  
+
+
+expressions:
+  anger:
+  joy:
+  sadness:
+  love:
+  hate:
+  surprise:
+  confusion:
+  
+directions:
+  up:
+    input:
+      - up
+    precedence: 0
+  up_left:
+    input:
+      - up
+      - left
+    precedence: 4
+  left:
+    input:
+      - left
+    precedence: 1
+  down_left:
+    input:
+      - down
+      - left
+    precedence: 5
+  down:
+    input:
+      - down
+    precedence: 2
+  down_right:
+    input:
+      - down
+      - right
+    precedence: 6
+  right:
+    input:
+      - right
+    precedence: 3
+  up_right:
+    input:
+      - up
+      - right
+    precedence: 7
+
+actions:
+  menu:
+    input: 
+      - tab
+    precedence: 0
+  hud: 
+    input:
+      - q
+    precedence: 1
+  sprint:
+    input:
+      - v
+    precedence: 2
+  interact:
+    input:
+      - z
+    precedence: 3
+  use:
+    input:
+      - x
+    precedence: 4
+  guard: 
+    input:
+      - c
+    precedence: 5
+  slash:
+    input:
+      - space
+    precedence: 6
+  thrust:
+    input:
+      - alt_left
+    precedence: 7
+  shoot:
+    input:
+      - shift_left
+    precedence: 8
+  cast:
+    input:
+      - ctrl_left
+    precedence: 9
+    
+consumable:
+  # actions
+  - use
+  - interact
+  - hud
+  - menu
+  - slash
+  - shoot
+  - thrust
+  - cast
+  # meditations
+  - arise
+  - execute
+  - reconsider
+  - traverse
+  - reverse
+  - ponder
+  - increment
+  - decrement

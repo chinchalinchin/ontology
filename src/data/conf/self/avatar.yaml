@@ -1,0 +1,363 @@
+# avatars do not get styles applied, so separate config seems appropriate
+
+equipment:
+  plate:
+    path: equipment.png
+    position:
+      x: 1
+      y: 44
+    size:
+      w: 30
+      h: 19
+  gold:
+    path: armor_gold.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 18
+      h: 16
+  bronze:
+    path:
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 18
+      h: 17
+  emblem_shield: 
+    path: shield_emblem.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 21
+      h: 27
+  falcon_shield: 
+    path: equipment.png
+    position:
+      x: 37
+      y: 230
+    size:
+      w: 22
+      h: 26
+  leather_shield: 
+    path: equipment.png
+    position: 
+      x: 69
+      y: 7
+    size:
+      w: 21
+      h: 25
+armory:
+  bow:
+    path: items.png
+    position:
+      x: 291
+      y: 109
+    size:
+      w: 31
+      h: 31
+  crossbow:
+    path: equipment.png
+    position:
+      x: 193
+      y: 4
+    size:
+      w: 30
+      h: 28
+  knife: 
+    path: items.png
+    position:
+      x: 20
+      y: 10
+    size:
+      w: 16
+      h: 17
+  shortsword:
+    path: avatar_sheet.png
+    position:
+      x: 3
+      y: 173
+    size:
+      w: 27
+      h: 27
+  axe: 
+    path: equipment.png
+    position:
+      x: 32
+      y: 18
+    size:
+      w: 32
+      h: 14
+  pickaxe:
+    path: equipment.png
+    position:
+      x: 96
+      y: 7
+    size:
+      w: 32
+      h: 23
+  warhammer:
+    path: equipment.png
+    position:
+      x: 352
+      y: 112
+    size:
+      w: 32
+      h: 16
+  cane:
+    path: cane.png
+    position:
+      x: 0
+      y: 0
+    size: 
+      w: 32
+      h: 32
+  shovel:
+    path: equipment.png
+    position:
+      x: 34
+      y: 258
+    size:
+      w: 29
+      h: 29
+  spear:
+    path: equipment.png
+    position:
+      x: 99
+      y: 227
+    size:
+      w: 29
+      h: 29
+  blood_magic:
+    path: equipment.png
+    position:
+      x: 451
+      y: 233
+    size: 
+      w: 26
+      h: 23
+inventory:
+  arrow_quiver:
+    path: quivers.png
+    position:
+      x: 42
+      y: 1
+    size:
+      w: 16
+      h: 32
+  bolt_quiver: null
+  shrapnel_bomb:
+    path: items.png
+    position: 
+      x: 115
+      y: 101
+    size:
+      w: 20
+      h: 28
+  rope:
+    path: items.png
+    position:
+      x: 322
+      y: 209
+    size:
+      w: 29
+      h: 15
+  portal_gate: null
+  smoke_bomb: null
+  spindle_seeds: null
+  resource_seeds: null
+  arrow:
+    path: arrow.png
+    position:
+      x: 4
+      y: 4
+    size:
+      w: 24
+      h: 24
+  fire_arrow:
+    path: arrow_fire.png
+    position:
+      x: 5
+      y: 4
+    size:
+      w: 25
+      h: 26
+  magic_arrow:
+    path: arrow_magic.png
+    position:
+      x: 2
+      y: 3
+    size:
+      w: 26
+      h: 25
+  bolt: 
+    path: bolt.png
+    position:
+      x: 7
+      y: 6
+    size:
+      w: 19
+      h: 20
+  precise_bolt:
+    path: bolt_precision.png
+    position:
+      x: 2
+      y: 2
+    size:
+      w: 28
+      h: 28
+  poison_bolt:
+    path: bolt_poison.png
+    position:
+      x: 7
+      y: 6
+    size:
+      w: 19
+      h: 21
+  produce: 
+    path: vegetables.png
+    position:
+      x: 78
+      y: 107
+    size:
+      w: 36
+      h: 35
+  herb:
+    path: plants.png
+    position:
+      x: 77
+      y: 160
+    size:
+      w: 34
+      h: 19
+  meat:
+    path: meat.png
+    position:
+      x: 50
+      y: 9
+    size:
+      w: 28
+      h: 19
+  ore: 
+    path: ore.png
+    position:
+      x: 98
+      y: 290
+    size:
+      w: 23
+      h: 24
+  crystal: 
+    path: equipment.png
+    position:
+      x: 393
+      y: 133
+    size:
+      w: 14
+      h: 14
+  pendant: 
+    path: avatar_sheet.png
+    position:
+      x: 276
+      y: 646
+    size: 
+      w: 25
+      h: 33
+  coin:
+    path: coin.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 19
+      h: 18
+  key: 
+    path: equipment.png
+    position:
+      x: 235
+      y: 83
+    size:
+      w: 12
+      h: 12
+quantity:
+  digit_0:
+    path: digit_0.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 12
+      h: 14
+  digit_1:
+    path: digit_1.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 12
+      h: 14
+  digit_2:
+    path: digit_2.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 12
+      h: 14
+  digit_3:
+    path: digit_3.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 12
+      h: 14
+  digit_4:
+    path: digit_4.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 12
+      h: 14
+  digit_5:
+    path: digit_5.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 12
+      h: 14
+  digit_6:
+    path: digit_6.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 12
+      h: 14
+  digit_7:
+    path: digit_7.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 12
+      h: 14
+  digit_8:
+    path: digit_8.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 12
+      h: 14
+  digit_9:
+    path: digit_9.png
+    position:
+      x: 0
+      y: 0
+    size:
+      w: 12
+      h: 14
