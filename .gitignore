@@ -1,15 +1,16 @@
-**/dist
-**/scratch
-**/*.pyc
-**/__pycache__
+# WORKSPACE
 **/.vscode
 **/.pytest_cache
-
-src/ontology.egg-info
-
-log
-build
+**/.DS_STORE
+**/scratch
 .venv
+log
 
+# ARTIFACTS
+**/dist
+**/*.pyc
+**/__pycache__
+src/ontology.egg-info
+build
 **/*.so
 **/*.c
