@@ -21,7 +21,7 @@ class EntityType(Enum):
     # TODO: PIXIE = 'pixie'
     # TODO: NYMPH = 'nypmh'
 
-class SelfTypes(Enum):
+class SelfType(Enum):
     AVATAR = 'avatar'
     QUALIA = 'qualia'
     WILL = 'will'

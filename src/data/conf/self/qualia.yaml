@@ -168,8 +168,8 @@ properties:
           label: map
 
 # size:
-#   quale_type:
-#     definition_form:
+#   quale_family:
+#     definition:
 #       quale:
 qualia:
   small:
@@ -183,9 +183,10 @@ qualia:
           size:
             w: 24
             h: 24
+      rotatable:  
         cap:
           path: slotsheet.png
-          rotation: direction
+          rotation: directional
           definition: left
           position:
             x: 14

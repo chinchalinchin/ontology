@@ -438,7 +438,7 @@ class Totality():
 
         setattr(
             self.selves,
-            constants.SelfTypes.AVATAR.value,
+            constants.SelfType.AVATAR.value,
             munch.Munch({})
         )
 
@@ -480,271 +480,142 @@ class Totality():
             'Totality._init_self_assets'
         )
 
-        qualia_conf = config.load_qualia_configuration()
+        setattr(
+            self.selves,
+            constants.SelfType.QUALIA.value,
+            munch.Munch({})
+        )
 
-        for size in qualia_conf.apriori.sizes:
+        qualia_conf = config.load_qualia_configuration().qualia
 
-            # EXTRINSIC?
-            if not self.slots.get(size):
+        for size, quale_families in qualia_conf.items():
+            setattr(
+                self.selves.get(constants.SelfType.QUALIA.value),
+                size,
+                munch.Munch({})
+            )
+
+            # (extrinsic, conf), (intrinsic, conf), ...
+            for family, definition in quale_families.items():
                 setattr(
-                    self.slots, 
-                    size, 
+                    self.selves.get(constants.SelfType.QUALIA.value).get(size),
+                    family,
                     munch.Munch({})
                 )
 
-            if not self.mirrors.get(size):
-                setattr(
-                    self.mirrors, 
-                    size, 
-                    munch.Munch({})
-                )
+                # (simple, conf), (fillable, conf)....
+                for def_type, quales in definition.items():
 
-            if not self.packs.get(size):
-                setattr(
-                    self.packs, 
-                    size, 
-                    munch.Munch({})
-                )
+                    # NOTE: dependent on the quale family and def_type
+                    #       e.g., (wallet, conf), (cap, conf), (buffer, conf), ..
+                    #       or     (bag, conf), (belt, conf)
+                    for quale_key, quale_conf in quales.items():
 
-            if not self.qualia.get(size):
-                setattr(
-                    self.qualia, 
-                    size, 
-                    munch.Munch({})
-                )
+                        if def_type == 'simple':
+                            if not quale_conf or not quale_conf.get('path'):
+                                continue
 
-
-            ## STYLED INITIALIZATION
-            for set_type in list(
-                e.value 
-                for e
-                in constants.StyledQualiaType.__members__.values()
-            ):
-
-                if set_type == constants.ExtrinsicType.SLOT.value:
-                    iter_set = qualia_conf.extrinsic.get(size).slot
-                    save_set = self.slots
-
-                # (cap, set_conf), (buffer, set_conf), (left, set_conf), ...
-                for set_key, set_conf in iter_set.items():
-                    if not set_conf or not set_conf.get('path'):
-                        continue
-
-                    buffer = gui.open_image(
-                        os.path.join(
-                            ontology_path,
-                            *settings.QUALIA_PATH,
-                            set_conf.path
-                        )
-                    )
-
-                    log.debug( 
-                        f"{size} {set_type} {set_key}: size - {buffer.size}, mode - {buffer.mode}", 
-                        'Totality._init_self_assets'
-                    )
-
-                    buffer = buffer.crop(
-                        ( 
-                            set_conf.position.x, 
-                            set_conf.position.y, 
-                            set_conf.size.w + set_conf.position.x, 
-                            set_conf.size.h + set_conf.position.y 
-                        )
-                    )
-
-                    if set_key in list(
-                        e.value
-                        for e
-                        in constants.DirectionalQualiaPiece.__members__.values()
-                    ):
-                        adjust = self.adjust_directional_rotation(set_conf.definition)
-                        setattr(
-                            save_set.get(size),
-                            set_key,
-                            munch.Munch({
-                                'down': buffer.rotate(
-                                    adjust[0], 
-                                    expand=True
-                                ),
-                                'left': buffer.rotate(
-                                    adjust[1], 
-                                    expand=True
-                                ),
-                                'right': buffer.rotate(
-                                    adjust[2], 
-                                    expand=True
-                                ),
-                                'up': buffer.rotate(
-                                    adjust[3], 
-                                    expand=True
-                                ),
-                            })
-                        )
-                        continue
-                    
-                    elif set_key in list(
-                        e.value 
-                        for e
-                        in constants.AlignmentQualiaPiece.__members__.values()
-                    ):
-                        adjust = self.adjust_alignment_rotation(set_conf.definition)
-                        setattr(
-                            save_set.get(size),
-                            set_key,
-                            munch.Munch({
-                                'vertical': buffer.rotate(
-                                    adjust[0], 
-                                    expand=True
-                                ),
-                                'horizontal': buffer.rotate(
-                                    adjust[1], 
-                                    expand=True
-                                )
-                            })
-                        )
-                        continue
-
-                    # huh? i think this is wrong.
-                    setattr(
-                        self.slots.get(size), 
-                        set_key, 
-                        buffer
-                    )
-
-            # TODO: mirrors aren't piecewise...
-
-            ## PIECEWISE DEFINITIONS
-            for set_type in list(
-                e.value
-                for e
-                in constants.PiecewiseQualiaType.__members__.values()
-            ):
-                # TODO: collapse this conditional into: iter_set = interface_conf.hud | menu.get(size).get(set_type)
-                #           by defining and passing the proper literals...
-                if set_type == constants.ExtrinsicType.MIRROR.value:
-                    iter_set = qualia_conf.extrinsic.get(size).mirror
-                    save_set = self.mirrors
-                elif set_type == constants.ExtrinsicType.PACK.value:
-                    iter_set = qualia_conf.extrinsic.get(size).pack
-                    save_set = self.packs
-                elif set_type == constants.IntrinsicType.IDEA.value:
-                    iter_set = qualia_conf.intrinsic.get(size).idea
-                    save_set = self.qualia
-                elif set_type == constants.IntrinsicType.BAUBLE.value:
-                    iter_set = qualia_conf.intrinsic.get(size).bauble
-                    save_set = self.qualia
-                elif set_type == constants.IntrinsicType.ASIDE.value:
-                    iter_set = qualia_conf.intrinsic.get(size).aside
-                    save_set = self.qualia
-                elif set_type == constants.IntrinsicType.FOCUS.value:
-                    iter_set = qualia_conf.intrinsic.get(size).focus
-                    save_set = self.qualia
-                    
-                # INTRINSIC?
-                if set_type in [ 'bauble', 'focus', 'aside', 'idea' ]:
-                    setattr(
-                        save_set.get(size), 
-                        set_type, 
-                        munch.Munch({})
-                    )
-
-                # (enabled, conf), (disbled, conf), ...
-                for set_key, set_conf in iter_set.items():
-                    if not set_conf:
-                        continue
-                    
-                    if set_type in [ 'bauble', 'focus', 'aside', 'idea']:
-                        setattr(
-                            save_set.get(size).get(set_type), 
-                            set_key, 
-                            munch.Munch({})
-                        )
-
-                    else: # HUD qualia ('mirror', 'pack')
-                        setattr(
-                            save_set.get(size), 
-                            set_key,
-                            munch.Munch({})
-                        )                        
-
-                    # for (unit, fill), (empty, fill)
-                    for component_key, component in set_conf.items():
-                        if not component.get('path'):
-                            continue
-                        
-                        
-                        buffer = gui.open_image(
-                            os.path.join(
-                                ontology_path,
-                                *settings.QUALIA_PATH,
-                                component.path
-                            )
-                        )
-
-                        log.debug( 
-                            f"{size} {set_type} {set_key} {component_key}: size - {buffer.size}, mode - {buffer.mode}", 
-                            'Totality._init_self_assets'
-                        )
-                        if set_type in [ 'bauble', 'focus', 'aside', 'idea' ]:
-                            setattr(
-                                save_set.get(size).get(set_type).get(set_key),
-                                component_key,
-                                buffer.crop(
-                                    ( 
-                                        component.position.x, 
-                                        component.position.y, 
-                                        component.size.w + component.position.x, 
-                                        component.size.h + component.position.y)
-                                    )
-                            )
-                        else: # extrinsic qualia ('mirror', 'pack')
-                            setattr(
-                                save_set.get(size).get(set_key),
-                                component_key,
-                                buffer.crop(
-                                    ( 
-                                        component.position.x, 
-                                        component.position.y, 
-                                        component.size.w + component.position.x, 
-                                        component.size.h + component.position.y
-                                    )
+                            buffer = gui.open_image(
+                                os.path.join(
+                                    ontology_path,
+                                    *settings.QUALIA_PATH,
+                                    quale_conf.path
                                 )
                             )
-            
-            ## SIMPLE DEFINITIONS
-            for set_type in SIMPLE_QUALIA_TYPES:
-                if set_type == 'concept':
-                    simple_set = qualia_conf.intrinsic.get(size).concept
 
-                elif set_type == 'conception':
-                    simple_set = qualia_conf.intrinsic.get(size).conception
+                            log.debug( 
+                                f"{size} {family} {quale_key}: size - {buffer.size}, mode - {buffer.mode}", 
+                                'Totality._init_self_assets'
+                            )
 
-                if not simple_set.get('path'):
-                    continue
+                            buffer = buffer.crop(
+                                ( 
+                                    quale_conf.position.x, 
+                                    quale_conf.position.y, 
+                                    quale_conf.size.w + quale_conf.position.x, 
+                                    quale_conf.size.h + quale_conf.position.y 
+                                )
+                            )
 
-                buffer = gui.open_image(
-                    os.path.join(
-                        ontology_path,
-                        *settings.QUALIA_PATH,
-                        simple_set.path
-                    )
-                )
+                            setattr(
+                                self.selves.get(constants.SelfType.QUALIA.value).get(size).get(family),
+                                quale_key,
+                                buffer
+                            )
+                            
+                        elif def_type == 'rotatable':
+                            if not quale_conf or not quale_conf.get('path'):
+                                continue
 
-                log.debug( 
-                    f"{size} {set_type} {set_key}: size - {buffer.size}, mode - {buffer.mode}", 
-                    'Totality._init_qualia_assets'
-                )
+                            buffer = gui.open_image(
+                                os.path.join(
+                                    ontology_path,
+                                    *settings.QUALIA_PATH,
+                                    quale_conf.path
+                                )
+                            )
 
-                buffer = buffer.crop(
-                    ( 
-                        simple_set.position.x,
-                        simple_set.position.y,
-                        simple_set.size.w + simple_set.position.x, 
-                        simple_set.size.h + simple_set.position.y
-                    )
-                )
+                            log.debug( 
+                                f"{size} {family} {quale_key}: size - {buffer.size}, mode - {buffer.mode}", 
+                                'Totality._init_self_assets'
+                            )
 
-                # simple qualia need to be stored and retrieved dirrecently if doing it this way.
+                            buffer = buffer.crop(
+                                ( 
+                                    quale_conf.position.x, 
+                                    quale_conf.position.y, 
+                                    quale_conf.size.w + quale_conf.position.x, 
+                                    quale_conf.size.h + quale_conf.position.y 
+                                )
+                            )
+
+                            if quale_conf.get('rotation') == 'directional':
+                                adjust = self.adjust_directional_rotation(quale_conf.definition)
+                                buffer = munch.Munch({
+                                    'down': buffer.rotate(
+                                        adjust[0], 
+                                        expand=True
+                                    ),
+                                    'left': buffer.rotate(
+                                        adjust[1], 
+                                        expand=True
+                                    ),
+                                    'right': buffer.rotate(
+                                        adjust[2], 
+                                        expand=True
+                                    ),
+                                    'up': buffer.rotate(
+                                        adjust[3], 
+                                        expand=True
+                                    ),
+                                })
+                            elif quale_conf.get('rotation') == 'alignment':
+                                adjust = self.adjust_alignment_rotation(quale_conf.definition)
+                                buffer = munch.Munch({
+                                    'vertical': buffer.rotate(
+                                        adjust[0], 
+                                        expand=True
+                                    ),
+                                    'horizontal': buffer.rotate(
+                                        adjust[1], 
+                                        expand=True
+                                    )
+                                })
+                        
+                            setattr(
+                                self.selves.get(constants.SelfType.QUALIA.value).get(size).get(family),
+                                quale_key,
+                                buffer
+                            )
+
+                        elif def_type == 'fillable':
+                            pass
+                        elif def_type == 'traversable':
+                            pass
+                        elif def_type == 'piecewise':
+                            pass
+                        elif def_type == 'piecewise_traversable':
+                            pass
 
 
     def _init_entity_assets(
