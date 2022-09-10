@@ -1,84 +1,103 @@
 from enum import Enum
 
+# CONSTANTS
+
+## TYPE HIERARCHY 
 #### FIRST LEVEL TYPES
-class OntaTypes(Enum):
+class OntaType(Enum):
     FORM = 'form'
     ENTITY = 'entity'
     SELF = 'self'
     DIALECTICS = 'dialectics'
-
-#### SECOND LEVEL TYPES
+###### SECOND LEVEL TYPES
 class FormType(Enum):
     TILE = 'tile'
     STRUT = 'strut'
     PLATE = 'plate'
-    # TODO: TRACK = 'track'
+    TRACK = 'track'
     COMPOSITE = 'composite'
-
 class EntityType(Enum):
     SPRITE = 'sprite'
     APPAREL = 'apparel'
-    # TODO: PIXIE = 'pixie'
-    # TODO: NYMPH = 'nypmh'
-
+    PIXIE = 'pixie'
+    NYMPH = 'nypmh'
 class SelfType(Enum):
     AVATAR = 'avatar'
     QUALIA = 'qualia'
     WILL = 'will'
-
 class DialecticType(Enum):
     PROJECTILE = 'projectile'
     EXPRESSION = 'expression'
-
-#### THIRD LEVEL TYPES
+######## THIRD LEVEL TYPES
 class PlateType(Enum):
     DOOR = 'door'
     CONTAINER = 'container'
     GATE = 'gate'
     PRESSURE = 'pressure'
     MASS = 'mass'
-
 class AvatarType(Enum):
     ARMORY = 'armory'
     EQUIPMENT = 'equipment'
     INVENTORY = 'inventory'
     QUANTITY = 'quantity'
-
 class ApparelType(Enum):
     ARMOR = 'armor'
     EQUIPMENT = 'equipment'
     SHIELD = 'shield'
-
 class QualiaType(Enum):
-    CAP = 'cap'
     BELT = 'belt'
     BAG = 'bag'
-    BUFFER = 'buffer'
-    WALLET = 'wallet'
-    SLOT = 'slot'
-    MIRROR = 'mirror'
-    IDEA = 'idea'
-    BAUBLE = 'bauble'
+    CAP = 'cap'
     CONCEPT = 'concept'
     CONCEPTION = 'conception'
+    BAUBLE = 'bauble'
+    BUFFER = 'buffer'
+    IDEA = 'idea'
+    MIRROR = 'mirror'
+    SLOT = 'slot'
+    WALLET = 'wallet'
 
-#### FOURTH LEVEL TYPES
-class PackType(Enum):
-    BAG = 'bag'
-    BELT = 'belt'
+#### FAMILIES
+###### TOP LEVEL
+class PlateFamilies(Enum):
+    STATIC = 'static'
+    SWITCH = 'switch'
+    MASS = 'mass'
 
-class MirrorType(Enum):
-    LIFE = 'life'
-    MAGIC = 'magic'
+class QualiaFamilies(Enum):
+    SIMPLE = 'simple'
+    ROTATABLE = 'rotatable'
+    STATEFUL = 'stateful'
+    PIECEWISE = 'piecewise'
+    PIECEWISE_STATEFUL = 'piecewise_stateful'
+    PACK = 'pack'
 
-### OVERLAPPING TYPES
-class StaticPlateType(Enum):
+######## SECOND LEVEL
+    ## PLATES
+class StaticPlateFamily(Enum):
     DOOR = 'door'
-
-class SwitchPlateType(Enum):
+class SwitchPlateFamily(Enum):
     CONTAINER = 'container'
     PRESSURE = 'pressure'
     GATE = 'gate'
+    ## QUALIA
+class SimpleQualiaFamily(Enum):
+    WALLET = 'wallet'
+    CONCEPT = 'concept'
+    CONCEPTION = 'conception'
+class RotatableQualiaFamily(Enum):
+    CAP = 'cap'
+    BUFFER = 'buffer'
+class PiecewiseQualiaFamily(Enum):
+    BAG = 'BAG'
+    BELT = 'BELT'
+class PiecewiseStatefulQualiaFamily(Enum):
+    IDEA = 'idea'
+    BAUBLE = 'bauble'
+class PackQualiaFamily(Enum):
+    BAG = 'bag'
+    BELT = 'belt'
+    WALLET = 'wallet'
 
 ## DECOMPOSITIONS
 class SlotPiece(Enum):
@@ -88,12 +107,11 @@ class SlotPiece(Enum):
     DISABLED = 'disabled'
     ACTIVE = 'active'
 
-## OTHER
+## CONTROLS
 class Desires(Enum):
     APPROACH = 'approach'
     FLEE = 'flee'
     ENGAGE = 'engage'
-
 class Intentions(Enum):
     MOVE = 'move'
     COMBAT = 'combat'

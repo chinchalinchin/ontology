@@ -243,7 +243,7 @@ class Totality():
                         asset_props.get(asset_key).get('type') in list(
                             e.value 
                             for e 
-                            in constants.SwitchPlateType.__members__.values()
+                            in constants.SwitchPlateFamily.__members__.values()
                         ):
 
                         setattr(
@@ -302,7 +302,7 @@ class Totality():
                     if asset_props.get(asset_key).get('type') in list(
                         e.value 
                         for e
-                        in constants.SwitchPlateType.__members__.values()
+                        in constants.SwitchPlateFamily.__members__.values()
                     ):
                         setattr(
                             self.forms.get(asset_type),
@@ -497,7 +497,7 @@ class Totality():
 
             for quale_key, quale_conf in family_conf.items():
 
-                if family_key == 'simple':
+                if family_key == constants.QualiaFamilies.SIMPLE.value:
                     if not quale_conf or not quale_conf.get('path'):
                         continue
 
@@ -529,7 +529,7 @@ class Totality():
                         buffer
                     )
 
-                elif family_key == 'rotatable':
+                elif family_key == constants.QualiaFamilies.ROTATABLE.value:
                     if not quale_conf or not quale_conf.get('path'):
                         continue
 
@@ -594,7 +594,7 @@ class Totality():
                         buffer
                     )
 
-                elif family_key == 'stateful':
+                elif family_key == constants.QualiaFamilies.STATEFUL.value:
                     setattr(
                         self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
                         quale_key,
@@ -631,7 +631,7 @@ class Totality():
                             buffer
                         )
 
-                elif family_key == 'piecewise':
+                elif family_key == constants.QualiaFamilies.PIECEWISE.value:
                     setattr(
                         self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
                         quale_key,
@@ -670,8 +670,50 @@ class Totality():
                             buffer
                         )
                 
-                elif family_key == 'piecewise_traversable':
-                    pass
+                elif family_key == constants.QualiaFamilies.PIECEWISE_STATEFUL.value:
+                    setattr(
+                        self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
+                        quale_key,
+                        munch.Munch({})
+                    )
+
+                    for state_key, state_conf in quale_conf.items():
+                        setattr(
+                            self.selves.get(constants.SelfType.QUALIA.value).get(family_key).get(quale_key),
+                            state_key,
+                            munch.Munch({})
+                        )
+                        for piece_key, piece_conf in state_conf.items():
+                            if not piece_conf or not piece_conf.get('path'):
+                                continue
+
+                            buffer = gui.open_image(
+                                os.path.join(
+                                    ontology_path,
+                                    *settings.QUALIA_PATH,
+                                    piece_conf.path
+                                )
+                            )
+
+                            log.debug( 
+                                f"{family_key} {quale_key} {state_key} {piece_key}: size - {buffer.size}, mode - {buffer.mode}", 
+                                'Totality._init_self_assets'
+                            )
+
+                            buffer = buffer.crop(
+                                ( 
+                                    piece_conf.position.x, 
+                                    piece_conf.position.y, 
+                                    piece_conf.size.w + piece_conf.position.x, 
+                                    piece_conf.size.h + piece_conf.position.y 
+                                )
+                            )
+
+                            setattr(
+                                self.selves.get(constants.SelfType.QUALIA.value).get(family_key).get(quale_key).get(state_key),
+                                piece_key,
+                                buffer
+                            )
 
 
     def _init_entity_assets(

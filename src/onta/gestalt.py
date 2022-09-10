@@ -261,7 +261,7 @@ class Renderer():
                     (
                         game_world.plate_properties.get(group_key) and \
                         game_world.plate_properties.get(group_key).type in \
-                            list(constants.StaticPlateType.__members__.values())
+                            list(constants.StaticPlateFamily.__members__.values())
                     ):
 
                     group_type  = constants.FormType.STRUT.value \
@@ -341,14 +341,14 @@ class Renderer():
             if group_type in list(
                 e.value 
                 for e 
-                in constants.StaticPlateType.__members__.values()
+                in constants.StaticPlateFamily.__members__.values()
             ):
                 continue
 
             if group_type not in list(
                 e.value 
                 for e
-                in constants.SwitchPlateType.__members__.values()
+                in constants.SwitchPlateFamily__members__.values()
             ):
                 group_dim = (
                     group_frame.size[0],
@@ -397,7 +397,7 @@ class Renderer():
                 if group_type not in list(
                     e.value 
                     for e
-                    in constants.SwitchPlateType.__members__.values()
+                    in constants.SwitchPlateFamily.__members__.values()
                 ):
                     gui.render_composite(
                         self.world_frame,

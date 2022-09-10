@@ -256,7 +256,7 @@ class World():
     ) -> None:
         for layer in self.layers:
             switches = []
-            for e in constants.SwitchPlateType.__members__.values():
+            for e in constants.SwitchPlateFamily.__members__.values():
                 switches += self.get_typed_platesets(
                     layer,
                     e.value
