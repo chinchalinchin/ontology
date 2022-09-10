@@ -155,7 +155,7 @@ qualia:
       size:
         w: 4
         h: 32
-  fillable:
+  stateful:
     mirror:
       unit: 
         path: hearts.png
@@ -173,7 +173,6 @@ qualia:
         size: 
           w: 16
           h: 16
-  traversable:
     slot:
       enabled:
         path: slotsheet.png
@@ -234,7 +233,7 @@ qualia:
         size:
           w: 32
           h: 64
-  piecewise_traversable:
+  piecewise_stateful:
     idea:
       enabled:
         left: 

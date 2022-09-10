@@ -496,11 +496,6 @@ class Totality():
             )
 
             for quale_key, quale_conf in family_conf.items():
-                setattr(
-                    self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
-                    quale_key,
-                    munch.Munch({})
-                )
 
                 if family_key == 'simple':
                     if not quale_conf or not quale_conf.get('path'):
@@ -599,14 +594,81 @@ class Totality():
                         buffer
                     )
 
-                elif family_key == 'fillable':
-                    pass
+                elif family_key == 'stateful':
+                    setattr(
+                        self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
+                        quale_key,
+                        munch.Munch({})
+                    )
 
-                elif family_key == 'traversable':
-                    pass
+                    for state_key, state_conf in quale_conf.items():
+                        if not state_conf or not state_conf.get('path'):
+                            continue
+                        
+                        buffer = gui.open_image(
+                            os.path.join(
+                                ontology_path,
+                                *settings.QUALIA_PATH,
+                                state_conf.path
+                            )
+                        )
+                        log.debug( 
+                            f"{family_key} {quale_key} {state_key}: size - {buffer.size}, mode - {buffer.mode}", 
+                            'Totality._init_self_assets'
+                        )
+                        buffer = buffer.crop(
+                            ( 
+                                state_conf.position.x, 
+                                state_conf.position.y, 
+                                state_conf.size.w + state_conf.position.x, 
+                                state_conf.size.h + state_conf.position.y 
+                            )
+                        )
+
+                        setattr(
+                            self.selves.get(constants.SelfType.QUALIA.value).get(family_key).get(quale_key),
+                            state_key,
+                            buffer
+                        )
 
                 elif family_key == 'piecewise':
-                    pass
+                    setattr(
+                        self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
+                        quale_key,
+                        munch.Munch({})
+                    )
+
+                    for piece_key, piece_conf in quale_conf.items():
+                        if not piece_conf or not piece_conf.get('path'):
+                            continue
+
+                        buffer = gui.open_image(
+                            os.path.join(
+                                ontology_path,
+                                *settings.QUALIA_PATH,
+                                piece_conf.path
+                            )
+                        )
+
+                        log.debug( 
+                            f"{family_key} {quale_key} {piece_key}: size - {buffer.size}, mode - {buffer.mode}", 
+                            'Totality._init_self_assets'
+                        )
+
+                        buffer = buffer.crop(
+                            ( 
+                                piece_conf.position.x, 
+                                piece_conf.position.y, 
+                                piece_conf.size.w + piece_conf.position.x, 
+                                piece_conf.size.h + piece_conf.position.y 
+                            )
+                        )
+
+                        setattr(
+                            self.selves.get(constants.SelfType.QUALIA.value).get(family_key).get(quale_key),
+                            piece_key,
+                            buffer
+                        )
                 
                 elif family_key == 'piecewise_traversable':
                     pass
@@ -874,7 +936,6 @@ class Totality():
         return None
 
 
-
     @functools.lru_cache(maxsize=64)
     def get_simple_qualia_frame(
         self,
@@ -895,44 +956,52 @@ class Totality():
         Image.Image,
         None
     ]:
+        if self.selves.qualia.rotatable.get(component_key):
+            return self.selves.qualia.rotatable.get(component_key).get(direction_key)
         return None
 
 
     @functools.lru_cache(maxsize=64)
-    def get_fillable_qualia_frame(
+    def get_stateful_qualia_frame(
         self,
         component_key,
-        fill_key
+        stateful_key
     ) -> Union[
         Image.Image,
         None
     ]:
-        pass
-
-
-    @functools.lru_cache(maxsize=64)
-    def get_traversable_qualia_frame(
-        self,
-        component_key,
-        status_key
-    ) -> Union[
-        Image.Image,
-        None
-    ]:
-        pass
+        if self.selves.qualia.stateful.get(component_key):
+            return self.selves.qualia.stateful.get(component_key).get(stateful_key)
+        return None
 
 
     @functools.lru_cache(maxsize=64)
     def get_piecewise_qualia_frame(
         self, 
-        breakpoint_key: str, 
         component_key: str, 
-        frame_key: str,
         piece_key: str
     ) -> Union[
         Image.Image, 
         None
     ]:
+        if self.selves.qualia.piecewise.get(component_key):
+            return self.selves.qualia.piecewise.get(component_key).get(piece_key)
+        return None
+
+
+    @functools.lru_cache(maxsize=64)
+    def get_stateful_piecewise_qualia_frame(
+        self,
+        component_key: str,
+        stateful_key: str,
+        piece_key: str,
+    ) -> Union[
+        Image.Image,
+        None
+    ]:
+        if self.selves.qualia.stateful_piecewise.get(component_key) and \
+            self.selves.qualia.stateful_piecewise.get(component_key).get(stateful_key):
+            return self.selves.qualia.stateful_piecewise.get(component_key).get(stateful_key).get(piece_key)
         return None
 
 

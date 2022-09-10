@@ -49,23 +49,20 @@ class ApparelType(Enum):
     EQUIPMENT = 'equipment'
     SHIELD = 'shield'
 
-#### FOURTH LEVEL TYPES
-class ExtrinsicType(Enum):
-    PACK = 'pack'
+class QualiaType(Enum):
+    CAP = 'cap'
+    BELT = 'belt'
     BAG = 'bag'
+    BUFFER = 'buffer'
     WALLET = 'wallet'
     SLOT = 'slot'
     MIRROR = 'mirror'
-
-class IntrinsicType(Enum):
     IDEA = 'idea'
     BAUBLE = 'bauble'
     CONCEPT = 'concept'
     CONCEPTION = 'conception'
-    ASIDE = 'aside'
-    FOCUS = 'focus'
 
-#### FIFTH LEVEL TYPES
+#### FOURTH LEVEL TYPES
 class PackType(Enum):
     BAG = 'bag'
     BELT = 'belt'
@@ -74,8 +71,7 @@ class MirrorType(Enum):
     LIFE = 'life'
     MAGIC = 'magic'
 
-
-### DEPENDENT TYPES
+### OVERLAPPING TYPES
 class StaticPlateType(Enum):
     DOOR = 'door'
 
@@ -83,27 +79,6 @@ class SwitchPlateType(Enum):
     CONTAINER = 'container'
     PRESSURE = 'pressure'
     GATE = 'gate'
-
-class PiecewiseQualiaType(Enum):
-    MIRROR = 'mirror'
-    PACK = 'pack'
-    IDEA = 'idea'
-    BAUBLE = 'bauble'
-    ASIDE = 'aside'
-    FOCUS = 'focus'
-
-class StyledQualiaType(Enum):
-    SLOT = 'slot'
-
-class SimpleQualiaType(Enum):
-    CONCEPT = 'concept'
-    CONCEPTION = 'conception'
-
-class DirectionalQualiaPiece(Enum):
-    CAP = 'cap'
-
-class AlignmentQualiaPiece(Enum):
-    BUFFER = 'buffer'
 
 ## DECOMPOSITIONS
 class SlotPiece(Enum):
