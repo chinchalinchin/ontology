@@ -334,7 +334,7 @@ def wallet_coordinates(
     return render_points
 
 
-def life_mirror_coordinates(
+def mirror_coordinates(
     device_dim: tuple,
     alignment: tuple,
     stack: str,

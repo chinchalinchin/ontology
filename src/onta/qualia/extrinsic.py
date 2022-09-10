@@ -157,8 +157,8 @@ class ExtrinsicQuale():
             self.sizes, 
             self.breakpoints
         )
-        self.properties = configure.properties
-        self.styles = configure.styles.get(self.media_size)
+        self.properties = configure.apriori.properties
+        self.styles = configure.apriori.styles.get(self.media_size)
 
         self.avatar_conf = config.load_avatar_configuration()
 
@@ -263,46 +263,44 @@ class ExtrinsicQuale():
             'ExtrinsicQuale._init_mirror_positions'
         )
 
-        mirror_styles = self.styles.get(self.media_size).mirror
-       
         mirror_alignment = (
-            self.styles.get(self.media_size).mirror.alignment.horizontal,
-            self.styles.get(self.media_size).mirror.alignment.vertical
+            self.styles.mirror.alignment.horizontal,
+            self.styles.mirror.alignment.vertical
         )
 
-        life_rank = (
-            self.properties.mirror.life.columns,
-            self.properties.mirror.life.rows,
+        mirror_rank = (
+            self.properties.mirror.columns,
+            self.properties.mirror.rows,
         )
 
         # NOTE: dependent on 'unit' and 'empty' being the same dimensions...
 
-        life_dim = (
-            self.quale_conf.get(self.media_size).mirror.life.unit.size.w,
-            self.quale_conf.get(self.media_size).mirror.life.unit.size.h
+        mirror_dim = (
+            self.quale_conf.mirror.unit.size.w,
+            self.quale_conf.mirror.unit.size.h
         )
 
         margins= (
-            mirror_styles.margins.w * player_device.dimensions[0],
-            mirror_styles.margins.h * player_device.dimensions[1]
+            self.styles.mirror.margins.w * player_device.dimensions[0],
+            self.styles.mirror.margins.h * player_device.dimensions[1]
         )
 
         padding = (
-            mirror_styles.padding.w,
-            mirror_styles.padding.h
+            self.styles.mirror.padding.w,
+            self.styles.mirror.padding.h
         )
 
         setattr(
             self.render_points,
-            'life',
-            formulae.life_mirror_coordinates(
+            constants.QualiaType.MIRROR.value,
+            formulae.mirror_coordinates(
                 player_device.dimensions,
                 mirror_alignment,
-                mirror_styles.stack,
+                self.styles.mirror.stack,
                 margins,
                 padding,
-                life_rank,
-                life_dim
+                mirror_rank,
+                mirror_dim
             )
         )
    
@@ -381,33 +379,42 @@ class ExtrinsicQuale():
         """
         setattr(
             self.containers,
-            'slots',
+            constants.QualiaType.SLOT.value,
             state_ao.get_state('dynamic').hero.slots
         )
         setattr(
             self.containers,
-            'equipment',
+            constants.AvatarType.EQUIPMENT.value,
             state_ao.get_state('dynamic').hero.capital.equipment
         )
         setattr(
             self.containers,
-            'packs',
+            constants.QualiaFamilies.PACK.value,
             state_ao.get_state('dynamic').hero.packs
         )
         setattr(
             self.containers,
-            'mirrors',
+            constants.QualiaFamilies.MEASURE.value,
             munch.Munch({
-                'life': state_ao.get_state('dynamic').hero.health
+                constants.QualiaType.MIRROR.value: 
+                    state_ao.get_state('dynamic').hero.health
             })
         )
 
         self._calculate_slot_frame_map()
 
-        for pack_key in PACK_TYPES:
+        for pack_key in list(
+            e.value 
+            for e
+            in constants.PackQualiaFamily.__members__.values()
+        ):
             self._calculate_pack_frame_map(pack_key)
 
-        for mirror_key in MIRROR_TYPES:
+        for mirror_key in list(
+            e.value
+            for e
+            in constants.MeasureQualiaFamily.__members__.values()
+        ):
             self._calculate_mirror_frame_map(mirror_key)
 
 
@@ -444,25 +451,59 @@ class ExtrinsicQuale():
                 ExtrinsicQuale.immute_slots(self.containers.slots), 
                 ExtrinsicQuale.immute_armory_size(self.avatar_conf),
                 ExtrinsicQuale.immute_inventory_size(self.avatar_conf),
-                tuple(self.render_points.slot),
-                tuple(self.render_points.bag),
-                tuple(self.render_points.belt),
-                tuple(self.properties.slot.maps),
+                tuple(
+                    self.render_points.get(
+                        constants.QualiaType.SLOT.value
+                    )
+                ),
+                tuple(
+                    self.render_points.get(
+                        constants.QualiaType.BAG.value
+                    )
+                ),
+                tuple(
+                    self.render_points.get(
+                        constants.QualiaType.BELT.value
+                    )
+                ),
+                tuple(
+                    self.properties.get(
+                        constants.QualiaType.SLOT.value
+                    ).maps
+                ),
                 avatar_tuple, 
-                self.containers.packs.bag,
-                self.containers.packs.belt, 
+                self.containers.get(
+                    constants.QualiaFamilies.PACK.value
+                ).get(
+                    constants.QualiaType.BAG.value
+                ),
+                self.containers.get(
+                    constants.QualiaFamilies.PACK.value
+                ).get(
+                    constants.QualiaType.BELT.value
+                ), 
                 self.get_slot_dimensions(),
                 self.get_bag_dimensions(),
                 self.get_belt_dimensions(),
             )
         )
 
-        setattr(self.frame_maps, 'avatar', munch.Munch({}))
+        setattr(
+            self.frame_maps, 
+            constants.SelfType.AVATAR.value, 
+            munch.Munch({})
+        )
 
-        for i, _ in enumerate(self.render_points.avatar):
-            if i < len(self.properties.slot.maps):
+        for i, _ in enumerate(
+            self.render_points.get(constants.SelfType.AVATAR.value)
+        ):
+            if i < len(
+                self.properties.get(constants.QualiaType.SLOT.value).maps
+            ):
                 setattr(
-                    self.frame_maps.avatar, 
+                    self.frame_maps.get(
+                        constants.SelfType.AVATAR.value
+                    ), 
                     str(i), 
                     self.containers.slots.get(
                         self.properties.slot.maps[i]
@@ -470,16 +511,24 @@ class ExtrinsicQuale():
                 )
 
         setattr(
-            self.frame_maps.avatar,
+            self.frame_maps.get(constants.SelfType.AVATAR.value),
             str(
-                len(self.frame_maps.avatar)
+                len(
+                    self.frame_maps.get(
+                        constants.SelfType.AVATAR.value
+                    )
+                )
             ),
             self.containers.packs.bag
         )
         setattr(
-            self.frame_maps.avatar,
+            self.frame_maps.get(constants.SelfType.AVATAR.value),
             str(
-                len(self.frame_maps.avatar)
+                len(
+                    self.frame_maps.get(
+                        constants.SelfType.AVATAR.value
+                    )
+                )
             ),
             self.containers.packs.belt
         )

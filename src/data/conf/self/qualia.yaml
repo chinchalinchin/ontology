@@ -1,4 +1,3 @@
-# a priori
 apriori:
   sizes:
     - small
@@ -13,100 +12,98 @@ apriori:
       g: 67
       b: 142
       a: 175
-  
-styles:
-  small:
-    default:
-      padding:
-        w: 0.05
-        h: 0.05
-      margins:
-        w: 0.05
-        h: 0.20
-      stack: vertical
-    slot:
-      margins:
-        w: 0.025
-        h: 0.025
-      stack: horizontal
-      alignment: 
-        vertical: bottom
-        horizontal: left
-      opacity: 0.5
-    mirror:
-      margins:
-        w: 0.025
-        h: 0.025
-      padding:
-        w: 0.005
-        h: 0.005
-      stack: horizontal
-      alignment:
-        vertical: top
-        horizontal: right
-      opacity: 0.5
-    pack: 
-      margins:
-        w: 0.025
-        h: 0.025
-      alignment:
-        vertical: bottom
-        horizontal: right
-  large:
-    default:
-      padding:
-        w: 0.05
-        h: 0.05
-      margins:
-        w: 0.05
-        h: 0.20
-      stack: vertical
-    slot:
-      margins: 
-        w: 0.025
-        h: 0.025
-      stack: horizontal
-      alignment: 
-        vertical: bottom
-        horizontal: left
-      opacity: 0.5
-    mirror:
-      margins:
-        w: 0.025
-        h: 0.025
-      padding:
-        w: 0.005
-        h: 0.005
-      stack: horizontal
-      alignment:
-        vertical: top
-        horizontal: right
-      opacity: 0.5
-    pack:
+  styles:
+    small:
+      default:
+        padding:
+          w: 0.05
+          h: 0.05
+        margins:
+          w: 0.05
+          h: 0.20
+        stack: vertical
+      slot:
+        margins:
+          w: 0.025
+          h: 0.025
+        stack: horizontal
+        alignment: 
+          vertical: bottom
+          horizontal: left
+        opacity: 0.5
+      mirror:
+        margins:
+          w: 0.025
+          h: 0.025
+        padding:
+          w: 0.005
+          h: 0.005
+        stack: horizontal
+        alignment:
+          vertical: top
+          horizontal: right
+        opacity: 0.5
+      pack: 
         margins:
           w: 0.025
           h: 0.025
         alignment:
           vertical: bottom
           horizontal: right
-
-properties:
-  slot: 
-    total: 4
-    maps:
-      - cast
-      - thrust
-      - shoot
-      - slash  
-  mirror:
-    columns: 10
-    rows: 1
-    bounds: 20
-  bag: null
-  belt: null
-  wallet: null
-  idea: null
-  bauble: null
+    large:
+      default:
+        padding:
+          w: 0.05
+          h: 0.05
+        margins:
+          w: 0.05
+          h: 0.20
+        stack: vertical
+      slot:
+        margins: 
+          w: 0.025
+          h: 0.025
+        stack: horizontal
+        alignment: 
+          vertical: bottom
+          horizontal: left
+        opacity: 0.5
+      mirror:
+        margins:
+          w: 0.025
+          h: 0.025
+        padding:
+          w: 0.005
+          h: 0.005
+        stack: horizontal
+        alignment:
+          vertical: top
+          horizontal: right
+        opacity: 0.5
+      pack:
+        margins:
+          w: 0.025
+          h: 0.025
+        alignment:
+          vertical: bottom
+          horizontal: right
+  properties:
+    slot: 
+      total: 4
+      maps:
+        - cast
+        - thrust
+        - shoot
+        - slash  
+    mirror:
+      columns: 10
+      rows: 1
+      bounds: 20
+    bag: null
+    belt: null
+    wallet: null
+    idea: null
+    bauble: null
 
 qualia:
   simple:
