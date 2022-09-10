@@ -854,7 +854,7 @@ class Totality():
     @functools.lru_cache(maxsize=64)
     def get_avatar_frame(
         self,
-        avatarset_key: str,
+        set_key: str,
         avatar_key: str
     ) -> Union[
         Image.Image, 
@@ -869,87 +869,10 @@ class Totality():
         :return: _Avatar_ frame image.
         :rtype: Union[Image.Image, None]
         """
-        if self.avatars.get(avatarset_key):
-            return self.avatars.get(avatarset_key).get(avatar_key)
-        return None
-    
-
-    @functools.lru_cache(maxsize=8)
-    def get_slot_frames(
-        self, 
-        breakpoint_key: str, 
-        component_key: str
-    ) -> Union[
-        munch.Munch, 
-        None
-    ]:
-        """_summary_
-
-        :param breakpoint_key: _description_
-        :type breakpoint_key: str
-        :param component_key: _description_
-        :type component_key: str
-        :return: _description_
-        :rtype: Union[Image.Image, None]
-        """
-        if self.slots.get(breakpoint_key):
-            return self.slots.get(breakpoint_key).get(component_key)
-        return None
-        
-
-    @functools.lru_cache(maxsize=8)
-    def get_pack_frame(
-        self, 
-        breakpoint_key: str, 
-        component_key: str, 
-        piece_key: str
-    ) -> Union[
-        Image.Image, 
-        None
-    ]:
-        """_summary_
-
-        :param breakpoint_key: _description_
-        :type breakpoint_key: str
-        :param component_key: _description_
-        :type component_key: str
-        :param piece_key: _description_
-        :type piece_key: str
-        :return: _description_
-        :rtype: Union[Image.Image, None]
-        """
-        print(self.packs)
-        if self.packs.get(breakpoint_key) and \
-            self.packs.get(breakpoint_key).get(component_key):
-            return self.packs.get(breakpoint_key).get(component_key).get(piece_key)
+        if self.avatars.get(set_key):
+            return self.avatars.get(set_key).get(avatar_key)
         return None
 
-
-    @functools.lru_cache(maxsize=8)
-    def get_mirror_frame(
-        self, 
-        breakpoint_key: str, 
-        component_key: str, 
-        fill_key: str
-    ) -> Union[
-        Image.Image, 
-        None
-    ]:
-        """_summary_
-
-        :param breakpoint_key: _description_
-        :type breakpoint_key: str
-        :param component_key: _description_
-        :type component_key: str
-        :param fill_key: _description_
-        :type fill_key: str
-        :return: _description_
-        :rtype: Union[Image.Image, None]
-        """
-        if self.mirrors.get(breakpoint_key) and \
-            self.mirrors.get(breakpoint_key).get(component_key):
-            return self.mirrors.get(breakpoint_key).get(component_key).get(fill_key)
-        return None
 
 
     @functools.lru_cache(maxsize=64)
