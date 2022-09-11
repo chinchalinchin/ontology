@@ -181,16 +181,32 @@ class ExtrinsicQuale():
         )
 
         pack_margins = (
-            self.styles.pack.margins.w, 
-            self.styles.pack.margins.h
+            self.styles.get(
+                constants.QualiaPartitions.PACK.value
+            ).margins.w, 
+            self.styles.get(
+                constants.QualiaPartitions.PACK.value
+            ).margins.h
         )
         pack_alignment = (
-            self.styles.pack.alignment.horizontal,
-            self.styles.pack.alignment.vertical
+            self.styles.get(
+                constants.QualiaPartitions.PACK.value
+            ).alignment.horizontal,
+            self.styles.get(
+                constants.QualiaPartitions.PACK.value
+            ).alignment.vertical
         )
 
-        bagset = self.quale_conf.piecwise.bag
-        beltset = self.quale_conf.piecewise.belt
+        bagset = self.quale_conf.get(
+            constants.QualiaFamilies.PIECEWISE.value
+        ).get(
+            constants.QualiaType.BAG.value
+        )
+        beltset = self.quale_conf.get(
+            constants.QualiaFamilies.PIECEWISE.value
+        ).get(
+            constants.QualiaType.BELT.value
+        )
 
         bag_piece_sizes = tuple(
             (
@@ -221,7 +237,9 @@ class ExtrinsicQuale():
             self.render_points,
             constants.QualiaType.BELT.value,
             formulae.belt_coordinates(
-                self.render_points.bag[0],
+                self.render_points.get(
+                    constants.QualiaType.BAG.value
+                )[0],
                 belt_piece_sizes,
                 self.get_belt_dimensions(),
                 pack_alignment[0],
@@ -235,8 +253,12 @@ class ExtrinsicQuale():
             self.render_points,
             constants.QualiaType.WALLET.value,
             formulae.wallet_coordinates(
-                self.render_points.belt[0],
-                self.render_points.bag[0],
+                self.render_points.get(
+                    constants.QualiaType.BELT.value
+                )[0],
+                self.render_points.get(
+                    constants.QualiaType.BAG.value
+                )[0],
                 self.get_bag_dimensions(),
                 self.get_belt_dimensions(),
                 self.get_wallet_dimensions(),
@@ -328,30 +350,30 @@ class ExtrinsicQuale():
 
         cap_dim = formulae.rotate_dimensions(
             (
-                self.quale_conf.get(self.media_size).slot.cap.size.w,
-                self.quale_conf.get(self.media_size).slot.cap.size.h
+                self.quale_conf.rotabable.cap.size.w,
+                self.quale_conf.rotatable.cap.size.h
             ),
-            self.quale_conf.get(self.media_size).slot.cap.definition,
-            self.styles.get(self.media_size).slot.stack
+            self.quale_conf.rotatable.cap.definition,
+            self.styles.slot.stack
         )
 
         buffer_dim = formulae.rotate_dimensions(
             (
-                self.quale_conf.get(self.media_size).slot.buffer.size.w,
-                self.quale_conf.get(self.media_size).slot.buffer.size.h
+                self.quale_conf.rotatable.buffer.size.w,
+                self.quale_conf.rotatable.buffer.size.h
             ),
-            self.quale_conf.get(self.media_size).slot.buffer.definition,
-            self.styles.get(self.media_size).slot.stack
+            self.quale_conf.rotatable.buffer.definition,
+            self.styles.rotatable.slot.stack
         )
 
         slot_dim = (
-            self.quale_conf.get(self.media_size).slot.disabled.size.w,
-            self.quale_conf.get(self.media_size).slot.disabled.size.h
+            self.quale_conf.stateful.slot.disabled.size.w,
+            self.quale_conf.stateful.slot.disabled.size.h
         )
 
         setattr(
             self.render_points,
-            'slot',
+            constants.QualiaType.SLOT.value,
             formulae.slot_coordinates(
                 slots_total,
                 slot_dim,
@@ -446,7 +468,7 @@ class ExtrinsicQuale():
         # NOTE: this ugliness is all in service of immutability...
         setattr(
             self.render_points,
-            'avatar',
+            constants.SelfType.AVATAR.value,
             formulae.slot_avatar_coordinates(
                 ExtrinsicQuale.immute_slots(self.containers.slots), 
                 ExtrinsicQuale.immute_armory_size(self.avatar_conf),
@@ -601,34 +623,7 @@ class ExtrinsicQuale():
             })
 
 
-    def get_frame_map(
-        self, 
-        component_key: str
-    ) -> munch.Munch:
-        return self.frame_maps.get(component_key)
-
-
-    def get_cap_directions(
-        self
-    ) -> str:
-        if self.styles.get(self.media_size).slot.stack == 'horizontal':
-            return (
-                'left', 
-                'right'
-            )
-        return (
-            'up', 
-            'down'
-        )
-
-
-    def get_buffer_direction(
-        self
-    ) -> str:
-        return self.styles.get(self.media_size).slot.stack
-
-
-    def get_bag_dimensions(
+    def _calculate_bag_dimensions(
         self
     ) -> tuple:
         if not self.dimensions.get('bag'):
@@ -656,7 +651,7 @@ class ExtrinsicQuale():
         return self.dimensions.bag
 
 
-    def get_belt_dimensions(
+    def _calculate_belt_dimensions(
         self
     ) -> tuple:
         if not self.dimensions.get('belt'):
@@ -680,7 +675,7 @@ class ExtrinsicQuale():
         return self.dimensions.belt
 
 
-    def get_wallet_dimensions(
+    def _calculate_wallet_dimensions(
         self
     ) -> tuple:
         if not self.dimensions.get('wallet'):
@@ -695,20 +690,71 @@ class ExtrinsicQuale():
         return self.dimensions.wallet
 
 
-    def get_slot_dimensions(
+    def _calculate_slot_dimensions(
         self
     ) -> tuple:
-        if not self.dimensions.get('slot'):
+        if not self.dimensions.get(
+            constants.QualiaType.SLOT.value
+        ):
             setattr(
                 self.dimensions,
-                'slot',
+                constants.QualiaType.SLOT.value,
                 (
-                    self.quale_conf.get(self.media_size).slot.disabled.size.w, 
-                    self.quale_conf.get(self.media_size).slot.disabled.size.h
+                    self.quale_conf.get(
+                        constants.QualiaFamilies.STATEFUL.value
+                    ).get(
+                        constants.QualiaType.SLOT.value
+                    ).enabled.size.w, 
+                    self.quale_conf.get(
+                        constants.QualiaFamilies.STATEFUL.value
+                    ).get(
+                        constants.QualiaType.SLOT.value
+                    ).enabled.size.h
                 )
             )
-        return self.dimensions.slot
+        return self.dimensions.get(
+            constants.QualiaType.SLOT.value
+        )
 
+    def get_dimensions(
+        self,
+        quale_key
+    ) -> tuple:
+        if quale_key == constants.QualiaType.SLOT.value:
+            return self._calculate_slot_dimensions()
+        if quale_key == constants.QualiaType.WALLET.value:
+            return self._calculate_wallet_dimensions()
+        if quale_key == constants.QualiaType.BAG.value:
+            return self._calculate_bag_dimensions()
+        if quale_key == constants.QualiaType.BELT.value:
+            return self._calculate_belt_dimensions()
+        raise KeyError(f'{quale_key} is not a valid ExtrinsicQuale component')
+
+    def get_frame_map(
+        self, 
+        component_key: str
+    ) -> munch.Munch:
+        return self.frame_maps.get(component_key)
+
+
+    def get_cap_directions(
+        self
+    ) -> str:
+        if self.styles.get(self.media_size).slot.stack == 'horizontal':
+            return (
+                'left', 
+                'right'
+            )
+        return (
+            'up', 
+            'down'
+        )
+
+
+    def get_buffer_direction(
+        self
+    ) -> str:
+        return self.styles.get(self.media_size).slot.stack
 
     def get_render_points(
         self, 

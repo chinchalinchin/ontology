@@ -9,6 +9,7 @@ log = logger.Logger(
     settings.LOG_LEVEL
 )
 
+# TODO: now that this is in Cython, it can be done with a generator.
 def _filter_nested_tuple(
     nested_tuple: tuple, 
     filter_value: str
@@ -558,7 +559,7 @@ def slot_coordinates(
 
 def slot_avatar_coordinates(
     slots_tuple: tuple,
-    equip_tuple: tuple,
+    arms_tuple: tuple,
     invent_tuple: tuple,
     slot_points_tuple: tuple,
     bag_points_tuple: tuple,
@@ -589,23 +590,25 @@ def slot_avatar_coordinates(
                 slot_key
             )
 
-            equipment = _filter_nested_tuple(
-                equip_tuple,
+            arms = _filter_nested_tuple(
+                arms_tuple,
                 slot[1]
             )
 
-            if avatar and equipment:
+            if avatar and arms:
                 slot_point = slot_points_tuple[avatar[1]]
 
                 render_points.append(
                     (
                         ( 
                             slot_point[0] + ( 
-                                slot_dim[0] - equipment[1] ) / 2 
+                                slot_dim[0] - arms[1] 
+                            ) / 2 
                         ),
                         ( 
                             slot_point[1] + ( 
-                                slot_dim[1] - equipment[2] ) / 2 
+                                slot_dim[1] - arms[2] 
+                            ) / 2 
                         )
                     )
                 )
@@ -621,10 +624,16 @@ def slot_avatar_coordinates(
     if inventory:
         render_points.append(
             (
-                ( bag_points_tuple[0][0] + ( 
-                    bag_dim[0] - inventory[1] ) / 2 ),
-                ( bag_points_tuple[0][1] + ( 
-                    bag_dim[1] - inventory[2] ) / 2 )
+                ( 
+                    bag_points_tuple[0][0] + ( 
+                        bag_dim[0] - inventory[1] 
+                    ) / 2 
+                ),
+                ( 
+                    bag_points_tuple[0][1] + ( 
+                        bag_dim[1] - inventory[2] 
+                    ) / 2 
+                )
             )
         )
     else:
@@ -638,10 +647,16 @@ def slot_avatar_coordinates(
     if inventory:
         render_points.append(
             (
-                ( belt_points_tuple[0][0] + ( 
-                    belt_dim[0] - inventory[1] ) / 2 ), 
-                ( belt_points_tuple[0][1] + ( 
-                    belt_dim[1] - inventory[2] ) / 2 )
+                ( 
+                    belt_points_tuple[0][0] + ( 
+                        belt_dim[0] - inventory[1] 
+                    ) / 2 
+                ), 
+                ( 
+                    belt_points_tuple[0][1] + ( 
+                        belt_dim[1] - inventory[2] 
+                    ) / 2 
+                )
             )
         )        
     else:

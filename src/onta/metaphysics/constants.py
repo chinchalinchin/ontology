@@ -69,9 +69,6 @@ class QualiaFamilies(Enum):
     STATEFUL = 'stateful'
     PIECEWISE = 'piecewise'
     PIECEWISE_STATEFUL = 'piecewise_stateful'
-    PACK = 'pack'
-    MEASURE = 'measure'
-
 ######## SECOND LEVEL
     ## PLATES
 class StaticPlateFamily(Enum):
@@ -80,8 +77,8 @@ class SwitchPlateFamily(Enum):
     CONTAINER = 'container'
     PRESSURE = 'pressure'
     GATE = 'gate'
-# DEFINTIONAL
     ## QUALIA
+    # DEFINTIONAL FAMILIES
 class SimpleQualiaFamily(Enum):
     WALLET = 'wallet'
     CONCEPT = 'concept'
@@ -95,12 +92,18 @@ class PiecewiseQualiaFamily(Enum):
 class PiecewiseStatefulQualiaFamily(Enum):
     IDEA = 'idea'
     BAUBLE = 'bauble'
-# GROUPING
-class PackQualiaFamily(Enum):
+
+#### PARTITIONS
+###### TOP LEVEL
+class QualiaPartitions(Enum):
+    PACK = 'pack'
+    MEASURE = 'measure'
+######## SECOND LEVEL
+class PackQualiaPartition(Enum):
     BAG = 'bag'
     BELT = 'belt'
     WALLET = 'wallet'
-class MeasureQualiaFamily(Enum):
+class MeasureQualiaPartition(Enum):
     MIRROR = "mirror"
     METER = "meter"
 
