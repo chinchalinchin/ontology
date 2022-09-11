@@ -468,6 +468,7 @@ def slot_coordinates(
     else: # top
         y_start = margins[1] * device_dim[1]
 
+    # NOTE: extrinsic slot layout onscreen:
     # 0    1     2       3     4       5     6       7     8
     # cap, slot, buffer, slot, buffer, slot, buffer, slot, cap
     # number of slots + number of buffers + number of caps
@@ -515,8 +516,12 @@ def slot_coordinates(
         return render_points
 
     # vertical
-    buffer_correction = ( slot_dim[0] - buffer_dim[0] ) / 2
-    cap_correction = ( slot_dim[0] - cap_dim[0] ) / 2
+    buffer_correction = ( 
+        slot_dim[0] - buffer_dim[0] 
+    ) / 2
+    cap_correction = ( 
+        slot_dim[0] - cap_dim[0] 
+    ) / 2
 
     for i in range(num):
         if i == 0: # cap

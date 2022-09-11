@@ -728,7 +728,9 @@ class ExtrinsicQuale():
             return self._calculate_bag_dimensions()
         if quale_key == constants.QualiaType.BELT.value:
             return self._calculate_belt_dimensions()
-        raise KeyError(f'{quale_key} is not a valid ExtrinsicQuale component')
+        raise KeyError(
+            f'{quale_key} is not a valid ExtrinsicQuale component'
+        )
 
     def get_frame_map(
         self, 

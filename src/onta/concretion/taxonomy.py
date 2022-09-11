@@ -62,7 +62,7 @@ class QualiaType(Enum):
 class PlateFamilies(Enum):
     STATIC = 'static'
     SWITCH = 'switch'
-    MASS = 'mass'
+    MOVEABLE = 'moveable'
 class QualiaFamilies(Enum):
     SIMPLE = 'simple'
     ROTATABLE = 'rotatable'
@@ -70,25 +70,28 @@ class QualiaFamilies(Enum):
     PIECEWISE = 'piecewise'
     PIECEWISE_STATEFUL = 'piecewise_stateful'
 ######## SECOND LEVEL
-    ## PLATES
+    # FUNCTIONAL PLATE FAMILIES 
+class MoveablePlateFamily(Enum):
+    MASS = 'mass'
 class StaticPlateFamily(Enum):
     DOOR = 'door'
 class SwitchPlateFamily(Enum):
     CONTAINER = 'container'
     PRESSURE = 'pressure'
     GATE = 'gate'
-    ## QUALIA
-    # DEFINTIONAL FAMILIES
+    # DEFINTIONAL QUALIA FAMILIES
 class SimpleQualiaFamily(Enum):
     WALLET = 'wallet'
     CONCEPT = 'concept'
     CONCEPTION = 'conception'
+class StatefulQualiaFamily(Enum):
+    SLOT = 'slot'
 class RotatableQualiaFamily(Enum):
     CAP = 'cap'
     BUFFER = 'buffer'
 class PiecewiseQualiaFamily(Enum):
-    BAG = 'BAG'
-    BELT = 'BELT'
+    BAG = 'bag'
+    BELT = 'belt'
 class PiecewiseStatefulQualiaFamily(Enum):
     IDEA = 'idea'
     BAUBLE = 'bauble'
@@ -107,15 +110,24 @@ class MeasureQualiaPartition(Enum):
     MIRROR = "mirror"
     METER = "meter"
 
-## DECOMPOSITIONS
-class SlotPiece(Enum):
+#### GROUPS
+class SlotGroup(Enum):
     CAP = 'cap'
     BUFFER = 'buffer'
     ENABLED = 'enabled'
     DISABLED = 'disabled'
     ACTIVE = 'active'
 
-## CONTROLS
+#### STAGES
+class TraversalStage(Enum):
+    ENABLED = 'enabled'
+    DISABLED = 'disabled'
+    ACTIVE = 'active'
+class MeasureStage(Enum):
+    UNIT = 'unit'
+    EMPTY = 'empty'
+
+## SPRITE CONTROLS
 class Desires(Enum):
     APPROACH = 'approach'
     FLEE = 'flee'

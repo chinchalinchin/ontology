@@ -9,9 +9,9 @@ from PIL \
 from onta.actuality \
     import conf
 from onta.concretion \
-    import composition
+    import composition, taxonomy
 from onta.metaphysics \
-    import settings, logger, gui, constants
+    import settings, logger, gui
 
 
 log = logger.Logger(
@@ -85,11 +85,11 @@ class Totality():
         list, 
         None
     ]:
-        if asset_type == constants.FormType.TILE.value:
+        if asset_type == taxonomy.FormType.TILE.value:
             return settings.TILE_PATH
-        if asset_type == constants.FormType.STRUT.value:
+        if asset_type == taxonomy.FormType.STRUT.value:
             return settings.STRUT_PATH
-        if asset_type == constants.FormType.PLATE.value: 
+        if asset_type == taxonomy.FormType.PLATE.value: 
             return settings.PLATE_PATH    
         return None
 
@@ -190,8 +190,8 @@ class Totality():
         for asset_type in list(
             e.value 
             for e 
-            in constants.FormType.__members__.values()
-            if e.value != constants.FormType.COMPOSITE.value
+            in taxonomy.FormType.__members__.values()
+            if e.value != taxonomy.FormType.COMPOSITE.value
         ):
             log.debug(
                 f'Initializing {asset_type} assets...',  
@@ -206,7 +206,7 @@ class Totality():
             asset_props, assets_conf = \
                 config.load_form_configuration(asset_type)
 
-            if asset_type == constants.FormType.TILE.value:
+            if asset_type == taxonomy.FormType.TILE.value:
                 # NOTE: all tile types are the same size...
                 w, h = assets_conf.size.w, assets_conf.size.h 
 
@@ -215,7 +215,7 @@ class Totality():
                     f'Initializing {asset_key}...',
                     'Totality._init_form_assets'
                 )
-                if asset_type != constants.FormType.TILE.value:
+                if asset_type != taxonomy.FormType.TILE.value:
                     # NOTE: ...but all other form sizes are dependent on type
                     w, h = asset_conf.size.w, asset_conf.size.h
 
@@ -243,7 +243,7 @@ class Totality():
                         asset_props.get(asset_key).get('type') in list(
                             e.value 
                             for e 
-                            in constants.SwitchPlateFamily.__members__.values()
+                            in taxonomy.SwitchPlateFamily.__members__.values()
                         ):
 
                         setattr(
@@ -302,7 +302,7 @@ class Totality():
                     if asset_props.get(asset_key).get('type') in list(
                         e.value 
                         for e
-                        in constants.SwitchPlateFamily.__members__.values()
+                        in taxonomy.SwitchPlateFamily.__members__.values()
                     ):
                         setattr(
                             self.forms.get(asset_type),
@@ -330,7 +330,7 @@ class Totality():
         for asset_type in list(
             e.value 
             for e 
-            in constants.DialecticType.__members__.values()
+            in taxonomy.DialecticType.__members__.values()
         ):
             log.debug(
                 f'{asset_type} initialization',
@@ -376,7 +376,7 @@ class Totality():
                     )
                 )
 
-                if asset_type == constants.DialecticType.PROJECTILE.value:
+                if asset_type == taxonomy.DialecticType.PROJECTILE.value:
 
                     adjust = self.adjust_directional_rotation(asset_conf.definition)
 
@@ -438,7 +438,7 @@ class Totality():
 
         setattr(
             self.selves,
-            constants.SelfType.AVATAR.value,
+            taxonomy.SelfType.AVATAR.value,
             munch.Munch({})
         )
 
@@ -446,7 +446,7 @@ class Totality():
 
         for set_key, set_conf in avatar_conf.items():
             setattr(
-                self.selves.get(constants.SelfType.AVATAR.value), 
+                self.selves.get(taxonomy.SelfType.AVATAR.value), 
                 set_key, 
                 munch.Munch({})
             )
@@ -463,7 +463,7 @@ class Totality():
                     )
                 )
                 setattr(
-                    self.selves.get(constants.SelfType.AVATAR.value).get(set_key),
+                    self.selves.get(taxonomy.SelfType.AVATAR.value).get(set_key),
                     avatar_key,
                     buffer.crop(
                         ( 
@@ -482,7 +482,7 @@ class Totality():
 
         setattr(
             self.selves,
-            constants.SelfType.QUALIA.value,
+            taxonomy.SelfType.QUALIA.value,
             munch.Munch({})
         )
 
@@ -490,14 +490,14 @@ class Totality():
 
         for family_key, family_conf in qualia_conf.items():
             setattr(
-                self.selves.get(constants.SelfType.QUALIA.value),
+                self.selves.get(taxonomy.SelfType.QUALIA.value),
                 family_key,
                 munch.Munch({})
             )
 
             for quale_key, quale_conf in family_conf.items():
 
-                if family_key == constants.QualiaFamilies.SIMPLE.value:
+                if family_key == taxonomy.QualiaFamilies.SIMPLE.value:
                     if not quale_conf or not quale_conf.get('path'):
                         continue
 
@@ -515,7 +515,7 @@ class Totality():
                     )
 
                     setattr(
-                        self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
+                        self.selves.get(taxonomy.SelfType.QUALIA.value).get(family_key),
                         quale_key,
                         buffer.crop(
                             ( 
@@ -527,7 +527,7 @@ class Totality():
                         )
                     )
 
-                elif family_key == constants.QualiaFamilies.ROTATABLE.value:
+                elif family_key == taxonomy.QualiaFamilies.ROTATABLE.value:
                     if not quale_conf or not quale_conf.get('path'):
                         continue
 
@@ -587,14 +587,14 @@ class Totality():
                         })
                 
                     setattr(
-                        self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
+                        self.selves.get(taxonomy.SelfType.QUALIA.value).get(family_key),
                         quale_key,
                         buffer
                     )
 
-                elif family_key == constants.QualiaFamilies.STATEFUL.value:
+                elif family_key == taxonomy.QualiaFamilies.STATEFUL.value:
                     setattr(
-                        self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
+                        self.selves.get(taxonomy.SelfType.QUALIA.value).get(family_key),
                         quale_key,
                         munch.Munch({})
                     )
@@ -616,7 +616,7 @@ class Totality():
                         )
 
                         setattr(
-                            self.selves.get(constants.SelfType.QUALIA.value).get(family_key).get(quale_key),
+                            self.selves.get(taxonomy.SelfType.QUALIA.value).get(family_key).get(quale_key),
                             state_key,
                             buffer.crop(
                                 ( 
@@ -628,9 +628,9 @@ class Totality():
                             )
                         )
 
-                elif family_key == constants.QualiaFamilies.PIECEWISE.value:
+                elif family_key == taxonomy.QualiaFamilies.PIECEWISE.value:
                     setattr(
-                        self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
+                        self.selves.get(taxonomy.SelfType.QUALIA.value).get(family_key),
                         quale_key,
                         munch.Munch({})
                     )
@@ -653,7 +653,7 @@ class Totality():
                         )
 
                         setattr(
-                            self.selves.get(constants.SelfType.QUALIA.value).get(family_key).get(quale_key),
+                            self.selves.get(taxonomy.SelfType.QUALIA.value).get(family_key).get(quale_key),
                             piece_key,
                             buffer.crop(
                                 ( 
@@ -665,16 +665,16 @@ class Totality():
                             )
                         )
                 
-                elif family_key == constants.QualiaFamilies.PIECEWISE_STATEFUL.value:
+                elif family_key == taxonomy.QualiaFamilies.PIECEWISE_STATEFUL.value:
                     setattr(
-                        self.selves.get(constants.SelfType.QUALIA.value).get(family_key),
+                        self.selves.get(taxonomy.SelfType.QUALIA.value).get(family_key),
                         quale_key,
                         munch.Munch({})
                     )
 
                     for state_key, state_conf in quale_conf.items():
                         setattr(
-                            self.selves.get(constants.SelfType.QUALIA.value).get(family_key).get(quale_key),
+                            self.selves.get(taxonomy.SelfType.QUALIA.value).get(family_key).get(quale_key),
                             state_key,
                             munch.Munch({})
                         )
@@ -696,7 +696,7 @@ class Totality():
                             )
 
                             setattr(
-                                self.selves.get(constants.SelfType.QUALIA.value).get(family_key).get(quale_key).get(state_key),
+                                self.selves.get(taxonomy.SelfType.QUALIA.value).get(family_key).get(quale_key).get(state_key),
                                 piece_key,
                                 buffer.crop(
                                 ( 

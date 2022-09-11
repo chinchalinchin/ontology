@@ -4,7 +4,7 @@ from typing import Union
 from onta.actuality \
     import state, conf
 from onta.concretion \
-    import mechanics, composition
+    import mechanics, composition, taxonomy
 from onta.concretion.dasein \
     import abstract, interpret, impulse
 from onta.concretion.facticity \
@@ -12,7 +12,7 @@ from onta.concretion.facticity \
 from onta.concretion.noumena \
     import substrata
 from onta.metaphysics \
-    import settings, logger, constants
+    import settings, logger
 
 log = logger.Logger(
     'onta.world', 
@@ -148,7 +148,7 @@ class World():
             self.layers.append(layer_key)
 
             for asset_type, asset_set in zip(
-                [ e.value for e in constants.FormType.__members__.values() ],
+                [ e.value for e in taxonomy.FormType.__members__.values() ],
                 [ self.tilesets, self.strutsets, self.platesets, self.compositions ]
             ):
                 setattr(
@@ -234,19 +234,19 @@ class World():
             ) + self.world_bounds
             self.platesets.get(layer).doors = self.get_typed_platesets(
                 layer, 
-                constants.PlateType.DOOR.value
+                taxonomy.PlateType.DOOR.value
             )
             self.platesets.get(layer).containers = self.get_typed_platesets(
                 layer, 
-                constants.PlateType.CONTAINER.value
+                taxonomy.PlateType.CONTAINER.value
             )
             self.platesets.get(layer).pressures = self.get_typed_platesets(
                 layer,  
-                constants.PlateType.PRESSURE.value
+                taxonomy.PlateType.PRESSURE.value
             )
             self.platesets.get(layer).masses = self.get_typed_platesets(
                 layer,  
-                constants.PlateType.MASS.value
+                taxonomy.PlateType.MASS.value
             )
 
 
@@ -256,7 +256,7 @@ class World():
     ) -> None:
         for layer in self.layers:
             switches = []
-            for e in constants.SwitchPlateFamily.__members__.values():
+            for e in taxonomy.SwitchPlateFamily.__members__.values():
                 switches += self.get_typed_platesets(
                     layer,
                     e.value
@@ -343,7 +343,7 @@ class World():
                         'World._ruminate'
                     )
 
-                    if sprite_desire.mode == constants.Desires.APPROACH.value:
+                    if sprite_desire.mode == taxonomy.Desires.APPROACH.value:
                         instruction = abstract.approach(
                            sprite_key,
                            sprite,
@@ -354,7 +354,7 @@ class World():
                            self._reorient
                         )
 
-                    elif sprite_desire.mode == constants.Desires.ENGAGE.value:
+                    elif sprite_desire.mode == taxonomy.Desires.ENGAGE.value:
                         instruction = abstract.engage(
                             sprite_key,
                             sprite,
@@ -364,7 +364,7 @@ class World():
                             self.get_sprites()
                         )
 
-                    elif sprite_desire.mode == constants.Desires.FLEE.value:
+                    elif sprite_desire.mode == taxonomy.Desires.FLEE.value:
                         instruction = abstract.attempt_unflee(
                             sprite_key,
                             sprite,
@@ -380,7 +380,7 @@ class World():
                         'World._ruminate'
                     )
 
-                    if sprite_desire.mode == constants.Desires.APPROACH.value:
+                    if sprite_desire.mode == taxonomy.Desires.APPROACH.value:
                         instruction = abstract.attempt_unapproach(
                             sprite_key,
                             sprite,
@@ -388,14 +388,14 @@ class World():
                             sprite_desire,
                             self.get_sprites()
                         )
-                    elif sprite_desire.mode == constants.Desires.FLEE.value:
+                    elif sprite_desire.mode == taxonomy.Desires.FLEE.value:
                         instruction = abstract.flee(
                             sprite_key,
                             sprite,
                             sprite_desire,
                             self._reorient
                         )
-                    elif sprite_desire.mode == constants.Desires.ENGAGE.value:
+                    elif sprite_desire.mode == taxonomy.Desires.ENGAGE.value:
                         instruction = abstract.attempt_unengage(
                             sprite_key,
                             sprite,
@@ -486,14 +486,14 @@ class World():
         for sprite_key, sprite in self.get_sprites().items():
             animate = False
 
-            if sprite.stature.intention == constants.Intentions.MOVE.value:
+            if sprite.stature.intention == taxonomy.Intentions.MOVE.value:
                 impulse.move(
                     sprite,
                     self.sprite_properties.get(sprite_key)
                 )
                 animate = True
 
-            elif sprite.stature.intention == constants.Intentions.COMBAT.value:
+            elif sprite.stature.intention == taxonomy.Intentions.COMBAT.value:
                 impulse.combat(
                     sprite_key,
                     sprite,
@@ -507,18 +507,18 @@ class World():
                 )
                 animate = True
 
-            elif sprite.stature.intention == constants.Intentions.DEFEND.value:
+            elif sprite.stature.intention == taxonomy.Intentions.DEFEND.value:
                 pass
 
             # reorient sets an intention with an expression, therefore
             #       does an 'express' intention make sense?
-            elif sprite.stature.intention == constants.Intentions.EXPRESS.value:
+            elif sprite.stature.intention == taxonomy.Intentions.EXPRESS.value:
                 impulse.express(
                     sprite,
                     self.sprite_properties.get(sprite_key)
                 )
 
-            elif sprite.stature.intention == constants.Intentions.OPERATE:
+            elif sprite.stature.intention == taxonomy.Intentions.OPERATE:
                 # well, what differentiates using and interacting then?
                 impulse.operate(
                     sprite,
@@ -557,19 +557,19 @@ class World():
         sprite = self.npcs.get(sprite_key)
         sprite_hitbox = substrata.sprite_hitbox(
             munch.unmunchify(sprite),
-            constants.FormType.STRUT.value,
+            taxonomy.FormType.STRUT.value,
             munch.unmunchify(
                 self.sprite_properties.get(sprite_key)
             )
         )
         collision_set = mechanics.collision_set_relative_to(
-            constants.FormType.STRUT.value,
+            taxonomy.FormType.STRUT.value,
             None,
             self.strutsets.get(sprite.layer).hitboxes,
             self.platesets.get(sprite.layer).containers,
             self.get_typed_platesets(
                 sprite.layer, 
-                constants.PlateType.GATE
+                taxonomy.PlateType.GATE
             ),
             self.switch_map.get(sprite.layer)
         )
@@ -611,11 +611,11 @@ class World():
         # SPRITE-TO-SPRITE, SPRITE-TO-STRUT COLLISIONS
         for sprite_key, sprite in self.get_sprites().items():
             for hitbox_key in [
-                constants.FormType.STRUT.value, 
-                constants.EntityType.SPRITE.value
+                taxonomy.FormType.STRUT.value, 
+                taxonomy.EntityType.SPRITE.value
             ]:
                 exclusions = [ sprite_key ]
-                if hitbox_key == constants.EntityType.SPRITE.value:
+                if hitbox_key == taxonomy.EntityType.SPRITE.value:
                     exclusions += [
                         key 
                         for key, val 
@@ -652,7 +652,7 @@ class World():
                     self.platesets.get(sprite.layer).containers,
                     self.get_typed_platesets(
                         sprite.layer, 
-                        constants.PlateType.GATE.value
+                        taxonomy.PlateType.GATE.value
                     ),
                     self.switch_map.get(sprite.layer)
                 )
@@ -716,7 +716,7 @@ class World():
                             })
                         )
 
-                if hitbox_key == constants.EntityType.SPRITE.value:
+                if hitbox_key == taxonomy.EntityType.SPRITE.value:
                     for key, val in collision_map.copy().items():
                         if key not in exclusions and \
                                 key == sprite_key:
@@ -743,7 +743,7 @@ class World():
             # recalculate plate meta after alteration
             self.platesets.get(sprite.layer).masses = self.get_typed_platesets(
                 sprite.layer,
-                constants.PlateType.MASS.value
+                taxonomy.PlateType.MASS.value
             )
 
         # MASS-TO-PLATE COLLISIONS
@@ -843,11 +843,11 @@ class World():
         :return: _description_
         :rtype: dict
         """
-        if formset_key == constants.FormType.TILE.value:
+        if formset_key == taxonomy.FormType.TILE.value:
             return self.tilesets
-        if formset_key == constants.FormType.STRUT.value:
+        if formset_key == taxonomy.FormType.STRUT.value:
             return self.strutsets
-        elif formset_key == constants.FormType.PLATE.value:
+        elif formset_key == taxonomy.FormType.PLATE.value:
             return self.platesets
 
 
@@ -986,7 +986,7 @@ class World():
         for nested_layer in self.layers:
             gates = gates + self.get_typed_platesets(
                 nested_layer, 
-                constants.PlateType.GATE.value
+                taxonomy.PlateType.GATE.value
             )
         return gates
 

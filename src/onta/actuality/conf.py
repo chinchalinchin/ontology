@@ -2,9 +2,10 @@ import os
 from typing import Union
 import yaml
 import munch
+from onta.concretion import taxonomy
 
 from onta.metaphysics \
-    import settings, constants
+    import settings
 
 class Conf():
     """
@@ -88,7 +89,7 @@ class Conf():
         """
         return self.__configuration(
             type_key, 
-            constants.OntaTypes.SELF.value
+            taxonomy.OntaTypes.SELF.value
         )
 
     def _form_configuration(
@@ -104,7 +105,7 @@ class Conf():
         """
         return self.__configuration(
             type_key, 
-            constants.OntaTypes.FORM.value
+            taxonomy.OntaTypes.FORM.value
         )
 
     def _entity_configuration(
@@ -120,7 +121,7 @@ class Conf():
         """
         return self.__configuration(
             type_key, 
-            constants.OntaTypes.ENTITY.value
+            taxonomy.OntaTypes.ENTITY.value
         )
 
 
@@ -137,7 +138,7 @@ class Conf():
         """
         return self.__configuration(
             type_key, 
-            constants.OntaTypes.DIALECTICS.value
+            taxonomy.OntaTypes.DIALECTICS.value
         )
 
 
@@ -154,7 +155,7 @@ class Conf():
         """
         if len(self.will_conf) == 0:
             self.will_conf = self._self_configuration(
-                constants.SelfTypes.WILL.value
+                taxonomy.SelfTypes.WILL.value
             )
         return self.will_conf
 
@@ -170,7 +171,7 @@ class Conf():
         # TODO: mismatch between qualia and interface naming scheme...
         if not self.qualia_conf:
             self.qualia_conf = self._self_configuration(
-                constants.SelfTypes.QUALIA.value
+                taxonomy.SelfTypes.QUALIA.value
             )
         return self.qualia_conf
 
@@ -185,7 +186,7 @@ class Conf():
         """
         if len(self.avatar_conf) == 0:
             self.avatar_conf = self._self_configuration(
-                constants.SelfTypes.AVATAR.value
+                taxonomy.SelfTypes.AVATAR.value
             )
         return self.avatar_conf
 
@@ -198,11 +199,11 @@ class Conf():
         None
     ]:
         # NOTE: generalized method that routes through cache
-        if self_type == constants.SelfTypes.QUALIA.value:
+        if self_type == taxonomy.SelfTypes.QUALIA.value:
             return self.load_qualia_configuration()
-        if self_type == constants.SelfTypes.AVATAR.value:
+        if self_type == taxonomy.SelfTypes.AVATAR.value:
             return self.load_avatar_configuration()
-        if self_type == constants.SelfTypes.WILL.value:
+        if self_type == taxonomy.SelfTypes.WILL.value:
             return self.load_will_configuration()
         return None
 
@@ -220,7 +221,7 @@ class Conf():
         """
         if len(self.expression_conf) == 0:
             self.expression_conf = self._dialectic_configuration(
-                constants.DialecticType.EXPRESSION.value
+                taxonomy.DialecticType.EXPRESSION.value
             )
         # NOTE: Expressions do not have properties, so to make return type consistent
         #       across dialectics, return None for expression properties
@@ -241,7 +242,7 @@ class Conf():
         if len(self.projectile_property_conf) == 0 or \
             len(self.projectile_img_conf) == 0:
             projectiles_conf = self._dialectic_configuration(
-                constants.DialecticType.PROJECTILE.value
+                taxonomy.DialecticType.PROJECTILE.value
             )
 
             # NOTE: separate in-game configuration from image configuration
@@ -280,9 +281,9 @@ class Conf():
         None
     ]:
         # NOTE: generalized method that routes through cache
-        if dialectic_type == constants.DialecticType.PROJECTILE.value:
+        if dialectic_type == taxonomy.DialecticType.PROJECTILE.value:
             return self.load_projectile_configuration()
-        if dialectic_type == constants.DialecticType.EXPRESSION.value:
+        if dialectic_type == taxonomy.DialecticType.EXPRESSION.value:
             return self.load_expression_configuration()
         return None
 
@@ -303,7 +304,7 @@ class Conf():
         #       used again in world for state information
         if len(self.apparel_conf) == 0:
             self.apparel_conf = self._entity_configuration(
-                constants.EntityType.APPAREL.value
+                taxonomy.EntityType.APPAREL.value
             )
         return self.apparel_conf
 
@@ -325,7 +326,7 @@ class Conf():
             not self.sprite_size:
 
             sprites_conf = self._entity_configuration(
-                constants.EntityType.SPRITE.value
+                taxonomy.EntityType.SPRITE.value
             )
 
             self.sprite_stature_conf = sprites_conf.stature
@@ -362,9 +363,9 @@ class Conf():
         None
     ]:
         # NOTE: generalized method that routes through cache
-        if entity_type == constants.EntityType.SPRITE.value:
+        if entity_type == taxonomy.EntityType.SPRITE.value:
             return self.load_sprite_configuration()
-        if entity_type == constants.EntityType.APPAREL.value:
+        if entity_type == taxonomy.EntityType.APPAREL.value:
             return self.load_apparel_configuration()
 
 
@@ -380,7 +381,7 @@ class Conf():
         """
         if len(self.composite_conf) == 0:
             self.composite_conf = self._form_configuration(
-                constants.FormType.COMPOSITE.value
+                taxonomy.FormType.COMPOSITE.value
             )
         # NOTE: Compositions do not have properties, so to make return type consistent
         #       across forms, return None for composition properties
@@ -401,7 +402,7 @@ class Conf():
 
         if len(self.tile_sheet_conf) == 0:
             self.tile_sheet_conf = self._form_configuration(
-                constants.FormType.TILE.value
+                taxonomy.FormType.TILE.value
             )
 
         # NOTE: Tiles do not have properties, so to make return type consistent
@@ -428,7 +429,7 @@ class Conf():
         if not self.strut_property_conf or \
             not self.strut_sheet_conf:
             struts_conf = self._form_configuration(
-                constants.FormType.STRUT.value
+                taxonomy.FormType.STRUT.value
             )
 
             for strut_key, strut in struts_conf.items():
@@ -474,7 +475,7 @@ class Conf():
             not self.plate_sheet_conf:
 
             plates_conf = self._form_configuration(
-                constants.FormType.PLATE.value
+                taxonomy.FormType.PLATE.value
             )
 
             for plate_key, plate_conf in plates_conf.items():
@@ -513,16 +514,16 @@ class Conf():
         None
     ]:
         # NOTE: generalized method that routes through cache...
-        if form_type == constants.FormType.PLATE.value:
+        if form_type == taxonomy.FormType.PLATE.value:
             return self.load_plate_configuration()
 
-        if form_type == constants.FormType.TILE.value:
+        if form_type == taxonomy.FormType.TILE.value:
             return self.load_tile_configuration()
 
-        if form_type == constants.FormType.STRUT.value:
+        if form_type == taxonomy.FormType.STRUT.value:
             return self.load_strut_configuration()
 
-        if form_type == constants.FormType.COMPOSITE.value:
+        if form_type == taxonomy.FormType.COMPOSITE.value:
             return self.load_composite_configuration()
 
         return None
