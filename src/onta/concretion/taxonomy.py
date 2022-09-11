@@ -122,12 +122,12 @@ class SlotGroup(Enum):
     DISABLED = 'disabled'
     ACTIVE = 'active'
 
-#### STAGES
-class TraversalStage(Enum):
+#### STATES
+class TraversalState(Enum):
     ENABLED = 'enabled'
     DISABLED = 'disabled'
     ACTIVE = 'active'
-class MeasureStage(Enum):
+class MeasureState(Enum):
     UNIT = 'unit'
     EMPTY = 'empty'
 
