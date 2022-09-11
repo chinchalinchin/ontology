@@ -1,8 +1,10 @@
 from enum import Enum
 
-# CONSTANTS
+# Onta Taxonomy
+# The Enums below enumerate (imagine that) the network of sets that constitute the various permutations of a given _ontology_.
 
 ## TYPE HIERARCHY 
+#   _Types_ are the central _Onta_ hierarchy of "being", from which all other abstract sets are derived. The elements in this hierarchy are actual, existent in-game objects with on-screen representations.
 #### FIRST LEVEL TYPES
 class OntaType(Enum):
     FORM = 'form'
@@ -58,17 +60,18 @@ class QualiaType(Enum):
     WALLET = 'wallet'
 
 #### FAMILIES
+# _Families_ are abstractions on top of the concrete _Types_. They represent ways of grouping the _Types_ by function or definition (i.e. how the asset is extracted from the asset file). Each _Family_ member represents a subset of its parent _Type_.
 ###### TOP LEVEL
 class PlateFamilies(Enum):
+    MOVEABLE = 'moveable'
     STATIC = 'static'
     SWITCH = 'switch'
-    MOVEABLE = 'moveable'
 class QualiaFamilies(Enum):
-    SIMPLE = 'simple'
-    ROTATABLE = 'rotatable'
-    STATEFUL = 'stateful'
     PIECEWISE = 'piecewise'
     PIECEWISE_STATEFUL = 'piecewise_stateful'
+    ROTATABLE = 'rotatable'
+    SIMPLE = 'simple'
+    STATEFUL = 'stateful'
 ######## SECOND LEVEL
     # FUNCTIONAL PLATE FAMILIES 
 class MoveablePlateFamily(Enum):
@@ -77,26 +80,27 @@ class StaticPlateFamily(Enum):
     DOOR = 'door'
 class SwitchPlateFamily(Enum):
     CONTAINER = 'container'
-    PRESSURE = 'pressure'
     GATE = 'gate'
+    PRESSURE = 'pressure'
     # DEFINTIONAL QUALIA FAMILIES
 class SimpleQualiaFamily(Enum):
-    WALLET = 'wallet'
     CONCEPT = 'concept'
     CONCEPTION = 'conception'
+    WALLET = 'wallet'
 class StatefulQualiaFamily(Enum):
     SLOT = 'slot'
 class RotatableQualiaFamily(Enum):
-    CAP = 'cap'
     BUFFER = 'buffer'
+    CAP = 'cap'
 class PiecewiseQualiaFamily(Enum):
     BAG = 'bag'
     BELT = 'belt'
 class PiecewiseStatefulQualiaFamily(Enum):
-    IDEA = 'idea'
     BAUBLE = 'bauble'
+    IDEA = 'idea'
 
 #### PARTITIONS
+# A _Partition_ is similar to a _Family_, in that it is an abstract grouping of _Types_, but a _Partition_ does not denote a functional or definitional grouping, but rather a purely visual (or aesthetic, for the philosophically minded) grouping of elements. For example, a _Pack_ qualia is just the on-screen grouping of the _Belt_ and _Bag_ qualia, i.e. an abstraction of the latter two _Quales_ into a higher level _Quale_, useful for the rendering engine so that it need not focus on minute details.
 ###### TOP LEVEL
 class QualiaPartitions(Enum):
     PACK = 'pack'

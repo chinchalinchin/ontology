@@ -1,9 +1,10 @@
 import munch
+from onta.concretion import taxonomy
 
 from onta.concretion.facticity \
     import gauge
 from onta.metaphysics \
-    import settings, logger, constants
+    import settings, logger
 
 log = logger.Logger(
     'onta.concretion.composition', 
@@ -195,11 +196,11 @@ def decompose_compositions(
                     )
 
                     # GRAB EXISTING ASSETS
-                    if elementset_key == constants.FormType.TILE.value:
+                    if elementset_key == taxonomy.FormType.TILE.value:
                         buffer_sets = decomposition[0]
-                    elif elementset_key == constants.FormType.STRUT.value:
+                    elif elementset_key == taxonomy.FormType.STRUT.value:
                         buffer_sets = decomposition[1]
-                    elif elementset_key == constants.FormType.PLATE.value:
+                    elif elementset_key == taxonomy.FormType.PLATE.value:
                         buffer_sets = decomposition[2]
 
                     for element_key, element in elementset_conf.items():
@@ -243,7 +244,7 @@ def decompose_compositions(
                                     len(buffer_sets.get(layer))
                                 )
                     
-                            if elementset_key == constants.FormType.PLATE.value:
+                            if elementset_key == taxonomy.FormType.PLATE.value:
                                 buffer_sets.get(layer).get(element_key).sets.append(
                                     munch.Munch({
                                         'start': {
@@ -268,11 +269,11 @@ def decompose_compositions(
                                     })
                                 )
                         
-                    if elementset_key == constants.FormType.TILE.value:
+                    if elementset_key == taxonomy.FormType.TILE.value:
                         decomposition[0] = buffer_sets
-                    elif elementset_key == constants.FormType.STRUT.value:
+                    elif elementset_key == taxonomy.FormType.STRUT.value:
                         decomposition[1] = buffer_sets
-                    elif elementset_key == constants.FormType.PLATE.value:
+                    elif elementset_key == taxonomy.FormType.PLATE.value:
                         decomposition[2] = buffer_sets
     
     return (
