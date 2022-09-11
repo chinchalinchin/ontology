@@ -31,7 +31,7 @@ class ExtrinsicQuale():
     @staticmethod
     def immute_slots(
         slot_configuration
-    ):
+    ) -> tuple:
         return tuple(
             ( 
                 key, 
@@ -40,7 +40,7 @@ class ExtrinsicQuale():
             if value else
             ( 
                 key , 
-                'null' 
+                None
             )
             for key, value 
             in slot_configuration.items()
@@ -50,7 +50,7 @@ class ExtrinsicQuale():
     @staticmethod
     def immute_armory_size(
         avatar_configuration
-    ):
+    ) -> tuple:
         return tuple(
             (
                 equip_key, 
@@ -67,7 +67,7 @@ class ExtrinsicQuale():
     @staticmethod
     def immute_inventory_size(
         avatar_configuration
-    ):
+    ) -> tuple:
         return tuple(
             (
                 invent_key, 
@@ -79,6 +79,22 @@ class ExtrinsicQuale():
             if invent is not None 
             and invent.get('size') is not None
         )
+
+    @staticmethod 
+    def immute_pack_pieces(
+        pack_piece_configuration
+    ) -> tuple:
+        return tuple(
+            (
+                pack_piece.size.w, 
+                pack_piece.size.h
+            ) 
+            for pack_piece 
+            in list(
+                pack_piece_configuration.values()
+            )
+        )
+
 
     def __init__(
         self, 
@@ -197,29 +213,34 @@ class ExtrinsicQuale():
                 taxonomy.QualiaPartitions.PACK.value
             ).alignment.vertical
         )
+        horizontal_alignment = pack_alignment[0]
 
-        bagset = self.quale_conf.get(
-            taxonomy.QualiaFamilies.PIECEWISE.value
-        ).get(
+        bag_piece_sizes = self.immute_pack_pieces(
+            self.quale_conf.get(
+                taxonomy.QualiaFamilies.PIECEWISE.value
+            ).get(
+                taxonomy.QualiaType.BAG.value
+            )
+        )
+
+        belt_piece_sizes = self.immute_pack_pieces(
+            self.quale_conf.get(
+                taxonomy.QualiaFamilies.PIECEWISE.value
+            ).get(
+                taxonomy.QualiaType.BELT.value
+            )
+        )
+
+        bag_dim = self.get_dimensions(
             taxonomy.QualiaType.BAG.value
         )
-        beltset = self.quale_conf.get(
-            taxonomy.QualiaFamilies.PIECEWISE.value
-        ).get(
+
+        belt_dim = self.get_dimensions(
             taxonomy.QualiaType.BELT.value
         )
 
-        bag_piece_sizes = tuple(
-            (
-                bag_piece.size.w, 
-                bag_piece.size.h
-            ) for bag_piece in list(bagset.values())
-        )
-        belt_piece_sizes = tuple(
-            (
-                belt_piece.size.w, 
-                belt_piece.size.h
-            ) for belt_piece in list(beltset.values())
+        wallet_dim = self.get_dimensions(
+            taxonomy.QualiaType.WALLET.value
         )
 
         setattr(
@@ -227,57 +248,45 @@ class ExtrinsicQuale():
             taxonomy.QualiaType.BAG.value,
             formulae.bag_coordinates(
                 bag_piece_sizes,
-                self.get_dimensions(
-                    taxonomy.QualiaType.BAG.value
-                ),
+                bag_dim,
                 pack_alignment,
                 pack_margins,
                 player_device.dimensions,
             )
         )
 
+        bag_initial_render_pt = self.render_points.get(
+            taxonomy.QualiaType.BAG.value
+        )[0]
+
         setattr(
             self.render_points,
             taxonomy.QualiaType.BELT.value,
             formulae.belt_coordinates(
-                self.render_points.get(
-                    taxonomy.QualiaType.BAG.value
-                )[0],
+                bag_initial_render_pt,
                 belt_piece_sizes,
-                self.get_dimensions(
-                    taxonomy.QualiaType.BELT.value
-                ),
-                pack_alignment[0],
+                belt_dim,
+                horizontal_alignment,
                 pack_margins,
-                self.get_dimensions(
-                    taxonomy.QualiaType.BAG.value
-                ),
-                self.get_dimensions(
-                    taxonomy.QualiaType.BAG.value
-                )
+                bag_dim,
+                bag_dim
             )
         )
+
+        belt_initial_render_pt = self.render_points.get(
+            taxonomy.QualiaType.BELT.value
+        )[0]
 
         setattr(
             self.render_points,
             taxonomy.QualiaType.WALLET.value,
             formulae.wallet_coordinates(
-                self.render_points.get(
-                    taxonomy.QualiaType.BELT.value
-                )[0],
-                self.render_points.get(
-                    taxonomy.QualiaType.BAG.value
-                )[0],
-                self.get_dimensions(
-                    taxonomy.QualiaType.BAG.value
-                ),
-                self.get_dimensions(
-                    taxonomy.QualiaType.BELT.value
-                ),
-                self.get_dimensions(
-                    taxonomy.QualiaType.WALLET.value
-                ),
-                pack_alignment[0],
+                belt_initial_render_pt,
+                bag_initial_render_pt,
+                bag_dim,
+                belt_dim,
+                wallet_dim,
+                horizontal_alignment,
                 pack_margins
             )
         )
@@ -301,8 +310,12 @@ class ExtrinsicQuale():
         )
 
         mirror_alignment = (
-            self.styles.mirror.alignment.horizontal,
-            self.styles.mirror.alignment.vertical
+            self.styles.get(
+                taxonomy.QualiaType.MIRROR.value
+            ).alignment.horizontal,
+            self.styles.get(
+                taxonomy.QualiaType.MIRROR.value
+            ).alignment.vertical
         )
 
         mirror_rank = (
@@ -311,29 +324,54 @@ class ExtrinsicQuale():
         )
 
         # NOTE: dependent on 'unit' and 'empty' being the same dimensions...
-
         mirror_dim = (
-            self.quale_conf.mirror.unit.size.w,
-            self.quale_conf.mirror.unit.size.h
+            self.quale_conf.get(
+                taxonomy.QualiaFamilies.STATEFUL.value
+            ).get(
+                taxonomy.QualiaType.MIRROR.value
+            ).get(
+                taxonomy.Measure.UNIT.value
+            ).size.w,
+            self.quale_conf.get(
+                taxonomy.QualiaFamilies.STATEFUL.value
+            ).get(
+                taxonomy.QualiaType.MIRROR.value
+            ).get(
+                taxonomy.Measure.UNIT.value
+            ).size.h
         )
 
         margins= (
-            self.styles.mirror.margins.w * player_device.dimensions[0],
-            self.styles.mirror.margins.h * player_device.dimensions[1]
+            self.styles.get(
+                taxonomy.QualiaType.MIRROR.value
+            ).margins.w * player_device.dimensions[0],
+            self.styles.get(
+                taxonomy.QualiaType.MIRROR.value
+            ).margins.h * player_device.dimensions[1]
         )
 
         padding = (
-            self.styles.mirror.padding.w,
-            self.styles.mirror.padding.h
+            self.styles.get(
+                taxonomy.QualiaType.MIRROR.value
+            ).padding.w,
+            self.styles.get(
+                taxonomy.QualiaType.MIRROR.value
+            ).padding.h
         )
 
+        mirror_stack = self.styles.get(
+            taxonomy.QualiaType.MIRROR.value
+        ).stack
+
+        device_dim = player_device.dimensions
+        
         setattr(
             self.render_points,
             taxonomy.QualiaType.MIRROR.value,
             formulae.mirror_coordinates(
-                player_device.dimensions,
+                device_dim,
                 mirror_alignment,
-                self.styles.mirror.stack,
+                mirror_stack,
                 margins,
                 padding,
                 mirror_rank,
@@ -531,7 +569,7 @@ class ExtrinsicQuale():
         bag_dim = self.get_dimensions(
             taxonomy.QualiaType.BAG.value
         )
-        
+
         belt_dim = self.get_dimensions(
             taxonomy.QualiaType.BELT.value
         )
@@ -572,44 +610,66 @@ class ExtrinsicQuale():
                     taxonomy.QualiaType.SLOT.value
                 ).maps
             ):
+                slot_mapping = self.properties.get(
+                    taxonomy.QualiaType.SLOT.value
+                ).maps[i]
+
+                container_slot = self.containers.get(
+                    taxonomy.QualiaType.SLOT.value
+                ).get(slot_mapping)
+
                 setattr(
                     self.frame_maps.get(
                         taxonomy.SelfType.AVATAR.value
                     ), 
                     str(i), 
-                    self.containers.get(
-                        taxonomy.QualiaType.SLOT.value
-                    ).get(
-                        self.properties.get(
-                            taxonomy.QualiaType.SLOT.value
-                        ).maps[i]
-                    )
+                    container_slot
                 )
+
+        bag_avatar_mapping = str(
+            len(
+                self.frame_maps.get(
+                    taxonomy.SelfType.AVATAR.value
+                )
+            )
+        )
+
+        bag_contents = self.containers.get(
+            taxonomy.QualiaPartitions.PACK.value
+        ).get(
+            taxonomy.QualiaType.BAG.value
+        )
 
         setattr(
             self.frame_maps.get(
                 taxonomy.SelfType.AVATAR.value
             ),
-            str(
-                len(
-                    self.frame_maps.get(
-                        taxonomy.SelfType.AVATAR.value
-                    )
-                )
-            ),
-            self.containers.packs.bag
+            bag_avatar_mapping,
+            bag_contents
         )
+
+        belt_avatar_mapping = str(
+            len(
+                self.frame_maps.get(
+                    taxonomy.SelfType.AVATAR.value
+                )
+            )
+        )
+        
+        belt_contents = self.containers.get(
+            taxonomy.QualiaPartitions.PACK.value
+        ).get(
+            taxonomy.QualiaType.BELT.value
+        )
+
         setattr(
-            self.frame_maps.get(taxonomy.SelfType.AVATAR.value),
-            str(
-                len(
-                    self.frame_maps.get(
-                        taxonomy.SelfType.AVATAR.value
-                    )
-                )
+            self.frame_maps.get(
+                taxonomy.SelfType.AVATAR.value
             ),
-            self.containers.packs.belt
+            belt_avatar_mapping,
+            belt_contents
         )
+
         # TODO: wallet avatar rendering points
 
 
@@ -625,9 +685,9 @@ class ExtrinsicQuale():
             self.frame_maps,
             taxonomy.QualiaType.SLOT.value,
             munch.Munch({
-                key: taxonomy.TraversalState.DISABLED.value
+                key: taxonomy.Traversal.DISABLED.value
                 if val is None 
-                else taxonomy.TraversalState.ENABLED.value
+                else taxonomy.Traversal.ENABLED.value
                 for key, val 
                 in self.containers.get(
                     taxonomy.QualiaType.SLOT.value
@@ -643,13 +703,13 @@ class ExtrinsicQuale():
             self.frame_maps,
             taxonomy.QualiaType.MIRROR.value,
             munch.Munch({
-                i: taxonomy.MeasureState.UNIT.value
+                i: taxonomy.Measure.UNIT.value
                 if i <= self.containers.get(
                     taxonomy.QualiaPartitions.MEASURE.value  
                 ).get(
                     taxonomy.QualiaType.MIRROR.value
                 ).current - 1 
-                else taxonomy.MeasureState.EMPTY.value
+                else taxonomy.Measure.EMPTY.value
                 for i in range(
                     self.properties.get(
                         taxonomy.QualiaType.MIRROR.value
@@ -672,19 +732,19 @@ class ExtrinsicQuale():
             taxonomy.QualiaType.BAG.value, 
             taxonomy.QualiaType.BELT.value 
         ]:
+            pack_piece_keys = list(
+                self.quale_conf.get(
+                    taxonomy.QualiaFamilies.PIECEWISE.value
+                ).get(pack_key).keys()
+            )
+
             setattr(
                 self.frame_maps,
                 pack_key,
                 munch.Munch({
                     i: key 
                     for i, key 
-                    in enumerate(
-                        list(
-                            self.quale_conf.get(
-                                taxonomy.QualiaFamilies.PIECEWISE.value
-                            ).get(pack_key).keys()
-                        )
-                    )
+                    in enumerate(pack_piece_keys)
                 })
             )
 
@@ -712,13 +772,15 @@ class ExtrinsicQuale():
                 list(bagset.keys())[0]
             ).size.h
 
+            bag_dim = ( 
+                total_bag_width, 
+                total_bag_height 
+            )
+            
             setattr(
                 self.dimensions,
                 taxonomy.QualiaType.BAG.value,
-                ( 
-                    total_bag_width, 
-                    total_bag_height 
-                )
+                bag_dim
             )
         return self.dimensions.bag
 
@@ -745,14 +807,17 @@ class ExtrinsicQuale():
                 )[0]
             ).size.h
 
+            belt_dim = ( 
+                total_belt_width, 
+                total_belt_height 
+            )
+
             setattr(
                 self.dimensions,
                 taxonomy.QualiaType.BELT.value,
-                ( 
-                    total_belt_width, 
-                    total_belt_height 
-                )
+                belt_dim
             )
+
         return self.dimensions.get(
             taxonomy.QualiaType.BELT.value
         )
@@ -764,22 +829,25 @@ class ExtrinsicQuale():
         if not self.dimensions.get(
             taxonomy.QualiaType.WALLET.value
         ):
+            wallet_dim = (
+                self.quale_conf.get(
+                    taxonomy.QualiaFamilies.SIMPLE.value
+                ).get(
+                    taxonomy.QualiaType.WALLET.value
+                ).size.w, 
+                self.quale_conf.get(
+                    taxonomy.QualiaFamilies.SIMPLE.value
+                ).get(
+                    taxonomy.QualiaType.WALLET.value
+                ).size.h
+            )
+
             setattr(
                 self.dimensions,
                 taxonomy.QualiaType.WALLET.value,
-                (
-                    self.quale_conf.get(
-                        taxonomy.QualiaFamilies.SIMPLE.value
-                    ).get(
-                        taxonomy.QualiaType.WALLET.value
-                    ).size.w, 
-                    self.quale_conf.get(
-                        taxonomy.QualiaFamilies.SIMPLE.value
-                    ).get(
-                        taxonomy.QualiaType.WALLET.value
-                    ).size.h
-                )
+                wallet_dim
             )
+
         return self.dimensions.get(
             taxonomy.QualiaType.WALLET.value
         )
@@ -800,14 +868,14 @@ class ExtrinsicQuale():
                     ).get(
                         taxonomy.QualiaType.SLOT.value
                     ).get(
-                        taxonomy.TraversalState.ENABLED.value
+                        taxonomy.Traversal.ENABLED.value
                     ).size.w, 
                     self.quale_conf.get(
                         taxonomy.QualiaFamilies.STATEFUL.value
                     ).get(
                         taxonomy.QualiaType.SLOT.value
                     ).get(
-                        taxonomy.TraversalState.ENABLED.value
+                        taxonomy.Traversal.ENABLED.value
                     ).size.h
                 )
             )
@@ -873,18 +941,22 @@ class ExtrinsicQuale():
         game_world: world.World
     ) ->  None:
         avatar_touched = False
+
         # Update Slots
         if self.containers.get(
             taxonomy.QualiaType.SLOT.value
         ) != game_world.hero.get(
             taxonomy.QualiaType.SLOT.value
         ):
+
+            hero_slots = game_world.hero.get(
+                taxonomy.QualiaType.SLOT.value
+            ).copy()
+
             setattr(
                 self.containers,
                 taxonomy.QualiaType.SLOT.value,
-                game_world.hero.get(
-                    taxonomy.QualiaType.SLOT.value
-                ).copy()
+                hero_slots
             )
             self._calculate_slot_frame_map()
             avatar_touched = True
@@ -895,12 +967,13 @@ class ExtrinsicQuale():
         ).get(
             taxonomy.QualiaType.MIRROR.value
         )!= game_world.hero.health:
+            hero_health = game_world.hero.health.copy()
             setattr(
                 self.containers.get(
                     taxonomy.QualiaPartitions.MEASURE.value
                 ), 
                 taxonomy.QualiaType.MIRROR.value, 
-                game_world.hero.health.copy()
+                hero_health
             )
             self._calculate_mirror_frame_map()
 

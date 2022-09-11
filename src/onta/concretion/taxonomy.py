@@ -123,20 +123,20 @@ class SlotGroup(Enum):
     ACTIVE = 'active'
 
 #### STATES
-class TraversalState(Enum):
+class Traversal(Enum):
     ENABLED = 'enabled'
     DISABLED = 'disabled'
     ACTIVE = 'active'
-class MeasureState(Enum):
+class Measure(Enum):
     UNIT = 'unit'
     EMPTY = 'empty'
 
 ## SPRITE CONTROLS
-class Desires(Enum):
+class DesireControl(Enum):
     APPROACH = 'approach'
     FLEE = 'flee'
     ENGAGE = 'engage'
-class Intentions(Enum):
+class IntentionControl(Enum):
     MOVE = 'move'
     COMBAT = 'combat'
     DEFEND = 'defend'

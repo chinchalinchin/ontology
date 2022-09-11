@@ -589,7 +589,7 @@ def slot_avatar_coordinates(
 
         # slot[0] = cast | thrust | slash | shoot 
         # slot[1] = equipment_name | null
-        if slot and slot[1] != 'null':
+        if slot and slot[1]:
             avatar = _filter_nested_tuple(
                 avatar_tuple,
                 slot_key
@@ -680,7 +680,11 @@ def idea_coordinates(
     menu_padding: tuple
 ) -> list:
     render_points = list()
-    full_width = sum(dim[0] for dim in idea_dims)
+    full_width = sum(
+        dim[0] 
+        for dim 
+        in idea_dims
+    )
 
     # idea_rendering_points => len() == len(ideas)*len(pieces)
     # for (0, equipment), (1, inventory), (2, status), ...
