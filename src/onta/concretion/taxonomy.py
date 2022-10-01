@@ -114,7 +114,7 @@ class MeasureQualiaPartition(Enum):
     MIRROR = "mirror"
     METER = "meter"
 
-#### DEFINITIONS
+#### QUALIA STATE DEFINITIONS
 class Traversal(Enum):
     ENABLED = 'enabled'
     DISABLED = 'disabled'

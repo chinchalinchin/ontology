@@ -4,13 +4,15 @@ import munch
 from onta \
     import world
 from onta.actuality \
-    import conf, state
+    import state
 from onta.concretion.facticity \
     import formulae
 from onta.metaphysics \
     import device, logger, settings
 from onta.qualia \
     import apriori
+from onta.qualia.quale \
+    import Quale
 from onta.qualia.thoughts \
     import bauble, symbol
 
@@ -29,7 +31,7 @@ SYMBOL_THOUGHTS = [
     'status'
 ]
 
-class IntrinsicQuale():
+class IntrinsicQuale(Quale):
     """
     
     A `IntrinsicQuale` is essentially an in-game menu; it composed of "ideas", i.e. buttons, the player iterates throguh and then executes. These "ideas" become "thoughts", i.e. submenus, when executed. When an "idea" is executed, focus is shifted to the "thought" until the player pops back into the "idea" selection menu.
@@ -40,9 +42,11 @@ class IntrinsicQuale():
         player_device: device.Device, 
         ontology_path: str = settings.DEFAULT_DIR
     ) -> None:
-        config = conf.Conf(ontology_path)
+        super.__init__(
+            player_device, 
+            ontology_path
+        )
         state_ao = state.State(ontology_path)
-        self._init_conf(config)
         self._init_fields()
         self.media_size = apriori.find_media_size(
             player_device.dimensions, 
@@ -55,54 +59,6 @@ class IntrinsicQuale():
             state_ao
         )
         self._init_ideas(state_ao)
-
-
-    def _init_conf(
-        self, 
-        config: conf.Conf
-    ) -> None:
-        """_summary_
-
-        :param config: _description_
-        :type config: conf.Conf
-
-        .. note::
-            ```python
-            self.quale_conf = {
-                'media_size_1': {
-                    'idea': {
-                        # ...
-                    },
-                    'bauble': {
-                        # ...
-                    },
-                    'aside': {
-                        # ...
-                    },
-                    'focus' : {
-                        # ...
-                    }
-                },
-                # ...
-            }
-            ```
-        """
-        self.avatar_conf = config.load_avatar_configuration()
-        configure = config.load_qualia_configuration()
-
-        self.quale_conf = configure.intrinsic
-        self.sizes = configure.apriori.sizes
-        self.styles = configure.styles.intrinsic
-        self.properties = configure.properties.intrinsic
-        self.alpha = configure.apriori.transparency
-
-        self.theme = apriori.construct_themes(
-            configure.apriori.theme
-        )
-        self.breakpoints = apriori.format_breakpoints(
-            configure.apriori.breakpoints
-        )
-
 
     def _init_fields(
         self
@@ -143,12 +99,12 @@ class IntrinsicQuale():
         player_device: device.Device
     ) -> None:
         quale_margins = (
-            self.styles.get(self.media_size).margins.w,
-            self.styles.get(self.media_size).margins.h
+            self.styles.default.margins.w,
+            self.styles.default.margins.h
         )
         quale_padding = (
-            self.styles.get(self.media_size).padding.w,
-            self.styles.get(self.media_size).padding.h
+            self.styles.default.padding.w,
+            self.styles.default.padding.h
         )
 
         # NOTE: all idea component pieces have the same dim, so any will do...
@@ -156,18 +112,27 @@ class IntrinsicQuale():
         # [ (left_w, left_h), (middle_w, middle_h), (right_w, right_h) ]
         dims = [
             ( 
-                self.quale_conf.get(self.media_size).idea.enabled.get(piece).size.w, 
-                self.quale_conf.get(self.media_size).idea.enabled.get(piece).size.h 
+                self.quale_conf.piecewise_stateful.idea.enabled.get(piece).size.w, 
+                self.quale_conf.piecewise_stateful.idea.enabled.get(piece).size.h 
             ) 
-            for piece in list(self.quale_conf.piecewise_traverseable.idea.enabled.keys())
+            for piece in list(
+                self.quale_conf.piecewise_stateful.idea.enabled.keys()
+            )
         ]
 
+        num_ideas = len(self.properties.thought)
+
+        num_pieces = len(self.quale_conf.piecewise_stateful.idea.enabled)
+
+        device_dim = player_device.dimensions
+
+        stack_style = self.styles.get(self.media_size).stack
         self.idea_rendering_points = formulae.idea_coordinates(
             dims,
-            len(self.properties.thought),
-            len(self.quale_conf.get(self.media_size).idea.enabled),
-            player_device.dimensions,
-            self.styles.get(self.media_size).stack,
+            num_ideas,
+            num_pieces,
+            device_dim,
+            stack_style,
             quale_margins,
             quale_padding
         )

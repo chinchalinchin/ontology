@@ -13,13 +13,15 @@ from onta.metaphysics \
     import logger, settings, device
 from onta.qualia \
     import apriori
+from onta.qualia.quale \
+    import Quale
 
 log = logger.Logger(
     'onta.concretion.qualia.extrinsic', 
     settings.LOG_LEVEL
 )
 
-class ExtrinsicQuale():
+class ExtrinsicQuale(Quale):
     """
     An `ExtrinsicQuale` is essentially a super-pretentious name for a Headsup Display.
 
@@ -101,13 +103,8 @@ class ExtrinsicQuale():
         player_device: device.Device, 
         ontology_path: str = settings.DEFAULT_DIR
     ) -> None:
-        config = conf.Conf(ontology_path)
         state_ao = state.State(ontology_path)
         self._init_fields()
-        self._init_conf(
-            config, 
-            player_device
-        )
         self._init_slot_positions(player_device)
         self._init_mirror_positions(player_device)
         self._init_pack_positions(player_device)
@@ -144,40 +141,6 @@ class ExtrinsicQuale():
         self.frame_maps = munch.Munch({})
         self.dimensions = munch.Munch({})
         self.quale_activated = True
-
-
-    def _init_conf(
-        self, 
-        config: conf.Conf, 
-        player_device: device.Device
-    ) -> None:
-        """Parse and store configuration from yaml files in instance fields.
-
-        :param config: _description_
-        :type config: conf.Conf
-        :param player_device: _description_
-        :type player_device: device.Device
-
-        .. note::
-            ```python
-            ```
-        """
-        configure = config.load_qualia_configuration()
-
-        self.quale_conf = configure.qualia
-        self.sizes = configure.apriori.sizes
-        self.breakpoints = apriori.format_breakpoints(
-            configure.apriori.breakpoints
-        )    
-        self.media_size = apriori.find_media_size(
-            player_device.dimensions, 
-            self.sizes, 
-            self.breakpoints
-        )
-        self.properties = configure.apriori.properties
-        self.styles = configure.apriori.styles.get(self.media_size)
-
-        self.avatar_conf = config.load_avatar_configuration()
 
 
     def _init_pack_positions(
