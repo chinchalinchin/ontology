@@ -261,7 +261,11 @@ class Renderer():
                     (
                         game_world.plate_properties.get(group_key) and \
                         game_world.plate_properties.get(group_key).type in \
-                            list(taxonomy.StaticPlateFamily.__members__.values())
+                            [
+                                e.value
+                                for e 
+                                in taxonomy.StaticPlateFamily.__members__.values()
+                            ]
                     ):
 
                     group_type  = taxonomy.FormType.STRUT.value \
@@ -870,11 +874,11 @@ class Renderer():
 
         gui.replace_alpha(
             self.world_frame, 
-            in_quale.alpha
+            in_quale.transparency
         )
         overlay = gui.channels(
             self.player_device.dimensions, 
-            in_quale.theme.overlay
+            in_quale.theme
         )
 
         self.world_frame.paste(
@@ -890,8 +894,7 @@ class Renderer():
         idea_frame_map, idea_piece_map = in_quale.idea_maps()
 
         for i, render_point in enumerate(idea_render_pts):
-            render_frame = data_totality.get_piecewise_qualia_frame(
-                in_quale.media_size, 
+            render_frame = data_totality.get_piecewise_stateful_qualia_frame(
                 taxonomy.QualiaType.IDEA.value,
                 idea_frame_map[i],
                 idea_piece_map[i]
@@ -917,8 +920,7 @@ class Renderer():
                     if not baub_frame_map[i] or not baub_piece_map[i]:
                         continue
 
-                    render_frame = data_totality.get_piecewise_qualia_frame(
-                        in_quale.media_size,
+                    render_frame = data_totality.get_piecewise_stateful_qualia_frame(
                         taxonomy.QualiaType.BAUBLE.value,
                         baub_frame_map[i],
                         baub_piece_map[i]

@@ -168,7 +168,8 @@ class PackProperty(Enum):
 class HealthProperty(Enum):
     CURRENT = "current"
     MAX = "max"
-## SPRITE CONTROLS
+
+#### SPRITE CONTROLS
 class DesireControl(Enum):
     APPROACH = 'approach'
     FLEE = 'flee'

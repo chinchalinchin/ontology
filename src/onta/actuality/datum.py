@@ -102,9 +102,9 @@ class Totality():
         list, 
         None
     ]:
-        if asset_type == 'projectiles':
+        if asset_type == taxonomy.DialecticType.PROJECTILE.value:
             return settings.PROJECTILE_PATH
-        if asset_type == 'expressions':
+        if asset_type == taxonomy.DialecticType.EXPRESSION.value:
             return settings.EXPRESSION_PATH
         return None
 
@@ -332,13 +332,13 @@ class Totality():
         ontology_path: str
     ) -> None:
 
-        for asset_type in list(
+        for asset_type in [
             e.value 
             for e 
             in taxonomy.DialecticType.__members__.values()
-        ):
+        ]:
             log.debug(
-                f'{asset_type} initialization',
+                f'{asset_type} initialization...',
                 'Totality._init_dialectic_assets'
             )
 
@@ -352,11 +352,10 @@ class Totality():
                 config.load_dialectic_configuration(asset_type)
 
             for asset_key, asset_conf in assets_conf.items():
-                log.verbose(
-                    f'Initializing {asset_key} assets...',
-                    'Totality._init_dialectic_assets'
-                )
 
+                # TODO: something wicked this way comes...
+                print(asset_key)
+                print(asset_conf)
                 if not asset_conf or not asset_conf.get('path'):
                     continue
 
@@ -370,6 +369,11 @@ class Totality():
                         *dialectic_type_path,
                         asset_conf.path
                     )
+                )
+
+                log.verbose(
+                    f"{asset_key}: size - {buffer.size}, mode - {buffer.mode}", 
+                    'Totality._init_form_assets'
                 )
 
                 buffer = buffer.crop(
@@ -730,7 +734,7 @@ class Totality():
 
         setattr(
             self.entities, 
-            'sprites', 
+            taxonomy.EntityType.SPRITE.value, 
             munch.Munch({
                 'base': munch.Munch({}),
                 'accents': munch.Munch({})
@@ -744,12 +748,16 @@ class Totality():
             )
 
             setattr(
-                self.entities.sprites.base, 
+                self.entities.get(
+                    taxonomy.EntityType.SPRITE.value
+                ).base, 
                 sprite_key, 
                 munch.Munch({})
             )
             setattr(
-                self.entities.sprites.accents, 
+                self.entities.get(
+                    taxonomy.EntityType.SPRITE.value
+                ).accents, 
                 sprite_key, 
                 munch.Munch({})
             )
@@ -786,12 +794,16 @@ class Totality():
                 frames += stature.frames
 
                 setattr(
-                    self.entities.sprites.base.get(sprite_key),
+                    self.entities.get(
+                        taxonomy.EntityType.SPRITE.value
+                    ).base.get(sprite_key),
                     stature_key,
                     []
                 )
                 setattr(
-                    self.entities.sprites.accents.get(sprite_key),
+                    self.entities.get(
+                        taxonomy.EntityType.SPRITE.value
+                    ).accents.get(sprite_key),
                     stature_key,
                     []
                 )
@@ -819,15 +831,19 @@ class Totality():
                             sheet
                         )
 
-                    self.entities.sprites.base.get(sprite_key).get(stature_key).append(
+                    self.entities.get(
+                        taxonomy.EntityType.SPRITE.value
+                    ).base.get(sprite_key).get(stature_key).append(
                         sprite_base_frame
                     )
-                    self.entities.sprites.accents.get(sprite_key).get(stature_key).append(
+                    self.entities.get(
+                        taxonomy.EntityType.SPRITE.value
+                    ).accents.get(sprite_key).get(stature_key).append(
                         sprite_accent_frame
                     )
 
             log.verbose(
-                f'{sprite_key}: states - {len(self.entities.sprites.base.get(sprite_key))}, frames - {frames}', 
+                f'{sprite_key}: states - {len(self.entities.sprite.base.get(sprite_key))}, frames - {frames}', 
                 'Totality._init_entity_assets'
             )
 
@@ -923,8 +939,18 @@ class Totality():
         Image.Image, 
         None
     ]:
-        if self.dialectics.projectiles.get(project_key):
-            return self.dialectics.projectiles.get(project_key).get(project_direction)
+        if self.dialectics.get(
+            taxonomy.DialecticType.PROJECTILE.value
+        ).get(
+            project_key
+        ):
+            return self.dialectics.get(
+                taxonomy.DialecticType.PROJECTILE.value
+            ).get(
+                project_key
+            ).get(
+                project_direction
+            )
         return None
 
 
@@ -936,7 +962,9 @@ class Totality():
         Image.Image, 
         None
     ]:
-        return self.dialectics.expressions.get(express_key)
+        return self.dialectics.get(
+            taxonomy.DialecticType.EXPRESSION.value
+        ).get(express_key)
 
 
     @functools.lru_cache(maxsize=256)
@@ -994,7 +1022,9 @@ class Totality():
         Image.Image, 
         None
     ]:
-        return self.selves.qualia.get(component_key)
+        return self.selves.get(
+            taxonomy.SelfType.QUALIA.value
+        ).get(component_key)
 
 
     @functools.lru_cache(maxsize=64)
@@ -1065,13 +1095,27 @@ class Totality():
         Image.Image, 
         None
     ]:
-        if self.selves.qualia.piecewise.get(component_key):
-            return self.selves.qualia.piecewise.get(component_key).get(piece_key)
+        if self.selves.get(
+            taxonomy.SelfType.QUALIA.value
+        ).get(
+            taxonomy.QualiaFamilies.PIECEWISE.value
+        ).get(
+            component_key
+        ):
+            return self.selves.get(
+                taxonomy.SelfType.QUALIA.value
+            ).get(
+                taxonomy.QualiaFamilies.PIECEWISE.value
+            ).get(
+                component_key
+            ).get(
+                piece_key
+            )
         return None
 
 
     @functools.lru_cache(maxsize=64)
-    def get_stateful_piecewise_qualia_frame(
+    def get_piecewise_stateful_qualia_frame(
         self,
         component_key: str,
         stateful_key: str,
@@ -1080,9 +1124,34 @@ class Totality():
         Image.Image,
         None
     ]:
-        if self.selves.qualia.stateful_piecewise.get(component_key) and \
-            self.selves.qualia.stateful_piecewise.get(component_key).get(stateful_key):
-            return self.selves.qualia.stateful_piecewise.get(component_key).get(stateful_key).get(piece_key)
+        if self.selves.get(
+            taxonomy.SelfType.QUALIA.value
+        ).get(
+            taxonomy.QualiaFamilies.PIECEWISE_STATEFUL.value
+        ).get(
+            component_key
+        ) \
+        and \
+        self.selves.get(
+            taxonomy.SelfType.QUALIA.value
+        ).get(
+            taxonomy.QualiaFamilies.PIECEWISE_STATEFUL.value
+        ).get(
+            component_key
+        ).get(
+            stateful_key
+        ):
+            return self.selves.get(
+                taxonomy.SelfType.QUALIA.value
+            ).get(
+                taxonomy.QualiaFamilies.PIECEWISE_STATEFUL.value
+            ).get(
+                component_key
+            ).get(
+                stateful_key
+            ).get(
+                piece_key
+            )
         return None
 
 
@@ -1107,20 +1176,41 @@ class Totality():
         :return: An image representing the appropriate _Sprite_ state frame, or `None` if frame doesn't exist.
         :rtype: Union[Image.Image, None]
         """
-        if self.entities.sprites.base.get(sprite_key) and \
-            self.entities.sprites.accents.get(sprite_key) and \
-            self.entities.sprites.base.get(sprite_key).get(stature_key) and \
-            self.entities.sprites.accents.get(sprite_key).get(stature_key):
+        if self.entities.get(
+            taxonomy.EntityType.SPRITE.value
+        ).base.get(sprite_key) \
+            and \
+        self.entities.get(
+            taxonomy.EntityType.SPRITE.value
+        ).accents.get(sprite_key) \
+            and \
+        self.entities.get(
+            taxonomy.EntityType.SPRITE.value
+        ).base.get(sprite_key).get(stature_key) \
+            and \
+        self.entities.get(
+            taxonomy.EntityType.SPRITE.value
+        ).accents.get(sprite_key).get(stature_key):
 
-                # TODO: check if frame index is less than state frames?
-                return (
-                    self.entities.sprites.base.get(sprite_key).get(stature_key)[frame_index],
-                    self.entities.sprites.accents.get(sprite_key).get(stature_key)[frame_index]
-                )
-        elif self.entities.sprites.base.get(sprite_key) and \
-            self.entities.sprites.base.get(sprite_key).get(stature_key):
+            # TODO: check if frame index is less than state frames?
             return (
-                self.entities.sprites.bases.get(sprite_key).get(stature_key)[frame_index],
+                self.entities.get(
+                    taxonomy.EntityType.SPRITE.value
+                ).base.get(sprite_key).get(stature_key)[frame_index],
+                self.entities.get(
+                    taxonomy.EntityType.SPRITE.value
+                ).accents.get(sprite_key).get(stature_key)[frame_index]
+            )
+        elif self.entities.get(
+            taxonomy.EntityType.SPRITE.value
+        ).base.get(sprite_key) and \
+            self.entities.get(
+                taxonomy.EntityType.SPRITE.value
+            ).base.get(sprite_key).get(stature_key):
+            return (
+                self.entities.get(
+                    taxonomy.EntityType.SPRITE.value
+                ).bases.get(sprite_key).get(stature_key)[frame_index],
                 None
             )
         return (

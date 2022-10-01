@@ -10,7 +10,7 @@ import munch
 from typing import Union
 
 from onta.concretion \
-    import mechanics
+    import mechanics, taxonomy
 from onta.concretion.facticity \
     import gauge
 from onta.concretion.noumena \
@@ -135,13 +135,28 @@ def combat(
     projectile_props: munch.Munch,
     target_sprites: munch.Munch,
 ) -> None: 
+    sprite_action = sprite.get(
+        taxonomy.SpriteProperty.STATURE.value
+    ).get(
+        taxonomy.StatureProperty.ACTION.value
+    )
+    sprite_belt = sprite.get(
+        taxonomy.SpriteProperty.PACK.value
+    ).get(
+        taxonomy.PackProperty.BELT.value
+    )
+
     if any(
         action 
-        in sprite.stature.action 
+        in sprite_action
         for action 
         in sprite_stature.decomposition.combat
     ):
-        equip_key = sprite.slot.get(sprite.stature.action)
+        equip_key = sprite.get(
+            taxonomy.SpriteProperty.SLOT.value
+        ).get(
+            sprite_action
+        )
 
         if equip_key is None:
             # NOTE: this means if sprite doesn't have equipment, they can't engage in combat.
@@ -150,25 +165,30 @@ def combat(
                     
         if apparel_props.equipment.get(equip_key).type == 'projectile':
 
-            if sprite.packs.belt in apparel_props.equipment.get(equip_key).properties.ammo and \
-                sprite.frame == apparel_props.equipment.get(equip_key).properties.release:
+            if sprite.get(
+                taxonomy.SpriteProperty.PACK.value
+            ).get(
+                taxonomy.PackProperty.BELT.value
+            ) in apparel_props.equipment.get(equip_key).properties.ammo \
+                and \
+            sprite.frame == apparel_props.equipment.get(equip_key).properties.release:
 
                 atkbox = substrata.projectile_attackbox(
                     munch.unmunchify(sprite),
                     munch.unmunchify(projectile_props.get(
-                        sprite.pack.belt
+                        sprite_belt
                     ).attackboxes)
                 )
                 projectiles.append(
                     munch.Munch({
-                        'key': sprite.pack.belt,
+                        'key': sprite_belt,
                         'layer': sprite.layer,
                         'direction': sprite.stature.direction,
                         'speed': projectile_props.get(
-                            sprite.pack.belt
+                           sprite_belt
                         ).speed,
                         'distance': projectile_props.get(
-                            sprite.pack.belt
+                            sprite_belt
                         ).distance,
                         'origin': ( 
                             atkbox[0], 
@@ -181,6 +201,7 @@ def combat(
                         'attackbox': atkbox
                     })
                 )
+                # TODO: decrement hero's ammo
 
         
         elif apparel_props.equipment.get(equip_key).type == 'blunt':

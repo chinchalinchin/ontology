@@ -63,6 +63,7 @@ class Quale():
         )
         self.properties = configure.apriori.properties
         self.styles = configure.apriori.styles.get(self.media_size)
-
+        self.transparency = configure.apriori.transparency
+        self.theme = configure.apriori.theme
         self.avatar_conf = config.load_avatar_configuration()
 

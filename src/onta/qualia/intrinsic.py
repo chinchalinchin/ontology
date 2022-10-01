@@ -92,6 +92,12 @@ class IntrinsicQuale(Quale):
         self.quale_activated = False
         self.media_size = None
         self.alpha = None
+        self.theme = (
+            self.theme.overlay.r,
+            self.theme.overlay.g,
+            self.theme.overlay.b,
+            self.theme.overlay.a
+        )
 
 
     def _init_idea_positions(
