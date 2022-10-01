@@ -18,7 +18,7 @@ meditations:
   arise:
     input:
       - tab
-    precedence: 5
+    precedence: 7
   execute:
     input:
       - space

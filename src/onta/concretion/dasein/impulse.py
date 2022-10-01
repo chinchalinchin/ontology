@@ -141,7 +141,7 @@ def combat(
         for action 
         in sprite_stature.decomposition.combat
     ):
-        equip_key = sprite.slots.get(sprite.stature.action)
+        equip_key = sprite.slot.get(sprite.stature.action)
 
         if equip_key is None:
             # NOTE: this means if sprite doesn't have equipment, they can't engage in combat.
@@ -156,19 +156,19 @@ def combat(
                 atkbox = substrata.projectile_attackbox(
                     munch.unmunchify(sprite),
                     munch.unmunchify(projectile_props.get(
-                        sprite.packs.belt
+                        sprite.pack.belt
                     ).attackboxes)
                 )
                 projectiles.append(
                     munch.Munch({
-                        'key': sprite.packs.belt,
+                        'key': sprite.pack.belt,
                         'layer': sprite.layer,
                         'direction': sprite.stature.direction,
                         'speed': projectile_props.get(
-                            sprite.packs.belt
+                            sprite.pack.belt
                         ).speed,
                         'distance': projectile_props.get(
-                            sprite.packs.belt
+                            sprite.pack.belt
                         ).distance,
                         'origin': ( 
                             atkbox[0], 

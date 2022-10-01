@@ -115,11 +115,11 @@ class MeasureQualiaPartition(Enum):
     METER = "meter"
 
 #### QUALIA STATE DEFINITIONS
-class Traversal(Enum):
+class QualiaTraversal(Enum):
     ENABLED = 'enabled'
     DISABLED = 'disabled'
     ACTIVE = 'active'
-class Measure(Enum):
+class QualiaMeasure(Enum):
     UNIT = 'unit'
     EMPTY = 'empty'
 

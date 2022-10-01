@@ -684,7 +684,7 @@ class Renderer():
 
         ### SLOT RENDERING
         rendering_points = display.get_render_points(
-            taxonomy.ExtrinsicType.SLOT.value
+            taxonomy.QualiaType.SLOT.value
         )
 
         cap_dir = display.get_cap_directions()
@@ -693,31 +693,37 @@ class Renderer():
         # slot names
         render_order = iter(display.properties.slot.maps)
 
-        cap_frames = data_totality.get_slot_frames(
-            display.media_size, 
-            taxonomy.SlotPiece.CAP.value
+        cap_frames = [
+            data_totality.get_rotatable_qualia_frame(
+                taxonomy.QualiaType.CAP.value,
+                direction
+            ) 
+            for direction
+            in cap_dir
+        ]
+
+        buffer_frame = data_totality.get_rotatable_qualia_frame( 
+            taxonomy.QualiaType.BUFFER.value,
+            buffer_dir
         )
-        buffer_frames = data_totality.get_slot_frames(
-            display.media_size, 
-            taxonomy.SlotPiece.BUFFER.value
-        )
+
         # TODO: I don't like the view creating the data structure here...
         # this should be done in repo...
         slot_frames = munch.Munch({
-            taxonomy.SlotPiece.ENABLED.value: 
-                data_totality.get_slot_frames(
-                    display.media_size, 
-                    taxonomy.SlotPiece.ENABLED.value
+            taxonomy.QualiaTraversal.ENABLED.value: 
+                data_totality.get_stateful_qualia_frame(
+                    taxonomy.QualiaType.SLOT.value, 
+                    taxonomy.QualiaTraversal.ENABLED.value
                 ),
-            taxonomy.SlotPiece.DISABLED.value:  
-                data_totality.get_slot_frames(
-                    display.media_size, 
-                taxonomy.SlotPiece.DISABLED.value
+            taxonomy.QualiaTraversal.DISABLED.value:  
+                data_totality.get_stateful_qualia_frame(
+                    taxonomy.QualiaType.SLOT.value, 
+                    taxonomy.QualiaTraversal.DISABLED.value
                 ),
-            taxonomy.SlotPiece.ACTIVE.value: 
-                data_totality.get_slot_frames(
-                    display.media_size, 
-                    taxonomy.SlotPiece.ACTIVE.value
+            taxonomy.QualiaTraversal.ACTIVE.value: 
+                data_totality.get_stateful_qualia_frame(
+                    taxonomy.QualiaType.SLOT.value, 
+                    taxonomy.QualiaTraversal.ACTIVE.value
                 )
         })
 
@@ -725,20 +731,20 @@ class Renderer():
         # cap, then alternate buffer and slot until last cap
         for i, render_point in enumerate(rendering_points):
             if i == 0:
-                render_frame = cap_frames.get(cap_dir[0])
+                render_frame = cap_frames[0]
 
             elif i == len(rendering_points) -1:
-                render_frame = cap_frames.get(cap_dir[1])
+                render_frame = cap_frames[1]
 
             elif i % 2 == 0:
-                render_frame = buffer_frames.get(buffer_dir)
+                render_frame = buffer_frame
 
             else:
                 render_key = next(render_order)
                 # map from slot name -> slot state -> slot frame
                 render_frame = slot_frames.get(
                     display.get_frame_map(
-                        taxonomy.ExtrinsicType.SLOT.value
+                        taxonomy.QualiaType.SLOT.value
                     ).get(render_key)
                 )
 
@@ -755,20 +761,19 @@ class Renderer():
         
         ## MIRROR RENDERING
         rendering_points = display.get_render_points(
-            taxonomy.MirrorType.LIFE.value
+            taxonomy.QualiaType.MIRROR.value
         )
 
         log.infinite(
-            f'Rendering {taxonomy.MirrorType.LIFE.value} mirrors...',
+            f'Rendering {taxonomy.QualiaType.MIRROR.value} mirrors...',
             'Renderer._render_extrinsic_quales'
         )
 
         for i, frame_key in display.get_frame_map(
-            taxonomy.MirrorType.LIFE.value
+            taxonomy.QualiaType.MIRROR.value
         ).items():
-            life_frame = data_totality.get_mirror_frame(
-                display.media_size, 
-                taxonomy.MirrorType.LIFE.value, 
+            life_frame = data_totality.get_stateful_qualia_frame(
+                taxonomy.QualiaType.MIRROR.value, 
                 frame_key
             )
             render_point = rendering_points[i]
@@ -780,7 +785,7 @@ class Renderer():
 
         ## PACK RENDERING
         # avatar rendering points include slot avatars and wallet avatars...
-        for pack_key in taxonomy.PackType.__members__.values():
+        for pack_key in taxonomy.PackQualiaPartition.__members__.values():
             log.infinite(
                 f'Rendering {pack_key.value} pack...',
                 'Renderer._render_extrinsic_quales'
@@ -789,11 +794,15 @@ class Renderer():
             pack_map = display.get_frame_map(pack_key.value)
             pack_rendering_points = display.get_render_points(pack_key.value)
 
+            # TODO: need to skip wallet until implemented. remove this continue
+            #           once done.
+            if pack_map is None:
+                continue
+
             for i, render_point in enumerate(pack_rendering_points):
                 # offset by slots
 
-                pack_frame = data_totality.get_pack_frame(
-                    display.media_size,
+                pack_frame = data_totality.get_piecewise_qualia_frame(
                     pack_key.value,
                     pack_map[i]
                 )
@@ -805,10 +814,10 @@ class Renderer():
 
         ## AVATAR RENDERING
         avatar_rendering_points = display.get_render_points(
-            taxonomy.SelfTypes.AVATAR.value
+            taxonomy.SelfType.AVATAR.value
         )
         avatar_frame_map = display.get_frame_map(
-            taxonomy.SelfTypes.AVATAR.value
+            taxonomy.SelfType.AVATAR.value
         )
         # TODO: there has to be a way of calculating this...
         avatar_set_map = munch.Munch({
@@ -875,7 +884,7 @@ class Renderer():
         )
 
         idea_render_pts = in_quale.rendering_points(
-            taxonomy.IntrinsicType.IDEA.value
+            taxonomy.QualiaType.IDEA.value
         )
         
         idea_frame_map, idea_piece_map = in_quale.idea_maps()
@@ -883,7 +892,7 @@ class Renderer():
         for i, render_point in enumerate(idea_render_pts):
             render_frame = data_totality.get_piecewise_qualia_frame(
                 in_quale.media_size, 
-                taxonomy.IntrinsicType.IDEA.value,
+                taxonomy.QualiaType.IDEA.value,
                 idea_frame_map[i],
                 idea_piece_map[i]
             )
@@ -899,7 +908,7 @@ class Renderer():
             if isinstance(activated_thought, bauble.BaubleThought):
                 baub_render_pts, avtr_render_pts = \
                     activated_thought.rendering_points(
-                        taxonomy.IntrinsicType.BAUBLE.value
+                        taxonomy.QualiaType.BAUBLE.value
                     )
                 baub_frame_map, baub_piece_map, baub_avtr_map = \
                     activated_thought.bauble_maps()
@@ -910,7 +919,7 @@ class Renderer():
 
                     render_frame = data_totality.get_piecewise_qualia_frame(
                         in_quale.media_size,
-                        taxonomy.IntrinsicType.BAUBLE.value,
+                        taxonomy.QualiaType.BAUBLE.value,
                         baub_frame_map[i],
                         baub_piece_map[i]
                     )
@@ -925,7 +934,9 @@ class Renderer():
                         continue
                     
                     # TODO: why is this not hidden behind the thought interface?
-                    avatarset_key = activated_thought.map_avatar_to_set(baub_avtr_map[i])
+                    avatarset_key = activated_thought.map_avatar_to_set(
+                        baub_avtr_map[i]
+                    )
 
                     avatar_frame = data_totality.get_avatar_frame(
                         avatarset_key,

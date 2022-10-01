@@ -20,6 +20,7 @@ log = logger.Logger(
 )
 
 class Totality():
+
     @staticmethod
     @functools.lru_cache(maxsize=2)
     def adjust_alignment_rotation(
@@ -577,7 +578,7 @@ class Totality():
                                 expand=True
                             ),
                         })
-                    elif quale_conf.get('rotation') == 'alignment':
+                    elif quale_conf.get('rotation') == 'symmetric':
                         adjust = self.adjust_alignment_rotation(quale_conf.definition)
                         buffer = munch.Munch({
                             'vertical': buffer.rotate(
@@ -970,8 +971,18 @@ class Totality():
         :return: _Avatar_ frame image.
         :rtype: Union[Image.Image, None]
         """
-        if self.selves.avatars.get(set_key):
-            return self.selves.avatars.get(set_key).get(avatar_key)
+        if self.selves.get(
+            taxonomy.SelfType.AVATAR.value
+        ).get(
+            set_key
+        ):
+            return self.selves.get(
+                taxonomy.SelfType.AVATAR.value
+            ).get(
+                set_key
+            ).get(
+                avatar_key
+            )
         return None
 
 
@@ -995,8 +1006,25 @@ class Totality():
         Image.Image,
         None
     ]:
-        if self.selves.qualia.rotatable.get(component_key):
-            return self.selves.qualia.rotatable.get(component_key).get(direction_key)
+        import pprint 
+
+        if self.selves.get(
+            taxonomy.SelfType.QUALIA.value
+        ).get(
+            taxonomy.QualiaFamilies.ROTATABLE.value
+        ).get(
+            component_key
+        ):
+
+            return self.selves.get(
+                taxonomy.SelfType.QUALIA.value
+            ).get(
+                taxonomy.QualiaFamilies.ROTATABLE.value
+            ).get(
+                component_key
+            ).get(
+                direction_key
+            )
         return None
 
 
@@ -1009,8 +1037,22 @@ class Totality():
         Image.Image,
         None
     ]:
-        if self.selves.qualia.stateful.get(component_key):
-            return self.selves.qualia.stateful.get(component_key).get(stateful_key)
+        if self.selves.get(
+            taxonomy.SelfType.QUALIA.value
+        ).get(
+            taxonomy.QualiaFamilies.STATEFUL.value
+        ).get(
+            component_key
+        ):
+            return self.selves.get(
+                taxonomy.SelfType.QUALIA.value
+            ).get(
+                taxonomy.QualiaFamilies.STATEFUL.value
+            ).get(
+                component_key
+            ).get(
+                stateful_key
+            )
         return None
 
 

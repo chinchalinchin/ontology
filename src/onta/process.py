@@ -180,7 +180,7 @@ def do(
             game_input, menu_input = player_will.poll(
                 pause_quale.quale_activated
             )
-
+            
             # # pre_update hook here
                 # # need:
                 # # scripts/npc.py:state_handler
