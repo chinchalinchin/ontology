@@ -543,7 +543,7 @@ class Totality():
                         )
                     )
 
-                    log.debug( 
+                    log.verbose( 
                         f"{family_key} {quale_key}: size - {buffer.size}, mode - {buffer.mode}", 
                         'Totality._init_self_assets'
                     )
@@ -614,7 +614,7 @@ class Totality():
                                 state_conf.path
                             )
                         )
-                        log.debug( 
+                        log.verbose( 
                             f"{family_key} {quale_key} {state_key}: size - {buffer.size}, mode - {buffer.mode}", 
                             'Totality._init_self_assets'
                         )
@@ -651,7 +651,7 @@ class Totality():
                             )
                         )
 
-                        log.debug( 
+                        log.verbose( 
                             f"{family_key} {quale_key} {piece_key}: size - {buffer.size}, mode - {buffer.mode}", 
                             'Totality._init_self_assets'
                         )

@@ -148,7 +148,12 @@ class World():
             self.layers.append(layer_key)
 
             for asset_type, asset_set in zip(
-                [ e.value for e in taxonomy.FormType.__members__.values() ],
+                [ e.value 
+                    for e 
+                    in taxonomy.FormType.__members__.values() 
+                    # TODO: remove once Tracks are implemented
+                    if e.value != taxonomy.FormType.TRACK.value
+                ],
                 [ self.tilesets, self.strutsets, self.platesets, self.compositions ]
             ):
                 setattr(

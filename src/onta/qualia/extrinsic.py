@@ -390,42 +390,88 @@ class ExtrinsicQuale():
         )
 
         alignment = (
-            self.styles.slot.alignment.horizontal,
-            self.styles.slot.alignment.vertical
+            self.styles.get(
+                taxonomy.QualiaType.SLOT.value
+            ).alignment.horizontal,
+            self.styles.get(
+                taxonomy.QualiaType.SLOT.value
+            ).alignment.vertical
         )
         margins = (
-            self.styles.slot.margins.w,
-            self.styles.slot.margins.h
+            self.styles.get(
+                taxonomy.QualiaType.SLOT.value
+            ).margins.w,
+            self.styles.get(
+                taxonomy.QualiaType.SLOT.value
+            ).margins.h
         )
 
         cap_dim = formulae.rotate_dimensions(
             (
-                self.quale_conf.rotabable.cap.size.w,
-                self.quale_conf.rotatable.cap.size.h
+                self.quale_conf.get(
+                    taxonomy.QualiaFamilies.ROTATABLE.value
+                ).get(
+                    taxonomy.QualiaType.CAP.value
+                ).size.w,
+                self.quale_conf.get(
+                    taxonomy.QualiaFamilies.ROTATABLE.value
+                ).get(
+                    taxonomy.QualiaType.CAP.value
+                ).size.h
             ),
-            self.quale_conf.rotatable.cap.definition,
-            self.styles.slot.stack
+            self.quale_conf.get(
+                taxonomy.QualiaFamilies.ROTATABLE.value
+            ).get(
+                taxonomy.QualiaType.CAP.value
+            ).definition,
+            self.styles.get(
+                taxonomy.QualiaType.SLOT.value
+            ).stack
         )
 
         buffer_dim = formulae.rotate_dimensions(
             (
-                self.quale_conf.rotatable.buffer.size.w,
-                self.quale_conf.rotatable.buffer.size.h
+                self.quale_conf.get(
+                    taxonomy.QualiaFamilies.ROTATABLE.value
+                ).get(
+                    taxonomy.QualiaType.BUFFER.value
+                ).size.w,
+                self.quale_conf.get(
+                    taxonomy.QualiaFamilies.ROTATABLE.value
+                ).get(
+                    taxonomy.QualiaType.BUFFER.value
+                ).size.h
             ),
-            self.quale_conf.rotatable.buffer.definition,
-            self.styles.rotatable.slot.stack
+            self.quale_conf.get(
+                taxonomy.QualiaFamilies.ROTATABLE.value
+            ).get(
+                taxonomy.QualiaType.BUFFER.value
+            ).definition,
+            self.styles.get(
+                taxonomy.QualiaType.SLOT.value
+            ).stack
         )
 
         slot_dim = (
-            self.quale_conf.stateful.slot.disabled.size.w,
-            self.quale_conf.stateful.slot.disabled.size.h
+            self.quale_conf.get(
+                taxonomy.QualiaFamilies.STATEFUL.value
+            ).get(
+                taxonomy.QualiaType.SLOT.value
+            ).disabled.size.w,
+            self.quale_conf.get(
+                taxonomy.QualiaFamilies.STATEFUL.value
+            ).get(
+                taxonomy.QualiaType.SLOT.value
+            ).disabled.size.h
         )
 
         slot_total = self.properties.get(
             taxonomy.QualiaType.SLOT.value
         ).total
 
-        slot_stack = self.styles.slot.stack
+        slot_stack = self.styles.get(
+            taxonomy.QualiaType.SLOT.value
+        ).stack
 
         device_dim = player_device.dimensions
         setattr(
@@ -538,6 +584,7 @@ class ExtrinsicQuale():
             ).maps
         )
 
+        # TODO: must be a better way to calculate this...
         slot_avatar_indices = tuple( 
             (
                 slot_state, 
