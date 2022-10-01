@@ -114,15 +114,7 @@ class MeasureQualiaPartition(Enum):
     MIRROR = "mirror"
     METER = "meter"
 
-#### GROUPS
-class SlotGroup(Enum):
-    CAP = 'cap'
-    BUFFER = 'buffer'
-    ENABLED = 'enabled'
-    DISABLED = 'disabled'
-    ACTIVE = 'active'
-
-#### STATES
+#### DEFINITIONS
 class Traversal(Enum):
     ENABLED = 'enabled'
     DISABLED = 'disabled'
@@ -131,6 +123,51 @@ class Measure(Enum):
     UNIT = 'unit'
     EMPTY = 'empty'
 
+#### SPRITE PROPERTIES
+###### FIRST LEVEL
+class SpriteProperty(Enum):
+    POSITION = "position"
+    STATURE = "stature"
+    INTENT = "intent"
+    FRAME = "frame"
+    LAYER = "layer"
+    PLOT = "plot"
+    SLOT = "slot"
+    ARMOR = "armor"
+    SHIELD = "shield"
+    PACK = "pack"
+    HEALTH = "health"
+    MEMORY = "memory"
+    DESIRES = "desires"
+    CAPITAL = "capital"
+######## SECOND LEVEL
+class CapitalProperty(Enum):
+    WALLET = "wallet"
+    EQUIPMENT = "equipment"
+    ARMORY = "armory"
+    INVENTORY = "inventory"
+    RESOURCES = "resources"
+class MemoryProperty(Enum):
+    PATHS = "paths"
+    INTENT = "intent"
+class StatureProperty(Enum):
+    DISPOSITION = "disposition"
+    ATTENTION = "attention"
+    INTENTION = "intention"
+    EXPRESSION = "expression"
+    DIRECTION = "direction"
+    ACTION = "action"
+class SlotProperty(Enum):
+    CAST = "cast"
+    THRUST = "thrust"
+    SLASH = "slash"
+    SHOOT = "shoot"
+class PackProperty(Enum):
+    BAG = "bag"
+    BELT = "belt"
+class HealthProperty(Enum):
+    CURRENT = "current"
+    MAX = "max"
 ## SPRITE CONTROLS
 class DesireControl(Enum):
     APPROACH = 'approach'

@@ -506,25 +506,33 @@ class ExtrinsicQuale():
             self.containers,
             taxonomy.QualiaType.SLOT.value,
             state_ao.get_state('dynamic').hero.get(
-                taxonomy.QualiaType.SLOT.value
+                taxonomy.SpriteProperty.SLOT.value
             )
         )
         setattr(
             self.containers,
             taxonomy.AvatarType.EQUIPMENT.value,
-            state_ao.get_state('dynamic').hero.capital.equipment
+            state_ao.get_state('dynamic').hero.get(
+                taxonomy.SpriteProperty.CAPITAL.value
+            ).get(
+                taxonomy.CapitalProperty.EQUIPMENT.value
+            )
         )
         setattr(
             self.containers,
             taxonomy.QualiaPartitions.PACK.value,
-            state_ao.get_state('dynamic').hero.packs
+            state_ao.get_state('dynamic').hero.get(
+                taxonomy.SpriteProperty.PACK.value
+            )
         )
         setattr(
             self.containers,
             taxonomy.QualiaPartitions.MEASURE.value,
             munch.Munch({
                 taxonomy.QualiaType.MIRROR.value: 
-                    state_ao.get_state('dynamic').hero.health
+                    state_ao.get_state('dynamic').hero.get(
+                        taxonomy.SpriteProperty.HEALTH.value
+                    )
             })
         )
 
