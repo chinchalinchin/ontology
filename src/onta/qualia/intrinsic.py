@@ -42,7 +42,7 @@ class IntrinsicQuale(Quale):
         player_device: device.Device, 
         ontology_path: str = settings.DEFAULT_DIR
     ) -> None:
-        super.__init__(
+        super().__init__(
             player_device, 
             ontology_path
         )
@@ -120,13 +120,14 @@ class IntrinsicQuale(Quale):
             )
         ]
 
-        num_ideas = len(self.properties.thought)
+        num_ideas = len(self.thought_conf)
 
         num_pieces = len(self.quale_conf.piecewise_stateful.idea.enabled)
 
         device_dim = player_device.dimensions
 
-        stack_style = self.styles.get(self.media_size).stack
+        stack_style = self.styles.default.stack
+
         self.idea_rendering_points = formulae.idea_coordinates(
             dims,
             num_ideas,
@@ -146,27 +147,25 @@ class IntrinsicQuale(Quale):
         # need statuses, pieces and sizes from the following confs
         # in order to initialize a Tab
         components_conf = munch.Munch({
-            'bauble': self.quale_conf.get(self.media_size).bauble,
-            'focus': self.quale_conf.get(self.media_size).focus,
-            'aside': self.quale_conf.get(self.media_size).aside,
-            'concept': self.quale_conf.get(self.media_size).concept,
-            'conception': self.quale_conf.get(self.media_size).conception
+            'bauble': self.quale_conf.piecewise_stateful.bauble,
+            'concept': self.quale_conf.simple.concept,
+            'conception': self.quale_conf.simple.conception
         }) # TODO: this seems redundant ... ?
 
         # all button component pieces have the same pieces, so any will do...
         full_width = sum(
-            self.quale_conf.get(self.media_size).idea.enabled.get(piece).size.w 
-            for piece in list(self.quale_conf.piecewise_traverseable.idea.enabled.keys())
+            self.quale_conf.piecewise_stateful.idea.enabled.get(piece).size.w 
+            for piece in list(self.quale_conf.piecewise_stateful.idea.enabled.keys())
         )
-        full_height = self.quale_conf.get(self.media_size).idea.enabled.get(
-            list(self.quale_conf.piecewise_traverseable.idea.enabled.keys())[0]
+        full_height = self.quale_conf.piecewise_stateful.idea.enabled.get(
+            list(self.quale_conf.piecewise_stateful.idea.enabled.keys())[0]
         ).size.h
         idea_dim = (
             full_width, 
             full_height
         )
 
-        for thought_key, thought_conf in self.properties.thought.items():
+        for thought_key, thought_conf in self.thought_conf.items():
             log.debug(
                 f'Creating {thought_key} thought...', 
                 'IntrinsicQuale._init_thoughts'
@@ -186,7 +185,7 @@ class IntrinsicQuale(Quale):
                         thought_key,
                         thought_conf,
                         components_conf,
-                        self.styles.get(self.media_size),
+                        self.styles,
                         self.avatar_conf,
                         self.idea_rendering_points[0],
                         idea_dim,
@@ -213,7 +212,7 @@ class IntrinsicQuale(Quale):
 
         # NOTE: this is what creates `self.thoughts`
         #       `self.thoughts`
-        for i, name in enumerate(list(self.properties.thought.keys())):
+        for i, name in enumerate(list(self.thought_conf.keys())):
             if i == 0:
                 self._activate_idea(name)
                 self.active_idea = i
@@ -225,7 +224,7 @@ class IntrinsicQuale(Quale):
         self
     ) -> list:
         return list(
-            self.quale_conf.piecewise_traverseable.idea.enabled.keys()
+            self.quale_conf.piecewise_stateful.idea.enabled.keys()
         )
 
 

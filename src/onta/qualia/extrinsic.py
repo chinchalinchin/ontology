@@ -103,6 +103,10 @@ class ExtrinsicQuale(Quale):
         player_device: device.Device, 
         ontology_path: str = settings.DEFAULT_DIR
     ) -> None:
+        super().__init__(
+            player_device, 
+            ontology_path
+        )
         state_ao = state.State(ontology_path)
         self._init_fields()
         self._init_slot_positions(player_device)
@@ -996,17 +1000,17 @@ class ExtrinsicQuale(Quale):
             self._calculate_mirror_frame_map()
 
         # Update Pack
-        if self.containers.packs.bag != game_world.hero.packs.bag:
+        if self.containers.pack.bag != game_world.hero.pack.bag:
             setattr(
-                self.containers.packs, 
+                self.containers.pack, 
                 'bag', 
-                game_world.hero.packs.bag
+                game_world.hero.pack.bag
             )
             self._calculate_pack_frame_map('bag')
             avatar_touched = True
         
-        if self.containers.packs.belt != game_world.hero.packs.belt:
-            self.containers.packs.belt = game_world.hero.packs.belt
+        if self.containers.pack.belt != game_world.hero.pack.belt:
+            self.containers.pack.belt = game_world.hero.pack.belt
             self._calculate_pack_frame_map('belt')
             avatar_touched = True
 

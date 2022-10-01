@@ -348,7 +348,7 @@ class Renderer():
             if group_type not in list(
                 e.value 
                 for e
-                in taxonomy.SwitchPlateFamily__members__.values()
+                in taxonomy.SwitchPlateFamily.__members__.values()
             ):
                 group_dim = (
                     group_frame.size[0],
@@ -576,12 +576,12 @@ class Renderer():
             if any(
                 slot 
                 for slot 
-                in sprite.slots.values()
+                in sprite.slot.values()
             ):
                 enabled = [ 
                     slot 
                     for slot 
-                    in sprite.slots.values() 
+                    in sprite.slot.values() 
                     if slot 
                 ]
 

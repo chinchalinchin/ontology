@@ -174,15 +174,15 @@ class BaubleThought():
         # NOTE: here is where the height assumption is made. See note in docstring.
         bauble_height = self.components_conf.bauble.enabled.left.size.h
         bauble_padding = (
-            self.device_dim[0] * self.styles.padding.w,
-            self.device_dim[1] * self.styles.padding.h
+            self.device_dim[0] * self.styles.default.padding.w,
+            self.device_dim[1] * self.styles.default.padding.h
         )
         bauble_margins = (
-            self.styles.margins.w * bauble_width,
-            self.styles.margins.h * bauble_height
+            self.styles.default.margins.w * bauble_width,
+            self.styles.default.margins.h * bauble_height
         )
 
-        if self.styles.stack == 'vertical':
+        if self.styles.default.stack == 'vertical':
             canvas_dim = (
                 self.alignment_ref[0],
                 self.device_dim[1]
@@ -194,7 +194,7 @@ class BaubleThought():
             self.bauble_scroll_num = int((canvas_dim[0] - canvas_start[0])
                 // max(bauble_piece_widths))
 
-        elif self.styles.stack == 'horizontal':
+        elif self.styles.default.stack == 'horizontal':
             canvas_dim=(
                 self.device_dim[0],
                 self.device_dim[1] - self.alignment_ref[1] - \

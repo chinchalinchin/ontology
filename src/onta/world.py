@@ -348,7 +348,7 @@ class World():
                         'World._ruminate'
                     )
 
-                    if sprite_desire.mode == taxonomy.Desires.APPROACH.value:
+                    if sprite_desire.mode == taxonomy.DesireControl.APPROACH.value:
                         instruction = abstract.approach(
                            sprite_key,
                            sprite,
@@ -359,7 +359,7 @@ class World():
                            self._reorient
                         )
 
-                    elif sprite_desire.mode == taxonomy.Desires.ENGAGE.value:
+                    elif sprite_desire.mode == taxonomy.DesireControl.ENGAGE.value:
                         instruction = abstract.engage(
                             sprite_key,
                             sprite,
@@ -369,7 +369,7 @@ class World():
                             self.get_sprites()
                         )
 
-                    elif sprite_desire.mode == taxonomy.Desires.FLEE.value:
+                    elif sprite_desire.mode == taxonomy.DesireControl.FLEE.value:
                         instruction = abstract.attempt_unflee(
                             sprite_key,
                             sprite,
@@ -385,7 +385,7 @@ class World():
                         'World._ruminate'
                     )
 
-                    if sprite_desire.mode == taxonomy.Desires.APPROACH.value:
+                    if sprite_desire.mode == taxonomy.DesireControl.APPROACH.value:
                         instruction = abstract.attempt_unapproach(
                             sprite_key,
                             sprite,
@@ -393,14 +393,14 @@ class World():
                             sprite_desire,
                             self.get_sprites()
                         )
-                    elif sprite_desire.mode == taxonomy.Desires.FLEE.value:
+                    elif sprite_desire.mode == taxonomy.DesireControl.FLEE.value:
                         instruction = abstract.flee(
                             sprite_key,
                             sprite,
                             sprite_desire,
                             self._reorient
                         )
-                    elif sprite_desire.mode == taxonomy.Desires.ENGAGE.value:
+                    elif sprite_desire.mode == taxonomy.DesireControl.ENGAGE.value:
                         instruction = abstract.attempt_unengage(
                             sprite_key,
                             sprite,
@@ -491,14 +491,14 @@ class World():
         for sprite_key, sprite in self.get_sprites().items():
             animate = False
 
-            if sprite.stature.intention == taxonomy.Intentions.MOVE.value:
+            if sprite.stature.intention == taxonomy.IntentionControl.MOVE.value:
                 impulse.move(
                     sprite,
                     self.sprite_properties.get(sprite_key)
                 )
                 animate = True
 
-            elif sprite.stature.intention == taxonomy.Intentions.COMBAT.value:
+            elif sprite.stature.intention == taxonomy.IntentionControl.COMBAT.value:
                 impulse.combat(
                     sprite_key,
                     sprite,
@@ -512,18 +512,18 @@ class World():
                 )
                 animate = True
 
-            elif sprite.stature.intention == taxonomy.Intentions.DEFEND.value:
+            elif sprite.stature.intention == taxonomy.IntentionControl.DEFEND.value:
                 pass
 
             # reorient sets an intention with an expression, therefore
             #       does an 'express' intention make sense?
-            elif sprite.stature.intention == taxonomy.Intentions.EXPRESS.value:
+            elif sprite.stature.intention == taxonomy.IntentionControl.EXPRESS.value:
                 impulse.express(
                     sprite,
                     self.sprite_properties.get(sprite_key)
                 )
 
-            elif sprite.stature.intention == taxonomy.Intentions.OPERATE:
+            elif sprite.stature.intention == taxonomy.IntentionControl.OPERATE.value:
                 # well, what differentiates using and interacting then?
                 impulse.operate(
                     sprite,

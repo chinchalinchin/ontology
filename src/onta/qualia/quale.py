@@ -51,6 +51,7 @@ class Quale():
         configure = config.load_qualia_configuration()
 
         self.quale_conf = configure.qualia
+        self.thought_conf = configure.thoughts
         self.sizes = configure.apriori.sizes
         self.breakpoints = apriori.format_breakpoints(
             configure.apriori.breakpoints
