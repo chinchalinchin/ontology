@@ -89,7 +89,7 @@ class Conf():
         """
         return self.__configuration(
             type_key, 
-            taxonomy.OntaTypes.SELF.value
+            taxonomy.OntaType.SELF.value
         )
 
     def _form_configuration(
@@ -105,7 +105,7 @@ class Conf():
         """
         return self.__configuration(
             type_key, 
-            taxonomy.OntaTypes.FORM.value
+            taxonomy.OntaType.FORM.value
         )
 
     def _entity_configuration(
@@ -121,9 +121,8 @@ class Conf():
         """
         return self.__configuration(
             type_key, 
-            taxonomy.OntaTypes.ENTITY.value
+            taxonomy.OntaType.ENTITY.value
         )
-
 
     def _dialectic_configuration(
         self, 
@@ -138,7 +137,7 @@ class Conf():
         """
         return self.__configuration(
             type_key, 
-            taxonomy.OntaTypes.DIALECTICS.value
+            taxonomy.OntaType.DIALECTICS.value
         )
 
 
@@ -155,7 +154,7 @@ class Conf():
         """
         if len(self.will_conf) == 0:
             self.will_conf = self._self_configuration(
-                taxonomy.SelfTypes.WILL.value
+                taxonomy.SelfType.WILL.value
             )
         return self.will_conf
 
@@ -171,7 +170,7 @@ class Conf():
         # TODO: mismatch between qualia and interface naming scheme...
         if not self.qualia_conf:
             self.qualia_conf = self._self_configuration(
-                taxonomy.SelfTypes.QUALIA.value
+                taxonomy.SelfType.QUALIA.value
             )
         return self.qualia_conf
 
@@ -186,26 +185,9 @@ class Conf():
         """
         if len(self.avatar_conf) == 0:
             self.avatar_conf = self._self_configuration(
-                taxonomy.SelfTypes.AVATAR.value
+                taxonomy.SelfType.AVATAR.value
             )
         return self.avatar_conf
-
-
-    def load_self_configuration(
-        self,
-        self_type
-    ) -> Union[
-        munch.Munch,
-        None
-    ]:
-        # NOTE: generalized method that routes through cache
-        if self_type == taxonomy.SelfTypes.QUALIA.value:
-            return self.load_qualia_configuration()
-        if self_type == taxonomy.SelfTypes.AVATAR.value:
-            return self.load_avatar_configuration()
-        if self_type == taxonomy.SelfTypes.WILL.value:
-            return self.load_will_configuration()
-        return None
 
 
     ## DIALECTIC CONFIGURATION

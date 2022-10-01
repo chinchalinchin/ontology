@@ -191,7 +191,11 @@ class Totality():
             e.value 
             for e 
             in taxonomy.FormType.__members__.values()
-            if e.value != taxonomy.FormType.COMPOSITE.value
+            if e.value not in [
+                taxonomy.FormType.COMPOSITE.value,
+                # TODO: remove this when Tracks are ready
+                taxonomy.FormType.TRACK.value
+            ]
         ):
             log.debug(
                 f'Initializing {asset_type} assets...',  
@@ -509,7 +513,7 @@ class Totality():
                         )
                     )
 
-                    log.debug( 
+                    log.verbose( 
                         f"{family_key} {quale_key}: size - {buffer.size}, mode - {buffer.mode}", 
                         'Totality._init_self_assets'
                     )
@@ -821,7 +825,7 @@ class Totality():
                         sprite_accent_frame
                     )
 
-            log.debug(
+            log.verbose(
                 f'{sprite_key}: states - {len(self.entities.sprites.base.get(sprite_key))}, frames - {frames}', 
                 'Totality._init_entity_assets'
             )
