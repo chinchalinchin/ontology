@@ -3,14 +3,14 @@
 **/.pytest_cache
 **/.DS_Store
 **/scratch
-.venv
+**/.venv
 log
 
 # ARTIFACTS
 **/dist
 **/*.pyc
 **/__pycache__
-src/ontology.egg-info
-build
+**/ontology.egg-info
+**/build
 **/*.so
 **/*.c

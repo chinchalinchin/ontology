@@ -62,6 +62,8 @@ class QualiaType(Enum):
 #### FAMILIES
 # _Families_ are abstractions on top of the concrete _Types_. They represent ways of grouping the _Types_ by function or definition (i.e. how the asset is extracted from the asset file). Each _Family_ member represents a subset of its parent _Type_.
 ###### TOP LEVEL
+class StrutFamilies(Enum):
+    HITBOX = "hitbox"
 class PlateFamilies(Enum):
     MOVEABLE = 'moveable'
     STATIC = 'static'
@@ -115,11 +117,12 @@ class MeasureQualiaPartition(Enum):
     METER = "meter"
 
 #### QUALIA STATE DEFINITIONS
-class QualiaTraversal(Enum):
+# a _Stateful_ enum denotes the possible states for a given _Stateful Qualia_. A qualia can either be 'traversed', in which case it cycles through the phases: `enabled`, `active`, `disabled`, or it can be 'measure' a player property, like health or magic. 
+class StatefulQualiaTraversal(Enum):
     ENABLED = 'enabled'
     DISABLED = 'disabled'
     ACTIVE = 'active'
-class QualiaMeasure(Enum):
+class StatefulQualiaMeasure(Enum):
     UNIT = 'unit'
     EMPTY = 'empty'
 
@@ -180,3 +183,16 @@ class IntentionControl(Enum):
     DEFEND = 'defend'
     EXPRESS = 'express'
     OPERATE = 'operate'
+
+#### STYLE ATTRIBUTES
+class StyleAttribte(Enum):
+    pass
+
+#### CONSTANTS
+class Constants(Enum):
+    SIZE = "size"
+    UNITS = "units"
+    X_COORD = "x"
+    Y_COORD = "y"
+    HEIGHT = "height"
+    WIDTH = "width"

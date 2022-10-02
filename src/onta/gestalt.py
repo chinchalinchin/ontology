@@ -714,20 +714,20 @@ class Renderer():
         # TODO: I don't like the view creating the data structure here...
         # this should be done in repo...
         slot_frames = munch.Munch({
-            taxonomy.QualiaTraversal.ENABLED.value: 
+            taxonomy.StatefulQualiaTraversal.ENABLED.value: 
                 data_totality.get_stateful_qualia_frame(
                     taxonomy.QualiaType.SLOT.value, 
-                    taxonomy.QualiaTraversal.ENABLED.value
+                    taxonomy.StatefulQualiaTraversal.ENABLED.value
                 ),
-            taxonomy.QualiaTraversal.DISABLED.value:  
+            taxonomy.StatefulQualiaTraversal.DISABLED.value:  
                 data_totality.get_stateful_qualia_frame(
                     taxonomy.QualiaType.SLOT.value, 
-                    taxonomy.QualiaTraversal.DISABLED.value
+                    taxonomy.StatefulQualiaTraversal.DISABLED.value
                 ),
-            taxonomy.QualiaTraversal.ACTIVE.value: 
+            taxonomy.StatefulQualiaTraversal.ACTIVE.value: 
                 data_totality.get_stateful_qualia_frame(
                     taxonomy.QualiaType.SLOT.value, 
-                    taxonomy.QualiaTraversal.ACTIVE.value
+                    taxonomy.StatefulQualiaTraversal.ACTIVE.value
                 )
         })
 

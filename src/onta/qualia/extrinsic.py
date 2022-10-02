@@ -297,14 +297,14 @@ class ExtrinsicQuale(Quale):
             ).get(
                 taxonomy.QualiaType.MIRROR.value
             ).get(
-                taxonomy.QualiaMeasure.UNIT.value
+                taxonomy.StatefulQualiaMeasure.UNIT.value
             ).size.w,
             self.quale_conf.get(
                 taxonomy.QualiaFamilies.STATEFUL.value
             ).get(
                 taxonomy.QualiaType.MIRROR.value
             ).get(
-                taxonomy.QualiaMeasure.UNIT.value
+                taxonomy.StatefulQualiaMeasure.UNIT.value
             ).size.h
         )
 
@@ -707,9 +707,9 @@ class ExtrinsicQuale(Quale):
             self.frame_maps,
             taxonomy.QualiaType.SLOT.value,
             munch.Munch({
-                key: taxonomy.QualiaTraversal.DISABLED.value
+                key: taxonomy.StatefulQualiaTraversal.DISABLED.value
                 if val is None 
-                else taxonomy.QualiaTraversal.ENABLED.value
+                else taxonomy.StatefulQualiaTraversal.ENABLED.value
                 for key, val 
                 in self.containers.get(
                     taxonomy.QualiaType.SLOT.value
@@ -725,13 +725,13 @@ class ExtrinsicQuale(Quale):
             self.frame_maps,
             taxonomy.QualiaType.MIRROR.value,
             munch.Munch({
-                i: taxonomy.QualiaMeasure.UNIT.value
+                i: taxonomy.StatefulQualiaMeasure.UNIT.value
                 if i <= self.containers.get(
                     taxonomy.QualiaPartitions.MEASURE.value  
                 ).get(
                     taxonomy.QualiaType.MIRROR.value
                 ).current - 1 
-                else taxonomy.QualiaMeasure.EMPTY.value
+                else taxonomy.StatefulQualiaMeasure.EMPTY.value
                 for i in range(
                     self.properties.get(
                         taxonomy.QualiaType.MIRROR.value
@@ -890,14 +890,14 @@ class ExtrinsicQuale(Quale):
                     ).get(
                         taxonomy.QualiaType.SLOT.value
                     ).get(
-                        taxonomy.QualiaTraversal.ENABLED.value
+                        taxonomy.StatefulQualiaTraversal.ENABLED.value
                     ).size.w, 
                     self.quale_conf.get(
                         taxonomy.QualiaFamilies.STATEFUL.value
                     ).get(
                         taxonomy.QualiaType.SLOT.value
                     ).get(
-                        taxonomy.QualiaTraversal.ENABLED.value
+                        taxonomy.StatefulQualiaTraversal.ENABLED.value
                     ).size.h
                 )
             )

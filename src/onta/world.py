@@ -38,7 +38,6 @@ ENTITY_TYPES = [
     'sprites'
 ]
 
-
 class World():
     # TODO: be careful with closures. 
     
@@ -72,6 +71,33 @@ class World():
     world_bounds = None
     iterations = 0
 
+    @staticmethod
+    def calculate_world_bounds(dim: tuple):
+        return [
+            ( 
+                0,
+                0, 
+                dim[0], 
+                1 
+            ),
+            ( 
+                0, 
+                0, 
+                1, 
+                dim[1] 
+            ),
+            ( 
+                dim[0], 
+                0, 
+                1, 
+                dim[1] ),
+            ( 
+                0, 
+                dim[1], 
+                dim[0], 
+                1 
+            )
+    ]
 
     def __init__(
         self,
@@ -148,13 +174,20 @@ class World():
             self.layers.append(layer_key)
 
             for asset_type, asset_set in zip(
-                [ e.value 
+                [ 
+                    e.value 
                     for e 
                     in taxonomy.FormType.__members__.values() 
                     # TODO: remove once Tracks are implemented
                     if e.value != taxonomy.FormType.TRACK.value
                 ],
-                [ self.tilesets, self.strutsets, self.platesets, self.compositions ]
+                [ 
+                    self.tilesets, 
+                    self.strutsets, 
+                    self.platesets, 
+                    # TODO: tracks would go here
+                    self.compositions 
+                ]
             ):
                 setattr(
                     asset_set, 
@@ -190,34 +223,9 @@ class World():
             f'Calculating stationary hitbox locations...',
             'World._generate_stationary_hitboxes'
         )
-        self.world_bounds = [
-            ( 
-                0,
-                0, 
-                self.dimensions[0], 
-                1 
-            ),
-            ( 
-                0, 
-                0, 
-                1, 
-                self.dimensions[1] 
-            ),
-            ( 
-                self.dimensions[0], 
-                0, 
-                1, 
-                self.dimensions[1] ),
-            ( 
-                0, 
-                self.dimensions[1], 
-                self.dimensions[0], 
-                1 
-            )
-        ]
+        self.world_bounds = self.calculate_world_bounds(self.dimensions)
         strut_dicts = munch.unmunchify(self.strutsets)
         plate_dicts = munch.unmunchify(self.platesets)
-
         strut_prop_dict = munch.unmunchify(self.strut_properties)
         plate_prop_dict = munch.unmunchify(self.plate_properties)
 
@@ -925,7 +933,11 @@ class World():
         layer: str,
         plateset_type: str
     ) -> list:
-        """_summary_
+        """Unpacks and filters by type the `self.platesets` `munch.Munch` dictionary, converting it into an array of indexed dictionaries. Plate type enumeration can be accessed via the values of `onta.concretion.taxonomy.PlateType`.
+
+        This unpacking is done so when a _Mass Plate_ interacts with a _Pressure Plate_, the connection of the _Pressure Plate_ to its associated _Gate Plate_ can be retrieved. Otherwise, the `content` of the _Pressure Plate_ would be hidden behind the hitbox aggregation that occurs in `self._generate_stationary_hitboxes()`. 
+        
+        In other words, collision detection doesn't care what specific hitbox a _Sprite_ has collided with; it only cares that a collision has occurred and in which direction the _Sprite_ was travelling when the collision happened; this vastly simplifies the calculations involved. However, this sort of collision detection does not suffice for _Plates_ with "identities", i.e. treasure chests with specific contents, pressure plates that unlock gates, door that lead to different layers, etc. Therefore, the hitbox detection for these _Plate_ types need special care. Hence this method!
 
         :param layer: The _World_ layer from which to retrieve platesets.
         :type layer: str
