@@ -22,7 +22,7 @@ class BaubleThought():
     def __init__(
         self, 
         name: str,
-        components: list, 
+        components: munch.Munch, 
         components_conf: munch.Munch,
         styles: munch.Munch, 
         avatar_conf: munch.Munch,
@@ -35,9 +35,9 @@ class BaubleThought():
 
         :param name: _description_
         :type name: str
-        :param components: This parameter corresponds to the array of_(component, label)_ tuples in the _conf/self/qualia.yml_. This array configures how many bauble rows are displayed; the labels determine the mapping between the bauble row and the player _Capital_ component.
+        :param components: This parameter corresponds to the array of_(component, label)_ tuples in the _conf/self/qualia.yml_ underneath the `thoughts` property. This array configures how many bauble rows are displayed; the labels determine the mapping between the bauble row and the player _Capital_ component.
         :type components: list
-        :param components_conf: _description_
+        :param components_conf: This parameter corresponds to the map of qualia pieces, states and their sizes in _conf/self/qualia.yml_.
         :type components_conf: munch.Munch
         :param styles: _description_
         :type styles: munch.Munch

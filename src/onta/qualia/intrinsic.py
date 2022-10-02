@@ -214,6 +214,7 @@ class IntrinsicQuale(Quale):
             full_height
         )
 
+        # (armory, armory_conf), (equipment, equipment_conf), ...
         for thought_key, thought_conf in self.thought_conf.items():
             log.debug(
                 f'Creating {thought_key} thought...', 
