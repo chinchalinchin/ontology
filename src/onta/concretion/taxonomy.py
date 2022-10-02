@@ -1,4 +1,5 @@
 from enum import Enum
+from tkinter import HORIZONTAL
 
 # Onta Taxonomy
 # The Enums below enumerate (imagine that) the network of sets that constitute the various permutations of a given _ontology_.
@@ -116,6 +117,12 @@ class MeasureQualiaPartition(Enum):
     MIRROR = "mirror"
     METER = "meter"
 
+#### PIECES
+class QualiaPiece(Enum):
+    LEFT = "left"
+    MIDDLE = "middle"
+    RIGHT = "right"
+
 #### QUALIA STATE DEFINITIONS
 # a _Stateful_ enum denotes the possible states for a given _Stateful Qualia_. A qualia can either be 'traversed', in which case it cycles through the phases: `enabled`, `active`, `disabled`, or it can be 'measure' a player property, like health or magic. 
 class StatefulQualiaTraversal(Enum):
@@ -186,18 +193,23 @@ class IntentionControl(Enum):
 
 #### LOOK AND FEEL 
 class Style(Enum):
-    pass
+    MARGINS = "margins"
+    PADDING = "padding"
+    STACK = "stack"
 class Theme(Enum):
     INTRINSIC = "intrinsic"
-
+class StackOrientation(Enum):
+    HORIZONTAL = "horizontal"
+    VERTICAL = "vertical"
+    
 #### CONSTANTS    
 class Measurement(Enum):
     SIZE = "size"
     UNITS = "units"
     X_COORD = "x"
     Y_COORD = "y"
-    HEIGHT = "height"
-    WIDTH = "width"
+    HEIGHT = "h"
+    WIDTH = "w"
 class Channels(Enum):
     R = "r"
     G = "g"

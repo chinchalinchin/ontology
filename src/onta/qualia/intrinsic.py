@@ -516,8 +516,11 @@ class IntrinsicQuale(Quale):
                 elif quale_input.reverse:
                     self.active_thought.decrement_bauble_selection()
 
+                elif quale_input.execute:
+                    selection = self.active_thought.select()
+                    return selection
+                    
                 self.active_thought.update(game_world)
-
                 return
 
             elif isinstance(

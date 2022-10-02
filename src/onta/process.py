@@ -196,13 +196,16 @@ def do(
 
             else:
                 # TODO: catch result in variable
-                pause_quale.update(
+                pause_selection = pause_quale.update(
                     menu_input,
                     game_world
                 )
                 
                 if not pause_quale.quale_activated:
                     player_will.consume_all()
+
+                if pause_selection is not None:
+                    game_world.interject(pause_selection)
 
                 # TODO: pass menu result back to game world
                 # for updating hero state

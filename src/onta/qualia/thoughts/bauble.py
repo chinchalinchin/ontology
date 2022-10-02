@@ -7,6 +7,7 @@ from onta \
     import world
 from onta.actuality \
     import state
+from onta.concretion import taxonomy
 from onta.concretion.facticity \
     import formulae
 from onta.metaphysics \
@@ -33,11 +34,11 @@ class BaubleThought():
     ) -> None: 
         """_summary_
 
-        :param name: _description_
+        :param name: Name of the `BaubleThought`. Used purely for logging. Does not materially affect the class in anyway.
         :type name: str
         :param components: This parameter corresponds to the array of_(component, label)_ tuples in the _conf/self/qualia.yml_ underneath the `thoughts` property. This array configures how many bauble rows are displayed; the labels determine the mapping between the bauble row and the player _Capital_ component.
         :type components: list
-        :param components_conf: This parameter corresponds to the map of qualia pieces, states and their sizes in _conf/self/qualia.yml_.
+        :param components_conf: This parameter corresponds to the map of _Qualia_ pieces, states and their sizes in _conf/self/qualia.yml_.
         :type components_conf: munch.Munch
         :param styles: _description_
         :type styles: munch.Munch
@@ -52,8 +53,6 @@ class BaubleThought():
         :param state_ao: _description_
         :type state_ao: state.State
         """
-        # Define in __init__ to avoid closure since tabs are created in loop by Menu
-
         self.name = name
         self.components = components
         self.components_conf = components_conf
@@ -71,10 +70,7 @@ class BaubleThought():
     def _init_fields(
         self
     ) -> None:
-        """_summary_
-
-        :return: _description_
-        :rtype: _type_
+        """Initialize class fields.
 
         .. note::
             ```python
@@ -189,25 +185,65 @@ class BaubleThought():
         if self.bauble_render_points:
             return
 
-        log.debug(f'Initializing {self.name} bauble positions', '_init_bauble_positions')
+        log.debug(
+            f'Initializing {self.name} bauble positions', 
+            '_calculate_bauble_positions'
+        )
+
+        # NOTE: Define function-scoped variables
+        default_styles = self.styles.default
+        default_margins = default_styles.get(
+            taxonomy.Style.MARGINS.value
+        )
+        default_padding = default_styles.get(
+            taxonomy.Style.PADDING.value
+        )
+        default_stack = default_styles.get(
+            taxonomy.Style.STACK.value
+        )
+        piece_conf = self.components_conf.get(
+            taxonomy.QualiaType.BAUBLE.value
+        ).get(
+            taxonomy.StatefulQualiaTraversal.ENABLED.value
+        )
         bauble_piece_widths = tuple(
-            piece.size.w 
+            piece.get(
+                taxonomy.Measurement.SIZE.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            )
             for piece 
-            in self.components_conf.bauble.enabled.values() 
+            in piece_conf.values() 
         )
         bauble_width = sum(bauble_piece_widths)
         # NOTE: here is where the height assumption is made. See note in docstring.
-        bauble_height = self.components_conf.bauble.enabled.left.size.h
+        bauble_height = piece_conf.get(
+            taxonomy.QualiaPiece.LEFT.value
+        ).get(
+            taxonomy.Measurement.SIZE.value
+        ).get(
+            taxonomy.Measurement.HEIGHT.value
+        )
         bauble_padding = (
-            self.device_dim[0] * self.styles.default.padding.w,
-            self.device_dim[1] * self.styles.default.padding.h
+            self.device_dim[0] * default_padding.get(
+                taxonomy.Measurement.WIDTH.value
+            ),
+            self.device_dim[1] * default_padding.get(
+                taxonomy.Measurement.HEIGHT.value
+            )
         )
         bauble_margins = (
-            self.styles.default.margins.w * bauble_width,
-            self.styles.default.margins.h * bauble_height
+            bauble_width * default_margins.get(
+                taxonomy.Measurement.WIDTH.value
+            ),
+            bauble_height * default_margins.get(
+                taxonomy.Measurement.HEIGHT.value
+            )
         )
 
-        if self.styles.default.stack == 'vertical':
+        num_baubles = len(self.baubles)
+
+        if default_stack == taxonomy.StackOrientation.VERTICAL.value:
             canvas_dim = (
                 self.alignment_ref[0],
                 self.device_dim[1]
@@ -216,10 +252,12 @@ class BaubleThought():
                 bauble_padding[0],
                 self.alignment_ref[1]
             )
-            self.bauble_scroll_num = int((canvas_dim[0] - canvas_start[0])
-                // max(bauble_piece_widths))
+            self.bauble_scroll_num = int(
+                ( canvas_dim[0] - canvas_start[0] )
+                // max(bauble_piece_widths)
+            )
 
-        elif self.styles.default.stack == 'horizontal':
+        elif default_stack == taxonomy.StackOrientation.HORIZONTAL.value:
             canvas_dim=(
                 self.device_dim[0],
                 self.device_dim[1] - self.alignment_ref[1] - \
@@ -230,13 +268,15 @@ class BaubleThought():
                 self.alignment_ref[1] + self.alignment_dim[1] + \
                     bauble_padding[1]
             )
-            self.bauble_scroll_num = int(canvas_dim[1] // bauble_height)
+            self.bauble_scroll_num = int(
+                canvas_dim[1] // bauble_height
+            )
 
 
-        # TODO: need to account for position of aside, concepts and focii somehow.
+        # TODO: need to account for position of concepts and conceptions
 
         self.bauble_render_points = formulae.bauble_coordinates(
-            len(self.baubles),
+            num_baubles,
             self.bauble_scroll_num,
             bauble_height,
             bauble_piece_widths,
@@ -244,7 +284,7 @@ class BaubleThought():
             canvas_start
         )
         self.bauble_piece_map = formulae.bauble_pieces(
-            len(self.baubles),
+            num_baubles,
             self.bauble_scroll_num
         )
 
@@ -376,7 +416,11 @@ class BaubleThought():
     def _incrementable(
         self
     ) -> bool:
-        return any(len(bauble.selectable) > 0 for bauble in self.baubles.values())
+        return any(
+            len(bauble.selectable) > 0 
+            for bauble 
+            in self.baubles.values()
+        )
 
 
     def map_avatar_to_set(
@@ -568,6 +612,18 @@ class BaubleThought():
 
         if select:
             self.increment_bauble_selection()
+
+
+    def select(
+        self
+    ) -> dict:
+        row_key = list(self.baubles.keys())[self.selected_row]
+        row_bauble = self.baubles.get(row_key)
+        return munch.Munch({
+            'capital': self.name,
+            'label': row_key,
+            'selection': row_bauble.selected
+        })
 
 
     def update(

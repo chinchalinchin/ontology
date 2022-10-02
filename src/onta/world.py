@@ -99,6 +99,7 @@ class World():
             )
     ]
 
+
     def __init__(
         self,
         ontology_path: str = settings.DEFAULT_DIR
@@ -261,7 +262,6 @@ class World():
                 layer,  
                 taxonomy.PlateType.MASS.value
             )
-
 
 
     def _generate_switch_map(
@@ -1071,6 +1071,29 @@ class World():
             return self.npcs.get(sprite_key)
 
         return None
+
+
+    def interject(
+        self,
+        pause_selection
+    ):
+        if pause_selection.capital == 'armory':
+            slot_label = pause_selection.get('label')
+            slot_selection = pause_selection.get('selection')
+
+            setattr(
+                self.hero.slot,
+                slot_label,
+                slot_selection
+            )
+
+        elif pause_selection.capital == 'equipment':
+            pass
+        elif pause_selection.capital == 'inventory':
+            pass
+        elif pause_selection.capital == 'resources':
+            pass
+
 
 
     def save(
