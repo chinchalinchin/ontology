@@ -7,7 +7,7 @@ apriori:
       h: 600
   transparency: 127
   theme:
-    overlay:
+    intrinsic:
       r: 20
       g: 67
       b: 142

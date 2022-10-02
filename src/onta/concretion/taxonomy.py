@@ -184,15 +184,22 @@ class IntentionControl(Enum):
     EXPRESS = 'express'
     OPERATE = 'operate'
 
-#### STYLE ATTRIBUTES
-class StyleAttribte(Enum):
+#### LOOK AND FEEL 
+class Style(Enum):
     pass
+class Theme(Enum):
+    INTRINSIC = "intrinsic"
 
-#### CONSTANTS
-class Constants(Enum):
+#### CONSTANTS    
+class Measurement(Enum):
     SIZE = "size"
     UNITS = "units"
     X_COORD = "x"
     Y_COORD = "y"
     HEIGHT = "height"
     WIDTH = "width"
+class Channels(Enum):
+    R = "r"
+    G = "g"
+    B = "b"
+    A = "a"

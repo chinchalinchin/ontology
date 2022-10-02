@@ -5,6 +5,7 @@ from onta \
     import world
 from onta.actuality \
     import state
+from onta.concretion import taxonomy
 from onta.concretion.facticity \
     import formulae
 from onta.metaphysics \
@@ -92,11 +93,16 @@ class IntrinsicQuale(Quale):
         self.quale_activated = False
         self.media_size = None
         self.alpha = None
-        self.theme = (
-            self.theme.overlay.r,
-            self.theme.overlay.g,
-            self.theme.overlay.b,
-            self.theme.overlay.a
+      
+
+        self.theme = tuple(
+            self.theme.get(
+                taxonomy.Theme.INTRINSIC.value
+            ).get(
+                channel.value
+            )
+            for channel
+            in taxonomy.Channels.__members__.values()
         )
 
 
@@ -150,22 +156,59 @@ class IntrinsicQuale(Quale):
         player_device: device.Device,
         state_ao: state.State
     ):
-        # need statuses, pieces and sizes from the following confs
-        # in order to initialize a Tab
         components_conf = munch.Munch({
-            'bauble': self.quale_conf.piecewise_stateful.bauble,
-            'concept': self.quale_conf.simple.concept,
-            'conception': self.quale_conf.simple.conception
+            taxonomy.QualiaType.BAUBLE.value: 
+                self.quale_conf.get(
+                    taxonomy.QualiaFamilies.PIECEWISE_STATEFUL.value
+                ).get(
+                    taxonomy.QualiaType.BAUBLE.value
+                ),
+            taxonomy.QualiaType.CONCEPT.value: 
+                self.quale_conf.get(
+                    taxonomy.QualiaFamilies.SIMPLE.value
+                ).get(
+                    taxonomy.QualiaType.CONCEPT.value
+                ),
+            taxonomy.QualiaType.CONCEPTION.value: 
+                self.quale_conf.get(
+                    taxonomy.QualiaFamilies.SIMPLE.value
+                ).get(
+                    taxonomy.QualiaType.CONCEPTION.value
+                )
         }) # TODO: this seems redundant ... ?
 
-        # all button component pieces have the same pieces, so any will do...
-        full_width = sum(
-            self.quale_conf.piecewise_stateful.idea.enabled.get(piece).size.w 
-            for piece in list(self.quale_conf.piecewise_stateful.idea.enabled.keys())
+        piece_conf = self.quale_conf.get(
+            taxonomy.QualiaFamilies.PIECEWISE_STATEFUL.value
+        ).get(
+            taxonomy.QualiaType.IDEA.value
+        ).get(
+            taxonomy.StatefulQualiaTraversal.ENABLED.value
         )
-        full_height = self.quale_conf.piecewise_stateful.idea.enabled.get(
-            list(self.quale_conf.piecewise_stateful.idea.enabled.keys())[0]
-        ).size.h
+
+        piece_keys = list(
+            piece_conf.keys()
+        )
+
+        full_width = sum(
+            piece_conf.get(
+                piece
+            ).get(
+                taxonomy.Measurement.SIZE.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            )
+            for piece 
+            in piece_keys
+        )
+
+        full_height = piece_conf.get(
+            piece_keys[0]
+        ).get(
+            taxonomy.Measurement.SIZE.value
+        ).get(
+            taxonomy.Measurement.HEIGHT.value
+        )
+
         idea_dim = (
             full_width, 
             full_height
@@ -230,7 +273,13 @@ class IntrinsicQuale(Quale):
         self
     ) -> list:
         return list(
-            self.quale_conf.piecewise_stateful.idea.enabled.keys()
+            self.quale_conf.get(
+                taxonomy.QualiaFamilies.PIECEWISE_STATEFUL.value
+            ).get(
+                taxonomy.QualiaType.IDEA.value
+            ).get(
+                taxonomy.StatefulQualiaTraversal.ENABLED.value
+            ).keys()
         )
 
 
@@ -247,7 +296,7 @@ class IntrinsicQuale(Quale):
             self.ideas,
             idea_key,
             munch.Munch({
-                piece: 'active' 
+                piece: taxonomy.StatefulQualiaTraversal.ACTIVE.value
                 for piece 
                 in self._idea_pieces()
             })
@@ -267,7 +316,7 @@ class IntrinsicQuale(Quale):
             self.ideas,
             idea_key,
             munch.Munch({
-                piece: 'disabled' 
+                piece: taxonomy.StatefulQualiaTraversal.DISABLED.value
                 for piece 
                 in self._idea_pieces()
             })
@@ -287,7 +336,7 @@ class IntrinsicQuale(Quale):
             self.ideas,
             idea_key,
             munch.Munch({
-                piece: 'enabled' 
+                piece: taxonomy.StatefulQualiaTraversal.ENABLED.value
                 for piece 
                 in self._idea_pieces()
             })
@@ -339,8 +388,12 @@ class IntrinsicQuale(Quale):
     def _ideate(
         self,
     ) -> None:
-        activate_thought_key = list(self.thoughts.keys())[self.active_idea]
-        self.active_thought = self.thoughts.get(activate_thought_key)
+        activate_thought_key = list(
+            self.thoughts.keys()
+        )[self.active_idea]
+        self.active_thought = self.thoughts.get(
+            activate_thought_key
+        )
 
 
     def _forget(
@@ -374,7 +427,9 @@ class IntrinsicQuale(Quale):
     def _active_thought_key(
         self
     ) -> str:
-        return list(self.thoughts.keys())[self.active_idea]
+        return list(
+            self.thoughts.keys()
+        )[self.active_idea]
 
 
     def get_active_thought(
@@ -407,7 +462,7 @@ class IntrinsicQuale(Quale):
         self, 
         interface_key: str
     ) -> list:
-        if interface_key in [ 'idea', 'ideas' ]:
+        if interface_key == taxonomy.QualiaType.IDEA.value:
             return self.idea_rendering_points
 
 

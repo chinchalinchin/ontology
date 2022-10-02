@@ -17,21 +17,6 @@ log = logger.Logger(
     settings.LOG_LEVEL
 )
 
-ARMORY_BAUBLES = [ 
-    'slash', 
-    'shoot', 
-    'cast', 
-    'thrust' 
-]
-EQUIPMENT_BAUBLES = [ 
-    'armor', 
-    'shield' 
-]
-INVENTORY_BAUBLES = [ 
-    'belt', 
-    'bag' 
-]
-
 class BaubleThought():
 
     def __init__(
@@ -46,6 +31,27 @@ class BaubleThought():
         device_dim: tuple,
         state_ao: state.State
     ) -> None: 
+        """_summary_
+
+        :param name: _description_
+        :type name: str
+        :param components: This parameter corresponds to the array of_(component, label)_ tuples in the _conf/self/qualia.yml_. This array configures how many bauble rows are displayed; the labels determine the mapping between the bauble row and the player _Capital_ component.
+        :type components: list
+        :param components_conf: _description_
+        :type components_conf: munch.Munch
+        :param styles: _description_
+        :type styles: munch.Munch
+        :param avatar_conf: _description_
+        :type avatar_conf: munch.Munch
+        :param alignment_reference: _description_
+        :type alignment_reference: tuple
+        :param alignment_dim: _description_
+        :type alignment_dim: tuple
+        :param device_dim: _description_
+        :type device_dim: tuple
+        :param state_ao: _description_
+        :type state_ao: state.State
+        """
         # Define in __init__ to avoid closure since tabs are created in loop by Menu
 
         self.name = name
@@ -57,7 +63,29 @@ class BaubleThought():
         self.alignment_dim = alignment_dim
         self.device_dim = device_dim
 
-        # NOTE: self.baubles = { 'slash': ..., 'shoot': ..., 'thrust': ..., 'cast': .... }
+        self._init_components(
+            state_ao.get_state('dynamic').get('hero').get('capital')
+        )
+
+
+    def _init_fields(
+        self
+    ) -> None:
+        """_summary_
+
+        :return: _description_
+        :rtype: _type_
+
+        .. note::
+            ```python
+            self.baubles = {
+                'slash': 'slash_avatar_key',
+                'shoot': 'shoot_avatar_key',
+                'thrust': 'thrust_avatar_key',
+                'cast': 'cast_avatar_key'
+            }
+            ```
+        """
         self.baubles = munch.Munch({})
         self.bauble_render_points = []
         self.bauble_avatar_render_points = []
@@ -67,11 +95,6 @@ class BaubleThought():
         self.bauble_scroll_num = None
 
         self.selected_row = 0
-        self.asides = munch.Munch({})
-        self.aside_render_points = []
-
-        self.focii = munch.Munch({})
-        self.focii_render_points = []
 
         self.concepts = munch.Munch({})
         self.concept_render_points = []
@@ -79,10 +102,6 @@ class BaubleThought():
 
         self.conceptions = munch.Munch({})
         self.conception_render_points = []
-
-        self._init_components(
-            state_ao.get_state('dynamic').get('hero').get('capital')
-        )
 
 
     def _init_components(
@@ -95,14 +114,17 @@ class BaubleThought():
         :type player_capital: munch.Munch
 
         .. note::
-            The label of a bauble must map to the possible label in a _Sprite_'s `capital`, i.e. `equipment[].label`, `armory[].label`, `inventory.label`, etc.
+            The label of a bauble (different than its content in `self.baubles`; "label" refers to the `label` property in _conf/self/qualia.yml_!) must map to a possible label in a _Sprite_'s `capital`, i.e. `equipment[].label` must map to `armor`, `shield`, `bag` or `belt`, `armory[].label` must map to `slash`, `thrust`, `shoot` or `cast,  `inventory etc.
         .. note::
             In other words, the possible values of `component.label` are `armor | shield | thrust | shoot | slash | cast | bag | belt`. TODO: there will probably be more to add here.
         """
         if not self.components:
             return
 
-        log.debug(f'Initializing {self.name} thought...', 'Thought._calculate_components')
+        log.debug(
+            f'Initializing {self.name} thought...', 
+            'Bauble._init_components'
+        )
         
         for component in self.components:
 
@@ -110,10 +132,13 @@ class BaubleThought():
             if not component:
                 continue
 
-            log.debug(f'Initializing {component.label} {component.component}', 'Thought._calculate_components')
+            log.debug(
+                f'Initializing {component.label} {component.component}', 
+                'Bauble._init_components'
+            )
 
 
-            # NOTE: bauble-based thought names must correspond to the component of the player capital they operate on.
+            # NOTE: bauble-based thought label must correspond to the component label of the player capital they operate on. See first note in docstring.
             iter_set = player_capital.get(self.name)
 
             component_avatars = [
