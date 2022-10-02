@@ -62,6 +62,8 @@ class BaubleThought():
         self.alignment_dim = alignment_dim
         self.device_dim = device_dim
 
+        self._init_fields()
+        
         self._init_components(
             state_ao.get_state('dynamic').get('hero').get('capital')
         )

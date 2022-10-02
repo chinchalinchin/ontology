@@ -75,68 +75,97 @@ equipment:
     action: slash
     type: blunt
     properties:
+      collide: 20
       power:
       attackboxes: 
         up:
           - frame: 3
             offset:
-              x:
-              y:
+              x: 32
+              y: 13
             size:
-              w:
-              h:
+              w: 13
+              h: 30
           - frame: 4
             offset:
-              x:
-              y:
+              x: 41
+              y: 9
             size:
-              w:
-              h:    
+              w: 14
+              h: 32
+          - frame: 5
+            offset:
+              x: 45
+              y: 12
+            size:
+              w: 14
+              h: 32
         down:
           - frame: 3
             offset:
-              x:
-              y:
+              x: 31
+              y: 26
             size:
-              w:
-              h:
+              w: 14
+              h: 33
           - frame: 4
             offset:
-              x:
-              y:
+              x: 43
+              y: 22
             size:
-              w:
-              h:  
+              w: 14
+              h: 32
+          - frame: 5
+            offset:
+              x: 47 
+              y: 18
+            size:
+              w: 14
+              h: 32
         left:
           - frame: 3
             offset:
-              x:
-              y:
+              x: 6
+              y: 21
             size:
-              w:
-              h:
+              w: 14
+              h: 33
           - frame: 4
             offset:
-              x:
-              y:
+              x: 3
+              y: 11
             size:
-              w:
-              h:  
+              w: 14
+              h: 32
+          - frame: 5
+            offset:
+              x: 5
+              y: 9
+            size:
+              w: 14
+              h: 32
         right:
           - frame: 3
             offset:
-              x:
-              y:
+              x: 45
+              y: 19
             size:
-              w:
-              h:
+              w: 14
+              h: 32
           - frame: 4
             offset:
-              x:
-              y:
+              x: 48
+              y: 8
             size:
-              w:
-              h:
+              w: 14
+              h: 32
+          - frame: 5
+            offset: 
+              x: 45
+              y: 7
+            size:
+              w: 14
+              h: 32
   knife:
     sheets: 
       - knife.png
@@ -152,6 +181,7 @@ equipment:
     type: blunt
     action: slash
     properties:
+      collide: 5
       power:
       attackbox: 
         up:
@@ -229,6 +259,7 @@ equipment:
     type: blunt
     action: slash
     properties:
+      collide: 10
       power:
       attackboxes: 
         up:
@@ -481,6 +512,7 @@ equipment:
     action: thrust
     type: blunt
     properties:
+      collide: 10
       power:
       attackboxes: 
         up:
@@ -558,6 +590,7 @@ equipment:
     action: thrust
     type: blunt
     properties:
+      collide: 10
       power:
       attackboxes: 
         up:

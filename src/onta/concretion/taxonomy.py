@@ -1,5 +1,4 @@
 from enum import Enum
-from tkinter import HORIZONTAL
 
 # Onta Taxonomy
 # The Enums below enumerate (imagine that) the network of sets that constitute the various permutations of a given _ontology_.
@@ -201,7 +200,7 @@ class Theme(Enum):
 class StackOrientation(Enum):
     HORIZONTAL = "horizontal"
     VERTICAL = "vertical"
-    
+
 #### CONSTANTS    
 class Measurement(Enum):
     SIZE = "size"

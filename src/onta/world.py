@@ -1077,6 +1077,14 @@ class World():
         self,
         pause_selection
     ):
+        """_summary_
+
+        :param pause_selection: _description_
+        :type pause_selection: _type_
+
+        .. note::
+            _Capital_ `label`s map to _Qualia Thought_ `labels`.
+        """
         if pause_selection.capital == 'armory':
             slot_label = pause_selection.get('label')
             slot_selection = pause_selection.get('selection')
@@ -1089,8 +1097,10 @@ class World():
 
         elif pause_selection.capital == 'equipment':
             pass
+
         elif pause_selection.capital == 'inventory':
             pass
+        
         elif pause_selection.capital == 'resources':
             pass
 

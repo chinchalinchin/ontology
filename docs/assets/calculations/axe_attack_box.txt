@@ -1,0 +1,51 @@
+up:
+	frame 3: (192, 768)
+	frame 4: (256, 768)
+	frame 5: (320, 768)
+
+	atkbox_3: (224, 781)
+	atkbox_4: (297, 777)
+	atkbox_5: (365, 780)
+
+	offset_3: (32, 13)
+	offset_4: (41, 9)
+	offset_5: (45, 12)
+
+left: 
+	frame 3: (192, 832)
+	frame 4: (256, 832)
+	frame 5: (320, 832)
+
+	atkbox_3: (198, 853)
+	atkbox_4: (259, 843)
+	atkbox_5: (325, 841)
+	
+	offset_3: (6, 21)
+	offset_4: (3, 11)
+	offset_5: (5, 9)
+
+down:
+	frame 3: (192, 896)
+	frame 4: (256, 896)
+	frame 5: (320, 896)
+
+	atkbox_3: (223, 922)
+	atkbox_4: (299, 918)
+	atkbox_5 (367, 914)
+	
+	offset_3: (31, 26)
+	offset_4: (43, 22)
+	offset_5: (47, 18)
+
+right:
+	frame 3: (192, 960)
+	frame 4: (256, 960)
+	frame 5: (320, 960)
+
+	atkbox_3: (237, 979)
+	atkbox_4: (304, 968)
+	atkbox_5: (365, 967)
+
+	offset_3: (45, 19)
+	offset_4: (48, 8)
+	offset_5: (45, 7)
