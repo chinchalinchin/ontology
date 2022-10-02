@@ -353,9 +353,6 @@ class Totality():
 
             for asset_key, asset_conf in assets_conf.items():
 
-                # TODO: something wicked this way comes...
-                print(asset_key)
-                print(asset_conf)
                 if not asset_conf or not asset_conf.get('path'):
                     continue
 
