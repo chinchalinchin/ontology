@@ -1,0 +1,51 @@
+up:
+	frame 3: (192, 768)
+	frame 4: (256, 768)
+	frame 5: (320, 768)
+
+	atkbox_3: (,)
+	atkbox_4: (,)
+	atkbox_5: (,)
+
+	offset_3: (,)
+	offset_4: (,)
+	offset_5: (,)
+
+left: 
+	frame 3: (192, 832)
+	frame 4: (256, 832)
+	frame 5: (320, 832)
+
+	atkbox_3: (,)
+	atkbox_4: (,)
+	atkbox_5: (,)
+	
+	offset_3: (,)
+	offset_4: (,)
+	offset_5: (,)
+
+down:
+	frame 3: (192, 896)
+	frame 4: (256, 896)
+	frame 5: (320, 896)
+
+	atkbox_3: (,)
+	atkbox_4: (,)
+	atkbox_5: (,)
+	
+	offset_3: (,)
+	offset_4: (,)
+	offset_5: (,)
+
+right:
+	frame 3: (192, 960)
+	frame 4: (256, 960)
+	frame 5: (320, 960)
+
+	atkbox_3: (,)
+	atkbox_4: (,)
+	atkbox_5: (,)
+
+	offset_3: (,)
+	offset_4: (,)
+	offset_5: (,)
