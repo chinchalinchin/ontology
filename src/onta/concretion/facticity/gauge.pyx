@@ -112,8 +112,7 @@ def any_intersections(
     rectangle: tuple, 
     rectangle_list: list
 ) -> Union[tuple, None]:
-    """Determines if a sprite's hitbox has collided with a list of hitboxes
-    :param object_key: 
+    """Determines if a _Sprite_'s hitbox has collided with a list of hitboxes. Will return the hitbox with which the _Sprite_ collided.
     :type object_key: str
     :param object_hitbox: _description_
     :type object_hitbox: tuple
@@ -123,11 +122,13 @@ def any_intersections(
     :rtype: Union[tuple, None]
 
     .. note::
-        This method assumes it only cares _if_ a collision occurs, not with _what_ the collision occurs. The hitbox list is traversed and if any one of the contained hitboxes intersects the sprite, `True` is returned. If none of the hitboxes in the list intersect the given sprite, `False` is returned.
+        This function assumes it only cares _if_ a collision occurs, not with _what_ the collision occurs. The hitbox list is traversed and if any one of the contained hitboxes intersects the sprite, `True` is returned. If none of the hitboxes in the list intersect the given sprite, `False` is returned.
     .. note:: 
         The argument is passed in as a tuple because immutability is a requirement for caching.
+    .. note::
+        This function will return the first hitbox it finds that has collided with the given _Sprite_. This does not necessarily mean this is the **only** collision. It may be the case the _Sprite_ has collided with more than one hitbox.
     .. todo::
-        Modify this to return the direction of the collision. Need to recoil sprite based on where the collision came from, not which direction the sprite is heading...
+        Modify this to return the direction of the collision. Need to recoil _Sprite_ based on where the collision came from, not which direction the _Sprite_ is heading...
 
     """
     for other_rect in rectangle_list:

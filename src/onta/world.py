@@ -612,7 +612,7 @@ class World():
         """
 
         .. note::
-            Keep in mind, the sprite collision doesn't care what sprite or strut with which the sprite collided, only what direction the sprite was travelling when the collision happened. The door hit detection, however, _is_ aware of what door with which the player is colliding, in order to locate the world layer to which the door is connected.
+            Keep in mind, the sprite collision doesn't care what sprite or strut with which the sprite collided, only what direction the sprite was travelling when the collision happened. The door hit detection, however, _is_ aware of what door with which the player is colliding, in order to locate the world layer to which the door is connected. See `self.get_typed_platesets()` docstring for more information.
         .. note::
             Technically, there is overlap here. Since sprite is checked against every other sprite for collisions, there are Pn = n!/(n-2)! permutations, but Cn = n!/(2!(n-2)!) distinct combinations. Therefore, Pn - Cn checks are unneccesary. To circumvent this problem (sort of), a collision map is kept internally within this method to keep track of which sprite-to-sprite collisions have already taken place. However, whether or not this is worth the effort, since the map has to be traversed when it is initialized, is an open question? 
         """
@@ -705,16 +705,16 @@ class World():
                             sprite,
                             self.get_sprites(),
                         )
-                        log.debug(
-                            f'Reorienting {sprite_key} with path {sprite.stature.attention}',
-                            'World._physics'
-                        )
                         new_direction = paths.reorient(
                             sprite_hitbox,
                             collision_set,
                             path,
                             self.sprite_properties.get(sprite_key).speed.collide,
                             self.dimensions
+                        )
+                        log.debug(
+                            f'Reorienting {sprite_key} with path {sprite.stature.attention} towards direction {new_direction}',
+                            'World._physics'
                         )
                         setattr(
                             sprite,
@@ -999,6 +999,9 @@ class World():
     def get_gates(
         self
     ) -> list:
+        """
+        This method is necessary because it does not necessarily follow that a _Pressure Plate_ must be on the same layer as the _Gate Plate_ with which it is connected. Therefore, this method traverse the layer tree and generates an array of all _Gate Plates_ in the _World_. 
+        """
         gates = []
         for nested_layer in self.layers:
             gates = gates + self.get_typed_platesets(
