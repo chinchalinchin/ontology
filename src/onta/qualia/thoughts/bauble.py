@@ -193,6 +193,12 @@ class BaubleThought():
             'BaubleThought._calculate_conceptual_positions'
         )
 
+        concept_stack = self.styles.get(
+            taxonomy.Style.GENERAL.value
+        ).get(
+            taxonomy.Style.STACK.value
+        )
+
         concept_styles = self.styles.get(
             taxonomy.QualiaType.CONCEPT.value
         )
@@ -203,10 +209,7 @@ class BaubleThought():
         concept_padding = concept_styles.get(
             taxonomy.Style.PADDING.value
         )
-        concept_stack = concept_styles.get(
-            taxonomy.Style.STACK.value
-        )
-
+    
         concept_conf = self.components_conf.get(
             taxonomy.QualiaType.CONCEPT.value
         ).get(
@@ -256,17 +259,20 @@ class BaubleThought():
         )
 
         # NOTE: Define function-scoped variables
-        styles = self.styles.get(
+        bauble_stack = self.styles.get(
+            taxonomy.Style.GENERAL.value
+        ).get(
+            taxonomy.Style.STACK.value
+        )
+
+        bauble_styles = self.styles.get(
             taxonomy.QualiaType.BAUBLE.value
         )
-        raw_margins = styles.get(
+        raw_margins = bauble_styles.get(
             taxonomy.Style.MARGINS.value
         )
-        raw_padding = styles.get(
+        raw_padding = bauble_styles.get(
             taxonomy.Style.PADDING.value
-        )
-        bauble_stack = styles.get(
-            taxonomy.Style.STACK.value
         )
         bauble_conf = self.components_conf.get(
             taxonomy.QualiaType.BAUBLE.value

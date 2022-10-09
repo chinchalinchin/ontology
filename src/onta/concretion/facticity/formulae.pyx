@@ -139,7 +139,7 @@ def bauble_canvas(
     alignment_reference,
     device_dim,
 ):
-    if bauble_stack == taxonomy.StackOrientation.VERTICAL.value:
+    if bauble_stack == taxonomy.Orientation.VERTICAL.value:
         # If vertical, align with bottom left corner of reference.
         canvas_dim = (
             alignment_reference[0],
@@ -154,17 +154,16 @@ def bauble_canvas(
             // max(bauble_widths)
         )
 
-    elif bauble_stack == taxonomy.StackOrientation.HORIZONTAL.value:
+    elif bauble_stack == taxonomy.Orientation.HORIZONTAL.value:
         # If horizontal align with top edge of reference
-        canvas_dim=(
-            device_dim[0],
-            device_dim[1] - alignment_reference[1] - \
-                alignment_reference[2]
-        )
         canvas_start = (
             bauble_padding[0], # TODO: add concept start point + concept width here
             alignment_reference[1] + alignment_reference[2] + \
                 bauble_padding[1]
+        )
+        canvas_dim=(
+            device_dim[0],
+            device_dim[1] - canvas_start[1]
         )
         scroll_num = int(
             canvas_dim[1] // bauble_height
@@ -742,7 +741,7 @@ def idea_coordinates(
         # j gives you index for the piece dim in dims
         for j in range(idea_pieces):
 
-            if idea_stack == taxonomy.StackOrientation.VERTICAL.value:
+            if idea_stack == taxonomy.Orientation.VERTICAL.value:
                 if i == 0 and j == 0:
                     x = (1 - idea_margins[0]) * device_dim[0] - full_width
                     y = idea_margins[1] * device_dim[1]

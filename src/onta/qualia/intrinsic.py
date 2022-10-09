@@ -116,7 +116,9 @@ class IntrinsicQuale(Quale):
             taxonomy.QualiaType.IDEA.value
         )
 
-        idea_stack = idea_styles.get(
+        idea_stack = self.styles.get(
+            taxonomy.Style.GENERAL.value
+        ).get(
             taxonomy.Style.STACK.value
         )
 

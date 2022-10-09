@@ -14,11 +14,12 @@ apriori:
       a: 175
   styles:
     small:
+      general:
+        stack: horizontal
       slot:
         margins:
           w: 0.025
           h: 0.025
-        stack: horizontal
         alignment: 
           vertical: bottom
           horizontal: left
@@ -30,7 +31,6 @@ apriori:
         padding:
           w: 0.005
           h: 0.005
-        stack: horizontal
         alignment:
           vertical: top
           horizontal: right
@@ -49,7 +49,6 @@ apriori:
         margins:
           w: 0.05
           h: 0.05
-        stack: horizontal
       idea:
         padding:
           w: 0.05
@@ -57,7 +56,6 @@ apriori:
         margins:
           w: 0.05
           h: 0.20
-        stack: horizontal
       concept:
         padding:
           w: 0.05
@@ -65,13 +63,13 @@ apriori:
         margins:
           w: 0.05
           h: 0.20
-        stack: horizontal
     large:
+      general:
+        stack: horizontal
       slot:
         margins: 
           w: 0.025
           h: 0.025
-        stack: horizontal
         alignment: 
           vertical: bottom
           horizontal: left
@@ -83,7 +81,6 @@ apriori:
         padding:
           w: 0.005
           h: 0.005
-        stack: horizontal
         alignment:
           vertical: top
           horizontal: right
@@ -101,8 +98,7 @@ apriori:
           h: 0.05
         margins:
           w: 0.05
-          h: 0.20
-        stack: horizontal
+          h: 0.05
       idea:
         padding:
           w: 0.05
@@ -110,7 +106,6 @@ apriori:
         margins:
           w: 0.05
           h: 0.20
-        stack: horizontal
       concept:
         padding:
           w: 0.05
@@ -118,7 +113,6 @@ apriori:
         margins:
           w: 0.05
           h: 0.20
-        stack: horizontal
   properties:
     slot: 
       total: 4

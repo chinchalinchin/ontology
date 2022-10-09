@@ -276,18 +276,29 @@ class ExtrinsicQuale(Quale):
             'ExtrinsicQuale._init_mirror_positions'
         )
 
+        mirror_styles = self.styles.get(
+            taxonomy.QualiaType.MIRROR.value
+        )
         mirror_alignment = (
-            self.styles.get(
-                taxonomy.QualiaType.MIRROR.value
-            ).alignment.horizontal,
-            self.styles.get(
-                taxonomy.QualiaType.MIRROR.value
-            ).alignment.vertical
+            mirror_styles.get(
+                taxonomy.Style.ALIGNMENT.value
+            ).get(
+                taxonomy.Orientation.HORIZONTAL.value
+            ),
+            mirror_styles.get(
+                taxonomy.Style.ALIGNMENT.value
+            ).get(
+                taxonomy.Orientation.VERTICAL.value
+            )
         )
 
         mirror_rank = (
-            self.properties.mirror.columns,
-            self.properties.mirror.rows,
+            self.properties.get(
+                taxonomy.QualiaType.MIRROR.value
+            ).columns,
+            self.properties.get(
+                taxonomy.QualiaType.MIRROR.value
+            ).rows,
         )
 
         # NOTE: dependent on 'unit' and 'empty' being the same dimensions...
@@ -298,37 +309,55 @@ class ExtrinsicQuale(Quale):
                 taxonomy.QualiaType.MIRROR.value
             ).get(
                 taxonomy.StatefulQualiaMeasure.UNIT.value
-            ).size.w,
+            ).get(
+                taxonomy.Measurement.SIZE.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            ),
             self.quale_conf.get(
                 taxonomy.QualiaFamilies.STATEFUL.value
             ).get(
                 taxonomy.QualiaType.MIRROR.value
             ).get(
                 taxonomy.StatefulQualiaMeasure.UNIT.value
-            ).size.h
+            ).get(
+                taxonomy.Measurement.SIZE.value
+            ).get(
+                taxonomy.Measurement.SIZE.value
+            )
         )
 
-        margins= (
-            self.styles.get(
-                taxonomy.QualiaType.MIRROR.value
-            ).margins.w * player_device.dimensions[0],
-            self.styles.get(
-                taxonomy.QualiaType.MIRROR.value
-            ).margins.h * player_device.dimensions[1]
+        mirror_margins = (
+            mirror_styles.get(
+                taxonomy.Style.MARGINS.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            ) * player_device.dimensions[0],
+            mirror_styles.get(
+                taxonomy.Style.MARGINS.value
+            ).get(
+                taxonomy.Measurement.HEIGHT.value
+            ) * player_device.dimensions[1]
         )
 
-        padding = (
-            self.styles.get(
-                taxonomy.QualiaType.MIRROR.value
-            ).padding.w,
-            self.styles.get(
-                taxonomy.QualiaType.MIRROR.value
-            ).padding.h
+        mirror_padding = (
+            mirror_styles.get(
+                taxonomy.Style.PADDING.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            ),
+            mirror_styles.get(
+                taxonomy.Style.PADDING.value
+            ).get(
+                taxonomy.Measurement.HEIGHT.value
+            )
         )
 
         mirror_stack = self.styles.get(
-            taxonomy.QualiaType.MIRROR.value
-        ).stack
+            taxonomy.Style.GENERAL.value
+        ).get(
+            taxonomy.Style.STACK.value
+        )
 
         device_dim = player_device.dimensions
         
@@ -339,8 +368,8 @@ class ExtrinsicQuale(Quale):
                 device_dim,
                 mirror_alignment,
                 mirror_stack,
-                margins,
-                padding,
+                mirror_margins,
+                mirror_padding,
                 mirror_rank,
                 mirror_dim
             )
@@ -356,89 +385,125 @@ class ExtrinsicQuale(Quale):
             'ExtrinsicQuale._init_slot_positions'
         )
 
-        alignment = (
-            self.styles.get(
-                taxonomy.QualiaType.SLOT.value
-            ).alignment.horizontal,
-            self.styles.get(
-                taxonomy.QualiaType.SLOT.value
-            ).alignment.vertical
+        slot_stack = self.styles.get(
+            taxonomy.Style.GENERAL.value
+        ).get(
+            taxonomy.Style.STACK.value
         )
-        margins = (
-            self.styles.get(
-                taxonomy.QualiaType.SLOT.value
-            ).margins.w,
-            self.styles.get(
-                taxonomy.QualiaType.SLOT.value
-            ).margins.h
+
+        slot_styles = self.styles.get(
+            taxonomy.QualiaType.SLOT.value
+        )
+
+        slot_alignment = (
+            slot_styles.get(
+                taxonomy.Style.ALIGNMENT.value
+            ).get(
+                taxonomy.Orientation.HORIZONTAL.value
+            ),
+            slot_styles.get(
+                taxonomy.Style.ALIGNMENT.value
+            ).get(
+                taxonomy.Orientation.VERTICAL.value
+            )
+        )
+        slot_margins = (
+            slot_styles.get(
+                taxonomy.Style.MARGINS.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            ),
+            slot_styles.get(
+                taxonomy.Style.MARGINS.value
+            ).get(
+                taxonomy.Measurement.HEIGHT.value
+            )
+        )
+
+        cap_conf =  self.quale_conf.get(
+            taxonomy.QualiaFamilies.ROTATABLE.value
+        ).get(
+            taxonomy.QualiaType.CAP.value
+        )
+
+        cap_def = cap_conf.get(
+            taxonomy.Property.DEFINITION.value
+        )
+
+        cap_dim = (
+            cap_conf.get(
+                taxonomy.Measurement.SIZE.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            ),
+            cap_conf.get(
+                taxonomy.Measurement.SIZE.value
+            ).get(
+                taxonomy.Measurement.HEIGHT.value
+            )
         )
 
         cap_dim = formulae.rotate_dimensions(
-            (
-                self.quale_conf.get(
-                    taxonomy.QualiaFamilies.ROTATABLE.value
-                ).get(
-                    taxonomy.QualiaType.CAP.value
-                ).size.w,
-                self.quale_conf.get(
-                    taxonomy.QualiaFamilies.ROTATABLE.value
-                ).get(
-                    taxonomy.QualiaType.CAP.value
-                ).size.h
-            ),
-            self.quale_conf.get(
-                taxonomy.QualiaFamilies.ROTATABLE.value
+            cap_dim,
+            cap_def,
+            slot_stack
+        )
+
+        buffer_conf = self.quale_conf.get(
+            taxonomy.QualiaFamilies.ROTATABLE.value
+        ).get(
+            taxonomy.QualiaType.BUFFER.value
+        )
+
+        buffer_dim = (
+            buffer_conf.get(
+                taxonomy.Measurement.SIZE.value
             ).get(
-                taxonomy.QualiaType.CAP.value
-            ).definition,
-            self.styles.get(
-                taxonomy.QualiaType.SLOT.value
-            ).stack
+                taxonomy.Measurement.WIDTH.value
+            ),
+            buffer_conf.get(
+                taxonomy.Measurement.SIZE.value
+            ).get(
+                taxonomy.Measurement.HEIGHT.value
+            )
+        )
+
+        buffer_def = buffer_conf.get(
+            taxonomy.Property.DEFINITION.value
         )
 
         buffer_dim = formulae.rotate_dimensions(
-            (
-                self.quale_conf.get(
-                    taxonomy.QualiaFamilies.ROTATABLE.value
-                ).get(
-                    taxonomy.QualiaType.BUFFER.value
-                ).size.w,
-                self.quale_conf.get(
-                    taxonomy.QualiaFamilies.ROTATABLE.value
-                ).get(
-                    taxonomy.QualiaType.BUFFER.value
-                ).size.h
-            ),
-            self.quale_conf.get(
-                taxonomy.QualiaFamilies.ROTATABLE.value
-            ).get(
-                taxonomy.QualiaType.BUFFER.value
-            ).definition,
-            self.styles.get(
-                taxonomy.QualiaType.SLOT.value
-            ).stack
+            buffer_dim,
+            buffer_def,
+            slot_stack
+        )
+
+        slot_conf = self.quale_conf.get(
+            taxonomy.QualiaFamilies.STATEFUL.value
+        ).get(
+            taxonomy.QualiaType.SLOT.value
+        ).get(
+            taxonomy.StatefulQualiaTraversal.ENABLED.value
         )
 
         slot_dim = (
-            self.quale_conf.get(
-                taxonomy.QualiaFamilies.STATEFUL.value
+            slot_conf.get(
+                taxonomy.Measurement.SIZE.value
             ).get(
-                taxonomy.QualiaType.SLOT.value
-            ).disabled.size.w,
-            self.quale_conf.get(
-                taxonomy.QualiaFamilies.STATEFUL.value
+                taxonomy.Measurement.WIDTH.value
+            ),
+            slot_conf.get(
+                taxonomy.Measurement.SIZE.value
             ).get(
-                taxonomy.QualiaType.SLOT.value
-            ).disabled.size.h
+                taxonomy.Measurement.HEIGHT.value
+            )
         )
 
         slot_total = self.properties.get(
             taxonomy.QualiaType.SLOT.value
-        ).total
-
-        slot_stack = self.styles.get(
-            taxonomy.QualiaType.SLOT.value
-        ).stack
+        ).get(
+            taxonomy.Property.TOTAL.value
+        )
 
         device_dim = player_device.dimensions
         setattr(
@@ -450,8 +515,8 @@ class ExtrinsicQuale(Quale):
                 buffer_dim,
                 cap_dim,
                 device_dim,
-                alignment,
-                margins,
+                slot_alignment,
+                slot_margins,
                 slot_stack,
             )
         )
@@ -932,8 +997,10 @@ class ExtrinsicQuale(Quale):
         self
     ) -> str:
         if self.styles.get(
-            taxonomy.QualiaType.SLOT.value
-        ).stack == 'horizontal':
+            taxonomy.Style.GENERAL.value
+        ).get(
+            taxonomy.Style.STACK.value
+        ) == taxonomy.Orientation.HORIZONTAL.value:
             return (
                 'left', 
                 'right'
@@ -948,8 +1015,10 @@ class ExtrinsicQuale(Quale):
         self
     ) -> str:
         return self.styles.get(
-            taxonomy.QualiaType.SLOT.value
-        ).stack
+            taxonomy.Style.GENERAL.value
+        ).get(
+            taxonomy.Style.STACK.value
+        )
 
     def get_render_points(
         self, 

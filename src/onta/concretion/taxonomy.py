@@ -191,14 +191,22 @@ class IntentionControl(Enum):
 
 #### LOOK AND FEEL 
 class Style(Enum):
+    GENERAL = "general"
     MARGINS = "margins"
     PADDING = "padding"
     STACK = "stack"
+    ALIGNMENT = "alignment"
 class Theme(Enum):
     INTRINSIC = "intrinsic"
-class StackOrientation(Enum):
+class Orientation(Enum):
     HORIZONTAL = "horizontal"
     VERTICAL = "vertical"
+class Property(Enum):
+    ROWS = "rows"
+    COLUMNS = "columns"
+    BOUNDS = "bounds"
+    TOTAL = "total"
+    DEFINITION = "definition"
 
 #### CONSTANTS    
 class Measurement(Enum):
