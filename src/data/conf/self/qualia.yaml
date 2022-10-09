@@ -14,14 +14,6 @@ apriori:
       a: 175
   styles:
     small:
-      default:
-        padding:
-          w: 0.05
-          h: 0.05
-        margins:
-          w: 0.05
-          h: 0.20
-        stack: vertical
       slot:
         margins:
           w: 0.025
@@ -50,15 +42,23 @@ apriori:
         alignment:
           vertical: bottom
           horizontal: right
-    large:
-      default:
+      bauble:
+        padding:
+          w: 0.05
+          h: 0.05
+        margins:
+          w: 0.05
+          h: 0.05
+        stack: horizontal
+      idea:
         padding:
           w: 0.05
           h: 0.05
         margins:
           w: 0.05
           h: 0.20
-        stack: vertical
+        stack: horizontal
+    large:
       slot:
         margins: 
           w: 0.025
@@ -87,6 +87,23 @@ apriori:
         alignment:
           vertical: bottom
           horizontal: right
+      bauble:
+        padding:
+          w: 0.05
+          h: 0.05
+        margins:
+          w: 0.05
+          h: 0.20
+        stack: horizontal
+      idea:
+        padding:
+          w: 0.05
+          h: 0.05
+        margins:
+          w: 0.05
+          h: 0.20
+        stack: horizontal
+  
   properties:
     slot: 
       total: 4
@@ -115,22 +132,6 @@ qualia:
       size:
         w: 24
         h: 24
-    concept:
-      path: scrolls.png
-      position:
-        x: 163
-        y: 32
-      size:
-        w: 90
-        h: 96
-    conception:
-      path: scrolls.png
-      position:
-        x: 32
-        y: 224
-      size:
-        w: 96
-        h: 96
   rotatable:  
     cap:
       path: slotsheet.png
@@ -195,6 +196,23 @@ qualia:
         size:
           w: 40
           h: 40
+    concept:
+      enabled:
+        path: slotsheet.png
+        position:
+          x: 802
+          y: 431
+        size:
+          w: 44
+          h: 44
+      disabled:
+        path: slotsheet.png
+        position:
+          x: 802
+          y: 481
+        size:
+          w: 44
+          h: 44
   piecewise:
     bag:
       left:
@@ -404,6 +422,7 @@ thoughts:
     - component: bauble
       label: belt
   inventory: null
+  resources: null
   map: 
     - component: display
       label: map

@@ -35,7 +35,7 @@ SYMBOL_THOUGHTS = [
 class IntrinsicQuale(Quale):
     """
     
-    A `IntrinsicQuale` is essentially an in-game menu; it composed of "ideas", i.e. buttons, the player iterates throguh and then executes. These "ideas" become "thoughts", i.e. submenus, when executed. When an "idea" is executed, focus is shifted to the "thought" until the player pops back into the "idea" selection menu.
+    A `IntrinsicQuale` is essentially an in-game menu; it composed of "ideas", i.e. buttons, the player iterates through and then executes. These _Ideas_ become _Thought_\s, i.e. submenus, when executed. When an _Idea_ is executed, focus is shifted to the _Thought_ until the player pops back into the "idea" selection menu by cancelling the active _Thought_.
     """
 
     def __init__(
@@ -60,6 +60,7 @@ class IntrinsicQuale(Quale):
             state_ao
         )
         self._init_ideas(state_ao)
+
 
     def _init_fields(
         self
@@ -110,44 +111,86 @@ class IntrinsicQuale(Quale):
         self, 
         player_device: device.Device
     ) -> None:
-        quale_margins = (
-            self.styles.default.margins.w,
-            self.styles.default.margins.h
+
+        idea_styles = self.styles.get(
+            taxonomy.QualiaType.IDEA.value
         )
-        quale_padding = (
-            self.styles.default.padding.w,
-            self.styles.default.padding.h
+
+        idea_stack = idea_styles.get(
+            taxonomy.Style.STACK.value
+        )
+
+        idea_margins = (
+            idea_styles.get(
+                taxonomy.Style.MARGINS.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            ),
+            idea_styles.get(
+                taxonomy.Style.MARGINS.value
+            ).get(
+                taxonomy.Measurement.HEIGHT.value
+            )
+        )
+        idea_padding = (
+            idea_styles.get(
+                taxonomy.Style.PADDING.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            ),
+            idea_styles.get(
+                taxonomy.Style.PADDING.value
+            ).get(
+                taxonomy.Measurement.HEIGHT.value
+            )
+        )
+
+        idea_piece_conf = self.quale_conf.get(
+            taxonomy.QualiaFamilies.PIECEWISE_STATEFUL.value
+        ).get(
+            taxonomy.QualiaType.IDEA.value
+        ).get(
+            taxonomy.StatefulQualiaTraversal.ENABLED
+        )
+
+        idea_pieces = list(
+            idea_piece_conf.keys()
         )
 
         # NOTE: all idea component pieces have the same dim, so any will do...
         # NOTE: ideas are "thought" buttons
         # [ (left_w, left_h), (middle_w, middle_h), (right_w, right_h) ]
-        dims = [
+        idea_dims = [
             ( 
-                self.quale_conf.piecewise_stateful.idea.enabled.get(piece).size.w, 
-                self.quale_conf.piecewise_stateful.idea.enabled.get(piece).size.h 
+                idea_piece_conf.get(piece).get(
+                    taxonomy.Measurement.SIZE.value
+                ).get(
+                    taxonomy.Measurement.WIDTH.value
+                ), 
+                idea_piece_conf.get(piece).get(
+                    taxonomy.Measurement.SIZE.value
+                ).get(
+                    taxonomy.Measurement.HEIGHT.value
+                )
             ) 
-            for piece in list(
-                self.quale_conf.piecewise_stateful.idea.enabled.keys()
-            )
+            for piece 
+            in idea_pieces
         ]
 
-        num_ideas = len(self.thought_conf)
+        idea_num = len(self.thought_conf)
 
-        num_pieces = len(self.quale_conf.piecewise_stateful.idea.enabled)
+        idea_pieces = len(idea_piece_conf)
 
         device_dim = player_device.dimensions
 
-        stack_style = self.styles.default.stack
-
         self.idea_rendering_points = formulae.idea_coordinates(
-            dims,
-            num_ideas,
-            num_pieces,
+            idea_dims,
+            idea_num,
+            idea_pieces,
+            idea_margins,
+            idea_padding,
+            idea_stack,
             device_dim,
-            stack_style,
-            quale_margins,
-            quale_padding
         )
 
 
@@ -156,7 +199,7 @@ class IntrinsicQuale(Quale):
         player_device: device.Device,
         state_ao: state.State
     ):
-        components_conf = munch.Munch({
+        bauble_conf = munch.Munch({
             taxonomy.QualiaType.BAUBLE.value: 
                 self.quale_conf.get(
                     taxonomy.QualiaFamilies.PIECEWISE_STATEFUL.value
@@ -165,19 +208,13 @@ class IntrinsicQuale(Quale):
                 ),
             taxonomy.QualiaType.CONCEPT.value: 
                 self.quale_conf.get(
-                    taxonomy.QualiaFamilies.SIMPLE.value
+                    taxonomy.QualiaFamilies.STATEFUL.value
                 ).get(
                     taxonomy.QualiaType.CONCEPT.value
-                ),
-            taxonomy.QualiaType.CONCEPTION.value: 
-                self.quale_conf.get(
-                    taxonomy.QualiaFamilies.SIMPLE.value
-                ).get(
-                    taxonomy.QualiaType.CONCEPTION.value
                 )
         }) # TODO: this seems redundant ... ?
 
-        piece_conf = self.quale_conf.get(
+        idea_piece_conf = self.quale_conf.get(
             taxonomy.QualiaFamilies.PIECEWISE_STATEFUL.value
         ).get(
             taxonomy.QualiaType.IDEA.value
@@ -185,12 +222,12 @@ class IntrinsicQuale(Quale):
             taxonomy.StatefulQualiaTraversal.ENABLED.value
         )
 
-        piece_keys = list(
-            piece_conf.keys()
+        idea_piece_keys = list(
+            idea_piece_conf.keys()
         )
 
         full_width = sum(
-            piece_conf.get(
+            idea_piece_conf.get(
                 piece
             ).get(
                 taxonomy.Measurement.SIZE.value
@@ -198,18 +235,20 @@ class IntrinsicQuale(Quale):
                 taxonomy.Measurement.WIDTH.value
             )
             for piece 
-            in piece_keys
+            in idea_piece_keys
         )
 
-        full_height = piece_conf.get(
-            piece_keys[0]
+        full_height = idea_piece_conf.get(
+            idea_piece_keys[0]
         ).get(
             taxonomy.Measurement.SIZE.value
         ).get(
             taxonomy.Measurement.HEIGHT.value
         )
 
-        idea_dim = (
+        idea_reference = (
+            self.idea_rendering_points[0][0],
+            self.idea_rendering_points[0][1],
             full_width, 
             full_height
         )
@@ -228,17 +267,19 @@ class IntrinsicQuale(Quale):
                 # this brings up the question. how much of the data should be in the configuration and how much
                 # should be programmatic logic?
 
+                # TODO: it would be better to decouple baubles from the whole screen by passing in starting position.
+
+                # Then, we can iterate through the thoughts conf, collect all the baubles and create a BaubleThought with all of them, and modularize the whole thing. That way, different kinds of thoughts can be composed together, i.e a SymbolThought could take up three quarters of the screen and a Bauble Thought could take up one quarter. 
                 setattr(
                     self.thoughts, 
                     thought_key,
                     bauble.BaubleThought(
                         thought_key,
                         thought_conf,
-                        components_conf,
+                        bauble_conf,
                         self.styles,
                         self.avatar_conf,
-                        self.idea_rendering_points[0],
-                        idea_dim,
+                        idea_reference,
                         player_device.dimensions,
                         state_ao,
                     )
@@ -262,7 +303,10 @@ class IntrinsicQuale(Quale):
 
         # NOTE: this is what creates `self.thoughts`
         #       `self.thoughts`
-        for i, name in enumerate(list(self.thought_conf.keys())):
+        thought_keys = list(
+            self.thought_conf.keys()
+        )
+        for i, name in enumerate(thought_keys):
             if i == 0:
                 self._activate_idea(name)
                 self.active_idea = i
@@ -284,6 +328,11 @@ class IntrinsicQuale(Quale):
         )
 
 
+    # NOTE: don't really need to keep track of the state of each individual piece, although it makeS rendering easier if the state of piece is maintained in its own data structure. Sometimes a little bit of redundancy is a good thing. 
+    # 
+    # However, the ease of rendering in this case is due to the amount of data the renderer needs to retrieve in order to render everything: render_points(x,y coordinates) frame_map (state frame) and piece_map (frame pieces). Each point in render_points is mapped to an element in frame_map and piece_map. One-to-one mappings are easier in process, but...it might be more efficient to refactor everything here...will need to think on that...
+    # 
+    # TODO: ^^^^ 
     def _activate_idea(
         self, 
         idea_key: str

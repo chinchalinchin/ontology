@@ -1,6 +1,9 @@
 from onta.metaphysics \
     import logger, settings
 
+from onta.concretion \
+    import taxonomy
+    
 from onta.concretion.facticity \
     import gauge
 
@@ -128,6 +131,51 @@ def rotate_dimensions(
     return rotator
 
 
+def bauble_canvas(
+    alignment_reference,
+    device_dim,
+    bauble_height,
+    bauble_widths,
+    bauble_padding,
+    bauble_stack
+):
+    if bauble_stack == taxonomy.StackOrientation.VERTICAL.value:
+        # If vertical, align with bottom left corner of reference.
+        canvas_dim = (
+            alignment_reference[0],
+            device_dim[1]
+        )
+        canvas_start = (
+            bauble_padding[0], 
+            alignment_reference[1]
+        )
+        scroll_num = int(
+            ( canvas_dim[0] - canvas_start[0] )
+            // max(bauble_widths)
+        )
+
+    elif bauble_stack == taxonomy.StackOrientation.HORIZONTAL.value:
+        # If horizontal align with top edge of reference
+        canvas_dim=(
+            device_dim[0],
+            device_dim[1] - alignment_reference[1] - \
+                alignment_reference[2]
+        )
+        canvas_start = (
+            bauble_padding[0], # TODO: add concept start point + concept width here
+            alignment_reference[1] + alignment_reference[2] + \
+                bauble_padding[1]
+        )
+        scroll_num = int(
+            canvas_dim[1] // bauble_height
+        )
+
+    return (
+        canvas_start,
+        scroll_num
+    )
+
+
 def tile_coordinates(
     set_dim: tuple,
     start: tuple,
@@ -205,7 +253,6 @@ def plate_coordinates(
     return coords
 
 
-# only needs called once, so no jit.
 def bag_coordinates(
     piece_sizes: tuple,
     pack_dim: tuple,
@@ -243,8 +290,6 @@ def bag_coordinates(
     return render_points
 
 
-# only needs called once, so no jit.
-# see next notes though
 def belt_coordinates(
     initial_position: tuple,
     piece_sizes: tuple,
@@ -672,12 +717,12 @@ def slot_avatar_coordinates(
 
 def idea_coordinates(
     idea_dims: list,
-    num_ideas: int,
-    num_pieces: int,
+    ideas_num: int,
+    idea_pieces: int,
+    idea_margins: tuple,
+    idea_padding: tuple,
+    idea_stack: str,
     device_dim: tuple,
-    menu_stack: str,
-    menu_margins: tuple,
-    menu_padding: tuple
 ) -> list:
     render_points = list()
     full_width = sum(
@@ -688,35 +733,35 @@ def idea_coordinates(
 
     # idea_rendering_points => len() == len(ideas)*len(pieces)
     # for (0, equipment), (1, inventory), (2, status), ...
-    for i in range(num_ideas):
+    for i in range(ideas_num):
 
         # for (0, left), (1, middle), (2, right)
         # j gives you index for the piece dim in dims
-        for j in range(num_pieces):
+        for j in range(idea_pieces):
 
-            if menu_stack == 'vertical':
+            if idea_stack == taxonomy.StackOrientation.VERTICAL.value:
                 if i == 0 and j == 0:
-                    x = (1 - menu_margins[0]) * device_dim[0] - full_width
-                    y = menu_margins[1] * device_dim[1]
+                    x = (1 - idea_margins[0]) * device_dim[0] - full_width
+                    y = idea_margins[1] * device_dim[1]
                 else:
                     if j == 0:
                         x = render_points[0][0]
                         y = render_points[0][1] + \
-                            ( 1 + menu_padding[1] ) * i * idea_dims[0][1]
+                            ( 1 + idea_padding[1] ) * i * idea_dims[0][1]
                     else:
                         x = render_points[j-1][0] + \
                             idea_dims[j-1][0]
                         y = render_points[j-1][1] + \
-                            ( 1 + menu_padding[1]) * i * idea_dims[j-1][1]
+                            ( 1 + idea_padding[1]) * i * idea_dims[j-1][1]
 
             else: # horizontal
                 if i == 0 and j == 0:
-                    x = menu_margins[0] * device_dim[0]
-                    y = menu_margins[1] * device_dim[1]
+                    x = idea_margins[0] * device_dim[0]
+                    y = idea_margins[1] * device_dim[1]
                 else:
                     if j == 0 :
                         x = render_points[0][0] + \
-                            i * ( full_width + menu_padding[0] )
+                            i * ( full_width + idea_padding[0] )
                         y = render_points[0][1]
                     else:
                         x = render_points[len(render_points)-1][0] + idea_dims[j-1][0]
@@ -732,15 +777,35 @@ def bauble_coordinates(
     bauble_height: int,
     bauble_widths: tuple,
     bauble_margins: tuple,
-    canvas_start: tuple,
+    bauble_padding: tuple,
+    bauble_stack: str,
+    device_dim: tuple,
+    alignment_reference: tuple,
 ):
+    """
+
+    :param alignment_reference: _(x,y,w,h)_ of the _Qualia_ that acts as the reference point to arrange the _Bauble_ coordinates.
+    :type alignment_reference: tuple
+    """
     render_points = []
+
+    canvas_start, scroll_num = bauble_canvas(
+        alignment_reference,
+        device_dim,
+        bauble_height,
+        bauble_widths,
+        bauble_padding,
+        bauble_stack
+    )
+  
+  
+  
     # NOTE:number of bauble rows
     #       -> shifts the y coordinate by row height
     for i in range(bauble_num):
         # NOTE: number of baubles displayed
         #       -> determines starting position of pieces
-        for j in range(bauble_scroll_num):
+        for j in range(scroll_num):
 
             if j ==  0:
                 render_points.append(

@@ -104,3 +104,7 @@ THAT PREVIOUS ONE FIRST
 - immediate:
     1. finish refactor of repo and view
     2. concept and conception coordinates
+
+
+
+- need to change direction of menu traversal depending on stack orientation style.

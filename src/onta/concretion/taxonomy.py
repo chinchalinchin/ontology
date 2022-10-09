@@ -75,7 +75,7 @@ class QualiaFamilies(Enum):
     SIMPLE = 'simple'
     STATEFUL = 'stateful'
 ######## SECOND LEVEL
-    # FUNCTIONAL PLATE FAMILIES 
+######## FUNCTIONAL PLATE FAMILIES 
 class MoveablePlateFamily(Enum):
     MASS = 'mass'
 class StaticPlateFamily(Enum):
@@ -84,12 +84,11 @@ class SwitchPlateFamily(Enum):
     CONTAINER = 'container'
     GATE = 'gate'
     PRESSURE = 'pressure'
-    # DEFINTIONAL QUALIA FAMILIES
+####### DEFINTIONAL QUALIA FAMILIES
 class SimpleQualiaFamily(Enum):
-    CONCEPT = 'concept'
-    CONCEPTION = 'conception'
     WALLET = 'wallet'
 class StatefulQualiaFamily(Enum):
+    CONCEPT = 'concept'
     SLOT = 'slot'
 class RotatableQualiaFamily(Enum):
     BUFFER = 'buffer'

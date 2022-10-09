@@ -187,12 +187,14 @@ def do(
                 # # construct npc state from game world info
             # scripts.apply_scripts(game_world, 'pre_update')
 
+            if display_quale.quale_activated:
+                display_quale.update(game_world)
+
             if not pause_quale.quale_activated and game_input.menu:
                 pause_quale.toggle_quale()
             
             if not pause_quale.quale_activated:
                 game_world.iterate(game_input)
-                display_quale.update(game_world)
 
             else:
                 # TODO: catch result in variable

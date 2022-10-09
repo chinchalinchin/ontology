@@ -908,6 +908,8 @@ class Renderer():
         if in_quale.active_thought:
             activated_thought = in_quale.get_active_thought()
 
+            # TODO: if BaubleThought is to be modularized, then this should be 
+            #           changed to contains(bauble.BaubleThought)
             if isinstance(activated_thought, bauble.BaubleThought):
                 baub_render_pts, avtr_render_pts = \
                     activated_thought.rendering_points(

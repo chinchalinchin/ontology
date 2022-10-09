@@ -696,7 +696,7 @@ class Totality():
                                 )
                             )
 
-                            log.debug( 
+                            log.verbose( 
                                 f"{family_key} {quale_key} {state_key} {piece_key}: size - {buffer.size}, mode - {buffer.mode}", 
                                 'Totality._init_self_assets'
                             )

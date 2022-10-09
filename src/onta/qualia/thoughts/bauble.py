@@ -19,6 +19,18 @@ log = logger.Logger(
 )
 
 class BaubleThought():
+    """ A `BaubleThought` is a traversible menu. It contains rows of "baubles". Each bauble is a collection of slots mapped to a concept. A concept represents a division of player state information. For instance, a "slash" concept maps to a bauble of slots that contain all the weapons a player can equip in the "slash" slot. Each concept has a "conception" map that contains the currently selected slot to its equipment; the "conception" is the piece of equipment currently equipped to the player.
+
+    A bauble row can be visualized as:
+
+        concept  |  conception | bauble[slots]
+    
+    E.g.,
+
+        slash    |   short_sword  |  [short_sword, knife, axe]
+    
+    Represent a row mapped to the "slash" concept with a "shortsword" currently equipped, i.e. "conceptualized", with the array of selections "[short_sword, knife, axe]" representing a traversible array of equipment the player can equip. For example, if the player traverses over the bauble and selects "knife", the "conception" will switch to "knife", and this information will propagate up through the menu, into the game world, where the player will equip the "knife" in-game.
+    """
 
     def __init__(
         self, 
@@ -28,7 +40,6 @@ class BaubleThought():
         styles: munch.Munch, 
         avatar_conf: munch.Munch,
         alignment_reference: tuple,
-        alignment_dim: tuple,
         device_dim: tuple,
         state_ao: state.State
     ) -> None: 
@@ -44,7 +55,7 @@ class BaubleThought():
         :type styles: munch.Munch
         :param avatar_conf: _description_
         :type avatar_conf: munch.Munch
-        :param alignment_reference: _description_
+        :param alignment_reference: The point on the canvas 
         :type alignment_reference: tuple
         :param alignment_dim: _description_
         :type alignment_dim: tuple
@@ -59,7 +70,6 @@ class BaubleThought():
         self.avatar_conf = avatar_conf
         self.styles = styles
         self.alignment_ref = alignment_reference
-        self.alignment_dim = alignment_dim
         self.device_dim = device_dim
 
         self._init_fields()
@@ -121,18 +131,16 @@ class BaubleThought():
 
         log.debug(
             f'Initializing {self.name} thought...', 
-            'Bauble._init_components'
+            'BaubleThought._init_components'
         )
         
         for component in self.components:
-
-            
             if not component:
                 continue
 
             log.debug(
                 f'Initializing {component.label} {component.component}', 
-                'Bauble._init_components'
+                'BaubleThought._init_components'
             )
 
 
@@ -157,6 +165,7 @@ class BaubleThought():
 
         
         if len(self.baubles) > 0:
+            self._calculate_concept_positions()
             self._calculate_bauble_positions()
             self._calculate_bauble_avatar_positions()
             self._calculate_bauble_frame_map()
@@ -170,8 +179,62 @@ class BaubleThought():
     ) -> None:
         pass
 
+    def _calculate_concept_positions(
+        self
+    ) -> None:
+        if self.concept_render_points:
+            return
 
-    # TODO: candidate for cython formulae module
+        log.debug(
+            f'Initialzing {self.name} concept positions',
+            'BaubleThought._calculate_concept_positions'
+        )
+
+        default_styles = self.styles.default
+
+        default_margins = default_styles.get(
+            taxonomy.Style.MARGINS.value
+        )
+        default_padding = default_styles.get(
+            taxonomy.Style.PADDING.value
+        )
+        default_stack = default_styles.get(
+            taxonomy.Style.STACK.value
+        )
+
+        concept_conf = self.components_conf.get(
+            taxonomy.QualiaType.CONCEPT.value
+        ).get(
+            taxonomy.StatefulQualiaTraversal.ENABLED.value
+        )
+
+        concept_dim = (
+            concept_conf.get(
+                taxonomy.Measurement.SIZE.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            ),
+            concept_conf.get(
+                taxonomy.Measurement.SIZE.value
+            ).get(
+                taxonomy.Measurement.HEIGHT.value
+            )
+        )
+
+        num_concepts = len(self.baubles)
+
+    def _calculate_conception_positions(
+        self
+    ) -> None:
+        pass
+
+
+    def _calculate_conception_avatar_position(
+        self
+    ) -> None:
+        pass
+
+
     def _calculate_bauble_positions(
         self,
     ) -> None:
@@ -189,18 +252,20 @@ class BaubleThought():
 
         log.debug(
             f'Initializing {self.name} bauble positions', 
-            '_calculate_bauble_positions'
+            'BaubleThought._calculate_bauble_positions'
         )
 
         # NOTE: Define function-scoped variables
-        default_styles = self.styles.default
-        default_margins = default_styles.get(
+        styles = self.styles.get(
+            taxonomy.QualiaType.BAUBLE.value
+        )
+        margins = styles.get(
             taxonomy.Style.MARGINS.value
         )
-        default_padding = default_styles.get(
+        padding = styles.get(
             taxonomy.Style.PADDING.value
         )
-        default_stack = default_styles.get(
+        stack = styles.get(
             taxonomy.Style.STACK.value
         )
         piece_conf = self.components_conf.get(
@@ -217,7 +282,6 @@ class BaubleThought():
             for piece 
             in piece_conf.values() 
         )
-        bauble_width = sum(bauble_piece_widths)
         # NOTE: here is where the height assumption is made. See note in docstring.
         bauble_height = piece_conf.get(
             taxonomy.QualiaPiece.LEFT.value
@@ -227,70 +291,49 @@ class BaubleThought():
             taxonomy.Measurement.HEIGHT.value
         )
         bauble_padding = (
-            self.device_dim[0] * default_padding.get(
+            self.device_dim[0] * padding.get(
                 taxonomy.Measurement.WIDTH.value
             ),
-            self.device_dim[1] * default_padding.get(
+            self.device_dim[1] * padding.get(
                 taxonomy.Measurement.HEIGHT.value
             )
         )
         bauble_margins = (
-            bauble_width * default_margins.get(
+            self.device_dim[0] * margins.get(
                 taxonomy.Measurement.WIDTH.value
             ),
-            bauble_height * default_margins.get(
+            self.device_dim[1] * margins.get(
                 taxonomy.Measurement.HEIGHT.value
             )
         )
 
         num_baubles = len(self.baubles)
 
-        if default_stack == taxonomy.StackOrientation.VERTICAL.value:
-            canvas_dim = (
-                self.alignment_ref[0],
-                self.device_dim[1]
-            )
-            canvas_start = (
-                bauble_padding[0],
-                self.alignment_ref[1]
-            )
-            self.bauble_scroll_num = int(
-                ( canvas_dim[0] - canvas_start[0] )
-                // max(bauble_piece_widths)
-            )
-
-        elif default_stack == taxonomy.StackOrientation.HORIZONTAL.value:
-            canvas_dim=(
-                self.device_dim[0],
-                self.device_dim[1] - self.alignment_ref[1] - \
-                    self.alignment_dim[1]
-            )
-            canvas_start = (
-                bauble_padding[0],
-                self.alignment_ref[1] + self.alignment_dim[1] + \
-                    bauble_padding[1]
-            )
-            self.bauble_scroll_num = int(
-                canvas_dim[1] // bauble_height
-            )
-
-
         # TODO: need to account for position of concepts and conceptions
 
+        self.bauble_scroll_num = formulae.bauble_canvas(
+            self.alignment_ref,
+            self.device_dim,
+            bauble_height,
+            bauble_padding,
+            stack
+        )[-1]
         self.bauble_render_points = formulae.bauble_coordinates(
             num_baubles,
-            self.bauble_scroll_num,
             bauble_height,
             bauble_piece_widths,
             bauble_margins,
-            canvas_start
+            bauble_padding,
+            self.device_dim,
+            self.alignment_ref,
+
         )
         self.bauble_piece_map = formulae.bauble_pieces(
             num_baubles,
             self.bauble_scroll_num
         )
 
-    # TODO: candidate for cython formulae module
+
     def _calculate_bauble_avatar_positions(
         self
     ) -> None:
@@ -310,6 +353,8 @@ class BaubleThought():
             #       
         bauble_width = self.components_conf.bauble.enabled.left.size.w
 
+
+        # TODO: this loop -> candidate for cython formulae module
 
         for bauble_label, bauble_conf in self.baubles.items():
             row = list(
@@ -449,7 +494,7 @@ class BaubleThought():
         self,
         component_key: str
     ) -> Union[tuple, None]:
-        if component_key == 'bauble':
+        if component_key == taxonomy.QualiaType.BAUBLE.value:
             return (
                 self.bauble_render_points, 
                 self.bauble_avatar_render_points
