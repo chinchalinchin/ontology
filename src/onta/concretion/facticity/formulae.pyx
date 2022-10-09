@@ -132,12 +132,12 @@ def rotate_dimensions(
 
 
 def bauble_canvas(
-    alignment_reference,
-    device_dim,
     bauble_height,
     bauble_widths,
     bauble_padding,
-    bauble_stack
+    bauble_stack,
+    alignment_reference,
+    device_dim,
 ):
     if bauble_stack == taxonomy.StackOrientation.VERTICAL.value:
         # If vertical, align with bottom left corner of reference.
@@ -169,6 +169,9 @@ def bauble_canvas(
         scroll_num = int(
             canvas_dim[1] // bauble_height
         )
+    else:
+        canvas_start = None
+        scroll_num = None
 
     return (
         canvas_start,
@@ -773,7 +776,6 @@ def idea_coordinates(
 
 def bauble_coordinates(
     bauble_num: int,
-    bauble_scroll_num: int,
     bauble_height: int,
     bauble_widths: tuple,
     bauble_margins: tuple,
@@ -790,15 +792,19 @@ def bauble_coordinates(
     render_points = []
 
     canvas_start, scroll_num = bauble_canvas(
-        alignment_reference,
-        device_dim,
         bauble_height,
         bauble_widths,
         bauble_padding,
-        bauble_stack
+        bauble_stack,
+        alignment_reference,
+        device_dim,
     )
-  
-  
+
+    if canvas_start is None:
+        raise ValueError('Canvas start coordinates cannot be calculated')
+    
+    if scroll_num is None:
+        raise ValueError('Number of scrollable baubles cannot be calculated')
   
     # NOTE:number of bauble rows
     #       -> shifts the y coordinate by row height

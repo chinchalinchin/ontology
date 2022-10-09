@@ -132,6 +132,7 @@ class IntrinsicQuale(Quale):
                 taxonomy.Measurement.HEIGHT.value
             )
         )
+
         idea_padding = (
             idea_styles.get(
                 taxonomy.Style.PADDING.value
@@ -144,13 +145,13 @@ class IntrinsicQuale(Quale):
                 taxonomy.Measurement.HEIGHT.value
             )
         )
-
+        
         idea_piece_conf = self.quale_conf.get(
             taxonomy.QualiaFamilies.PIECEWISE_STATEFUL.value
         ).get(
             taxonomy.QualiaType.IDEA.value
         ).get(
-            taxonomy.StatefulQualiaTraversal.ENABLED
+            taxonomy.StatefulQualiaTraversal.ENABLED.value
         )
 
         idea_pieces = list(

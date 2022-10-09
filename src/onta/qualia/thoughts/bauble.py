@@ -86,15 +86,20 @@ class BaubleThought():
 
         .. note::
             ```python
+            # E.g., If self.name == 'armory'
             self.baubles = {
                 'slash': 'slash_avatar_key',
                 'shoot': 'shoot_avatar_key',
                 'thrust': 'thrust_avatar_key',
                 'cast': 'cast_avatar_key'
             }
+
             ```
         """
+        self.selected_row = 0
+
         self.baubles = munch.Munch({})
+
         self.bauble_render_points = []
         self.bauble_avatar_render_points = []
         self.bauble_frame_map = []
@@ -102,14 +107,12 @@ class BaubleThought():
         self.bauble_avatar_map = []
         self.bauble_scroll_num = None
 
-        self.selected_row = 0
-
-        self.concepts = munch.Munch({})
         self.concept_render_points = []
 
-
-        self.conceptions = munch.Munch({})
         self.conception_render_points = []
+        self.conception_frame_map = []
+        # NOTE: can get conception avatars through `self.baubles`
+        self.conception_avatar_map = []
 
 
     def _init_components(
@@ -165,7 +168,7 @@ class BaubleThought():
 
         
         if len(self.baubles) > 0:
-            self._calculate_concept_positions()
+            self._calculate_conceptual_positions()
             self._calculate_bauble_positions()
             self._calculate_bauble_avatar_positions()
             self._calculate_bauble_frame_map()
@@ -179,26 +182,28 @@ class BaubleThought():
     ) -> None:
         pass
 
-    def _calculate_concept_positions(
+    def _calculate_conceptual_positions(
         self
     ) -> None:
         if self.concept_render_points:
             return
 
         log.debug(
-            f'Initialzing {self.name} concept positions',
-            'BaubleThought._calculate_concept_positions'
+            f'Initialzing {self.name} concept and conception positions',
+            'BaubleThought._calculate_conceptual_positions'
         )
 
-        default_styles = self.styles.default
+        concept_styles = self.styles.get(
+            taxonomy.QualiaType.CONCEPT.value
+        )
 
-        default_margins = default_styles.get(
+        concept_margins = concept_styles.get(
             taxonomy.Style.MARGINS.value
         )
-        default_padding = default_styles.get(
+        concept_padding = concept_styles.get(
             taxonomy.Style.PADDING.value
         )
-        default_stack = default_styles.get(
+        concept_stack = concept_styles.get(
             taxonomy.Style.STACK.value
         )
 
@@ -221,15 +226,10 @@ class BaubleThought():
             )
         )
 
-        num_concepts = len(self.baubles)
-
-    def _calculate_conception_positions(
-        self
-    ) -> None:
-        pass
+        concept_num = len(self.baubles)
 
 
-    def _calculate_conception_avatar_position(
+    def _calculate_concept_avatar_position(
         self
     ) -> None:
         pass
@@ -259,16 +259,16 @@ class BaubleThought():
         styles = self.styles.get(
             taxonomy.QualiaType.BAUBLE.value
         )
-        margins = styles.get(
+        raw_margins = styles.get(
             taxonomy.Style.MARGINS.value
         )
-        padding = styles.get(
+        raw_padding = styles.get(
             taxonomy.Style.PADDING.value
         )
-        stack = styles.get(
+        bauble_stack = styles.get(
             taxonomy.Style.STACK.value
         )
-        piece_conf = self.components_conf.get(
+        bauble_conf = self.components_conf.get(
             taxonomy.QualiaType.BAUBLE.value
         ).get(
             taxonomy.StatefulQualiaTraversal.ENABLED.value
@@ -280,10 +280,10 @@ class BaubleThought():
                 taxonomy.Measurement.WIDTH.value
             )
             for piece 
-            in piece_conf.values() 
+            in bauble_conf.values() 
         )
         # NOTE: here is where the height assumption is made. See note in docstring.
-        bauble_height = piece_conf.get(
+        bauble_height = bauble_conf.get(
             taxonomy.QualiaPiece.LEFT.value
         ).get(
             taxonomy.Measurement.SIZE.value
@@ -291,45 +291,49 @@ class BaubleThought():
             taxonomy.Measurement.HEIGHT.value
         )
         bauble_padding = (
-            self.device_dim[0] * padding.get(
+            self.device_dim[0] * raw_padding.get(
                 taxonomy.Measurement.WIDTH.value
             ),
-            self.device_dim[1] * padding.get(
+            self.device_dim[1] * raw_padding.get(
                 taxonomy.Measurement.HEIGHT.value
             )
         )
         bauble_margins = (
-            self.device_dim[0] * margins.get(
+            self.device_dim[0] * raw_margins.get(
                 taxonomy.Measurement.WIDTH.value
             ),
-            self.device_dim[1] * margins.get(
+            self.device_dim[1] * raw_margins.get(
                 taxonomy.Measurement.HEIGHT.value
             )
         )
 
-        num_baubles = len(self.baubles)
+        bauble_num = len(self.baubles)
 
         # TODO: need to account for position of concepts and conceptions
 
+        # NOTE: there is a bit of redundancy here, sice bauble_coordinates calls bauble_canvas. It might make sense to subsume the piece map into the canvas method...?
         self.bauble_scroll_num = formulae.bauble_canvas(
+            bauble_height,
+            bauble_piece_widths,
+            bauble_padding,
+            bauble_stack,
             self.alignment_ref,
             self.device_dim,
-            bauble_height,
-            bauble_padding,
-            stack
         )[-1]
+
         self.bauble_render_points = formulae.bauble_coordinates(
-            num_baubles,
+            bauble_num,
             bauble_height,
             bauble_piece_widths,
             bauble_margins,
             bauble_padding,
+            bauble_stack,
             self.device_dim,
             self.alignment_ref,
-
         )
+
         self.bauble_piece_map = formulae.bauble_pieces(
-            num_baubles,
+            bauble_num,
             self.bauble_scroll_num
         )
 
@@ -420,8 +424,6 @@ class BaubleThought():
             while self.bauble_scroll_num > added:
                 self.bauble_avatar_map.append(None)
                 added += 1
-
-            # TODO: will need the current world state to update grab player's capital
  
 
     def _calculate_bauble_frame_map(
@@ -435,16 +437,22 @@ class BaubleThought():
             for avatar_key in bauble_conf.selectable:
                 added += 1
                 if avatar_key == selected:
-                    self.bauble_frame_map.append('active')
+                    self.bauble_frame_map.append(
+                        taxonomy.StatefulQualiaTraversal.ACTIVE.value
+                    )
                     continue
 
-                self.bauble_frame_map.append('enabled')
+                self.bauble_frame_map.append(
+                    taxonomy.StatefulQualiaTraversal.ENABLED.value
+                )
 
                 if added == self.bauble_scroll_num:
                     break
 
             while self.bauble_scroll_num > added:
-                self.bauble_frame_map.append('disabled')
+                self.bauble_frame_map.append(
+                    taxonomy.StatefulQualiaTraversal.DISABLED.value
+                )
                 added += 1
 
 

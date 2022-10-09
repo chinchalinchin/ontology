@@ -58,6 +58,14 @@ apriori:
           w: 0.05
           h: 0.20
         stack: horizontal
+      concept:
+        padding:
+          w: 0.05
+          h: 0.05
+        margins:
+          w: 0.05
+          h: 0.20
+        stack: horizontal
     large:
       slot:
         margins: 
@@ -103,7 +111,14 @@ apriori:
           w: 0.05
           h: 0.20
         stack: horizontal
-  
+      concept:
+        padding:
+          w: 0.05
+          h: 0.05
+        margins:
+          w: 0.05
+          h: 0.20
+        stack: horizontal
   properties:
     slot: 
       total: 4
