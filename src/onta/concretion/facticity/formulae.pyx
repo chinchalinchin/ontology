@@ -167,7 +167,7 @@ def bauble_canvas(
             device_dim[1]
         )
         canvas_start = (
-            bauble_margins[0], 
+            bauble_margins[0] * device_dim[0], 
             alignment_reference[1]
         )
         scroll_num = int(
@@ -178,9 +178,9 @@ def bauble_canvas(
     elif bauble_stack == taxonomy.Orientation.HORIZONTAL.value:
         # If horizontal align with top edge of reference
         canvas_start = (
-            bauble_margins[0], # TODO: add concept start point + concept width here
+            bauble_margins[0] * device_dim[0], # TODO: add concept start point + concept width here
             alignment_reference[1] + alignment_reference[3] + \
-                bauble_margins[1]
+                bauble_margins[1] * device_dim[1]
         )
         canvas_dim=(
             device_dim[0],
@@ -822,7 +822,7 @@ def idea_coordinates(
 def bauble_coordinates(
     bauble_num: int,
     bauble_height: int,
-    bauble_widths: tuple,
+    bauble_piece_widths: tuple,
     bauble_margins: tuple,
     bauble_padding: tuple,
     bauble_stack: str,
@@ -838,7 +838,7 @@ def bauble_coordinates(
 
     canvas_start, scroll_num = bauble_canvas(
         bauble_height,
-        bauble_widths,
+        bauble_piece_widths,
         bauble_margins,
         bauble_stack,
         alignment_reference,
@@ -862,7 +862,7 @@ def bauble_coordinates(
                 render_points.append(
                     (
                         canvas_start[0],
-                        canvas_start[1]+ i * bauble_height *(
+                        canvas_start[1]+ i * bauble_height * (
                             1 + bauble_padding[1]
                         )
                     )
@@ -873,9 +873,9 @@ def bauble_coordinates(
             #       i.e. only need to accumulate piece width
 
             if j == 1: # add left piece
-                piece_width = bauble_widths[0]
+                piece_width = bauble_piece_widths[0]
             else: # add middle piece
-                piece_width = bauble_widths[1]
+                piece_width = bauble_piece_widths[1]
             # don't add right piece width because nothing 
             # is rendered after that
 

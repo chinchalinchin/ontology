@@ -269,11 +269,29 @@ class BaubleThought():
         bauble_styles = self.styles.get(
             taxonomy.QualiaType.BAUBLE.value
         )
-        raw_margins = bauble_styles.get(
-            taxonomy.Style.MARGINS.value
+        bauble_margins = (
+            bauble_styles.get(
+                taxonomy.Style.PADDING.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            ),
+            bauble_styles.get(
+                taxonomy.Style.PADDING.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            )
         )
-        raw_padding = bauble_styles.get(
-            taxonomy.Style.PADDING.value
+        bauble_padding = (
+            bauble_styles.get(
+                taxonomy.Style.PADDING.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            ),
+            bauble_styles.get(
+                taxonomy.Style.PADDING.value
+            ).get(
+                taxonomy.Measurement.WIDTH.value
+            )
         )
         bauble_conf = self.components_conf.get(
             taxonomy.QualiaType.BAUBLE.value
@@ -296,22 +314,6 @@ class BaubleThought():
             taxonomy.Measurement.SIZE.value
         ).get(
             taxonomy.Measurement.HEIGHT.value
-        )
-        bauble_padding = (
-            self.device_dim[0] * raw_padding.get(
-                taxonomy.Measurement.WIDTH.value
-            ),
-            self.device_dim[1] * raw_padding.get(
-                taxonomy.Measurement.HEIGHT.value
-            )
-        )
-        bauble_margins = (
-            self.device_dim[0] * raw_margins.get(
-                taxonomy.Measurement.WIDTH.value
-            ),
-            self.device_dim[1] * raw_margins.get(
-                taxonomy.Measurement.HEIGHT.value
-            )
         )
 
         bauble_num = len(self.baubles)
