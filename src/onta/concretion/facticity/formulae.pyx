@@ -187,7 +187,7 @@ def bauble_canvas(
             device_dim[1] - canvas_start[1]
         )
         scroll_num = int(
-            canvas_dim[1] // bauble_height
+            canvas_dim[1] // max(bauble_piece_widths)
         )
     else:
         allowable = [
@@ -845,6 +845,11 @@ def bauble_coordinates(
         device_dim,
     )
 
+    if bauble_stack == taxonomy.Orientation.HORIZONTAL.value:
+        full_piece_width = sum(bauble_piece_widths)
+        row_width = full_piece_width * scroll_num
+        shift = row_width 
+
     if canvas_start is None:
         raise ValueError('Canvas start coordinates cannot be calculated')
     
@@ -859,6 +864,10 @@ def bauble_coordinates(
         for j in range(scroll_num):
 
             if j ==  0:
+                shift = 0
+                if bauble_stack == taxonomy.Orientation.HORIZONTAL.value:
+                    shift 
+                
                 render_points.append(
                     (
                         canvas_start[0],
@@ -897,12 +906,18 @@ def bauble_pieces(
     for i in range(bauble_num):
         for j in range(bauble_scroll_num):
             if j == 0:
-                piece_map.append('left')
+                piece_map.append(
+                    taxonomy.Piece.LEFT.value
+                )
                 continue
 
             if j != bauble_scroll_num - 1:
-                piece_map.append('middle')
+                piece_map.append(
+                    taxonomy.Piece.MIDDLE.value
+                )
                 continue
 
-            piece_map.append('right')
+            piece_map.append(
+                taxonomy.Piece.RIGHT.value
+            )
     return piece_map

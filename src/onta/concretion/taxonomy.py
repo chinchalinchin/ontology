@@ -207,6 +207,10 @@ class Property(Enum):
     BOUNDS = "bounds"
     TOTAL = "total"
     DEFINITION = "definition"
+class Piece(Enum):
+    LEFT = "left"
+    MIDDLE = "middle"
+    RIGHT = "right"
 
 #### CONSTANTS    
 class Measurement(Enum):

@@ -279,7 +279,7 @@ class IntrinsicQuale(Quale):
                         bauble_conf,
                         self.styles,
                         self.avatar_conf,
-                        idea_reference,
+                        idea_reference, # this variable implicitly contains layout information since the bauble coordinate methods use it to calculate the canvas size. if the aforementioned is to happen, this will need to be rethought...
                         player_device.dimensions,
                         state_ao,
                     )
