@@ -182,6 +182,7 @@ class BaubleThought():
     ) -> None:
         pass
 
+
     def _calculate_conceptual_positions(
         self
     ) -> None:
@@ -334,8 +335,8 @@ class BaubleThought():
             bauble_margins,
             bauble_padding,
             bauble_stack,
-            self.device_dim,
             self.alignment_ref,
+            self.device_dim,
         )
 
         self.bauble_piece_map = formulae.bauble_pieces(

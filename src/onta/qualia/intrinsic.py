@@ -111,7 +111,11 @@ class IntrinsicQuale(Quale):
         self, 
         player_device: device.Device
     ) -> None:
+        """_summary_
 
+        :param player_device: _description_
+        :type player_device: device.Device
+        """
         idea_styles = self.styles.get(
             taxonomy.QualiaType.IDEA.value
         )

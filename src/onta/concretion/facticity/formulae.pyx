@@ -1,3 +1,6 @@
+from typing \
+    import Union, Tuple
+
 from onta.metaphysics \
     import logger, settings
 
@@ -132,13 +135,31 @@ def rotate_dimensions(
 
 
 def bauble_canvas(
-    bauble_height,
-    bauble_widths,
-    bauble_padding,
-    bauble_stack,
-    alignment_reference,
-    device_dim,
-):
+    bauble_height: float,
+    bauble_piece_widths: tuple,
+    bauble_margins: tuple,
+    bauble_stack: str,
+    alignment_reference: tuple,
+    device_dim: tuple,
+) -> Tuple[Tuple[float, float], int]:
+    """
+    Calculates the on-screen starting position of the canvas on which the _Baubles_ will be rendered, and calculates the number of _Baubles_ that can be displayed in a row.
+
+    :param bauble_height: Height of a bauble.
+    :type bauble_height: float 
+    :param bauble_piece_widths: Ordered tuple of bauble piece widths, i.e. the first element of the tuple correspodns to the width of the left piece, the second to the middle, the third to the right. 
+    :type bauble_piece_widths: tuple
+    :param bauble_margins: _(w,h)_ of margins style.
+    :type bauble_margins: tuple
+    :param bauble_stack: Orientation of the overall view, relative to which the _Baubles_ must be oriented. Values statically enumerated through `onta.concretion.Orientation.__members__`.
+    :type bauble_stack: str
+    :param alignment_reference: _(x,y,w,h)_ of the left-most idea _Qualia_.
+    :type alignment_reference: tuple
+    :param device_dim: _(w,h)_ of the screen.
+    :type device_dim: tuple
+
+    :raises ValueError: If the bauble_stack
+    """
     if bauble_stack == taxonomy.Orientation.VERTICAL.value:
         # If vertical, align with bottom left corner of reference.
         canvas_dim = (
@@ -146,20 +167,20 @@ def bauble_canvas(
             device_dim[1]
         )
         canvas_start = (
-            bauble_padding[0], 
+            bauble_margins[0], 
             alignment_reference[1]
         )
         scroll_num = int(
             ( canvas_dim[0] - canvas_start[0] )
-            // max(bauble_widths)
+            // max(bauble_piece_widths)
         )
 
     elif bauble_stack == taxonomy.Orientation.HORIZONTAL.value:
         # If horizontal align with top edge of reference
         canvas_start = (
-            bauble_padding[0], # TODO: add concept start point + concept width here
-            alignment_reference[1] + alignment_reference[2] + \
-                bauble_padding[1]
+            bauble_margins[0], # TODO: add concept start point + concept width here
+            alignment_reference[1] + alignment_reference[3] + \
+                bauble_margins[1]
         )
         canvas_dim=(
             device_dim[0],
@@ -169,8 +190,12 @@ def bauble_canvas(
             canvas_dim[1] // bauble_height
         )
     else:
-        canvas_start = None
-        scroll_num = None
+        allowable = [
+            e.value 
+            for e
+            in taxonomy.Orientation.__members__.values()
+        ]
+        raise ValueError(f'Bauble stack is not set to allowable values: {allowable}')
 
     return (
         canvas_start,
@@ -743,33 +768,54 @@ def idea_coordinates(
 
             if idea_stack == taxonomy.Orientation.VERTICAL.value:
                 if i == 0 and j == 0:
-                    x = (1 - idea_margins[0]) * device_dim[0] - full_width
-                    y = idea_margins[1] * device_dim[1]
+                    # NOTE: use margins to calculate first position
+                    coord = (
+                        (1 - idea_margins[0]) * device_dim[0] - full_width,
+                        idea_margins[1] * device_dim[1]
+                    )
                 else:
+                    # NOTE: ...and then switch to padding
                     if j == 0:
-                        x = render_points[0][0]
-                        y = render_points[0][1] + \
-                            ( 1 + idea_padding[1] ) * i * idea_dims[0][1]
+                        coord = (
+                            render_points[0][0],
+                            render_points[0][1] + \
+                                ( 1 + idea_padding[1] ) * i * idea_dims[0][1]
+                        )
                     else:
-                        x = render_points[j-1][0] + \
-                            idea_dims[j-1][0]
-                        y = render_points[j-1][1] + \
+                        coord = (
+                            render_points[j-1][0] + idea_dims[j-1][0],
+                            render_points[j-1][1] + \
                             ( 1 + idea_padding[1]) * i * idea_dims[j-1][1]
+                        )
 
-            else: # horizontal
+            elif idea_stack == taxonomy.Orientation.HORIZONTAL.value:
                 if i == 0 and j == 0:
-                    x = idea_margins[0] * device_dim[0]
-                    y = idea_margins[1] * device_dim[1]
+                    coord = (
+                        idea_margins[0] * device_dim[0],
+                        idea_margins[1] * device_dim[1]
+                    )
                 else:
                     if j == 0 :
-                        x = render_points[0][0] + \
-                            i * ( full_width + idea_padding[0] )
-                        y = render_points[0][1]
+                        coord = (
+                            render_points[0][0] + \
+                                ( 1 + idea_padding[0] ) * i * full_width,
+                            render_points[0][1]
+                        )
                     else:
-                        x = render_points[len(render_points)-1][0] + idea_dims[j-1][0]
-                        y = render_points[j-1][1]
+                        coord = (
+                            render_points[len(render_points)-1][0] + \
+                                idea_dims[j-1][0],
+                            render_points[j-1][1] 
+                        )
+            else:
+                allowable = [
+                    e.value
+                    for e
+                    in taxonomy.Orientation.__members__.values()
+                ]
+                raise ValueError(f'Stack orientation not in allowable values: {allowable}')
         
-            render_points.append((x,y))
+            render_points.append(coord)
     return render_points
 
 
@@ -780,8 +826,8 @@ def bauble_coordinates(
     bauble_margins: tuple,
     bauble_padding: tuple,
     bauble_stack: str,
-    device_dim: tuple,
     alignment_reference: tuple,
+    device_dim: tuple,
 ):
     """
 
@@ -793,7 +839,7 @@ def bauble_coordinates(
     canvas_start, scroll_num = bauble_canvas(
         bauble_height,
         bauble_widths,
-        bauble_padding,
+        bauble_margins,
         bauble_stack,
         alignment_reference,
         device_dim,
@@ -816,8 +862,8 @@ def bauble_coordinates(
                 render_points.append(
                     (
                         canvas_start[0],
-                        canvas_start[1]+ i * (
-                            bauble_height + bauble_margins[1]
+                        canvas_start[1]+ i * bauble_height *(
+                            1 + bauble_padding[1]
                         )
                     )
                 )
