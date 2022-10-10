@@ -322,7 +322,7 @@ class BaubleThought():
         self.bauble_scroll_num = formulae.bauble_canvas(
             bauble_height,
             bauble_piece_widths,
-            bauble_padding,
+            bauble_margins,
             bauble_stack,
             self.alignment_ref,
             self.device_dim,

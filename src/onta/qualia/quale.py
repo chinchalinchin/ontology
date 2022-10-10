@@ -1,7 +1,14 @@
-from onta.actuality import conf
-from onta.metaphysics import device, settings
-from onta.qualia import apriori
+from onta.actuality \
+    import conf
+from onta.metaphysics \
+    import device, logger, settings
+from onta.qualia \
+    import apriori
 
+log = logger.Logger(
+    'onta.qualia.quale', 
+    settings.LOG_LEVEL
+)
 
 class Quale():
     
@@ -67,3 +74,7 @@ class Quale():
         self.theme = configure.apriori.theme
         self.avatar_conf = config.load_avatar_configuration()
 
+        log.debug(
+            f'Intiailizing quales with {self.media_size} media size...', 
+            'Quale.__init__'
+        )

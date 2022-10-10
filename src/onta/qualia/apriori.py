@@ -18,7 +18,7 @@ def find_media_size(
     :rtype: str
     """
     for i, break_point in enumerate(breakpoints):
-        if device_dim[0] < break_point[0] and \
+        if device_dim[0] < break_point[0] or \
             device_dim[1] < break_point[1]:
             return sizes[i]
     return sizes[len(sizes)-1]

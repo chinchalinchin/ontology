@@ -10,8 +10,6 @@ from onta.concretion.facticity \
     import formulae
 from onta.metaphysics \
     import device, logger, settings
-from onta.qualia \
-    import apriori
 from onta.qualia.quale \
     import Quale
 from onta.qualia.thoughts \
@@ -49,11 +47,6 @@ class IntrinsicQuale(Quale):
         )
         state_ao = state.State(ontology_path)
         self._init_fields()
-        self.media_size = apriori.find_media_size(
-            player_device.dimensions, 
-            self.sizes, 
-            self.breakpoints
-        )
         self._init_idea_positions(player_device)
         self._init_thoughts(
             player_device,
