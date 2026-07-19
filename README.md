@@ -17,4 +17,5 @@ python setup.py build_ext --inplace
 
 ## References
 
+- [Cython](https://pypi.org/project/Cython/)
 - [SDL2](https://wiki.libsdl.org/SDL2/FrontPage)

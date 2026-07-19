@@ -1,12 +1,17 @@
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 
-# Define the C extension
+# Homebrew paths for both Apple Silicon (/opt/homebrew) and Intel (/usr/local)
+include_dirs = ["/opt/homebrew/include", "/usr/local/include"]
+library_dirs = ["/opt/homebrew/lib", "/usr/local/lib"]
+
 ext_modules = [
     Extension(
-        "sdl2_renderer",              # Name of the resulting Python module
-        sources=["libs/sdl2.pyx"],# Your Cython source file
-        libraries=["SDL2", "SDL2_image"], # The C libraries to link against
+        "sdl2_renderer",
+        sources=["libs/sdl2.pyx"],
+        libraries=["SDL2", "SDL2_image"],
+        include_dirs=include_dirs,
+        library_dirs=library_dirs,
     )
 ]
 
