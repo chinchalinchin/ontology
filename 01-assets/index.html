@@ -707,21 +707,24 @@
 <p>IDs are used to map assets to images loaded into the <a href="../00-overview/#registry">registry</a>, to ensure each asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical asset, but not in-game objects.</p>
 <p><strong>Properties vs. State</strong></p>
 <p><em>Properties</em> are static and never changed by ingame mechanics. Properties determine the immutable characteristics of an ingame asset, e.g. dimensions and hitboxes.</p>
-<p><em>State</em> is dynamic and is changed by ingame mechanics. State determines the mutable characteristics of an ingame asset, e.g. the current position of an ingame asset. All assets have a <em>position</em> and a <em>layer</em>. Position is given as a Cartesian coordinates, whereas Layer is a categorical variable ranging from 1 to 10. </p>
+<p><em>State</em> is dynamic and is changed by ingame mechanics. State determines the mutable characteristics of an ingame asset, e.g. the current position of an ingame asset. All assets have a <em>position</em>, <em>dimension</em> and a <em>layer</em>. Position and dimension are given as a Cartesian coordinates, whereas Layer is a categorical variable ranging from 1 to 10. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The concept of a Layer is defined more explicitly in <a href="../02-app/">Application documentation</a>. It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player entering Doors.</p>
 </div>
 <p><strong>Asset Hierarchy</strong></p>
-<p>Assets are divided into <em>mutable</em> and <em>immutable</em> categories. <em>Immutable</em> assets are never altered by the game loop and always have the same state. <em>Mutable</em> objects change their state based on ingame events.</p>
+<p>Assets are divided along two axes.</p>
+<p>First, assets are divided into <em>mutable</em> and <em>immutable</em> categories. <em>Immutable</em> assets are never altered by the game loop and always have the same state. <em>Mutable</em> objects change their state based on ingame events.</p>
+<p>Second, assets are divided in <em>animate</em> and <em>inanimate</em> categories. <em>Inanimate</em> assets either have a single frame or a pair of frames (switches). <em>Animate</em> objects possess rows of frames for different animations.</p>
+<p>All <em>immutable</em> objects are <em>inanimate</em>, but not all <em>mutable</em> objects are <em>animate</em>. </p>
 <p>In order of ascending complexity, where complexity is defined as the number of dimensions in the state, the game asset hierarchy is given below,</p>
 <ul>
-<li>(<em>Immutable</em>) Tile: <ul>
+<li>(<em>Immutable</em>, <em>Inanimate</em>) Tile: <ul>
 <li>Regular: State = Position, Layer</li>
 <li>Irregular: State = Position, Layer</li>
 </ul>
 </li>
-<li>(<em>Mutable</em>) Objects:<ul>
+<li>(<em>Mutable</em>, <em>Inanimate</em>) Objects:<ul>
 <li>Crate: State = Position, Layer</li>
 <li>Door: State = Position, Layer, OutLayer</li>
 <li>Chest: State = Position, Layer, Switch, Content</li>
@@ -729,7 +732,7 @@
 <li>Plate: State = Position, Layer, Switch, Key</li>
 </ul>
 </li>
-<li>(<em>Mutable</em>) Sheets:<ul>
+<li>(<em>Mutable</em>, <em>Animate</em>) Sheets:<ul>
 <li>Pixie: State = Postion, Layer, Frame</li>
 <li>Nymph: State = Position, Layer, Frame, Direction</li>
 <li>Sprite: State = Position, Layer, Frame, Direction, Action</li>

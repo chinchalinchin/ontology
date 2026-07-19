@@ -420,10 +420,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ontologyappworldview" class="md-nav__link">
+  <a href="#class-ontologyappworldviewview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ontology.app.world.view
+        Class: ontology.app.world.view.View
       
     </span>
   </a>
@@ -582,10 +582,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#ontologyappworldview" class="md-nav__link">
+  <a href="#class-ontologyappworldviewview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        ontology.app.world.view
+        Class: ontology.app.world.view.View
       
     </span>
   </a>
@@ -690,14 +690,18 @@
     <span class="n">view</span> <span class="p">:</span> <span class="n">View</span>
     <span class="n">player</span> <span class="p">:</span> <span class="n">Player</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span> <span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
         <span class="c1"># Initialize mutators</span>
         <span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">paused</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># Initialize engine components</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="n">Player</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">view</span> <span class="o">=</span> <span class="n">View</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">board</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">views</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">View</span><span class="p">(</span><span class="n">screen</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">pieces</span><span class="o">.</span><span class="n">immutable</span><span class="p">[</span><span class="n">layer</span><span class="p">])</span>
+            <span class="k">for</span> <span class="n">layer</span> 
+            <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">layers</span>
+        <span class="p">]</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">loop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">while</span> <span class="n">ingame</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
@@ -705,29 +709,73 @@
             <span class="n">control</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
             <span class="c1"># 2. Update Board based on input</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">control</span><span class="p">)</span>
-            <span class="c1"># 3. Gather up Pieces</span>
-            <span class="n">pieces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">pieces</span>
-            <span class="c1"># 4. Draw Pieces on Board</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">pieces</span><span class="p">)</span>
+            <span class="c1"># 3. Determine current layer</span>
+            <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">layer</span>
+            <span class="c1"># 4. Gather up pieces</span>
+            <span class="n">pieces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span><span class="o">.</span><span class="n">mutable</span>
+            <span class="c1"># 4. Draw pieces on Board</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">views</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">pieces</span><span class="p">)</span>
 </code></pre></div>
-<h3 id="ontologyappworldview">ontology.app.world.view</h3>
+<h3 id="class-ontologyappworldviewview">Class: ontology.app.world.view.View</h3>
 <p>TODO</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">View</span><span class="p">:</span>
 
-    <span class="c1"># TODO: determine what datatype to use</span>
-    <span class="n">canvas</span> <span class="p">:</span> <span class="s2">&quot;?&quot;</span>
+    <span class="c1"># Static image assembled from immutable assets</span>
+    <span class="n">canvas</span><span class="p">:</span> <span class="s2">&quot;TODO: Data Type?&quot;</span>
+    <span class="c1"># Buffer to hold copy of canvas for rendering</span>
+    <span class="n">buffer</span><span class="p">:</span> <span class="s2">&quot;TODO: Data Type?&quot;</span>
+    <span class="c1"># Screen size</span>
+    <span class="n">screen</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+        <span class="n">screen</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> 
+        <span class="n">immutable</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">screen</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="p">(</span><span class="n">immutable</span><span class="p">)</span>
         <span class="k">return</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">__render</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># internal method for render</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_onscreen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+        <span class="n">pov</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> 
+        <span class="n">pos</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> 
+        <span class="n">dim</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="c1"># calculate result</span>
+        <span class="k">return</span> <span class="n">result</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">draw_sheet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sheets</span> <span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Sheet</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">sheet</span> <span class="ow">in</span> <span class="n">sheets</span><span class="p">:</span>
-            <span class="n">position</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-            <span class="n">canvas</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
-        <span class="k">return</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">canvas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+        <span class="n">assets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TODO: Data Type?&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render and stack immutable assets onto static canvas.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">asset</span> <span class="ow">in</span> <span class="n">assets</span><span class="p">:</span>
+            <span class="n">position</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="n">asset</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+        <span class="n">assets</span> <span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">],</span> 
+        <span class="n">pov</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;TODO: Data Type?&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Render mutable assets onto the immutable canvas.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 1. Copy static canvas into new buffer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># 2. Render all onscreen assets</span>
+        <span class="k">for</span> <span class="n">asset</span> <span class="ow">in</span> <span class="n">assets</span><span class="p">:</span>
+            <span class="n">position</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="n">asset</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_onscreen</span><span class="p">(</span><span class="n">pov</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">position</span><span class="p">,</span> <span class="n">dimensions</span><span class="p">,</span> <span class="n">frame</span><span class="p">)</span>
+
+        <span class="c1"># 3. Clip bufer to the player&#39;s POV</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">pov</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span>
 </code></pre></div>
 <h3 id="ontologyappworldboardboard">ontology.app.world.board.Board</h3>
 <p>TODO</p>
