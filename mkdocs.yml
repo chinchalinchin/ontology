@@ -1,7 +1,7 @@
-site_name: Golem
+site_name: Ontology
 site_url: https://chinchalinchin.github.io/ontology/
 repo_url: https://github.com/chinchalinchin/ontology
-repo_name: chinchalinchin/golem
+repo_name: chinchalinchin/ontology
 
 theme:
   name: material
