@@ -1,0 +1,40 @@
+# Dockerfile.ci
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# 1. Install heavy system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    zlib1g-dev \
+    libsdl2-dev \
+    libjpeg-dev \
+    nasm \
+    tar \
+    libbz2-dev \
+    libgtk2.0-dev \
+    cmake \
+    git \
+    libfluidsynth-dev \
+    libgme-dev \
+    libopenal-dev \
+    timidity \
+    libwildmidi-dev \
+    unzip \
+    python3.10 \
+    python3.10-dev \
+    python3.10-venv \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.10 1 \
+    && update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+
+WORKDIR /app
+
+# 2. Copy ONLY requirements first to leverage Docker layer caching
+COPY requirements.txt .
+
+# 3. Install Python dependencies directly into the image
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt

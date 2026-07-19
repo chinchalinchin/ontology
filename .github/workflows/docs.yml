@@ -1,0 +1,29 @@
+name: Ontology CI/CD
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  docs:
+    needs: test
+    runs-on: ubuntu-latest
+    container:
+      image: chinchalinchin/golem-ci:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deploy MkDocs to GitHub Pages
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git config --global --add safe.directory /__w/golem/golem
+          mkdocs gh-deploy --force
