@@ -1,0 +1,16 @@
+# -------------------------------------------------------
+  tiles:
+    regular:
+      length: 32
+      width: 32
+      content:
+        - clay
+        - coal
+        - dirt
+        - grass
+        - lava
+        - mud
+        - sand
+        - soil
+        - water
+        - wheat

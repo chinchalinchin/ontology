@@ -1,0 +1,26 @@
+sheets:
+  nymphs:
+    max_frames: 6
+  pixies:
+  sprites:
+    CAST_UP:
+    CAST_LEFT:
+    CAST_DOWN:
+    CAST_RIGHT:
+    THRUST_UP:
+    THRUST_LEFT:
+    THRUST_DOWN:
+    THRUST_RIGHT:
+    WALK_UP:
+    WALK_LEFT:
+    WALK_DOWN:
+    WALK_RIGHT:
+    SLASH_UP:
+    SLASH_LEFT:
+    SLASH_DOWN:
+    SLASH_RIGHT:
+    SHOOT_UP:
+    SHOOT_LEFT:
+    SHOOT_DOOWN:
+    SHOOT_RIGHT:
+    DIE:

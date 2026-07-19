@@ -4,13 +4,61 @@ This document serves to specify the asset hierarchy and provide key definition f
 
 **IDs**
 
-IDs are used to map assets to images loaded into the [repository](./overview.md#repository), to ensure each asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical asset, but not in-game objects.
+IDs are used to map assets to images loaded into the [registry](./00-overview.md#registry), to ensure each asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical asset, but not in-game objects.
 
-## Menu
+**Properties vs. State**
+
+*Properties* are static and never changed by ingame mechanics. Properties determine the immutable characteristics of an ingame asset, e.g. dimensions and hitboxes.
+
+*State* is dynamic and is changed by ingame mechanics. State determines the mutable characteristics of an ingame asset, e.g. the current position of an ingame asset. All assets have a *position* and a *layer*. Position is given as a Cartesian coordinates, whereas Layer is a categorical variable ranging from 1 to 10. 
+
+!!! note
+    The concept of a Layer is defined more explicitly in [Application documentation](./02-app.md). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player entering Doors.
+
+**Asset Hierarchy**
+
+Assets are divided into *mutable* and *immutable* categories. *Immutable* assets are never altered by the game loop and always have the same state. *Mutable* objects change their state based on ingame events.
+
+In order of ascending complexity, where complexity is defined as the number of dimensions in the state, the game asset hierarchy is given below,
+
+- (*Immutable*) Tile: 
+    - Regular: State = Position, Layer
+    - Irregular: State = Position, Layer
+- (*Mutable*) Objects:
+    - Crate: State = Position, Layer
+    - Door: State = Position, Layer, OutLayer
+    - Chest: State = Position, Layer, Switch, Content
+    - Gate: State = Position, Layer, Switch, Key
+    - Plate: State = Position, Layer, Switch, Key
+- (*Mutable*) Sheets:
+    - Pixie: State = Postion, Layer, Frame
+    - Nymph: State = Position, Layer, Frame, Direction
+    - Sprite: State = Position, Layer, Frame, Direction, Action
+
+## Tiles
+
+*Tiles* are the most basic type of asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. 
+
+In terms of configuration, Tiles are divided into two categories, *regular* and *irregular*. *Regular Tiles* are always sized 32x32 pixels. *Irregular Tiles* are variable size. 
+
+**Properties**
+
+- ID: `int`
+- Dimensions: `tuple[w, h]`
+
+All Tiles properties are statically configured by `src/assets/tiles/main.yaml`
+
+**State**
+
+- Layer: `int`
+- Position: `tuple.[x, y]`
+
+!!! note
+    Tiles have an *immutable state*, but do not participate in the game loop. Their state is never altered by game actions.
 
 ## Objects
 
-*Objects* are static frames.
+*Objects* are static assets made of a single frame or pair of frames. An Object with two frames is considered to have an `ON` and `OFF` state, i.e. a binary trigger. *Binary Objects* are Objects whose static frame is dependent on their internal state.
 
 ### Chests
 
@@ -18,29 +66,31 @@ IDs are used to map assets to images loaded into the [repository](./overview.md#
 
 **Properties**
 
-- ID
-- Dimensions `(w, h)`
-- Hitboxes: `[ (x, y, w, h), ... ]`
+- ID: `int`
+- Dimensions `tuple[w, h]`
+- Hitboxes: `[ tuple[x, y, w, h], ... ]`
 
 **State**
 
-- Position: `(x, y)`
-- Open: `true | false`
-- Content
+- Position: `tuple[x, y]`
+- Layer: `int`
+- Switch: `bool`
+- Content: `str`
 
 ### Crates
 
-*Crates* are *Objects* who static frame can be moved by in-game physics. When a *Spriute* collides with one, a *Crate* moves in the direction of the *Sprite*.
+*Crates* are *Objects* who state can be altered by in-game physics. For example, when a *Spriute* collides with a *Crate*, the *Crate* moves in the direction of the *Sprite*, with the same speed as the *Sprite*.
 
 **Properties**
 
-- ID
-- Dimensions: `(w, h)`
-- Hitboxes: `[ (x, y, w, h), ... ]`
+- ID: `int`
+- Dimensions `tuple[w, h]`
+- Hitboxes: `[ tuple[x, y, w, h], ... ]`
 
 **State**
 
-- Position: `(x, y)`
+- Position: `tuple[x, y]`
+- Layer: `int`
 
 ### Doors
 
@@ -48,99 +98,90 @@ IDs are used to map assets to images loaded into the [repository](./overview.md#
 
 **Properties**
 
-- ID
-- Dimensions: `(w, h)`
-- Hitboxes: `[ (x, y, w, h), ... ]`
+- ID: `int`
+- Dimensions `tuple[w, h]`
+- Hitboxes: `[ tuple[x, y, w, h], ... ]`
 
 **State**
 
-- Position: `(x, y)`
-- Layer
+- Position: `tuple[x, y]`
+- Layer: `int`
+- OutLayer: `int`
 
 ### Gates
 
-*Gates* are *Objects* who state is connected to *Plates*. When opened, they do not have hitboxes and the player can pass freely through them. When closed, their hitboxes prevent approach.
+*Gates* are *Objects* whose state is connected to *Plates*. When a *Gate* is opened (`ON`), they do not have hitboxes and the player can pass freely through them. When a Gate is closed (`OFF`), its hitboxes prevent the player from approaching.
 
 **Properties**
 
-- ID
-- Dimensions: `(w, h)`
-- Hitboxes: `[ (x, y, w, h), ... ]`
+- ID: `int`
+- Dimensions `tuple[w, h]`
+- Hitboxes: `[ tuple[x, y, w, h], ... ]`
 
 **State**
 
-- Key
-- Position: `(x, y)`
-- Open: `true | false`
+- Position: `tuple[x, y]`
+- Layer: `int`
+- Open: `bool`
+- Key: `str`
 
 ### Plates
 
-*Plates* are *Objects* who static frame can be changed by collision, i.e. whose hitbox flips its state. When activated, *Plates* flip the state of the keyed *Gate*.
+*Plates* are *Objects* whose state can be changed by collision, i.e. when a player enters its hitbox and flips its state. When activated, a *Plate* in turn flips the state of its keyed *Gate*.
 
 **Properties**
 
-- ID
-- Dimensions: `(w, h)`
-- Hitboxes: `[ (x, y, w, h), ... ]`
+- ID: `int`
+- Dimensions `tuple[w, h]`
+- Hitboxes: `[ tuple[x, y, w, h], ... ]`
 
 **State**
 
-- Position: `(x, y)`
-- Open: `true | false`
-- Key
-
-### Tiles
-
-*Tiles* are the most basic type of *Object*. They have no hitboxes and are simply rendered, without affecting the game otherwise.
-
-**Properties**
-
-- ID
-- Dimensions: `(w, h)`
-
-**State**
-
-- Position: `(x, y)`
+- Position: `tuple[x, y]`
+- Layer: `int`
+- Switch: `bool`
+- Key: `str`
 
 ## Sheets
 
-*Sheets* are animations arranged in rows of grames.
+*Sheets* are animated assets arranged in rows of frames. They possess a *Frame* state that iterates over a row of frames as the game loop progresses. 
 
 ### Pixies
 
-*Pixies* are *Sheets* over a single row of frames.
+*Pixies* are *Sheets* defined over a single row of frames.
 
 **Properties**
 
 - ID
-- Dimensions `(w, h)`
-- Hitboxes: `[ (x, y, w, h), ... ]`
+- Dimensions `tuple[w, h]`
+- Hitboxes: `[ tuple[x, y, w, h], ... ]`
 
 **State**
 
-- Position: `(x, y)`
-- Frame
+- Position: `tuple[x, y]`
+- Layer: `int`
+- Frame: `int`
 
 **Calculated State**
 
 - FrameKey(ID, Frame)
 
-### Nymph
+### Nymphs
 
-*Nymphs* are *Sheets* over four rows of frames. Nymphs always have the same number of frames in each row.
+*Nymphs* are *Sheets* over four rows of frames. Nymphs always have the same number of frames in each row. 
 
 **Properties**
 
 - ID
-- Dimensions `(w, h)`
-- Hitboxes: `[ (x, y, w, h), ...]`
-- MaxFrame: 6
+- Dimensions `tuple[w, h]`
+- Hitboxes: `[ tuple[x, y, w, h], ...]`
+- MaxFrame: `int`
 
 **State**
 
-- Position: `(x, y)`
+- Position: `tuple[x, y]`
 - Direction: `UP | LEFT | DOWN | RIGHT`
-- Frame
+- Frame: `int`
 
 **Calculated State**
 
@@ -153,9 +194,9 @@ IDs are used to map assets to images loaded into the [repository](./overview.md#
 **Properties**
 
 - ID
-- Dimension: `(w, h)`
-- Hitboxes: `[ (x, y, w, h), ...]`
-- MaxFrame:
+- Dimension: `tuple[w, h]`
+- Hitboxes: `list[ tuple[x, y, w, h] ]`
+- MaxFrame: `dict[str, int]`
     - `CAST`: 7 Frames
     - `THRUST`: 8 Frames
     - `WALK`: 9 Frames
@@ -165,11 +206,15 @@ IDs are used to map assets to images loaded into the [repository](./overview.md#
 
 **State**
 
-- Position: `(x, y)`
-- Direction: `UP | LEFT | DOWN | RIGHT`
-- Action: `CAST | THRUST | WALK | SLASH | SHOOT | DIE`
-- Frame
+- Position: `tuple[x, y]`
+- Direction: `enum[UP | LEFT | DOWN | RIGHT]`
+- Action: `enum[CAST | THRUST | WALK | SLASH | SHOOT | DIE]`
+- Frame: `int`
 
 **Calculated State**
 
 - FrameKey(ID, Direction, Action, Frame)
+
+## Menu
+
+TODO

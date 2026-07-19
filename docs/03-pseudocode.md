@@ -2,7 +2,14 @@
 
 ## Package: ontology.app.interface
 
-### Class: ontology.app.interface.controller.Controller
+### Class: ontology.app.interface.player.Player
+
+TODO
+
+```
+```
+
+### Class: ontology.app.interface.player.Controller
 
 TODO
 
@@ -22,25 +29,30 @@ class Engine:
     # Loop Mutators
     ingame : bool
     paused : bool 
+    # Engine components
     board : Board 
     view : View
-    pad : Controller
+    player : Player
 
     def __init__(self, file : Path):
-        # Initialize flags
+        # Initialize mutators
         loaded = False
         paused = False
-
         # Initialize engine components
-        self.pad = Controller()
+        self.player = Player()
         self.view = View()
         self.board = Board(file)
         
     def loop(self) -> None:
         while ingame and not self.paused:
-            control = self.pad.poll()
+            # 1. Poll Player input
+            control = self.player.poll()
+            # 2. Update Board based on input
             self.board.update(control)
-            self.view.draw(board.pieces)
+            # 3. Gather up Pieces
+            pieces = self.board.pieces
+            # 4. Draw Pieces on Board
+            self.view.draw(pieces)
 ```
 
 ### ontology.app.world.view
@@ -50,15 +62,23 @@ TODO
 ```python
 class View:
 
+    # TODO: determine what datatype to use
+    canvas : "?"
+
     def __init__(self):
-        # TODO: initialize
         return
 
-    def draw() -> None:
+    def __render(self):
+        # internal method for render
+    
+    def draw_sheet(self, sheets : List[Sheet]) -> None:
+        for sheet in sheets:
+            position, dimensions, frame = piece.get()
+            canvas.render(position, dimensions, frame)
         return
 ```
 
-### ontology.app.world.board
+### ontology.app.world.board.Board
 
 TODO
 

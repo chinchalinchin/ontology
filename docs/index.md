@@ -6,4 +6,5 @@
 
 - [Overview](./00-overview.md)
 - [Assets](./01-assets.md)
-- [Pseudocode](./02-pseudocode.md)
+- [Application](./02-app.md)
+- [Pseudocode](./03-pseudocode.md)

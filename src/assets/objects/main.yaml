@@ -36,35 +36,3 @@ objects:
     stone-sword:
       length:
       width:
-  # -------------------------------------------------------
-  tiles:
-    clay: 
-      length: 32
-      width: 32
-    coal: 
-      length: 32
-      width: 32
-    dirt: 
-      length: 32
-      width: 32
-    grass: 
-      length: 32
-      width: 32
-    lava: 
-      length: 32
-      width: 32
-    mud: 
-      length: 32
-      width: 32
-    sand: 
-      length: 32
-      width: 32
-    soil: 
-      length: 32
-      width: 32
-    water: 
-      length: 32
-      width: 32
-    wheat: 
-      length: 32
-      width: 32
