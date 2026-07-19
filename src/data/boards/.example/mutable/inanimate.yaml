@@ -1,24 +1,29 @@
 objects:
+  # ------------------------------------------- CHESTS
   chests:
     - id: ID of Chest asset
       x: horizontal position
       y: vertical position
       layer: Layer ID
+  # ------------------------------------------- CRATES
   crates:
     - id: ID of Crate asset
       x: horizontal position
       y: vertical position
       layer: Layer ID
+  # ------------------------------------------- DOORS
   doors:
     - id: ID of Door asset
       x: horizontal position
       y: vertical position
       layer: Layer ID
+  # ------------------------------------------- GATES
   gates:
     - id: ID of Gate asset
       x: horizontal position
       y: vertical position
       layer: Layer ID
+  # ------------------------------------------- PLATES
   plates:
     - id: ID of Plate asset
       x: horizontal position

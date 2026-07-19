@@ -13,6 +13,7 @@ sheets:
       layer: Layer ID
   # ------------------------------------------- SPRITES
   sprites:
-    - id: 
-      x: 
-      y:
+    - id: ID of Sprite asset
+      x: horizontal position
+      y: vertical position 
+      layer: Layer ID

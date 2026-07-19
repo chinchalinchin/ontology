@@ -1,26 +1,29 @@
 # Ontology: Pseudocode
 
+## Package: ontology.app.asset
+
+### Class: ontology.app.asset.Asset
+
+```python
+class Asset:
+
+```
+
 ## Package: ontology.app.interface
 
 ### Class: ontology.app.interface.player.Player
 
-TODO
-
-```
+```python
 ```
 
 ### Class: ontology.app.interface.player.Controller
 
-TODO
-
-```
+```python
 ```
 
 ## Package: ontology.app.world
 
 ### Class: ontology.app.world.engine.Engine
-
-TODO
 
 ```python
 
@@ -126,11 +129,38 @@ class View:
         return self.buffer
 ```
 
-### ontology.app.world.board.Board
-
-TODO
+### Class: ontology.app.world.board.Board
 
 ```python
+class Board:
+
+    # Player
+    player: Player
+    # Tiles
+    tiles: List[Asset]
+    # Objects
+    chests: List[Asset]
+    crates: List[Asset]
+    doors: List[Asset]
+    gates: List[Asset]
+    plates: List[Asset]
+    # Sheets
+    nymphs: List[Asset]
+    pixies: List[Asset]
+    sprites: List[Asset]    
+
+    def __init__(self, root: Path):
+        # assume the folllowing directory structure for each board
+        #
+        # ```
+        #    boards
+        #    └── world-00
+        #        ├── immutable.yaml
+        #        └── mutable
+        #            ├── animate.yaml
+        #            ├── inanimate.yaml
+        #            └── player.yaml
+        # ```
 ```
 
 ## ontology.app.registry
