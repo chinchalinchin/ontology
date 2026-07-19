@@ -18,6 +18,7 @@ nav:
   - Home: index.md
   - Overview: 00-overview.md
   - Assets: 01-assets.md
+  - Pseudocode: 02-pseudocode.md
 
 markdown_extensions:
   - admonition

@@ -3,38 +3,16 @@
 !!! note "LPC"
     All assets are taken from the *Liberated Pixel Cup*
 
-## ontology.app.world
+## Controller
 
-### ontology.app.world.engine
-
-TODO
-
-```python
-```
-
-### ontology.app.world.view
+## Engine
 
 TODO
 
-```python
-```
+### View
 
-### ontology.app.world.board
+TODO 
+
+### Board
 
 TODO
-
-```python
-```
-
-## ontology.app.registry
-
-### ontology.app.registry.frames
-
-Internal registry for frames.
-
-```python
-```
-
-### ontology.app.registry.pipeline
-
-Internal registry for compositions. Ingests asset configuration and assembles compositions.

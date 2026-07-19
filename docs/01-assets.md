@@ -1,5 +1,7 @@
 # Ontology: Assets
 
+This document serves to specify the asset hierarchy and provide key definition for game terminology.
+
 **IDs**
 
 IDs are used to map assets to images loaded into the [repository](./overview.md#repository), to ensure each asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical asset, but not in-game objects.
