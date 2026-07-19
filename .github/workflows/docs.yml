@@ -10,7 +10,6 @@ permissions:
 
 jobs:
   docs:
-    needs: test
     runs-on: ubuntu-latest
     container:
       image: chinchalinchin/golem-ci:latest
