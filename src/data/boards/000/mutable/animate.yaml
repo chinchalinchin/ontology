@@ -1,0 +1,18 @@
+sheets:
+  # ------------------------------------------- PIXIES
+  pixies:
+    - id: ID of Pixie asset
+      x: horizontal position
+      y: vertical position
+      layer: Layer ID
+  # ------------------------------------------- NYMPHS
+  nymphs:
+    - id: ID of Nymph asset
+      x: horizontal position
+      y: vertical position
+      layer: Layer ID
+  # ------------------------------------------- SPRITES
+  sprites:
+    - id: 
+      x: 
+      y:

@@ -10,27 +10,33 @@ IDs are used to map assets to images loaded into the [registry](./00-overview.md
 
 *Properties* are static and never changed by ingame mechanics. Properties determine the immutable characteristics of an ingame asset, e.g. dimensions and hitboxes.
 
-*State* is dynamic and is changed by ingame mechanics. State determines the mutable characteristics of an ingame asset, e.g. the current position of an ingame asset. All assets have a *position* and a *layer*. Position is given as a Cartesian coordinates, whereas Layer is a categorical variable ranging from 1 to 10. 
+*State* is dynamic and is changed by ingame mechanics. State determines the mutable characteristics of an ingame asset, e.g. the current position of an ingame asset. All assets have a *position*, *dimension* and a *layer*. Position and dimension are given as a Cartesian coordinates, whereas Layer is a categorical variable ranging from 1 to 10. 
 
 !!! note
     The concept of a Layer is defined more explicitly in [Application documentation](./02-app.md). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player entering Doors.
 
 **Asset Hierarchy**
 
-Assets are divided into *mutable* and *immutable* categories. *Immutable* assets are never altered by the game loop and always have the same state. *Mutable* objects change their state based on ingame events.
+Assets are divided along two axes.
+
+First, assets are divided into *mutable* and *immutable* categories. *Immutable* assets are never altered by the game loop and always have the same state. *Mutable* objects change their state based on ingame events.
+
+Second, assets are divided in *animate* and *inanimate* categories. *Inanimate* assets either have a single frame or a pair of frames (switches). *Animate* objects possess rows of frames for different animations.
+
+All *immutable* objects are *inanimate*, but not all *mutable* objects are *animate*. 
 
 In order of ascending complexity, where complexity is defined as the number of dimensions in the state, the game asset hierarchy is given below,
 
-- (*Immutable*) Tile: 
+- (*Immutable*, *Inanimate*) Tile: 
     - Regular: State = Position, Layer
     - Irregular: State = Position, Layer
-- (*Mutable*) Objects:
+- (*Mutable*, *Inanimate*) Objects:
     - Crate: State = Position, Layer
     - Door: State = Position, Layer, OutLayer
     - Chest: State = Position, Layer, Switch, Content
     - Gate: State = Position, Layer, Switch, Key
     - Plate: State = Position, Layer, Switch, Key
-- (*Mutable*) Sheets:
+- (*Mutable*, *Animate*) Sheets:
     - Pixie: State = Postion, Layer, Frame
     - Nymph: State = Position, Layer, Frame, Direction
     - Sprite: State = Position, Layer, Frame, Direction, Action
