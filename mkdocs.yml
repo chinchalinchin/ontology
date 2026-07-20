@@ -18,7 +18,8 @@ nav:
   - Home: index.md
   - Overview: 00-overview.md
   - Assets: 01-assets.md
-  - Application: 02-app.md
+  - Schema: 03-schema.md
+  - Interface: 03-api.md
   - Pseudocode: 03-pseudocode.md
 
 markdown_extensions:
@@ -38,7 +39,7 @@ exclude:
   - '**/notes.md'
   
 extra_javascript:
-  - javascripts/mathjax.js
+  - .static/js/mathjax.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 plugins:

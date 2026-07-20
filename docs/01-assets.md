@@ -13,7 +13,7 @@ IDs are used to map assets to images loaded into the [registry](./00-overview.md
 *State* is dynamic and is changed by ingame mechanics. State determines the mutable characteristics of an ingame asset, e.g. the current position of an ingame asset. All assets have a *position*, *dimension* and a *layer*. Position and dimension are given as a Cartesian coordinates, whereas Layer is a categorical variable ranging from 1 to 10. 
 
 !!! note
-    The concept of a Layer is defined more explicitly in [Application documentation](./02-app.md). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player entering Doors.
+    The concept of a Layer is defined more explicitly in [World documentation](./00-overview.md#world). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting Doors.
 
 **Asset Hierarchy**
 
@@ -57,7 +57,7 @@ All Tiles properties are statically configured by `src/assets/tiles/main.yaml`
 **State**
 
 - Layer: `int`
-- Position: `tuple.[x, y]`
+- Position: `tuple[x, y]`
 
 !!! note
     Tiles have an *immutable state*, but do not participate in the game loop. Their state is never altered by game actions.

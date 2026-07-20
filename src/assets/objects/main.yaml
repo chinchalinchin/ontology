@@ -2,37 +2,91 @@ objects:
   # -------------------------------------------------------
   chests:
     wooden-chest:
-      length:
-      width:
+      dimensions:
+        l:
+        w:
+      hitboxes:
+        - x:
+          y:
+          l:
+          w:
   # -------------------------------------------------------
   crates:
     stone-statue:
-      length:
-      width:
+      dimensions:
+        l:
+        w:
+      hitboxes:
+        - x:
+          y:
+          l:
+          w:
     wooden-barrel:
-      length:
-      width:
+      dimensions:
+        l:
+        w:
+      hitboxes:
+        - x:
+          y:
+          l:
+          w:
     wooden-box:
-      length:
-      width:
+      dimensions:
+        l:
+        w:
+      hitboxes:
+        - x:
+          y:
+          l:
+          w:
   # -------------------------------------------------------
   doors:
     double-door:
-      length:
-      width:
+      dimensions:
+        l:
+        w:
+      hitboxes:
+        - x:
+          y:
+          l:
+          w:
   # -------------------------------------------------------
   gates:
     stone-gate:
-      length:
-      width:
+      dimensions:
+        l:
+        w:
+      hitboxes:
+        - x:
+          y:
+          l:
+          w:
   # -------------------------------------------------------
   plates:
     stone-crack:
-      length: 64
-      width: 32
+      dimensions:
+        l:
+        w:
+      hitboxes:
+        - x:
+          y:
+          l:
+          w:
     stone-switch:
-      length: 30
-      width: 14
+      dimensions:
+        l:
+        w:
+      hitboxes:
+        - x:
+          y:
+          l:
+          w:
     stone-sword:
-      length:
-      width:
+      dimensions:
+        l:
+        w:
+      hitboxes:
+        - x:
+          y:
+          l:
+          w:
