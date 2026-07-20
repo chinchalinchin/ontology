@@ -36,7 +36,8 @@ markdown_extensions:
       generic: true
 
 exclude:
-  - '**/notes.md'
+  - '**/.*/*.md'
+  - '**/.*.md'
   
 extra_javascript:
   - .static/js/mathjax.js
