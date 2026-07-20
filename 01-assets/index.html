@@ -729,11 +729,34 @@
 
 
 <h1 id="ontology-assets">Ontology: Assets</h1>
-<p>This document serves to specify the asset hierarchy and provide key definition for game terminology.</p>
+<p>This document serves to specify the Asset hierarchy and provide key definition for game terminology.</p>
 <div class="admonition note">
 <p class="admonition-title">Definition</p>
 <p>An asset is an image file.</p>
 </div>
+<p>The Asset directory is organized as follows,</p>
+<div class="highlight"><pre><span></span><code>assets<span class="w"> </span>%<span class="w"> </span>tree<span class="w"> </span>-L<span class="w"> </span><span class="m">2</span>
+.
+├──<span class="w"> </span>menu
+│<span class="w">   </span>└──<span class="w"> </span>main.yaml
+├──<span class="w"> </span>objects
+│<span class="w">   </span>├──<span class="w"> </span>chests
+│<span class="w">   </span>├──<span class="w"> </span>crates
+│<span class="w">   </span>├──<span class="w"> </span>doors
+│<span class="w">   </span>├──<span class="w"> </span>gates
+│<span class="w">   </span>├──<span class="w"> </span>plates
+│<span class="w">   </span>└──<span class="w"> </span>main.yaml
+├──<span class="w"> </span>sheets
+│<span class="w">   </span>├──<span class="w"> </span>nymphs
+│<span class="w">   </span>├──<span class="w"> </span>pixies
+│<span class="w">   </span>├──<span class="w"> </span>sprites
+│<span class="w">   </span>└──<span class="w"> </span>main.yaml
+└──<span class="w"> </span>tiles
+<span class="w">    </span>├──<span class="w"> </span>irregular
+<span class="w">    </span>├──<span class="w"> </span>regular
+<span class="w">    </span>└──<span class="w"> </span>main.yaml
+</code></pre></div>
+<p>The <code>main.yaml</code> files in each subdirectory conform to the <a href="../02-schema/#asset-property-schemas">Asset property schema</a>.</p>
 <p><strong>Keys</strong></p>
 <p>Keys are used to map assets to images loaded into the <a href="../00-overview/#registry">registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, keys uniquely identify a physical Asset, but not in-game objects.</p>
 <p><strong>Properties vs. State</strong></p>
@@ -770,11 +793,13 @@
 </ul>
 </li>
 </ul>
+<p><strong>Intent</strong></p>
+<p>Intent represents a mutable state change. All Assets implement an <code>update</code> method that receives as argument an <code>Intent</code> object.</p>
 <h2 id="tiles">Tiles</h2>
 <p><em>Tiles</em> are inanimate, immutable Assets. <em>Tiles</em> are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. </p>
 <p>In terms of configuration, Tiles are divided into two categories, <em>regular</em> and <em>irregular</em>. <em>Regular Tiles</em> are always sized 32x32 pixels. <em>Irregular Tiles</em> are variable size. </p>
 <ul>
-<li>Key: <code>str</code></li>
+<li>AssetKey: <code>str</code></li>
 </ul>
 <p><strong>Properties</strong></p>
 <ul>
@@ -783,7 +808,7 @@
 <p>All Tiles properties are statically configured by <code>src/assets/tiles/main.yaml</code></p>
 <p><strong>State</strong></p>
 <ul>
-<li>Layer: <code>str</code></li>
+<li>LayerKey: <code>str</code></li>
 <li>Position: <code>tuple[x, y]</code></li>
 </ul>
 <div class="admonition note">
@@ -799,17 +824,17 @@
 <h3 id="chests">Chests</h3>
 <p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>INTERACT</code> state while intersecting the dimensions of the <em>Chest</em>. When <code>switch == true</code>, the Chest is <em>activated</em> (open). When <code>switch == false</code>, the Chest is <em>idle</em> (closed).</p>
 <ul>
-<li>Key: <code>str</code></li>
+<li>AssetKey: <code>str</code></li>
 </ul>
 <p><strong>Properties</strong></p>
 <ul>
-<li>Dimensions <code>tuple[w, h]</code></li>
-<li>Hitboxes: <code>[ tuple[x, y, w, h], ... ]</code></li>
+<li>Dimensions <code>Tuple[w, h]</code></li>
+<li>Hitboxes: <code>List[Tuple[x, y, w, h], ... ]</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
-<li>Position: <code>tuple[x, y]</code></li>
-<li>Layer: <code>str</code></li>
+<li>Position: <code>Tuple[x, y]</code></li>
+<li>LayerKey: <code>str</code></li>
 <li>Switch: <code>bool</code></li>
 <li>Content: <code>str</code></li>
 </ul>
@@ -824,17 +849,17 @@
 <h3 id="crates">Crates</h3>
 <p><em>Crates</em> are <em>Objects</em> who state can be altered by in-game physics. For example, when a <em>Spriute</em> collides with a <em>Crate</em>, the <em>Crate</em> moves in the direction of the <em>Sprite</em>, with the same speed as the <em>Sprite</em>.</p>
 <ul>
-<li>Key: <code>str</code></li>
+<li>AssetKey: <code>str</code></li>
 </ul>
 <p><strong>Properties</strong></p>
 <ul>
-<li>Dimensions <code>tuple[w, h]</code></li>
-<li>Hitboxes: <code>[ tuple[x, y, w, h], ... ]</code></li>
+<li>Dimensions <code>Tuple[w, h]</code></li>
+<li>Hitboxes: <code>List[Tuple[relX, relY, w, h]]</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
-<li>Position: <code>tuple[x, y]</code></li>
-<li>Layer: <code>str</code></li>
+<li>Position: <code>Tuple[x, y]</code></li>
+<li>LayerKey: <code>str</code></li>
 </ul>
 <p><strong>Calculated State</strong></p>
 <ul>
@@ -843,18 +868,18 @@
 <h3 id="doors">Doors</h3>
 <p><em>Doors</em> are <em>Objects</em> that alter the player's <code>&lt;layer&gt;</code>. When a player enters the hitbox of a door, the <code>&lt;layer&gt;</code> is changed to the <code>&lt;outlayer&gt;</code>.</p>
 <ul>
-<li>Key: <code>str</code></li>
+<li>AssetKey: <code>str</code></li>
 </ul>
 <p><strong>Properties</strong></p>
 <ul>
-<li>Dimensions <code>tuple[w, h]</code></li>
-<li>Hitboxes: <code>[ tuple[x, y, w, h], ... ]</code></li>
+<li>Dimensions <code>Tuple[w, h]</code></li>
+<li>Hitboxes: <code>List[Tuple[x, y, w, h], ... ]</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
-<li>Position: <code>tuple[x, y]</code></li>
-<li>Layer: <code>str</code></li>
-<li>OutLayer: <code>str</code></li>
+<li>Position: <code>Tuple[x, y]</code></li>
+<li>LayerKey: <code>str</code></li>
+<li>OutLayerKey: <code>str</code></li>
 </ul>
 <p><strong>Calculated State</strong></p>
 <ul>
@@ -863,18 +888,18 @@
 <h3 id="gates">Gates</h3>
 <p><em>Gates</em> are <em>Objects</em> whose state is connected to <em>Plates</em>. When a <em>Gate</em> is activated (open), it does not have hitboxes and the player can pass freely through it. When a Gate is idle (closed), its hitboxes prevent the player from passing through its area.</p>
 <ul>
-<li>Key: <code>str</code></li>
+<li>AssetKey: <code>str</code></li>
 </ul>
 <p><strong>Properties</strong></p>
 <ul>
-<li>Dimensions <code>tuple[w, h]</code></li>
-<li>Hitboxes: <code>[ tuple[x, y, w, h], ... ]</code></li>
+<li>Dimensions <code>Tuple[w, h]</code></li>
+<li>Hitboxes: <code>List[Tuple[relX, relY, w, h]]</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
-<li>Position: <code>tuple[x, y]</code></li>
-<li>Layer: <code>str</code></li>
-<li>Link: <code>str</code></li>
+<li>Position: <code>Tuple[x, y]</code></li>
+<li>LayerKey: <code>str</code></li>
+<li>LinkKey: <code>str</code></li>
 <li>Switch: <code>bool</code></li>
 </ul>
 <p><strong>Calculated State</strong></p>
@@ -888,20 +913,19 @@
 <h3 id="plates">Plates</h3>
 <p><em>Plates</em> are <em>Binary Objects</em> whose state can be changed by collision, i.e. when a player enters its hitbox and flips its state. When activated, a <em>Plate</em> in turn flips the state of its keyed <em>Gate</em>.</p>
 <ul>
-<li>Key: <code>str</code></li>
+<li>AssetKey: <code>str</code></li>
 </ul>
 <p><strong>Properties</strong></p>
 <ul>
-<li>Dimensions <code>tuple[w, h]</code></li>
-<li>Hitboxes: <code>[ tuple[x, y, w, h], ... ]</code></li>
+<li>Dimensions <code>Tuple[w, h]</code></li>
+<li>Hitboxes: <code>List[Tuple[x, y, w, h], ... ]</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
-<li>Position: <code>tuple[x, y]</code></li>
-<li>Layer: <code>str</code></li>
-<li>Link: <code>str</code></li>
+<li>Position: <code>Tuple[x, y]</code></li>
+<li>LayerKey: <code>str</code></li>
+<li>LinkKey: <code>str</code></li>
 <li>Switch: <code>bool</code></li>
-<li>Key: <code>str</code></li>
 </ul>
 <p><strong>CalculatedState</strong></p>
 <ul>
@@ -916,8 +940,8 @@
 <p><strong>Direction and Action</strong></p>
 <p>For any sheet composed of more than one row (i.e. all types of Sheets except <em>Pixies</em>), the rows of that Sheet are identified by <em>direction</em> and <em>action</em>. These categories are enumerated below. </p>
 <ul>
-<li>Direction: <code>UP | LEFT | DOWN | RIGHT</code></li>
-<li>Action: <code>CAST | THRUST | WALK | SLASH | SHOOT | DIE</code></li>
+<li>Direction: <code>enum[UP | LEFT | DOWN | RIGHT]</code></li>
+<li>Action: <code>enum[CAST | THRUST | WALK | SLASH | SHOOT | DIE]</code></li>
 </ul>
 <h3 id="pixies">Pixies</h3>
 <p><em>Pixies</em> are <em>Sheets</em> defined over a single row of frames. They are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is a <em>Pixie</em>.</p>
@@ -927,22 +951,20 @@
 </ul>
 <p><strong>Properties</strong></p>
 <ul>
-<li>Dimensions <code>tuple[w, h]</code></li>
-<li>Hitboxes: <code>[ tuple[x, y, w, h], ... ]</code></li>
+<li>Dimensions <code>Tuple[w, h]</code></li>
+<li>Hitboxes: <code>List[Tuple[x, y, w, h], ... ]</code></li>
 <li>Persistent: <code>bool</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
-<li>Position: <code>tuple[x, y]</code></li>
+<li>Position: <code>Tuple[x, y]</code></li>
 <li>Layer: <code>str</code></li>
 <li>Frame: <code>int</code></li>
 </ul>
 <p><strong>Calculated State</strong></p>
 <ul>
-<li>FrameKey(ID, Frame)</li>
+<li>FrameKey(Key, Frame) -&gt; <code>&lt;key&gt;-&lt;frame&gt;</code></li>
 </ul>
-<p><strong>Methods</strong></p>
-<p>TODO</p>
 <h3 id="nymphs">Nymphs</h3>
 <p><em>Nymphs</em> are <em>Sheets</em> over four rows of frames. Nymphs always have the same number of frames in each row, determine by the <em>MaxFrame</em> property. They are meant to encapsulate simple ingame characters, such as animals, bugs, or other creatures.</p>
 <ul>
@@ -950,8 +972,8 @@
 </ul>
 <p><strong>Properties</strong></p>
 <ul>
-<li>Dimensions <code>tuple[w, h]</code></li>
-<li>Hitboxes: <code>[ tuple[x, y, w, h], ...]</code></li>
+<li>Dimensions <code>Tuple[w, h]</code></li>
+<li>Hitboxes: <code>List[Tuple[relX, relY, w, h]]</code></li>
 <li>MaxFrame: <code>int</code></li>
 </ul>
 <p><strong>State</strong></p>
@@ -962,13 +984,10 @@
 </ul>
 <p><strong>Calculated State</strong></p>
 <ul>
-<li>FrameKey(ID, Direction, Action, Frame)</li>
+<li>FrameKey(Key, Direction, Frame) -&gt; <code>&lt;key&gt;-&lt;direction&gt;-&lt;frame&gt;</code></li>
 </ul>
-<p><strong>Methods</strong></p>
-<p>TODO</p>
 <h3 id="sprites">Sprites</h3>
 <p><em>Sprites</em> are <em>Sheets</em>  over twenty-one rows of frames. <em>Sprites</em> have a variable number of frames per row. They are meant to encapsulate the core ingame characters, e.g. the player, non-playable characters and enemies.</p>
-<p><strong>Intent</strong></p>
 <p><strong>Player, NPCs and Enemies</strong></p>
 <p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. </p>
 <ul>
@@ -977,8 +996,8 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li>Dimension: <code>tuple[w, h]</code></li>
-<li>Hitboxes: <code>list[ tuple[x, y, w, h] ]</code></li>
-<li>MaxFrame: <code>dict[str, int]</code><ul>
+<li>Hitboxes: <code>List[Tuple[relX, relY, w, h]]</code></li>
+<li>MaxFrame: <code>Dict[str, int]</code><ul>
 <li><code>CAST</code>: 7 Frames</li>
 <li><code>THRUST</code>: 8 Frames</li>
 <li><code>WALK</code>: 9 Frames</li>
@@ -990,14 +1009,14 @@
 </ul>
 <p><strong>State</strong></p>
 <ul>
-<li>Position: <code>tuple[x, y]</code></li>
+<li>Position: <code>Tuple[x, y]</code></li>
 <li>Direction: <code>Direction</code></li>
 <li>Action: <code>Action</code></li>
 <li>Frame: <code>int</code></li>
 </ul>
 <p><strong>Calculated State</strong></p>
 <ul>
-<li>FrameKey(ID, Direction, Action, Frame)</li>
+<li>FrameKey(Key, Direction, Action, Frame) -&gt; <code>&lt;key&gt;-&lt;direction&gt;-&lt;action&gt;-&lt;frame&gt;</code></li>
 </ul>
 <p><strong>Methods</strong></p>
 <h2 id="menu">Menu</h2>
