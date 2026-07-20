@@ -1,0 +1,27 @@
+effects:
+  persistent:
+    <key>:
+      maxframe: 8
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
+  temporary:
+    <key>:
+      maxframe: 8
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:

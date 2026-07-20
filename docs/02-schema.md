@@ -18,6 +18,14 @@
 --8<-- "docs/.static/yaml/property-objects.yaml"
 ```
 
+### Effect Properties
+
+- Location: `/src/assets/effects/main.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/property-effects.yaml"
+```
+
 ### Sheet Properties
 
 - Location: `/src/assets/sheets/main.yaml`

@@ -10,5 +10,4 @@
 - [Overview](./00-overview.md)
 - [Assets](./01-assets.md)
 - [Schema](./02-schema.md)
-- [Interface](./03-api.md)
-- [Pseudocode](./04-pseudocode.md)
+- [Pseudocode](./03-pseudocode.md)

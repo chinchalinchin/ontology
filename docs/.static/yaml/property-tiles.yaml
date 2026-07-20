@@ -7,7 +7,7 @@
       keys:
         - Tile Asset Key
     irregular:
-      - key: Tile Asset Key
+      <key>:
         dimensions:
           l: Tile Pixel Length
           w: Tile Pixel Width

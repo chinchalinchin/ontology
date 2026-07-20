@@ -16,7 +16,7 @@ abstract class Asset:
     abstract def update(self, intention: Intent) -> None:
         # Abstract method.
         # Updates current state based on input.
-        # Recalculated frame_key.
+        # Recalculated frame_key. 
         
     def get(self) -> (Tuple[int, int], Tuple[int, int], str):
         return (self.position, self.dimensions, self.frame_key)

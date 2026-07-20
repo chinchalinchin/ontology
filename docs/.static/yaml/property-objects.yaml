@@ -7,8 +7,8 @@ objects:
         w: pixel width
       hitboxes:
         - pos: 
-            x: relative horizontal position
-            y: relative vertical position
+            relX: relative horizontal position
+            relY: relative vertical position
           dim:
             l: hitbox pixel length
             w: hitbox pixel width
@@ -19,8 +19,8 @@ objects:
         w: pixel width
       hitboxes:
         - pos: 
-            x: relative horizontal position
-            y: relative vertical position
+            relX: relative horizontal position
+            relY: relative vertical position
           dim:
             l: hitbox pixel length
             w: hitbox pixel width
@@ -31,8 +31,8 @@ objects:
         w: pixel width
       hitboxes:
         - pos: 
-            x: relative horizontal position
-            y: relative vertical position
+            relX: relative horizontal position
+            relY: relative vertical position
           dim:
             l: hitbox pixel length
             w: hitbox pixel width
@@ -43,8 +43,8 @@ objects:
         w: pixel width
       hitboxes:
         - pos: 
-            x: relative horizontal position
-            y: relative vertical position
+            relX: relative horizontal position
+            relY: relative vertical position
           dim:
             l: hitbox pixel length
             w: hitbox pixel width
@@ -55,8 +55,8 @@ objects:
         w: pixel width
       hitboxes:
         - pos: 
-            x: relative horizontal position
-            y: relative vertical position
+            relX: relative horizontal position
+            relY: relative vertical position
           dim:
             l: hitbox pixel length
             w: hitbox pixel width
