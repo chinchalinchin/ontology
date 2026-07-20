@@ -8,28 +8,24 @@
       
       
       
-        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/02-app/">
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/02-schema/">
       
       
-        <link rel="prev" href="../01-assets/">
-      
-      
-        <link rel="next" href="../03-pseudocode/">
       
       
         
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.2">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Application - Ontology</title>
+        <title>Ontology: Schemas - Ontology</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -75,6 +71,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#ontology-schemas" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -107,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Application
+              Ontology: Schemas
             
           </span>
         </div>
@@ -265,24 +266,17 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../03-schema.md" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Application
+    Schema
   
 
     
@@ -291,7 +285,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -303,7 +296,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../03-pseudocode/" class="md-nav__link">
+      <a href="../03-api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-pseudocode.md" class="md-nav__link">
         
   
   
@@ -340,6 +360,77 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#asset-schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Schemas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Asset Schemas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#object-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Object Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#immutable-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Immutable State
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mutable-inanimate-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mutable Inanimate State
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mutable-animate-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mutable Animate State
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -359,9 +450,20 @@
   
 
 
-  <h1>Application</h1>
-
-
+<h1 id="ontology-schemas">Ontology: Schemas</h1>
+<h2 id="asset-schemas">Asset Schemas</h2>
+<h3 id="object-properties">Object Properties</h3>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/property-object.yaml&quot;</span>
+</code></pre></div>
+<h3 id="immutable-state">Immutable State</h3>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/state-immutable.yaml&quot;</span>
+</code></pre></div>
+<h3 id="mutable-inanimate-state">Mutable Inanimate State</h3>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/state-mutable-inanimate.yaml&quot;</span>
+</code></pre></div>
+<h3 id="mutable-animate-state">Mutable Animate State</h3>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/state-mutable-animate.yaml&quot;</span>
+</code></pre></div>
 
 
 
@@ -414,9 +516,9 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
       
-        <script src="../javascripts/mathjax.js"></script>
+        <script src="../.static/js/mathjax.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       
