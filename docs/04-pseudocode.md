@@ -4,30 +4,29 @@
 
 ```python
 abstract class Asset:
-    key: int
-    layer: int
-    dimensions: tuple[w, h]
-    position: tuple[w, h]
-    hitboxes: list[ tuple[x, y, w, h] ]
-    frame: Image
+    # Asset Identifier
+    asset_key: str
+    # Properties
+    dimensions: Tuple[int, int]
+    # State
+    position: Tuple[int, int]
+    frame_key: str
+    layer_key: str
 
-    abstract def _frame(self) -> None:
-        # Abstract private method.
-        # Calculates current frame based on state.
-        # Updates frame.
-
-    abstract def update(self, msg: Intent) -> None:
-        # Abstract public method.
+    abstract def update(self, intention: Intent) -> None:
+        # Abstract method.
         # Updates current state based on input.
+        # Recalculated frame_key.
         
-    def get(self) -> (position, dimensions, frame):
-        # Public method.
-        return (position, dimensions, self._frame())
+    def get(self) -> (Tuple[int, int], Tuple[int, int], str):
+        return (self.position, self.dimensions, self.frame_key)
 ```
 
-### Intent
+## Intent
 
 ```python
+class Intent:
+    # TODO
 ```
 
 ## Engine
@@ -73,7 +72,7 @@ class Engine:
 ## View
 
 !!! note
-    Should be implemented in Cython
+    Should be implemented in Cython (I think)
 
 ```python
 class View:
@@ -141,6 +140,36 @@ class View:
     Should be implemented in Cython
     
 ```python
+class Registry:
+
+    assets = {
+        "<asset-frame-key>": Image
+    }
+
+    def load(self):
+        # parse /src/assets/ directory
+        #
+        # ```tree
+        # ├── menu
+        # │   └── main.yaml
+        # ├── objects
+        # │   ├── chests
+        # │   ├── crates
+        # │   ├── doors
+        # │   ├── gates
+        # │   ├── main.yaml
+        # │   └── plates
+        # ├── sheets
+        # │   ├── main.yaml
+        # │   ├── nymphs
+        # │   ├── pixies
+        # │   └── sprites
+        # └── tiles
+        #     ├── irregular
+        #     ├── main.yaml
+        #     └── regular
+        # ```
+
 ```
 
 ## Board
@@ -166,7 +195,7 @@ class Board:
     def __init__(self, root: Path):
         # assume the folllowing directory structure for each board
         #
-        # ```
+        # ```tree
         #    boards
         #    └── <board-key>
         #        ├── immutable.yaml
@@ -179,21 +208,67 @@ class Board:
         return self.chests + self.crates + self.doors + self.gates + self.plates
 
     def _sheets(self) -> List[Asset]:
-        return self.nymphs + self.pixies + self.sprites
+        return self.nymphs + self.pixies + self.sprites +
 
     def pieces(self) -> List[Asset]:
         return self.tiles + self._objects() + self._sheets()
 
     def update(self, intent: Intent) -> None:
         # game logic
+        for obj in self._objects():
+            # perform object logic
+
+        for sheet in self._sheets():
+            # perform sheet logic
+
+```
+
+## Sprite
+
+```python
+class Sprite(Asset):
+    # Inherited Attributes
+    ## Asset Identifier
+    asset_key: str
+    ## Properties
+    dimensions: Tuple[int, int]
+    ## State
+    position: Tuple[int, int]
+    layer_key: str
+    frame_key: str
+
+    # Unique Attributes
+    ## Properties
+    hitboxes: List[Tuple[int, int, int, int]]
+    ## State
+    direction: Direction # enum[UP, LEFT, DOWN, RIGHT]
+    action: Action # enum[CAST, THRUST, WALK, SLASH, SHOOT, DIE]
+
+    def update(self, intention: Intent) -> None:
+        # Abstract implementation
+        # Update state
 ```
 
 ## Player
 
 ```python
-class Player:
-    device: Controller | Keyboard
+class Player(Asset):
+    # Inherited Attributes
+    ## Asset Identifier
+    asset_key: str
+    ## Properties
+    dimensions: Tuple[int, int]
+    ## State
+    frame_key: str
+    layer_key: str
+    position: Tuple[int, int]
+
+    # Unique Attributes
+    ## Properties
+    hitboxes: List[Tuple[int, int, int, int]]
     mappings: dict
+    ## Extensions
+    device: Controller | Keyboard
 
     def __init__(self, 
         device_type = Enum["controller" | "keyboard"]
@@ -203,8 +278,13 @@ class Player:
         else:
             self.device = Keyboard(mapping)
 
+    def update(self, intention: Intent) -> None:
+        # Abstract implementation
+        # Update state
+
     def poll(self) -> Intent:
         intention = self.device.intend()
+        # Map device to intent
         return Intent(intention)
 ```
 

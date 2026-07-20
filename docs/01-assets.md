@@ -1,9 +1,36 @@
 # Ontology: Assets
 
-This document serves to specify the asset hierarchy and provide key definition for game terminology.
+This document serves to specify the Asset hierarchy and provide key definition for game terminology.
 
 !!! note "Definition"
     An asset is an image file.
+
+The Asset directory is organized as follows,
+
+```bash
+assets % tree -L 2
+.
+├── menu
+│   └── main.yaml
+├── objects
+│   ├── chests
+│   ├── crates
+│   ├── doors
+│   ├── gates
+│   ├── plates
+│   └── main.yaml
+├── sheets
+│   ├── nymphs
+│   ├── pixies
+│   ├── sprites
+│   └── main.yaml
+└── tiles
+    ├── irregular
+    ├── regular
+    └── main.yaml
+```
+
+The `main.yaml` files in each subdirectory conform to the [Asset property schema](./02-schema.md#asset-property-schemas).
 
 **Keys**
 
@@ -44,13 +71,17 @@ In order of ascending complexity, where complexity is defined as the number of d
     - Nymph: State = Position, Layer, Frame, Direction
     - Sprite: State = Position, Layer, Frame, Direction, Action
 
+**Intent**
+
+Intent represents a mutable state change. All Assets implement an `update` method that receives as argument an `Intent` object.
+
 ## Tiles
 
 *Tiles* are inanimate, immutable Assets. *Tiles* are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. 
 
 In terms of configuration, Tiles are divided into two categories, *regular* and *irregular*. *Regular Tiles* are always sized 32x32 pixels. *Irregular Tiles* are variable size. 
 
-- Key: `str`
+- AssetKey: `str`
 
 **Properties**
 
@@ -60,7 +91,7 @@ All Tiles properties are statically configured by `src/assets/tiles/main.yaml`
 
 **State**
 
-- Layer: `str`
+- LayerKey: `str`
 - Position: `tuple[x, y]`
 
 !!! note "Immutable"
@@ -82,17 +113,17 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 *Chests* are *Binary Objects* whose frame can be changed by the player entering into an `INTERACT` state while intersecting the dimensions of the *Chest*. When `switch == true`, the Chest is *activated* (open). When `switch == false`, the Chest is *idle* (closed).
 
-- Key: `str`
+- AssetKey: `str`
 
 **Properties**
 
-- Dimensions `tuple[w, h]`
-- Hitboxes: `[ tuple[x, y, w, h], ... ]`
+- Dimensions `Tuple[w, h]`
+- Hitboxes: `List[Tuple[x, y, w, h], ... ]`
 
 **State**
 
-- Position: `tuple[x, y]`
-- Layer: `str`
+- Position: `Tuple[x, y]`
+- LayerKey: `str`
 - Switch: `bool`
 - Content: `str`
 
@@ -106,17 +137,17 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 *Crates* are *Objects* who state can be altered by in-game physics. For example, when a *Spriute* collides with a *Crate*, the *Crate* moves in the direction of the *Sprite*, with the same speed as the *Sprite*.
 
-- Key: `str`
+- AssetKey: `str`
 
 **Properties**
 
-- Dimensions `tuple[w, h]`
-- Hitboxes: `[ tuple[x, y, w, h], ... ]`
+- Dimensions `Tuple[w, h]`
+- Hitboxes: `List[Tuple[relX, relY, w, h]]`
 
 **State**
 
-- Position: `tuple[x, y]`
-- Layer: `str`
+- Position: `Tuple[x, y]`
+- LayerKey: `str`
 
 **Calculated State**
 
@@ -126,18 +157,18 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 *Doors* are *Objects* that alter the player's `<layer>`. When a player enters the hitbox of a door, the `<layer>` is changed to the `<outlayer>`.
 
-- Key: `str`
+- AssetKey: `str`
 
 **Properties**
 
-- Dimensions `tuple[w, h]`
-- Hitboxes: `[ tuple[x, y, w, h], ... ]`
+- Dimensions `Tuple[w, h]`
+- Hitboxes: `List[Tuple[x, y, w, h], ... ]`
 
 **State**
 
-- Position: `tuple[x, y]`
-- Layer: `str`
-- OutLayer: `str`
+- Position: `Tuple[x, y]`
+- LayerKey: `str`
+- OutLayerKey: `str`
 
 **Calculated State**
 
@@ -147,18 +178,18 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 *Gates* are *Objects* whose state is connected to *Plates*. When a *Gate* is activated (open), it does not have hitboxes and the player can pass freely through it. When a Gate is idle (closed), its hitboxes prevent the player from passing through its area.
 
-- Key: `str`
+- AssetKey: `str`
 
 **Properties**
 
-- Dimensions `tuple[w, h]`
-- Hitboxes: `[ tuple[x, y, w, h], ... ]`
+- Dimensions `Tuple[w, h]`
+- Hitboxes: `List[Tuple[relX, relY, w, h]]`
 
 **State**
 
-- Position: `tuple[x, y]`
-- Layer: `str`
-- Link: `str`
+- Position: `Tuple[x, y]`
+- LayerKey: `str`
+- LinkKey: `str`
 - Switch: `bool`
 
 **Calculated State**
@@ -171,20 +202,19 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 *Plates* are *Binary Objects* whose state can be changed by collision, i.e. when a player enters its hitbox and flips its state. When activated, a *Plate* in turn flips the state of its keyed *Gate*.
 
-- Key: `str`
+- AssetKey: `str`
 
 **Properties**
 
-- Dimensions `tuple[w, h]`
-- Hitboxes: `[ tuple[x, y, w, h], ... ]`
+- Dimensions `Tuple[w, h]`
+- Hitboxes: `List[Tuple[x, y, w, h], ... ]`
 
 **State**
 
-- Position: `tuple[x, y]`
-- Layer: `str`
-- Link: `str`
+- Position: `Tuple[x, y]`
+- LayerKey: `str`
+- LinkKey: `str`
 - Switch: `bool`
-- Key: `str`
 
 **CalculatedState**
 
@@ -200,8 +230,8 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 For any sheet composed of more than one row (i.e. all types of Sheets except *Pixies*), the rows of that Sheet are identified by *direction* and *action*. These categories are enumerated below. 
 
-- Direction: `UP | LEFT | DOWN | RIGHT`
-- Action: `CAST | THRUST | WALK | SLASH | SHOOT | DIE`
+- Direction: `enum[UP | LEFT | DOWN | RIGHT]`
+- Action: `enum[CAST | THRUST | WALK | SLASH | SHOOT | DIE]`
 
 ### Pixies
 
@@ -213,23 +243,19 @@ Some Pixies are brief (e.g. explosions or magic effects), while others loop thro
 
 **Properties**
 
-- Dimensions `tuple[w, h]`
-- Hitboxes: `[ tuple[x, y, w, h], ... ]`
+- Dimensions `Tuple[w, h]`
+- Hitboxes: `List[Tuple[x, y, w, h], ... ]`
 - Persistent: `bool`
 
 **State**
 
-- Position: `tuple[x, y]`
+- Position: `Tuple[x, y]`
 - Layer: `str`
 - Frame: `int`
 
 **Calculated State**
 
-- FrameKey(ID, Frame)
-
-**Methods**
-
-TODO
+- FrameKey(Key, Frame) -> `<key>-<frame>`
 
 ### Nymphs
 
@@ -239,8 +265,8 @@ TODO
 
 **Properties**
 
-- Dimensions `tuple[w, h]`
-- Hitboxes: `[ tuple[x, y, w, h], ...]`
+- Dimensions `Tuple[w, h]`
+- Hitboxes: `List[Tuple[relX, relY, w, h]]`
 - MaxFrame: `int`
 
 **State**
@@ -251,17 +277,11 @@ TODO
 
 **Calculated State**
 
-- FrameKey(ID, Direction, Action, Frame)
-
-**Methods**
-
-TODO
+- FrameKey(Key, Direction, Frame) -> `<key>-<direction>-<frame>`
 
 ### Sprites
 
 *Sprites* are *Sheets*  over twenty-one rows of frames. *Sprites* have a variable number of frames per row. They are meant to encapsulate the core ingame characters, e.g. the player, non-playable characters and enemies.
-
-**Intent**
 
 **Player, NPCs and Enemies**
 
@@ -272,8 +292,8 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
 **Properties**
 
 - Dimension: `tuple[w, h]`
-- Hitboxes: `list[ tuple[x, y, w, h] ]`
-- MaxFrame: `dict[str, int]`
+- Hitboxes: `List[Tuple[relX, relY, w, h]]`
+- MaxFrame: `Dict[str, int]`
     - `CAST`: 7 Frames
     - `THRUST`: 8 Frames
     - `WALK`: 9 Frames
@@ -283,14 +303,14 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
 
 **State**
 
-- Position: `tuple[x, y]`
+- Position: `Tuple[x, y]`
 - Direction: `Direction`
 - Action: `Action`
 - Frame: `int`
 
 **Calculated State**
 
-- FrameKey(ID, Direction, Action, Frame)
+- FrameKey(Key, Direction, Action, Frame) -> `<key>-<direction>-<action>-<frame>`
 
 **Methods**
 
