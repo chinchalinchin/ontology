@@ -1,0 +1,62 @@
+objects:
+  # -------------------------------------------------------
+  chests:
+    <key>:
+      dim:
+        l: pixel length
+        w: pixel width
+      hitboxes:
+        - pos: 
+            x: relative horizontal position
+            y: relative vertical position
+          dim:
+            l: hitbox pixel length
+            w: hitbox pixel width
+  crates:
+    <key>:
+      dim:
+        l: pixel length
+        w: pixel width
+      hitboxes:
+        - pos: 
+            x: relative horizontal position
+            y: relative vertical position
+          dim:
+            l: hitbox pixel length
+            w: hitbox pixel width
+  doors:
+    <key>:
+      dim:
+        l: pixel length
+        w: pixel width
+      hitboxes:
+        - pos: 
+            x: relative horizontal position
+            y: relative vertical position
+          dim:
+            l: hitbox pixel length
+            w: hitbox pixel width
+  gates:
+    <key>:
+      dim:
+        l: pixel length
+        w: pixel width
+      hitboxes:
+        - pos: 
+            x: relative horizontal position
+            y: relative vertical position
+          dim:
+            l: hitbox pixel length
+            w: hitbox pixel width
+  plates:
+    <key>:
+      dim:
+        l: pixel length
+        w: pixel width
+      hitboxes:
+        - pos: 
+            x: relative horizontal position
+            y: relative vertical position
+          dim:
+            l: hitbox pixel length
+            w: hitbox pixel width

@@ -6,11 +6,14 @@
 !!! note "Angular Brackets"
     Angular brackets denote parameters.
 
+!!! note "Orientation"
+    (0,0) corresponds to the upper-left corner, with down being the positive y-direction.
+
 ## Assets
 
 All Assets have an *ID*, *Properties* and *State*. 
 
-1. ID: `str`
+1. Key: `str`
 2. Properties:
     - Dimensions: `tuple[w, h]`
 3. State:
@@ -32,6 +35,10 @@ An Asset is deployed onto a *Board*, where it acquires its *State*, i.e. its dyn
 
 A group of Assets of the same category have a single set of Properties, but each individual Asset may have a unique State, unique to its particular deployment. For example, a treasure chest is configured once by its Properties (its height, weight, etc.), but each instance of a treasure chest on a Board has a unique State (its position, content, etc.).
 
+### Hitboxes
+
+Many Assets have Hitboxes. Hitboxes are *Properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. 
+
 ## Intents
 
 TODO
@@ -47,6 +54,10 @@ TODO
 ### Board
 
 TODO
+
+The Board state is maintained in `/src/data/boards/`.
+
+The Board state is divided into *immutable* Assets, *mutable inanimate* Assets and *mutable animate* Assets. 
 
 ## Registry
 

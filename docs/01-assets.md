@@ -47,7 +47,7 @@ In order of ascending complexity, where complexity is defined as the number of d
 
 In terms of configuration, Tiles are divided into two categories, *regular* and *irregular*. *Regular Tiles* are always sized 32x32 pixels. *Irregular Tiles* are variable size. 
 
-- ID: `str`
+- Key: `str`
 
 **Properties**
 
@@ -71,7 +71,7 @@ All Tiles properties are statically configured by `src/assets/tiles/main.yaml`
 
 *Chests* are *Objects* whose static frame can be changed by the player entering into an `INTERACT` state.
 
-- ID: `str`
+- Key: `str`
 
 **Properties**
 
@@ -89,7 +89,7 @@ All Tiles properties are statically configured by `src/assets/tiles/main.yaml`
 
 *Crates* are *Objects* who state can be altered by in-game physics. For example, when a *Spriute* collides with a *Crate*, the *Crate* moves in the direction of the *Sprite*, with the same speed as the *Sprite*.
 
-- ID: `str`
+- Key: `str`
 
 **Properties**
 
@@ -105,7 +105,7 @@ All Tiles properties are statically configured by `src/assets/tiles/main.yaml`
 
 *Doors* are *Objects* that alter the player's `LAYER`. When a player enters the hitbox of a door, the `LAYER` is shifted.
 
-- ID: `str`
+- Key: `str`
 
 **Properties**
 
@@ -122,7 +122,7 @@ All Tiles properties are statically configured by `src/assets/tiles/main.yaml`
 
 *Gates* are *Objects* whose state is connected to *Plates*. When a *Gate* is opened (`ON`), they do not have hitboxes and the player can pass freely through them. When a Gate is closed (`OFF`), its hitboxes prevent the player from approaching.
 
-- ID: `str`
+- Key: `str`
 
 **Properties**
 
@@ -140,7 +140,7 @@ All Tiles properties are statically configured by `src/assets/tiles/main.yaml`
 
 *Plates* are *Objects* whose state can be changed by collision, i.e. when a player enters its hitbox and flips its state. When activated, a *Plate* in turn flips the state of its keyed *Gate*.
 
-- ID: `str`
+- Key: `str`
 
 **Properties**
 
@@ -162,7 +162,7 @@ All Tiles properties are statically configured by `src/assets/tiles/main.yaml`
 
 *Pixies* are *Sheets* defined over a single row of frames.
 
-- ID: `str`
+- Key: `str`
 
 **Properties**
 
@@ -183,7 +183,7 @@ All Tiles properties are statically configured by `src/assets/tiles/main.yaml`
 
 *Nymphs* are *Sheets* over four rows of frames. Nymphs always have the same number of frames in each row. 
 
-- ID: `str`
+- Key: `str`
 
 **Properties**
 
@@ -205,7 +205,7 @@ All Tiles properties are statically configured by `src/assets/tiles/main.yaml`
 
 *Sprites* are *Sheets*  over twenty-one rows of frames. *Sprites* have a variable number of frames per row.
 
-- ID: `str`
+- Key: `str`
 
 **Properties**
 

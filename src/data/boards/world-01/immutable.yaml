@@ -1,3 +1,6 @@
+dimensions:
+  l: World pixel length
+  w: World pixel width
 tiles:
   regular:
     - id: ID of Tile asset

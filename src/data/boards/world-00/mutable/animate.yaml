@@ -1,19 +1,22 @@
 sheets:
   # ------------------------------------------- PIXIES
   pixies:
-    - id: ID of Pixie asset
-      x: horizontal position
-      y: vertical position
-      layer: Layer ID
+    - key:
+      layer:
+      position:
+        x:
+        y:
   # ------------------------------------------- NYMPHS
   nymphs:
-    - id: ID of Nymph asset
-      x: horizontal position
-      y: vertical position
-      layer: Layer ID
+    - key: 
+      layer:
+      position:
+        x:
+        y:
   # ------------------------------------------- SPRITES
   sprites:
-    - id: ID of Sprite asset
-      x: horizontal position
-      y: vertical position 
-      layer: Layer ID
+    - key:
+      layer:
+      position:
+        x:
+        y:

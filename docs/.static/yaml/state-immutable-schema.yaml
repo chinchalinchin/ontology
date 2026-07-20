@@ -1,0 +1,22 @@
+dimensions:
+  w: World pixel width
+  l: World pixel length
+tiles:
+  regular:
+    - key: ID of Tile Asset
+      layer: Layer ID
+      position:
+        x: horizontal position
+        y: vertical position
+      multiply:
+        nx: number of horizontal multiples
+        ny: number of vertical multiples
+  irregular:
+    - key: ID of Tile Asset
+      layer: Layer ID
+      position: 
+        x: horizontal position
+        y: veritical position
+      multiply:
+        nx: number of horizontal multiples
+        ny: number of vertical multiples
