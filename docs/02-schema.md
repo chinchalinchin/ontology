@@ -2,6 +2,15 @@
 
 ## Asset Property Schemas
 
+### Intent Properties
+
+
+- Location: `/src/assets/intents/main.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/property-intents.yaml"
+```
+
 ### Tile Properties
 
 - Location: `/src/assets/tiles/main.yaml`

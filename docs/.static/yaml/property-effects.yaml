@@ -7,8 +7,8 @@ effects:
         w:
       hitboxes:
         - pos: 
-            x:
-            y:
+            relX:
+            relY:
           dim:
             l:
             w:
@@ -20,8 +20,8 @@ effects:
         w:
       hitboxes:
         - pos: 
-            x:
-            y:
+            relX:
+            relY:
           dim:
             l:
             w:

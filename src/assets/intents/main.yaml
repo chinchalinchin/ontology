@@ -1,0 +1,18 @@
+intent:
+  actions:
+    - CAST
+    - THRUST
+    - WALK
+    - SLASH
+    - SHOOT
+    - DIE
+  directions:
+    - UP
+    - LEFT
+    - DOWN
+    - RIGHT
+  dispositions:
+    - MEANDER
+    - ATTACK 
+  communications: 
+    - 000-hello

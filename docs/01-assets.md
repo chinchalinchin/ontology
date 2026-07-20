@@ -3,13 +3,20 @@
 This document serves to specify the Asset hierarchy and provide key definition for game terminology.
 
 !!! note "Definition"
-    An asset is an image file.
+    An asset is an image, sound or text file.
 
 The Asset directory is organized as follows,
 
 ```bash
 assets % tree -L 2
 .
+├── effects
+│   ├── temporary
+│   ├── persistent
+│   └── main.yaml
+├── intents
+│   ├── communications
+│   └── main.yaml
 ├── menu
 │   └── main.yaml
 ├── objects
@@ -20,7 +27,6 @@ assets % tree -L 2
 │   ├── plates
 │   └── main.yaml
 ├── sheets
-│   ├── nymphs
 │   ├── pixies
 │   ├── sprites
 │   └── main.yaml
@@ -72,38 +78,36 @@ In order of ascending complexity, where complexity is defined as the number of d
     - Gate: State = Position, Layer, Switch, Key
     - Plate: State = Position, Layer, Switch, Key
 - (*Immutable*, *Animate*) Effect:
-    - Temporary: State = 
-    - Persistent: State = 
+    - Temporary: State = Position, Layer, Frame
+    - Persistent: State = Position, Layer, Frame
 - (*Mutable*, *Animate*) Sheet:
     - Pixie: State = Postion, Layer, Frame
     - Nymph: State = Position, Layer, Frame, Direction
     - Sprite: State = Position, Layer, Frame, Direction, Action
 
-**Intent**
-
-Intent represents a mutable state change. All Assets implement an `update` method that receives as argument an `Intent` object. 
-
 ## Tiles
 
-*Tiles* are inanimate, immutable Assets. *Tiles* are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. 
+*Tiles* are inanimate, immutable Assets. *Tiles* are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds by breaking each rendered image into a grid of tiles.
 
-In terms of configuration, Tiles are divided into two categories, *regular* and *irregular*. *Regular Tiles* are always sized 32x32 pixels. *Irregular Tiles* are variable size. 
+In terms of configuration, Tiles are divided into two categories, *regular* and *irregular*. *Regular Tiles* are always sized 32x32 pixels (configurable in the `/src/assets/tile/main.yaml` file). *Irregular Tiles* are variable size. 
 
+Tiles have an *immutable, inanimate state* and do not participate in the game loop. Their state is never altered by ingame actions. 
 - AssetKey: `str`
 
 **Properties**
 
 - Dimensions: `tuple[w, h]`
 
-All Tiles properties are statically configured by `src/assets/tiles/main.yaml`
-
 **State**
 
 - LayerKey: `str`
 - Position: `tuple[x, y]`
 
-!!! note "Immutable"
-    Tiles have an *immutable state* and do not participate in the game loop. Their state is never altered by ingame actions.
+**Calculated State**
+
+- FrameKey(Switch)
+    - If `switch == true`, returns `<asset-key>-idle`
+    - If `switch == false`, returns `<asset-key>-activated`
 
 ## Objects
 
@@ -126,7 +130,7 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 **Properties**
 
 - Dimensions `Tuple[w, h]`
-- Hitboxes: `List[Tuple[x, y, w, h], ... ]`
+- Hitboxes: `List[Tuple[relX, relY, w, h], ... ]`
 
 **State**
 
@@ -138,8 +142,8 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 **CalculatedState**
 
 - FrameKey(Switch)
-    - If `switch == true`, returns `<key>-idle`
-    - If `switch == false`, returns `<key>-activated`
+    - If `switch == true`, returns `<asset-key>-idle`
+    - If `switch == false`, returns `<asset-key>-activated`
 
 ### Crates
 
@@ -159,7 +163,7 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 **Calculated State**
 
-- FrameKey(Key): returns `<key>`
+- FrameKey(Key): returns `<asset-key>`
 
 ### Doors
 
@@ -170,7 +174,7 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 **Properties**
 
 - Dimensions `Tuple[w, h]`
-- Hitboxes: `List[Tuple[x, y, w, h], ... ]`
+- Hitboxes: `List[Tuple[relX, relY, w, h], ... ]`
 
 **State**
 
@@ -180,7 +184,7 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 **Calculated State**
 
-- FrameKey(): returns `<key>`
+- FrameKey(): returns `<asset-key>`
 
 ### Gates
 
@@ -203,8 +207,8 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 **Calculated State**
 
 - FrameKey(Switch)
-    - If `switch == true`, returns `<key>-idle`
-    - If `switch == false`, returns `<key>-activated`
+    - If `switch == true`, returns `<asset-key>-idle`
+    - If `switch == false`, returns `<asset-key>-activated`
 
 ### Plates
 
@@ -215,7 +219,7 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 **Properties**
 
 - Dimensions `Tuple[w, h]`
-- Hitboxes: `List[Tuple[x, y, w, h], ... ]`
+- Hitboxes: `List[Tuple[relX, relY, w, h], ... ]`
 
 **State**
 
@@ -227,8 +231,8 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 **CalculatedState**
 
 - FrameKey(Switch)
-    - If `switch == true`, returns `<key>-idle`
-    - If `switch == false`, returns `<key>-activated`
+    - If `switch == true`, returns `<asset-key>-idle`
+    - If `switch == false`, returns `<asset-key>-activated`
     
 ## Effects
 
@@ -242,38 +246,38 @@ Some Effects are brief (e.g. explosions or magic effects), while others loop thr
 
 ### Temporary
 
-- Key: `str`
+- AssetKey: `str`
 
 **Properties**
 
 - Dimensions `Tuple[w, h]`
-- Hitboxes: `List[Tuple[x, y, w, h], ... ]`
+- Hitboxes: `List[Tuple[relX, relY, w, h], ... ]`
 - MaxFrame: `int`
 
 **State**
 
 - Position: `Tuple[x, y]`
-- Layer: `str`
+- LayerKey: `str`
 - Frame: `int`
 
 **Calculated State**
 
-- FrameKey(Key, Frame) -> `<key>-<frame>`
+- FrameKey(Key, Frame) -> `<asset-key>-<frame>`
 
 ### Persistent
 
-- Key: `str`
+- AssetKey: `str`
 
 **Properties**
 
 - Dimensions `Tuple[w, h]`
-- Hitboxes: `List[Tuple[x, y, w, h], ... ]`
+- Hitboxes: `List[Tuple[relX, relY, w, h], ... ]`
 - MaxFrame: `int`
 
 **State**
 
 - Position: `Tuple[x, y]`
-- Layer: `str`
+- LayerKey: `str`
 - Frame: `int`
 
 **Calculated State**
@@ -295,7 +299,7 @@ For any sheet composed of more than one row (i.e. all types of Sheets except *Pi
 
 *Pixies* are *Sheets* over four rows of frames. Pixies always have the same number of frames in each row, determined by the *MaxFrame* property. They are meant to encapsulate simple Characters, such as animals, bugs, or other creatures.
 
-- Key: `str`
+- AssetKey: `str`
 
 **Properties**
 
@@ -306,12 +310,13 @@ For any sheet composed of more than one row (i.e. all types of Sheets except *Pi
 **State**
 
 - Position: `tuple[x, y]`
+- LayerKey: `str`
 - Direction: `Direction`
 - Frame: `int`
 
 **Calculated State**
 
-- FrameKey(Key, Direction, Frame) -> `<key>-<direction>-<frame>`
+- FrameKey(Key, Direction, Frame) -> `<asset-key>-<direction>-<frame>`
 
 ### Sprites
 
@@ -321,32 +326,44 @@ For any sheet composed of more than one row (i.e. all types of Sheets except *Pi
 
 NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. 
 
-- Key: `str`
+- AssetKey: `str`
+
+**LPC Frames**
+
+The LPC specification defines the following frames per Sprite action,
+
+- `CAST`: MaxFrame = 7
+- `THRUST`: MaxFrame = 8
+- `WALK`: MaxFrame = 9
+- `SLASH`: MaxFrame = 6
+- `SHOOT`: MacFrame = 13
+- `DIE`: MacFrame = 6
+
+LPC Assets are bundled with the application by default.
 
 **Properties**
 
 - Dimension: `tuple[w, h]`
 - Hitboxes: `List[Tuple[relX, relY, w, h]]`
 - MaxFrame: `Dict[str, int]`
-    - `CAST`: 7 Frames
-    - `THRUST`: 8 Frames
-    - `WALK`: 9 Frames
-    - `SLASH`: 6 Frames
-    - `SHOOT`: 13 Frames
-    - `DIE`: 6 Frames
 
 **State**
 
 - Position: `Tuple[x, y]`
+- LayerKey: `str`
 - Direction: `Direction`
 - Action: `Action`
 - Frame: `int`
 
 **Calculated State**
 
-- FrameKey(Key, Direction, Action, Frame) -> `<key>-<direction>-<action>-<frame>`
+- FrameKey(Key, Direction, Action, Frame) -> `<asset-key>-<direction>-<action>-<frame>`
 
-**Methods**
+## Intent
+
+*Intent* represents a mutable state change. All Assets implement an `update` method that receives as argument an `Intent` object. This method is called during the game loop for each Asset.
+
+An Intent has atleast one of the following: *action*, *direction*, *disposition* and *communication*.
 
 ## Menu
 

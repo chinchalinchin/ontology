@@ -1,0 +1,9 @@
+intent:
+  actions:
+    - Action Key
+  directions:
+    - Direction Key
+  dispositions:
+    - Disposition Key
+  communications: 
+    - Communication File Path

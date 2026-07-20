@@ -198,7 +198,9 @@ class Board:
         # ```tree
         #    boards
         #    └── <board-key>
-        #        ├── immutable.yaml
+        #        └── immutable
+        #            ├── animate.yaml
+        #            └── inanimate.yaml
         #        └── mutable
         #            ├── animate.yaml
         #            └── inanimate.yaml
