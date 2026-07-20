@@ -18,9 +18,9 @@ nav:
   - Home: index.md
   - Overview: 00-overview.md
   - Assets: 01-assets.md
-  - Schema: 03-schema.md
+  - Schema: 02-schema.md
   - Interface: 03-api.md
-  - Pseudocode: 03-pseudocode.md
+  - Pseudocode: 04-pseudocode.md
 
 markdown_extensions:
   - admonition
