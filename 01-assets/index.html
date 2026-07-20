@@ -389,6 +389,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Effects
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Effects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#temporary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Temporary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#persistent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persistent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#sheets" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -412,17 +451,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#nymphs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nymphs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#sprites" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -435,6 +463,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intent
+      
+    </span>
+  </a>
   
 </li>
       
@@ -491,34 +530,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../03-api/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Interface
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../04-pseudocode/" class="md-nav__link">
+      <a href="../03-pseudocode/" class="md-nav__link">
         
   
   
@@ -648,6 +660,45 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Effects
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Effects">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#temporary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Temporary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#persistent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persistent
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#sheets" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -671,17 +722,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#nymphs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nymphs
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#sprites" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -694,6 +734,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intent
+      
+    </span>
+  </a>
   
 </li>
       
@@ -732,11 +783,18 @@
 <p>This document serves to specify the Asset hierarchy and provide key definition for game terminology.</p>
 <div class="admonition note">
 <p class="admonition-title">Definition</p>
-<p>An asset is an image file.</p>
+<p>An asset is an image, sound or text file.</p>
 </div>
 <p>The Asset directory is organized as follows,</p>
 <div class="highlight"><pre><span></span><code>assets<span class="w"> </span>%<span class="w"> </span>tree<span class="w"> </span>-L<span class="w"> </span><span class="m">2</span>
 .
+├──<span class="w"> </span>effects
+│<span class="w">   </span>├──<span class="w"> </span>temporary
+│<span class="w">   </span>├──<span class="w"> </span>persistent
+│<span class="w">   </span>└──<span class="w"> </span>main.yaml
+├──<span class="w"> </span>intents
+│<span class="w">   </span>├──<span class="w"> </span>communications
+│<span class="w">   </span>└──<span class="w"> </span>main.yaml
 ├──<span class="w"> </span>menu
 │<span class="w">   </span>└──<span class="w"> </span>main.yaml
 ├──<span class="w"> </span>objects
@@ -747,7 +805,6 @@
 │<span class="w">   </span>├──<span class="w"> </span>plates
 │<span class="w">   </span>└──<span class="w"> </span>main.yaml
 ├──<span class="w"> </span>sheets
-│<span class="w">   </span>├──<span class="w"> </span>nymphs
 │<span class="w">   </span>├──<span class="w"> </span>pixies
 │<span class="w">   </span>├──<span class="w"> </span>sprites
 │<span class="w">   </span>└──<span class="w"> </span>main.yaml
@@ -768,9 +825,14 @@
 </div>
 <p><strong>Asset Hierarchy</strong></p>
 <p>Assets are divided along two axes.</p>
-<p>First, Assets are divided into <em>mutable</em> and <em>immutable</em> categories. <em>Immutable</em> Assets are never altered by the game loop and always have the same state. <em>Mutable</em> objects change their state based on ingame events.</p>
-<p>Second, Assets are divided in <em>animate</em> and <em>inanimate</em> categories. <em>Inanimate</em> Assets either have a single frame or a pair of frames (<em>Binary Objects</em>). <em>Animate</em> objects possess rows of frames for different animations. The rows of <em>inanimate</em> Assets are further categorized by the axes of <em>direction</em> and <em>action</em>. See <a href="#sheets">Sheets section</a> below for more information on the division of <em>direction</em> and <em>action</em>.</p>
-<p>All <em>immutable</em> objects are <em>inanimate</em>, but not all <em>mutable</em> objects are <em>animate</em>. </p>
+<p>First, Assets are divided into <em>mutable</em> and <em>immutable</em> categories. <em>Immutable</em> Assets are never have their state altered by the game loop. <em>Mutable</em> objects change their state based on Intent generated by the game loop.</p>
+<p>Second, Assets are divided in <em>animate</em> and <em>inanimate</em> categories. <em>Inanimate</em> Assets either have a single frame or a pair of frames (<em>Binary Objects</em>). <em>Animate</em> objects possess rows of frames for different animation states. </p>
+<p>The rows of <em>animate</em> Assets are further categorized by the axes of <em>direction</em> and <em>action</em>. See <a href="#sheets">Sheets section</a> below for more information on the division of <em>direction</em> and <em>action</em>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Strictly speaking, <em>state</em> does not include information about the current frame of the animation. While this quantity is dynamic and ever-changing as the game loop progresses, the animation frame is regarded as a <em>calculated</em> state, which can be reducedto more primitive attributes in the state. </p>
+<p>As a consequence, an immutable is not necessarily inanimate.</p>
+</div>
 <p>In order of ascending complexity, where complexity is defined as the number of dimensions in the state, the game asset hierarchy is given below,</p>
 <ul>
 <li>(<em>Immutable</em>, <em>Inanimate</em>) Tile: <ul>
@@ -778,7 +840,7 @@
 <li>Irregular: State = Position, Layer</li>
 </ul>
 </li>
-<li>(<em>Mutable</em>, <em>Inanimate</em>) Objects:<ul>
+<li>(<em>Mutable</em>, <em>Inanimate</em>) Object:<ul>
 <li>Crate: State = Position, Layer</li>
 <li>Door: State = Position, Layer, OutLayer</li>
 <li>Chest: State = Position, Layer, Switch, Content</li>
@@ -786,35 +848,40 @@
 <li>Plate: State = Position, Layer, Switch, Key</li>
 </ul>
 </li>
-<li>(<em>Mutable</em>, <em>Animate</em>) Sheets:<ul>
+<li>(<em>Immutable</em>, <em>Animate</em>) Effect:<ul>
+<li>Temporary: State = Position, Layer, Frame</li>
+<li>Persistent: State = Position, Layer, Frame</li>
+</ul>
+</li>
+<li>(<em>Mutable</em>, <em>Animate</em>) Sheet:<ul>
 <li>Pixie: State = Postion, Layer, Frame</li>
 <li>Nymph: State = Position, Layer, Frame, Direction</li>
 <li>Sprite: State = Position, Layer, Frame, Direction, Action</li>
 </ul>
 </li>
 </ul>
-<p><strong>Intent</strong></p>
-<p>Intent represents a mutable state change. All Assets implement an <code>update</code> method that receives as argument an <code>Intent</code> object.</p>
 <h2 id="tiles">Tiles</h2>
-<p><em>Tiles</em> are inanimate, immutable Assets. <em>Tiles</em> are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. </p>
-<p>In terms of configuration, Tiles are divided into two categories, <em>regular</em> and <em>irregular</em>. <em>Regular Tiles</em> are always sized 32x32 pixels. <em>Irregular Tiles</em> are variable size. </p>
-<ul>
-<li>AssetKey: <code>str</code></li>
-</ul>
+<p><em>Tiles</em> are inanimate, immutable Assets. <em>Tiles</em> are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds by breaking each rendered image into a grid of tiles.</p>
+<p>In terms of configuration, Tiles are divided into two categories, <em>regular</em> and <em>irregular</em>. <em>Regular Tiles</em> are always sized 32x32 pixels (configurable in the <code>/src/assets/tile/main.yaml</code> file). <em>Irregular Tiles</em> are variable size. </p>
+<p>Tiles have an <em>immutable, inanimate state</em> and do not participate in the game loop. Their state is never altered by ingame actions. 
+- AssetKey: <code>str</code></p>
 <p><strong>Properties</strong></p>
 <ul>
 <li>Dimensions: <code>tuple[w, h]</code></li>
 </ul>
-<p>All Tiles properties are statically configured by <code>src/assets/tiles/main.yaml</code></p>
 <p><strong>State</strong></p>
 <ul>
 <li>LayerKey: <code>str</code></li>
 <li>Position: <code>tuple[x, y]</code></li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Immutable</p>
-<p>Tiles have an <em>immutable state</em> and do not participate in the game loop. Their state is never altered by ingame actions.</p>
-</div>
+<p><strong>Calculated State</strong></p>
+<ul>
+<li>FrameKey(Switch)<ul>
+<li>If <code>switch == true</code>, returns <code>&lt;asset-key&gt;-idle</code></li>
+<li>If <code>switch == false</code>, returns <code>&lt;asset-key&gt;-activated</code></li>
+</ul>
+</li>
+</ul>
 <h2 id="objects">Objects</h2>
 <p><em>Objects</em> are inanimate Assets made of a single frame or pair of frames. </p>
 <p><strong>Binary Objects</strong></p>
@@ -829,7 +896,7 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li>Dimensions <code>Tuple[w, h]</code></li>
-<li>Hitboxes: <code>List[Tuple[x, y, w, h], ... ]</code></li>
+<li>Hitboxes: <code>List[Tuple[relX, relY, w, h], ... ]</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
@@ -841,8 +908,8 @@
 <p><strong>CalculatedState</strong></p>
 <ul>
 <li>FrameKey(Switch)<ul>
-<li>If <code>switch == true</code>, returns <code>&lt;key&gt;-idle</code></li>
-<li>If <code>switch == false</code>, returns <code>&lt;key&gt;-activated</code></li>
+<li>If <code>switch == true</code>, returns <code>&lt;asset-key&gt;-idle</code></li>
+<li>If <code>switch == false</code>, returns <code>&lt;asset-key&gt;-activated</code></li>
 </ul>
 </li>
 </ul>
@@ -863,7 +930,7 @@
 </ul>
 <p><strong>Calculated State</strong></p>
 <ul>
-<li>FrameKey(Key): returns <code>&lt;key&gt;</code></li>
+<li>FrameKey(Key): returns <code>&lt;asset-key&gt;</code></li>
 </ul>
 <h3 id="doors">Doors</h3>
 <p><em>Doors</em> are <em>Objects</em> that alter the player's <code>&lt;layer&gt;</code>. When a player enters the hitbox of a door, the <code>&lt;layer&gt;</code> is changed to the <code>&lt;outlayer&gt;</code>.</p>
@@ -873,7 +940,7 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li>Dimensions <code>Tuple[w, h]</code></li>
-<li>Hitboxes: <code>List[Tuple[x, y, w, h], ... ]</code></li>
+<li>Hitboxes: <code>List[Tuple[relX, relY, w, h], ... ]</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
@@ -883,7 +950,7 @@
 </ul>
 <p><strong>Calculated State</strong></p>
 <ul>
-<li>FrameKey(): returns <code>&lt;key&gt;</code></li>
+<li>FrameKey(): returns <code>&lt;asset-key&gt;</code></li>
 </ul>
 <h3 id="gates">Gates</h3>
 <p><em>Gates</em> are <em>Objects</em> whose state is connected to <em>Plates</em>. When a <em>Gate</em> is activated (open), it does not have hitboxes and the player can pass freely through it. When a Gate is idle (closed), its hitboxes prevent the player from passing through its area.</p>
@@ -905,8 +972,8 @@
 <p><strong>Calculated State</strong></p>
 <ul>
 <li>FrameKey(Switch)<ul>
-<li>If <code>switch == true</code>, returns <code>&lt;key&gt;-idle</code></li>
-<li>If <code>switch == false</code>, returns <code>&lt;key&gt;-activated</code></li>
+<li>If <code>switch == true</code>, returns <code>&lt;asset-key&gt;-idle</code></li>
+<li>If <code>switch == false</code>, returns <code>&lt;asset-key&gt;-activated</code></li>
 </ul>
 </li>
 </ul>
@@ -918,7 +985,7 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li>Dimensions <code>Tuple[w, h]</code></li>
-<li>Hitboxes: <code>List[Tuple[x, y, w, h], ... ]</code></li>
+<li>Hitboxes: <code>List[Tuple[relX, relY, w, h], ... ]</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
@@ -930,13 +997,58 @@
 <p><strong>CalculatedState</strong></p>
 <ul>
 <li>FrameKey(Switch)<ul>
-<li>If <code>switch == true</code>, returns <code>&lt;key&gt;-idle</code></li>
-<li>If <code>switch == false</code>, returns <code>&lt;key&gt;-activated</code></li>
+<li>If <code>switch == true</code>, returns <code>&lt;asset-key&gt;-idle</code></li>
+<li>If <code>switch == false</code>, returns <code>&lt;asset-key&gt;-activated</code></li>
 </ul>
 </li>
 </ul>
+<h2 id="effects">Effects</h2>
+<p><em>Effects</em> are animate, immutable Assets. They are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is a <em>Pixie</em>.</p>
+<p><em>Effects</em> are <em>Sheets</em> defined over a single row of frames. </p>
+<p><strong>Temporary vs. Persistent</strong></p>
+<p>Some Effects are brief (e.g. explosions or magic effects), while others loop through their frames forever (e.g. water ripples or a windmill). This distinction is captured in the division between <em>Temporary</em> and <em>Persistent</em> Effects. Temporary Effects are garbage-collected and removed from the Board after they "<em>die</em>", whereas Persistent Effects are excluded from garbage collection and always iterate over their animation (as long as they are on screen)</p>
+<h3 id="temporary">Temporary</h3>
+<ul>
+<li>AssetKey: <code>str</code></li>
+</ul>
+<p><strong>Properties</strong></p>
+<ul>
+<li>Dimensions <code>Tuple[w, h]</code></li>
+<li>Hitboxes: <code>List[Tuple[relX, relY, w, h], ... ]</code></li>
+<li>MaxFrame: <code>int</code></li>
+</ul>
+<p><strong>State</strong></p>
+<ul>
+<li>Position: <code>Tuple[x, y]</code></li>
+<li>LayerKey: <code>str</code></li>
+<li>Frame: <code>int</code></li>
+</ul>
+<p><strong>Calculated State</strong></p>
+<ul>
+<li>FrameKey(Key, Frame) -&gt; <code>&lt;asset-key&gt;-&lt;frame&gt;</code></li>
+</ul>
+<h3 id="persistent">Persistent</h3>
+<ul>
+<li>AssetKey: <code>str</code></li>
+</ul>
+<p><strong>Properties</strong></p>
+<ul>
+<li>Dimensions <code>Tuple[w, h]</code></li>
+<li>Hitboxes: <code>List[Tuple[relX, relY, w, h], ... ]</code></li>
+<li>MaxFrame: <code>int</code></li>
+</ul>
+<p><strong>State</strong></p>
+<ul>
+<li>Position: <code>Tuple[x, y]</code></li>
+<li>LayerKey: <code>str</code></li>
+<li>Frame: <code>int</code></li>
+</ul>
+<p><strong>Calculated State</strong></p>
+<ul>
+<li>FrameKey(Key, Frame) -&gt; <code>&lt;key&gt;-&lt;frame&gt;</code></li>
+</ul>
 <h2 id="sheets">Sheets</h2>
-<p><em>Sheets</em> are animate Assets arranged in rows of frames. They possess a <em>Frame</em> state that iterates over a row of frames as the game loop progresses. </p>
+<p><em>Sheets</em> are animate, mutable Assets arranged in rows of frames. They possess a <em>Frame</em> state that iterates over a row of frames as the game loop progresses. </p>
 <p><strong>Direction and Action</strong></p>
 <p>For any sheet composed of more than one row (i.e. all types of Sheets except <em>Pixies</em>), the rows of that Sheet are identified by <em>direction</em> and <em>action</em>. These categories are enumerated below. </p>
 <ul>
@@ -944,31 +1056,9 @@
 <li>Action: <code>enum[CAST | THRUST | WALK | SLASH | SHOOT | DIE]</code></li>
 </ul>
 <h3 id="pixies">Pixies</h3>
-<p><em>Pixies</em> are <em>Sheets</em> defined over a single row of frames. They are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is a <em>Pixie</em>.</p>
-<p>Some Pixies are brief (e.g. explosions or magic effects), while others loop through their frames forever (e.g. water ripples or a windmill). The <em>Persistent</em> property determines whether a Pixie is short-lived or long-lived.</p>
+<p><em>Pixies</em> are <em>Sheets</em> over four rows of frames. Pixies always have the same number of frames in each row, determined by the <em>MaxFrame</em> property. They are meant to encapsulate simple Characters, such as animals, bugs, or other creatures.</p>
 <ul>
-<li>Key: <code>str</code></li>
-</ul>
-<p><strong>Properties</strong></p>
-<ul>
-<li>Dimensions <code>Tuple[w, h]</code></li>
-<li>Hitboxes: <code>List[Tuple[x, y, w, h], ... ]</code></li>
-<li>Persistent: <code>bool</code></li>
-</ul>
-<p><strong>State</strong></p>
-<ul>
-<li>Position: <code>Tuple[x, y]</code></li>
-<li>Layer: <code>str</code></li>
-<li>Frame: <code>int</code></li>
-</ul>
-<p><strong>Calculated State</strong></p>
-<ul>
-<li>FrameKey(Key, Frame) -&gt; <code>&lt;key&gt;-&lt;frame&gt;</code></li>
-</ul>
-<h3 id="nymphs">Nymphs</h3>
-<p><em>Nymphs</em> are <em>Sheets</em> over four rows of frames. Nymphs always have the same number of frames in each row, determine by the <em>MaxFrame</em> property. They are meant to encapsulate simple ingame characters, such as animals, bugs, or other creatures.</p>
-<ul>
-<li>Key: <code>str</code></li>
+<li>AssetKey: <code>str</code></li>
 </ul>
 <p><strong>Properties</strong></p>
 <ul>
@@ -979,46 +1069,53 @@
 <p><strong>State</strong></p>
 <ul>
 <li>Position: <code>tuple[x, y]</code></li>
+<li>LayerKey: <code>str</code></li>
 <li>Direction: <code>Direction</code></li>
 <li>Frame: <code>int</code></li>
 </ul>
 <p><strong>Calculated State</strong></p>
 <ul>
-<li>FrameKey(Key, Direction, Frame) -&gt; <code>&lt;key&gt;-&lt;direction&gt;-&lt;frame&gt;</code></li>
+<li>FrameKey(Key, Direction, Frame) -&gt; <code>&lt;asset-key&gt;-&lt;direction&gt;-&lt;frame&gt;</code></li>
 </ul>
 <h3 id="sprites">Sprites</h3>
-<p><em>Sprites</em> are <em>Sheets</em>  over twenty-one rows of frames. <em>Sprites</em> have a variable number of frames per row. They are meant to encapsulate the core ingame characters, e.g. the player, non-playable characters and enemies.</p>
+<p><em>Sprites</em> are <em>Sheets</em>  over twenty-one rows of frames. <em>Sprites</em> have a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, non-playable characters and enemies.</p>
 <p><strong>Player, NPCs and Enemies</strong></p>
 <p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. </p>
 <ul>
-<li>Key: <code>str</code></li>
+<li>AssetKey: <code>str</code></li>
 </ul>
+<p><strong>LPC Frames</strong></p>
+<p>The LPC specification defines the following frames per Sprite action,</p>
+<ul>
+<li><code>CAST</code>: MaxFrame = 7</li>
+<li><code>THRUST</code>: MaxFrame = 8</li>
+<li><code>WALK</code>: MaxFrame = 9</li>
+<li><code>SLASH</code>: MaxFrame = 6</li>
+<li><code>SHOOT</code>: MacFrame = 13</li>
+<li><code>DIE</code>: MacFrame = 6</li>
+</ul>
+<p>LPC Assets are bundled with the application by default.</p>
 <p><strong>Properties</strong></p>
 <ul>
 <li>Dimension: <code>tuple[w, h]</code></li>
 <li>Hitboxes: <code>List[Tuple[relX, relY, w, h]]</code></li>
-<li>MaxFrame: <code>Dict[str, int]</code><ul>
-<li><code>CAST</code>: 7 Frames</li>
-<li><code>THRUST</code>: 8 Frames</li>
-<li><code>WALK</code>: 9 Frames</li>
-<li><code>SLASH</code>: 6 Frames</li>
-<li><code>SHOOT</code>: 13 Frames</li>
-<li><code>DIE</code>: 6 Frames</li>
-</ul>
-</li>
+<li>MaxFrame: <code>Dict[str, int]</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
 <li>Position: <code>Tuple[x, y]</code></li>
+<li>LayerKey: <code>str</code></li>
 <li>Direction: <code>Direction</code></li>
 <li>Action: <code>Action</code></li>
 <li>Frame: <code>int</code></li>
 </ul>
 <p><strong>Calculated State</strong></p>
 <ul>
-<li>FrameKey(Key, Direction, Action, Frame) -&gt; <code>&lt;key&gt;-&lt;direction&gt;-&lt;action&gt;-&lt;frame&gt;</code></li>
+<li>FrameKey(Key, Direction, Action, Frame) -&gt; <code>&lt;asset-key&gt;-&lt;direction&gt;-&lt;action&gt;-&lt;frame&gt;</code></li>
 </ul>
-<p><strong>Methods</strong></p>
+<h2 id="intent">Intent</h2>
+<p><em>Intent</em> represents a mutable state change. All Assets implement an <code>update</code> method that receives as argument an <code>Intent</code> object. This method is called during the game loop for each Asset.</p>
+<p>An Intent has atleast one of the following: <em>action</em>, <em>direction</em>, <em>disposition</em> and <em>communication</em>.</p>
 <h2 id="menu">Menu</h2>
 <p>TODO</p>
 
