@@ -370,16 +370,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#asset-schemas" class="md-nav__link">
+  <a href="#asset-property-schemas" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Asset Schemas
+        Asset Property Schemas
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Asset Schemas">
+    <nav class="md-nav" aria-label="Asset Property Schemas">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tile-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tile Properties
+      
+    </span>
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#object-properties" class="md-nav__link">
@@ -391,6 +402,34 @@
   </a>
   
 </li>
+        
+          <li class="md-nav__item">
+  <a href="#sheet-properties" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sheet Properties
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#asset-state-schemas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset State Schemas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Asset State Schemas">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#immutable-state" class="md-nav__link">
@@ -451,17 +490,42 @@
 
 
 <h1 id="ontology-schemas">Ontology: Schemas</h1>
-<h2 id="asset-schemas">Asset Schemas</h2>
-<h3 id="object-properties">Object Properties</h3>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/property-object.yaml&quot;</span>
+<h2 id="asset-property-schemas">Asset Property Schemas</h2>
+<h3 id="tile-properties">Tile Properties</h3>
+<ul>
+<li>Location: <code>/src/assets/tiles/main.yaml</code></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/property-tiles.yaml&quot;</span>
 </code></pre></div>
+<h3 id="object-properties">Object Properties</h3>
+<ul>
+<li>Location: <code>/src/assets/objects/main.yaml</code></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/property-objects.yaml&quot;</span>
+</code></pre></div>
+<h3 id="sheet-properties">Sheet Properties</h3>
+<ul>
+<li>Location: <code>/src/assets/sheets/main.yaml</code></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/property-sheets.yaml&quot;</span>
+</code></pre></div>
+<h2 id="asset-state-schemas">Asset State Schemas</h2>
 <h3 id="immutable-state">Immutable State</h3>
+<ul>
+<li>Location: <code>/src/data/boards/&lt;board&gt;/immutable.yaml</code></li>
+</ul>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/state-immutable.yaml&quot;</span>
 </code></pre></div>
 <h3 id="mutable-inanimate-state">Mutable Inanimate State</h3>
+<ul>
+<li>Location: <code>/src/data/boards/&lt;board&gt;/mutable/inanimate.yaml</code></li>
+</ul>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/state-mutable-inanimate.yaml&quot;</span>
 </code></pre></div>
 <h3 id="mutable-animate-state">Mutable Animate State</h3>
+<ul>
+<li>Location: <code>/src/data/boards/&lt;boards&gt;/animate.yaml</code></li>
+</ul>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/state-mutable-animate.yaml&quot;</span>
 </code></pre></div>
 
