@@ -1,9 +1,38 @@
 # Ontology: Pseudocode
 
+## Asset
+
+```python
+abstract class Asset:
+    key: int
+    layer: int
+    dimensions: tuple[w, h]
+    position: tuple[w, h]
+    hitboxes: list[ tuple[x, y, w, h] ]
+    frame: Image
+
+    abstract def _frame(self) -> None:
+        # Abstract private method.
+        # Calculates current frame based on state.
+        # Updates frame.
+
+    abstract def update(self, msg: Intent) -> None:
+        # Abstract public method.
+        # Updates current state based on input.
+        
+    def get(self) -> (position, dimensions, frame):
+        # Public method.
+        return (position, dimensions, self._frame())
+```
+
+### Intent
+
+```python
+```
+
 ## Engine
 
 ```python
-
 class Engine:
     # Loop Mutators
     ingame : bool
@@ -29,7 +58,7 @@ class Engine:
     def loop(self) -> None:
         while ingame and not self.paused:
             # 1. Poll Player input
-            control = self.player.poll()
+            control : Intent = self.player.poll()
             # 2. Update Board based on input
             self.board.update(control)
             # 3. Determine current layer
@@ -43,12 +72,15 @@ class Engine:
 
 ## View
 
+!!! note
+    Should be implemented in Cython
+
 ```python
 class View:
     # Static image assembled from immutable assets
-    canvas: "TODO: Data Type?"
+    canvas: Image
     # Buffer to hold copy of canvas for rendering
-    buffer: "TODO: Data Type?"
+    buffer: Image
     # Screen size
     screen: Tuple[int, int]
 
@@ -72,7 +104,7 @@ class View:
     
     def canvas(self, 
         assets: List[Asset]
-    ) -> "TODO: Data Type?":
+    ) -> Image:
         """
         Render and stack immutable assets onto static canvas.
         """
@@ -85,7 +117,7 @@ class View:
     def draw(self, 
         assets : List[Asset], 
         pov: Tuple[int, int]
-    ) -> "TODO: Data Type?":
+    ) -> Image:
         """
         Render mutable assets onto the immutable canvas.
         """
@@ -101,6 +133,14 @@ class View:
         # 3. Clip bufer to the player's POV
         self.buffer.clip(pov)
         return self.buffer
+```
+
+## Registry
+
+!!! note
+    Should be implemented in Cython
+    
+```python
 ```
 
 ## Board
@@ -128,11 +168,78 @@ class Board:
         #
         # ```
         #    boards
-        #    └── world-00
+        #    └── <board-key>
         #        ├── immutable.yaml
         #        └── mutable
         #            ├── animate.yaml
-        #            ├── inanimate.yaml
-        #            └── player.yaml
+        #            └── inanimate.yaml
         # ```
+
+    def _objects(self) -> List[Asset]:
+        return self.chests + self.crates + self.doors + self.gates + self.plates
+
+    def _sheets(self) -> List[Asset]:
+        return self.nymphs + self.pixies + self.sprites
+
+    def pieces(self) -> List[Asset]:
+        return self.tiles + self._objects() + self._sheets()
+
+    def update(self, intent: Intent) -> None:
+        # game logic
+```
+
+## Player
+
+```python
+class Player:
+    device: Controller | Keyboard
+    mappings: dict
+
+    def __init__(self, 
+        device_type = Enum["controller" | "keyboard"]
+    ):
+        if device_type == "controller":
+            self.device = Controller()
+        else:
+            self.device = Keyboard(mapping)
+
+    def poll(self) -> Intent:
+        intention = self.device.intend()
+        return Intent(intention)
+```
+
+## Device
+
+```python
+abstract class Device:
+    mapping: Mapping
+
+    def __init__(self, 
+        device_type = Enum["controller" | "keyboard"]
+    ):
+        self.mapping = Mapping(device_type)
+
+    abstract def intend -> Intent
+```
+
+## Controller
+
+```python
+class Controller(Device):
+
+    # Device Implementation
+    def intend() -> Intent:
+        # calculate controller state
+        return state
+```
+
+## Keyboard
+
+```python
+class Keyboard(Device):
+
+    # Device Implementation
+    def intend() -> Intent:
+        # calculate keyboard state
+        return state
 ```

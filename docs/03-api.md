@@ -10,7 +10,7 @@ def () -> ()
 # ontology.app.asset.Asset
 
 Attributes
-    - id: `int`
+    - key: `int`
     - layer: `int`
     - dimensions: `tuple[w, h]`
     - position: `tuple[w, h]`
