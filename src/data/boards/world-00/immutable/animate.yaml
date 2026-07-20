@@ -1,19 +1,7 @@
-tiles:
-  regular:
+effects:
+  persistent:
     - key:
       layer: 
       position:
         x:
         y:
-      multiply:
-        nx:
-        ny:
-  irregular:
-    - key:
-      layer: 
-      position:
-        x:
-        y:
-      multiply:
-        nx:
-        ny:

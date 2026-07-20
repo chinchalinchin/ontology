@@ -3,7 +3,7 @@
 This document serves to specify the Asset hierarchy and provide key definition for game terminology.
 
 !!! note "Definition"
-    An asset is an image file.
+    An asset is an image, sound or text file.
 
 The Asset directory is organized as follows,
 

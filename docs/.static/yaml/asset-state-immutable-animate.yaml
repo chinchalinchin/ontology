@@ -5,3 +5,9 @@ effects:
       position:
         x: Horizontal Position
         y: Vertical Position
+  temporary:
+    - key: Effect Asset Key
+      layer: Layer Key
+      position:
+        x: Horizontal Position
+        y: Vertical Positions

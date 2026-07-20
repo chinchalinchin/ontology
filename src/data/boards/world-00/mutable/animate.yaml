@@ -1,13 +1,6 @@
 sheets:
   # ------------------------------------------- PIXIES
   pixies:
-    - key:
-      layer:
-      position:
-        x:
-        y:
-  # ------------------------------------------- NYMPHS
-  nymphs:
     - key: 
       layer:
       position:
@@ -15,8 +8,13 @@ sheets:
         y:
   # ------------------------------------------- SPRITES
   sprites:
-    - key:
-      layer:
+    - key: test
+      layer: 0
       position:
-        x:
-        y:
+        x: 0
+        y: 0
+      intention:
+        action: null
+        direction: null
+        disposition: null
+        communication: null
