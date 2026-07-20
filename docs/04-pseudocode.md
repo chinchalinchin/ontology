@@ -1,34 +1,10 @@
 # Ontology: Pseudocode
 
-## Package: ontology.app.asset
-
-### Class: ontology.app.asset.Asset
-
-```python
-class Asset:
-
-```
-
-## Package: ontology.app.interface
-
-### Class: ontology.app.interface.player.Player
-
-```python
-```
-
-### Class: ontology.app.interface.player.Controller
-
-```python
-```
-
-## Package: ontology.app.world
-
-### Class: ontology.app.world.engine.Engine
+## Engine
 
 ```python
 
 class Engine:
-
     # Loop Mutators
     ingame : bool
     paused : bool 
@@ -60,17 +36,15 @@ class Engine:
             layer = self.board.layer
             # 4. Gather up pieces
             pieces = self.board.pieces[layer].mutable
-            # 4. Draw pieces on Board
+            # 5. Draw pieces on Board
             self.views[layer].draw(pieces)
+            # ETC: calculate frame rates, lag, buffer rates, skips, etc. 
 ```
 
-### Class: ontology.app.world.view.View
-
-TODO
+## View
 
 ```python
 class View:
-
     # Static image assembled from immutable assets
     canvas: "TODO: Data Type?"
     # Buffer to hold copy of canvas for rendering
@@ -129,7 +103,7 @@ class View:
         return self.buffer
 ```
 
-### Class: ontology.app.world.board.Board
+## Board
 
 ```python
 class Board:
@@ -162,16 +136,3 @@ class Board:
         #            └── player.yaml
         # ```
 ```
-
-## ontology.app.registry
-
-### ontology.app.registry.frames
-
-Internal registry for frames.
-
-```python
-```
-
-### ontology.app.registry.pipeline
-
-Internal registry for compositions. Ingests asset configuration and assembles compositions.
