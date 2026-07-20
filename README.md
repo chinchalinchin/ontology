@@ -33,12 +33,13 @@ This section provides an overview of the project's directory and file structure.
 ### /src
 
 - `cli.py`: Application command line interface.
-- `/src/app`: Application source code.
-- `/src/assets`: Application assets.
-- `/src/data`: Application data.
+- `/src/app/`: Application source code.
+- `/src/assets/`: Application assets.
+- `/src/data/`: Application data.
 
 
 ## References
 
 - [Cython](https://pypi.org/project/Cython/)
 - [SDL2](https://wiki.libsdl.org/SDL2/FrontPage)
+- [LiberatedPixelCup]
