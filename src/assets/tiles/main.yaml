@@ -1,9 +1,10 @@
 # -------------------------------------------------------
   tiles:
     regular:
-      length: 32
-      width: 32
-      content:
+      dimensions:
+        l: 32
+        w: 32
+      keys:
         - clay
         - coal
         - dirt
@@ -15,4 +16,7 @@
         - water
         - wheat
     irregular:
-      
+      - key: <key>
+        dimensions:
+          l:
+          w:

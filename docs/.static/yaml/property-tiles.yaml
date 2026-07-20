@@ -1,0 +1,13 @@
+# -------------------------------------------------------
+  tiles:
+    regular:
+      dimensions:
+        l: Tile Pixel Length
+        w: Tile Pixel Width
+      keys:
+        - Tile Asset Key
+    irregular:
+      - key: Tile Asset Key
+        dimensions:
+          l: Tile Pixel Length
+          w: Tile Pixel Width
