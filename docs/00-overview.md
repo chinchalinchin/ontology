@@ -8,12 +8,12 @@
 
 ## Assets
 
-All Assets have *Properties* and *State*. 
+All Assets have an *ID*, *Properties* and *State*. 
 
-1. Properties
-    - ID: `int`
+1. ID: `str`
+2. Properties:
     - Dimensions: `tuple[w, h]`
-2. State
+3. State:
     - Layer: `int`
     - Position: `tuple[x, y]`
 
@@ -30,9 +30,11 @@ The index schema for each Asset configures its *Properties*, i.e. its static att
 
 An Asset is deployed onto a *Board*, where it acquires its *State*, i.e. its dynamic attributes that are variable and change as a result of gameplay. 
 
-Each Asset has a single set of Properties, but may have multiple States, each unique to its particular deployment. For example, a treasure chest is configured once by its Properties (its height, weight, etc.), but each instance of a treasure chest on a Board has a unique State (its position, content, etc.).
+A group of Assets of the same category have a single set of Properties, but each individual Asset may have a unique State, unique to its particular deployment. For example, a treasure chest is configured once by its Properties (its height, weight, etc.), but each instance of a treasure chest on a Board has a unique State (its position, content, etc.).
 
-## Controller
+## Intents
+
+TODO
 
 ## Engine
 
