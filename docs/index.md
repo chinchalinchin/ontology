@@ -9,5 +9,7 @@
 
 - [Overview](./00-overview.md)
 - [Assets](./01-assets.md)
-- [Schema](./02-schema.md)
-- [Pseudocode](./03-pseudocode.md)
+- [Properties](./02-properties.md)
+- [State](./03-state.md)
+- [Intents](./04-intents.md)
+- [Pseudocode](./05-pseudocode.md)

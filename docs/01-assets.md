@@ -3,7 +3,7 @@
 This document serves to specify the Asset hierarchy and provide key definition for game terminology.
 
 !!! note "Definition"
-    An asset is an image, sound or text file.
+    An asset is an image file.
 
 The Asset directory is organized as follows,
 
@@ -111,7 +111,7 @@ Tiles have an *immutable, inanimate state* and do not participate in the game lo
 
 ## Objects
 
-*Objects* are inanimate Assets made of a single frame or pair of frames. 
+*Objects* are inanimate, mutable Assets made of a single frame or pair of frames. 
 
 **Binary Objects**
 
@@ -236,9 +236,10 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
     
 ## Effects
 
-*Effects* are animate, immutable Assets. They are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is a *Pixie*.
+*Effects* are animate, immutable Assets. *Effects* are defined over a single row of frames. *Effects* possess a *Frame* attribute that iterates over the row of frames as the game loop progresses.
 
-*Effects* are *Sheets* defined over a single row of frames. 
+*Effects* are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is a *Pixie*.
+
 
 **Temporary vs. Persistent**
 
@@ -286,7 +287,7 @@ Some Effects are brief (e.g. explosions or magic effects), while others loop thr
 
 ## Sheets
 
-*Sheets* are animate, mutable Assets arranged in rows of frames. They possess a *Frame* state that iterates over a row of frames as the game loop progresses. 
+*Sheets* are animate, mutable Assets. They are arranged in rows of frames. Sheets possess a *Frame* attribute that iterates over a particular row of frames as the game loop progresses. 
 
 **Direction and Action**
 
@@ -320,7 +321,7 @@ For any sheet composed of more than one row (i.e. all types of Sheets except *Pi
 
 ### Sprites
 
-*Sprites* are *Sheets*  over twenty-one rows of frames. *Sprites* have a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, non-playable characters and enemies.
+*Sprites* are *Sheets*  over multiple rows of frames. *Sprites* have a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, non-playable characters and enemies.
 
 **Player, NPCs and Enemies**
 
@@ -358,12 +359,6 @@ LPC Assets are bundled with the application by default.
 **Calculated State**
 
 - FrameKey(Key, Direction, Action, Frame) -> `<asset-key>-<direction>-<action>-<frame>`
-
-## Intent
-
-*Intent* represents a mutable state change. All Assets implement an `update` method that receives as argument an `Intent` object. This method is called during the game loop for each Asset.
-
-An Intent has atleast one of the following: *action*, *direction*, *disposition* and *communication*.
 
 ## Menu
 
