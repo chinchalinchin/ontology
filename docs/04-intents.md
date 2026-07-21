@@ -12,7 +12,7 @@ An Intent has atleast one of the following: *action*, *direction*, *disposition*
 - Location: `/src/assets/intents/main.yaml`
 
 ```yaml
---8<-- "docs/.static/yaml/property-intents.yaml"
+--8<-- "docs/.static/yaml/data-intents.yaml"
 ```
 
 ## Intent Overview
