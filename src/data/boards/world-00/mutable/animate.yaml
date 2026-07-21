@@ -1,15 +1,21 @@
 sheets:
   # ------------------------------------------- PIXIES
   pixies:
-    - key: 
-      layer:
+    - name: test
+      key: test
+      layer: outside
       position:
-        x:
-        y:
+        x: 100
+        y: 100
   # ------------------------------------------- SPRITES
   sprites:
-    - key: test
-      layer: 0
+    - name: test
+      key: test
+      layer: outside
+      mutators:
+        frightened:
+          limit: 0.25
+          enemy: 4
       position:
         x: 0
         y: 0

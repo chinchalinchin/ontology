@@ -29,6 +29,13 @@ class Intent:
     # TODO
 ```
 
+## Instruction
+
+```python
+class Instruction:
+    # TODO
+```
+
 ## Engine
 
 ```python
@@ -57,9 +64,9 @@ class Engine:
     def loop(self) -> None:
         while ingame and not self.paused:
             # 1. Poll Player input
-            control : Intent = self.player.poll()
+            control: Instruction  = self.player.poll()
             # 2. Update Board based on input
-            self.board.update(control)
+            self.player = self.board.play(control)
             # 3. Determine current layer
             layer = self.board.layer
             # 4. Gather up pieces
@@ -215,7 +222,7 @@ class Board:
         return self.chests + self.crates + self.doors + self.gates + self.plates
 
     def _sheets(self) -> List[Asset]:
-        return self.nymphs + self.pixies + self.sprites +
+        return self.nymphs + self.pixies + self.sprites
 
     def pieces(self) -> List[Asset]:
         return self.tiles + self._objects() + self._sheets()
@@ -227,6 +234,8 @@ class Board:
 
         for sheet in self._sheets():
             # perform sheet logic
+        
+        # update player
 
 ```
 

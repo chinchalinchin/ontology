@@ -1,79 +1,132 @@
 intent:
   # -------------------------- ACTIONS
   actions:
-    - cast
-    - thrust
-    - walk
-    - slash
-    - shoot
-    - die
+    cast:
+      row: 0
+      frames:
+    thrust:
+      row: 4
+      frames:
+    walk:
+      row: 8
+      frames:
+    slash:
+      row: 12
+      frames:
+    shoot:
+      row: 16
+      frames:
+    die:
+      row: 20
+      frames:
   # -------------------------- COMMUNICATIONS
   communications: 
     - plot-00
   # -------------------------- DIRECTIONS
   directions:
     content: 
-      - up
-      - left
-      - down
-      - right
+      up:
+        offset: 0
+      left:
+        offset: 1
+      down:
+        offset: 2
+      right:
+        offset: 3
   # -------------------------- DISPOSITIONS
   dispositions:
     attack:
       transitions:
-        - attack 
-        - hunt
-        - loot
-        - return
+        - next: attack
+          conditions:  
+        - next: hunt
+          conditions: 
+            - sprite.disposition == 'attack'
+            - sprite.target is None
+            - sprite.memory.target is not None
+        - next: loot
+          condition: 
+            - sprite.disposition == 'atack'
+            - sprite.target.mutators.dead.triggered
     attract:
       transitions:
-        - 
+        - next: 
+          condition:
     barter:
       transitions: 
-        - 
+        - next:
+          condition:
     escape: 
       transitions:
-        - return
+        - next: escape
+          condition: 
+            - sprite.disposition == 'escape' 
+            - sprite.target.disposition == 'attack'
+        - next: return
+          condition: sprite.
     find: 
       transitions:
-        - loot
-        - recoil
-        - return
+        - next: loot
+          condition: 
+        - next: recoil
+          condition:
+        - next: return
+          condition: 
     follow: 
       transitions: 
-        - follow
-        - hunt
-        - wander
+        - next: follow
+          condition: 
+        - next: hunt
+          condition: 
+        - next: wander
+          condition: 
     idle: 
       transitions: 
-        - idle
-        - recoil
-        - wander
+        - next: idle
+          condition: 
+        - next: recoil
+          condition: sprite.mutators.struck.triggered
+        - next: wander
+          condition:
     interact:
       transitions:
-        - 
+        - next:
+          condition:
     loot:
       transitions:
-        - return
+        - next: return
+          condition: 
     mock: 
       transitions:
-        - mock
-        - threaten
+        - next: mock
+          condition: 
+        - next: threaten
+          condition: 
     recoil:
       transitions:
-        - attack
-        - escape
+        - next: attack
+          condition: 
+        - next: escape
+          condition: sprite.mutators.frightened
     return:
       transitions:
-        - idle
-        - return
-        - wander
+        - next: idle
+          condition: 
+        - next: return
+          condition:
+        - next: wander
+          condition: 
     threaten:
       transitions:
-        - attack
-        - hunt 
-        - threaten
-        - recoil
+        - next: attack
+          condition: 
+        - next: hunt
+          condition:  
+        - next: threaten
+          condition: 
+        - next: recoil
+          condition:
     wander:
       transitions:
-        - recoil
+        - next: recoil
+          condition: 
