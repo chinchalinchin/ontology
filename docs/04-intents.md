@@ -53,4 +53,4 @@ As can be seen from this example, Disposition manages the possible states (in pa
 
 Possibly null.
 
-A Communication contains a key to retrieve the content of a specific text file contained in `/src/data/intents/communications/<key>.yaml`.
+A Communication contains a key to retrieve the content of a specific text file contained in `/src/data/intents/communications/<plot-state>.yaml#<key>`, where `<plot-state>` .
