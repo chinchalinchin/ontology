@@ -414,15 +414,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#state" class="md-nav__link">
+  <a href="#mutators" class="md-nav__link">
     <span class="md-ellipsis">
       
-        State
+        Mutators
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="State">
+    <nav class="md-nav" aria-label="Mutators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Triggers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mutator-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mutator Values
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intentions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intentions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Intentions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -436,12 +475,7 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
+          <li class="md-nav__item">
   <a href="#memory" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -450,22 +484,21 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Memory">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#communications" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Communications
-      
-    </span>
-  </a>
-  
 </li>
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        
+      
+    </span>
+  </a>
   
 </li>
       
@@ -612,15 +645,54 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#state" class="md-nav__link">
+  <a href="#mutators" class="md-nav__link">
     <span class="md-ellipsis">
       
-        State
+        Mutators
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="State">
+    <nav class="md-nav" aria-label="Mutators">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#triggers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Triggers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mutator-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mutator Values
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intentions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intentions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Intentions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -634,12 +706,7 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
+          <li class="md-nav__item">
   <a href="#memory" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -648,22 +715,21 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Memory">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#communications" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Communications
-      
-    </span>
-  </a>
-  
 </li>
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        
+      
+    </span>
+  </a>
   
 </li>
       
@@ -691,11 +757,39 @@
 <p>Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, unique in their deployment, are the most important Asset to the gameplay loop, as the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another and the Player's presence. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The Player state does not observe the Disposition transition matrix; the Player state is entirely altered by polling the user's input. See <a href="../06-player/">Player documentation</a> for more information.</p>
+<p>The Player state does not observe the Disposition transition matrix; the Player state is entirely altered by polling the user's input and mapping input to Instructions. See <a href="../06-player/">Player documentation</a> for more information.</p>
 </div>
-<h2 id="state">State</h2>
-<p>TODO</p>
+<ul>
+<li>AssetKey: <code>str</code></li>
+</ul>
+<p><strong>State</strong></p>
+<ul>
+<li>Name: <code>str</code></li>
+<li>Position: <code>Tuple[int, int]</code></li>
+<li>Layer: <code>str</code></li>
+<li>Intention: <code>Dict[str, str]</code></li>
+<li></li>
+</ul>
+<h2 id="mutators">Mutators</h2>
+<h3 id="triggers">Triggers</h3>
+<ul>
+<li><code>dead.triggered</code>: Triggered if a Sprite dies.</li>
+<li><code>struck.triggered</code>: Triggered if a Sprite collides with a hitbox.</li>
+<li><code>frightened.triggered</code>: <ul>
+<li>Triggered if Sprite's health dips below <code>limit</code></li>
+<li>Tr</li>
+</ul>
+</li>
+</ul>
+<h3 id="mutator-values">Mutator Values</h3>
+<ul>
+<li><code>frightened.radius</code>: Radius of enemy separation within which the Sprite triggers the <code>frightened</code> mutator. Measured in pixels.</li>
+<li><code>frightened.limit</code>: Percentage of health below which Sprite triggers the <code>frightened</code> mutator.</li>
+<li><code>frightened.enemy</code>: Number of enemies within the <code>frightened.radius</code> that must be present to trigger the <code>frightened</code> mutator.</li>
+</ul>
+<h2 id="intentions">Intentions</h2>
 <h3 id="disposition">Disposition</h3>
+<p>TODO</p>
 <ol>
 <li><code>attack</code></li>
 <li><code>attract</code></li>
@@ -704,13 +798,25 @@
 <li><code>find</code></li>
 <li><code>follow</code></li>
 <li><code>idle</code></li>
-<li><code>loot</code></li>
-<li></li>
+<li><code>interact</code></li>
+<li><code>loot</code> </li>
+<li><code>mock</code></li>
+<li><code>recoil</code></li>
+<li><code>return</code></li>
+<li><code>threaten</code></li>
+<li><code>wander</code></li>
 </ol>
-<h2 id="memory">Memory</h2>
+<h3 id="memory">Memory</h3>
 <p>TODO</p>
-<h3 id="communications">Communications</h3>
-<p>TODO</p>
+<ul>
+<li><code>target</code>: <ul>
+<li><code>category (chest | crate | plate | gate | door | sprite | pixie)</code>: Category of Sprite's current target.</li>
+<li><code>name</code>: Identifier of Sprite's current target.</li>
+</ul>
+</li>
+<li><code>communications</code>: List of dialogue saved in Sprite's memory.</li>
+</ul>
+<h2 id="_1"></h2>
 
 
 
