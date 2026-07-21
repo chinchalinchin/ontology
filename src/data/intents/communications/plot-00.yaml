@@ -1,0 +1,19 @@
+busy:
+  conditions:
+    disposition: 
+      - idle
+      - meander
+  content: Away with you! I am engaged in endeavors!
+hello:
+  conditions: 
+    disposition:
+      - idle
+      - attract
+      - meander
+    content: Good morrow, neighbor!
+insult:
+  conditions:
+    disposition:
+      - threaten
+      - mock
+    content: Thou art a brutish knave!

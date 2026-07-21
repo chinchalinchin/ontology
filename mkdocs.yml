@@ -21,7 +21,11 @@ nav:
   - Properties: 02-properties.md
   - State: 03-state.md
   - Intents: 04-intents.md
-  - Pseudocode: 05-pseudocode.md
+  - Sprites: 05-sprites.md
+  - Player: 06-player.md
+  - Application: 07-application.md
+  - Plotting: 08-plotting.md
+  - Pseudocode: 09-pseudocode.md
 
 markdown_extensions:
   - admonition

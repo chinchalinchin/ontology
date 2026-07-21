@@ -45,10 +45,12 @@ Possibly null.
 
 ### Disposition
 
-Possibly null.
+A Disposition is an internal state attribute of a Sprite. This attribute determines the state progression of non-playable character. For example, Sprites with a Disposition of `IDLE` cannot enter into the `ATTACK` Disposition without first passing through a `SHOCK` or `THREATEN` Disposition, and a Sprite cannot engage in the `SLASH` or `SHOOT` Action without first being in the `ATTACK` Disposition. 
+
+As can be seen from this example, Disposition manages the possible states (in particular, Actions) that can be reached from the Sprite's current state. Disposition is covered more thoroughly in the [Sprites documentation](./05-sprites.md), along with a complete map of Dispositions and Actions.
 
 ### Communication
 
 Possibly null.
 
-A Communication contains a key to retrieve the content of a specific text file contained in `/src/data/intents/communications/<key>.txt`.
+A Communication contains a key to retrieve the content of a specific text file contained in `/src/data/intents/communications/<key>.yaml`.

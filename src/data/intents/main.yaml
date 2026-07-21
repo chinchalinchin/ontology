@@ -1,18 +1,76 @@
 intent:
+  # -------------------------- ACTIONS
   actions:
-    - CAST
-    - THRUST
-    - WALK
-    - SLASH
-    - SHOOT
-    - DIE
-  directions:
-    - UP
-    - LEFT
-    - DOWN
-    - RIGHT
-  dispositions:
-    - MEANDER
-    - ATTACK 
+    - cast
+    - thrust
+    - walk
+    - slash
+    - shoot
+    - die
+  # -------------------------- COMMUNICATIONS
   communications: 
-    - 000-hello
+    - plot-00
+  # -------------------------- DIRECTIONS
+  directions:
+    content: 
+      - up
+      - left
+      - down
+      - right
+  # -------------------------- DISPOSITIONS
+  dispositions:
+    attack:
+      transitions:
+        - attack 
+        - hunt
+        - loot
+        - return
+    attract:
+      transitions:
+        - 
+    barter:
+      transitions: 
+        - 
+    escape: 
+      transitions:
+        - return
+    find: 
+      transitions:
+        - loot
+        - recoil
+        - return
+    follow: 
+      transitions: 
+        - follow
+        - hunt
+        - wander
+    idle: 
+      transitions: 
+        - idle
+        - recoil
+        - wander
+    loot:
+      transitions:
+        - return
+    mock: 
+      transitions:
+        - mock
+        - threaten
+    recoil:
+      transitions:
+        - attack
+        - escape
+    return:
+      transitions:
+        - idle
+        - return
+        - wander
+    threaten:
+      transitions:
+        - attack
+        - hunt 
+        - threaten
+        - recoil
+    wander:
+      transitions:
+        - recoil

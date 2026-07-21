@@ -3,7 +3,7 @@
 This document serves to specify the Asset hierarchy and provide key definition for game terminology.
 
 !!! note "Definition"
-    An asset is an image, sound or text file.
+    An asset is an image or sound file.
 
 The Asset directory is organized as follows,
 
@@ -36,7 +36,7 @@ assets % tree -L 2
     └── main.yaml
 ```
 
-The `main.yaml` files in each subdirectory conform to the [Asset property schema](./02-schema.md#asset-property-schemas).
+The `main.yaml` files in each subdirectory conform to the [Asset property schema](./02-properties.md).
 
 **Keys**
 
@@ -77,6 +77,9 @@ In order of ascending complexity, where complexity is defined as the number of d
     - Chest: State = Position, Layer, Switch, Content
     - Gate: State = Position, Layer, Switch, Key
     - Plate: State = Position, Layer, Switch, Key
+- (*Mutable*, *Inanimate*) Cursor:
+    - Expression: State = 
+    - Buff: State = 
 - (*Immutable*, *Animate*) Effect:
     - Temporary: State = Position, Layer, Frame
     - Persistent: State = Position, Layer, Frame
@@ -111,7 +114,7 @@ Tiles have an *immutable, inanimate state* and do not participate in the game lo
 
 ## Objects
 
-*Objects* are inanimate, mutable Assets made of a single frame or pair of frames. 
+*Objects* are inanimate, mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and, oddly enough, objects.
 
 **Binary Objects**
 
@@ -234,6 +237,18 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
     - If `switch == true`, returns `<asset-key>-idle`
     - If `switch == false`, returns `<asset-key>-activated`
     
+## Cursors
+
+*Cursors* are inanimate, mutable Assets made of a single frame. They are divided into *Expressions* and *Projectiles*. Expressions are pinned to other Assets and have their position state updated in tandem with the Asset to which they are linked. Projectiles are spawned with a certain direction and velocity, follow a fixed trajectory based on the spawn conditions, and then either impact a hitbox or are garbage-collected.
+
+### Expressions
+
+TODO
+
+### Projectiles
+
+TODO
+
 ## Effects
 
 *Effects* are animate, immutable Assets. *Effects* are defined over a single row of frames. *Effects* possess a *Frame* attribute that iterates over the row of frames as the game loop progresses.
@@ -361,5 +376,9 @@ LPC Assets are bundled with the application by default.
 - FrameKey(Key, Direction, Action, Frame) -> `<asset-key>-<direction>-<action>-<frame>`
 
 ## Menu
+
+TODO
+
+## Sounds
 
 TODO
