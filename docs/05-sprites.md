@@ -5,6 +5,17 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 !!! note
     The Player state does not observe the Disposition transition matrix; the Player state is entirely altered by polling the user's input and mapping input to Instructions. See [Player documentation](./06-player.md) for more information.
     
+- AssetKey: `str`
+
+
+**State**
+
+- Name: `str`
+- Position: `Tuple[int, int]`
+- Layer: `str`
+- Intention: `Dict[str, str]`
+- 
+
 ## Mutators
 
 ### Triggers
@@ -21,9 +32,11 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 - `frightened.limit`: Percentage of health below which Sprite triggers the `frightened` mutator.
 - `frightened.enemy`: Number of enemies within the `frightened.radius` that must be present to trigger the `frightened` mutator.
 
-## Attributes
+## Intentions
 
 ### Disposition
+
+TODO
 
 1. `attack`
 2. `attract`
@@ -48,3 +61,5 @@ TODO
     - `category (chest | crate | plate | gate | door | sprite | pixie)`: Category of Sprite's current target.
     - `name`: Identifier of Sprite's current target.
 - `communications`: List of dialogue saved in Sprite's memory.
+
+## 

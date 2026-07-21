@@ -15,3 +15,20 @@ sheets:
       position:
         x: Horizontal Position
         y: Vertical Position 
+      mutators:
+        frightened:
+          radius: 25
+          limit: 0.25
+          enemy: 4
+      position:
+        x: 0
+        y: 0
+      intention:
+        action: null
+        direction: null
+        disposition: null
+        communication: null
+      memory:
+        target: null
+        communications: 
+          - something to say

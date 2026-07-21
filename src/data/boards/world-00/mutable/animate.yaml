@@ -14,6 +14,7 @@ sheets:
       layer: outside
       mutators:
         frightened:
+          radius: 25
           limit: 0.25
           enemy: 4
       position:
@@ -24,3 +25,7 @@ sheets:
         direction: null
         disposition: null
         communication: null
+      memory:
+        target: null
+        communications: 
+          - something to say

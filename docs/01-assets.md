@@ -51,6 +51,11 @@ Keys are used to map assets to images loaded into the [registry](./00-overview.m
 !!! note "Layers"
     The concept of a Layer is defined more explicitly in [World documentation](./00-overview.md#world). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting Doors.
 
+
+**Names**
+
+Names are used to uniquely identify an ingame entity. A single Asset may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. A Name is part of an Asset's state.
+
 **Asset Hierarchy**
 
 Assets are divided along two axes.
@@ -103,6 +108,7 @@ Tiles have an *immutable, inanimate state* and do not participate in the game lo
 
 **State**
 
+- Name: `str`
 - LayerKey: `str`
 - Position: `tuple[x, y]`
 
@@ -137,6 +143,7 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 **State**
 
+- Name: `str`
 - Position: `Tuple[x, y]`
 - LayerKey: `str`
 - Switch: `bool`
@@ -161,6 +168,7 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 **State**
 
+- Name: `str`
 - Position: `Tuple[x, y]`
 - LayerKey: `str`
 
@@ -181,6 +189,7 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 **State**
 
+- Name: `str`
 - Position: `Tuple[x, y]`
 - LayerKey: `str`
 - OutLayerKey: `str`
@@ -202,6 +211,7 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 **State**
 
+- Name: `str`
 - Position: `Tuple[x, y]`
 - LayerKey: `str`
 - LinkKey: `str`
@@ -226,6 +236,7 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 **State**
 
+- Name: `str`
 - Position: `Tuple[x, y]`
 - LayerKey: `str`
 - LinkKey: `str`
@@ -253,8 +264,7 @@ TODO
 
 *Effects* are animate, immutable Assets. *Effects* are defined over a single row of frames. *Effects* possess a *Frame* attribute that iterates over the row of frames as the game loop progresses.
 
-*Effects* are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is a *Pixie*.
-
+*Effects* are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is an *Effect*.
 
 **Temporary vs. Persistent**
 
@@ -272,6 +282,7 @@ Some Effects are brief (e.g. explosions or magic effects), while others loop thr
 
 **State**
 
+- Name: `str`
 - Position: `Tuple[x, y]`
 - LayerKey: `str`
 - Frame: `int`
@@ -292,6 +303,7 @@ Some Effects are brief (e.g. explosions or magic effects), while others loop thr
 
 **State**
 
+- Name: `str`
 - Position: `Tuple[x, y]`
 - LayerKey: `str`
 - Frame: `int`
@@ -325,6 +337,7 @@ For any sheet composed of more than one row (i.e. all types of Sheets except *Pi
 
 **State**
 
+- Name: `str`
 - Position: `tuple[x, y]`
 - LayerKey: `str`
 - Direction: `Direction`
@@ -337,6 +350,8 @@ For any sheet composed of more than one row (i.e. all types of Sheets except *Pi
 ### Sprites
 
 *Sprites* are *Sheets*  over multiple rows of frames. *Sprites* have a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, non-playable characters and enemies.
+
+Some of the attributes and characteristics of a Sprite are presented here without further explanation, for the sake of completeness. See [Sprite documentation](./05-sprites.md) for a more thorough explanation of Sprite mechanics.
 
 **Player, NPCs and Enemies**
 
@@ -365,11 +380,18 @@ LPC Assets are bundled with the application by default.
 
 **State**
 
+- Name: `str`
 - Position: `Tuple[x, y]`
 - LayerKey: `str`
-- Direction: `Direction`
-- Action: `Action`
 - Frame: `int`
+- Intention: `Dict[str, str]`
+    - Direction: `Direction`
+    - Action: `Action`
+    - Disposition: `Disposition`
+    - Communication: `Communication`
+- Memory: `Dict[str, Any]`
+    - Target: `str`
+    - Communications: `List[str]`
 
 **Calculated State**
 
