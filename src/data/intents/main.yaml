@@ -49,6 +49,9 @@ intent:
         - idle
         - recoil
         - wander
+    interact:
+      transitions:
+        - 
     loot:
       transitions:
         - return
