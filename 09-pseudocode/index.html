@@ -8,10 +8,10 @@
       
       
       
-        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/03-pseudocode/">
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/09-pseudocode/">
       
       
-        <link rel="prev" href="../02-schema/">
+        <link rel="prev" href="../08-plotting/">
       
       
       
@@ -271,14 +271,176 @@
   
   
     <li class="md-nav__item">
-      <a href="../02-schema/" class="md-nav__link">
+      <a href="../02-properties/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Schema
+    Properties
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../03-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    State
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-intents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../06-player/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Player
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-application/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../08-plotting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plotting
   
 
     
@@ -819,16 +981,21 @@
     <span class="n">player</span><span class="p">:</span> <span class="n">Player</span>
     <span class="c1"># Tiles</span>
     <span class="n">tiles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
+    <span class="c1"># Effects</span>
+    <span class="n">permanent</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
+    <span class="n">temporary</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
+    <span class="c1"># Cursors</span>
+    <span class="n">expressions</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
+    <span class="n">projectiles</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
     <span class="c1"># Objects</span>
-    <span class="n">chests</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
-    <span class="n">crates</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
-    <span class="n">doors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
-    <span class="n">gates</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
-    <span class="n">plates</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
+    <span class="n">chests</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
+    <span class="n">crates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
+    <span class="n">doors</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
+    <span class="n">gates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
+    <span class="n">plates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
     <span class="c1"># Sheets</span>
-    <span class="n">nymphs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
-    <span class="n">pixies</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>
-    <span class="n">sprites</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]</span>    
+    <span class="n">pixies</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
+    <span class="n">sprites</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
         <span class="c1"># assume the folllowing directory structure for each board</span>
