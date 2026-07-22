@@ -16,19 +16,24 @@ sheets:
         x: Horizontal Position
         y: Vertical Position 
       mutators:
-        frightened:
-          radius: 25
-          limit: 0.25
-          enemy: 4
-      position:
-        x: 0
-        y: 0
+        parameters:
+          frightened:
+            radius: Radius of Frightened Mutator
+            limit: Health Percentage Boundary of Frightened Mutator
+            enemy: Enemy Boundary of Frightened Mutator
       intention:
-        action: null
-        direction: null
-        disposition: null
-        communication: null
+        action: Action Key
+        direction: Direction Key
+        extension: Extension Key
+        disposition: Disposition Key
+        motivation: Motivation Key
+        communication: Communication Key
+      goal: null
       memory:
         target: null
         communications: 
-          - something to say
+          - <communication-key>
+          # unforgettable
+          - <communication-key>
+      inventory: 
+        null

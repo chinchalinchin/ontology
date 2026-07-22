@@ -9,12 +9,26 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 - Name: `str`
 - Position: `Tuple[int, int]`
 - Layer: `str`
-- Intention: `Dict[str, str]`
+- Meters
+    - Health: `int`
+- Intention: 
+    - Action: `str`
+    - Direction: `str`
+    - Extension: `str`
+    - Disposition: `str`
+    - Motvation: `str`
 - Mutators:
     - Triggers: `Dict[str, bool]`
     - Parameters: `Dict[str, Dict[str, Union[int, double]]]`
-- Memory: `Dict[str, Any]`
-- Goal: `Dict[str, Any]`
+- Memory: 
+    - Target:
+        - Name: `str`
+        - Category: `str`
+    - Communication: `List[str]` 
+- Goal: 
+    - AssetName: `str`
+    - ExtensionKey: `str`
+    - ActionKey: `str`
 - Frame: `int`
 
 Frame is an integer that tracks the current animation frame. It's maximum value is dependent on the Action state. For example, if a Sprite is in the `walk` Action state, then Frame will cycle from 0 to `walk.MaxFrames`.
@@ -23,14 +37,45 @@ Frame is an integer that tracks the current animation frame. It's maximum value 
 
 - FrameKey: `AssetKey + Intention.Direction + Intention.Action + Frame`
 
+**Methods**
+
+- `poll() -> Intent`: Returns the Sprite's current Intent.
+- `update(intent: Intent) -> None`: Updates the Sprite's current Intent.
+
+## Meters
+
+TODO
+
+### Health
+
+TODO
+
+### Magic
+
+TODO
+
+## Statistics
+
+### Strength
+
+TODO
+
+### Defense
+
+TODO
+
+### Speed
+
+TODO
+
 ## Mutators
 
-*Mutators* are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated state attributes, not *primitive* state attributes.
+*Mutators* are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated from state attributes, not *primitive* state attributes themselves.
 
 ### Triggers
 
-- `trigger.animated`: Triggered if a Sprite is currently animate. When this is false, the Sprite does not receive animation updates from the game loop, e.g. if the user releases the right arrow key on the keyboard, leaving the Player in a `(walk, right)` state, then this mutator prevents the animation from progressing.
-- `triggers.dead`: Triggered if a Sprite dies.
+- `trigger.animated`: Triggered if a Sprite is currently animating. When this Mutator trigger is false, the Sprite does not receive animation updates from the game loop, e.g. if the user releases the right arrow button on the keyboard, leaving the Player in a `(walk, right)` state, then this mutator prevents the animation from progressing until the Player resumes pressing the right arrow button.
+- `triggers.dead`: Triggered if a Sprite dies. This can only occur if the Sprite's 
 - `triggers.struck`: Triggered if a Sprite collides with a hitbox.
 - `triggers.frightened`: Triggered for the logical disjunction of the following conditions:
     - Triggered if Sprite's health dips below `frightened.limit`
@@ -54,9 +99,12 @@ The default Actions and Directions for the LPC specification are,
 !!! note 
     In the LPC specification, the `thrust` Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the `thrust` state.
 
+!!! note
+    Any Actions defined in the `/src/assets/sheets/**.png` file rows must have its Action key entered in `/src/data/intents/main.yaml#actions` file to register as an Action enterable from a Disposition.
+
 The complete Intention State for a Sprite is given by the tuple,
 
-    (Action, Direction, Extension, Disposition, Motivation, Goal)
+    (Action, Direction, Extension, Disposition, Motivation)
 
 The dimensions of Intention are discussed in more detail below.
 
@@ -183,11 +231,19 @@ In another example, the transition from `attack` to `loot` in the default Dispos
 
 `sprites` is a reference to a dictionary of all ingame Sprites keyed by their identifying and unique `name`, which provides access to their state attributes.
 
-### Goal
+### Motivation
 
-- Goal: Unique Identifier of Asset
-- ExtensionKey: `Union[None, Action]`
-- ActionKey: `Union[None, Action]`
+Motivations are long-term variables that modulate the Disposition Transition matrix.
+
+### Communication
+
+The Communication dimension of an Intention can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the `speak` Extension.
+
+## Goal
+
+- AssetName: Unique Identifier of Asset
+- ExtensionKey: 
+- ActionKey: 
 
 ## Memory
 

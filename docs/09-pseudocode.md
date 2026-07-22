@@ -48,7 +48,10 @@ class Engine:
     view : View
     player : Player
 
-    def __init__(self, file: Path, screen: Tuple[int, int]):
+    def __init__(self, 
+        file: Path, 
+        screen: Tuple[int, int]
+    ):
         # Initialize mutators
         loaded = False
         paused = False
@@ -67,12 +70,16 @@ class Engine:
             control: Instruction  = self.player.poll()
             # 2. Update Board based on input
             self.player = self.board.play(control)
-            # 3. Determine current layer
+
+
+            # 1. Update board
+            self.board.play()
+            # 2. Gather new state info
             layer = self.board.layer
-            # 4. Gather up pieces
-            pieces = self.board.pieces[layer].mutable
-            # 5. Draw pieces on Board
-            self.views[layer].draw(pieces)
+            player = self.board.player
+            pieces = self.board.pieces
+            # 3. Draw pieces on Board
+            self.views[layer].draw(pieces, player)
             # ETC: calculate frame rates, lag, buffer rates, skips, etc. 
 ```
 
@@ -222,21 +229,24 @@ class Board:
         return self.chests + self.crates + self.doors + self.gates + self.plates
 
     def _sheets(self) -> List[Asset]:
-        return self.nymphs + self.pixies + self.sprites
+        return self.pixies + self.sprites + self.player
 
     def pieces(self) -> List[Asset]:
         return self.tiles + self._objects() + self._sheets()
 
     def update(self, intent: Intent) -> None:
         # game logic
+
         for obj in self._objects():
             # perform object logic
 
+        # player is treated as sprite
         for sheet in self._sheets():
-            # perform sheet logic
+            intent = sheet.poll()
+            # intent logic
+            new_intent = some_intent
+            sheet.update(new_intent)
         
-        # update player
-
 ```
 
 ## Sprite
@@ -244,6 +254,8 @@ class Board:
 ```python
 class Sprite(Asset):
     # Inherited Attributes
+    ## Unique Identifer
+    name: str
     ## Asset Identifier
     asset_key: str
     ## Properties
@@ -257,8 +269,11 @@ class Sprite(Asset):
     ## Properties
     hitboxes: List[Tuple[int, int, int, int]]
     ## State
-    direction: Direction # enum[UP, LEFT, DOWN, RIGHT]
-    action: Action # enum[CAST, THRUST, WALK, SLASH, SHOOT, DIE]
+    intention : Intent
+
+    def poll() -> Intent:
+        # calculate Intent
+        return self.intention
 
     def update(self, intention: Intent) -> None:
         # Abstract implementation

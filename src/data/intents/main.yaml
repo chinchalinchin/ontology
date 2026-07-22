@@ -1,34 +1,18 @@
 intents:
   # -------------------------- ACTIONS
   actions:
-    cast:
-      row: 0
-      frames: 7
-    thrust:
-      row: 4
-      frames: 7
-    walk:
-      row: 8
-      frames: 7
-    slash:
-      row: 12
-      frames: 7
-    shoot:
-      row: 16
-      frames: 7
-    die:
-      row: 20
-      frames: 1
+    - cast
+    - thrust
+    - walk
+    - slash
+    - shoot
+    - die
   # -------------------------- DIRECTIONS
   directions:
-    up:
-      offset: 0
-    left:
-      offset: 1
-    down:
-      offset: 2
-    right:
-      offset: 3
+    - up
+    - left
+    - down
+    - right
   # -------------------------- COMMUNICATIONS
   communications: 
     plots:
@@ -42,10 +26,11 @@ intents:
         - slash
         - shoot
         - thrust
+      extensions: null
       transitions:
         - next: attack
           conditions:  
-            - sprite.intention.goal.target.category == 'sprite'
+            - sprite.goal.target.category == 'sprite'
         - next: hunt
           conditions: 
             - not sprite.intention.goal.target
@@ -54,9 +39,14 @@ intents:
           condition: 
             - sprites[sprite.target.name].mutators.triggers.dead
     attract:
+      actions: null
+      extensions: 
+        - interact
       transitions:
-        - next: 
-          condition:
+        - next: barter
+          condition: 
+        - next: communicate
+          condition: sprite.memory.communications
     barter:
       transitions: 
         - next:
@@ -86,7 +76,7 @@ intents:
     follow: 
       transitions: 
         - next: follow
-          condition: 
+          condition: sprite.intention.disposition == 'follow' and sprite.goal.target
         - next: hunt
           condition: 
         - next: wander
@@ -94,9 +84,9 @@ intents:
     idle: 
       transitions: 
         - next: idle
-          condition: 
+          condition: sprite.intention.disposition == 'idle'
         - next: recoil
-          condition: sprite.mutators.struck.triggered
+          condition: sprite.mutators.triggers.struck
         - next: wander
           condition:
     interact:
@@ -149,4 +139,5 @@ intents:
   # -------------------------- MOTIVATIONS
   motivations:
     profit:
+    
     

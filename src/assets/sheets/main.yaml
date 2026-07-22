@@ -1,66 +1,78 @@
 sheets:
   pixies:
-    count: Frame Count of Pixie Sheets
+    count: 6
   sprites:
     cast:
-      up:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-      down:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-      left:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-      right:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame: 
-        hitframe: <hitframe-index>
+      frames: 7
+      directions:
+        up:
+          row: 0
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
+        down:
+          row: 1
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
+        left:
+          row: 2
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
+        right:
+          row: 3
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame: 
+          hitframe: <hitframe-index>
     thrust:
-      up:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-      down:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-      left:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-      right:
+      frames: 8
+      directions:
+        up:
+          row: 4
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
+        down:
+          row: 5
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
+        left:
+          row: 6
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
+        right:
+        row: 7
         hitboxes:
           - relX:
             relY:
@@ -69,74 +81,96 @@ sheets:
             frame:
         hitframe: <hitframe-index>
     walk:
-      up: null
-      down: null
-      right: null
+      frames: 9
+      directions: 
+        up:
+          row: 8
+        left:
+          row: 9
+        down: 
+          row: 10
+        right:
+          row: 11
     slash:
-      up:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-      down:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-      left:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-      right:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
+      frames: 6
+      directions:
+        up:
+          row: 12
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
+        down:
+          row: 13
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
+        left:
+          row: 14
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
+        right:
+          row: 15
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
     shoot:
-      up:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-      down:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-      left:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-      right:
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
+      frames: 13
+      directions:
+        up:
+          row: 16
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
+        down:
+          row: 17
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
+        left:
+          row: 18
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
+        right:
+          row: 19
+          hitboxes:
+            - relX:
+              relY:
+              w:
+              h:
+              frame:
+          hitframe: <hitframe-index>
     die:
-      up:
+      frames: 6
+      directions:
+        up:
+          row: 20

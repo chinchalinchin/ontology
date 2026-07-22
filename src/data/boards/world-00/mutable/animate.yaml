@@ -15,6 +15,13 @@ sheets:
     - name: test
       key: test
       layer: outside
+      meters:
+        health: 150
+        magic: 100
+      
+        strength: 10
+        defense: 10
+        speed: 10
       mutators:
         frightened:
           radius: 25
@@ -30,7 +37,7 @@ sheets:
         disposition: null
         motivation: null
         communication: null
-        goal: null
+      goal: null
       memory:
         target: null
         communications: 
