@@ -3,25 +3,22 @@ intents:
   actions:
     cast:
       row: 0
-      frames:
+      frames: 7
     thrust:
       row: 4
-      frames:
+      frames: 7
     walk:
       row: 8
-      frames:
+      frames: 7
     slash:
       row: 12
-      frames:
+      frames: 7
     shoot:
       row: 16
-      frames:
+      frames: 7
     die:
       row: 20
-      frames:
-  # -------------------------- COMMUNICATIONS
-  communications: 
-    - plot-00
+      frames: 1
   # -------------------------- DIRECTIONS
   directions:
     up:
@@ -32,6 +29,9 @@ intents:
       offset: 2
     right:
       offset: 3
+  # -------------------------- COMMUNICATIONS
+  communications: 
+    - plot-00
   # -------------------------- DISPOSITIONS
   dispositions:
     attack:

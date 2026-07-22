@@ -1,5 +1,8 @@
 # Ontology: Assets
 
+!!! note
+    LPC Assets are bundled with the application by default.
+
 This document serves to specify the Asset hierarchy and provide key definition for game terminology.
 
 !!! note "Definition"
@@ -318,14 +321,50 @@ Some Effects are brief (e.g. explosions or magic effects), while others loop thr
 
 **Direction and Action**
 
-For any sheet composed of more than one row (i.e. all types of Sheets except *Pixies*), the rows of that Sheet are identified by *direction* and *action*. These categories are enumerated below. 
+For any sheet composed of more than one row (i.e. all types of Sheets except *Pixies*), the rows of that Sheet are identified by *Direction*, *Action* and *Frame*. 
 
-- Direction: `enum[UP | LEFT | DOWN | RIGHT]`
-- Action: `enum[CAST | THRUST | WALK | SLASH | SHOOT | DIE]`
+The default (*LPC*) categories are enumerated below. The categories can be configured in the `/src/data/intents/main.yaml` file. See [Intents documentation](./04-messages.md) for more information. 
+
+- Direction: `Enum[up, left, down, right]`
+- Action: `Enum[cast, thrust, walk, slash, shoot, die]`
+- Frame: `Interval[0, n(Action)]`
+
+Where `n(Action)` is the number of frames per Action (e.g., `cast` might have 7 frames while `shoot` has 16 frames; this is the case for the *LPC* spritesheet specification.)
+
+**IMPORTANT** For Sheets, it is assumed coordinates of a frame are *completely determined* (holding the Sheet Asset file constant) by Action, Direction and Frame. It is assumed Actions form contiguous rows in the Sheets and each Action row group is further partitioned by Direction. It is further assumed the frames of the (Action, Direction) animation are organized in horizontal cells of equal length. To illustrate the meaning of this, the default LPC Sheet configurations are shown below,
+
+- ROW #: `(Action, Direction)`
+- row 0: `(cast, up)`
+- row 1: `(cast, left)`
+- row 2: `(cast, down)`
+- row 3: `(cast, right)`
+- row 4: `(thrust, up)`
+- row 5: `(thrust, left)`
+- row 6: `(thrust, down)`
+- row 7: `(thrust, right)`
+- row 8: `(walk, up)`
+- row 9: `(walk, left)`
+- row 10: `(walk, down)`
+- row 11: `(walk, right)`
+- row 12: `(slash, up)`
+- row 13: `(slash, left)`
+- row 14: `(slash, down)`
+- row 15: `(slash, right)`
+- row 16: `(shoot, up)`
+- row 17: `(shoot, left)`
+- row 18: `(shoot, down)`
+- row 19: `(shoot, right)`
+- row 20: `(die, down)`
+
+!!! note
+    `die` is only associated with a single row in the LPC specification.
+
+!!! note
+    The row indexing starts at 0.
 
 ### Pixies
 
-*Pixies* are *Sheets* over four rows of frames. Pixies always have the same number of frames in each row, determined by the *MaxFrame* property. They are meant to encapsulate simple Characters, such as animals, bugs, or other creatures.
+*Pixies* are *Sheets* over four rows of frames. Pixies always have the same number of frames in each row, determined by the *MaxFrame* property. Pixies only have one Action state: `walk`. They are meant to encapsulate simple Characters, such as animals, bugs, or other creatures. 
 
 - AssetKey: `str`
 
@@ -334,11 +373,12 @@ For any sheet composed of more than one row (i.e. all types of Sheets except *Pi
 - Dimensions `Tuple[w, h]`
 - Hitboxes: `List[Tuple[relX, relY, w, h]]`
 - MaxFrame: `int`
+- Action: `walk`
 
 **State**
 
 - Name: `str`
-- Position: `tuple[x, y]`
+- Position: `Tuple[x, y]`
 - LayerKey: `str`
 - Direction: `Direction`
 - Frame: `int`
@@ -349,28 +389,26 @@ For any sheet composed of more than one row (i.e. all types of Sheets except *Pi
 
 ### Sprites
 
-*Sprites* are *Sheets*  over multiple rows of frames. *Sprites* have a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, non-playable characters and enemies.
+*Sprites* are *Sheets* over multiple rows of frames. *Sprites* have a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, non-playable characters and enemies.
 
 Some of the attributes and characteristics of a Sprite are presented here without further explanation, for the sake of completeness. See [Sprite documentation](./05-sprites.md) for a more thorough explanation of Sprite mechanics.
-
-**Player, NPCs and Enemies**
-
-NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. 
-
-- AssetKey: `str`
 
 **LPC Frames**
 
 The LPC specification defines the following frames per Sprite action,
 
-- `CAST`: MaxFrame = 7
-- `THRUST`: MaxFrame = 8
-- `WALK`: MaxFrame = 9
-- `SLASH`: MaxFrame = 6
-- `SHOOT`: MacFrame = 13
-- `DIE`: MacFrame = 6
+- `cast`: MaxFrame = 7
+- `thrust`: MaxFrame = 8
+- `walk`: MaxFrame = 9
+- `slash`: MaxFrame = 6
+- `shoot`: MacFrame = 13
+- `die`: MacFrame = 6
 
-LPC Assets are bundled with the application by default.
+**Player, NPCs and Enemies**
+
+NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. See [Intents documentation](./04-messages.md) for more information on Intents. See [Player documentation](./06-player.md) for more information on the Player.
+
+- AssetKey: `str`
 
 **Properties**
 

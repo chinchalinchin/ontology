@@ -1,19 +1,18 @@
 # Ontology: Messages
 
-Sprites consume Messages. Messages represent mutable state changes. Messages are generated and passed to Assets via the game loop. All Assets implement an `update` method that receives as argument an Instruction object. This method is called during the game loop for each Asset. 
+Sprites consume Messages. Messages represent mutable state changes. Messages are generated and passed to Assets via the game loop. Messages are divided into Instructions and Intents.
 
 The base class for a message is Instruction. Instructions are extended into Intents for more complex operations, i.e. all Intents are Instructions, but not all Instructions are Intents. 
 
-## Schema
+All Assets implement an `update` method that receives as argument an Instruction object. This method is called during the game loop for each Asset. 
 
-### Intent Schema
+## Schema
 
 - Location: `/src/assets/intents/main.yaml`
 
 ```yaml
 --8<-- "docs/.static/yaml/data-intents.yaml"
 ```
-
 
 ## Instructions
 
@@ -44,6 +43,8 @@ Instructions are primarily utilized by the [Player](./06-player.md) interface. C
 !!! important
     *Immutable*, *inanimate* Assets, while implementing an `update` method, receive a null Message. All other Asset categories implement a non-trivial `update` method.
 
+Action and Direction may determine ingame events, such as an Asset moving across the screen or starting an attack animation. In the case of Sheets, Action and Direction jointly determine the coordinates of the Asset frame to use.
+
 ## Intents
 
 An Intent has atleast one of the following: *action*, *direction*, *disposition* and *communication*.
@@ -60,9 +61,9 @@ Possibly null.
 
 **Disposition**
 
-A Disposition is an internal state attribute of a Sprite. This attribute determines the state progression of non-playable character. For example, Sprites with a Disposition of `IDLE` cannot enter into the `ATTACK` Disposition without first passing through a `SHOCK` or `THREATEN` Disposition, and a Sprite cannot engage in the `SLASH` or `SHOOT` Action without first being in the `ATTACK` Disposition. 
+A Disposition is an internal state attribute of a Sprite. This attribute determines the state progression of non-playable character. For example, Sprites with a Disposition of `idle` cannot enter into the `attack` Disposition without first passing through a `recoil` or `threaten` Disposition, and a Sprite cannot engage in the `slash` or `shoot` Action without first being in the `attack` Disposition. 
 
-As can be seen from this example, Disposition manages the possible states (in particular, Actions) that can be reached from the Sprite's current state. Disposition is covered more thoroughly in the [Sprites documentation](./05-sprites.md), along with a complete map of Dispositions and Actions.
+As can be seen from this example, Disposition manages the possible states (in particular, Actions) that can be reached from the Sprite's current state, i.e. Dispositions govern the logic of state transitions. The Disposition transition tree is covered more thoroughly in the [Sprites documentation](./05-sprites.md).
 
 **Communication**
 
