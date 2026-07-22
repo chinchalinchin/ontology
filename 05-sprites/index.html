@@ -486,17 +486,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -728,17 +717,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -796,7 +774,7 @@
 </ul>
 </li>
 <li>Memory: <code>Dict[str, Any]</code></li>
-<li>Goal: `Dict[str, Any]</li>
+<li>Goal: <code>Dict[str, Any]</code></li>
 <li>Frame: <code>int</code></li>
 </ul>
 <p>Frame is an integer that tracks the current animation frame. It's maximum value is dependent on the Action state. For example, if a Sprite is in the <code>walk</code> Action state, then Frame will cycle from 0 to <code>walk.MaxFrames</code>.</p>
@@ -840,7 +818,7 @@
 <h3 id="extension">Extension</h3>
 <p>A Extension is a pseudo-state that does not factor into the Asset frame key calculation directly. It may indirectly alter the Sprite (Action, Direction) transitions or other properties of the Sprites, e.g. entering into the <code>sprint</code> Extension state increases the velocity of the <code>(walk, *)</code> states, but does not factor into the animation speed. Similarly, entering into the <code>interact</code> Extension state does not alter the Sprite's current animation in a way, but instead allows the Sprite to open a Chest or Door, for example.</p>
 <h3 id="disposition">Disposition</h3>
-<p>A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's <em>Disposition</em> determines its State Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.</p>
+<p>A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's <em>Disposition</em> determines its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.</p>
 <ol>
 <li><code>attack</code><ul>
 <li>Reachable Actions: <code>cast, thrust, slash, shoot</code></li>
@@ -899,13 +877,36 @@
 </ul>
 </li>
 </ol>
-<p><strong>Default Disposition Tree</strong></p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/examples/default-disposition-tree.yaml&quot;</span>
+<p><strong>Default Disposition Transition Matrix</strong></p>
+<p>Provided below is the Disposition Transition Matrix bundled with the application by default,</p>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/examples/default-disposition-matrix.yaml&quot;</span>
 </code></pre></div>
-<p><strong>Dispositional Scripting</strong></p>
-<p>The <code>condition</code> for each state transition is given </p>
-<h3 id="_1"></h3>
-<p>asdf</p>
+<p><strong>Transition Scripting</strong></p>
+<p>The <code>condition</code> for each Disposition transition is given in a simple truth-valued language that admits the logical operations and terms,</p>
+<p>Operations:</p>
+<ul>
+<li><code>==</code>: equivalence</li>
+<li><code>!=</code>: non-equivalence</li>
+<li><code>not</code>: negation</li>
+<li><code>or</code>: disjunction</li>
+<li><code>and</code>: conjunction</li>
+</ul>
+<p>Terms:</p>
+<ul>
+<li><code>None</code>: null value</li>
+<li><code>str</code>: constants</li>
+<li><code>sprite.&lt;state&gt;</code>: variables</li>
+<li><code>sprites[&lt;sprite-name&gt;].&lt;state&gt;</code></li>
+</ul>
+<p>In the default Disposition Transition matrix given above, the transition from <code>attack</code> to <code>hunt</code> is conditional on the following,</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.intention.goal.target</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goal.target.category == &#39;sprite&#39;</span>
+</code></pre></div>
+<p><code>sprite</code> is a reference to the Sprite which is currently processing the given Disposition. Thus, the Sprite's Disposition state will transition to <code>hunt</code> if the Sprite currently does not have a target, but remembers having a target of category <code>sprite</code>.</p>
+<p>In another example, the transition from <code>attack</code> to <code>loot</code> in the default Disposition Transition matrix is given by,</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[sprite.target.name].mutators.triggers.dead</span>
+</code></pre></div>
+<p><code>sprites</code> is a reference to a dictionary of all ingame Sprites keyed by their identifying and unique <code>name</code>, which provides access to their3 state attributes.</p>
 <h2 id="memory">Memory</h2>
 <ul>
 <li><code>target</code>: <ul>
