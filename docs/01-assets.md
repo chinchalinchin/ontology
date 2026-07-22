@@ -424,7 +424,7 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
 - Position: `Tuple[int, int]`
 - LayerKey: `str`
 - Frame: `int`
-- Intention: `Dict[str, str]`
+- Intention: `Dict[str, Any]`
     - Direction: `Direction`
     - Action: `Action`
     - Disposition: `Disposition`

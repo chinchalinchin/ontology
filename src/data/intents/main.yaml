@@ -40,13 +40,13 @@ intents:
           conditions:  
         - next: hunt
           conditions: 
-            - sprite.disposition == 'attack'
-            - sprite.target is None
-            - sprite.memory.target is not None
+            - sprite.intention.disposition == 'attack'
+            - not sprite.intention.goal.target
+            - sprite.memory.target
         - next: loot
           condition: 
-            - sprite.disposition == 'atack'
-            - sprite.target.mutators.dead.triggered
+            - sprite.intention.disposition == 'atack'
+            - sprite.target.mutators.triggers.dead
     attract:
       transitions:
         - next: 

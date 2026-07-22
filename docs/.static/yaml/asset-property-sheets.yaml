@@ -1,0 +1,12 @@
+sheets:
+  pixies:
+    count: Frame Count of Pixie Sheets
+  sprites:
+    <action-key>:
+      <direction-key>:
+        hitboxes:
+          - relX: Relative Horizontal Position of Hitbox
+            relY: Relative Vertcal Position of Hitbox
+            w: Width of Hitbox
+            h: Height of Hitbox
+            frame: Frame of Animation Row Where Hitbox is Present

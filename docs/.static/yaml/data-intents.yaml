@@ -19,3 +19,5 @@ intents:
       transitions:
         - next: <next-disposition-key>
           conditions: <condition-for-transition>
+  extension:
+    <key>:
