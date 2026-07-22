@@ -25,7 +25,7 @@
     
     
       
-        <title>Intents - Ontology</title>
+        <title>Messages - Ontology</title>
       
     
     
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Intents
+              Messages
             
           </span>
         </div>
@@ -343,7 +343,7 @@
   <span class="md-ellipsis">
     
   
-    Intents
+    Messages
   
 
     
@@ -361,7 +361,7 @@
   <span class="md-ellipsis">
     
   
-    Intents
+    Messages
   
 
     
@@ -394,23 +394,6 @@
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Schema">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#intent-schema" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Intent Schema
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -648,23 +631,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Schema">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#intent-schema" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Intent Schema
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -744,10 +710,10 @@
 
 
 <h1 id="ontology-messages">Ontology: Messages</h1>
-<p>Sprites consume Messages. Messages represent mutable state changes. Messages are generated and passed to Assets via the game loop. All Assets implement an <code>update</code> method that receives as argument an Instruction object. This method is called during the game loop for each Asset. </p>
+<p>Sprites consume Messages. Messages represent mutable state changes. Messages are generated and passed to Assets via the game loop. Messages are divided into Instructions and Intents.</p>
 <p>The base class for a message is Instruction. Instructions are extended into Intents for more complex operations, i.e. all Intents are Instructions, but not all Instructions are Intents. </p>
+<p>All Assets implement an <code>update</code> method that receives as argument an Instruction object. This method is called during the game loop for each Asset. </p>
 <h2 id="schema">Schema</h2>
-<h3 id="intent-schema">Intent Schema</h3>
 <ul>
 <li>Location: <code>/src/assets/intents/main.yaml</code></li>
 </ul>
@@ -783,6 +749,7 @@
 <p class="admonition-title">Important</p>
 <p><em>Immutable</em>, <em>inanimate</em> Assets, while implementing an <code>update</code> method, receive a null Message. All other Asset categories implement a non-trivial <code>update</code> method.</p>
 </div>
+<p>Action and Direction may determine ingame events, such as an Asset moving across the screen or starting an attack animation. In the case of Sheets, Action and Direction jointly determine the coordinates of the Asset frame to use.</p>
 <h2 id="intents">Intents</h2>
 <p>An Intent has atleast one of the following: <em>action</em>, <em>direction</em>, <em>disposition</em> and <em>communication</em>.</p>
 <h3 id="attributes_1">Attributes</h3>
@@ -791,8 +758,8 @@
 <p><strong>Direction</strong></p>
 <p>Possibly null.</p>
 <p><strong>Disposition</strong></p>
-<p>A Disposition is an internal state attribute of a Sprite. This attribute determines the state progression of non-playable character. For example, Sprites with a Disposition of <code>IDLE</code> cannot enter into the <code>ATTACK</code> Disposition without first passing through a <code>SHOCK</code> or <code>THREATEN</code> Disposition, and a Sprite cannot engage in the <code>SLASH</code> or <code>SHOOT</code> Action without first being in the <code>ATTACK</code> Disposition. </p>
-<p>As can be seen from this example, Disposition manages the possible states (in particular, Actions) that can be reached from the Sprite's current state. Disposition is covered more thoroughly in the <a href="../05-sprites/">Sprites documentation</a>, along with a complete map of Dispositions and Actions.</p>
+<p>A Disposition is an internal state attribute of a Sprite. This attribute determines the state progression of non-playable character. For example, Sprites with a Disposition of <code>idle</code> cannot enter into the <code>attack</code> Disposition without first passing through a <code>recoil</code> or <code>threaten</code> Disposition, and a Sprite cannot engage in the <code>slash</code> or <code>shoot</code> Action without first being in the <code>attack</code> Disposition. </p>
+<p>As can be seen from this example, Disposition manages the possible states (in particular, Actions) that can be reached from the Sprite's current state, i.e. Dispositions govern the logic of state transitions. The Disposition transition tree is covered more thoroughly in the <a href="../05-sprites/">Sprites documentation</a>.</p>
 <p><strong>Communication</strong></p>
 <p>Possibly null.</p>
 <p>A Communication contains a key to retrieve the content of a specific text file contained in <code>/src/data/intents/communications/&lt;plot-state&gt;.yaml#&lt;key&gt;</code>, where <code>&lt;plot-state&gt;</code>.</p>

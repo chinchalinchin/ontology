@@ -603,7 +603,7 @@
   <span class="md-ellipsis">
     
   
-    Intents
+    Messages
   
 
     
@@ -1020,6 +1020,10 @@
 
 
 <h1 id="ontology-assets">Ontology: Assets</h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>LPC Assets are bundled with the application by default.</p>
+</div>
 <p>This document serves to specify the Asset hierarchy and provide key definition for game terminology.</p>
 <div class="admonition note">
 <p class="admonition-title">Definition</p>
@@ -1311,13 +1315,49 @@
 <h2 id="sheets">Sheets</h2>
 <p><em>Sheets</em> are animate, mutable Assets. They are arranged in rows of frames. Sheets possess a <em>Frame</em> attribute that iterates over a particular row of frames as the game loop progresses. </p>
 <p><strong>Direction and Action</strong></p>
-<p>For any sheet composed of more than one row (i.e. all types of Sheets except <em>Pixies</em>), the rows of that Sheet are identified by <em>direction</em> and <em>action</em>. These categories are enumerated below. </p>
+<p>For any sheet composed of more than one row (i.e. all types of Sheets except <em>Pixies</em>), the rows of that Sheet are identified by <em>Direction</em>, <em>Action</em> and <em>Frame</em>. </p>
+<p>The default (<em>LPC</em>) categories are enumerated below. The categories can be configured in the <code>/src/data/intents/main.yaml</code> file. See <a href="../04-messages/">Intents documentation</a> for more information. </p>
 <ul>
-<li>Direction: <code>enum[UP | LEFT | DOWN | RIGHT]</code></li>
-<li>Action: <code>enum[CAST | THRUST | WALK | SLASH | SHOOT | DIE]</code></li>
+<li>Direction: <code>Enum[up, left, down, right]</code></li>
+<li>Action: <code>Enum[cast, thrust, walk, slash, shoot, die]</code></li>
+<li>Frame: <code>Interval[0, n(Action)]</code></li>
 </ul>
+<p>Where <code>n(Action)</code> is the number of frames per Action (e.g., <code>cast</code> might have 7 frames while <code>shoot</code> has 16 frames; this is the case for the <em>LPC</em> spritesheet specification.)</p>
+<p><strong>IMPORTANT</strong> For Sheets, it is assumed coordinates of a frame are <em>completely determined</em> (holding the Sheet Asset file constant) by Action, Direction and Frame. It is assumed Actions form contiguous rows in the Sheets and each Action row group is further partitioned by Direction. It is further assumed the frames of the (Action, Direction) animation are organized in horizontal cells of equal length. To illustrate the meaning of this, the default LPC Sheet configurations are shown below,</p>
+<ul>
+<li>ROW #: <code>(Action, Direction)</code></li>
+<li>row 0: <code>(cast, up)</code></li>
+<li>row 1: <code>(cast, left)</code></li>
+<li>row 2: <code>(cast, down)</code></li>
+<li>row 3: <code>(cast, right)</code></li>
+<li>row 4: <code>(thrust, up)</code></li>
+<li>row 5: <code>(thrust, left)</code></li>
+<li>row 6: <code>(thrust, down)</code></li>
+<li>row 7: <code>(thrust, right)</code></li>
+<li>row 8: <code>(walk, up)</code></li>
+<li>row 9: <code>(walk, left)</code></li>
+<li>row 10: <code>(walk, down)</code></li>
+<li>row 11: <code>(walk, right)</code></li>
+<li>row 12: <code>(slash, up)</code></li>
+<li>row 13: <code>(slash, left)</code></li>
+<li>row 14: <code>(slash, down)</code></li>
+<li>row 15: <code>(slash, right)</code></li>
+<li>row 16: <code>(shoot, up)</code></li>
+<li>row 17: <code>(shoot, left)</code></li>
+<li>row 18: <code>(shoot, down)</code></li>
+<li>row 19: <code>(shoot, right)</code></li>
+<li>row 20: <code>(die, down)</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>die</code> is only associated with a single row in the LPC specification.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The row indexing starts at 0.</p>
+</div>
 <h3 id="pixies">Pixies</h3>
-<p><em>Pixies</em> are <em>Sheets</em> over four rows of frames. Pixies always have the same number of frames in each row, determined by the <em>MaxFrame</em> property. They are meant to encapsulate simple Characters, such as animals, bugs, or other creatures.</p>
+<p><em>Pixies</em> are <em>Sheets</em> over four rows of frames. Pixies always have the same number of frames in each row, determined by the <em>MaxFrame</em> property. Pixies only have one Action state: <code>walk</code>. They are meant to encapsulate simple Characters, such as animals, bugs, or other creatures. </p>
 <ul>
 <li>AssetKey: <code>str</code></li>
 </ul>
@@ -1326,11 +1366,12 @@
 <li>Dimensions <code>Tuple[w, h]</code></li>
 <li>Hitboxes: <code>List[Tuple[relX, relY, w, h]]</code></li>
 <li>MaxFrame: <code>int</code></li>
+<li>Action: <code>walk</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
 <li>Name: <code>str</code></li>
-<li>Position: <code>tuple[x, y]</code></li>
+<li>Position: <code>Tuple[x, y]</code></li>
 <li>LayerKey: <code>str</code></li>
 <li>Direction: <code>Direction</code></li>
 <li>Frame: <code>int</code></li>
@@ -1340,24 +1381,23 @@
 <li>FrameKey(Key, Direction, Frame) -&gt; <code>&lt;asset-key&gt;-&lt;direction&gt;-&lt;frame&gt;</code></li>
 </ul>
 <h3 id="sprites">Sprites</h3>
-<p><em>Sprites</em> are <em>Sheets</em>  over multiple rows of frames. <em>Sprites</em> have a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, non-playable characters and enemies.</p>
+<p><em>Sprites</em> are <em>Sheets</em> over multiple rows of frames. <em>Sprites</em> have a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, non-playable characters and enemies.</p>
 <p>Some of the attributes and characteristics of a Sprite are presented here without further explanation, for the sake of completeness. See <a href="../05-sprites/">Sprite documentation</a> for a more thorough explanation of Sprite mechanics.</p>
-<p><strong>Player, NPCs and Enemies</strong></p>
-<p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. </p>
-<ul>
-<li>AssetKey: <code>str</code></li>
-</ul>
 <p><strong>LPC Frames</strong></p>
 <p>The LPC specification defines the following frames per Sprite action,</p>
 <ul>
-<li><code>CAST</code>: MaxFrame = 7</li>
-<li><code>THRUST</code>: MaxFrame = 8</li>
-<li><code>WALK</code>: MaxFrame = 9</li>
-<li><code>SLASH</code>: MaxFrame = 6</li>
-<li><code>SHOOT</code>: MacFrame = 13</li>
-<li><code>DIE</code>: MacFrame = 6</li>
+<li><code>cast</code>: MaxFrame = 7</li>
+<li><code>thrust</code>: MaxFrame = 8</li>
+<li><code>walk</code>: MaxFrame = 9</li>
+<li><code>slash</code>: MaxFrame = 6</li>
+<li><code>shoot</code>: MacFrame = 13</li>
+<li><code>die</code>: MacFrame = 6</li>
 </ul>
-<p>LPC Assets are bundled with the application by default.</p>
+<p><strong>Player, NPCs and Enemies</strong></p>
+<p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. See <a href="../04-messages/">Intents documentation</a> for more information on Intents. See <a href="../06-player/">Player documentation</a> for more information on the Player.</p>
+<ul>
+<li>AssetKey: <code>str</code></li>
+</ul>
 <p><strong>Properties</strong></p>
 <ul>
 <li>Dimension: <code>tuple[w, h]</code></li>
