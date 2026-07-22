@@ -1,22 +1,7 @@
 intents:
   # -------------------------- ACTIONS
   actions:
-    cast:
-      row: <row-index>
-      frames: <frames-per-row>
-    thrust:
-      row: <row-index>
-      frames: <frames-per-row>
-    walk:
-      row: <row-index>
-      frames: <frames-per-row>
-    slash:
-      row: <row-index>
-      frames: <frames-per-row>
-    shoot:
-      row: <row-index>
-      frames: <frames-per-row>
-    die:
+    <key>:
       row: <row-index>
       frames: <frames-per-row>
   # -------------------------- COMMUNICATIONS
@@ -24,17 +9,13 @@ intents:
     - <plot-state-key>
   # -------------------------- DIRECTIONS
   directions:
-    up:
-      offset: <row-offset>
-    left:
-      offset: <row-offset>
-    down:
-      offset: <row-offset>
-    right:
+    <key>:
       offset: <row-offset>
   # -------------------------- DISPOSITIONS
   dispositions:
     <key>:
+      actions:
+        - <reachable-action-key>
       transitions:
         - next: <next-disposition-key>
           conditions: <condition-for-transition>

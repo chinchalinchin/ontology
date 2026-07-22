@@ -364,7 +364,9 @@ Where `n(Action)` is the number of frames per Action (e.g., `cast` might have 7 
 
 ### Pixies
 
-*Pixies* are *Sheets* over four rows of frames. Pixies always have the same number of frames in each row, determined by the *MaxFrame* property. Pixies only have one Action state: `walk`. They are meant to encapsulate simple Characters, such as animals, bugs, or other creatures. 
+*Pixies* are *Sheets* over four rows of frames. Pixies always have the same number of frames in each row, determined by the *MaxFrame* property. Pixies only have one Action state: `walk`. The rows of their Sheet Asset file are assumed to be partitioned over Direction only. 
+
+*Pixies* are meant to encapsulate simple Characters, such as animals, bugs, or other creatures. 
 
 - AssetKey: `str`
 
@@ -412,14 +414,14 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
 
 **Properties**
 
-- Dimension: `tuple[w, h]`
-- Hitboxes: `List[Tuple[relX, relY, w, h]]`
+- Dimension: `tuple[int, int]`
+- Hitboxes: `List[Tuple[int, int, int, int]]`
 - MaxFrame: `Dict[str, int]`
 
 **State**
 
 - Name: `str`
-- Position: `Tuple[x, y]`
+- Position: `Tuple[int, int]`
 - LayerKey: `str`
 - Frame: `int`
 - Intention: `Dict[str, str]`
