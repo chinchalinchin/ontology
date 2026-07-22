@@ -465,10 +465,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#disposition" class="md-nav__link">
+  <a href="#dispositions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Disposition
+        Dispositions
       
     </span>
   </a>
@@ -685,10 +685,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#disposition" class="md-nav__link">
+  <a href="#dispositions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Disposition
+        Dispositions
       
     </span>
   </a>
@@ -746,26 +746,30 @@
 <li>Position: <code>Tuple[int, int]</code></li>
 <li>Layer: <code>str</code></li>
 <li>Intention: <code>Dict[str, str]</code></li>
+<li>Mutators: <code>Dict[str, Dict[str, Union[int, double, bool]]]</code></li>
 </ul>
 <h2 id="mutators">Mutators</h2>
+<p><em>Mutators</em> are attributes that alter Sprite behavior.</p>
 <h3 id="triggers">Triggers</h3>
 <ul>
 <li><code>dead.triggered</code>: Triggered if a Sprite dies.</li>
 <li><code>struck.triggered</code>: Triggered if a Sprite collides with a hitbox.</li>
-<li><code>frightened.triggered</code>: <ul>
-<li>Triggered if Sprite's health dips below <code>limit</code></li>
-<li>Tr</li>
+<li><code>frightened.triggered</code>: Triggered for the logical disjunction of the following conditions:<ul>
+<li>Triggered if Sprite's health dips below <code>frightened.limit</code></li>
+<li>Triggered if Sprite is surrounded by more than <code>frightened.enemy</code> enemies with the pixel distance of <code>frightened.radius</code>.</li>
 </ul>
 </li>
 </ul>
 <h3 id="mutator-paramaeters">Mutator Paramaeters</h3>
 <ul>
-<li><code>frightened.radius</code>: Radius of enemy separation within which the Sprite triggers the <code>frightened</code> mutator. Measured in pixels.</li>
+<li><code>frightened.radius</code>: Radius of separation within which the Sprite triggers the <code>frightened</code> mutator. Measured in pixels.</li>
 <li><code>frightened.limit</code>: Percentage of health below which Sprite triggers the <code>frightened</code> mutator.</li>
 <li><code>frightened.enemy</code>: Number of enemies within the <code>frightened.radius</code> that must be present to trigger the <code>frightened</code> mutator.</li>
 </ul>
 <h2 id="intentions">Intentions</h2>
-<h3 id="disposition">Disposition</h3>
+<p><em>Intentions</em> are an internal State data structure that determines and governs a Sprite's core logic. The two most basic Intentions, Direction and Action, determine the current animation of the Sprite. All Sheet assets are given an Intention state with Direction and Action that is updated by the gameplay loop when deployed. Sprites, however, have a more complex Intention state, which provides a greater variety of behavior and possibility of emergent gameplay.</p>
+<h3 id="dispositions">Dispositions</h3>
+<p>A Sprite's <em>Disposition</em> determines its State Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below,</p>
 <ol>
 <li><code>attack</code></li>
 <li><code>attract</code></li>
@@ -782,6 +786,7 @@
 <li><code>threaten</code></li>
 <li><code>wander</code></li>
 </ol>
+<p><strong>Default Disposition Tree</strong></p>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/examples/default-disposition-tree.yaml&quot;</span>
 </code></pre></div>
 <h3 id="memory">Memory</h3>
