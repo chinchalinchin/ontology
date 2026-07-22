@@ -7,6 +7,9 @@ sheets:
       position:
         x: 100
         y: 100
+      intention:
+        action: null
+        direction: null
   # ------------------------------------------- SPRITES
   sprites:
     - name: test
@@ -23,9 +26,16 @@ sheets:
       intention:
         action: null
         direction: null
+        extension: null
         disposition: null
+        motivation: null
         communication: null
+        goal: null
       memory:
         target: null
         communications: 
-          - something to say
+          - insult
+          # unforgettable
+          - greeting
+      inventory: 
+        null

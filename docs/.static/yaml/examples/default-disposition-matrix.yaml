@@ -6,6 +6,7 @@ intents:
         - slash
         - shoot
         - thrust
+      extensions: null
       transitions:
         - next: attack
           conditions:  
@@ -18,21 +19,34 @@ intents:
           condition: 
             - sprites[sprite.target.name].mutators.triggers.dead
     attract:
+      actions: null
+      extensions:
+        - interact
       transitions:
-        - next: 
+        - next: barter
           condition:
+        - next: communicate
+          condition: sprite.memory.communications
     barter:
       transitions: 
         - next:
           condition:
     escape: 
+      actions: null
+      extensions: null
       transitions:
         - next: escape
           condition: 
             - sprite.disposition == 'escape' 
             - sprite.target.disposition == 'attack'
         - next: return
-          condition: sprite.
+          condition: sprite
+      communicate:
+        actions: null
+        extensions: null
+        transitions:
+          - next: 
+            condition: 
     find: 
       transitions:
         - next: loot

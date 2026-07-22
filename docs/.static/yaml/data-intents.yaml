@@ -16,8 +16,14 @@ intents:
     <key>:
       actions:
         - <reachable-action-key>
+      extensions:
+        - <reachable-extension-key>
       transitions:
         - next: <next-disposition-key>
           conditions: <condition-for-transition>
-  extension:
+  # -------------------------- EXTENSIONS
+  extensions:
     <key>:
+  # -------------------------- MOTIVATIONS
+  motivations:
+    <key>

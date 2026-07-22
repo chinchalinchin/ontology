@@ -31,7 +31,9 @@ intents:
       offset: 3
   # -------------------------- COMMUNICATIONS
   communications: 
-    - plot-00
+    plots:
+      - a
+      - b
   # -------------------------- DISPOSITIONS
   dispositions:
     attack:
@@ -59,6 +61,12 @@ intents:
       transitions: 
         - next:
           condition:
+    communicate:
+      actions: null
+      extensions: null
+      transitions:
+        - next: 
+          condition: 
     escape: 
       transitions:
         - next: escape
@@ -133,3 +141,12 @@ intents:
       transitions:
         - next: recoil
           condition: 
+  # -------------------------- EXTENSIONS
+  extensions:
+    interact: null
+    speak: null
+    sprint: null
+  # -------------------------- MOTIVATIONS
+  motivations:
+    profit:
+    

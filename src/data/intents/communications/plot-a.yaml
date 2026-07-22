@@ -4,12 +4,12 @@ busy:
       - idle
       - meander
   content: Away with you! I am engaged in endeavors!
-hello:
+greeting:
   conditions: 
     disposition:
       - idle
       - attract
-      - meander
+      - wander
     content: Good morrow, neighbor!
 insult:
   conditions:

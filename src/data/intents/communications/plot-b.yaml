@@ -1,0 +1,19 @@
+busy:
+  conditions:
+    disposition: 
+      - idle
+      - wander
+  content: Go away!
+greeting:
+  conditions: 
+    disposition:
+      - idle
+      - attract
+      - wander
+    content: Wonderful day!
+insult:
+  conditions:
+    disposition:
+      - threaten
+      - mock
+    content: What a simpleton!
