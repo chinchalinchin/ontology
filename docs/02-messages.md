@@ -18,7 +18,7 @@ All Assets implement an `update` method that receives as argument an Instruction
 
 An Instruction has a Direction and Action. 
 
-Instructions are primarily utilized by the [Player](./06-player.md) interface. Controller mappings are converted into Instructions, which are then passed to the Player Sprite during the game loop. In addition, Instructions are utilized by mutable, inanimate Objects, such as Cursors and Crates, which change their position state within the game loop and do not require complex handling.
+Instructions are primarily utilized by the [Player](./04-player.md) interface. Controller mappings are converted into Instructions, which are then passed to the Player Sprite during the game loop. In addition, Instructions are utilized by mutable, inanimate Objects, such as Cursors and Crates, which change their position state within the game loop and do not require complex handling.
 
 ### Attributes
 
@@ -63,7 +63,7 @@ Possibly null.
 
 A Disposition is an internal state attribute of a Sprite. This attribute determines the state progression of non-playable character. For example, Sprites with a Disposition of `idle` cannot enter into the `attack` Disposition without first passing through a `recoil` or `threaten` Disposition, and a Sprite cannot engage in the `slash` or `shoot` Action without first being in the `attack` Disposition. 
 
-As can be seen from this example, Disposition manages the possible states (in particular, Actions) that can be reached from the Sprite's current state, i.e. Dispositions govern the logic of state transitions. The Disposition transition tree is covered more thoroughly in the [Sprites documentation](./05-sprites.md).
+As can be seen from this example, Disposition manages the possible states (in particular, Actions) that can be reached from the Sprite's current state, i.e. Dispositions govern the logic of state transitions. The Disposition transition tree is covered more thoroughly in the [Sprites documentation](./03-sprites.md).
 
 **Communication**
 

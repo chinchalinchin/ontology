@@ -89,7 +89,7 @@ TODO
 
 ## Intentions
 
-*Intentions* are an internal State data structure that determines and governs a Sprite's core logic. The two most basic Intentions, Direction and Action, determine the current animation of the Sprite. All Sheet assets are given an Intention state with a Direction and Action that is updated by the gameplay loop when deployed. Sprites, however, have a more complex internal state, represented as Intentions, which provides a greater variety of behavior and enhanced possibility of emergent gameplay.
+*Intentions* are an internal State data structure that governs a Sprite's core logic. The two most basic Intentions, Direction and Action, determine the current animation of the Sprite. All Sheet Assets, when deployed on a Board, are given an Intention state with a Direction and Action that is updated by the gameplay loop. Sprites, however, have a more complex internal state, represented by the other attributes of Intentions, which in turn provides a greater variety of behavior and enhanced possibility of emergent gameplay.
 
 The default Actions and Directions for the LPC specification are,
 
@@ -106,11 +106,13 @@ The complete Intention State for a Sprite is given by the tuple,
 
     (Action, Direction, Extension, Disposition, Motivation)
 
-The dimensions of Intention are discussed in more detail below.
+The attributes of Intention are discussed in more detail below.
 
 ### Extension
 
-A Extension is a pseudo-state that does not factor into the Asset frame key calculation directly. It may indirectly alter the Sprite (Action, Direction) transitions or other properties of the Sprites, e.g. entering into the `sprint` Extension state increases the velocity of the `(walk, *)` states, but does not factor into the animation speed. Similarly, entering into the `interact` Extension state does not alter the Sprite's current animation in a way, but instead allows the Sprite to open a Chest or Door, for example.
+A Extension is a pseudo-state that does not factor into the Asset frame key calculation directly. It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the `sprint` Extension state increases the velocity of the `(walk, *)` states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the `interact` Extension state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.
+
+The default Extension states are enumerated below,
 
 - `interact`
 - `speak`
@@ -119,7 +121,7 @@ A Extension is a pseudo-state that does not factor into the Asset frame key calc
 ### Disposition
 
 !!! importatnt
-    The Player state does not observe the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to Instructions (a subset of Intents). See [Player documentation](./06-player.md) for more information on the Player. See [Instructions documentation](./04-messages.md) for more information on Instructions.
+    The Player state does not observe the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to Instructions (a subset of Intents). See [Player documentation](./04-player.md) for more information on the Player. See [Instructions documentation](./02-messages.md#instructions) for more information on Instructions.
     
 A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's *Disposition* determines its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.
 
@@ -234,6 +236,15 @@ In another example, the transition from `attack` to `loot` in the default Dispos
 ### Motivation
 
 Motivations are long-term variables that modulate the Disposition Transition matrix.
+
+The default Motivations are enumerated below,
+
+- `conquest`
+- `profit`
+- `survival`
+- `love`
+- `revenge`
+- `rebellion`
 
 ### Communication
 

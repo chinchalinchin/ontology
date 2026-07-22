@@ -27,7 +27,7 @@ In addition, Assets are divided into several categories. See [Assets](./01-asset
 - Sheet
 - Tile
 
-Assets are placed in the `/src/assets/<category>/` directory and then added and configured to the Asset category index `/src/assets/<category>/main.yaml`. See [Schema](./03-schema.md) for more information on each Asset category index schema.
+Assets are placed in the `/src/assets/<category>/` directory and then added and configured to the Asset category index `/src/assets/<category>/main.yaml`. See [Asset Schema](./01-assets.md#schemas) for more information on each Asset category index schema.
 
 The index schema for each Asset configures its *Properties*, i.e. its static attributes that are constant and do not change as a result of gameplay.
 

@@ -18,15 +18,22 @@ intents:
     plots:
       - a
       - b
+  # --------------------------
+  # --------------------------
   # -------------------------- DISPOSITIONS
   dispositions:
+    # ------------------------
+    # ------------------------ ATTACK
     attack:
+      # ---------------------- REACHABLE ACTIONS
       actions:
         - cast
         - slash
         - shoot
         - thrust
+      # ---------------------- REACHABLE EXTENSIONS
       extensions: null
+      # ---------------------- TRANSITIONS
       transitions:
         - next: attack
           conditions:  
@@ -38,10 +45,15 @@ intents:
         - next: loot
           condition: 
             - sprites[sprite.target.name].mutators.triggers.dead
+    # ------------------------
+    # ------------------------ ATTRACT
     attract:
+      # ---------------------- REACHABLE ACTIONS
       actions: null
+      # ---------------------- REACHABLE EXTENSIONS
       extensions: 
         - interact
+      # ---------------------- TRANSITIONS
       transitions:
         - next: barter
           condition: 
@@ -138,6 +150,11 @@ intents:
     sprint: null
   # -------------------------- MOTIVATIONS
   motivations:
-    profit:
+    conquest: null
+    profit: null
+    survival: null
+    love: null
+    revenge: null
+    rebellion: null
     
     

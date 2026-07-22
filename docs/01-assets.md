@@ -39,7 +39,7 @@ assets % tree -L 2
     └── main.yaml
 ```
 
-The `main.yaml` files in each subdirectory conform to the [Asset property schema](./02-properties.md).
+The `main.yaml` files in each subdirectory conform to the [Asset property schemas](#schemas).
 
 **Keys**
 
@@ -323,7 +323,7 @@ Some Effects are brief (e.g. explosions or magic effects), while others loop thr
 
 For any sheet composed of more than one row (i.e. all types of Sheets except *Pixies*), the rows of that Sheet are identified by *Direction*, *Action* and *Frame*. 
 
-The default (*LPC*) categories are enumerated below. The categories can be configured in the `/src/data/intents/main.yaml` file. See [Intents documentation](./04-messages.md) for more information. 
+The default (*LPC*) categories are enumerated below. The categories can be configured in the `/src/data/intents/main.yaml` file. See [Intents documentation](./02-messages.md#intents) for more information. 
 
 - Direction: `Enum[up, left, down, right]`
 - Action: `Enum[cast, thrust, walk, slash, shoot, die]`
@@ -393,7 +393,7 @@ Where `n(Action)` is the number of frames per Action (e.g., `cast` might have 7 
 
 *Sprites* are *Sheets* over multiple rows of frames. *Sprites* have a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, non-playable characters and enemies.
 
-Some of the attributes and characteristics of a Sprite are presented here without further explanation, for the sake of completeness. See [Sprite documentation](./05-sprites.md) for a more thorough explanation of Sprite mechanics.
+Some of the attributes and characteristics of a Sprite are presented here without further explanation, for the sake of completeness. See [Sprite documentation](./03-sprites.md) for a more thorough explanation of Sprite mechanics.
 
 **LPC Frames**
 
@@ -408,7 +408,7 @@ The LPC specification defines the following frames per Sprite action,
 
 **Player, NPCs and Enemies**
 
-NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. See [Intents documentation](./04-messages.md) for more information on Intents. See [Player documentation](./06-player.md) for more information on the Player.
+NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. See [Intents documentation](./02-messages.md#intents) for more information on Intents. See [Player documentation](./04-player.md) for more information on the Player.
 
 - AssetKey: `str`
 
@@ -444,3 +444,69 @@ TODO
 ## Sounds
 
 TODO
+
+
+## Schemas
+
+### Properties: Tile Properties
+
+- Location: `/src/assets/tiles/main.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/asset-property-tiles.yaml"
+```
+
+### Properties: Objects
+
+- Location: `/src/assets/objects/main.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/asset-property-objects.yaml"
+```
+
+### Properties: Effects
+
+- Location: `/src/assets/effects/main.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/asset-property-effects.yaml"
+```
+
+### Properties: Sheets
+
+- Location: `/src/assets/sheets/main.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/asset-property-sheets.yaml"
+
+
+## Immutable Inanimate State
+
+- Location: `/src/data/boards/<board>/immutable/inanimate.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/asset-state-immutable-inanimate.yaml"
+```
+
+### State: Immutable, Inanimate
+
+- Location: `/src/data/boards/<board>/immutable/animate.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/asset-state-immutable-animate.yaml"
+```
+## State: Mutable, Inanimate
+
+- Location: `/src/data/boards/<board>/mutable/inanimate.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/asset-state-mutable-inanimate.yaml"
+```
+
+## State: Mutable, Animate
+
+- Location: `/src/data/boards/<boards>/animate.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/asset-state-mutable-animate.yaml"
+```
