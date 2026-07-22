@@ -486,6 +486,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -496,6 +507,34 @@
     <span class="md-ellipsis">
       
         Memory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Memory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#communications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Communications
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inventory
       
     </span>
   </a>
@@ -717,6 +756,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -727,6 +777,34 @@
     <span class="md-ellipsis">
       
         Memory
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Memory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#communications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Communications
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#inventory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inventory
       
     </span>
   </a>
@@ -754,11 +832,7 @@
 
 
 <h1 id="ontology-sprites">Ontology: Sprites</h1>
-<p>Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, unique in their deployment, are the most important Asset to the gameplay loop, as the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another and the Player's presence. </p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The Player state does not observe the Disposition transition matrix; the Player state is entirely altered by polling the user's input and mapping input to Instructions. See <a href="../06-player/">Player documentation</a> for more information.</p>
-</div>
+<p>Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the gameplay loop and thus have many unique attributes and methods, as the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. </p>
 <ul>
 <li>AssetKey: <code>str</code></li>
 </ul>
@@ -802,78 +876,122 @@
 <li><code>parameters.frightened.enemy</code>: Number of enemies within the <code>parameters.frightened.radius</code> that must be present to trigger the <code>triggers.frightened</code> mutator.</li>
 </ul>
 <h2 id="intentions">Intentions</h2>
-<p><em>Intentions</em> are an internal State data structure that determines and governs a Sprite's core logic. The two most basic Intentions, Direction and Action, determine the current animation of the Sprite. All Sheet assets are given an Intention state with Direction and Action that is updated by the gameplay loop when deployed. Sprites, however, have a more complex Intention state, which provides a greater variety of behavior and possibility of emergent gameplay.</p>
+<p><em>Intentions</em> are an internal State data structure that determines and governs a Sprite's core logic. The two most basic Intentions, Direction and Action, determine the current animation of the Sprite. All Sheet assets are given an Intention state with a Direction and Action that is updated by the gameplay loop when deployed. Sprites, however, have a more complex internal state, represented as Intentions, which provides a greater variety of behavior and enhanced possibility of emergent gameplay.</p>
 <p>The default Actions and Directions for the LPC specification are,</p>
 <ul>
 <li>Actions: <code>cast, thrust, walk, slash, shoot, die</code></li>
 <li>Directions: <code>up, down, left, right</code></li>
 </ul>
-<p>The complete Intention State for a Sprite is given by the tuple,</p>
-<pre><code>(Action, Direction, Extension, Disposition, Communication, Goal)
-</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>In the LPC specification, the <code>thrust</code> Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the <code>thrust</code> state.</p>
 </div>
+<p>The complete Intention State for a Sprite is given by the tuple,</p>
+<pre><code>(Action, Direction, Extension, Disposition, Motivation, Goal)
+</code></pre>
+<p>The dimensions of Intention are discussed in more detail below.</p>
 <h3 id="extension">Extension</h3>
 <p>A Extension is a pseudo-state that does not factor into the Asset frame key calculation directly. It may indirectly alter the Sprite (Action, Direction) transitions or other properties of the Sprites, e.g. entering into the <code>sprint</code> Extension state increases the velocity of the <code>(walk, *)</code> states, but does not factor into the animation speed. Similarly, entering into the <code>interact</code> Extension state does not alter the Sprite's current animation in a way, but instead allows the Sprite to open a Chest or Door, for example.</p>
+<ul>
+<li><code>interact</code></li>
+<li><code>speak</code></li>
+<li><code>sprint</code></li>
+</ul>
 <h3 id="disposition">Disposition</h3>
+<div class="admonition importatnt">
+<p class="admonition-title">Importatnt</p>
+<p>The Player state does not observe the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to Instructions (a subset of Intents). See <a href="../06-player/">Player documentation</a> for more information on the Player. See <a href="../04-messages/">Instructions documentation</a> for more information on Instructions.</p>
+</div>
 <p>A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's <em>Disposition</em> determines its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.</p>
 <ol>
 <li><code>attack</code><ul>
 <li>Reachable Actions: <code>cast, thrust, slash, shoot</code></li>
+<li>Reachable Dispostions: <code>attack, hunt, loot</code></li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 <li><code>attract</code><ul>
 <li>Reachable Actions: <code>walk</code></li>
+<li>Reachable Dispostions: <code>barter, communicate</code></li>
+<li>Reachable Extensions: <code>interact</code></li>
 </ul>
 </li>
 <li><code>barter</code><ul>
 <li>Reachable Actions: None</li>
+<li>Reachable Dispostions: None</li>
+<li>Reachable Extensions: None</li>
+</ul>
+</li>
+<li><code>communicate</code><ul>
+<li>Reachable Actions: None</li>
+<li>Reachable Dispostions: None</li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 <li><code>escape</code><ul>
 <li>Reachable Actions: <code>walk</code></li>
+<li>Reachable Dispostions: None</li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 <li><code>find</code><ul>
 <li>Reachable Actions: <code>walk, thrust</code></li>
+<li>Reachable Dispostions: None</li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 <li><code>follow</code><ul>
 <li>Reachable Actions: <code>walk</code></li>
+<li>Reachable Dispostions: None</li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 <li><code>idle</code><ul>
 <li>Reachable Actions: <code>walk</code></li>
+<li>Reachable Dispostions: None</li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 <li><code>interact</code><ul>
 <li>Reachable Actions: None</li>
+<li>Reachable Dispostions: None</li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 <li><code>loot</code> <ul>
 <li>Reachable Actions: None</li>
+<li>Reachable Dispostions: None</li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 <li><code>mock</code><ul>
 <li>Reachable Actions: None</li>
+<li>Reachable Dispostions: None</li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 <li><code>recoil</code><ul>
 <li>Reachable Actions: <code>die</code></li>
+<li>Reachable Dispostions: None</li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 <li><code>return</code><ul>
 <li>Reachable Actions: <code>walk</code></li>
+<li>Reachable Dispostions: <code>find</code></li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 <li><code>threaten</code><ul>
 <li>Reachable Actions: None</li>
+<li>Reachable Dispostions: <code>attack</code></li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 <li><code>wander</code><ul>
 <li>Reachable Actions: <code>walk</code></li>
+<li>Reachable Dispostions: None</li>
+<li>Reachable Extensions: None</li>
 </ul>
 </li>
 </ol>
@@ -903,19 +1021,39 @@
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goal.target.category == &#39;sprite&#39;</span>
 </code></pre></div>
 <p><code>sprite</code> is a reference to the Sprite which is currently processing the given Disposition. Thus, the Sprite's Disposition state will transition to <code>hunt</code> if the Sprite currently does not have a target, but remembers having a target of category <code>sprite</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The expression <code>not sprite.intention.goal.target</code> is a <em>truthy</em> expression, i.e. it is to be interpretted as existential claim. In other words, this expression evaluates to <code>true</code> if <code>sprite.intention.goal.target</code> does not exist. If the expression involves a List, e.g. <code>sprite.memory.communications</code>, this expression evaluates to <code>true</code> in the event it has more than 0 entries.</p>
+</div>
 <p>In another example, the transition from <code>attack</code> to <code>loot</code> in the default Disposition Transition matrix is given by,</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[sprite.target.name].mutators.triggers.dead</span>
 </code></pre></div>
-<p><code>sprites</code> is a reference to a dictionary of all ingame Sprites keyed by their identifying and unique <code>name</code>, which provides access to their3 state attributes.</p>
+<p><code>sprites</code> is a reference to a dictionary of all ingame Sprites keyed by their identifying and unique <code>name</code>, which provides access to their state attributes.</p>
+<h3 id="goal">Goal</h3>
+<ul>
+<li>Goal: Unique Identifier of Asset</li>
+<li>ExtensionKey: <code>Union[None, Action]</code></li>
+<li>ActionKey: <code>Union[None, Action]</code></li>
+</ul>
 <h2 id="memory">Memory</h2>
 <ul>
-<li><code>target</code>: <ul>
+<li><code>memory.target</code>: <ul>
 <li><code>category (chest | crate | plate | gate | door | sprite | pixie)</code>: Category of Sprite's current target.</li>
 <li><code>name</code>: Identifier of Sprite's current target.</li>
 </ul>
 </li>
-<li><code>communications</code>: List of dialogue saved in Sprite's memory.</li>
+<li><code>memory.communications</code>: List of dialogue saved in Sprite's memory.</li>
 </ul>
+<h3 id="communications">Communications</h3>
+<p>Under certain conditions based on the Sprite's Disposition, the gameplay loop delivers to the Sprite an Intent containing a Communication key. For example, a Sprite in the <code>mock</code> Disposition might receive a Communication key <code>insult</code>. This key gets stored at the <em>beginning</em> (0 index) of the <code>memory.communications</code> list. </p>
+<p>When a Sprite with a non-empty <code>memory.communications</code> enters into the <code>communicate</code> Disposition, the gameplay loop will then take the first entry out of this Sprites <code>memory.communications</code> list, delete it from this list and place it in the <code>intention.communication</code> cell. </p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The last entry in <code>memory.communications</code> is <em>never</em> deleted. The entry is termed <em>unforgettable</em>.</p>
+</div>
+<p>When a Sprite with a non-null <code>intention.communication</code> enters into the <code>speak</code> Extension, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the <code>intention.communication</code> cell.</p>
+<h2 id="inventory">Inventory</h2>
+<p>TODO</p>
 
 
 
