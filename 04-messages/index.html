@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/04-intents/">
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/04-messages/">
       
       
         <link rel="prev" href="../03-state/">
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ontology-intents" class="md-skip">
+        <a href="#ontology-messages" class="md-skip">
           Skip to content
         </a>
       
@@ -387,6 +387,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#intent-schema" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -396,57 +408,57 @@
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#intent-overview" class="md-nav__link">
+  <a href="#instructions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Intent Overview
+        Instructions
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Intent Overview">
+    <nav class="md-nav" aria-label="Instructions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#action" class="md-nav__link">
+  <a href="#attributes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Action
+        Attributes
       
     </span>
   </a>
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#direction" class="md-nav__link">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intents" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Direction
+        Intents
       
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Intents">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#disposition" class="md-nav__link">
+  <a href="#attributes_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Disposition
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#communication" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Communication
+        Attributes
       
     </span>
   </a>
@@ -628,6 +640,18 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schema">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#intent-schema" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -637,57 +661,57 @@
   </a>
   
 </li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#intent-overview" class="md-nav__link">
+  <a href="#instructions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Intent Overview
+        Instructions
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Intent Overview">
+    <nav class="md-nav" aria-label="Instructions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#action" class="md-nav__link">
+  <a href="#attributes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Action
+        Attributes
       
     </span>
   </a>
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#direction" class="md-nav__link">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intents" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Direction
+        Intents
       
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Intents">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#disposition" class="md-nav__link">
+  <a href="#attributes_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Disposition
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#communication" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Communication
+        Attributes
       
     </span>
   </a>
@@ -719,22 +743,20 @@
   
 
 
-<h1 id="ontology-intents">Ontology: Intents</h1>
-<p><em>Intent</em> represents a mutable state change for an Asset. Intents are passed to Assets via the game loop. All Assets implement an <code>update</code> method that receives as argument an Intent object. This method is called during the game loop for each Asset. </p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p><em>Immutable</em>, <em>inanimate</em> Assets, while implementing an <code>update</code> method, receive a null Intentn. All other Asset categories implement a non-trivial <code>update</code> method.</p>
-</div>
-<p>An Intent has atleast one of the following: <em>action</em>, <em>direction</em>, <em>disposition</em> and <em>communication</em>.</p>
-<h2 id="intent-schema">Intent Schema</h2>
+<h1 id="ontology-messages">Ontology: Messages</h1>
+<p>Sprites consume Messages. Messages represent mutable state changes. Messages are generated and passed to Assets via the game loop. All Assets implement an <code>update</code> method that receives as argument an Instruction object. This method is called during the game loop for each Asset. </p>
+<p>The base class for a message is Instruction. Instructions are extended into Intents for more complex operations, i.e. all Intents are Instructions, but not all Instructions are Intents. </p>
+<h2 id="schema">Schema</h2>
+<h3 id="intent-schema">Intent Schema</h3>
 <ul>
 <li>Location: <code>/src/assets/intents/main.yaml</code></li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-intents.yaml&quot;</span>
 </code></pre></div>
-<h2 id="intent-overview">Intent Overview</h2>
-<h3 id="action">Action</h3>
-<p>Possibly null.</p>
+<h2 id="instructions">Instructions</h2>
+<p>An Instruction has a Direction and Action. </p>
+<p>Instructions are primarily utilized by the <a href="../06-player/">Player</a> interface. Controller mappings are converted into Instructions, which are then passed to the Player Sprite during the game loop. In addition, Instructions are utilized by mutable, inanimate Objects, such as Cursors and Crates, which change their position state within the game loop and do not require complex handling.</p>
+<h3 id="attributes">Attributes</h3>
 <div class="admonition info">
 <p class="admonition-title">LPC Default</p>
 <p>The default Actions created for the LPC Assets is enumerated below,</p>
@@ -747,8 +769,6 @@
 <li>DIE</li>
 </ul>
 </div>
-<h3 id="direction">Direction</h3>
-<p>Possibly null.</p>
 <div class="admonition info">
 <p class="admonition-title">LPC Default</p>
 <p>The default Actions created for the LPC Assets is enumerated below,</p>
@@ -759,12 +779,23 @@
 <li>RIGHT</li>
 </ul>
 </div>
-<h3 id="disposition">Disposition</h3>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><em>Immutable</em>, <em>inanimate</em> Assets, while implementing an <code>update</code> method, receive a null Message. All other Asset categories implement a non-trivial <code>update</code> method.</p>
+</div>
+<h2 id="intents">Intents</h2>
+<p>An Intent has atleast one of the following: <em>action</em>, <em>direction</em>, <em>disposition</em> and <em>communication</em>.</p>
+<h3 id="attributes_1">Attributes</h3>
+<p><strong>Action</strong></p>
+<p>Possibly null.</p>
+<p><strong>Direction</strong></p>
+<p>Possibly null.</p>
+<p><strong>Disposition</strong></p>
 <p>A Disposition is an internal state attribute of a Sprite. This attribute determines the state progression of non-playable character. For example, Sprites with a Disposition of <code>IDLE</code> cannot enter into the <code>ATTACK</code> Disposition without first passing through a <code>SHOCK</code> or <code>THREATEN</code> Disposition, and a Sprite cannot engage in the <code>SLASH</code> or <code>SHOOT</code> Action without first being in the <code>ATTACK</code> Disposition. </p>
 <p>As can be seen from this example, Disposition manages the possible states (in particular, Actions) that can be reached from the Sprite's current state. Disposition is covered more thoroughly in the <a href="../05-sprites/">Sprites documentation</a>, along with a complete map of Dispositions and Actions.</p>
-<h3 id="communication">Communication</h3>
+<p><strong>Communication</strong></p>
 <p>Possibly null.</p>
-<p>A Communication contains a key to retrieve the content of a specific text file contained in <code>/src/data/intents/communications/&lt;plot-state&gt;.yaml#&lt;key&gt;</code>, where <code>&lt;plot-state&gt;</code> .</p>
+<p>A Communication contains a key to retrieve the content of a specific text file contained in <code>/src/data/intents/communications/&lt;plot-state&gt;.yaml#&lt;key&gt;</code>, where <code>&lt;plot-state&gt;</code>.</p>
 
 
 
