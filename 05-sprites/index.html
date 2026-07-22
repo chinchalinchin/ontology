@@ -437,10 +437,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#mutator-paramaeters" class="md-nav__link">
+  <a href="#paramaeters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Mutator Paramaeters
+        Paramaeters
       
     </span>
   </a>
@@ -465,10 +465,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#dispositions" class="md-nav__link">
+  <a href="#extension" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dispositions
+        Extension
       
     </span>
   </a>
@@ -476,10 +476,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#memory" class="md-nav__link">
+  <a href="#disposition" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Memory
+        Disposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        
       
     </span>
   </a>
@@ -488,6 +499,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory
+      
+    </span>
+  </a>
   
 </li>
       
@@ -657,10 +679,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#mutator-paramaeters" class="md-nav__link">
+  <a href="#paramaeters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Mutator Paramaeters
+        Paramaeters
       
     </span>
   </a>
@@ -685,10 +707,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#dispositions" class="md-nav__link">
+  <a href="#extension" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dispositions
+        Extension
       
     </span>
   </a>
@@ -696,10 +718,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#memory" class="md-nav__link">
+  <a href="#disposition" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Memory
+        Disposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        
       
     </span>
   </a>
@@ -708,6 +741,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory
+      
+    </span>
+  </a>
   
 </li>
       
@@ -746,50 +790,123 @@
 <li>Position: <code>Tuple[int, int]</code></li>
 <li>Layer: <code>str</code></li>
 <li>Intention: <code>Dict[str, str]</code></li>
-<li>Mutators: <code>Dict[str, Dict[str, Union[int, double, bool]]]</code></li>
+<li>Mutators:<ul>
+<li>Triggers: <code>Dict[str, bool]</code></li>
+<li>Parameters: <code>Dict[str, Dict[str, Union[int, double]]]</code></li>
+</ul>
+</li>
+<li>Memory: <code>Dict[str, Any]</code></li>
+<li>Goal: `Dict[str, Any]</li>
+<li>Frame: <code>int</code></li>
+</ul>
+<p>Frame is an integer that tracks the current animation frame. It's maximum value is dependent on the Action state. For example, if a Sprite is in the <code>walk</code> Action state, then Frame will cycle from 0 to <code>walk.MaxFrames</code>.</p>
+<p><strong>Calculated State</strong></p>
+<ul>
+<li>FrameKey: <code>AssetKey + Intention.Direction + Intention.Action + Frame</code></li>
 </ul>
 <h2 id="mutators">Mutators</h2>
-<p><em>Mutators</em> are attributes that alter Sprite behavior.</p>
+<p><em>Mutators</em> are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated state attributes, not <em>primitive</em> state attributes.</p>
 <h3 id="triggers">Triggers</h3>
 <ul>
-<li><code>dead.triggered</code>: Triggered if a Sprite dies.</li>
-<li><code>struck.triggered</code>: Triggered if a Sprite collides with a hitbox.</li>
-<li><code>frightened.triggered</code>: Triggered for the logical disjunction of the following conditions:<ul>
+<li><code>trigger.animated</code>: Triggered if a Sprite is currently animate. When this is false, the Sprite does not receive animation updates from the game loop, e.g. if the user releases the right arrow key on the keyboard, leaving the Player in a <code>(walk, right)</code> state, then this mutator prevents the animation from progressing.</li>
+<li><code>triggers.dead</code>: Triggered if a Sprite dies.</li>
+<li><code>triggers.struck</code>: Triggered if a Sprite collides with a hitbox.</li>
+<li><code>triggers.frightened</code>: Triggered for the logical disjunction of the following conditions:<ul>
 <li>Triggered if Sprite's health dips below <code>frightened.limit</code></li>
 <li>Triggered if Sprite is surrounded by more than <code>frightened.enemy</code> enemies with the pixel distance of <code>frightened.radius</code>.</li>
 </ul>
 </li>
 </ul>
-<h3 id="mutator-paramaeters">Mutator Paramaeters</h3>
+<h3 id="paramaeters">Paramaeters</h3>
 <ul>
-<li><code>frightened.radius</code>: Radius of separation within which the Sprite triggers the <code>frightened</code> mutator. Measured in pixels.</li>
-<li><code>frightened.limit</code>: Percentage of health below which Sprite triggers the <code>frightened</code> mutator.</li>
-<li><code>frightened.enemy</code>: Number of enemies within the <code>frightened.radius</code> that must be present to trigger the <code>frightened</code> mutator.</li>
+<li><code>parameters.frightened.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.frightened</code> mutator. Measured in pixels.</li>
+<li><code>parameters.frightened.limit</code>: Percentage of health below which Sprite triggers the <code>triggers.frightened</code> mutator.</li>
+<li><code>parameters.frightened.enemy</code>: Number of enemies within the <code>parameters.frightened.radius</code> that must be present to trigger the <code>triggers.frightened</code> mutator.</li>
 </ul>
 <h2 id="intentions">Intentions</h2>
 <p><em>Intentions</em> are an internal State data structure that determines and governs a Sprite's core logic. The two most basic Intentions, Direction and Action, determine the current animation of the Sprite. All Sheet assets are given an Intention state with Direction and Action that is updated by the gameplay loop when deployed. Sprites, however, have a more complex Intention state, which provides a greater variety of behavior and possibility of emergent gameplay.</p>
-<h3 id="dispositions">Dispositions</h3>
-<p>A Sprite's <em>Disposition</em> determines its State Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below,</p>
+<p>The default Actions and Directions for the LPC specification are,</p>
+<ul>
+<li>Actions: <code>cast, thrust, walk, slash, shoot, die</code></li>
+<li>Directions: <code>up, down, left, right</code></li>
+</ul>
+<p>The complete Intention State for a Sprite is given by the tuple,</p>
+<pre><code>(Action, Direction, Extension, Disposition, Communication, Goal)
+</code></pre>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the LPC specification, the <code>thrust</code> Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the <code>thrust</code> state.</p>
+</div>
+<h3 id="extension">Extension</h3>
+<p>A Extension is a pseudo-state that does not factor into the Asset frame key calculation directly. It may indirectly alter the Sprite (Action, Direction) transitions or other properties of the Sprites, e.g. entering into the <code>sprint</code> Extension state increases the velocity of the <code>(walk, *)</code> states, but does not factor into the animation speed. Similarly, entering into the <code>interact</code> Extension state does not alter the Sprite's current animation in a way, but instead allows the Sprite to open a Chest or Door, for example.</p>
+<h3 id="disposition">Disposition</h3>
+<p>A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's <em>Disposition</em> determines its State Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.</p>
 <ol>
-<li><code>attack</code></li>
-<li><code>attract</code></li>
-<li><code>barter</code></li>
-<li><code>escape</code></li>
-<li><code>find</code></li>
-<li><code>follow</code></li>
-<li><code>idle</code></li>
-<li><code>interact</code></li>
-<li><code>loot</code> </li>
-<li><code>mock</code></li>
-<li><code>recoil</code></li>
-<li><code>return</code></li>
-<li><code>threaten</code></li>
-<li><code>wander</code></li>
+<li><code>attack</code><ul>
+<li>Reachable Actions: <code>cast, thrust, slash, shoot</code></li>
+</ul>
+</li>
+<li><code>attract</code><ul>
+<li>Reachable Actions: <code>walk</code></li>
+</ul>
+</li>
+<li><code>barter</code><ul>
+<li>Reachable Actions: None</li>
+</ul>
+</li>
+<li><code>escape</code><ul>
+<li>Reachable Actions: <code>walk</code></li>
+</ul>
+</li>
+<li><code>find</code><ul>
+<li>Reachable Actions: <code>walk, thrust</code></li>
+</ul>
+</li>
+<li><code>follow</code><ul>
+<li>Reachable Actions: <code>walk</code></li>
+</ul>
+</li>
+<li><code>idle</code><ul>
+<li>Reachable Actions: <code>walk</code></li>
+</ul>
+</li>
+<li><code>interact</code><ul>
+<li>Reachable Actions: None</li>
+</ul>
+</li>
+<li><code>loot</code> <ul>
+<li>Reachable Actions: None</li>
+</ul>
+</li>
+<li><code>mock</code><ul>
+<li>Reachable Actions: None</li>
+</ul>
+</li>
+<li><code>recoil</code><ul>
+<li>Reachable Actions: <code>die</code></li>
+</ul>
+</li>
+<li><code>return</code><ul>
+<li>Reachable Actions: <code>walk</code></li>
+</ul>
+</li>
+<li><code>threaten</code><ul>
+<li>Reachable Actions: None</li>
+</ul>
+</li>
+<li><code>wander</code><ul>
+<li>Reachable Actions: <code>walk</code></li>
+</ul>
+</li>
 </ol>
 <p><strong>Default Disposition Tree</strong></p>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/examples/default-disposition-tree.yaml&quot;</span>
 </code></pre></div>
-<h3 id="memory">Memory</h3>
+<p><strong>Dispositional Scripting</strong></p>
+<p>The <code>condition</code> for each state transition is given </p>
+<h3 id="_1"></h3>
+<p>asdf</p>
+<h2 id="memory">Memory</h2>
 <ul>
 <li><code>target</code>: <ul>
 <li><code>category (chest | crate | plate | gate | door | sprite | pixie)</code>: Category of Sprite's current target.</li>

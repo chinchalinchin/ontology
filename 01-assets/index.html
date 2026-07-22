@@ -1357,7 +1357,8 @@
 <p>The row indexing starts at 0.</p>
 </div>
 <h3 id="pixies">Pixies</h3>
-<p><em>Pixies</em> are <em>Sheets</em> over four rows of frames. Pixies always have the same number of frames in each row, determined by the <em>MaxFrame</em> property. Pixies only have one Action state: <code>walk</code>. They are meant to encapsulate simple Characters, such as animals, bugs, or other creatures. </p>
+<p><em>Pixies</em> are <em>Sheets</em> over four rows of frames. Pixies always have the same number of frames in each row, determined by the <em>MaxFrame</em> property. Pixies only have one Action state: <code>walk</code>. The rows of their Sheet Asset file are assumed to be partitioned over Direction only. </p>
+<p><em>Pixies</em> are meant to encapsulate simple Characters, such as animals, bugs, or other creatures. </p>
 <ul>
 <li>AssetKey: <code>str</code></li>
 </ul>
@@ -1400,17 +1401,17 @@
 </ul>
 <p><strong>Properties</strong></p>
 <ul>
-<li>Dimension: <code>tuple[w, h]</code></li>
-<li>Hitboxes: <code>List[Tuple[relX, relY, w, h]]</code></li>
+<li>Dimension: <code>tuple[int, int]</code></li>
+<li>Hitboxes: <code>List[Tuple[int, int, int, int]]</code></li>
 <li>MaxFrame: <code>Dict[str, int]</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
 <li>Name: <code>str</code></li>
-<li>Position: <code>Tuple[x, y]</code></li>
+<li>Position: <code>Tuple[int, int]</code></li>
 <li>LayerKey: <code>str</code></li>
 <li>Frame: <code>int</code></li>
-<li>Intention: <code>Dict[str, str]</code><ul>
+<li>Intention: <code>Dict[str, Any]</code><ul>
 <li>Direction: <code>Direction</code></li>
 <li>Action: <code>Action</code></li>
 <li>Disposition: <code>Disposition</code></li>
