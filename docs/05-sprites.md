@@ -17,7 +17,7 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
     - Triggers: `Dict[str, bool]`
     - Parameters: `Dict[str, Dict[str, Union[int, double]]]`
 - Memory: `Dict[str, Any]`
-- Goal: `Dict[str, Any]
+- Goal: `Dict[str, Any]`
 - Frame: `int`
 
 Frame is an integer that tracks the current animation frame. It's maximum value is dependent on the Action state. For example, if a Sprite is in the `walk` Action state, then Frame will cycle from 0 to `walk.MaxFrames`.
@@ -67,7 +67,7 @@ A Extension is a pseudo-state that does not factor into the Asset frame key calc
 
 ### Disposition
 
-A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's *Disposition* determines its State Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.
+A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's *Disposition* determines its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.
 
 1. `attack`
     - Reachable Actions: `cast, thrust, slash, shoot`
@@ -98,20 +98,49 @@ A Disposition determines which Actions are currently reachable for a Sprite. In 
 14. `wander`
     - Reachable Actions: `walk`
 
-**Default Disposition Tree**
+**Default Disposition Transition Matrix**
+
+Provided below is the Disposition Transition Matrix bundled with the application by default,
 
 ```yaml
---8<-- "docs/.static/yaml/examples/default-disposition-tree.yaml"
+--8<-- "docs/.static/yaml/examples/default-disposition-matrix.yaml"
 ```
 
-**Dispositional Scripting**
+**Transition Scripting**
 
-The `condition` for each state transition is given 
+The `condition` for each Disposition transition is given in a simple truth-valued language that admits the logical operations and terms,
 
+Operations:
 
-###
+- `==`: equivalence
+- `!=`: non-equivalence
+- `not`: negation
+- `or`: disjunction
+- `and`: conjunction
 
-asdf
+Terms:
+
+- `None`: null value
+- `str`: constants
+- `sprite.<state>`: variables
+- `sprites[<sprite-name>].<state>`
+
+In the default Disposition Transition matrix given above, the transition from `attack` to `hunt` is conditional on the following,
+
+```yaml
+- not sprite.intention.goal.target
+- sprite.memory.goal.target.category == 'sprite'
+```
+
+`sprite` is a reference to the Sprite which is currently processing the given Disposition. Thus, the Sprite's Disposition state will transition to `hunt` if the Sprite currently does not have a target, but remembers having a target of category `sprite`.
+
+In another example, the transition from `attack` to `loot` in the default Disposition Transition matrix is given by,
+
+```yaml
+- sprites[sprite.target.name].mutators.triggers.dead
+```
+
+`sprites` is a reference to a dictionary of all ingame Sprites keyed by their identifying and unique `name`, which provides access to their3 state attributes.
 
 ## Memory
 

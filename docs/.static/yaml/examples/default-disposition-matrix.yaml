@@ -1,18 +1,22 @@
 intents:
   dispositions:
     attack:
+      actions:
+        - cast
+        - slash
+        - shoot
+        - thrust
       transitions:
         - next: attack
           conditions:  
+            - sprite.intention.goal.target.category == 'sprite'
         - next: hunt
           conditions: 
-            - sprite.disposition == 'attack'
-            - sprite.target is None
-            - sprite.memory.target is not None
+            - not sprite.intention.goal.target
+            - sprite.memory.goal.target.category == 'sprite'
         - next: loot
           condition: 
-            - sprite.disposition == 'atack'
-            - sprite.target.mutators.dead.triggered
+            - sprites[sprite.target.name].mutators.triggers.dead
     attract:
       transitions:
         - next: 

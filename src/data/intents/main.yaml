@@ -35,18 +35,22 @@ intents:
   # -------------------------- DISPOSITIONS
   dispositions:
     attack:
+      actions:
+        - cast
+        - slash
+        - shoot
+        - thrust
       transitions:
         - next: attack
           conditions:  
+            - sprite.intention.goal.target.category == 'sprite'
         - next: hunt
           conditions: 
-            - sprite.intention.disposition == 'attack'
             - not sprite.intention.goal.target
-            - sprite.memory.target
+            - sprite.memory.goal.target == 'sprite'
         - next: loot
           condition: 
-            - sprite.intention.disposition == 'atack'
-            - sprite.target.mutators.triggers.dead
+            - sprites[sprite.target.name].mutators.triggers.dead
     attract:
       transitions:
         - next: 
