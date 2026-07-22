@@ -1,132 +1,40 @@
-intent:
+intents:
   # -------------------------- ACTIONS
   actions:
     cast:
-      row: 0
-      frames:
+      row: <row-index>
+      frames: <frames-per-row>
     thrust:
-      row: 4
-      frames:
+      row: <row-index>
+      frames: <frames-per-row>
     walk:
-      row: 8
-      frames:
+      row: <row-index>
+      frames: <frames-per-row>
     slash:
-      row: 12
-      frames:
+      row: <row-index>
+      frames: <frames-per-row>
     shoot:
-      row: 16
-      frames:
+      row: <row-index>
+      frames: <frames-per-row>
     die:
-      row: 20
-      frames:
+      row: <row-index>
+      frames: <frames-per-row>
   # -------------------------- COMMUNICATIONS
   communications: 
-    - plot-00
+    - <plot-state-key>
   # -------------------------- DIRECTIONS
   directions:
-    content: 
-      up:
-        offset: 0
-      left:
-        offset: 1
-      down:
-        offset: 2
-      right:
-        offset: 3
+    up:
+      offset: <row-offset>
+    left:
+      offset: <row-offset>
+    down:
+      offset: <row-offset>
+    right:
+      offset: <row-offset>
   # -------------------------- DISPOSITIONS
   dispositions:
-    attack:
+    <key>:
       transitions:
-        - next: attack
-          conditions:  
-        - next: hunt
-          conditions: 
-            - sprite.disposition == 'attack'
-            - sprite.target is None
-            - sprite.memory.target is not None
-        - next: loot
-          condition: 
-            - sprite.disposition == 'atack'
-            - sprite.target.mutators.dead.triggered
-    attract:
-      transitions:
-        - next: 
-          condition:
-    barter:
-      transitions: 
-        - next:
-          condition:
-    escape: 
-      transitions:
-        - next: escape
-          condition: 
-            - sprite.disposition == 'escape' 
-            - sprite.target.disposition == 'attack'
-        - next: return
-          condition: 
-    find: 
-      transitions:
-        - next: loot
-          condition: 
-        - next: recoil
-          condition:
-        - next: return
-          condition: 
-    follow: 
-      transitions: 
-        - next: follow
-          condition: 
-        - next: hunt
-          condition: 
-        - next: wander
-          condition: 
-    idle: 
-      transitions: 
-        - next: idle
-          condition: 
-        - next: recoil
-          condition: sprite.mutators.struck.triggered
-        - next: wander
-          condition:
-    interact:
-      transitions:
-        - next:
-          condition:
-    loot:
-      transitions:
-        - next: return
-          condition: 
-    mock: 
-      transitions:
-        - next: mock
-          condition: 
-        - next: threaten
-          condition: 
-    recoil:
-      transitions:
-        - next: attack
-          condition: 
-        - next: escape
-          condition: sprite.mutators.frightened
-    return:
-      transitions:
-        - next: idle
-          condition: 
-        - next: return
-          condition:
-        - next: wander
-          condition: 
-    threaten:
-      transitions:
-        - next: attack
-          condition: 
-        - next: hunt
-          condition:  
-        - next: threaten
-          condition: 
-        - next: recoil
-          condition:
-    wander:
-      transitions:
-        - next: recoil
-          condition: 
+        - next: <next-disposition-key>
+          conditions: <condition-for-transition>

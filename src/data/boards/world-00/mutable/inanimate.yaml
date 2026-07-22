@@ -15,6 +15,14 @@ objects:
       position: 
         x: Horizontal Position
         y: Vertical Position
+  # ------------------------------------------- CURSORS
+  cursors: 
+    - name: Cursor Identifier
+      key: Cursor Asset Key
+      layer: Layer Key
+      position: 
+        x: Horizontal Position
+        y: Vertical Position
   # ------------------------------------------- DOORS
   doors:
     - name: Door Identifier

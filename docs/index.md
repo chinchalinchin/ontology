@@ -11,7 +11,7 @@
 - [Assets](./01-assets.md)
 - [Properties](./02-properties.md)
 - [State](./03-state.md)
-- [Intents](./04-intents.md)
+- [Intents](./04-messagesw.md)
 - [Sprites](./05-sprites.md)
 - [Player](./06-player.md)
 - [Application](./07-application.md)

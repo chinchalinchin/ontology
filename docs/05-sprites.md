@@ -7,14 +7,12 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
     
 - AssetKey: `str`
 
-
 **State**
 
 - Name: `str`
 - Position: `Tuple[int, int]`
 - Layer: `str`
 - Intention: `Dict[str, str]`
-- 
 
 ## Mutators
 
@@ -26,7 +24,7 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
     - Triggered if Sprite's health dips below `limit`
     - Tr
 
-### Mutator Values
+### Mutator Paramaeters
 
 - `frightened.radius`: Radius of enemy separation within which the Sprite triggers the `frightened` mutator. Measured in pixels.
 - `frightened.limit`: Percentage of health below which Sprite triggers the `frightened` mutator.
@@ -35,8 +33,6 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 ## Intentions
 
 ### Disposition
-
-TODO
 
 1. `attack`
 2. `attract`
@@ -53,13 +49,13 @@ TODO
 13. `threaten`
 14. `wander`
 
-### Memory
+```yaml
+--8<-- "docs/.static/yaml/examples/default-disposition-tree.yaml"
+```
 
-TODO
+### Memory
 
 - `target`: 
     - `category (chest | crate | plate | gate | door | sprite | pixie)`: Category of Sprite's current target.
     - `name`: Identifier of Sprite's current target.
 - `communications`: List of dialogue saved in Sprite's memory.
-
-## 
