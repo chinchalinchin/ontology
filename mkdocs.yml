@@ -21,9 +21,9 @@ nav:
   - Messages: 02-messages.md
   - Sprites: 03-sprites.md
   - Player: 04-player.md
-  - Application: 05-application.md
-  - Plotting: 06-plots.md
-  - Pseudocode: 07-pseudocode.md
+  - Plots: 06-plots.md
+  - Application: 07-application.md
+  - Pseudocode: 08-pseudocode.md
 
 markdown_extensions:
   - admonition
