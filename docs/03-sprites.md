@@ -384,6 +384,7 @@ TODO
 ```yaml
 --8<-- "docs/.static/yaml/data-equipment.yaml"
 ```
+
 ## Personas
 
 Personas are stacks of superimposed Sprite Sheets. They are assembled in the [Registry](./00-overview.md#registry) using the `/src/data/personas/main.yaml` state configuration file. The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona throug the AssetKey property.
