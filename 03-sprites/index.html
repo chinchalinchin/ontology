@@ -399,15 +399,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#statistics" class="md-nav__link">
+  <a href="#character" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Statistics
+        Character
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Statistics">
+    <nav class="md-nav" aria-label="Character">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -496,7 +496,18 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Intentions">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#action-directions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Action, Directions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Action, Directions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -651,7 +662,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../05-application/" class="md-nav__link">
+      <a href="../05-application.md" class="md-nav__link">
         
   
   
@@ -705,7 +716,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../07-pseudocode/" class="md-nav__link">
+      <a href="../07-pseudocode.md" class="md-nav__link">
         
   
   
@@ -791,15 +802,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#statistics" class="md-nav__link">
+  <a href="#character" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Statistics
+        Character
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Statistics">
+    <nav class="md-nav" aria-label="Character">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -888,7 +899,18 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Intentions">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#action-directions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Action, Directions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Action, Directions">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1033,6 +1055,13 @@
 <li>Layer: <code>str</code></li>
 <li>Meters<ul>
 <li>Health: <code>int</code></li>
+<li>Magic: <code>int</code></li>
+</ul>
+</li>
+<li>Character<ul>
+<li>Strength: <code>int</code></li>
+<li>Defense: <code>int</code></li>
+<li>Speed: <code>int</code></li>
 </ul>
 </li>
 <li>Intention: <ul>
@@ -1056,9 +1085,13 @@
 </ul>
 </li>
 <li>Memory: <ul>
-<li>Target:<ul>
-<li>Name: <code>str</code></li>
-<li>Category: <code>str</code></li>
+<li>Goal:<ul>
+<li>AssetName: <code>str</code></li>
+<li>Intention:<ul>
+<li>Action: <code>str</code></li>
+<li>Extension: <code>str</code></li>
+</ul>
+</li>
 </ul>
 </li>
 <li>Communication: <code>List[str]</code> </li>
@@ -1066,8 +1099,11 @@
 </li>
 <li>Goal: <ul>
 <li>AssetName: <code>str</code></li>
-<li>ExtensionKey: <code>str</code></li>
-<li>ActionKey: <code>str</code></li>
+<li>Intension:<ul>
+<li>Action: <code>str</code></li>
+<li>Extension: <code>str</code></li>
+</ul>
+</li>
 </ul>
 </li>
 <li>Frame: <code>int</code></li>
@@ -1079,8 +1115,10 @@
 </ul>
 <p><strong>Methods</strong></p>
 <ul>
+<li><code>animate() -&gt; None</code>: Increments Frame.</li>
 <li><code>poll() -&gt; Intent</code>: Returns the Sprite's current Intent.</li>
 <li><code>update(intent: Intent) -&gt; None</code>: Updates the Sprite's current Intent.</li>
+<li><code>achieved(goal_asset: Asset) -&gt; Union[Intent, None]</code>: Returns Goal Intention if Goal achieved, None otherwise.</li>
 </ul>
 <h2 id="meters">Meters</h2>
 <p>TODO</p>
@@ -1088,7 +1126,7 @@
 <p>TODO</p>
 <h3 id="magic">Magic</h3>
 <p>TODO</p>
-<h2 id="statistics">Statistics</h2>
+<h2 id="character">Character</h2>
 <h3 id="strength">Strength</h3>
 <p>TODO</p>
 <h3 id="defense">Defense</h3>
@@ -1107,16 +1145,20 @@
 <li>Triggered if Sprite is surrounded by more than <code>frightened.enemy</code> enemies with the pixel distance of <code>frightened.radius</code>.</li>
 </ul>
 </li>
+<li><code>triggers.vision</code>: Trigger if a Sprite is within visible distance of its Goal.</li>
 </ul>
 <h3 id="paramaeters">Paramaeters</h3>
 <ul>
 <li><code>parameters.frightened.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.frightened</code> mutator. Measured in pixels.</li>
 <li><code>parameters.frightened.limit</code>: Percentage of health below which Sprite triggers the <code>triggers.frightened</code> mutator.</li>
 <li><code>parameters.frightened.enemy</code>: Number of enemies within the <code>parameters.frightened.radius</code> that must be present to trigger the <code>triggers.frightened</code> mutator.</li>
+<li><code>parameters.vision.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.vision</code> mutator. Measured in pixels.</li>
 </ul>
 <h2 id="intentions">Intentions</h2>
 <p><em>Intentions</em> are an internal State data structure that governs a Sprite's core logic. The two most basic Intentions, Direction and Action, determine the current animation of the Sprite. All Sheet Assets, when deployed on a Board, are given an Intention state with a Direction and Action that is updated by the gameplay loop. Sprites, however, have a more complex internal state, represented by the other attributes of Intentions, which in turn provides a greater variety of behavior and enhanced possibility of emergent gameplay.</p>
-<p>The default Actions and Directions for the LPC specification are,</p>
+<h2 id="action-directions">Action, Directions</h2>
+<p>Action and Direction were previously defined in the <a href="../01-assets/">Assets documentation</a>, since these two Intention states determine the animation frame currently being rendered in the gameloop. </p>
+<p>As a reminder, the default Actions and Directions for the game engine (and LPC specification) are,</p>
 <ul>
 <li>Actions: <code>cast, thrust, walk, slash, shoot, die</code></li>
 <li>Directions: <code>up, down, left, right</code></li>
@@ -1130,7 +1172,7 @@
 <p>Any Actions defined in the <code>/src/assets/sheets/**.png</code> file rows must have its Action key entered in <code>/src/data/intents/main.yaml#actions</code> file to register as an Action enterable from a Disposition.</p>
 </div>
 <p>The complete Intention State for a Sprite is given by the tuple,</p>
-<pre><code>(Action, Direction, Extension, Disposition, Motivation)
+<pre><code>(Action, Direction, Extension, Disposition, Motivation, Expression)
 </code></pre>
 <p>The attributes of Intention are discussed in more detail below.</p>
 <h3 id="extension">Extension</h3>
@@ -1278,7 +1320,7 @@
 </code></pre></div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if <code>sprite.goal.target.category == 'sprite'</code>, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back to <code>attack</code>.</p>
+<p>The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if <code>sprite.goal.target.category == 'sprite'</code>, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back into <code>attack</code>.</p>
 </div>
 <h3 id="motivation">Motivation</h3>
 <p>Motivations are long-term variables that modulate the Disposition Transition matrix.</p>
@@ -1307,19 +1349,29 @@
 <li><code>tired</code></li>
 </ul>
 <h2 id="goal">Goal</h2>
+<p><em>Goals</em> are provide the seed (or energy) for transitions through Dispositions and the application of Motivations to modulate said transitions. A Goal is a Sprite's <em>modus operandi</em>, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is <em>in order</em> to achieve a Goal.</p>
 <ul>
-<li>AssetName: Unique Identifier of Asset</li>
-<li>ExtensionKey: </li>
-<li>ActionKey: </li>
-</ul>
-<h2 id="memory">Memory</h2>
-<ul>
-<li><code>memory.target</code>: <ul>
-<li><code>category (chest | crate | plate | gate | door | sprite | pixie)</code>: Category of Sprite's current target.</li>
-<li><code>name</code>: Identifier of Sprite's current target.</li>
+<li><code>name</code>: Unique Identifier of Asset Goal.</li>
+<li><code>intention</code>:<ul>
+<li><code>extension</code>: Extension to be applied when Goal achieved .</li>
+<li><code>action</code>: Action to be applied when Goal achieved.</li>
 </ul>
 </li>
-<li><code>memory.communications</code>: List of dialogue saved in Sprite's memory.</li>
+</ul>
+<p>When a Sprite has Goal, it will seek out (path-find) its way to the AssetName, provided the AssetName is within <code>mutators.parameters.vision.radius</code>.</p>
+<h2 id="memory">Memory</h2>
+<p><em>Memory</em> is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Disposition and Motivation.</p>
+<ul>
+<li><code>memory.goal</code>: <ul>
+<li><code>name</code>: Unique Identifer of Asset Goal.</li>
+<li><code>intention</code>:<ul>
+<li><code>extension</code>: Extension to be applied when Goal achieved. </li>
+<li><code>action</code>: Action to be applied when Goal achieved.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>memory.communications</code>: List of saved dialogue.</li>
 </ul>
 <h3 id="communications">Communications</h3>
 <p>Under certain conditions based on the Sprite's Disposition, the gameplay loop delivers to the Sprite an Intent containing a Communication key. For example, a Sprite in the <code>mock</code> Disposition might receive a Communication key <code>insult</code>. This key gets stored at the <em>beginning</em> (0 index) of the <code>memory.communications</code> list. </p>

@@ -25,15 +25,15 @@
          <lastmod>2026-07-23</lastmod>
     </url>
     <url>
-         <loc>https://chinchalinchin.github.io/ontology/05-application/</loc>
-         <lastmod>2026-07-23</lastmod>
-    </url>
-    <url>
          <loc>https://chinchalinchin.github.io/ontology/06-plots/</loc>
          <lastmod>2026-07-23</lastmod>
     </url>
     <url>
-         <loc>https://chinchalinchin.github.io/ontology/07-pseudocode/</loc>
+         <loc>https://chinchalinchin.github.io/ontology/07-application/</loc>
+         <lastmod>2026-07-23</lastmod>
+    </url>
+    <url>
+         <loc>https://chinchalinchin.github.io/ontology/08-pseudocode/</loc>
          <lastmod>2026-07-23</lastmod>
     </url>
 </urlset>
