@@ -1,0 +1,5 @@
+personas:
+  <persona-key>:
+    base: <base-key>
+    features:
+      - <feature-key>

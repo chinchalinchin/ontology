@@ -2,11 +2,78 @@ sheets:
   pixies:
     count: 6
   sprites:
-    cast:
-      frames: 7
-      directions:
-        up:
-          row: 0
+    states:
+      cast:
+        frames: 7
+        directions:
+          up:
+            row: 0
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+          down:
+            row: 1
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+          left:
+            row: 2
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+          right:
+            row: 3
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame: 
+            hitframe: <hitframe-index>
+      thrust:
+        frames: 8
+        directions:
+          up:
+            row: 4
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+          down:
+            row: 5
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+          left:
+            row: 6
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+          right:
+          row: 7
           hitboxes:
             - relX:
               relY:
@@ -14,168 +81,102 @@ sheets:
               h:
               frame:
           hitframe: <hitframe-index>
-        down:
-          row: 1
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-        left:
-          row: 2
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-        right:
-          row: 3
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame: 
-          hitframe: <hitframe-index>
-    thrust:
-      frames: 8
-      directions:
-        up:
-          row: 4
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-        down:
-          row: 5
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-        left:
-          row: 6
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-        right:
-        row: 7
-        hitboxes:
-          - relX:
-            relY:
-            w:
-            h:
-            frame:
-        hitframe: <hitframe-index>
-    walk:
-      frames: 9
-      directions: 
-        up:
-          row: 8
-          hitboxes: null
-        left:
-          row: 9
-          hitboxes: null
-        down: 
-          row: 10
-          hitboxes: null
-        right:
-          row: 11
-          hitboxes: null
-    slash:
-      frames: 6
-      directions:
-        up:
-          row: 12
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-        down:
-          row: 13
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-        left:
-          row: 14
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-        right:
-          row: 15
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-    shoot:
-      frames: 13
-      directions:
-        up:
-          row: 16
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-        down:
-          row: 17
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-        left:
-          row: 18
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-        right:
-          row: 19
-          hitboxes:
-            - relX:
-              relY:
-              w:
-              h:
-              frame:
-          hitframe: <hitframe-index>
-    die:
-      frames: 6
-      directions:
-        up:
-          row: 20
-          hitboxes: null
+      walk:
+        frames: 9
+        directions: 
+          up:
+            row: 8
+            hitboxes: null
+          left:
+            row: 9
+            hitboxes: null
+          down: 
+            row: 10
+            hitboxes: null
+          right:
+            row: 11
+            hitboxes: null
+      slash:
+        frames: 6
+        directions:
+          up:
+            row: 12
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+          down:
+            row: 13
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+          left:
+            row: 14
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+          right:
+            row: 15
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+      shoot:
+        frames: 13
+        directions:
+          up:
+            row: 16
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+          down:
+            row: 17
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+          left:
+            row: 18
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+          right:
+            row: 19
+            hitboxes:
+              - relX:
+                relY:
+                w:
+                h:
+                frame:
+            hitframe: <hitframe-index>
+      die:
+        frames: 6
+        directions:
+          up:
+            row: 20
+            hitboxes: null

@@ -12,7 +12,7 @@
 - [Messages](./03-messages.md)
 - [Sprites](./03-sprites.md)
 - [Player](./04-player.md)
-- [TODO]()
+- [Menus](./05-menus.md)
 - [Plots](./06-plots.md)
 - [Application](./07-application.md)
 - [Pseudocode](./08-pseudocode.md)

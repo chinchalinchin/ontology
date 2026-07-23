@@ -14,7 +14,7 @@ sheets:
       layer: Layer Key
       position:
         x: Horizontal Position
-        y: Vertical Position 
+        y: Vertical Position
       meter:
         health: 
           current: Current Health Meter
@@ -66,4 +66,10 @@ sheets:
           # unforgettable
           - Communication Key
       inventory: 
-        null
+        loot:
+        equipment:
+          armor:
+          tool:
+          utility:
+          weapon:
+        wallet:

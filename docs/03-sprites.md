@@ -356,3 +356,18 @@ When a Sprite with a non-null `intention.communication` enters into the `speak` 
 ## Inventory
 
 TODO
+
+### Equipment
+
+TODO
+
+```yaml
+--8<-- "docs/.static/yaml/data-equipment.yaml"
+```
+## Personas
+
+TODO
+
+```yaml
+--8<-- "docs/.static/yaml/data-personas.yaml"
+```

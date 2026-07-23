@@ -1,0 +1,50 @@
+  equipment:
+    knife:
+      sheets:
+        - knife
+      kind: weapon
+    lantern:
+      sheets:
+        - lantern
+      kind: utility
+    leather:
+      sheets:
+        - leather-gloves
+        - leather-shield
+      kind: armor
+    pickaxe:
+      sheets:
+        - pickaxe
+      kind: tool
+    plate:
+      sheets:
+        - plate-boots
+        - plate-chest
+        - plate-gloves
+        - plate-greaves
+        - plate-shoulders
+      kind: armor
+    sandals:
+      sheets:
+        - sandals
+      kind: armor
+    shortsword:
+      sheets:
+        - shortswords
+      kind: weapon
+    shovel:
+      sheets:
+        - shovel
+      kind: utility
+    spear:
+      sheets:
+        - spear
+      kind: weapon
+    stave:
+      sheets:
+        - stave
+      kind: weapon
+    warhammer:
+      sheets:
+        - warhammer
+      kind: weapon

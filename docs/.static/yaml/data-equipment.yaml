@@ -1,0 +1,5 @@
+equipment:
+  <equipment-key>:
+    sheets:
+      - <equipment-sheet-key>
+    kind: <kind>
