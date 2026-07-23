@@ -507,19 +507,19 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#action-directions" class="md-nav__link">
+    <nav class="md-nav" aria-label="Intentions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#action-direction" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Action, Directions
+        Action, Direction
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Action, Directions">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#extension" class="md-nav__link">
@@ -633,10 +633,49 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#loot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wallet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wallet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#equipment" class="md-nav__link">
     <span class="md-ellipsis">
       
         Equipment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Equipment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#equipment-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Equipment Schema
       
     </span>
   </a>
@@ -656,6 +695,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Personas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#persona-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persona Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -976,19 +1032,19 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#action-directions" class="md-nav__link">
+    <nav class="md-nav" aria-label="Intentions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#action-direction" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Action, Directions
+        Action, Direction
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Action, Directions">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#extension" class="md-nav__link">
@@ -1102,10 +1158,49 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#loot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loot
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wallet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wallet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#equipment" class="md-nav__link">
     <span class="md-ellipsis">
       
         Equipment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Equipment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#equipment-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Equipment Schema
       
     </span>
   </a>
@@ -1125,6 +1220,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Personas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#persona-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Persona Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1203,7 +1315,11 @@
 </li>
 <li>Inventory:<ul>
 <li>Loot: <code>Dict[str, int]</code></li>
-<li>Equipment: <code>Dict[str, bool]</code></li>
+<li>Equipment:
+    Armor: <code>str</code>
+    Weapon: <code>str</code>
+    Tool: <code>str</code>
+    Utility: <code>str</code></li>
 <li>Wallet: <code>int</code></li>
 </ul>
 </li>
@@ -1284,7 +1400,7 @@
 </ul>
 <h2 id="intentions">Intentions</h2>
 <p><em>Intentions</em> are an internal State data structure that governs a Sprite's core logic. The two most basic Intentions, Direction and Action, determine the current animation of the Sprite. All Sheet Assets, when deployed on a Board, are given an Intention state with a Direction and Action that is updated by the gameplay loop. Sprites, however, have a more complex internal state, represented by the other attributes of Intentions, which in turn provides a greater variety of behavior and enhanced possibility of emergent gameplay.</p>
-<h2 id="action-directions">Action, Directions</h2>
+<h3 id="action-direction">Action, Direction</h3>
 <p>Action and Direction were previously defined in the <a href="../01-assets/">Assets documentation</a>, since these two Intention states determine the animation frame currently being rendered in the gameloop. </p>
 <p>As a reminder, the default Actions and Directions for the game engine (and LPC specification) are,</p>
 <ul>
@@ -1511,12 +1627,37 @@
 <p>When a Sprite with a non-null <code>intention.communication</code> enters into the <code>speak</code> Extension, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the <code>intention.communication</code> cell.</p>
 <h2 id="inventory">Inventory</h2>
 <p>TODO</p>
-<h3 id="equipment">Equipment</h3>
+<p>Equipment, while part of the Inventory, affects the animation, and thus is covered in its own section, <a href="#equipment">Equipment</a>.</p>
+<h3 id="loot">Loot</h3>
 <p>TODO</p>
+<h3 id="wallet">Wallet</h3>
+<p>TODO</p>
+<h2 id="equipment">Equipment</h2>
+<p>TODO</p>
+<ul>
+<li>Equipment Sheets: <code>/src/assets/sheets/sprites/equipment/&lt;equipment-key&gt;.png</code></li>
+</ul>
+<h3 id="equipment-schema">Equipment Schema</h3>
+<ul>
+<li>Location: <code>/src/data/equipment/main.yaml</code></li>
+</ul>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-equipment.yaml&quot;</span>
 </code></pre></div>
 <h2 id="personas">Personas</h2>
-<p>TODO</p>
+<p>Personas are stacks of superimposed Sprite Sheets. They are assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>/src/data/personas/main.yaml</code> state configuration file. The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona throug the AssetKey property.</p>
+<p>Personas are assembled from a Base Sheet and Feature Sheets. The Base Sheet is the background of the resultant Sheet. Feature Sheets are pasted over the Base in the order they are specified.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is assumed the Base and Feature Sheets conform to the same (Action, Direction) row mapping as the Sprite Sheets themselves. As always, the game engine assumes and implements the LPC specification by default.</p>
+</div>
+<ul>
+<li>Base Sheets: <code>/src/assets/sheets/sprites/base/&lt;base-key&gt;.png</code></li>
+<li>Feature Sheets: <code>/src/assets/sheets/sprites/features/&lt;feature-key&gt;.png</code></li>
+</ul>
+<h3 id="persona-schema">Persona Schema</h3>
+<ul>
+<li>Location: <code>/src/data/personas/main.yaml</code></li>
+</ul>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-personas.yaml&quot;</span>
 </code></pre></div>
 
