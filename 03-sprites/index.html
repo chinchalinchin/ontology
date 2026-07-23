@@ -360,6 +360,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#meters" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -763,6 +774,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#meters" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1045,6 +1067,21 @@
 
 <h1 id="ontology-sprites">Ontology: Sprites</h1>
 <p>Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the gameplay loop and thus have many unique attributes and methods, as the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. </p>
+<p><strong>LPC Frames</strong></p>
+<p>The LPC specification defines the following frames per Sprite Action,</p>
+<ul>
+<li><code>cast</code>: Count = 7</li>
+<li><code>thrust</code>: Count = 8</li>
+<li><code>walk</code>: Count = 9</li>
+<li><code>slash</code>: Count = 6</li>
+<li><code>shoot</code>: Count = 13</li>
+<li><code>die</code>: Count = 6</li>
+</ul>
+<p>The game engine use the LPC as its default setting.</p>
+<p><strong>Player, NPCs and Enemies</strong></p>
+<p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. See <a href="../02-messages/#intents">Intents documentation</a> for more information on Intents. See <a href="../04-player/">Player documentation</a> for more information on the Player.</p>
+<h2 id="overview">Overview</h2>
+<p><strong>Properties</strong></p>
 <ul>
 <li>AssetKey: <code>str</code></li>
 </ul>
@@ -1054,8 +1091,16 @@
 <li>Position: <code>Tuple[int, int]</code></li>
 <li>Layer: <code>str</code></li>
 <li>Meters<ul>
-<li>Health: <code>int</code></li>
-<li>Magic: <code>int</code></li>
+<li>Health: <ul>
+<li>Current: <code>int</code></li>
+<li>Maximum: <code>int</code></li>
+</ul>
+</li>
+<li>Magic: <code>int</code><ul>
+<li>Current: <code>int</code></li>
+<li>Maxium: <code>int</code></li>
+</ul>
+</li>
 </ul>
 </li>
 <li>Character<ul>
@@ -1115,7 +1160,7 @@
 </ul>
 <p><strong>Methods</strong></p>
 <ul>
-<li><code>animate() -&gt; None</code>: Increments Frame.</li>
+<li><code>animate() -&gt; None</code>: Increments Frame, if <code>triggers.animated == true</code>.</li>
 <li><code>poll() -&gt; Intent</code>: Returns the Sprite's current Intent.</li>
 <li><code>update(intent: Intent) -&gt; None</code>: Updates the Sprite's current Intent.</li>
 <li><code>achieved(goal_asset: Asset) -&gt; Union[Intent, None]</code>: Returns Goal Intention if Goal achieved, None otherwise.</li>
@@ -1137,8 +1182,8 @@
 <p><em>Mutators</em> are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated from state attributes, not <em>primitive</em> state attributes themselves.</p>
 <h3 id="triggers">Triggers</h3>
 <ul>
-<li><code>trigger.animated</code>: Triggered if a Sprite is currently animating. When this Mutator trigger is false, the Sprite does not receive animation updates from the game loop, e.g. if the user releases the right arrow button on the keyboard, leaving the Player in a <code>(walk, right)</code> state, then this mutator prevents the animation from progressing until the Player resumes pressing the right arrow button.</li>
-<li><code>triggers.dead</code>: Triggered if a Sprite dies. This can only occur if the Sprite's </li>
+<li><code>trigger.animated</code>: Triggered if a Sprite is currently able to animate, i.e. increment its Frame. When this Mutator trigger is false, the Sprite does not receive animation updates from the game loop, e.g. if the user releases the right arrow button on the keyboard, leaving the Player in a <code>(walk, right)</code> state, then this mutator prevents the animation from progressing until the Player resumes pressing the right arrow button.</li>
+<li><code>triggers.dead</code>: Triggered if a Sprite dies. This can only occur if the Sprite's <code>character.health.current = 0</code></li>
 <li><code>triggers.struck</code>: Triggered if a Sprite collides with a hitbox.</li>
 <li><code>triggers.frightened</code>: Triggered for the logical disjunction of the following conditions:<ul>
 <li>Triggered if Sprite's health dips below <code>frightened.limit</code></li>

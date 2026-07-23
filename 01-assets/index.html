@@ -1253,10 +1253,10 @@
 <h2 id="tiles">Tiles</h2>
 <p><em>Tiles</em> are inanimate, immutable Assets. <em>Tiles</em> are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds by breaking each rendered image into a grid of tiles.</p>
 <p>In terms of configuration, Tiles are divided into two categories, <em>regular</em> and <em>irregular</em>. <em>Regular Tiles</em> are always sized 32x32 pixels (configurable in the <code>/src/assets/tile/main.yaml</code> file). <em>Irregular Tiles</em> are variable size. </p>
-<p>Tiles have an <em>immutable, inanimate state</em> and do not participate in the game loop. Their state is never altered by ingame actions. 
-- AssetKey: <code>str</code></p>
+<p>Tiles have an <em>immutable, inanimate state</em> and do not participate in the game loop. Their state is never altered by ingame actions. </p>
 <p><strong>Properties</strong></p>
 <ul>
+<li>AssetKey: <code>str</code></li>
 <li>Dimensions: <code>tuple[w, h]</code></li>
 </ul>
 <p><strong>State</strong></p>
@@ -1281,11 +1281,9 @@
 <p>Binary objects frames are always organized in horizontal rows. The idle frame will always start at <code>(0,0)</code> and the activated frame will always start at <code>(w,0)</code>. Because of this relation, the dimensions of a Chest image file will always be <code>(2w, h)</code></p>
 <h3 id="chests">Chests</h3>
 <p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>INTERACT</code> state while intersecting the dimensions of the <em>Chest</em>. When <code>switch == true</code>, the Chest is <em>activated</em> (open). When <code>switch == false</code>, the Chest is <em>idle</em> (closed).</p>
-<ul>
-<li>AssetKey: <code>str</code></li>
-</ul>
 <p><strong>Properties</strong></p>
 <ul>
+<li>AssetKey: <code>str</code></li>
 <li>Dimensions <code>Tuple[w, h]</code></li>
 <li>Hitboxes: <code>List[Tuple[relX, relY, w, h], ... ]</code></li>
 </ul>
@@ -1307,11 +1305,9 @@
 </ul>
 <h3 id="crates">Crates</h3>
 <p><em>Crates</em> are <em>Objects</em> who state can be altered by in-game physics. For example, when a <em>Spriute</em> collides with a <em>Crate</em>, the <em>Crate</em> moves in the direction of the <em>Sprite</em>, with the same speed as the <em>Sprite</em>.</p>
-<ul>
-<li>AssetKey: <code>str</code></li>
-</ul>
 <p><strong>Properties</strong></p>
 <ul>
+<li>AssetKey: <code>str</code></li>
 <li>Dimensions <code>Tuple[w, h]</code></li>
 <li>Hitboxes: <code>List[Tuple[relX, relY, w, h]]</code></li>
 </ul>
@@ -1327,11 +1323,9 @@
 </ul>
 <h3 id="doors">Doors</h3>
 <p><em>Doors</em> are <em>Objects</em> that alter the player's <code>&lt;layer&gt;</code>. When a player enters the hitbox of a door, the <code>&lt;layer&gt;</code> is changed to the <code>&lt;outlayer&gt;</code>.</p>
-<ul>
-<li>AssetKey: <code>str</code></li>
-</ul>
 <p><strong>Properties</strong></p>
 <ul>
+<li>AssetKey: <code>str</code></li>
 <li>Dimensions <code>Tuple[w, h]</code></li>
 <li>Hitboxes: <code>List[Tuple[relX, relY, w, h], ... ]</code></li>
 </ul>
@@ -1348,11 +1342,9 @@
 </ul>
 <h3 id="gates">Gates</h3>
 <p><em>Gates</em> are <em>Objects</em> whose state is connected to <em>Plates</em>. When a <em>Gate</em> is activated (open), it does not have hitboxes and the player can pass freely through it. When a Gate is idle (closed), its hitboxes prevent the player from passing through its area.</p>
-<ul>
-<li>AssetKey: <code>str</code></li>
-</ul>
 <p><strong>Properties</strong></p>
 <ul>
+<li>AssetKey: <code>str</code></li>
 <li>Dimensions <code>Tuple[w, h]</code></li>
 <li>Hitboxes: <code>List[Tuple[relX, relY, w, h]]</code></li>
 </ul>
@@ -1374,11 +1366,9 @@
 </ul>
 <h3 id="plates">Plates</h3>
 <p><em>Plates</em> are <em>Binary Objects</em> whose state can be changed by collision, i.e. when a player enters its hitbox and flips its state. When activated, a <em>Plate</em> in turn flips the state of its keyed <em>Gate</em>.</p>
-<ul>
-<li>AssetKey: <code>str</code></li>
-</ul>
 <p><strong>Properties</strong></p>
 <ul>
+<li>AssetKey: <code>str</code></li>
 <li>Dimensions <code>Tuple[w, h]</code></li>
 <li>Hitboxes: <code>List[Tuple[relX, relY, w, h], ... ]</code></li>
 </ul>
@@ -1410,14 +1400,12 @@
 <p><strong>Temporary vs. Persistent</strong></p>
 <p>Some Effects are brief (e.g. explosions or magic effects), while others loop through their frames forever (e.g. water ripples or a windmill). This distinction is captured in the division between <em>Temporary</em> and <em>Persistent</em> Effects. Temporary Effects are garbage-collected and removed from the Board after they "<em>die</em>", whereas Persistent Effects are excluded from garbage collection and always iterate over their animation (as long as they are on screen)</p>
 <h3 id="temporary">Temporary</h3>
-<ul>
-<li>AssetKey: <code>str</code></li>
-</ul>
 <p><strong>Properties</strong></p>
 <ul>
+<li>AssetKey: <code>str</code></li>
 <li>Dimensions <code>Tuple[w, h]</code></li>
 <li>Hitboxes: <code>List[Tuple[relX, relY, w, h], ... ]</code></li>
-<li>MaxFrame: <code>int</code></li>
+<li>Count: <code>int</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
@@ -1431,11 +1419,9 @@
 <li>FrameKey(Key, Frame) -&gt; <code>&lt;asset-key&gt;-&lt;frame&gt;</code></li>
 </ul>
 <h3 id="persistent">Persistent</h3>
-<ul>
-<li>AssetKey: <code>str</code></li>
-</ul>
 <p><strong>Properties</strong></p>
 <ul>
+<li>AssetKey: <code>str</code></li>
 <li>Dimensions <code>Tuple[w, h]</code></li>
 <li>Hitboxes: <code>List[Tuple[relX, relY, w, h], ... ]</code></li>
 <li>MaxFrame: <code>int</code></li>
@@ -1498,11 +1484,9 @@
 <h3 id="pixies">Pixies</h3>
 <p><em>Pixies</em> are <em>Sheets</em> over four rows of frames. Pixies always have the same number of frames in each row, determined by the <em>MaxFrame</em> property. Pixies only have one Action state: <code>walk</code>. The rows of their Sheet Asset file are assumed to be partitioned over Direction only. </p>
 <p><em>Pixies</em> are meant to encapsulate simple Characters, such as animals, bugs, or other creatures. </p>
-<ul>
-<li>AssetKey: <code>str</code></li>
-</ul>
 <p><strong>Properties</strong></p>
 <ul>
+<li>AssetKey: <code>str</code></li>
 <li>Dimensions <code>Tuple[w, h]</code></li>
 <li>Hitboxes: <code>List[Tuple[relX, relY, w, h]]</code></li>
 <li>MaxFrame: <code>int</code></li>
@@ -1522,24 +1506,9 @@
 </ul>
 <h3 id="sprites">Sprites</h3>
 <p><em>Sprites</em> are <em>Sheets</em> over multiple rows of frames. <em>Sprites</em> have a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, non-playable characters and enemies.</p>
-<p>Some of the attributes and characteristics of a Sprite are presented here without further explanation, for the sake of completeness. See <a href="../03-sprites/">Sprite documentation</a> for a more thorough explanation of Sprite mechanics.</p>
-<p><strong>LPC Frames</strong></p>
-<p>The LPC specification defines the following frames per Sprite action,</p>
-<ul>
-<li><code>cast</code>: MaxFrame = 7</li>
-<li><code>thrust</code>: MaxFrame = 8</li>
-<li><code>walk</code>: MaxFrame = 9</li>
-<li><code>slash</code>: MaxFrame = 6</li>
-<li><code>shoot</code>: MacFrame = 13</li>
-<li><code>die</code>: MacFrame = 6</li>
-</ul>
-<p><strong>Player, NPCs and Enemies</strong></p>
-<p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. See <a href="../02-messages/#intents">Intents documentation</a> for more information on Intents. See <a href="../04-player/">Player documentation</a> for more information on the Player.</p>
-<ul>
-<li>AssetKey: <code>str</code></li>
-</ul>
 <p><strong>Properties</strong></p>
 <ul>
+<li>AssetKey: <code>str</code></li>
 <li>Dimension: <code>tuple[int, int]</code></li>
 <li>Hitboxes: <code>List[Tuple[int, int, int, int]]</code></li>
 <li>MaxFrame: <code>Dict[str, int]</code></li>
@@ -1547,26 +1516,12 @@
 <p><strong>State</strong></p>
 <ul>
 <li>Name: <code>str</code></li>
-<li>Position: <code>Tuple[int, int]</code></li>
+<li>Position: <code>Tuple[x, y]</code></li>
 <li>LayerKey: <code>str</code></li>
-<li>Frame: <code>int</code></li>
-<li>Intention: <code>Dict[str, Union[Direction, Action, Dispostion, Communication]]</code><ul>
 <li>Direction: <code>Direction</code></li>
-<li>Action: <code>Action</code></li>
-<li>Disposition: <code>Disposition</code></li>
-<li>Communication: <code>Communication</code></li>
+<li>Frame: <code>int</code></li>
 </ul>
-</li>
-<li>Memory: <code>Dict[str, Any]</code><ul>
-<li>Target: <code>str</code></li>
-<li>Communications: <code>List[str]</code></li>
-</ul>
-</li>
-</ul>
-<p><strong>Calculated State</strong></p>
-<ul>
-<li>FrameKey(Key, Direction, Action, Frame) -&gt; <code>&lt;asset-key&gt;-&lt;direction&gt;-&lt;action&gt;-&lt;frame&gt;</code></li>
-</ul>
+<p>This enumeration of Sprite state is incomplete and only includes what is necessary to achieve animation. See <a href="../03-sprites/">Sprite documentation</a> for a more thorough explanation of Sprite state and mechanics.</p>
 <h2 id="menu">Menu</h2>
 <p>TODO</p>
 <h2 id="sounds">Sounds</h2>
