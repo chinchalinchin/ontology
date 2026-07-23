@@ -3,3 +3,4 @@ build/**
 **/*.c
 **/save/**
 !**/save/.gitkeep
+**/.DS_Store
