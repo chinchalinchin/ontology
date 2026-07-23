@@ -77,7 +77,7 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
         - Extension: `str`
 - Frame: `int`
 
-Frame is an integer that tracks the current animation frame. It's maximum value is dependent on the Action state. For example, if a Sprite is in the `walk` Action state, then Frame will cycle from 0 to `walk.MaxFrames`.
+Frame is an integer that tracks the current animation frame. It's maximum value is dependent on the Action state. For example, if a Sprite is in the `walk` Action state, then Frame will cycle from 0 to `count.walk`.
 
 **Calculated State**
 

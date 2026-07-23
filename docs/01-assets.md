@@ -302,7 +302,7 @@ Some Effects are brief (e.g. explosions or magic effects), while others loop thr
 - AssetKey: `str`
 - Dimensions `Tuple[w, h]`
 - Hitboxes: `List[Tuple[relX, relY, w, h], ... ]`
-- MaxFrame: `int`
+- Count: `int`
 
 **State**
 
@@ -364,7 +364,7 @@ Where `n(Action)` is the number of frames per Action (e.g., `cast` might have 7 
 
 ### Pixies
 
-*Pixies* are *Sheets* over four rows of frames. Pixies always have the same number of frames in each row, determined by the *MaxFrame* property. Pixies only have one Action state: `walk`. The rows of their Sheet Asset file are assumed to be partitioned over Direction only. 
+*Pixies* are *Sheets* over four rows of frames. Pixies always have the same number of frames in each row, determined by the *Count* property. Pixies only have one Action state: `walk`. The rows of their Sheet Asset file are assumed to be partitioned over Direction only. 
 
 *Pixies* are meant to encapsulate simple Characters, such as animals, bugs, or other creatures. 
 
@@ -373,7 +373,7 @@ Where `n(Action)` is the number of frames per Action (e.g., `cast` might have 7 
 - AssetKey: `str`
 - Dimensions `Tuple[w, h]`
 - Hitboxes: `List[Tuple[relX, relY, w, h]]`
-- MaxFrame: `int`
+- Count: `int`
 - Action: `walk`
 
 **State**
@@ -397,7 +397,7 @@ Where `n(Action)` is the number of frames per Action (e.g., `cast` might have 7 
 - AssetKey: `str`
 - Dimension: `tuple[int, int]`
 - Hitboxes: `List[Tuple[int, int, int, int]]`
-- MaxFrame: `Dict[str, int]`
+- Count: `Dict[str, int]`
 
 **State**
 
