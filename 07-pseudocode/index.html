@@ -8,10 +8,10 @@
       
       
       
-        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/09-pseudocode/">
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/07-pseudocode/">
       
       
-        <link rel="prev" href="../08-plotting/">
+        <link rel="prev" href="../06-plots/">
       
       
       
@@ -271,61 +271,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../02-properties/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Properties
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../03-state/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    State
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../04-messages/" class="md-nav__link">
+      <a href="../02-messages/" class="md-nav__link">
         
   
   
@@ -352,7 +298,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../05-sprites/" class="md-nav__link">
+      <a href="../03-sprites/" class="md-nav__link">
         
   
   
@@ -379,7 +325,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../06-player/" class="md-nav__link">
+      <a href="../04-player/" class="md-nav__link">
         
   
   
@@ -406,7 +352,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../07-application/" class="md-nav__link">
+      <a href="../05-application/" class="md-nav__link">
         
   
   
@@ -433,7 +379,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../08-plotting/" class="md-nav__link">
+      <a href="../06-plots/" class="md-nav__link">
         
   
   
@@ -875,7 +821,10 @@
     <span class="n">view</span> <span class="p">:</span> <span class="n">View</span>
     <span class="n">player</span> <span class="p">:</span> <span class="n">Player</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">screen</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+        <span class="n">file</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> 
+        <span class="n">screen</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="p">):</span>
         <span class="c1"># Initialize mutators</span>
         <span class="n">loaded</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="n">paused</span> <span class="o">=</span> <span class="kc">False</span>
@@ -894,12 +843,16 @@
             <span class="n">control</span><span class="p">:</span> <span class="n">Instruction</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
             <span class="c1"># 2. Update Board based on input</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">play</span><span class="p">(</span><span class="n">control</span><span class="p">)</span>
-            <span class="c1"># 3. Determine current layer</span>
+
+
+            <span class="c1"># 1. Update board</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+            <span class="c1"># 2. Gather new state info</span>
             <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">layer</span>
-            <span class="c1"># 4. Gather up pieces</span>
-            <span class="n">pieces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span><span class="o">.</span><span class="n">mutable</span>
-            <span class="c1"># 5. Draw pieces on Board</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">views</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">pieces</span><span class="p">)</span>
+            <span class="n">player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">player</span>
+            <span class="n">pieces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">pieces</span>
+            <span class="c1"># 3. Draw pieces on Board</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">views</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">pieces</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
             <span class="c1"># ETC: calculate frame rates, lag, buffer rates, skips, etc. </span>
 </code></pre></div>
 <h2 id="view">View</h2>
@@ -1041,24 +994,29 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chests</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">crates</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">doors</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">gates</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">plates</span>
 
     <span class="k">def</span> <span class="nf">_sheets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nymphs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixies</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">sprites</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pixies</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">sprites</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">player</span>
 
     <span class="k">def</span> <span class="nf">pieces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Asset</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tiles</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sheets</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intent</span><span class="p">:</span> <span class="n">Intent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># game logic</span>
+
         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">():</span>
             <span class="c1"># perform object logic</span>
 
+        <span class="c1"># player is treated as sprite</span>
         <span class="k">for</span> <span class="n">sheet</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sheets</span><span class="p">():</span>
-            <span class="c1"># perform sheet logic</span>
-
-        <span class="c1"># update player</span>
+            <span class="n">intent</span> <span class="o">=</span> <span class="n">sheet</span><span class="o">.</span><span class="n">poll</span><span class="p">()</span>
+            <span class="c1"># intent logic</span>
+            <span class="n">new_intent</span> <span class="o">=</span> <span class="n">some_intent</span>
+            <span class="n">sheet</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">new_intent</span><span class="p">)</span>
 </code></pre></div>
 <h2 id="sprite">Sprite</h2>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Sprite</span><span class="p">(</span><span class="n">Asset</span><span class="p">):</span>
     <span class="c1"># Inherited Attributes</span>
+    <span class="c1">## Unique Identifer</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="c1">## Asset Identifier</span>
     <span class="n">asset_key</span><span class="p">:</span> <span class="nb">str</span>
     <span class="c1">## Properties</span>
@@ -1072,8 +1030,11 @@
     <span class="c1">## Properties</span>
     <span class="n">hitboxes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
     <span class="c1">## State</span>
-    <span class="n">direction</span><span class="p">:</span> <span class="n">Direction</span> <span class="c1"># enum[UP, LEFT, DOWN, RIGHT]</span>
-    <span class="n">action</span><span class="p">:</span> <span class="n">Action</span> <span class="c1"># enum[CAST, THRUST, WALK, SLASH, SHOOT, DIE]</span>
+    <span class="n">intention</span> <span class="p">:</span> <span class="n">Intent</span>
+
+    <span class="k">def</span> <span class="nf">poll</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Intent</span><span class="p">:</span>
+        <span class="c1"># calculate Intent</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">intention</span>
 
     <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intention</span><span class="p">:</span> <span class="n">Intent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Abstract implementation</span>
