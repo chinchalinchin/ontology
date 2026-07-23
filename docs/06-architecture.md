@@ -1,4 +1,6 @@
-# Ontology: Application
+# Ontology: Architecture
+
+This section contains an in-depth presentation of the game engine's programmatic architecture.
 
 ## Initialization
 

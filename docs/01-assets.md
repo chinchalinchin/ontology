@@ -116,7 +116,6 @@ Tiles have an *immutable, inanimate state* and do not participate in the game lo
 
 **State**
 
-- Name: `str`
 - LayerKey: `str`
 - Position: `tuple[x, y]`
 
@@ -154,13 +153,15 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 - Position: `Tuple[x, y]`
 - LayerKey: `str`
 - Switch: `bool`
-- Content: `str`
+- ContentKeys: `List[str]`
 
 **CalculatedState**
 
 - FrameKey(Switch)
     - If `switch == true`, returns `<asset-key>-idle`
     - If `switch == false`, returns `<asset-key>-activated`
+
+**TODO** Elaborate content keying system.
 
 ### Crates
 
@@ -198,6 +199,7 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 - Position: `Tuple[x, y]`
 - LayerKey: `str`
 - OutLayerKey: `str`
+- OutPosition: `Tuple[x, y]`
 
 **Calculated State**
 
@@ -321,7 +323,7 @@ Some Effects are brief (e.g. explosions or magic effects), while others loop thr
 
 For any sheet composed of more than one row (i.e. all types of Sheets except *Pixies*), the rows of that Sheet are identified by *Direction*, *Action* and *Frame*. 
 
-The default (*LPC*) categories are enumerated below. The categories can be configured in the `/src/data/intents/main.yaml` file. See [Intents documentation](./02-messages.md#intents) for more information. 
+The default (*LPC*) categories are enumerated below. The categories can be configured in the `/src/data/intents/main.yaml` file. See [Intents documentation](./02-sprites.md#intents) for more information. 
 
 - Direction: `Enum[up, left, down, right]`
 - Action: `Enum[cast, thrust, walk, slash, shoot, die]`
@@ -405,7 +407,7 @@ Where `n(Action)` is the number of frames per Action (e.g., `cast` might have 7 
 - Direction: `Direction`
 - Frame: `int`
 
-This enumeration of Sprite state is incomplete and only includes what is necessary to achieve animation. See [Sprite documentation](./03-sprites.md) for a more thorough explanation of Sprite state and mechanics.
+This enumeration of Sprite state is incomplete and only includes what is necessary to achieve animation. See [Sprite documentation](./02-sprites.md) for a more thorough explanation of Sprite state and mechanics.
 
 ## Menu
 

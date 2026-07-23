@@ -17,7 +17,11 @@ The game engine use the LPC as its default setting.
 
 **Player, NPCs and Enemies**
 
-NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. See [Intents documentation](./02-messages.md#intents) for more information on Intents. See [Player documentation](./04-player.md) for more information on the Player.
+NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device, as opposed to Disposition Transitions
+
+- See [Intents](#intents) and [Intentions](#intentions) documentation below for more information on the Intention mechanics. 
+- See [Dispositions](#disposition) documentation below for more information on Disposition Transition Matrix.
+- See [Player](./03-player.md) documentation for more information on the Player.
 
 ## Overview 
 
@@ -36,7 +40,7 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
         - Maximum: `int`
     - Magic: `int`
         - Current: `int`
-        - Maxium: `int`
+        - Maximum: `int`
 - Character
     - Strength: `int`
     - Defense: `int`
@@ -46,7 +50,7 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
     - Direction: `str`
     - Extension: `str`
     - Disposition: `str`
-    - Motvation: `str`
+    - Motivation: `str`
     - Expression: `str`
 - Inventory:
     - Loot: `Dict[str, int]`
@@ -68,7 +72,7 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
     - Communication: `List[str]` 
 - Goal: 
     - AssetName: `str`
-    - Intension:
+    - Intention:
         - Action: `str`
         - Extension: `str`
 - Frame: `int`
@@ -85,6 +89,29 @@ Frame is an integer that tracks the current animation frame. It's maximum value 
 - `poll() -> Intent`: Returns the Sprite's current Intent.
 - `update(intent: Intent) -> None`: Updates the Sprite's current Intent.
 - `achieved(goal_asset: Asset) -> Union[Intent, None]`: Returns Goal Intention if Goal achieved, None otherwise.
+
+## Intents
+
+Sprites consume Intents. Intents represent mutable state changes. All Assets implement an `update` method that receives as argument an Intention object, possibly null. This method is called during the game loop for each Asset. An Intent has atleast one of the following: *Action*, *Communication*, *Direction*, *Disposition*, *Extension*, *Expression* or *Motivation*. These attributes are central to Sprite logic and are covered more in-depth below.
+
+The [Player](./03-player.md) implements the Sprite Asset interface, but is unique in its implementation, insofar controller button are mapped into Intents, which are then consumed by the game engine, i.e. Intents act as the interface between the user and the game. 
+
+All state changes are mediated through an Intent. For example, a mutable, inanimate Object, such as Crates, changes its position state when it is pushed by a hitbox in motion. In terms of the game engine, this is achieved  by the Crate receiving an Intent that contains the state instruction,
+
+```python 
+intent.action = 'walk'
+intent.direction = 'left'
+```
+
+An Intent is stored in a Sprite's *Intention*. Intentions are covered in more detail below.
+
+### Schema
+
+- Location: `/src/assets/intents/main.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/data-intents.yaml"
+```
 
 ## Meters
 
@@ -171,7 +198,7 @@ The default Extension states are enumerated below,
 ### Disposition
 
 !!! importatnt
-    The Player state does not observe the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to Instructions (a subset of Intents). See [Player documentation](./04-player.md) for more information on the Player. See [Instructions documentation](./02-messages.md#instructions) for more information on Instructions.
+    The Player state does not observe the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to Intents. See [Player documentation](./03-player.md) for more information on the Player.
     
 A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's *Disposition* determines its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.
 

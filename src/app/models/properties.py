@@ -5,12 +5,12 @@ class Dimensions(BaseModel):
     l: int
     w: int
 
-class Position(BaseModel):
-    x: int
-    y: int
+class RelativeDimensions(BaseModel):
+    relX: int
+    relY: int
 
 class Hitbox(BaseModel):
     # Properties
-    dim: Dimensions
+    rel: RelativeDimensions
     # State
     pos: Position
