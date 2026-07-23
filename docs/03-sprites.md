@@ -2,6 +2,27 @@
 
 Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the gameplay loop and thus have many unique attributes and methods, as the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. 
 
+**LPC Frames**
+
+The LPC specification defines the following frames per Sprite Action,
+
+- `cast`: Count = 7
+- `thrust`: Count = 8
+- `walk`: Count = 9
+- `slash`: Count = 6
+- `shoot`: Count = 13
+- `die`: Count = 6
+
+The game engine use the LPC as its default setting.
+
+**Player, NPCs and Enemies**
+
+NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. See [Intents documentation](./02-messages.md#intents) for more information on Intents. See [Player documentation](./04-player.md) for more information on the Player.
+
+## Overview 
+
+**Properties**
+
 - AssetKey: `str`
 
 **State**
@@ -10,8 +31,12 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 - Position: `Tuple[int, int]`
 - Layer: `str`
 - Meters
-    - Health: `int`
+    - Health: 
+        - Current: `int`
+        - Maximum: `int`
     - Magic: `int`
+        - Current: `int`
+        - Maxium: `int`
 - Character
     - Strength: `int`
     - Defense: `int`
@@ -50,10 +75,9 @@ Frame is an integer that tracks the current animation frame. It's maximum value 
 
 - FrameKey: `AssetKey + Intention.Direction + Intention.Action + Frame`
 
-
 **Methods**
 
-- `animate() -> None`: Increments Frame.
+- `animate() -> None`: Increments Frame, if `triggers.animated == true`.
 - `poll() -> Intent`: Returns the Sprite's current Intent.
 - `update(intent: Intent) -> None`: Updates the Sprite's current Intent.
 - `achieved(goal_asset: Asset) -> Union[Intent, None]`: Returns Goal Intention if Goal achieved, None otherwise.
@@ -90,8 +114,8 @@ TODO
 
 ### Triggers
 
-- `trigger.animated`: Triggered if a Sprite is currently animating. When this Mutator trigger is false, the Sprite does not receive animation updates from the game loop, e.g. if the user releases the right arrow button on the keyboard, leaving the Player in a `(walk, right)` state, then this mutator prevents the animation from progressing until the Player resumes pressing the right arrow button.
-- `triggers.dead`: Triggered if a Sprite dies. This can only occur if the Sprite's 
+- `trigger.animated`: Triggered if a Sprite is currently able to animate, i.e. increment its Frame. When this Mutator trigger is false, the Sprite does not receive animation updates from the game loop, e.g. if the user releases the right arrow button on the keyboard, leaving the Player in a `(walk, right)` state, then this mutator prevents the animation from progressing until the Player resumes pressing the right arrow button.
+- `triggers.dead`: Triggered if a Sprite dies. This can only occur if the Sprite's `character.health.current = 0`
 - `triggers.struck`: Triggered if a Sprite collides with a hitbox.
 - `triggers.frightened`: Triggered for the logical disjunction of the following conditions:
     - Triggered if Sprite's health dips below `frightened.limit`

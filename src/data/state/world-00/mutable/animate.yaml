@@ -16,8 +16,12 @@ sheets:
       key: test
       layer: outside
       meters:
-        health: 150
-        magic: 100
+        health:
+          current: 150 
+          max: 150
+        magic: 
+          current: 100
+          max: 150
       character:
         strength: 10
         defense: 10
@@ -27,6 +31,8 @@ sheets:
           radius: 25
           limit: 0.25
           enemy: 4
+        vision:
+          radius: 25
       position:
         x: 0
         y: 0

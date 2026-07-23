@@ -15,12 +15,32 @@ sheets:
       position:
         x: Horizontal Position
         y: Vertical Position 
+      meter:
+        health: 
+          current: Current Health Meter
+          maximum: Maximum Health Meter
+        magic: 
+          current: Current Magic Meter
+          maximum: Maximum Magic Meter
+      character:
+        strength: Strength
+        defense: Defense
+        speed: Speed
+      mutators:
+        frightened:
+          radius: Pixel Length
+          limit: Health Percentage
+          enemy: Enemy Count
+        vision:
+          radius: Pixel Length
       mutators:
         parameters:
           frightened:
             radius: Radius of Frightened Mutator
             limit: Health Percentage Boundary of Frightened Mutator
             enemy: Enemy Boundary of Frightened Mutator
+          vision:
+            radius: Radius of Vision Mutator
       intention:
         action: Action Key
         communication: Communication Key
@@ -32,14 +52,12 @@ sheets:
       frame: Frame Number
       goal:
         name: Asset Identifier
-        category: Category Key
         intention:
           extension: Extension Key
           action: Action Key
       memory:
         goal: 
           name: Asset Identifier
-          category: Category Key
           intention:
             extension: Extension Key
             action: Action Key
