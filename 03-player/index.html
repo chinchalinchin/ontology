@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/06-plots/">
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/03-player/">
       
       
-        <link rel="prev" href="../05-menus/">
+        <link rel="prev" href="../02-sprites/">
       
       
-        <link rel="next" href="../07-application/">
+        <link rel="next" href="../04-menus/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Plots - Ontology</title>
+        <title>Player - Ontology</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ontology-plotting" class="md-skip">
+        <a href="#ontology-player" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Plots
+              Player
             
           </span>
         </div>
@@ -273,34 +273,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../02-messages/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Messages
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../03-sprites/" class="md-nav__link">
+      <a href="../02-sprites/" class="md-nav__link">
         
   
   
@@ -308,60 +281,6 @@
     
   
     Sprites
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../04-player/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Player
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../05-menus/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Menus
   
 
     
@@ -397,6 +316,61 @@
   <span class="md-ellipsis">
     
   
+    Player
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-menus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
     Plots
   
 
@@ -406,7 +380,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -418,41 +391,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../07-application/" class="md-nav__link">
+      <a href="../06-architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Application
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../08-pseudocode/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Pseudocode
+    Architecture
   
 
     
@@ -503,9 +449,7 @@
   
 
 
-<h1 id="ontology-plotting">Ontology: Plotting</h1>
-<p>Due to the nature of the Ontology game engine, a Plot is not scripted, in the sense that Sprite Actions are hardcoded and pre-determined down to the pixels. Conditions are reached to change the World state, which causes a Player's <code>plot-key</code> attribute to update. This in turn is affects what states can be reached by the gameplay loop. </p>
-<p>As a simple example, a Plot state might be defined to change conditional on the existence of Sprite (i.e. whether a character is alive or dead). In the first state, a Sprite might have access to a Communication in its Memory (See <a href="../03-sprites/">Sprite documentation</a> for more details on the internal mechanics of Sprites)</p>
+<h1 id="ontology-player">Ontology: Player</h1>
 
 
 

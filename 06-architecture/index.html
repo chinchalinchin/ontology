@@ -8,13 +8,11 @@
       
       
       
-        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/04-player/">
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/06-architecture/">
       
       
-        <link rel="prev" href="../03-sprites/">
+        <link rel="prev" href="../05-plots/">
       
-      
-        <link rel="next" href="../05-menus/">
       
       
         
@@ -25,7 +23,7 @@
     
     
       
-        <title>Player - Ontology</title>
+        <title>Architecture - Ontology</title>
       
     
     
@@ -76,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ontology-player" class="md-skip">
+        <a href="#ontology-architecture" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Player
+              Architecture
             
           </span>
         </div>
@@ -273,14 +271,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../02-messages/" class="md-nav__link">
+      <a href="../02-sprites/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Messages
+    Sprites
   
 
     
@@ -300,14 +298,68 @@
   
   
     <li class="md-nav__item">
-      <a href="../03-sprites/" class="md-nav__link">
+      <a href="../03-player/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Sprites
+    Player
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../04-menus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Menus
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
   
 
     
@@ -336,6 +388,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -343,7 +413,7 @@
   <span class="md-ellipsis">
     
   
-    Player
+    Architecture
   
 
     
@@ -353,114 +423,36 @@
 
       </a>
       
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../05-menus/" class="md-nav__link">
         
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
-  <span class="md-ellipsis">
+  
     
   
-    Menus
   
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
+        <li class="md-nav__item">
+  <a href="#initialization" class="md-nav__link">
+    <span class="md-ellipsis">
       
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../06-plots/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Plots
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
+        Initialization
       
+    </span>
+  </a>
+  
+</li>
       
+    </ul>
   
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../07-application/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Application
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
+</nav>
       
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../08-pseudocode/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Pseudocode
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -485,6 +477,25 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initialization
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -503,7 +514,48 @@
   
 
 
-<h1 id="ontology-player">Ontology: Player</h1>
+<h1 id="ontology-architecture">Ontology: Architecture</h1>
+<p>This section contains an in-depth presentation of the game engine's programmatic architecture.</p>
+<h2 id="initialization">Initialization</h2>
+<ol>
+<li>Create <code>Registry</code>.<ul>
+<li>Load Assets into memory<ul>
+<li>Recursive load <code>/src/assets/**</code> using the <code>main.yaml</code> contained in each <code>/src/asset/&lt;category&gt;</code> directory. Create a map using the key-values <code>&lt;registry-key&gt;: &lt;frame&gt;</code>, where <code>&lt;registry-key&gt;</code> is the Asset file name (<code>&lt;asset-key&gt;</code>), unless otherwise specified below:<ul>
+<li>Parse and index Chests, Gates and Plates so each frame is indexed with    <code>&lt;asset-key&gt;-&lt;idle | activated&gt;</code>.</li>
+<li>Parse and index Pixie sheets so each frame is indexed with <code>&lt;asset-key&gt;-&lt;direction&gt;-&lt;number&gt;</code>, with <code>&lt;number&gt;</code> starting at 0.</li>
+<li>Parse and index Sprite sheets so each frame is indexed with <code>&lt;asset-key&gt;-&lt;action&gt;-&lt;direction&gt;-&lt;number&gt;</code>, with <code>&lt;number&gt;</code> starting at 0.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Create <code>Board</code>.<ul>
+<li>Load Board into memory<ul>
+<li>Load the following YAML files from the <code>/src/data/boards/&lt;board-key&gt;</code> directory, where <code>&lt;board-key&gt;</code> is the selected board.<ul>
+<li><code>/src/data/boards/&lt;board-key&gt;/immutable/inanimate.yaml</code></li>
+<li><code>/src/data/boards/&lt;board-key&gt;/immutable/animate.yaml</code></li>
+<li><code>/src/data/boards/&lt;board-key&gt;/mutable/inanimate.yaml</code></li>
+<li><code>/src/data/boards/&lt;board-key&gt;/mutable/animate.yaml</code></li>
+</ul>
+</li>
+<li>Initalize dictionaries of Asset lists, keyed by the Asset Layer. </li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<p>**Example of Asset list dictionary,</p>
+<div class="highlight"><pre><span></span><code><span class="n">sprites</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;layer-0&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1"># ....</span>
+    <span class="p">],</span>
+    <span class="s2">&quot;layer-1&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1"># ...</span>
+    <span class="p">],</span>
+    <span class="c1"># ...</span>
+<span class="p">}</span>
+</code></pre></div>
 
 
 

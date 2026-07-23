@@ -14,7 +14,7 @@
         <link rel="prev" href="../00-overview/">
       
       
-        <link rel="next" href="../02-messages/">
+        <link rel="next" href="../02-sprites/">
       
       
         
@@ -636,34 +636,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../02-messages/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Messages
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../03-sprites/" class="md-nav__link">
+      <a href="../02-sprites/" class="md-nav__link">
         
   
   
@@ -690,7 +663,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../04-player/" class="md-nav__link">
+      <a href="../03-player/" class="md-nav__link">
         
   
   
@@ -717,7 +690,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../05-menus/" class="md-nav__link">
+      <a href="../04-menus/" class="md-nav__link">
         
   
   
@@ -744,7 +717,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../06-plots/" class="md-nav__link">
+      <a href="../05-plots/" class="md-nav__link">
         
   
   
@@ -771,41 +744,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../07-application/" class="md-nav__link">
+      <a href="../06-architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Application
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../08-pseudocode/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Pseudocode
+    Architecture
   
 
     
@@ -1288,7 +1234,6 @@
 </ul>
 <p><strong>State</strong></p>
 <ul>
-<li>Name: <code>str</code></li>
 <li>LayerKey: <code>str</code></li>
 <li>Position: <code>tuple[x, y]</code></li>
 </ul>
@@ -1320,7 +1265,7 @@
 <li>Position: <code>Tuple[x, y]</code></li>
 <li>LayerKey: <code>str</code></li>
 <li>Switch: <code>bool</code></li>
-<li>Content: <code>str</code></li>
+<li>ContentKeys: <code>List[str]</code></li>
 </ul>
 <p><strong>CalculatedState</strong></p>
 <ul>
@@ -1330,6 +1275,7 @@
 </ul>
 </li>
 </ul>
+<p><strong>TODO</strong> Elaborate content keying system.</p>
 <h3 id="crates">Crates</h3>
 <p><em>Crates</em> are <em>Objects</em> who state can be altered by in-game physics. For example, when a <em>Spriute</em> collides with a <em>Crate</em>, the <em>Crate</em> moves in the direction of the <em>Sprite</em>, with the same speed as the <em>Sprite</em>.</p>
 <p><strong>Properties</strong></p>
@@ -1362,6 +1308,7 @@
 <li>Position: <code>Tuple[x, y]</code></li>
 <li>LayerKey: <code>str</code></li>
 <li>OutLayerKey: <code>str</code></li>
+<li>OutPosition: <code>Tuple[x, y]</code></li>
 </ul>
 <p><strong>Calculated State</strong></p>
 <ul>
@@ -1468,7 +1415,7 @@
 <p><em>Sheets</em> are animate, mutable Assets. They are arranged in rows of frames. Sheets possess a <em>Frame</em> attribute that iterates over a particular row of frames as the game loop progresses. </p>
 <p><strong>Direction and Action</strong></p>
 <p>For any sheet composed of more than one row (i.e. all types of Sheets except <em>Pixies</em>), the rows of that Sheet are identified by <em>Direction</em>, <em>Action</em> and <em>Frame</em>. </p>
-<p>The default (<em>LPC</em>) categories are enumerated below. The categories can be configured in the <code>/src/data/intents/main.yaml</code> file. See <a href="../02-messages/#intents">Intents documentation</a> for more information. </p>
+<p>The default (<em>LPC</em>) categories are enumerated below. The categories can be configured in the <code>/src/data/intents/main.yaml</code> file. See <a href="../02-sprites/#intents">Intents documentation</a> for more information. </p>
 <ul>
 <li>Direction: <code>Enum[up, left, down, right]</code></li>
 <li>Action: <code>Enum[cast, thrust, walk, slash, shoot, die]</code></li>
@@ -1548,7 +1495,7 @@
 <li>Direction: <code>Direction</code></li>
 <li>Frame: <code>int</code></li>
 </ul>
-<p>This enumeration of Sprite state is incomplete and only includes what is necessary to achieve animation. See <a href="../03-sprites/">Sprite documentation</a> for a more thorough explanation of Sprite state and mechanics.</p>
+<p>This enumeration of Sprite state is incomplete and only includes what is necessary to achieve animation. See <a href="../02-sprites/">Sprite documentation</a> for a more thorough explanation of Sprite state and mechanics.</p>
 <h2 id="menu">Menu</h2>
 <p>TODO</p>
 <h2 id="sounds">Sounds</h2>

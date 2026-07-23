@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/03-sprites/">
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/02-sprites/">
       
       
-        <link rel="prev" href="../02-messages/">
+        <link rel="prev" href="../01-assets/">
       
       
-        <link rel="next" href="../04-player/">
+        <link rel="next" href="../03-player/">
       
       
         
@@ -270,33 +270,6 @@
       
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../02-messages/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Messages
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -367,6 +340,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intents
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Intents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -730,7 +731,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../04-player/" class="md-nav__link">
+      <a href="../03-player/" class="md-nav__link">
         
   
   
@@ -757,7 +758,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../05-menus/" class="md-nav__link">
+      <a href="../04-menus/" class="md-nav__link">
         
   
   
@@ -784,7 +785,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../06-plots/" class="md-nav__link">
+      <a href="../05-plots/" class="md-nav__link">
         
   
   
@@ -811,41 +812,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../07-application/" class="md-nav__link">
+      <a href="../06-architecture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Application
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../08-pseudocode/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Pseudocode
+    Architecture
   
 
     
@@ -892,6 +866,34 @@
       
     </span>
   </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#intents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intents
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Intents">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1274,7 +1276,12 @@
 </ul>
 <p>The game engine use the LPC as its default setting.</p>
 <p><strong>Player, NPCs and Enemies</strong></p>
-<p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device. See <a href="../02-messages/#intents">Intents documentation</a> for more information on Intents. See <a href="../04-player/">Player documentation</a> for more information on the Player.</p>
+<p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device, as opposed to Disposition Transitions</p>
+<ul>
+<li>See <a href="#intents">Intents</a> and <a href="#intentions">Intentions</a> documentation below for more information on the Intention mechanics. </li>
+<li>See <a href="#disposition">Dispositions</a> documentation below for more information on Disposition Transition Matrix.</li>
+<li>See <a href="../03-player/">Player</a> documentation for more information on the Player.</li>
+</ul>
 <h2 id="overview">Overview</h2>
 <p><strong>Properties</strong></p>
 <ul>
@@ -1293,7 +1300,7 @@
 </li>
 <li>Magic: <code>int</code><ul>
 <li>Current: <code>int</code></li>
-<li>Maxium: <code>int</code></li>
+<li>Maximum: <code>int</code></li>
 </ul>
 </li>
 </ul>
@@ -1309,7 +1316,7 @@
 <li>Direction: <code>str</code></li>
 <li>Extension: <code>str</code></li>
 <li>Disposition: <code>str</code></li>
-<li>Motvation: <code>str</code></li>
+<li>Motivation: <code>str</code></li>
 <li>Expression: <code>str</code></li>
 </ul>
 </li>
@@ -1343,7 +1350,7 @@
 </li>
 <li>Goal: <ul>
 <li>AssetName: <code>str</code></li>
-<li>Intension:<ul>
+<li>Intention:<ul>
 <li>Action: <code>str</code></li>
 <li>Extension: <code>str</code></li>
 </ul>
@@ -1364,6 +1371,20 @@
 <li><code>update(intent: Intent) -&gt; None</code>: Updates the Sprite's current Intent.</li>
 <li><code>achieved(goal_asset: Asset) -&gt; Union[Intent, None]</code>: Returns Goal Intention if Goal achieved, None otherwise.</li>
 </ul>
+<h2 id="intents">Intents</h2>
+<p>Sprites consume Intents. Intents represent mutable state changes. All Assets implement an <code>update</code> method that receives as argument an Intention object, possibly null. This method is called during the game loop for each Asset. An Intent has atleast one of the following: <em>Action</em>, <em>Communication</em>, <em>Direction</em>, <em>Disposition</em>, <em>Extension</em>, <em>Expression</em> or <em>Motivation</em>. These attributes are central to Sprite logic and are covered more in-depth below.</p>
+<p>The <a href="../03-player/">Player</a> implements the Sprite Asset interface, but is unique in its implementation, insofar controller button are mapped into Intents, which are then consumed by the game engine, i.e. Intents act as the interface between the user and the game. </p>
+<p>All state changes are mediated through an Intent. For example, a mutable, inanimate Object, such as Crates, changes its position state when it is pushed by a hitbox in motion. In terms of the game engine, this is achieved  by the Crate receiving an Intent that contains the state instruction,</p>
+<div class="highlight"><pre><span></span><code><span class="n">intent</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;walk&#39;</span>
+<span class="n">intent</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;left&#39;</span>
+</code></pre></div>
+<p>An Intent is stored in a Sprite's <em>Intention</em>. Intentions are covered in more detail below.</p>
+<h3 id="schema">Schema</h3>
+<ul>
+<li>Location: <code>/src/assets/intents/main.yaml</code></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-intents.yaml&quot;</span>
+</code></pre></div>
 <h2 id="meters">Meters</h2>
 <p>TODO</p>
 <h3 id="health">Health</h3>
@@ -1430,7 +1451,7 @@
 <h3 id="disposition">Disposition</h3>
 <div class="admonition importatnt">
 <p class="admonition-title">Importatnt</p>
-<p>The Player state does not observe the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to Instructions (a subset of Intents). See <a href="../04-player/">Player documentation</a> for more information on the Player. See <a href="../02-messages/#instructions">Instructions documentation</a> for more information on Instructions.</p>
+<p>The Player state does not observe the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to Intents. See <a href="../03-player/">Player documentation</a> for more information on the Player.</p>
 </div>
 <p>A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's <em>Disposition</em> determines its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.</p>
 <ol>
