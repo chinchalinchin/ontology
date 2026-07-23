@@ -7,17 +7,16 @@ intents:
     - slash
     - shoot
     - die
-  # -------------------------- DIRECTIONS
-  directions:
-    - up
-    - left
-    - down
-    - right
   # -------------------------- COMMUNICATIONS
   communications: 
-    plots:
-      - a
-      - b
+    plot-a: null
+    plot-b: null
+  # -------------------------- DIRECTIONS
+  directions:
+    up: null
+    left: null
+    down: null
+    right: null
   # --------------------------
   # --------------------------
   # -------------------------- DISPOSITIONS
@@ -25,22 +24,22 @@ intents:
     # ------------------------
     # ------------------------ ATTACK
     attack:
-      # ---------------------- REACHABLE ACTIONS
+      # ---------------------- ATTACK: REACHABLE ACTIONS
       actions:
         - cast
         - slash
         - shoot
         - thrust
-      # ---------------------- REACHABLE EXTENSIONS
+      # ---------------------- ATTACK: REACHABLE EXTENSIONS
       extensions: null
-      # ---------------------- TRANSITIONS
+      # ---------------------- ATTACK: TRANSITIONS
       transitions:
         - next: attack
           conditions:  
             - sprite.goal.target.category == 'sprite'
         - next: hunt
           conditions: 
-            - not sprite.intention.goal.target
+            - not sprite.goal.target
             - sprite.memory.goal.target == 'sprite'
         - next: loot
           condition: 
@@ -48,20 +47,27 @@ intents:
     # ------------------------
     # ------------------------ ATTRACT
     attract:
-      # ---------------------- REACHABLE ACTIONS
+      # ---------------------- ATTRACT: REACHABLE ACTIONS
       actions: null
-      # ---------------------- REACHABLE EXTENSIONS
+      # ---------------------- ATTRACT: REACHABLE EXTENSIONS
       extensions: 
         - interact
-      # ---------------------- TRANSITIONS
+      # ---------------------- ATTRACT: TRANSITIONS
       transitions:
-        - next: barter
-          condition: 
+        - next: attract
+          condition: sprite.inventory.loot
         - next: communicate
           condition: sprite.memory.communications
+        - next: barter
+          condition: sprite.inventory.loot
+    # ------------------------
+    # ------------------------ BARTER:
     barter:
+      actions: null
+      extensions:
+        - trade
       transitions: 
-        - next:
+        - next: barter
           condition:
     communicate:
       actions: null
@@ -143,11 +149,42 @@ intents:
       transitions:
         - next: recoil
           condition: 
+  
+  # -------------------------- EXPRESSIONS
+  expressions:
+    affection:
+      dispositions:
+        - 
+    agreement:
+      dispositions:
+       - follow
+    anger:
+      dispositions: 
+        - attack
+    confusion:
+      disposition:
+       -
+    curiosity:
+      dispositions: 
+        - find
+        - interact
+        - return
+    disagreement:
+      disposition: null
+    loquacity:
+      dispositions:
+        - communicate
+    surprise:
+      dispositions: 
+       - recoil
+    tired:
+      dispositions: null
   # -------------------------- EXTENSIONS
   extensions:
     interact: null
     speak: null
     sprint: null
+    trade: null
   # -------------------------- MOTIVATIONS
   motivations:
     conquest: null

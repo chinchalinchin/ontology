@@ -85,12 +85,16 @@ sheets:
       directions: 
         up:
           row: 8
+          hitboxes: null
         left:
           row: 9
+          hitboxes: null
         down: 
           row: 10
+          hitboxes: null
         right:
           row: 11
+          hitboxes: null
     slash:
       frames: 6
       directions:
@@ -174,3 +178,4 @@ sheets:
       directions:
         up:
           row: 20
+          hitboxes: null

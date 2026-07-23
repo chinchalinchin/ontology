@@ -1,0 +1,11 @@
+cursors:
+  expressions:
+    <expression-key>:
+      dimensions:
+        l: Pixel Length
+        w: Pixel Width
+  projectiles:
+    <projectile-key>:
+      dimensions:
+        l: Pixel Length
+        w: Pixel Width

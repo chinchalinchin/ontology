@@ -1,19 +1,16 @@
 intents:
   # -------------------------- ACTIONS
   actions:
-    <key>:
-      row: <row-index>
-      frames: <frames-per-row>
+    <action-key>:
   # -------------------------- COMMUNICATIONS
   communications: 
-    - <plot-state-key>
+    <plot-state-key>:
   # -------------------------- DIRECTIONS
   directions:
-    <key>:
-      offset: <row-offset>
+    <direction-key>:
   # -------------------------- DISPOSITIONS
   dispositions:
-    <key>:
+    <disposition-key>:
       actions:
         - <reachable-action-key>
       extensions:
@@ -21,9 +18,14 @@ intents:
       transitions:
         - next: <next-disposition-key>
           conditions: <condition-for-transition>
+  # -------------------------- EXPRESSIONS
+  expressions:
+    <expression-key>:
+      dispositions: 
+        - <disposition-trigger-key>
   # -------------------------- EXTENSIONS
   extensions:
-    <key>:
+    <extension-key>:
   # -------------------------- MOTIVATIONS
   motivations:
-    <key>
+    <motivation-key>:

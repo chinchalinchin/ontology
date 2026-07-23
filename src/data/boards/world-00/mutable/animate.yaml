@@ -37,6 +37,7 @@ sheets:
         disposition: null
         motivation: null
         communication: null
+        expression: null
       goal: null
       memory:
         target: null

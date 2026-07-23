@@ -1,0 +1,48 @@
+menu:
+  symbols:
+    digits:
+      dimensions:
+        l: 14
+        w: 120
+  windows:
+    slots:
+      dimensions:
+        l: 40
+        w: 120
+  icons:
+    armor-bronze:
+      dimensions:
+        l:
+        w:
+    armor-gold: 
+      dimensions:
+        l:
+        w:
+    arrow-fire:
+      dimensions:
+        l:
+        w:
+    arrow-magic:
+      dimensions:
+        l:
+        w:
+    arrow:
+      dimensions:
+        l:
+        w:
+    bolt-poison:
+      dimensions:
+        l:
+        w:
+    bolt-precision:
+      dimensions:
+        l:
+        w:
+    cane:
+      dimensions:
+        l:
+        w:
+    coin:
+      dimensions:
+        l:
+        w:

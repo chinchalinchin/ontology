@@ -17,6 +17,11 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
     - Extension: `str`
     - Disposition: `str`
     - Motvation: `str`
+    - Expression: `str`
+- Inventory:
+    - Loot: `Dict[str, int]`
+    - Equipment: `Dict[str, bool]`
+    - Wallet: `int`
 - Mutators:
     - Triggers: `Dict[str, bool]`
     - Parameters: `Dict[str, Dict[str, Union[int, double]]]`
@@ -210,13 +215,13 @@ Terms:
 
 - `None`: null value
 - `str`: constants
-- `sprite.<state>`: variables
-- `sprites[<sprite-name>].<state>`
+- `sprite.<state>`: self variable
+- `sprites[<sprite-name>].<state>`: Sprites variable
 
 In the default Disposition Transition matrix given above, the transition from `attack` to `hunt` is conditional on the following,
 
 ```yaml
-- not sprite.intention.goal.target
+- not sprite.goal.target
 - sprite.memory.goal.target.category == 'sprite'
 ```
 
@@ -232,6 +237,15 @@ In another example, the transition from `attack` to `loot` in the default Dispos
 ```
 
 `sprites` is a reference to a dictionary of all ingame Sprites keyed by their identifying and unique `name`, which provides access to their state attributes.
+
+Notice in the example there is a self-entrant transition. A Sprite with an `attack` Disposition can re-enter the `attack` Disposition conditional on the Sprite still having a target,
+
+```yaml 
+- sprite.goal.target.category == 'sprite'
+```
+
+!!! important
+    The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if `sprite.goal.target.category == 'sprite'`, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back to `attack`.
 
 ### Motivation
 
@@ -249,6 +263,21 @@ The default Motivations are enumerated below,
 ### Communication
 
 The Communication dimension of an Intention can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the `speak` Extension.
+
+### Expression
+
+The Expression dimension alter the Sprite's apperance by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. 
+
+The default Expressions are enumerated below,
+
+- `agreement`
+- `anger`
+- `confusion`
+- `curiosity`
+- `disagreement`
+- `loquacity`
+- `surprise`
+- `tired`
 
 ## Goal
 

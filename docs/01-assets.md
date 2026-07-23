@@ -13,13 +13,14 @@ The Asset directory is organized as follows,
 ```bash
 assets % tree -L 2
 .
+├── cursors
+│   ├── expressions
+│   ├── main.yaml
+│   └── projectiles
 ├── effects
-│   ├── temporary
+│   ├── main.yaml
 │   ├── persistent
-│   └── main.yaml
-├── intents
-│   ├── communications
-│   └── main.yaml
+│   └── temporary
 ├── menu
 │   └── main.yaml
 ├── objects
@@ -27,16 +28,20 @@ assets % tree -L 2
 │   ├── crates
 │   ├── doors
 │   ├── gates
-│   ├── plates
-│   └── main.yaml
+│   ├── main.yaml
+│   └── plates
 ├── sheets
+│   ├── main.yaml
 │   ├── pixies
-│   ├── sprites
-│   └── main.yaml
+│   └── sprites
+├── sounds
+│   ├── main.yaml
+│   ├── music
+│   └── speech
 └── tiles
     ├── irregular
-    ├── regular
-    └── main.yaml
+    ├── main.yaml
+    └── regular
 ```
 
 The `main.yaml` files in each subdirectory conform to the [Asset property schemas](#schemas).

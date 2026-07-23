@@ -1,27 +1,27 @@
 effects:
   persistent:
     <key>:
-      maxframe: 8
+      count: Number of Frames
       dim:
-        l: 
-        w:
+        l: Pixel Length
+        w: Pixel Width
       hitboxes:
         - pos: 
-            relX:
-            relY:
+            relX: Relative Horizontal Position
+            relY: Relative Vertical Postion
           dim:
-            l:
-            w:
+            l: Pixel Length
+            w: Pixel Width
   temporary:
     <key>:
-      maxframe: 8
+      count: Number of Frames
       dim:
-        l: 
-        w:
+        l: Pixel Length
+        w: Pixel Width
       hitboxes:
         - pos: 
-            relX:
-            relY:
+            relX: Relative Horizontal Position
+            relY: Relative Vertical Position
           dim:
-            l:
-            w:
+            l: Pixel Length
+            w: Pixel Width
