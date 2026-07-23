@@ -54,4 +54,10 @@ sheets:
           # unforgettable
           - greeting
       inventory: 
-        null
+        loot:
+          <loot-key>: int
+        equipment:
+          armor: Armor Key
+          weapon: Weapon Key
+          tool: Tool Key
+          utility: Utility Key

@@ -15,7 +15,7 @@ sheets:
       position:
         x: Horizontal Position
         y: Vertical Position
-      meter:
+      meters:
         health: 
           current: Current Health Meter
           maximum: Maximum Health Meter
@@ -67,9 +67,10 @@ sheets:
           - Communication Key
       inventory: 
         loot:
+          <loot-key>: Loot Key Quantity
         equipment:
-          armor:
-          tool:
-          utility:
-          weapon:
-        wallet:
+          armor: Armor Key
+          tool: Tool Key
+          utility: Utility Key
+          weapon: Weapon Key
+        wallet: Money Quantity

@@ -50,7 +50,11 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
     - Expression: `str`
 - Inventory:
     - Loot: `Dict[str, int]`
-    - Equipment: `Dict[str, bool]`
+    - Equipment:
+        Armor: `str`
+        Weapon: `str`
+        Tool: `str`
+        Utility: `str`
     - Wallet: `int`
 - Mutators:
     - Triggers: `Dict[str, bool]`
@@ -133,7 +137,7 @@ TODO
 
 *Intentions* are an internal State data structure that governs a Sprite's core logic. The two most basic Intentions, Direction and Action, determine the current animation of the Sprite. All Sheet Assets, when deployed on a Board, are given an Intention state with a Direction and Action that is updated by the gameplay loop. Sprites, however, have a more complex internal state, represented by the other attributes of Intentions, which in turn provides a greater variety of behavior and enhanced possibility of emergent gameplay.
 
-## Action, Directions
+### Action, Direction
 
 Action and Direction were previously defined in the [Assets documentation](./01-assets.md), since these two Intention states determine the animation frame currently being rendered in the gameloop. 
 
@@ -357,16 +361,44 @@ When a Sprite with a non-null `intention.communication` enters into the `speak` 
 
 TODO
 
-### Equipment
+Equipment, while part of the Inventory, affects the animation, and thus is covered in its own section, [Equipment](#equipment).
+
+### Loot
 
 TODO
+
+### Wallet
+
+TODO
+
+## Equipment
+
+TODO
+
+- Equipment Sheets: `/src/assets/sheets/sprites/equipment/<equipment-key>.png`
+
+### Equipment Schema
+
+- Location: `/src/data/equipment/main.yaml`
 
 ```yaml
 --8<-- "docs/.static/yaml/data-equipment.yaml"
 ```
 ## Personas
 
-TODO
+Personas are stacks of superimposed Sprite Sheets. They are assembled in the [Registry](./00-overview.md#registry) using the `/src/data/personas/main.yaml` state configuration file. The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona throug the AssetKey property.
+
+Personas are assembled from a Base Sheet and Feature Sheets. The Base Sheet is the background of the resultant Sheet. Feature Sheets are pasted over the Base in the order they are specified.
+
+!!! note
+    It is assumed the Base and Feature Sheets conform to the same (Action, Direction) row mapping as the Sprite Sheets themselves. As always, the game engine assumes and implements the LPC specification by default.
+
+- Base Sheets: `/src/assets/sheets/sprites/base/<base-key>.png`
+- Feature Sheets: `/src/assets/sheets/sprites/features/<feature-key>.png`
+
+### Persona Schema
+
+- Location: `/src/data/personas/main.yaml`
 
 ```yaml
 --8<-- "docs/.static/yaml/data-personas.yaml"
