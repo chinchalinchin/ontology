@@ -18,7 +18,7 @@ sheets:
       meters:
         health: 150
         magic: 100
-      
+      character:
         strength: 10
         defense: 10
         speed: 10
@@ -40,7 +40,9 @@ sheets:
         expression: null
       goal: null
       memory:
-        target: null
+        target: 
+          name: test2
+          category: sprite
         communications: 
           - insult
           # unforgettable

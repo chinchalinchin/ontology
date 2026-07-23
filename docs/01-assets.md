@@ -487,31 +487,31 @@ TODO
 
 ## Immutable Inanimate State
 
-- Location: `/src/data/boards/<board>/immutable/inanimate.yaml`
+- Location: `/src/data/state/<board-key>/immutable/inanimate.yaml`
 
 ```yaml
---8<-- "docs/.static/yaml/asset-state-immutable-inanimate.yaml"
+--8<-- "docs/.static/yaml/data-state-immutable-inanimate.yaml"
 ```
 
 ### State: Immutable, Inanimate
 
-- Location: `/src/data/boards/<board>/immutable/animate.yaml`
+- Location: `/src/data/state/<board-key>/immutable/animate.yaml`
 
 ```yaml
---8<-- "docs/.static/yaml/asset-state-immutable-animate.yaml"
+--8<-- "docs/.static/yaml/data-state-immutable-animate.yaml"
 ```
 ## State: Mutable, Inanimate
 
-- Location: `/src/data/boards/<board>/mutable/inanimate.yaml`
+- Location: `/src/data/state/<board-key>/mutable/inanimate.yaml`
 
 ```yaml
---8<-- "docs/.static/yaml/asset-state-mutable-inanimate.yaml"
+--8<-- "docs/.static/yaml/data-state-mutable-inanimate.yaml"
 ```
 
 ## State: Mutable, Animate
 
-- Location: `/src/data/boards/<boards>/animate.yaml`
+- Location: `/src/data/state/<board-key>/animate.yaml`
 
 ```yaml
---8<-- "docs/.static/yaml/asset-state-mutable-animate.yaml"
+--8<-- "docs/.static/yaml/data-state-mutable-animate.yaml"
 ```

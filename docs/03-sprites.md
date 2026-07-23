@@ -11,6 +11,11 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 - Layer: `str`
 - Meters
     - Health: `int`
+    - Magic: `int`
+- Character
+    - Strength: `int`
+    - Defense: `int`
+    - Speed: `int`
 - Intention: 
     - Action: `str`
     - Direction: `str`
@@ -26,14 +31,17 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
     - Triggers: `Dict[str, bool]`
     - Parameters: `Dict[str, Dict[str, Union[int, double]]]`
 - Memory: 
-    - Target:
-        - Name: `str`
-        - Category: `str`
+    - Goal:
+        - AssetName: `str`
+        - Intention:
+            - Action: `str`
+            - Extension: `str`
     - Communication: `List[str]` 
 - Goal: 
     - AssetName: `str`
-    - ExtensionKey: `str`
-    - ActionKey: `str`
+    - Intension:
+        - Action: `str`
+        - Extension: `str`
 - Frame: `int`
 
 Frame is an integer that tracks the current animation frame. It's maximum value is dependent on the Action state. For example, if a Sprite is in the `walk` Action state, then Frame will cycle from 0 to `walk.MaxFrames`.
@@ -42,10 +50,13 @@ Frame is an integer that tracks the current animation frame. It's maximum value 
 
 - FrameKey: `AssetKey + Intention.Direction + Intention.Action + Frame`
 
+
 **Methods**
 
+- `animate() -> None`: Increments Frame.
 - `poll() -> Intent`: Returns the Sprite's current Intent.
 - `update(intent: Intent) -> None`: Updates the Sprite's current Intent.
+- `achieved(goal_asset: Asset) -> Union[Intent, None]`: Returns Goal Intention if Goal achieved, None otherwise.
 
 ## Meters
 
@@ -59,7 +70,7 @@ TODO
 
 TODO
 
-## Statistics
+## Character
 
 ### Strength
 
@@ -85,18 +96,24 @@ TODO
 - `triggers.frightened`: Triggered for the logical disjunction of the following conditions:
     - Triggered if Sprite's health dips below `frightened.limit`
     - Triggered if Sprite is surrounded by more than `frightened.enemy` enemies with the pixel distance of `frightened.radius`.
+- `triggers.vision`: Trigger if a Sprite is within visible distance of its Goal.
 
 ### Paramaeters
 
 - `parameters.frightened.radius`: Radius of separation within which the Sprite triggers the `triggers.frightened` mutator. Measured in pixels.
 - `parameters.frightened.limit`: Percentage of health below which Sprite triggers the `triggers.frightened` mutator.
 - `parameters.frightened.enemy`: Number of enemies within the `parameters.frightened.radius` that must be present to trigger the `triggers.frightened` mutator.
+- `parameters.vision.radius`: Radius of separation within which the Sprite triggers the `triggers.vision` mutator. Measured in pixels.
 
 ## Intentions
 
 *Intentions* are an internal State data structure that governs a Sprite's core logic. The two most basic Intentions, Direction and Action, determine the current animation of the Sprite. All Sheet Assets, when deployed on a Board, are given an Intention state with a Direction and Action that is updated by the gameplay loop. Sprites, however, have a more complex internal state, represented by the other attributes of Intentions, which in turn provides a greater variety of behavior and enhanced possibility of emergent gameplay.
 
-The default Actions and Directions for the LPC specification are,
+## Action, Directions
+
+Action and Direction were previously defined in the [Assets documentation](./01-assets.md), since these two Intention states determine the animation frame currently being rendered in the gameloop. 
+
+As a reminder, the default Actions and Directions for the game engine (and LPC specification) are,
 
 - Actions: `cast, thrust, walk, slash, shoot, die`
 - Directions: `up, down, left, right`
@@ -109,7 +126,7 @@ The default Actions and Directions for the LPC specification are,
 
 The complete Intention State for a Sprite is given by the tuple,
 
-    (Action, Direction, Extension, Disposition, Motivation)
+    (Action, Direction, Extension, Disposition, Motivation, Expression)
 
 The attributes of Intention are discussed in more detail below.
 
@@ -245,7 +262,7 @@ Notice in the example there is a self-entrant transition. A Sprite with an `atta
 ```
 
 !!! important
-    The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if `sprite.goal.target.category == 'sprite'`, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back to `attack`.
+    The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if `sprite.goal.target.category == 'sprite'`, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back into `attack`.
 
 ### Motivation
 
@@ -281,16 +298,25 @@ The default Expressions are enumerated below,
 
 ## Goal
 
-- AssetName: Unique Identifier of Asset
-- ExtensionKey: 
-- ActionKey: 
+*Goals* are provide the seed (or energy) for transitions through Dispositions and the application of Motivations to modulate said transitions. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is *in order* to achieve a Goal.
+
+- `name`: Unique Identifier of Asset Goal.
+- `intention`:
+    - `extension`: Extension to be applied when Goal achieved .
+    - `action`: Action to be applied when Goal achieved.
+
+When a Sprite has Goal, it will seek out (path-find) its way to the AssetName, provided the AssetName is within `mutators.parameters.vision.radius`.
 
 ## Memory
 
-- `memory.target`: 
-    - `category (chest | crate | plate | gate | door | sprite | pixie)`: Category of Sprite's current target.
-    - `name`: Identifier of Sprite's current target.
-- `memory.communications`: List of dialogue saved in Sprite's memory.
+*Memory* is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Disposition and Motivation.
+
+- `memory.goal`: 
+    - `name`: Unique Identifer of Asset Goal.
+    - `intention`:
+        - `extension`: Extension to be applied when Goal achieved. 
+        - `action`: Action to be applied when Goal achieved.
+- `memory.communications`: List of saved dialogue.
 
 ### Communications
 

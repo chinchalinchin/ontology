@@ -23,17 +23,29 @@ sheets:
             enemy: Enemy Boundary of Frightened Mutator
       intention:
         action: Action Key
-        direction: Direction Key
-        extension: Extension Key
-        disposition: Disposition Key
-        motivation: Motivation Key
         communication: Communication Key
-      goal: null
+        direction: Direction Key
+        disposition: Disposition Key
+        extension: Extension Key
+        expression: Expression Key
+        motivation: Motivation Key
+      frame: Frame Number
+      goal:
+        name: Asset Identifier
+        category: Category Key
+        intention:
+          extension: Extension Key
+          action: Action Key
       memory:
-        target: null
+        goal: 
+          name: Asset Identifier
+          category: Category Key
+          intention:
+            extension: Extension Key
+            action: Action Key
         communications: 
-          - <communication-key>
+          - Communication Key
           # unforgettable
-          - <communication-key>
+          - Communication Key
       inventory: 
         null
