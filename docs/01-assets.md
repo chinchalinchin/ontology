@@ -111,19 +111,17 @@ Tiles have an *immutable, inanimate state* and do not participate in the game lo
 
 **Properties**
 
-- AssetKey: `str`
-- Dimensions: `tuple[w, h]`
+- `asset: str`
+- `dimensions: Tuple[w, h]`
 
 **State**
 
-- LayerKey: `str`
-- Position: `tuple[x, y]`
+- `layer: str`
+- `position: Tuple[x, y]`
 
 **Calculated State**
 
-- FrameKey(Switch)
-    - If `switch == true`, returns `<asset-key>-idle`
-    - If `switch == false`, returns `<asset-key>-activated`
+- `FrameKey() -> <asset-key>`
 
 ## Objects
 
@@ -158,8 +156,8 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 **CalculatedState**
 
 - FrameKey(Switch)
-    - If `switch == true`, returns `<asset-key>-idle`
-    - If `switch == false`, returns `<asset-key>-activated`
+    - If `switch == true`, returns `<asset-key>-activated`
+    - If `switch == false`, returns `<asset-key>-idle`
 
 **TODO** Elaborate content keying system.
 
@@ -417,7 +415,6 @@ TODO
 
 TODO
 
-
 ## Schemas
 
 ### Properties: Tile Properties
@@ -450,9 +447,9 @@ TODO
 
 ```yaml
 --8<-- "docs/.static/yaml/asset-property-sheets.yaml"
+```
 
-
-## Immutable Inanimate State
+### State: Immutable, Inanimate
 
 - Location: `/src/data/state/<board-key>/immutable/inanimate.yaml`
 
@@ -460,14 +457,15 @@ TODO
 --8<-- "docs/.static/yaml/data-state-immutable-inanimate.yaml"
 ```
 
-### State: Immutable, Inanimate
+### State: Immutable, Animate
 
 - Location: `/src/data/state/<board-key>/immutable/animate.yaml`
 
 ```yaml
 --8<-- "docs/.static/yaml/data-state-immutable-animate.yaml"
 ```
-## State: Mutable, Inanimate
+
+### State: Mutable, Inanimate
 
 - Location: `/src/data/state/<board-key>/mutable/inanimate.yaml`
 
@@ -475,7 +473,7 @@ TODO
 --8<-- "docs/.static/yaml/data-state-mutable-inanimate.yaml"
 ```
 
-## State: Mutable, Animate
+### State: Mutable, Animate
 
 - Location: `/src/data/state/<board-key>/animate.yaml`
 
