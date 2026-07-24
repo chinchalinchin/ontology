@@ -594,12 +594,18 @@
   
 </li>
         
-      </ul>
-    </nav>
+          <li class="md-nav__item">
+  <a href="#state-immutable-animate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State: Immutable, Animate
+      
+    </span>
+  </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#state-mutable-inanimate" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -609,8 +615,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#state-mutable-animate" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -618,6 +624,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1079,12 +1090,18 @@
   
 </li>
         
-      </ul>
-    </nav>
+          <li class="md-nav__item">
+  <a href="#state-immutable-animate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State: Immutable, Animate
+      
+    </span>
+  </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#state-mutable-inanimate" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1094,8 +1111,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#state-mutable-animate" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1103,6 +1120,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1229,21 +1251,17 @@
 <p>Tiles have an <em>immutable, inanimate state</em> and do not participate in the game loop. Their state is never altered by ingame actions. </p>
 <p><strong>Properties</strong></p>
 <ul>
-<li>AssetKey: <code>str</code></li>
-<li>Dimensions: <code>tuple[w, h]</code></li>
+<li><code>asset: str</code></li>
+<li><code>dimensions: Tuple[w, h]</code></li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
-<li>LayerKey: <code>str</code></li>
-<li>Position: <code>tuple[x, y]</code></li>
+<li><code>layer: str</code></li>
+<li><code>position: Tuple[x, y]</code></li>
 </ul>
 <p><strong>Calculated State</strong></p>
 <ul>
-<li>FrameKey(Switch)<ul>
-<li>If <code>switch == true</code>, returns <code>&lt;asset-key&gt;-idle</code></li>
-<li>If <code>switch == false</code>, returns <code>&lt;asset-key&gt;-activated</code></li>
-</ul>
-</li>
+<li><code>FrameKey() -&gt; &lt;asset-key&gt;</code></li>
 </ul>
 <h2 id="objects">Objects</h2>
 <p><em>Objects</em> are inanimate, mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and, oddly enough, objects.</p>
@@ -1270,8 +1288,8 @@
 <p><strong>CalculatedState</strong></p>
 <ul>
 <li>FrameKey(Switch)<ul>
-<li>If <code>switch == true</code>, returns <code>&lt;asset-key&gt;-idle</code></li>
-<li>If <code>switch == false</code>, returns <code>&lt;asset-key&gt;-activated</code></li>
+<li>If <code>switch == true</code>, returns <code>&lt;asset-key&gt;-activated</code></li>
+<li>If <code>switch == false</code>, returns <code>&lt;asset-key&gt;-idle</code></li>
 </ul>
 </li>
 </ul>
@@ -1524,28 +1542,26 @@
 <li>Location: <code>/src/assets/sheets/main.yaml</code></li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/asset-property-sheets.yaml&quot;</span>
-
-
-<span class="l l-Scalar l-Scalar-Plain">## Immutable Inanimate State</span>
-
-<span class="l l-Scalar l-Scalar-Plain">- Location</span><span class="p p-Indicator">:</span><span class="w"> </span><span class="err">`</span><span class="l l-Scalar l-Scalar-Plain">/src/data/state/&lt;board-key&gt;/immutable/inanimate.yaml`</span>
-
-<span class="err">```</span><span class="l l-Scalar l-Scalar-Plain">yaml</span>
-<span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-state-immutable-inanimate.yaml&quot;</span>
 </code></pre></div>
 <h3 id="state-immutable-inanimate">State: Immutable, Inanimate</h3>
+<ul>
+<li>Location: <code>/src/data/state/&lt;board-key&gt;/immutable/inanimate.yaml</code></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-state-immutable-inanimate.yaml&quot;</span>
+</code></pre></div>
+<h3 id="state-immutable-animate">State: Immutable, Animate</h3>
 <ul>
 <li>Location: <code>/src/data/state/&lt;board-key&gt;/immutable/animate.yaml</code></li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-state-immutable-animate.yaml&quot;</span>
 </code></pre></div>
-<h2 id="state-mutable-inanimate">State: Mutable, Inanimate</h2>
+<h3 id="state-mutable-inanimate">State: Mutable, Inanimate</h3>
 <ul>
 <li>Location: <code>/src/data/state/&lt;board-key&gt;/mutable/inanimate.yaml</code></li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-state-mutable-inanimate.yaml&quot;</span>
 </code></pre></div>
-<h2 id="state-mutable-animate">State: Mutable, Animate</h2>
+<h3 id="state-mutable-animate">State: Mutable, Animate</h3>
 <ul>
 <li>Location: <code>/src/data/state/&lt;board-key&gt;/animate.yaml</code></li>
 </ul>
