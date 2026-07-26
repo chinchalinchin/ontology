@@ -1,14 +1,24 @@
 """
-Pydantic models for typing the state attributes of ingame objects (lowercase "o"). See Sprite documentation for a more in-depth explanation of each field and its purpose. 
+Pydantic models for typing the state attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
 """
-
-from pydantic import BaseModel
+# Standard Libraries
 from typing import Dict, List, Tuple, Union
+# External Libraries
+from pydantic import BaseModel
+# Application Libraries
+from app.models import Position
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------- ASSET STATE FIELDS
 # ---------------------------------------------------------------------------------------
 
+class Animation(BaseModel):
+    """
+    Rerpresentation of the animation state of a Sprite.
+    """
+    action: str
+    direction: str
+    
 class Character(BaseModel):
     """
     Representation of a Sprite's game characteristics.
@@ -39,13 +49,11 @@ class Health(BaseModel):
     """
     current: int 
     maximum: int
-
+    
 class Intention(BaseModel):
     """
     Representation of the internal, hidden state of a Sprite. 
     """
-    action: str
-    direction: str
     extension: str
     disposition: str
     motivation: str
@@ -80,13 +88,6 @@ class Mutator(BaseModel):
     triggers: Dict[str, bool]
     parameters: Dict[str, Dict[str, Union[int, double]]]
 
-class Position(BaseModel):
-    """
-    Representation of a Sprite's Cartesian coordinates. Following convention, (0,0) is the upper-left corner and down is the positive-y direction.
-    """
-    x: int
-    y: int
-
 class Memory(BaseModel):
     """
     Representation of a Sprite's memory. 
@@ -105,7 +106,12 @@ class ExpressionCursorState(BaseModel):
     pass
 
 class ProjectileState(BaseModel):
-    pass
+    # ---------------------------------------------------- KEYS
+    name: str               # Unique Asset Identifier
+    layer: str              # Layer Identifier Key
+    # ---------------------------------------------------- FIELDS
+    position: Position
+    initial: Position
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- EFFECT STATE MODELS
@@ -195,7 +201,14 @@ class SpriteState(BaseModel):
     layer: str              # Layer Identifier Key
     frame: int              # Current Frame
     # ---------------------------------------------------- FIELDS
+    animation: Animation
     position: Position
+    character: Character
+    intention: Intention
+    inventory: Inventory
+    mutators: Mutator
+    memory: Memory
+    goal: Goal
 
 # ------------------------------------------------------------------- TILE STATE MODELS
 

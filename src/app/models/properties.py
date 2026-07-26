@@ -1,5 +1,10 @@
+"""
+Pydantic models for typing the property attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
+"""
+# Standard Libraries
+from typing import Dict, List, Tuple, Union
+# Externa Libraries
 from pydantic import BaseModel
-from typing import Dict, List, Tuple
 
 # ---------------------------------------------------------------------------------------
 # ----------------------------------------------------------------- ASSET PROPERTY FIELDS
@@ -14,22 +19,19 @@ class RelativeDimensions(BaseModel):
     relY: int
 
 class Hitbox(BaseModel):
-    # Properties
     rel: RelativeDimensions
-    # State
     pos: Position
 
 # ---------------------------------------------------------------------------------------
-# ----------------------------------------------------------------- ASSET PROPERTY MODELS
+# ------------------------------------------------------------------- ASSET PROPERTY MODEL
 # ---------------------------------------------------------------------------------------
 
 class AssetProperties(BaseModel):
     asset: str
     dimensions: Dimensions
     hitboxes: List[Hitbox]
-
-class SpriteProperties(BaseModel):
-    asset: str
-    dimensions: Dimensions
-    hitboxes: List[Hitbox]
-    count: Dict[str, int]
+    # Animate Properties
+    #   count: None             => inanimate Assets
+    #   count: str              => animate Assets
+    #   count: Dict[str, int]   => Sprite Assets
+    count: Union[None, str, Dict[str, int]]

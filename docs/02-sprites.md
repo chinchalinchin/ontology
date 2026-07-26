@@ -45,9 +45,10 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
     - Strength: `int`
     - Defense: `int`
     - Speed: `int`
-- Intention: 
+- Animation:
     - Action: `str`
     - Direction: `str`
+- Intention: 
     - Extension: `str`
     - Disposition: `str`
     - Motivation: `str`
@@ -92,15 +93,22 @@ Frame is an integer that tracks the current animation frame. It's maximum value 
 
 ## Intents
 
-Sprites consume Intents. Intents represent mutable state changes. All Assets implement an `update` method that receives as argument an Intention object, possibly null. This method is called during the game loop for each Asset. An Intent has atleast one of the following: *Action*, *Communication*, *Direction*, *Disposition*, *Extension*, *Expression* or *Motivation*. These attributes are central to Sprite logic and are covered more in-depth below.
+Sprites consume Intents. Intents represent mutable state changes. All Assets implement an `update` method that receives as argument an Intention object, possibly null. This method is called during the game loop for each Asset. An Intent has atleast one of the following: *Communication*, *Disposition*, *Extension*, *Expression* or *Motivation*. These attributes are central to Sprite logic and are covered more in-depth below.
 
 The [Player](./03-player.md) implements the Sprite Asset interface, but is unique in its implementation, insofar controller button are mapped into Intents, which are then consumed by the game engine, i.e. Intents act as the interface between the user and the game. 
 
 All state changes are mediated through an Intent. For example, a mutable, inanimate Object, such as Crates, changes its position state when it is pushed by a hitbox in motion. In terms of the game engine, this is achieved  by the Crate receiving an Intent that contains the state instruction,
 
+```python
+intention.dispostion = 'attach'
+
+```
+
+TODO
+
 ```python 
-intent.action = 'walk'
-intent.direction = 'left'
+animation.action = 'walk'
+animation.direction = 'left'
 ```
 
 An Intent is stored in a Sprite's *Intention*. Intentions are covered in more detail below.
@@ -153,18 +161,16 @@ TODO
     - Triggered if Sprite is surrounded by more than `frightened.enemy` enemies with the pixel distance of `frightened.radius`.
 - `triggers.vision`: Trigger if a Sprite is within visible distance of its Goal.
 
-### Paramaeters
+### Parameters
 
 - `parameters.frightened.radius`: Radius of separation within which the Sprite triggers the `triggers.frightened` mutator. Measured in pixels.
 - `parameters.frightened.limit`: Percentage of health below which Sprite triggers the `triggers.frightened` mutator.
 - `parameters.frightened.enemy`: Number of enemies within the `parameters.frightened.radius` that must be present to trigger the `triggers.frightened` mutator.
 - `parameters.vision.radius`: Radius of separation within which the Sprite triggers the `triggers.vision` mutator. Measured in pixels.
 
-## Intentions
+## Animations
 
-*Intentions* are an internal State data structure that governs a Sprite's core logic. The two most basic Intentions, Direction and Action, determine the current animation of the Sprite. All Sheet Assets, when deployed on a Board, are given an Intention state with a Direction and Action that is updated by the gameplay loop. Sprites, however, have a more complex internal state, represented by the other attributes of Intentions, which in turn provides a greater variety of behavior and enhanced possibility of emergent gameplay.
-
-### Action, Direction
+## Action, Direction
 
 Action and Direction were previously defined in the [Assets documentation](./01-assets.md), since these two Intention states determine the animation frame currently being rendered in the gameloop. 
 
@@ -179,9 +185,13 @@ As a reminder, the default Actions and Directions for the game engine (and LPC s
 !!! note
     Any Actions defined in the `/src/assets/sheets/**.png` file rows must have its Action key entered in `/src/data/intents/main.yaml#actions` file to register as an Action enterable from a Disposition.
 
+## Intentions
+
+*Intentions* are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given an Intention state, along with an Animation stat, that is updated by the gameplay loop. The complex internal state of a Sprite is represented by its Intention. Intention is the medium through which Sprites transition into different Animation states. 
+
 The complete Intention State for a Sprite is given by the tuple,
 
-    (Action, Direction, Extension, Disposition, Motivation, Expression)
+    (Disposition, Expression, Extension, Motivation)
 
 The attributes of Intention are discussed in more detail below.
 

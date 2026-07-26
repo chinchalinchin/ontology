@@ -22,6 +22,16 @@ intents:
   # -------------------------- DISPOSITIONS
   dispositions:
     # ------------------------
+    # ------------------------ ATTACH
+    attach:
+      # ---------------------- ATTACH: REACHABLE ACTIONS
+      actions: 
+        - walk
+      # ---------------------- ATTACH: REACHAABLE EXTENSIONS
+      extensions: null
+      # ---------------------- ATTACH: TRANSITIONS
+      transition: null
+    # ------------------------
     # ------------------------ ATTACK
     attack:
       # ---------------------- ATTACK: REACHABLE ACTIONS
