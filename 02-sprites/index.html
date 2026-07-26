@@ -484,10 +484,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#paramaeters" class="md-nav__link">
+  <a href="#parameters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Paramaeters
+        Parameters
       
     </span>
   </a>
@@ -496,6 +496,28 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#animations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Animations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#action-direction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Action, Direction
+      
+    </span>
+  </a>
   
 </li>
       
@@ -510,17 +532,6 @@
   
     <nav class="md-nav" aria-label="Intentions">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#action-direction" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Action, Direction
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#extension" class="md-nav__link">
@@ -1010,10 +1021,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#paramaeters" class="md-nav__link">
+  <a href="#parameters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Paramaeters
+        Parameters
       
     </span>
   </a>
@@ -1022,6 +1033,28 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#animations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Animations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#action-direction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Action, Direction
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1036,17 +1069,6 @@
   
     <nav class="md-nav" aria-label="Intentions">
       <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#action-direction" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Action, Direction
-      
-    </span>
-  </a>
-  
-</li>
         
           <li class="md-nav__item">
   <a href="#extension" class="md-nav__link">
@@ -1311,9 +1333,12 @@
 <li>Speed: <code>int</code></li>
 </ul>
 </li>
-<li>Intention: <ul>
+<li>Animation:<ul>
 <li>Action: <code>str</code></li>
 <li>Direction: <code>str</code></li>
+</ul>
+</li>
+<li>Intention: <ul>
 <li>Extension: <code>str</code></li>
 <li>Disposition: <code>str</code></li>
 <li>Motivation: <code>str</code></li>
@@ -1372,11 +1397,14 @@
 <li><code>achieved(goal_asset: Asset) -&gt; Union[Intent, None]</code>: Returns Goal Intention if Goal achieved, None otherwise.</li>
 </ul>
 <h2 id="intents">Intents</h2>
-<p>Sprites consume Intents. Intents represent mutable state changes. All Assets implement an <code>update</code> method that receives as argument an Intention object, possibly null. This method is called during the game loop for each Asset. An Intent has atleast one of the following: <em>Action</em>, <em>Communication</em>, <em>Direction</em>, <em>Disposition</em>, <em>Extension</em>, <em>Expression</em> or <em>Motivation</em>. These attributes are central to Sprite logic and are covered more in-depth below.</p>
+<p>Sprites consume Intents. Intents represent mutable state changes. All Assets implement an <code>update</code> method that receives as argument an Intention object, possibly null. This method is called during the game loop for each Asset. An Intent has atleast one of the following: <em>Communication</em>, <em>Disposition</em>, <em>Extension</em>, <em>Expression</em> or <em>Motivation</em>. These attributes are central to Sprite logic and are covered more in-depth below.</p>
 <p>The <a href="../03-player/">Player</a> implements the Sprite Asset interface, but is unique in its implementation, insofar controller button are mapped into Intents, which are then consumed by the game engine, i.e. Intents act as the interface between the user and the game. </p>
 <p>All state changes are mediated through an Intent. For example, a mutable, inanimate Object, such as Crates, changes its position state when it is pushed by a hitbox in motion. In terms of the game engine, this is achieved  by the Crate receiving an Intent that contains the state instruction,</p>
-<div class="highlight"><pre><span></span><code><span class="n">intent</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;walk&#39;</span>
-<span class="n">intent</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;left&#39;</span>
+<div class="highlight"><pre><span></span><code><span class="n">intention</span><span class="o">.</span><span class="n">dispostion</span> <span class="o">=</span> <span class="s1">&#39;attach&#39;</span>
+</code></pre></div>
+<p>TODO</p>
+<div class="highlight"><pre><span></span><code><span class="n">animation</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;walk&#39;</span>
+<span class="n">animation</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="s1">&#39;left&#39;</span>
 </code></pre></div>
 <p>An Intent is stored in a Sprite's <em>Intention</em>. Intentions are covered in more detail below.</p>
 <h3 id="schema">Schema</h3>
@@ -1412,16 +1440,15 @@
 </li>
 <li><code>triggers.vision</code>: Trigger if a Sprite is within visible distance of its Goal.</li>
 </ul>
-<h3 id="paramaeters">Paramaeters</h3>
+<h3 id="parameters">Parameters</h3>
 <ul>
 <li><code>parameters.frightened.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.frightened</code> mutator. Measured in pixels.</li>
 <li><code>parameters.frightened.limit</code>: Percentage of health below which Sprite triggers the <code>triggers.frightened</code> mutator.</li>
 <li><code>parameters.frightened.enemy</code>: Number of enemies within the <code>parameters.frightened.radius</code> that must be present to trigger the <code>triggers.frightened</code> mutator.</li>
 <li><code>parameters.vision.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.vision</code> mutator. Measured in pixels.</li>
 </ul>
-<h2 id="intentions">Intentions</h2>
-<p><em>Intentions</em> are an internal State data structure that governs a Sprite's core logic. The two most basic Intentions, Direction and Action, determine the current animation of the Sprite. All Sheet Assets, when deployed on a Board, are given an Intention state with a Direction and Action that is updated by the gameplay loop. Sprites, however, have a more complex internal state, represented by the other attributes of Intentions, which in turn provides a greater variety of behavior and enhanced possibility of emergent gameplay.</p>
-<h3 id="action-direction">Action, Direction</h3>
+<h2 id="animations">Animations</h2>
+<h2 id="action-direction">Action, Direction</h2>
 <p>Action and Direction were previously defined in the <a href="../01-assets/">Assets documentation</a>, since these two Intention states determine the animation frame currently being rendered in the gameloop. </p>
 <p>As a reminder, the default Actions and Directions for the game engine (and LPC specification) are,</p>
 <ul>
@@ -1436,8 +1463,10 @@
 <p class="admonition-title">Note</p>
 <p>Any Actions defined in the <code>/src/assets/sheets/**.png</code> file rows must have its Action key entered in <code>/src/data/intents/main.yaml#actions</code> file to register as an Action enterable from a Disposition.</p>
 </div>
+<h2 id="intentions">Intentions</h2>
+<p><em>Intentions</em> are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given an Intention state, along with an Animation stat, that is updated by the gameplay loop. The complex internal state of a Sprite is represented by its Intention. Intention is the medium through which Sprites transition into different Animation states. </p>
 <p>The complete Intention State for a Sprite is given by the tuple,</p>
-<pre><code>(Action, Direction, Extension, Disposition, Motivation, Expression)
+<pre><code>(Disposition, Expression, Extension, Motivation)
 </code></pre>
 <p>The attributes of Intention are discussed in more detail below.</p>
 <h3 id="extension">Extension</h3>
