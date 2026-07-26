@@ -2,7 +2,7 @@ sheets:
   # ------------------------------------------- PIXIES
   pixies:
     - name: test
-      key: test
+      asset: test
       layer: outside
       position:
         x: 100
@@ -13,7 +13,7 @@ sheets:
   # ------------------------------------------- SPRITES
   sprites:
     - name: test
-      key: test
+      asset: test
       layer: outside
       meters:
         health:

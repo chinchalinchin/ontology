@@ -5,9 +5,29 @@ class Position(BaseModel):
     x: int
     y: int
 
+class RelativePosition(BaseModel):
+    relX: int
+    relY: int
+
+class Dimensions(BaseModel):
+    """
+    """
+    l: int
+    w: int
+
+class Multliple(BaseModel):
+    """
+    """
+    nx: int
+    ny: int
+    
 class Velocity(BaseModel):
     """
     Representation of Velocity vector. Down is the positive y-direction.
     """
     vx: int
     vy: int
+
+class Hitbox(BaseModel):
+    rel: RelativePosition
+    dim: Dimenions

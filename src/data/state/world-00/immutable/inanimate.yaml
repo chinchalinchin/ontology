@@ -1,19 +1,19 @@
 tiles:
   regular:
-    - key:
+    - asset:
       layer: 
       position:
         x:
         y:
-      multiply:
+      multiple:
         nx:
         ny:
   irregular:
-    - key:
+    - asset:
       layer: 
       position:
         x:
         y:
-      multiply:
+      multiple:
         nx:
         ny:

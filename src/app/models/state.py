@@ -6,7 +6,7 @@ from typing import Dict, List, Tuple, Union
 # External Libraries
 from pydantic import BaseModel
 # Application Libraries
-from app.models import Position
+from app.models import Position, Multiple
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------- ASSET STATE FIELDS
@@ -217,3 +217,4 @@ class TileState(BaseModel):
     layer: str              # Layer Identifier Key
     # ---------------------------------------------------- FIELDS
     position: Position
+    multiple: Multiple

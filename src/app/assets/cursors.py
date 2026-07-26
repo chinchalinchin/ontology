@@ -10,14 +10,17 @@ import app.physics.collisions as collisions
 class ExpressionCursor(assets.Asset, collisions.Shape):
     """
     """
-    state: State.ExpressionCursorState
+    properties: properties.AssetProperties
+    state: state.ExpressionCursorState
 
     def __init__(self, 
         properties: properties.AssetProperties,
-        state: state.ExpressionCursorState
+        state: state.ExpressionCursorState,
+        **kwargs
     ):
-        super().__init__(properties)
+        super().__init__(**kwargs)
         self.state = state
+        self.propertis = properties
     
     def frame(self) -> str:
         return self.properties.asset
@@ -33,9 +36,10 @@ class Projectile(assets.Asset):
 
     def __init__(self, 
         properties: properties.AssetProperties,
-        state: state.ProjectileState
+        state: state.ProjectileState,
+        **kwargs
     ):
-        super().__init__(properties)
+        super().__init__(**kwargs)
         self.state = state
     
     def frame(self) -> str:

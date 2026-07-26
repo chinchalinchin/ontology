@@ -4,7 +4,7 @@ Package for foundational Asset class.
 # Standard Libraries
 from abc import ABC, abstractmethod
 # Application Libraries
-from app.models import Velocity
+from app.models import Velocity, Dimensions
 import app.models.state as state
 import app.models.properties as properties
 
@@ -14,7 +14,8 @@ class Asset(ABC):
     """
     properties: properties.AssetProperties
 
-    def __init__(self, properties.AssetProperties):
+    def __init__(self, properties.AssetProperties, **kwargs):
+        super().__init__(**kwargs)
         self.properties = properties
 
     @abstractmethod
@@ -25,16 +26,16 @@ class Asset(ABC):
         pass 
 
     @abstractmethod
-    def animate(self) -> None:
+    def onscreen(self, screen: Dimensions, player: Player) -> bool:
         """
-        Abstract method for incrementing Asset's frame key. 
+        Abstract method for determining if Asset is onscreen.
         """
         pass
 
-    @abstractmethod 
-    def intend(self, intent: state.Intention) -> None:
+    @abstractmethod
+    def animate(self) -> None:
         """
-        Abstract method for passing intentions to Asset state.
+        Abstract method for incrementing Asset's frame key. 
         """
         pass
 

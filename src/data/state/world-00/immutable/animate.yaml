@@ -1,6 +1,6 @@
 effects:
   persistent:
-    - key:
+    - asset:
       layer: 
       position:
         x:
