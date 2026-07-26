@@ -58,7 +58,7 @@ class Board:
         if not self.layers:
             # dynamically calculate layers based on loaded Assets dictionary keys
         return self.layers
-        
+
     def tiles_by_layer(self, layer) -> List[Asset]:
         """
         Returns a list of all Tile Assets on the given layer of the game Board.
@@ -77,7 +77,7 @@ class Board:
                 self.plates[layer] + self.pixies[layer] + \
                 self.sprites[layer]
 
-    def animate(self):
+    def animations(self):
         """
         Returns a list of animate Assets()
         """
@@ -94,8 +94,8 @@ class Board:
         """
         """
         # ------------------------- ANIMATION HANDLING
-        for piece in self.animate()
-            piece.animate()
+        for animation in self.animations()
+            animation.animate()
         # -------------------------
 
         # ------------------------- PROJECTILE HANDLING
@@ -104,7 +104,7 @@ class Board:
                 if proj.intersects(target):
                     # TODO: projectile logic
             if not proj.alive(): 
-                # TODO: remove projectil
+                # TODO: remove projectile
         # -------------------------
 
         # ------------------------- TEMPORARY EFFECT HANDLING
