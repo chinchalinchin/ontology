@@ -7,6 +7,8 @@ from app.models.properties import SpriteProperties
 from app.models.state import SpriteState, Animation
 
 
+# -------------------------------------- SHEET ANIMATION IMPLEMENTATIONS
+
 class SpriteAnimation(Animation):
     """
     """
@@ -14,13 +16,14 @@ class SpriteAnimation(Animation):
     def animate(self, animation: Animation, properties: SpriteProperties) -> Aniatmion:
         """
         """
-        animation.frame = animation.frame + 1
+        animation.frame += 1
 
         if animation.frame > properties[animations.action].count:
             animation.frame = 0
 
         return animation
     
+# -------------------------------------- SHEET FRAME IMPLEMENTATIONS
 
 class SpriteFrame(Frame):
     """

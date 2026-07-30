@@ -2,26 +2,40 @@
 Package for Object Assets.
 """
 # Application Libraries
-from app.assets import Asset
+from app.assets import Animation, Frame
 
+# -------------------------------------- OBJECT ANIMATION IMPLEMENTATIONS
 
-class Chest(Asset):
-    """
-    """
-
-class Crate(Asset):
+class ChestAnimation(Animation):
     """
     """
 
-class Door(Asset):
+class GateAnimation(Animation):
     """
     """
 
-class Gate(Asset):
+class PlateAnimation(Animation):
     """
     """
 
+# -------------------------------------- OBJECT FRAME IMPLEMENTATIONS
 
-class Plate(Object):
+class ChestFrame(Frame):
+    """
+    """
+
+class CrateFrame(Frame):
+    """
+    """
+
+class GateFrame(Frame):
+    """
+    """
+
+class DoorFrame(Frame):
+    """
+    """
+
+class PlateFrame(Frame):
     """
     """

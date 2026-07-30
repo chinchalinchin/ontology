@@ -4,10 +4,12 @@ Package for Cursor Assets.
 # Application Libraries
 from app.assets import Frame
 
-class ExpressionCursor(Asset):
+# -------------------------------------- OBJECT FRAME IMPLEMENTATIONS
+
+class ExpressionCursorFrame(Frame):
     """
     """
 
-class Projectile(Asset):
+class ProjectileFrame(Frame):
     """
     """
