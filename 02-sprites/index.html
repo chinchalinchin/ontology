@@ -1392,15 +1392,14 @@
 <p><strong>Methods</strong></p>
 <ul>
 <li><code>animate() -&gt; None</code>: Increments Frame, if <code>triggers.animated == true</code>.</li>
-<li><code>poll() -&gt; Intent</code>: Returns the Sprite's current Intent.</li>
 <li><code>update(intent: Intent) -&gt; None</code>: Updates the Sprite's current Intent.</li>
 <li><code>achieved(goal_asset: Asset) -&gt; Union[Intent, None]</code>: Returns Goal Intention if Goal achieved, None otherwise.</li>
 </ul>
 <h2 id="intents">Intents</h2>
-<p>Sprites consume Intents. Intents represent mutable state changes. All Assets implement an <code>update</code> method that receives as argument an Intention object, possibly null. This method is called during the game loop for each Asset. An Intent has atleast one of the following: <em>Communication</em>, <em>Disposition</em>, <em>Extension</em>, <em>Expression</em> or <em>Motivation</em>. These attributes are central to Sprite logic and are covered more in-depth below.</p>
+<p>Sprites consume Intents. Intents represent mutable state changes. All Assets implement an <code>update</code> method that receives as argument an Intention object, possibly null. This method is called during the game loop for each Asset. An Intent has atleast one of the following <em>Disposition</em>, <em>Extension</em>, <em>Expression</em> or <em>Motivation</em>. These attributes are central to Sprite logic and are covered more in-depth below.</p>
 <p>The <a href="../03-player/">Player</a> implements the Sprite Asset interface, but is unique in its implementation, insofar controller button are mapped into Intents, which are then consumed by the game engine, i.e. Intents act as the interface between the user and the game. </p>
 <p>All state changes are mediated through an Intent. For example, a mutable, inanimate Object, such as Crates, changes its position state when it is pushed by a hitbox in motion. In terms of the game engine, this is achieved  by the Crate receiving an Intent that contains the state instruction,</p>
-<div class="highlight"><pre><span></span><code><span class="n">intention</span><span class="o">.</span><span class="n">dispostion</span> <span class="o">=</span> <span class="s1">&#39;attach&#39;</span>
+<div class="highlight"><pre><span></span><code><span class="n">intention</span><span class="o">.</span><span class="n">disposition</span> <span class="o">=</span> <span class="s1">&#39;attach&#39;</span>
 </code></pre></div>
 <p>TODO</p>
 <div class="highlight"><pre><span></span><code><span class="n">animation</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="s1">&#39;walk&#39;</span>
