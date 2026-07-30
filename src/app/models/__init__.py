@@ -28,18 +28,12 @@ class Velocity(BaseModel):
 class Hitbox(BaseModel):
     """
     """
-    pos: Position
-    dim: Dimenions
+    position: Position
+    dimensions: Dimenions
 
 class AttackBox(BaseModel):
     """
     """
-    pos: Position
-    dim: Dimenions
+    position: Position
+    dimensions: Dimenions
     hitframe: int
-
-class Shape(BaseModel):
-    """
-    """
-    dim: Dimensions
-    hitboxes: List[Hitbox]

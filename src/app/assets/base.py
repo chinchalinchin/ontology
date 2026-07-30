@@ -10,45 +10,48 @@ from app.math import Geometry
 import app.models.state as state
 import app.models.properties as properties
 
+UNIFIED_PROPS = Union[
+    properties.CursorProperties,
+    properties.EffectProperties,
+    properties.ObjectProperties,
+    properties.SheetProperties,
+    properties.TileProperties
+]
+
+UNIFIED_STATE = Union[
+    state.ExpressionCursorState,
+    state.ProjectileState,
+    state.PersistentEffectState,
+    state.TemporaryEffectState,
+    state.ChestState,
+    state.CrateState,
+    state.DoorState,
+    state.GateState,
+    state.PlateState,
+    state.PixieState,
+    state.SpriteState,
+    state.TileState
+]
 
 class Asset:
     """
     Foundational class for all game Assets.
     """
-    properties: Union[
-        properties.CursorProperties,
-        properties.EffectProperties,
-        properties.ObjectProperties,
-        properties.SheetProperties,
-        properties.TileProperties
-    ]
-
-    state: Union[
-        state.ExpressionCursorState,
-        state.ProjectileState,
-        state.PersistentEffectState,
-        state.TemporaryEffectState,
-        state.ChestState,
-        state.CrateState,
-        state.DoorState,
-        state.GateState,
-        state.PlateState,
-        state.PixieState,
-        state.SpriteState,
-        state.TileState
-    ]
-
+    properties: UNIFIED_PROPS
+    state: UNIFIED_STATE
     shape: Shape
-
     animation: Animation
+    frame: int
 
     def __init__(self, 
-        properties, 
-        state,
-        animation
+        properties: UNIFIED_PROPS, 
+        state: UNIFIED_STATE,
+        frame: Union[Frame, None] = None
+        animation: Union[Animation, None] = None
     ):
         self.properties = properties
         self.state = state
+        self.frame = frame
         self.animation = animation
         self.shape = Shape(
             state.position, 
@@ -72,42 +75,50 @@ class Shape:
     """
     Foundational class for Assets with mutable states.
     """
-    position: Position
     dimensions: Dimensions
     hitboxes: List[Hitbox]
 
     def __init__(self, 
-        position: Position
         dimensions: Dimension
         hitboxes: List[Hitbox]
     ):
-        self.position = position
         self.hitboxes = hitboxes
         self.dimensions = dimensions
 
-    def intersects(self, other: Shape):
+    def _relative(self, position: Position):
+        return [
+            Hitbox(
+                position.x + hb.position.x, 
+                position.y + hb.position.y,
+                hb.dimensions.w,
+                hb.dimensions.l
+            ) for hb in self.hitboxes
+        ]
+
+    def intersects(self, position: Position, other: Shape):
         """
         """
-        for hb in self.hitboxes:
+        for hb in self._relative(position):
             for ohb in other.hitboxes:
                 if Geometry.intersect(hb, ohb):
                     return True 
         return False
 
-    def move(self, velocity: Velocity) -> None:
+    def move(self, position: Position, velocity: Velocity) -> None:
         """
         Method for moving the Asset position state.
         """
-        self.position.x = self.position.x + velocity.vx
-        self.position.y = self.position.y + velocity.vy
+        position.x = position.x + velocity.vx
+        position.y = position.y + velocity.vy
 
 
 class Frame(ABC):
     """
-    Foundational class for Assets.
+    Foundational interface for Assets.
     """
 
-    def key(self, animation: properties.Animation) -> str:
+    @abstractmethod
+    def key(self, animation: state.Animation) -> str:
         """
         Abstract method for Asset's frame key schema. 
         """
@@ -116,11 +127,11 @@ class Frame(ABC):
 
 class Animation(ABC):
     """
-    Foundational class for Assets with animate states.
+    Foundational interface for Assets with animate states.
     """
 
     @abstractmethod
-    def animate(self) -> None:
+    def animate(self, animation: state.Animation, properties: UNIFIED_PROPS) -> None:
         """
         Abstract method for incrementing Asset's frame key. 
         """

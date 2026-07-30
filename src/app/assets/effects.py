@@ -2,14 +2,14 @@
 Package for Effect Assets.
 """
 # Application Libraries
-from app.assets import Asset
+from app.assets import Frame, Animation
 
-class PersistentEffect:
+class PersistentEffectFrame(Frame):
     """
     """
     pass
 
-class TemporaryEffect:
+class TemporaryEffectFrame(Frame):
     """
     """
     pass

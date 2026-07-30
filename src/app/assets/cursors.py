@@ -2,7 +2,7 @@
 Package for Cursor Assets.
 """
 # Application Libraries
-from app.assets import Asset
+from app.assets import Frame
 
 class ExpressionCursor(Asset):
     """

@@ -5,14 +5,20 @@
 
 # Standard Libraries 
 from typing import List, Dict
+# External Libraries
 
 # Application Libraries
 from app.assets import Asset
 from app.player import Player
-import app.assets.cursors as cursors
-import app.assets.effects as effects 
-import app.assets.objects as objects
-import app.assets.sheets as sheets 
+from app.models.properties import TileProperties, EffectProperties, \
+                                    ObjectProperties, CursorProperties, \
+                                    PixieProperties, SpriteProperties
+from app.models.state import TileState, ExpressionCursorState, \
+                                ProjectileState, PersistentEffectState, \
+                                TemporaryEffectState, ChestState, \
+                                CrateState, DoorState, \
+                                GateState, PlateState, \
+                                PixieState, SpriteState
 
 class Board:
     """
@@ -53,6 +59,40 @@ class Board:
         #            ├── animate.yaml
         #            └── inanimate.yaml
         # ```
+        #
+        # for snapshot in immutable.inanimate:
+        #   tiles[config.layer]     += [ 
+        #       Asset(
+        #           properties      = TileProperties(
+        #               key         = snapshot.asset, 
+        #               dimensions  = immutable.inanimate.regular.dimensions
+        #           ),
+        #           state           = TileState(
+        #               position    = snapshot.position
+        #               multiple    = snapshot.multiple
+        #           )
+        #       )
+        #   ]
+        #
+        # for snapshot in immutable.animate.persistent:
+        #   effects                 += [
+        #       Asset(
+        #           properties      = EffectProperties(),
+        #           state           = PersistentEffectState(),
+        #           frame           = PersistentEffectFrame(),
+        #           animation       = PersistentEffectAnimation()
+        #       )
+        #   ]
+        # 
+        # for snapshot in mutable.animate.sprites
+        #   sprites                 += [
+        #       Asset(
+        #           properties      = SpriteProperties(),
+        #           state           = SpriteState(),
+        #           frame           = SpriteFrame(),
+        #           animation       = SpriteAnimation()
+        #       )
+        #   ]
 
     def layers(self) -> int:
         if not self.layers:

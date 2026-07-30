@@ -52,7 +52,7 @@ class PixieProperties(BaseModel):
     key: str                    # Unique Asset Identifier
     # -------------------------- Properties
     shape: ShapeProperties
-    
+
 # ---------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------- SPRITE PROPERTIES
 
@@ -68,13 +68,9 @@ class SpriteActionProperty(BaseModel):
     count: int
     directions: Dict[str, SpriteDirection]
 
-class SpriteShapeProperty(BaseModel):
-    dimensions: Dimensions
-    hitboxes: List[Hitbox]
-
 class SpriteProperties(BaseModel):
     # -------------------------- Keys
     key: str                    # Unique Asset Identifier
     # -------------------------- Properties
-    shape: SpriteShapeProperty
+    shape: ShapeProperties
     actions: Dict[str, SpriteActionProperty]

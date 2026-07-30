@@ -16,7 +16,7 @@
         - water
         - wheat
     irregular:
-      - key: <key>
+      <key>:
         dimensions:
           l:
           w:
