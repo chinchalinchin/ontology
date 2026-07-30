@@ -1,7 +1,7 @@
 # NOTE: PSEUDCODE
 #       Should be implemented in Cython, I think.
 
-class View:
+class Screen:
     # Static image assembled from immutable assets
     canvas: Image
     # Buffer to hold copy of canvas for rendering

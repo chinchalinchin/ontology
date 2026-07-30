@@ -185,7 +185,6 @@ class PlateState(BaseModel):
     position: Position      # Position
     switch: bool            # Binary state flag
 
-
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- SHEET STATE MODELS
 
@@ -209,6 +208,11 @@ class SpriteState(BaseModel):
     mutators: Mutator
     memory: Memory
     goal: Goal
+
+class Animation(BaseModel):
+    action: Union[str, None]
+    direction: Union[str, None]
+    frame: Union[int, None]
 
 # ------------------------------------------------------------------- TILE STATE MODELS
 

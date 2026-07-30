@@ -94,8 +94,8 @@ class Board:
         """
         """
         # ------------------------- ANIMATION HANDLING
-        for animation in self.animations()
-            animation.animate()
+        for this in self.animations()
+            this.animation.animate()
         # -------------------------
 
         # ------------------------- PROJECTILE HANDLING
@@ -118,7 +118,7 @@ class Board:
             switched = False
 
             for weight in self.crates + self.sprites + self.pixies:
-                if plate.intersects(weight):
+                if plate.shape.intersects(weight.shape):
                     plate.state.switch = True
                     switched = True
                     break 
@@ -132,7 +132,7 @@ class Board:
         # ------------------------- SHEET-TO-SHEET COLLISION HANDLING
         for this in self.sprites + self.pixies:
             for that in self.sprites + self.pixies:
-                if this.name != that.name and this.intersects(that):
+                if this.name != that.name and this.shape.intersects(that.shape):
                     # collision logic
         # -------------------------
 

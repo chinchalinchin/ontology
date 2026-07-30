@@ -1,27 +1,29 @@
 effects:
   persistent:
     coin:
-      maxframe: 8
-      dim:
-        l: 
-        w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+      count: 8
+      shape:
+        dim:
+          l: 
+          w:
+        hitboxes:
+          - pos: 
+              x:
+              y:
+            dim:
+              l:
+              w:
   temporary:
     bang:
-      maxframe: 8
-      dim:
-        l: 
-        w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+      count: 8
+      shape:
+        dim:
+          l: 
+          w:
+        hitboxes:
+          - pos: 
+              x:
+              y:
+            dim:
+              l:
+              w:

@@ -1,3 +1,5 @@
+# NOTE: toy example
+
 # cdef extern blocks tell Cython to look at the C headers
 cdef extern from "SDL2/SDL.h":
     ctypedef struct SDL_Window:

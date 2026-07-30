@@ -5,9 +5,6 @@ class Position(BaseModel):
     x: int
     y: int
 
-class RelativePosition(BaseModel):
-    relX: int
-    relY: int
 
 class Dimensions(BaseModel):
     """
@@ -29,5 +26,20 @@ class Velocity(BaseModel):
     vy: int
 
 class Hitbox(BaseModel):
-    rel: RelativePosition
+    """
+    """
+    pos: Position
     dim: Dimenions
+
+class AttackBox(BaseModel):
+    """
+    """
+    pos: Position
+    dim: Dimenions
+    hitframe: int
+
+class Shape(BaseModel):
+    """
+    """
+    dim: Dimensions
+    hitboxes: List[Hitbox]

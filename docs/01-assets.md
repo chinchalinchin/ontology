@@ -59,7 +59,6 @@ Keys are used to map assets to images loaded into the [registry](./00-overview.m
 !!! note "Layers"
     The concept of a Layer is defined more explicitly in [World documentation](./00-overview.md#world). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting Doors.
 
-
 **Names**
 
 Names are used to uniquely identify an ingame entity. A single Asset may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. A Name is part of an Asset's state.
@@ -372,7 +371,6 @@ Where `n(Action)` is the number of frames per Action (e.g., `cast` might have 7 
 - Dimensions `Tuple[w, h]`
 - Hitboxes: `List[Tuple[relX, relY, w, h]]`
 - Count: `int`
-- Action: `walk`
 
 **State**
 
@@ -380,6 +378,7 @@ Where `n(Action)` is the number of frames per Action (e.g., `cast` might have 7 
 - Position: `Tuple[x, y]`
 - LayerKey: `str`
 - Direction: `Direction`
+- Action: `walk`
 - Frame: `int`
 
 **Calculated State**
@@ -402,6 +401,7 @@ Where `n(Action)` is the number of frames per Action (e.g., `cast` might have 7 
 - Name: `str`
 - Position: `Tuple[x, y]`
 - LayerKey: `str`
+- Action: `walk`
 - Direction: `Direction`
 - Frame: `int`
 

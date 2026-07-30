@@ -1,13 +1,7 @@
 intents:
-  # -------------------------- ACTIONS
-  actions:
-    <action-key>:
   # -------------------------- COMMUNICATIONS
   communications: 
     <plot-state-key>:
-  # -------------------------- DIRECTIONS
-  directions:
-    <direction-key>:
   # -------------------------- DISPOSITIONS
   dispositions:
     <disposition-key>:

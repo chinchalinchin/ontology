@@ -6,27 +6,75 @@ from typing import Dict, List, Tuple, Union
 # External Libraries
 from pydantic import BaseModel
 # Application Libraries
-from app.models import Position, Dimenions, Hitbox
+from app.models import Position, Dimenions, Hitbox, Entity
 
 # ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------------ PROPERTY MODEL
+# ----------------------------------------------------------------------- PROPERTY MODELS
 # ---------------------------------------------------------------------------------------
 
-class ShapeProperties(BaseModel):
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------ COMPONENT PROPERTIES
+
+class ShapeProperties:
     dimensions: Dimensions
     hitboxes: List[Hitbox]
 
-class TileProperties(BaseModel):
+# ---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------- ASSET PROPERTIES
+
+class CursorProperties:
     # -------------------------- Keys
-    asset: str                  # Unique Asset Identifier
+    key: str                    # Unique Asset Identifier
     # -------------------------- Properties
     dimensions: Dimensions
 
-class AssetProperties(BaseModel):
+class EffectProperties(BaseModel):
     # -------------------------- Keys
-    asset: str                  # Unique Asset Identifier 
-    # -------------------------- Animation Properties
-    #   count: None             => inanimate Assets
-    #   count: str              => animate Assets
-    #   count: Dict[str, int]   => Sprite Assets
-    count: Union[None, str, Dict[str, int]]
+    key: str                    # Unique Asset Identifier
+    # -------------------------- Properties
+    shape: ShapeProperties
+    count: int 
+
+class ObjectProperties(BaseModel):
+    # -------------------------- Keys
+    key: str                    # Unique Asset Identifier
+    # -------------------------- Properties
+    shape: ShapeProperties
+
+class TileProperties(BaseModel):
+    # -------------------------- Keys
+    key: str                    # Unique Asset Identifier
+    # -------------------------- Properties
+    dimensions: Dimensions
+
+class PixieProperties(BaseModel):
+    # -------------------------- Keys
+    key: str                    # Unique Asset Identifier
+    # -------------------------- Properties
+    shape: ShapeProperties
+    
+# ---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------- SPRITE PROPERTIES
+
+class PixieActionsProperty(BaseModel):
+    count: int
+    directions: List[str]
+    
+class SpriteDirectionProperty(BaseModel):
+    row: int
+    attackboxes: List[AttackBox]
+
+class SpriteActionProperty(BaseModel):
+    count: int
+    directions: Dict[str, SpriteDirection]
+
+class SpriteShapeProperty(BaseModel):
+    dimensions: Dimensions
+    hitboxes: List[Hitbox]
+
+class SpriteProperties(BaseModel):
+    # -------------------------- Keys
+    key: str                    # Unique Asset Identifier
+    # -------------------------- Properties
+    shape: SpriteShapeProperty
+    actions: Dict[str, SpriteActionProperty]
