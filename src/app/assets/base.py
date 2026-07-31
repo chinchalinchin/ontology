@@ -3,12 +3,15 @@ Package for foundational Asset class.
 """
 # Standard Libraries
 from abc import ABC, abstractmethod
-from typing import Union
+from typing import Union, List
 # Application Libraries
-from app.models import Velocity, Dimensions
+from app.assets.base import Frame, Shape
+from app.models import Position, Velocity,\
+                         Dimensions, Hitbox
 from app.models.properties import AssetProperties
 from app.models.state import AssetState, Animation
-from app.math import Geometry
+# Cython Libraries
+from libs.calculate import Geometry
 
 class Asset:
     """
@@ -23,7 +26,7 @@ class Asset:
     def __init__(self, 
         properties: AssetProperties, 
         state: AssetState,
-        frame: Union[Frame, None] = None
+        frame: Union[Frame, None] = None,
         animation: Union[Animation, None] = None
     ):
         self.properties = properties
@@ -56,7 +59,7 @@ class Shape:
     hitboxes: List[Hitbox]
 
     def __init__(self, 
-        dimensions: Dimension
+        dimensions: Dimensions,
         hitboxes: List[Hitbox]
     ):
         self.hitboxes = hitboxes
@@ -64,25 +67,13 @@ class Shape:
 
     def intersects(self, 
         position: Position, 
+        shape: Shape,
         other_position: Position, 
         other_shape: Shape
     ):
         """
         """
-        for hb in self.hitboxes:
-            for ohb in other_shape.hitboxes:
-                this_x = position.x + hb.position.x, 
-                this_y = position.y + hb.position.y,
-                this_w = hb.dimensions.w
-                this_l = hb.dimensions.l
-
-                that_x = other_position.x + ohb.position.x
-                that_y = other_position.y + ohb.position.y
-                this_w = ohb.dimensions.w 
-                that_l = ohb.dimension.l
-                if Geometry.intersect(hb, ohb):
-                    return True 
-        return False
+        return Geometry.intersects(position, shape, other_position, other_shape)
 
     def move(self, position: Position, velocity: Velocity) -> None:
         """
