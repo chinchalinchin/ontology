@@ -208,7 +208,7 @@ The default Extension states are enumerated below,
 !!! importatnt
     The Player state does not observe the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to Intents. See [Player documentation](./03-player.md) for more information on the Player.
     
-A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's *Disposition* determines its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.
+A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's *Disposition* is an element in its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.
 
 1. `attack`
     - Reachable Actions: `cast, thrust, slash, shoot`
@@ -308,7 +308,7 @@ In the default Disposition Transition matrix given above, the transition from `a
 `sprite` is a reference to the Sprite which is currently processing the given Disposition. Thus, the Sprite's Disposition state will transition to `hunt` if the Sprite currently does not have a target, but remembers having a target of category `sprite`.
 
 !!! note
-    The expression `not sprite.intention.goal.target` is a *truthy* expression, i.e. it is to be interpretted as existential claim. In other words, this expression evaluates to `true` if `sprite.intention.goal.target` does not exist. If the expression involves a List, e.g. `sprite.memory.communications`, this expression evaluates to `true` in the event it has more than 0 entries.
+    The expression `not sprite.intention.goal.target` is a *truthy* expression, i.e. it is to be interpretted as an existential claim. In other words, this expression evaluates to `true` if `sprite.intention.goal.target` does not exist. If the expression involves a List, e.g. `sprite.memory.communications`, this expression evaluates to `true` in the event it has more than 0 entries.
 
 In another example, the transition from `attack` to `loot` in the default Disposition Transition matrix is given by,
 
@@ -422,7 +422,7 @@ TODO
 
 ## Personas
 
-Personas are stacks of superimposed Sprite Sheets. They are assembled in the [Registry](./00-overview.md#registry) using the `/src/data/personas/main.yaml` state configuration file. The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona throug the AssetKey property.
+Personas are stacks of superimposed Sprite Sheets. They are assembled in the [Registry](./00-overview.md#registry) using the `compositions` property in the configuration file. The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona through the Asset Key property. In other words, once assembled, Personas are effectively "new" Assets.
 
 Personas are assembled from a Base Sheet and Feature Sheets. The Base Sheet is the background of the resultant Sheet. Feature Sheets are pasted over the Base in the order they are specified.
 
@@ -431,11 +431,3 @@ Personas are assembled from a Base Sheet and Feature Sheets. The Base Sheet is t
 
 - Base Sheets: `/src/assets/sheets/sprites/base/<base-key>.png`
 - Feature Sheets: `/src/assets/sheets/sprites/features/<feature-key>.png`
-
-### Persona Schema
-
-- Location: `/src/data/personas/main.yaml`
-
-```yaml
---8<-- "docs/.static/yaml/data-personas.yaml"
-```

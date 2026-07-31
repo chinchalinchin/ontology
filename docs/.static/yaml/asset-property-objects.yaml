@@ -2,61 +2,66 @@ objects:
   # -------------------------------------------------------
   chests:
     <key>:
-      dim:
-        l: pixel length
-        w: pixel width
-      hitboxes:
-        - pos: 
-            relX: relative horizontal position
-            relY: relative vertical position
-          dim:
-            l: hitbox pixel length
-            w: hitbox pixel width
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width
   crates:
     <key>:
-      dim:
-        l: pixel length
-        w: pixel width
-      hitboxes:
-        - pos: 
-            relX: relative horizontal position
-            relY: relative vertical position
-          dim:
-            l: hitbox pixel length
-            w: hitbox pixel width
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width
   doors:
     <key>:
-      dim:
-        l: pixel length
-        w: pixel width
-      hitboxes:
-        - pos: 
-            relX: relative horizontal position
-            relY: relative vertical position
-          dim:
-            l: hitbox pixel length
-            w: hitbox pixel width
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width
   gates:
     <key>:
-      dim:
-        l: pixel length
-        w: pixel width
-      hitboxes:
-        - pos: 
-            relX: relative horizontal position
-            relY: relative vertical position
-          dim:
-            l: hitbox pixel length
-            w: hitbox pixel width
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width
   plates:
     <key>:
-      dim:
-        l: pixel length
-        w: pixel width
-      hitboxes:
-        - pos: 
-            relX: relative horizontal position
-            relY: relative vertical position
-          dim:
-            l: hitbox pixel length
-            w: hitbox pixel width
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width

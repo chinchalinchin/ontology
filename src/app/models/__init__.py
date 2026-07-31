@@ -1,4 +1,4 @@
-class Position(BaseModel):
+class Position:
     """
     Representation of Cartesian coordinates. Following convention, (0,0) is the upper-left corner and down is the positive-y direction.
     """
@@ -6,34 +6,34 @@ class Position(BaseModel):
     y: int
 
 
-class Dimensions(BaseModel):
+class Dimensions:
     """
     """
     l: int
     w: int
 
-class Multliple(BaseModel):
+class Multiple:
     """
     """
     nx: int
     ny: int
     
-class Velocity(BaseModel):
+class Velocity:
     """
     Representation of Velocity vector. Down is the positive y-direction.
     """
     vx: int
     vy: int
 
-class Hitbox(BaseModel):
+class Hitbox:
     """
     """
     position: Position
-    dimensions: Dimenions
+    dimensions: Dimensions
 
-class AttackBox(BaseModel):
+class AttackBox:
     """
     """
     position: Position
-    dimensions: Dimenions
+    dimensions: Dimensions
     hitframe: int

@@ -2,26 +2,28 @@ effects:
   persistent:
     <key>:
       count: Number of Frames
-      dim:
-        l: Pixel Length
-        w: Pixel Width
-      hitboxes:
-        - pos: 
-            relX: Relative Horizontal Position
-            relY: Relative Vertical Postion
-          dim:
-            l: Pixel Length
-            w: Pixel Width
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width
   temporary:
     <key>:
       count: Number of Frames
-      dim:
-        l: Pixel Length
-        w: Pixel Width
-      hitboxes:
-        - pos: 
-            relX: Relative Horizontal Position
-            relY: Relative Vertical Position
-          dim:
-            l: Pixel Length
-            w: Pixel Width
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width

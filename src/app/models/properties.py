@@ -3,10 +3,8 @@ Pydantic models for typing the property attributes of Assets. See documentation 
 """
 # Standard Libraries
 from typing import Dict, List, Tuple, Union
-# External Libraries
-from pydantic import BaseModel
 # Application Libraries
-from app.models import Position, Dimenions, Hitbox, Entity
+from app.models import Position, Dimensions, Hitbox, AttackBox
 
 # ---------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------- PROPERTY MODELS
@@ -15,29 +13,29 @@ from app.models import Position, Dimenions, Hitbox, Entity
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ COMPONENT PROPERTIES
 
-class ShapeProperties(BaseModel):
+class ShapeProperties:
     dimensions: Dimensions
     hitboxes: List[Hitbox]
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------- NESTED PROPERTIES
 
-class PixieActionsProperty(BaseModel):
+class PixieActionsProperty:
     count: int
     directions: List[str]
     
-class SpriteDirectionProperty(BaseModel):
+class SpriteDirectionProperty:
     row: int
     attackboxes: List[AttackBox]
 
-class SpriteActionProperty(BaseModel):
+class SpriteActionProperty:
     count: int
-    directions: Dict[str, SpriteDirection]
+    directions: Dict[str, SpriteDirectionProperty]
 
 # ---------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------- ASSET PROPERTIES
 
-class AssetProperties(BaseModel):
+class AssetProperties:
     pass 
 
 class CursorProperties(AssetProperties):
@@ -70,9 +68,6 @@ class PixieProperties(AssetProperties):
     key: str                    # Unique Asset Identifier
     # -------------------------- Properties
     shape: ShapeProperties
-
-# ---------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------- SPRITE PROPERTIES
 
 class SpriteProperties(AssetProperties):
     # -------------------------- Keys

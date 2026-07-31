@@ -2,13 +2,11 @@
 Pydantic models for typing the state attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
 """
 # Standard Libraries
-from typing import Dict, List, Tuple, Union
-# External Libraries
-from pydantic import BaseModel
+from typing import Dict, List, Union
 # Application Libraries
 from app.models import Position, Multiple
 
-class AssetState(BaseModel):
+class AssetState:
     """
     """
     pass 
@@ -16,7 +14,7 @@ class AssetState(BaseModel):
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------- COMPONENT STATES
 
-class Animation(BaseModel):
+class Animation:
     """
     """
     action: Union[str, None]
@@ -27,7 +25,7 @@ class Animation(BaseModel):
 # -------------------------------------------------------------------- ASSET STATE FIELDS
 # ---------------------------------------------------------------------------------------
     
-class Character(BaseModel):
+class Character:
     """
     Representation of a Sprite's game characteristics.
     """
@@ -35,7 +33,7 @@ class Character(BaseModel):
     defense: int
     speed: int
 
-class Equipment(BaseModel):
+class Equipment:
     """
     Representation of the Sprite's equipment set.
     """
@@ -44,21 +42,14 @@ class Equipment(BaseModel):
     tool: str
     utility: str
 
-class Goal(BaseModel):
-    """
-    Representation of a Sprite's overarching Goal.
-    """
-    name: str
-    intention: Intention
-
-class Health(BaseModel):
+class Health:
     """
     Representation of a Sprite's health meter.
     """
     current: int 
     maximum: int
     
-class Intention(BaseModel):
+class Intention:
     """
     Representation of the internal, hidden state of a Sprite. 
     """
@@ -67,7 +58,14 @@ class Intention(BaseModel):
     motivation: str
     expression: str
 
-class Inventory(BaseModel):
+class Goal:
+    """
+    Representation of a Sprite's overarching Goal.
+    """
+    name: str
+    intention: Intention
+
+class Inventory:
     """
     Representation of a Sprite's Inventory.
     """
@@ -75,28 +73,28 @@ class Inventory(BaseModel):
     equipment: Equipment
     wallet: int
 
-class Magic(BaseModel):
+class Magic:
     """
     Representation of a Sprite's Magic Meter.
     """
     current: int
     maximum: int
 
-class Meters(BaseModel):
+class Meters:
     """
     Representation of a Sprite's Meter fields. Meters track values that change in response to Sprite Actions.
     """
     health: Health
     magic: Magic
 
-class Mutator(BaseModel):
+class Mutator:
     """
     Representation of a Sprite's mutators. Mutators alter the Sprite's behavior during the gameplay loop.
     """
     triggers: Dict[str, bool]
-    parameters: Dict[str, Dict[str, Union[int, double]]]
+    parameters: Dict[str, Dict[str, Union[int, float]]]
 
-class Memory(BaseModel):
+class Memory:
     """
     Representation of a Sprite's memory. 
     """

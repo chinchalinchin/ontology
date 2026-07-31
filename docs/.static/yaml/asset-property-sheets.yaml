@@ -1,14 +1,48 @@
 sheets:
   pixies:
-    count: Frame Count of Pixie Sheets
-  sprites:
-    <action-key>:
-      frames: Frame Count of Action Row Group
-      directions:
-        <direction-key>:
+    entities:
+      <key>:
+        shape:
+          dim:
+            l: pixel length
+            w: pixel width
           hitboxes:
-            - relX: Relative Horizontal Position of Hitbox
-              relY: Relative Vertcal Position of Hitbox
-              w: Width of Hitbox
-              h: Height of Hitbox
-              frame: Frame of Animation Row Where Hitbox is Present
+            - pos: 
+                x: relative horizontal position
+                y: relative vertical position
+              dim:
+                l: hitbox pixel length
+                w: hitbox pixel width 
+    count: Frame Count of Pixie Sheets
+    directions:
+      - <direction-key>
+  sprites:
+    personas:
+      - key: hero
+        base: <base-asset-key>
+        features:
+          - <feature-asset-key>
+    shape:
+      dim:
+        l: pixel length
+        w: pixel width
+      hitboxes:
+        - pos: 
+            x: relative horizontal position
+            y: relative vertical position
+          dim:
+            l: hitbox pixel length
+            w: hitbox pixel width 
+    actions:
+      <action-key>:
+        count: Frame Count of Action Row Group
+        directions:
+          <direction-key>:
+            attackboxes:
+              - pos: 
+                  x: relative horizontal position
+                  y: relative vertical position
+                dim:
+                  l: hitbox pixel length
+                  w: hitbox pixel width 
+                hitframe: <hitframe-index>
