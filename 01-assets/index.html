@@ -306,18 +306,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#conceptual-categories" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Conceptual Categories
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Conceptual Categories">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#tiles" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -327,8 +315,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#objects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -395,11 +383,6 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-        
           <li class="md-nav__item">
   <a href="#cursors" class="md-nav__link">
     <span class="md-ellipsis">
@@ -431,8 +414,7 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Sheets">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#pixies" class="md-nav__link">
@@ -443,7 +425,8 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Pixies">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#sprites" class="md-nav__link">
@@ -763,18 +746,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#conceptual-categories" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Conceptual Categories
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Conceptual Categories">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#tiles" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -784,8 +755,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#objects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -852,11 +823,6 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-        
           <li class="md-nav__item">
   <a href="#cursors" class="md-nav__link">
     <span class="md-ellipsis">
@@ -888,8 +854,7 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Sheets">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#pixies" class="md-nav__link">
@@ -900,7 +865,8 @@
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Pixies">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#sprites" class="md-nav__link">
@@ -1113,33 +1079,66 @@
 <span class="w">    </span>├──<span class="w"> </span>main.yaml
 <span class="w">    </span>└──<span class="w"> </span>regular
 </code></pre></div>
-<p>The <code>main.yaml</code> files in each subdirectory conform to the <a href="https://www.google.com/search?q=%23schemas">Asset property schemas</a>.</p>
+<p>The <code>main.yaml</code> files in each subdirectory conform to the <a href="#schemas">Asset property schemas</a>.</p>
 <p><strong>Keys</strong></p>
-<p>Keys are used to map assets to images loaded into the <a href="https://www.google.com/search?q=./00-overview.md%23registry">registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, keys uniquely identify a physical Asset, but not in-game objects.</p>
+<p>Keys are used to map assets to images loaded into the <a href="./00-overview.md%23registry">registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, keys uniquely identify a physical Asset, but not in-game objects.</p>
 <p><strong>Properties vs. State</strong></p>
 <p><em>Properties</em> are static and never changed by ingame mechanics. Properties determine the immutable characteristics of an ingame Asset, e.g. dimensions and hitboxes. They are loaded side-by-side with the asset files in the <code>/src/assets/**</code> directory.</p>
 <p><em>State</em> is dynamic and is changed by ingame mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current position of an ingame Asset. All Assets have a <em>position</em>, <em>dimension</em> and a <em>layer</em> mutable state. Position and dimension are given as Cartesian coordinates, whereas Layer is a categorical variable.</p>
 <p>Both Properties and State are explicitly typed using strict <strong>Pydantic Models</strong> (e.g., <code>SpriteProperties</code>, <code>SpriteState</code>). This separation of data guarantees memory safety and allows the engine to compile smoothly into fast C-structs via Cython.</p>
 <div class="admonition note">
 <p class="admonition-title">Layers</p>
+<p>The concept of a Layer is defined more explicitly in <a href="./00-overview.md%23world">World documentation</a>. It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.</p>
 </div>
-<p>The concept of a Layer is defined more explicitly in <a href="https://www.google.com/search?q=./00-overview.md%23world">World documentation</a>. It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting Doors.</p>
 <p><strong>Names</strong></p>
 <p>Names are used to uniquely identify an ingame entity. A single Asset may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. A Name is part of an Asset's state.</p>
+<p><strong>Asset Hierarchy</strong></p>
+<p>Assets are divided along two axes.</p>
+<p>First, Assets are divided into <em>mutable</em> and <em>immutable</em> categories. <em>Immutable</em> Assets are never have their state altered by the game loop. <em>Mutable</em> objects change their state based on Intent generated by the game loop.</p>
+<p>Second, Assets are divided in <em>animate</em> and <em>inanimate</em> categories. <em>Inanimate</em> Assets either have a single frame or a pair of frames (<em>Binary Objects</em>). <em>Animate</em> objects possess rows of frames for different animation states.</p>
+<p>The rows of <em>animate</em> Assets are further categorized by the axes of <em>direction</em> and <em>action</em>. See <a href="#sheets">Sheets section</a> below for more information on the division of <em>direction</em> and <em>action</em>.</p>
+<p>In order of ascending complexity, where complexity is defined as the number of dimensions in the state, the game asset hierarchy is given below,</p>
+<ul>
+<li><em>Immutable</em>, <em>Inanimate</em> Assets<ul>
+<li>Tile: Regular, State: Position, Layer</li>
+<li>Tile: Irregular, State: Position, Layer</li>
+</ul>
+</li>
+<li><em>Mutable</em>, <em>Inanimate</em> Assets<ul>
+<li>Object: Crate, State: Position, Layer</li>
+<li>Object: Door, State: Position, Layer, OutLayer</li>
+<li>Object: Chest, State: Position, Layer, Switch, Content</li>
+<li>Object: Gate, State: Position, Layer, Switch, Key</li>
+<li>Object: Plate, State: Position, Layer, Switch, Key</li>
+</ul>
+</li>
+<li><em>Mutable</em>, <em>Inanimate</em> Assets<ul>
+<li>Cursor: Expression, State: TODO </li>
+<li>Cursor: Projectile, State: TODO</li>
+</ul>
+</li>
+<li><em>Immutable</em>, <em>Animate</em> Assets<ul>
+<li>Effect: Temporary, State: Position, Layer, Frame</li>
+<li>Effect: Persistent, State: Position, Layer, Frame</li>
+</ul>
+</li>
+<li><em>Mutable</em>, <em>Animate</em> Assets<ul>
+<li>Sheet: Pixie, State: Postion, Layer, Frame</li>
+<li>Sheet: Sprite, State: Position, Layer, Frame, Direction, Action</li>
+</ul>
+</li>
+</ul>
 <p><strong>Asset Architecture</strong></p>
-<p>To ensure high performance and compatibility with Cython (which strictly requires single-inheritance for C-level extensions), Ontology abandons deep object-oriented inheritance trees in favor of <strong>Composition</strong>.</p>
-<p>Every physical entity in the game is an instance of the unified <code>Asset</code> class (or a lightweight single-inheritance subclass). The distinction between a "Tile", a "Gate", and a "Sprite" is determined entirely by the data models and stateless behaviors injected into them:</p>
+<p>Every physical entity in the game is an instance of the unified <code>Asset</code> class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and stateless behaviors injected into them:</p>
 <ol>
-<li><strong>Properties:</strong> A Pydantic model defining immutable data (e.g., <code>TileProperties</code>, <code>ObjectProperties</code>).</li>
-<li><strong>State:</strong> A Pydantic model defining mutable data (e.g., <code>TileState</code>, <code>ChestState</code>).</li>
+<li><strong>Properties:</strong> A model defining immutable data (e.g., <code>TileProperties</code>, <code>ObjectProperties</code>).</li>
+<li><strong>State:</strong> A model defining mutable data (e.g., <code>TileState</code>, <code>ChestState</code>).</li>
 <li><strong>Shape:</strong> A component constructed from Properties and State that manages <code>Position</code>, <code>Dimensions</code>, and <code>Hitboxes</code> to process inline collision math.</li>
-<li><strong>Animation &amp; Frame Behaviors:</strong> Stateless strategies (e.g. <code>SpriteAnimation</code>, <code>SpriteFrame</code>) injected into the Asset. These contain the specific logic for updating frames and calculating the render key, mutating the Asset's state in-place to avoid data duplication.</li>
+<li><strong>Animation &amp; Frame:</strong> Stateless strategies (e.g. <code>SpriteAnimation</code>, <code>SpriteFrame</code>) injected into the Asset. These contain the specific logic for updating frames and calculating the render key, mutating the Asset's state in-place to avoid data duplication.</li>
 </ol>
-<h2 id="conceptual-categories">Conceptual Categories</h2>
-<p>While all Assets share the same underlying architecture, they are conceptually divided into categories based on their data complexity.</p>
-<h3 id="tiles">Tiles</h3>
-<p><em>Tiles</em> are inanimate, immutable configurations. <em>Tiles</em> are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds by breaking each rendered image into a grid of tiles.</p>
-<p>In terms of configuration, Tiles are divided into two categories, <em>regular</em> and <em>irregular</em>. <em>Regular Tiles</em> are always sized 32x32 pixels (configurable in the <code>/src/assets/tile/main.yaml</code> file). <em>Irregular Tiles</em> are variable size.</p>
+<h2 id="tiles">Tiles</h2>
+<p><em>Tiles</em> are inanimate, immutable Assets. <em>Tiles</em> are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds by breaking each rendered image into a grid of tiles.</p>
+<p>In terms of configuration, Tiles are divided into two categories, <em>regular</em> and <em>irregular</em>. <em>Regular Tiles</em> are always sized 32x32 pixels (configurable in the <code>/src/assets/tile/main.yaml</code> file). <em>Irregular Tiles</em> have variable size.</p>
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
@@ -1151,22 +1150,22 @@
 <li><code>position: Position</code></li>
 <li><code>multiple: Multiple</code></li>
 </ul>
-<p><strong>Frame Behavior</strong></p>
+<p><strong>Frame</strong></p>
 <ul>
 <li><code>key(animation) -&gt; &lt;key&gt;</code></li>
 </ul>
-<h3 id="objects">Objects</h3>
-<p><em>Objects</em> are inanimate, mutable configurations made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.</p>
+<h2 id="objects">Objects</h2>
+<p><em>Objects</em> are inanimate, mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.</p>
 <p><strong>Binary Objects</strong></p>
 <p>An Object with two frames is considered to have an <em>activated</em> and <em>idle</em> state, i.e. a binary trigger. <em>Binary Objects</em> are Objects whose frame is dependent on their internal state switch.</p>
 <p><strong>Binary Frames</strong></p>
 <p>Binary objects frames are always organized in horizontal rows. The idle frame will always start at <code>(0,0)</code> and the activated frame will always start at <code>(w,0)</code>. Because of this relation, the dimensions of a Chest image file will always be <code>(2w, h)</code></p>
-<h4 id="chests">Chests</h4>
-<p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>INTERACT</code> state while intersecting the dimensions of the <em>Chest</em>. When <code>switch == true</code>, the Chest is <em>activated</em> (open). When <code>switch == false</code>, the Chest is <em>idle</em> (closed).</p>
+<h3 id="chests">Chests</h3>
+<p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>interact</code> Extension (see <a href="../02-sprites/#extension">Extensions</a> for more details on the distinction between Extension and Action) while intersecting the hitboxes of the <em>Chest</em>. When <code>switch == true</code>, the Chest is <em>activated</em> (open). When <code>switch == false</code>, the Chest is <em>idle</em> (closed).</p>
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
-<li><code>shape: ShapeProperties</code> (contains Dimensions and Hitboxes)</li>
+<li><code>shape: ShapeProperties</code> </li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
@@ -1176,13 +1175,15 @@
 <li><code>switch: bool</code></li>
 <li><code>content: List[str]</code></li>
 </ul>
-<p><strong>Frame Behavior</strong></p>
+<p><strong>Frame</strong></p>
 <ul>
-<li><code>key(animation)</code></li>
+<li><code>key(animation)</code><ul>
 <li>If <code>switch == true</code>, returns <code>&lt;key&gt;-activated</code></li>
 <li>If <code>switch == false</code>, returns <code>&lt;key&gt;-idle</code></li>
 </ul>
-<h4 id="crates">Crates</h4>
+</li>
+</ul>
+<h3 id="crates">Crates</h3>
 <p><em>Crates</em> are <em>Objects</em> who state can be altered by in-game physics. For example, when a <em>Sprite</em> collides with a <em>Crate</em>, the <em>Crate</em> moves in the direction of the <em>Sprite</em>, with the same speed.</p>
 <p><strong>Properties</strong></p>
 <ul>
@@ -1195,11 +1196,11 @@
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
 </ul>
-<p><strong>Frame Behavior</strong></p>
+<p><strong>Frame</strong></p>
 <ul>
 <li><code>key(animation): returns &lt;key&gt;</code></li>
 </ul>
-<h4 id="doors">Doors</h4>
+<h3 id="doors">Doors</h3>
 <p><em>Doors</em> are <em>Objects</em> that alter the player's <code>&lt;layer&gt;</code>. When a player enters the hitbox of a door, the <code>&lt;layer&gt;</code> is changed to the <code>&lt;outlayer&gt;</code>.</p>
 <p><strong>Properties</strong></p>
 <ul>
@@ -1214,11 +1215,11 @@
 <li><code>position: Position</code></li>
 <li><code>out: Position</code></li>
 </ul>
-<p><strong>Frame Behavior</strong></p>
+<p><strong>Frame</strong></p>
 <ul>
 <li><code>key(animation): returns &lt;key&gt;</code></li>
 </ul>
-<h4 id="gates">Gates</h4>
+<h3 id="gates">Gates</h3>
 <p><em>Gates</em> are <em>Objects</em> whose state is connected to <em>Plates</em>. When a <em>Gate</em> is activated (open), it does not have hitboxes and the player can pass freely through it. When a Gate is idle (closed), its hitboxes prevent the player from passing through its area.</p>
 <p><strong>Properties</strong></p>
 <ul>
@@ -1235,11 +1236,13 @@
 </ul>
 <p><strong>Frame Behavior</strong></p>
 <ul>
-<li><code>key(animation)</code></li>
+<li><code>key(animation)</code><ul>
 <li>If <code>switch == true</code>, returns <code>&lt;key&gt;-idle</code></li>
 <li>If <code>switch == false</code>, returns <code>&lt;key&gt;-activated</code></li>
 </ul>
-<h4 id="plates">Plates</h4>
+</li>
+</ul>
+<h3 id="plates">Plates</h3>
 <p><em>Plates</em> are <em>Binary Objects</em> whose state can be changed by collision, i.e. when a player enters its hitbox and flips its state. When activated, a <em>Plate</em> in turn flips the state of its keyed <em>Gate</em>.</p>
 <p><strong>Properties</strong></p>
 <ul>
@@ -1254,15 +1257,17 @@
 <li><code>position: Position</code></li>
 <li><code>switch: bool</code></li>
 </ul>
-<p><strong>Frame Behavior</strong></p>
+<p><strong>Frame</strong></p>
 <ul>
-<li><code>key(animation)</code></li>
+<li><code>key(animation)</code><ul>
 <li>If <code>switch == true</code>, returns <code>&lt;key&gt;-idle</code></li>
 <li>If <code>switch == false</code>, returns <code>&lt;key&gt;-activated</code></li>
 </ul>
+</li>
+</ul>
 <h3 id="cursors">Cursors</h3>
 <p><em>Cursors</em> are inanimate, mutable Assets made of a single frame. They are divided into <em>Expressions</em> and <em>Projectiles</em>. Expressions are pinned to other Assets and have their position state updated in tandem with the Asset to which they are linked. Projectiles are spawned with a certain direction and velocity, follow a fixed trajectory based on the spawn conditions, and then either impact a hitbox or are garbage-collected.</p>
-<p><em>(See schemas for detailed property lists).</em></p>
+<p>TODO</p>
 <h3 id="effects">Effects</h3>
 <p><em>Effects</em> are animate, immutable configurations. <em>Effects</em> are defined over a single row of frames. <em>Effects</em> utilize an injected <em>Animation</em> behavior that iterates over the row of frames as the game loop progresses.</p>
 <p><em>Effects</em> are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is an <em>Effect</em>.</p>
@@ -1274,14 +1279,14 @@
 <li><code>shape: ShapeProperties</code></li>
 <li><code>count: int</code></li>
 </ul>
-<p><strong>Frame Behavior</strong></p>
+<p><strong>Frame</strong></p>
 <ul>
 <li><code>key(animation) -&gt; &lt;key&gt;-&lt;animation.frame&gt;</code></li>
 </ul>
 <h3 id="sheets">Sheets</h3>
 <p><em>Sheets</em> are animate, mutable configurations arranged in rows of frames.</p>
 <p><strong>Direction and Action</strong></p>
-<p>For any sheet composed of more than one row (i.e. all types of Sheets except <em>Pixies</em>), the rows of that Sheet are identified by <em>Direction</em>, <em>Action</em> and <em>Frame</em>.</p>
+<p>The rows of a Sheet are identified by <em>Direction</em>, <em>Action</em> and <em>Frame</em>.</p>
 <p>The default (<em>LPC</em>) categories are enumerated below. The categories can be configured in the <code>/src/data/intents/main.yaml</code> file.</p>
 <ul>
 <li>Direction: <code>Enum[up, left, down, right]</code></li>
@@ -1290,7 +1295,39 @@
 </ul>
 <p>Where <code>n(Action)</code> is the number of frames per Action.</p>
 <p><strong>IMPORTANT</strong> For Sheets, it is assumed coordinates of a frame are <em>completely determined</em> by Action, Direction and Frame. It is assumed Actions form contiguous rows partitioned by Direction, and frames are organized in horizontal cells of equal length.</p>
-<h4 id="pixies">Pixies</h4>
+<ul>
+<li>ROW #: <code>(Action, Direction)</code></li>
+<li>row 0: <code>(cast, up)</code></li>
+<li>row 1: <code>(cast, left)</code></li>
+<li>row 2: <code>(cast, down)</code></li>
+<li>row 3: <code>(cast, right)</code></li>
+<li>row 4: <code>(thrust, up)</code></li>
+<li>row 5: <code>(thrust, left)</code></li>
+<li>row 6: <code>(thrust, down)</code></li>
+<li>row 7: <code>(thrust, right)</code></li>
+<li>row 8: <code>(walk, up)</code></li>
+<li>row 9: <code>(walk, left)</code></li>
+<li>row 10: <code>(walk, down)</code></li>
+<li>row 11: <code>(walk, right)</code></li>
+<li>row 12: <code>(slash, up)</code></li>
+<li>row 13: <code>(slash, left)</code></li>
+<li>row 14: <code>(slash, down)</code></li>
+<li>row 15: <code>(slash, right)</code></li>
+<li>row 16: <code>(shoot, up)</code></li>
+<li>row 17: <code>(shoot, left)</code></li>
+<li>row 18: <code>(shoot, down)</code></li>
+<li>row 19: <code>(shoot, right)</code></li>
+<li>row 20: <code>(die, down)</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>die</code> is only associated with a single row in the LPC specification.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The row indexing starts at 0.</p>
+</div>
+<h3 id="pixies">Pixies</h3>
 <p><em>Pixies</em> are <em>Sheets</em> over four rows of frames. Pixies always have the same number of frames in each row. Pixies only have one Action state: <code>walk</code>. The rows of their Sheet Asset file are assumed to be partitioned over Direction only.</p>
 <p><em>Pixies</em> encapsulate simple Characters, such as animals or bugs.</p>
 <p><strong>Properties</strong></p>
@@ -1304,7 +1341,7 @@
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code> (includes direction and frame)</li>
 </ul>
-<p><strong>Frame Behavior</strong></p>
+<p><strong>Frame</strong></p>
 <ul>
 <li><code>key(animation) -&gt; &lt;key&gt;-&lt;animation.direction&gt;-&lt;animation.frame&gt;</code></li>
 </ul>
@@ -1329,7 +1366,7 @@
 <li><code>memory: Memory</code></li>
 <li><code>goal: Goal</code></li>
 </ul>
-<p><strong>Animation Behavior</strong></p>
+<p><strong>Animation</strong></p>
 <p>The injected <code>SpriteAnimation</code> component directly mutates the <code>animation.frame</code> property on the <code>SpriteState</code> to advance the animation sequence based on its current <code>animation.action</code>.</p>
 <h2 id="menu">Menu</h2>
 <p>TODO</p>

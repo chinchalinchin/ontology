@@ -708,23 +708,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Personas">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#persona-schema" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Persona Schema
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
     </ul>
@@ -1245,23 +1228,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Personas">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#persona-schema" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Persona Schema
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
     </ul>
@@ -1481,7 +1447,7 @@
 <p class="admonition-title">Importatnt</p>
 <p>The Player state does not observe the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to Intents. See <a href="../03-player/">Player documentation</a> for more information on the Player.</p>
 </div>
-<p>A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's <em>Disposition</em> determines its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.</p>
+<p>A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's <em>Disposition</em> is an element in its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.</p>
 <ol>
 <li><code>attack</code><ul>
 <li>Reachable Actions: <code>cast, thrust, slash, shoot</code></li>
@@ -1602,7 +1568,7 @@
 <p><code>sprite</code> is a reference to the Sprite which is currently processing the given Disposition. Thus, the Sprite's Disposition state will transition to <code>hunt</code> if the Sprite currently does not have a target, but remembers having a target of category <code>sprite</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The expression <code>not sprite.intention.goal.target</code> is a <em>truthy</em> expression, i.e. it is to be interpretted as existential claim. In other words, this expression evaluates to <code>true</code> if <code>sprite.intention.goal.target</code> does not exist. If the expression involves a List, e.g. <code>sprite.memory.communications</code>, this expression evaluates to <code>true</code> in the event it has more than 0 entries.</p>
+<p>The expression <code>not sprite.intention.goal.target</code> is a <em>truthy</em> expression, i.e. it is to be interpretted as an existential claim. In other words, this expression evaluates to <code>true</code> if <code>sprite.intention.goal.target</code> does not exist. If the expression involves a List, e.g. <code>sprite.memory.communications</code>, this expression evaluates to <code>true</code> in the event it has more than 0 entries.</p>
 </div>
 <p>In another example, the transition from <code>attack</code> to <code>loot</code> in the default Disposition Transition matrix is given by,</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[sprite.target.name].mutators.triggers.dead</span>
@@ -1693,7 +1659,7 @@
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-equipment.yaml&quot;</span>
 </code></pre></div>
 <h2 id="personas">Personas</h2>
-<p>Personas are stacks of superimposed Sprite Sheets. They are assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>/src/data/personas/main.yaml</code> state configuration file. The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona throug the AssetKey property.</p>
+<p>Personas are stacks of superimposed Sprite Sheets. They are assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>compositions</code> property in the configuration file. The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona through the Asset Key property. In other words, once assembled, Personas are effectively "new" Assets.</p>
 <p>Personas are assembled from a Base Sheet and Feature Sheets. The Base Sheet is the background of the resultant Sheet. Feature Sheets are pasted over the Base in the order they are specified.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1703,12 +1669,6 @@
 <li>Base Sheets: <code>/src/assets/sheets/sprites/base/&lt;base-key&gt;.png</code></li>
 <li>Feature Sheets: <code>/src/assets/sheets/sprites/features/&lt;feature-key&gt;.png</code></li>
 </ul>
-<h3 id="persona-schema">Persona Schema</h3>
-<ul>
-<li>Location: <code>/src/data/personas/main.yaml</code></li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-personas.yaml&quot;</span>
-</code></pre></div>
 
 
 
