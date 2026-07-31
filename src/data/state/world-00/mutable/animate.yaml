@@ -7,9 +7,6 @@ sheets:
       position:
         x: 100
         y: 100
-      intention:
-        action: null
-        direction: null
   # ------------------------------------------- SPRITES
   sprites:
     - name: test

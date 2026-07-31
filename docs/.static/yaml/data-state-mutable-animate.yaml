@@ -42,9 +42,7 @@ sheets:
           vision:
             radius: Radius of Vision Mutator
       intention:
-        action: Action Key
         communication: Communication Key
-        direction: Direction Key
         disposition: Disposition Key
         extension: Extension Key
         expression: Expression Key

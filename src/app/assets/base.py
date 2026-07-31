@@ -6,46 +6,23 @@ from abc import ABC, abstractmethod
 from typing import Union
 # Application Libraries
 from app.models import Velocity, Dimensions
+from app.models.properties import AssetProperties
+from app.models.state import AssetState, Animation
 from app.math import Geometry
-import app.models.state as state
-import app.models.properties as properties
-
-UNIFIED_PROPS = Union[
-    properties.CursorProperties,
-    properties.EffectProperties,
-    properties.ObjectProperties,
-    properties.SheetProperties,
-    properties.TileProperties
-]
-
-UNIFIED_STATE = Union[
-    state.ExpressionCursorState,
-    state.ProjectileState,
-    state.PersistentEffectState,
-    state.TemporaryEffectState,
-    state.ChestState,
-    state.CrateState,
-    state.DoorState,
-    state.GateState,
-    state.PlateState,
-    state.PixieState,
-    state.SpriteState,
-    state.TileState
-]
 
 class Asset:
     """
     Foundational class for all game Assets.
     """
-    properties: UNIFIED_PROPS
-    state: UNIFIED_STATE
+    properties: AssetProperties
+    state: AssetState
     shape: Shape
     animation: Animation
     frame: int
 
     def __init__(self, 
-        properties: UNIFIED_PROPS, 
-        state: UNIFIED_STATE,
+        properties: AssetProperties, 
+        state: AssetState,
         frame: Union[Frame, None] = None
         animation: Union[Animation, None] = None
     ):
@@ -85,21 +62,24 @@ class Shape:
         self.hitboxes = hitboxes
         self.dimensions = dimensions
 
-    def _relative(self, position: Position):
-        return [
-            Hitbox(
-                position.x + hb.position.x, 
-                position.y + hb.position.y,
-                hb.dimensions.w,
-                hb.dimensions.l
-            ) for hb in self.hitboxes
-        ]
+    def intersects(self, 
+        position: Position, 
+        other_position: Position, 
+        other_shape: Shape
+    ):
+        """
+        """
+        for hb in self.hitboxes:
+            for ohb in other_shape.hitboxes:
+                this_x = position.x + hb.position.x, 
+                this_y = position.y + hb.position.y,
+                this_w = hb.dimensions.w
+                this_l = hb.dimensions.l
 
-    def intersects(self, position: Position, other: Shape):
-        """
-        """
-        for hb in self._relative(position):
-            for ohb in other.hitboxes:
+                that_x = other_position.x + ohb.position.x
+                that_y = other_position.y + ohb.position.y
+                this_w = ohb.dimensions.w 
+                that_l = ohb.dimension.l
                 if Geometry.intersect(hb, ohb):
                     return True 
         return False
@@ -118,7 +98,7 @@ class Frame(ABC):
     """
 
     @abstractmethod
-    def key(self, animation: state.Animation) -> str:
+    def key(self, animation: Animation) -> str:
         """
         Abstract method for Asset's frame key schema. 
         """
@@ -131,7 +111,7 @@ class Animation(ABC):
     """
 
     @abstractmethod
-    def animate(self, animation: state.Animation, properties: UNIFIED_PROPS) -> None:
+    def animate(self, animation: Animation, properties: AssetProperties) -> Animation:
         """
         Abstract method for incrementing Asset's frame key. 
         """

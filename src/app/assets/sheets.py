@@ -13,7 +13,7 @@ class SpriteAnimation(Animation):
     """
     """
 
-    def animate(self, animation: Animation, properties: SpriteProperties) -> Aniatmion:
+    def animate(self, animation: Animation, properties: AssetProperties) -> Animation:
         """
         """
         animation.frame += 1

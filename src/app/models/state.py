@@ -8,16 +8,24 @@ from pydantic import BaseModel
 # Application Libraries
 from app.models import Position, Multiple
 
+class AssetState(BaseModel):
+    """
+    """
+    pass 
+
 # ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------- ASSET STATE FIELDS
-# ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------------- COMPONENT STATES
 
 class Animation(BaseModel):
     """
-    Rerpresentation of the animation state of a Sprite.
     """
-    action: str
-    direction: str
+    action: Union[str, None]
+    direction: Union[str, None]
+    frame: Union[int, None]
+    
+# ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------------- ASSET STATE FIELDS
+# ---------------------------------------------------------------------------------------
     
 class Character(BaseModel):
     """
@@ -99,7 +107,13 @@ class Memory(BaseModel):
 # -------------------------------------------------------------------- ASSET STATE MODELS
 # ---------------------------------------------------------------------------------------
 
-class TileState(BaseModel):
+# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------------- TILE STATE MODELS
+
+
+class TileState(AssetState):
+    """
+    """
     # ---------------------------------------------------- KEYS
     layer: str              # Layer Identifier Key
     # ---------------------------------------------------- FIELDS
@@ -109,10 +123,14 @@ class TileState(BaseModel):
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- CURSOR STATE MODELS
 
-class ExpressionCursorState(BaseModel):
+class ExpressionCursorState(AssetState):
+    """
+    """
     pass
 
-class ProjectileState(BaseModel):
+class ProjectileState(AssetState):
+    """
+    """
     # ---------------------------------------------------- KEYS
     name: str               # Unique Asset Identifier
     layer: str              # Layer Identifier Key
@@ -123,10 +141,14 @@ class ProjectileState(BaseModel):
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- EFFECT STATE MODELS
 
-class PersistentEffectState(BaseModel):
+class PersistentEffectState(AssetState):
+    """
+    """
     pass 
 
-class TemporaryEffectState(BaseModel):
+class TemporaryEffectState(AssetState):
+    """
+    """
     pass
 
 # ---------------------------------------------------------------------------------------
@@ -137,19 +159,27 @@ class TemporaryEffectState(BaseModel):
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- MENU STATE MODELS
 
-class IconState(BaseModel):
+class IconState(AssetState):
+    """
+    """
     pass
 
-class SymbolState(BaseModel):
+class SymbolState(AssetState):
+    """
+    """
     pass
 
-class WindowState(BaseModel):
+class WindowState(AssetState):
+    """
+    """
     pass 
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- OBJECT STATE MODELS
 
-class ChestState(BaseModel):
+class ChestState(AssetState):
+    """
+    """
     # ---------------------------------------------------- KEYS
     name: str               # Unique Asset Identifier
     layer: str              # Layer Identifier Key
@@ -158,14 +188,18 @@ class ChestState(BaseModel):
     position: Position      # Position of Asset on Board
     switch: bool            # Binary state flag
     
-class CrateState(BaseModel):
+class CrateState(AssetState):
+    """
+    """
     # ---------------------------------------------------- KEYS
     name: str               # Unique Asset Identifier
     layer: str              # Layer Identifier Key
     # ---------------------------------------------------- FIELDS
     position: Position
 
-class DoorState(BaseModel):
+class DoorState(AssetState):
+    """
+    """
     # ---------------------------------------------------- KEYS
     name: str               # Unique Asset Identifier
     layer: str              # Layer Identifier Key
@@ -174,7 +208,9 @@ class DoorState(BaseModel):
     position: Position      # Position of Asset on Board
     out: Position           # Out Position of Asset
 
-class GateState(BaseModel):
+class GateState(AssetState):
+    """
+    """
     # ---------------------------------------------------- KEYS
     name: str               # Unique Asset Identifier
     layer: str              # Layer Identifier Key
@@ -183,7 +219,9 @@ class GateState(BaseModel):
     position: Position      # Position
     switch: bool            # Binary state flag
 
-class PlateState(BaseModel):
+class PlateState(AssetState):
+    """
+    """
     # ---------------------------------------------------- KEYS
     name: str               # Unique Asset Identifier
     layer: str              # Layer Identifier Key
@@ -195,10 +233,12 @@ class PlateState(BaseModel):
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- SHEET STATE MODELS
 
-class PixieState(BaseModel):
+class PixieState(AssetState):
+    """
+    """
     pass 
 
-class SpriteState(BaseModel):
+class SpriteState(AssetState):
     """
     Central model for typing Sprite's state.
     """
@@ -207,7 +247,6 @@ class SpriteState(BaseModel):
     layer: str              # Layer Identifier Key
     frame: int              # Current Frame
     # ---------------------------------------------------- FIELDS
-    animation: Animation
     position: Position
     character: Character
     intention: Intention
@@ -215,17 +254,3 @@ class SpriteState(BaseModel):
     mutators: Mutator
     memory: Memory
     goal: Goal
-
-class Animation(BaseModel):
-    action: Union[str, None]
-    direction: Union[str, None]
-    frame: Union[int, None]
-
-# ------------------------------------------------------------------- TILE STATE MODELS
-
-class TileState(BaseModel):
-    # ---------------------------------------------------- KEYS
-    layer: str              # Layer Identifier Key
-    # ---------------------------------------------------- FIELDS
-    position: Position
-    multiple: Multiple

@@ -15,46 +15,12 @@ from app.models import Position, Dimenions, Hitbox, Entity
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ COMPONENT PROPERTIES
 
-class ShapeProperties:
+class ShapeProperties(BaseModel):
     dimensions: Dimensions
     hitboxes: List[Hitbox]
 
 # ---------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------- ASSET PROPERTIES
-
-class CursorProperties:
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
-    # -------------------------- Properties
-    dimensions: Dimensions
-
-class EffectProperties(BaseModel):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
-    # -------------------------- Properties
-    shape: ShapeProperties
-    count: int 
-
-class ObjectProperties(BaseModel):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
-    # -------------------------- Properties
-    shape: ShapeProperties
-
-class TileProperties(BaseModel):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
-    # -------------------------- Properties
-    dimensions: Dimensions
-
-class PixieProperties(BaseModel):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
-    # -------------------------- Properties
-    shape: ShapeProperties
-
-# ---------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------- SPRITE PROPERTIES
+# --------------------------------------------------------------------- NESTED PROPERTIES
 
 class PixieActionsProperty(BaseModel):
     count: int
@@ -68,7 +34,47 @@ class SpriteActionProperty(BaseModel):
     count: int
     directions: Dict[str, SpriteDirection]
 
-class SpriteProperties(BaseModel):
+# ---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------- ASSET PROPERTIES
+
+class AssetProperties(BaseModel):
+    pass 
+
+class CursorProperties(AssetProperties):
+    # -------------------------- Keys
+    key: str                    # Unique Asset Identifier
+    # -------------------------- Properties
+    dimensions: Dimensions
+
+class EffectProperties(AssetProperties):
+    # -------------------------- Keys
+    key: str                    # Unique Asset Identifier
+    # -------------------------- Properties
+    shape: ShapeProperties
+    count: int 
+
+class ObjectProperties(AssetProperties):
+    # -------------------------- Keys
+    key: str                    # Unique Asset Identifier
+    # -------------------------- Properties
+    shape: ShapeProperties
+
+class TileProperties(AssetProperties):
+    # -------------------------- Keys
+    key: str                    # Unique Asset Identifier
+    # -------------------------- Properties
+    dimensions: Dimensions
+
+class PixieProperties(AssetProperties):
+    # -------------------------- Keys
+    key: str                    # Unique Asset Identifier
+    # -------------------------- Properties
+    shape: ShapeProperties
+
+# ---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------- SPRITE PROPERTIES
+
+class SpriteProperties(AssetProperties):
     # -------------------------- Keys
     key: str                    # Unique Asset Identifier
     # -------------------------- Properties
