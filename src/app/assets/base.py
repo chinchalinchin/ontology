@@ -4,14 +4,16 @@ Package for foundational Asset class.
 # Standard Libraries
 from abc import ABC, abstractmethod
 from typing import Union, List
+
 # Application Libraries
-from app.assets.base import Frame, Shape
+from app.assets.base import Frame, Shape, Animation
 from app.models import Position, Velocity,\
                          Dimensions, Hitbox
 from app.models.properties import AssetProperties
-from app.models.state import AssetState, Animation
+from app.models.state import AssetState, AnimationState
+
 # Cython Libraries
-from libs.calculate import Geometry
+from libs.math import Geometry
 
 class Asset:
     """
@@ -20,7 +22,7 @@ class Asset:
     properties: AssetProperties
     state: AssetState
     shape: Shape
-    animation: Animation
+    animation: AnimationState
     frame: int
 
     def __init__(self, 
@@ -89,7 +91,10 @@ class Frame(ABC):
     """
 
     @abstractmethod
-    def key(self, animation: Animation) -> str:
+    def key(self, 
+        asset: str, 
+        state: AssetState
+    ) -> str:
         """
         Abstract method for Asset's frame key schema. 
         """
@@ -102,7 +107,10 @@ class Animation(ABC):
     """
 
     @abstractmethod
-    def animate(self, animation: Animation, properties: AssetProperties) -> Animation:
+    def animate(self, 
+        state: AssetState, 
+        properties: AssetProperties
+    ) -> AssetState:
         """
         Abstract method for incrementing Asset's frame key. 
         """

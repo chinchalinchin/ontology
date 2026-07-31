@@ -85,25 +85,6 @@ class PySpriteProperties(BaseModel):
     actions: Dict[str, PySpriteActionProperty]
 
 # ---------------------------------------------------------------------------------------
-
-class PixieConfiguration(BaseModel):
-    shapes: Dict[str, PyShapeProperties]
-    action: Dict[str, PyPixieActionsProperty]
-
-class SpriteConfiguration(BaseModel):
-    shape: PyShapeProperties
-    actions: Dict[str, PySpriteActionProperty]
-    compostions: List[PySpriteComposition]
-
-class CursorConfiguration(BaseModel):
-    expressions: Dict[str, PyCursorProperties]
-    projectiles: Dict[str, PyCursorProperties]
-
-class SheetConfiguration(BaseModel):
-    pixies: PixieConfiguration
-    sprites: SpriteConfiguration
-
-# ---------------------------------------------------------------------------------------
 # ------------------------------------------------------ STATE CONFIGURATION & VALIDATION
 # ---------------------------------------------------------------------------------------
 
@@ -170,19 +151,22 @@ class PyProjectileState(BaseModel):
     initial: PyPosition
 
 class PyPersistentEffectState(BaseModel):
+    # TODO
     pass 
 
 class PyIconState(BaseModel):
+    # TODO
     pass
 
 class PySymbolState(BaseModel):
+    # TODO
     pass
 
 class PyWindowState(BaseModel):
+    # TODO
     pass 
 
 # ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------- OBJECT STATE MODELS
 
 class PyChestState(BaseModel):
     name: str
@@ -203,21 +187,22 @@ class PyDoorState(BaseModel):
     position: PyPosition
     out: PyPosition
 
-class GateState(BaseModel):
+class PyGateState(BaseModel):
     name: str
     layer: str
     link: str
     position: PyPosition
     switch: bool
 
-class PlateState(BaseModel):
+class PyPlateState(BaseModel):
     name: str
     layer: str
     link: str
     position: PyPosition
     switch: bool
 
-class PixieState(BaseModel):
+class PyPixieState(BaseModel):
+    # TODO
     pass 
 
 class PySpriteState(BaseModel):
@@ -231,3 +216,25 @@ class PySpriteState(BaseModel):
     mutators: PyMutator
     memory: PyMemory
     goal: PyGoal
+
+
+# ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------- YAML SCHEMAS
+# ---------------------------------------------------------------------------------------
+
+class PixieConfiguration(BaseModel):
+    shapes: Dict[str, PyShapeProperties]
+    action: Dict[str, PyPixieActionsProperty]
+
+class SpriteConfiguration(BaseModel):
+    shape: PyShapeProperties
+    actions: Dict[str, PySpriteActionProperty]
+    compostions: List[PySpriteComposition]
+
+class CursorConfiguration(BaseModel):
+    expressions: Dict[str, PyCursorProperties]
+    projectiles: Dict[str, PyCursorProperties]
+
+class SheetConfiguration(BaseModel):
+    pixies: PixieConfiguration
+    sprites: SpriteConfiguration

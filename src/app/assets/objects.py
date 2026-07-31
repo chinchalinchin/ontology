@@ -2,40 +2,41 @@
 Package for Object Assets.
 """
 # Application Libraries
-from app.assets import Animation, Frame
+import ontology.src.app.constants as constants
+from app.assets.base import Animation, Frame
+from app.models.state import AssetState
+from app.models.properties import AssetProperties
 
 # -------------------------------------- OBJECT ANIMATION IMPLEMENTATIONS
 
-class ChestAnimation(Animation):
-    """
-    """
 
-class GateAnimation(Animation):
-    """
-    """
+class BinaryAnimation(Animation):
 
-class PlateAnimation(Animation):
-    """
-    """
-
+    def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
+        """
+        """
+        state.animation.frame = constants.ON if state.state.switch else constants.OFF
+        return state
+        
 # -------------------------------------- OBJECT FRAME IMPLEMENTATIONS
 
-class ChestFrame(Frame):
+class ObjectFrame(Frame):
     """
     """
 
-class CrateFrame(Frame):
+    def key(self, asset: str, state: AssetState) -> str:
+        """
+        """
+        return asset
+    
+class BinaryFrame(Frame):
     """
     """
 
-class GateFrame(Frame):
-    """
-    """
-
-class DoorFrame(Frame):
-    """
-    """
-
-class PlateFrame(Frame):
-    """
-    """
+    def key(self, asset: str, state: AssetState) -> str:
+        """
+        """
+        return constants.SEPARATOR.join(
+            asset, 
+            state.animation.frame
+        )

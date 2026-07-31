@@ -1,10 +1,11 @@
 """
-Pydantic models for typing the property attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
+Models for typing the property attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
 """
 # Standard Libraries
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List
+
 # Application Libraries
-from app.models import Position, Dimensions, Hitbox, AttackBox
+from app.models import Dimensions, Hitbox, AttackBox
 
 # ---------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------- PROPERTY MODELS

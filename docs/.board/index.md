@@ -23,10 +23,12 @@ Construct a native Cython wrapper around the SDL2 C library to handle hardware-a
 ### 2. [ ] Asset Registry (`src/app/game/registry.py`)
 
 Create a centralized `Registry` class responsible for loading asset files into memory exactly once and mapping `FrameKey` strings to specific crop coordinates.
+
 - **Initialization:** - Recursively parse the `/src/assets/**` directory.
   - Load all `main.yaml` property schemas to understand asset dimensions and animation counts.
 - **Texture Management:** - Call the SDL2 interface to load each unique `.png` file into GPU memory using `IMG_LoadTexture`.
   - Store the resulting C-pointers in a dictionary keyed by the base `<asset-key>`.
+- **Sprite Assembly**:** - Using the sprite property configuration for `base` and `feature`, assemble the Sprite Sheets and index them in the 
 - **Frame Indexing:**
   - Build a lookup table mapping every possible calculated `FrameKey` (e.g., `<asset-key>-walk-left-3`) to its exact `SDL_Rect` crop coordinates (x, y, w, h) based on the asset's Property configurations (like row offsets and cell widths).
 - **Lookup Method:** - `get_render_data(frame_key) -> Tuple[TexturePtr, SDL_Rect]`

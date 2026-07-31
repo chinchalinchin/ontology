@@ -2,14 +2,16 @@
 Package for Cursor Assets.
 """
 # Application Libraries
-from app.assets import Frame
+from app.assets.base import Frame
+from app.models.state import AssetState
 
-# -------------------------------------- OBJECT FRAME IMPLEMENTATIONS
+# -------------------------------------- CURSOR FRAME IMPLEMENTATIONS
 
-class ExpressionCursorFrame(Frame):
+class CursorFrame(Frame):
     """
     """
 
-class ProjectileFrame(Frame):
-    """
-    """
+    def key(self, asset: str, state: AssetState) -> str:
+        """
+        """
+        return asset

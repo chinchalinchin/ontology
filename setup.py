@@ -8,7 +8,7 @@ library_dirs = ["/opt/homebrew/lib", "/usr/local/lib"]
 ext_modules = [
     Extension(
         "libs.sdl2",
-        sources=["libs/sdl2.pyx"],
+        sources=["libs/math.pyx", "libs/registry.pyx", "libs/render.pyx"],
         libraries=["SDL2", "SDL2_image"],
         include_dirs=include_dirs,
         library_dirs=library_dirs,
@@ -16,6 +16,6 @@ ext_modules = [
 ]
 
 setup(
-    name="Cython SDL2 Render Example",
+    name="Ontology Cython Libraries",
     ext_modules=cythonize(ext_modules, compiler_directives={'language_level': "3"}),
 )

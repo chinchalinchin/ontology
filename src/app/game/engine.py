@@ -1,5 +1,8 @@
 # NOTE: PSEUDCODE
 
+from app.game.board import Board
+from app.player import Player
+
 class Engine:
     # Engine components
     board : Board 
@@ -51,9 +54,11 @@ class Engine:
         return differential
 
     def loop(self) -> None:
-        while self.board.loaded
+        while self.board.loaded:
             while not self.board.paused:
                 delta = self._game()
 
             while self.board.paused: 
                 delta = self._menu()
+
+            # TODO: calculate pause from delta

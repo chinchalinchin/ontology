@@ -5,20 +5,11 @@
 
 # Standard Libraries 
 from typing import List, Dict
-# External Libraries
+from itertools import chain
 
 # Application Libraries
-from app.assets import Asset
+from app.assets.base import Asset
 from app.player import Player
-from app.models.properties import TileProperties, EffectProperties, \
-                                    ObjectProperties, CursorProperties, \
-                                    PixieProperties, SpriteProperties
-from app.models.state import TileState, ExpressionCursorState, \
-                                ProjectileState, PersistentEffectState, \
-                                TemporaryEffectState, ChestState, \
-                                CrateState, DoorState, \
-                                GateState, PlateState, \
-                                PixieState, SpriteState
 
 class Board:
     """
@@ -93,9 +84,11 @@ class Board:
         #           animation       = SpriteAnimation()
         #       )
         #   ]
+        pass
 
     def layers(self) -> int:
         if not self.layers:
+            pass
             # dynamically calculate layers based on loaded Assets dictionary keys
         return self.layers
 
@@ -112,7 +105,7 @@ class Board:
         layer = self.player.layer
         return self.expressions[layer] + self.projectiles[layer]  + \
                 self.permanent[layer] + self.temporary[layer]  + \
-                self.chests[layer] + self.crates[layer] + 
+                self.chests[layer] + self.crates[layer] + \
                 self.doors[layer] + self.gates[layer] + \
                 self.plates[layer] + self.pixies[layer] + \
                 self.sprites[layer]
@@ -134,22 +127,25 @@ class Board:
         """
         """
         # ------------------------- ANIMATION HANDLING
-        for this in self.animations()
+        for this in self.animations():
             this.animation.animate()
         # -------------------------
 
         # ------------------------- PROJECTILE HANDLING
         for proj in self.projectiles:
-            for target in self.pixes + self.sprites:
+            for target in chain(self.pixes, self.sprites):
                 if proj.intersects(target):
+                    pass
                     # TODO: projectile logic
             if not proj.alive(): 
+                pass
                 # TODO: remove projectile
         # -------------------------
 
         # ------------------------- TEMPORARY EFFECT HANDLING
         for ef in self.temporary:
             if not ef.alive():
+                pass
                 # TODO: remove effect
         # -------------------------
 
@@ -157,7 +153,7 @@ class Board:
         for plate in self.plates:
             switched = False
 
-            for weight in self.crates + self.sprites + self.pixies:
+            for weight in chain(self.crates, self.sprites, self.pixies):
                 if plate.shape.intersects(weight.shape):
                     plate.state.switch = True
                     switched = True
@@ -170,13 +166,14 @@ class Board:
         # -------------------------
 
         # ------------------------- SHEET-TO-SHEET COLLISION HANDLING
-        for this in self.sprites + self.pixies:
-            for that in self.sprites + self.pixies:
+        for this in chain(self.sprites, self.pixies):
+            for that in chain(self.sprites, self.pixies):
                 if this.name != that.name and this.shape.intersects(that.shape):
-                    # collision logic
+                    pass
+                    # TODO: collision logic
         # -------------------------
 
         # ------------------------- PLAYER HANDLING
         self.player
-        # player logic
+        # TODO: player logic
         # -------------------------

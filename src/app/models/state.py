@@ -1,10 +1,13 @@
 """
-Pydantic models for typing the state attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
+Models for typing the state attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
 """
 # Standard Libraries
 from typing import Dict, List, Union
+
 # Application Libraries
 from app.models import Position, Multiple
+
+# ---------------------------------------------------------------------------------------
 
 class AssetState:
     """
@@ -14,7 +17,7 @@ class AssetState:
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------- COMPONENT STATES
 
-class Animation:
+class AnimationState:
     """
     """
     action: Union[str, None]
@@ -124,7 +127,11 @@ class TileState(AssetState):
 class ExpressionCursorState(AssetState):
     """
     """
-    pass
+    # ---------------------------------------------------- KEYS
+    name: str               # Unique Asset Identifier
+    layer: str              # Layer Identifier Key
+    # ---------------------------------------------------- FIELDS
+    position: Position
 
 class ProjectileState(AssetState):
     """
@@ -142,12 +149,22 @@ class ProjectileState(AssetState):
 class PersistentEffectState(AssetState):
     """
     """
-    pass 
+    # ---------------------------------------------------- KEYS
+    name: str               # Unique Asset Identifier
+    layer: str              # Layer Identifier Key
+    # ---------------------------------------------------- FIELDS
+    position: Position
+    animation: AnimationState
 
 class TemporaryEffectState(AssetState):
     """
     """
-    pass
+    # ---------------------------------------------------- KEYS
+    name: str               # Unique Asset Identifier
+    layer: str              # Layer Identifier Key
+    # ---------------------------------------------------- FIELDS
+    position: Position
+    animation: AnimationState
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- ENVIRON STATE MODELS
@@ -184,6 +201,7 @@ class ChestState(AssetState):
     content: List[str]      # Content Identifier Keys
     # ---------------------------------------------------- FIELDS
     position: Position      # Position of Asset on Board
+    animation: AnimationState
     switch: bool            # Binary state flag
     
 class CrateState(AssetState):
@@ -215,6 +233,7 @@ class GateState(AssetState):
     link: str               # Link Identifier Key
     # ---------------------------------------------------- FIELDS
     position: Position      # Position
+    animation: AnimationState
     switch: bool            # Binary state flag
 
 class PlateState(AssetState):
@@ -226,6 +245,7 @@ class PlateState(AssetState):
     link: str               # Link Identifier Key
     # ---------------------------------------------------- FIELDS
     position: Position      # Position
+    animation: AnimationState
     switch: bool            # Binary state flag
 
 # ---------------------------------------------------------------------------------------
@@ -246,6 +266,7 @@ class SpriteState(AssetState):
     frame: int              # Current Frame
     # ---------------------------------------------------- FIELDS
     position: Position
+    animation: AnimationState
     character: Character
     intention: Intention
     inventory: Inventory
