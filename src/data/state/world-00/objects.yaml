@@ -1,8 +1,8 @@
 objects:
-  # ------------------------------------------- CHESTS
+  # ------------------------------------------- CHEST
   chests:
     - name: Chest Identifier
-      key: Chest Asset Key
+      asset: Chest Asset Key
       layer: Layer Key
       position:
         x: Horizontal Position
@@ -10,15 +10,7 @@ objects:
   # ------------------------------------------- CRATES
   crates:
     - name: Crate Identifier
-      key: Crate Asset Key
-      layer: Layer Key
-      position: 
-        x: Horizontal Position
-        y: Vertical Position
-  # ------------------------------------------- DOORS
-  cursors: 
-    - name: Cursor Identifier
-      key: Cursor Asset Key
+      asset: Crate Asset Key
       layer: Layer Key
       position: 
         x: Horizontal Position
@@ -26,7 +18,7 @@ objects:
   # ------------------------------------------- DOORS
   doors:
     - name: Door Identifier
-      key: Door Asset Key
+      asset: Door Asset Key
       layer: Layer Key
       outlayer: Out Layer Key
       position:
@@ -35,7 +27,7 @@ objects:
   # ------------------------------------------- GATES
   gates:
     - name: Gate Identifier
-      key: Gate Asset Key
+      asset: Gate Asset Key
       layer: Layer Key
       link: Plate Link Key
       position:
@@ -44,7 +36,7 @@ objects:
   # ------------------------------------------- PLATES
   plates:
     - name: Plate Identifier
-      key: Plate Asset Key
+      asset: Plate Asset Key
       layer: Layer Key
       link: Gate Link Key
       position:

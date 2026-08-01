@@ -5,62 +5,28 @@ Package for game Board. The Board holds and mutates the state of the game for th
 """
 
 # Standard Libraries 
-from typing import Iterable, List
-from itertools import chain
+from typing import List
 
 # Application Libraries
-from app.assets.base import Asset, Mechanic, AnimationMechanics
-from app.assets.cursors import ProjectileMechanics
-from app.assets.effects import EffectFrame, \
-                                    PersistentAnimation
-from app.assets.objects import SwitchMechanics
-from app.assets.sheets import CollisionMechanics, \
-                                    SpriteAnimation, \
-                                    SpriteFrame
-from app.models.state import PersistentEffectState, \
-                                    TileState,\
-                                    SpriteState
-from app.models.properties import EffectProperties, \
-                                    TileProperties, \
-                                    SpriteProperties
+from app.assets.base import Asset
+from app.game.mechanics import Mechanic, \
+                                    AnimationMechanics, \
+                                    CollisionMechanics, \
+                                    ProjectileMechanics, \
+                                    SwitchMechanics
+from app.game.factory import Factory
 from app.player import Player
 
 class Board:
     """
     """
-    # ------------------------- PROPERTIES
     layers: int
-    mechanics: List[Mechanic]
-
-    # ------------------------- ASSETS
     player: Player
-    # --------- Tiles
-    tiles: List[Asset]
-    # --------- Effects
-    permanent: List[Asset]
-    temporary: List[Asset]
-    # --------- Cursors
-    expressions: List[Asset]
-    projectiles: List[Asset]
-    # --------- Objects
-    chests: List[Asset]
-    crates: List[Asset]
-    doors: List[Asset]
-    gates: List[Asset]
-    plates: List[Asset]
-    # --------- Sheets
-    pixies: List[Asset]
-    sprites: List[Asset]
-
-    # ------------------------- Mechanics
+    mechanics: List[Mechanic]
+    assets: List[Asset]
 
     def __init__(self, root: Path):
-        self._assets()
-        self._mechanics(root)
-
-    def _mechanics(self):
-        """
-        """
+        self.load()
         self.mechanics = [ 
             AnimationMechanics(),
             CollisionMechanics(),
@@ -68,60 +34,32 @@ class Board:
             SwitchMechanics()
         ]
 
-    def _assets(self, root: Path):
+    def load(self, root: Path):
         """
-        The Asset state information is organized in the /src/data/boards/ directory with the following struture,
-
-        ```tree
-            boards
-            └── <board-key>
-                └── immutable
-                    ├── animate.yaml
-                    └── inanimate.yaml
-                └── mutable
-                    ├── animate.yaml
-                    └── inanimate.yaml
-        ```
         """
-        immutable_inanimate = "TODO: yaml file"
-        immutable_animate = "TODO: yaml file"
-        mutable_animate = "TODO: yaml file "
+        asset_recipes = "TODO: yaml file @ src/assets/main.yaml"
+        asset_properties = {}
 
-        for snapshot in immutable_inanimate:
-            self.tiles[snapshot.layer]     += [ 
-              Asset(
-                properties                  = TileProperties(
-                    key                     = snapshot.asset, 
-                    dimensions              = immutable_inanimate.regular.dimensions
-                ),
-                state                       = TileState(
-                    position                = snapshot.position,
-                    multiple                = snapshot.multiple
-                )
-              )
-            ]
-        
-        for snapshot in immutable_animate.persistent:
-          effects                           += [
-            Asset(
-                # TODO: inits
-                properties                  = EffectProperties(),
-                state                       = PersistentEffectState(),
-                frame                       = EffectFrame(),
-                animation                   = PersistentAnimation()
-            )
-          ]
-        
-        for snapshot in mutable_animate.sprites:
-          sprites                           += [
-              Asset(
-                # TODO: inits
-                properties                  = SpriteProperties(),
-                state                       = SpriteState(),
-                frame                       = SpriteFrame(),
-                animation                   = SpriteAnimation()
-              )
-          ]
+        for asset_type, type_recipes in asset_recipes.keys():
+            for type_key in type_recipes.keys():
+                property_path = f"./src/assets/{asset_type}/{type_key}/main.yaml"
+                asset_properties[type_key] = "TODO: open(property_path)"
+
+        asset_state = "TODO: concatened yaml files @ src/data/state/{root}/**.yaml"
+
+        for category_key, category in asset_state:
+            for instance_key, instances in category:
+                for instance_state in instances:
+                    instance_recipe             = asset_recipes[category_key][instance_key]
+                    instance_properties         = asset_properties[category_key]
+                    self.assets                 += [
+                        Asset(
+                            properties          = Factory.properties(instance_key, instance_properties),
+                            state               = Factory.state(instance_key, instance_state),
+                            frame               = Factory.frame(instance_recipe.frame),
+                            animation           = Factory.animation(instance_recipe.animation)
+                        )
+                    ]
 
     def get_layers(self) -> int:
         if not self.layers:
@@ -129,26 +67,11 @@ class Board:
             # dynamically calculate layers based on loaded Assets dictionary keys
         return self.layers
 
-    def tiles_by_layer(self, layer) -> List[Asset]:
+    def tiles(self, layer) -> List[Asset]:
         """
         Returns a list of all Tile Assets on the given layer of the game Board.
         """
         return [ tile for tile in self.tiles if tile.state.layer == layer ]
-
-    def assets(self) -> Iterable[Asset]:
-        return chain(
-            self.permanent, 
-            self.temporary, 
-            self.expressions, 
-            self.projectiles, 
-            self.chests, 
-            self.crates, 
-            self.doors, 
-            self.gates, 
-            self.plates,
-            self.pixies, 
-            self.sprites
-        )
 
     def menu(self) -> None:
         """

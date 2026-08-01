@@ -1,0 +1,15 @@
+cursors: 
+  expressions:
+    - name: Cursor Identifier
+      asset: Cursor Asset Key
+      layer: Layer Key
+      position: 
+        x: Horizontal Position
+        y: Vertical Position
+  projectiles:
+    - name: Cursor Identifier
+      asset: Cursor Asset Key
+      layer: Layer Key
+      position: 
+        x: Horizontal Position
+        y: Vertical Position

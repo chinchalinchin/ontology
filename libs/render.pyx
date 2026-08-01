@@ -95,7 +95,7 @@ cdef class TexturePtr:
 # Public Python/Cython API
 # -----------------------------------------------------------------------------
 
-def init_sdl():
+def init():
     """Initializes the SDL subsystems and instantiates the hidden hardware renderer."""
     global _window, _renderer
     SDL_Init(SDL_INIT_VIDEO)
@@ -108,7 +108,7 @@ def init_sdl():
     if _renderer == NULL:
         raise RuntimeError("Failed to initialize hardware-accelerated SDL_Renderer.")
 
-def load_texture(str filepath) -> TexturePtr:
+def load(str filepath) -> TexturePtr:
     """Loads a physical .png file directly into GPU memory."""
     cdef bytes b_filepath = filepath.encode('utf-8')
     cdef SDL_Texture* tex = IMG_LoadTexture(_renderer, b_filepath)
@@ -120,7 +120,7 @@ def load_texture(str filepath) -> TexturePtr:
     wrapper.ptr = tex
     return wrapper
 
-def create_render_target(int width, int height) -> TexturePtr:
+def canvas(int width, int height) -> TexturePtr:
     """Instantiates a blank texture assigned as an accelerated rendering target."""
     cdef SDL_Texture* tex = SDL_CreateTexture(
         _renderer, 
@@ -137,7 +137,7 @@ def create_render_target(int width, int height) -> TexturePtr:
     wrapper.h = height
     return wrapper
 
-def draw_to_target(TexturePtr target, TexturePtr source, tuple src_rect=None, tuple dst_rect=None):
+def draw(TexturePtr target, TexturePtr source, tuple src_rect=None, tuple dst_rect=None):
     """Binds a target texture, copies a cropped source onto it, and unbinds."""
     cdef SDL_Rect c_src
     cdef SDL_Rect c_dst
@@ -157,7 +157,7 @@ def draw_to_target(TexturePtr target, TexturePtr source, tuple src_rect=None, tu
     SDL_RenderCopy(_renderer, source.ptr, p_src, p_dst)
     SDL_SetRenderTarget(_renderer, NULL)
 
-def render_scene(TexturePtr background, list active_assets):
+def render(TexturePtr background, list active_assets):
     """
     Renders the composite scene in C-level loop.
     active_assets should be a list of tuples: (TexturePtr, src_rect_tuple, dst_rect_tuple)

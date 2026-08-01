@@ -5,50 +5,16 @@ Package for foundational Asset classes and interfaces.
 """
 # Standard Libraries
 from abc import ABC, abstractmethod
-from itertools import chain
 from typing import Union
 
 # Application Libraries
-from app.assets.base import Frame, Shape, Animation
-from app.game.board import Board
 from app.models.properties import AssetProperties
 from app.models.state import AssetState, AnimationState
+from app.player import Player
 
 # Cython Libraries
 from libs.math import Geometry
 from libs.core import Dimensions, Shape
-
-class Asset:
-    """
-    Foundational class for all game Assets.
-    """
-    properties: AssetProperties
-    state: AssetState
-    shape: Shape
-    animation: AnimationState
-    frame: int
-
-    def __init__(self, 
-        properties: AssetProperties, 
-        state: AssetState,
-        frame: Union[Frame, None] = None,
-        animation: Union[Animation, None] = None
-    ):
-        self.properties = properties
-        self.state = state
-        self.frame = frame
-        self.animation = animation
-        self.shape = Shape(
-            state.position, 
-            properties.dimensions, 
-            properties.hitboxes
-        )
-
-    def onscreen(self, player: Player, screensize: Dimensions) -> str: 
-        """
-        """
-        return Geometry.onscreen(self.shape, player.shape, screensize)
-
 
 class Frame(ABC):
     """
@@ -81,27 +47,33 @@ class Animation(ABC):
         """
         pass
 
-class Mechanic(ABC):
+class Asset:
     """
+    Foundational class for all game Assets.
     """
+    properties: AssetProperties
+    state: AssetState
+    shape: Shape
+    animation: AnimationState
+    frame: int
 
-    @abstractmethod 
-    def update(self, board: Board, delta: float) -> None:
-        pass
+    def __init__(self, 
+        properties: AssetProperties, 
+        state: AssetState,
+        frame: Union[Frame, None] = None,
+        animation: Union[Animation, None] = None
+    ):
+        self.properties = properties
+        self.state = state
+        self.frame = frame
+        self.animation = animation
+        self.shape = Shape(
+            state.position, 
+            properties.dimensions, 
+            properties.hitboxes
+        )
 
-class AnimationMechanics(Mechanic):
-    """
-    """
-
-    def update(self, board: Board, delta: float) -> None:
-        for asset in chain(
-            board.permanent, 
-            board.temporary,
-            board.chests, 
-            board.gates, 
-            board.plates,
-            board.pixies, 
-            board.sprites
-        ):
-            asset.animate(asset.state, asset.properties)
-        pass 
+    def onscreen(self, player: Player, screensize: Dimensions) -> str: 
+        """
+        """
+        return Geometry.onscreen(self.shape, player.shape, screensize)

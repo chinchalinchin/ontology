@@ -388,66 +388,16 @@ TODO
 
 ### Properties: Tiles
 
-* Location: `/src/assets/tiles/main.yaml`
+* Location: `/src/assets/<category>/main.yaml`
 
 ```yaml
---8<-- "docs/.static/yaml/asset-property-tiles.yaml"
-
+--8<-- "docs/.static/yaml/asset-properties.yaml"
 ```
 
-### Properties: Objects
+### State
 
-* Location: `/src/assets/objects/main.yaml`
-
-```yaml
---8<-- "docs/.static/yaml/asset-property-objects.yaml"
-
-```
-
-### Properties: Effects
-
-* Location: `/src/assets/effects/main.yaml`
+* Location: `/src/data/state/<board-key>/*.yaml`
 
 ```yaml
---8<-- "docs/.static/yaml/asset-property-effects.yaml"
-```
-
-### Properties: Sheets
-
-* Location: `/src/assets/sheets/main.yaml`
-
-```yaml
---8<-- "docs/.static/yaml/asset-property-sheets.yaml"
-```
-
-### State: Immutable, Inanimate
-
-* Location: `/src/data/state/<board-key>/immutable/inanimate.yaml`
-
-```yaml
---8<-- "docs/.static/yaml/data-state-immutable-inanimate.yaml"
-```
-
-### State: Immutable, Animate
-
-* Location: `/src/data/state/<board-key>/immutable/animate.yaml`
-
-```yaml
---8<-- "docs/.static/yaml/data-state-immutable-animate.yaml"
-```
-
-### State: Mutable, Inanimate
-
-* Location: `/src/data/state/<board-key>/mutable/inanimate.yaml`
-
-```yaml
---8<-- "docs/.static/yaml/data-state-mutable-inanimate.yaml"
-```
-
-### State: Mutable, Animate
-
-* Location: `/src/data/state/<board-key>/animate.yaml`
-
-```yaml
---8<-- "docs/.static/yaml/data-state-mutable-animate.yaml"
+--8<-- "docs/.static/yaml/asset-state.yaml"
 ```

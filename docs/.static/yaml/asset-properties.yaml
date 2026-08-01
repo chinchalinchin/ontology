@@ -1,0 +1,162 @@
+# ------------------------------------------------------------------
+# ---------------------------------------------------------- CURSORS
+cursors:
+  expressions:
+    <expression-key>:
+      dimensions:
+        l: Pixel Length
+        w: Pixel Width
+  projectiles:
+    <projectile-key>:
+      dimensions:
+        l: Pixel Length
+        w: Pixel Width
+# ------------------------------------------------------------------
+# ---------------------------------------------------------- EFFECTS
+effects:
+  persistent:
+    <key>:
+      count: Number of Frames
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width
+  temporary:
+    <key>:
+      count: Number of Frames
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width
+# ------------------------------------------------------------------
+# ---------------------------------------------------------- OBJECTS
+objects:
+  chests:
+    <key>:
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width
+  crates:
+    <key>:
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width
+  doors:
+    <key>:
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width
+  gates:
+    <key>:
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width
+  plates:
+    <key>:
+      shape:
+        dim:
+          l: Pixel Length
+          w: Pixel Width
+        hitboxes:
+          - pos: 
+              x: Relative Horizontal Position
+              y: Relative Vertical Postion
+            dim:
+              l: Pixel Length
+              w: Pixel Width
+# ------------------------------------------------------------------
+# ----------------------------------------------------------- SHEETS
+sheets:
+  pixies:
+    entities:
+      <key>:
+        shape:
+          dim:
+            l: pixel length
+            w: pixel width
+          hitboxes:
+            - pos: 
+                x: relative horizontal position
+                y: relative vertical position
+              dim:
+                l: hitbox pixel length
+                w: hitbox pixel width 
+    count: Frame Count of Pixie Sheets
+    directions:
+      - <direction-key>
+  sprites:
+    personas:
+      - key: hero
+        base: <base-asset-key>
+        features:
+          - <feature-asset-key>
+    shape:
+      dim:
+        l: pixel length
+        w: pixel width
+      hitboxes:
+        - pos: 
+            x: relative horizontal position
+            y: relative vertical position
+          dim:
+            l: hitbox pixel length
+            w: hitbox pixel width 
+    actions:
+      <action-key>:
+        count: Frame Count of Action Row Group
+        directions:
+          <direction-key>:
+            attackboxes:
+              - pos: 
+                  x: relative horizontal position
+                  y: relative vertical position
+                dim:
+                  l: hitbox pixel length
+                  w: hitbox pixel width 
+                hitframe: <hitframe-index>

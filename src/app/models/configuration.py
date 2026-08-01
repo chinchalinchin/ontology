@@ -230,7 +230,7 @@ class PixieConfiguration(BaseModel):
 class SpriteConfiguration(BaseModel):
     shape: PyShapeProperties
     actions: Dict[str, PySpriteActionProperty]
-    compostions: List[PySpriteComposition]
+    compositions: List[PySpriteComposition]
 
 class CursorConfiguration(BaseModel):
     expressions: Dict[str, PyCursorProperties]

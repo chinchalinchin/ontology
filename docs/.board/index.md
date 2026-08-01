@@ -4,13 +4,13 @@
 
 Construct a native Cython wrapper around the SDL2 C library to handle hardware-accelerated GPU rendering, strictly avoiding Python-side memory buffers.
 
-* **Dependencies:** Link against `SDL2` and `SDL2_image` in `setup.py`.
-  * **Method - `init_sdl()`:** Initialize the SDL video and image subsystems and instantiate the hidden window and hardware-accelerated `SDL_Renderer`.
-  * **Method - `load_texture(filepath)`:** Load a `.png` file directly into GPU memory and return an `SDL_Texture` C-pointer.
-  * **Method - `create_render_target(width, height)`:** Instantiate a blank `SDL_Texture` configured with `SDL_TEXTUREACCESS_TARGET` to act as a cached background canvas entirely on the GPU.
-  * **Method - `draw_to_target(target_ptr, source_ptr, src_rect, dst_rect)`:** Bind the target texture, copy the specifically cropped `source_ptr` rectangle to the target coordinate, and unbind.
-  * **Method - `render_scene(background_ptr, active_assets)`:** Clear the active renderer, copy the cached background pointer, iterate over active assets to overlay their respective textures, and call `SDL_RenderPresent`.
-  * **Method - `save_to_png(filename)`:** Read the active renderer's pixels into an `SDL_Surface` and export it to the disk for debugging.
+- **Dependencies:** Link against `SDL2` and `SDL2_image` in `setup.py`.
+  - [x] **Method - `init()`:** Initialize the SDL video and image subsystems and instantiate the hidden window and hardware-accelerated `SDL_Renderer`.
+  - [x] **Method - `load(filepath)`:** Load a `.png` file directly into GPU memory and return an `SDL_Texture` C-pointer.
+  - [x] **Method - `canvas(width, height)`:** Instantiate a blank `SDL_Texture` configured with `SDL_TEXTUREACCESS_TARGET` to act as a cached background canvas entirely on the GPU.
+  - [x] **Method - `draw(target_ptr, source_ptr, src_rect, dst_rect)`:** Bind the target texture, copy the specifically cropped `source_ptr` rectangle to the target coordinate, and unbind.
+  - [x] **Method - `render(background_ptr, active_assets)`:** Clear the active renderer, copy the cached background pointer, iterate over active assets to overlay their respective textures, and call `SDL_RenderPresent`.
+  - [x] **Method - `save(filename)`:** Read the active renderer's pixels into an `SDL_Surface` and export it to the disk for debugging.
 
 **2. Asset Registry (`src/app/game/registry.py`)**
 

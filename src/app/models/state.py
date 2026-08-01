@@ -17,7 +17,6 @@ class AssetState:
     pass 
 
 # ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------- COMPONENT STATES
 
 class AnimationState:
     """
@@ -25,10 +24,94 @@ class AnimationState:
     action: Union[str, None]
     direction: Union[str, None]
     frame: Union[int, None]
+
+# ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------------- ASSET STATE MODELS
+# ---------------------------------------------------------------------------------------
+
+class MultiplierState(AssetState):
+    """
+    """
+    # ---------------------------------------------------- KEYS
+    layer: str              # Layer Identifier Key
+    # ---------------------------------------------------- FIELDS
+    position: Position
+    multiple: Multiple 
+
+
+class PositionalState(AssetState):
+    """
+    """
+    # ---------------------------------------------------- KEYS
+    name: str               # Unique Asset Identifier
+    layer: str              # Layer Identifier Key
+    # ---------------------------------------------------- FIELDS
+    position: Position
+
+class MetricState(AssetState):
+    """
+    """
+    # ---------------------------------------------------- KEYS
+    name: str               # Unique Asset Identifier
+    layer: str              # Layer Identifier Key
+    # ---------------------------------------------------- FIELDS
+    position: Position
+    initial: Position
+
+class AnimatorState(AssetState):
+    """
+    """
+    # ---------------------------------------------------- KEYS
+    name: str               # Unique Asset Identifier
+    layer: str              # Layer Identifier Key
+    # ---------------------------------------------------- FIELDS
+    position: Position
+    animation: AnimationState
+
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------- OBJECT STATE MODELS
+
+class ContainerState(AssetState):
+    """
+    """
+    # ---------------------------------------------------- KEYS
+    name: str               # Unique Asset Identifier
+    layer: str              # Layer Identifier Key
+    content: List[str]      # Content Identifier Keys
+    # ---------------------------------------------------- FIELDS
+    position: Position      # Position of Asset on Board
+    animation: AnimationState
+    switch: bool            # Binary state flag
     
+class DoorState(AssetState):
+    """
+    """
+    # ---------------------------------------------------- KEYS
+    name: str               # Unique Asset Identifier
+    layer: str              # Layer Identifier Key
+    outlayer: str           # Out Layer Identifier Key
+    # ---------------------------------------------------- FIELDS
+    position: Position      # Position of Asset on Board
+    out: Position           # Out Position of Asset
+
+class SwitchState(AssetState):
+    """
+    """
+    # ---------------------------------------------------- KEYS
+    name: str               # Unique Asset Identifier
+    layer: str              # Layer Identifier Key
+    link: str               # Link Identifier Key
+    # ---------------------------------------------------- FIELDS
+    position: Position      # Position
+    animation: AnimationState
+    switch: bool            # Binary state flag
+
 # ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------- ASSET STATE FIELDS
+# --------------------------------------------------------------------------- SHEET STATE
 # ---------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------- SHEET  STATE FIELDS
     
 class Character:
     """
@@ -106,156 +189,13 @@ class Memory:
     goal: Goal
     communications: List[str]
 
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------- ASSET STATE MODELS
-# ---------------------------------------------------------------------------------------
-
-# ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------------- TILE STATE MODELS
-
-
-class TileState(AssetState):
-    """
-    """
-    # ---------------------------------------------------- KEYS
-    layer: str              # Layer Identifier Key
-    # ---------------------------------------------------- FIELDS
-    position: Position
-    multiple: Multiple 
-
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------- CURSOR STATE MODELS
-
-class ExpressionCursorState(AssetState):
-    """
-    """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
-    # ---------------------------------------------------- FIELDS
-    position: Position
-
-class ProjectileState(AssetState):
-    """
-    """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
-    # ---------------------------------------------------- FIELDS
-    position: Position
-    initial: Position
-
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------- EFFECT STATE MODELS
-
-class PersistentEffectState(AssetState):
-    """
-    """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
-    # ---------------------------------------------------- FIELDS
-    position: Position
-    animation: AnimationState
-
-class TemporaryEffectState(AssetState):
-    """
-    """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
-    # ---------------------------------------------------- FIELDS
-    position: Position
-    animation: AnimationState
-
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------- ENVIRON STATE MODELS
-
-# TODO: Finish design stage
-
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------- MENU STATE MODELS
-
-class IconState(AssetState):
-    """
-    """
-    pass
-
-class SymbolState(AssetState):
-    """
-    """
-    pass
-
-class WindowState(AssetState):
-    """
-    """
-    pass 
-
-# ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------- OBJECT STATE MODELS
-
-class ChestState(AssetState):
-    """
-    """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
-    content: List[str]      # Content Identifier Keys
-    # ---------------------------------------------------- FIELDS
-    position: Position      # Position of Asset on Board
-    animation: AnimationState
-    switch: bool            # Binary state flag
-    
-class CrateState(AssetState):
-    """
-    """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
-    # ---------------------------------------------------- FIELDS
-    position: Position
-
-class DoorState(AssetState):
-    """
-    """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
-    outlayer: str           # Out Layer Identifier Key
-    # ---------------------------------------------------- FIELDS
-    position: Position      # Position of Asset on Board
-    out: Position           # Out Position of Asset
-
-class GateState(AssetState):
-    """
-    """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
-    link: str               # Link Identifier Key
-    # ---------------------------------------------------- FIELDS
-    position: Position      # Position
-    animation: AnimationState
-    switch: bool            # Binary state flag
-
-class PlateState(AssetState):
-    """
-    """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
-    link: str               # Link Identifier Key
-    # ---------------------------------------------------- FIELDS
-    position: Position      # Position
-    animation: AnimationState
-    switch: bool            # Binary state flag
-
-# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- SHEET STATE MODELS
 
 class PixieState(AssetState):
     """
     """
+    # TODO
     pass 
 
 class SpriteState(AssetState):
@@ -275,3 +215,21 @@ class SpriteState(AssetState):
     mutators: Mutator
     memory: Memory
     goal: Goal
+
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------- MENU STATE MODELS
+
+class IconState(AssetState):
+    """
+    """
+    pass
+
+class SymbolState(AssetState):
+    """
+    """
+    pass
+
+class WindowState(AssetState):
+    """
+    """
+    pass 

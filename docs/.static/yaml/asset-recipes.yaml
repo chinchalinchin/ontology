@@ -1,0 +1,8 @@
+assets:
+  <asset-category>:
+    <asset-instance>:
+      frame: <frame-implementation>
+      animation: <animation-implementation>
+      behaviors:
+        - <behavior-implementation>
+      state: <state-implementation>

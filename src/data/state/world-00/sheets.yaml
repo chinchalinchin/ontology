@@ -1,5 +1,4 @@
 sheets:
-  # ------------------------------------------- PIXIES
   pixies:
     - name: test
       asset: test
@@ -7,7 +6,6 @@ sheets:
       position:
         x: 100
         y: 100
-  # ------------------------------------------- SPRITES
   sprites:
     - name: test
       asset: test
