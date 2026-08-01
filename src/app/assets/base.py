@@ -5,6 +5,7 @@ Package for foundational Asset classes and interfaces.
 """
 # Standard Libraries
 from abc import ABC, abstractmethod
+from itertools import chain
 from typing import Union, List
 
 # Application Libraries
@@ -44,18 +45,10 @@ class Asset:
             properties.hitboxes
         )
 
-    def update(self):
+    def onscreen(self, player: Player, screensize: Dimensions) -> str: 
         """
         """
-        if self.animation:
-            self.animation.animate()
-
-        # TODO: everything else
-
-    def onscreen(self, player: Player, screen: Screen) -> str: 
-        """
-        """
-        return Geometry.onscreen(self.shape, player.shape, screen.dimensions)
+        return Geometry.onscreen(self.shape, player.shape, screensize)
 
 
 class Shape:
@@ -126,6 +119,22 @@ class Mechanic(ABC):
     """
 
     @abstractmethod 
-    def update(self, board: Board, delta_time: float) -> None:
+    def update(self, board: Board, delta: float) -> None:
         pass
-    
+
+class AnimationMechanics(Mechanic):
+    """
+    """
+
+    def update(self, board: Board, delta: float) -> None:
+        for asset in chain(
+            board.permanent, 
+            board.temporary,
+            board.chests, 
+            board.gates, 
+            board.plates,
+            board.pixies, 
+            board.sprites
+        ):
+            asset.animate(asset.state, asset.properties)
+        pass 

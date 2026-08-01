@@ -27,7 +27,6 @@ class Geometry:
                 
     return False
 
-
     @staticmethod
     cdef bint onscreen(self,
         Asset asset,
@@ -44,3 +43,20 @@ class Geometry:
         # TODO
 
         return False
+
+    @staticmethod
+    cdef (double, double) center(self
+        Asset asset
+    ):
+        center_x = (asset.state.position.x + asset.properties.dimensions.w) / 2
+        center_y = (asset.state.position.y + asset.properties.dimensions.h) / 2
+        return (center_x, center_y)
+
+    @staticmethod
+    cdef (double, double) offset(self
+        Position center,
+        Dimensions dim
+    )
+        clip_x = center.x - dim.w / 2
+        clip_y = center.y - dim.h / 2
+        return (clip_x, clip_y)

@@ -32,24 +32,17 @@ class Engine:
             in self.board.layers
         ]
 
-    def _menu(self) -> float:
-        # TODO: start time 
-
-        # 1. update menu
-        self.board.menu()
-
-        # TODO: end time
-        # ETC: calculate frame rates, lag, buffer rates, skips, etc.
-        differential = 0.25 # some number
-        return differential
-
+    @staticmethod
+    def time(self) -> Time:
+        return current_time 
+    
     def loop(self) -> None:
         delta = 1.0 / 60.0
         accumulator = 0.0
-        last_time = get_time()
+        last_time = self.time()
 
         while self.board.loaded:
-            current_time = get_time()
+            current_time = self.time()
             frame_time = current_time - last_time
             last_time = current_time
             accumulator += frame_time

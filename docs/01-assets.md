@@ -103,7 +103,10 @@ Every physical entity in the game is an instance of the unified `Asset` class. T
 1. **Properties:** A model defining immutable data (e.g., `TileProperties`, `ObjectProperties`).
 2. **State:** A model defining mutable data (e.g., `TileState`, `ChestState`).
 3. **Shape:** A component constructed from Properties and State that manages `Position`, `Dimensions`, and `Hitboxes` to process inline collision math.
-4. **Animation & Frame:** Stateless strategies (e.g. `SpriteAnimation`, `SpriteFrame`) injected into the Asset. These contain the specific logic for updating frames and calculating the render key, mutating the Asset's state in-place to avoid data duplication.
+4. **Animation** Stateless strategies (e.g. `SpriteAnimation`, `PixieAnimation`) injected into the Asset. These contain the specific logic for updating frames.
+5. **Frame:** A static schema calculation used by the renderer to determine the correct texture string key.
+
+*Behaviors* are decoupled from Assets and managed entirely by *Mechanics* classes that iterate over the Board Assets. See [Mechanics documentation](./06-architecture.md#mechanics) for more information.
 
 ## Tiles
 

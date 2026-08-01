@@ -9,7 +9,7 @@ from typing import Iterable, List
 from itertools import chain
 
 # Application Libraries
-from app.assets.base import Asset, Mechanic
+from app.assets.base import Asset, Mechanic, AnimationMechanics
 from app.assets.cursors import ProjectileMechanics
 from app.assets.effects import EffectFrame, \
                                     PersistentAnimation
@@ -62,6 +62,7 @@ class Board:
         """
         """
         self.mechanics = [ 
+            AnimationMechanics(),
             CollisionMechanics(),
             ProjectileMechanics(),
             SwitchMechanics()
@@ -155,17 +156,12 @@ class Board:
         # TODO: implement
         pass 
 
-    def play(self, delta_time: float) -> None:
+    def play(self, delta: float) -> None:
         """
         """
-        # ------------------------- ANIMATION HANDLING
-        for this in self.assets():
-            this.update()
-        # -------------------------
-
         # ------------------------- MECHANIC HANDLING
         for this in self.mechanics:
-            this.update(self, delta_time)
+            this.update(self, delta)
 
         # ------------------------- PLAYER HANDLING
         self.player

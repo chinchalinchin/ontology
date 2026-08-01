@@ -4,32 +4,36 @@ This section contains an in-depth presentation of the game engine's programmatic
 
 ## Initialization
 
-1. Create `Registry`.
+1. Create `Registry`
     * Load Assets into memory
-        - Recursive load `/src/assets/**` using the `main.yaml` contained in each `/src/asset/<category>` directory. Create a map using the key-values `<registry-key>: <frame>`, where `<registry-key>` is the Asset file name (`<asset-key>`), unless otherwise specified below:
-            - Parse and index Chests, Gates and Plates so each frame is indexed with    `<asset-key>-<idle | activated>`.
-            - Parse and index Pixie sheets so each frame is indexed with `<asset-key>-<direction>-<number>`, with `<number>` starting at 0.
-            - Parse and index Sprite sheets so each frame is indexed with `<asset-key>-<action>-<direction>-<number>`, with `<number>` starting at 0.
-2. Create `Board`.
+        - Recursively load `/src/assets/**` using the `main.yaml` contained in each `/src/asset/<category>` directory. Pydantic Models (DTOs) are used *exclusively* during this phase to read `main.yaml` files and ensure strict schema validation.
+        - Create a map using the key-values `<registry-key>: <frame>`, where `<registry-key>` is the Asset file name (`<asset-key>`), unless otherwise specified below:
+            - Parse and index Chests, Gates and Plates so each frame is indexed with  `<asset-key>-<idle | activated>`.
+            - Parse and index Pixie sheets so each frame is indexed with `<asset-key>-<direction>-<frame>`, with `<frame>` starting at 0.
+            - Parse and index Sprite sheets so each frame is indexed with `<asset-key>-<action>-<direction>-<frame>`, with `<frame>` starting at 0.
+2. Create `Board`
     * Load Board into memory
         - Load the following YAML files from the `/src/data/boards/<board-key>` directory, where `<board-key>` is the selected board.
             - `/src/data/boards/<board-key>/immutable/inanimate.yaml`
             - `/src/data/boards/<board-key>/immutable/animate.yaml`
             - `/src/data/boards/<board-key>/mutable/inanimate.yaml`
             - `/src/data/boards/<board-key>/mutable/animate.yaml`
-        - Initalize dictionaries of Asset lists, keyed by the Asset Layer. 
+        - Convert all heavy Pydantic DTOs into lightweight Plain Old Python Objects (POPOs) and Cython `cdef classes` for runtime use.
+        - Initialize homogeneous lists of Asset components (e.g., `board.plates`, `board.sprites`, `board.projectiles`).
+3. Register Mechanics
+    - Initialize the Mechanics (e.g., `PhysicsMechanic`, `CollisionMechanic`, `AnimationMechanic`).
 
-**Example of Asset list dictionary,
+## Mechanics
+
+The `Board.play()` method never changes when new game features are added. It simply iterates through the registered Mechanics:
 
 ```python
-sprites = {
-    "layer-0": [
-        # ....
-    ],
-    "layer-1": [
-        # ...
-    ],
-    # ...
-}
+def play(self, delta_time: float) -> None:
+    for mechanic in self.mechanics:
+        mechanic.update(self, delta_time)
+
 ```
-            
+
+Mechanics act as filters. Rather than the Board passing arguments to a system, a Mechanic is responsible for querying the Board for the exact data it cares about.
+
+For example, the `SwitchMechanics` system strictly queries `board.plates`, `board.gates`, and any heavy entities (like `crates` and `sprites`) to resolve trigger logic, leaving the rest of the board untouched. This keeps execution tight and game loops strictly separated by behavior, not nouns.

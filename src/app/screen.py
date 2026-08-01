@@ -1,31 +1,40 @@
 # NOTE: PSEUDCODE
 #       Should be implemented in Cython, I think.
+"""
+# Ontology: Screen
+
+"""
+
+# Standard Libraries
+from typing import List
+
+# Application Libraries
+from app.assets.base import Asset
+from app.models import Dimensions, Position
+from app.player import Player
+
+# Cython Libraries
+from libs.math import Geometry
 
 class Screen:
+    """
+    """
+
     # Static image assembled from immutable assets
     canvas: Image
     # Buffer to hold copy of canvas for rendering
     buffer: Image
     # Screen size
-    screen: Tuple[int, int]
+    screensize: Dimensions
 
 
     def __init__(self, 
-        screen: Tuple[int, int], 
+        screen: Dimensions, 
         immutable: List[Asset]
     ):
         self.screen = screen
         self.canvas(immutable)
         return
-
-    def _onscreen(self, 
-        pov: Tuple[int, int], 
-        pos: Tuple[int, int], 
-        dim: Tuple[int, int]
-    ) -> bool:
-        result = False
-        # calculate result
-        return result
     
     def canvas(self, 
         assets: List[Asset]
@@ -34,14 +43,17 @@ class Screen:
         Render and stack immutable assets onto static canvas.
         """
         for asset in assets:
-            position, dimensions, frame = asset.get()
-            self.canvas.render(position, dimensions, frame)
+            self.canvas.render(
+                asset.state.position, 
+                asset.properties.dimensions, 
+                asset.key(asset.properties.key, asset.state)
+            )
 
         return self.canvas
 
     def draw(self, 
         assets : List[Asset], 
-        pov: Tuple[int, int]
+        player: Player
     ) -> Image:
         """
         Render mutable assets onto the immutable canvas.
@@ -51,10 +63,15 @@ class Screen:
 
         # 2. Render all onscreen assets
         for asset in assets:
-            position, dimensions, frame = asset.get()
-            if self._onscreen(pov, position, dimensions):
-                self.buffer.render(position, dimensions, frame)
+            if asset.onscreen(player, self.screensize):
+                self.buffer.render(
+                    asset.state.position,
+                    asset.properties.dimensions,
+                    asset.key(asset.properties.key, asset.state)
+                )
         
         # 3. Clip bufer to the player's POV
-        self.buffer.clip(pov)
+        center = Position(*Geometry.center(player))
+        clip = Position(*Geometry.offset(center, self.screensize))
+        self.buffer.clip(clip, self.screensize)
         return self.buffer
