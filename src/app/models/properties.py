@@ -6,8 +6,8 @@ Models for typing the property attributes of Assets. See documentation for a mor
 # Standard Libraries
 from typing import Dict, List
 
-# Application Libraries
-from app.models import Dimensions, Hitbox, AttackBox
+# Cython Libraries
+from libs.core import Dimensions, Hitbox, AttackBox
 
 # ---------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------- PROPERTY MODELS

@@ -56,6 +56,11 @@ class CollisionMechanics(Mechanic):
         """
         for this in chain(board.sprites, board.pixies):
             for that in chain(board.sprites, board.pixies):
-                if this.name != that.name and this.shape.intersects(that.shape):
+                if this.name != that.name and this.shape.intersects(
+                    this.state.position,
+                    this.shape,
+                    that.state.position,
+                    that.shape
+                ):
                     # TODO: implement
                     pass

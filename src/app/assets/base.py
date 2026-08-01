@@ -6,18 +6,17 @@ Package for foundational Asset classes and interfaces.
 # Standard Libraries
 from abc import ABC, abstractmethod
 from itertools import chain
-from typing import Union, List
+from typing import Union
 
 # Application Libraries
 from app.assets.base import Frame, Shape, Animation
 from app.game.board import Board
-from app.models import Position, Velocity,\
-                         Dimensions, Hitbox
 from app.models.properties import AssetProperties
 from app.models.state import AssetState, AnimationState
 
 # Cython Libraries
 from libs.math import Geometry
+from libs.core import Dimensions, Shape
 
 class Asset:
     """
@@ -49,38 +48,6 @@ class Asset:
         """
         """
         return Geometry.onscreen(self.shape, player.shape, screensize)
-
-
-class Shape:
-    """
-    Foundational class for Assets with mutable states.
-    """
-    dimensions: Dimensions
-    hitboxes: List[Hitbox]
-
-    def __init__(self, 
-        dimensions: Dimensions,
-        hitboxes: List[Hitbox]
-    ):
-        self.hitboxes = hitboxes
-        self.dimensions = dimensions
-
-    def intersects(self, 
-        position: Position, 
-        shape: Shape,
-        other_position: Position, 
-        other_shape: Shape
-    ):
-        """
-        """
-        return Geometry.intersects(position, shape, other_position, other_shape)
-
-    def move(self, position: Position, velocity: Velocity) -> None:
-        """
-        Method for moving the Asset position state.
-        """
-        position.x = position.x + velocity.vx
-        position.y = position.y + velocity.vy
 
 
 class Frame(ABC):

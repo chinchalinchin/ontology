@@ -1,4 +1,8 @@
-# NOTE: pseudo code
+
+"""
+"""
+
+# NOTE: pseudocode
 
 class Player:
     device: Controller | Keyboard
@@ -7,12 +11,12 @@ class Player:
         device_type = Enum["controller" | "keyboard"]
     ):
         if device_type == "controller":
-            self.device = Controller()
+            self.device = Controller(mapping)
         else:
             self.device = Keyboard(mapping)
 
     def poll(self) -> SpriteState:
-        # Map device to state
+        # TODO: Map device to state
         return SpriteState(
             # TODO: init
         )

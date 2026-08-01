@@ -6,8 +6,8 @@ Models for typing the state attributes of Assets. See documentation for a more i
 # Standard Libraries
 from typing import Dict, List, Union
 
-# Application Libraries
-from app.models import Position, Multiple
+# Cython Libraries
+from libs.models import Position, Multiple
 
 # ---------------------------------------------------------------------------------------
 

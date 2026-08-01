@@ -1,6 +1,41 @@
 # Cythonized intersection logic
 
-class Geometry:
+from libs.core cimport Position, Dimensions, Hitbox, Shape
+
+cdef class Shape:
+    """
+    Foundational class for Assets with mutable states.
+    """
+    dimensions: Dimensions
+    hitboxes: List[Hitbox]
+
+    def __init__(self, 
+        dimensions: Dimensions,
+        hitboxes: List[Hitbox]
+    ):
+        self.hitboxes = hitboxes
+        self.dimensions = dimensions
+
+    def intersects(self, 
+        position: Position, 
+        shape: Shape,
+        other_position: Position, 
+        other_shape: Shape
+    ):
+        """
+        """
+        return Geometry.intersects(position, shape, other_position, other_shape)
+
+    def move(self, position: Position, velocity: Velocity) -> None:
+        """
+        Method for moving the Asset position state.
+        """
+        position.x = position.x + velocity.vx
+        position.y = position.y + velocity.vy
+
+def class Geometry:
+    """
+    """
 
     @staticmethod
     cdef bint intersects(self, 
@@ -8,7 +43,7 @@ class Geometry:
         Shape shape, 
         Shape other_shape, 
         Position other_pos
-    ):
+    ) nogil:
         cdef int x, y, ox, oy
     
         for hb in shape.hitboxes:
