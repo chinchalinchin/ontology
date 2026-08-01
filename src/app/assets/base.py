@@ -115,3 +115,12 @@ class Animation(ABC):
         Abstract method for incrementing Asset's frame key. 
         """
         pass
+
+class Mechanic(ABC):
+    """
+    """
+
+    @abstractmethod 
+    def update(self, board: Board, delta_time: float) -> None:
+        pass
+    

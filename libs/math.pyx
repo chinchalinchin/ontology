@@ -2,7 +2,7 @@
 
 class Geometry:
 
-    @staticmethdo
+    @staticmethod
     cdef bint intersects(self, 
         Position pos, 
         Shape shape, 

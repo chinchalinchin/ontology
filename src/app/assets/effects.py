@@ -3,7 +3,7 @@ Package for Effect Assets.
 """
 # Application Libraries
 import app.constants as constants
-from app.assets.base import Frame, Animation
+from app.assets.base import Frame, Animation, Mechanic
 from app.models.state import AssetState
 from app.models.properties import AssetProperties
 
@@ -45,3 +45,19 @@ class EffectFrame(Frame):
             asset, 
             state.animation.frame
         )
+
+# -------------------------------------- EFFECT FRAME IMPLEMENTATIONS
+
+class RemoveMechanics(Mechanic):
+    """
+    """
+
+    def update(self, board: Board, delta_time: float) -> None: 
+        """
+        """           
+
+        for effect in board.temporary:
+            if not effect.alive():
+                # TODO: implementation
+                pass
+

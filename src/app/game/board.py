@@ -8,7 +8,19 @@ from typing import List, Dict
 from itertools import chain
 
 # Application Libraries
-from app.assets.base import Asset
+from app.assets.base import Asset, Mechanic
+from app.assets.cursors import ProjectileMechanics
+from app.assets.effects import EffectFrame, \
+                                    PersistentAnimation
+from app.assets.objects import SwitchMechanics
+from app.assets.sheets import SpriteAnimation, \
+                                    SpriteFrame
+from app.models.state import PersistentEffectState, \
+                                    TileState,\
+                                    SpriteState
+from app.models.properties import EffectProperties, \
+                                    TileProperties, \
+                                    SpriteProperties
 from app.player import Player
 
 class Board:
@@ -16,77 +28,96 @@ class Board:
     """
     # ------------------------- PROPERTIES
     layers: int
+    mechanics: List[Mechanic]
 
     # ------------------------- ASSETS
     player: Player
     # --------- Tiles
-    tiles: Dict[List[Asset]]
+    tiles: Dict[str, List[Asset]]
     # --------- Effects
-    permanent: Dict[List[Asset]]
-    temporary: Dict[List[Asset]]
+    permanent: Dict[str, List[Asset]]
+    temporary: Dict[str, List[Asset]]
     # --------- Cursors
-    expressions: Dict[List[Asset]]
-    projectiles: Dict[List[Asset]]
+    expressions: Dict[str, List[Asset]]
+    projectiles: Dict[str, List[Asset]]
     # --------- Objects
-    chests: Dict[List[Asset]]
-    crates: Dict[List[Asset]]
-    doors: Dict[List[Asset]]
-    gates: Dict[List[Asset]]
-    plates: Dict[List[Asset]]
+    chests: Dict[str, List[Asset]]
+    crates: Dict[str, List[Asset]]
+    doors: Dict[str, List[Asset]]
+    gates: Dict[str, List[Asset]]
+    plates: Dict[str, List[Asset]]
     # --------- Sheets
-    pixies: Dict[List[Asset]]
-    sprites: Dict[List[Asset]]
+    pixies: Dict[str, List[Asset]]
+    sprites: Dict[str, List[Asset]]
+
+    # ------------------------- Mechanics
 
     def __init__(self, root: Path):
-        # assume the folllowing directory structure for each board
-        #
-        # ```tree
-        #    boards
-        #    └── <board-key>
-        #        └── immutable
-        #            ├── animate.yaml
-        #            └── inanimate.yaml
-        #        └── mutable
-        #            ├── animate.yaml
-        #            └── inanimate.yaml
-        # ```
-        #
-        # for snapshot in immutable.inanimate:
-        #   tiles[config.layer]     += [ 
-        #       Asset(
-        #           properties      = TileProperties(
-        #               key         = snapshot.asset, 
-        #               dimensions  = immutable.inanimate.regular.dimensions
-        #           ),
-        #           state           = TileState(
-        #               position    = snapshot.position
-        #               multiple    = snapshot.multiple
-        #           )
-        #       )
-        #   ]
-        #
-        # for snapshot in immutable.animate.persistent:
-        #   effects                 += [
-        #       Asset(
-        #           properties      = EffectProperties(),
-        #           state           = PersistentEffectState(),
-        #           frame           = PersistentEffectFrame(),
-        #           animation       = PersistentEffectAnimation()
-        #       )
-        #   ]
-        # 
-        # for snapshot in mutable.animate.sprites
-        #   sprites                 += [
-        #       Asset(
-        #           properties      = SpriteProperties(),
-        #           state           = SpriteState(),
-        #           frame           = SpriteFrame(),
-        #           animation       = SpriteAnimation()
-        #       )
-        #   ]
-        pass
+        self._assets()
+        self._mechanics(root)
 
-    def layers(self) -> int:
+    def _mechanics(self):
+        """
+        """
+        self.mechanics = [ 
+            ProjectileMechanics(),
+            SwitchMechanics()
+        ]
+
+    def _assets(self, root: Path):
+        """
+        The Asset state information is organized in the /src/data/boards/ directory with the following struture,
+
+        ```tree
+            boards
+            └── <board-key>
+                └── immutable
+                    ├── animate.yaml
+                    └── inanimate.yaml
+                └── mutable
+                    ├── animate.yaml
+                    └── inanimate.yaml
+        ```
+        """
+        immutable_inanimate = "TODO: yaml file"
+        immutable_animate = "TODO: yaml file"
+        mutable_animate = "TODO: yaml file "
+
+        for snapshot in immutable_inanimate:
+            self.tiles[snapshot.layer]     += [ 
+              Asset(
+                properties                  = TileProperties(
+                    key                     = snapshot.asset, 
+                    dimensions              = immutable_inanimate.regular.dimensions
+                ),
+                state                       = TileState(
+                    position                = snapshot.position,
+                    multiple                = snapshot.multiple
+                )
+              )
+            ]
+        
+        for snapshot in immutable_animate.persistent:
+          effects                           += [
+            Asset(
+                properties                  = EffectProperties(),
+                state                       = PersistentEffectState(),
+                frame                       = EffectFrame(),
+                animation                   = PersistentAnimation()
+            )
+          ]
+        
+        for snapshot in mutable_animate.sprites:
+          sprites                           += [
+              Asset(
+                properties                  = SpriteProperties(),
+                state                       = SpriteState(),
+                frame                       = SpriteFrame(),
+                animation                   = SpriteAnimation()
+              )
+          ]
+
+    def get_layers(self) -> int:
         if not self.layers:
             pass
             # dynamically calculate layers based on loaded Assets dictionary keys
@@ -114,16 +145,17 @@ class Board:
         """
         Returns a list of animate Assets()
         """
-        return self.permanent + self.temporary + \
-                self.pixies + self.sprites + \
-                self.player
+        return  self.plates + self.gates + \
+                self.chests + self.player + \
+                self.permanent + self.temporary + \
+                self.pixies + self.sprites 
 
     def menu(self) -> None:
         """
         """
         pass 
 
-    def play(self) -> None:
+    def play(self, delta_time: float) -> None:
         """
         """
         # ------------------------- ANIMATION HANDLING
@@ -131,47 +163,9 @@ class Board:
             this.animation.animate()
         # -------------------------
 
-        # ------------------------- PROJECTILE HANDLING
-        for proj in self.projectiles:
-            for target in chain(self.pixes, self.sprites):
-                if proj.intersects(target):
-                    pass
-                    # TODO: projectile logic
-            if not proj.alive(): 
-                pass
-                # TODO: remove projectile
-        # -------------------------
-
-        # ------------------------- TEMPORARY EFFECT HANDLING
-        for ef in self.temporary:
-            if not ef.alive():
-                pass
-                # TODO: remove effect
-        # -------------------------
-
-        # ------------------------- PLATE HANDLING
-        for plate in self.plates:
-            switched = False
-
-            for weight in chain(self.crates, self.sprites, self.pixies):
-                if plate.shape.intersects(weight.shape):
-                    plate.state.switch = True
-                    switched = True
-                    break 
-            
-            if switched:
-                for gate in self.gates:
-                    if plate.state.link == gate.state.link:
-                        gate.state.switch = plate.state.switch
-        # -------------------------
-
-        # ------------------------- SHEET-TO-SHEET COLLISION HANDLING
-        for this in chain(self.sprites, self.pixies):
-            for that in chain(self.sprites, self.pixies):
-                if this.name != that.name and this.shape.intersects(that.shape):
-                    pass
-                    # TODO: collision logic
-        # -------------------------
+        # ------------------------- MECHANIC HANDLING
+        for this in self.mechanics:
+            this.update(self, delta_time)
 
         # ------------------------- PLAYER HANDLING
         self.player

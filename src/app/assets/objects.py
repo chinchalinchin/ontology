@@ -1,9 +1,14 @@
 """
 Package for Object Assets.
 """
+# Standard Libraries
+from itertools import chain
+
 # Application Libraries
-import ontology.src.app.constants as constants
-from app.assets.base import Animation, Frame
+import app.constants as constants
+
+from app.assets.base import Animation, Frame, Mechanic
+from app.game.board import Board
 from app.models.state import AssetState
 from app.models.properties import AssetProperties
 
@@ -40,3 +45,25 @@ class BinaryFrame(Frame):
             asset, 
             state.animation.frame
         )
+
+# -------------------------------------- OBJECT MECHANIC IMPLEMENTATIONS
+
+class SwitchMechanics(Mechanic):
+    """
+    """
+
+    def update(self, board: Board, delta_time: float) -> None:
+        """
+        """
+        for plate in board.plates:
+            for weight in chain(board.crates, board.sprites, board.pixies):
+                 if plate.shape.intersects(weight.shape):
+                    current_state = plate.state.switch
+                    plate.state.switch = True
+                    switched = not (current_state == plate.state.switch)
+                    break 
+                
+            if switched:
+                for gate in board.gates:
+                    if plate.state.link == gate.state.link:
+                        gate.state.switch = plate.state.switch

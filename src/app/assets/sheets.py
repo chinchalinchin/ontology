@@ -1,10 +1,13 @@
 """
 Package for Sheet Assets.
 """
+# Standard Libraries
+from itertools import chain
 # Application Libraries
 import app.constants as constants
+from app.assets.base import Animation, Frame, Mechanic
+from app.game.board import Board
 from app.models.properties import AssetProperties
-from app.assets.base import Animation, Frame
 from app.models.state import AssetState
 
 
@@ -39,4 +42,18 @@ class SpriteFrame(Frame):
             state.animation.direction,
             state.animation.frame
         ])
- 
+
+# -------------------------------------- SHEET MECHANIC IMPLEMENTATIONS
+
+class CollisionMechanics(Mechanic):
+    """
+    """
+
+    def update(self, board: Board, delta_time: float) -> None:
+        """
+        """
+        for this in chain(board.sprites, board.pixies):
+            for that in chain(board.sprites, board.pixies):
+                if this.name != that.name and this.shape.intersects(that.shape):
+                    # TODO: implement
+                    pass
