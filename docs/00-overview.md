@@ -47,7 +47,7 @@ TODO
 
 TODO
 
-### View
+### Screen
 
 TODO 
 
@@ -59,5 +59,6 @@ The Board state is maintained in `/src/data/boards/`.
 
 The Board state is divided into *immutable* Assets, *mutable inanimate* Assets and *mutable animate* Assets. 
 
-## Registry
+### Registry
 
+TODO

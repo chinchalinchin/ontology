@@ -33,7 +33,7 @@ cdef class Shape:
         position.x = position.x + velocity.vx
         position.y = position.y + velocity.vy
 
-def class Geometry:
+cdef class Geometry:
     """
     """
 
@@ -95,3 +95,18 @@ def class Geometry:
         clip_x = center.x - dim.w / 2
         clip_y = center.y - dim.h / 2
         return (clip_x, clip_y)
+
+cdef Physics:
+    """
+    """
+
+    @staticmethod
+    cdef void collisions(list shapes):
+        """
+        """
+        cdef int i, j
+        cdef int length = len(shapes)
+        for i in range(length):
+            for j in range(i + 1, length):
+                if Geometry.intersects(shapes[i], shapes[j]):
+                    # Resolve
