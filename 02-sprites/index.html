@@ -1264,7 +1264,7 @@
 </ul>
 <p>The game engine use the LPC as its default setting.</p>
 <p><strong>Player, NPCs and Enemies</strong></p>
-<p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's Intent is determined by polling from the Player's input device, as opposed to Disposition Transitions</p>
+<p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to Disposition Transitions.</p>
 <ul>
 <li>See <a href="#intents">Intents</a> and <a href="#intentions">Intentions</a> documentation below for more information on the Intention mechanics. </li>
 <li>See <a href="#disposition">Dispositions</a> documentation below for more information on Disposition Transition Matrix.</li>
@@ -1353,7 +1353,7 @@
 <p>Frame is an integer that tracks the current animation frame. It's maximum value is dependent on the Action state. For example, if a Sprite is in the <code>walk</code> Action state, then Frame will cycle from 0 to <code>count.walk</code>.</p>
 <p><strong>Calculated State</strong></p>
 <ul>
-<li>FrameKey: <code>AssetKey + Intention.Direction + Intention.Action + Frame</code></li>
+<li>Key: <code>AssetKey + Animation.Direction + Animation.Action + Animation.Frame</code></li>
 </ul>
 <p><strong>Methods</strong></p>
 <ul>
