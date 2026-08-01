@@ -460,6 +460,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#cython" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cython
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -510,6 +521,17 @@
     <span class="md-ellipsis">
       
         Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cython" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cython
       
     </span>
   </a>
@@ -568,7 +590,7 @@
 </li>
 </ul>
 </li>
-<li>Register Mechanics<ul>
+<li>Register <code>Mechanics</code><ul>
 <li>Initialize the Mechanics (e.g., <code>PhysicsMechanic</code>, <code>CollisionMechanic</code>, <code>AnimationMechanic</code>).</li>
 </ul>
 </li>
@@ -581,6 +603,10 @@
 </code></pre></div>
 <p>Mechanics act as filters. Rather than the Board passing arguments to a system, a Mechanic is responsible for querying the Board for the exact data it cares about.</p>
 <p>For example, the <code>SwitchMechanics</code> system strictly queries <code>board.plates</code>, <code>board.gates</code>, and any heavy entities (like <code>crates</code> and <code>sprites</code>) to resolve trigger logic, leaving the rest of the board untouched. This keeps execution tight and game loops strictly separated by behavior, not nouns.</p>
+<h2 id="cython">Cython</h2>
+<p>While Python objects are fast enough for general logic, calculating collisions requires accessing absolute coordinates (potentially) millions of times per second.</p>
+<p>Position, Velocity, and Shape data are modeled as Cython Extension Types (cdef class in <code>.pxd</code> definition files). This allows Geometry.intersects (in <code>libs/math.pyx</code>) to access properties like <code>pos.x</code> natively as C-integers on the stack.</p>
+<p>By stripping out the Python Global Interpreter Lock (GIL) and dictionary lookups, collision math resolves with zero garbage collection overhead.</p>
 
 
 
