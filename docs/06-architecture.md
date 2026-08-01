@@ -20,7 +20,7 @@ This section contains an in-depth presentation of the game engine's programmatic
             - `/src/data/boards/<board-key>/mutable/animate.yaml`
         - Convert all heavy Pydantic DTOs into lightweight Plain Old Python Objects (POPOs) and Cython `cdef classes` for runtime use.
         - Initialize homogeneous lists of Asset components (e.g., `board.plates`, `board.sprites`, `board.projectiles`).
-3. Register Mechanics
+3. Register `Mechanics`
     - Initialize the Mechanics (e.g., `PhysicsMechanic`, `CollisionMechanic`, `AnimationMechanic`).
 
 ## Mechanics
@@ -31,9 +31,16 @@ The `Board.play()` method never changes when new game features are added. It sim
 def play(self, delta_time: float) -> None:
     for mechanic in self.mechanics:
         mechanic.update(self, delta_time)
-
 ```
 
 Mechanics act as filters. Rather than the Board passing arguments to a system, a Mechanic is responsible for querying the Board for the exact data it cares about.
 
 For example, the `SwitchMechanics` system strictly queries `board.plates`, `board.gates`, and any heavy entities (like `crates` and `sprites`) to resolve trigger logic, leaving the rest of the board untouched. This keeps execution tight and game loops strictly separated by behavior, not nouns.
+
+## Cython
+
+While Python objects are fast enough for general logic, calculating collisions requires accessing absolute coordinates (potentially) millions of times per second.
+
+Position, Velocity, and Shape data are modeled as Cython Extension Types (cdef class in `.pxd` definition files). This allows Geometry.intersects (in `libs/math.pyx`) to access properties like `pos.x` natively as C-integers on the stack.
+
+By stripping out the Python Global Interpreter Lock (GIL) and dictionary lookups, collision math resolves with zero garbage collection overhead.
