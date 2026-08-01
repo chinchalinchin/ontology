@@ -1,5 +1,7 @@
 """
-Package for Sheet Assets.
+# Ontology: Sheet Assets
+
+Package for Sheet Asset implementations.
 """
 # Standard Libraries
 from itertools import chain

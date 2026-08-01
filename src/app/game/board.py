@@ -1,11 +1,10 @@
 """
+# Ontology: Board
 
 """
-# NOTE: PSEUDCODE
 
 # Standard Libraries 
 from typing import List, Dict
-from itertools import chain
 
 # Application Libraries
 from app.assets.base import Asset, Mechanic
@@ -13,7 +12,8 @@ from app.assets.cursors import ProjectileMechanics
 from app.assets.effects import EffectFrame, \
                                     PersistentAnimation
 from app.assets.objects import SwitchMechanics
-from app.assets.sheets import SpriteAnimation, \
+from app.assets.sheets import CollisionMechanics, \
+                                    SpriteAnimation, \
                                     SpriteFrame
 from app.models.state import PersistentEffectState, \
                                     TileState,\
@@ -60,6 +60,7 @@ class Board:
         """
         """
         self.mechanics = [ 
+            CollisionMechanics(),
             ProjectileMechanics(),
             SwitchMechanics()
         ]

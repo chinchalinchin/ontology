@@ -1,4 +1,6 @@
 """
+# Ontology: Cursor Assets
+
 Package for Cursor Asset implementations.
 """
 # Standard Libraries 

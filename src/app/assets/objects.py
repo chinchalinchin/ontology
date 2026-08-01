@@ -1,5 +1,7 @@
 """
-Package for Object Assets.
+# Ontology: Object Assets
+
+Package for Object Asset implementations.
 """
 # Standard Libraries
 from itertools import chain

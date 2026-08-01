@@ -1,6 +1,8 @@
 
 """
-Package for Tile Assets.
+# Ontology: Tile Assets
+
+Package for Tile Asset implementations.
 """
 # Application Libraries
 from app.assets.base import Frame

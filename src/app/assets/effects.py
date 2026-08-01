@@ -1,5 +1,7 @@
 """
-Package for Effect Assets.
+# Ontology: Effect Assets
+
+Package for Effect Asset implementations.
 """
 # Application Libraries
 import app.constants as constants

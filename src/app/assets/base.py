@@ -1,5 +1,7 @@
 """
-Package for foundational Asset class.
+# Ontology: Asset Base
+
+Package for foundational Asset classes and interfaces.
 """
 # Standard Libraries
 from abc import ABC, abstractmethod
