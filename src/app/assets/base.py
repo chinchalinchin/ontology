@@ -9,6 +9,7 @@ from typing import Union, List
 
 # Application Libraries
 from app.assets.base import Frame, Shape, Animation
+from app.game.board import Board
 from app.models import Position, Velocity,\
                          Dimensions, Hitbox
 from app.models.properties import AssetProperties
@@ -46,8 +47,10 @@ class Asset:
     def update(self):
         """
         """
+        if self.animation:
+            self.animation.animate()
+
         # TODO: everything else
-        self.animation.animate()
 
     def onscreen(self, player: Player, screen: Screen) -> str: 
         """

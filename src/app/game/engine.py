@@ -4,47 +4,33 @@
 """
 # NOTE: PSEUDCODE
 
+# Standard Libraries
+from typing import Tuple
+
+# Application Libraries
 from app.game.board import Board
+from app.screen import Screen
 from app.player import Player
 
 class Engine:
     # Engine components
     board : Board 
-    view : View
+    screen: Screen
     player : Player
     # Framerate 
     rate: int 
 
     def __init__(self, 
-        file: Path, 
+        root: Path, 
         screen: Tuple[int, int]
     ):
         # Initialize engine components
-        self.board = Board(file)
-        self.views = [
-            View(screen, self.board.tiles_by_layer(layer))
+        self.board = Board(root)
+        self.screens = [
+            Screen(screen, self.board.tiles_by_layer(layer))
             for layer 
             in self.board.layers
         ]
-        
-    def _game(self) -> float:
-        # TODO: start time 
-
-        # 1. Update board
-        self.board.play()
-
-        # 2. Gather new state info
-        layer = self.board.layer
-        player = self.board.player
-        assets = self.board.assets
-
-        # 3. Draw pieces on Board
-        self.views[layer].draw(assets, player)
-
-        # TODO: end time
-        # ETC: calculate frame rates, lag, buffer rates, skips, etc.
-        differential = 0.25 # some number
-        return differential
 
     def _menu(self) -> float:
         # TODO: start time 
@@ -58,11 +44,24 @@ class Engine:
         return differential
 
     def loop(self) -> None:
+        delta = 1.0 / 60.0
+        accumulator = 0.0
+        last_time = get_time()
+
         while self.board.loaded:
+            current_time = get_time()
+            frame_time = current_time - last_time
+            last_time = current_time
+            accumulator += frame_time
+            
             while not self.board.paused:
-                delta = self._game()
+                while accumulator >= delta:
+                    self.board.play(delta)
+                    accumulator -= delta
+
+                player = self.board.player
+                assets = self.board.assets()
+                self.screens[player.layer].draw(assets, player)
 
             while self.board.paused: 
-                delta = self._menu()
-
-            # TODO: calculate pause from delta
+                self.board.menu()

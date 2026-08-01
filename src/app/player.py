@@ -1,19 +1,6 @@
-class Player(Asset):
-    # Inherited Attributes
-    ## Asset Identifier
-    asset_key: str
-    ## Properties
-    dimensions: Tuple[int, int]
-    ## State
-    frame_key: str
-    layer_key: str
-    position: Tuple[int, int]
+# NOTE: pseudo code
 
-    # Unique Attributes
-    ## Properties
-    hitboxes: List[Tuple[int, int, int, int]]
-    mappings: dict
-    ## Extensions
+class Player:
     device: Controller | Keyboard
 
     def __init__(self, 
@@ -24,11 +11,8 @@ class Player(Asset):
         else:
             self.device = Keyboard(mapping)
 
-    def update(self, intention: Intent) -> None:
-        # Abstract implementation
-        # Update state
-
-    def poll(self) -> Intent:
-        intention = self.device.intend()
-        # Map device to intent
-        return Intent(intention)
+    def poll(self) -> SpriteState:
+        # Map device to state
+        return SpriteState(
+            # TODO: init
+        )

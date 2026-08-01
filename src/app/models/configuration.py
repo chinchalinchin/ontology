@@ -1,4 +1,6 @@
 """
+# Ontology: Configuration
+
 Package for Pydantic models used for loading and validating YAML. These models are data-transfer-objects and are not used ingame to manage properties or state, due to the overhead with Pydantic models. They are used purely for easy-loading the YAML configuration files and ensuring they match schemas.
 """
 # Standard Libraries
@@ -15,7 +17,6 @@ from pydantic import BaseModel
 class PyPosition(BaseModel):
     x: int
     y: int
-
 
 class PyDimensions(BaseModel):
     l: int

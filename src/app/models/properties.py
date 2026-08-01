@@ -1,4 +1,6 @@
 """
+# Ontology: Properties
+
 Models for typing the property attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
 """
 # Standard Libraries

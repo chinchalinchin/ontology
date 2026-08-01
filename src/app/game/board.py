@@ -1,10 +1,12 @@
 """
 # Ontology: Board
 
+Package for game Board. The Board holds and mutates the state of the game for the engine loop.
 """
 
 # Standard Libraries 
-from typing import List, Dict
+from typing import Iterable, List
+from itertools import chain
 
 # Application Libraries
 from app.assets.base import Asset, Mechanic
@@ -33,22 +35,22 @@ class Board:
     # ------------------------- ASSETS
     player: Player
     # --------- Tiles
-    tiles: Dict[str, List[Asset]]
+    tiles: List[Asset]
     # --------- Effects
-    permanent: Dict[str, List[Asset]]
-    temporary: Dict[str, List[Asset]]
+    permanent: List[Asset]
+    temporary: List[Asset]
     # --------- Cursors
-    expressions: Dict[str, List[Asset]]
-    projectiles: Dict[str, List[Asset]]
+    expressions: List[Asset]
+    projectiles: List[Asset]
     # --------- Objects
-    chests: Dict[str, List[Asset]]
-    crates: Dict[str, List[Asset]]
-    doors: Dict[str, List[Asset]]
-    gates: Dict[str, List[Asset]]
-    plates: Dict[str, List[Asset]]
+    chests: List[Asset]
+    crates: List[Asset]
+    doors: List[Asset]
+    gates: List[Asset]
+    plates: List[Asset]
     # --------- Sheets
-    pixies: Dict[str, List[Asset]]
-    sprites: Dict[str, List[Asset]]
+    pixies: List[Asset]
+    sprites: List[Asset]
 
     # ------------------------- Mechanics
 
@@ -101,6 +103,7 @@ class Board:
         for snapshot in immutable_animate.persistent:
           effects                           += [
             Asset(
+                # TODO: inits
                 properties                  = EffectProperties(),
                 state                       = PersistentEffectState(),
                 frame                       = EffectFrame(),
@@ -111,6 +114,7 @@ class Board:
         for snapshot in mutable_animate.sprites:
           sprites                           += [
               Asset(
+                # TODO: inits
                 properties                  = SpriteProperties(),
                 state                       = SpriteState(),
                 frame                       = SpriteFrame(),
@@ -128,40 +132,35 @@ class Board:
         """
         Returns a list of all Tile Assets on the given layer of the game Board.
         """
-        return self.tiles[layer] 
+        return [ tile for tile in self.tiles if tile.state.layer == layer ]
 
-    def assets(self) -> List[Asset]:
-        """
-        Returns a list of all Assets on the current layer of the game Board.
-        """
-        layer = self.player.layer
-        return self.expressions[layer] + self.projectiles[layer]  + \
-                self.permanent[layer] + self.temporary[layer]  + \
-                self.chests[layer] + self.crates[layer] + \
-                self.doors[layer] + self.gates[layer] + \
-                self.plates[layer] + self.pixies[layer] + \
-                self.sprites[layer]
-
-    def animations(self):
-        """
-        Returns a list of animate Assets()
-        """
-        return  self.plates + self.gates + \
-                self.chests + self.player + \
-                self.permanent + self.temporary + \
-                self.pixies + self.sprites 
+    def assets(self) -> Iterable[Asset]:
+        return chain(
+            self.permanent, 
+            self.temporary, 
+            self.expressions, 
+            self.projectiles, 
+            self.chests, 
+            self.crates, 
+            self.doors, 
+            self.gates, 
+            self.plates,
+            self.pixies, 
+            self.sprites
+        )
 
     def menu(self) -> None:
         """
         """
+        # TODO: implement
         pass 
 
     def play(self, delta_time: float) -> None:
         """
         """
         # ------------------------- ANIMATION HANDLING
-        for this in self.animations():
-            this.animation.animate()
+        for this in self.assets():
+            this.update()
         # -------------------------
 
         # ------------------------- MECHANIC HANDLING

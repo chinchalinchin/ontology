@@ -37,7 +37,7 @@ Create a centralized `Registry` class responsible for loading asset files into m
 
 Create a CLI tool to facilitate testing, debugging, and snapshotting board configurations without booting the full game loop.
 - **Command: `construct`**
-  - **Usage:** `python main.py construct <board-key> --out <directory>`
+  - **Usage:** `python main.py construct <board-key> --out <directory | DEFAULT: working directory> --layer <layer | DEFAULT = 0>`
   - **Steps:**
       1. Load the immutable configuration (`/src/data/boards/<board-key>/immutable/inanimate.yaml`).
       2. Initialize the `Registry` to load required tilesheets.
@@ -45,7 +45,7 @@ Create a CLI tool to facilitate testing, debugging, and snapshotting board confi
       4. Iterate over the Tile deployments, retrieving their textures/rects from the `Registry`, and paint them onto the `Canvas`.
       5. Call `save_to_png` to output the static background image to `<directory>`.
 - **Command: `render`**
-  - **Usage:** `python main.py render <board-key> --out <directory>`
+  - **Usage:** `python main.py render <board-key> --out <directory DEFAULT: working directory> --layer <layer | DEFAULT = 0>`
   - **Steps:**
       1. Execute the `construct` steps to build the background canvas.
       2. Load the mutable and animate configurations for `<board-key>`.

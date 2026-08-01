@@ -6,6 +6,7 @@ Package for Effect Asset implementations.
 # Application Libraries
 import app.constants as constants
 from app.assets.base import Frame, Animation, Mechanic
+from app.game.board import Board
 from app.models.state import AssetState
 from app.models.properties import AssetProperties
 
@@ -24,7 +25,6 @@ class PersistentAnimation(Animation):
         return state
     
 class TemporaryAnimation(Animation):
-    pass
 
     def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
         """
