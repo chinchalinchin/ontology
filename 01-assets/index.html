@@ -1133,8 +1133,10 @@
 <li><strong>Properties:</strong> A model defining immutable data (e.g., <code>TileProperties</code>, <code>ObjectProperties</code>).</li>
 <li><strong>State:</strong> A model defining mutable data (e.g., <code>TileState</code>, <code>ChestState</code>).</li>
 <li><strong>Shape:</strong> A component constructed from Properties and State that manages <code>Position</code>, <code>Dimensions</code>, and <code>Hitboxes</code> to process inline collision math.</li>
-<li><strong>Animation &amp; Frame:</strong> Stateless strategies (e.g. <code>SpriteAnimation</code>, <code>SpriteFrame</code>) injected into the Asset. These contain the specific logic for updating frames and calculating the render key, mutating the Asset's state in-place to avoid data duplication.</li>
+<li><strong>Animation</strong> Stateless strategies (e.g. <code>SpriteAnimation</code>, <code>PixieAnimation</code>) injected into the Asset. These contain the specific logic for updating frames.</li>
+<li><strong>Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string key.</li>
 </ol>
+<p><em>Behaviors</em> are decoupled from Assets and managed entirely by <em>Mechanics</em> classes that iterate over the Board Assets. See <a href="../06-architecture/#mechanics">Mechanics documentation</a> for more information.</p>
 <h2 id="tiles">Tiles</h2>
 <p><em>Tiles</em> are inanimate, immutable Assets. <em>Tiles</em> are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds by breaking each rendered image into a grid of tiles.</p>
 <p>In terms of configuration, Tiles are divided into two categories, <em>regular</em> and <em>irregular</em>. <em>Regular Tiles</em> are always sized 32x32 pixels (configurable in the <code>/src/assets/tile/main.yaml</code> file). <em>Irregular Tiles</em> have variable size.</p>

@@ -449,6 +449,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -494,6 +505,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -518,19 +540,20 @@
 <p>This section contains an in-depth presentation of the game engine's programmatic architecture.</p>
 <h2 id="initialization">Initialization</h2>
 <ol>
-<li>Create <code>Registry</code>.<ul>
+<li>Create <code>Registry</code><ul>
 <li>Load Assets into memory<ul>
-<li>Recursive load <code>/src/assets/**</code> using the <code>main.yaml</code> contained in each <code>/src/asset/&lt;category&gt;</code> directory. Create a map using the key-values <code>&lt;registry-key&gt;: &lt;frame&gt;</code>, where <code>&lt;registry-key&gt;</code> is the Asset file name (<code>&lt;asset-key&gt;</code>), unless otherwise specified below:<ul>
-<li>Parse and index Chests, Gates and Plates so each frame is indexed with    <code>&lt;asset-key&gt;-&lt;idle | activated&gt;</code>.</li>
-<li>Parse and index Pixie sheets so each frame is indexed with <code>&lt;asset-key&gt;-&lt;direction&gt;-&lt;number&gt;</code>, with <code>&lt;number&gt;</code> starting at 0.</li>
-<li>Parse and index Sprite sheets so each frame is indexed with <code>&lt;asset-key&gt;-&lt;action&gt;-&lt;direction&gt;-&lt;number&gt;</code>, with <code>&lt;number&gt;</code> starting at 0.</li>
+<li>Recursively load <code>/src/assets/**</code> using the <code>main.yaml</code> contained in each <code>/src/asset/&lt;category&gt;</code> directory. Pydantic Models (DTOs) are used <em>exclusively</em> during this phase to read <code>main.yaml</code> files and ensure strict schema validation.</li>
+<li>Create a map using the key-values <code>&lt;registry-key&gt;: &lt;frame&gt;</code>, where <code>&lt;registry-key&gt;</code> is the Asset file name (<code>&lt;asset-key&gt;</code>), unless otherwise specified below:<ul>
+<li>Parse and index Chests, Gates and Plates so each frame is indexed with  <code>&lt;asset-key&gt;-&lt;idle | activated&gt;</code>.</li>
+<li>Parse and index Pixie sheets so each frame is indexed with <code>&lt;asset-key&gt;-&lt;direction&gt;-&lt;frame&gt;</code>, with <code>&lt;frame&gt;</code> starting at 0.</li>
+<li>Parse and index Sprite sheets so each frame is indexed with <code>&lt;asset-key&gt;-&lt;action&gt;-&lt;direction&gt;-&lt;frame&gt;</code>, with <code>&lt;frame&gt;</code> starting at 0.</li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li>Create <code>Board</code>.<ul>
+<li>Create <code>Board</code><ul>
 <li>Load Board into memory<ul>
 <li>Load the following YAML files from the <code>/src/data/boards/&lt;board-key&gt;</code> directory, where <code>&lt;board-key&gt;</code> is the selected board.<ul>
 <li><code>/src/data/boards/&lt;board-key&gt;/immutable/inanimate.yaml</code></li>
@@ -539,23 +562,25 @@
 <li><code>/src/data/boards/&lt;board-key&gt;/mutable/animate.yaml</code></li>
 </ul>
 </li>
-<li>Initalize dictionaries of Asset lists, keyed by the Asset Layer. </li>
+<li>Convert all heavy Pydantic DTOs into lightweight Plain Old Python Objects (POPOs) and Cython <code>cdef classes</code> for runtime use.</li>
+<li>Initialize homogeneous lists of Asset components (e.g., <code>board.plates</code>, <code>board.sprites</code>, <code>board.projectiles</code>).</li>
 </ul>
 </li>
+</ul>
+</li>
+<li>Register Mechanics<ul>
+<li>Initialize the Mechanics (e.g., <code>PhysicsMechanic</code>, <code>CollisionMechanic</code>, <code>AnimationMechanic</code>).</li>
 </ul>
 </li>
 </ol>
-<p>**Example of Asset list dictionary,</p>
-<div class="highlight"><pre><span></span><code><span class="n">sprites</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;layer-0&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="c1"># ....</span>
-    <span class="p">],</span>
-    <span class="s2">&quot;layer-1&quot;</span><span class="p">:</span> <span class="p">[</span>
-        <span class="c1"># ...</span>
-    <span class="p">],</span>
-    <span class="c1"># ...</span>
-<span class="p">}</span>
+<h2 id="mechanics">Mechanics</h2>
+<p>The <code>Board.play()</code> method never changes when new game features are added. It simply iterates through the registered Mechanics:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">mechanic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">mechanics</span><span class="p">:</span>
+        <span class="n">mechanic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta_time</span><span class="p">)</span>
 </code></pre></div>
+<p>Mechanics act as filters. Rather than the Board passing arguments to a system, a Mechanic is responsible for querying the Board for the exact data it cares about.</p>
+<p>For example, the <code>SwitchMechanics</code> system strictly queries <code>board.plates</code>, <code>board.gates</code>, and any heavy entities (like <code>crates</code> and <code>sprites</code>) to resolve trigger logic, leaving the rest of the board untouched. This keeps execution tight and game loops strictly separated by behavior, not nouns.</p>
 
 
 
