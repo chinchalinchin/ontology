@@ -5,10 +5,45 @@ Package for Pydantic models used for loading and validating YAML. These models a
 """
 # Standard Libraries
 from typing import List, Union, Dict
+
+# Application Libraries
+import app.constants as constants
+
 # External Libraries
 from pydantic import BaseModel
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
 
 # NOTE: *Py-* prefix denotes Pydantic model that inherits from Pydantic's BaseModel, whereas no prefix indicates game object class.
+
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------- PRIMITIVE MODELS CONFIGURATION & VALIDATION
+# ---------------------------------------------------------------------------------------
+
+class PyPosition(BaseModel):
+    x: int
+    y: int
+
+class PyDimensions(BaseModel):
+    l: int
+    w: int
+
+class PyMultiple(BaseModel):
+    nx: int
+    ny: int
+
+class PyHitbox(BaseModel):
+    pos: PyPosition
+    dim: PyDimensions
+
+class PyAttackBox(BaseModel):
+    pos: PyPosition
+    dim: PyDimensions
+    hitframe: int
+
+class PyShape(BaseModel):
+    dim: PyDimensions
+    hitboxes: List[PyHitbox]
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------- PROPERTY CONFIGURATION & VALIDATION
@@ -35,39 +70,30 @@ class PyAttackBox(BaseModel):
     dim: PyDimensions
     hitframe: int
 
-class PyShapeProperties(BaseModel):
-    dim: PyDimensions
-    hitboxes: List[PyHitbox]
-
 # ---------------------------------------------------------------------------------------
 
 class PyCursorProperties(BaseModel):
-    key: str
     dim: PyDimensions
 
 class PyEffectProperties(BaseModel):
-    key: str
-    shape: PyShapeProperties
+    shape: PyShape
     count: int 
 
 class PyObjectProperties(BaseModel):
-    key: str
-    shape: PyShapeProperties
+    shape: PyShape
 
 class PyTileProperties(BaseModel):
-    key: str
     dim: PyDimensions
 
 class PyPixieActionsProperty(BaseModel):
-    count: int
     directions: List[str]
 
 class PyPixieProperties(BaseModel):
-    key: str                  
-    shape: PyShapeProperties
+    shape: PyShape
+
+# ---------------------------------------------------------------------------------------
 
 class PySpriteComposition(BaseModel):
-    key: str 
     base: str
     apparel: List[str]
     features: List[str]
@@ -81,161 +107,196 @@ class PySpriteActionProperty(BaseModel):
     directions: Dict[str, PySpriteDirectionProperty]
 
 class PySpriteProperties(BaseModel):
-    key: str
-    shape: PyShapeProperties
+    shape: PyShape
     actions: Dict[str, PySpriteActionProperty]
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------ STATE CONFIGURATION & VALIDATION
 # ---------------------------------------------------------------------------------------
 
-class PyCharacter(BaseModel):
+class PyAssetState(BaseModel):
+    key: str
+    layer: str
+
+class PyAnimationState(BaseModel):
+    action: Union[str, None]
+    direction: Union[str, None]
+    frame: Union[int, None]
+
+# ---------------------------------------------------------------------------------------
+
+class PyCharacterState(BaseModel):
     strength: int
     defense: int
     speed: int
 
-class PyEquipment(BaseModel):
+class PyEquipmentState(BaseModel):
     armor: str
     weapon: str
     tool: str
     utility: str
 
-class PyHealth(BaseModel):
+class PyHealthState(BaseModel):
     current: int 
     maximum: int
     
-class PyIntention(BaseModel):
+class PyIntentionState(BaseModel):
     extension: str
     disposition: str
     motivation: str
     expression: str
 
-class PyGoal(BaseModel):
+class PyGoalState(BaseModel):
     name: str
-    intention: PyIntention
+    intention: PyIntentionState
 
-class PyInventory(BaseModel):
+class PyInventoryState(BaseModel):
     loot: Dict[str, int]
-    equipment: PyEquipment
+    equipment: PyEquipmentState
     wallet: int
 
-class PyMagic(BaseModel):
+class PyMagicState(BaseModel):
     current: int
     maximum: int
 
-class PyMeters(BaseModel):
-    health: PyHealth
-    magic: PyMagic
+class PyMeterState(BaseModel):
+    health: PyHealthState
+    magic: PyMagicState
 
-class PyMutator(BaseModel):
-    triggers: Dict[str, bool]
+class PyMutatorState(BaseModel):
     parameters: Dict[str, Dict[str, Union[int, float]]]
 
-class PyMemory(BaseModel):
-    goal: PyGoal
+class PyMemoryState(BaseModel):
+    goal: PyGoalState
     communications: List[str]
 
 # ---------------------------------------------------------------------------------------
 
-class PyTileState(BaseModel):
-    layer: str
+class PyMultiplierState(PyAssetState):
     position: PyPosition
     multiple: PyMultiple 
 
-class PyExpressionCursorState(BaseModel):
-    pass
-
-class PyProjectileState(BaseModel):
+class PyPositionalState(PyAssetState):
     name: str
-    layer: str
+    position: PyPosition
+
+class PyMetricState(PyAssetState):
+    name: str
     position: PyPosition
     initial: PyPosition
 
-class PyPersistentEffectState(BaseModel):
-    # TODO
-    pass 
-
-class PyIconState(BaseModel):
-    # TODO
-    pass
-
-class PySymbolState(BaseModel):
-    # TODO
-    pass
-
-class PyWindowState(BaseModel):
-    # TODO
-    pass 
-
-# ---------------------------------------------------------------------------------------
-
-class PyChestState(BaseModel):
+class PyAnimatorState(PyAssetState):
     name: str
-    layer: str
+    position: PyPosition
+    animation: PyAnimationState
+
+class PyContainerState(PyAssetState):
+    name: str
     content: List[str]
     position: PyPosition
+    animation: PyAnimationState
     switch: bool
     
-class PyCrateState(BaseModel):
+class PyDoorState(PyAssetState):
     name: str
-    layer: str
-    position: PyPosition
-
-class PyDoorState(BaseModel):
-    name: str
-    layer: str
-    outlayer: str
     position: PyPosition
     out: PyPosition
+    outlayer: str
 
-class PyGateState(BaseModel):
+class PySwitchState(PyAssetState):
     name: str
-    layer: str
     link: str
     position: PyPosition
-    switch: bool
-
-class PyPlateState(BaseModel):
-    name: str
-    layer: str
-    link: str
-    position: PyPosition
+    animation: PyAnimationState
     switch: bool
 
 class PyPixieState(BaseModel):
-    # TODO
-    pass 
+    name: str
+    position: PyPosition
 
 class PySpriteState(BaseModel):
     name: str
-    layer: str
-    frame: int
     position: PyPosition
-    character: PyCharacter
-    intention: PyIntention
-    inventory: PyInventory
-    mutators: PyMutator
-    memory: PyMemory
-    goal: PyGoal
-
+    character: PyCharacterState
+    intention: PyIntentionState
+    inventory: PyInventoryState
+    meters: PyMeterState
+    mutators: PyMutatorState
+    memory: PyMemoryState
+    goal: PyGoalState
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- YAML SCHEMAS
 # ---------------------------------------------------------------------------------------
 
-class PixieConfiguration(BaseModel):
-    shapes: Dict[str, PyShapeProperties]
+# ------------------------------------------------------------------ PROPERTY YAML SCHEMA
+
+class PyPixiePropertyConfiguration(BaseModel):
+    shapes: Dict[str, PyShape]
     action: Dict[str, PyPixieActionsProperty]
 
-class SpriteConfiguration(BaseModel):
-    shape: PyShapeProperties
+class PySpritePropertyConfiguration(BaseModel):
+    shape: PyShape
     actions: Dict[str, PySpriteActionProperty]
     compositions: List[PySpriteComposition]
 
-class CursorConfiguration(BaseModel):
+# ---------------------------------------------------------------------------------------
+
+class PyEffectPropertyConfiguration(BaseSettings):
+    pass
+
+class PyObjectPropertyConfiguration(BaseSettings):
+    pass 
+
+class PyTilePropertyConfiguration(BaseSettings):
+    pass
+
+class PyCursorPropertyConfiguration(BaseSettings):
     expressions: Dict[str, PyCursorProperties]
     projectiles: Dict[str, PyCursorProperties]
 
-class SheetConfiguration(BaseModel):
-    pixies: PixieConfiguration
-    sprites: SpriteConfiguration
+    # Load YAML
+    model_config = SettingsConfigDict(
+        yaml_file = constants.ASSET_DIR / "cursors" / constants.APP_EXT
+    )
+
+class PySheetPropertyConfiguration(BaseSettings):
+    pixies: PyPixiePropertyConfiguration
+    sprites: PySpritePropertyConfiguration
+
+    # Load YAML
+    model_config = SettingsConfigDict(
+        yaml_file = constants.ASSET_DIR / "sheets" / constants.APP_EXT
+    )
+
+# --------------------------------------------------------------------- STATE YAML SCHEMA
+
+class PyCursorStateConfiguration(BaseSettings):
+    expressions: List[PyPositionalState]
+    projectiles: List[PyMetricState]
+
+class PyEffectStateConfiguration(BaseModel):
+    persistent: List[PyAnimatorState]
+    temporary: List[PyAnimatorState]
+
+class PyObjectStateConfiguration(BaseModel):
+    chests: List[PyContainerState]
+    crates: List[PyPositionalState]
+    doors: List[PyDoorState]
+    gates: List[PySwitchState]
+    plates: List[PySwitchState]
+
+class PySheetStateConfiguration(BaseModel):
+    sprites: List[PySpriteState]
+    pixies: List[PyPixieState]
+
+# ---------------------------------------------------------------------------------------
+
+class PyStateConfiguration(BaseModel):
+    tiles: List[PyMultiplierState]
+    cursors: PyCursorStateConfiguration
+    effects: PyEffectStateConfiguration
+    objects: PyObjectStateConfiguration
+    sheets: PySheetStateConfiguration
+
+    # Must be loaded at runtime to get board state key!

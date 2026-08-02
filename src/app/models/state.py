@@ -13,14 +13,27 @@ from libs.models import Position, Multiple
 
 class AssetState:
     """
+    Foundational class for Asset states. 
+
+    - key: Asset key
+    - layer: Layer key
     """
+    # ---------------------------------------------------- KEYS
+    key: str
+    layer: str
     pass 
 
 # ---------------------------------------------------------------------------------------
 
 class AnimationState:
     """
+    Foundational class for animate Asset states.
+
+    - action: Action key, possibly null.
+    - direction: Direction key, possibly null.
+    - frame: Frame index, possible null.
     """
+    # ---------------------------------------------------- FIELDS
     action: Union[str, None]
     direction: Union[str, None]
     frame: Union[int, None]
@@ -31,9 +44,11 @@ class AnimationState:
 
 class MultiplierState(AssetState):
     """
+    Asset state for multiplying Assets across the screen.
+
+    - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
+    - multiple: Vector (horizontal, vertical) of Asset's multiples.
     """
-    # ---------------------------------------------------- KEYS
-    layer: str              # Layer Identifier Key
     # ---------------------------------------------------- FIELDS
     position: Position
     multiple: Multiple 
@@ -41,19 +56,24 @@ class MultiplierState(AssetState):
 
 class PositionalState(AssetState):
     """
+    Asset state for Assets that only track position.
+
+    - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     """
     # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
+    name: str               # Deployment Key
     # ---------------------------------------------------- FIELDS
     position: Position
 
 class MetricState(AssetState):
     """
+    Asset state for measuring distance from spawn point.
+
+    - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
+    - initial: Coordinates (horizontal, vertical) of Asset's initial position, relative to it's upper-left corner.
     """
     # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
+    name: str               # Deployment Key
     # ---------------------------------------------------- FIELDS
     position: Position
     initial: Position
@@ -62,8 +82,7 @@ class AnimatorState(AssetState):
     """
     """
     # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
+    name: str               # Deployment Key
     # ---------------------------------------------------- FIELDS
     position: Position
     animation: AnimationState
@@ -76,7 +95,6 @@ class ContainerState(AssetState):
     """
     # ---------------------------------------------------- KEYS
     name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
     content: List[str]      # Content Identifier Keys
     # ---------------------------------------------------- FIELDS
     position: Position      # Position of Asset on Board
@@ -88,11 +106,10 @@ class DoorState(AssetState):
     """
     # ---------------------------------------------------- KEYS
     name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
-    outlayer: str           # Out Layer Identifier Key
     # ---------------------------------------------------- FIELDS
     position: Position      # Position of Asset on Board
     out: Position           # Out Position of Asset
+    outlayer: str           # Out Layer Identifier Key
 
 class SwitchState(AssetState):
     """

@@ -9,12 +9,32 @@ tiles:
     multiply:
       nx: number of horizontal multiples
       ny: number of vertical multiples
+  # ------------------------------------------- DOORS
+cursors:
+  expressions:
+    - name: Cursor Identifier
+      key: Cursor Asset Key
+      layer: Layer Key
+      position: 
+        x: Horizontal Position
+        y: Vertical Position
+  projectiles:
+    - name: Cursor Identifier
+      key: Cursor Asset Key
+      layer: Layer Key
+      position: 
+        x: Horizontal Position
+        y: Vertical Position
+      initial:
+        x: Horizontal Position
+        y: Vertical Position
 # ------------------------------------------------------------------
 # ---------------------------------------------------------- EFFECTS
 effects:
   # ------------------------------------------- PERSISTENT EFFECTS
   persistent:
     - key: Effect Asset Key
+      name: Effect Identifier
       layer: Layer Key
       position:
         x: Horizontal Position
@@ -22,6 +42,7 @@ effects:
   # ------------------------------------------- TEMPORARY EFFECTS
   temporary:
     - key: Effect Asset Key
+      name: Effect Identifier
       layer: Layer Key
       position:
         x: Horizontal Position
@@ -37,18 +58,13 @@ objects:
       position:
         x: Horizontal Position
         y: Vertical Position
+      switch: Switch Flag
+      content:
+        - Content Key
   # ------------------------------------------- CRATES
   crates:
     - name: Crate Identifier
       key: Crate Asset Key
-      layer: Layer Key
-      position: 
-        x: Horizontal Position
-        y: Vertical Position
-  # ------------------------------------------- DOORS
-  cursors: 
-    - name: Cursor Identifier
-      key: Cursor Asset Key
       layer: Layer Key
       position: 
         x: Horizontal Position
@@ -62,6 +78,9 @@ objects:
       position:
         x: Horizontal Position
         y: Vertical Position
+      out:
+        x: Horizontal Position
+        y: Vertical Position
   # ------------------------------------------- GATES
   gates:
     - name: Gate Identifier
@@ -71,6 +90,7 @@ objects:
       position:
         x: Horizontal Position
         y: Vertical Position
+      switch: Switch Flag
   # ------------------------------------------- PLATES
   plates:
     - name: Plate Identifier
@@ -80,6 +100,7 @@ objects:
       position:
         x: Horizontal Position
         y: Vertical Position
+      switch: Switch Flag
 # ------------------------------------------------------------------
 # ----------------------------------------------------------- SHEETS
 sheets:
@@ -118,15 +139,13 @@ sheets:
         vision:
           radius: Pixel Length
       mutators:
-        parameters:
-          frightened:
-            radius: Radius of Frightened Mutator
-            limit: Health Percentage Boundary of Frightened Mutator
-            enemy: Enemy Boundary of Frightened Mutator
-          vision:
-            radius: Radius of Vision Mutator
+        frightened:
+          radius: Radius of Frightened Mutator
+          limit: Health Percentage Boundary of Frightened Mutator
+          enemy: Enemy Boundary of Frightened Mutator
+        vision:
+          radius: Radius of Vision Mutator
       intention:
-        communication: Communication Key
         disposition: Disposition Key
         extension: Extension Key
         expression: Expression Key

@@ -13,3 +13,6 @@ cursors:
       position: 
         x: Horizontal Position
         y: Vertical Position
+      initial:
+        x: Horizontal Position
+        y: Vertical Position
