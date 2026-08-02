@@ -484,10 +484,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#properties-tiles" class="md-nav__link">
+  <a href="#recipes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Properties: Tiles
+        Recipes
       
     </span>
   </a>
@@ -495,10 +495,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#properties-objects" class="md-nav__link">
+  <a href="#properties" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Properties: Objects
+        Properties
       
     </span>
   </a>
@@ -506,65 +506,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#properties-effects" class="md-nav__link">
+  <a href="#state" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Properties: Effects
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#properties-sheets" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Properties: Sheets
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#state-immutable-inanimate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        State: Immutable, Inanimate
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#state-immutable-animate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        State: Immutable, Animate
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#state-mutable-inanimate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        State: Mutable, Inanimate
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#state-mutable-animate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        State: Mutable, Animate
+        State
       
     </span>
   </a>
@@ -924,10 +869,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#properties-tiles" class="md-nav__link">
+  <a href="#recipes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Properties: Tiles
+        Recipes
       
     </span>
   </a>
@@ -935,10 +880,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#properties-objects" class="md-nav__link">
+  <a href="#properties" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Properties: Objects
+        Properties
       
     </span>
   </a>
@@ -946,65 +891,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#properties-effects" class="md-nav__link">
+  <a href="#state" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Properties: Effects
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#properties-sheets" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Properties: Sheets
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#state-immutable-inanimate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        State: Immutable, Inanimate
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#state-immutable-animate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        State: Immutable, Animate
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#state-mutable-inanimate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        State: Mutable, Inanimate
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#state-mutable-animate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        State: Mutable, Animate
+        State
       
     </span>
   </a>
@@ -1138,6 +1028,7 @@
 <li><strong>Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string key.</li>
 </ol>
 <p><em>Behaviors</em> are decoupled from Assets and managed entirely by <em>Mechanics</em> classes that iterate over the Board Assets. See <a href="../06-architecture/#mechanics">Mechanics documentation</a> for more information.</p>
+<p>The "<em>recipe</em>" for an Asset is specified in the <code>/src/assets/main.yaml</code> configuration file. A recipe includes the Frame implementation, the Animation implementation, the State model and the Properties model. See <a href="#schemas">Schemas</a> for an example of the Asset recipe schema. The recipe configuration file defines each of the Asset categories in the following headings.</p>
 <h2 id="tiles">Tiles</h2>
 <p><em>Tiles</em> are inanimate, immutable Assets. <em>Tiles</em> are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds by breaking each rendered image into a grid of tiles.</p>
 <p>In terms of configuration, Tiles are divided into two categories, <em>regular</em> and <em>irregular</em>. <em>Regular Tiles</em> are always sized 32x32 pixels (configurable in the <code>/src/assets/tile/main.yaml</code> file). <em>Irregular Tiles</em> have variable size.</p>
@@ -1154,7 +1045,7 @@
 </ul>
 <p><strong>Frame</strong></p>
 <ul>
-<li><code>key(asset, animation) -&gt; &lt;asset&gt;</code></li>
+<li><code>key(asset, None) -&gt; &lt;asset&gt;</code></li>
 </ul>
 <h2 id="objects">Objects</h2>
 <p><em>Objects</em> are inanimate, mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.</p>
@@ -1379,53 +1270,21 @@
 <h2 id="sounds">Sounds</h2>
 <p>TODO</p>
 <h2 id="schemas">Schemas</h2>
-<h3 id="properties-tiles">Properties: Tiles</h3>
+<h3 id="recipes">Recipes</h3>
 <ul>
-<li>Location: <code>/src/assets/tiles/main.yaml</code></li>
+<li>Location: <code>/src/assets/main.yaml</code></li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/asset-property-tiles.yaml&quot;</span>
+<h3 id="properties">Properties</h3>
+<ul>
+<li>Location: <code>/src/assets/&lt;category&gt;/main.yaml</code></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/asset-properties.yaml&quot;</span>
 </code></pre></div>
-<h3 id="properties-objects">Properties: Objects</h3>
+<h3 id="state">State</h3>
 <ul>
-<li>Location: <code>/src/assets/objects/main.yaml</code></li>
+<li>Location: <code>/src/data/state/&lt;board-key&gt;/*.yaml</code></li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/asset-property-objects.yaml&quot;</span>
-</code></pre></div>
-<h3 id="properties-effects">Properties: Effects</h3>
-<ul>
-<li>Location: <code>/src/assets/effects/main.yaml</code></li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/asset-property-effects.yaml&quot;</span>
-</code></pre></div>
-<h3 id="properties-sheets">Properties: Sheets</h3>
-<ul>
-<li>Location: <code>/src/assets/sheets/main.yaml</code></li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/asset-property-sheets.yaml&quot;</span>
-</code></pre></div>
-<h3 id="state-immutable-inanimate">State: Immutable, Inanimate</h3>
-<ul>
-<li>Location: <code>/src/data/state/&lt;board-key&gt;/immutable/inanimate.yaml</code></li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-state-immutable-inanimate.yaml&quot;</span>
-</code></pre></div>
-<h3 id="state-immutable-animate">State: Immutable, Animate</h3>
-<ul>
-<li>Location: <code>/src/data/state/&lt;board-key&gt;/immutable/animate.yaml</code></li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-state-immutable-animate.yaml&quot;</span>
-</code></pre></div>
-<h3 id="state-mutable-inanimate">State: Mutable, Inanimate</h3>
-<ul>
-<li>Location: <code>/src/data/state/&lt;board-key&gt;/mutable/inanimate.yaml</code></li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-state-mutable-inanimate.yaml&quot;</span>
-</code></pre></div>
-<h3 id="state-mutable-animate">State: Mutable, Animate</h3>
-<ul>
-<li>Location: <code>/src/data/state/&lt;board-key&gt;/animate.yaml</code></li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-state-mutable-animate.yaml&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/asset-state.yaml&quot;</span>
 </code></pre></div>
 
 
