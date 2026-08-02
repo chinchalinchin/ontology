@@ -245,11 +245,26 @@ class PySpritePropertyConfiguration(BaseModel):
 class PyEffectPropertyConfiguration(BaseSettings):
     pass
 
+    # Load YAML
+    model_config = SettingsConfigDict(
+        yaml_file = constants.ASSET_DIR / "effects" / constants.APP_EXT
+    )
+
 class PyObjectPropertyConfiguration(BaseSettings):
     pass 
 
+    # Load YAML
+    model_config = SettingsConfigDict(
+        yaml_file = constants.ASSET_DIR / "objects" / constants.APP_EXT
+    )
+
 class PyTilePropertyConfiguration(BaseSettings):
     pass
+
+    # Load YAML
+    model_config = SettingsConfigDict(
+        yaml_file = constants.ASSET_DIR / "tiles" / constants.APP_EXT
+    )
 
 class PyCursorPropertyConfiguration(BaseSettings):
     expressions: Dict[str, PyCursorProperties]
