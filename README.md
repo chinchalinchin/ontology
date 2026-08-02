@@ -42,4 +42,4 @@ This section provides an overview of the project's directory and file structure.
 
 - [Cython](https://pypi.org/project/Cython/)
 - [SDL2](https://wiki.libsdl.org/SDL2/FrontPage)
-- [LiberatedPixelCup]
+- [LiberatedPixelCup](https://lpc.opengameart.org/static/LPC-Style-Guide/build/styleguide.html)

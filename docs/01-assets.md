@@ -109,6 +109,8 @@ Every physical entity in the game is an instance of the unified `Asset` class. T
 
 *Behaviors* are decoupled from Assets and managed entirely by *Mechanics* classes that iterate over the Board Assets. See [Mechanics documentation](./06-architecture.md#mechanics) for more information.
 
+The "*recipe*" for an Asset is specified in the `/src/assets/main.yaml` configuration file. A recipe includes the Frame implementation, the Animation implementation, the State model and the Properties model. See [Schemas](#schemas) for an example of the Asset recipe schema. The recipe configuration file defines each of the Asset categories in the following headings.
+
 ## Tiles
 
 *Tiles* are inanimate, immutable Assets. *Tiles* are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds by breaking each rendered image into a grid of tiles.
@@ -128,7 +130,7 @@ In terms of configuration, Tiles are divided into two categories, *regular* and 
 
 **Frame**
 
-* `key(asset, animation) -> <asset>`
+* `key(asset, None) -> <asset>`
 
 ## Objects
 
@@ -386,7 +388,12 @@ TODO
 
 ## Schemas
 
-### Properties: Tiles
+### Recipes
+
+* Location: `/src/assets/main.yaml`
+
+
+### Properties
 
 * Location: `/src/assets/<category>/main.yaml`
 
@@ -401,3 +408,4 @@ TODO
 ```yaml
 --8<-- "docs/.static/yaml/asset-state.yaml"
 ```
+

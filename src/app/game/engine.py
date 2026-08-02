@@ -27,7 +27,7 @@ class Engine:
         # Initialize engine components
         self.board = Board(root)
         self.screens = [
-            Screen(screen, self.board.tiles_by_layer(layer))
+            Screen(screen, self.board.tiles(layer))
             for layer 
             in self.board.layers
         ]

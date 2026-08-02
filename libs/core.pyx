@@ -14,6 +14,14 @@ cdef class Dimensions:
         self.l = l
         self.w = w
 
+cdef class Multiple:
+    """
+    """
+
+    def __init__(self, int nx, int ny):
+        self.nx = nx
+        self.ny = ny
+        
 cdef class Velocity:
     """
     """
@@ -22,7 +30,7 @@ cdef class Velocity:
         self.vx = vx
         self.vy = vy
 
-class AttackBox:
+cdef class AttackBox:
     """
     """
     def __init__(self, Position position, Dimensions dimensions, int hitframe):
