@@ -469,6 +469,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Cython">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sdl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SDL
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -535,6 +552,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Cython">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sdl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SDL
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -607,6 +641,14 @@
 <p>While Python objects are fast enough for general logic, calculating collisions requires accessing absolute coordinates (potentially) millions of times per second.</p>
 <p>Position, Velocity, and Shape data are modeled as Cython Extension Types (cdef class in <code>.pxd</code> definition files). This allows Geometry.intersects (in <code>libs/math.pyx</code>) to access properties like <code>pos.x</code> natively as C-integers on the stack.</p>
 <p>By stripping out the Python Global Interpreter Lock (GIL) and dictionary lookups, collision math resolves with zero garbage collection overhead.</p>
+<h3 id="sdl">SDL</h3>
+<p>The engine relies on a Cythonized bridge to C-level SDL2 bindings, completely skipping Python's Global Interpreter Lock (GIL) during rendering. The flow operates as follows (<code>libs/render.pyx</code>, <code>libs/registry.pyx</code>):</p>
+<ul>
+<li><strong>Context Initialization</strong> (<code>init</code>): Sets up an off-screen SDL rendering context (<code>_render</code>er) and window.</li>
+<li><strong>VRAM Uploads</strong> (<code>load</code>): Loads physical image assets from disk directly into the GPU memory, returning a safe, reference-counted Python wrapper (<code>TexturePtr</code>).</li>
+<li><strong>Background Compilation</strong> (<code>canvas</code> &amp; <code>construct</code>): A blank texture (<code>SDL_TEXTUREACCESS_TARGET</code>) is created on the GPU. By setting it as the active render target, <code>construct()</code> iteratively "stamps" all the static background tiles onto it. This creates a unified map texture, eliminating the need to re-render thousands of tiles on every single frame.</li>
+<li><strong>Frame Rendering</strong> (<code>render</code>): During the main loop, render() clears the screen buffer, copies the entire static background texture onto it, stamps all moving active_assets over it, and swaps the buffer to the physical display (<code>SDL_RenderPresent</code>).</li>
+</ul>
 
 
 
