@@ -44,3 +44,12 @@ While Python objects are fast enough for general logic, calculating collisions r
 Position, Velocity, and Shape data are modeled as Cython Extension Types (cdef class in `.pxd` definition files). This allows Geometry.intersects (in `libs/math.pyx`) to access properties like `pos.x` natively as C-integers on the stack.
 
 By stripping out the Python Global Interpreter Lock (GIL) and dictionary lookups, collision math resolves with zero garbage collection overhead.
+
+### SDL
+
+The engine relies on a Cythonized bridge to C-level SDL2 bindings, completely skipping Python's Global Interpreter Lock (GIL) during rendering. The flow operates as follows (`libs/render.pyx`, `libs/registry.pyx`):
+
+- **Context Initialization** (`init`): Sets up an off-screen SDL rendering context (`_render`er) and window.
+- **VRAM Uploads** (`load`): Loads physical image assets from disk directly into the GPU memory, returning a safe, reference-counted Python wrapper (`TexturePtr`).
+- **Background Compilation** (`canvas` & `construct`): A blank texture (`SDL_TEXTUREACCESS_TARGET`) is created on the GPU. By setting it as the active render target, `construct()` iteratively "stamps" all the static background tiles onto it. This creates a unified map texture, eliminating the need to re-render thousands of tiles on every single frame.
+- **Frame Rendering** (`render`): During the main loop, render() clears the screen buffer, copies the entire static background texture onto it, stamps all moving active_assets over it, and swaps the buffer to the physical display (`SDL_RenderPresent`).

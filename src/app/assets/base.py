@@ -54,7 +54,7 @@ class Asset:
     properties: AssetProperties
     state: AssetState
     shape: Shape
-    animation: AnimationState
+    animation: Animation
     frame: int
 
     def __init__(self, 

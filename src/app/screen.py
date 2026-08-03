@@ -11,7 +11,7 @@ from app.player import Player
 
 # Cython Libraries
 from libs.core import Position, Dimensions
-from libs.render import canvas, construct, render
+from libs.render import canvas, construct, render, TexturePtr
 
 class Screen:
     """
@@ -19,7 +19,7 @@ class Screen:
     """
     screensize: Dimensions
     boardsize: Dimensions
-    canvas_tex: TexturePtr # ?
+    canvas_tex: TexturePtr
 
     def __init__(self, 
         screensize: Dimensions,

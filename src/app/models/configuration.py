@@ -13,7 +13,6 @@ import app.constants as constants
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
 # NOTE: *Py-* prefix denotes Pydantic model that inherits from Pydantic's BaseModel, whereas no prefix indicates game object class.
 
 # ---------------------------------------------------------------------------------------

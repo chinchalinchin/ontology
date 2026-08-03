@@ -187,37 +187,48 @@ def construct(TexturePtr target, list tiles):
                 
     # 5. Unbind the target to return to normal screen rendering
     SDL_SetRenderTarget(_renderer, NULL)
-
-def render(TexturePtr background, list active_assets):
+    
+def render(TexturePtr background, list active_assets, Position camera, Dimensions screen):
     """
     active_assets list format: (TexturePtr, src_pos, src_dim, dst_pos, dst_dim)
+    camera: Top-left Position of the viewport.
+    screen: Dimensions of the viewport.
     """
     SDL_RenderClear(_renderer)
     
-    # 1. Blit the pre-compiled static background
-    if background is not None:
-        SDL_RenderCopy(_renderer, background.ptr, NULL, NULL)
-        
-    # 2. Setup reusable C structures for the loop
-    cdef SDL_Rect c_src, c_dst
+    # 1. Setup reusable C structures for the loop
+    cdef SDL_Rect c_src, c_dst, bg_src
     cdef SDL_Rect* p_src
     cdef SDL_Rect* p_dst
     cdef TexturePtr tex_wrapper
     cdef Position s_pos, d_pos
     cdef Dimensions s_dim, d_dim
 
+    # 2. Blit the pre-compiled static background using the camera as the source rectangle
+    if background is not None:
+        bg_src.x = camera.x
+        bg_src.y = camera.y
+        bg_src.w = screen.l
+        bg_src.h = screen.w
+        # Native cropping: Only render the portion of the background the camera is viewing
+        SDL_RenderCopy(_renderer, background.ptr, &bg_src, NULL)
+        
     # 3. Overlay the stateful/animated assets
     for asset_data in active_assets:
         tex_wrapper, s_pos, s_dim, d_pos, d_dim = asset_data        
         
         if s_pos is not None and s_dim is not None:
-            populate_rectangle(&c_src, s_pos, s_dim)
+            rectangle(&c_src, s_pos, s_dim) # Fixed helper reference
             p_src = &c_src
         else:
             p_src = NULL
             
         if d_pos is not None and d_dim is not None:
-            populate_rectangle(&c_dst, d_pos, d_dim)
+            # Translate absolute world coordinates to screen coordinates
+            c_dst.x = d_pos.x - camera.x
+            c_dst.y = d_pos.y - camera.y
+            c_dst.w = d_dim.l
+            c_dst.h = d_dim.w
             p_dst = &c_dst
         else:
             p_dst = NULL

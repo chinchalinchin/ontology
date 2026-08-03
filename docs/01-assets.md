@@ -392,7 +392,6 @@ TODO
 
 * Location: `/src/assets/main.yaml`
 
-
 ### Properties
 
 * Location: `/src/assets/<category>/main.yaml`

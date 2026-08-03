@@ -80,6 +80,9 @@ class MetricState(AssetState):
 
 class AnimatorState(AssetState):
     """
+    Asset state for Assets that possess both position and animation.
+
+    - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     """
     # ---------------------------------------------------- KEYS
     name: str               # Deployment Key

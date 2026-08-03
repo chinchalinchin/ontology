@@ -1,4 +1,10 @@
-### Phase 1: Rendering
+# Ontology: Task Board
+
+This is the Task Board for the project. Below is a backlog of completed and pending tasks.
+
+Current Phase: Phase I
+
+## Phase 1: Rendering
 
 **1. Cython SDL2 Interface (`libs/render.pyx`)**
 
@@ -16,11 +22,11 @@ Construct a native Cython wrapper around the SDL2 C library to handle hardware-a
 
 Create a centralized class to ingest YAML files, cache GPU textures, and map dynamic string keys to C-struct crop coordinates.
 
-* **YAML Ingestion:** Recursively parse the `/src/assets/**` directories using Pydantic DTO models strictly to validate schema integrity at startup.
-* **Texture Caching:** Invoke the SDL2 interface to load each physical `.png` file, storing the resulting C-pointers in a flat dictionary keyed by the base `<asset-key>`.
-* **Persona Assembly:** For composite sprites, leverage `create_render_target()` and `draw_to_target()` to stack the `base` and `feature` textures directly on the GPU, caching the flattened result as a new distinct texture pointer.
-* **Frame Indexing:** Construct a flat lookup table mapping every possible `FrameKey` (e.g., `<asset-key>-walk-left-3`) to its exact `SDL_Rect` crop coordinates `(x, y, w, h)` based on the loaded Pydantic Properties.
-* **Query Interface:** Expose `get_render_data(frame_key)` to return the exact `(TexturePtr, SDL_Rect)` needed by the rendering pipeline in $O(1)$ time.
+* [] **YAML Ingestion:** Recursively parse the `/src/assets/**` directories using Pydantic DTO models strictly to validate schema integrity at startup.
+* [] **Texture Caching:** Invoke the SDL2 interface to load each physical `.png` file, storing the resulting C-pointers in a flat dictionary keyed by the base `<asset-key>`.
+* [] **Persona Assembly:** For composite sprites, leverage `create_render_target()` and `draw_to_target()` to stack the `base` and `feature` textures directly on the GPU, caching the flattened result as a new distinct texture pointer.
+* [] **Frame Indexing:** Construct a flat lookup table mapping every possible `FrameKey` (e.g., `<asset-key>-walk-left-3`) to its exact `SDL_Rect` crop coordinates `(x, y, w, h)` based on the loaded Pydantic Properties.
+* [] **Query Interface:** Expose `get_render_data(frame_key)` to return the exact `(TexturePtr, SDL_Rect)` needed by the rendering pipeline in $O(1)$ time.
 
 **3. Command Line Interface (`src/cli.py`)**
 
@@ -42,3 +48,9 @@ Implement the debugging commands required to test configurations, schemas, and r
 ## Phase 2: Editor
 
 TODO
+
+Tabs: 
+  World State Design Tab: Drag and drop Asset files onto canvas.
+  Strut Composition Tab: Drag and drop Asset files. Drag and drop hitboxes.
+
+Add Category of Tiles, Struts. Tiles with hitboxes, essentially. For ingame objects like houses, fences, etc.

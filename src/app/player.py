@@ -1,18 +1,30 @@
 
 """
+# Ontology: Player
 """
 
-# NOTE: pseudocode
+# NOTE: pseudo code
 
-class Player:
+from app.assets.base import Asset
+from app.input.devices import Keyboard, Controller
+from app.models.state import SpriteState
+
+
+class Player(Asset):
     device: Controller | Keyboard
 
     def __init__(self, 
-        device_type = Enum["controller" | "keyboard"]
+        device = Enum["controller" | "keyboard"],
+        **kwargs
     ):
-        if device_type == "controller":
+        super().__init__(**kwargs)
+        if device == "controller":
+            # load controller State <-> Input mapping
+            mapping = "TODO"
             self.device = Controller(mapping)
         else:
+            # load keyboard State <-> Input mapping
+            mapping = "TODO"
             self.device = Keyboard(mapping)
 
     def poll(self) -> SpriteState:
