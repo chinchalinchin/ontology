@@ -7,12 +7,12 @@ bypassing the Python Global Interpreter Lock (GIL) and ctypes overhead.
 """
 
 from libs.core cimport Position, Dimensions, Multiple
+from libs.registry cimport TexturePtr
 
 # -----------------------------------------------------------------------------
 # C-Header Definitions
 # -----------------------------------------------------------------------------
 cdef extern from "SDL2/SDL.h":
-    # Opaque structures
     ctypedef struct SDL_Window:
         pass
     ctypedef struct SDL_Renderer:
@@ -23,14 +23,12 @@ cdef extern from "SDL2/SDL.h":
         void* pixels
         int pitch
         
-    # Standard Rect struct for cropping/pasting
     ctypedef struct SDL_Rect:
         int x
         int y
         int w
         int h
         
-    # Core SDL Functions
     int SDL_Init(unsigned int flags)
     void SDL_Quit()
     
@@ -47,12 +45,10 @@ cdef extern from "SDL2/SDL.h":
     int SDL_RenderCopy(SDL_Renderer* renderer, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect)
     void SDL_RenderPresent(SDL_Renderer* renderer)
     int SDL_RenderReadPixels(SDL_Renderer* renderer, const SDL_Rect* rect, unsigned int format, void* pixels, int pitch)
-    void SDL_DestroyTexture(SDL_Texture* texture)
     
     SDL_Surface* SDL_CreateRGBSurfaceWithFormat(unsigned int flags, int width, int height, int depth, unsigned int format)
     void SDL_FreeSurface(SDL_Surface* surface)
     
-    # Core SDL Constants
     unsigned int SDL_INIT_VIDEO
     unsigned int SDL_WINDOW_HIDDEN
     unsigned int SDL_RENDERER_ACCELERATED
@@ -62,7 +58,6 @@ cdef extern from "SDL2/SDL.h":
 cdef extern from "SDL2/SDL_image.h":
     int IMG_Init(int flags)
     void IMG_Quit()
-    SDL_Texture* IMG_LoadTexture(SDL_Renderer* renderer, const char* file)
     int IMG_SavePNG(SDL_Surface* surface, const char* file)
     
     int IMG_INIT_PNG
@@ -71,28 +66,7 @@ cdef extern from "SDL2/SDL_image.h":
 # Global Singletons
 # -----------------------------------------------------------------------------
 cdef SDL_Window* _window = NULL
-cdef SDL_Renderer* _renderer = NULL
-
-# -----------------------------------------------------------------------------
-# Extension Types
-# -----------------------------------------------------------------------------
-cdef class TexturePtr:
-    """
-    Cython extension type wrapping the raw C-pointer for an SDL_Texture.
-    This provides a safe way to store GPU memory addresses in standard Python 
-    variables without manual pointer arithmetic or ctypes.
-    """
-    cdef SDL_Texture* ptr
-    cdef public int w
-    cdef public int h
-
-    def __dealloc__(self):
-        # Prevent GPU memory leaks by automatically destroying the texture
-        # when the Python wrapper object is garbage collected.
-        if self.ptr != NULL:
-            SDL_DestroyTexture(self.ptr)
-            self.ptr = NULL
-
+# Note: _renderer is maintained in render.pxd
 
 # -----------------------------------------------------------------------------
 # Public Python/Cython API
@@ -100,35 +74,26 @@ cdef class TexturePtr:
 
 def init():
     """Initializes the SDL subsystems and instantiates the hidden hardware renderer."""
-    global _window, _renderer
+    global _window
+    
     SDL_Init(SDL_INIT_VIDEO)
     IMG_Init(IMG_INIT_PNG)
     
-    # Create a hidden window for offscreen GPU rendering context
     _window = SDL_CreateWindow(b"Ontology Offscreen Canvas", 0, 0, 800, 600, SDL_WINDOW_HIDDEN)
+    
+    # Assign to global cython context mapped from .pxd
+    global _renderer
     _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED)
     
     if _renderer == NULL:
         raise RuntimeError("Failed to initialize hardware-accelerated SDL_Renderer.")
 
 cdef inline void rectangle(SDL_Rect* rect, Position pos, Dimensions dim):
-    """Helper to quickly map your custom models to the SDL_Rect C-struct."""
+    """Helper to quickly map custom models to the SDL_Rect C-struct."""
     rect.x = pos.x
     rect.y = pos.y
     rect.w = dim.l 
     rect.h = dim.w 
-
-def load(str filepath) -> TexturePtr:
-    """Loads a physical .png file directly into GPU memory."""
-    cdef bytes b_filepath = filepath.encode('utf-8')
-    cdef SDL_Texture* tex = IMG_LoadTexture(_renderer, b_filepath)
-    
-    if tex == NULL:
-        raise RuntimeError(f"Failed to load texture into GPU memory: {filepath}")
-    
-    cdef TexturePtr wrapper = TexturePtr()
-    wrapper.ptr = tex
-    return wrapper
 
 def canvas(Dimensions dim) -> TexturePtr:
     """Instantiates a blank texture assigned as an accelerated rendering target."""
@@ -136,59 +101,71 @@ def canvas(Dimensions dim) -> TexturePtr:
         _renderer, 
         SDL_PIXELFORMAT_RGBA32, 
         SDL_TEXTUREACCESS_TARGET, 
-        dim.w, dim.h
+        dim.l, dim.w
     )
     if tex == NULL:
         raise RuntimeError("Failed to create GPU render target.")
     
     cdef TexturePtr wrapper = TexturePtr()
     wrapper.ptr = tex
-    wrapper.w = dim.w
-    wrapper.h = dim.h
+    wrapper.w = dim.l
+    wrapper.h = dim.w
     return wrapper
+
+def compose(TexturePtr base_ptr, list feature_ptrs) -> TexturePtr:
+    """
+    Binds a blank TEXTUREACCESS_TARGET, stamps the base and features onto it, 
+    unbinds, and returns the new flattened TexturePtr.
+    """
+    cdef Dimensions dim = Dimensions(base_ptr.w, base_ptr.h)
+    cdef TexturePtr target = canvas(dim)
+
+    # 1. Bind new target texture
+    SDL_SetRenderTarget(_renderer, target.ptr)
+
+    # 2. Draw base foundation
+    SDL_RenderCopy(_renderer, base_ptr.ptr, NULL, NULL)
+
+    # 3. Stack arbitrary features on top
+    cdef TexturePtr feat
+    for feat in feature_ptrs:
+        SDL_RenderCopy(_renderer, feat.ptr, NULL, NULL)
+
+    # 4. Unbind render target
+    SDL_SetRenderTarget(_renderer, NULL)
+
+    return target
 
 def construct(TexturePtr target, list tiles):
     """
     Constructs the static background entirely in C.
     tiles format: (TexturePtr, src_pos, src_dim, dst_pos, dst_dim, dst_mul)
     """
-    # 1. Bind the target texture (the canvas) on the GPU
     SDL_SetRenderTarget(_renderer, target.ptr)
     
-    # 2. Declare C-level variables for the loops
     cdef SDL_Rect c_src, c_dst
     cdef TexturePtr tex
     cdef Position s_pos, d_pos
     cdef Dimensions s_dim, d_dim
-    cdef Mutliple multi
+    cdef Multiple multi
     cdef int i, j
     
-    # 3. Iterate through the instructions 
-    for tile_data in tile_deployments:
-        # Unpack the Python tuple into typed C-variables
-        tex, s_pos, s_dim, d_pos, d_dim, multi = tile_data
+    for tile in tiles:
+        tex, s_pos, s_dim, d_pos, d_dim, multi = tile
+        rectangle(&c_src, s_pos, s_dim)
         
-        # Populate the static source rectangle (what part of the sprite sheet to crop)
-        populate_rect(&c_src, s_pos, s_dim)
-        
-        # Set static dimensions for the destination
         c_dst.w = d_dim.l
         c_dst.h = d_dim.w
         
-        # 4. Execute the Multiple (nx, ny) logic in pure C
         for i in range(multi.nx):
             for j in range(multi.ny):
-                # Calculate absolute coordinates based on grid offsets
                 c_dst.x = d_pos.x + (i * d_dim.l)
                 c_dst.y = d_pos.y + (j * d_dim.w)
-                
-                # Stamp to the GPU canvas
                 SDL_RenderCopy(_renderer, tex.ptr, &c_src, &c_dst)
                 
-    # 5. Unbind the target to return to normal screen rendering
     SDL_SetRenderTarget(_renderer, NULL)
     
-def render(TexturePtr background, list active_assets, Position camera, Dimensions screen):
+def render(TexturePtr background, list assets, Position camera, Dimensions screen):
     """
     active_assets list format: (TexturePtr, src_pos, src_dim, dst_pos, dst_dim)
     camera: Top-left Position of the viewport.
@@ -196,7 +173,6 @@ def render(TexturePtr background, list active_assets, Position camera, Dimension
     """
     SDL_RenderClear(_renderer)
     
-    # 1. Setup reusable C structures for the loop
     cdef SDL_Rect c_src, c_dst, bg_src
     cdef SDL_Rect* p_src
     cdef SDL_Rect* p_dst
@@ -204,27 +180,23 @@ def render(TexturePtr background, list active_assets, Position camera, Dimension
     cdef Position s_pos, d_pos
     cdef Dimensions s_dim, d_dim
 
-    # 2. Blit the pre-compiled static background using the camera as the source rectangle
     if background is not None:
         bg_src.x = camera.x
         bg_src.y = camera.y
         bg_src.w = screen.l
         bg_src.h = screen.w
-        # Native cropping: Only render the portion of the background the camera is viewing
         SDL_RenderCopy(_renderer, background.ptr, &bg_src, NULL)
         
-    # 3. Overlay the stateful/animated assets
-    for asset_data in active_assets:
-        tex_wrapper, s_pos, s_dim, d_pos, d_dim = asset_data        
+    for asset in assets:
+        tex_wrapper, s_pos, s_dim, d_pos, d_dim = asset        
         
         if s_pos is not None and s_dim is not None:
-            rectangle(&c_src, s_pos, s_dim) # Fixed helper reference
+            rectangle(&c_src, s_pos, s_dim)
             p_src = &c_src
         else:
             p_src = NULL
             
         if d_pos is not None and d_dim is not None:
-            # Translate absolute world coordinates to screen coordinates
             c_dst.x = d_pos.x - camera.x
             c_dst.y = d_pos.y - camera.y
             c_dst.w = d_dim.l
@@ -233,14 +205,8 @@ def render(TexturePtr background, list active_assets, Position camera, Dimension
         else:
             p_dst = NULL
             
-        SDL_RenderCopy(
-            _renderer, 
-            tex_wrapper.ptr, 
-            p_src, 
-            p_dst
-        )
+        SDL_RenderCopy(_renderer, tex_wrapper.ptr, p_src, p_dst)
                     
-    # 4. Swap buffers
     SDL_RenderPresent(_renderer)
 
 def save(str filename, Dimensions dim):
@@ -248,30 +214,22 @@ def save(str filename, Dimensions dim):
     cdef bytes b_filename = filename.encode('utf-8')
     
     cdef SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
-        0, 
-        dim.w, 
-        dim.h, 
-        32, 
-        SDL_PIXELFORMAT_RGBA32
+        0, dim.l, dim.w, 32, SDL_PIXELFORMAT_RGBA32
     )
     
     if surface == NULL:
         raise RuntimeError("Failed to create SDL_Surface for saving PNG.")
         
-    # Perform raw pixel readback from GPU
     SDL_RenderReadPixels(
-        _renderer, 
-        NULL, 
-        SDL_PIXELFORMAT_RGBA32, 
-        surface.pixels, 
-        surface.pitch
+        _renderer, NULL, SDL_PIXELFORMAT_RGBA32, surface.pixels, surface.pitch
     )
     IMG_SavePNG(surface, b_filename)
     SDL_FreeSurface(surface)
 
 def quit_sdl():
     """Safely terminate SDL bindings."""
-    global _window, _renderer
+    global _window
+    global _renderer
     if _renderer != NULL:
         SDL_DestroyRenderer(_renderer)
         _renderer = NULL
