@@ -48,18 +48,18 @@ class Factory:
             return StateAnimation()
 
     @staticmethod
-    def properties(self, instance, snapshot):
-        if instance == "tiles":
+    def properties(self, category, snapshot):
+        if category == "tiles":
             return TileProperties(**snapshot)
-        if instance == "effects":
+        if category == "effects":
             return EffectProperties(**snapshot)
-        if instance == "objects":
+        if category == "objects":
             return ObjectProperties(**snapshot)
-        if instance == "cursors":
+        if category == "cursors":
             return CursorProperties(**snapshot)
-        if instance == "pixies":
+        if category == "pixies":
             return PixieProperties(**snapshot)
-        if instance == "sprites":
+        if category == "sprites":
             return SpriteProperties(**snapshot)
 
     @staticmethod

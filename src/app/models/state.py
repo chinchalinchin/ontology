@@ -16,11 +16,15 @@ class AssetState:
     Foundational class for Asset states. 
 
     - key: Asset key
-    - layer: Layer key
+    - layer: Layer key 
+    ## Asset Hierarchy Keys
+    - category: Category key (e.g. Tile, Object, Cursors, etc.)
+    - instance: Instance key (e.g. Expressions, Projectiles, Temporary, etc.)
     """
     # ---------------------------------------------------- KEYS
     key: str
     layer: str
+    category: str
     pass 
 
 # ---------------------------------------------------------------------------------------

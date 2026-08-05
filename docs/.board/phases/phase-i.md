@@ -10,7 +10,7 @@ Construct a native Cython wrapper around the SDL2 C library to handle hardware-a
 - [x] **Method** - `load(filepath)`: Load a `.png` file directly into GPU memory and return an `SDL_Texture` C-pointer.
 - [x] **Method** - `canvas(width, height)`: Instantiate a blank `SDL_Texture` configured with `SDL_TEXTUREACCESS_TARGET` to act as a cached background canvas entirely on the GPU.
 - [x] **Method** - `draw(target_ptr, source_ptr, src_rect, dst_rect)`: Bind the target texture, copy the specifically cropped `source_ptr` rectangle to the target coordinate, and unbind.
-- [ ] **Method** - `compose(base_ptr, feature_ptrs)` Bind a blank `TEXTUREACCESS_TARGET`, stamps the base and features onto it, unbinds, and returns the new flattened TexturePtr. Used for assembling Sprite's base and features into a "virtual" Asset.
+- [x] **Method** - `compose(base_ptr, feature_ptrs)` Bind a blank `TEXTUREACCESS_TARGET`, stamps the base and features onto it, unbinds, and returns the new flattened TexturePtr. Used for assembling Sprite's base and features into a "virtual" Asset.
 - [x] **Method** - `render(background_ptr, assets)`:** Clear the active renderer, copy the cached background pointer, iterate over active Assets to overlay their respective textures, and call `SDL_RenderPresent`.
 - [x] **Method** - `save(filename)`:** Read the active renderer's pixels into an `SDL_Surface` and export it to the disk for debugging.
 
@@ -20,15 +20,15 @@ Construct a native Cython wrapper around the SDL2 C library to handle hardware-a
 
 Create a centralized Cython Extension Type to ingest the parsed data structures from the YAML configuration, cache GPU textures, and map dynamic string keys to C-struct crop coordinates.
 
-- [ ] **Data Structures** (`libs/registry.pxd`): Define the cdef class TexturePtr wrapper here so both the Registry and Renderer can strongly type it in their arguments.
-- [ ] **Method** - `load(filepath)`: `cimport` the `_rendere`r from `render`.pxd. Load `.png` files directly into GPU memory via `IMG_LoadTexture` and return a safe `TexturePtr` wrapper. Implement` __dealloc__` to call `SDL_DestroyTexture` to prevent memory leaks.
+- [x] **Data Structures** (`libs/registry.pxd`): Define the cdef class TexturePtr wrapper here so both the Registry and Renderer can strongly type it in their arguments.
+- [x] **Method** - `load(filepath)`: `cimport` the `_rendere`r from `render`.pxd. Load `.png` files directly into GPU memory via `IMG_LoadTexture` and return a safe `TexturePtr` wrapper. Implement` __dealloc__` to call `SDL_DestroyTexture` to prevent memory leaks.
 - [~] **YAML Ingestion**: Recursively parse the `/src/assets/**` directories using Pydantic DTO models on the Python side strictly to validate schema integrity at startup.
-- [ ] **Texture Caching**: Invoke `load()` for each physical .png file, storing the resulting TexturePtr in a flat C-level dictionary/map keyed by the base `<asset-key>`.
-- [ ] **Persona Assembly**: For composite sprites, leverage render.`compile_texture()` to stack the base and feature textures directly on the GPU, caching the flattened result as a new distinct texture pointer in the dictionary.
-- [ ] **Frame Indexing**: Construct a flat lookup table mapping every possible FrameKey (e.g., `<asset-key>-walk-left-3`) to its exact crop coordinates as primitive integers `(src_x, src_y, src_w, src_h)`.
+- [x] **Texture Caching**: Invoke `load()` for each physical .png file, storing the resulting TexturePtr in a flat C-level dictionary/map keyed by the base `<asset-key>`.
+- [x] **Persona Assembly**: For composite sprites, leverage render.`compile_texture()` to stack the base and feature textures directly on the GPU, caching the flattened result as a new distinct texture pointer in the dictionary.
+- [x] **Frame Indexing**: Construct a flat lookup table mapping every possible FrameKey (e.g., `<asset-key>-walk-left-3`) to its exact crop coordinates as primitive integers `(src_x, src_y, src_w, src_h)`.
 - [ ] **Query Interface**: Expose get_render_data(frame_key) to return a Python tuple containing `(TexturePtr, src_x, src_y, src_w, src_h)`. This allows screen.py to append destination coordinates without instantiating heavy POPOs.
 
-**3. Command Line Interface (`src/cli.py`)**
+**4. Command Line Interface (`src/cli.py`)**
 
 Implement the debugging commands required to test configurations, schemas, and rendering output without booting the full physics loop.
 

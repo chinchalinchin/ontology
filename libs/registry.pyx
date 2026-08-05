@@ -42,12 +42,12 @@ class Registry:
         self._textures = {}
         self._frames = {}
 
-        self._load_configurations()
-        self._cache_textures()
-        self._assemble_personas()
-        self._index_frames()
+        self._load()
+        self._cache()
+        self._assemble()
+        self._index()
 
-    def _load_configurations(self):
+    def _load(self):
         """Invoke Pydantic schema engines to strictly parse configuration YAML files."""
         self.sheets_config = PySheetPropertyConfiguration()
         self.objects_config = PyObjectPropertyConfiguration()
@@ -72,7 +72,7 @@ class Registry:
         wrapper.h = h
         return wrapper
 
-    def _cache_textures(self):
+    def _cache(self):
         """Recursively parses all physical PNG files across the static asset directory."""
         asset_dir = str(constants.ASSET_DIR)
         for root, _, files in os.walk(asset_dir):
@@ -82,7 +82,7 @@ class Registry:
                     filepath = os.path.join(root, file)
                     self._textures[asset_key] = self.load(filepath)
 
-    def _assemble_personas(self):
+    def _assemble(self):
         """Compiles composite characters utilizing cython-wrapped base and feature renders."""
         if not self.sheets_config or not self.sheets_config.sprites:
             return
@@ -103,7 +103,7 @@ class Registry:
             if feature_ptrs:
                 self._textures[persona.key] = render.compose(base_ptr, feature_ptrs)
 
-    def _index_frames(self):
+    def _index(self):
         """Maps runtime dynamic frame keys to their GPU mapping tuple coordinates."""
         
         # 1. Binary Objects (Chests, Gates, Plates)
@@ -155,7 +155,7 @@ class Registry:
                                 self._textures[key], f * w, 0, w, h
                             )
 
-    def get_render_data(self, frame_key: str) -> Tuple:
+    def data(self, frame_key: str) -> Tuple:
         """
         Returns a lightweight Python tuple resolving mapped texture configurations for the camera.
         Format: (TexturePtr, src_x, src_y, src_w, src_h)

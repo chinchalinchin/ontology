@@ -9,6 +9,9 @@ from typing import List, Union, Dict
 # Application Libraries
 import app.constants as constants
 
+from app.models.recipes import FrameRecipe, AnimationRecipe, \
+                                StateRecipe, BehaviorRecipe
+
 # External Libraries
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -225,6 +228,35 @@ class PySpriteState(BaseModel):
     goal: PyGoalState
 
 # ---------------------------------------------------------------------------------------
+# ------------------------------------------------------ RECIPE CONFIGURATION & VALIDATION
+# ---------------------------------------------------------------------------------------
+
+class PyRecipe(BaseModel):
+    frame: FrameRecipe
+    animation: AnimationRecipe
+    state: StateRecipe
+    behaviors: List[BehaviorRecipe]
+
+class PyCursorRecipe(BaseModel):
+    expressions: PyRecipe
+    projectiles: PyRecipe
+
+class PyEffectRecipe(BaseModel):
+    temporary: PyRecipe
+    persistent: PyRecipe
+
+class PyObjectRecipe(BaseModel):
+    chests: PyRecipe
+    crates: PyRecipe
+    doors: PyRecipe
+    gates: PyRecipe
+    plates: PyRecipe
+
+class PySheetRecipe(BaseModel):
+    pixies: PyRecipe
+    sprites: PyRecipe
+
+# ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- YAML SCHEMAS
 # ---------------------------------------------------------------------------------------
 
@@ -283,6 +315,15 @@ class PySheetPropertyConfiguration(BaseSettings):
         yaml_file = constants.ASSET_DIR / "sheets" / constants.APP_EXT
     )
 
+# --------------------------------------------------------------------- RECIPE YAML SCHEMA
+
+class PyRecipeConfiguration(BaseSettings):
+    tiles: PyRecipe
+    cursors: PyCursorRecipe
+    effects: PyEffectRecipe
+    objects: PyObjectRecipe
+    sheets: PySheetRecipe
+    
 # --------------------------------------------------------------------- STATE YAML SCHEMA
 
 class PyCursorStateConfiguration(BaseSettings):

@@ -5,7 +5,7 @@ Package for game Board. The Board holds and mutates the state of the game for th
 """
 
 # Standard Libraries 
-from typing import List
+from typing import List, Dict
 
 # Application Libraries
 from app.assets.base import Asset
@@ -15,6 +15,8 @@ from app.game.mechanics import Mechanic, \
                                     ProjectileMechanics, \
                                     SwitchMechanics
 from app.game.factory import Factory
+from app.models.properties import AssetProperties
+from app.models.state import AssetState
 from app.player import Player
 
 class Board:
@@ -25,8 +27,11 @@ class Board:
     mechanics: List[Mechanic]
     assets: List[Asset]
 
-    def __init__(self, root: Path):
-        self.load()
+    def __init__(self, 
+        asset_states: List[AssetState],
+        asset_properties: Dict[str, AssetProperties]
+    ):
+        self._populate(asset_states, asset_properties)
         self.mechanics = [ 
             AnimationMechanics(),
             CollisionMechanics(),
@@ -34,32 +39,24 @@ class Board:
             SwitchMechanics()
         ]
 
-    def load(self, root: Path):
+    def _populate(self, 
+        asset_states: List[AssetState],
+        asset_properties: Dict[str, AssetProperties]
+    ):
         """
         """
-        asset_recipes = "TODO: yaml file @ src/assets/main.yaml"
-        asset_properties = {}
 
-        for asset_type, type_recipes in asset_recipes.keys():
-            for type_key in type_recipes.keys():
-                property_path = f"./src/assets/{asset_type}/{type_key}/main.yaml"
-                asset_properties[type_key] = "TODO: open(property_path)"
-
-        asset_state = "TODO: concatened yaml files @ src/data/state/{root}/**.yaml"
-
-        for category_key, category in asset_state:
-            for instance_key, instances in category:
-                for instance_state in instances:
-                    instance_recipe             = asset_recipes[category_key][instance_key]
-                    instance_properties         = asset_properties[category_key]
-                    self.assets                 += [
-                        Asset(
-                            properties          = Factory.properties(instance_key, instance_properties),
-                            state               = Factory.state(instance_key, instance_state),
-                            frame               = Factory.frame(instance_recipe.frame),
-                            animation           = Factory.animation(instance_recipe.animation)
-                        )
-                    ]
+        for state in asset_states:
+            instance_recipe             = asset_recipes[state.category][state.instance]
+            instance_properties         = asset_properties[state.category]
+            self.assets                 += [
+                Asset(
+                    properties          = Factory.properties(state.instance, instance_properties),
+                    state               = Factory.state(state.instance, state),
+                    frame               = Factory.frame(instance_recipe.frame),
+                    animation           = Factory.animation(instance_recipe.animation)
+                )
+            ]
 
     def get_layers(self) -> int:
         if not self.layers:
