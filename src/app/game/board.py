@@ -15,6 +15,7 @@ from app.game.mechanics import Mechanic, \
                                     ProjectileMechanics, \
                                     SwitchMechanics
 from app.game.factory import Factory
+from app.models.configuration import PyRecipeConfiguration
 from app.models.properties import AssetProperties
 from app.models.state import AssetState
 from app.player import Player
@@ -45,6 +46,7 @@ class Board:
     ):
         """
         """
+        asset_recipes = PyRecipeConfiguration()
 
         for state in asset_states:
             instance_recipe             = asset_recipes[state.category][state.instance]

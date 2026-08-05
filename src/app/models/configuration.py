@@ -323,7 +323,12 @@ class PyRecipeConfiguration(BaseSettings):
     effects: PyEffectRecipe
     objects: PyObjectRecipe
     sheets: PySheetRecipe
-    
+
+    # Load YAML
+    model_config = SettingsConfigDict(
+        yaml_file = constants.ASSET_DIR / constants.APP_EXT
+    )
+
 # --------------------------------------------------------------------- STATE YAML SCHEMA
 
 class PyCursorStateConfiguration(BaseSettings):
