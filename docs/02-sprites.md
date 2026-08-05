@@ -185,7 +185,7 @@ As a reminder, the default Actions and Directions for the game engine (and LPC s
 
 ## Intentions
 
-*Intentions* are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given an Intention state, along with an Animation stat, that is updated by the gameplay loop. The complex internal state of a Sprite is represented by its Intention. Intention is the medium through which Sprites transition into different Animation states. 
+*Intentions* are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given an Intention state, along with an Animation state, that is updated by the gameplay loop. The complex internal state of a Sprite is represented by its Intention. Intention is the medium through which Sprites transition into different Animation states. 
 
 The complete Intention State for a Sprite is given by the tuple,
 
@@ -202,11 +202,12 @@ The default Extension states are enumerated below,
 - `interact`
 - `speak`
 - `sprint`
+- `trade`
 
 ### Disposition
 
 !!! importatnt
-    The Player state does not observe the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to Intents. See [Player documentation](./03-player.md) for more information on the Player.
+    The Player state does not observe the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to state. See [Player documentation](./03-player.md) for more information on the Player.
     
 A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's *Disposition* is an element in its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.
 
@@ -339,6 +340,7 @@ The default Motivations are enumerated below,
 - `love`
 - `revenge`
 - `rebellion`
+- `safety`
 
 ### Communication
 
@@ -346,7 +348,7 @@ The Communication dimension of an Intention can be thought of as the short-term 
 
 ### Expression
 
-The Expression dimension alter the Sprite's apperance by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. 
+The Expression dimension alter the Sprite's appearnce by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. 
 
 The default Expressions are enumerated below,
 
@@ -392,6 +394,16 @@ When a Sprite with a non-empty `memory.communications` enters into the `communic
 
 When a Sprite with a non-null `intention.communication` enters into the `speak` Extension, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the `intention.communication` cell.
 
+### Prices
+
+Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the `trade` extension. This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.
+
+When two Sprites enter the `speak` Extension within a certain radius of each other, the `SpeechMechanic` does the following:
+
+1. It averages the intersection of Prices. For example, if one Sprite has a price of 1 for Loot A and another has a price of 5 for Loot A, then the new price of Loot A for both Sprites will be (1 + 5)/2 = 3. It performs this calculation for every such Loot Key the Sprites have in common.
+2. For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to 
+A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the `SpeechMechanic` will populate the Sprite's Prices.
+
 ## Inventory
 
 TODO
@@ -422,7 +434,7 @@ TODO
 
 ## Personas
 
-Personas are stacks of superimposed Sprite Sheets. They are assembled in the [Registry](./00-overview.md#registry) using the `compositions` property in the configuration file. The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona through the Asset Key property. In other words, once assembled, Personas are effectively "new" Assets.
+Personas are stacks of superimposed Sprite Sheets. They are assembled in the [Registry](./00-overview.md#registry) using the `compositions` property in the configuration file during the [application bootstrap](./06-architecture.md). The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona through the Asset Key property. In other words, once assembled, Personas are effectively new "virtualized" Assets.
 
 Personas are assembled from a Base Sheet and Feature Sheets. The Base Sheet is the background of the resultant Sheet. Feature Sheets are pasted over the Base in the order they are specified.
 

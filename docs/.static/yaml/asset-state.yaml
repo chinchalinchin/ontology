@@ -139,13 +139,6 @@ sheets:
           enemy: Enemy Count
         vision:
           radius: Pixel Length
-      mutators:
-        frightened:
-          radius: Radius of Frightened Mutator
-          limit: Health Percentage Boundary of Frightened Mutator
-          enemy: Enemy Boundary of Frightened Mutator
-        vision:
-          radius: Radius of Vision Mutator
       intention:
         disposition: Disposition Key
         extension: Extension Key
@@ -167,6 +160,8 @@ sheets:
           - Communication Key
           # unforgettable
           - Communication Key
+        prices: 
+          <loot-key>: Loot Price
       inventory: 
         loot:
           <loot-key>: Loot Key Quantity
