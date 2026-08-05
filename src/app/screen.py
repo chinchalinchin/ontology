@@ -62,30 +62,30 @@ class Screen:
 
         return Position(x=cam_x, y=cam_y)
 
-    def draw(self, 
-        assets: List[Asset], 
-        player: Player
-    ) -> None:
-        """
-        Render stateful Assets onto the screen relative to the camera.
-        """
+    def draw(self, assets: List[Asset], player: Player, registry: Registry) -> None:
         pov = self.camera(player)
-
         active_assets = []
+        
         for asset in assets:
-            # TODO: Add logic to completely cull assets that are outside the camera bounds
-            active_assets.append((
-                # TODO: Fetch TexturePtr from Registry using asset.properties.key
-                None, 
-                Position(x=0, y=0), # Placeholder for src_pos 
-                asset.properties.dimensions, # src_dim
-                asset.state.position, # dst_pos (absolute world position)
-                asset.properties.dimensions # dst_dim
-            ))
+            # 1. Resolve current animation frame key
+            frame_key = asset.frame.key(asset.properties.key, asset.state)
+            
+            # 2. Query registry for C-level source coordinates
+            tex_data = registry.data(frame_key)
 
-        render(
-            self.canvas_tex, 
-            active_assets, 
-            pov, 
-            self.screensize
-        )
+            if not tex_data:
+                continue 
+
+            tex, sx, sy, sw, sh = tex_data
+            
+            # 3. Create a flat tuple of PRIMITIVE INTEGERS for destination
+            dx, dy = asset.state.position.x, asset.state.position.y
+            dw, dh = asset.properties.dimensions.l, asset.properties.dimensions.w
+            
+            # Optional: Simple Python-side integer camera culling here
+            if (dx + dw >= pov.x and dx <= pov.x + self.screensize.l and
+                dy + dh >= pov.y and dy <= pov.y + self.screensize.w):
+                
+                active_assets.append((tex, sx, sy, sw, sh, dx, dy, dw, dh))
+
+        render(self.canvas_tex, active_assets, pov, self.screensize)
