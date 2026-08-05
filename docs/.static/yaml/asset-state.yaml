@@ -9,7 +9,8 @@ tiles:
     multiply:
       nx: number of horizontal multiples
       ny: number of vertical multiples
-  # ------------------------------------------- DOORS
+# ------------------------------------------------------------------
+# ---------------------------------------------------------- CURSORS
 cursors:
   expressions:
     - name: Cursor Identifier

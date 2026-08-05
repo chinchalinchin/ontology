@@ -14,10 +14,6 @@ from app.game.mechanics import Mechanic, \
                                     CollisionMechanics, \
                                     ProjectileMechanics, \
                                     SwitchMechanics
-from app.game.factory import Factory
-from app.models.configuration import PyRecipeConfiguration
-from app.models.properties import AssetProperties
-from app.models.state import AssetState
 from app.player import Player
 
 class Board:
@@ -29,36 +25,15 @@ class Board:
     assets: List[Asset]
 
     def __init__(self, 
-        asset_states: List[AssetState],
-        asset_properties: Dict[str, AssetProperties]
+        assets: List[Asset]
     ):
-        self._populate(asset_states, asset_properties)
+        self.assets = assets
         self.mechanics = [ 
             AnimationMechanics(),
             CollisionMechanics(),
             ProjectileMechanics(),
             SwitchMechanics()
         ]
-
-    def _populate(self, 
-        asset_states: List[AssetState],
-        asset_properties: Dict[str, AssetProperties]
-    ):
-        """
-        """
-        asset_recipes = PyRecipeConfiguration()
-
-        for state in asset_states:
-            instance_recipe             = asset_recipes[state.category][state.instance]
-            instance_properties         = asset_properties[state.category]
-            self.assets                 += [
-                Asset(
-                    properties          = Factory.properties(state.instance, instance_properties),
-                    state               = Factory.state(state.instance, state),
-                    frame               = Factory.frame(instance_recipe.frame),
-                    animation           = Factory.animation(instance_recipe.animation)
-                )
-            ]
 
     def get_layers(self) -> int:
         if not self.layers:

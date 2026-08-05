@@ -5,7 +5,7 @@ assets:
     behaviors: null
     state: multiplier
   cursors:
-    expression:
+    expressions:
       frame: single
       animation: null
       behaviors:

@@ -42,35 +42,18 @@ class Registry:
         self._textures = {}
         self._frames = {}
 
-        self._load()
+        self._configuration()
         self._cache()
         self._assemble()
         self._index()
 
-    def _load(self):
+    def _configuration(self):
         """Invoke Pydantic schema engines to strictly parse configuration YAML files."""
         self.sheets_config = PySheetPropertyConfiguration()
         self.objects_config = PyObjectPropertyConfiguration()
         self.effects_config = PyEffectPropertyConfiguration()
         self.cursors_config = PyCursorPropertyConfiguration()
         self.tiles_config = PyTilePropertyConfiguration()
-
-    def load(self, filepath: str) -> TexturePtr:
-        """Loads a physical .png file directly into GPU memory via SDL2 extensions."""
-        cdef bytes b_filepath = filepath.encode('utf-8')
-        cdef SDL_Texture* tex = IMG_LoadTexture(_renderer, b_filepath)
-        
-        if tex == NULL:
-            raise RuntimeError(f"Failed to load texture into GPU memory: {filepath}")
-
-        cdef int w, h
-        SDL_QueryTexture(tex, NULL, NULL, &w, &h)
-
-        cdef TexturePtr wrapper = TexturePtr()
-        wrapper.ptr = tex
-        wrapper.w = w
-        wrapper.h = h
-        return wrapper
 
     def _cache(self):
         """Recursively parses all physical PNG files across the static asset directory."""
@@ -155,6 +138,23 @@ class Registry:
                                 self._textures[key], f * w, 0, w, h
                             )
 
+    def load(self, filepath: str) -> TexturePtr:
+        """Loads a physical .png file directly into GPU memory via SDL2 extensions."""
+        cdef bytes b_filepath = filepath.encode('utf-8')
+        cdef SDL_Texture* tex = IMG_LoadTexture(_renderer, b_filepath)
+        
+        if tex == NULL:
+            raise RuntimeError(f"Failed to load texture into GPU memory: {filepath}")
+
+        cdef int w, h
+        SDL_QueryTexture(tex, NULL, NULL, &w, &h)
+
+        cdef TexturePtr wrapper = TexturePtr()
+        wrapper.ptr = tex
+        wrapper.w = w
+        wrapper.h = h
+        return wrapper
+        
     def data(self, frame_key: str) -> Tuple:
         """
         Returns a lightweight Python tuple resolving mapped texture configurations for the camera.

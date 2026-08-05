@@ -1,6 +1,10 @@
 assets:
+  # <asset-category> tiles, cursors, effects, objects, sheets
+  # **NOTE**: The <asset-category> encodes the Asset property type.
   <asset-category>:
-    <asset-instance>:
+    # <asset-instance>: expressions, projectiles, temporary, persistent, 
+    #                   chests, crates, doors, gates, plates, pixies, sprites
+    <asset-instance>: 
       frame: <frame-implementation>
       animation: <animation-implementation>
       behaviors:

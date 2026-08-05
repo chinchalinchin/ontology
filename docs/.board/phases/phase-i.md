@@ -1,5 +1,5 @@
 
-#### Phase 1: Rendering
+#### Phase I: Render
 
 1. **Cython SDL2 Interface** (`libs/render.pyx`)
 
@@ -26,9 +26,18 @@ Create a centralized Cython Extension Type to ingest the parsed data structures 
 - [x] **Texture Caching**: Invoke `load()` for each physical .png file, storing the resulting TexturePtr in a flat C-level dictionary/map keyed by the base `<asset-key>`.
 - [x] **Persona Assembly**: For composite sprites, leverage render.`compile_texture()` to stack the base and feature textures directly on the GPU, caching the flattened result as a new distinct texture pointer in the dictionary.
 - [x] **Frame Indexing**: Construct a flat lookup table mapping every possible FrameKey (e.g., `<asset-key>-walk-left-3`) to its exact crop coordinates as primitive integers `(src_x, src_y, src_w, src_h)`.
-- [ ] **Query Interface**: Expose get_render_data(frame_key) to return a Python tuple containing `(TexturePtr, src_x, src_y, src_w, src_h)`. This allows screen.py to append destination coordinates without instantiating heavy POPOs.
+- [~] **Query Interface**: Expose `data(frame_key)` to return a Python tuple containing `(TexturePtr, src_x, src_y, src_w, src_h)`. This allows `screen.py` to append destination coordinates without instantiating heavy POPOs.
 
-**4. Command Line Interface (`src/cli.py`)**
+**Application Orchestration** (`src/app/orchestration.py`, `src/app/models/*`, `src/app/game/*`)
+
+- [ ] Initialize `libs.render`.
+- [ ] Instantiate Registry to validate `/src/assets/**` and cache GPU textures.
+- [~] Parse `/src/data/boards/<board-key>/**.yaml`.
+- [~] Convert Pydantic models by invoking Factory to hydrate runtime Asset POPOs from the parsed configuration.
+- [ ] Query Registry for the calculated TexturePtr frames and bind them to the Assets.
+- [~] Intialize Board and inject the hydrated Assets into the Board.
+
+**4. Command Line Interface** (`src/cli.py`)
 
 Implement the debugging commands required to test configurations, schemas, and rendering output without booting the full physics loop.
 
