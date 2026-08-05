@@ -596,6 +596,17 @@
 <p>This section contains an in-depth presentation of the game engine's programmatic architecture.</p>
 <h2 id="initialization">Initialization</h2>
 <ol>
+<li>Bootstrap<ul>
+<li>Load Configuration into memory<ul>
+<li>Load Asset properties YAML files from <code>/src/assets/**/main.yaml</code></li>
+<li>Load Asset recipes YAML File from <code>/src/assets/main.yaml</code></li>
+<li>Load Asset state YAML files from the <code>/src/data/boards/&lt;board-key&gt;</code> directory, where <code>&lt;board-key&gt;</code> is the selected board. There may be an arbitrary number of state files, with any filename, in the <code>&lt;board-key&gt;</code> directory.</li>
+<li>Convert all heavy Pydantic DTOs into lightweight Plain Old Python Objects (POPOs) and Cython <code>cdef classes</code> for runtime use.</li>
+<li>Initialize homogeneous lists of Asset components.</li>
+</ul>
+</li>
+</ul>
+</li>
 <li>Create <code>Registry</code><ul>
 <li>Load Assets into memory<ul>
 <li>Recursively load <code>/src/assets/**</code> using the <code>main.yaml</code> contained in each <code>/src/asset/&lt;category&gt;</code> directory. Pydantic Models (DTOs) are used <em>exclusively</em> during this phase to read <code>main.yaml</code> files and ensure strict schema validation.</li>
@@ -609,21 +620,7 @@
 </li>
 </ul>
 </li>
-<li>Create <code>Board</code><ul>
-<li>Load Board into memory<ul>
-<li>Load the following YAML files from the <code>/src/data/boards/&lt;board-key&gt;</code> directory, where <code>&lt;board-key&gt;</code> is the selected board.<ul>
-<li><code>/src/data/boards/&lt;board-key&gt;/immutable/inanimate.yaml</code></li>
-<li><code>/src/data/boards/&lt;board-key&gt;/immutable/animate.yaml</code></li>
-<li><code>/src/data/boards/&lt;board-key&gt;/mutable/inanimate.yaml</code></li>
-<li><code>/src/data/boards/&lt;board-key&gt;/mutable/animate.yaml</code></li>
-</ul>
-</li>
-<li>Convert all heavy Pydantic DTOs into lightweight Plain Old Python Objects (POPOs) and Cython <code>cdef classes</code> for runtime use.</li>
-<li>Initialize homogeneous lists of Asset components (e.g., <code>board.plates</code>, <code>board.sprites</code>, <code>board.projectiles</code>).</li>
-</ul>
-</li>
-</ul>
-</li>
+<li>Create <code>Board</code></li>
 <li>Register <code>Mechanics</code><ul>
 <li>Initialize the Mechanics (e.g., <code>PhysicsMechanic</code>, <code>CollisionMechanic</code>, <code>AnimationMechanic</code>).</li>
 </ul>
