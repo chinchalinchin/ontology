@@ -28,6 +28,12 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
 **Properties**
 
 - AssetKey: `str`
+- Actions: 
+    - Count: `int`
+    - Directions:
+        - Row: `int`
+        - Attackboxes: `List[Attackbox]` 
+- Shape: `ShapeProperties` 
 
 **State**
 
@@ -48,6 +54,7 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
 - Animation:
     - Action: `str`
     - Direction: `str`
+    - Frame: `int`
 - Intention: 
     - Extension: `str`
     - Disposition: `str`
@@ -65,51 +72,30 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
     - Triggers: `Dict[str, bool]`
     - Parameters: `Dict[str, Dict[str, Union[int, double]]]`
 - Memory: 
-    - Goal:
-        - AssetName: `str`
-        - Intention:
-            - Action: `str`
-            - Extension: `str`
+    - Goal: `Goal (see below)`
     - Communication: `List[str]` 
+    - Prices: `Dict[str, double]`
 - Goal: 
-    - AssetName: `str`
+    - Name: `str`
+    - Category: `Enum[sprite | object]`
     - Intention:
         - Action: `str`
         - Extension: `str`
-- Frame: `int`
 
-Frame is an integer that tracks the current animation frame. It's maximum value is dependent on the Action state. For example, if a Sprite is in the `walk` Action state, then Frame will cycle from 0 to `count.walk`.
+`state.animation.frame` is an integer that tracks the current animation frame. Its maximum value is dependent on the Action state and its corresponding properties. In other words, if a Sprite is in the `state.animation.action` Action state, then Frame will cycle from 0 to `properties.actions[state.animation.action].count`.
 
-**Calculated State**
+**Frame**
 
-- Key: `AssetKey + Animation.Direction + Animation.Action + Animation.Frame`
+- `key(asset, animation)`: `asset + animation.direction + animation.action + animation.frame`
 
 **Methods**
 
-- `animate() -> None`: Increments Frame, if `triggers.animated == true`.
-- `update(intent: Intent) -> None`: Updates the Sprite's current Intent.
+!!! TODO
+    These should be incorporated into Mechanics to keep the Sprite class purely data-driven.
+
+- `intend(intent: Intention) -> None`: Updates the Sprite's current Intention.
 - `achieved(goal_asset: Asset) -> Union[Intent, None]`: Returns Goal Intention if Goal achieved, None otherwise.
 
-## Intents
-
-Sprites consume Intents. Intents represent mutable state changes. All Assets implement an `update` method that receives as argument an Intention object, possibly null. This method is called during the game loop for each Asset. An Intent has atleast one of the following *Disposition*, *Extension*, *Expression* or *Motivation*. These attributes are central to Sprite logic and are covered more in-depth below.
-
-The [Player](./03-player.md) implements the Sprite Asset interface, but is unique in its implementation, insofar controller button are mapped into Intents, which are then consumed by the game engine, i.e. Intents act as the interface between the user and the game. 
-
-All state changes are mediated through an Intent. For example, a mutable, inanimate Object, such as Crates, changes its position state when it is pushed by a hitbox in motion. In terms of the game engine, this is achieved  by the Crate receiving an Intent that contains the state instruction,
-
-```python
-intention.disposition = 'attach'
-```
-
-TODO
-
-```python 
-animation.action = 'walk'
-animation.direction = 'left'
-```
-
-An Intent is stored in a Sprite's *Intention*. Intentions are covered in more detail below.
 
 ### Schema
 
@@ -170,7 +156,7 @@ TODO
 
 ## Action, Direction
 
-Action and Direction were previously defined in the [Assets documentation](./01-assets.md), since these two Intention states determine the animation frame currently being rendered in the gameloop. 
+Action and Direction were previously defined in the [Assets documentation](./01-assets.md), since these two state attributes determine the animation frame currently being rendered in the gameloop. 
 
 As a reminder, the default Actions and Directions for the game engine (and LPC specification) are,
 
@@ -184,6 +170,9 @@ As a reminder, the default Actions and Directions for the game engine (and LPC s
     Any Actions defined in the `/src/assets/sheets/**.png` file rows must have its Action key entered in `/src/data/intents/main.yaml#actions` file to register as an Action enterable from a Disposition.
 
 ## Intentions
+
+!!! importatnt
+    The Player state does not observe Intention Mechanics such as the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to state. See [Player documentation](./03-player.md) for more information on the Player.
 
 *Intentions* are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given an Intention state, along with an Animation state, that is updated by the gameplay loop. The complex internal state of a Sprite is represented by its Intention. Intention is the medium through which Sprites transition into different Animation states. 
 
@@ -205,9 +194,6 @@ The default Extension states are enumerated below,
 - `trade`
 
 ### Disposition
-
-!!! importatnt
-    The Player state does not observe the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to state. See [Player documentation](./03-player.md) for more information on the Player.
     
 A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's *Disposition* is an element in its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.
 
@@ -222,11 +208,11 @@ A Disposition determines which Actions are currently reachable for a Sprite. In 
 3. `barter`
     - Reachable Actions: None
     - Reachable Dispostions: None
-    - Reachable Extensions: None
+    - Reachable Extensions: `trade`
 4. `communicate`
     - Reachable Actions: None
     - Reachable Dispostions: None
-    - Reachable Extensions: None
+    - Reachable Extensions: `trade`, `speak`
 5. `escape`
     - Reachable Actions: `walk`
     - Reachable Dispostions: None

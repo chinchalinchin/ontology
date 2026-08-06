@@ -13,8 +13,7 @@ Construct a native Cython wrapper around the SDL2 C library to handle hardware-a
 - [x] **Method** - `compose(base_ptr, feature_ptrs)` Bind a blank `TEXTUREACCESS_TARGET`, stamps the base and features onto it, unbinds, and returns the new flattened TexturePtr. Used for assembling Sprite's base and features into a "virtual" Asset.
 - [x] **Method** - `render(background_ptr, assets)`:** Clear the active renderer, copy the cached background pointer, iterate over active Assets to overlay their respective textures, and call `SDL_RenderPresent`.
 - [x] **Method** - `save(filename)`:** Read the active renderer's pixels into an `SDL_Surface` and export it to the disk for debugging.
-
-- **NOTE**: `load()` should be moved to `libs/registry.pyx`. The Registry should handle the lifecycle of physical assets (loading from disk, caching GPU pointers, garbage collection). `libs/render.pyx` should purely be an interface for SDL. Probably `TexturePtr` should be maintained in `libs/registry.pyx` as well.
+- [ ] Optimize Render Signatures: Refactor `render()` and `construct()` to accept flat tuples of primitive integers rather than Position/Dimensions POPOs to enforce zero-allocation C-stack unpacking.
 
 2. **Asset Registry** (`libs/registry.pyx` & `libs/registry.pxd`)
 
@@ -26,7 +25,7 @@ Create a centralized Cython Extension Type to ingest the parsed data structures 
 - [x] **Texture Caching**: Invoke `load()` for each physical .png file, storing the resulting TexturePtr in a flat C-level dictionary/map keyed by the base `<asset-key>`.
 - [x] **Persona Assembly**: For composite sprites, leverage render.`compile_texture()` to stack the base and feature textures directly on the GPU, caching the flattened result as a new distinct texture pointer in the dictionary.
 - [x] **Frame Indexing**: Construct a flat lookup table mapping every possible FrameKey (e.g., `<asset-key>-walk-left-3`) to its exact crop coordinates as primitive integers `(src_x, src_y, src_w, src_h)`.
-- [~] **Query Interface**: Expose `data(frame_key)` to return a Python tuple containing `(TexturePtr, src_x, src_y, src_w, src_h)`. This allows `screen.py` to append destination coordinates without instantiating heavy POPOs.
+- [x] **Query Interface**: Expose `data(frame_key)` to return a Python tuple containing `(TexturePtr, src_x, src_y, src_w, src_h)`. This allows `screen.py` to append destination coordinates without instantiating heavy POPOs.
 
 **Application Orchestration** (`src/app/orchestration.py`, `src/app/models/*`, `src/app/game/*`)
 
@@ -35,7 +34,8 @@ Create a centralized Cython Extension Type to ingest the parsed data structures 
 - [~] Parse `/src/data/boards/<board-key>/**.yaml`.
 - [~] Convert Pydantic models by invoking Factory to hydrate runtime Asset POPOs from the parsed configuration.
 - [ ] Query Registry for the calculated TexturePtr frames and bind them to the Assets.
-- [~] Intialize Board and inject the hydrated Assets into the Board.
+- [~] Intialize Board and inject the hydrated Assets into the Board. This logic belongs inside `Screen.draw()`, requiring the Registry to be injected into the Screen component at startup.
+- [ ] Camera Culling: Implement integer-based boundary checks inside Screen.draw() to cull assets falling outside the camera's viewport before passing them to the Cython rendering interface.
 
 **4. Command Line Interface** (`src/cli.py`)
 

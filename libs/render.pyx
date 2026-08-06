@@ -167,18 +167,11 @@ def construct(TexturePtr target, list tiles):
     
 def render(TexturePtr background, list assets, Position camera, Dimensions screen):
     """
-    active_assets list format: (TexturePtr, src_pos, src_dim, dst_pos, dst_dim)
-    camera: Top-left Position of the viewport.
-    screen: Dimensions of the viewport.
     """
     SDL_RenderClear(_renderer)
-    
     cdef SDL_Rect c_src, c_dst, bg_src
-    cdef SDL_Rect* p_src
-    cdef SDL_Rect* p_dst
     cdef TexturePtr tex_wrapper
-    cdef Position s_pos, d_pos
-    cdef Dimensions s_dim, d_dim
+    cdef int sx, sy, sw, sh, dx, dy, dw, dh
 
     if background is not None:
         bg_src.x = camera.x
@@ -188,24 +181,16 @@ def render(TexturePtr background, list assets, Position camera, Dimensions scree
         SDL_RenderCopy(_renderer, background.ptr, &bg_src, NULL)
         
     for asset in assets:
-        tex_wrapper, s_pos, s_dim, d_pos, d_dim = asset        
+        # Safely unpack the primitive tuple directly into C-variables
+        tex_wrapper, sx, sy, sw, sh, dx, dy, dw, dh = asset        
         
-        if s_pos is not None and s_dim is not None:
-            rectangle(&c_src, s_pos, s_dim)
-            p_src = &c_src
-        else:
-            p_src = NULL
+        c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sh
+        
+        c_dst.x = dx - camera.x
+        c_dst.y = dy - camera.y
+        c_dst.w, c_dst.h = dw, dh
             
-        if d_pos is not None and d_dim is not None:
-            c_dst.x = d_pos.x - camera.x
-            c_dst.y = d_pos.y - camera.y
-            c_dst.w = d_dim.l
-            c_dst.h = d_dim.w
-            p_dst = &c_dst
-        else:
-            p_dst = NULL
-            
-        SDL_RenderCopy(_renderer, tex_wrapper.ptr, p_src, p_dst)
+        SDL_RenderCopy(_renderer, tex_wrapper.ptr, &c_src, &c_dst)
                     
     SDL_RenderPresent(_renderer)
 

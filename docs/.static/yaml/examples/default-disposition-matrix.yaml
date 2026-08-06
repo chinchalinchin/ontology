@@ -10,14 +10,14 @@ intents:
       transitions:
         - next: attack
           conditions:  
-            - sprite.intention.goal.target.category == 'sprite'
+            - sprite.goal.target.category == 'sprite'
         - next: hunt
           conditions: 
-            - not sprite.intention.goal.target
+            - not sprite.goal.target
             - sprite.memory.goal.target.category == 'sprite'
         - next: loot
           condition: 
-            - sprites[sprite.target.name].mutators.triggers.dead
+            - sprites[sprite.goal.target.name].mutators.triggers.dead
     attract:
       actions: null
       extensions:

@@ -1,6 +1,8 @@
 #### Phase III: Dispositions
 
-To maintain performance, the custom disposition DSL defined in `/src/assets/intents/main.yaml` must be compiled into executable Python `lambda` functions during the orchestration phase of the application bootstrap.
+##### Disposition Propositional Language (DPL)
+
+To maintain performance, the custom disposition DPL defined in `/src/assets/intents/main.yaml` must be compiled into executable Python `lambda` functions during the orchestration phase of the application bootstrap.
 
 **Implementation Outline**
 

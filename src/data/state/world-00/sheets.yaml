@@ -21,9 +21,9 @@ sheets:
         strength: 10
         defense: 10
         speed: 10
-      mutators:
+      mutators: 
         frightened:
-          radius: 25
+          radius: 15
           limit: 0.25
           enemy: 4
         vision:
@@ -48,6 +48,8 @@ sheets:
           - insult
           # unforgettable
           - greeting
+        prices:
+          <loot-key>: 
       inventory: 
         loot:
           <loot-key>: int
