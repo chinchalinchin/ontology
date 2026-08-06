@@ -4,12 +4,28 @@
 Header file for Cythonized mathematical and geometric operations.
 """
 
-from libs.core cimport Position, Dimensions, Hitbox, Shape, Velocity
+from libs.core cimport Position, Dimensions, Hitbox, Velocity
 
 cdef class Geometry:
     
     @staticmethod
-    cdef bint intersects(Position pos, Shape shape, Position other_pos, Shape other_shape)
+    cdef bint intersects(
+        Position pos1, 
+        Dimensions dim1, 
+        list hitboxes1,
+        Position pos2, 
+        Dimensions dim2, 
+        list hitboxes2
+    )
+
+    @staticmethod
+    cdef bint onscreen(
+        Position pos, 
+        Dimensions dim, 
+        Position p_pos, 
+        Dimensions p_dim, 
+        Dimensions screen
+    )
 
 
 cdef class Physics:

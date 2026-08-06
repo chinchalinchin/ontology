@@ -7,7 +7,6 @@ Cythonized high-performance geometry and physics logic.
 from typing import List
 
 # Cython Libraries
-# Note: 'Shape' has been removed from the imports.
 from libs.core cimport Position, Dimensions, Hitbox
 
 
@@ -100,10 +99,13 @@ cdef class Physics:
                 asset_a = assets[i]
                 asset_b = assets[j]
                 
-                # Retrieve raw state/properties directly, entirely skipping Shape wrapper
                 if Geometry.intersects(
-                    asset_a.state.position, asset_a.properties.dimensions, getattr(asset_a.properties, 'hitboxes', []),
-                    asset_b.state.position, asset_b.properties.dimensions, getattr(asset_b.properties, 'hitboxes', [])
+                    asset_a.state.position, 
+                    asset_a.properties.dimensions, 
+                    getattr(asset_a.properties, 'hitboxes', []),
+                    asset_b.state.position, 
+                    asset_b.properties.dimensions,
+                    getattr(asset_b.properties, 'hitboxes', [])
                 ):
                     # TODO: Trigger collision mutators or halt vectors (Resolution Phase)
                     pass

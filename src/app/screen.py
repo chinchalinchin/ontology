@@ -58,8 +58,8 @@ class Screen:
         and clamps it to the boundaries of the board.
         """
         # Center the camera on the player
-        cam_x = player.shape.position.x + (player.shape.dimensions.l // 2) - (self.screensize.l // 2)
-        cam_y = player.shape.position.y + (player.shape.dimensions.w // 2) - (self.screensize.w // 2)
+        cam_x = player.properties.position.x + (player.properties.dimensions.l // 2) - (self.screensize.l // 2)
+        cam_y = player.properties.position.y + (player.properties.dimensions.w // 2) - (self.screensize.w // 2)
 
         # Clamp to board edges
         max_x = max(0, self.boardsize.l - self.screensize.l)

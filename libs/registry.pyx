@@ -94,14 +94,14 @@ class Registry:
             for cat in ['chests', 'gates', 'plates']:
                 for key, obj in getattr(self.objects_config, cat, {}).items():
                     if key in self._textures:
-                        w, h = obj.shape.dim.l, obj.shape.dim.w
+                        w, h = obj.properties.dim.l, obj.properties.dim.w
                         self._frames[f"{key}-idle"] = (self._textures[key], 0, 0, w, h)
                         self._frames[f"{key}-activated"] = (self._textures[key], w, 0, w, h)
 
         # 2. Sprites
         if self.sheets_config and self.sheets_config.sprites:
-            w = self.sheets_config.sprites.shape.dim.l
-            h = self.sheets_config.sprites.shape.dim.w
+            w = self.sheets_config.sprites.properties.dim.l
+            h = self.sheets_config.sprites.properties.dim.w
 
             # Apply mapping across all Sprite assets against the LPC schema configuration
             for s_key in self._textures:
@@ -116,23 +116,22 @@ class Registry:
 
         # 3. Pixies
         if self.sheets_config and getattr(self.sheets_config, 'pixies', None):
-            for key, pixie_prop in getattr(self.sheets_config.pixies, 'shapes', {}).items():
+            for key, pixie_prop in getattr(self.sheets_config.pixies, 'entities', {}).items():
                 if key in self._textures:
                     w, h = pixie_prop.dim.l, pixie_prop.dim.w
-                    for action, action_prop in getattr(self.sheets_config.pixies, 'action', {}).items():
-                        count = getattr(action_prop, 'count', 4)  # Default fallback handling
-                        for row, direction in enumerate(action_prop.directions):
-                            for f in range(count):
-                                self._frames[f"{key}-{direction}-{f}"] = (
-                                    self._textures[key], f * w, row * h, w, h
-                                )
+                    count = getattr(self.sheets_config.pixies, 'count', 6) # fallback
+                    for row, direction in enumerate(getattr(self.sheets_config.pixies, 'directions', {}) ):
+                        for f in range(count):
+                            self._frames[f"{key}-{direction}-{f}"] = (
+                                self._textures[key], f * w, row * h, w, h
+                            )
 
         # 4. Effects
         if self.effects_config:
             for cat in ['persistent', 'temporary']:
                 for key, eff in getattr(self.effects_config, cat, {}).items():
                     if key in self._textures:
-                        w, h = eff.shape.dim.l, eff.shape.dim.w
+                        w, h = eff.properties.dim.l, eff.properties.dim.w
                         for f in range(eff.count):
                             self._frames[f"{key}-{f}"] = (
                                 self._textures[key], f * w, 0, w, h

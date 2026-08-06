@@ -14,7 +14,7 @@ from app.player import Player
 
 # Cython Libraries
 from libs.math import Geometry
-from libs.core import Dimensions, Shape
+from libs.core import Dimensions
 
 class Frame(ABC):
     """

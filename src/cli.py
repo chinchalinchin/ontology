@@ -83,15 +83,7 @@ def cli_render(args):
             if tex_data:
                 tex, sx, sy, sw, sh = tex_data
                 dx, dy = asset.state.position.x, asset.state.position.y
-                
-                # Handling the bug previously flagged for nested 'shape' property layouts
-                try:
-                    dw = asset.properties.dimensions.l
-                    dh = asset.properties.dimensions.w
-                except AttributeError:
-                    dw = asset.properties.shape.dim.l
-                    dh = asset.properties.shape.dim.w
-                    
+                dw, dh = asset.properties.dimensions.l, asset.properties.dimensions.w          
                 active_assets.append((tex, sx, sy, sw, sh, dx, dy, dw, dh))
                 
     sdl_render(bg_canvas, active_assets, 0, 0, chunk_size, chunk_size)

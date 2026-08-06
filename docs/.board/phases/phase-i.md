@@ -58,3 +58,4 @@ Implement the debugging commands required to test configurations, schemas, and r
 
 - [ ] **Struts**: Struts have been added to support the `CommerceMechanics`. Refer to the `01-assets.md#struts` for more information on their use. 
 - [ ] **Tile Schemas**: During the conceptualizion of Struts, the Tile property schema was altered. The Tile instantiation and hydration flows may no longer be correct. Review the Tile creation flow and ensure everything logically connects.
+- [ ] **Shape**: The Asset properties `hitboxes` and `dimensions` were previously nested under a `shape` object. This object has been removed to flatten out the objects and align the application with a data-oriented design perspective. Ensure the application has not been broken during this refactor.

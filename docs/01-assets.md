@@ -103,9 +103,8 @@ Every physical entity in the game is an instance of the unified `Asset` class. T
 
 1. **Properties:** A model defining immutable data (e.g., `TileProperties`, `ObjectProperties`).
 2. **State:** A model defining mutable data (e.g., `TileState`, `ChestState`).
-3. **Shape:** A component constructed from Properties and State that manages `Position`, `Dimensions`, and `Hitboxes` to process inline collision math.
-4. **Animation** Stateless strategies (e.g. `SpriteAnimation`, `PixieAnimation`) injected into the Asset. These contain the specific logic for updating frames.
-5. **Frame:** A static schema calculation used by the renderer to determine the correct texture string key.
+3. **Animation** Stateless strategies (e.g. `SpriteAnimation`, `PixieAnimation`) injected into the Asset. These contain the specific logic for updating frames.
+4. **Frame:** A static schema calculation used by the renderer to determine the correct texture string key.
 
 *Behaviors* are decoupled from Assets and managed entirely by *Mechanics* classes that iterate over the Board Assets. See [Mechanics documentation](./06-architecture.md#mechanics) for more information.
 
@@ -170,7 +169,8 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 **Properties**
 
 * `key: str`
-* `shape: ShapeProperties` 
+* `dim: Dimensions`
+* `hitboxes: List[Hitbox]` 
 
 **State**
 
@@ -193,7 +193,8 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 **Properties**
 
 * `key: str`
-* `shape: ShapeProperties`
+* `dim: Dimensions`
+* `hitboxes: List[Hitbox]` s`
 
 **State**
 
@@ -212,7 +213,8 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 **Properties**
 
 * `key: str`
-* `shape: ShapeProperties`
+* `dim: Dimensions`
+* `hitboxes: List[Hitbox]` 
 
 **State**
 
@@ -233,7 +235,8 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 **Properties**
 
 * `key: str`
-* `shape: ShapeProperties`
+* `dim: Dimensions`
+* `hitboxes: List[Hitbox]` 
 
 **State**
 
@@ -256,7 +259,8 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 **Properties**
 
 * `key: str`
-* `shape: ShapeProperties`
+* `dim: Dimensions`
+* `hitboxes: List[Hitbox]` 
 
 **State**
 
@@ -291,7 +295,8 @@ Some Effects are brief (e.g. explosions or magic effects), while others loop thr
 **Properties**
 
 * `key: str`
-* `shape: ShapeProperties`
+* `dim: Dimensions`
+* `hitboxes: List[Hitbox]` 
 * `count: int`
 
 **Frame**
@@ -354,7 +359,8 @@ Where `n(Action)` is the number of frames per Action.
 **Properties**
 
 * `key: str`
-* `shape: ShapeProperties`
+* `dim: Dimensions`
+* `hitboxes: List[Hitbox]` 
 
 **State**
 
@@ -373,7 +379,8 @@ Where `n(Action)` is the number of frames per Action.
 **Properties**
 
 * `key: str`
-* `shape: ShapeProperties`
+* `dim: Dimensions`
+* `hitboxes: List[Hitbox]` 
 * `actions: Dict[str, SpriteActionProperty]`
 
 **State**

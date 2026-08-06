@@ -37,7 +37,8 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
     - Directions:
         - Row: `int`
         - Attackboxes: `List[Attackbox]` 
-- Shape: `ShapeProperties` 
+* Dimensions: `Tuple[int, int]
+* Hitboxes: `List[Tuple[int, int, int, int]]` 
 
 **State**
 

@@ -73,7 +73,7 @@ class PositionalState(AssetState):
     # ---------------------------------------------------- FIELDS
     position: Position
 
-@dataclass(slots=True):
+@dataclass(slots=True)
 class PropertyState(AssetState):
     """
     """
