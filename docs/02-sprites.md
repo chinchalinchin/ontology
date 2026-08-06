@@ -77,7 +77,7 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
     - Prices: `Dict[str, double]`
 - Goal: 
     - Name: `str`
-    - Category: `Enum[sprite | object]`
+    - Category: `Enum[sprite | object | loot]`
     - Intention:
         - Action: `str`
         - Extension: `str`
@@ -282,20 +282,20 @@ Terms:
 
 - `None`: null value
 - `str`: constants
-- `sprite.<state>`: self variable
-- `sprites[<sprite-name>].<state>`: Sprites variable
+- `sprite.<state>`: self State variable
+- `sprites[<sprite-name>].<state>`: other Sprites state variable
 
 In the default Disposition Transition matrix given above, the transition from `attack` to `hunt` is conditional on the following,
 
 ```yaml
-- not sprite.goal.target
-- sprite.memory.goal.target.category == 'sprite'
+- not sprite.goal
+- sprite.memory.goal.category == 'sprite'
 ```
 
-`sprite` is a reference to the Sprite which is currently processing the given Disposition. Thus, the Sprite's Disposition state will transition to `hunt` if the Sprite currently does not have a target, but remembers having a target of category `sprite`.
+`sprite` is a reference to the Sprite's state which is currently processing the given Disposition. Thus, the Sprite's Disposition state will transition to `hunt` if the Sprite currently does not have a target, but remembers having a target of category `sprite`.
 
 !!! note
-    The expression `not sprite.intention.goal.target` is a *truthy* expression, i.e. it is to be interpretted as an existential claim. In other words, this expression evaluates to `true` if `sprite.intention.goal.target` does not exist. If the expression involves a List, e.g. `sprite.memory.communications`, this expression evaluates to `true` in the event it has more than 0 entries.
+    The expression `not sprite.goal` is a *truthy* expression, i.e. it is to be interpretted as an existential claim. In other words, this expression evaluates to `true` if `sprite.goal` does not exist. If the expression involves a List, e.g. `sprite.memory.communications`, this expression evaluates to `true` in the event it has more than 0 entries.
 
 In another example, the transition from `attack` to `loot` in the default Disposition Transition matrix is given by,
 
@@ -303,7 +303,7 @@ In another example, the transition from `attack` to `loot` in the default Dispos
 - sprites[sprite.target.name].mutators.triggers.dead
 ```
 
-`sprites` is a reference to a dictionary of all ingame Sprites keyed by their identifying and unique `name`, which provides access to their state attributes.
+`sprites` is a reference to a dictionary of all ingame Sprites states keyed by their identifying and unique `name`, which provides access to their state attributes.
 
 Notice in the example there is a self-entrant transition. A Sprite with an `attack` Disposition can re-enter the `attack` Disposition conditional on the Sprite still having a target,
 
@@ -312,7 +312,7 @@ Notice in the example there is a self-entrant transition. A Sprite with an `atta
 ```
 
 !!! important
-    The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if `sprite.goal.target.category == 'sprite'`, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back into `attack`.
+    The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == 'sprite'`, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back into `attack`.
 
 ### Motivation
 
@@ -351,12 +351,21 @@ The default Expressions are enumerated below,
 
 *Goals* are provide the seed (or energy) for transitions through Dispositions and the application of Motivations to modulate said transitions. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is *in order* to achieve a Goal.
 
-- `name`: Unique Identifier of Asset Goal.
+- `name`: Unique Identifier of the Goal.
+- `category`: Category of the Goal. (`sprite`, `asset`, `position`, `loot`, `wealth`)
 - `intention`:
     - `extension`: Extension to be applied when Goal achieved .
     - `action`: Action to be applied when Goal achieved.
 
 When a Sprite has Goal, it will seek out (path-find) its way to the AssetName, provided the AssetName is within `mutators.parameters.vision.radius`.
+
+The `category` of a Goal affects the type of identifier given in `name`. 
+
+- `category == sprite`: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The `name` will be a Sprite `name`.
+- `category == asset`: The Goal is a non-Sprite Asset, i.e. the Sprite is trying to find an ingame Object. The `name` will be the Asset `name`.
+- `category == loot`: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The `name` will be an Inventory key. 
+- `category == wealth`: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The `name` will be an Inventory key. The key will be of the value with the maximum value in the Sprite's Prices, e.g. the loot with the highest Price.
+- `category == position`: The Goal is Position, i.e. the Sprite is trying to find a Position on the Board. The `name` will be ... (TODO: PROPERTY MECHANICS).
 
 ## Memory
 

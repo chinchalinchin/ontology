@@ -13,153 +13,185 @@ intents:
     plot-b: null
   # -------------------------- DIRECTIONS
   directions:
-    up: null
-    left: null
-    down: null
-    right: null
+    - up
+    - left
+    - down
+    - right
   # --------------------------
   # --------------------------
   # -------------------------- DISPOSITIONS
   dispositions:
-    # ------------------------
-    # ------------------------ ATTACH
-    attach:
-      # ---------------------- ATTACH: REACHABLE ACTIONS
-      actions: 
-        - walk
-      # ---------------------- ATTACH: REACHAABLE EXTENSIONS
-      extensions: null
-      # ---------------------- ATTACH: TRANSITIONS
-      transition: null
-    # ------------------------
-    # ------------------------ ATTACK
     attack:
-      # ---------------------- ATTACK: REACHABLE ACTIONS
       actions:
         - cast
         - slash
         - shoot
         - thrust
-      # ---------------------- ATTACK: REACHABLE EXTENSIONS
       extensions: null
-      # ---------------------- ATTACK: TRANSITIONS
       transitions:
         - next: attack
           conditions:  
-            - sprite.goal.target.category == 'sprite'
+            - sprite.goal.category == 'sprite'
         - next: hunt
           conditions: 
-            - not sprite.goal.target
-            - sprite.memory.goal.target == 'sprite'
-        - next: loot
-          condition: 
-            - sprites[sprite.target.name].mutators.triggers.dead
-    # ------------------------
-    # ------------------------ ATTRACT
+            - not sprite.goal
+            - sprite.memory.goal.category == 'sprite'
+        - next: scavenge
+          conditions: 
+            - sprites[sprite.goal.name].mutators.triggers.dead
     attract:
-      # ---------------------- ATTRACT: REACHABLE ACTIONS
       actions: null
-      # ---------------------- ATTRACT: REACHABLE EXTENSIONS
-      extensions: 
+      extensions:
         - interact
-      # ---------------------- ATTRACT: TRANSITIONS
+        - speak
       transitions:
-        - next: attract
-          condition: sprite.inventory.loot
-        - next: communicate
-          condition: sprite.memory.communications
         - next: barter
-          condition: sprite.inventory.loot
-    # ------------------------
-    # ------------------------ BARTER:
+          conditions:
+            - sprite.inventory
+            - sprite.intention.motivation == 'profit'
+        - next: communicate
+          conditions: 
+            - sprite.memory.communications
     barter:
       actions: null
       extensions:
         - trade
+        - speak
       transitions: 
-        - next: barter
-          condition:
+        - next: threaten
+          conditions:
+            - sprite.memory.goal.category == 'loot'
+            - sprite.inventory.wallet < sprite.prices[sprite.memory.goal.name]
+            - sprite.intention.motivation == 'survival'
     communicate:
+      actions:
+        - walk
+      extensions: 
+        - speak
+      transitions:
+        - next: 
+          conditions: 
+    escape: 
+      actions: 
+        - walk
+      extensions:
+        - sprint
+      transitions:
+        - next: escape
+          conditions: 
+            - sprites[sprite.goal.name].intention.disposition == 'attack'
+        - next: return
+          conditions: 
+            - not sprite.goal
+    find: 
       actions: null
       extensions: null
       transitions:
-        - next: 
-          condition: 
-    escape: 
-      transitions:
-        - next: escape
-          condition: 
-            - sprite.disposition == 'escape' 
-            - sprite.target.disposition == 'attack'
-        - next: return
-          condition: sprite.
-    find: 
-      transitions:
-        - next: loot
-          condition: 
+        - next: scavenge
+          conditions: 
+            - 
         - next: recoil
-          condition:
+          conditions:
+            -
         - next: return
-          condition: 
+          conditions:
+            -  
     follow: 
+      actions: null
+      extensions: null
       transitions: 
         - next: follow
-          condition: sprite.intention.disposition == 'follow' and sprite.goal.target
+          conditions:
+            -  
         - next: hunt
-          condition: 
+          conditions:
+            -  
         - next: wander
-          condition: 
+          conditions:
+            -  
     idle: 
+      actions: null
+      extensions: null
       transitions: 
         - next: idle
-          condition: sprite.intention.disposition == 'idle'
+          conditions:
+            -  
         - next: recoil
-          condition: sprite.mutators.triggers.struck
+          conditions: 
+            - sprite.mutators.triggers.struck
         - next: wander
-          condition:
+          conditions:
+            - 
     interact:
+      actions: null
+      extensions: null
       transitions:
         - next:
-          condition:
-    loot:
-      transitions:
-        - next: return
-          condition: 
-    mock: 
+          conditions:
+            - 
+    mock:
+      actions: null
+      extensions: null 
       transitions:
         - next: mock
-          condition: 
+          conditions:
+            -  
         - next: threaten
-          condition: 
+          conditions:
+            -  
     recoil:
+      actions: null
+      extensions: null
       transitions:
         - next: attack
-          condition: 
+          conditions:
+            -  
         - next: escape
-          condition: sprite.mutators.frightened
+          conditions: 
+            - sprite.mutators.triggers.frightened
     return:
+      actions: null
+      extensions: null
       transitions:
         - next: idle
-          condition: 
+          conditions: 
+            - 
         - next: return
-          condition:
+          conditions:
+            - 
         - next: wander
-          condition: 
+          conditions: 
+            - 
+    scavenge:
+      actions: null
+      extensions: null
+      transitions:
+        - next: return
+          conditions:
+            -  
     threaten:
+      actions: null
+      extensions: null
       transitions:
         - next: attack
-          condition: 
+          conditions:
+            -  
         - next: hunt
-          condition:  
+          conditions:
+            -   
         - next: threaten
-          condition: 
+          conditions:
+            -  
         - next: recoil
-          condition:
+          conditions:
+            - 
     wander:
+      actions: null
+      extensions: null
       transitions:
         - next: recoil
-          condition: 
-  
+          conditions:
+            - 
   # -------------------------- EXPRESSIONS
   expressions:
     affection:

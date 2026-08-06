@@ -10,106 +10,164 @@ intents:
       transitions:
         - next: attack
           conditions:  
-            - sprite.goal.target.category == 'sprite'
+            - sprite.goal.category == 'sprite'
         - next: hunt
           conditions: 
-            - not sprite.goal.target
-            - sprite.memory.goal.target.category == 'sprite'
-        - next: loot
-          condition: 
-            - sprites[sprite.goal.target.name].mutators.triggers.dead
+            - not sprite.goal
+            - sprite.memory.goal.category == 'sprite'
+        - next: scavenge
+          conditions: 
+            - sprites[sprite.goal.name].mutators.triggers.dead
     attract:
       actions: null
       extensions:
         - interact
+        - speak
       transitions:
         - next: barter
-          condition:
+          conditions:
+            - sprite.inventory
+            - sprite.intention.motivation == 'profit'
         - next: communicate
-          condition: sprite.memory.communications
+          conditions: 
+            - sprite.memory.communications
     barter:
+      actions: null
+      extensions:
+        - trade
+        - speak
       transitions: 
-        - next:
-          condition:
+        - next: threaten
+          conditions:
+            - sprite.memory.goal.category == 'loot'
+            - sprite.inventory.wallet < sprite.prices[sprite.memory.goal.name]
+            - sprite.intention.motivation == 'survival'
+    communicate:
+      actions:
+        - walk
+      extensions: 
+        - speak
+      transitions:
+        - next: 
+          conditions: 
     escape: 
+      actions: 
+        - walk
+      extensions:
+        - sprint
+      transitions:
+        - next: escape
+          conditions: 
+            - sprites[sprite.goal.name].intention.disposition == 'attack'
+        - next: return
+          conditions: 
+            - not sprite.goal
+    find: 
       actions: null
       extensions: null
       transitions:
-        - next: escape
-          condition: 
-            - sprite.disposition == 'escape' 
-            - sprite.target.disposition == 'attack'
-        - next: return
-          condition: sprite
-      communicate:
-        actions: null
-        extensions: null
-        transitions:
-          - next: 
-            condition: 
-    find: 
-      transitions:
-        - next: loot
-          condition: 
+        - next: scavenge
+          conditions: 
+            - 
         - next: recoil
-          condition:
+          conditions:
+            -
         - next: return
-          condition: 
+          conditions:
+            -  
     follow: 
+      actions: null
+      extensions: null
       transitions: 
         - next: follow
-          condition: 
+          conditions:
+            -  
         - next: hunt
-          condition: 
+          conditions:
+            -  
         - next: wander
-          condition: 
+          conditions:
+            -  
     idle: 
+      actions: null
+      extensions: null
       transitions: 
         - next: idle
-          condition: 
+          conditions:
+            -  
         - next: recoil
-          condition: sprite.mutators.struck.triggered
+          conditions: 
+            - sprite.mutators.triggers.struck
         - next: wander
-          condition:
+          conditions:
+            - 
     interact:
+      actions: null
+      extensions: null
       transitions:
         - next:
-          condition:
-    loot:
-      transitions:
-        - next: return
-          condition: 
-    mock: 
+          conditions:
+            - 
+    mock:
+      actions: null
+      extensions: null 
       transitions:
         - next: mock
-          condition: 
+          conditions:
+            -  
         - next: threaten
-          condition: 
+          conditions:
+            -  
     recoil:
+      actions: null
+      extensions: null
       transitions:
         - next: attack
-          condition: 
+          conditions:
+            -  
         - next: escape
-          condition: sprite.mutators.frightened
+          conditions: 
+            - sprite.mutators.triggers.frightened
     return:
+      actions: null
+      extensions: null
       transitions:
         - next: idle
-          condition: 
+          conditions: 
+            - 
         - next: return
-          condition:
+          conditions:
+            - 
         - next: wander
-          condition: 
+          conditions: 
+            - 
+    scavenge:
+      actions: null
+      extensions: null
+      transitions:
+        - next: return
+          conditions:
+            -  
     threaten:
+      actions: null
+      extensions: null
       transitions:
         - next: attack
-          condition: 
+          conditions:
+            -  
         - next: hunt
-          condition:  
+          conditions:
+            -   
         - next: threaten
-          condition: 
+          conditions:
+            -  
         - next: recoil
-          condition:
+          conditions:
+            - 
     wander:
+      actions: null
+      extensions: null
       transitions:
         - next: recoil
-          condition: 
+          conditions:
+            - 
