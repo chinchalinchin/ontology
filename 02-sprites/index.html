@@ -1285,7 +1285,8 @@
 </li>
 </ul>
 </li>
-<li>Shape: <code>ShapeProperties</code> </li>
+<li>Dimensions: `Tuple[int, int]</li>
+<li>Hitboxes: <code>List[Tuple[int, int, int, int]]</code> </li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
@@ -1432,10 +1433,12 @@
 <p>A Extension is a pseudo-state that does not factor into the Asset frame key calculation directly. It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the <code>sprint</code> Extension state increases the velocity of the <code>(walk, *)</code> states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the <code>interact</code> Extension state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.</p>
 <p>The default Extension states are enumerated below,</p>
 <ul>
-<li><code>interact</code></li>
-<li><code>speak</code></li>
-<li><code>sprint</code></li>
-<li><code>trade</code></li>
+<li><code>interact</code>: Sprites enter into this Extension to interact with Objects.</li>
+<li><code>speak</code>: Sprites enter into this Extension to draw their Communication on a Dialogue window.</li>
+<li><code>sprint</code>: Sprites enter into this Extension to increase their velocity.</li>
+<li><code>trade</code>: Sprites enter into this Extension to exchange Money for Inventory.</li>
+<li><code>build</code>: Sprites enter into this Extension to place Struts on the Board.</li>
+<li><code>mine</code>: Sprites enter into this Extension to convert Resources into Inventory. <strong>NOTE</strong>: This Extension is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel, i.e. the Spear Weapon and the Shovel Tool both use the same underlying animation rows.</li>
 </ul>
 <h3 id="disposition">Disposition</h3>
 <p>A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's <em>Disposition</em> is an element in its Disposition Transition matrix, covered below. Dispositions are enumerated below, along with their reachable states.</p>
@@ -1462,6 +1465,12 @@
 <li>Reachable Actions:</li>
 <li>Reachable Dispostions:</li>
 <li>Reachable Extensions: <code>trade</code>, <code>speak</code></li>
+</ul>
+</li>
+<li><code>construct</code><ul>
+<li>Reachable Actions: <code>walk</code>, <code>thrust</code> (Shovel is maps to Thrust Animation; see <a href="#extension">above</a>)</li>
+<li>Reachable Dispositions: </li>
+<li>Reachable Extension: <code>build</code>, <code>mine</code></li>
 </ul>
 </li>
 <li><code>engage</code><ul>
@@ -1496,14 +1505,14 @@
 </li>
 <li><code>mock</code><ul>
 <li>Reachable Actions: None</li>
-<li>Reachable Dispostions: </li>
-<li>Reachable Extensions:</li>
+<li>Reachable Dispostions: <code>threaten</code></li>
+<li>Reachable Extensions: <code>speak</code></li>
 </ul>
 </li>
 <li><code>recoil</code><ul>
 <li>Reachable Actions: <code>die</code></li>
 <li>Reachable Dispostions: </li>
-<li>Reachable Extensions:</li>
+<li>Reachable Extensions: </li>
 </ul>
 </li>
 <li><code>return</code><ul>
@@ -1526,7 +1535,7 @@
 </li>
 <li><code>wander</code><ul>
 <li>Reachable Actions: <code>walk</code></li>
-<li>Reachable Dispostions:</li>
+<li>Reachable Dispostions: <code>find</code>, <code>return</code>, <code>idle</code></li>
 <li>Reachable Extensions:</li>
 </ul>
 </li>
@@ -1652,7 +1661,7 @@ A and visa versa. In other words, if a Sprite converses with another Sprite that
 </ol>
 <h2 id="inventory">Inventory</h2>
 <p>TODO</p>
-<p>Equipment, while part of the Inventory, affects the animation, and thus is covered in its own section, <a href="#equipment">Equipment</a>.</p>
+<p>Equipment, while part of the Inventory, affects the rendering of the Sprite, and thus is covered in its own section, <a href="#equipment">Equipment</a>.</p>
 <h3 id="loot">Loot</h3>
 <p>TODO</p>
 <h3 id="wallet">Wallet</h3>

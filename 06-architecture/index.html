@@ -473,6 +473,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#objective-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objective Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#dispositional-mechanics" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -589,6 +600,17 @@
     <span class="md-ellipsis">
       
         General Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#objective-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objective Mechanics
       
     </span>
   </a>
@@ -715,23 +737,26 @@
 <h3 id="general-mechanics">General Mechanics</h3>
 <p>These Mechanics handle general game logic.</p>
 <ul>
-<li>ProjectileMechanics: Increment projectile positions, checks intersections and garbage collects, if applicable.</li>
-<li>AnimationMechanic: Translates current states into FrameKeys for the renderer.</li>
-<li>SwitchMechanics: Binds the Gate and Plate states together based on their <code>switch</code>.</li>
-<li>PhysicsMechanic: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.</li>
+<li><code>ProjectileMechanics</code>: Increment projectile positions, checks intersections and garbage collects, if applicable.</li>
+<li><code>AnimationMechanic</code>: Translates current states into FrameKeys for the renderer.</li>
+<li><code>PhysicsMechanic</code>: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.</li>
+</ul>
+<h3 id="objective-mechanics">Objective Mechanics</h3>
+<ul>
+<li><code>SwitchMechanics</code>: Binds the Gate and Plate states together based on their <code>switch</code>.</li>
 </ul>
 <h3 id="dispositional-mechanics">Dispositional Mechanics</h3>
 <p>These Mechanics handle the logic governing the Sprite Disposition Transtion matrix.</p>
 <ul>
-<li>IntentionMechanics: Runs the Disposition transition lambdas, etc.</li>
-<li>MotionMechanics: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.</li>
-<li>CommerceMechanics: Translate Intentions (barter, attract, etc.) into trades and price movements.</li>
-<li>CombatMechanic: (Cython) Resolves attack hitbox overlaps, decrements health, etc.</li>
+<li><code>IntentionMechanic</code>s: Runs the Disposition transition lambdas, etc.</li>
+<li><code>MotionMechanics</code>: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.</li>
+<li><code>CommerceMechanics</code>: Translate Intentions (barter, attract, etc.) into trades and price movements.</li>
+<li><code>CombatMechanic</code>: (Cython) Resolves attack hitbox overlaps, decrements health, etc.</li>
 </ul>
 <h2 id="cython">Cython</h2>
 <p>While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine strategically uses Cython to bridge this gap, adhering to a strict <strong>"Zero Heap Allocation in the Inner Loop"</strong> philosophy to prevent frame stutters caused by the Python Garbage Collector.</p>
 <h3 id="math-geometry-libsmathpyx">Math &amp; Geometry (<code>libs/math.pyx</code>)</h3>
-<p>Spatial data like <code>Position</code>, <code>Dimensions</code>, <code>Velocity</code>, and <code>Shape</code> are modeled as Cython Extension Types (<code>cdef class</code> in <code>.pxd</code> definition files).</p>
+<p>Spatial data like <code>Position</code>, <code>Dimensions</code> and <code>Velocity</code> are modeled as Cython Extension Types (<code>cdef class</code> in <code>.pxd</code> definition files).</p>
 <ul>
 <li><strong>Direct Memory Access:</strong> This structure allows geometry methods like <code>Geometry.intersects</code> to access spatial properties (e.g., <code>pos.x</code>, <code>hb.dimensions.l</code>) natively at C-speeds.</li>
 <li><strong>The GIL and Readability:</strong> The engine explicitly retains the Global Interpreter Lock (GIL) during geometry calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax (like <code>for hb in hitboxes</code>), while executing the actual mathematical overlap checks inline using primitive C variables on the CPU stack.</li>

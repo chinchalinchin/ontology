@@ -317,6 +317,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#struts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Struts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#objects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -702,6 +713,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#struts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Struts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#objects" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -990,8 +1012,8 @@
 <p>In order of ascending complexity, where complexity is defined as the number of dimensions in the state, the game asset hierarchy is given below,</p>
 <ul>
 <li><em>Immutable</em>, <em>Inanimate</em> Assets<ul>
-<li>Tile: Regular, State: Position, Layer</li>
-<li>Tile: Irregular, State: Position, Layer</li>
+<li>Tile: State: Position, Layer</li>
+<li>Strut: State: Position, Layer, Owner</li>
 </ul>
 </li>
 <li><em>Mutable</em>, <em>Inanimate</em> Assets<ul>
@@ -1023,7 +1045,6 @@
 <ol>
 <li><strong>Properties:</strong> A model defining immutable data (e.g., <code>TileProperties</code>, <code>ObjectProperties</code>).</li>
 <li><strong>State:</strong> A model defining mutable data (e.g., <code>TileState</code>, <code>ChestState</code>).</li>
-<li><strong>Shape:</strong> A component constructed from Properties and State that manages <code>Position</code>, <code>Dimensions</code>, and <code>Hitboxes</code> to process inline collision math.</li>
 <li><strong>Animation</strong> Stateless strategies (e.g. <code>SpriteAnimation</code>, <code>PixieAnimation</code>) injected into the Asset. These contain the specific logic for updating frames.</li>
 <li><strong>Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string key.</li>
 </ol>
@@ -1031,7 +1052,24 @@
 <p>The "<em>recipe</em>" for an Asset is specified in the <code>/src/assets/main.yaml</code> configuration file. A recipe includes the Frame implementation, the Animation implementation, the State model and the Properties model. See <a href="#schemas">Schemas</a> for an example of the Asset recipe schema. The recipe configuration file defines each of the Asset categories in the following headings.</p>
 <h2 id="tiles">Tiles</h2>
 <p><em>Tiles</em> are inanimate, immutable Assets. <em>Tiles</em> are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds by breaking each rendered image into a grid of tiles.</p>
-<p>In terms of configuration, Tiles are divided into two categories, <em>regular</em> and <em>irregular</em>. <em>Regular Tiles</em> are always sized 32x32 pixels (configurable in the <code>/src/assets/tile/main.yaml</code> file). <em>Irregular Tiles</em> have variable size.</p>
+<p><em>Tiles</em> are always assumed to be sized 32x32 pixels. These dimensions configurable in the <code>/src/assets/tile/main.yaml</code> file, but they apply to all Tiles universally.</p>
+<p><strong>Properties</strong></p>
+<ul>
+<li><code>key: str</code></li>
+<li><code>dimensions: Dimensions</code></li>
+</ul>
+<p><strong>State</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>position: Position</code></li>
+<li><code>multiple: Multiple</code></li>
+</ul>
+<p><strong>Frame</strong></p>
+<ul>
+<li><code>key(asset, None) -&gt; &lt;asset&gt;</code></li>
+</ul>
+<h2 id="struts">Struts</h2>
+<p><em>Struts</em> are inanimate, immutable Assets. They are similar to tiles, except they have variable dimensions and possess an <em>owner</em>. <em>Struts</em> are meant to encapsulate the concept of property in the game, e.g. houses, fences, roads.</p>
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
@@ -1058,7 +1096,8 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
-<li><code>shape: ShapeProperties</code> </li>
+<li><code>dim: Dimensions</code></li>
+<li><code>hitboxes: List[Hitbox]</code> </li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
@@ -1081,7 +1120,8 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
-<li><code>shape: ShapeProperties</code></li>
+<li><code>dim: Dimensions</code></li>
+<li><code>hitboxes: List[Hitbox]</code> s`</li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
@@ -1098,7 +1138,8 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
-<li><code>shape: ShapeProperties</code></li>
+<li><code>dim: Dimensions</code></li>
+<li><code>hitboxes: List[Hitbox]</code> </li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
@@ -1117,7 +1158,8 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
-<li><code>shape: ShapeProperties</code></li>
+<li><code>dim: Dimensions</code></li>
+<li><code>hitboxes: List[Hitbox]</code> </li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
@@ -1140,7 +1182,8 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
-<li><code>shape: ShapeProperties</code></li>
+<li><code>dim: Dimensions</code></li>
+<li><code>hitboxes: List[Hitbox]</code> </li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
@@ -1169,7 +1212,8 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
-<li><code>shape: ShapeProperties</code></li>
+<li><code>dim: Dimensions</code></li>
+<li><code>hitboxes: List[Hitbox]</code> </li>
 <li><code>count: int</code></li>
 </ul>
 <p><strong>Frame</strong></p>
@@ -1226,7 +1270,8 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
-<li><code>shape: ShapeProperties</code></li>
+<li><code>dim: Dimensions</code></li>
+<li><code>hitboxes: List[Hitbox]</code> </li>
 </ul>
 <p><strong>State</strong></p>
 <ul>
@@ -1243,7 +1288,8 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
-<li><code>shape: ShapeProperties</code></li>
+<li><code>dim: Dimensions</code></li>
+<li><code>hitboxes: List[Hitbox]</code> </li>
 <li><code>actions: Dict[str, SpriteActionProperty]</code></li>
 </ul>
 <p><strong>State</strong></p>
