@@ -79,8 +79,8 @@ The rows of *animate* Assets are further categorized by the axes of *Direction* 
 In order of ascending complexity, where complexity is defined as the number of dimensions in the state, the game asset hierarchy is given below,
 
 - *Immutable*, *Inanimate* Assets
-    - Tile: Regular, State: Position, Layer
-    - Tile: Irregular, State: Position, Layer
+    - Tile: State: Position, Layer
+    - Strut: State: Position, Layer, Owner
 - *Mutable*, *Inanimate* Assets
     - Object: Crate, State: Position, Layer
     - Object: Door, State: Position, Layer, OutLayer
@@ -115,7 +115,26 @@ The "*recipe*" for an Asset is specified in the `/src/assets/main.yaml` configur
 
 *Tiles* are inanimate, immutable Assets. *Tiles* are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds by breaking each rendered image into a grid of tiles.
 
-In terms of configuration, Tiles are divided into two categories, *regular* and *irregular*. *Regular Tiles* are always sized 32x32 pixels (configurable in the `/src/assets/tile/main.yaml` file). *Irregular Tiles* have variable size.
+*Tiles* are always assumed to be sized 32x32 pixels. These dimensions configurable in the `/src/assets/tile/main.yaml` file, but they apply to all Tiles universally.
+
+**Properties**
+
+* `key: str`
+* `dimensions: Dimensions`
+
+**State**
+
+* `layer: str`
+* `position: Position`
+* `multiple: Multiple`
+
+**Frame**
+
+* `key(asset, None) -> <asset>`
+
+## Struts
+
+*Struts* are inanimate, immutable Assets. They are similar to tiles, except they have variable dimensions and possess an *owner*. *Struts* are meant to encapsulate the concept of property in the game, e.g. houses, fences, roads.
 
 **Properties**
 

@@ -50,6 +50,16 @@ intents:
       transitions:
         - next: 
           conditions: 
+    construct:
+      actions:
+        - walk
+        - thrust
+      extension:
+        - mine
+        - build
+      transitions:
+        - next:
+          conditions: 
     escape: 
       actions: 
         - walk

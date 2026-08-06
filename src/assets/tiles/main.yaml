@@ -1,6 +1,6 @@
 # -------------------------------------------------------
   tiles:
-    regular:
+    grid:
       dimensions:
         l: 32
         w: 32
@@ -15,8 +15,15 @@
         - soil
         - water
         - wheat
-    irregular:
+    struts:
       <key>:
-        dimensions:
+        dim:
           l:
           w:
+        hitboxes:
+          - pos: 
+              x:
+              y:
+            dim:
+              l:
+              w:

@@ -61,6 +61,13 @@ class TileProperties(AssetProperties):
     # -------------------------- Properties
     dimensions: Dimensions
 
+class StrutProperties(AssetProperties):
+    # -------------------------- Keys
+    key: str                    # Unique Asset Identifier
+    # -------------------------- Properties
+    dimensions: Dimensions
+    hitboxes: Dimensions
+
 class PixieProperties(AssetProperties):
     # -------------------------- Keys
     key: str                    # Unique Asset Identifier

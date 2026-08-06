@@ -73,6 +73,16 @@ class PositionalState(AssetState):
     # ---------------------------------------------------- FIELDS
     position: Position
 
+@dataclass(slots=True):
+class PropertyState(AssetState):
+    """
+    """
+    # ---------------------------------------------------- KEYS
+    name: str               # Deployment Key
+    owner: str                  # Unique Owner Identifer
+    # ---------------------------------------------------- FIELDS
+    position: Position
+
 @dataclass(slots=True)
 class MetricState(AssetState):
     """
@@ -210,7 +220,7 @@ class Intention:
     communcation: str
 
     # Disposition Scripting Language conditions
-    transitions: List[Callable]
+    transitions: Dict[str, Transitions]
 
 @dataclass(slots=True)
 class Goal:

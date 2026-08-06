@@ -29,27 +29,32 @@ Create a centralized Cython Extension Type to ingest the parsed data structures 
 
 **Application Orchestration** (`src/app/orchestration.py`, `src/app/models/*`, `src/app/game/*`)
 
-- [ ] Initialize `libs.render`.
-- [ ] Instantiate Registry to validate `/src/assets/**` and cache GPU textures.
-- [~] Parse `/src/data/boards/<board-key>/**.yaml`.
-- [~] Convert Pydantic models by invoking Factory to hydrate runtime Asset POPOs from the parsed configuration.
+- [x] Initialize `libs.render`.
+- [x] Instantiate Registry to validate `/src/assets/**` and cache GPU textures.
+- [x] Parse `/src/data/boards/<board-key>/**.yaml`.
+- [x] Convert Pydantic models by invoking Factory to hydrate runtime Asset POPOs from the parsed configuration.
 - [x] Query Registry for the calculated TexturePtr frames and bind them to the Assets.
-- [~] Intialize Board and inject the hydrated Assets into the Board. This logic belongs inside `Screen.draw()`, requiring the Registry to be injected into the Screen component at startup.
+- [x] Intialize Board and inject the hydrated Assets into the Board. This logic belongs inside `Screen.draw()`, requiring the Registry to be injected into the Screen component at startup.
 - [x] Camera Culling: Implement integer-based boundary checks inside Screen.draw() to cull assets falling outside the camera's viewport before passing them to the Cython rendering interface.
 
 **4. Command Line Interface** (`src/cli.py`)
 
 Implement the debugging commands required to test configurations, schemas, and rendering output without booting the full physics loop.
 
-* [ ]**Command Definition:** `construct <board-key> --out <directory> --layer <layer>`
-  * [ ] **Construct Step 1:** Parse the state configuration (`/src/data/boards/<board-key>/*.yaml`) using Pydantic validation. 
-  * [ ] **Construct Step 2:** Initialize the `Registry` to load required tilesheets and boot the Cython SDL2 Interface.
-  * [ ] **Construct Step 3:** Use `canvas()` to allocate the layer's background canvas on the GPU.
-  * [ ] **Construct Step 4:** Iterate through the deployed Tiles, query their pointers/rects from the `Registry`, and use `draw()` to paint them directly onto the canvas.
-  * [ ] **Construct Step 5:** Execute `save()` to export the resulting static background.
-* [ ] **Command Definition:** `render <board-key> --out <directory> --layer <layer>`
-  * [ ] **Render Step 1:** Execute the previous `construct` steps to generate the cached background texture pointer.
-  * [ ] **Render Step 2:** Parse the mutable and animate YAML configurations for `<board-key>` via Pydantic.
-  * [ ] **Render Step 3:** Instantiate the composite `Asset` POPOs, mapping the validated YAML data into their respective `State` and `Properties` models alongside their stateless `Frame` and `Animation` component. Will need to default these when initializing. Should probably make this part of the Factory initialization as well.
-  * [ ] **Render Step 4:** Iterate over the mutable assets, invoking their `Frame.key()` method to evaluate their current `FrameKey` based on their state variables.
-  * [ ] **Render Step 5:** Pass the background pointer and the evaluated assets to `render()`, followed by `save()` to snapshot the full composite scene.
+* [x]**Command Definition:** `construct <board-key> --out <directory> --layer <layer>`
+  * [x] **Construct Step 1:** Parse the state configuration (`/src/data/boards/<board-key>/*.yaml`) using Pydantic validation. 
+  * [x] **Construct Step 2:** Initialize the `Registry` to load required tilesheets and boot the Cython SDL2 Interface.
+  * [x] **Construct Step 3:** Use `canvas()` to allocate the layer's background canvas on the GPU.
+  * [x] **Construct Step 4:** Iterate through the deployed Tiles, query their pointers/rects from the `Registry`, and use `draw()` to paint them directly onto the canvas.
+  * [x] **Construct Step 5:** Execute `save()` to export the resulting static background.
+* [x] **Command Definition:** `render <board-key> --out <directory> --layer <layer>`
+  * [x] **Render Step 1:** Execute the previous `construct` steps to generate the cached background texture pointer.
+  * [x] **Render Step 2:** Parse the mutable and animate YAML configurations for `<board-key>` via Pydantic.
+  * [x] **Render Step 3:** Instantiate the composite `Asset` POPOs, mapping the validated YAML data into their respective `State` and `Properties` models alongside their stateless `Frame` and `Animation` component. Will need to default these when initializing. Should probably make this part of the Factory initialization as well.
+  * [x] **Render Step 4:** Iterate over the mutable assets, invoking their `Frame.key()` method to evaluate their current `FrameKey` based on their state variables.
+  * [x] **Render Step 5:** Pass the background pointer and the evaluated assets to `render()`, followed by `save()` to snapshot the full composite scene.
+
+##### Refactirs
+
+- [ ] **Struts**: Struts have been added to support the `CommerceMechanics`. Refer to the `01-assets.md#struts` for more information on their use. 
+- [ ] **Tile Schemas**: During the conceptualizion of Struts, the Tile property schema was altered. The Tile instantiation and hydration flows may no longer be correct. Review the Tile creation flow and ensure everything logically connects.

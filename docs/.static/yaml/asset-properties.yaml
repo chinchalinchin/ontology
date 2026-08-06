@@ -1,4 +1,36 @@
 # ------------------------------------------------------------------
+# ------------------------------------------------------------ TILES
+tiles:
+  dimensions:
+    l: 32
+    w: 32
+  keys:
+    - clay
+    - coal
+    - dirt
+    - grass
+    - lava
+    - mud
+    - sand
+    - soil
+    - water
+    - wheat
+struts:
+  <key>:
+    dim:
+      l:
+      w:
+    hitboxes:
+      - pos: 
+          x:
+          y:
+        dim:
+          l:
+          w:
+    cost:
+      - item: <inventory-key>
+        quantity: <quantity-key>
+# ------------------------------------------------------------------
 # ---------------------------------------------------------- CURSORS
 cursors:
   expressions:

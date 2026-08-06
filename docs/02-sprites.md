@@ -185,10 +185,12 @@ A Extension is a pseudo-state that does not factor into the Asset frame key calc
 
 The default Extension states are enumerated below,
 
-- `interact`
-- `speak`
-- `sprint`
-- `trade`
+- `interact`: Sprites enter into this Extension to interact with Objects.
+- `speak`: Sprites enter into this Extension to draw their Communication on a Dialogue window.
+- `sprint`: Sprites enter into this Extension to increase their velocity.
+- `trade`: Sprites enter into this Extension to exchange Money for Inventory.
+- `build`: Sprites enter into this Extension to place Struts on the Board.
+- `mine`: Sprites enter into this Extension to convert Resources into Inventory. **NOTE**: This Extension is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel, i.e. the Spear Weapon and the Shovel Tool both use the same underlying animation rows.
 
 ### Disposition
     
@@ -210,49 +212,53 @@ A Disposition determines which Actions are currently reachable for a Sprite. In 
     - Reachable Actions:
     - Reachable Dispostions:
     - Reachable Extensions: `trade`, `speak`
-5. `engage`
+5. `construct`
+    - Reachable Actions: `walk`, `thrust` (Shovel is maps to Thrust Animation; see [above](#extension))
+    - Reachable Dispositions: 
+    - Reachable Extension: `build`, `mine`
+6. `engage`
     - Reachable Actions: `walk`
     - Reachable Dispostions: 
     - Reachable Extensions: `interact`
-6. `escape`
+7. `escape`
     - Reachable Actions: `walk`
     - Reachable Dispostions: 
     - Reachable Extensions: `sprint`
-7. `find`
+8. `find`
     - Reachable Actions: `walk, thrust`
     - Reachable Dispostions: 
     - Reachable Extensions: `sprint`
-8. `follow`
+9. `follow`
     - Reachable Actions: `walk`
     - Reachable Dispostions: 
     - Reachable Extensions: `sprint`
-9. `idle`
+10. `idle`
     - Reachable Actions: `walk`
     - Reachable Dispostions: 
     - Reachable Extensions:
-10. `mock`
+11. `mock`
     - Reachable Actions: None
-    - Reachable Dispostions: 
-    - Reachable Extensions:
-11. `recoil`
+    - Reachable Dispostions: `threaten`
+    - Reachable Extensions: `speak`
+12. `recoil`
     - Reachable Actions: `die`
     - Reachable Dispostions: 
-    - Reachable Extensions:
-12. `return`
+    - Reachable Extensions: 
+13. `return`
     - Reachable Actions: `walk`
     - Reachable Dispostions: `find`
     - Reachable Extensions:
-13. `scavenge` 
+14. `scavenge` 
     - Reachable Actions:
     - Reachable Dispostions:
     - Reachable Extensions:
-14. `threaten`
+15. `threaten`
     - Reachable Actions: 
     - Reachable Dispostions: `attack`
     - Reachable Extensions: 
-15. `wander`
+16. `wander`
     - Reachable Actions: `walk`
-    - Reachable Dispostions:
+    - Reachable Dispostions: `find`, `return`, `idle`
     - Reachable Extensions:
 
 **Default Disposition Transition Matrix**

@@ -9,6 +9,13 @@ tiles:
     multiply:
       nx: number of horizontal multiples
       ny: number of vertical multiples
+struts:
+  - key: ID of Tile Asset
+    layer: Layer ID
+    owner: Owner ID
+    position:
+      x: horizontal position
+      y: vertical position
 # ------------------------------------------------------------------
 # ---------------------------------------------------------- CURSORS
 cursors:

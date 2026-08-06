@@ -85,6 +85,10 @@ class PyObjectProperties(BaseModel):
 class PyTileProperties(BaseModel):
     dim: PyDimensions
 
+class PyStrutProperties(BaseModel):
+    dim: PyDimensions
+    hitboxes: List[PyHitbox]
+    
 # ---------------------------------------------------------------------------------------
 
 class PyPixieEmtityProperty(BaseModel):
@@ -95,7 +99,7 @@ class PyPixieDirectionProperty(BaseModel):
     row: int
 
 class PyPixieProperties(BaseModel):
-    entities: PyPixieEmtityProperty
+    entities: Dict[str, PyPixieEmtityProperty]
     count: int
     directions: Dict[str, PyPixieDirectionProperty]
 
@@ -118,6 +122,7 @@ class PySpriteProperties(BaseModel):
     dim: PyDimensions
     hitboxes: List[PyHitbox]
     actions: Dict[str, PySpriteActionProperty]
+    compositions: List[PySpriteComposition]
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------ STATE CONFIGURATION & VALIDATION
@@ -286,22 +291,12 @@ class PySheetRecipe(BaseModel):
 # -------------------------------------------------------------------------- YAML SCHEMAS
 # ---------------------------------------------------------------------------------------
 
-# ------------------------------------------------------------------ PROPERTY YAML SCHEMA
-
-class PyPixiePropertyConfiguration(BaseModel):
-    dim: PyDimensions
-    hitboxes: List[PyHitbox]
-    action: Dict[str, PyPixieActionsProperty]
-
-class PySpritePropertyConfiguration(BaseModel):
-    shape: PyShape
-    actions: Dict[str, PySpriteActionProperty]
-    compositions: List[PySpriteComposition]
 
 # ---------------------------------------------------------------------------------------
 
 class PyEffectPropertyConfiguration(BaseSettings):
-    pass
+    persistant: Dict[str, PyEffectProperties]
+    temporary: Dict[str, PyEffectProperties]
 
     # Load YAML
     model_config = SettingsConfigDict(
@@ -309,7 +304,11 @@ class PyEffectPropertyConfiguration(BaseSettings):
     )
 
 class PyObjectPropertyConfiguration(BaseSettings):
-    pass 
+    chests: Dict[str, PyObjectProperties]
+    crates: Dict[str, PyObjectProperties]
+    doors: Dict[str, PyObjectProperties]
+    gates: Dict[str, PyObjectProperties]
+    plates: Dict[str, PyObjectProperties]
 
     # Load YAML
     model_config = SettingsConfigDict(
@@ -317,7 +316,8 @@ class PyObjectPropertyConfiguration(BaseSettings):
     )
 
 class PyTilePropertyConfiguration(BaseSettings):
-    pass
+    grid: PyTileProperties
+    struts: PyStrutProperties
 
     # Load YAML
     model_config = SettingsConfigDict(
@@ -334,8 +334,8 @@ class PyCursorPropertyConfiguration(BaseSettings):
     )
 
 class PySheetPropertyConfiguration(BaseSettings):
-    pixies: PyPixiePropertyConfiguration
-    sprites: PySpritePropertyConfiguration
+    pixies: PyPixieProperties
+    sprites: PySpriteProperties
 
     # Load YAML
     model_config = SettingsConfigDict(
