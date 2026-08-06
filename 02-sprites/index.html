@@ -1270,6 +1270,8 @@
 <li>See <a href="#disposition">Dispositions</a> documentation below for more information on Disposition Transition Matrix.</li>
 <li>See <a href="../03-player/">Player</a> documentation for more information on the Player.</li>
 </ul>
+<p><strong>Layers</strong></p>
+<p>Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations should be separated by Layer, to avoid inter-Layer collisions.</p>
 <h2 id="overview">Overview</h2>
 <p><strong>Properties</strong></p>
 <ul>
@@ -1359,15 +1361,6 @@
 <ul>
 <li><code>key(asset, animation)</code>: <code>asset + animation.direction + animation.action + animation.frame</code></li>
 </ul>
-<p><strong>Methods</strong></p>
-<div class="admonition todo">
-<p class="admonition-title">Todo</p>
-<p>These should be incorporated into Mechanics to keep the Sprite class purely data-driven.</p>
-</div>
-<ul>
-<li><code>intend(intent: Intention) -&gt; None</code>: Updates the Sprite's current Intention.</li>
-<li><code>achieved(goal_asset: Asset) -&gt; Union[Intent, None]</code>: Returns Goal Intention if Goal achieved, None otherwise.</li>
-</ul>
 <h3 id="schema">Schema</h3>
 <ul>
 <li>Location: <code>/src/assets/intents/main.yaml</code></li>
@@ -1425,13 +1418,13 @@
 <p>Any Actions defined in the <code>/src/assets/sheets/**.png</code> file rows must have its Action key entered in <code>/src/data/intents/main.yaml#actions</code> file to register as an Action enterable from a Disposition.</p>
 </div>
 <h2 id="intentions">Intentions</h2>
-<div class="admonition importatnt">
-<p class="admonition-title">Importatnt</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
 <p>The Player state does not observe Intention Mechanics such as the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to state. See <a href="../03-player/">Player documentation</a> for more information on the Player.</p>
 </div>
 <p><em>Intentions</em> are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given an Intention state, along with an Animation state, that is updated by the gameplay loop. The complex internal state of a Sprite is represented by its Intention. Intention is the medium through which Sprites transition into different Animation states. </p>
 <p>The complete Intention State for a Sprite is given by the tuple,</p>
-<pre><code>(Disposition, Expression, Extension, Motivation)
+<pre><code>(Disposition, Expression, Extension, Motivation, Communication)
 </code></pre>
 <p>The attributes of Intention are discussed in more detail below.</p>
 <h3 id="extension">Extension</h3>
@@ -1558,7 +1551,7 @@
 <li><code>sprite.&lt;state&gt;</code>: self State variable</li>
 <li><code>sprites[&lt;sprite-name&gt;].&lt;state&gt;</code>: other Sprites state variable</li>
 </ul>
-<p>In the default Disposition Transition matrix given above, the transition from <code>attack</code> to <code>hunt</code> is conditional on the following,</p>
+<p>For example, in the default Disposition Transition matrix given above, the transition from <code>attack</code> to <code>hunt</code> is conditional on the following,</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goal.category == &#39;sprite&#39;</span>
 </code></pre></div>
