@@ -501,10 +501,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#sdl" class="md-nav__link">
+  <a href="#math-geometry-libsmathpyx" class="md-nav__link">
     <span class="md-ellipsis">
       
-        SDL
+        Math &amp; Geometry (libs/math.pyx)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardware-rendering-libsrenderpyx-libsregistrypyx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardware Rendering (libs/render.pyx &amp; libs/registry.pyx)
       
     </span>
   </a>
@@ -613,10 +624,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#sdl" class="md-nav__link">
+  <a href="#math-geometry-libsmathpyx" class="md-nav__link">
     <span class="md-ellipsis">
       
-        SDL
+        Math &amp; Geometry (libs/math.pyx)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardware-rendering-libsrenderpyx-libsregistrypyx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardware Rendering (libs/render.pyx &amp; libs/registry.pyx)
       
     </span>
   </a>
@@ -707,16 +729,20 @@
 <li>CombatMechanic: (Cython) Resolves attack hitbox overlaps, decrements health, etc.</li>
 </ul>
 <h2 id="cython">Cython</h2>
-<p>While Python objects are fast enough for general logic, calculating collisions requires accessing absolute coordinates (potentially) millions of times per second.</p>
-<p>Position, Velocity, and Shape data are modeled as Cython Extension Types (cdef class in <code>.pxd</code> definition files). This allows Geometry.intersects (in <code>libs/math.pyx</code>) to access properties like <code>pos.x</code> natively as C-integers on the stack.</p>
-<p>By stripping out the Python Global Interpreter Lock (GIL) and dictionary lookups, collision math resolves with zero garbage collection overhead.</p>
-<h3 id="sdl">SDL</h3>
-<p>The engine relies on a Cythonized bridge to C-level SDL2 bindings, completely skipping Python's Global Interpreter Lock (GIL) during rendering. The flow operates as follows (<code>libs/render.pyx</code>, <code>libs/registry.pyx</code>):</p>
+<p>While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine strategically uses Cython to bridge this gap, adhering to a strict <strong>"Zero Heap Allocation in the Inner Loop"</strong> philosophy to prevent frame stutters caused by the Python Garbage Collector.</p>
+<h3 id="math-geometry-libsmathpyx">Math &amp; Geometry (<code>libs/math.pyx</code>)</h3>
+<p>Spatial data like <code>Position</code>, <code>Dimensions</code>, <code>Velocity</code>, and <code>Shape</code> are modeled as Cython Extension Types (<code>cdef class</code> in <code>.pxd</code> definition files).</p>
 <ul>
-<li><strong>Context Initialization</strong> (<code>init</code>): Sets up an off-screen SDL rendering context (<code>_render</code>er) and window.</li>
-<li><strong>VRAM Uploads</strong> (<code>load</code>): Loads physical image assets from disk directly into the GPU memory, returning a safe, reference-counted Python wrapper (<code>TexturePtr</code>).</li>
-<li><strong>Background Compilation</strong> (<code>canvas</code> &amp; <code>construct</code>): A blank texture (<code>SDL_TEXTUREACCESS_TARGET</code>) is created on the GPU. By setting it as the active render target, <code>construct()</code> iteratively "stamps" all the static background tiles onto it. This creates a unified map texture, eliminating the need to re-render thousands of tiles on every single frame.</li>
-<li><strong>Frame Rendering</strong> (<code>render</code>): During the main loop, render() clears the screen buffer, copies the entire static background texture onto it, stamps all moving active_assets over it, and swaps the buffer to the physical display (<code>SDL_RenderPresent</code>).</li>
+<li><strong>Direct Memory Access:</strong> This structure allows geometry methods like <code>Geometry.intersects</code> to access spatial properties (e.g., <code>pos.x</code>, <code>hb.dimensions.l</code>) natively at C-speeds.</li>
+<li><strong>The GIL and Readability:</strong> The engine explicitly retains the Global Interpreter Lock (GIL) during geometry calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax (like <code>for hb in hitboxes</code>), while executing the actual mathematical overlap checks inline using primitive C variables on the CPU stack.</li>
+</ul>
+<h3 id="hardware-rendering-libsrenderpyx-libsregistrypyx">Hardware Rendering (<code>libs/render.pyx</code> &amp; <code>libs/registry.pyx</code>)</h3>
+<p>The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate the overhead of crossing the Python-to-C boundary, the rendering pipeline does not pass heavy Python objects (like <code>SpriteState</code> or <code>Dimensions</code>) to the renderer. Instead, it extracts raw integers on the Python side and unpacks them cleanly onto the C-stack.</p>
+<ul>
+<li><strong>Context Initialization (<code>init</code>):</strong> Sets up an off-screen SDL rendering context (<code>_renderer</code>) and window.</li>
+<li><strong>VRAM Uploads (<code>load</code>):</strong> Loads physical image assets from disk directly into GPU memory, returning a safe, reference-counted Python wrapper (<code>TexturePtr</code>).</li>
+<li><strong>Background Compilation (<code>canvas</code> &amp; <code>construct</code>):</strong> A blank texture (<code>SDL_TEXTUREACCESS_TARGET</code>) is created on the GPU to match the full size of the Board. Python passes a single list of flattened integer tuples representing the source/destination coordinates and grid multipliers. Cython unpacks these primitives and executes thousands of <code>SDL_RenderCopy</code> calls natively on the GPU. This caches a unified map texture, eliminating the need to instantiate and re-render thousands of background tiles every frame.</li>
+<li><strong>Frame Rendering (<code>render</code>):</strong> During the main game loop, <code>Screen.draw()</code> performs lightweight integer-based AABB camera culling natively in Python. This intentionally avoids paying the micro-transaction overhead of calling a Cython function repeatedly inside a massive Python loop. The visible assets are flattened into primitive integer tuples and passed across the C-boundary in a single list. <code>render()</code> then clears the screen buffer, copies the cropped background texture, stamps the active primitives, and swaps the buffer to the physical display (<code>SDL_RenderPresent</code>).</li>
 </ul>
 
 
