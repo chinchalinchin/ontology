@@ -20,8 +20,7 @@ cdef class Attackbox:
     cdef public Position position
     cdef public Dimensions dimensions
     cdef public int hitframe
-    
+
 cdef class Shape:
-    cdef public Position position
     cdef public Dimensions dimensions
     cdef public list hitboxes 

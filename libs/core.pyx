@@ -45,3 +45,11 @@ cdef class Hitbox:
     def __init__(self, Position position, Dimensions dimensions):
         self.position = position
         self.dimensions = dimensions
+
+cdef class Shape:
+    """
+    Foundational class for Assets with mutable states.
+    """
+    def __init__(self, dimensions: Dimensions, hitboxes: List[Hitbox]):
+        self.hitboxes = hitboxes
+        self.dimensions = dimensions

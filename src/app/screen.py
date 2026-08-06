@@ -12,6 +12,7 @@ from app.player import Player
 # Cython Libraries
 from libs.core import Position, Dimensions
 from libs.render import canvas, construct, render, TexturePtr
+from libs.registry import Registry
 
 class Screen:
     """
@@ -24,23 +25,30 @@ class Screen:
     def __init__(self, 
         screensize: Dimensions,
         boardsize: Dimensions,
-        tiles: List[Asset]   
+        tiles: List[Asset],
+        registry: Registry
     ):
         self.screensize = screensize
         self.boardsize = boardsize
         
-        # The background texture is now the size of the whole board
-        self.canvas_tex = canvas(self.boardsize)
+        # The background texture is now the size of the whole board (passing flat integers)
+        self.canvas_tex = canvas(self.boardsize.l, self.boardsize.w)
         
-        cython_tiles = [( 
-            # TODO: Fetch TexturePtr from Registry using tile.properties.key
-            None,
-            Position(x=0, y=0),
-            tile.properties.dimensions,
-            tile.state.position,
-            tile.properties.dimensions,
-            tile.state.multiple
-        ) for tile in tiles]
+        cython_tiles = []
+        for tile in tiles:
+            # Query Registry using the computed tile key
+            tex_data = registry.data(tile.frame.key(tile.properties.key, tile.state))
+            if tex_data:
+                tex, sx, sy, sw, sh = tex_data
+                
+                # Append flat primitives directly for the C-loop
+                cython_tiles.append(( 
+                    tex,
+                    sx, sy, sw, sh,
+                    tile.state.position.x, tile.state.position.y,
+                    tile.properties.dimensions.l, tile.properties.dimensions.w,
+                    tile.state.multiple.nx, tile.state.multiple.ny
+                ))
         
         construct(self.canvas_tex, cython_tiles)
 
@@ -63,6 +71,9 @@ class Screen:
         return Position(x=cam_x, y=cam_y)
 
     def draw(self, assets: List[Asset], player: Player, registry: Registry) -> None:
+        """
+        Calculates viewport positioning, culls non-visible items, and routes data to the renderer.
+        """
         pov = self.camera(player)
         active_assets = []
         
@@ -78,14 +89,22 @@ class Screen:
 
             tex, sx, sy, sw, sh = tex_data
             
-            # 3. Create a flat tuple of PRIMITIVE INTEGERS for destination
+            # 3. Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
             dx, dy = asset.state.position.x, asset.state.position.y
             dw, dh = asset.properties.dimensions.l, asset.properties.dimensions.w
             
-            # Optional: Simple Python-side integer camera culling here
+            # 4. Strict Camera Culling: Only pass geometry if intersecting the camera frame 
             if (dx + dw >= pov.x and dx <= pov.x + self.screensize.l and
                 dy + dh >= pov.y and dy <= pov.y + self.screensize.w):
                 
                 active_assets.append((tex, sx, sy, sw, sh, dx, dy, dw, dh))
 
-        render(self.canvas_tex, active_assets, pov, self.screensize)
+        # Pass purely native integers to bypass heavy object allocation
+        render(
+            self.canvas_tex, 
+            active_assets, 
+            pov.x, 
+            pov.y, 
+            self.screensize.l, 
+            self.screensize.w
+        )
