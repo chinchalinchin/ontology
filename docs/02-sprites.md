@@ -177,6 +177,8 @@ The complete Intention State for a Sprite is given by the tuple,
 
 The attributes of Intention are discussed in more detail below.
 
+Intentions are configured through the `/src/data/intents/main.yaml` file.
+
 ### Extension
 
 A Extension is a pseudo-state that does not factor into the Asset frame key calculation directly. It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the `sprint` Extension state increases the velocity of the `(walk, *)` states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the `interact` Extension state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.
@@ -190,68 +192,68 @@ The default Extension states are enumerated below,
 
 ### Disposition
     
-A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's *Disposition* is an element in its Disposition Transition matrix, covered below. Dispositions are configurable, but since they are an essential piece of gameplay data, a default Disposition configuration has been provided. The default Dispositions are enumerated below.
+A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's *Disposition* is an element in its Disposition Transition matrix, covered below. Dispositions are enumerated below, along with their reachable states.
 
 1. `attack`
     - Reachable Actions: `cast, thrust, slash, shoot`
     - Reachable Dispostions: `attack, hunt, loot`
-    - Reachable Extensions: None
+    - Reachable Extensions:
 2. `attract`
     - Reachable Actions: `walk`
     - Reachable Dispostions: `barter, communicate`
     - Reachable Extensions: `interact`
 3. `barter`
-    - Reachable Actions: None
-    - Reachable Dispostions: None
+    - Reachable Actions:
+    - Reachable Dispostions:
     - Reachable Extensions: `trade`
 4. `communicate`
-    - Reachable Actions: None
-    - Reachable Dispostions: None
+    - Reachable Actions:
+    - Reachable Dispostions:
     - Reachable Extensions: `trade`, `speak`
-5. `escape`
+5. `engage`
     - Reachable Actions: `walk`
-    - Reachable Dispostions: None
-    - Reachable Extensions: None
-6. `find`
+    - Reachable Dispostions: 
+    - Reachable Extensions: `interact`
+6. `escape`
+    - Reachable Actions: `walk`
+    - Reachable Dispostions: 
+    - Reachable Extensions: `sprint`
+7. `find`
     - Reachable Actions: `walk, thrust`
-    - Reachable Dispostions: None
-    - Reachable Extensions: None
-7. `follow`
+    - Reachable Dispostions: 
+    - Reachable Extensions: `sprint`
+8. `follow`
     - Reachable Actions: `walk`
-    - Reachable Dispostions: None
-    - Reachable Extensions: None
-8. `idle`
+    - Reachable Dispostions: 
+    - Reachable Extensions: `sprint`
+9. `idle`
     - Reachable Actions: `walk`
-    - Reachable Dispostions: None
-    - Reachable Extensions: None
-9. `interact`
+    - Reachable Dispostions: 
+    - Reachable Extensions:
+10. `mock`
     - Reachable Actions: None
-    - Reachable Dispostions: None
-    - Reachable Extensions: None
-10. `loot` 
-    - Reachable Actions: None
-    - Reachable Dispostions: None
-    - Reachable Extensions: None
-11. `mock`
-    - Reachable Actions: None
-    - Reachable Dispostions: None
-    - Reachable Extensions: None
-12. `recoil`
+    - Reachable Dispostions: 
+    - Reachable Extensions:
+11. `recoil`
     - Reachable Actions: `die`
-    - Reachable Dispostions: None
-    - Reachable Extensions: None
-13. `return`
+    - Reachable Dispostions: 
+    - Reachable Extensions:
+12. `return`
     - Reachable Actions: `walk`
     - Reachable Dispostions: `find`
-    - Reachable Extensions: None
+    - Reachable Extensions:
+13. `scavenge` 
+    - Reachable Actions:
+    - Reachable Dispostions:
+    - Reachable Extensions:
 14. `threaten`
-    - Reachable Actions: None
+    - Reachable Actions: 
     - Reachable Dispostions: `attack`
-    - Reachable Extensions: None
+    - Reachable Extensions: 
 15. `wander`
     - Reachable Actions: `walk`
-    - Reachable Dispostions: None
-    - Reachable Extensions: None
+    - Reachable Dispostions:
+    - Reachable Extensions:
 
 **Default Disposition Transition Matrix**
 
@@ -261,7 +263,7 @@ Provided below is the Disposition Transition Matrix bundled with the application
 --8<-- "docs/.static/yaml/examples/default-disposition-matrix.yaml"
 ```
 
-**Transition Scripting**
+**Disposition Scripting Language (DSL)**
 
 The `condition` for each Disposition transition is given in a simple truth-valued language that admits the logical operations and terms,
 
@@ -308,6 +310,8 @@ Notice in the example there is a self-entrant transition. A Sprite with an `atta
 
 !!! important
     The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == 'sprite'`, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back into `attack`.
+
+Disposition conditions are converted into lambda functions by the application and then evaluated at runtime.
 
 ### Motivation
 

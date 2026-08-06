@@ -119,11 +119,23 @@ class SwitchMechanics(Mechanic):
 class BehaviorMechanics(Mechanic):
     """
     """
+    
+    def update(self, board: Board, delta: float) -> None:
+        """
+        Evaluates AST lambdas to transition Dispositions.
+        """
+        sprites = board.instances(AssetInstances.SPRITES)
 
-    def update(self, board: Board, delta_time: float) -> None:
-        """
-        """
-        for layer in board.get_layers():
-            sprites = board.instances(AssetInstances.SPRITES, layer)
-            motivation = sprites.state.intention.motivation
-            # TODO: implement
+        for sprite in sprites:
+            # 1. Fetch the compiled AST transitions for the CURRENT disposition
+            transits = sprite.intention.transitions()
+            
+            # 2. Evaluate conditions
+            for transit in transits:
+                if transit.conditions(sprite, board):
+                    # 3. Transition the state
+                    sprite.intention.disposition = transit.next
+                    
+                    # Break immediately to avoid evaluating the NEW state's 
+                    # transitions in this same frame.
+                    break

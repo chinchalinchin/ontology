@@ -4,7 +4,7 @@
 Models for typing the state attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
 """
 # Standard Libraries
-from typing import Dict, List, Union
+from typing import Callable, Dict, List, Union
 
 # Cython Libraries
 from libs.models import Position, Multiple
@@ -160,15 +160,26 @@ class Health:
     """
     current: int 
     maximum: int
+
+class Transitions:
+    """
+    """
+    conditions: List[Callable]
+    next: str
     
 class Intention:
     """
     Representation of the internal, hidden state of a Sprite. 
     """
+    # 
     extension: str
     disposition: str
     motivation: str
     expression: str
+    communcation: str
+
+    # Disposition Scripting Language conditions
+    transitions: List[Callable]
 
 class Goal:
     """
