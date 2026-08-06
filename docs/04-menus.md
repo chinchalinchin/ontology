@@ -11,3 +11,7 @@ TODO
 ## Windows
 
 TODO
+
+### Slots
+
+TODO
