@@ -116,7 +116,7 @@ class SwitchMechanics(Mechanic):
                         if plate.state.link == gate.state.link:
                             gate.state.switch = plate.state.switch
 
-class BehaviorMechanics(Mechanic):
+class IntentionMechanics(Mechanic):
     """
     """
     

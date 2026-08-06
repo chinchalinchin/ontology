@@ -36,6 +36,24 @@ Mechanics act as filters. Rather than the Board passing arguments to a system, a
 
 For example, the `SwitchMechanics` system strictly queries `board.plates`, `board.gates`, and any heavy entities (like `crates` and `sprites`) to resolve trigger logic, leaving the rest of the board untouched. This keeps execution tight and game loops strictly separated by behavior, not nouns.
 
+### General Mechanics
+
+These Mechanics handle general game logic.
+
+- ProjectileMechanics: Increment projectile positions, checks intersections and garbage collects, if applicable.
+- AnimationMechanic: Translates current states into FrameKeys for the renderer.
+- SwitchMechanics: Binds the Gate and Plate states together based on their `switch`.
+- PhysicsMechanic: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.
+
+### Dispositional Mechanics
+
+These Mechanics handle the logic governing the Sprite Disposition Transtion matrix.
+
+- IntentionMechanics: Runs the Disposition transition lambdas, etc.
+- MotionMechanics: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.
+- CommerceMechanics: Translate Intentions (barter, attract, etc.) into trades and price movements.
+- CombatMechanic: (Cython) Resolves attack hitbox overlaps, decrements health, etc.
+
 ## Cython
 
 While Python objects are fast enough for general logic, calculating collisions requires accessing absolute coordinates (potentially) millions of times per second.
