@@ -1345,7 +1345,7 @@
 </li>
 <li>Goal: <ul>
 <li>Name: <code>str</code></li>
-<li>Category: <code>Enum[sprite | object]</code></li>
+<li>Category: <code>Enum[sprite | object | loot]</code></li>
 <li>Intention:<ul>
 <li>Action: <code>str</code></li>
 <li>Extension: <code>str</code></li>
@@ -1555,28 +1555,28 @@
 <ul>
 <li><code>None</code>: null value</li>
 <li><code>str</code>: constants</li>
-<li><code>sprite.&lt;state&gt;</code>: self variable</li>
-<li><code>sprites[&lt;sprite-name&gt;].&lt;state&gt;</code>: Sprites variable</li>
+<li><code>sprite.&lt;state&gt;</code>: self State variable</li>
+<li><code>sprites[&lt;sprite-name&gt;].&lt;state&gt;</code>: other Sprites state variable</li>
 </ul>
 <p>In the default Disposition Transition matrix given above, the transition from <code>attack</code> to <code>hunt</code> is conditional on the following,</p>
-<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal.target</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goal.target.category == &#39;sprite&#39;</span>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goal.category == &#39;sprite&#39;</span>
 </code></pre></div>
-<p><code>sprite</code> is a reference to the Sprite which is currently processing the given Disposition. Thus, the Sprite's Disposition state will transition to <code>hunt</code> if the Sprite currently does not have a target, but remembers having a target of category <code>sprite</code>.</p>
+<p><code>sprite</code> is a reference to the Sprite's state which is currently processing the given Disposition. Thus, the Sprite's Disposition state will transition to <code>hunt</code> if the Sprite currently does not have a target, but remembers having a target of category <code>sprite</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The expression <code>not sprite.intention.goal.target</code> is a <em>truthy</em> expression, i.e. it is to be interpretted as an existential claim. In other words, this expression evaluates to <code>true</code> if <code>sprite.intention.goal.target</code> does not exist. If the expression involves a List, e.g. <code>sprite.memory.communications</code>, this expression evaluates to <code>true</code> in the event it has more than 0 entries.</p>
+<p>The expression <code>not sprite.goal</code> is a <em>truthy</em> expression, i.e. it is to be interpretted as an existential claim. In other words, this expression evaluates to <code>true</code> if <code>sprite.goal</code> does not exist. If the expression involves a List, e.g. <code>sprite.memory.communications</code>, this expression evaluates to <code>true</code> in the event it has more than 0 entries.</p>
 </div>
 <p>In another example, the transition from <code>attack</code> to <code>loot</code> in the default Disposition Transition matrix is given by,</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[sprite.target.name].mutators.triggers.dead</span>
 </code></pre></div>
-<p><code>sprites</code> is a reference to a dictionary of all ingame Sprites keyed by their identifying and unique <code>name</code>, which provides access to their state attributes.</p>
+<p><code>sprites</code> is a reference to a dictionary of all ingame Sprites states keyed by their identifying and unique <code>name</code>, which provides access to their state attributes.</p>
 <p>Notice in the example there is a self-entrant transition. A Sprite with an <code>attack</code> Disposition can re-enter the <code>attack</code> Disposition conditional on the Sprite still having a target,</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.target.category == &#39;sprite&#39;</span>
 </code></pre></div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if <code>sprite.goal.target.category == 'sprite'</code>, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back into <code>attack</code>.</p>
+<p>The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if <code>sprite.goal.category == 'sprite'</code>, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back into <code>attack</code>.</p>
 </div>
 <h3 id="motivation">Motivation</h3>
 <p>Motivations are long-term variables that modulate the Disposition Transition matrix.</p>
@@ -1608,7 +1608,8 @@
 <h2 id="goal">Goal</h2>
 <p><em>Goals</em> are provide the seed (or energy) for transitions through Dispositions and the application of Motivations to modulate said transitions. A Goal is a Sprite's <em>modus operandi</em>, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is <em>in order</em> to achieve a Goal.</p>
 <ul>
-<li><code>name</code>: Unique Identifier of Asset Goal.</li>
+<li><code>name</code>: Unique Identifier of the Goal.</li>
+<li><code>category</code>: Category of the Goal. (<code>sprite</code>, <code>asset</code>, <code>position</code>, <code>loot</code>, <code>wealth</code>)</li>
 <li><code>intention</code>:<ul>
 <li><code>extension</code>: Extension to be applied when Goal achieved .</li>
 <li><code>action</code>: Action to be applied when Goal achieved.</li>
@@ -1616,6 +1617,14 @@
 </li>
 </ul>
 <p>When a Sprite has Goal, it will seek out (path-find) its way to the AssetName, provided the AssetName is within <code>mutators.parameters.vision.radius</code>.</p>
+<p>The <code>category</code> of a Goal affects the type of identifier given in <code>name</code>. </p>
+<ul>
+<li><code>category == sprite</code>: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The <code>name</code> will be a Sprite <code>name</code>.</li>
+<li><code>category == asset</code>: The Goal is a non-Sprite Asset, i.e. the Sprite is trying to find an ingame Object. The <code>name</code> will be the Asset <code>name</code>.</li>
+<li><code>category == loot</code>: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The <code>name</code> will be an Inventory key. </li>
+<li><code>category == wealth</code>: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The <code>name</code> will be an Inventory key. The key will be of the value with the maximum value in the Sprite's Prices, e.g. the loot with the highest Price.</li>
+<li><code>category == position</code>: The Goal is Position, i.e. the Sprite is trying to find a Position on the Board. The <code>name</code> will be ... (TODO: PROPERTY MECHANICS).</li>
+</ul>
 <h2 id="memory">Memory</h2>
 <p><em>Memory</em> is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Disposition and Motivation.</p>
 <ul>
