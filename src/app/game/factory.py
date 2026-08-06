@@ -14,11 +14,13 @@ from app.assets.frames import (
 )
 from app.models.state import (
     AnimatorState, ContainerState, DoorState, SwitchState, 
-    MetricState, MultiplierState, PositionalState, PixieState, SpriteState
+    MetricState, MultiplierState, PositionalState, PropertyState,
+    PixieState, SpriteState
 )
 from app.models.properties import (
     EffectProperties, CursorProperties, ObjectProperties, 
-    TileProperties, PixieProperties, SpriteProperties
+    TileProperties, PixieProperties, SpriteProperties,
+    StrutProperties
 )
 
 T = TypeVar('T')
@@ -61,6 +63,7 @@ class Factory:
             "container": ContainerState,
             "door": DoorState,
             "switch": SwitchState,
+            "property": PropertyState,
             "pixie": PixieState,
             "sprite": SpriteState
         }
@@ -79,7 +82,8 @@ class Factory:
             "objects": ObjectProperties,
             "cursors": CursorProperties,
             "pixies": PixieProperties,
-            "sprites": SpriteProperties
+            "sprites": SpriteProperties,
+            "struts": StrutProperties
         }
         
         target_cls = type_map.get(category)

@@ -27,11 +27,7 @@ class StateRecipe(str, Enum):
     SWITCH          = "switch"
     DOOR            = "door"
     POSITIONAL      = "positional"
+    PROPERTY        = "property"
     CONTAINER       = "container"
     ANIMATOR        = "animator"
     METRIC          = "metric"
-
-class BehaviorRecipe(str, Enum):
-    """
-    """
-    intentions      = "intentions"

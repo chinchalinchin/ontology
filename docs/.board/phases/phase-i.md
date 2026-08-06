@@ -54,8 +54,8 @@ Implement the debugging commands required to test configurations, schemas, and r
   * [x] **Render Step 4:** Iterate over the mutable assets, invoking their `Frame.key()` method to evaluate their current `FrameKey` based on their state variables.
   * [x] **Render Step 5:** Pass the background pointer and the evaluated assets to `render()`, followed by `save()` to snapshot the full composite scene.
 
-##### Refactirs
+##### Refactors
 
-- [ ] **Struts**: Struts have been added to support the `CommerceMechanics`. Refer to the `01-assets.md#struts` for more information on their use. 
+- [ ] **Struts**: Struts have been added to support the `CommerceMechanics`. Refer to the `01-assets.md#struts` for more information on their use. Ensure the application models, factory methods and registry are properly updated to instantiate this new type of Asset during the orchestration.
 - [ ] **Tile Schemas**: During the conceptualizion of Struts, the Tile property schema was altered. The Tile instantiation and hydration flows may no longer be correct. Review the Tile creation flow and ensure everything logically connects.
 - [ ] **Shape**: The Asset properties `hitboxes` and `dimensions` were previously nested under a `shape` object. This object has been removed to flatten out the objects and align the application with a data-oriented design perspective. Ensure the application has not been broken during this refactor.

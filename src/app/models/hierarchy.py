@@ -14,6 +14,7 @@ class AssetCategories(str, Enum):
     EFFECTS         = "effects"
     CURSORS         = "cursors"
     SHEETS          = "sheets"
+    STRUTS          = "struts"
 
 class AssetInstances(str, Enum):
     """

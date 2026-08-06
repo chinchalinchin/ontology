@@ -138,6 +138,11 @@ class PyAnimationState(BaseModel):
     direction: Union[str, None]
     frame: Union[int, None]
 
+class PyPropertyState(BaseModel):
+    name: str
+    owner: str
+    position: PyPosition
+
 # ---------------------------------------------------------------------------------------
 
 class PyCharacterState(BaseModel):

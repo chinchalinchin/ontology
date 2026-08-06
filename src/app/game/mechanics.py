@@ -22,6 +22,8 @@ class Mechanic(ABC):
     def update(self, board: Board, delta: float) -> None:
         pass
 
+# ----------------------------------------------------------------------------------------
+
 class AnimationMechanics(Mechanic):
     """
     """
@@ -37,6 +39,8 @@ class AnimationMechanics(Mechanic):
             board.instances(AssetInstances.PLATES)
         ):
             asset.animate(asset.state, asset.properties)
+
+# ----------------------------------------------------------------------------------------
 
 class CollisionMechanics(Mechanic):
     def update(self, board: Board, delta_time: float) -> None:
@@ -54,20 +58,6 @@ class CollisionMechanics(Mechanic):
                             # Resolve collision
                             pass
                 
-class RemoveMechanics(Mechanic):
-    """
-    """
-
-    def update(self, board: Board, delta_time: float) -> None: 
-        """
-        """           
-        temporary = board.instances(AssetInstances.TEMPORARY)
-
-        for effect in temporary:
-            if effect.state.animation.frame > effect.properties.count:
-                # TODO: implementation
-                pass
-
 class ProjectileMechanics(Mechanic):
     """
     """
@@ -81,12 +71,31 @@ class ProjectileMechanics(Mechanic):
 
             for proj in projectiles:
                 for target in sheets:
-                    if proj.shape.intersects(target.shape):
+                    if Geometry.intersects(
+                        proj.state.position, proj.properties.dimensions, getattr(proj.properties, 'hitboxes', []),
+                        target.state.position, target.properties.dimensions, getattr(target.properties, 'hitboxes', [])
+                    ):
                         # TODO: Resolve collision
                         pass
                 if not proj.alive():
                     # TODO: garbage collect
                     pass
+
+# ----------------------------------------------------------------------------------------
+
+class RemoveMechanics(Mechanic):
+    """
+    """
+
+    def update(self, board: Board, delta_time: float) -> None: 
+        """
+        """           
+        temporary = board.instances(AssetInstances.TEMPORARY)
+
+        for effect in temporary:
+            if effect.state.animation.frame > effect.properties.count:
+                # TODO: implementation
+                pass
 
 class SwitchMechanics(Mechanic):
     """
@@ -103,7 +112,14 @@ class SwitchMechanics(Mechanic):
 
             for plate in plates:
                 for weight in chain(crates, sheets):
-                    if plate.shape.intersects(weight.shape):
+                    if Geometry.intersects(
+                        plate.state.position,
+                        plate.properties.dimensions, 
+                        getattr(plate.properties, 'hitboxes', []),
+                        weight.state.position, 
+                        weight.properties.dimensions,
+                        getattr(weight.properties, 'hitboxes', [])
+                    ):
                         current_state = plate.state.switch
                         plate.state.switch = True
                         switched = not (current_state == plate.state.switch)
@@ -113,6 +129,8 @@ class SwitchMechanics(Mechanic):
                     for gate in gates:
                         if plate.state.link == gate.state.link:
                             gate.state.switch = plate.state.switch
+
+# ----------------------------------------------------------------------------------------
 
 class IntentionMechanics(Mechanic):
     """

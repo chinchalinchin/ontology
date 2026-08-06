@@ -12,7 +12,7 @@ from app.game.factory import Factory
 from app.models.configuration import (
     PyRecipeConfiguration, PyMultiplierState, PyPositionalState, 
     PyMetricState, PyAnimatorState, PyContainerState, PyDoorState, 
-    PySwitchState, PyPixieState, PySpriteState
+    PySwitchState, PyPixieState, PySpriteState, PyPropertyState
 )
 
 def migrate(board_key: str = "world-00") -> List[Any]:
@@ -28,9 +28,8 @@ def migrate(board_key: str = "world-00") -> List[Any]:
         return flat_states
 
     model_map = {
-        "tiles": {
-            "regular": PyMultiplierState
-        },
+        "tiles": PyMultiplierState,
+        "struts": PyPropertyState,
         "cursors": {
             "expressions": PyPositionalState,
             "projectiles": PyMetricState,
@@ -67,7 +66,15 @@ def migrate(board_key: str = "world-00") -> List[Any]:
                     if "name" not in item:
                         item["name"] = f"tile_{item.get('key')}"
                     flat_states.append(PyMultiplierState(**item))
-                    
+
+            elif category == "struts":
+                for item in content:
+                    item["category"] = "struts"
+                    item["instance"] = "strut"
+                    if "name" not in item:
+                        item["name"] = f"strut_{item.get('key')}"
+                    flat_states.append(PyPropertyState(**item))
+                         
             elif category in model_map:
                 for instance, items in content.items():
                     model_cls = model_map[category].get(instance)

@@ -1,8 +1,8 @@
 # ------------------------------------------------------------------
 # ------------------------------------------------------------ TILES
 tiles:
-  - key: ID of Tile Asset
-    layer: Layer ID
+  - key: Tile Asset Key
+    layer: Layer Key
     position:
       x: horizontal position
       y: vertical position
@@ -10,7 +10,8 @@ tiles:
       nx: number of horizontal multiples
       ny: number of vertical multiples
 struts:
-  - key: ID of Tile Asset
+  - key: Tile AssetlKey
+    mame: Tile Key
     layer: Layer ID
     owner: Owner ID
     position:
@@ -20,14 +21,14 @@ struts:
 # ---------------------------------------------------------- CURSORS
 cursors:
   expressions:
-    - name: Cursor Identifier
+    - name: Cursor Key
       key: Cursor Asset Key
       layer: Layer Key
       position: 
         x: Horizontal Position
         y: Vertical Position
   projectiles:
-    - name: Cursor Identifier
+    - name: Cursor Key
       key: Cursor Asset Key
       layer: Layer Key
       position: 
@@ -42,7 +43,7 @@ effects:
   # ------------------------------------------- PERSISTENT EFFECTS
   persistent:
     - key: Effect Asset Key
-      name: Effect Identifier
+      name: Effect Key
       layer: Layer Key
       position:
         x: Horizontal Position
@@ -50,7 +51,7 @@ effects:
   # ------------------------------------------- TEMPORARY EFFECTS
   temporary:
     - key: Effect Asset Key
-      name: Effect Identifier
+      name: Effect Key
       layer: Layer Key
       position:
         x: Horizontal Position
@@ -60,7 +61,7 @@ effects:
 objects:
   # ------------------------------------------- CHESTS
   chests:
-    - name: Chest Identifier
+    - name: Chest Key
       key: Chest Asset Key
       layer: Layer Key
       position:
@@ -71,7 +72,7 @@ objects:
         - Content Key
   # ------------------------------------------- CRATES
   crates:
-    - name: Crate Identifier
+    - name: Crate Key
       key: Crate Asset Key
       layer: Layer Key
       position: 
@@ -79,7 +80,7 @@ objects:
         y: Vertical Position
   # ------------------------------------------- DOORS
   doors:
-    - name: Door Identifier
+    - name: Door Key
       key: Door Asset Key
       layer: Layer Key
       outlayer: Out Layer Key
@@ -91,7 +92,7 @@ objects:
         y: Vertical Position
   # ------------------------------------------- GATES
   gates:
-    - name: Gate Identifier
+    - name: Gate Key
       key: Gate Asset Key
       layer: Layer Key
       link: Plate Link Key
@@ -101,7 +102,7 @@ objects:
       switch: Switch Flag
   # ------------------------------------------- PLATES
   plates:
-    - name: Plate Identifier
+    - name: Plate Key
       key: Plate Asset Key
       layer: Layer Key
       link: Gate Link Key
@@ -114,7 +115,7 @@ objects:
 sheets:
   # ------------------------------------------- PIXIES
   pixies:
-    - name: Pixie Identifier
+    - name: Pixie Key
       key: Pixie Asset Key
       layer: Layer Key
       position:
@@ -122,7 +123,7 @@ sheets:
         y: Vertical Position
   # ------------------------------------------- SPRITES
   sprites:
-    - name: Sprite Identifier
+    - name: Sprite Key
       key: Sprite Asset Key
       layer: Layer Key
       position:

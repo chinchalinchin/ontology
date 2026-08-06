@@ -4,6 +4,11 @@ assets:
     animation: null
     behaviors: null
     state: multiplier
+  struts:
+    frame: single
+    animation: null
+    behaviors: null
+    state: property
   cursors:
     expressions:
       frame: single
