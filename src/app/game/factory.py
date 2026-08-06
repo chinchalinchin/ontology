@@ -27,7 +27,7 @@ from app.models.properties import EffectProperties, \
 class Factory:
 
     @staticmethod
-    def frame(self, recipe):
+    def frame(recipe):
         if recipe.frame == "single":
             return SingleFrame()
         if recipe.frame == "iterable":
@@ -37,7 +37,7 @@ class Factory:
         return SingleFrame()
 
     @staticmethod
-    def animation(self, recipe):
+    def animation(recipe):
         if recipe.animation == "binary":
             return BinaryAnimation()
         if recipe.animation == "persistent":
@@ -46,9 +46,10 @@ class Factory:
             return TemporaryAnimation()
         if recipe.animation == "state":
             return StateAnimation()
+        return PersistentAnimation()
 
     @staticmethod
-    def properties(self, category, snapshot):
+    def properties(category, snapshot):
         if category == "tiles":
             return TileProperties(**snapshot)
         if category == "effects":
@@ -61,9 +62,10 @@ class Factory:
             return PixieProperties(**snapshot)
         if category == "sprites":
             return SpriteProperties(**snapshot)
+        return TileProperties(**snapshot)
 
     @staticmethod
-    def state(self, instance, snapshot):
+    def state(instance, snapshot):
         if instance == "multipler":
             return MultiplierState(**snapshot)
         if instance == "positional":
@@ -82,3 +84,4 @@ class Factory:
             return PixieState(**snapshot)
         if instance == "sprite":
             return SpriteState(**snapshot)
+        return PositionalState(**snapshot)

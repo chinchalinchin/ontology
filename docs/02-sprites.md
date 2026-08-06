@@ -23,6 +23,10 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
 - See [Dispositions](#disposition) documentation below for more information on Disposition Transition Matrix.
 - See [Player](./03-player.md) documentation for more information on the Player.
 
+**Layers**
+
+Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations should be separated by Layer, to avoid inter-Layer collisions.
+
 ## Overview 
 
 **Properties**
@@ -87,15 +91,6 @@ NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique
 **Frame**
 
 - `key(asset, animation)`: `asset + animation.direction + animation.action + animation.frame`
-
-**Methods**
-
-!!! TODO
-    These should be incorporated into Mechanics to keep the Sprite class purely data-driven.
-
-- `intend(intent: Intention) -> None`: Updates the Sprite's current Intention.
-- `achieved(goal_asset: Asset) -> Union[Intent, None]`: Returns Goal Intention if Goal achieved, None otherwise.
-
 
 ### Schema
 
@@ -171,14 +166,14 @@ As a reminder, the default Actions and Directions for the game engine (and LPC s
 
 ## Intentions
 
-!!! importatnt
+!!! important
     The Player state does not observe Intention Mechanics such as the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to state. See [Player documentation](./03-player.md) for more information on the Player.
 
 *Intentions* are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given an Intention state, along with an Animation state, that is updated by the gameplay loop. The complex internal state of a Sprite is represented by its Intention. Intention is the medium through which Sprites transition into different Animation states. 
 
 The complete Intention State for a Sprite is given by the tuple,
 
-    (Disposition, Expression, Extension, Motivation)
+    (Disposition, Expression, Extension, Motivation, Communication)
 
 The attributes of Intention are discussed in more detail below.
 
@@ -285,7 +280,7 @@ Terms:
 - `sprite.<state>`: self State variable
 - `sprites[<sprite-name>].<state>`: other Sprites state variable
 
-In the default Disposition Transition matrix given above, the transition from `attack` to `hunt` is conditional on the following,
+For example, in the default Disposition Transition matrix given above, the transition from `attack` to `hunt` is conditional on the following,
 
 ```yaml
 - not sprite.goal

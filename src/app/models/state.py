@@ -25,8 +25,8 @@ class AssetState:
     key: str
     layer: str
     category: str
-    pass 
-
+    instance: str
+    
 # ---------------------------------------------------------------------------------------
 
 class AnimationState:

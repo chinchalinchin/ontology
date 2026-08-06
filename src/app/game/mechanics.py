@@ -9,6 +9,7 @@ from itertools import chain
 
 # Application Libraries
 from app.game.board import Board
+from app.models.hierarchy import AssetCategories, AssetInstances
 
 class Mechanic(ABC):
     """
@@ -23,14 +24,14 @@ class AnimationMechanics(Mechanic):
     """
 
     def update(self, board: Board, delta: float) -> None:
+        """
+        """
         for asset in chain(
-            board.permanent, 
-            board.temporary,
-            board.chests, 
-            board.gates, 
-            board.plates,
-            board.pixies, 
-            board.sprites
+            board.categories(AssetCategories.EFFECTS),
+            board.categories(AssetCategories.SHEETS),
+            board.instances(AssetInstances.CHESTS),
+            board.instances(AssetInstances.GATES),
+            board.instances(AssetInstances.PLATES)
         ):
             asset.animate(asset.state, asset.properties)
 
@@ -41,16 +42,19 @@ class CollisionMechanics(Mechanic):
     def update(self, board: Board, delta_time: float) -> None:
         """
         """
-        for this in chain(board.sprites, board.pixies):
-            for that in chain(board.sprites, board.pixies):
-                if this.name != that.name and this.shape.intersects(
-                    this.state.position,
-                    this.shape,
-                    that.state.position,
-                    that.shape
-                ):
-                    # TODO: implement
-                    pass
+        for layer in board.layers():
+            sheets = board.categories(AssetCategories.SHEETS, layer)
+
+            for this in sheets:
+                for that in sheets:
+                    if this.name != that.name and this.shape.intersects(
+                        this.state.position,
+                        this.shape,
+                        that.state.position,
+                        that.shape
+                    ):
+                        # TODO: implement
+                        pass
                 
 class RemoveMechanics(Mechanic):
     """
@@ -59,9 +63,10 @@ class RemoveMechanics(Mechanic):
     def update(self, board: Board, delta_time: float) -> None: 
         """
         """           
+        temporary = board.instances(AssetInstances.TEMPORARY)
 
-        for effect in board.temporary:
-            if not effect.alive():
+        for effect in temporary:
+            if effect.state.animation.frame > effect.properties.count:
                 # TODO: implementation
                 pass
 
@@ -72,14 +77,18 @@ class ProjectileMechanics(Mechanic):
     def update(self, board: Board, delta_time: float) -> None:
         """
         """
-        for proj in board.projectiles:
-            for target in chain(board.sprites, board.pixies):
-                if proj.shape.intersects(target.shape):
-                    # TODO: Resolve collision
+        for layer in board.layers():
+            sheets = board.categories(AssetCategories.SHEETS, layer)
+            projectiles = board.instances(AssetInstances.PROJECTILES, layer)
+
+            for proj in projectiles:
+                for target in sheets:
+                    if proj.shape.intersects(target.shape):
+                        # TODO: Resolve collision
+                        pass
+                if not proj.alive():
+                    # TODO: garbage collect
                     pass
-            if not proj.alive():
-                # TODO: garbage collect
-                pass
 
 class SwitchMechanics(Mechanic):
     """
@@ -88,15 +97,33 @@ class SwitchMechanics(Mechanic):
     def update(self, board: Board, delta_time: float) -> None:
         """
         """
-        for plate in board.plates:
-            for weight in chain(board.crates, board.sprites, board.pixies):
-                 if plate.shape.intersects(weight.shape):
-                    current_state = plate.state.switch
-                    plate.state.switch = True
-                    switched = not (current_state == plate.state.switch)
-                    break 
-                
-            if switched:
-                for gate in board.gates:
-                    if plate.state.link == gate.state.link:
-                        gate.state.switch = plate.state.switch
+        for layer in board.get_layers():
+            plates = board.instances(AssetInstances.PLATES, layer)
+            crates = board.instances(AssetInstances.CRATES, layer)
+            gates = board.instances(AssetInstances.GATES, layer)
+            sheets = board.categories(AssetCategories.SHEETS, layer)
+
+            for plate in plates:
+                for weight in chain(crates, sheets):
+                    if plate.shape.intersects(weight.shape):
+                        current_state = plate.state.switch
+                        plate.state.switch = True
+                        switched = not (current_state == plate.state.switch)
+                        break 
+                    
+                if switched:
+                    for gate in gates:
+                        if plate.state.link == gate.state.link:
+                            gate.state.switch = plate.state.switch
+
+class BehaviorMechanics(Mechanic):
+    """
+    """
+
+    def update(self, board: Board, delta_time: float) -> None:
+        """
+        """
+        for layer in board.get_layers():
+            sprites = board.instances(AssetInstances.SPRITES, layer)
+            motivation = sprites.state.intention.motivation
+            # TODO: implement

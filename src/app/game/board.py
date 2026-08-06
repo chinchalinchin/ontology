@@ -5,7 +5,7 @@ Package for game Board. The Board holds and mutates the state of the game for th
 """
 
 # Standard Libraries 
-from typing import List, Dict
+from typing import List
 
 # Application Libraries
 from app.assets.base import Asset
@@ -13,13 +13,14 @@ from app.game.mechanics import Mechanic, \
                                     AnimationMechanics, \
                                     CollisionMechanics, \
                                     ProjectileMechanics, \
-                                    SwitchMechanics
+                                    SwitchMechanics, \
+                                    BehaviorMechanics
 from app.player import Player
 
 class Board:
     """
     """
-    layers: int
+    numlayers: int
     player: Player
     mechanics: List[Mechanic]
     assets: List[Asset]
@@ -30,23 +31,48 @@ class Board:
         self.assets = assets
         self.mechanics = [ 
             AnimationMechanics(),
+            BehaviorMechanics(),
             CollisionMechanics(),
             ProjectileMechanics(),
-            SwitchMechanics()
+            SwitchMechanics(),
         ]
 
-    def get_layers(self) -> int:
-        if not self.layers:
+    def layers(self) -> int:
+        if not self.numlayers:
             pass
             # dynamically calculate layers based on loaded Assets dictionary keys
-        return self.layers
+        return self.numlayers
 
-    def tiles(self, layer) -> List[Asset]:
+    def categories(self, category, layer = None) -> List[Asset]:
         """
-        Returns a list of all Tile Assets on the given layer of the game Board.
+        Returns a list of all categorized Assets on the given layer of the game Board. If no layer is specified, all layers are returned.
         """
-        return [ tile for tile in self.tiles if tile.state.layer == layer ]
+        if layer is not None:
+            return [ 
+                asset for asset in self.asset 
+                if (asset.state.layer == layer
+                  and asset.state.category == category)
+            ]
+        return [ 
+            asset for asset in self.asset 
+            if asset.state.category == category
+        ]
 
+    def instances(self, instance, layer = None) -> List[Asset]:
+        """
+        Returns a list of all instanced Assets on the given layer of the game Board. If no layer is specified, all layers are returned.
+        """
+        if layer is not None:
+            return [ 
+                asset for asset in self.asset 
+                if (asset.state.layer == layer 
+                    and asset.state.instance == instance)
+            ]
+        return [ 
+            asset for asset in self.asset 
+            if asset.state.instance == instance
+        ]
+    
     def menu(self) -> None:
         """
         """

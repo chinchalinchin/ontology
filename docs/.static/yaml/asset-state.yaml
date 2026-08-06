@@ -144,18 +144,19 @@ sheets:
         extension: Extension Key
         expression: Expression Key
         motivation: Motivation Key
-      frame: Frame Number
+        communication: Communication Key
       goal:
-        name: Asset Identifier
+        name: Goal Identifier
+        category: Goal Category Identifier
         intention:
           extension: Extension Key
           action: Action Key
       memory:
-        goal: 
-          name: Asset Identifier
-          intention:
-            extension: Extension Key
-            action: Action Key
+        name: Goal Identifier
+        category: Goal Category Identifier
+        intention:
+          extension: Extension Key
+          action: Action Key
         communications: 
           - Communication Key
           # unforgettable
