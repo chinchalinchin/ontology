@@ -172,7 +172,7 @@ def render(TexturePtr background, list assets, int cam_x, int cam_y, int screen_
         SDL_RenderCopy(_renderer, background.ptr, &bg_src, NULL)
         
     for asset in assets:
-        # Safely unpack the primitive tuple directly into C-variables
+        # Safely unpack the primitive git atuple directly into C-variables
         tex_wrapper, sx, sy, sw, sh, dx, dy, dw, dh = asset        
         
         c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sh

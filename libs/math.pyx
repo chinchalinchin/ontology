@@ -7,7 +7,7 @@ Cythonized high-performance geometry and physics logic.
 from typing import List
 
 # Cython Libraries
-from libs.core cimport Position, Dimensions, Hitbox
+from libs.core cimport Position, Dimensions, Hitbox, Shape
 
 
 cdef class Geometry:
@@ -16,7 +16,12 @@ cdef class Geometry:
     """
 
     @staticmethod
-    cdef bint intersects(Position pos, Shape shape, Position other_pos, Shape other_shape):
+    cdef bint intersects(
+        Position pos, 
+        Shape shape, 
+        Position other_pos, 
+        Shape other_shape
+    ):
         """
         Calculates AABB intersection between two Shape objects at native C-speeds.
         """
@@ -39,45 +44,6 @@ cdef class Geometry:
                     return True
                     
         return False
-
-    @staticmethod
-    cdef bint onscreen(object asset, object player, object screen): 
-        """
-        Checks if an asset's bounding box intersects the screen's viewport.
-        """
-        # Center the camera on the player
-        cdef int cam_x = player.shape.position.x + (player.shape.dimensions.l // 2) - (screen.screensize.l // 2)
-        cdef int cam_y = player.shape.position.y + (player.shape.dimensions.w // 2) - (screen.screensize.w // 2)
-        
-        cdef int ax = asset.state.position.x
-        cdef int ay = asset.state.position.y
-        cdef int aw = asset.properties.dimensions.l
-        cdef int ah = asset.properties.dimensions.w
-        
-        # AABB check against the screen bounds
-        if (ax < cam_x + screen.screensize.l and ax + aw > cam_x and
-            ay < cam_y + screen.screensize.w and ay + ah > cam_y):
-            return True
-            
-        return False
-
-    @staticmethod
-    cdef tuple center(object asset):
-        """
-        Returns the absolute center point of an asset as a double-precision tuple.
-        """
-        cdef double center_x = (asset.state.position.x + asset.properties.dimensions.l) / 2.0
-        cdef double center_y = (asset.state.position.y + asset.properties.dimensions.w) / 2.0
-        return (center_x, center_y)
-
-    @staticmethod
-    cdef tuple offset(Position center, Dimensions dim):
-        """
-        Calculates the top-left offset necessary to center the given dimensions.
-        """
-        cdef double clip_x = center.x - (dim.l / 2.0)
-        cdef double clip_y = center.y - (dim.w / 2.0)
-        return (clip_x, clip_y)
 
 
 cdef class Physics:

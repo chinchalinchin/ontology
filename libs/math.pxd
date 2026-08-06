@@ -11,14 +11,6 @@ cdef class Geometry:
     @staticmethod
     cdef bint intersects(Position pos, Shape shape, Position other_pos, Shape other_shape)
 
-    @staticmethod
-    cdef bint onscreen(object asset, object player, object screen)
-
-    @staticmethod
-    cdef tuple center(object asset)
-
-    @staticmethod
-    cdef tuple offset(Position center, Dimensions dim)
 
 cdef class Physics:
 
