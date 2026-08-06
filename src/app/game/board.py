@@ -14,7 +14,7 @@ from app.game.mechanics import Mechanic, \
                                     CollisionMechanics, \
                                     ProjectileMechanics, \
                                     SwitchMechanics, \
-                                    BehaviorMechanics
+                                    IntentionMechanics
 from app.player import Player
 
 class Board:
@@ -31,7 +31,7 @@ class Board:
         self.assets = assets
         self.mechanics = [ 
             AnimationMechanics(),
-            BehaviorMechanics(),
+            IntentionMechanics(),
             CollisionMechanics(),
             ProjectileMechanics(),
             SwitchMechanics(),

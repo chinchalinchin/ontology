@@ -1,8 +1,10 @@
 """
-
+# Ontology: Hierarchy
 """
 # Standard Libraries
 from enum import Enum
+
+# -------------------------------- ASSET ENUMERATIONS
 
 class AssetCategories(str, Enum):
     """
@@ -27,3 +29,55 @@ class AssetInstances(str, Enum):
     PLATES          = "plates"
     PIXIES          = "pixies"
     SPRITES         = "sprites"
+
+# -------------------------------- SPRITE STATE ENUMERATIONS
+
+class Actions(str, Enum):
+    CAST            = "cast"
+    THRUST          = "thrust"
+    WALK            = "walk"
+    SLASH           = "slash"
+    SHOOT           = "die"
+
+class Expressions(str, Enum):
+    AGREEMENT       = "agreement"
+    ANGER           = "anger"
+    CONFUSION       = "confusion"
+    CURIOSITY       = "curiosity"
+    DISAGREEMENT    = "disagreement"
+    LOQUACITY       = "loquacity"
+    SURPRISE        = "surprise"
+    TIRED           = "tried"
+
+class Extensions(str, Enum):
+    INTERACT        = "interact"
+    SPEAK           = "speak"
+    SPRINT          = "sprint"
+    TRADE           = "trade"
+
+class Dispositions(str, Enum):
+    ATTACK          = "attack"
+    ATTRACT         = "attract"
+    BARTER          = "barter"
+    COMMUNICATE     = "communicate"
+    ESCAPE          = "escape"
+    ENGAGE          = "engage"
+    FIND            = "find"
+    FOLLOW          = "follow"
+    IDLE            = "idle"
+    INTERACT        = "interact"
+    SCAVENGE        = "scavenge"
+    MOCK            = "mock"
+    RECOIL          = "recoil"
+    RETURN          = "return"
+    THREATEN        = "threaten"
+    WANDER          = "wander"
+
+class Motivations(str, Enum):
+    CONQUEST        = "conquest"
+    LOVE            = "love"
+    PROFIT          = "profit"
+    REBELLION       = "rebellion"
+    REVENGE         = "revenge"
+    SAFETY          = "safety"
+    SURVIVAL        = "survival"

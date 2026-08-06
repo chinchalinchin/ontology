@@ -43,6 +43,7 @@ cdef extern from "SDL2/SDL.h":
     int SDL_RenderClear(SDL_Renderer* renderer)
     int SDL_RenderCopy(SDL_Renderer* renderer, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect)
     void SDL_RenderPresent(SDL_Renderer* renderer)
+    void SDL_PumpEvents()
     int SDL_RenderReadPixels(SDL_Renderer* renderer, const SDL_Rect* rect, unsigned int format, void* pixels, int pitch)
     
     SDL_Surface* SDL_CreateRGBSurfaceWithFormat(unsigned int flags, int width, int height, int depth, unsigned int format)
@@ -53,6 +54,10 @@ cdef extern from "SDL2/SDL.h":
     unsigned int SDL_RENDERER_ACCELERATED
     int SDL_TEXTUREACCESS_TARGET
     unsigned int SDL_PIXELFORMAT_RGBA32
+
+    int SDL_SetTextureBlendMode(SDL_Texture* texture, int blendMode)
+    int SDL_SetRenderDrawColor(SDL_Renderer* renderer, int r, int g, int b, int a)
+    int SDL_BLENDMODE_BLEND
 
 cdef extern from "SDL2/SDL_image.h":
     int IMG_Init(int flags)
@@ -98,6 +103,15 @@ def canvas(int w, int h) -> TexturePtr:
     if tex == NULL:
         raise RuntimeError("Failed to create GPU render target.")
     
+    # 1. Enable Alpha Blending
+    SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND)
+
+    # 2. Clear VRAM garbage with pure transparency
+    SDL_SetRenderTarget(_renderer, tex)
+    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0)
+    SDL_RenderClear(_renderer)
+    SDL_SetRenderTarget(_renderer, NULL)
+
     cdef TexturePtr wrapper = TexturePtr()
     wrapper.ptr = tex
     wrapper.w = w
@@ -184,6 +198,7 @@ def render(TexturePtr background, list assets, int cam_x, int cam_y, int screen_
         SDL_RenderCopy(_renderer, tex_wrapper.ptr, &c_src, &c_dst)
                     
     SDL_RenderPresent(_renderer)
+    SDL_PumpEvents()
 
 def save(str filename, int w, int h):
     """Extracts pixel data from the active hardware renderer to debug onto disk."""
