@@ -458,6 +458,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dispositional-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dispositional Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -541,6 +569,34 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dispositional-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dispositional Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -634,6 +690,22 @@
 </code></pre></div>
 <p>Mechanics act as filters. Rather than the Board passing arguments to a system, a Mechanic is responsible for querying the Board for the exact data it cares about.</p>
 <p>For example, the <code>SwitchMechanics</code> system strictly queries <code>board.plates</code>, <code>board.gates</code>, and any heavy entities (like <code>crates</code> and <code>sprites</code>) to resolve trigger logic, leaving the rest of the board untouched. This keeps execution tight and game loops strictly separated by behavior, not nouns.</p>
+<h3 id="general-mechanics">General Mechanics</h3>
+<p>These Mechanics handle general game logic.</p>
+<ul>
+<li>ProjectileMechanics: Increment projectile positions, checks intersections and garbage collects, if applicable.</li>
+<li>AnimationMechanic: Translates current states into FrameKeys for the renderer.</li>
+<li>SwitchMechanics: Binds the Gate and Plate states together based on their <code>switch</code>.</li>
+<li>PhysicsMechanic: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.</li>
+</ul>
+<h3 id="dispositional-mechanics">Dispositional Mechanics</h3>
+<p>These Mechanics handle the logic governing the Sprite Disposition Transtion matrix.</p>
+<ul>
+<li>IntentionMechanics: Runs the Disposition transition lambdas, etc.</li>
+<li>MotionMechanics: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.</li>
+<li>CommerceMechanics: Translate Intentions (barter, attract, etc.) into trades and price movements.</li>
+<li>CombatMechanic: (Cython) Resolves attack hitbox overlaps, decrements health, etc.</li>
+</ul>
 <h2 id="cython">Cython</h2>
 <p>While Python objects are fast enough for general logic, calculating collisions requires accessing absolute coordinates (potentially) millions of times per second.</p>
 <p>Position, Velocity, and Shape data are modeled as Cython Extension Types (cdef class in <code>.pxd</code> definition files). This allows Geometry.intersects (in <code>libs/math.pyx</code>) to access properties like <code>pos.x</code> natively as C-integers on the stack.</p>
