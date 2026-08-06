@@ -13,7 +13,7 @@ Construct a native Cython wrapper around the SDL2 C library to handle hardware-a
 - [x] **Method** - `compose(base_ptr, feature_ptrs)` Bind a blank `TEXTUREACCESS_TARGET`, stamps the base and features onto it, unbinds, and returns the new flattened TexturePtr. Used for assembling Sprite's base and features into a "virtual" Asset.
 - [x] **Method** - `render(background_ptr, assets)`:** Clear the active renderer, copy the cached background pointer, iterate over active Assets to overlay their respective textures, and call `SDL_RenderPresent`.
 - [x] **Method** - `save(filename)`:** Read the active renderer's pixels into an `SDL_Surface` and export it to the disk for debugging.
-- [ ] Optimize Render Signatures: Refactor `render()` and `construct()` to accept flat tuples of primitive integers rather than Position/Dimensions POPOs to enforce zero-allocation C-stack unpacking.
+- [x] **Optimize Render Signatures**: Refactor `render()` and `construct()` to accept flat tuples of primitive integers rather than Position/Dimensions POPOs to enforce zero-allocation C-stack unpacking.
 
 2. **Asset Registry** (`libs/registry.pyx` & `libs/registry.pxd`)
 
@@ -33,9 +33,9 @@ Create a centralized Cython Extension Type to ingest the parsed data structures 
 - [ ] Instantiate Registry to validate `/src/assets/**` and cache GPU textures.
 - [~] Parse `/src/data/boards/<board-key>/**.yaml`.
 - [~] Convert Pydantic models by invoking Factory to hydrate runtime Asset POPOs from the parsed configuration.
-- [ ] Query Registry for the calculated TexturePtr frames and bind them to the Assets.
+- [x] Query Registry for the calculated TexturePtr frames and bind them to the Assets.
 - [~] Intialize Board and inject the hydrated Assets into the Board. This logic belongs inside `Screen.draw()`, requiring the Registry to be injected into the Screen component at startup.
-- [ ] Camera Culling: Implement integer-based boundary checks inside Screen.draw() to cull assets falling outside the camera's viewport before passing them to the Cython rendering interface.
+- [x] Camera Culling: Implement integer-based boundary checks inside Screen.draw() to cull assets falling outside the camera's viewport before passing them to the Cython rendering interface.
 
 **4. Command Line Interface** (`src/cli.py`)
 
@@ -50,6 +50,6 @@ Implement the debugging commands required to test configurations, schemas, and r
 * [ ] **Command Definition:** `render <board-key> --out <directory> --layer <layer>`
   * [ ] **Render Step 1:** Execute the previous `construct` steps to generate the cached background texture pointer.
   * [ ] **Render Step 2:** Parse the mutable and animate YAML configurations for `<board-key>` via Pydantic.
-  * [ ] **Render Step 3:** Instantiate the composite `Asset` POPOs, mapping the validated YAML data into their respective `State` and `Properties` models alongside their stateless `GraphicsBehavior` component.
-  * [ ] **Render Step 4:** Iterate over the mutable assets, invoking their `GraphicsBehavior.frame()` method to evaluate their current `FrameKey` based on their state variables.
+  * [ ] **Render Step 3:** Instantiate the composite `Asset` POPOs, mapping the validated YAML data into their respective `State` and `Properties` models alongside their stateless `Frame` and `Animation` component. Will need to default these when initializing. Should probably make this part of the Factory initialization as well.
+  * [ ] **Render Step 4:** Iterate over the mutable assets, invoking their `Frame.key()` method to evaluate their current `FrameKey` based on their state variables.
   * [ ] **Render Step 5:** Pass the background pointer and the evaluated assets to `render()`, followed by `save()` to snapshot the full composite scene.
