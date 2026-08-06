@@ -42,7 +42,7 @@ Create a centralized Cython Extension Type to ingest the parsed data structures 
 Implement the debugging commands required to test configurations, schemas, and rendering output without booting the full physics loop.
 
 * [ ]**Command Definition:** `construct <board-key> --out <directory> --layer <layer>`
-  * [ ] **Construct Step 1:** Parse the immutable configuration (`/src/data/boards/<board-key>/immutable/inanimate.yaml`) using Pydantic validation.
+  * [ ] **Construct Step 1:** Parse the state configuration (`/src/data/boards/<board-key>/*.yaml`) using Pydantic validation. 
   * [ ] **Construct Step 2:** Initialize the `Registry` to load required tilesheets and boot the Cython SDL2 Interface.
   * [ ] **Construct Step 3:** Use `canvas()` to allocate the layer's background canvas on the GPU.
   * [ ] **Construct Step 4:** Iterate through the deployed Tiles, query their pointers/rects from the `Registry`, and use `draw()` to paint them directly onto the canvas.

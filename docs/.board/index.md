@@ -9,3 +9,5 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 
 - [Phase I: Rendering](./phases/phase-i.md)
 - [Phase II: Editor](./phases/phase-ii.md)
+- [Phase III: Dispositions](./phases/phase-iii.md)
+- [Phase IV: Mechanics](./phases/phase-iv.md)

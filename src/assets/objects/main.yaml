@@ -2,118 +2,109 @@ objects:
   # -------------------------------------------------------
   chests:
     wooden-chest:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
   # -------------------------------------------------------
   crates:
     stone-statue:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
     wooden-barrel:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
     wooden-box:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
   # -------------------------------------------------------
   doors:
     double-door:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
   # -------------------------------------------------------
   gates:
     stone-gate:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
   # -------------------------------------------------------
   plates:
     stone-crack:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
     stone-switch:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
     stone-sword:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:

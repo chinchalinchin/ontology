@@ -11,6 +11,9 @@ from itertools import chain
 from app.game.board import Board
 from app.models.hierarchy import AssetCategories, AssetInstances
 
+# Cython Libraries
+from libs.math import Geometry
+
 class Mechanic(ABC):
     """
     """
@@ -36,25 +39,20 @@ class AnimationMechanics(Mechanic):
             asset.animate(asset.state, asset.properties)
 
 class CollisionMechanics(Mechanic):
-    """
-    """
-
     def update(self, board: Board, delta_time: float) -> None:
-        """
-        """
         for layer in board.layers():
             sheets = board.categories(AssetCategories.SHEETS, layer)
 
             for this in sheets:
                 for that in sheets:
-                    if this.name != that.name and this.shape.intersects(
-                        this.state.position,
-                        this.shape,
-                        that.state.position,
-                        that.shape
-                    ):
-                        # TODO: implement
-                        pass
+                    if this.state.name != that.state.name:
+                        # Pass the raw components to your Cython math library
+                        if Geometry.intersects(
+                            this.state.position, this.properties.dimensions, this.properties.hitboxes,
+                            that.state.position, that.properties.dimensions, that.properties.hitboxes
+                        ):
+                            # Resolve collision
+                            pass
                 
 class RemoveMechanics(Mechanic):
     """

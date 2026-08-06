@@ -2,28 +2,26 @@ effects:
   persistent:
     coin:
       count: 8
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
   temporary:
     bang:
       count: 8
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:

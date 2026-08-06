@@ -43,10 +43,6 @@ class PyAttackBox(BaseModel):
     dim: PyDimensions
     hitframe: int
 
-class PyShape(BaseModel):
-    dim: PyDimensions
-    hitboxes: List[PyHitbox]
-
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------- PROPERTY CONFIGURATION & VALIDATION
 # ---------------------------------------------------------------------------------------
@@ -78,20 +74,30 @@ class PyCursorProperties(BaseModel):
     dim: PyDimensions
 
 class PyEffectProperties(BaseModel):
-    shape: PyShape
+    dim: PyDimensions
+    hitboxes: List[PyHitbox]
     count: int 
 
 class PyObjectProperties(BaseModel):
-    shape: PyShape
+    dim: PyDimensions
+    hitboxes: List[PyHitbox]
 
 class PyTileProperties(BaseModel):
     dim: PyDimensions
 
-class PyPixieActionsProperty(BaseModel):
-    directions: List[str]
+# ---------------------------------------------------------------------------------------
+
+class PyPixieEmtityProperty(BaseModel):
+    dim: PyDimensions
+    hitboxes: List[PyHitbox]
+
+class PyPixieDirectionProperty(BaseModel):
+    row: int
 
 class PyPixieProperties(BaseModel):
-    shape: PyShape
+    entities: PyPixieEmtityProperty
+    count: int
+    directions: Dict[str, PyPixieDirectionProperty]
 
 # ---------------------------------------------------------------------------------------
 
@@ -109,7 +115,8 @@ class PySpriteActionProperty(BaseModel):
     directions: Dict[str, PySpriteDirectionProperty]
 
 class PySpriteProperties(BaseModel):
-    shape: PyShape
+    dim: PyDimensions
+    hitboxes: List[PyHitbox]
     actions: Dict[str, PySpriteActionProperty]
 
 # ---------------------------------------------------------------------------------------
@@ -282,7 +289,8 @@ class PySheetRecipe(BaseModel):
 # ------------------------------------------------------------------ PROPERTY YAML SCHEMA
 
 class PyPixiePropertyConfiguration(BaseModel):
-    shapes: Dict[str, PyShape]
+    dim: PyDimensions
+    hitboxes: List[PyHitbox]
     action: Dict[str, PyPixieActionsProperty]
 
 class PySpritePropertyConfiguration(BaseModel):

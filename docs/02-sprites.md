@@ -402,7 +402,7 @@ A and visa versa. In other words, if a Sprite converses with another Sprite that
 
 TODO
 
-Equipment, while part of the Inventory, affects the animation, and thus is covered in its own section, [Equipment](#equipment).
+Equipment, while part of the Inventory, affects the rendering of the Sprite, and thus is covered in its own section, [Equipment](#equipment).
 
 ### Loot
 

@@ -53,27 +53,18 @@ class Asset:
     """
     properties: AssetProperties
     state: AssetState
-    shape: Shape
-    animation: Animation
     frame: int
+    animation: Animation
 
-    def __init__(self, 
-        properties: AssetProperties, 
-        state: AssetState,
-        frame: Union[Frame, None] = None,
-        animation: Union[Animation, None] = None
-    ):
+    def __init__(self, properties, state, frame=None, animation=None):
         self.properties = properties
         self.state = state
         self.frame = frame
         self.animation = animation
-        self.shape = Shape(
-            state.position, 
-            properties.dimensions, 
-            properties.hitboxes
-        )
 
-    def onscreen(self, player: Player, screensize: Dimensions) -> str: 
-        """
-        """
-        return Geometry.onscreen(self.shape, player.shape, screensize)
+    def onscreen(self, player: Player, screensize: Dimensions) -> bool: 
+        return Geometry.onscreen(
+            self.state.position, self.properties.dimensions,
+            player.state.position, player.properties.dimensions, 
+            screensize
+        )

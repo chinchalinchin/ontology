@@ -1,108 +1,102 @@
 pixies:
   entities:
     bee:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
     eyeball:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
     ghost:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
     malboro:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
     sandworm:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
     slime:
-      shape:
-        dim:
-          l: 
-          w:
-        hitboxes:
-          - pos: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+      dim:
+        l: 
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
   count: 6
   directions:
-    - up
-    - left
-    - down
-    - right
+    up:
+      row: 0
+    left:
+      row: 1
+    down:
+      row: 2
+    right:
+      row: 3
 sprites:
-  compositions:
+  personas:
     - key: hero
       base: <>
-      apparel: 
-        - <>
       features:
         - <>
-  shape:
-    dim:
-      l: 
-      w:
-    hitboxes:
-      - pos: 
-          x:
-          y:
-        dim:
-          l:
-          w:
+  dim:
+    l: 
+    w:
+  hitboxes:
+    - pos: 
+        x:
+        y:
+      dim:
+        l:
+        w:
   actions:
     cast:
       count: 7
       directions:
         up:
-          row: 0
           attackboxes:
             - pos:
                 x:

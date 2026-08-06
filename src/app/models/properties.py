@@ -14,13 +14,6 @@ from libs.core import Dimensions, Hitbox, AttackBox
 # ---------------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------ COMPONENT PROPERTIES
-
-class ShapeProperties:
-    dimensions: Dimensions
-    hitboxes: List[Hitbox]
-
-# ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------- NESTED PROPERTIES
 
 class PixieActionsProperty:
@@ -51,14 +44,16 @@ class EffectProperties(AssetProperties):
     # -------------------------- Keys
     key: str                    # Unique Asset Identifier
     # -------------------------- Properties
-    shape: ShapeProperties
+    dimensions: Dimensions
+    hitboxes: List[Hitbox]
     count: int 
 
 class ObjectProperties(AssetProperties):
     # -------------------------- Keys
     key: str                    # Unique Asset Identifier
     # -------------------------- Properties
-    shape: ShapeProperties
+    dimensions: Dimensions
+    hitboxes: List[Hitbox]
 
 class TileProperties(AssetProperties):
     # -------------------------- Keys
@@ -70,11 +65,13 @@ class PixieProperties(AssetProperties):
     # -------------------------- Keys
     key: str                    # Unique Asset Identifier
     # -------------------------- Properties
-    shape: ShapeProperties
+    dimensions: Dimensions
+    hitboxes: List[Hitbox]
 
 class SpriteProperties(AssetProperties):
     # -------------------------- Keys
     key: str                    # Unique Asset Identifier
     # -------------------------- Properties
-    shape: ShapeProperties
+    dimensions: Dimensions
+    hitboxes: List[Hitbox]
     actions: Dict[str, SpriteActionProperty]
