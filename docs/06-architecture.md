@@ -40,19 +40,22 @@ For example, the `SwitchMechanics` system strictly queries `board.plates`, `boar
 
 These Mechanics handle general game logic.
 
-- ProjectileMechanics: Increment projectile positions, checks intersections and garbage collects, if applicable.
-- AnimationMechanic: Translates current states into FrameKeys for the renderer.
-- SwitchMechanics: Binds the Gate and Plate states together based on their `switch`.
-- PhysicsMechanic: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.
+- `ProjectileMechanics`: Increment projectile positions, checks intersections and garbage collects, if applicable.
+- `AnimationMechanic`: Translates current states into FrameKeys for the renderer.
+- `PhysicsMechanic`: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.
+
+### Objective Mechanics
+
+- `SwitchMechanics`: Binds the Gate and Plate states together based on their `switch`.
 
 ### Dispositional Mechanics
 
 These Mechanics handle the logic governing the Sprite Disposition Transtion matrix.
 
-- IntentionMechanics: Runs the Disposition transition lambdas, etc.
-- MotionMechanics: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.
-- CommerceMechanics: Translate Intentions (barter, attract, etc.) into trades and price movements.
-- CombatMechanic: (Cython) Resolves attack hitbox overlaps, decrements health, etc.
+- `IntentionMechanic`s: Runs the Disposition transition lambdas, etc.
+- `MotionMechanics`: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.
+- `CommerceMechanics`: Translate Intentions (barter, attract, etc.) into trades and price movements.
+- `CombatMechanic`: (Cython) Resolves attack hitbox overlaps, decrements health, etc.
 
 ## Cython
 

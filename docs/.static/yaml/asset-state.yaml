@@ -133,7 +133,7 @@ sheets:
         defense: Defense
         speed: Speed
       mutators:
-        frightened:
+        fear:
           radius: Pixel Length
           limit: Health Percentage
           enemy: Enemy Count

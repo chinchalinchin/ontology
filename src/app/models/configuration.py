@@ -118,6 +118,7 @@ class PySpriteProperties(BaseModel):
 
 class PyAssetState(BaseModel):
     key: str
+    name: str
     layer: str
 
 class PyAnimationState(BaseModel):
@@ -141,7 +142,9 @@ class PyEquipmentState(BaseModel):
 class PyHealthState(BaseModel):
     current: int 
     maximum: int
-    
+
+# ---------------------------------------------------------------------------------------
+
 class PyIntentionState(BaseModel):
     extension: str
     disposition: str
@@ -157,6 +160,8 @@ class PyInventoryState(BaseModel):
     equipment: PyEquipmentState
     wallet: int
 
+# ---------------------------------------------------------------------------------------
+
 class PyMagicState(BaseModel):
     current: int
     maximum: int
@@ -165,13 +170,27 @@ class PyMeterState(BaseModel):
     health: PyHealthState
     magic: PyMagicState
 
+# ---------------------------------------------------------------------------------------
+
+class PyVisionMutator(BaseModel):
+    radius: int
+
+class PyFearMutator(BaseModel):
+    radius: int
+    limit: float
+    enemy: int
+
 class PyMutatorState(BaseModel):
-    parameters: Dict[str, Dict[str, Union[int, float]]]
+    fear: PyFearMutator
+    vision: PyVisionMutator
+
+# ---------------------------------------------------------------------------------------
 
 class PyMemoryState(BaseModel):
     goal: PyGoalState
     communications: List[str]
-
+    prices: Dict[str, float]
+    
 # ---------------------------------------------------------------------------------------
 
 class PyMultiplierState(PyAssetState):
