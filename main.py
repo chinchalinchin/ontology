@@ -1,7 +1,7 @@
 """
 # Ontology: Entrypoint
 """
-from app.orchestration import orchestrate
+from app.hooks.orchestrator import orchestrate
 
 def main():
     board, registry = orchestrate("world-00")

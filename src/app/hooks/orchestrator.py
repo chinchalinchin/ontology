@@ -9,8 +9,8 @@ import yaml
 import app.config.constants as constants
 from app.assets.base import Asset
 from app.game.board import Board
-from app.game.factory import Factory
-from app.config.recipes import StateRecipe
+from app.hooks.factory import Factory
+from app.config.hierarchy import StateRecipe
 from app.config.validators import (
     PyMultiplierState, PyPositionalState, PyMetricState, 
     PyAnimatorState, PyContainerState, PyDoorState, PySwitchState,

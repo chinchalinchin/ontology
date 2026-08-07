@@ -9,7 +9,7 @@ from typing import List, Union, Dict, Optional, Type, Tuple
 # Application Libraries
 import app.config.constants as constants
 
-from app.config.recipes import FrameRecipe, AnimationRecipe, \
+from app.config.hierarchy import FrameRecipe, AnimationRecipe, \
                                 StateRecipe
 
 # External Libraries

@@ -35,6 +35,36 @@ class AssetInstances(str, Enum):
     PIXIES          = "pixies"
     SPRITES         = "sprites"
 
+# -------------------------------- ASSET RECIPE ENUMERATIONS
+
+class FrameRecipe(str, Enum):
+    """
+    """
+    SINGLE          = "single"
+    ITERABLE        = "iterable"
+    STATE           = "state"
+
+class AnimationRecipe(str, Enum):
+    """
+    """
+    TEMPORARY       = "temporary"
+    PERSISTENT      = "persistent"
+    BINARY          = "binary"
+    STATE           = "state"
+
+class StateRecipe(str, Enum):
+    """
+    """
+    SPRITE          = "sprite"
+    SWITCH          = "switch"
+    DOOR            = "door"
+    POSITIONAL      = "positional"
+    PROPERTY        = "property"
+    CONTAINER       = "container"
+    ANIMATOR        = "animator"
+    METRIC          = "metric"
+    MULTIPLIER      = "multiplier"
+
 # -------------------------------- SPRITE STATE ENUMERATIONS
 
 class Actions(str, Enum):

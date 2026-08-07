@@ -19,7 +19,7 @@ from app.config.validators import (
     PyCraftPropertyConfiguration,
     PyRecipeConfiguration
 )
-from app.config.recipes import FrameRecipe, AnimationRecipe
+from app.config.hierarchy import FrameRecipe, AnimationRecipe
 
 # Cython Libraries
 from libs.render cimport (

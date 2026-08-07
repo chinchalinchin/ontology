@@ -16,7 +16,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Application Libraries
-from app.orchestration import migrate, orchestrate
+from app.hooks.orchestrator import migrate, orchestrate
 
 # Cython Libraries
 from libs.render import init, canvas, construct as render_construct, render as sdl_render, save, quit_sdl

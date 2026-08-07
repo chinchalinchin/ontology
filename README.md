@@ -53,7 +53,6 @@ Update your workspace settings to help the linter resolve imports from the `libs
     "./libs"
   ]
 }
-
 ```
 
 ## Index
@@ -69,6 +68,8 @@ This section provides an overview of the project's directory and file structure.
 
 ### /libs
 
+Cython interfaces and headers.
+
 * `render.pyx`: Cython interfaces for SDL2 rendering.
 * `registry.pyx`: Cython class for storing textures.
 * `core.pyx`: Cython data classes.
@@ -76,8 +77,10 @@ This section provides an overview of the project's directory and file structure.
 
 ### /src
 
+Application source code.
+
 * `cli.py`: Application command line interface.
-* `/src/app/`: Application source code.
+* `/src/app/`: Application packages.
 * `/src/assets/`: Application assets.
 * `/src/data/`: Application data.
 
