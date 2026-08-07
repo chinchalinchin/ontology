@@ -208,13 +208,6 @@ class Meters:
 # --------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
-class Transitions:
-    """
-    """
-    conditions: List[Callable]
-    next: str
-
-@dataclass(slots=True)
 class Intention:
     """
     Representation of the internal, hidden state of a Sprite. 
@@ -225,9 +218,6 @@ class Intention:
     motivation: str
     expression: str
     communcation: str
-
-    # Disposition Scripting Language conditions
-    transitions: List[Transitions]
 
 @dataclass(slots=True)
 class Goal:
@@ -268,7 +258,7 @@ class MutatorParameters:
     vision: VisionMutator
 
 @dataclass(slots=True)
-class Mutator:
+class Mutators:
     """
     Representation of a Sprite's mutators. Mutators alter the Sprite's behavior during the gameplay loop.
     """
@@ -304,7 +294,7 @@ class SpriteState(AssetState):
     character: Character
     intention: Intention
     inventory: Inventory
-    mutators: Mutator
+    mutators: Mutators
     memory: Memory
     goal: Goal
 

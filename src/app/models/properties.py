@@ -4,7 +4,7 @@
 Models for typing the property attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
 """
 # Standard Libraries
-from typing import Dict, List
+from typing import Dict, List, Callable
 
 # Cython Libraries
 from libs.core import Dimensions, Hitbox, AttackBox
@@ -79,3 +79,21 @@ class SheetProperties(AssetProperties):
     # -------------------------- Properties
     personas: Dict[str, Persona]
     actions: Dict[str, Action]
+
+# ---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------- DISPOSITION PROPERTIES
+
+class Transition:
+    """
+    """
+    conditions: List[Callable]
+    next: str
+
+class Disposition:
+    """
+    """
+    # 
+    extensions: List[str]
+    actions: List[str]
+    # Disposition Scripting Language conditions
+    transitions: List[Transition]
