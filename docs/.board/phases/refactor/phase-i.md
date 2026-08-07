@@ -1,4 +1,4 @@
-#### Refactor: Phase I Refactor
+#### Refactor: Phase I
 
 After review of Phase I, several modifications and refactors have been initiated. The following decisions have been made regarding the core architecture of the game engine,
 

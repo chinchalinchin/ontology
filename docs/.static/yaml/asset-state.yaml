@@ -20,6 +20,17 @@ tiles:
         nx: number of horizontal multiples
         ny: number of vertical multiples
 # ------------------------------------------------------------------
+# ---------------------------------------------------------- CRAFTS
+crafts:
+  struts:
+    - key: Strut Asset Key
+      name: Strut Key
+      layer: Layer Key
+      owner: Owner Key
+      position:
+        x: Horizontal Position
+        y: Vertical Position
+# ------------------------------------------------------------------
 # ---------------------------------------------------------- CURSORS
 cursors:
   expressions:
@@ -42,7 +53,6 @@ cursors:
 # ------------------------------------------------------------------
 # ---------------------------------------------------------- EFFECTS
 effects:
-  # ------------------------------------------- PERSISTENT EFFECTS
   persistent:
     - key: Effect Asset Key
       name: Effect Key
@@ -50,7 +60,6 @@ effects:
       position:
         x: Horizontal Position
         y: Vertical Position
-  # ------------------------------------------- TEMPORARY EFFECTS
   temporary:
     - key: Effect Asset Key
       name: Effect Key
@@ -61,7 +70,6 @@ effects:
 # ------------------------------------------------------------------
 # ---------------------------------------------------------- OBJECTS
 objects:
-  # ------------------------------------------- CHESTS
   chests:
     - name: Chest Key
       key: Chest Asset Key
@@ -72,7 +80,6 @@ objects:
       switch: Switch Flag
       content:
         - Content Key
-  # ------------------------------------------- CRATES
   crates:
     - name: Crate Key
       key: Crate Asset Key
@@ -80,7 +87,6 @@ objects:
       position: 
         x: Horizontal Position
         y: Vertical Position
-  # ------------------------------------------- DOORS
   doors:
     - name: Door Key
       key: Door Asset Key
@@ -92,7 +98,6 @@ objects:
       out:
         x: Horizontal Position
         y: Vertical Position
-  # ------------------------------------------- GATES
   gates:
     - name: Gate Key
       key: Gate Asset Key
@@ -102,7 +107,6 @@ objects:
         x: Horizontal Position
         y: Vertical Position
       switch: Switch Flag
-  # ------------------------------------------- PLATES
   plates:
     - name: Plate Key
       key: Plate Asset Key
@@ -112,18 +116,9 @@ objects:
         x: Horizontal Position
         y: Vertical Position
       switch: Switch Flag
-  struts:
-    - key: Strut Asset Key
-      name: Strut Key
-      layer: Layer Key
-      owner: Owner Key
-      position:
-        x: Horizontal Position
-        y: Vertical Position
 # ------------------------------------------------------------------
 # ----------------------------------------------------------- SHEETS
 sheets:
-  # ------------------------------------------- PIXIES
   pixies:
     - name: Pixie Key
       key: Pixie Asset Key
@@ -131,7 +126,6 @@ sheets:
       position:
         x: Horizontal Position
         y: Vertical Position
-  # ------------------------------------------- SPRITES
   sprites:
     - name: Sprite Key
       key: Sprite Asset Key
@@ -167,8 +161,11 @@ sheets:
         name: Goal Identifier
         category: Goal Category Identifier
         intention:
+          disposition: Disposition Key
           extension: Extension Key
-          action: Action Key
+          expression: Expression Key
+          motivation: Motivation Key
+          communication: Communication Key
       memory:
         name: Goal Identifier
         category: Goal Category Identifier
