@@ -307,17 +307,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#intents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Intents
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#engine" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -356,6 +345,45 @@
     <span class="md-ellipsis">
       
         Registry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#world" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        World
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="World">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layers
       
     </span>
   </a>
@@ -592,17 +620,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#intents" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Intents
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#engine" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -652,6 +669,45 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#world" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        World
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="World">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Layers
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -686,23 +742,13 @@
 <p>(0,0) corresponds to the upper-left corner, with down being the positive y-direction.</p>
 </div>
 <h2 id="assets">Assets</h2>
-<p>All Assets have an <em>ID</em>, <em>Properties</em> and <em>State</em>. </p>
-<ol>
-<li>Key: <code>str</code></li>
-<li>Properties:<ul>
-<li>Dimensions: <code>tuple[w, h]</code></li>
-</ul>
-</li>
-<li>State:<ul>
-<li>Layer: <code>int</code></li>
-<li>Position: <code>tuple[x, y]</code></li>
-</ul>
-</li>
-</ol>
+<p>All Assets have an <em>Key</em>, <em>Properties</em> and <em>State</em>. </p>
 <p>In addition, Assets are divided into several categories. See <a href="../01-assets/">Assets</a> for more information on each category. Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,</p>
 <ul>
 <li>Menu</li>
 <li>Object</li>
+<li>Effect</li>
+<li>Cursor</li>
 <li>Sheet</li>
 <li>Tile</li>
 </ul>
@@ -712,17 +758,18 @@
 <p>A group of Assets of the same category have a single set of Properties, but each individual Asset may have a unique State, unique to its particular deployment. For example, a treasure chest is configured once by its Properties (its height, weight, etc.), but each instance of a treasure chest on a Board has a unique State (its position, content, etc.).</p>
 <h3 id="hitboxes">Hitboxes</h3>
 <p>Many Assets have Hitboxes. Hitboxes are <em>Properties</em>, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. </p>
-<h2 id="intents">Intents</h2>
-<p>TODO</p>
 <h2 id="engine">Engine</h2>
-<p>TODO</p>
 <h3 id="screen">Screen</h3>
 <p>TODO </p>
 <h3 id="board">Board</h3>
-<p>TODO</p>
-<p>The Board state is maintained in <code>/src/data/boards/</code>.</p>
-<p>The Board state is divided into <em>immutable</em> Assets, <em>mutable inanimate</em> Assets and <em>mutable animate</em> Assets. </p>
+<p>The Board is the Game's "database". It holds all ingame Assets during the course of the game loop and exposes them to the engine through queryable interfaces.</p>
+<p>The state files for each Board is maintained in <code>/src/data/state/&lt;board-key&gt;/**</code>.</p>
 <h3 id="registry">Registry</h3>
+<p>The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. </p>
+<h2 id="world">World</h2>
+<h3 id="mechanics">Mechanics</h3>
+<p>TODO</p>
+<h3 id="layers">Layers</h3>
 <p>TODO</p>
 
 
