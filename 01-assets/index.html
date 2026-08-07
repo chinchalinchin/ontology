@@ -1642,7 +1642,6 @@
 <h2 id="effects">Effects</h2>
 <p><em>Effects</em> are animate, immutable Objects. <em>Effects</em> are defined over a single row of frames. <em>Effects</em> utilize an injected <em>Animation</em> behavior that iterates over the row of frames as the game loop progresses.</p>
 <p><em>Effects</em> are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is an <em>Effect</em>.</p>
-<p>Some Effects are brief (e.g. explosions or magic effects), while others loop through their frames forever (e.g. water ripples or a windmill). Temporary Effects are garbage-collected and removed from the Board after they "die", whereas Persistent Effects are excluded from garbage collection.</p>
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
@@ -1651,7 +1650,7 @@
 <li><code>count: int</code></li>
 </ul>
 <h3 id="temporary">Temporary</h3>
-<p>TODO</p>
+<p>Temporary Effects are brief, short-lived effects, such as explosions or magic effects. After their animation is concluded, they are garbage-collected and removed from the Board after they "die"</p>
 <p><strong>Animation: TemporaryAnimation</strong></p>
 <ul>
 <li><code>if animation.frame &lt; properties.count: animation.frame += 1</code></li>
@@ -1660,14 +1659,15 @@
 <ul>
 <li><code>key(asset, animation): returns {asset}-{animation.frame}</code></li>
 </ul>
-<p><strong>State: PositionalState</strong></p>
+<p><strong>State: AnimatorState</strong></p>
 <ul>
 <li><code>name: str</code></li>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
+<li><code>animation: Animation</code></li>
 </ul>
 <h3 id="persistant">Persistant</h3>
-<p>TODO</p>
+<p>Persistent Effects are long-term, continuous effects, such as water ripples or windmills, whose animation continually cycles through its loop.</p>
 <p><strong>Animation: PersistantAnimation</strong></p>
 <ul>
 <li><code>if animation.frame &gt; properties.count: animation.frame = 0</code></li>
@@ -1676,28 +1676,32 @@
 <ul>
 <li><code>key(asset, animation) -&gt; &lt;asset&gt;-&lt;animation.frame&gt;</code></li>
 </ul>
-<p><strong>State: PositionalState</strong></p>
+<p><strong>State: AnimatorState</strong></p>
 <ul>
 <li><code>name: str</code></li>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
+<li><code>animation: Animation</code></li>
 </ul>
 <h2 id="crafts">Crafts</h2>
-<p>TODO</p>
+<p>Crafts are Assets that can be instantiated through game <a href="../06-architecture/#mechanics">Mechanics</a>, such as <code>CommerceMechanics</code> or <code>ChemistryMechanics</code>. All Crafts have a <code>cost</code> associated with them. </p>
+<p><strong>Cost</strong></p>
+<p>Cost is a set of quantities that must be satisfied before the Craft can be instantiated. It is a "formula" for the Craft's creation. </p>
+<div class="highlight"><pre><span></span><code><span class="nt">cost</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">key</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">quantity</span><span class="p">:</span>
+</code></pre></div>
+<p>The <code>key</code> referenced in the <code>cost</code> depends on the Instance type of the Craft. For example, a Strut costs Inventory Loot. The <code>cost</code> of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.</p>
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>key: str</code></li>
 <li><code>dimensions: Dimensions</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
-<li><code>cost</code>:<ul>
-<li><code>item</code>: <code>str</code> </li>
-<li><code>quantity</code>: <code>int</code></li>
-</ul>
-</li>
+<li><code>cost: Cost</code></li>
 </ul>
 <h3 id="struts">Struts</h3>
-<p><em>Struts</em> are inanimate, immutable Assets. <em>Struts</em> are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. They possess an owner. </p>
-<p>Struts may be placed on the Board through the state files, but are instantiated ingame through the <code>build</code> Sprite Extension state (see <a href="../02-sprites/#extension">Sprite documentation</a> for more information on Extensions). The <em>cost</em> of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.</p>
+<p><em>Struts</em> are inanimate, immutable Assets. <em>Struts</em> are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an <code>owner</code>. </p>
+<p>Struts may be placed on the Board through the state files manually, but are instantiated ingame through the <code>build</code> Sprite Extension state (see <a href="../02-sprites/#extension">Sprite documentation</a> for more information on Extensions).</p>
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
@@ -1731,27 +1735,57 @@
 <p>The row indexing starts at 0.</p>
 </div>
 <p><strong>Action</strong></p>
+<p>Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without an accompanying Direction. The "space" of the (Action, Direction) space is configured by Sheet Properties. </p>
+<p>This snippet from the <a href="#schemas">Schemas</a> shows the general structure of an Action,</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;action-key&gt;</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">count</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">directions</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">&lt;direction-key&gt;</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">row</span><span class="p">:</span><span class="w"> </span>
+<span class="w">            </span><span class="nt">attackboxes</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">pos</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">x</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span>
+<span class="w">                  </span><span class="nt">dim</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">l</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">w</span><span class="p">:</span>
+<span class="w">                  </span><span class="nt">hitframe</span><span class="p">:</span>
+</code></pre></div>
 <ul>
-<li>Action:<ul>
-<li><code>&lt;action-key&gt;</code>:<ul>
-<li>Count:</li>
-<li>Directions:</li>
+<li><code>&lt;action-key&gt;: str</code> - Ranges over <code>cast, thrust, walk, slash, shoot, die</code></li>
+<li><code>&lt;direction-key&gt; : str</code> -  Ranges over  <code>up, left, down, right</code></li>
+<li><code>count: int</code> - is the number of frames in the Action row grouping. </li>
+<li><code>row: int</code> - Index of the (Action, Direction) row in the Sheet file.</li>
+<li><code>attackboxes</code> - List of indexed Hitboxes, where the <code>hitframe</code> index denotes what frame of the animation it applies, i.e. the intersection calculation changes based on what frame in animation over which it is being evaluated. <code>pos</code> is an Position tuple and <code>dim</code> is a Dimensions tuple, exactly mirroring their Hitbox equivalents.</li>
 </ul>
-</li>
-</ul>
-</li>
-</ul>
-<p><strong>Properties</strong></p>
+<p><strong>Personas</strong></p>
+<p>This snippet from the <a href="#schemas">Schemas</a> shows the general structure of a Persona,</p>
+<div class="highlight"><pre><span></span><code><span class="nt">&lt;persona-key&gt;</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">dim</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">l</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">w</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">hitboxes</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">pos</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">x</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">y</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">dim</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span>
+<span class="w">            </span><span class="nt">w</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">stack</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;stack-key&gt;</span>
+</code></pre></div>
+<p><code>dim</code> and <code>hitboxes</code> are similar to most other Asset types, whereas <code>stack</code> is unique to Sheets. <code>stack</code> is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. </p>
+<p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. These "stack" of Sheets is keyed in the <a href="../00-overview/#registry">Registry</a> using the <code>&lt;persona-key&gt;</code>. </p>
+<p>The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.</p>
+<p><strong>Properties: SheetProperties</strong></p>
 <ul>
 <li><code>key: str</code></li>
-<li><code>dim: Dimensions</code></li>
-<li><code>hitboxes: List[Hitbox]</code> </li>
+<li><code>personas: Personas</code></li>
 <li><code>actions: Actions</code></li>
 </ul>
 <h3 id="pixies">Pixies</h3>
-<p><em>Pixies</em> are <em>Sheets</em> that have simple game mechanics, e.g. are excluded from the complex calculations of the <a href="../02-sprites/#intentions">Intention Mechanic</a>.</p>
-<p><em>Pixies</em> encapsulate simple Characters, such as animals or bugs.</p>
-<p><strong>State</strong></p>
+<p><em>Pixies</em> are <em>Sheets</em> that have simple game mechanics, e.g. are excluded from the complex calculations of the <a href="../02-sprites/#intentions">Intention Mechanic</a>. <em>Pixies</em> encapsulate simple Characters, such as animals or bugs.</p>
+<p><strong>State: AnimatorState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
