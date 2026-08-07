@@ -293,7 +293,7 @@ class PyRecipes(YamlBaseSettings):
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------- RECIPE YAML SCHEMA
 
-class PyRecipes(YamlBaseSettings):
+class PyRecipeConfiguration(YamlBaseSettings):
     assets: PyRecipes
 
     model_config = SettingsConfigDict(
@@ -357,8 +357,8 @@ class PyObjectPropertyInstances(BaseModel):
     gates: Dict[str, PyObjectProperties] = {}
     plates: Dict[str, PyObjectProperties] = {}
 
-class PyStrutPropertyInstances(BaseModel):
-    struts: Dict[str, PyStrutProperties] = {}
+class PyCraftPropertyInstances(BaseModel):
+    struts: Dict[str, PyCraftProperties] = {}
 
 class PyCursorPropertyInstances(BaseModel):
     expressions: Dict[str, PyCursorProperties] = {}
@@ -392,11 +392,11 @@ class PyObjectPropertyConfiguration(YamlBaseSettings):
         yaml_file = constants.ASSET_DIR / "objects" / constants.APP_EXT
     )
 
-class PyStrutPropertyConfiguration(YamlBaseSettings):
-    objects: PyStrutPropertyInstances
+class PyCraftPropertyConfiguration(YamlBaseSettings):
+    objects: PyCraftPropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = constants.ASSET_DIR / "objects" / constants.APP_EXT
+        yaml_file = constants.ASSET_DIR / "crafts" / constants.APP_EXT
     )
 
 class PyCursorPropertyConfiguration(YamlBaseSettings):
