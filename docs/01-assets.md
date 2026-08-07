@@ -1,12 +1,12 @@
 # Ontology: Assets
 
-!!! note
-    LPC Assets are bundled with the application by default.
-
 This document serves to specify the Asset architecture and provide key definition for game terminology.
 
 !!! note "Definition"
-    An asset is an image or sound file.
+    An Asset is an image or sound file.
+
+!!! note
+    LPC Assets are bundled with the application by default.
 
 ## Overview 
 
@@ -14,7 +14,6 @@ The Asset directory is organized as follows,
 
 ```bash
 assets % tree -L 2
-:~/Projects/ontology/src/assets$ tree -L 2
 .
 ├── cursors
 │   ├── expressions
@@ -49,14 +48,18 @@ assets % tree -L 2
 │   ├── speech
 │   └── main.yaml
 └── tiles
-    ├── back
-    ├── fore
-    └── main.yaml
+│   ├── back
+│   ├── fore
+│   └── main.yaml
+└── main.yaml
+
 
 27 directories, 9 files
 ```
 
-The `main.yaml` files in each subdirectory conform to the [Asset property schemas](#schemas).
+The root `main.yaml` configures [Asset Recipes](#recipes). The `main.yaml` files in each subdirectory conform to the [Asset property schemas](#schemas). 
+
+### Asset Concepts
 
 **Keys**
 
@@ -71,49 +74,56 @@ Keys are used to map assets to images loaded into the [Registry](./00-overview.m
 !!! note "Layers"
     The concept of a Layer is defined more explicitly in [World documentation](./00-overview.md#world). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.
 
-State files are maintained in `/src/data/boards/*`.
+State files are maintained in `/src/data/state/<board-key>/**`, where `<board-key>` is a unique identifer.
 
 **Names**
 
 Names are used to uniquely identify an ingame entity. A single Asset may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. A Name is part of an Asset's state.
 
-**Asset Hierarchy**
+**Mutability**
 
-Assets are divided along two axes.
+Assets are divided along *mutable* and *immutable* axes. *Immutable* Assets never have their state altered by the game loop. *Mutable* Assets change their state based on the game loop.
 
-First, Assets are divided into *mutable* and *immutable* categories. *Immutable* Assets never have their state altered by the game loop. *Mutable* objects change their state based on the game loop.
+**Animability**
 
-Second, Assets are divided in *animate* and *inanimate* categories. *Inanimate* Assets either have a single frame or a pair of frames (*Binary Objects*). *Animate* objects possess rows of frames for different animation states.
+Assets are also divided along *animate* and *inanimate* axes. *Inanimate* Assets possess a single frame. *Animate* objects possess rows of frames for different animation states.
+
+**Direction & Action**
 
 The rows of *animate* Assets are further categorized by the axes of *Direction* and *Action*. See [Sheets section](#sheets) below for more information on the division of *Direction* and *Action*.
 
-In order of ascending complexity, where complexity is defined as the number of dimensions in the state, the Assets fall along these axes as shown below,
+### Asset Hierarchy
 
-- *Immutable*, *Inanimate* Assets
-    - Tile: Back, State: Position, Layer
-    - Tile: Fore, State: Position, Layer
-- *Mutable*, *Inanimate* Assets
-    - Object: Crate, State: Position, Layer
-    - Object: Door, State: Position, Layer, OutLayer
-    - Object: Chest, State: Position, Layer, Switch, Content
-    - Object: Gate, State: Position, Layer, Switch, Link
-    - Object: Plate, State: Position, Layer, Switch, Link
-    - Object: Strut, State: Position, Layer, Owner
-    - Cursor: Expression, State: Position, Layer
-    - Cursor: Projectile, State: Position, Layer, Initial
-- *Immutable*, *Animate* Assets
-    - Effect: Temporary, State: Position, Layer, Frame
-    - Effect: Persistent, State: Position, Layer, Frame
-- *Mutable*, *Animate* Assets
-    - Sheet: Pixie, State: Postion, Layer, Frame
-    - Sheet: Sprite, State: Position, Layer, Frame, Direction, Action, Intention, ...
+**Categories and Instances**
 
-The Asset *Categories* (e.g. Tiles, Objects, Effects, Sheet) are form the first layer of the hierarchy. Each Asset Category is defined by its static Properties,
+The Asset *Categories* (e.g. Tiles, Objects, Effects, Sheet, etc.) form the top layer of the hierarchy. Each Asset Category is defined by its static Properties; an Asset's Category determines what type of Properties it will parse from the configuration files and inject into its deployment.
 
 - Tiles: Properties = Dimensions 
+- Cursor: Properties = Dimensions
+- Craft: Properties = Dimensions, Hitboxes, Cost
 - Objects: Properties = Dimensions, Hitboxes
+- Effects: Properties = Dimensions, Hitboxes, Count
+- Sheets: Properties = Dimensions, Hitboxes, Actions, Personas
 
-**Asset Architecture**
+The Asset *Instances* (e.g. Crates, Gates, Sprites, Projectiles, etc.) form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic State; an Assets Instance determine what type of State it will parse from the configuration files and inject into its deployment.
+
+- Tile - BackTile, State: Position, Layer
+- Tile - ForeTile, State: Position, Layer
+- Object - Crate, State: Position, Layer
+- Object - Door, State: Position, Layer, OutLayer
+- Object - Chest, State: Position, Layer, Switch, Content
+- Object - Gate, State: Position, Layer, Switch, Link
+- Object - Plate, State: Position, Layer, Switch, Link
+- Craft - Strut, State: Position, Layer, Owner
+- Craft - Tract, State: Position, Layer, Owner, Stage
+- Cursor - Expression, State: Position, Layer
+- Cursor - Projectile, State: Position, Layer, Initial
+- Effect - Temporary, State: Position, Layer, Frame
+- Effect - Persistent, State: Position, Layer, Frame
+- Sheet - Pixie, State: Postion, Layer, Frame
+- Sheet - Sprite, State: Position, Layer, Frame, Direction, Action, Intention, ...
+
+**Architecture**
 
 Every physical entity in the game is an instance of the unified `Asset` class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and stateless behaviors injected into them:
 
@@ -307,6 +317,8 @@ Some Effects are brief (e.g. explosions or magic effects), while others loop thr
 **Frame**
 
 * `key(asset, animation) -> <asset>-<animation.frame>`
+
+## ?
 
 ### Struts 
 

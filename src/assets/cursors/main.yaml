@@ -1,59 +1,59 @@
 cursors:
   expressions:
     affection:
-      dimensions:
+      dim:
         l:
         w:
     agreement:
-      dimensions:
+      dim:
         l: 
         w:
     anger:
-      dimensions:
+      dim:
         l: 
         w:
     confusion:
-      dimensions:
+      dim:
         l:
         w:
     curiosity:
-      dimensions:
+      dim:
         l:
         w:
     disagreement:
-      dimensions:
+      dim:
         l:
         w:
     loquacity:
-      dimensions:
+      dim:
         l:
         w:
     surprise:
-      dimensions:
+      dim:
         l:
         w:
     tired:
-      dimensions:
+      dim:
         l:
         w:
   projectiles:
     arrow-fire:
-      dimensions:
+      dim:
         l:
         w:
     arrow-magic:
-      dimensions:
+      dim:
         l:
         w:
     bolt-poison:
-      dimensions:
+      dim:
         l:
         w:
     bolt-precise:
-      dimensions:
+      dim:
         l:
         w:
     bolt:
-      dimensions:
+      dim:
         l:
         w:

@@ -1,137 +1,140 @@
-pixies:
-  entities:
-    bee:
-      dim:
-        l: 32
-        w: 32
-      hitboxes: null
-    eyeball:
-      dim:
-        l: 64 
-        w: 64
-      hitboxes: null
-    ghost:
-      dim:
-        l: 64
-        w: 64
-      hitboxes: null
-    malboro:
-      dim:
-        l: 128
-        w: 128
-      hitboxes: null
-    sandworm:
-      dim:
-        l: 64
-        w: 64
-      hitboxes: null
-    slime:
-      dim:
-        l: 64
-        w: 64
-      hitboxes: null
-  count: 6
-  directions:
-    up:
-      row: 0
-    left:
-      row: 1
-    down:
-      row: 2
-    right:
-      row: 3
-sprites:
-  personas:
-    - key: hero
-      base: human-male-ivory
-      features:
-        - hair-bangs-black
-        - boots-brown
-        - pants-green
-        - shirt-male-green
-  dim:
-    l: 64
-    w: 64
-  hitboxes: null
-  actions:
-    cast:
-      count: 7
-      directions:
-        up:
-          row: 0
-          attackboxes: null
-        down:
-          row: 1
-          attackboxes: null
-        left:
-          row: 2
-          attackboxes: null
-        right:
-          row: 3
-          attackboxes: null
-    thrust:
-      count: 8
-      directions:
-        up:
-          row: 4
-          attackboxes: null
-        down:
-          row: 5
-          attackboxes: null
-        left:
-          row: 6
-          attackboxes: null
-        right:
-          row: 7
-          attackboxes: null
-    walk:
-      count: 9
-      directions: 
-        up:
-          row: 8
-          attackboxes: null
-        left:
-          row: 9
-          attackboxes: null
-        down: 
-          row: 10
-          attackboxes: null
-        right:
-          row: 11
-          attackboxes: null
-    slash:
-      count: 6
-      directions:
-        up:
-          row: 12
-          attackboxes: null
-        down:
-          row: 13
-          attackboxes: null
-        left:
-          row: 14
-          attackboxes: null
-        right:
-          row: 15
-          attackboxes: null
-    shoot:
-      count: 13
-      directions:
-        up:
-          row: 16
-          attackboxes: null
-        down:
-          row: 17
-          attackboxes: null
-        left:
-          row: 18
-          attackboxes: null
-        right:
-          row: 19
-          attackboxes: null
-    die:
-      count: 6
-      directions:
-        up:
-          row: 20
-          attackboxes: null
+sheets:
+  pixies:
+    personas:
+      bee:
+        dim:
+          l: 32
+          w: 32
+        hitboxes: null
+      eyeball:
+        dim:
+          l: 64 
+          w: 64
+        hitboxes: null
+      ghost:
+        dim:
+          l: 64
+          w: 64
+        hitboxes: null
+      malboro:
+        dim:
+          l: 128
+          w: 128
+        hitboxes: null
+      sandworm:
+        dim:
+          l: 64
+          w: 64
+        hitboxes: null
+      slime:
+        dim:
+          l: 64
+          w: 64
+        hitboxes: null
+    actions:
+      walk:
+        count: 6
+        directions:
+          up:
+            row: 0
+          left:
+            row: 1
+          down:
+            row: 2
+          right:
+            row: 3
+  sprites:
+    personas:
+      hero:
+        base: human-male-ivory
+        features:
+          - hair-bangs-black
+          - boots-brown
+          - pants-green
+          - shirt-male-green
+    dim:
+      l: 64
+      w: 64
+    hitboxes: null
+    actions:
+      cast:
+        count: 7
+        directions:
+          up:
+            row: 0
+            attackboxes: null
+          down:
+            row: 1
+            attackboxes: null
+          left:
+            row: 2
+            attackboxes: null
+          right:
+            row: 3
+            attackboxes: null
+      thrust:
+        count: 8
+        directions:
+          up:
+            row: 4
+            attackboxes: null
+          down:
+            row: 5
+            attackboxes: null
+          left:
+            row: 6
+            attackboxes: null
+          right:
+            row: 7
+            attackboxes: null
+      walk:
+        count: 9
+        directions: 
+          up:
+            row: 8
+            attackboxes: null
+          left:
+            row: 9
+            attackboxes: null
+          down: 
+            row: 10
+            attackboxes: null
+          right:
+            row: 11
+            attackboxes: null
+      slash:
+        count: 6
+        directions:
+          up:
+            row: 12
+            attackboxes: null
+          down:
+            row: 13
+            attackboxes: null
+          left:
+            row: 14
+            attackboxes: null
+          right:
+            row: 15
+            attackboxes: null
+      shoot:
+        count: 13
+        directions:
+          up:
+            row: 16
+            attackboxes: null
+          down:
+            row: 17
+            attackboxes: null
+          left:
+            row: 18
+            attackboxes: null
+          right:
+            row: 19
+            attackboxes: null
+      die:
+        count: 6
+        directions:
+          up:
+            row: 20
+            attackboxes: null
