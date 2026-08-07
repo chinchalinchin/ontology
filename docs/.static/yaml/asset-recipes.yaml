@@ -8,6 +8,11 @@ assets:
     #                   chests, crates, doors, gates, plates, struts
     #                   pixies, sprites
     <asset-instance>: 
-      frame: <frame-implementation>
-      animation: <animation-implementation>
-      state: <state-implementation>
+      frame: <frame-implementation> 
+        # single, iterable, state
+      animation: <animation-implementation> 
+        # temporary, persistent, binary, state
+      state: <state-implementation> 
+        # sprite, pixie, switch, door, positional, 
+        # property, container, animator, metric
+        # multiplier
