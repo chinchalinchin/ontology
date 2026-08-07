@@ -63,31 +63,6 @@ class PyAttackBox(BaseModel):
     dim: PyDimensions
     hitframe: int
 
-# ---------------------------------------------------------------------------------------
-# --------------------------------------------------- PROPERTY CONFIGURATION & VALIDATION
-# ---------------------------------------------------------------------------------------
-
-class PyPosition(BaseModel):
-    x: int
-    y: int
-
-class PyDimensions(BaseModel):
-    l: int
-    w: int
-
-class PyMultiple(BaseModel):
-    nx: int
-    ny: int
-
-class PyHitbox(BaseModel):
-    pos: PyPosition
-    dim: PyDimensions
-
-class PyAttackBox(BaseModel):
-    pos: PyPosition
-    dim: PyDimensions
-    hitframe: int
-
 class PyDirection(BaseModel):
     row: int
     attackboxes: Optional[List[PyAttackBox]] = None
@@ -101,6 +76,12 @@ class PyPersona(BaseModel):
     hitboxes: List[PyHitbox]
     stack: List[str]
 
+class PyCost(BaseModel):
+    item: str
+    quantity: int
+
+# ---------------------------------------------------------------------------------------
+# --------------------------------------------------- PROPERTY CONFIGURATION & VALIDATION
 # ---------------------------------------------------------------------------------------
 
 class PyCursorProperties(BaseModel):
@@ -119,10 +100,11 @@ class PyTileProperties(BaseModel):
     dim: PyDimensions
     keys: List[str]
 
-class PyStrutProperties(BaseModel):
+class PyCraftProperties(BaseModel):
     dim: PyDimensions
     hitboxes: Optional[List[PyHitbox]] = None
-
+    cost: List[PyCost]
+    
 class PySheetProperties(BaseModel):
     personas: Dict[str, PyPersona]
     actions: Dict[str, PyAction]

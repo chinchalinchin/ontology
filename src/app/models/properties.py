@@ -16,17 +16,23 @@ from libs.core import Dimensions, Hitbox, AttackBox
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------- NESTED PROPERTIES
 
-class PixieActionsProperty:
-    count: int
-    directions: List[str]
-    
-class SpriteDirectionProperty:
+
+class Direction:
     row: int
     attackboxes: List[AttackBox]
 
-class SpriteActionProperty:
+class Action:
     count: int
-    directions: Dict[str, SpriteDirectionProperty]
+    directions: Dict[str, Direction]
+
+class Persona:
+    dim: Dimensions
+    hitboxes: List[Hitbox]
+    stack: List[str]
+
+class Cost:
+    item: str
+    quantity: int
 
 # ---------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------- ASSET PROPERTIES

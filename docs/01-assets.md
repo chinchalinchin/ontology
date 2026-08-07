@@ -432,7 +432,7 @@ cost:
 
 The `key` referenced in the `cost` depends on the Instance type of the Craft. For example, a Strut costs Inventory Loot. The `cost` of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.
 
-**Properties**
+**Properties: CraftProperties**
 
 * `key: str`
 * `dimensions: Dimensions`
