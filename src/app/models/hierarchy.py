@@ -14,11 +14,13 @@ class AssetCategories(str, Enum):
     EFFECTS         = "effects"
     CURSORS         = "cursors"
     SHEETS          = "sheets"
-    STRUTS          = "struts"
+    CRAFTS          = "crafts"
 
 class AssetInstances(str, Enum):
     """
     """
+    BACK            = "back"
+    FORE            = "fore"
     EXPRESSIONS     = "expressions"
     PROJECTILES     = "projectiles"
     PERSISTENT      = "persistent"
@@ -28,6 +30,7 @@ class AssetInstances(str, Enum):
     DOORS           = "doors"
     GATES           = "gates"
     PLATES          = "plates"
+    STRUTS          = "struts"
     PIXIES          = "pixies"
     SPRITES         = "sprites"
 

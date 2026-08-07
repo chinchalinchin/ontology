@@ -4,7 +4,7 @@
 Models for typing the property attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
 """
 # Standard Libraries
-from typing import Dict, List
+from typing import Dict, List, Callable
 
 # Cython Libraries
 from libs.core import Dimensions, Hitbox, AttackBox
@@ -15,7 +15,6 @@ from libs.core import Dimensions, Hitbox, AttackBox
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------- NESTED PROPERTIES
-
 
 class Direction:
     row: int
@@ -67,24 +66,34 @@ class TileProperties(AssetProperties):
     # -------------------------- Properties
     dimensions: Dimensions
 
-class StrutProperties(AssetProperties):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
-    # -------------------------- Properties
-    dimensions: Dimensions
-    hitboxes: Dimensions
-
-class PixieProperties(AssetProperties):
+class CraftProperties(AssetProperties):
     # -------------------------- Keys
     key: str                    # Unique Asset Identifier
     # -------------------------- Properties
     dimensions: Dimensions
     hitboxes: List[Hitbox]
+    cost: List[Cost]
 
-class SpriteProperties(AssetProperties):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
+class SheetProperties(AssetProperties):
+    # NOTE: key, dimension and hitboxes are embedded in the persona!
     # -------------------------- Properties
-    dimensions: Dimensions
-    hitboxes: List[Hitbox]
-    actions: Dict[str, SpriteActionProperty]
+    personas: Dict[str, Persona]
+    actions: Dict[str, Action]
+
+# ---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------- DISPOSITION PROPERTIES
+
+class Transition:
+    """
+    """
+    conditions: List[Callable]
+    next: str
+
+class Disposition:
+    """
+    """
+    # 
+    extensions: List[str]
+    actions: List[str]
+    # Disposition Scripting Language conditions
+    transitions: List[Transition]

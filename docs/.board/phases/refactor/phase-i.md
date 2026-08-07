@@ -18,14 +18,38 @@ In addition, Pydantic Models for validating the new state and properties have be
 
 - [ ] Refactor orchestration complexity.
 - [ ] Ensure POPOs are updated to match the data being received through the Pydantic DTOs.
-- [ ] TODO: TASKING
+- [ ] Implement Board Asset Caching. Refactor `src/app/game/board.py`. Pre-calculate and cache dictionaries for categories and instances mapped by layer during `__init__`. The methods `categories()` and `instances()` must return references to these existing lists, completely eliminating list comprehensions from the main loop.
+- [ ] Optimize Mechanic Queries. Ensure no Mechanic class (`SwitchMechanics`, `CollisionMechanics`, etc.) utilizes `chain()` or list comprehensions inside `update()`. Rely entirely on the newly cached lists from the `Board`.
+
+For the third item in this task list: Currently, because `Board.categories()` iterates over all Assets on the fly, a simple attribute update (`sprite.state.layer = new_layer`) works . However, if the Board caches Assets into separate lists per layer during `__init__`, a simple attribute update will cause a desync: the Sprite will physically reside in the Layer A cached list while its state claims it is on Layer B.
+
+To safely change layers without breaking the cached ECS implementation, the layer attribute cannot be mutated directly. Instead, the Board must expose a migration method to handle the pointer reassignment safely:
+
+```python
+class Board:
+    # ...
+    def migrate_layer(self, asset: Asset, new_layer: str) -> None:
+        """Safely moves an asset between cached layer lists."""
+        old_layer = asset.state.layer
+        
+        # 1. Remove from old cached lists
+        self._cached_layers[old_layer].remove(asset)
+        
+        # 2. Update state
+        asset.state.layer = new_layer
+        
+        # 3. Append to new cached lists
+        self._cached_layers[new_layer].append(asset)
+```
+
+Any Mechanic resolving a Door traversal must call `board.migrate_layer()` rather than mutating `asset.state.layer` in isolation.
 
 **Crafts**
 
 A Craft Asset Categry has been devised, and a single Instance has been added to it. Struts have been added to support the `CommerceMechanics`. Refer to the [Struts Documentation](../../01-assets.md#struts) and [Struts schemas](../../01-assets.md#schemas) for more information on their use and data models.
 
-- Ensure Craft Properties and State are correctly instantiated.
-- TODO: TASKING
+- [ ] Ensure Craft properties and state are correctly instantiated.
+- [ ] Ensure `src/app/game/factory.py` has the explicit mapping to route `CraftProperties` and `PropertyState` correctly when hydrating crafts from the orchestrator.
 
 **Tiles**
 
@@ -33,7 +57,9 @@ Tiles have been decomposed from a Category with a single Instance to multiple In
 
 - [ ] Ensure the Tiles remained indexed correctly in the `libs/registry.pyx`
 - [ ] Create another buffer in the renderer to hold the Fore tiles. This should be initialized during the application initialization, along with the Back tile buffer. During `render` superimpose the dynamic Assets onto the Back tile buffer, and then superimpose the Fore tiles on top of the dynamic Assets.
-- TODO: TASKING
+- [ ] Update Cython Render Signature. Modify `libs/render.pyx` -> def `render(...)` to accept a `TexturePtr` foreground parameter.
+- [ ] Implement Painter's Algorithm in C. Inside the render function, add a step immediately before `SDL_RenderPresent` to copy the foreground texture to the renderer, using the exact same `bg_src `camera coordinates used for the background.
+- [ ] Orchestrate Foreground Canvas. In `src/app/screen.py`, instantiate two canvases (`self.bg_canvas` and `self.fg_canvas`) during `__init__`. Route Back Tile assets to the background constructor and Fore Tile assets to the foreground constructor, then pass both pointers to the `render()` call.
 
 **Sheets**
 
@@ -47,7 +73,4 @@ The Sprite Schema used to assemble the Sprite Sheets from a `base` and `features
 - [ ] Re-hydrate the Pixie states in `src/app/orchestration.py`, `src/app/game/factory.py`.
 - [ ] Re-index the Pixie assets in `libs/registry.pyx`
 - [ ] Re-hydrate Sprite states in `src/app/orchestration.py`, `src/app/game/factory.py`
-
-**General Debugging**
-
-- [ ] This may have ancillary and knock-on effects in some of the libraries. Ensure the application has not be substantially broken by this refactor by mentally simulating the data flows.
+- [ ] Verify Sprite Stacking. Confirm that the compose() method in `libs/render.pyx` correctly flattens the newly aligned Persona configurations into a single GPU texture without memory leaks.

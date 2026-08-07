@@ -12,8 +12,8 @@ from app.game.board import Board
 from app.game.factory import Factory
 from app.models.recipes import StateRecipe
 from app.models.configuration import (
-    PyMultiplierState, PyPositionalState, PyMetricState, PyAnimatorState, 
-    PyContainerState, PyDoorState, PySwitchState, PyPixieState, 
+    PyMultiplierState, PyPositionalState, PyMetricState, 
+    PyAnimatorState, PyContainerState, PyDoorState, PySwitchState,
     PySpriteState, PyPropertyState, PyRecipeConfiguration
 )
 
@@ -22,6 +22,7 @@ import libs.render as render
 from libs.registry import Registry
 
 # Dynamic mapping of the StateRecipe enum to the Pydantic Validation Models
+## TODO: replace with PyStateConfiguration model validation!
 PY_STATE_MAP = {
     StateRecipe.MULTIPLIER: PyMultiplierState,
     StateRecipe.POSITIONAL: PyPositionalState,
@@ -31,7 +32,7 @@ PY_STATE_MAP = {
     StateRecipe.DOOR: PyDoorState,
     StateRecipe.SWITCH: PySwitchState,
     StateRecipe.PROPERTY: PyPropertyState,
-    StateRecipe.PIXIE: PyPixieState,
+    StateRecipe.PIXIE: PyAnimatorState,
     StateRecipe.SPRITE: PySpriteState
 }
 
@@ -39,6 +40,11 @@ def migrate(
     board_key: str, 
     asset_recipes: Union[PyRecipeConfiguration, None] = None
 ) -> List[Any]:
+    """
+    # migrate
+
+    Transfer the Pydantic DTOs to Python POPOs for the game engine.
+    """
     board_dir = constants.STATE_DIR / board_key
     flat_states = []
 
@@ -54,7 +60,9 @@ def migrate(
             
         if not data:
             continue
-            
+
+        ## TODO: use Pydantic PyStateConfiguration model
+
         # Dynamically traverse the parsed dictionary
         for category, content in data.items():
             
