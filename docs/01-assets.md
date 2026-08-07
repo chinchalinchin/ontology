@@ -8,41 +8,52 @@ This document serves to specify the Asset architecture and provide key definitio
 !!! note "Definition"
     An asset is an image or sound file.
 
+## Overview 
+
 The Asset directory is organized as follows,
 
 ```bash
 assets % tree -L 2
+:~/Projects/ontology/src/assets$ tree -L 2
 .
 ├── cursors
 │   ├── expressions
-│   ├── main.yaml
-│   └── projectiles
+│   ├── projectiles
+│   └── main.yaml
 ├── effects
-│   ├── main.yaml
 │   ├── persistent
-│   └── temporary
+│   ├── temporary
+│   └── main.yaml
+├── environ
+│   └── main.yaml
+├── main.yaml
 ├── menu
+│   ├── icons
+│   ├── symbols
+│   ├── windows
 │   └── main.yaml
 ├── objects
 │   ├── chests
 │   ├── crates
 │   ├── doors
 │   ├── gates
-│   ├── main.yaml
-│   └── plates
+│   ├── plates
+│   ├── struts
+│   └── main.yaml
 ├── sheets
-│   ├── main.yaml
 │   ├── pixies
-│   └── sprites
+│   ├── sprites
+│   └── main.yaml
 ├── sounds
-│   ├── main.yaml
 │   ├── music
-│   └── speech
+│   ├── speech
+│   └── main.yaml
 └── tiles
-    ├── irregular
-    ├── main.yaml
-    └── regular
+    ├── back
+    ├── fore
+    └── main.yaml
 
+27 directories, 9 files
 ```
 
 The `main.yaml` files in each subdirectory conform to the [Asset property schemas](#schemas).
@@ -53,9 +64,9 @@ Keys are used to map assets to images loaded into the [Registry](./00-overview.m
 
 **Properties vs. State**
 
-*Properties* are static and never changed by ingame mechanics. Properties determine the immutable characteristics of an ingame Asset, e.g. dimensions and hitboxes. They are loaded side-by-side with the asset files in the `/src/assets/**` directory.
+*Properties* are static and never changed by ingame mechanics. Properties determine the immutable characteristics of an ingame Asset, e.g. dimensions and hitboxes. They are loaded side-by-side with the asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective length and width. Dimensions are Cartesian coordinate tuples.
 
-*State* is dynamic and is changed by ingame mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current position of an ingame Asset. All Assets have a *position*, *dimension* and a *layer* mutable state. Position and dimension are given as Cartesian coordinates, whereas Layer is a categorical variable.
+*State* is dynamic and is changed by ingame mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current position of an ingame Asset, the current animation, etc.. All Assets have a *position* and a *layer* mutable state. Position are given as Cartesian coordinates, whereas Layer is a categorical variable.
 
 !!! note "Layers"
     The concept of a Layer is defined more explicitly in [World documentation](./00-overview.md#world). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.
@@ -76,26 +87,31 @@ Second, Assets are divided in *animate* and *inanimate* categories. *Inanimate* 
 
 The rows of *animate* Assets are further categorized by the axes of *Direction* and *Action*. See [Sheets section](#sheets) below for more information on the division of *Direction* and *Action*.
 
-In order of ascending complexity, where complexity is defined as the number of dimensions in the state, the game asset hierarchy is given below,
+In order of ascending complexity, where complexity is defined as the number of dimensions in the state, the Assets fall along these axes as shown below,
 
 - *Immutable*, *Inanimate* Assets
-    - Tile: State: Position, Layer
-    - Strut: State: Position, Layer, Owner
+    - Tile: Back, State: Position, Layer
+    - Tile: Fore, State: Position, Layer
 - *Mutable*, *Inanimate* Assets
     - Object: Crate, State: Position, Layer
     - Object: Door, State: Position, Layer, OutLayer
     - Object: Chest, State: Position, Layer, Switch, Content
     - Object: Gate, State: Position, Layer, Switch, Link
     - Object: Plate, State: Position, Layer, Switch, Link
-- *Mutable*, *Inanimate* Assets
-    - Cursor: Expression, State: TODO 
-    - Cursor: Projectile, State: TODO
+    - Object: Strut, State: Position, Layer, Owner
+    - Cursor: Expression, State: Position, Layer
+    - Cursor: Projectile, State: Position, Layer, Initial
 - *Immutable*, *Animate* Assets
     - Effect: Temporary, State: Position, Layer, Frame
     - Effect: Persistent, State: Position, Layer, Frame
 - *Mutable*, *Animate* Assets
     - Sheet: Pixie, State: Postion, Layer, Frame
     - Sheet: Sprite, State: Position, Layer, Frame, Direction, Action, Intention, ...
+
+The Asset *Categories* (e.g. Tiles, Objects, Effects, Sheet) are form the first layer of the hierarchy. Eac
+
+- Tiles: Dimensions, no Hitboxes, no mutable State
+- Objects: Dimensions, Hitboxes, mutable State
 
 **Asset Architecture**
 
@@ -112,7 +128,7 @@ The "*recipe*" for an Asset is specified in the `/src/assets/main.yaml` configur
 
 ## Tiles
 
-*Tiles* are inanimate, immutable Assets. *Tiles* are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds by breaking each rendered image into a grid of tiles.
+*Tiles* are inanimate, immutable Assets. *Tiles* are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds and foregrounds by breaking each rendered image into a grid of tiles.
 
 *Tiles* are always assumed to be sized 32x32 pixels. These dimensions configurable in the `/src/assets/tile/main.yaml` file, but they apply to all Tiles universally.
 
@@ -131,24 +147,13 @@ The "*recipe*" for an Asset is specified in the `/src/assets/main.yaml` configur
 
 * `key(asset, None) -> <asset>`
 
-## Struts
+### Back Tiles
 
-*Struts* are inanimate, immutable Assets. They are similar to tiles, except they have variable dimensions and possess an *owner*. *Struts* are meant to encapsulate the concept of property in the game, e.g. houses, fences, roads.
+A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets. Back Tiles will always be rendered *under* all of the other Assets.
 
-**Properties**
+### Fore Tiles
 
-* `key: str`
-* `dimensions: Dimensions`
-
-**State**
-
-* `layer: str`
-* `position: Position`
-* `owner: str`
-
-**Frame**
-
-* `key(asset, None) -> <asset>`
+A Fore Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Fore Tiles will always be render on top of all of other Assets.
 
 ## Objects
 
@@ -276,15 +281,15 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
     * If `switch == true`, returns `<asset>-idle`
     * If `switch == false`, returns `<asset>-activated`
 
-### Cursors
+## Cursors
 
 *Cursors* are inanimate, mutable Assets made of a single frame. They are divided into *Expressions* and *Projectiles*. Expressions are pinned to other Assets and have their position state updated in tandem with the Asset to which they are linked. Projectiles are spawned with a certain direction and velocity, follow a fixed trajectory based on the spawn conditions, and then either impact a hitbox or are garbage-collected.
 
 TODO
 
-### Effects
+## Effects
 
-*Effects* are animate, immutable configurations. *Effects* are defined over a single row of frames. *Effects* utilize an injected *Animation* behavior that iterates over the row of frames as the game loop progresses.
+*Effects* are animate, immutable Objects. *Effects* are defined over a single row of frames. *Effects* utilize an injected *Animation* behavior that iterates over the row of frames as the game loop progresses.
 
 *Effects* are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is an *Effect*.
 
@@ -303,7 +308,32 @@ Some Effects are brief (e.g. explosions or magic effects), while others loop thr
 
 * `key(asset, animation) -> <asset>-<animation.frame>`
 
-### Sheets
+### Struts 
+
+*Struts* are inanimate, immutable Assets. *Struts* are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. They possess an owner. 
+
+Struts may be placed on the Board through the state files, but are instantiated ingame through the `build` Sprite Extension state (see [Sprite documentation](./02-sprites.md#extension) for more information on Extensions). The *cost* of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.
+
+**Properties**
+
+* `key: str`
+* `dimensions: Dimensions`
+* `hitboxes: List[Hitbox]`
+* `cost`:
+    * `item`: `str` 
+    * `quantity`: `int`.
+
+**State**
+
+* `layer: str`
+* `position: Position`
+* `owner: str`
+
+**Frame**
+
+* `key(asset, None) -> <asset>`
+
+## Sheets
 
 *Sheets* are animate, mutable configurations arranged in rows of frames.
 

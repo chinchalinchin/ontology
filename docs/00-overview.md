@@ -11,19 +11,14 @@
 
 ## Assets
 
-All Assets have an *ID*, *Properties* and *State*. 
-
-1. Key: `str`
-2. Properties:
-    - Dimensions: `tuple[w, h]`
-3. State:
-    - Layer: `int`
-    - Position: `tuple[x, y]`
+All Assets have an *Key*, *Properties* and *State*. 
 
 In addition, Assets are divided into several categories. See [Assets](./01-assets.md) for more information on each category. Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,
 
 - Menu
 - Object
+- Effect
+- Cursor
 - Sheet
 - Tile
 
@@ -39,13 +34,7 @@ A group of Assets of the same category have a single set of Properties, but each
 
 Many Assets have Hitboxes. Hitboxes are *Properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. 
 
-## Intents
-
-TODO
-
 ## Engine
-
-TODO
 
 ### Screen
 
@@ -53,12 +42,20 @@ TODO
 
 ### Board
 
-TODO
+The Board is the Game's "database". It holds all ingame Assets during the course of the game loop and exposes them to the engine through queryable interfaces.
 
-The Board state is maintained in `/src/data/boards/`.
-
-The Board state is divided into *immutable* Assets, *mutable inanimate* Assets and *mutable animate* Assets. 
+The state files for each Board is maintained in `/src/data/state/<board-key>/**`.
 
 ### Registry
+
+The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. 
+
+## World
+
+### Mechanics
+
+TODO
+
+### Layers
 
 TODO
