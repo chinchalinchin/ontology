@@ -108,10 +108,10 @@ In order of ascending complexity, where complexity is defined as the number of d
     - Sheet: Pixie, State: Postion, Layer, Frame
     - Sheet: Sprite, State: Position, Layer, Frame, Direction, Action, Intention, ...
 
-The Asset *Categories* (e.g. Tiles, Objects, Effects, Sheet) are form the first layer of the hierarchy. Eac
+The Asset *Categories* (e.g. Tiles, Objects, Effects, Sheet) are form the first layer of the hierarchy. Each Asset Category is defined by its static Properties,
 
-- Tiles: Dimensions, no Hitboxes, no mutable State
-- Objects: Dimensions, Hitboxes, mutable State
+- Tiles: Properties = Dimensions 
+- Objects: Properties = Dimensions, Hitboxes
 
 **Asset Architecture**
 

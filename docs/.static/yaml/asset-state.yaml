@@ -1,14 +1,24 @@
 # ------------------------------------------------------------------
 # ------------------------------------------------------------ TILES
 tiles:
-  - key: Tile Asset Key
-    layer: Layer Key
-    position:
-      x: horizontal position
-      y: vertical position
-    multiply:
-      nx: number of horizontal multiples
-      ny: number of vertical multiples
+  fore:
+    - key: Tile Asset Key
+      layer: Layer Key
+      position:
+        x: horizontal position
+        y: vertical position
+      multiply:
+        nx: number of horizontal multiples
+        ny: number of vertical multiples
+  back:
+    - key: Tile Asset Key
+      layer: Layer Key
+      position:
+        x: horizontal position
+        y: vertical position
+      multiply:
+        nx: number of horizontal multiples
+        ny: number of vertical multiples
 # ------------------------------------------------------------------
 # ---------------------------------------------------------- CURSORS
 cursors:
