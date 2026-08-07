@@ -29,15 +29,15 @@ crafts:
   struts:
     <key>:
       dim:
-        l:
-        w:
+        l: Pixel Length
+        w: Pixel Width
       hitboxes:
         - pos: 
-            x:
-            y:
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
           dim:
-            l:
-            w:
+            l: Pixel Length
+            w: Pixel Width
       cost:
         - item: <inventory-key>
           quantity: <quantity-key>

@@ -4,8 +4,7 @@
 Package for Asset Frame implementations.
 """
 # Application Libraries
-import app.constants as constants
-
+import app.config.constants as constants
 from app.assets.base import Frame
 from app.models.state import AssetState
 

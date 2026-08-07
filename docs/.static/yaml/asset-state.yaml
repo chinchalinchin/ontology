@@ -167,11 +167,15 @@ sheets:
           motivation: Motivation Key
           communication: Communication Key
       memory:
-        name: Goal Identifier
-        category: Goal Category Identifier
-        intention:
-          extension: Extension Key
-          action: Action Key
+        goal:
+          name: Goal Identifier
+          category: Goal Category Identifier
+          intention:
+            disposition: Disposition Key
+            extension: Extension Key
+            expression: Expression Key
+            motivation: Motivation Key
+            communication: Communication Key
         communications: 
           - Communication Key
           # unforgettable

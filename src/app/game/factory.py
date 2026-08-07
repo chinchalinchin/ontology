@@ -1,23 +1,27 @@
 """
 # Ontology: Factory
+
+Package for instantiating Asset classes and their components.
 """
+# Standard Libraries
 from typing import get_type_hints, Type, TypeVar, Any
 
+# Application Libraries
 from app.assets.animations import (
     BinaryAnimation, PersistentAnimation, TemporaryAnimation, StateAnimation
 )
 from app.assets.frames import (
     SingleFrame, IterableFrame, StateFrame
 )
-from app.models.recipes import FrameRecipe, AnimationRecipe, StateRecipe
+from app.config.recipes import FrameRecipe, AnimationRecipe, StateRecipe
 from app.models.state import (
     AnimatorState, ContainerState, DoorState, SwitchState, 
     MetricState, MultiplierState, PositionalState, PropertyState,
-    PixieState, SpriteState
+    SpriteState
 )
 from app.models.properties import (
     EffectProperties, CursorProperties, ObjectProperties, 
-    TileProperties, PixieProperties, SpriteProperties, StrutProperties
+    TileProperties, CraftProperties, SheetProperties
 )
 
 T = TypeVar('T')
@@ -34,7 +38,7 @@ class Factory:
         StateRecipe.DOOR: DoorState,
         StateRecipe.SWITCH: SwitchState,
         StateRecipe.PROPERTY: PropertyState,
-        StateRecipe.PIXIE: PixieState,
+        StateRecipe.PIXIE: AnimatorState,
         StateRecipe.SPRITE: SpriteState
     }
 
@@ -57,8 +61,8 @@ class Factory:
         "effects": EffectProperties,
         "objects": ObjectProperties,
         "cursors": CursorProperties,
-        "struts": StrutProperties,
-        "sheets": SpriteProperties 
+        "crafts": CraftProperties,
+        "sheets": SheetProperties 
     }
 
     @staticmethod
@@ -78,16 +82,14 @@ class Factory:
     def state(recipe: StateRecipe, snapshot: dict) -> Any:
         target_cls = Factory.STATE_MAP.get(recipe)
         if not target_cls:
-            raise ValueError(f"Unknown state recipe type: {recipe}")
+            raise ValueError(f"Unknown state recipe: {recipe}")
         return Factory._hydrate(target_cls, snapshot)
 
     @staticmethod
     def properties(category: str, snapshot: dict) -> Any:
-        # Edge case handling for Pixies vs Sprites inside the 'sheets' category
-        if category == "sheets" and snapshot.get("entities"):
-            target_cls = PixieProperties
-        else:
-            target_cls = Factory.PROPERTY_MAP.get(category)
+        target_cls = Factory.PROPERTY_MAP.get(category)
+        if not target_cls:
+            raise ValueError(f"Unknown property recipe: {category}")
         return Factory._hydrate(target_cls, snapshot)
 
     @staticmethod

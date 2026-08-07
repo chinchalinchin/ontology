@@ -225,6 +225,7 @@ class Goal:
     Representation of a Sprite's overarching Goal.
     """
     name: str
+    category: str
     intention: Intention
 
 @dataclass(slots=True)

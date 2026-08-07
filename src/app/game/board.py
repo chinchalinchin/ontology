@@ -9,12 +9,10 @@ from typing import List
 
 # Application Libraries
 from app.assets.base import Asset
-from app.game.mechanics import Mechanic, \
-                                    AnimationMechanics, \
-                                    CollisionMechanics, \
-                                    ProjectileMechanics, \
-                                    SwitchMechanics, \
-                                    IntentionMechanics
+from app.game.mechanics import (
+    Mechanic, AnimationMechanics, CollisionMechanics, 
+    ProjectileMechanics, SwitchMechanics, IntentionMechanics
+)
 from app.player import Player
 
 class Board:

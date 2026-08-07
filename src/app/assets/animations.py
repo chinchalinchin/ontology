@@ -4,7 +4,7 @@
 Package for Asset Animation implementations.
 """
 # Application Libraries
-import app.constants as constants
+import app.config.constants as constants
 from app.assets.base import Animation
 from app.models.properties import AssetProperties
 from app.models.state import AssetState

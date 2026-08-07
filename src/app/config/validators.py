@@ -1,5 +1,5 @@
 """
-# Ontology: Configuration
+# Ontology: Validators
 
 Package for Pydantic models used for loading and validating YAML. These models are data-transfer-objects and are not used ingame to manage properties or state, due to the overhead with Pydantic models. They are used purely for easy-loading the YAML configuration files and ensuring they match schemas.
 """
@@ -7,9 +7,9 @@ Package for Pydantic models used for loading and validating YAML. These models a
 from typing import List, Union, Dict, Optional, Type, Tuple
 
 # Application Libraries
-import app.constants as constants
+import app.config.constants as constants
 
-from app.models.recipes import FrameRecipe, AnimationRecipe, \
+from app.config.recipes import FrameRecipe, AnimationRecipe, \
                                 StateRecipe
 
 # External Libraries
@@ -130,7 +130,7 @@ class PyPropertyState(BaseModel):
     owner: str
     position: PyPosition
 
-# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------- SPRITE STATE FIELDS
 
 class PyCharacterState(BaseModel):
     strength: int
@@ -147,8 +147,6 @@ class PyHealthState(BaseModel):
     current: int 
     maximum: int
 
-# ---------------------------------------------------------------------------------------
-
 class PyIntentionState(BaseModel):
     extension: str
     disposition: str
@@ -157,14 +155,13 @@ class PyIntentionState(BaseModel):
 
 class PyGoalState(BaseModel):
     name: str
+    category: str
     intention: PyIntentionState
 
 class PyInventoryState(BaseModel):
     loot: Dict[str, int]
     equipment: PyEquipmentState
     wallet: int
-
-# ---------------------------------------------------------------------------------------
 
 class PyMagicState(BaseModel):
     current: int
@@ -173,8 +170,6 @@ class PyMagicState(BaseModel):
 class PyMeterState(BaseModel):
     health: PyHealthState
     magic: PyMagicState
-
-# ---------------------------------------------------------------------------------------
 
 class PyVisionMutator(BaseModel):
     radius: int
@@ -188,12 +183,10 @@ class PyMutatorState(BaseModel):
     fear: PyFearMutator
     vision: PyVisionMutator
 
-# ---------------------------------------------------------------------------------------
-
 class PyMemoryState(BaseModel):
-    goal: PyGoalState
-    communications: List[str]
-    prices: Dict[str, float]
+    goal: Optional[PyGoalState] = None
+    communications: Optional[List[str]] = []
+    prices: Optional[Dict[str, float]] = {}
     
 # ---------------------------------------------------------------------------------------
 

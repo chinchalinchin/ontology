@@ -1,4 +1,7 @@
+"""
+# Ontology: Constants
 
+"""
 from pathlib import Path
 
 # APPLICATION CONSTANTS
