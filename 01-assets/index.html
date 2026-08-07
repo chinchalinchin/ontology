@@ -1678,15 +1678,20 @@
 </ul>
 <h3 id="pixies">Pixies</h3>
 <p><em>Pixies</em> are <em>Sheets</em> that have simple game mechanics, e.g. are excluded from the complex calculations of the <a href="../02-sprites/#intentions">Intention Mechanic</a>. <em>Pixies</em> encapsulate simple Characters, such as animals or bugs.</p>
+<p><strong>Animation: StateAnimation</strong></p>
+<ul>
+<li><code>state.animation.frame += 1</code></li>
+<li><code>if state.animation.frame &gt; properties.actions[state.animation.action].count: state.animation.frame = 0</code></li>
+</ul>
+<p><strong>Frame: StateFrame</strong></p>
+<ul>
+<li><code>key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}</code></li>
+</ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
-<li><code>animation: Animation</code> (Action, Direction, Frame)</li>
-</ul>
-<p><strong>Frame</strong></p>
-<ul>
-<li><code>key(asset, animation): returns {asset}-&lt;animation.direction&gt;-&lt;animation.frame&gt;</code></li>
+<li><code>animation: Animation</code></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1694,19 +1699,21 @@
 </div>
 <h4 id="sprites">Sprites</h4>
 <p><em>Sprites</em> are <em>Sheets</em> over multiple rows of frames with a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, NPCs, and enemies.</p>
-<p><strong>Properties</strong></p>
+<p><strong>Animation: StateAnimation</strong></p>
 <ul>
-<li><code>key: str</code></li>
-<li><code>dim: Dimensions</code></li>
-<li><code>hitboxes: List[Hitbox]</code> </li>
-<li><code>actions: Dict[str, SpriteActionProperty]</code></li>
+<li><code>state.animation.frame += 1</code></li>
+<li><code>if state.animation.frame &gt; properties.actions[state.animation.action].count: state.animation.frame = 0</code></li>
 </ul>
-<p><strong>State</strong></p>
+<p><strong>Frame: StateFrame</strong></p>
+<ul>
+<li><code>key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}</code></li>
+</ul>
+<p><strong>State: SpriteState</strong></p>
 <ul>
 <li><code>name: str</code></li>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
-<li><code>animation: Animation</code> (Action, Direction, Frame)</li>
+<li><code>animation: Animation</code></li>
 <li><code>character: Character</code></li>
 <li><code>intention: Intention</code></li>
 <li><code>inventory: Inventory</code></li>
@@ -1714,12 +1721,7 @@
 <li><code>memory: Memory</code></li>
 <li><code>goal: Goal</code></li>
 </ul>
-<p><strong>Animation</strong></p>
-<p>The injected <code>SpriteAnimation</code> component directly mutates the <code>animation.frame</code> property on the <code>SpriteState</code> to advance the animation sequence based on its current <code>animation.action</code>.</p>
-<p><strong>Frame: StateFrame</strong></p>
-<ul>
-<li><code>key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}</code></li>
-</ul>
+<p>Sprite States are covered in more detail in the <a href="../02-sprites/">Sprites documentation</a>.</p>
 <h2 id="schemas">Schemas</h2>
 <h3 id="recipes">Recipes</h3>
 <p>Asset Recipe files determine the specific (State, Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.</p>
