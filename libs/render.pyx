@@ -200,8 +200,9 @@ def render(TexturePtr background, list assets, int cam_x, int cam_y, int screen_
     SDL_RenderPresent(_renderer)
     SDL_PumpEvents()
 
-def save(str filename, int w, int h):
-    """Extracts pixel data from the active hardware renderer to debug onto disk."""
+# Update the signature in libs/render.pyx to accept an optional target
+def save(str filename, int w, int h, TexturePtr target=None):
+    """Extracts pixel data from the active hardware renderer or a specific texture to disk."""
     cdef bytes b_filename = filename.encode('utf-8')
     
     cdef SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
@@ -211,11 +212,19 @@ def save(str filename, int w, int h):
     if surface == NULL:
         raise RuntimeError("Failed to create SDL_Surface for saving PNG.")
         
+    # If a specific target is provided, bind it so we can read its pixels
+    if target is not None:
+        SDL_SetRenderTarget(_renderer, target.ptr)
+        
     SDL_RenderReadPixels(
         _renderer, NULL, SDL_PIXELFORMAT_RGBA32, surface.pixels, surface.pitch
     )
     IMG_SavePNG(surface, b_filename)
     SDL_FreeSurface(surface)
+
+    # Safely reset the target back to the hidden window if we changed it
+    if target is not None:
+        SDL_SetRenderTarget(_renderer, NULL)
 
 def quit_sdl():
     """Safely terminate SDL bindings."""

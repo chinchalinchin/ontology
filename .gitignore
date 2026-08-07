@@ -4,3 +4,5 @@ build/**
 **/save/**
 !**/save/.gitkeep
 **/.DS_Store
+**/__pycache__/**
+**/**.pyc

@@ -1,55 +1,52 @@
 """
 # Ontology: Orchestration
-
-Package for orchestrating the application logic.
 """
-from typing import List, Any
+# Standard Libraries
+from typing import List, Any, Union
 import yaml
+
+# Application Libraries
 import app.constants as constants
 from app.assets.base import Asset
 from app.game.board import Board
 from app.game.factory import Factory
+from app.models.recipes import StateRecipe
 from app.models.configuration import (
-    PyRecipeConfiguration, PyMultiplierState, PyPositionalState, 
-    PyMetricState, PyAnimatorState, PyContainerState, PyDoorState, 
-    PySwitchState, PyPixieState, PySpriteState, PyPropertyState
+    PyMultiplierState, PyPositionalState, PyMetricState, PyAnimatorState, 
+    PyContainerState, PyDoorState, PySwitchState, PyPixieState, 
+    PySpriteState, PyPropertyState, PyRecipeConfiguration
 )
 
-def migrate(board_key: str = "world-00") -> List[Any]:
-    """
-    ## state_models
-    
-    The state directory can contain an arbitrary number of YAML configuration files.
-    """
+# Cython Libraries
+import libs.render as render
+from libs.registry import Registry
+
+# Dynamic mapping of the StateRecipe enum to the Pydantic Validation Models
+PY_STATE_MAP = {
+    StateRecipe.MULTIPLIER: PyMultiplierState,
+    StateRecipe.POSITIONAL: PyPositionalState,
+    StateRecipe.METRIC: PyMetricState,
+    StateRecipe.ANIMATOR: PyAnimatorState,
+    StateRecipe.CONTAINER: PyContainerState,
+    StateRecipe.DOOR: PyDoorState,
+    StateRecipe.SWITCH: PySwitchState,
+    StateRecipe.PROPERTY: PyPropertyState,
+    StateRecipe.PIXIE: PyPixieState,
+    StateRecipe.SPRITE: PySpriteState
+}
+
+def migrate(
+    board_key: str, 
+    asset_recipes: Union[PyRecipeConfiguration, None] = None
+) -> List[Any]:
     board_dir = constants.STATE_DIR / board_key
     flat_states = []
-    
+
+    if not asset_recipes:
+        asset_recipes = PyRecipeConfiguration()
+
     if not board_dir.exists():
         return flat_states
-
-    model_map = {
-        "tiles": PyMultiplierState,
-        "struts": PyPropertyState,
-        "cursors": {
-            "expressions": PyPositionalState,
-            "projectiles": PyMetricState,
-        },
-        "effects": {
-            "persistent": PyAnimatorState,
-            "temporary": PyAnimatorState,
-        },
-        "objects": {
-            "chests": PyContainerState,
-            "crates": PyPositionalState,
-            "doors": PyDoorState,
-            "gates": PySwitchState,
-            "plates": PySwitchState,
-        },
-        "sheets": {
-            "sprites": PySpriteState,
-            "pixies": PyPixieState,
-        }
-    }
 
     for yaml_file in board_dir.glob("*.yaml"):
         with open(yaml_file, 'r') as f:
@@ -58,54 +55,58 @@ def migrate(board_key: str = "world-00") -> List[Any]:
         if not data:
             continue
             
+        # Dynamically traverse the parsed dictionary
         for category, content in data.items():
-            if category == "tiles":
+            
+            # Handle flattened lists (e.g., tiles or struts)
+            if isinstance(content, list):
+                instance = "regular" if category == "tiles" else "strut"
+                recipe = getattr(getattr(asset_recipes, category, None), instance, None)
+                if not recipe: continue
+                
+                model_cls = PY_STATE_MAP.get(recipe.state)
                 for item in content:
-                    item["category"] = "tiles"
-                    item["instance"] = "regular"
-                    if "name" not in item:
-                        item["name"] = f"tile_{item.get('key')}"
-                    flat_states.append(PyMultiplierState(**item))
+                    item["category"] = category
+                    item["instance"] = instance
+                    if "layer" in item: item["layer"] = str(item["layer"])
+                    if "name" not in item: item["name"] = f"{instance}_{item.get('key')}"
+                    flat_states.append(model_cls(**item))
 
-            elif category == "struts":
-                for item in content:
-                    item["category"] = "struts"
-                    item["instance"] = "strut"
-                    if "name" not in item:
-                        item["name"] = f"strut_{item.get('key')}"
-                    flat_states.append(PyPropertyState(**item))
-                         
-            elif category in model_map:
+            # Handle nested objects (e.g., objects: chests: [...])
+            elif isinstance(content, dict):
                 for instance, items in content.items():
-                    model_cls = model_map[category].get(instance)
-                    if model_cls and items:
-                        for item in items:
-                            item["category"] = category
-                            item["instance"] = instance
-                            if "name" not in item:
-                                item["name"] = f"{instance}_{item.get('key')}"
-                            flat_states.append(model_cls(**item))
-                            
+                    recipe = getattr(getattr(asset_recipes, category, None), instance, None)
+                    if not recipe or not items: continue
+                    
+                    model_cls = PY_STATE_MAP.get(recipe.state)
+                    for item in items:
+                        item["category"] = category
+                        item["instance"] = instance
+                        if "layer" in item: item["layer"] = str(item["layer"])
+                        if "name" not in item: item["name"] = f"{instance}_{item.get('key')}"
+                        flat_states.append(model_cls(**item))
+                        
     return flat_states
 
-
-def orchestrate(board_key: str = "world-00", registry=None):
+def orchestrate(board_key: 
+    str = "world-00", 
+    registry: Union[Registry, None]=None, 
+    asset_recipes: Union[PyRecipeConfiguration, None] = None
+):
     """
-    ## orchestrate
+    # Ontology: Orchestrate
     """
-    import libs.render as render
-    from libs.registry import Registry
 
-    # Initialize libs.render if not provided (e.g., from the CLI environment)
     if registry is None:
         render.init()
-        # Instantiate Registry to validate /src/assets/** and cache GPU textures.
         registry = Registry()
     
-    # 1. Load Pydantic Configurations
-    asset_recipes = PyRecipeConfiguration()
+    # 1. Load Pydantic Configurations (RESTORED)
+    # The Orchestrator manages how the engine is glued together, so it loads the Recipes.
+    if asset_recipes is None:
+        asset_recipes = PyRecipeConfiguration()
     
-    # Build property cache from registry
+    # 2. Build property cache from registry
     asset_properties_cache = {
         "tiles": registry.tiles_config.model_dump() if registry.tiles_config else {},
         "cursors": registry.cursors_config.model_dump() if registry.cursors_config else {},
@@ -114,27 +115,23 @@ def orchestrate(board_key: str = "world-00", registry=None):
         "sheets": registry.sheets_config.model_dump() if registry.sheets_config else {}
     }
     
-    # 2. Flatten and parse PyAssetState models for the current board
-    py_states = migrate(board_key) 
+    # 3. Flatten and parse PyAssetState models for the current board
+    py_states = migrate(board_key, asset_recipes) 
     assets = []
 
     for py_state in py_states:
-        # Pydantic's .model_dump() safely converts the validated DTO back to a raw dictionary
         state_dict = py_state.model_dump()
-        
-        # Extract keys needed for routing
-        category = getattr(py_state, 'category', '')
-        instance = getattr(py_state, 'instance', '')
+        category = py_state.category
+        instance = py_state.instance
         prop_key = py_state.key
 
-        # 3. Lookup Recipes
+        # 4. Extract specific recipe dynamically
         category_recipe = getattr(asset_recipes, category, None)
         recipe = getattr(category_recipe, instance, None) if category_recipe else None
-        
         if not recipe:
             continue
 
-        # 4. Fetch the specific property dictionary for this asset key
+        # 5. Extract specific properties dynamically
         prop_dict = {}
         if category in asset_properties_cache:
             cat_props = asset_properties_cache[category]
@@ -149,16 +146,14 @@ def orchestrate(board_key: str = "world-00", registry=None):
                 else:
                     prop_dict = instance_props.get(prop_key, {})
 
-        # 5. Build the Unified Asset
+        # 6. Rely on the Factory to translate Enums into live POPOs
         assets.append(
             Asset(
                 properties = Factory.properties(category, prop_dict),
-                state      = Factory.state(instance, state_dict),
-                frame      = Factory.frame(recipe),
-                animation  = Factory.animation(recipe)
+                state      = Factory.state(recipe.state, state_dict),
+                frame      = Factory.frame(recipe.frame),
+                animation  = Factory.animation(recipe.animation)
             )
         )
 
-    # 6. Boot the engine
-    board = Board(assets)
-    return board, registry
+    return Board(assets), registry

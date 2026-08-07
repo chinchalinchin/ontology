@@ -1,81 +1,56 @@
-assets:
-  tiles:
+tiles:
+  frame: single
+  animation: null
+  state: multiplier
+struts:
+  frame: single
+  animation: null
+  state: property
+cursors:
+  expressions:
     frame: single
     animation: null
-    behaviors: null
-    state: multiplier
-  struts:
+    state: positional
+  projectiles:
     frame: single
     animation: null
-    behaviors: null
-    state: property
-  cursors:
-    expressions:
-      frame: single
-      animation: null
-      behaviors:
-        - <behavior>
-      state: positional
-    projectiles:
-      frame: single
-      animation: null
-      behaviors:
-        - <behavior>
-      state: metric
-  effects:
-    temporary:
-      frame: iterable
-      animation: temporary
-      behaviors:
-        - <behavior>
-      state: animator
-    persistent:
-      frame: iterable
-      animation: persistent
-      behaviors:
-        - <behavior>
-      state: animator
-  objects:
-    chests:
-      frame: iterable
-      animation: binary
-      behaviors:
-        - <behavior>
-      state: container
-    crates:
-      frame: single
-      animation: null
-      behaviors:
-        - <behavior>
-      state: positional
-    doors:
-      frame: single
-      animation: null
-      behaviors:
-        - <behavior>
-      state: door
-    gates: 
-      frame: iterable
-      animation: binary
-      behaviors:
-        - <behavior>
-      state: switch
-    plates:
-      frame: iterable
-      animation: binary
-      behaviors:
-        - <behavior>
-      state: switch
-  sheets:
-    pixies:
-      frame: state
-      animation: state
-      behaviors:
-        - <behavior>
-      state: pixie
-    sprites:
-      frame: state
-      animation: state
-      behaviors:
-        - <behavior>
-      state: sprite
+    state: metric
+effects:
+  temporary:
+    frame: iterable
+    animation: temporary
+    state: animator
+  persistent:
+    frame: iterable
+    animation: persistent
+    state: animator
+objects:
+  chests:
+    frame: iterable
+    animation: binary
+    state: container
+  crates:
+    frame: single
+    animation: null
+    state: positional
+  doors:
+    frame: single
+    animation: null
+    state: door
+  gates: 
+    frame: iterable
+    animation: binary
+    state: switch
+  plates:
+    frame: iterable
+    animation: binary
+    state: switch
+sheets:
+  pixies:
+    frame: state
+    animation: state
+    state: pixie
+  sprites:
+    frame: state
+    animation: state
+    state: sprite

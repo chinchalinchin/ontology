@@ -49,12 +49,12 @@ class Board:
         """
         if layer is not None:
             return [ 
-                asset for asset in self.asset 
+                asset for asset in self.assets
                 if (asset.state.layer == layer
                   and asset.state.category == category)
             ]
         return [ 
-            asset for asset in self.asset 
+            asset for asset in self.assets
             if asset.state.category == category
         ]
 
@@ -64,12 +64,12 @@ class Board:
         """
         if layer is not None:
             return [ 
-                asset for asset in self.asset 
+                asset for asset in self.assets 
                 if (asset.state.layer == layer 
                     and asset.state.instance == instance)
             ]
         return [ 
-            asset for asset in self.asset 
+            asset for asset in self.assets 
             if asset.state.instance == instance
         ]
     

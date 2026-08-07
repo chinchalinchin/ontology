@@ -2,15 +2,13 @@
 """
 # Ontology: Asset Registry
 
-Cythonized extension for ingesting physical image files, tracking their GPU memory pointers 
-and flat-mapping FrameKeys directly to GPU texture croppings. 
+Cythonized extension for ingesting physical image files, tracking their GPU memory pointers and flat-mapping Frame keys directly to GPU texture croppings. 
 """
-
+# Standard Libraries
 import os
 from typing import Tuple
 
-from libs.render cimport _renderer, SDL_Texture, SDL_DestroyTexture, SDL_QueryTexture
-import libs.render as render
+# Application Libraries
 import app.constants as constants
 from app.models.configuration import (
     PySheetPropertyConfiguration,
@@ -19,6 +17,16 @@ from app.models.configuration import (
     PyCursorPropertyConfiguration,
     PyTilePropertyConfiguration
 )
+
+# Cython Libraries
+from libs.render cimport (
+    _renderer, 
+    SDL_Renderer, 
+    SDL_Texture, 
+    SDL_DestroyTexture, 
+    SDL_QueryTexture
+)
+import libs.render as render
 
 cdef extern from "SDL2/SDL_image.h":
     SDL_Texture* IMG_LoadTexture(SDL_Renderer* renderer, const char* file)

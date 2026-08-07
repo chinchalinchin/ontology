@@ -3,6 +3,8 @@ Cython==3.2.8
 pydantic==2.13.4
 pydantic-settings[yaml]==2.14.2
 PyYAML==6.0.3
+# Build
+setuptools==83.0.0
 # Documentation
 mkdocs
 mkdocs-material

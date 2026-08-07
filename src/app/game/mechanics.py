@@ -4,11 +4,14 @@
 Package for Asset Mechanic implementations.
 """
 # Standard Libraries
+from __future__ import annotations
 from abc import ABC, abstractmethod
 from itertools import chain
+from typing import TYPE_CHECKING
 
 # Application Libraries
-from app.game.board import Board
+if TYPE_CHECKING:
+    from app.game.board import Board
 from app.models.hierarchy import AssetCategories, AssetInstances
 
 # Cython Libraries

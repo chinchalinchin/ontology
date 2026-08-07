@@ -31,3 +31,4 @@ class StateRecipe(str, Enum):
     CONTAINER       = "container"
     ANIMATOR        = "animator"
     METRIC          = "metric"
+    MULTIPLIER      = "multiplier"

@@ -9,9 +9,11 @@ tiles:
     multiply:
       nx: number of horizontal multiples
       ny: number of vertical multiples
+# ------------------------------------------------------------------
+# ----------------------------------------------------------- STRUTS
 struts:
-  - key: Tile AssetlKey
-    mame: Tile Key
+  - key: Strut AssetlKey
+    mame: Strut Key
     layer: Layer ID
     owner: Owner ID
     position:

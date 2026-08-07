@@ -5,106 +5,52 @@ objects:
       dim:
         l: 
         w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+      hitboxes: null
   # -------------------------------------------------------
   crates:
     stone-statue:
       dim:
         l: 
         w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+      hitboxes: null
     wooden-barrel:
       dim:
         l: 
         w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+      hitboxes: null
     wooden-box:
       dim:
         l: 
         w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+      hitboxes: null
   # -------------------------------------------------------
   doors:
     double-door:
       dim:
         l: 
         w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+      hitboxes: null
   # -------------------------------------------------------
   gates:
     stone-gate:
       dim:
         l: 
         w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+      hitboxes: null
   # -------------------------------------------------------
   plates:
     stone-crack:
       dim:
         l: 
         w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+      hitboxes: null
     stone-switch:
       dim:
         l: 
         w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+      hitboxes: null
     stone-sword:
       dim:
         l: 
         w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+      hitboxes: null

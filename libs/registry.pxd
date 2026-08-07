@@ -1,6 +1,7 @@
 # cython: language_level=3
 """
 # libs/registry.pxd
+
 Header file for the Asset Registry and Texture Pointers.
 """
 

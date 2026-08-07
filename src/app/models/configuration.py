@@ -4,18 +4,38 @@
 Package for Pydantic models used for loading and validating YAML. These models are data-transfer-objects and are not used ingame to manage properties or state, due to the overhead with Pydantic models. They are used purely for easy-loading the YAML configuration files and ensuring they match schemas.
 """
 # Standard Libraries
-from typing import List, Union, Dict
+from typing import List, Union, Dict, Optional, Type, Tuple
 
 # Application Libraries
 import app.constants as constants
 
 from app.models.recipes import FrameRecipe, AnimationRecipe, \
-                                StateRecipe, BehaviorRecipe
+                                StateRecipe
 
 # External Libraries
 from pydantic import BaseModel
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import (
+    BaseSettings, 
+    SettingsConfigDict, 
+    PydanticBaseSettingsSource, 
+    YamlConfigSettingsSource
+)
 
+class YamlBaseSettings(BaseSettings):
+    """
+    Base class that tells Pydantic V2 how to properly parse YAML files.
+    """
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: Type[BaseSettings],
+        init_settings: PydanticBaseSettingsSource,
+        env_settings: PydanticBaseSettingsSource,
+        dotenv_settings: PydanticBaseSettingsSource,
+        file_secret_settings: PydanticBaseSettingsSource,
+    ) -> Tuple[PydanticBaseSettingsSource, ...]:
+        return (YamlConfigSettingsSource(settings_cls),)
+    
 # NOTE: *Py-* prefix denotes Pydantic model that inherits from Pydantic's BaseModel, whereas no prefix indicates game object class.
 
 # ---------------------------------------------------------------------------------------
@@ -75,25 +95,25 @@ class PyCursorProperties(BaseModel):
 
 class PyEffectProperties(BaseModel):
     dim: PyDimensions
-    hitboxes: List[PyHitbox]
+    hitboxes: Optional[List[PyHitbox]] = None
     count: int 
 
 class PyObjectProperties(BaseModel):
     dim: PyDimensions
-    hitboxes: List[PyHitbox]
+    hitboxes: Optional[List[PyHitbox]] = None
 
 class PyTileProperties(BaseModel):
     dim: PyDimensions
 
 class PyStrutProperties(BaseModel):
     dim: PyDimensions
-    hitboxes: List[PyHitbox]
+    hitboxes: Optional[List[PyHitbox]] = None
     
 # ---------------------------------------------------------------------------------------
 
 class PyPixieEmtityProperty(BaseModel):
     dim: PyDimensions
-    hitboxes: List[PyHitbox]
+    hitboxes: Optional[List[PyHitbox]] = None
 
 class PyPixieDirectionProperty(BaseModel):
     row: int
@@ -105,14 +125,13 @@ class PyPixieProperties(BaseModel):
 
 # ---------------------------------------------------------------------------------------
 
-class PySpriteComposition(BaseModel):
+class PySpritePersonas(BaseModel):
     base: str
-    apparel: List[str]
     features: List[str]
 
 class PySpriteDirectionProperty(BaseModel):
     row: int
-    attackboxes: List[PyAttackBox]
+    attackboxes: Optional[List[PyAttackBox]] = None
 
 class PySpriteActionProperty(BaseModel):
     count: int
@@ -120,9 +139,9 @@ class PySpriteActionProperty(BaseModel):
 
 class PySpriteProperties(BaseModel):
     dim: PyDimensions
-    hitboxes: List[PyHitbox]
+    hitboxes: Optional[List[PyHitbox]] = None
     actions: Dict[str, PySpriteActionProperty]
-    compositions: List[PySpriteComposition]
+    personas: List[PySpritePersonas]
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------ STATE CONFIGURATION & VALIDATION
@@ -132,6 +151,8 @@ class PyAssetState(BaseModel):
     key: str
     name: str
     layer: str
+    category: str = ""  # Let Pydantic know to keep this!
+    instance: str = ""  # Let Pydantic know to keep this!
 
 class PyAnimationState(BaseModel):
     action: Union[str, None]
@@ -269,9 +290,8 @@ class PySpriteState(BaseModel):
 
 class PyRecipe(BaseModel):
     frame: FrameRecipe
-    animation: AnimationRecipe
+    animation: Optional[AnimationRecipe] = None
     state: StateRecipe
-    behaviors: List[BehaviorRecipe]
 
 class PyCursorRecipe(BaseModel):
     expressions: PyRecipe
@@ -291,104 +311,96 @@ class PyObjectRecipe(BaseModel):
 class PySheetRecipe(BaseModel):
     pixies: PyRecipe
     sprites: PyRecipe
-
+ 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- YAML SCHEMAS
 # ---------------------------------------------------------------------------------------
 
+class PyEffectInstances(YamlBaseSettings):
+    persistent: Dict[str, PyEffectProperties] = {}
+    temporary: Dict[str, PyEffectProperties] = {}
 
-# ---------------------------------------------------------------------------------------
+class PyEffectPropertyConfiguration(YamlBaseSettings):
+    effects: PyEffectInstances
 
-class PyEffectPropertyConfiguration(BaseSettings):
-    persistant: Dict[str, PyEffectProperties]
-    temporary: Dict[str, PyEffectProperties]
-
-    # Load YAML
     model_config = SettingsConfigDict(
         yaml_file = constants.ASSET_DIR / "effects" / constants.APP_EXT
     )
 
-class PyObjectPropertyConfiguration(BaseSettings):
-    chests: Dict[str, PyObjectProperties]
-    crates: Dict[str, PyObjectProperties]
-    doors: Dict[str, PyObjectProperties]
-    gates: Dict[str, PyObjectProperties]
-    plates: Dict[str, PyObjectProperties]
+# ---------------------------------------------------------------------------------------
 
-    # Load YAML
+class PyObjectInstances(BaseModel):
+    chests: Dict[str, PyObjectProperties] = {}
+    crates: Dict[str, PyObjectProperties] = {}
+    doors: Dict[str, PyObjectProperties] = {}
+    gates: Dict[str, PyObjectProperties] = {}
+    plates: Dict[str, PyObjectProperties] = {}
+
+class PyObjectPropertyConfiguration(YamlBaseSettings):
+    objects: PyObjectInstances
+
     model_config = SettingsConfigDict(
         yaml_file = constants.ASSET_DIR / "objects" / constants.APP_EXT
     )
 
-class PyTilePropertyConfiguration(BaseSettings):
-    grid: PyTileProperties
-    struts: PyStrutProperties
+# ---------------------------------------------------------------------------------------
 
-    # Load YAML
+class PyStrutInstances(BaseModel):
+    struts: Optional[PyStrutProperties] = None
+
+class PyStrutPropertyConfiguration(YamlBaseSettings):
+    objects: PyStrutInstances
+
+    model_config = SettingsConfigDict(
+        yaml_file = constants.ASSET_DIR / "objects" / constants.APP_EXT
+    )
+
+# ---------------------------------------------------------------------------------------
+
+class PyTileInstances(YamlBaseSettings):
+    grids: Optional[PyTileProperties] = None
+
+class PyTilePropertyConfiguration(YamlBaseSettings):
+    tiles: PyTileInstances
+
     model_config = SettingsConfigDict(
         yaml_file = constants.ASSET_DIR / "tiles" / constants.APP_EXT
     )
 
-class PyCursorPropertyConfiguration(BaseSettings):
-    expressions: Dict[str, PyCursorProperties]
-    projectiles: Dict[str, PyCursorProperties]
+# ---------------------------------------------------------------------------------------
 
-    # Load YAML
+class PyCursorInstances(BaseModel):
+    expressions: Dict[str, PyCursorProperties] = {}
+    projectiles: Dict[str, PyCursorProperties] = {}
+
+class PyCursorPropertyConfiguration(YamlBaseSettings):
+    cursors: PyCursorInstances
+
     model_config = SettingsConfigDict(
         yaml_file = constants.ASSET_DIR / "cursors" / constants.APP_EXT
     )
 
-class PySheetPropertyConfiguration(BaseSettings):
-    pixies: PyPixieProperties
-    sprites: PySpriteProperties
+class PySheetInstaces(BaseModel):
+    pixies: Optional[PyPixieProperties] = None
+    sprites: Optional[PySpriteProperties] = None
 
-    # Load YAML
+class PySheetPropertyConfiguration(YamlBaseSettings):
+    sheets: PySheetInstaces
+
     model_config = SettingsConfigDict(
         yaml_file = constants.ASSET_DIR / "sheets" / constants.APP_EXT
     )
 
 # --------------------------------------------------------------------- RECIPE YAML SCHEMA
 
-class PyRecipeConfiguration(BaseSettings):
-    tiles: PyRecipe
-    cursors: PyCursorRecipe
-    effects: PyEffectRecipe
-    objects: PyObjectRecipe
-    sheets: PySheetRecipe
+class PyRecipeConfiguration(YamlBaseSettings):
+    tiles: Optional[PyRecipe] = None
+    struts: Optional[PyRecipe] = None
+    cursors: Optional[PyCursorRecipe] = None
+    effects: Optional[PyEffectRecipe] = None
+    objects: Optional[PyObjectRecipe] = None
+    sheets: Optional[PySheetRecipe] = None
 
-    # Load YAML
     model_config = SettingsConfigDict(
         yaml_file = constants.ASSET_DIR / constants.APP_EXT
     )
-
-# --------------------------------------------------------------------- STATE YAML SCHEMA
-
-class PyCursorStateConfiguration(BaseSettings):
-    expressions: List[PyPositionalState]
-    projectiles: List[PyMetricState]
-
-class PyEffectStateConfiguration(BaseModel):
-    persistent: List[PyAnimatorState]
-    temporary: List[PyAnimatorState]
-
-class PyObjectStateConfiguration(BaseModel):
-    chests: List[PyContainerState]
-    crates: List[PyPositionalState]
-    doors: List[PyDoorState]
-    gates: List[PySwitchState]
-    plates: List[PySwitchState]
-
-class PySheetStateConfiguration(BaseModel):
-    sprites: List[PySpriteState]
-    pixies: List[PyPixieState]
-
-# ---------------------------------------------------------------------------------------
-
-class PyStateConfiguration(BaseModel):
-    tiles: List[PyMultiplierState]
-    cursors: PyCursorStateConfiguration
-    effects: PyEffectStateConfiguration
-    objects: PyObjectStateConfiguration
-    sheets: PySheetStateConfiguration
-
-    # Must be loaded at runtime to get board state key!

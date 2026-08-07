@@ -12,6 +12,10 @@ cdef class Multiple:
     cdef public int nx
     cdef public int ny
     
+cdef class Velocity:
+    cdef public int vx
+    cdef public int vy
+
 cdef class Hitbox:
     cdef public Position position
     cdef public Dimensions dimensions

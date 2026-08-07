@@ -8,7 +8,7 @@ from typing import Callable, Dict, List, Union
 from dataclasses import dataclass
 
 # Cython Libraries
-from libs.models import Position, Multiple
+from libs.core import Position, Multiple
 
 # ---------------------------------------------------------------------------------------
 

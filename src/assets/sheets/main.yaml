@@ -2,70 +2,34 @@ pixies:
   entities:
     bee:
       dim:
-        l: 
-        w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+        l: 32
+        w: 32
+      hitboxes: null
     eyeball:
       dim:
-        l: 
-        w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+        l: 64 
+        w: 64
+      hitboxes: null
     ghost:
       dim:
-        l: 
-        w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+        l: 64
+        w: 64
+      hitboxes: null
     malboro:
       dim:
-        l: 
-        w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+        l: 128
+        w: 128
+      hitboxes: null
     sandworm:
       dim:
-        l: 
-        w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+        l: 64
+        w: 64
+      hitboxes: null
     slime:
       dim:
-        l: 
-        w:
-      hitboxes:
-        - pos: 
-            x:
-            y:
-          dim:
-            l:
-            w:
+        l: 64
+        w: 64
+      hitboxes: null
   count: 6
   directions:
     up:
@@ -79,209 +43,95 @@ pixies:
 sprites:
   personas:
     - key: hero
-      base: <>
+      base: human-male-ivory
       features:
-        - <>
+        - hair-bangs-black
+        - boots-brown
+        - pants-green
+        - shirt-male-green
   dim:
-    l: 
-    w:
-  hitboxes:
-    - pos: 
-        x:
-        y:
-      dim:
-        l:
-        w:
+    l: 64
+    w: 64
+  hitboxes: null
   actions:
     cast:
       count: 7
       directions:
         up:
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          row: 0
+          attackboxes: null
         down:
           row: 1
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
         left:
           row: 2
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
         right:
           row: 3
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
     thrust:
       count: 8
       directions:
         up:
           row: 4
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
         down:
           row: 5
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
         left:
           row: 6
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
         right:
-        row: 7
-        attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          row: 7
+          attackboxes: null
     walk:
       count: 9
       directions: 
         up:
           row: 8
-          hitboxes: null
+          attackboxes: null
         left:
           row: 9
-          hitboxes: null
+          attackboxes: null
         down: 
           row: 10
-          hitboxes: null
+          attackboxes: null
         right:
           row: 11
-          hitboxes: null
+          attackboxes: null
     slash:
       count: 6
       directions:
         up:
           row: 12
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
         down:
           row: 13
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
         left:
           row: 14
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
         right:
           row: 15
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
     shoot:
       count: 13
       directions:
         up:
           row: 16
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
         down:
           row: 17
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
         left:
           row: 18
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
         right:
           row: 19
-          attackboxes:
-            - pos:
-                x:
-                y:
-              dim:
-                w:
-                h:
-              hitframe: <hitframe-index>
+          attackboxes: null
     die:
       count: 6
       directions:
         up:
           row: 20
-          hitboxes: null
+          attackboxes: null

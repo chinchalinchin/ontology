@@ -5,16 +5,10 @@ Package for foundational Asset classes and interfaces.
 """
 # Standard Libraries
 from abc import ABC, abstractmethod
-from typing import Union
 
 # Application Libraries
 from app.models.properties import AssetProperties
-from app.models.state import AssetState, AnimationState
-from app.player import Player
-
-# Cython Libraries
-from libs.math import Geometry
-from libs.core import Dimensions
+from app.models.state import AssetState
 
 class Frame(ABC):
     """
@@ -61,10 +55,3 @@ class Asset:
         self.state = state
         self.frame = frame
         self.animation = animation
-
-    def onscreen(self, player: Player, screensize: Dimensions) -> bool: 
-        return Geometry.onscreen(
-            self.state.position, self.properties.dimensions,
-            player.state.position, player.properties.dimensions, 
-            screensize
-        )

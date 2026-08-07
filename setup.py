@@ -7,8 +7,23 @@ library_dirs = ["/opt/homebrew/lib", "/usr/local/lib"]
 
 ext_modules = [
     Extension(
-        "libs.sdl2",
-        sources=["libs/math.pyx", "libs/registry.pyx", "libs/render.pyx"],
+        "libs.core",
+        sources=["libs/core.pyx"],
+    ),
+    Extension(
+        "libs.math",
+        sources=["libs/math.pyx"],
+    ),
+    Extension(
+        "libs.render",
+        sources=["libs/render.pyx"],
+        libraries=["SDL2", "SDL2_image"],
+        include_dirs=include_dirs,
+        library_dirs=library_dirs,
+    ),
+    Extension(
+        "libs.registry",
+        sources=["libs/registry.pyx"],
         libraries=["SDL2", "SDL2_image"],
         include_dirs=include_dirs,
         library_dirs=library_dirs,

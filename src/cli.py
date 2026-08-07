@@ -2,9 +2,23 @@
 """
 # Ontology: CLI
 """
-import argparse
+# Standard Libraries
+import sys
 from pathlib import Path
+import argparse
+
+# ---------------------------------------------------------
+# PATH RESOLUTION: Add project root to sys.path
+# This allows Python to find the /libs directory at the root
+# ---------------------------------------------------------
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+# Application Libraries
 from app.orchestration import migrate, orchestrate
+
+# Cython Libraries
 from libs.render import init, canvas, construct as render_construct, render as sdl_render, save, quit_sdl
 from libs.registry import Registry
 
@@ -41,8 +55,9 @@ def cli_construct(args):
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{args.board_key}_{args.layer}_chunk.png"
-    save(str(out_path), chunk_size, chunk_size)
-    
+
+    # Pass the bg_canvas as the explicit target
+    save(str(out_path), chunk_size, chunk_size, target=bg_canvas)   
     quit_sdl()
 
 def cli_render(args):
