@@ -12,5 +12,6 @@
 - [Sprites](./02-sprites.md)
 - [Player](./03-player.md)
 - [Menus](./04-menus.md)
-- [Plots](./05-plots.md)
-- [Architecture](./06-architecture.md)
+- [Sounds](./05-sounds.md)
+- [Plots](./06-plots.md)
+- [Architecture](./07-architecture.md)

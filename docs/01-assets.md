@@ -3,7 +3,7 @@
 This document serves to specify the Asset architecture and provide key definition for game terminology.
 
 !!! note "Definition"
-    An Asset is an image or sound file.
+    An Asset is an image file.
 
 !!! note
     LPC Assets are bundled with the application by default.
@@ -200,6 +200,8 @@ N/A
 
 ## Objects
 
+* Property File: `/src/assets/objects/main.yaml`
+
 *Objects* are inanimate, mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.
 
 **Binary Frames**
@@ -313,6 +315,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 ## Cursors
 
+* Property File: `/src/assets/cursors/main.yaml`
+
 *Cursors* are inanimate, mutable Assets made of a single frame. They are divided into *Expressions* and *Projectiles*.
 
 **Properties: ObjectProperties**
@@ -358,6 +362,8 @@ N/A
 * `initial: Position`
 
 ## Effects
+
+* Property File: `/src/assets/effects/main.yaml`
 
 *Effects* are animate, immutable Objects. *Effects* are defined over a single row of frames. *Effects* utilize an injected *Animation* behavior that iterates over the row of frames as the game loop progresses.
 
@@ -410,6 +416,8 @@ Persistent Effects are long-term, continuous effects, such as water ripples or w
 
 ## Crafts
 
+* Property File: `/src/assets/crafts/main.yaml`
+
 Crafts are Assets that can be instantiated through game [Mechanics](./06-architecture.md#mechanics), such as `CommerceMechanics` or `ChemistryMechanics`. All Crafts have a `cost` associated with them. 
 
 **Cost**
@@ -452,6 +460,8 @@ N/A
 * `owner: str`
 
 ## Sheets
+
+* Property File: `/src/assets/sheets/main.yaml`
 
 *Sheets* are animate, mutable configurations arranged in rows of frames.
 
@@ -584,25 +594,7 @@ The injected `SpriteAnimation` component directly mutates the `animation.frame` 
 
 * `key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}`
 
-## Menu
 
-TODO
-
-### Icons
-
-TODO
-
-### Symbols
-
-TODO
-
-### Windows
-
-TODO
-
-## Sounds
-
-TODO
 
 ## Schemas
 

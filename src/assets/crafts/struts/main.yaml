@@ -1,0 +1,18 @@
+# ------------------------------------------------------------------
+# ----------------------------------------------------------- CRAFTS
+crafts:
+  struts:
+    <key>:
+      dim:
+        l:
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
+      cost:
+        - item: <inventory-key>
+          quantity: <quantity-key>

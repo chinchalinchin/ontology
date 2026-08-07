@@ -88,6 +88,19 @@ class PyAttackBox(BaseModel):
     dim: PyDimensions
     hitframe: int
 
+class PyDirection(BaseModel):
+    row: int
+    attackboxes: Optional[List[PyAttackBox]] = None
+
+class PyAction(BaseModel):
+    count: int
+    directions: Dict[str, PyDirection]
+
+class PyPersona(BaseModel):
+    dim: PyDimensions
+    hitboxes: List[PyHitbox]
+    stack: List[str]
+
 # ---------------------------------------------------------------------------------------
 
 class PyCursorProperties(BaseModel):
@@ -104,44 +117,15 @@ class PyObjectProperties(BaseModel):
 
 class PyTileProperties(BaseModel):
     dim: PyDimensions
+    keys: List[str]
 
 class PyStrutProperties(BaseModel):
     dim: PyDimensions
     hitboxes: Optional[List[PyHitbox]] = None
-    
-# ---------------------------------------------------------------------------------------
 
-class PyPixieEmtityProperty(BaseModel):
-    dim: PyDimensions
-    hitboxes: Optional[List[PyHitbox]] = None
-
-class PyPixieDirectionProperty(BaseModel):
-    row: int
-
-class PyPixieProperties(BaseModel):
-    entities: Dict[str, PyPixieEmtityProperty]
-    count: int
-    directions: Dict[str, PyPixieDirectionProperty]
-
-# ---------------------------------------------------------------------------------------
-
-class PySpritePersonas(BaseModel):
-    base: str
-    features: List[str]
-
-class PySpriteDirectionProperty(BaseModel):
-    row: int
-    attackboxes: Optional[List[PyAttackBox]] = None
-
-class PySpriteActionProperty(BaseModel):
-    count: int
-    directions: Dict[str, PySpriteDirectionProperty]
-
-class PySpriteProperties(BaseModel):
-    dim: PyDimensions
-    hitboxes: Optional[List[PyHitbox]] = None
-    actions: Dict[str, PySpriteActionProperty]
-    personas: List[PySpritePersonas]
+class PySheetProperties(BaseModel):
+    personas: Dict[str, PyPersona]
+    actions: Dict[str, PyAction]
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------ STATE CONFIGURATION & VALIDATION
@@ -151,8 +135,8 @@ class PyAssetState(BaseModel):
     key: str
     name: str
     layer: str
-    category: str = ""  # Let Pydantic know to keep this!
-    instance: str = ""  # Let Pydantic know to keep this!
+    category: str = ""
+    instance: str = ""
 
 class PyAnimationState(BaseModel):
     action: Union[str, None]
@@ -269,12 +253,9 @@ class PySwitchState(PyAssetState):
     animation: PyAnimationState
     switch: bool
 
-class PyPixieState(BaseModel):
-    name: str
-    position: PyPosition
-
 class PySpriteState(BaseModel):
     name: str
+    animation: Optional[PyAnimationState] = None
     position: PyPosition
     character: PyCharacterState
     intention: PyIntentionState
@@ -283,6 +264,7 @@ class PySpriteState(BaseModel):
     mutators: PyMutatorState
     memory: PyMemoryState
     goal: PyGoalState
+
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------ RECIPE CONFIGURATION & VALIDATION
@@ -312,14 +294,9 @@ class PySheetRecipe(BaseModel):
     pixies: PyRecipe
     sprites: PyRecipe
 
-
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------- YAML SCHEMAS
 # ---------------------------------------------------------------------------------------
 
- # --------------------------------------------------------------------- RECIPE YAML SCHEMA
-
-class PyRecipeConfiguration(YamlBaseSettings):
+class PyRecipes(YamlBaseSettings):
     tiles: Optional[PyRecipe] = None
     struts: Optional[PyRecipe] = None
     cursors: Optional[PyCursorRecipe] = None
@@ -327,85 +304,131 @@ class PyRecipeConfiguration(YamlBaseSettings):
     objects: Optional[PyObjectRecipe] = None
     sheets: Optional[PySheetRecipe] = None
 
+# ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------- YAML SCHEMAS
+# ---------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------------- RECIPE YAML SCHEMA
+
+class PyRecipes(YamlBaseSettings):
+    assets: PyRecipes
+
     model_config = SettingsConfigDict(
         yaml_file = constants.ASSET_DIR / constants.APP_EXT
     )
 
 # ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------------- STATE YAML SCHEMA
 
-class PyEffectInstances(YamlBaseSettings):
-    persistent: Dict[str, PyEffectProperties] = {}
-    temporary: Dict[str, PyEffectProperties] = {}
+class PyTileStateInstances(BaseModel):
+    fore: List[PyMultiplierState] = []
+    back: List[PyMultiplierState] = []
 
-class PyEffectPropertyConfiguration(YamlBaseSettings):
-    effects: PyEffectInstances
+class PyCraftStateInstances(BaseModel):
+    struts: List[PyPropertyState] = []
 
-    model_config = SettingsConfigDict(
-        yaml_file = constants.ASSET_DIR / "effects" / constants.APP_EXT
-    )
+class PyCursorStateInstances(BaseModel):
+    expressions: List[PyPositionalState] = []
+    projectiles: List[PyMetricState] = []
+
+class PyEffectStateInstances(BaseModel):
+    temporary: List[PyPositionalState] = []
+    persistent: List[PyMultiplierState] = []
+
+class PyObjectStateInstances(BaseModel):
+    chests: List[PyContainerState] = []
+    crates: List[PyPositionalState] = []
+    doors: List[PyDoorState] = []
+    gates: List[PySwitchState] = []
+    plates: List[PySwitchState] = []
+
+class PySheetStateInstances(BaseModel):
+    pixies: List[PyAnimatorState] = []
+    sprites: List[PySpriteState] = []
 
 # ---------------------------------------------------------------------------------------
 
-class PyObjectInstances(BaseModel):
+class PyStateConfiguration(BaseModel):
+    tiles: Optional[PyTileStateInstances] = None
+    objects: Optional[PyEffectStateInstances] = None
+    crafts: Optional[PyCraftStateInstances] = None
+    cursors: Optional[PyCursorStateInstances] = None
+    effects: Optional[PyEffectStateInstances] = None
+    sheets: Optional[PySheetStateInstances] = None
+
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------ PROPERTY YAML SCHEMA
+
+class PyTilePropertyInstances(BaseModel):
+    fore: PyTileProperties
+    back: PyTileProperties
+
+class PyEffectPropertyInstances(BaseModel):
+    persistent: Dict[str, PyEffectProperties] = {}
+    temporary: Dict[str, PyEffectProperties] = {}
+
+class PyObjectPropertyInstances(BaseModel):
     chests: Dict[str, PyObjectProperties] = {}
     crates: Dict[str, PyObjectProperties] = {}
     doors: Dict[str, PyObjectProperties] = {}
     gates: Dict[str, PyObjectProperties] = {}
     plates: Dict[str, PyObjectProperties] = {}
 
-class PyObjectPropertyConfiguration(YamlBaseSettings):
-    objects: PyObjectInstances
+class PyStrutPropertyInstances(BaseModel):
+    struts: Dict[str, PyStrutProperties] = {}
 
-    model_config = SettingsConfigDict(
-        yaml_file = constants.ASSET_DIR / "objects" / constants.APP_EXT
-    )
+class PyCursorPropertyInstances(BaseModel):
+    expressions: Dict[str, PyCursorProperties] = {}
+    projectiles: Dict[str, PyCursorProperties] = {}
 
-# ---------------------------------------------------------------------------------------
-
-class PyStrutInstances(BaseModel):
-    struts: Optional[PyStrutProperties] = None
-
-class PyStrutPropertyConfiguration(YamlBaseSettings):
-    objects: PyStrutInstances
-
-    model_config = SettingsConfigDict(
-        yaml_file = constants.ASSET_DIR / "objects" / constants.APP_EXT
-    )
+class PySheetPropertyInstances(BaseModel):
+    pixies: Optional[PySheetProperties] = None
+    sprites: Optional[PySheetProperties] = None
 
 # ---------------------------------------------------------------------------------------
-
-class PyTileInstances(YamlBaseSettings):
-    grids: Optional[PyTileProperties] = None
 
 class PyTilePropertyConfiguration(YamlBaseSettings):
-    tiles: PyTileInstances
+    tiles: PyTilePropertyInstances
 
     model_config = SettingsConfigDict(
         yaml_file = constants.ASSET_DIR / "tiles" / constants.APP_EXT
     )
 
-# ---------------------------------------------------------------------------------------
 
-class PyCursorInstances(BaseModel):
-    expressions: Dict[str, PyCursorProperties] = {}
-    projectiles: Dict[str, PyCursorProperties] = {}
+class PyEffectPropertyConfiguration(YamlBaseSettings):
+    effects: PyEffectPropertyInstances
+
+    model_config = SettingsConfigDict(
+        yaml_file = constants.ASSET_DIR / "effects" / constants.APP_EXT
+    )
+    
+class PyObjectPropertyConfiguration(YamlBaseSettings):
+    objects: PyObjectPropertyInstances
+
+    model_config = SettingsConfigDict(
+        yaml_file = constants.ASSET_DIR / "objects" / constants.APP_EXT
+    )
+
+class PyStrutPropertyConfiguration(YamlBaseSettings):
+    objects: PyStrutPropertyInstances
+
+    model_config = SettingsConfigDict(
+        yaml_file = constants.ASSET_DIR / "objects" / constants.APP_EXT
+    )
 
 class PyCursorPropertyConfiguration(YamlBaseSettings):
-    cursors: PyCursorInstances
+    cursors: PyCursorPropertyInstances
 
     model_config = SettingsConfigDict(
         yaml_file = constants.ASSET_DIR / "cursors" / constants.APP_EXT
     )
 
-# ---------------------------------------------------------------------------------------
-
-class PySheetInstaces(BaseModel):
-    pixies: Optional[PyPixieProperties] = None
-    sprites: Optional[PySpriteProperties] = None
-
 class PySheetPropertyConfiguration(YamlBaseSettings):
-    sheets: PySheetInstaces
+    sheets: PySheetPropertyInstances
 
     model_config = SettingsConfigDict(
         yaml_file = constants.ASSET_DIR / "sheets" / constants.APP_EXT
     )
+
+# ---------------------------------------------------------------------------------------

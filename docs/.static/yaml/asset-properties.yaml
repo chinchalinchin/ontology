@@ -1,37 +1,46 @@
 # ------------------------------------------------------------------
 # ------------------------------------------------------------ TILES
 tiles:
-  dimensions:
-    l: 32
-    w: 32
-  keys:
-    - clay
-    - coal
-    - dirt
-    - grass
-    - lava
-    - mud
-    - sand
-    - soil
-    - water
-    - wheat
+  back:
+    dimensions:
+      l: 32
+      w: 32
+    keys:
+      - clay
+      - coal
+      - dirt
+      - grass
+      - lava
+      - mud
+      - sand
+      - soil
+      - water
+      - wheat
+  fore:
+    dimensions:
+      l: 32
+      w: 32
+    keys:
+      - canopy
+      - cloudy
 # ------------------------------------------------------------------
-# ----------------------------------------------------------- STRUTS
-struts:
-  <key>:
-    dim:
-      l:
-      w:
-    hitboxes:
-      - pos: 
-          x:
-          y:
-        dim:
-          l:
-          w:
-    cost:
-      - item: <inventory-key>
-        quantity: <quantity-key>
+# ----------------------------------------------------------- CRAFTS
+crafts:
+  struts:
+    <key>:
+      dim:
+        l:
+        w:
+      hitboxes:
+        - pos: 
+            x:
+            y:
+          dim:
+            l:
+            w:
+      cost:
+        - item: <inventory-key>
+          quantity: <quantity-key>
 # ------------------------------------------------------------------
 # ---------------------------------------------------------- CURSORS
 cursors:
@@ -141,7 +150,7 @@ objects:
 # ----------------------------------------------------------- SHEETS
 sheets:
   pixies:
-    entities:
+    personas:
       <key>:
         dim:
           l: pixel length
@@ -153,26 +162,30 @@ sheets:
             dim:
               l: hitbox pixel length
               w: hitbox pixel width 
-    count: Frame Count of Pixie Sheets
-    directions:
-      <direction-key>:
-        row: <row-index>
+        stack:
+          - <sheet-asset-key>
+    actions:
+      <action-key>:
+        count: Frame Count of Pixie Sheets
+        directions:
+          <direction-key>:
+            row: <row-index>
+            attackboxes: null
   sprites:
     personas:
-      - key: hero
-        base: <base-asset-key>
-        features:
-          - <feature-asset-key>
-    dim:
-      l: pixel length
-      w: pixel width
-    hitboxes:
-      - pos: 
-          x: relative horizontal position
-          y: relative vertical position
+      <key>:
         dim:
-          l: hitbox pixel length
-          w: hitbox pixel width 
+          l: pixel length
+          w: pixel width
+        hitboxes:
+          - pos: 
+              x: relative horizontal position
+              y: relative vertical position
+            dim:
+              l: hitbox pixel length
+              w: hitbox pixel width 
+        stack:
+          - <sheet-asset-key>
     actions:
       <action-key>:
         count: Frame Count of Action Row Group
