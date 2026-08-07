@@ -339,6 +339,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#asset-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -825,6 +836,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#asset-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1183,56 +1205,66 @@
 
 <span class="m">27</span><span class="w"> </span>directories,<span class="w"> </span><span class="m">9</span><span class="w"> </span>files
 </code></pre></div>
-<p>The root <code>main.yaml</code> configures <a href="#recipes">Asset Recipes</a>. The <code>main.yaml</code> files in each subdirectory conform to the <a href="#schemas">Asset property schemas</a>. </p>
+<p>The root <code>main.yaml</code> configures <a href="#recipes">Asset Recipes</a>. The <code>main.yaml</code> files in each subdirectory conform to the <a href="#schemas">Asset property schema</a> of their respective Asset Category. </p>
 <h3 id="asset-concepts">Asset Concepts</h3>
-<p><strong>Keys</strong></p>
-<p>Keys are used to map assets to images loaded into the <a href="../00-overview/#registry">Registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, keys uniquely identify a physical Asset, but not in-game objects.</p>
+<p><strong>Keys vs Names</strong></p>
+<p>Keys are used to map Assets to images loaded into the <a href="../00-overview/#registry">Registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, keys uniquely identify a physical Asset, but not in-game entities.</p>
+<p>Names are used to uniquely identify an ingame entity. A single Asset Key may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. </p>
+<p>A Name is part of an Asset's state. A Key is what binds an Asset state to its properties.</p>
+<p><strong>Mutability vs. Animability</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These terms are useful for refering to the state and properties, but do not play a formal role in the application's implementation. They are included to make precise what is meant when they are employed.</p>
+</div>
+<p>Assets are divided along <em>mutable</em> and <em>immutable</em> axes. <em>Immutable</em> Assets never have their state altered by the game loop. <em>Mutable</em> Assets change their state based on the game loop.</p>
+<p>Assets are also divided along <em>animate</em> and <em>inanimate</em> axes. <em>Inanimate</em> Assets possess a single frame. <em>Animate</em> objects possess rows of frames for different animation states.</p>
+<p>These terms form a partition of the Asset "<em>space</em>". An inanimate Asset is not necessarily immutable; Crates, for example, do not have animation, but do have mutable states. An animate Asset is not necessarily mutable; Effects, such as water ripples, has an animation, but does not have a mutable state.</p>
+<p>In other words, an Asset's <em>mutability</em> refers to the capacity of its state (not including its animation) to change.</p>
+<p><strong>Direction &amp; Action</strong></p>
+<p>The frame rows of <em>animate</em> Assets are further categorized by the axes of <em>Direction</em> and <em>Action</em>. See <a href="#sheets">Sheets section</a> below for more information on the division of <em>Direction</em> and <em>Action</em>.</p>
 <p><strong>Properties vs. State</strong></p>
-<p><em>Properties</em> are static and never changed by ingame mechanics. Properties determine the immutable characteristics of an ingame Asset, e.g. dimensions and hitboxes. They are loaded side-by-side with the asset files in the <code>/src/assets/**</code> directory. All Assets have, at bare minumum, a Dimension property, specifying their respective length and width. Dimensions are Cartesian coordinate tuples.</p>
-<p><em>State</em> is dynamic and is changed by ingame mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current position of an ingame Asset, the current animation, etc.. All Assets have a <em>position</em> and a <em>layer</em> mutable state. Position are given as Cartesian coordinates, whereas Layer is a categorical variable.</p>
+<p><em>Properties</em> are static and never changed by game Mechanics. Properties determine the immutable characteristics of an ingame Asset, e.g. dimensions and hitboxes. They are loaded side-by-side with the asset files in the <code>/src/assets/**</code> directory. All Assets have, at bare minumum, a Dimension property, specifying their respective length and width. Dimensions are Cartesian coordinate tuples.</p>
+<p><em>State</em> is dynamic and is changed by game Mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current position of an ingame Asset, the current animation, etc.. All Assets have a <em>position</em> and a <em>layer</em> mutable state. Position are given as Cartesian coordinates, whereas Layer is a categorical variable.</p>
 <div class="admonition note">
 <p class="admonition-title">Layers</p>
 <p>The concept of a Layer is defined more explicitly in <a href="../00-overview/#world">World documentation</a>. It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.</p>
 </div>
-<p>State files are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code>, where <code>&lt;board-key&gt;</code> is a unique identifer.</p>
-<p><strong>Names</strong></p>
-<p>Names are used to uniquely identify an ingame entity. A single Asset may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. A Name is part of an Asset's state.</p>
-<p><strong>Mutability</strong></p>
-<p>Assets are divided along <em>mutable</em> and <em>immutable</em> axes. <em>Immutable</em> Assets never have their state altered by the game loop. <em>Mutable</em> Assets change their state based on the game loop.</p>
-<p><strong>Animability</strong></p>
-<p>Assets are also divided along <em>animate</em> and <em>inanimate</em> axes. <em>Inanimate</em> Assets possess a single frame. <em>Animate</em> objects possess rows of frames for different animation states.</p>
-<p><strong>Direction &amp; Action</strong></p>
-<p>The rows of <em>animate</em> Assets are further categorized by the axes of <em>Direction</em> and <em>Action</em>. See <a href="#sheets">Sheets section</a> below for more information on the division of <em>Direction</em> and <em>Action</em>.</p>
+<p>State files are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code>, where <code>&lt;board-key&gt;</code> is a unique identifer for a <a href="../00-overview/#board">Board</a>.</p>
 <h3 id="asset-hierarchy">Asset Hierarchy</h3>
+<p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Asset still abide a strict Object hierarchy in terms of configuration. The configuration <a href="#schemas">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
 <p><strong>Categories and Instances</strong></p>
-<p>The Asset <em>Categories</em> (e.g. Tiles, Objects, Effects, Sheet, etc.) form the top layer of the hierarchy. Each Asset Category is defined by its static Properties; an Asset's Category determines what type of Properties it will parse from the configuration files and inject into its deployment.</p>
+<p>Asset <em>Categories</em> form the top layer of the hierarchy. Each Asset Category is defined by its static Properties; an Asset's Category determines what type of Properties it will parse from the configuration files and inject into its deployment. </p>
 <ul>
 <li>Tiles: Properties = Dimensions </li>
 <li>Cursor: Properties = Dimensions</li>
-<li>Craft: Properties = Dimensions, Hitboxes, Cost</li>
 <li>Objects: Properties = Dimensions, Hitboxes</li>
+<li>Craft: Properties = Dimensions, Hitboxes, Cost</li>
 <li>Effects: Properties = Dimensions, Hitboxes, Count</li>
 <li>Sheets: Properties = Dimensions, Hitboxes, Actions, Personas</li>
 </ul>
-<p>The Asset <em>Instances</em> (e.g. Crates, Gates, Sprites, Projectiles, etc.) form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic State; an Assets Instance determine what type of State it will parse from the configuration files and inject into its deployment.</p>
+<p>Each Category has Instances. Asset <em>Instances</em> form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic State; an Assets Instance determine what type of State it will parse from the configuration files and inject into its deployment. </p>
 <ul>
-<li>Tile - BackTile, State: Position, Layer</li>
-<li>Tile - ForeTile, State: Position, Layer</li>
-<li>Object - Crate, State: Position, Layer</li>
-<li>Object - Door, State: Position, Layer, OutLayer</li>
-<li>Object - Chest, State: Position, Layer, Switch, Content</li>
-<li>Object - Gate, State: Position, Layer, Switch, Link</li>
-<li>Object - Plate, State: Position, Layer, Switch, Link</li>
-<li>Craft - Strut, State: Position, Layer, Owner</li>
-<li>Craft - Tract, State: Position, Layer, Owner, Stage</li>
-<li>Cursor - Expression, State: Position, Layer</li>
-<li>Cursor - Projectile, State: Position, Layer, Initial</li>
-<li>Effect - Temporary, State: Position, Layer, Frame</li>
-<li>Effect - Persistent, State: Position, Layer, Frame</li>
-<li>Sheet - Pixie, State: Postion, Layer, Frame</li>
-<li>Sheet - Sprite, State: Position, Layer, Frame, Direction, Action, Intention, ...</li>
+<li>Tile - BackTile: State = Position, Layer</li>
+<li>Tile - ForeTile: State = Position, Layer</li>
+<li>Object - Crate: State = Position, Layer</li>
+<li>Object - Door: State = Position, Layer, OutLayer</li>
+<li>Object - Chest: State = Position, Layer, Switch, Content</li>
+<li>Object - Gate: State = Position, Layer, Switch, Link</li>
+<li>Object - Plate: State = Position, Layer, Switch, Link</li>
+<li>Craft - Strut: State = Position, Layer, Owner</li>
+<li>Craft - Tract: State = Position, Layer, Owner, Stage</li>
+<li>Cursor - Expression: State = Position, Layer</li>
+<li>Cursor - Projectile: State = Position, Layer, Initial</li>
+<li>Effect - Temporary: State = Position, Layer</li>
+<li>Effect - Persistent: State = Position, Layer</li>
+<li>Sheet - Pixie, State: Postion = Layer</li>
+<li>Sheet - Sprite, State: Position = Layer, Direction, Action, Intention, Memory</li>
 </ul>
-<p><strong>Architecture</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Animation and Frame states are not shown in the above table to save space, but belong in the Instance as well. See <a href="#recipes">Asset Recipes</a> for more details.</p>
+</div>
+<h3 id="asset-architecture">Asset Architecture</h3>
 <p>Every physical entity in the game is an instance of the unified <code>Asset</code> class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and stateless behaviors injected into them:</p>
 <ol>
 <li><strong>Properties:</strong> A model defining immutable data (e.g., <code>TileProperties</code>, <code>ObjectProperties</code>).</li>
@@ -1481,12 +1513,16 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
-<li><code>animation: Animation</code> (includes direction and frame)</li>
+<li><code>animation: Animation</code> (Action, Direction, Frame)</li>
 </ul>
 <p><strong>Frame</strong></p>
 <ul>
 <li><code>key(asset, animation) -&gt; &lt;asset&gt;-&lt;animation.direction&gt;-&lt;animation.frame&gt;</code></li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Pixies only have a single Action state, <code>walk</code>.</p>
+</div>
 <h4 id="sprites">Sprites</h4>
 <p><em>Sprites</em> are <em>Sheets</em> over multiple rows of frames with a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, NPCs, and enemies.</p>
 <p><strong>Properties</strong></p>
@@ -1521,9 +1557,12 @@
 <p>TODO</p>
 <h2 id="schemas">Schemas</h2>
 <h3 id="recipes">Recipes</h3>
+<p>Asset Recipes determine the specific (State, Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.</p>
 <ul>
 <li>Location: <code>/src/assets/main.yaml</code></li>
 </ul>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/asset-recipes.yaml&quot;</span>
+</code></pre></div>
 <h3 id="properties">Properties</h3>
 <ul>
 <li>Location: <code>/src/assets/&lt;category&gt;/main.yaml</code></li>
