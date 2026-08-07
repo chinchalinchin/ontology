@@ -250,6 +250,13 @@ class PyRecipe(BaseModel):
     animation: Optional[AnimationRecipe] = None
     state: StateRecipe
 
+class PyTileRecipe(BaseModel):
+    fore: PyRecipe
+    back: PyRecipe
+
+class PyCraftRecipe(BaseModel):
+    struts: PyRecipe
+
 class PyCursorRecipe(BaseModel):
     expressions: PyRecipe
     projectiles: PyRecipe
@@ -273,7 +280,7 @@ class PySheetRecipe(BaseModel):
 
 class PyRecipes(YamlBaseSettings):
     tiles: Optional[PyRecipe] = None
-    struts: Optional[PyRecipe] = None
+    crafts: Optional[PyRecipe] = None
     cursors: Optional[PyCursorRecipe] = None
     effects: Optional[PyEffectRecipe] = None
     objects: Optional[PyObjectRecipe] = None

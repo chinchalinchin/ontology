@@ -7,7 +7,7 @@ from typing import List
 
 # Application Libraries
 from app.assets.base import Asset
-from app.player import Player
+from app.input.player import Player
 
 # Cython Libraries
 from libs.core import Position, Dimensions
@@ -20,7 +20,8 @@ class Screen:
     """
     screensize: Dimensions
     boardsize: Dimensions
-    canvas_tex: TexturePtr
+    bg_canvas: TexturePtr
+    fg_canvas: TexturePtr
 
     def __init__(self, 
         screensize: Dimensions,
@@ -31,10 +32,13 @@ class Screen:
         self.screensize = screensize
         self.boardsize = boardsize
         
-        # The background texture is now the size of the whole board (passing flat integers)
-        self.canvas_tex = canvas(self.boardsize.l, self.boardsize.w)
+        # Instantiate Painter's Algorithm Targets
+        self.bg_canvas = canvas(self.boardsize.l, self.boardsize.w)
+        self.fg_canvas = canvas(self.boardsize.l, self.boardsize.w)
         
-        cython_tiles = []
+        cython_bg_tiles = []
+        cython_fg_tiles = []
+        
         for tile in tiles:
             # Query Registry using the computed tile key
             tex_data = registry.data(tile.frame.key(tile.properties.key, tile.state))
@@ -42,15 +46,22 @@ class Screen:
                 tex, sx, sy, sw, sh = tex_data
                 
                 # Append flat primitives directly for the C-loop
-                cython_tiles.append(( 
+                tile_tuple = ( 
                     tex,
                     sx, sy, sw, sh,
                     tile.state.position.x, tile.state.position.y,
                     tile.properties.dimensions.l, tile.properties.dimensions.w,
                     tile.state.multiple.nx, tile.state.multiple.ny
-                ))
+                )
+
+                # Route properties
+                if tile.state.instance == "back":
+                    cython_bg_tiles.append(tile_tuple)
+                elif tile.state.instance == "fore":
+                    cython_fg_tiles.append(tile_tuple)
         
-        construct(self.canvas_tex, cython_tiles)
+        construct(self.bg_canvas, cython_bg_tiles)
+        construct(self.fg_canvas, cython_fg_tiles)
 
     def camera(self, player: Player) -> Position:
         """
@@ -101,7 +112,8 @@ class Screen:
 
         # Pass purely native integers to bypass heavy object allocation
         render(
-            self.canvas_tex, 
+            self.bg_canvas, 
+            self.fg_canvas,
             active_assets, 
             pov.x, 
             pov.y, 

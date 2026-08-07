@@ -13,7 +13,7 @@ from app.game.mechanics import (
     Mechanic, AnimationMechanics, CollisionMechanics, 
     ProjectileMechanics, SwitchMechanics, IntentionMechanics
 )
-from app.player import Player
+from app.input.player import Player
 
 class Board:
     """

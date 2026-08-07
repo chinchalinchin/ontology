@@ -168,7 +168,15 @@ def construct(TexturePtr target, list tiles):
                 
     SDL_SetRenderTarget(_renderer, NULL)
     
-def render(TexturePtr background, list assets, int cam_x, int cam_y, int screen_w, int screen_h):
+def render(
+    TexturePtr background, 
+    TexturePtr foreground, 
+    list assets, 
+    int cam_x,
+    int cam_y, 
+    int screen_w, 
+    int screen_h
+):
     """
     Executes the active frame render passing flat coordinates to bypass Python object allocations.
     assets format: (TexturePtr, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h)
@@ -196,6 +204,10 @@ def render(TexturePtr background, list assets, int cam_x, int cam_y, int screen_
         c_dst.w, c_dst.h = dw, dh
             
         SDL_RenderCopy(_renderer, tex_wrapper.ptr, &c_src, &c_dst)
+
+    # Execute Painter's algorithm
+    if foreground is not None:
+        SDL_RenderCopy(_renderer, foreground.ptr, &bg_src, NULL)
                     
     SDL_RenderPresent(_renderer)
     SDL_PumpEvents()

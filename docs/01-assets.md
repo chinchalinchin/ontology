@@ -549,15 +549,20 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 
 *Pixies* are *Sheets* that have simple game mechanics, e.g. are excluded from the complex calculations of the [Intention Mechanic](./02-sprites.md#intentions). *Pixies* encapsulate simple Characters, such as animals or bugs.
 
+**Animation: StateAnimation**
+
+- `state.animation.frame += 1`
+- `if state.animation.frame > properties.actions[state.animation.action].count: state.animation.frame = 0`
+
+**Frame: StateFrame**
+
+* `key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}`
+
 **State: AnimatorState**
 
 * `layer: str`
 * `position: Position`
-* `animation: Animation` (Action, Direction, Frame)
-
-**Frame**
-
-* `key(asset, animation): returns {asset}-<animation.direction>-<animation.frame>`
+* `animation: Animation`
 
 !!! note
     Pixies only have a single Action state, `walk`.
@@ -566,19 +571,21 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 
 *Sprites* are *Sheets* over multiple rows of frames with a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, NPCs, and enemies.
 
-**Properties**
+**Animation: StateAnimation**
 
-* `key: str`
-* `dim: Dimensions`
-* `hitboxes: List[Hitbox]` 
-* `actions: Dict[str, SpriteActionProperty]`
+- `state.animation.frame += 1`
+- `if state.animation.frame > properties.actions[state.animation.action].count: state.animation.frame = 0`
 
-**State**
+**Frame: StateFrame**
+
+* `key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}`
+
+**State: SpriteState**
 
 * `name: str`
 * `layer: str`
 * `position: Position`
-* `animation: Animation` (Action, Direction, Frame)
+* `animation: Animation`
 * `character: Character`
 * `intention: Intention`
 * `inventory: Inventory`
@@ -586,15 +593,7 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 * `memory: Memory`
 * `goal: Goal`
 
-**Animation**
-
-The injected `SpriteAnimation` component directly mutates the `animation.frame` property on the `SpriteState` to advance the animation sequence based on its current `animation.action`.
-
-**Frame: StateFrame**
-
-* `key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}`
-
-
+Sprite States are covered in more detail in the [Sprites documentation](./02-sprites.md).
 
 ## Schemas
 

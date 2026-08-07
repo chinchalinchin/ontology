@@ -10,7 +10,7 @@ from typing import Tuple
 # Application Libraries
 from app.game.board import Board
 from app.screen import Screen
-from app.player import Player
+from app.input.player import Player
 
 class Engine:
     # Engine components

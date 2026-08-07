@@ -38,7 +38,6 @@ class Factory:
         StateRecipe.DOOR: DoorState,
         StateRecipe.SWITCH: SwitchState,
         StateRecipe.PROPERTY: PropertyState,
-        StateRecipe.PIXIE: AnimatorState,
         StateRecipe.SPRITE: SpriteState
     }
 
