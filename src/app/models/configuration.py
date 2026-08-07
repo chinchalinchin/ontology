@@ -311,9 +311,26 @@ class PyObjectRecipe(BaseModel):
 class PySheetRecipe(BaseModel):
     pixies: PyRecipe
     sprites: PyRecipe
- 
+
+
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- YAML SCHEMAS
+# ---------------------------------------------------------------------------------------
+
+ # --------------------------------------------------------------------- RECIPE YAML SCHEMA
+
+class PyRecipeConfiguration(YamlBaseSettings):
+    tiles: Optional[PyRecipe] = None
+    struts: Optional[PyRecipe] = None
+    cursors: Optional[PyCursorRecipe] = None
+    effects: Optional[PyEffectRecipe] = None
+    objects: Optional[PyObjectRecipe] = None
+    sheets: Optional[PySheetRecipe] = None
+
+    model_config = SettingsConfigDict(
+        yaml_file = constants.ASSET_DIR / constants.APP_EXT
+    )
+
 # ---------------------------------------------------------------------------------------
 
 class PyEffectInstances(YamlBaseSettings):
@@ -380,6 +397,8 @@ class PyCursorPropertyConfiguration(YamlBaseSettings):
         yaml_file = constants.ASSET_DIR / "cursors" / constants.APP_EXT
     )
 
+# ---------------------------------------------------------------------------------------
+
 class PySheetInstaces(BaseModel):
     pixies: Optional[PyPixieProperties] = None
     sprites: Optional[PySpriteProperties] = None
@@ -389,18 +408,4 @@ class PySheetPropertyConfiguration(YamlBaseSettings):
 
     model_config = SettingsConfigDict(
         yaml_file = constants.ASSET_DIR / "sheets" / constants.APP_EXT
-    )
-
-# --------------------------------------------------------------------- RECIPE YAML SCHEMA
-
-class PyRecipeConfiguration(YamlBaseSettings):
-    tiles: Optional[PyRecipe] = None
-    struts: Optional[PyRecipe] = None
-    cursors: Optional[PyCursorRecipe] = None
-    effects: Optional[PyEffectRecipe] = None
-    objects: Optional[PyObjectRecipe] = None
-    sheets: Optional[PySheetRecipe] = None
-
-    model_config = SettingsConfigDict(
-        yaml_file = constants.ASSET_DIR / constants.APP_EXT
     )

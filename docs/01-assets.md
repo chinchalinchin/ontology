@@ -144,7 +144,7 @@ The "*recipe*" for an Asset is specified in the `/src/assets/main.yaml` configur
 
 * `layer: str`
 * `position: Position`
-* `multiple: Multiple`
+* `owner: str`
 
 **Frame**
 
