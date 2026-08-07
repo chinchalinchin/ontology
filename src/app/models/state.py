@@ -17,9 +17,16 @@ class AssetState:
     """
     Foundational class for Asset states. 
 
+    ## Keys
+
     - key: Asset key
+    
+    ### State Keys 
+
     - layer: Layer key 
-    ## Asset Hierarchy Keys
+    
+    ### Asset Hierarchy Keys
+
     - category: Category key (e.g. Tile, Object, Cursors, etc.)
     - instance: Instance key (e.g. Expressions, Projectiles, Temporary, etc.)
     """
@@ -154,7 +161,7 @@ class SwitchState(AssetState):
 # ---------------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------- SHEET  STATE FIELDS
+# -------------------------------------------------------------------- SHEET STATE FIELDS
     
 @dataclass(slots=True)
 class Character:
@@ -220,7 +227,7 @@ class Intention:
     communcation: str
 
     # Disposition Scripting Language conditions
-    transitions: Dict[str, Transitions]
+    transitions: List[Transitions]
 
 @dataclass(slots=True)
 class Goal:
@@ -281,13 +288,6 @@ class Memory:
 
 # --------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- SHEET STATE MODELS
-
-@dataclass(slots=True)
-class PixieState(AssetState):
-    """
-    """
-    # TODO
-    pass 
 
 @dataclass(slots=True)
 class SpriteState(AssetState):

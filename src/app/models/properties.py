@@ -16,7 +16,6 @@ from libs.core import Dimensions, Hitbox, AttackBox
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------- NESTED PROPERTIES
 
-
 class Direction:
     row: int
     attackboxes: List[AttackBox]
@@ -67,24 +66,16 @@ class TileProperties(AssetProperties):
     # -------------------------- Properties
     dimensions: Dimensions
 
-class StrutProperties(AssetProperties):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
-    # -------------------------- Properties
-    dimensions: Dimensions
-    hitboxes: Dimensions
-
-class PixieProperties(AssetProperties):
+class CraftProperties(AssetProperties):
     # -------------------------- Keys
     key: str                    # Unique Asset Identifier
     # -------------------------- Properties
     dimensions: Dimensions
     hitboxes: List[Hitbox]
+    cost: List[Cost]
 
-class SpriteProperties(AssetProperties):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
+class SheetProperties(AssetProperties):
+    # NOTE: key, dimension and hitboxes are embedded in the persona!
     # -------------------------- Properties
-    dimensions: Dimensions
-    hitboxes: List[Hitbox]
-    actions: Dict[str, SpriteActionProperty]
+    personas: Dict[str, Persona]
+    actions: Dict[str, Action]

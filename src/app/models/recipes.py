@@ -23,7 +23,6 @@ class StateRecipe(str, Enum):
     """
     """
     SPRITE          = "sprite"
-    PIXIE           = "pixie"
     SWITCH          = "switch"
     DOOR            = "door"
     POSITIONAL      = "positional"
