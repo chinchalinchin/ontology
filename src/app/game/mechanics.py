@@ -6,13 +6,12 @@ Package for Asset Mechanic implementations.
 # Standard Libraries
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from itertools import chain
 from typing import TYPE_CHECKING
 
 # Application Libraries
 if TYPE_CHECKING:
     from app.game.board import Board
-from app.models.hierarchy import AssetCategories, AssetInstances
+from app.config.hierarchy import AssetCategories, AssetInstances
 
 # Cython Libraries
 from libs.math import Geometry
@@ -34,13 +33,15 @@ class AnimationMechanics(Mechanic):
     def update(self, board: Board, delta: float) -> None:
         """
         """
-        for asset in chain(
-            board.categories(AssetCategories.EFFECTS),
-            board.categories(AssetCategories.SHEETS),
-            board.instances(AssetInstances.CHESTS),
-            board.instances(AssetInstances.GATES),
-            board.instances(AssetInstances.PLATES)
-        ):
+        for asset in board.categories(AssetCategories.EFFECTS):
+            asset.animate(asset.state, asset.properties)
+        for asset in board.categories(AssetCategories.SHEETS):
+            asset.animate(asset.state, asset.properties)
+        for asset in board.instances(AssetInstances.CHESTS):
+            asset.animate(asset.state, asset.properties)
+        for asset in board.instances(AssetInstances.GATES):
+            asset.animate(asset.state, asset.properties)
+        for asset in board.instances(AssetInstances.PLATES):
             asset.animate(asset.state, asset.properties)
 
 # ----------------------------------------------------------------------------------------
@@ -92,7 +93,7 @@ class RemoveMechanics(Mechanic):
 
     def update(self, board: Board, delta_time: float) -> None: 
         """
-        """           
+        """            
         temporary = board.instances(AssetInstances.TEMPORARY)
 
         for effect in temporary:
@@ -107,14 +108,17 @@ class SwitchMechanics(Mechanic):
     def update(self, board: Board, delta_time: float) -> None:
         """
         """
-        for layer in board.get_layers():
+        for layer in board.layers():
             plates = board.instances(AssetInstances.PLATES, layer)
             crates = board.instances(AssetInstances.CRATES, layer)
             gates = board.instances(AssetInstances.GATES, layer)
             sheets = board.categories(AssetCategories.SHEETS, layer)
 
             for plate in plates:
-                for weight in chain(crates, sheets):
+                switched = False
+                
+                # Verify crate overlap independently
+                for weight in crates:
                     if Geometry.intersects(
                         plate.state.position,
                         plate.properties.dimensions, 
@@ -127,7 +131,24 @@ class SwitchMechanics(Mechanic):
                         plate.state.switch = True
                         switched = not (current_state == plate.state.switch)
                         break 
-                    
+                        
+                # Verify sheet overlap independently
+                if not switched:
+                    for weight in sheets:
+                        if Geometry.intersects(
+                            plate.state.position,
+                            plate.properties.dimensions, 
+                            getattr(plate.properties, 'hitboxes', []),
+                            weight.state.position, 
+                            weight.properties.dimensions,
+                            getattr(weight.properties, 'hitboxes', [])
+                        ):
+                            current_state = plate.state.switch
+                            plate.state.switch = True
+                            switched = not (current_state == plate.state.switch)
+                            break 
+                
+                # Notify linked gates 
                 if switched:
                     for gate in gates:
                         if plate.state.link == gate.state.link:

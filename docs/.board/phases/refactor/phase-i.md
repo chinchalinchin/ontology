@@ -16,33 +16,10 @@ The imposition of the Category and Instance partition should signficantly reduce
 
 In addition, Pydantic Models for validating the new state and properties have been added.
 
-- [ ] Refactor orchestration complexity.
-- [ ] Ensure POPOs are updated to match the data being received through the Pydantic DTOs.
-- [ ] Implement Board Asset Caching. Refactor `src/app/game/board.py`. Pre-calculate and cache dictionaries for categories and instances mapped by layer during `__init__`. The methods `categories()` and `instances()` must return references to these existing lists, completely eliminating list comprehensions from the main loop.
-- [ ] Optimize Mechanic Queries. Ensure no Mechanic class (`SwitchMechanics`, `CollisionMechanics`, etc.) utilizes `chain()` or list comprehensions inside `update()`. Rely entirely on the newly cached lists from the `Board`.
-
-For the third item in this task list: Currently, because `Board.categories()` iterates over all Assets on the fly, a simple attribute update (`sprite.state.layer = new_layer`) works . However, if the Board caches Assets into separate lists per layer during `__init__`, a simple attribute update will cause a desync: the Sprite will physically reside in the Layer A cached list while its state claims it is on Layer B.
-
-To safely change layers without breaking the cached ECS implementation, the layer attribute cannot be mutated directly. Instead, the Board must expose a migration method to handle the pointer reassignment safely:
-
-```python
-class Board:
-    # ...
-    def migrate_layer(self, asset: Asset, new_layer: str) -> None:
-        """Safely moves an asset between cached layer lists."""
-        old_layer = asset.state.layer
-        
-        # 1. Remove from old cached lists
-        self._cached_layers[old_layer].remove(asset)
-        
-        # 2. Update state
-        asset.state.layer = new_layer
-        
-        # 3. Append to new cached lists
-        self._cached_layers[new_layer].append(asset)
-```
-
-Any Mechanic resolving a Door traversal must call `board.migrate_layer()` rather than mutating `asset.state.layer` in isolation.
+- [ ] Refactor orchestration complexity in `src/app/orchestration.py`.
+- [x] Ensure POPOs are updated to match the data being received through the Pydantic DTOs.
+- [x] Implement Board Asset Caching. Refactor `src/app/game/board.py`. Pre-calculate and cache dictionaries for categories and instances mapped by layer during `__init__`. The methods `categories()` and `instances()` must return references to these existing lists, completely eliminating list comprehensions from the main loop.
+- [x] Optimize Mechanic Queries. Ensure no Mechanic class (`SwitchMechanics`, `CollisionMechanics`, etc.) utilizes `chain()` or list comprehensions inside `update()`. Rely entirely on the newly cached lists from the `Board`.
 
 **Crafts**
 

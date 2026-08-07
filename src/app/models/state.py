@@ -18,20 +18,18 @@ class AssetState:
     Foundational class for Asset states. 
 
     ## Keys
-
     - key: Asset key
+    - name: Deployment Key
     
     ### State Keys 
-
     - layer: Layer key 
     
     ### Asset Hierarchy Keys
-
     - category: Category key (e.g. Tile, Object, Cursors, etc.)
     - instance: Instance key (e.g. Expressions, Projectiles, Temporary, etc.)
     """
-    # ---------------------------------------------------- KEYS
     key: str
+    name: str
     layer: str
     category: str
     instance: str
@@ -47,7 +45,6 @@ class AnimationState:
     - direction: Direction key, possibly null.
     - frame: Frame index, possible null.
     """
-    # ---------------------------------------------------- FIELDS
     action: Union[str, None]
     direction: Union[str, None]
     frame: Union[int, None]
@@ -64,7 +61,6 @@ class MultiplierState(AssetState):
     - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     - multiple: Vector (horizontal, vertical) of Asset's multiples.
     """
-    # ---------------------------------------------------- FIELDS
     position: Position
     multiple: Multiple 
 
@@ -75,19 +71,13 @@ class PositionalState(AssetState):
 
     - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     """
-    # ---------------------------------------------------- KEYS
-    name: str               # Deployment Key
-    # ---------------------------------------------------- FIELDS
     position: Position
 
 @dataclass(slots=True)
 class PropertyState(AssetState):
     """
     """
-    # ---------------------------------------------------- KEYS
-    name: str               # Deployment Key
     owner: str                  # Unique Owner Identifer
-    # ---------------------------------------------------- FIELDS
     position: Position
 
 @dataclass(slots=True)
@@ -98,9 +88,6 @@ class MetricState(AssetState):
     - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     - initial: Coordinates (horizontal, vertical) of Asset's initial position, relative to it's upper-left corner.
     """
-    # ---------------------------------------------------- KEYS
-    name: str               # Deployment Key
-    # ---------------------------------------------------- FIELDS
     position: Position
     initial: Position
 
@@ -111,9 +98,6 @@ class AnimatorState(AssetState):
 
     - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     """
-    # ---------------------------------------------------- KEYS
-    name: str               # Deployment Key
-    # ---------------------------------------------------- FIELDS
     position: Position
     animation: AnimationState
 
@@ -124,10 +108,7 @@ class AnimatorState(AssetState):
 class ContainerState(AssetState):
     """
     """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
     content: List[str]      # Content Identifier Keys
-    # ---------------------------------------------------- FIELDS
     position: Position      # Position of Asset on Board
     animation: AnimationState
     switch: bool            # Binary state flag
@@ -136,9 +117,6 @@ class ContainerState(AssetState):
 class DoorState(AssetState):
     """
     """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    # ---------------------------------------------------- FIELDS
     position: Position      # Position of Asset on Board
     out: Position           # Out Position of Asset
     outlayer: str           # Out Layer Identifier Key
@@ -147,11 +125,7 @@ class DoorState(AssetState):
 class SwitchState(AssetState):
     """
     """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
     link: str               # Link Identifier Key
-    # ---------------------------------------------------- FIELDS
     position: Position      # Position
     animation: AnimationState
     switch: bool            # Binary state flag
@@ -198,6 +172,7 @@ class Magic:
     current: int 
     maximum: int
 
+@dataclass(slots=True)
 class Meters:
     """
     Representation of a Sprite's Meter fields. Meters track values that change in response to Sprite Actions.
@@ -212,12 +187,10 @@ class Intention:
     """
     Representation of the internal, hidden state of a Sprite. 
     """
-    # 
     extension: str
     disposition: str
     motivation: str
     expression: str
-    communcation: str
 
 @dataclass(slots=True)
 class Goal:
@@ -254,17 +227,12 @@ class FearMutator:
     enemy: int
 
 @dataclass(slots=True)
-class MutatorParameters:
-    fear: FearMutator
-    vision: VisionMutator
-
-@dataclass(slots=True)
 class Mutators:
     """
     Representation of a Sprite's mutators. Mutators alter the Sprite's behavior during the gameplay loop.
     """
-    triggers: Dict[str, bool]
-    parameters: MutatorParameters
+    fear: FearMutator
+    vision: VisionMutator
 
 # --------------------------------------------------------------------------------------
 
@@ -285,16 +253,12 @@ class SpriteState(AssetState):
     """
     Central model for typing Sprite's state.
     """
-    # ---------------------------------------------------- KEYS
-    name: str               # Unique Asset Identifier
-    layer: str              # Layer Identifier Key
-    frame: int              # Current Frame
-    # ---------------------------------------------------- FIELDS
     position: Position
     animation: AnimationState
     character: Character
     intention: Intention
     inventory: Inventory
+    meters: Meters
     mutators: Mutators
     memory: Memory
     goal: Goal
@@ -318,4 +282,4 @@ class SymbolState(AssetState):
 class WindowState(AssetState):
     """
     """
-    pass 
+    pass
