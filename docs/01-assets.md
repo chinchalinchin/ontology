@@ -363,8 +363,6 @@ N/A
 
 *Effects* are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is an *Effect*.
 
-Some Effects are brief (e.g. explosions or magic effects), while others loop through their frames forever (e.g. water ripples or a windmill). Temporary Effects are garbage-collected and removed from the Board after they "die", whereas Persistent Effects are excluded from garbage collection.
-
 **Properties**
 
 * `key: str`
@@ -374,7 +372,7 @@ Some Effects are brief (e.g. explosions or magic effects), while others loop thr
 
 ### Temporary
 
-TODO
+Temporary Effects are brief, short-lived effects, such as explosions or magic effects. After their animation is concluded, they are garbage-collected and removed from the Board after they "die"
 
 **Animation: TemporaryAnimation**
 
@@ -384,15 +382,16 @@ TODO
 
 * `key(asset, animation): returns {asset}-{animation.frame}`
 
-**State: PositionalState**
+**State: AnimatorState**
 
 * `name: str`
 * `layer: str`
 * `position: Position`
+* `animation: Animation`
 
 ### Persistant
 
-TODO
+Persistent Effects are long-term, continuous effects, such as water ripples or windmills, whose animation continually cycles through its loop.
 
 **Animation: PersistantAnimation**
 
@@ -402,30 +401,41 @@ TODO
 
 * `key(asset, animation) -> <asset>-<animation.frame>`
 
-**State: PositionalState**
+**State: AnimatorState**
 
 * `name: str`
 * `layer: str`
 * `position: Position`
+* `animation: Animation`
 
 ## Crafts
 
-TODO
+Crafts are Assets that can be instantiated through game [Mechanics](./06-architecture.md#mechanics), such as `CommerceMechanics` or `ChemistryMechanics`. All Crafts have a `cost` associated with them. 
+
+**Cost**
+
+Cost is a set of quantities that must be satisfied before the Craft can be instantiated. It is a "formula" for the Craft's creation. 
+
+```yaml
+cost:
+    - key:
+      quantity:
+```
+
+The `key` referenced in the `cost` depends on the Instance type of the Craft. For example, a Strut costs Inventory Loot. The `cost` of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.
 
 **Properties**
 
 * `key: str`
 * `dimensions: Dimensions`
 * `hitboxes: List[Hitbox]`
-* `cost`:
-    * `item`: `str` 
-    * `quantity`: `int`
+* `cost: Cost`
 
 ### Struts 
 
-*Struts* are inanimate, immutable Assets. *Struts* are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. They possess an owner. 
+*Struts* are inanimate, immutable Assets. *Struts* are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an `owner`. 
 
-Struts may be placed on the Board through the state files, but are instantiated ingame through the `build` Sprite Extension state (see [Sprite documentation](./02-sprites.md#extension) for more information on Extensions). The *cost* of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.
+Struts may be placed on the Board through the state files manually, but are instantiated ingame through the `build` Sprite Extension state (see [Sprite documentation](./02-sprites.md#extension) for more information on Extensions).
 
 **Animation: None**
 
@@ -467,25 +477,69 @@ Where `n(Action)` is the number of frames per Action.
 
 **Action**
 
-- Action:
-    - `<action-key>`:
-        - Count:
-        - Directions:
+Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without an accompanying Direction. The "space" of the (Action, Direction) space is configured by Sheet Properties. 
 
-**Properties**
+This snippet from the [Schemas](#schemas) shows the general structure of an Action,
+
+```yaml
+<action-key>:
+    count:
+    directions:
+        <direction-key>:
+            row: 
+            attackboxes:
+                - pos:
+                    x:
+                    y: 
+                  dim:
+                    l:
+                    w:
+                  hitframe:
+```
+
+* `<action-key>: str` - Ranges over `cast, thrust, walk, slash, shoot, die`
+* `<direction-key> : str` -  Ranges over  `up, left, down, right`
+* `count: int` - is the number of frames in the Action row grouping. 
+* `row: int` - Index of the (Action, Direction) row in the Sheet file.
+* `attackboxes` - List of indexed Hitboxes, where the `hitframe` index denotes what frame of the animation it applies, i.e. the intersection calculation changes based on what frame in animation over which it is being evaluated. `pos` is an Position tuple and `dim` is a Dimensions tuple, exactly mirroring their Hitbox equivalents.
+
+**Personas**
+
+This snippet from the [Schemas](#schemas) shows the general structure of a Persona,
+
+```yaml
+<persona-key>:
+    dim:
+        l:
+        w:
+    hitboxes: 
+        - pos:
+            x:
+            y:
+          dim:
+            l: 
+            w:
+    stack:
+        - <stack-key>
+```
+
+`dim` and `hitboxes` are similar to most other Asset types, whereas `stack` is unique to Sheets. `stack` is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. 
+
+For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. These "stack" of Sheets is keyed in the [Registry](./00-overview.md#registry) using the `<persona-key>`. 
+
+The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
+
+**Properties: SheetProperties**
 
 * `key: str`
-* `dim: Dimensions`
-* `hitboxes: List[Hitbox]` 
+* `personas: Personas`
 * `actions: Actions`
 
 ### Pixies
 
-*Pixies* are *Sheets* that have simple game mechanics, e.g. are excluded from the complex calculations of the [Intention Mechanic](./02-sprites.md#intentions).
+*Pixies* are *Sheets* that have simple game mechanics, e.g. are excluded from the complex calculations of the [Intention Mechanic](./02-sprites.md#intentions). *Pixies* encapsulate simple Characters, such as animals or bugs.
 
-*Pixies* encapsulate simple Characters, such as animals or bugs.
-
-**State**
+**State: AnimatorState**
 
 * `layer: str`
 * `position: Position`

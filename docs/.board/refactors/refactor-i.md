@@ -8,13 +8,19 @@ After review of Phase I, several modifications and refactors have been initiated
 
 The changes entailed by these shifts are detailed below.
 
-**Struts**
+One of the motivations for this structural change is removing the complexity of the `src/app/orchestration.py` and `src/app/game/factory.py`. In other words, these refactor seeks to align the data structures of the in-game Asset so the dimensions of their configuratiion are determined entirely by their Asset Category.
 
-Struts have been added to support the `CommerceMechanics`. Refer to the [Struts Documentation](../../01-assets.md#struts) and [Struts schemas](../../01-assets.md#schemas) for more information on their use and data models.
+**Crafts**
+
+A Craft Asset Categry has been devised, and a single Instance has been added to it. Struts have been added to support the `CommerceMechanics`. Refer to the [Struts Documentation](../../01-assets.md#struts) and [Struts schemas](../../01-assets.md#schemas) for more information on their use and data models.
+
+- TODO: TASKING
 
 **Tiles**
 
-Tiles have been decomposed from a Category with a single Instance to multiple Instances, Fore and Back.
+Tiles have been decomposed from a Category with a single Instance to multiple Instances, Fore and Back, i.e. a nesting has been add to the Tile state and property configuration. This will substantially alter the object hydration flows for Tiles.
+
+- TODO: TASKING
 
 **Sheets**
 
@@ -22,9 +28,12 @@ To support this structural change, the schemas of Sheets have been modified to a
 
 The Pixie Schema is now reworked, and some of the properties have been renamed to correspond to their Sprite counterparts. Pixies used to be constrained to have a certain number of rows and frames. But to generalize across the asset hierarchy, their properties have been brought in line with Sprites.
 
-The Sprite Schema used to assemble the Sprite Sheets from a `base` and `features` attribute specified in the `/assets/sheets/main.yaml` configuration file. To align the Pixie and Sprite configurations, a more general
+The Sprite Schema used to assemble the Sprite Sheets from a `base` and `features` attribute specified in the `/assets/sheets/main.yaml` configuration file. To align the Pixie and Sprite configurations, a more general Property schema has been adopted, with Actions and Personas alterations to ensure they conform with both Asset Instance types.
 
 - [ ] Re-hydrate the Pixie states in `src/app/orchestration.py`, `src/app/game/factory.py`.
 - [ ] Re-index the Pixie assets in `libs/registry.pyx`
+- [ ] Re-hydrate Sprite states in `src/app/orchestration.py`, `src/app/game/factory.py`
 
+**General Debugging**
 
+- [ ] This may have ancillary and knock-on effects in some of the libraries. Ensure the application has not be substantially broken by this refactor by mentally simulating the data flows.

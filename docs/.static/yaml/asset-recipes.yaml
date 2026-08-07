@@ -13,6 +13,6 @@ assets:
       animation: <animation-implementation> 
         # temporary, persistent, binary, state
       state: <state-implementation> 
-        # sprite, pixie, switch, door, positional, 
+        # sprite, switch, door, positional, 
         # property, container, animator, metric
         # multiplier

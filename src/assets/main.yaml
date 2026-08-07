@@ -55,7 +55,7 @@ sheets:
   pixies:
     frame: state
     animation: state
-    state: pixie
+    state: animator
   sprites:
     frame: state
     animation: state
