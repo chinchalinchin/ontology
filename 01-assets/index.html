@@ -314,6 +314,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#asset-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Concepts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asset-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -447,7 +475,18 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Effects">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="?">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -761,6 +800,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#asset-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Concepts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asset-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Hierarchy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -894,7 +961,18 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Effects">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="?">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1051,19 +1129,18 @@
 
 
 <h1 id="ontology-assets">Ontology: Assets</h1>
+<p>This document serves to specify the Asset architecture and provide key definition for game terminology.</p>
+<div class="admonition note">
+<p class="admonition-title">Definition</p>
+<p>An Asset is an image or sound file.</p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>LPC Assets are bundled with the application by default.</p>
 </div>
-<p>This document serves to specify the Asset architecture and provide key definition for game terminology.</p>
-<div class="admonition note">
-<p class="admonition-title">Definition</p>
-<p>An asset is an image or sound file.</p>
-</div>
 <h2 id="overview">Overview</h2>
 <p>The Asset directory is organized as follows,</p>
 <div class="highlight"><pre><span></span><code>assets<span class="w"> </span>%<span class="w"> </span>tree<span class="w"> </span>-L<span class="w"> </span><span class="m">2</span>
-:~/Projects/ontology/src/assets$<span class="w"> </span>tree<span class="w"> </span>-L<span class="w"> </span><span class="m">2</span>
 .
 ├──<span class="w"> </span>cursors
 │<span class="w">   </span>├──<span class="w"> </span>expressions
@@ -1098,13 +1175,16 @@
 │<span class="w">   </span>├──<span class="w"> </span>speech
 │<span class="w">   </span>└──<span class="w"> </span>main.yaml
 └──<span class="w"> </span>tiles
-<span class="w">    </span>├──<span class="w"> </span>back
-<span class="w">    </span>├──<span class="w"> </span>fore
-<span class="w">    </span>└──<span class="w"> </span>main.yaml
+│<span class="w">   </span>├──<span class="w"> </span>back
+│<span class="w">   </span>├──<span class="w"> </span>fore
+│<span class="w">   </span>└──<span class="w"> </span>main.yaml
+└──<span class="w"> </span>main.yaml
+
 
 <span class="m">27</span><span class="w"> </span>directories,<span class="w"> </span><span class="m">9</span><span class="w"> </span>files
 </code></pre></div>
-<p>The <code>main.yaml</code> files in each subdirectory conform to the <a href="#schemas">Asset property schemas</a>.</p>
+<p>The root <code>main.yaml</code> configures <a href="#recipes">Asset Recipes</a>. The <code>main.yaml</code> files in each subdirectory conform to the <a href="#schemas">Asset property schemas</a>. </p>
+<h3 id="asset-concepts">Asset Concepts</h3>
 <p><strong>Keys</strong></p>
 <p>Keys are used to map assets to images loaded into the <a href="../00-overview/#registry">Registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, keys uniquely identify a physical Asset, but not in-game objects.</p>
 <p><strong>Properties vs. State</strong></p>
@@ -1114,49 +1194,45 @@
 <p class="admonition-title">Layers</p>
 <p>The concept of a Layer is defined more explicitly in <a href="../00-overview/#world">World documentation</a>. It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.</p>
 </div>
-<p>State files are maintained in <code>/src/data/boards/*</code>.</p>
+<p>State files are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code>, where <code>&lt;board-key&gt;</code> is a unique identifer.</p>
 <p><strong>Names</strong></p>
 <p>Names are used to uniquely identify an ingame entity. A single Asset may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. A Name is part of an Asset's state.</p>
-<p><strong>Asset Hierarchy</strong></p>
-<p>Assets are divided along two axes.</p>
-<p>First, Assets are divided into <em>mutable</em> and <em>immutable</em> categories. <em>Immutable</em> Assets never have their state altered by the game loop. <em>Mutable</em> objects change their state based on the game loop.</p>
-<p>Second, Assets are divided in <em>animate</em> and <em>inanimate</em> categories. <em>Inanimate</em> Assets either have a single frame or a pair of frames (<em>Binary Objects</em>). <em>Animate</em> objects possess rows of frames for different animation states.</p>
+<p><strong>Mutability</strong></p>
+<p>Assets are divided along <em>mutable</em> and <em>immutable</em> axes. <em>Immutable</em> Assets never have their state altered by the game loop. <em>Mutable</em> Assets change their state based on the game loop.</p>
+<p><strong>Animability</strong></p>
+<p>Assets are also divided along <em>animate</em> and <em>inanimate</em> axes. <em>Inanimate</em> Assets possess a single frame. <em>Animate</em> objects possess rows of frames for different animation states.</p>
+<p><strong>Direction &amp; Action</strong></p>
 <p>The rows of <em>animate</em> Assets are further categorized by the axes of <em>Direction</em> and <em>Action</em>. See <a href="#sheets">Sheets section</a> below for more information on the division of <em>Direction</em> and <em>Action</em>.</p>
-<p>In order of ascending complexity, where complexity is defined as the number of dimensions in the state, the Assets fall along these axes as shown below,</p>
-<ul>
-<li><em>Immutable</em>, <em>Inanimate</em> Assets<ul>
-<li>Tile: Back, State: Position, Layer</li>
-<li>Tile: Fore, State: Position, Layer</li>
-</ul>
-</li>
-<li><em>Mutable</em>, <em>Inanimate</em> Assets<ul>
-<li>Object: Crate, State: Position, Layer</li>
-<li>Object: Door, State: Position, Layer, OutLayer</li>
-<li>Object: Chest, State: Position, Layer, Switch, Content</li>
-<li>Object: Gate, State: Position, Layer, Switch, Link</li>
-<li>Object: Plate, State: Position, Layer, Switch, Link</li>
-<li>Object: Strut, State: Position, Layer, Owner</li>
-<li>Cursor: Expression, State: Position, Layer</li>
-<li>Cursor: Projectile, State: Position, Layer, Initial</li>
-</ul>
-</li>
-<li><em>Immutable</em>, <em>Animate</em> Assets<ul>
-<li>Effect: Temporary, State: Position, Layer, Frame</li>
-<li>Effect: Persistent, State: Position, Layer, Frame</li>
-</ul>
-</li>
-<li><em>Mutable</em>, <em>Animate</em> Assets<ul>
-<li>Sheet: Pixie, State: Postion, Layer, Frame</li>
-<li>Sheet: Sprite, State: Position, Layer, Frame, Direction, Action, Intention, ...</li>
-</ul>
-</li>
-</ul>
-<p>The Asset <em>Categories</em> (e.g. Tiles, Objects, Effects, Sheet) are form the first layer of the hierarchy. Each Asset Category is defined by its static Properties,</p>
+<h3 id="asset-hierarchy">Asset Hierarchy</h3>
+<p><strong>Categories and Instances</strong></p>
+<p>The Asset <em>Categories</em> (e.g. Tiles, Objects, Effects, Sheet, etc.) form the top layer of the hierarchy. Each Asset Category is defined by its static Properties; an Asset's Category determines what type of Properties it will parse from the configuration files and inject into its deployment.</p>
 <ul>
 <li>Tiles: Properties = Dimensions </li>
+<li>Cursor: Properties = Dimensions</li>
+<li>Craft: Properties = Dimensions, Hitboxes, Cost</li>
 <li>Objects: Properties = Dimensions, Hitboxes</li>
+<li>Effects: Properties = Dimensions, Hitboxes, Count</li>
+<li>Sheets: Properties = Dimensions, Hitboxes, Actions, Personas</li>
 </ul>
-<p><strong>Asset Architecture</strong></p>
+<p>The Asset <em>Instances</em> (e.g. Crates, Gates, Sprites, Projectiles, etc.) form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic State; an Assets Instance determine what type of State it will parse from the configuration files and inject into its deployment.</p>
+<ul>
+<li>Tile - BackTile, State: Position, Layer</li>
+<li>Tile - ForeTile, State: Position, Layer</li>
+<li>Object - Crate, State: Position, Layer</li>
+<li>Object - Door, State: Position, Layer, OutLayer</li>
+<li>Object - Chest, State: Position, Layer, Switch, Content</li>
+<li>Object - Gate, State: Position, Layer, Switch, Link</li>
+<li>Object - Plate, State: Position, Layer, Switch, Link</li>
+<li>Craft - Strut, State: Position, Layer, Owner</li>
+<li>Craft - Tract, State: Position, Layer, Owner, Stage</li>
+<li>Cursor - Expression, State: Position, Layer</li>
+<li>Cursor - Projectile, State: Position, Layer, Initial</li>
+<li>Effect - Temporary, State: Position, Layer, Frame</li>
+<li>Effect - Persistent, State: Position, Layer, Frame</li>
+<li>Sheet - Pixie, State: Postion, Layer, Frame</li>
+<li>Sheet - Sprite, State: Position, Layer, Frame, Direction, Action, Intention, ...</li>
+</ul>
+<p><strong>Architecture</strong></p>
 <p>Every physical entity in the game is an instance of the unified <code>Asset</code> class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and stateless behaviors injected into them:</p>
 <ol>
 <li><strong>Properties:</strong> A model defining immutable data (e.g., <code>TileProperties</code>, <code>ObjectProperties</code>).</li>
@@ -1323,6 +1399,7 @@
 <ul>
 <li><code>key(asset, animation) -&gt; &lt;asset&gt;-&lt;animation.frame&gt;</code></li>
 </ul>
+<h2 id="_1">?</h2>
 <h3 id="struts">Struts</h3>
 <p><em>Struts</em> are inanimate, immutable Assets. <em>Struts</em> are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. They possess an owner. </p>
 <p>Struts may be placed on the Board through the state files, but are instantiated ingame through the <code>build</code> Sprite Extension state (see <a href="../02-sprites/#extension">Sprite documentation</a> for more information on Extensions). The <em>cost</em> of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.</p>
