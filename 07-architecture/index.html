@@ -640,7 +640,7 @@
 <h3 id="math-geometry-libsmathpyx">Math &amp; Geometry (<code>libs/math.pyx</code>)</h3>
 <p>Spatial data like <code>Position</code>, <code>Dimensions</code> and <code>Velocity</code> are modeled as Cython Extension Types (<code>cdef class</code> in <code>.pxd</code> definition files).</p>
 <ul>
-<li><strong>Direct Memory Access:</strong> This structure allows geometry methods like <code>Geometry.intersects</code> to access spatial properties (e.g., <code>pos.x</code>, <code>hb.dimensions.l</code>) natively at C-speeds.</li>
+<li><strong>Direct Memory Access:</strong> This structure allows geometry methods like <code>Geometry.intersects</code> to access spatial properties (e.g., <code>position.x</code>, <code>hb.dimensions.l</code>) natively at C-speeds.</li>
 <li><strong>The GIL and Readability:</strong> The engine explicitly retains the Global Interpreter Lock (GIL) during geometry calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax (like <code>for hb in hitboxes</code>), while executing the actual mathematical overlap checks inline using primitive C variables on the CPU stack.</li>
 </ul>
 <h3 id="hardware-rendering-libsrenderpyx-libsregistrypyx">Hardware Rendering (<code>libs/render.pyx</code> &amp; <code>libs/registry.pyx</code>)</h3>
