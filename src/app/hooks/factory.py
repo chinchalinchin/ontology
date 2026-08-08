@@ -14,6 +14,11 @@ from app.assets.frames import (
     SingleFrame, IterableFrame, StateFrame
 )
 from app.config.enums import FrameRecipe, AnimationRecipe, StateRecipe
+from app.config.validators import (
+    PyAnimatorState, PyContainerState, PyDoorState, PySwitchState,
+    PyMetricState, PyMultiplierState, PyPositionalState, PyPropertyState,
+    PySpriteState, PyRecipeConfiguration
+)
 from app.models.state import (
     AnimatorState, ContainerState, DoorState, SwitchState, 
     MetricState, MultiplierState, PositionalState, PropertyState,
@@ -79,7 +84,14 @@ class Factory:
 
     @staticmethod
     def state(recipe: StateRecipe, snapshot: dict) -> Any:
-        target_cls = Factory.STATE_MAP.get(recipe)
+        target_cls = Factory.STATE_MAP["models"].get(recipe)
+        if not target_cls:
+            raise ValueError(f"Unknown state recipe: {recipe}")
+        return Factory._hydrate(target_cls, snapshot)
+    
+    @staticmethod
+    def state(recipe: StateRecipe, snapshot: dict) -> Any:
+        target_cls = Factory.STATE_MAP["models"].get(recipe)
         if not target_cls:
             raise ValueError(f"Unknown state recipe: {recipe}")
         return Factory._hydrate(target_cls, snapshot)
@@ -88,7 +100,7 @@ class Factory:
     def properties(category: str, snapshot: dict) -> Any:
         target_cls = Factory.PROPERTY_MAP.get(category)
         if not target_cls:
-            raise ValueError(f"Unknown property recipe: {category}")
+            raise ValueError(f"Unknown property category: {category}")
         return Factory._hydrate(target_cls, snapshot)
 
     @staticmethod

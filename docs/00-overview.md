@@ -34,11 +34,23 @@ A group of Assets of the same category have a single set of Properties, but each
 
 Many Assets have Hitboxes. Hitboxes are *Properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. 
 
-## Engine
+## Application 
+
+### Factory
+
+The Factory builds Asset components based on Recipes.
+
+### Orchestrator
+
+The Orchestrator is responsible for reading in the configuration files for properties and state, converting them into application data models and then instantiating the corresponding classes.
+
+### Engine
+
+The Engine handle the core gameplay loop and framerate calculations.
 
 ### Screen
 
-TODO 
+The Screen acts as a high-level container for a Cythonized SDL rendering interface.
 
 ### Board
 
@@ -50,12 +62,14 @@ The state files for each Board is maintained in `/src/data/state/<board-key>/**`
 
 The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. 
 
-## World
-
 ### Mechanics
 
 TODO
 
 ### Layers
 
-TODO
+All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire frame, it is rendering a Layer.  
+
+Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at `(x_1, y_1)` and get released on Layer 3 at `(x_2, y_2)`. For this reason, each Layer may have different dimensions.
+
+All of the Assets are loaded into the Registry on start, and the state file is parsed

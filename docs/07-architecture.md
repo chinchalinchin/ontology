@@ -72,7 +72,7 @@ While Python objects are fast enough for general logic, calculating collisions a
 
 Spatial data like `Position`, `Dimensions` and `Velocity` are modeled as Cython Extension Types (`cdef class` in `.pxd` definition files).
 
-- **Direct Memory Access:** This structure allows geometry methods like `Geometry.intersects` to access spatial properties (e.g., `pos.x`, `hb.dimensions.l`) natively at C-speeds.
+- **Direct Memory Access:** This structure allows geometry methods like `Geometry.intersects` to access spatial properties (e.g., `position.x`, `hb.dimensions.l`) natively at C-speeds.
 - **The GIL and Readability:** The engine explicitly retains the Global Interpreter Lock (GIL) during geometry calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax (like `for hb in hitboxes`), while executing the actual mathematical overlap checks inline using primitive C variables on the CPU stack.
 
 ### Hardware Rendering (`libs/render.pyx` & `libs/registry.pyx`)

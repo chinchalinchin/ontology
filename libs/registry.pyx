@@ -9,7 +9,8 @@ import os
 from typing import Tuple
 
 # Application Libraries
-import app.config.constants as constants
+from app.config.enums import FrameRecipe, AnimationRecipe
+import app.config.settings as settings
 from app.config.validators import (
     PySheetPropertyConfiguration,
     PyObjectPropertyConfiguration,
@@ -19,7 +20,6 @@ from app.config.validators import (
     PyCraftPropertyConfiguration,
     PyRecipeConfiguration
 )
-from app.config.hierarchy import FrameRecipe, AnimationRecipe
 
 # Cython Libraries
 from libs.render cimport (
@@ -70,7 +70,7 @@ class Registry:
 
     def _cache(self):
         """Recursively parses all physical PNG files across the static asset directory."""
-        asset_dir = str(constants.ASSET_DIR)
+        asset_dir = str(settings.ASSET_DIR)
         for root, _, files in os.walk(asset_dir):
             for file in files:
                 if file.endswith('.png'):
@@ -106,18 +106,12 @@ class Registry:
     def _index(self):
         """Maps runtime dynamic frame keys to their GPU mapping tuple coordinates."""
         prop_map = {
-            "tiles": self.tiles_config.tiles 
-                        if getattr(self, 'tiles_config', None) else None,
-            "objects": self.objects_config.objects 
-                        if getattr(self, 'objects_config', None) else None,
-            "effects": self.effects_config.effects 
-                        if getattr(self, 'effects_config', None) else None,
-            "cursors": self.cursors_config.cursors 
-                        if getattr(self, 'cursors_config', None) else None,
-            "crafts": self.crafts_config.objects 
-                        if getattr(self, 'crafts_config', None) else None,
-            "sheets": self.sheets_config.sheets 
-                        if getattr(self, 'sheets_config', None) else None,
+            "tiles": self.tiles_config.tiles,
+            "objects": self.objects_config.objects,
+            "effects": self.effects_config.effects,
+            "cursors": self.cursors_config.cursors,
+            "crafts": self.crafts_config.objects,
+            "sheets": self.sheets_config.sheets,
         }
 
         for cat_name, cat_props in prop_map.items():
@@ -155,8 +149,8 @@ class Registry:
                         
                         # Differentiate between Binary Objects and Sequential Effects
                         if recipe.animation == AnimationRecipe.BINARY:
-                            self._frames[f"{key}-idle"] = (self._textures[key], 0, 0, w, h)
-                            self._frames[f"{key}-activated"] = (self._textures[key], w, 0, w, h)
+                            self._frames[f"{key}-{settings.OFF}"] = (self._textures[key], 0, 0, w, h)
+                            self._frames[f"{key}-{settings.ON}"] = (self._textures[key], w, 0, w, h)
                         else:
                             for f in range(props.count):
                                 self._frames[f"{key}-{f}"] = (self._textures[key], f * w, 0, w, h)
