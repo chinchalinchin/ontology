@@ -432,6 +432,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Initialization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#orchestrator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Orchestrator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#factory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Factory
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -547,36 +575,39 @@
 <p>This section contains an in-depth presentation of the game engine's programmatic architecture.</p>
 <h2 id="initialization">Initialization</h2>
 <ol>
-<li>Bootstrap<ul>
+<li>Entrypoint: <code>Orchestrate</code><ul>
 <li>Load Configuration into memory<ul>
-<li>Load Asset properties YAML files from <code>/src/assets/**/main.yaml</code></li>
-<li>Load Asset recipes YAML File from <code>/src/assets/main.yaml</code></li>
+<li>Load Asset Recipes YAML File from <code>/src/assets/main.yaml</code></li>
+<li>Load Asset Category properties YAML files from <code>/src/assets/&lt;category&gt;/main.yaml</code></li>
 <li>Load Asset state YAML files from the <code>/src/data/boards/&lt;board-key&gt;</code> directory, where <code>&lt;board-key&gt;</code> is the selected board. There may be an arbitrary number of state files, with any filename, in the <code>&lt;board-key&gt;</code> directory.</li>
 <li>Convert all heavy Pydantic DTOs into lightweight Plain Old Python Objects (POPOs) and Cython <code>cdef classes</code> for runtime use.</li>
-<li>Initialize homogeneous lists of Asset components.</li>
+<li>Initialize list of Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).</li>
 </ul>
 </li>
 </ul>
 </li>
-<li>Create <code>Registry</code><ul>
+<li>Init: <code>Registry</code><ul>
 <li>Load Assets into memory<ul>
 <li>Recursively load <code>/src/assets/**</code> using the <code>main.yaml</code> contained in each <code>/src/asset/&lt;category&gt;</code> directory. Pydantic Models (DTOs) are used <em>exclusively</em> during this phase to read <code>main.yaml</code> files and ensure strict schema validation.</li>
-<li>Create a map using the key-values <code>&lt;registry-key&gt;: &lt;frame&gt;</code>, where <code>&lt;registry-key&gt;</code> is the Asset file name (<code>&lt;asset-key&gt;</code>), unless otherwise specified below:<ul>
-<li>Parse and index Chests, Gates and Plates so each frame is indexed with  <code>&lt;asset-key&gt;-&lt;idle | activated&gt;</code>.</li>
-<li>Parse and index Pixie sheets so each frame is indexed with <code>&lt;asset-key&gt;-&lt;direction&gt;-&lt;frame&gt;</code>, with <code>&lt;frame&gt;</code> starting at 0.</li>
-<li>Parse and index Sprite sheets so each frame is indexed with <code>&lt;asset-key&gt;-&lt;action&gt;-&lt;direction&gt;-&lt;frame&gt;</code>, with <code>&lt;frame&gt;</code> starting at 0.</li>
+<li>Create a map using the key-values <code>&lt;registry-key&gt;: &lt;frame&gt;</code>, where <code>&lt;registry-key&gt;</code> is calculated according to the Frame schema,<ul>
+<li>Assets with SingleFrame index with <code>&lt;asset-id&gt;</code></li>
+<li>Assets with BinaryFrames indexed with  <code>&lt;asset-key&gt;-&lt;idle | activated&gt;</code>.</li>
+<li>Assets with StateFrames indexed with <code>&lt;asset-key&gt;-&lt;action&gt;-&lt;direction&gt;-&lt;frame&gt;</code>, with <code>&lt;frame&gt;</code> starting at 0.</li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
 </li>
-<li>Create <code>Board</code></li>
-<li>Register <code>Mechanics</code><ul>
-<li>Initialize the Mechanics (e.g., <code>PhysicsMechanic</code>, <code>CollisionMechanic</code>, <code>AnimationMechanic</code>).</li>
+<li>Init <code>Board</code><ul>
+<li>Initialize and register the Mechanics (e.g., <code>PhysicsMechanic</code>, <code>CollisionMechanic</code>, <code>AnimationMechanic</code>).</li>
 </ul>
 </li>
 </ol>
+<h3 id="orchestrator">Orchestrator</h3>
+<p>TODO</p>
+<h3 id="factory">Factory</h3>
+<p>TODO</p>
 <h2 id="mechanics">Mechanics</h2>
 <p>The <code>Board.play()</code> method never changes when new game features are added. It simply iterates through the registered Mechanics:</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

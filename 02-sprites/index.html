@@ -489,17 +489,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#animations" class="md-nav__link">
+  <a href="#animation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Animations
+        Animation
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Animation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#action-direction" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -507,6 +508,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1009,17 +1015,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#animations" class="md-nav__link">
+  <a href="#animation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Animations
+        Animation
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
+    <nav class="md-nav" aria-label="Animation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#action-direction" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1027,6 +1034,11 @@
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1252,17 +1264,6 @@
 
 <h1 id="ontology-sprites">Ontology: Sprites</h1>
 <p>Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the gameplay loop and thus have many unique attributes and methods, as the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. </p>
-<p><strong>LPC Frames</strong></p>
-<p>The LPC specification defines the following frames per Sprite Action,</p>
-<ul>
-<li><code>cast</code>: Count = 7</li>
-<li><code>thrust</code>: Count = 8</li>
-<li><code>walk</code>: Count = 9</li>
-<li><code>slash</code>: Count = 6</li>
-<li><code>shoot</code>: Count = 13</li>
-<li><code>die</code>: Count = 6</li>
-</ul>
-<p>The game engine use the LPC as its default setting.</p>
 <p><strong>Player, NPCs and Enemies</strong></p>
 <p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to Disposition Transitions.</p>
 <ul>
@@ -1402,13 +1403,22 @@
 <li><code>parameters.frightened.enemy</code>: Number of enemies within the <code>parameters.frightened.radius</code> that must be present to trigger the <code>triggers.frightened</code> mutator.</li>
 <li><code>parameters.vision.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.vision</code> mutator. Measured in pixels.</li>
 </ul>
-<h2 id="animations">Animations</h2>
-<h2 id="action-direction">Action, Direction</h2>
+<h2 id="animation">Animation</h2>
+<h3 id="action-direction">Action, Direction</h3>
 <p>Action and Direction were previously defined in the <a href="../01-assets/">Assets documentation</a>, since these two state attributes determine the animation frame currently being rendered in the gameloop. </p>
-<p>As a reminder, the default Actions and Directions for the game engine (and LPC specification) are,</p>
+<p>As a reminder, the default Actions and Directions for the game engine (and LPC specification) are given below,</p>
 <ul>
 <li>Actions: <code>cast, thrust, walk, slash, shoot, die</code></li>
 <li>Directions: <code>up, down, left, right</code></li>
+</ul>
+<p>The frames per Action Group are given below,</p>
+<ul>
+<li><code>cast</code>: Count = 7</li>
+<li><code>thrust</code>: Count = 8</li>
+<li><code>walk</code>: Count = 9</li>
+<li><code>slash</code>: Count = 6</li>
+<li><code>shoot</code>: Count = 13</li>
+<li><code>die</code>: Count = 6</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

@@ -350,6 +350,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#asset-taxonomy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Taxonomy
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -881,6 +892,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#asset-taxonomy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Asset Taxonomy
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1275,10 +1297,10 @@
 </code></pre></div>
 <p>The root <code>main.yaml</code> configures <a href="#recipes">Asset Recipes</a>. The <code>main.yaml</code> files in each subdirectory conform to the <a href="#schemas">Asset property schema</a> of their respective Asset Category. </p>
 <h3 id="asset-concepts">Asset Concepts</h3>
-<p><strong>Keys &amp; Names</strong></p>
-<p>Keys are used to map Assets to images loaded into the <a href="../00-overview/#registry">Registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, keys uniquely identify a physical Asset, but not in-game entities.</p>
-<p>Names are used to uniquely identify an ingame entity. A single Asset Key may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. </p>
-<p>A Name is part of an Asset's state. A Key is what binds an Asset state to its properties.</p>
+<p><strong>IDs &amp; Names</strong></p>
+<p>IDs are used to map Assets to images loaded into the <a href="../00-overview/#registry">Registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset, but not in-game entities.</p>
+<p>Names are used to uniquely identify an ingame entity. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. </p>
+<p>A Name identifies an Asset's deployment. A ID is what binds an Asset deployed state to its deployed properties.</p>
 <p><strong>Mutability &amp; Animability</strong></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1329,8 +1351,8 @@
 <li>Cursor - Projectile: State = Position, Layer, Initial</li>
 <li>Effect - Temporary: State = Position, Layer</li>
 <li>Effect - Persistent: State = Position, Layer</li>
-<li>Sheet - Pixie, State: Postion = Layer</li>
-<li>Sheet - Sprite, State: Position = Layer, Direction, Action, Intention, Memory</li>
+<li>Sheet - Pixie, State: Postion = Position, Layer</li>
+<li>Sheet - Sprite, State: Position = Position, Layer, Intention, Inventory, Meters, Memory, Mutators, Goal</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1346,6 +1368,19 @@
 </ol>
 <p><em>Behaviors</em> are decoupled from Assets and managed entirely by <em>Mechanics</em> classes that iterate over the Board Assets. See <a href="./06-architecture.md#mechanics">Mechanics documentation</a> for more information.</p>
 <p>The Recipe for an Asset is specified in the <a href="#recipes">Recipe</a> configuration file. A recipe includes the Frame implementation, the Animation implementation, the State model and the Properties model. The recipe configuration file defines each of the Asset categories in the following headings.</p>
+<h3 id="asset-taxonomy">Asset Taxonomy</h3>
+<p>An Asset's position in the Asset Hierarchy is encoded into its Taxonomy is encoded into each Asset's attributes. These attributes exist on every Asset instantiated within the game,</p>
+<ul>
+<li><code>id: str</code></li>
+<li><code>category: str</code></li>
+<li><code>instance: str</code></li>
+<li><code>name: str</code></li>
+</ul>
+<p><code>id</code> uniquely identifies the Asset file. It must match a file found in the <code>src/assets/**</code> directory.</p>
+<p><code>category</code> determines what property model is employed by the Asset. The category must be configured by a <code>src/assets/&lt;category&gt;/main.yaml</code> configuration file.</p>
+<p><code>instance</code> determines what state model is employed by the Asset. An Asset's state is hydrated from the <code>data/state/&lt;board&gt;/*</code> directory.</p>
+<p><code>name</code> is the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique <code>name</code>.</p>
+<p><code>(category, instance)</code> collectively determine the components <code>(frame, animation, properties, state)</code> injected into an Asset class during the <a href="../07-architecture/#initialization">Initialization</a>. More specifically, category determines properties (<code>category -&gt; properties</code>), and instance determines everything else (<code>instance -&gt; (frame, animation, state)</code>).</p>
 <h2 id="tiles">Tiles</h2>
 <ul>
 <li>Property File: <code>/src/assets/tiles/main.yaml</code></li>
@@ -1354,7 +1389,6 @@
 <p><em>Tiles</em> are always assumed to be sized 32x32 pixels. These dimensions configurable in the property file, but they apply to all Tiles universally.</p>
 <p><strong>Properties: TileProperties</strong></p>
 <ul>
-<li><code>key: str</code></li>
 <li><code>dimensions: Dimensions</code></li>
 </ul>
 <h3 id="back">Back</h3>
@@ -1395,7 +1429,6 @@
 <p>Binary objects frames are always organized in horizontal rows. The idle frame will always start at <code>(0,0)</code> and the activated frame will always start at <code>(w,0)</code>. Because of this relation, the dimensions of a Chest image file will always be <code>(2w, h)</code></p>
 <p><strong>Properties: ObjectProperties</strong></p>
 <ul>
-<li><code>key: str</code></li>
 <li><code>dim: Dimensions</code></li>
 <li><code>hitboxes: List[Hitbox]</code> </li>
 </ul>
@@ -1414,7 +1447,6 @@
 </ul>
 <p><strong>State: ContainerState</strong></p>
 <ul>
-<li><code>name: str</code></li>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>switch: bool</code></li>
@@ -1424,7 +1456,6 @@
 <p><em>Crates</em> are <em>Objects</em> who state can be altered by in-game physics. For example, when a <em>Sprite</em> collides with a <em>Crate</em>, the <em>Crate</em> moves in the direction of the <em>Sprite</em>, with the same speed.</p>
 <p><strong>State: PositionalState</strong></p>
 <ul>
-<li><code>name: str</code></li>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
 </ul>
@@ -1436,7 +1467,6 @@
 <p><em>Doors</em> are <em>Objects</em> that alter a Sprite's <code>&lt;layer&gt;</code>. When a Sprite enters the hitbox of a door, the <code>&lt;layer&gt;</code> is changed to the <code>&lt;outlayer&gt;</code> at the <code>&lt;out&gt;</code> Position.</p>
 <p><strong>State: DoorState</strong></p>
 <ul>
-<li><code>name: str</code></li>
 <li><code>layer: str</code></li>
 <li><code>outlayer: str</code></li>
 <li><code>position: Position</code></li>
@@ -1459,7 +1489,6 @@
 </ul>
 <p><strong>State: SwitchState</strong></p>
 <ul>
-<li><code>name: str</code></li>
 <li><code>layer: str</code></li>
 <li><code>link: str</code></li>
 <li><code>position: Position</code></li>
@@ -1478,7 +1507,6 @@
 </ul>
 <p><strong>State: SwitchState</strong></p>
 <ul>
-<li><code>name: str</code></li>
 <li><code>layer: str</code></li>
 <li><code>link: str</code></li>
 <li><code>position: Position</code></li>
@@ -1491,7 +1519,6 @@
 <p><em>Cursors</em> are inanimate, mutable Assets made of a single frame. They are divided into <em>Expressions</em> and <em>Projectiles</em>.</p>
 <p><strong>Properties: ObjectProperties</strong></p>
 <ul>
-<li><code>key: str</code></li>
 <li><code>dim: Dimensions</code></li>
 </ul>
 <h3 id="expressions">Expressions</h3>
@@ -1504,7 +1531,6 @@
 </ul>
 <p><strong>State: PositionalState</strong></p>
 <ul>
-<li><code>name: str</code></li>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
 </ul>
@@ -1518,7 +1544,6 @@
 </ul>
 <p><strong>State: MetricState</strong></p>
 <ul>
-<li><code>name: str</code></li>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>initial: Position</code></li>
@@ -1531,7 +1556,6 @@
 <p><em>Effects</em> are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is an <em>Effect</em>.</p>
 <p><strong>Properties</strong></p>
 <ul>
-<li><code>key: str</code></li>
 <li><code>dim: Dimensions</code></li>
 <li><code>hitboxes: List[Hitbox]</code> </li>
 <li><code>count: int</code></li>
@@ -1548,7 +1572,6 @@
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
-<li><code>name: str</code></li>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
@@ -1565,7 +1588,6 @@
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
-<li><code>name: str</code></li>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
@@ -1636,7 +1658,7 @@
 <span class="w">        </span><span class="nt">&lt;direction-key&gt;</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">row</span><span class="p">:</span><span class="w"> </span>
 <span class="w">            </span><span class="nt">attackboxes</span><span class="p">:</span>
-<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">pos</span><span class="p">:</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span>
 <span class="w">                    </span><span class="nt">x</span><span class="p">:</span>
 <span class="w">                    </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span>
 <span class="w">                  </span><span class="nt">dim</span><span class="p">:</span>
@@ -1658,7 +1680,7 @@
 <span class="w">        </span><span class="nt">l</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">w</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">hitboxes</span><span class="p">:</span><span class="w"> </span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">pos</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">x</span><span class="p">:</span>
 <span class="w">            </span><span class="nt">y</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">dim</span><span class="p">:</span>
