@@ -108,7 +108,7 @@ class View:
 
     def _onscreen(self, 
         pov: Tuple[int, int], 
-        pos: Tuple[int, int], 
+        position: Tuple[int, int], 
         dim: Tuple[int, int]
     ) -> bool:
         result = False

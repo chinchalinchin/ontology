@@ -16,23 +16,8 @@ from libs.core import Position, Multiple
 class AssetState:
     """
     Foundational class for Asset states. 
-
-    ## Keys
-    - key: Asset key
-    - name: Deployment Key
-    
-    ### State Keys 
-    - layer: Layer key 
-    
-    ### Asset Hierarchy Keys
-    - category: Category key (e.g. Tile, Object, Cursors, etc.)
-    - instance: Instance key (e.g. Expressions, Projectiles, Temporary, etc.)
     """
-    key: str
-    name: str
     layer: str
-    category: str
-    instance: str
     
 # ---------------------------------------------------------------------------------------
 

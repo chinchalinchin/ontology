@@ -4,23 +4,30 @@ This section contains an in-depth presentation of the game engine's programmatic
 
 ## Initialization
 
-1. Bootstrap
+1. Entrypoint: `Orchestrate`
     * Load Configuration into memory
-        - Load Asset properties YAML files from `/src/assets/**/main.yaml`
-        - Load Asset recipes YAML File from `/src/assets/main.yaml`
+        - Load Asset Recipes YAML File from `/src/assets/main.yaml`
+        - Load Asset Category properties YAML files from `/src/assets/<category>/main.yaml`
         - Load Asset state YAML files from the `/src/data/boards/<board-key>` directory, where `<board-key>` is the selected board. There may be an arbitrary number of state files, with any filename, in the `<board-key>` directory.
         - Convert all heavy Pydantic DTOs into lightweight Plain Old Python Objects (POPOs) and Cython `cdef classes` for runtime use.
-        - Initialize homogeneous lists of Asset components.
-2. Create `Registry`
+        - Initialize list of Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).
+2. Init: `Registry`
     * Load Assets into memory
         - Recursively load `/src/assets/**` using the `main.yaml` contained in each `/src/asset/<category>` directory. Pydantic Models (DTOs) are used *exclusively* during this phase to read `main.yaml` files and ensure strict schema validation.
-        - Create a map using the key-values `<registry-key>: <frame>`, where `<registry-key>` is the Asset file name (`<asset-key>`), unless otherwise specified below:
-            - Parse and index Chests, Gates and Plates so each frame is indexed with  `<asset-key>-<idle | activated>`.
-            - Parse and index Pixie sheets so each frame is indexed with `<asset-key>-<direction>-<frame>`, with `<frame>` starting at 0.
-            - Parse and index Sprite sheets so each frame is indexed with `<asset-key>-<action>-<direction>-<frame>`, with `<frame>` starting at 0.
-3. Create `Board`
-4. Register `Mechanics`
-    - Initialize the Mechanics (e.g., `PhysicsMechanic`, `CollisionMechanic`, `AnimationMechanic`).
+        - Create a map using the key-values `<registry-key>: <frame>`, where `<registry-key>` is calculated according to the Frame schema,
+            - Assets with SingleFrame index with `<asset-id>`
+            - Assets with BinaryFrames indexed with  `<asset-key>-<idle | activated>`.
+            - Assets with StateFrames indexed with `<asset-key>-<action>-<direction>-<frame>`, with `<frame>` starting at 0.
+3. Init `Board`
+    - Initialize and register the Mechanics (e.g., `PhysicsMechanic`, `CollisionMechanic`, `AnimationMechanic`).
+
+### Orchestrator
+
+TODO
+
+### Factory
+
+TODO
 
 ## Mechanics
 

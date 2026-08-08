@@ -61,13 +61,13 @@ The root `main.yaml` configures [Asset Recipes](#recipes). The `main.yaml` files
 
 ### Asset Concepts
 
-**Keys & Names**
+**IDs & Names**
 
-Keys are used to map Assets to images loaded into the [Registry](./00-overview.md#registry), to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, keys uniquely identify a physical Asset, but not in-game entities.
+IDs are used to map Assets to images loaded into the [Registry](./00-overview.md#registry), to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset, but not in-game entities.
 
-Names are used to uniquely identify an ingame entity. A single Asset Key may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. 
+Names are used to uniquely identify an ingame entity. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. 
 
-A Name is part of an Asset's state. A Key is what binds an Asset state to its properties.
+A Name identifies an Asset's deployment. A ID is what binds an Asset deployed state to its deployed properties.
 
 **Mutability & Animability**
 
@@ -130,8 +130,8 @@ Each Category has Instances. Asset *Instances* form the bottom layer of the hier
 - Cursor - Projectile: State = Position, Layer, Initial
 - Effect - Temporary: State = Position, Layer
 - Effect - Persistent: State = Position, Layer
-- Sheet - Pixie, State: Postion = Layer
-- Sheet - Sprite, State: Position = Layer, Direction, Action, Intention, Memory
+- Sheet - Pixie, State: Postion = Position, Layer
+- Sheet - Sprite, State: Position = Position, Layer, Intention, Inventory, Meters, Memory, Mutators, Goal
 
 !!! note
     Animation and Frame states are not shown in the above table to save space, but belong in the Instance as well. See [Asset Recipes](#recipes) for more details.
@@ -149,6 +149,25 @@ Every physical entity in the game is an instance of the unified `Asset` class. T
 
 The Recipe for an Asset is specified in the [Recipe](#recipes) configuration file. A recipe includes the Frame implementation, the Animation implementation, the State model and the Properties model. The recipe configuration file defines each of the Asset categories in the following headings.
 
+### Asset Taxonomy
+
+An Asset's position in the Asset Hierarchy is encoded into its Taxonomy is encoded into each Asset's attributes. These attributes exist on every Asset instantiated within the game,
+
+- `id: str`
+- `category: str`
+- `instance: str`
+- `name: str`
+
+`id` uniquely identifies the Asset file. It must match a file found in the `src/assets/**` directory.
+
+`category` determines what property model is employed by the Asset. The category must be configured by a `src/assets/<category>/main.yaml` configuration file.
+
+`instance` determines what state model is employed by the Asset. An Asset's state is hydrated from the `data/state/<board>/*` directory.
+
+`name` is the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique `name`.
+
+`(category, instance)` collectively determine the components `(frame, animation, properties, state)` injected into an Asset class during the [Initialization](./07-architecture.md#initialization). More specifically, category determines properties (`category -> properties`), and instance determines everything else (`instance -> (frame, animation, state)`).
+
 ## Tiles
 
 * Property File: `/src/assets/tiles/main.yaml`
@@ -159,7 +178,6 @@ The Recipe for an Asset is specified in the [Recipe](#recipes) configuration fil
 
 **Properties: TileProperties**
 
-* `key: str`
 * `dimensions: Dimensions`
 
 ### Back
@@ -212,7 +230,6 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 **Properties: ObjectProperties**
 
-* `key: str`
 * `dim: Dimensions`
 * `hitboxes: List[Hitbox]` 
 
@@ -235,7 +252,6 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **State: ContainerState**
 
-* `name: str`
 * `layer: str`
 * `position: Position`
 * `switch: bool`
@@ -247,7 +263,6 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **State: PositionalState**
 
-* `name: str`
 * `layer: str`
 * `position: Position`
 
@@ -261,7 +276,6 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **State: DoorState**
 
-* `name: str`
 * `layer: str`
 * `outlayer: str`
 * `position: Position`
@@ -286,7 +300,6 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **State: SwitchState**
 
-* `name: str`
 * `layer: str`
 * `link: str`
 * `position: Position`
@@ -307,7 +320,6 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **State: SwitchState**
 
-* `name: str`
 * `layer: str`
 * `link: str`
 * `position: Position`
@@ -321,7 +333,6 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Properties: ObjectProperties**
 
-* `key: str`
 * `dim: Dimensions`
 
 ### Expressions
@@ -338,7 +349,6 @@ N/A
 
 **State: PositionalState**
 
-* `name: str`
 * `layer: str`
 * `position: Position`
 
@@ -356,7 +366,6 @@ N/A
 
 **State: MetricState**
 
-* `name: str`
 * `layer: str`
 * `position: Position`
 * `initial: Position`
@@ -371,7 +380,6 @@ N/A
 
 **Properties**
 
-* `key: str`
 * `dim: Dimensions`
 * `hitboxes: List[Hitbox]` 
 * `count: int`
@@ -390,7 +398,6 @@ Temporary Effects are brief, short-lived effects, such as explosions or magic ef
 
 **State: AnimatorState**
 
-* `name: str`
 * `layer: str`
 * `position: Position`
 * `animation: Animation`
@@ -409,7 +416,6 @@ Persistent Effects are long-term, continuous effects, such as water ripples or w
 
 **State: AnimatorState**
 
-* `name: str`
 * `layer: str`
 * `position: Position`
 * `animation: Animation`
@@ -498,7 +504,7 @@ This snippet from the [Schemas](#schemas) shows the general structure of an Acti
         <direction-key>:
             row: 
             attackboxes:
-                - pos:
+                - position:
                     x:
                     y: 
                   dim:
@@ -523,7 +529,7 @@ This snippet from the [Schemas](#schemas) shows the general structure of a Perso
         l:
         w:
     hitboxes: 
-        - pos:
+        - position:
             x:
             y:
           dim:

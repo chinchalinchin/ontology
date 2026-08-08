@@ -7,9 +7,9 @@ Package for Pydantic models used for loading and validating YAML. These models a
 from typing import List, Union, Dict, Optional, Type, Tuple
 
 # Application Libraries
-import app.config.constants as constants
+import app.config.settings as settings
 
-from app.config.hierarchy import FrameRecipe, AnimationRecipe, \
+from app.config.enums import FrameRecipe, AnimationRecipe, \
                                 StateRecipe
 
 # External Libraries
@@ -55,12 +55,12 @@ class PyMultiple(BaseModel):
     ny: int
 
 class PyHitbox(BaseModel):
-    pos: PyPosition
-    dim: PyDimensions
+    position: PyPosition
+    dimensions: PyDimensions
 
 class PyAttackBox(BaseModel):
-    pos: PyPosition
-    dim: PyDimensions
+    position: PyPosition
+    dimensions: PyDimensions
     hitframe: int
 
 class PyDirection(BaseModel):
@@ -85,23 +85,23 @@ class PyCost(BaseModel):
 # ---------------------------------------------------------------------------------------
 
 class PyCursorProperties(BaseModel):
-    dim: PyDimensions
+    dimensions: PyDimensions
 
 class PyEffectProperties(BaseModel):
-    dim: PyDimensions
+    dimensions: PyDimensions
     hitboxes: Optional[List[PyHitbox]] = None
     count: int 
 
 class PyObjectProperties(BaseModel):
-    dim: PyDimensions
+    dimensions: PyDimensions
     hitboxes: Optional[List[PyHitbox]] = None
 
 class PyTileProperties(BaseModel):
-    dim: PyDimensions
+    dimensions: PyDimensions
     keys: List[str]
 
 class PyCraftProperties(BaseModel):
-    dim: PyDimensions
+    dimensions: PyDimensions
     hitboxes: Optional[List[PyHitbox]] = None
     cost: List[PyCost]
     
@@ -114,11 +114,7 @@ class PySheetProperties(BaseModel):
 # ---------------------------------------------------------------------------------------
 
 class PyAssetState(BaseModel):
-    key: str
-    name: str
     layer: str
-    category: str = ""
-    instance: str = ""
 
 class PyAnimationState(BaseModel):
     action: Union[str, None]
@@ -297,7 +293,7 @@ class PyRecipeConfiguration(YamlBaseSettings):
     assets: PyRecipes
 
     model_config = SettingsConfigDict(
-        yaml_file = constants.ASSET_DIR / constants.APP_EXT
+        yaml_file = settings.ASSET_DIR / settings.APP_EXT
     )
 
 # ---------------------------------------------------------------------------------------
@@ -374,7 +370,7 @@ class PyTilePropertyConfiguration(YamlBaseSettings):
     tiles: PyTilePropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = constants.ASSET_DIR / "tiles" / constants.APP_EXT
+        yaml_file = settings.ASSET_DIR / "tiles" / settings.APP_EXT
     )
 
 
@@ -382,35 +378,35 @@ class PyEffectPropertyConfiguration(YamlBaseSettings):
     effects: PyEffectPropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = constants.ASSET_DIR / "effects" / constants.APP_EXT
+        yaml_file = settings.ASSET_DIR / "effects" / settings.APP_EXT
     )
     
 class PyObjectPropertyConfiguration(YamlBaseSettings):
     objects: PyObjectPropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = constants.ASSET_DIR / "objects" / constants.APP_EXT
+        yaml_file = settings.ASSET_DIR / "objects" / settings.APP_EXT
     )
 
 class PyCraftPropertyConfiguration(YamlBaseSettings):
     objects: PyCraftPropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = constants.ASSET_DIR / "crafts" / constants.APP_EXT
+        yaml_file = settings.ASSET_DIR / "crafts" / settings.APP_EXT
     )
 
 class PyCursorPropertyConfiguration(YamlBaseSettings):
     cursors: PyCursorPropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = constants.ASSET_DIR / "cursors" / constants.APP_EXT
+        yaml_file = settings.ASSET_DIR / "cursors" / settings.APP_EXT
     )
 
 class PySheetPropertyConfiguration(YamlBaseSettings):
     sheets: PySheetPropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = constants.ASSET_DIR / "sheets" / constants.APP_EXT
+        yaml_file = settings.ASSET_DIR / "sheets" / settings.APP_EXT
     )
 
 # ---------------------------------------------------------------------------------------

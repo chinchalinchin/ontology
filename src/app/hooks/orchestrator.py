@@ -6,11 +6,11 @@ from typing import List, Any, Union
 import yaml
 
 # Application Libraries
-import app.config.constants as constants
+import app.config.settings as settings
 from app.assets.base import Asset
 from app.game.board import Board
 from app.hooks.factory import Factory
-from app.config.hierarchy import StateRecipe
+from app.config.enums import StateRecipe
 from app.config.validators import (
     PyMultiplierState, PyPositionalState, PyMetricState, 
     PyAnimatorState, PyContainerState, PyDoorState, PySwitchState,
@@ -43,7 +43,7 @@ def migrate(
 
     Transfer the Pydantic DTOs to Python POPOs for the game engine.
     """
-    board_dir = constants.STATE_DIR / board_key
+    board_dir = settings.STATE_DIR / board_key
     flat_states = []
 
     if not asset_recipes:
@@ -122,6 +122,7 @@ def orchestrate(board_key:
         state_dict = py_state.model_dump()
         category = py_state.category
         instance = py_state.instance
+        # TODO: This is broken. Taxonomy is not part of state.
         prop_key = py_state.key
 
         # 4. Extract specific recipe dynamically

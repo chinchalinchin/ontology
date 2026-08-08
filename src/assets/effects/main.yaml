@@ -6,7 +6,7 @@ effects:
         l: 
         w:
       hitboxes:
-        - pos: 
+        - position: 
             x:
             y:
           dim:
@@ -19,7 +19,7 @@ effects:
         l: 
         w:
       hitboxes:
-        - pos: 
+        - position: 
             x:
             y:
           dim:

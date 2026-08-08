@@ -5,7 +5,7 @@ tiles:
     dimensions:
       l: 32
       w: 32
-    keys:
+    ids:
       - clay
       - coal
       - dirt
@@ -20,19 +20,19 @@ tiles:
     dimensions:
       l: 32
       w: 32
-    keys:
+    ids:
       - canopy
       - cloudy
 # ------------------------------------------------------------------
 # ----------------------------------------------------------- CRAFTS
 crafts:
   struts:
-    <key>:
+    <id>:
       dim:
         l: Pixel Length
         w: Pixel Width
       hitboxes:
-        - pos: 
+        - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Position
           dim:
@@ -58,26 +58,26 @@ cursors:
 # ---------------------------------------------------------- EFFECTS
 effects:
   persistent:
-    <key>:
+    <id>:
       count: Number of Frames
       dim:
         l: Pixel Length
         w: Pixel Width
       hitboxes:
-        - pos: 
+        - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
           dim:
             l: Pixel Length
             w: Pixel Width
   temporary:
-    <key>:
+    <id>:
       count: Number of Frames
       dim:
         l: Pixel Length
         w: Pixel Width
       hitboxes:
-        - pos: 
+        - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
           dim:
@@ -87,60 +87,60 @@ effects:
 # ---------------------------------------------------------- OBJECTS
 objects:
   chests:
-    <key>:
+    <id>:
       dim:
         l: Pixel Length
         w: Pixel Width
       hitboxes:
-        - pos: 
+        - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
           dim:
             l: Pixel Length
             w: Pixel Width
   crates:
-    <key>:
+    <id>:
       dim:
         l: Pixel Length
         w: Pixel Width
       hitboxes:
-        - pos: 
+        - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
           dim:
             l: Pixel Length
             w: Pixel Width
   doors:
-    <key>:
+    <id>:
       dim:
         l: Pixel Length
         w: Pixel Width
       hitboxes:
-        - pos: 
+        - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
           dim:
             l: Pixel Length
             w: Pixel Width
   gates:
-    <key>:
+    <id>:
       dim:
         l: Pixel Length
         w: Pixel Width
       hitboxes:
-        - pos: 
+        - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
           dim:
             l: Pixel Length
             w: Pixel Width
   plates:
-    <key>:
+    <id>:
       dim:
         l: Pixel Length
         w: Pixel Width
       hitboxes:
-        - pos: 
+        - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
           dim:
@@ -151,12 +151,12 @@ objects:
 sheets:
   pixies:
     personas:
-      <key>:
+      <id>:
         dim:
           l: pixel length
           w: pixel width
         hitboxes:
-          - pos: 
+          - position: 
               x: relative horizontal position
               y: relative vertical position
             dim:
@@ -173,12 +173,12 @@ sheets:
             attackboxes: null
   sprites:
     personas:
-      <key>:
+      <id>:
         dim:
           l: pixel length
           w: pixel width
         hitboxes:
-          - pos: 
+          - position: 
               x: relative horizontal position
               y: relative vertical position
             dim:
@@ -193,7 +193,7 @@ sheets:
           <direction-key>:
             row: <row-index>
             attackboxes:
-              - pos: 
+              - position: 
                   x: relative horizontal position
                   y: relative vertical position
                 dim:

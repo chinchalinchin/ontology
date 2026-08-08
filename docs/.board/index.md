@@ -13,4 +13,5 @@ This is the Task Board for the project. Below is a backlog of completed and pend
   - [Phase III: Dispositions](./phases/implement/phase-iii.md)
   - [Phase IV: Mechanics](./phases/implement/phase-iv.md)
 - Refactor
-  - [Phase I: Refactor](./phases/refactor/phase-i.md)
+  - [Phase I: Refactor I](./phases/refactor/phase-i-i.md)
+  - [Phase I: Refactor II](./phases/refactor/phase-i-ii.md)

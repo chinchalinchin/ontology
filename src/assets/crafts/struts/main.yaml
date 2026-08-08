@@ -2,12 +2,12 @@
 # ----------------------------------------------------------- CRAFTS
 crafts:
   struts:
-    <key>:
+    <id>:
       dim:
         l:
         w:
       hitboxes:
-        - pos: 
+        - position: 
             x:
             y:
           dim:

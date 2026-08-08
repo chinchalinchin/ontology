@@ -2,19 +2,6 @@
 
 Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the gameplay loop and thus have many unique attributes and methods, as the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. 
 
-**LPC Frames**
-
-The LPC specification defines the following frames per Sprite Action,
-
-- `cast`: Count = 7
-- `thrust`: Count = 8
-- `walk`: Count = 9
-- `slash`: Count = 6
-- `shoot`: Count = 13
-- `die`: Count = 6
-
-The game engine use the LPC as its default setting.
-
 **Player, NPCs and Enemies**
 
 NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to Disposition Transitions.
@@ -148,16 +135,25 @@ TODO
 - `parameters.frightened.enemy`: Number of enemies within the `parameters.frightened.radius` that must be present to trigger the `triggers.frightened` mutator.
 - `parameters.vision.radius`: Radius of separation within which the Sprite triggers the `triggers.vision` mutator. Measured in pixels.
 
-## Animations
+## Animation
 
-## Action, Direction
+### Action, Direction
 
 Action and Direction were previously defined in the [Assets documentation](./01-assets.md), since these two state attributes determine the animation frame currently being rendered in the gameloop. 
 
-As a reminder, the default Actions and Directions for the game engine (and LPC specification) are,
+As a reminder, the default Actions and Directions for the game engine (and LPC specification) are given below,
 
 - Actions: `cast, thrust, walk, slash, shoot, die`
 - Directions: `up, down, left, right`
+
+The frames per Action Group are given below,
+
+- `cast`: Count = 7
+- `thrust`: Count = 8
+- `walk`: Count = 9
+- `slash`: Count = 6
+- `shoot`: Count = 13
+- `die`: Count = 6
 
 !!! note 
     In the LPC specification, the `thrust` Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the `thrust` state.

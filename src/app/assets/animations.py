@@ -4,7 +4,7 @@
 Package for Asset Animation implementations.
 """
 # Application Libraries
-import app.config.constants as constants
+import app.config.settings as settings
 from app.assets.base import Animation
 from app.models.properties import AssetProperties
 from app.models.state import AssetState
@@ -14,7 +14,7 @@ class BinaryAnimation(Animation):
     def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
         """
         """
-        state.animation.frame = constants.ON if state.switch else constants.OFF
+        state.animation.frame = settings.ON if state.switch else settings.OFF
         return state
         
 class PersistentAnimation(Animation):

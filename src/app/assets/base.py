@@ -13,6 +13,12 @@ from app.models.state import AssetState
 # Cython Libraries
 from libs.core import Dimensions
 
+class Taxonomy:
+    id: str
+    name: str
+    category: str
+    instance: str
+
 class Frame(ABC):
     """
     Foundational interface for Assets.
@@ -46,12 +52,20 @@ class Asset:
     """
     Foundational class for all game Assets.
     """
+    taxonomy: Taxonomy
     properties: AssetProperties
     state: AssetState
     frame: int
     animation: Animation
 
-    def __init__(self, properties, state, frame=None, animation=None):
+    def __init__(self,
+        taxonomy: Taxonomy,
+        properties: AssetProperties, 
+        state: AssetState, 
+        frame: Frame=None, 
+        animation: Animation=None
+    ):
+        self.taxonomy = taxonomy
         self.properties = properties
         self.state = state
         self.frame = frame
@@ -64,7 +78,7 @@ class Asset:
             return self.properties.dim
         # Fallback for polymorphic Sheets which nest spatial data in Personas
         elif hasattr(self.properties, 'personas'):
-            return self.properties.personas[self.state.key].dim
+            return self.properties.personas[self.taxonomy.id].dim
         return None
 
     @property
@@ -74,5 +88,5 @@ class Asset:
             return self.properties.hitboxes
         # Fallback for polymorphic Sheets
         elif hasattr(self.properties, 'personas'):
-            return self.properties.personas[self.state.key].hitboxes
+            return self.properties.personas[self.taxonomy.id].hitboxes
         return []

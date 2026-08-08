@@ -1,5 +1,7 @@
 """
 # Ontology: Screen
+
+Package for the Screen class, an abstraction over the Cython SDL rendering interface and image registries.
 """
 
 # Standard Libraries
@@ -7,7 +9,7 @@ from typing import List
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.hierarchy import AssetInstances
+from app.config.enums import AssetInstances
 from app.input.player import Player
 
 # Cython Libraries
@@ -42,7 +44,7 @@ class Screen:
         
         for tile in tiles:
             # Query Registry using the computed tile key
-            tex_data = registry.data(tile.frame.key(tile.properties.key, tile.state))
+            tex_data = registry.data(tile.frame.key(tile.taxonomy.id, tile.state))
             if tex_data:
                 tex, sx, sy, sw, sh = tex_data
                 
@@ -56,9 +58,9 @@ class Screen:
                 )
 
                 # Route properties
-                if tile.state.instance == AssetInstances.BACK:
+                if tile.taxonomy.instance == AssetInstances.BACK:
                     cython_bg_tiles.append(tile_tuple)
-                elif tile.state.instance == AssetInstances.FORE:
+                elif tile.taxonomy.instance == AssetInstances.FORE:
                     cython_fg_tiles.append(tile_tuple)
         
         construct(self.bg_canvas, cython_bg_tiles)
@@ -70,8 +72,8 @@ class Screen:
         and clamps it to the boundaries of the board.
         """
         # Center the camera on the player
-        cam_x = player.properties.position.x + (player.properties.dimensions.l // 2) - (self.screensize.l // 2)
-        cam_y = player.properties.position.y + (player.properties.dimensions.w // 2) - (self.screensize.w // 2)
+        cam_x = player.states.position.x + (player.properties.dim.l // 2) - (self.screensize.l // 2)
+        cam_y = player.state.position.y + (player.properties.dim.w // 2) - (self.screensize.w // 2)
 
         # Clamp to board edges
         max_x = max(0, self.boardsize.l - self.screensize.l)

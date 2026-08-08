@@ -138,14 +138,14 @@ class Registry:
                     # Tiles schema has a list of keys; others map key -> properties
                     if cat_name == "tiles":
                         w, h = inst_props.dim.l, inst_props.dim.w
-                        for key in inst_props.keys:
-                            if key in self._textures:
-                                self._frames[key] = (self._textures[key], 0, 0, w, h)
+                        for id in inst_props.ids:
+                            if id in self._textures:
+                                self._frames[id] = (self._textures[id], 0, 0, w, h)
                     else:
-                        for key, props in inst_props.items():
-                            if key in self._textures:
+                        for id, props in inst_props.items():
+                            if id in self._textures:
                                 w, h = props.dim.l, props.dim.w
-                                self._frames[key] = (self._textures[key], 0, 0, w, h)
+                                self._frames[id] = (self._textures[id], 0, 0, w, h)
 
                 # 2. IterableFrame
                 elif recipe.frame == FrameRecipe.ITERABLE:

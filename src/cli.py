@@ -38,7 +38,7 @@ def cli_construct(args):
     # Construct Step 4: Iterate through deployed Tiles and draw directly to canvas
     cython_tiles = []
     for tile in tiles:
-        frame_key = tile.key
+        frame_key = tile.taxonomy.id
         tex_data = registry.data(frame_key)
         if tex_data:
             tex, sx, sy, sw, sh = tex_data
@@ -68,20 +68,33 @@ def cli_render(args):
     registry = Registry()
     
     chunk_size = 1024
+    # TODO: calculate board size dynamically instead of this bullshit.
     bg_canvas = canvas(chunk_size, chunk_size)
     
     cython_tiles = []
     for s in states:
         if s.category == "tiles" and s.layer == args.layer:
+            # TODO: this is broken because key isn't on state now.
+            #       need to instantiate board.
             tex_data = registry.data(s.key)
             if tex_data:
                 tex, sx, sy, sw, sh = tex_data
                 cython_tiles.append((
-                    tex, sx, sy, sw, sh,
-                    s.position.x, s.position.y,
-                    sw, sh,
-                    s.multiple.nx, s.multiple.ny
+                    tex, 
+                    sx, 
+                    sy, 
+                    sw, 
+                    sh,
+                    s.position.x, 
+                    s.position.y,
+                    sw, 
+                    sh,
+                    s.multiple.nx,
+                    s.multiple.ny
                 ))
+
+    # TODO: don't do this in the CLI. Why is CLI instantiating objects?
+    #       delegate everything to orchestration and screen.
     
     render_construct(bg_canvas, cython_tiles)
     
@@ -93,7 +106,7 @@ def cli_render(args):
     active_assets = []
     for asset in board.assets:
         if asset.state.layer == args.layer and asset.state.category != "tiles":
-            frame_key = asset.frame.key(asset.properties.key, asset.state)
+            frame_key = asset.frame.key(asset.taxonomy.id, asset.state)
             tex_data = registry.data(frame_key)
             if tex_data:
                 tex, sx, sy, sw, sh = tex_data

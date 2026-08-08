@@ -2,31 +2,33 @@
 # ------------------------------------------------------------ TILES
 tiles:
   fore:
-    - key: Tile Asset Key
+    - id: Asset ID
+      name: Deployment Name
       layer: Layer Key
       position:
-        x: horizontal position
-        y: vertical position
+        x: Horizontal Position
+        y: Vertical Position
       multiply:
-        nx: number of horizontal multiples
-        ny: number of vertical multiples
+        nx: Number of Horizontal Multiples
+        ny: Number of Vertical Multiples
   back:
-    - key: Tile Asset Key
+    - id: Asset ID
+      name: Deployment Name
       layer: Layer Key
       position:
-        x: horizontal position
-        y: vertical position
+        x: Horizontal Position
+        y: Vertical Position
       multiply:
-        nx: number of horizontal multiples
-        ny: number of vertical multiples
+        nx: Number of Horizontal Multiples
+        ny: Number of Vertical Multiples
 # ------------------------------------------------------------------
 # ---------------------------------------------------------- CRAFTS
 crafts:
   struts:
-    - key: Strut Asset Key
-      name: Strut Key
+    - id: Asset ID
+      name: Deployment Name
       layer: Layer Key
-      owner: Owner Key
+      owner: Owner Name
       position:
         x: Horizontal Position
         y: Vertical Position
@@ -34,15 +36,15 @@ crafts:
 # ---------------------------------------------------------- CURSORS
 cursors:
   expressions:
-    - name: Cursor Key
-      key: Cursor Asset Key
+    - id: Cursor Asset ID
+      name: Deployment Name
       layer: Layer Key
       position: 
         x: Horizontal Position
         y: Vertical Position
   projectiles:
-    - name: Cursor Key
-      key: Cursor Asset Key
+    - id: Asset ID
+      name: Deployment Name
       layer: Layer Key
       position: 
         x: Horizontal Position
@@ -54,15 +56,15 @@ cursors:
 # ---------------------------------------------------------- EFFECTS
 effects:
   persistent:
-    - key: Effect Asset Key
-      name: Effect Key
+    - id: Asset ID
+      name: Deployment Name
       layer: Layer Key
       position:
         x: Horizontal Position
         y: Vertical Position
   temporary:
-    - key: Effect Asset Key
-      name: Effect Key
+    - id: Asset ID
+      name: Deployment Name
       layer: Layer Key
       position:
         x: Horizontal Position
@@ -71,8 +73,8 @@ effects:
 # ---------------------------------------------------------- OBJECTS
 objects:
   chests:
-    - name: Chest Key
-      key: Chest Asset Key
+    - id: Asset ID
+      name: Deployment Key
       layer: Layer Key
       position:
         x: Horizontal Position
@@ -81,15 +83,15 @@ objects:
       content:
         - Content Key
   crates:
-    - name: Crate Key
-      key: Crate Asset Key
+    - id: Asset ID
+      name: Deployment Key
       layer: Layer Key
       position: 
         x: Horizontal Position
         y: Vertical Position
   doors:
-    - name: Door Key
-      key: Door Asset Key
+    - id: Asset ID
+      name: Deployment Key
       layer: Layer Key
       outlayer: Out Layer Key
       position:
@@ -99,8 +101,8 @@ objects:
         x: Horizontal Position
         y: Vertical Position
   gates:
-    - name: Gate Key
-      key: Gate Asset Key
+    - id: Asset ID
+      name: Deployment Key
       layer: Layer Key
       link: Plate Link Key
       position:
@@ -108,8 +110,8 @@ objects:
         y: Vertical Position
       switch: Switch Flag
   plates:
-    - name: Plate Key
-      key: Plate Asset Key
+    - id: Asset ID
+      name: Deployment Key
       layer: Layer Key
       link: Gate Link Key
       position:
@@ -120,15 +122,15 @@ objects:
 # ----------------------------------------------------------- SHEETS
 sheets:
   pixies:
-    - name: Pixie Key
-      key: Pixie Asset Key
+    - id: Asset ID
+      name: Pixie Deployment
       layer: Layer Key
       position:
         x: Horizontal Position
         y: Vertical Position
   sprites:
-    - name: Sprite Key
-      key: Sprite Asset Key
+    - id: Asset ID
+      name: Deployment Key
       layer: Layer Key
       position:
         x: Horizontal Position
