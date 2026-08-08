@@ -13,7 +13,7 @@ from app.assets.animations import (
 from app.assets.frames import (
     SingleFrame, IterableFrame, StateFrame
 )
-from app.config.hierarchy import FrameRecipe, AnimationRecipe, StateRecipe
+from app.config.enums import FrameRecipe, AnimationRecipe, StateRecipe
 from app.models.state import (
     AnimatorState, ContainerState, DoorState, SwitchState, 
     MetricState, MultiplierState, PositionalState, PropertyState,

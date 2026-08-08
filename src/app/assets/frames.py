@@ -12,18 +12,18 @@ class SingleFrame(Frame):
     """
     """
 
-    def key(self, asset: str, state: AssetState) -> str:
+    def key(self, id: str, state: AssetState) -> str:
         """
         """
-        return asset
+        return id
     
 class IterableFrame(Frame):
 
-    def key(self, asset: str, state: AssetState) -> str:
+    def key(self, id: str, state: AssetState) -> str:
         """
         """
         return constants.SEPARATOR.join(
-            asset, 
+            id, 
             state.animation.frame
         )
     
@@ -31,11 +31,11 @@ class StateFrame(Frame):
     """
     """
 
-    def key(self, asset: str, state: AssetState) -> str:
+    def key(self, id: str, state: AssetState) -> str:
         """
         """
         return constants.SEPARATOR.join([
-            asset, 
+            id, 
             state.animation.action, 
             state.animation.direction,
             state.animation.frame

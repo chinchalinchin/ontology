@@ -9,7 +9,7 @@ from typing import Tuple
 
 # Application Libraries
 from app.game.board import Board
-from app.screen import Screen
+from app.game.screen import Screen
 from app.input.player import Player
 
 class Engine:

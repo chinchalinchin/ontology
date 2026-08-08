@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 # Application Libraries
 if TYPE_CHECKING:
     from app.game.board import Board
-from app.config.hierarchy import AssetCategories, AssetInstances
+from app.config.enums import AssetCategories, AssetInstances
 
 # Cython Libraries
 from libs.math import Geometry
@@ -167,8 +167,11 @@ class IntentionMechanics(Mechanic):
         sprites = board.instances(AssetInstances.SPRITES)
 
         for sprite in sprites:
-            # 1. Fetch the compiled AST transitions for the CURRENT disposition
-            transits = sprite.intention.transitions()
+            # TODO (Phase III): Intention logic and DSL matrix compilation is pending.
+            if not hasattr(sprite, 'transitions'):
+                continue
+
+            transits = sprite.transitions()
             
             # 2. Evaluate conditions
             for transit in transits:

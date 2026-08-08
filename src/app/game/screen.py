@@ -7,6 +7,7 @@ from typing import List
 
 # Application Libraries
 from app.assets.base import Asset
+from app.config.hierarchy import AssetInstances
 from app.input.player import Player
 
 # Cython Libraries
@@ -55,9 +56,9 @@ class Screen:
                 )
 
                 # Route properties
-                if tile.state.instance == "back":
+                if tile.state.instance == AssetInstances.BACK:
                     cython_bg_tiles.append(tile_tuple)
-                elif tile.state.instance == "fore":
+                elif tile.state.instance == AssetInstances.FORE:
                     cython_fg_tiles.append(tile_tuple)
         
         construct(self.bg_canvas, cython_bg_tiles)
@@ -90,7 +91,7 @@ class Screen:
         
         for asset in assets:
             # 1. Resolve current animation frame key
-            frame_key = asset.frame.key(asset.properties.key, asset.state)
+            frame_key = asset.frame.key(asset.id, asset.state)
             
             # 2. Query registry for C-level source coordinates
             tex_data = registry.data(frame_key)
