@@ -1425,21 +1425,21 @@
 </ul>
 <p><em>Objects</em> are inanimate, mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.</p>
 <p><strong>Binary Frames</strong></p>
-<p>An Object with two frames is considered to have an <em>activated</em> and <em>idle</em> state, i.e. a binary trigger. <em>Binary Objects</em> are Objects whose frame is dependent on their internal state switch.</p>
-<p>Binary objects frames are always organized in horizontal rows. The idle frame will always start at <code>(0,0)</code> and the activated frame will always start at <code>(w,0)</code>. Because of this relation, the dimensions of a Chest image file will always be <code>(2w, h)</code></p>
+<p>An Object with two frames is considered to have an <em>On</em> and <em>off</em> state, i.e. a binary trigger. <em>Binary Objects</em> are Objects whose frame is dependent on their internal state switch.</p>
+<p>Binary objects frames are always organized in horizontal rows. The off frame will always start at <code>(0,0)</code> and the on frame will always start at <code>(w,0)</code>. Because of this relation, the dimensions of a Chest image file will always be <code>(2w, h)</code></p>
 <p><strong>Properties: ObjectProperties</strong></p>
 <ul>
 <li><code>dim: Dimensions</code></li>
 <li><code>hitboxes: List[Hitbox]</code> </li>
 </ul>
 <h3 id="chests">Chests</h3>
-<p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>interact</code> Extension (see <a href="../02-sprites/#extension">Extensions</a> for more details on the distinction between Extension and Action) while intersecting the hitboxes of the <em>Chest</em>. When <code>switch == true</code>, the Chest is <em>activated</em> (open). When <code>switch == false</code>, the Chest is <em>idle</em> (closed).</p>
+<p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>interact</code> Extension (see <a href="../02-sprites/#extension">Extensions</a> for more details on the distinction between Extension and Action) while intersecting the hitboxes of the <em>Chest</em>. When <code>switch == true</code>, the Chest is <em>on</em> (open). When <code>switch == false</code>, the Chest is <em>off</em> (closed).</p>
 <p>A Chest is <em>reusable</em> through the <code>interact</code> <a href="../02-sprites/#extension">Extension</a>, meaning <a href="../02-sprites/#inventory">Inventory Loot</a> can be taken out of and also placed into a Chest. The <code>content</code> state field manages the current contents of the Chest through a list of Inventory Loot keys.</p>
 <p>When <em>interacting</em> with a Chest, the <a href="../03-player/">Player</a> is shown a two windowed menu, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an <code>interact</code> Extension through its <a href="../02-sprites/#disposition">Disposition Transition Matrix</a>. This interaction is managed through a <a href="./06-architecture.md#mechanics">Mechanic</a>s</p>
 <p><strong>Animation: BinaryAnimation</strong></p>
 <ul>
-<li><code>if switch == true: animation.frame = activated</code></li>
-<li><code>if switch != true: animation.frame = idle</code></li>
+<li><code>if switch == true: animation.frame = 1</code></li>
+<li><code>if switch != true: animation.frame = 0</code></li>
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
@@ -1477,11 +1477,11 @@
 <li><code>key(asset, animation): returns {asset}</code></li>
 </ul>
 <h3 id="gates">Gates</h3>
-<p><em>Gates</em> are <em>Objects</em> whose state is connected to <em>Plates</em>. When a <em>Gate</em> is activated (open), it does not have hitboxes and the player can pass freely through it. When a Gate is idle (closed), its hitboxes prevent the player from passing through its area.</p>
+<p><em>Gates</em> are <em>Binary Objects</em> whose state is connected to <em>Plates</em>. When a <em>Gate</em> is on (open), it does not have hitboxes and the player can pass freely through it. When a Gate is off (closed), its hitboxes prevent the player from passing through its area.</p>
 <p><strong>Animation: BinaryAnimation</strong></p>
 <ul>
-<li><code>if switch == true: animation.frame = activated</code></li>
-<li><code>if switch != true: animation.frame = idle</code></li>
+<li><code>if switch == true: animation.frame = 1</code></li>
+<li><code>if switch != true: animation.frame = 0</code></li>
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
@@ -1498,8 +1498,8 @@
 <p><em>Plates</em> are <em>Binary Objects</em> whose state can be changed by collision, i.e. when a player enters its hitbox and flips its state. When activated, a <em>Plate</em> in turn flips the state of its keyed <em>Gate</em>.</p>
 <p><strong>Animation: BinaryAnimation</strong></p>
 <ul>
-<li><code>if switch == true: animation.frame = activated</code></li>
-<li><code>if switch != true: animation.frame = idle</code></li>
+<li><code>if switch == true: animation.frame = 1</code></li>
+<li><code>if switch != true: animation.frame = 0</code></li>
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
