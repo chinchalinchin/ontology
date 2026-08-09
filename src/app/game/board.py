@@ -5,6 +5,7 @@ Package for game Board. The Board holds and mutates the state of the game for th
 """
 
 # Standard Libraries 
+import logging
 from typing import List, Dict
 
 # Application Libraries
@@ -24,16 +25,18 @@ from app.input.player import Player
 # Cython Libraries
 from libs.core import Dimensions
 
+logger = logging.getLogger(__name__)
+
 class Board:
     """
     """
     player: Player
     mechanics: List[Mechanic]
-    assets: List[Asset]
 
     loaded: bool
     paused: bool
 
+    _assets: List[Asset]
     _cached_categories: Dict[str, Dict[str, List[Asset]]]
     _cached_instances: Dict[str, Dict[str, List[Asset]]]
     _cached_layers: Dict[str, List[Asset]]
@@ -44,9 +47,10 @@ class Board:
         assets: List[Asset], 
         player: Player
     ):
+        logger.info(f"Initializing Board with {len(assets)} incoming assets.")
+        
         self.loaded = False
         self.paused = False
-        self.assets = assets
         self.player = player
         self.mechanics = [ 
             AnimationMechanics(),
@@ -56,8 +60,11 @@ class Board:
             SwitchMechanics(),
             RemoveMechanics()
         ]
+        self._assets = assets
         self._cache()
+        
         self.loaded = True
+        logger.info("Board completely hydrated and initialized.")
 
     def _cache(self):
         """
@@ -65,13 +72,14 @@ class Board:
 
         Anytime an Asset changes layer, the `relayer()` method must be called, to invalidate the Asset caches.
         """
+        logger.debug("Building initial board spatial caching dictionaries by layer/category/instance.")
         self._cached_categories = {}
         self._cached_instances = {}
         self._cached_layers = {}
         self._all_categories = {}
         self._all_instances = {}
 
-        for asset in self.assets:
+        for asset in self._assets:
             layer = asset.state.layer
             cat = asset.category
             inst = asset.instance
@@ -108,7 +116,7 @@ class Board:
     @property
     def assets(self, layer=None) -> List[Asset]:
         if layer is None:
-            return self.assets
+            return self._assets
         return self._cached_layers[layer]
     
     def layers(self) -> List[str]:
@@ -134,12 +142,12 @@ class Board:
         """
         Safely moves an asset between cached layer lists.
         """
-        ## TODO: Relayer _cached_layers
-
         old_layer = asset.state.layer
         if old_layer == new_layer:
             return
             
+        logger.debug(f"Relayering asset '{asset.taxonomy.name}' from layer '{old_layer}' -> '{new_layer}'.")
+        
         cat = asset.category
         inst = asset.instance
 
@@ -152,6 +160,10 @@ class Board:
             if asset in self._cached_instances[old_layer][inst]:
                 self._cached_instances[old_layer][inst].remove(asset)
 
+        if old_layer in self._cached_layers:
+            if asset in self._cached_layers[old_layer]:
+                self._cached_layers[old_layer].remove(asset)
+
         # 2. Update state
         asset.state.layer = new_layer
 
@@ -159,6 +171,7 @@ class Board:
         if new_layer not in self._cached_categories:
             self._cached_categories[new_layer] = {}
             self._cached_instances[new_layer] = {}
+            self._cached_layers[new_layer] = []
             
         if cat not in self._cached_categories[new_layer]:
             self._cached_categories[new_layer][cat] = []
@@ -168,6 +181,10 @@ class Board:
             self._cached_instances[new_layer][inst] = []
         self._cached_instances[new_layer][inst].append(asset)
 
+        if new_layer not in self._cached_layers:
+            self._cached_layers[new_layer] = []
+        self._cached_layers[new_layer].append(asset)
+        
     def menu(self) -> None:
         """
         """
@@ -177,6 +194,8 @@ class Board:
     def play(self, delta: float) -> None:
         """
         """
+        # NOTE: Intentionally omitting logging here to prevent I/O bottlenecks in the core game loop.
+        
         # ------------------------- MECHANIC HANDLING
         for this in self.mechanics:
             this.update(self, delta)

@@ -2,58 +2,58 @@ cursors:
   expressions:
     affection:
       dimensions:
-        w:
-        l:
+        w: 16
+        l: 16
     agreement:
       dimensions:
-        w:
-        l:
+        w: 16
+        l: 16
     anger:
       dimensions:
-        w:
-        l:
+        w: 16
+        l: 16
     confusion:
       dimensions:
-        w:
-        l:
+        w: 16
+        l: 16
     curiosity:
       dimensions:
-        w:
-        l:
+        w: 16
+        l: 16
     disagreement:
       dimensions:
-        w:
-        l:
+        w: 16
+        l: 16
     loquacity:
       dimensions:
-        w:
-        l:
+        w: 16
+        l: 16
     surprise:
       dimensions:
-        w:
-        l:
+        w: 16
+        l: 16
     tired:
       dimensions:
-        w:
-        l:
+        w: 16
+        l: 16
   projectiles:
     arrow-fire:
       dimensions:
-        w:
-        l:
+        w: 31
+        l: 18
     arrow-magic:
       dimensions:
-        w:
-        l:
+        w: 30
+        l: 21
     bolt-poison:
       dimensions:
-        w:
-        l:
+        w: 24
+        l: 17
     bolt-precise:
       dimensions:
-        w:
-        l:
+        w: 24
+        l: 9
     bolt:
       dimensions:
-        w:
-        l:
+        w: 32
+        l: 10

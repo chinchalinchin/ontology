@@ -31,7 +31,7 @@ Create a centralized Cython Extension Type to ingest the parsed data structures 
 
 - [x] Initialize `libs.render`.
 - [x] Instantiate Registry to validate `/src/assets/**` and cache GPU textures.
-- [x] Parse `/src/data/boards/<board-key>/**.yaml`.
+- [x] Parse `/src/data/state/<board-key>/**.yaml`.
 - [x] Convert Pydantic models by invoking Factory to hydrate runtime Asset POPOs from the parsed configuration.
 - [x] Query Registry for the calculated TexturePtr frames and bind them to the Assets.
 - [x] Intialize Board and inject the hydrated Assets into the Board. This logic belongs inside `Screen.draw()`, requiring the Registry to be injected into the Screen component at startup.
@@ -42,7 +42,7 @@ Create a centralized Cython Extension Type to ingest the parsed data structures 
 Implement the debugging commands required to test configurations, schemas, and rendering output without booting the full physics loop.
 
 * [x]**Command Definition:** `construct <board-key> --out <directory> --layer <layer>`
-  * [x] **Construct Step 1:** Parse the state configuration (`/src/data/boards/<board-key>/*.yaml`) using Pydantic validation. 
+  * [x] **Construct Step 1:** Parse the state configuration (`/src/data/state/<board-key>/*.yaml`) using Pydantic validation. 
   * [x] **Construct Step 2:** Initialize the `Registry` to load required tilesheets and boot the Cython SDL2 Interface.
   * [x] **Construct Step 3:** Use `canvas()` to allocate the layer's background canvas on the GPU.
   * [x] **Construct Step 4:** Iterate through the deployed Tiles, query their pointers/rects from the `Registry`, and use `draw()` to paint them directly onto the canvas.

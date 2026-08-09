@@ -3,25 +3,24 @@ effects:
     coin:
       count: 8
       dimensions:
-        w:
-        l:
-      hitboxes:
-        - position: 
-            x:
-            y:
-          dimensions:
-            w:
-            l:
+        w: 32
+        l: 32
+      hitboxes: null
+    spike:
+      count: 7
+      dimensions:
+        w: 64
+        l: 64
+      hitboxes: null
   temporary:
     bang:
-      count: 8
+      count: 10
       dimensions:
-        w:
-        l:
-      hitboxes:
-        - position: 
-            x:
-            y:
-          dimensions:
-            w:
-            l:
+        w: 32
+        l: 32
+      hitboxes: null
+    bomb:
+      count: 13
+      dimensions:
+        w: 32
+        l: 32

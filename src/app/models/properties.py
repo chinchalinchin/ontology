@@ -5,6 +5,7 @@ Models for typing the property attributes of Assets. See documentation for a mor
 """
 # Standard Libraries
 from typing import Dict, List, Callable
+from dataclasses import dataclass, field
 
 # Cython Libraries
 from libs.core import Dimensions, Hitbox, AttackBox
@@ -16,19 +17,24 @@ from libs.core import Dimensions, Hitbox, AttackBox
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------- NESTED PROPERTIES
 
+@dataclass(slots=True)
 class Direction:
     row: int
-    attackboxes: List[AttackBox]
+    attackboxes: List[AttackBox] = field(default_factory=list)
 
+@dataclass(slots=True)
 class Action:
     count: int
     directions: Dict[str, Direction]
 
+@dataclass(slots=True)
 class Persona:
     dim: Dimensions
-    hitboxes: List[Hitbox]
     stack: List[str]
+    hitboxes: List[Hitbox] = field(default_factory=list)
 
+
+@dataclass(slots=True)
 class Cost:
     item: str
     quantity: int
@@ -36,31 +42,37 @@ class Cost:
 # ---------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------- ASSET PROPERTIES
 
+@dataclass(slots=True)
 class AssetProperties:
     pass 
 
+@dataclass(slots=True)
 class CursorProperties(AssetProperties):
-    # -------------------------- Properties
     dimensions: Dimensions
 
+@dataclass(slots=True)
 class EffectProperties(AssetProperties):
     dimensions: Dimensions
-    hitboxes: List[Hitbox]
     count: int 
+    hitboxes: List[Hitbox] = field(default_factory=list)
 
+@dataclass(slots=True)
 class ObjectProperties(AssetProperties):
     dimensions: Dimensions
-    hitboxes: List[Hitbox]
+    hitboxes: List[Hitbox] = field(default_factory=list)
 
+@dataclass(slots=True)
 class TileProperties(AssetProperties):
     dimensions: Dimensions
     ids: List[str]
 
+@dataclass(slots=True)
 class CraftProperties(AssetProperties):
     dimensions: Dimensions
-    hitboxes: List[Hitbox]
     cost: List[Cost]
+    hitboxes: List[Hitbox] = field(default_factory=list)
 
+@dataclass(slots=True)
 class SheetProperties(AssetProperties):
     # NOTE: key, dimension and hitboxes are embedded in the persona!
     # -------------------------- Properties
@@ -70,17 +82,20 @@ class SheetProperties(AssetProperties):
 # ---------------------------------------------------------------------------------------
 # ---------------------------------------------------------------- DISPOSITION PROPERTIES
 
+@dataclass(slots=True)
 class Transition:
     """
     """
-    conditions: List[Callable]
     next: str
+    conditions: List[Callable] = field(default_factory=list)
 
+@dataclass(slots=True)
 class Disposition:
     """
     """
-    # 
-    extensions: List[str]
-    actions: List[str]
+    # Reachable nodes
+    extensions: List[str] = field(default_factory=list)
+    actions: List[str] = field(default_factory=list)
+
     # Disposition Scripting Language conditions
-    transitions: List[Transition]
+    transitions: List[Transition] = field(default_factory=list)

@@ -5,7 +5,7 @@ Models for typing the state attributes of Assets. See documentation for a more i
 """
 # Standard Libraries
 from typing import Callable, Dict, List, Union
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 # Cython Libraries
 from libs.core import Position, Multiple
@@ -30,9 +30,9 @@ class AnimationState:
     - direction: Direction key, possibly null.
     - frame: Frame index, possible null.
     """
-    action: Union[str, None]
-    direction: Union[str, None]
-    frame: Union[int, None]
+    action: Union[str, None] = None
+    direction: Union[str, None] = None
+    frame: Union[int, None] = None
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------- ASSET STATE MODELS
@@ -84,7 +84,7 @@ class AnimatorState(AssetState):
     - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     """
     position: Position
-    animation: AnimationState
+    animation: AnimationState = None
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- OBJECT STATE MODELS
@@ -95,8 +95,9 @@ class ContainerState(AssetState):
     """
     content: List[str]      # Content Identifier Keys
     position: Position      # Position of Asset on Board
-    animation: AnimationState
     switch: bool            # Binary state flag
+    animation: AnimationState = None
+
 
 @dataclass(slots=True)
 class DoorState(AssetState):
@@ -112,8 +113,9 @@ class SwitchState(AssetState):
     """
     link: str               # Link Identifier Key
     position: Position      # Position
-    animation: AnimationState
     switch: bool            # Binary state flag
+    animation: AnimationState = None
+
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------- SHEET STATE
@@ -127,19 +129,19 @@ class Character:
     """
     Representation of a Sprite's game characteristics.
     """
-    strength: int
-    defense: int
-    speed: int
+    strength: int = 10
+    defense: int = 10
+    speed: int = 10
 
 @dataclass(slots=True)
 class Equipment:
     """
     Representation of the Sprite's equipment set.
     """
-    armor: str
-    weapon: str
-    tool: str
-    utility: str
+    armor: str = None
+    weapon: str = None
+    tool: str = None
+    utility: str = None
 
 @dataclass(slots=True)
 class Health:
@@ -192,9 +194,9 @@ class Inventory:
     """
     Representation of a Sprite's Inventory.
     """
-    loot: Dict[str, int]
-    equipment: Equipment
-    wallet: int
+    loot: Dict[str, int] = field(default_factory=dict)
+    equipment: Equipment = None
+    wallet: int = 0
 
 # --------------------------------------------------------------------------------------
 
@@ -240,7 +242,6 @@ class SpriteState(AssetState):
     Central model for typing Sprite's state.
     """
     position: Position
-    animation: AnimationState
     character: Character
     intention: Intention
     inventory: Inventory
@@ -248,6 +249,18 @@ class SpriteState(AssetState):
     mutators: Mutators
     memory: Memory
     goal: Goal
+    animation: AnimationState = None
+
+@dataclass(slots=True)
+class PlayerState(AssetState):
+    """
+    Central model for typing Sprite's state.
+    """
+    position: Position
+    character: Character
+    inventory: Inventory
+    meters: Meters
+    animation: AnimationState = None
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- MENU STATE MODELS

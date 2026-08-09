@@ -2,17 +2,17 @@
 # ----------------------------------------------------------- CRAFTS
 crafts:
   struts:
-    <id>:
+    placeholder:
       dimensions:
-        w:
-        l:
+        w: 100
+        l: 100
       hitboxes:
         - position: 
-            x:
-            y:
+            x: 0
+            y: 0
           dimensions:
-            w:
-            l:
+            w: 100
+            l: 100
       cost:
-        - item: <inventory-key>
-          quantity: <quantity-key>
+        - item: wood
+          quantity: 10

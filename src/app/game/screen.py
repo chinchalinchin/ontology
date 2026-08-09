@@ -5,6 +5,7 @@ Package for the Screen class, an abstraction over the Cython SDL rendering inter
 """
 
 # Standard Libraries
+import logging
 from typing import List
 
 # Application Libraries
@@ -14,8 +15,10 @@ from app.input.player import Player
 
 # Cython Libraries
 from libs.core import Position, Dimensions
-from libs.render import canvas, construct, render, TexturePtr
-from libs.registry import Registry
+from libs.render import canvas, construct, render, save
+from libs.registry import Registry, TexturePtr
+
+logger = logging.getLogger(__name__)
 
 class Screen:
     """
@@ -32,6 +35,7 @@ class Screen:
         tiles: List[Asset],
         registry: Registry
     ):
+        logger.info(f"Initializing Screen overlay (Viewport: {screensize.w}x{screensize.l} | Board: {boardsize.w}x{boardsize.l})")
         self.screensize = screensize
         self.boardsize = boardsize
         
@@ -42,6 +46,8 @@ class Screen:
         cython_bg_tiles = []
         cython_fg_tiles = []
         
+        logger.debug(f"Offloading primitive coordinates to Cython background construct for {len(tiles)} total tiles.")
+
         for tile in tiles:
             # Query Registry using the computed tile key
             frame_key = tile.frame.key(tile.id, tile.state)
@@ -134,3 +140,18 @@ class Screen:
             self.screensize.w, 
             self.screensize.l
         )
+
+    def export_background(self, out_path: str) -> None:
+        """
+        Exports the raw generated background canvas mapping to disk.
+        """
+        logger.info(f"Dumping pre-constructed map textures (bg_canvas) to file system -> {out_path}")
+        save(out_path, self.boardsize.w, self.boardsize.l, target=self.bg_canvas)
+
+    def export_render(self, out_path: str, assets: List[Asset], player: Player, registry: Registry) -> None:
+        """
+        Draws a composited snapshot of the frame and extracts the VRAM buffer to disk.
+        """
+        logger.info(f"Extracting VRAM view buffer representing full composition to file system -> {out_path}")
+        self.draw(assets, player, registry)
+        save(out_path, self.screensize.w, self.screensize.l)

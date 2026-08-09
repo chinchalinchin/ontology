@@ -3,54 +3,72 @@ objects:
   chests:
     wooden-chest:
       dimensions:
-        w:
-        l:
+        w: 32
+        l: 32
       hitboxes: null
   # -------------------------------------------------------
   crates:
     stone-statue:
       dimensions:
-        w:
-        l:
+        w: 30
+        l: 64
       hitboxes: null
     wooden-barrel:
       dimensions:
-        w:
-        l:
+        w: 28
+        l: 38
       hitboxes: null
     wooden-box:
       dimensions:
-        w:
-        l:
+        w: 28
+        l: 30
       hitboxes: null
   # -------------------------------------------------------
   doors:
     double-door:
       dimensions:
-        w:
-        l:
+        w: 64
+        l: 64
       hitboxes: null
+    dungeon-door:
+      dimensions:
+        w: 32
+        l: 48
+      hitboxes: null
+    mansion-door:
+      dimensions:
+        w: 32
+        l: 48
+      hitxboes: null
+    open-door:
+      dimensions:
+        w: 32
+        l: 57
+    shack-door:
+      dimensions:
+        w: 32
+        l: 48
   # -------------------------------------------------------
   gates:
     stone-gate:
       dimensions:
-        w:
-        l:
+        w: 64
+        l: 64
       hitboxes: null
   # -------------------------------------------------------
   plates:
     stone-crack:
       dimensions:
-        w:
-        l:
+        w: 32
+        l: 32
       hitboxes: null
     stone-switch:
       dimensions:
-        w:
-        l:
+        w: 15
+        l: 14
       hitboxes: null
     stone-sword:
       dimensions:
-        w:
-        l:
+        w: 26
+        l: 38
       hitboxes: null

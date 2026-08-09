@@ -3,6 +3,10 @@
 
 Package for instantiating Asset classes and their components.
 """
+# Standard Libraries
+from typing import get_type_hints, get_origin, get_args, Union
+import types
+
 # Application Libraries
 from app.assets.animations import (
     BinaryAnimation, 
@@ -42,8 +46,14 @@ from app.models.properties import (
     SheetProperties
 )
 
+# Cython Libraries
+from libs.core import Position, Dimensions, Hitbox, AttackBox
+
 class Factory:
-    
+    CYTHON_HINTS = {
+        Hitbox: {'position': Position, 'dimensions': Dimensions},
+        AttackBox: {'position': Position, 'dimensions': Dimensions, 'hitframe': int}
+    }
     # Map Enums directly to Runtime Data Classes
     STATE_MAP = {
         StateRecipe.MULTIPLIER: MultiplierState,
@@ -80,15 +90,61 @@ class Factory:
         AssetCategories.SHEETS: SheetProperties 
     }
 
+    @classmethod
+    def _hydrate(cls, target_cls, data):
+        """
+        Recursively instantiate dataclasses and Cython structs from dictionaries.
+        """
+        if not isinstance(data, dict):
+            return data
+
+        # Extract type hints, failing gracefully for Cython extension types
+        try:
+            hints = get_type_hints(target_cls)
+        except (TypeError, AttributeError):
+            hints = {}
+
+        if not hints:
+            hints = cls.CYTHON_HINTS.get(target_cls, {})
+
+        kwargs = {}
+        for key, value in data.items():
+            if value is None or key not in hints:
+                kwargs[key] = value
+                continue
+
+            field_type = hints[key]
+            origin = get_origin(field_type)
+
+            # Resolve Optional/Union types
+            if origin is Union or origin is getattr(types, 'UnionType', type(None)):
+                args = get_args(field_type)
+                field_type = next((t for t in args if t is not type(None)), field_type)
+                origin = get_origin(field_type)
+
+            # Recursively apply instantiation 
+            if origin is list and isinstance(value, list):
+                inner_type = get_args(field_type)[0]
+                kwargs[key] = [cls._hydrate(inner_type, item) for item in value]
+            elif origin is dict and isinstance(value, dict):
+                inner_type = get_args(field_type)[1]
+                kwargs[key] = {k: cls._hydrate(inner_type, v) for k, v in value.items()}
+            elif isinstance(value, dict) and isinstance(field_type, type):
+                kwargs[key] = cls._hydrate(field_type, value)
+            else:
+                kwargs[key] = value
+
+        return target_cls(**kwargs)
+    
     @staticmethod
     def state(recipe: StateRecipe, snapshot: dict):
-        cls = Factory.STATE_MAP.get(recipe)
-        return cls(**snapshot)
+        target_cls = Factory.STATE_MAP.get(recipe)
+        return Factory._hydrate(target_cls, snapshot)
 
     @staticmethod
     def properties(category: str, snapshot: dict):
-        cls = Factory.PROPERTY_MAP.get(category)
-        return cls(**snapshot)
+        target_cls = Factory.PROPERTY_MAP.get(category)
+        return Factory._hydrate(target_cls, snapshot)
 
     @staticmethod
     def frame(recipe: FrameRecipe):

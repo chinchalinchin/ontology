@@ -3,6 +3,7 @@
 """
 # Standard Libraries
 import time
+import logging
 from typing import List, Any, Dict, Tuple
 
 # External Libraries
@@ -32,6 +33,8 @@ from libs.core import Dimensions
 import libs.render as render
 from libs.registry import Registry
 
+logger = logging.getLogger(__name__)
+
 class Orchestrator:
     """
     """
@@ -44,6 +47,7 @@ class Orchestrator:
     screens: Dict[str, Screen]
 
     def __init__(self, state: str):
+        logger.info(f"Initializing Orchestrator for target state: {state}")
         self.recipes = PyRecipeConfiguration()
         self.properties = { }
         self.load(state)
@@ -63,8 +67,7 @@ class Orchestrator:
                 elif isinstance(target[key], list) and isinstance(value, list):
                     target[key].extend(value)
                 else:
-                    # If types clash or aren't combinable, source overwrites or 
-                    # you can choose to raise a ValueError here depending on strictness.
+                    # If types clash or aren't combinable, source overwrites
                     target[key] = value
             else:
                 target[key] = value
@@ -75,17 +78,22 @@ class Orchestrator:
         return time.perf_counter()
     
     def load(self, state: str) -> None:
-        board_path = settings.DATA_DIR / state  
+        board_path = settings.STATE_DIR / state  
         target_dir = board_path.expanduser()
         merged_data: dict[str, Any] = {}
+        
+        logger.info(f"Loading YAML state configurations from {target_dir}")
 
         for file_path in target_dir.glob("*.yaml"):
+            logger.info(file_path)
             with file_path.open("r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
-                
                 if isinstance(data, dict):
                     merged_data = Orchestrator.merge(merged_data, data)
 
+        logger.info(merged_data)
+
+        logger.debug(f"Validating loaded schema via Pydantic model.")
         self.state = PyStateConfiguration.model_validate(merged_data)
 
     def migrate(self) -> List[Asset]:
@@ -94,6 +102,7 @@ class Orchestrator:
 
         Transfer the Pydantic DTOs to Python POPOs for the game engine.
         """
+        logger.info("Migrating configuration states to engine Application Objects (POPOs)...")
         assets = []
 
         if not self.properties:
@@ -106,12 +115,15 @@ class Orchestrator:
                 **PySheetPropertyConfiguration().model_dump()
             }
 
-        for category_key, instance_data in self.state.model_dump().items():
+        for category_key, instance_data in self.state.model_dump(exclude_none=True).items():
             for instance_key, instance_list in instance_data.items():
                 for instance in instance_list:
 
                     recipe = getattr(getattr(self.recipes.assets, category_key), instance_key)
 
+                    logger.info(recipe)
+                    
+                    # Lookup properties using the 'id' before modifying the dictionary
                     if category_key == AssetCategories.TILES:
                         instance_props = self.properties[category_key][instance_key]
                     elif category_key == AssetCategories.SHEETS:
@@ -119,16 +131,21 @@ class Orchestrator:
                     else:
                         instance_props = self.properties[category_key][instance_key][instance["id"]] 
 
+                    # Pop the taxonomy keys to strip them from the state snapshot
+                    asset_id = instance.pop("id")
+                    asset_name = instance.pop("name")
+
                     assets.append(
                         Asset(
-                            taxonomy   = Factory.taxonomy(category_key, instance_key, instance["id"], instance["name"]),
+                            taxonomy   = Factory.taxonomy(category_key, instance_key, asset_id, asset_name),
                             properties = Factory.properties(category_key, instance_props),
                             state      = Factory.state(recipe.state, instance),
                             frame      = Factory.frame(recipe.frame),
                             animation  = Factory.animation(recipe.animation)
                         )
                     )
-
+                    
+        logger.info(f"Successfully migrated {len(assets)} assets.")
         return assets
     
     def orchestrate(self, 
@@ -140,13 +157,16 @@ class Orchestrator:
 
         Initialize and return game components.
         """
+        logger.info("Bootstrapping internal SDL environment and initializing Registry.")
         render.init(screensize.w, screensize.l)
 
         assets = self.migrate()
         player = Player(device)
 
         self.board = Board(assets, player)
-        self.registry = Registry(self.properties)
+        self.registry = Registry(self.properties, self.recipes)
+        
+        logger.info("Initializing game screens across layers...")
         self.screens = {
             layer: Screen(
                 screensize, 
@@ -160,7 +180,9 @@ class Orchestrator:
         return self.board, self.registry, self.screens
 
     def start(self, screensize) -> None:
-        self.orchestrate(screensize)
+        self.orchestrate(screensize, device=Devices.KEYBOARD) # Assuming keyboard as default for actual gameplay
+        
+        logger.info("Entering Main Game Loop...")
         delta = 1.0 / 60.0
         accumulator = 0.0
         last_time = self.time()

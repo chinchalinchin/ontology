@@ -65,7 +65,7 @@ class PyAttackBox(BaseModel):
 
 class PyDirection(BaseModel):
     row: int
-    attackboxes: Optional[List[PyAttackBox]] = None
+    attackboxes: Optional[List[PyAttackBox]] = []
 
 class PyAction(BaseModel):
     count: int
@@ -73,7 +73,7 @@ class PyAction(BaseModel):
 
 class PyPersona(BaseModel):
     dimensions: PyDimensions
-    hitboxes: List[PyHitbox]
+    hitboxes: Optional[List[PyHitbox]] = []
     stack: List[str]
 
 class PyCost(BaseModel):
@@ -89,12 +89,12 @@ class PyCursorProperties(BaseModel):
 
 class PyEffectProperties(BaseModel):
     dimensions: PyDimensions
-    hitboxes: Optional[List[PyHitbox]] = None
+    hitboxes: Optional[List[PyHitbox]] = []
     count: int 
 
 class PyObjectProperties(BaseModel):
     dimensions: PyDimensions
-    hitboxes: Optional[List[PyHitbox]] = None
+    hitboxes: Optional[List[PyHitbox]] = []
 
 class PyTileProperties(BaseModel):
     dimensions: PyDimensions
@@ -102,7 +102,7 @@ class PyTileProperties(BaseModel):
 
 class PyCraftProperties(BaseModel):
     dimensions: PyDimensions
-    hitboxes: Optional[List[PyHitbox]] = None
+    hitboxes: Optional[List[PyHitbox]] = []
     cost: List[PyCost]
     
 class PySheetProperties(BaseModel):
@@ -239,6 +239,12 @@ class PySpriteState(BaseModel):
     memory: PyMemoryState
     goal: PyGoalState
 
+class PyPlayerState(BaseModel):
+    position: PyPosition
+    animation: Optional[PyAnimationState] = None
+    character: PyCharacterState
+    inventory: PyInventoryState
+    meters: PyMeterState
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------ RECIPE CONFIGURATION & VALIDATION
@@ -277,7 +283,7 @@ class PySheetRecipe(BaseModel):
 
 # ---------------------------------------------------------------------------------------
 
-class PyRecipes(YamlBaseSettings):
+class PyRecipes(BaseModel):
     tiles: Optional[PyTileRecipe] = None
     crafts: Optional[PyCraftRecipe] = None
     cursors: Optional[PyCursorRecipe] = None
@@ -303,30 +309,30 @@ class PyRecipeConfiguration(YamlBaseSettings):
 # --------------------------------------------------------------------- STATE YAML SCHEMA
 
 class PyTileStateInstances(BaseModel):
-    fore: List[PyMultiplierState] = []
+    fore: Optional[List[PyMultiplierState]] = []
     back: List[PyMultiplierState] = []
 
 class PyCraftStateInstances(BaseModel):
-    struts: List[PyPropertyState] = []
+    struts: Optional[List[PyPropertyState]] = []
 
 class PyCursorStateInstances(BaseModel):
-    expressions: List[PyPositionalState] = []
-    projectiles: List[PyMetricState] = []
+    expressions: Optional[List[PyPositionalState]] = []
+    projectiles: Optional[List[PyMetricState]] = []
 
 class PyEffectStateInstances(BaseModel):
-    temporary: List[PyPositionalState] = []
-    persistent: List[PyAnimatorState] = []
+    temporary: Optional[List[PyPositionalState]] = []
+    persistent: Optional[List[PyAnimatorState]] = []
 
 class PyObjectStateInstances(BaseModel):
-    chests: List[PyContainerState] = []
-    crates: List[PyPositionalState] = []
-    doors: List[PyDoorState] = []
-    gates: List[PySwitchState] = []
-    plates: List[PySwitchState] = []
+    chests: Optional[List[PyContainerState]] = []
+    crates: Optional[List[PyPositionalState]] = []
+    doors: Optional[List[PyDoorState]] = []
+    gates: Optional[List[PySwitchState]] = []
+    plates: Optional[List[PySwitchState]] = []
 
 class PySheetStateInstances(BaseModel):
-    pixies: List[PyAnimatorState] = []
-    sprites: List[PySpriteState] = []
+    pixies: Optional[List[PyAnimatorState]] = []
+    sprites: Optional[List[PySpriteState]] = []
 
 # ---------------------------------------------------------------------------------------
 

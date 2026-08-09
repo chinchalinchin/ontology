@@ -5,6 +5,11 @@
 # Standard Libraries
 from enum import Enum
 
+
+class Devices(str, Enum):
+    CONTROLLER  = "controller"
+    KEYBOARD    = "keyboard"
+
 # -------------------------------- ASSET ENUMERATIONS
 
 class AssetCategories(str, Enum):

@@ -1,6 +1,13 @@
+from typing import Dict
 
-class Keyboard: 
+class Device:
+    mapping: Dict
+
+    def __init__(self, mapping):
+        self.mapping = mapping
+
+class Keyboard(Device):
     pass 
 
-class Controller:
+class Controller(Device):
     pass

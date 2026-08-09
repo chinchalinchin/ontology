@@ -1,9 +1,11 @@
 tiles:
-  - key: grass
-    layer: 0
-    position:
-      x: 0
-      y: 0
-    multiple:
-      nx: 4
-      ny: 4
+  back:
+    - id: grass
+      name: grassy-knoll
+      layer: '0'
+      position:
+        x: 0
+        y: 0
+      multiple:
+        nx: 4
+        ny: 4

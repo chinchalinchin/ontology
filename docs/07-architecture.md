@@ -8,7 +8,7 @@ This section contains an in-depth presentation of the game engine's programmatic
     * Load Configuration into memory
         - Load Asset Recipes YAML File from `/src/assets/main.yaml`
         - Load Asset Category properties YAML files from `/src/assets/<category>/main.yaml`
-        - Load Asset state YAML files from the `/src/data/boards/<board-key>` directory, where `<board-key>` is the selected board. There may be an arbitrary number of state files, with any filename, in the `<board-key>` directory.
+        - Load Asset state YAML files from the `/src/data/state/<board-key>` directory, where `<board-key>` is the selected board. There may be an arbitrary number of state files, with any filename, in the `<board-key>` directory.
         - Convert all heavy Pydantic DTOs into lightweight Plain Old Python Objects (POPOs) and Cython `cdef classes` for runtime use.
         - Initialize list of Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).
 2. Init: `Registry`
