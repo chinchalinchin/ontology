@@ -36,11 +36,13 @@ class Board:
     _all_instances: Dict[str, List[Asset]]
 
     def __init__(self, 
-        assets: List[Asset]
+        assets: List[Asset], 
+        player: Player
     ):
         self.loaded = False
         self.paused = False
         self.assets = assets
+        self.player = player
         self.mechanics = [ 
             AnimationMechanics(),
             IntentionMechanics(),

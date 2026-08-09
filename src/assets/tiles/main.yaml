@@ -1,10 +1,10 @@
 # -------------------------------------------------------
   tiles:
-    grid:
+    back:
       dimensions:
-        l: 32
         w: 32
-      keys:
+        l: 32
+      ids:
         - clay
         - coal
         - dirt
@@ -15,15 +15,9 @@
         - soil
         - water
         - wheat
-    struts:
-      <id>:
-        dim:
-          l:
-          w:
-        hitboxes:
-          - position: 
-              x:
-              y:
-            dim:
-              l:
-              w:
+    fore:
+      dimensions:
+        w: 32
+        l: 32
+      ids:
+        - canopy

@@ -3,16 +3,16 @@
 crafts:
   struts:
     <id>:
-      dim:
-        l:
+      dimensions:
         w:
+        l:
       hitboxes:
         - position: 
             x:
             y:
-          dim:
-            l:
+          dimensions:
             w:
+            l:
       cost:
         - item: <inventory-key>
           quantity: <quantity-key>

@@ -50,7 +50,7 @@ effects:
   persistent:
     <id>:
       count: Number of Frames
-      dimension:
+      dimensions:
         w: Pixel Horizontal Size
         l: Pixel Vertical Size
       hitboxes:

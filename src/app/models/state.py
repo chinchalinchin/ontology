@@ -17,7 +17,6 @@ class AssetState:
     """
     Foundational class for Asset states. 
     """
-    name: str
     layer: str
     
 # ---------------------------------------------------------------------------------------
@@ -177,6 +176,7 @@ class Intention:
     disposition: str
     motivation: str
     expression: str
+    communication: str
 
 @dataclass(slots=True)
 class Goal:

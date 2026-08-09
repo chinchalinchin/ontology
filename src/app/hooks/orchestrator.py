@@ -11,9 +11,10 @@ import yaml
 # Application Libraries
 import app.config.settings as settings
 from app.config.enums import AssetCategories
-from app.assets.base import Asset, Taxonomy
+from app.assets.base import Asset
 from app.game.board import Board
 from app.game.screen import Screen
+from app.input.player import Player, Device
 from app.hooks.factory import Factory
 from app.config.validators import (
     PyRecipeConfiguration,
@@ -40,10 +41,9 @@ class Orchestrator:
     state: PyStateConfiguration
     registry: Registry
     board: Board
-    screens: List[Screen]
+    screens: Dict[str, Screen]
 
     def __init__(self, state: str):
-        render.init()
         self.recipes = PyRecipeConfiguration()
         self.properties = { }
         self.load(state)
@@ -71,7 +71,7 @@ class Orchestrator:
         return target
 
     @staticmethod
-    def time(self) -> float:
+    def time() -> float:
         return time.perf_counter()
     
     def load(self, state: str) -> None:
@@ -98,28 +98,28 @@ class Orchestrator:
 
         if not self.properties:
             self.properties = {
-                **PyTilePropertyConfiguration().model_dump().items(),
-                **PyObjectPropertyConfiguration().model_dump().items(),
-                **PyEffectPropertyConfiguration().model_dump().items(),
-                **PyCursorPropertyConfiguration().model_dump().items(),
-                **PyCraftPropertyConfiguration().model_dump().items(),
-                **PySheetPropertyConfiguration().model_dump().items()
+                **PyTilePropertyConfiguration().model_dump(),
+                **PyObjectPropertyConfiguration().model_dump(),
+                **PyEffectPropertyConfiguration().model_dump(),
+                **PyCursorPropertyConfiguration().model_dump(),
+                **PyCraftPropertyConfiguration().model_dump(),
+                **PySheetPropertyConfiguration().model_dump()
             }
 
         for category_key, instance_data in self.state.model_dump().items():
-            for instance_key, instance_list in instance_data:
+            for instance_key, instance_list in instance_data.items():
                 for instance in instance_list:
 
-                    recipe = self.recipes.assets[category_key][instance_key]
+                    recipe = getattr(getattr(self.recipes.assets, category_key), instance_key)
 
                     if category_key != AssetCategories.TILES:
-                        instance_props = self.property_map[category_key][instance_key][instance["id"]]
+                        instance_props = self.properties[category_key][instance_key][instance["id"]]
                     else: 
-                        instance_props = self.property_map[category_key][instance_key]
+                        instance_props = self.properties[category_key][instance_key]
 
                     assets.append(
                         Asset(
-                            taxonomy   = Factory.taxonomy(category_key, instance_key, instance),
+                            taxonomy   = Factory.taxonomy(category_key, instance_key, instance["id"], instance["name"]),
                             properties = Factory.properties(category_key, instance_props),
                             state      = Factory.state(recipe.state, instance),
                             frame      = Factory.frame(recipe.frame),
@@ -129,25 +129,31 @@ class Orchestrator:
 
         return assets
     
-    def orchestrate(self, screensize: Dimensions) -> Tuple[Board, Registry, List[Screen]]:
+    def orchestrate(self, 
+        screensize: Dimensions,
+        device: Device
+    ) -> Tuple[Board, Registry, Dict[str, Screen]]:
         """
         # Ontology: Orchestrate
 
         Initialize and return game components.
         """
-        render.init(screensize)
-        assets = self.migrate()
-        self.board = Board(assets)
-        self.registry = Registry(self.property_map)
+        render.init(screensize.w, screensize.l)
 
-        self.screens = [
-            Screen(
+        assets = self.migrate()
+        player = Player(device)
+
+        self.board = Board(assets, player)
+        self.registry = Registry(self.properties)
+        self.screens = {
+            layer: Screen(
                 screensize, 
                 self.board.size(layer)[0],
                 self.board.categories(AssetCategories.TILES, layer),
                 self.registry
-            ) for layer in self.board.layers()
-        ]
+            )
+            for layer in self.board.layers()
+        } 
         
         return self.board, self.registry, self.screens
 

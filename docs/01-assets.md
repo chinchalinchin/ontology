@@ -224,9 +224,9 @@ N/A
 
 **Binary Frames**
 
-An Object with two frames is considered to have an *activated* and *idle* state, i.e. a binary trigger. *Binary Objects* are Objects whose frame is dependent on their internal state switch.
+An Object with two frames is considered to have an *On* and *off* state, i.e. a binary trigger. *Binary Objects* are Objects whose frame is dependent on their internal state switch.
 
-Binary objects frames are always organized in horizontal rows. The idle frame will always start at `(0,0)` and the activated frame will always start at `(w,0)`. Because of this relation, the dimensions of a Chest image file will always be `(2w, h)`
+Binary objects frames are always organized in horizontal rows. The off frame will always start at `(0,0)` and the on frame will always start at `(w,0)`. Because of this relation, the dimensions of a Chest image file will always be `(2w, h)`
 
 **Properties: ObjectProperties**
 
@@ -235,7 +235,7 @@ Binary objects frames are always organized in horizontal rows. The idle frame wi
 
 ### Chests
 
-*Chests* are *Binary Objects* whose frame can be changed by the player entering into an `interact` Extension (see [Extensions](./02-sprites.md#extension) for more details on the distinction between Extension and Action) while intersecting the hitboxes of the *Chest*. When `switch == true`, the Chest is *activated* (open). When `switch == false`, the Chest is *idle* (closed).
+*Chests* are *Binary Objects* whose frame can be changed by the player entering into an `interact` Extension (see [Extensions](./02-sprites.md#extension) for more details on the distinction between Extension and Action) while intersecting the hitboxes of the *Chest*. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
 
 A Chest is *reusable* through the `interact` [Extension](./02-sprites.md#extension), meaning [Inventory Loot](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory Loot keys.
 
@@ -243,8 +243,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Animation: BinaryAnimation**
 
-- `if switch == true: animation.frame = activated`
-- `if switch != true: animation.frame = idle`
+- `if switch == true: animation.frame = 1`
+- `if switch != true: animation.frame = 0`
 
 **Frame: IterableFrame**
 
@@ -287,12 +287,12 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 ### Gates
 
-*Gates* are *Objects* whose state is connected to *Plates*. When a *Gate* is activated (open), it does not have hitboxes and the player can pass freely through it. When a Gate is idle (closed), its hitboxes prevent the player from passing through its area.
+*Gates* are *Binary Objects* whose state is connected to *Plates*. When a *Gate* is on (open), it does not have hitboxes and the player can pass freely through it. When a Gate is off (closed), its hitboxes prevent the player from passing through its area.
 
 **Animation: BinaryAnimation**
 
-- `if switch == true: animation.frame = activated`
-- `if switch != true: animation.frame = idle`
+- `if switch == true: animation.frame = 1`
+- `if switch != true: animation.frame = 0`
 
 **Frame: IterableFrame**
 
@@ -311,8 +311,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Animation: BinaryAnimation**
 
-- `if switch == true: animation.frame = activated`
-- `if switch != true: animation.frame = idle`
+- `if switch == true: animation.frame = 1`
+- `if switch != true: animation.frame = 0`
 
 **Frame: IterableFrame**
 

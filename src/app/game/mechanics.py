@@ -161,6 +161,8 @@ class SwitchMechanics(Mechanic):
                     for gate in gates:
                         if plate.state.link == gate.state.link:
                             gate.state.switch = plate.state.switch
+                else:
+                    plate.state.switch = switched
 
 # ----------------------------------------------------------------------------------------
 

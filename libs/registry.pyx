@@ -102,13 +102,14 @@ class Registry:
             if not cat_props: continue
             
             cat_recipes = getattr(self.recipes.assets, cat_name, None)
+            
             if not cat_recipes: continue
             
             # Iterate through the Pydantic PyRecipe model fields
             for inst_name, recipe in cat_recipes:
                 if not recipe: continue
 
-                inst_props = getattr(cat_props, inst_name, None)
+                inst_props = cat_props[inst_name]
 
                 if not inst_props: continue
 
@@ -117,40 +118,42 @@ class Registry:
 
                     # Tiles schema has a list of keys; others map key -> properties
                     if cat_name == AssetCategories.TILES:
-                        w, l = inst_props.dimensions.w, inst_props.dimensions.l
-                        for id in inst_props.ids:
+                        w, l = inst_props["dimensions"]["w"], inst_props["dimensions"]["l"]
+                        for id in inst_props["ids"]:
                             if id in self._textures:
                                 self._frames[id] = (self._textures[id], 0, 0, w, l)
                     else:
                         for id, props in inst_props.items():
                             if id in self._textures:
-                                w, l = props.dimensions.w, props.dimensions.l
+                                w, l = props["dimensions"]["w"], props["dimensions"]["l"]
                                 self._frames[id] = (self._textures[id], 0, 0, w, l)
 
                 # 2. IterableFrame
                 elif recipe.frame == FrameRecipe.ITERABLE:
                     for key, props in inst_props.items():
                         if key not in self._textures: continue
-                        w, l = props.dimensions.w, props.dimensions.l
+                        
+                        w, l = props["dimensions"]["w"], props["dimensions"]["l"]
                         
                         # Differentiate between Binary Objects and Sequential Effects
                         if recipe.animation == AnimationRecipe.BINARY:
                             self._frames[f"{key}-{settings.OFF}"] = (self._textures[key], 0, 0, w, l)
                             self._frames[f"{key}-{settings.ON}"] = (self._textures[key], w, 0, w, l)
                         else:
-                            for f in range(props.count):
+                            for f in range(props["count"]):
                                 self._frames[f"{key}-{f}"] = (self._textures[key], f * w, 0, w, l)
 
                 # 3. StateFrame (Sheets)
                 elif recipe.frame == FrameRecipe.STATE:
-                    for p_key, persona in inst_props.personas.items():
+                    for p_key, persona in inst_props["personas"].items():
                         if p_key not in self._textures: continue
-                        w, l = persona.dimensions.w, persona.dimensions.l
+
+                        w, l = persona["dimensions"]["w"], persona["dimensions"]["l"]
                         
-                        for action, action_prop in inst_props.actions.items():
-                            for direction, dir_prop in action_prop.directions.items():
-                                row = dir_prop.row
-                                for f in range(action_prop.count):
+                        for action, action_prop in inst_props["actions"].items():
+                            for direction, dir_prop in action_prop["directions"].items():
+                                row = dir_prop["row"]
+                                for f in range(action_prop["count"]):
                                     self._frames[f"{p_key}-{action}-{direction}-{f}"] = (
                                         self._textures[p_key], f * w, row * l, w, l
                                     )

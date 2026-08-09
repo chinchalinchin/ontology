@@ -2,44 +2,44 @@ sheets:
   pixies:
     personas:
       bee:
-        dim:
-          l: 32
+        dimensions:
           w: 32
+          l: 32
         hitboxes: null
         stack:
           - bee
       eyeball:
-        dim:
-          l: 64 
-          w: 64
+        dimensions:
+          w: 64 
+          l: 64
         hitboxes: null
         stack:
           - eyeball 
       ghost:
-        dim:
-          l: 64
+        dimensions:
           w: 64
+          l: 64
         hitboxes: null
         stack: 
           - ghost
       malboro:
-        dim:
-          l: 128
+        dimensions:
           w: 128
+          l: 128
         hitboxes: null
         stack:
           - malboro
       sandworm:
-        dim:
-          l: 64
+        dimensions:
           w: 64
+          l: 64
         hitboxes: null
         stack:
           - sandworm
       slime:
-        dim:
-          l: 64
+        dimensions:
           w: 64
+          l: 64
         hitboxes: null
         stack:
           - slime
@@ -58,9 +58,9 @@ sheets:
   sprites:
     personas:
       hero:
-        dim:
-          l: 64
+        dimensions:
           w: 64
+          l: 64
         hitboxes: null
         stack:
           - human-male-ivory

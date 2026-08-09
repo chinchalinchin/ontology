@@ -2,55 +2,55 @@ objects:
   # -------------------------------------------------------
   chests:
     wooden-chest:
-      dim:
-        l: 
+      dimensions:
         w:
+        l:
       hitboxes: null
   # -------------------------------------------------------
   crates:
     stone-statue:
-      dim:
-        l: 
+      dimensions:
         w:
+        l:
       hitboxes: null
     wooden-barrel:
-      dim:
-        l: 
+      dimensions:
         w:
+        l:
       hitboxes: null
     wooden-box:
-      dim:
-        l: 
+      dimensions:
         w:
+        l:
       hitboxes: null
   # -------------------------------------------------------
   doors:
     double-door:
-      dim:
-        l: 
+      dimensions:
         w:
+        l:
       hitboxes: null
   # -------------------------------------------------------
   gates:
     stone-gate:
-      dim:
-        l: 
+      dimensions:
         w:
+        l:
       hitboxes: null
   # -------------------------------------------------------
   plates:
     stone-crack:
-      dim:
-        l: 
+      dimensions:
         w:
+        l:
       hitboxes: null
     stone-switch:
-      dim:
-        l: 
+      dimensions:
         w:
+        l:
       hitboxes: null
     stone-sword:
-      dim:
-        l: 
+      dimensions:
         w:
+        l:
       hitboxes: null

@@ -24,7 +24,7 @@ class PersistentAnimation(Animation):
         """
         state.animation.frame += 1
 
-        if state.animation.frame > properties.count:
+        if state.animation.frame >= properties.count:
             state.animation.frame = 0
 
         return state
@@ -48,7 +48,7 @@ class StateAnimation(Animation):
         """
         state.animation.frame += 1
 
-        if state.animation.frame > properties.actions[state.animation.action].count:
+        if state.animation.frame >= properties.actions[state.animation.action].count:
             state.animation.frame = 0
 
         return state

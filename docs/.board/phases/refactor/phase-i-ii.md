@@ -1,7 +1,5 @@
 #### Refactor: Phase I, Part II
 
-**Orchestration & Hydration**
-
 - [x] Refactor orchestration complexity in `src/app/orchestrator.py`. The orchestrator functions are far too complex. Use the data structures intelligently to hydrate the asset models. 
 - [x] Ensure factory methods align with schemas and models.
 - [x] Ensure POPOs are updated to match the data being received through the Pydantic DTOs.
@@ -9,3 +7,4 @@
     - [ ] Add default args to the CLI for screensize.
     - [x] Add method to Board to calculate the boardsize based on the position and multiples of Tiles.
     - [ ] Add export methods to Screen.
+- [] Fix `Board.relayer()` to accurately remove/append assets to the `_cached_layers` arrays so `board.assets(layer)` queries return accurate data.

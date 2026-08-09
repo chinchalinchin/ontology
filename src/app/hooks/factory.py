@@ -99,11 +99,11 @@ class Factory:
         return Factory.ANIMATION_MAP.get(recipe, PersistentAnimation)()
 
     @staticmethod
-    def taxonomy(category, instance, snapshot):
+    def taxonomy(category, instance, id, name):
         return Taxonomy(
-            id = snapshot.id,
-            name = snapshot.name,
+            id = id,
+            name = name,
+            instance = instance,
             category = category,
-            instance = instance
         )
                     

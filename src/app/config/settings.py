@@ -11,8 +11,8 @@ SEPARATOR = "-"
 
 ## STATE CONSTANTS
 ### BINARY OBJECT STATE KEYS
-ON = "activated"
-OFF = "idle"
+ON = 1
+OFF = 0
 
 # DIRECTORY CONSTANTS
 

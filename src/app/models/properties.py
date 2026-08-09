@@ -40,36 +40,23 @@ class AssetProperties:
     pass 
 
 class CursorProperties(AssetProperties):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
     # -------------------------- Properties
     dimensions: Dimensions
 
 class EffectProperties(AssetProperties):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
-    # -------------------------- Properties
     dimensions: Dimensions
     hitboxes: List[Hitbox]
     count: int 
 
 class ObjectProperties(AssetProperties):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
-    # -------------------------- Properties
     dimensions: Dimensions
     hitboxes: List[Hitbox]
 
 class TileProperties(AssetProperties):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
-    # -------------------------- Properties
     dimensions: Dimensions
+    ids: List[str]
 
 class CraftProperties(AssetProperties):
-    # -------------------------- Keys
-    key: str                    # Unique Asset Identifier
-    # -------------------------- Properties
     dimensions: Dimensions
     hitboxes: List[Hitbox]
     cost: List[Cost]

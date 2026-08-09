@@ -72,7 +72,7 @@ class PyAction(BaseModel):
     directions: Dict[str, PyDirection]
 
 class PyPersona(BaseModel):
-    dim: PyDimensions
+    dimensions: PyDimensions
     hitboxes: List[PyHitbox]
     stack: List[str]
 
@@ -114,7 +114,9 @@ class PySheetProperties(BaseModel):
 # ---------------------------------------------------------------------------------------
 
 class PyAssetState(BaseModel):
+    id: str
     layer: str
+    name: str
 
 class PyAnimationState(BaseModel):
     action: Union[str, None]
@@ -148,6 +150,7 @@ class PyIntentionState(BaseModel):
     disposition: str
     motivation: str
     expression: str
+    communication: str
 
 class PyGoalState(BaseModel):
     name: str
@@ -275,8 +278,8 @@ class PySheetRecipe(BaseModel):
 # ---------------------------------------------------------------------------------------
 
 class PyRecipes(YamlBaseSettings):
-    tiles: Optional[PyRecipe] = None
-    crafts: Optional[PyRecipe] = None
+    tiles: Optional[PyTileRecipe] = None
+    crafts: Optional[PyCraftRecipe] = None
     cursors: Optional[PyCursorRecipe] = None
     effects: Optional[PyEffectRecipe] = None
     objects: Optional[PyObjectRecipe] = None
@@ -312,7 +315,7 @@ class PyCursorStateInstances(BaseModel):
 
 class PyEffectStateInstances(BaseModel):
     temporary: List[PyPositionalState] = []
-    persistent: List[PyMultiplierState] = []
+    persistent: List[PyAnimatorState] = []
 
 class PyObjectStateInstances(BaseModel):
     chests: List[PyContainerState] = []
