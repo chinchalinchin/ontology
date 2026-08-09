@@ -640,11 +640,36 @@
 <h2 id="cython">Cython</h2>
 <p>While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine strategically uses Cython to bridge this gap, adhering to a strict <strong>"Zero Heap Allocation in the Inner Loop"</strong> philosophy to prevent frame stutters caused by the Python Garbage Collector.</p>
 <h3 id="math-geometry-libsmathpyx">Math &amp; Geometry (<code>libs/math.pyx</code>)</h3>
-<p>Spatial data like <code>Position</code>, <code>Dimensions</code> and <code>Velocity</code> are modeled as Cython Extension Types (<code>cdef class</code> in <code>.pxd</code> definition files).</p>
+<p>Spatial data like are modeled as Cython Extension Types (<code>cdef class</code> in <code>.pxd</code> definition files).</p>
 <ul>
-<li><strong>Direct Memory Access:</strong> This structure allows geometry methods like <code>Geometry.intersects</code> to access spatial properties (e.g., <code>position.x</code>, <code>hb.dimensions.l</code>) natively at C-speeds.</li>
-<li><strong>The GIL and Readability:</strong> The engine explicitly retains the Global Interpreter Lock (GIL) during geometry calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax (like <code>for hb in hitboxes</code>), while executing the actual mathematical overlap checks inline using primitive C variables on the CPU stack.</li>
+<li>Position: <ul>
+<li>x: int</li>
+<li>y: int</li>
 </ul>
+</li>
+<li>Multiple:<ul>
+<li>nx: int</li>
+<li>ny: int</li>
+</ul>
+</li>
+<li>Velocity:<ul>
+<li>vx: int</li>
+<li>vy: int</li>
+</ul>
+</li>
+<li>Hitbox:<ul>
+<li>position: Position</li>
+<li>dimension Dimensions</li>
+</ul>
+</li>
+<li>Attackbox<ul>
+<li>position: Position</li>
+<li>dimensions: Dimensions</li>
+</ul>
+</li>
+</ul>
+<p>This structure allows geometry methods like <code>Geometry.intersects</code> to access spatial properties (e.g., <code>position.x</code>, <code>hb.dimensions.l</code>) natively at C-speeds.</p>
+<p>The engine explicitly retains the Global Interpreter Lock (GIL) during geometry calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax (like <code>for hb in hitboxes</code>), while executing the actual mathematical overlap checks inline using primitive C variables on the CPU stack.</p>
 <h3 id="hardware-rendering-libsrenderpyx-libsregistrypyx">Hardware Rendering (<code>libs/render.pyx</code> &amp; <code>libs/registry.pyx</code>)</h3>
 <p>The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate the overhead of crossing the Python-to-C boundary, the rendering pipeline does not pass heavy Python objects (like <code>SpriteState</code> or <code>Dimensions</code>) to the renderer. Instead, it extracts raw integers on the Python side and unpacks them cleanly onto the C-stack.</p>
 <ul>
