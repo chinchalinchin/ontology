@@ -83,7 +83,7 @@ class Expressions(str, Enum):
     DISAGREEMENT    = "disagreement"
     LOQUACITY       = "loquacity"
     SURPRISE        = "surprise"
-    TIRED           = "tried"
+    TIRED           = "tired"
 
 class Extensions(str, Enum):
     INTERACT        = "interact"

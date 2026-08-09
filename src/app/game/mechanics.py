@@ -146,7 +146,7 @@ class SwitchMechanics(Mechanic):
                         if Geometry.intersects(
                             plate.state.position,
                             plate.dimensions, 
-                            plate.hitbxoes,
+                            plate.hitboxes,
                             weight.state.position, 
                             weight.dimensions,
                             weight.hitboxes
@@ -183,10 +183,12 @@ class IntentionMechanics(Mechanic):
             
             # 2. Evaluate conditions
             for transit in transits:
-                if transit.conditions(sprite, board):
-                    # 3. Transition the state
-                    sprite.intention.disposition = transit.next
-                    
-                    # Break immediately to avoid evaluating the NEW state's 
-                    # transitions in this same frame.
-                    break
+                if transit.conditions:
+                    for condition in transit.conditions:
+                        if condition(sprite, board):
+                            # 3. Transition the state
+                            sprite.intention.disposition = transit.next
+                            
+                            # Break immediately to avoid evaluating the NEW state's 
+                            # transitions in this same frame.
+                            break

@@ -109,7 +109,7 @@ def cli_render(args):
     # Render Step 5: Pass the background pointer and evaluated assets to render()
     active_assets = []
     for asset in board.assets:
-        if asset.state.layer == args.layer and asset.state.category != "tiles":
+        if asset.state.layer == args.layer and asset.category != AssetCategories.TILES:
             frame_key = asset.frame.key(asset.taxonomy.id, asset.state)
             tex_data = registry.data(frame_key)
             if tex_data:

@@ -2,7 +2,7 @@
 # Ontology: Orchestration
 """
 # Standard Libraries
-from datetime import datetime, time
+import time
 from typing import List, Any, Dict, Tuple
 
 # External Libraries
@@ -71,8 +71,8 @@ class Orchestrator:
         return target
 
     @staticmethod
-    def time(self) -> time:
-        return datetime.now().time()
+    def time(self) -> float:
+        return time.perf_counter()
     
     def load(self, state: str) -> None:
         board_path = settings.DATA_DIR / state  
@@ -86,7 +86,7 @@ class Orchestrator:
                 if isinstance(data, dict):
                     merged_data = Orchestrator.merge(merged_data, data)
 
-        self.valid_state = PyStateConfiguration.model_validate(merged_data)
+        self.state = PyStateConfiguration.model_validate(merged_data)
 
     def migrate(self) -> List[Asset]:
         """
@@ -106,14 +106,14 @@ class Orchestrator:
                 **PySheetPropertyConfiguration().model_dump().items()
             }
 
-        for category_key, instance_data in self.state:
+        for category_key, instance_data in self.state.model_dump().items():
             for instance_key, instance_list in instance_data:
                 for instance in instance_list:
 
                     recipe = self.recipes.assets[category_key][instance_key]
 
                     if category_key != AssetCategories.TILES:
-                        instance_props = self.property_map[category_key][instance_key][instance.id]
+                        instance_props = self.property_map[category_key][instance_key][instance["id"]]
                     else: 
                         instance_props = self.property_map[category_key][instance_key]
 
@@ -135,6 +135,7 @@ class Orchestrator:
 
         Initialize and return game components.
         """
+        render.init(screensize)
         assets = self.migrate()
         self.board = Board(assets)
         self.registry = Registry(self.property_map)
@@ -150,8 +151,8 @@ class Orchestrator:
         
         return self.board, self.registry, self.screens
 
-    def start(self) -> None:
-        self.orchestrate()
+    def start(self, screensize) -> None:
+        self.orchestrate(screensize)
         delta = 1.0 / 60.0
         accumulator = 0.0
         last_time = self.time()
@@ -167,11 +168,9 @@ class Orchestrator:
                     self.board.play(delta)
                     accumulator -= delta
 
-                player = self.board.player
-                assets = self.board.assets
-                self.screens[player.layer].draw(
-                    assets, 
-                    player, 
+                self.screens[self.board.player.layer].draw(
+                    self.board.assets(self.board.player.layer), 
+                    self.board.player, 
                     self.registry
                 )
 

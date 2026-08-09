@@ -76,14 +76,14 @@ cdef SDL_Window* _window = NULL
 # Public Python/Cython API
 # -----------------------------------------------------------------------------
 
-def init():
+def init(int w, int l):
     """Initializes the SDL subsystems and instantiates the hidden hardware renderer."""
     global _window
     
     SDL_Init(SDL_INIT_VIDEO)
     IMG_Init(IMG_INIT_PNG)
     
-    _window = SDL_CreateWindow(b"Ontology Offscreen Canvas", 0, 0, 800, 600, SDL_WINDOW_HIDDEN)
+    _window = SDL_CreateWindow(b"Ontology Offscreen Canvas", 0, 0, w, l, SDL_WINDOW_HIDDEN)
     
     # Assign to global cython context mapped from .pxd
     global _renderer
@@ -159,7 +159,7 @@ def construct(TexturePtr target, list tiles):
         # Unpack flat tuples cleanly onto the C-stack
         tex, sx, sy, sw, sl, dx, dy, dw, dl, nx, ny = tile
         
-        c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, dl
+        c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sl
         c_dst.w, c_dst.h = dw, dl
         
         for i in range(nx):
@@ -192,14 +192,14 @@ def render(
         bg_src.x = cam_x
         bg_src.y = cam_y
         bg_src.w = screen_w
-        bg_src.l = screen_l
+        bg_src.h = screen_l
         SDL_RenderCopy(_renderer, background.ptr, &bg_src, NULL)
         
     for asset in assets:
         # Safely unpack the primitive git atuple directly into C-variables
-        tex_wrapper, sx, sy, sw, sl, dx, dy, dw, dl = asset        
+        tex_wrapper, sx, sy, sw, sl, dx, dy, dw, dl = asset
         
-        c_src.x, c_src.y, c_src.w, c_src.l = sx, sy, sw, sl
+        c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sl
         
         c_dst.x = dx - cam_x
         c_dst.y = dy - cam_y

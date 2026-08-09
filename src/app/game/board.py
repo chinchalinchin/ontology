@@ -31,6 +31,7 @@ class Board:
 
     _cached_categories: Dict[str, Dict[str, List[Asset]]]
     _cached_instances: Dict[str, Dict[str, List[Asset]]]
+    _cached_layers: Dict[str, List[Asset]]
     _all_categories: Dict[str, List[Asset]]
     _all_instances: Dict[str, List[Asset]]
 
@@ -38,6 +39,7 @@ class Board:
         assets: List[Asset]
     ):
         self.loaded = False
+        self.paused = False
         self.assets = assets
         self.mechanics = [ 
             AnimationMechanics(),
@@ -57,18 +59,20 @@ class Board:
         """
         self._cached_categories = {}
         self._cached_instances = {}
+        self._cached_layers = {}
         self._all_categories = {}
         self._all_instances = {}
 
         for asset in self.assets:
             layer = asset.state.layer
-            cat = asset.state.category
-            inst = asset.state.instance
+            cat = asset.category
+            inst = asset.instance
 
             # Initialize layer dictionaries if not present
             if layer not in self._cached_categories:
                 self._cached_categories[layer] = {}
                 self._cached_instances[layer] = {}
+                self._cached_layers[layer] = []
             
             # Cache by layer and category
             if cat not in self._cached_categories[layer]:
@@ -80,6 +84,9 @@ class Board:
                 self._cached_instances[layer][inst] = []
             self._cached_instances[layer][inst].append(asset)
 
+            # Cache by layer only
+            self._cached_layers[layer].append(asset)
+
             # Cache globally by category
             if cat not in self._all_categories:
                 self._all_categories[cat] = []
@@ -90,6 +97,12 @@ class Board:
                 self._all_instances[inst] = []
             self._all_instances[inst].append(asset)
 
+    @property
+    def assets(self, layer=None) -> List[Asset]:
+        if layer is None:
+            return self.assets
+        return self._cached_layers[layer]
+    
     def layers(self) -> List[str]:
         return list(self._cached_categories.keys())
 
@@ -113,12 +126,14 @@ class Board:
         """
         Safely moves an asset between cached layer lists.
         """
+        ## TODO: Relayer _cached_layers
+
         old_layer = asset.state.layer
         if old_layer == new_layer:
             return
             
-        cat = asset.state.category
-        inst = asset.state.instance
+        cat = asset.category
+        inst = asset.instance
 
         # 1. Remove from old cached lists
         if old_layer in self._cached_categories and cat in self._cached_categories[old_layer]:

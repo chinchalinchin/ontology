@@ -44,7 +44,7 @@ class Screen:
         
         for tile in tiles:
             # Query Registry using the computed tile key
-            frame_key = tile.frame.key(tile.taxonomy.id, tile.state)
+            frame_key = tile.frame.key(tile.id, tile.state)
             tex_data = registry.data(frame_key)
             if tex_data:
                 tex, sx, sy, sw, sl = tex_data
@@ -58,8 +58,8 @@ class Screen:
                     sl,
                     tile.state.position.x, 
                     tile.state.position.y,
-                    tile.properties.dimensions.w, 
-                    tile.properties.dimensions.l,
+                    tile.dimensions.w, 
+                    tile.dimensions.l,
                     tile.state.multiple.nx, 
                     tile.state.multiple.ny
                 )
@@ -79,8 +79,8 @@ class Screen:
         and clamps it to the boundaries of the board.
         """
         # Center the camera on the player
-        cam_x = player.states.position.x + (player.properties.dimensions.w // 2) - (self.screensize.w // 2)
-        cam_y = player.state.position.y + (player.properties.dimensions.l // 2) - (self.screensize.l // 2)
+        cam_x = player.state.position.x + (player.dimensions.w // 2) - (self.screensize.w // 2)
+        cam_y = player.state.position.y + (player.dimensions.l // 2) - (self.screensize.l // 2)
 
         # Clamp to board edges
         max_x = max(0, self.boardsize.w - self.screensize.w)

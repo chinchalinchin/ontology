@@ -11,7 +11,8 @@ intents:
         - <reachable-extension-key>
       transitions:
         - next: <next-disposition-key>
-          conditions: <condition-for-transition>
+          conditions: 
+            - <condition-for-transition>
   # -------------------------- EXPRESSIONS
   expressions:
     <expression-key>:

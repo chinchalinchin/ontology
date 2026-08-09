@@ -82,7 +82,7 @@ class Factory:
 
     @staticmethod
     def state(recipe: StateRecipe, snapshot: dict):
-        cls = Factory.STATE_MAP["models"].get(recipe)
+        cls = Factory.STATE_MAP.get(recipe)
         return cls(**snapshot)
 
     @staticmethod
@@ -98,6 +98,7 @@ class Factory:
     def animation(recipe: AnimationRecipe):
         return Factory.ANIMATION_MAP.get(recipe, PersistentAnimation)()
 
+    @staticmethod
     def taxonomy(category, instance, snapshot):
         return Taxonomy(
             id = snapshot.id,

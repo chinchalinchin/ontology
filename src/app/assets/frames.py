@@ -22,10 +22,10 @@ class IterableFrame(Frame):
     def key(self, id: str, state: AssetState) -> str:
         """
         """
-        return settings.SEPARATOR.join(
+        return settings.SEPARATOR.join([
             id, 
-            state.animation.frame
-        )
+            str(state.animation.frame)
+        ])
     
 class StateFrame(Frame):
     """
@@ -38,5 +38,5 @@ class StateFrame(Frame):
             id, 
             state.animation.action, 
             state.animation.direction,
-            state.animation.frame
+            str(state.animation.frame)
         ])
