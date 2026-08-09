@@ -42,7 +42,7 @@ class Board:
 
     def _cache(self):
         """
-        Cache Assets queries by layer to prevent expensive object creation.
+        Cache Assets queries by layer to prevent excessive list generations.
 
         Anytime an Asset changes layer, the `relayer()` method must be called, to invalidate the Asset caches.
         """

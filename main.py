@@ -1,11 +1,11 @@
 """
 # Ontology: Entrypoint
 """
-from app.hooks.orchestrator import orchestrate
+from app.hooks.orchestrator import Orchestrator
 
 def main():
-    board, registry = orchestrate("world-00")
-    print("Engine orchestrated successfully. Ready to bind logic loops.")
-
+    maestro = Orchestrator("world-00")
+    maestro.start()
+    
 if __name__ == "__main__":
     main()

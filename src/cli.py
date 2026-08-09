@@ -22,6 +22,8 @@ from app.hooks.orchestrator import migrate, orchestrate
 from libs.render import init, canvas, construct as render_construct, render as sdl_render, save, quit_sdl
 from libs.registry import Registry
 
+# TODO: This is utter garbarge. Scrape it. CLI shouldn't be interacting with low-level game objects.
+#       Create an Orchestrator.
 def cli_construct(args):
     # Construct Step 1: Parse the immutable configuration via migrate
     states = migrate(args.board_key)
@@ -60,6 +62,8 @@ def cli_construct(args):
     save(str(out_path), chunk_size, chunk_size, target=bg_canvas)   
     quit_sdl()
 
+# TODO: This is utter garbarge. Scrape it. CLI shouldn't be interacting with low-level game objects.
+#       Create an Orchestrator.
 def cli_render(args):
     # Render Step 1: Execute construct steps to generate cached background
     states = migrate(args.board_key)

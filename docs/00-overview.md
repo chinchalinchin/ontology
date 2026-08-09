@@ -40,17 +40,21 @@ Many Assets have Hitboxes. Hitboxes are *Properties*, i.e., they are static and 
 
 The Factory builds Asset components based on Recipes.
 
+TODO
+
 ### Orchestrator
 
 The Orchestrator is responsible for reading in the configuration files for properties and state, converting them into application data models and then instantiating the corresponding classes.
 
-### Engine
+The Orchestrator handles the core gameplay loop and framerate calculations.
 
-The Engine handle the core gameplay loop and framerate calculations.
+TODO
 
 ### Screen
 
 The Screen acts as a high-level container for a Cythonized SDL rendering interface.
+
+TODO
 
 ### Board
 
@@ -58,18 +62,18 @@ The Board is the Game's "database". It holds all ingame Assets during the course
 
 The state files for each Board is maintained in `/src/data/state/<board-key>/**`.
 
+TODO
+
 ### Registry
 
 The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. 
 
-### Mechanics
-
 TODO
+
+## Concepts
 
 ### Layers
 
 All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire frame, it is rendering a Layer.  
 
 Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at `(x_1, y_1)` and get released on Layer 3 at `(x_2, y_2)`. For this reason, each Layer may have different dimensions.
-
-All of the Assets are loaded into the Registry on start, and the state file is parsed

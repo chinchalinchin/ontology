@@ -15,6 +15,9 @@ The Asset directory is organized as follows,
 ```bash
 assets % tree -L 2
 .
+├── crafts
+│   └── struts
+│   └── main.yaml
 ├── cursors
 │   ├── expressions
 │   ├── projectiles
@@ -52,9 +55,6 @@ assets % tree -L 2
 │   ├── fore
 │   └── main.yaml
 └── main.yaml
-
-
-27 directories, 9 files
 ```
 
 The root `main.yaml` configures [Asset Recipes](#recipes). The `main.yaml` files in each subdirectory conform to the [Asset property schema](#schemas) of their respective Asset Category. 

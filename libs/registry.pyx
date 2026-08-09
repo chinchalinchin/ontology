@@ -9,7 +9,7 @@ import os
 from typing import Tuple
 
 # Application Libraries
-from app.config.enums import FrameRecipe, AnimationRecipe
+from app.config.enums import FrameRecipe, AnimationRecipe, AssetCategories
 import app.config.settings as settings
 from app.config.validators import (
     PySheetPropertyConfiguration,
@@ -49,24 +49,16 @@ class Registry:
     Centralized Asset Registry to ingest configuration, cache GPU textures, 
     and map dynamic string keys to crop coordinates.
     """
-    def __init__(self):
+    
+    def __init__(self, properties, recipes):
         self._textures = {}
         self._frames = {}
+        self.properties = properties
+        self.recipes = recipes
 
-        self._configuration()
         self._cache()
         self._assemble()
         self._index()
-
-    def _configuration(self):
-        """Invoke Pydantic schema engines to strictly parse configuration YAML files."""
-        self.recipes_config = PyRecipeConfiguration()
-        self.sheets_config = PySheetPropertyConfiguration()
-        self.objects_config = PyObjectPropertyConfiguration()
-        self.effects_config = PyEffectPropertyConfiguration()
-        self.cursors_config = PyCursorPropertyConfiguration()
-        self.tiles_config = PyTilePropertyConfiguration()
-        self.crafts_config = PyCraftPropertyConfiguration()
 
     def _cache(self):
         """Recursively parses all physical PNG files across the static asset directory."""
@@ -89,8 +81,10 @@ class Registry:
 
             for p_key, persona in sheet_cfg.personas.items():
                 if not persona.stack: continue
+
                 base_key = persona.stack[0]
                 base_ptr = self._textures.get(base_key)
+
                 if not base_ptr: continue
                 
                 feature_ptrs = []
@@ -105,19 +99,11 @@ class Registry:
 
     def _index(self):
         """Maps runtime dynamic frame keys to their GPU mapping tuple coordinates."""
-        prop_map = {
-            "tiles": self.tiles_config.tiles,
-            "objects": self.objects_config.objects,
-            "effects": self.effects_config.effects,
-            "cursors": self.cursors_config.cursors,
-            "crafts": self.crafts_config.objects,
-            "sheets": self.sheets_config.sheets,
-        }
 
-        for cat_name, cat_props in prop_map.items():
+        for cat_name, cat_props in self.properties.items():
             if not cat_props: continue
             
-            cat_recipes = getattr(self.recipes_config.assets, cat_name, None)
+            cat_recipes = getattr(self.recipes.assets, cat_name, None)
             if not cat_recipes: continue
             
             # Iterate through the Pydantic PyRecipe model fields
@@ -129,8 +115,9 @@ class Registry:
 
                 # 1. SingleFrame 
                 if recipe.frame == FrameRecipe.SINGLE:
+
                     # Tiles schema has a list of keys; others map key -> properties
-                    if cat_name == "tiles":
+                    if cat_name == AssetCategories.TILES:
                         w, h = inst_props.dim.l, inst_props.dim.w
                         for id in inst_props.ids:
                             if id in self._textures:
@@ -195,7 +182,7 @@ class Registry:
             return self._frames[frame_key]
             
         # Fallback for single-frame immutables like Tiles where schema crop === texture bounds
-        elif frame_key in self._textures:
+        if frame_key in self._textures:
             tex = self._textures[frame_key]
             return (tex, 0, 0, tex.w, tex.h)
             

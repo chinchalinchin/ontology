@@ -45,12 +45,12 @@ crafts:
 # ---------------------------------------------------------- CURSORS
 cursors:
   expressions:
-    <expression-key>:
+    <id>:
       dimensions:
         l: Pixel Length
         w: Pixel Width
   projectiles:
-    <projectile-key>:
+    <id>:
       dimensions:
         l: Pixel Length
         w: Pixel Width

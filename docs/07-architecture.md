@@ -13,13 +13,16 @@ This section contains an in-depth presentation of the game engine's programmatic
         - Initialize list of Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).
 2. Init: `Registry`
     * Load Assets into memory
-        - Recursively load `/src/assets/**` using the `main.yaml` contained in each `/src/asset/<category>` directory. Pydantic Models (DTOs) are used *exclusively* during this phase to read `main.yaml` files and ensure strict schema validation.
+        - Recursively load `/src/assets/**/*.png` (*not* `.mp3` or `.wav`!). Pydantic Models (DTOs) are used during this phase to read `main.yaml` files and ensure strict schema validation. 
         - Create a map using the key-values `<registry-key>: <frame>`, where `<registry-key>` is calculated according to the Frame schema,
             - Assets with SingleFrame index with `<asset-id>`
-            - Assets with BinaryFrames indexed with  `<asset-key>-<idle | activated>`.
-            - Assets with StateFrames indexed with `<asset-key>-<action>-<direction>-<frame>`, with `<frame>` starting at 0.
+            - Assets with BinaryFrames indexed with  `<asset-id>-<idle | activated>`.
+            - Assets with StateFrames indexed with `<asset-id>-<action>-<direction>-<frame>`, with `<frame>` starting at 0.
 3. Init `Board`
     - Initialize and register the Mechanics (e.g., `PhysicsMechanic`, `CollisionMechanic`, `AnimationMechanic`).
+4. Init `Screen`
+
+TODO
 
 ### Orchestrator
 
