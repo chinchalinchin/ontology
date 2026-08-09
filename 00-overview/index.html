@@ -341,17 +341,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#engine" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Engine
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#screen" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -384,16 +373,22 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#mechanics" class="md-nav__link">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concepts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Mechanics
+        Concepts
       
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Concepts">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#layers" class="md-nav__link">
@@ -670,17 +665,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#engine" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Engine
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#screen" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -713,16 +697,22 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#mechanics" class="md-nav__link">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#concepts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Mechanics
+        Concepts
       
     </span>
   </a>
   
-</li>
+    <nav class="md-nav" aria-label="Concepts">
+      <ul class="md-nav__list">
         
           <li class="md-nav__item">
   <a href="#layers" class="md-nav__link">
@@ -793,23 +783,25 @@
 <h2 id="application">Application</h2>
 <h3 id="factory">Factory</h3>
 <p>The Factory builds Asset components based on Recipes.</p>
+<p>TODO</p>
 <h3 id="orchestrator">Orchestrator</h3>
 <p>The Orchestrator is responsible for reading in the configuration files for properties and state, converting them into application data models and then instantiating the corresponding classes.</p>
-<h3 id="engine">Engine</h3>
-<p>The Engine handle the core gameplay loop and framerate calculations.</p>
+<p>The Orchestrator handles the core gameplay loop and framerate calculations.</p>
+<p>TODO</p>
 <h3 id="screen">Screen</h3>
 <p>The Screen acts as a high-level container for a Cythonized SDL rendering interface.</p>
+<p>TODO</p>
 <h3 id="board">Board</h3>
 <p>The Board is the Game's "database". It holds all ingame Assets during the course of the game loop and exposes them to the engine through queryable interfaces.</p>
 <p>The state files for each Board is maintained in <code>/src/data/state/&lt;board-key&gt;/**</code>.</p>
+<p>TODO</p>
 <h3 id="registry">Registry</h3>
 <p>The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. </p>
-<h3 id="mechanics">Mechanics</h3>
 <p>TODO</p>
+<h2 id="concepts">Concepts</h2>
 <h3 id="layers">Layers</h3>
 <p>All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire frame, it is rendering a Layer.  </p>
 <p>Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at <code>(x_1, y_1)</code> and get released on Layer 3 at <code>(x_2, y_2)</code>. For this reason, each Layer may have different dimensions.</p>
-<p>All of the Assets are loaded into the Registry on start, and the state file is parsed</p>
 
 
 

@@ -588,11 +588,11 @@
 </li>
 <li>Init: <code>Registry</code><ul>
 <li>Load Assets into memory<ul>
-<li>Recursively load <code>/src/assets/**</code> using the <code>main.yaml</code> contained in each <code>/src/asset/&lt;category&gt;</code> directory. Pydantic Models (DTOs) are used <em>exclusively</em> during this phase to read <code>main.yaml</code> files and ensure strict schema validation.</li>
+<li>Recursively load <code>/src/assets/**/*.png</code> (<em>not</em> <code>.mp3</code> or <code>.wav</code>!). Pydantic Models (DTOs) are used during this phase to read <code>main.yaml</code> files and ensure strict schema validation. </li>
 <li>Create a map using the key-values <code>&lt;registry-key&gt;: &lt;frame&gt;</code>, where <code>&lt;registry-key&gt;</code> is calculated according to the Frame schema,<ul>
 <li>Assets with SingleFrame index with <code>&lt;asset-id&gt;</code></li>
-<li>Assets with BinaryFrames indexed with  <code>&lt;asset-key&gt;-&lt;idle | activated&gt;</code>.</li>
-<li>Assets with StateFrames indexed with <code>&lt;asset-key&gt;-&lt;action&gt;-&lt;direction&gt;-&lt;frame&gt;</code>, with <code>&lt;frame&gt;</code> starting at 0.</li>
+<li>Assets with BinaryFrames indexed with  <code>&lt;asset-id&gt;-&lt;idle | activated&gt;</code>.</li>
+<li>Assets with StateFrames indexed with <code>&lt;asset-id&gt;-&lt;action&gt;-&lt;direction&gt;-&lt;frame&gt;</code>, with <code>&lt;frame&gt;</code> starting at 0.</li>
 </ul>
 </li>
 </ul>
@@ -603,7 +603,9 @@
 <li>Initialize and register the Mechanics (e.g., <code>PhysicsMechanic</code>, <code>CollisionMechanic</code>, <code>AnimationMechanic</code>).</li>
 </ul>
 </li>
+<li>Init <code>Screen</code></li>
 </ol>
+<p>TODO</p>
 <h3 id="orchestrator">Orchestrator</h3>
 <p>TODO</p>
 <h3 id="factory">Factory</h3>
