@@ -579,7 +579,7 @@
 <li>Load Configuration into memory<ul>
 <li>Load Asset Recipes YAML File from <code>/src/assets/main.yaml</code></li>
 <li>Load Asset Category properties YAML files from <code>/src/assets/&lt;category&gt;/main.yaml</code></li>
-<li>Load Asset state YAML files from the <code>/src/data/boards/&lt;board-key&gt;</code> directory, where <code>&lt;board-key&gt;</code> is the selected board. There may be an arbitrary number of state files, with any filename, in the <code>&lt;board-key&gt;</code> directory.</li>
+<li>Load Asset state YAML files from the <code>/src/data/state/&lt;board-key&gt;</code> directory, where <code>&lt;board-key&gt;</code> is the selected board. There may be an arbitrary number of state files, with any filename, in the <code>&lt;board-key&gt;</code> directory.</li>
 <li>Convert all heavy Pydantic DTOs into lightweight Plain Old Python Objects (POPOs) and Cython <code>cdef classes</code> for runtime use.</li>
 <li>Initialize list of Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).</li>
 </ul>
