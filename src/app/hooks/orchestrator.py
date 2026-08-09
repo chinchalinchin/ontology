@@ -11,7 +11,7 @@ import yaml
 # Application Libraries
 import app.config.settings as settings
 from app.config.enums import AssetCategories
-from app.assets.base import Asset
+from app.assets.base import Asset, Taxonomy
 from app.game.board import Board
 from app.game.screen import Screen
 from app.hooks.factory import Factory
@@ -98,26 +98,28 @@ class Orchestrator:
 
         if not self.properties:
             self.properties = {
-                **PyTilePropertyConfiguration().model_dump(),
-                **PyObjectPropertyConfiguration().model_dump(),
-                **PyEffectPropertyConfiguration().model_dump(),
-                **PyCursorPropertyConfiguration().model_dump(),
-                **PyCraftPropertyConfiguration().model_dump(),
-                **PySheetPropertyConfiguration().model_dump()
+                **PyTilePropertyConfiguration().model_dump().items(),
+                **PyObjectPropertyConfiguration().model_dump().items(),
+                **PyEffectPropertyConfiguration().model_dump().items(),
+                **PyCursorPropertyConfiguration().model_dump().items(),
+                **PyCraftPropertyConfiguration().model_dump().items(),
+                **PySheetPropertyConfiguration().model_dump().items()
             }
 
         for category_key, instance_data in self.state:
             for instance_key, instance_list in instance_data:
                 for instance in instance_list:
 
-                    recipe = self.asset_recipes.assets[category_key][instance_key]
-                    instance_props = self.property_map[category_key][instance_key]
+                    recipe = self.recipes.assets[category_key][instance_key]
 
                     if category_key != AssetCategories.TILES:
-                        properties = properties[instance.id]
+                        instance_props = self.property_map[category_key][instance_key][instance.id]
+                    else: 
+                        instance_props = self.property_map[category_key][instance_key]
 
                     assets.append(
                         Asset(
+                            taxonomy   = Factory.taxonomy(category_key, instance_key, instance),
                             properties = Factory.properties(category_key, instance_props),
                             state      = Factory.state(recipe.state, instance),
                             frame      = Factory.frame(recipe.frame),
@@ -127,13 +129,12 @@ class Orchestrator:
 
         return assets
     
-    def orchestrate(self, screensize: Dimensions) -> Tuple[Board, Registry]:
+    def orchestrate(self, screensize: Dimensions) -> Tuple[Board, Registry, List[Screen]]:
         """
         # Ontology: Orchestrate
 
-        Initialize and return game component.
+        Initialize and return game components.
         """
-
         assets = self.migrate()
         self.board = Board(assets)
         self.registry = Registry(self.property_map)
@@ -141,7 +142,7 @@ class Orchestrator:
         self.screens = [
             Screen(
                 screensize, 
-                self.board.size(layer),
+                self.board.size(layer)[0],
                 self.board.categories(AssetCategories.TILES, layer),
                 self.registry
             ) for layer in self.board.layers()
@@ -149,7 +150,7 @@ class Orchestrator:
         
         return self.board, self.registry, self.screens
 
-    def start(self):
+    def start(self) -> None:
         self.orchestrate()
         delta = 1.0 / 60.0
         accumulator = 0.0
@@ -167,8 +168,12 @@ class Orchestrator:
                     accumulator -= delta
 
                 player = self.board.player
-                assets = self.board.assets()
-                self.screens[player.layer].draw(assets, player)
+                assets = self.board.assets
+                self.screens[player.layer].draw(
+                    assets, 
+                    player, 
+                    self.registry
+                )
 
             while self.board.paused: 
                 self.board.menu()

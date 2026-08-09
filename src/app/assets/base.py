@@ -5,6 +5,7 @@ Package for foundational Asset classes and interfaces.
 """
 # Standard Libraries
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 # Application Libraries
 from app.models.properties import AssetProperties
@@ -13,6 +14,7 @@ from app.models.state import AssetState
 # Cython Libraries
 from libs.core import Dimensions
 
+@dataclass(slots=True)
 class Taxonomy:
     id: str
     name: str
@@ -71,6 +73,22 @@ class Asset:
         self.frame = frame
         self.animation = animation
 
+    @property
+    def id(self) -> str: 
+        return self.taxonomy.id
+
+    @property
+    def name(self) -> str:
+        return self.taxonomy.name
+
+    @property
+    def category(self) -> str:
+        return self.taxonomy.category
+
+    @property
+    def instance(self) -> str:
+        return self.taxonomy.instance
+    
     @property
     def dimensions(self) -> Dimensions:
         """Unified spatial retrieval for rendering and camera culling."""

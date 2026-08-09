@@ -25,7 +25,10 @@ class Board:
     player: Player
     mechanics: List[Mechanic]
     assets: List[Asset]
-    
+
+    loaded: bool
+    paused: bool
+
     _cached_categories: Dict[str, Dict[str, List[Asset]]]
     _cached_instances: Dict[str, Dict[str, List[Asset]]]
     _all_categories: Dict[str, List[Asset]]
@@ -34,6 +37,7 @@ class Board:
     def __init__(self, 
         assets: List[Asset]
     ):
+        self.loaded = False
         self.assets = assets
         self.mechanics = [ 
             AnimationMechanics(),
@@ -43,6 +47,7 @@ class Board:
             SwitchMechanics(),
         ]
         self._cache()
+        self.loaded = True
 
     def _cache(self):
         """
@@ -162,17 +167,17 @@ class Board:
         """
         Calculates the size of Board by layer. 
 
-        If no layer is specified, method will return a list of all layer sizes.
+        If no layer is specified, method will return a list of all layer sizes as a List.
         """
 
         layers = [ layer ] if layer is not None else self.layers()
         layer_sizes = []
 
-        for layer in self.layers:
+        for layer in layers:
             tiles = self.categories(AssetCategories.TILES, layer)
-            w = max(tile.state.position.x + tile.state.multiple.nx * tile.properties.dimensions.w 
-                for tile in tiles)
-            l = max(tile.state.position.y + tile.state.multiple.ny * tile.properties.dimensions.l
-                for tile in tiles)
+            w = max([ tile.state.position.x + tile.state.multiple.nx * tile.properties.dimensions.w 
+                    for tile in tiles ], default = 0)
+            l = max([tile.state.position.y + tile.state.multiple.ny * tile.properties.dimensions.l
+                    for tile in tiles], default = 0)
             layer_sizes.append(Dimensions(w=w, l=l))
         return layer_sizes

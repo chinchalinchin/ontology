@@ -56,8 +56,12 @@ class CollisionMechanics(Mechanic):
                     if this.state.name != that.state.name:
                         # Pass the raw components to your Cython math library
                         if Geometry.intersects(
-                            this.state.position, this.properties.dimensions, this.properties.hitboxes,
-                            that.state.position, that.properties.dimensions, that.properties.hitboxes
+                            this.state.position, 
+                            this.dimensions, 
+                            this.hitboxes,
+                            that.state.position, 
+                            that.dimensions, 
+                            that.hitboxes
                         ):
                             # Resolve collision
                             pass
@@ -76,8 +80,12 @@ class ProjectileMechanics(Mechanic):
             for proj in projectiles:
                 for target in sheets:
                     if Geometry.intersects(
-                        proj.state.position, proj.properties.dimensions, getattr(proj.properties, 'hitboxes', []),
-                        target.state.position, target.properties.dimensions, getattr(target.properties, 'hitboxes', [])
+                        proj.state.position,
+                        proj.dimensions, 
+                        proj.hitboxes,
+                        target.state.position, 
+                        target.dimensions, 
+                        target.hitboxes
                     ):
                         # TODO: Resolve collision
                         pass
@@ -121,11 +129,11 @@ class SwitchMechanics(Mechanic):
                 for weight in crates:
                     if Geometry.intersects(
                         plate.state.position,
-                        plate.properties.dimensions, 
-                        getattr(plate.properties, 'hitboxes', []),
+                        plate.dimensions, 
+                        plate.hitboxes,
                         weight.state.position, 
-                        weight.properties.dimensions,
-                        getattr(weight.properties, 'hitboxes', [])
+                        weight.dimensions,
+                        weight.hitboxes
                     ):
                         current_state = plate.state.switch
                         plate.state.switch = True
@@ -137,11 +145,11 @@ class SwitchMechanics(Mechanic):
                     for weight in sheets:
                         if Geometry.intersects(
                             plate.state.position,
-                            plate.properties.dimensions, 
-                            getattr(plate.properties, 'hitboxes', []),
+                            plate.dimensions, 
+                            plate.hitbxoes,
                             weight.state.position, 
-                            weight.properties.dimensions,
-                            getattr(weight.properties, 'hitboxes', [])
+                            weight.dimensions,
+                            weight.hitboxes
                         ):
                             current_state = plate.state.switch
                             plate.state.switch = True

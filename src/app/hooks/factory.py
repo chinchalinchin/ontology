@@ -10,6 +10,7 @@ from app.assets.animations import (
     TemporaryAnimation, 
     StateAnimation
 )
+from app.assets.base import Taxonomy
 from app.assets.frames import (
     SingleFrame, 
     IterableFrame, 
@@ -96,3 +97,12 @@ class Factory:
     @staticmethod
     def animation(recipe: AnimationRecipe):
         return Factory.ANIMATION_MAP.get(recipe, PersistentAnimation)()
+
+    def taxonomy(category, instance, snapshot):
+        return Taxonomy(
+            id = snapshot.id,
+            name = snapshot.name,
+            category = category,
+            instance = instance
+        )
+                    

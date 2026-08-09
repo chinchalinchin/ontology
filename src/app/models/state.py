@@ -17,6 +17,7 @@ class AssetState:
     """
     Foundational class for Asset states. 
     """
+    name: str
     layer: str
     
 # ---------------------------------------------------------------------------------------

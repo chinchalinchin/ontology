@@ -72,7 +72,8 @@ class Actions(str, Enum):
     THRUST          = "thrust"
     WALK            = "walk"
     SLASH           = "slash"
-    SHOOT           = "die"
+    SHOOT           = "shoot"
+    DIE             = "die"
 
 class Expressions(str, Enum):
     AGREEMENT       = "agreement"

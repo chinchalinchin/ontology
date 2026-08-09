@@ -36,25 +36,32 @@ class Screen:
         self.boardsize = boardsize
         
         # Instantiate Painter's Algorithm Targets
-        self.bg_canvas = canvas(self.boardsize.l, self.boardsize.w)
-        self.fg_canvas = canvas(self.boardsize.l, self.boardsize.w)
+        self.bg_canvas = canvas(self.boardsize.w, self.boardsize.l)
+        self.fg_canvas = canvas(self.boardsize.w, self.boardsize.l)
         
         cython_bg_tiles = []
         cython_fg_tiles = []
         
         for tile in tiles:
             # Query Registry using the computed tile key
-            tex_data = registry.data(tile.frame.key(tile.taxonomy.id, tile.state))
+            frame_key = tile.frame.key(tile.taxonomy.id, tile.state)
+            tex_data = registry.data(frame_key)
             if tex_data:
-                tex, sx, sy, sw, sh = tex_data
+                tex, sx, sy, sw, sl = tex_data
                 
                 # Append flat primitives directly for the C-loop
                 tile_tuple = ( 
                     tex,
-                    sx, sy, sw, sh,
-                    tile.state.position.x, tile.state.position.y,
-                    tile.properties.dimensions.l, tile.properties.dimensions.w,
-                    tile.state.multiple.nx, tile.state.multiple.ny
+                    sx, 
+                    sy, 
+                    sw, 
+                    sl,
+                    tile.state.position.x, 
+                    tile.state.position.y,
+                    tile.properties.dimensions.w, 
+                    tile.properties.dimensions.l,
+                    tile.state.multiple.nx, 
+                    tile.state.multiple.ny
                 )
 
                 # Route properties
@@ -72,19 +79,23 @@ class Screen:
         and clamps it to the boundaries of the board.
         """
         # Center the camera on the player
-        cam_x = player.states.position.x + (player.properties.dim.l // 2) - (self.screensize.l // 2)
-        cam_y = player.state.position.y + (player.properties.dim.w // 2) - (self.screensize.w // 2)
+        cam_x = player.states.position.x + (player.properties.dimensions.w // 2) - (self.screensize.w // 2)
+        cam_y = player.state.position.y + (player.properties.dimensions.l // 2) - (self.screensize.l // 2)
 
         # Clamp to board edges
-        max_x = max(0, self.boardsize.l - self.screensize.l)
-        max_y = max(0, self.boardsize.w - self.screensize.w)
+        max_x = max(0, self.boardsize.w - self.screensize.w)
+        max_y = max(0, self.boardsize.l - self.screensize.l)
 
         cam_x = max(0, min(cam_x, max_x))
         cam_y = max(0, min(cam_y, max_y))
 
         return Position(x=cam_x, y=cam_y)
 
-    def draw(self, assets: List[Asset], player: Player, registry: Registry) -> None:
+    def draw(self, 
+        assets: List[Asset], 
+        player: Player, 
+        registry: Registry
+    ) -> None:
         """
         Calculates viewport positioning, culls non-visible items, and routes data to the renderer.
         """
@@ -101,17 +112,17 @@ class Screen:
             if not tex_data:
                 continue 
 
-            tex, sx, sy, sw, sh = tex_data
+            tex, sx, sy, sw, sl = tex_data
             
             # 3. Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
             dx, dy = asset.state.position.x, asset.state.position.y
-            dw, dh = asset.properties.dimensions.l, asset.properties.dimensions.w
+            dw, dl = asset.dimensions.w, asset.dimensions.l
             
             # 4. Strict Camera Culling: Only pass geometry if intersecting the camera frame 
-            if (dx + dw >= pov.x and dx <= pov.x + self.screensize.l and
-                dy + dh >= pov.y and dy <= pov.y + self.screensize.w):
+            if (dx + dw >= pov.x and dx <= pov.x + self.screensize.w and
+                dy + dl >= pov.y and dy <= pov.y + self.screensize.l):
                 
-                active_assets.append((tex, sx, sy, sw, sh, dx, dy, dw, dh))
+                active_assets.append((tex, sx, sy, sw, sl, dx, dy, dw, dl))
 
         # Pass purely native integers to bypass heavy object allocation
         render(
@@ -120,6 +131,6 @@ class Screen:
             active_assets, 
             pov.x, 
             pov.y, 
-            self.screensize.l, 
-            self.screensize.w
+            self.screensize.w, 
+            self.screensize.l
         )

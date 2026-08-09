@@ -98,7 +98,7 @@ class PyObjectProperties(BaseModel):
 
 class PyTileProperties(BaseModel):
     dimensions: PyDimensions
-    keys: List[str]
+    ids: List[str]
 
 class PyCraftProperties(BaseModel):
     dimensions: PyDimensions
@@ -329,7 +329,7 @@ class PySheetStateInstances(BaseModel):
 
 class PyStateConfiguration(BaseModel):
     tiles: Optional[PyTileStateInstances] = None
-    objects: Optional[PyEffectStateInstances] = None
+    objects: Optional[PyObjectStateInstances] = None
     crafts: Optional[PyCraftStateInstances] = None
     cursors: Optional[PyCursorStateInstances] = None
     effects: Optional[PyEffectStateInstances] = None
