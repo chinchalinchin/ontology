@@ -3,33 +3,43 @@
 
 Package for instantiating Asset classes and their components.
 """
-# Standard Libraries
-from typing import get_type_hints, Type, TypeVar, Any
-
 # Application Libraries
 from app.assets.animations import (
-    BinaryAnimation, PersistentAnimation, TemporaryAnimation, StateAnimation
+    BinaryAnimation, 
+    PersistentAnimation, 
+    TemporaryAnimation, 
+    StateAnimation
 )
 from app.assets.frames import (
-    SingleFrame, IterableFrame, StateFrame
+    SingleFrame, 
+    IterableFrame, 
+    StateFrame
 )
-from app.config.enums import FrameRecipe, AnimationRecipe, StateRecipe
-from app.config.validators import (
-    PyAnimatorState, PyContainerState, PyDoorState, PySwitchState,
-    PyMetricState, PyMultiplierState, PyPositionalState, PyPropertyState,
-    PySpriteState, PyRecipeConfiguration
+from app.config.enums import (
+    FrameRecipe, 
+    AnimationRecipe, 
+    StateRecipe,
+    AssetCategories
 )
 from app.models.state import (
-    AnimatorState, ContainerState, DoorState, SwitchState, 
-    MetricState, MultiplierState, PositionalState, PropertyState,
+    AnimatorState, 
+    ContainerState, 
+    DoorState, 
+    SwitchState, 
+    MetricState, 
+    MultiplierState, 
+    PositionalState, 
+    PropertyState,
     SpriteState
 )
 from app.models.properties import (
-    EffectProperties, CursorProperties, ObjectProperties, 
-    TileProperties, CraftProperties, SheetProperties
+    EffectProperties,
+    CursorProperties, 
+    ObjectProperties, 
+    TileProperties, 
+    CraftProperties, 
+    SheetProperties
 )
-
-T = TypeVar('T')
 
 class Factory:
     
@@ -61,47 +71,23 @@ class Factory:
 
     # Properties are strictly grouped by their broad categories
     PROPERTY_MAP = {
-        "tiles": TileProperties,
-        "effects": EffectProperties,
-        "objects": ObjectProperties,
-        "cursors": CursorProperties,
-        "crafts": CraftProperties,
-        "sheets": SheetProperties 
+        AssetCategories.TILES: TileProperties,
+        AssetCategories.EFFECTS: EffectProperties,
+        AssetCategories.OBJECTS: ObjectProperties,
+        AssetCategories.CURSORS: CursorProperties,
+        AssetCategories.CRAFTS: CraftProperties,
+        AssetCategories.SHEETS: SheetProperties 
     }
 
     @staticmethod
-    def _hydrate(cls: Type[T], data: dict[str, Any]) -> T:
-        if not isinstance(data, dict): return data
-        hints = get_type_hints(cls)
-        hydrated_data = {}
-        for key, value in data.items():
-            expected_type = hints.get(key)
-            if isinstance(value, dict) and hasattr(expected_type, '__annotations__'):
-                hydrated_data[key] = Factory._hydrate(expected_type, value)
-            else:
-                hydrated_data[key] = value
-        return cls(**hydrated_data)
+    def state(recipe: StateRecipe, snapshot: dict):
+        cls = Factory.STATE_MAP["models"].get(recipe)
+        return cls(**snapshot)
 
     @staticmethod
-    def state(recipe: StateRecipe, snapshot: dict) -> Any:
-        target_cls = Factory.STATE_MAP["models"].get(recipe)
-        if not target_cls:
-            raise ValueError(f"Unknown state recipe: {recipe}")
-        return Factory._hydrate(target_cls, snapshot)
-    
-    @staticmethod
-    def state(recipe: StateRecipe, snapshot: dict) -> Any:
-        target_cls = Factory.STATE_MAP["models"].get(recipe)
-        if not target_cls:
-            raise ValueError(f"Unknown state recipe: {recipe}")
-        return Factory._hydrate(target_cls, snapshot)
-
-    @staticmethod
-    def properties(category: str, snapshot: dict) -> Any:
-        target_cls = Factory.PROPERTY_MAP.get(category)
-        if not target_cls:
-            raise ValueError(f"Unknown property category: {category}")
-        return Factory._hydrate(target_cls, snapshot)
+    def properties(category: str, snapshot: dict):
+        cls = Factory.PROPERTY_MAP.get(category)
+        return cls(**snapshot)
 
     @staticmethod
     def frame(recipe: FrameRecipe):

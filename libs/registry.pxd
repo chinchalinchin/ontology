@@ -11,4 +11,4 @@ from libs.render cimport SDL_Texture
 cdef class TexturePtr:
     cdef SDL_Texture* ptr
     cdef public int w
-    cdef public int h
+    cdef public int l

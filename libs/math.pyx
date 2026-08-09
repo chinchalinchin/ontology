@@ -43,15 +43,15 @@ cdef class Geometry:
             hb1 = <Hitbox>item1
             x1 = pos1.x + hb1.position.x
             y1 = pos1.y + hb1.position.y
-            w1 = hb1.dimensions.l
-            h1 = hb1.dimensions.w
+            w1 = hb1.dimensions.w
+            h1 = hb1.dimensions.l
         
             for item2 in hitboxes2:
                 hb2 = <Hitbox>item2
                 x2 = pos2.x + hb2.position.x
                 y2 = pos2.y + hb2.position.y
-                w2 = hb2.dimensions.l
-                h2 = hb2.dimensions.w
+                w2 = hb2.dimensions.w
+                h2 = hb2.dimensions.l
                 
                 # Inline AABB collision check using the integer primitives 
                 if (x1 < x2 + w2 and x1 + w1 > x2 and
@@ -73,11 +73,11 @@ cdef class Geometry:
         the camera's viewport (centered on the player).
         """
         # Calculate camera top-left (without board-clamping for raw speed)
-        cdef int cam_x = p_pos.x + (p_dim.l // 2) - (screen.l // 2)
-        cdef int cam_y = p_pos.y + (p_dim.w // 2) - (screen.w // 2)
+        cdef int cam_x = p_pos.x + (p_dim.l // 2) - (screen.w // 2)
+        cdef int cam_y = p_pos.y + (p_dim.w // 2) - (screen.l // 2)
         
-        return (pos.x < cam_x + screen.l and pos.x + dim.l > cam_x and
-                pos.y < cam_y + screen.w and pos.y + dim.w > cam_y)
+        return (pos.x < cam_x + screen.w and pos.x + dim.w > cam_x and
+                pos.y < cam_y + screen.l and pos.y + dim.l > cam_y)
 
 
 cdef class Physics:

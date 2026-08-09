@@ -9,6 +9,9 @@
 !!! note "Orientation"
     (0,0) corresponds to the upper-left corner, with down being the positive y-direction.
 
+!!! note "Width, Length"
+    Width is a horizontal displacement, length is a vertical displacement.
+    
 ## Assets
 
 All Assets have an *Key*, *Properties* and *State*. 

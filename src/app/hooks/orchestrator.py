@@ -2,6 +2,7 @@
 # Ontology: Orchestration
 """
 # Standard Libraries
+from datetime import datetime, time
 from typing import List, Any, Dict, Tuple
 
 # External Libraries
@@ -26,6 +27,7 @@ from app.config.validators import (
 )
 
 # Cython Libraries
+from libs.core import Dimensions
 import libs.render as render
 from libs.registry import Registry
 
@@ -34,17 +36,17 @@ class Orchestrator:
     """
 
     properties: Dict
-    asset_recipes: PyRecipeConfiguration
-    valid_state: PyStateConfiguration
+    recipes: PyRecipeConfiguration
+    state: PyStateConfiguration
     registry: Registry
     board: Board
     screens: List[Screen]
 
-    def __init__(self, board_key: str):
+    def __init__(self, state: str):
         render.init()
-        self.asset_recipes = PyRecipeConfiguration()
+        self.recipes = PyRecipeConfiguration()
         self.properties = { }
-        self.load(board_key)
+        self.load(state)
 
     @staticmethod
     def merge(
@@ -69,11 +71,11 @@ class Orchestrator:
         return target
 
     @staticmethod
-    def time(self) -> Time:
-        return "TODO: some time" 
+    def time(self) -> time:
+        return datetime.now().time()
     
-    def load(self, board_key: str):
-        board_path = settings.DATA_DIR / board_key  
+    def load(self, state: str) -> None:
+        board_path = settings.DATA_DIR / state  
         target_dir = board_path.expanduser()
         merged_data: dict[str, Any] = {}
 
@@ -96,20 +98,20 @@ class Orchestrator:
 
         if not self.properties:
             self.properties = {
-                "tiles": PyTilePropertyConfiguration(),
-                "objects": PyObjectPropertyConfiguration(),
-                "effects": PyEffectPropertyConfiguration(),
-                "cursors": PyCursorPropertyConfiguration(),
-                "crafts": PyCraftPropertyConfiguration(),
-                "sheets": PySheetPropertyConfiguration(),
+                **PyTilePropertyConfiguration().model_dump(),
+                **PyObjectPropertyConfiguration().model_dump(),
+                **PyEffectPropertyConfiguration().model_dump(),
+                **PyCursorPropertyConfiguration().model_dump(),
+                **PyCraftPropertyConfiguration().model_dump(),
+                **PySheetPropertyConfiguration().model_dump()
             }
 
-        for category_key, instance_data in self.valid_state:
+        for category_key, instance_data in self.state:
             for instance_key, instance_list in instance_data:
                 for instance in instance_list:
 
                     recipe = self.asset_recipes.assets[category_key][instance_key]
-                    instance_props = self.property_map[category_key][category_key][instance_key]
+                    instance_props = self.property_map[category_key][instance_key]
 
                     if category_key != AssetCategories.TILES:
                         properties = properties[instance.id]
@@ -125,7 +127,7 @@ class Orchestrator:
 
         return assets
     
-    def orchestrate(self) -> Tuple[Board, Registry]:
+    def orchestrate(self, screensize: Dimensions) -> Tuple[Board, Registry]:
         """
         # Ontology: Orchestrate
 
@@ -136,21 +138,15 @@ class Orchestrator:
         self.board = Board(assets)
         self.registry = Registry(self.property_map)
 
-        self.board.layers()
-
         self.screens = [
             Screen(
-                "TODO: screensize", 
-                "TODO: boardsize",
-                self.board.tiles(layer),
+                screensize, 
+                self.board.size(layer),
+                self.board.categories(AssetCategories.TILES, layer),
                 self.registry
-            )
-            for layer 
-            in self.board.layers
+            ) for layer in self.board.layers()
         ]
         
-        self.screen = Screen()
-
         return self.board, self.registry, self.screens
 
     def start(self):

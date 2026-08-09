@@ -74,11 +74,11 @@ class Asset:
     @property
     def dimensions(self) -> Dimensions:
         """Unified spatial retrieval for rendering and camera culling."""
-        if hasattr(self.properties, 'dim'):
-            return self.properties.dim
+        if hasattr(self.properties, 'dimensions'):
+            return self.properties.dimensions
         # Fallback for polymorphic Sheets which nest spatial data in Personas
         elif hasattr(self.properties, 'personas'):
-            return self.properties.personas[self.taxonomy.id].dim
+            return self.properties.personas[self.taxonomy.id].dimensions
         return None
 
     @property

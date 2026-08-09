@@ -3,41 +3,31 @@
 tiles:
   back:
     dimensions:
-      l: 32
-      w: 32
+      w: Pixel Horizontal Size
+      l: Pixel Vertical Size
     ids:
-      - clay
-      - coal
-      - dirt
-      - grass
-      - lava
-      - mud
-      - sand
-      - soil
-      - water
-      - wheat
+      - <asset-id>
   fore:
     dimensions:
-      l: 32
-      w: 32
+      w: Pixel Horizontal Size
+      l: Pixel Vertical Size
     ids:
-      - canopy
-      - cloudy
+      - <asset-id>
 # ------------------------------------------------------------------
 # ----------------------------------------------------------- CRAFTS
 crafts:
   struts:
     <id>:
-      dim:
-        l: Pixel Length
-        w: Pixel Width
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
       hitboxes:
         - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Position
-          dim:
-            l: Pixel Length
-            w: Pixel Width
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
       cost:
         - item: <inventory-key>
           quantity: <quantity-key>
@@ -47,121 +37,121 @@ cursors:
   expressions:
     <id>:
       dimensions:
-        l: Pixel Length
-        w: Pixel Width
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Sizeh
   projectiles:
     <id>:
       dimensions:
-        l: Pixel Length
-        w: Pixel Width
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
 # ------------------------------------------------------------------
 # ---------------------------------------------------------- EFFECTS
 effects:
   persistent:
     <id>:
       count: Number of Frames
-      dim:
-        l: Pixel Length
-        w: Pixel Width
+      dimension:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
       hitboxes:
         - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
-          dim:
-            l: Pixel Length
-            w: Pixel Width
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
   temporary:
     <id>:
       count: Number of Frames
-      dim:
-        l: Pixel Length
-        w: Pixel Width
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
       hitboxes:
         - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
-          dim:
-            l: Pixel Length
-            w: Pixel Width
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
 # ------------------------------------------------------------------
 # ---------------------------------------------------------- OBJECTS
 objects:
   chests:
     <id>:
-      dim:
-        l: Pixel Length
-        w: Pixel Width
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
       hitboxes:
         - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
-          dim:
-            l: Pixel Length
-            w: Pixel Width
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
   crates:
     <id>:
-      dim:
-        l: Pixel Length
-        w: Pixel Width
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
       hitboxes:
         - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
-          dim:
-            l: Pixel Length
-            w: Pixel Width
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
   doors:
     <id>:
-      dim:
-        l: Pixel Length
-        w: Pixel Width
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
       hitboxes:
         - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
-          dim:
-            l: Pixel Length
-            w: Pixel Width
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
   gates:
     <id>:
-      dim:
-        l: Pixel Length
-        w: Pixel Width
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
       hitboxes:
         - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
-          dim:
-            l: Pixel Length
-            w: Pixel Width
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
   plates:
     <id>:
-      dim:
-        l: Pixel Length
-        w: Pixel Width
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
       hitboxes:
         - position: 
             x: Relative Horizontal Position
             y: Relative Vertical Postion
-          dim:
-            l: Pixel Length
-            w: Pixel Width
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
 # ------------------------------------------------------------------
 # ----------------------------------------------------------- SHEETS
 sheets:
   pixies:
     personas:
       <id>:
-        dim:
-          l: pixel length
-          w: pixel width
+        dimensions:
+          w: Pixel Horizontal Size
+          l: Pixel Vertical Size
         hitboxes:
           - position: 
-              x: relative horizontal position
-              y: relative vertical position
-            dim:
-              l: hitbox pixel length
-              w: hitbox pixel width 
+              x: Relative Horizontal Position
+              y: Relative Vertical Position
+            dimensions:
+              w: Pixel Horizontal Size
+              l: Pixel Vertical Size
         stack:
           - <sheet-asset-key>
     actions:
@@ -174,16 +164,16 @@ sheets:
   sprites:
     personas:
       <id>:
-        dim:
-          l: pixel length
-          w: pixel width
+        dimensions:
+          w: Pixel Horizontal Size
+          l: Pixel Vertical Size
         hitboxes:
           - position: 
-              x: relative horizontal position
-              y: relative vertical position
+              x: Relative Horizontal Position
+              y: Relative Vertical Position
             dim:
-              l: hitbox pixel length
-              w: hitbox pixel width 
+              w: Pixel Horizontal Size
+              l: Pixel Vertical Size 
         stack:
           - <sheet-asset-key>
     actions:
@@ -194,9 +184,9 @@ sheets:
             row: <row-index>
             attackboxes:
               - position: 
-                  x: relative horizontal position
-                  y: relative vertical position
-                dim:
-                  l: hitbox pixel length
-                  w: hitbox pixel width 
+                  x: Relative Horizontal position
+                  y: Relative Vertical position
+                dimensions:
+                  w: Pixel Horizontal Size
+                  l: Pixel Vertical Size
                 hitframe: <hitframe-index>

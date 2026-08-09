@@ -12,9 +12,9 @@ cdef class Dimensions:
     """
     """
 
-    def __init__(self, int l, int w):
-        self.l = l
+    def __init__(self, int w, int l):
         self.w = w
+        self.l = l
 
 cdef class Multiple:
     """

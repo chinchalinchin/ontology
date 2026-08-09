@@ -389,7 +389,7 @@ class PyObjectPropertyConfiguration(YamlBaseSettings):
     )
 
 class PyCraftPropertyConfiguration(YamlBaseSettings):
-    objects: PyCraftPropertyInstances
+    crafts: PyCraftPropertyInstances
 
     model_config = SettingsConfigDict(
         yaml_file = settings.ASSET_DIR / "crafts" / settings.APP_EXT

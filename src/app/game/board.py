@@ -9,11 +9,15 @@ from typing import List, Dict
 
 # Application Libraries
 from app.assets.base import Asset
+from app.config.enums import AssetCategories
 from app.game.mechanics import (
     Mechanic, AnimationMechanics, CollisionMechanics, 
     ProjectileMechanics, SwitchMechanics, IntentionMechanics
 )
 from app.input.player import Player
+
+# Cython Libraries
+from libs.core import Dimensions
 
 class Board:
     """
@@ -153,3 +157,22 @@ class Board:
         self.player
         # TODO: player logic
         # -------------------------
+
+    def size(self, layer=None) -> List[Dimensions]:
+        """
+        Calculates the size of Board by layer. 
+
+        If no layer is specified, method will return a list of all layer sizes.
+        """
+
+        layers = [ layer ] if layer is not None else self.layers()
+        layer_sizes = []
+
+        for layer in self.layers:
+            tiles = self.categories(AssetCategories.TILES, layer)
+            w = max(tile.state.position.x + tile.state.multiple.nx * tile.properties.dimensions.w 
+                for tile in tiles)
+            l = max(tile.state.position.y + tile.state.multiple.ny * tile.properties.dimensions.l
+                for tile in tiles)
+            layer_sizes.append(Dimensions(w=w, l=l))
+        return layer_sizes

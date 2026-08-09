@@ -92,13 +92,14 @@ def init():
     if _renderer == NULL:
         raise RuntimeError("Failed to initialize hardware-accelerated SDL_Renderer.")
 
-def canvas(int w, int h) -> TexturePtr:
+def canvas(int w, int l) -> TexturePtr:
     """Instantiates a blank texture assigned as an accelerated rendering target using primitive integers."""
     cdef SDL_Texture* tex = SDL_CreateTexture(
         _renderer, 
         SDL_PIXELFORMAT_RGBA32, 
         SDL_TEXTUREACCESS_TARGET, 
-        w, h
+        w, 
+        l
     )
     if tex == NULL:
         raise RuntimeError("Failed to create GPU render target.")
@@ -115,7 +116,7 @@ def canvas(int w, int h) -> TexturePtr:
     cdef TexturePtr wrapper = TexturePtr()
     wrapper.ptr = tex
     wrapper.w = w
-    wrapper.h = h
+    wrapper.l = l
     return wrapper
 
 def compose(TexturePtr base_ptr, list feature_ptrs) -> TexturePtr:
@@ -123,7 +124,7 @@ def compose(TexturePtr base_ptr, list feature_ptrs) -> TexturePtr:
     Binds a blank TEXTUREACCESS_TARGET, stamps the base and features onto it, 
     unbinds, and returns the new flattened TexturePtr.
     """
-    cdef TexturePtr target = canvas(base_ptr.w, base_ptr.h)
+    cdef TexturePtr target = canvas(base_ptr.w, base_ptr.l)
 
     # 1. Bind new target texture
     SDL_SetRenderTarget(_renderer, target.ptr)
@@ -144,26 +145,27 @@ def compose(TexturePtr base_ptr, list feature_ptrs) -> TexturePtr:
 def construct(TexturePtr target, list tiles):
     """
     Constructs the static background entirely in C using zero-allocation primitives.
-    tiles format: (TexturePtr, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h, mul_nx, mul_ny)
+    tiles format: 
+        (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l, mul_nx, mul_ny)
     """
     SDL_SetRenderTarget(_renderer, target.ptr)
     
     cdef SDL_Rect c_src, c_dst
     cdef TexturePtr tex
-    cdef int sx, sy, sw, sh, dx, dy, dw, dh, nx, ny
+    cdef int sx, sy, sw, sl, dx, dy, dw, dl, nx, ny
     cdef int i, j
     
     for tile in tiles:
         # Unpack flat tuples cleanly onto the C-stack
-        tex, sx, sy, sw, sh, dx, dy, dw, dh, nx, ny = tile
+        tex, sx, sy, sw, sl, dx, dy, dw, dl, nx, ny = tile
         
-        c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sh
-        c_dst.w, c_dst.h = dw, dh
+        c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, dl
+        c_dst.w, c_dst.h = dw, dl
         
         for i in range(nx):
             for j in range(ny):
                 c_dst.x = dx + (i * dw)
-                c_dst.y = dy + (j * dh)
+                c_dst.y = dy + (j * dl)
                 SDL_RenderCopy(_renderer, tex.ptr, &c_src, &c_dst)
                 
     SDL_SetRenderTarget(_renderer, NULL)
@@ -175,33 +177,33 @@ def render(
     int cam_x,
     int cam_y, 
     int screen_w, 
-    int screen_h
+    int screen_l
 ):
     """
     Executes the active frame render passing flat coordinates to bypass Python object allocations.
-    assets format: (TexturePtr, src_x, src_y, src_w, src_h, dst_x, dst_y, dst_w, dst_h)
+    assets format: (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l)
     """
     SDL_RenderClear(_renderer)
     cdef SDL_Rect c_src, c_dst, bg_src
     cdef TexturePtr tex_wrapper
-    cdef int sx, sy, sw, sh, dx, dy, dw, dh
+    cdef int sx, sy, sw, sl, dx, dy, dw, dl
 
     if background is not None:
         bg_src.x = cam_x
         bg_src.y = cam_y
         bg_src.w = screen_w
-        bg_src.h = screen_h
+        bg_src.l = screen_l
         SDL_RenderCopy(_renderer, background.ptr, &bg_src, NULL)
         
     for asset in assets:
         # Safely unpack the primitive git atuple directly into C-variables
-        tex_wrapper, sx, sy, sw, sh, dx, dy, dw, dh = asset        
+        tex_wrapper, sx, sy, sw, sl, dx, dy, dw, dl = asset        
         
-        c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sh
+        c_src.x, c_src.y, c_src.w, c_src.l = sx, sy, sw, sl
         
         c_dst.x = dx - cam_x
         c_dst.y = dy - cam_y
-        c_dst.w, c_dst.h = dw, dh
+        c_dst.w, c_dst.h = dw, dl
             
         SDL_RenderCopy(_renderer, tex_wrapper.ptr, &c_src, &c_dst)
 
@@ -213,12 +215,12 @@ def render(
     SDL_PumpEvents()
 
 # Update the signature in libs/render.pyx to accept an optional target
-def save(str filename, int w, int h, TexturePtr target=None):
+def save(str filename, int w, int l, TexturePtr target=None):
     """Extracts pixel data from the active hardware renderer or a specific texture to disk."""
     cdef bytes b_filename = filename.encode('utf-8')
     
     cdef SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
-        0, w, h, 32, SDL_PIXELFORMAT_RGBA32
+        0, w, l, 32, SDL_PIXELFORMAT_RGBA32
     )
     
     if surface == NULL:

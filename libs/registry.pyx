@@ -9,17 +9,13 @@ import os
 from typing import Tuple
 
 # Application Libraries
-from app.config.enums import FrameRecipe, AnimationRecipe, AssetCategories
-import app.config.settings as settings
-from app.config.validators import (
-    PySheetPropertyConfiguration,
-    PyObjectPropertyConfiguration,
-    PyEffectPropertyConfiguration,
-    PyCursorPropertyConfiguration,
-    PyTilePropertyConfiguration,
-    PyCraftPropertyConfiguration,
-    PyRecipeConfiguration
+from app.config.enums import (
+    FrameRecipe, 
+    AnimationRecipe, 
+    AssetCategories,
+    AssetInstances
 )
+import app.config.settings as settings
 
 # Cython Libraries
 from libs.render cimport (
@@ -72,14 +68,16 @@ class Registry:
 
     def _assemble(self):
         """Compiles composite characters utilizing cython-wrapped base and feature renders."""
-        if not getattr(self, 'sheets_config', None) or not getattr(self.sheets_config, 'sheets', None):
+        if not getattr(self.properties, 'sheets', None) or \
+                not getattr(self.properties.sheets, 'sheets', None):
             return
 
-        for cat in ['pixies', 'sprites']:
-            sheet_cfg = getattr(self.sheets_config.sheets, cat, None)
-            if not sheet_cfg: continue
+        for cat in [AssetInstances.PIXIES, AssetInstances.SPRITES]:
+            sheet = getattr(self.properties.sheets.sheets, cat, None)
+            
+            if not sheet: continue
 
-            for p_key, persona in sheet_cfg.personas.items():
+            for p_key, persona in sheet.personas.items():
                 if not persona.stack: continue
 
                 base_key = persona.stack[0]
@@ -87,13 +85,13 @@ class Registry:
 
                 if not base_ptr: continue
                 
-                feature_ptrs = []
+                stack_ptrs = []
                 for f_key in persona.stack[1:]:
                     if f_key in self._textures:
-                        feature_ptrs.append(self._textures[f_key])
+                        stack_ptrs.append(self._textures[f_key])
 
-                if feature_ptrs:
-                    self._textures[p_key] = render.compose(base_ptr, feature_ptrs)
+                if stack_ptrs:
+                    self._textures[p_key] = render.compose(base_ptr, stack_ptrs)
                 else:
                     self._textures[p_key] = base_ptr
 
@@ -109,8 +107,9 @@ class Registry:
             # Iterate through the Pydantic PyRecipe model fields
             for inst_name, recipe in cat_recipes:
                 if not recipe: continue
-                
+
                 inst_props = getattr(cat_props, inst_name, None)
+
                 if not inst_props: continue
 
                 # 1. SingleFrame 
@@ -118,42 +117,42 @@ class Registry:
 
                     # Tiles schema has a list of keys; others map key -> properties
                     if cat_name == AssetCategories.TILES:
-                        w, h = inst_props.dim.l, inst_props.dim.w
+                        w, l = inst_props.dimensions.w, inst_props.dimensions.l
                         for id in inst_props.ids:
                             if id in self._textures:
-                                self._frames[id] = (self._textures[id], 0, 0, w, h)
+                                self._frames[id] = (self._textures[id], 0, 0, w, l)
                     else:
                         for id, props in inst_props.items():
                             if id in self._textures:
-                                w, h = props.dim.l, props.dim.w
-                                self._frames[id] = (self._textures[id], 0, 0, w, h)
+                                w, l = props.dimensions.w, props.dimensions.l
+                                self._frames[id] = (self._textures[id], 0, 0, w, l)
 
                 # 2. IterableFrame
                 elif recipe.frame == FrameRecipe.ITERABLE:
                     for key, props in inst_props.items():
                         if key not in self._textures: continue
-                        w, h = props.dim.l, props.dim.w
+                        w, l = props.dimensions.w, props.dimensions.l
                         
                         # Differentiate between Binary Objects and Sequential Effects
                         if recipe.animation == AnimationRecipe.BINARY:
-                            self._frames[f"{key}-{settings.OFF}"] = (self._textures[key], 0, 0, w, h)
-                            self._frames[f"{key}-{settings.ON}"] = (self._textures[key], w, 0, w, h)
+                            self._frames[f"{key}-{settings.OFF}"] = (self._textures[key], 0, 0, w, l)
+                            self._frames[f"{key}-{settings.ON}"] = (self._textures[key], w, 0, w, l)
                         else:
                             for f in range(props.count):
-                                self._frames[f"{key}-{f}"] = (self._textures[key], f * w, 0, w, h)
+                                self._frames[f"{key}-{f}"] = (self._textures[key], f * w, 0, w, l)
 
                 # 3. StateFrame (Sheets)
                 elif recipe.frame == FrameRecipe.STATE:
                     for p_key, persona in inst_props.personas.items():
                         if p_key not in self._textures: continue
-                        w, h = persona.dim.l, persona.dim.w
+                        w, l = persona.dimensions.w, persona.dimensions.l
                         
                         for action, action_prop in inst_props.actions.items():
                             for direction, dir_prop in action_prop.directions.items():
                                 row = dir_prop.row
                                 for f in range(action_prop.count):
                                     self._frames[f"{p_key}-{action}-{direction}-{f}"] = (
-                                        self._textures[p_key], f * w, row * h, w, h
+                                        self._textures[p_key], f * w, row * l, w, l
                                     )
 
     def load(self, filepath: str) -> TexturePtr:
@@ -164,19 +163,19 @@ class Registry:
         if tex == NULL:
             raise RuntimeError(f"Failed to load texture into GPU memory: {filepath}")
 
-        cdef int w, h
-        SDL_QueryTexture(tex, NULL, NULL, &w, &h)
+        cdef int w, l
+        SDL_QueryTexture(tex, NULL, NULL, &w, &l)
 
         cdef TexturePtr wrapper = TexturePtr()
         wrapper.ptr = tex
         wrapper.w = w
-        wrapper.h = h
+        wrapper.l = l
         return wrapper
         
     def data(self, frame_key: str) -> Tuple:
         """
         Returns a lightweight Python tuple resolving mapped texture configurations for the camera.
-        Format: (TexturePtr, src_x, src_y, src_w, src_h)
+        Format: (TexturePtr, src_x, src_y, src_w, src_l)
         """
         if frame_key in self._frames:
             return self._frames[frame_key]
@@ -184,6 +183,6 @@ class Registry:
         # Fallback for single-frame immutables like Tiles where schema crop === texture bounds
         if frame_key in self._textures:
             tex = self._textures[frame_key]
-            return (tex, 0, 0, tex.w, tex.h)
+            return (tex, 0, 0, tex.w, tex.l)
             
         return None
