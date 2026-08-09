@@ -11,8 +11,13 @@ from typing import List, Dict
 from app.assets.base import Asset
 from app.config.enums import AssetCategories
 from app.game.mechanics import (
-    Mechanic, AnimationMechanics, CollisionMechanics, 
-    ProjectileMechanics, SwitchMechanics, IntentionMechanics
+    Mechanic, 
+    AnimationMechanics, 
+    CollisionMechanics, 
+    ProjectileMechanics, 
+    SwitchMechanics, 
+    IntentionMechanics,
+    RemoveMechanics
 )
 from app.input.player import Player
 
@@ -49,6 +54,7 @@ class Board:
             CollisionMechanics(),
             ProjectileMechanics(),
             SwitchMechanics(),
+            RemoveMechanics()
         ]
         self._cache()
         self.loaded = True

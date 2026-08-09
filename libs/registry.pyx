@@ -68,25 +68,26 @@ class Registry:
 
     def _assemble(self):
         """Compiles composite characters utilizing cython-wrapped base and feature renders."""
-        if not getattr(self.properties, 'sheets', None) or \
-                not getattr(self.properties.sheets, 'sheets', None):
+        if not self.properties.get('sheets', None):
             return
 
         for cat in [AssetInstances.PIXIES, AssetInstances.SPRITES]:
-            sheet = getattr(self.properties.sheets.sheets, cat, None)
+            sheet = self.properties["sheets"].get(cat, None)
             
             if not sheet: continue
 
-            for p_key, persona in sheet.personas.items():
-                if not persona.stack: continue
+            for p_key, persona in sheet.get("personas", {}).items():
+                stack = persona.get("stack", [])
+                
+                if not stack: continue
 
-                base_key = persona.stack[0]
+                base_key = persona.get("stack", [])[0]
                 base_ptr = self._textures.get(base_key)
 
                 if not base_ptr: continue
                 
                 stack_ptrs = []
-                for f_key in persona.stack[1:]:
+                for f_key in stack[1:]:
                     if f_key in self._textures:
                         stack_ptrs.append(self._textures[f_key])
 

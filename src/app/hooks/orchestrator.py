@@ -112,10 +112,12 @@ class Orchestrator:
 
                     recipe = getattr(getattr(self.recipes.assets, category_key), instance_key)
 
-                    if category_key != AssetCategories.TILES:
-                        instance_props = self.properties[category_key][instance_key][instance["id"]]
-                    else: 
+                    if category_key == AssetCategories.TILES:
                         instance_props = self.properties[category_key][instance_key]
+                    elif category_key == AssetCategories.SHEETS:
+                        instance_props = self.properties[category_key][instance_key]["personas"][instance["id"]] 
+                    else:
+                        instance_props = self.properties[category_key][instance_key][instance["id"]] 
 
                     assets.append(
                         Asset(
