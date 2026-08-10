@@ -2,7 +2,7 @@
 """
 # Ontology: Native Renderer (Cython)
 
-Directly interfaces with SDL2 C-Headers to execute hardware-accelerated rendering, 
+Directly interfaces with SDL2 C-Headers to execute headless rendering, 
 bypassing the Python Global Interpreter Lock (GIL) and ctypes overhead.
 """
 
@@ -34,10 +34,7 @@ cdef extern from "SDL2/SDL.h":
     int SDL_Init(unsigned int flags)
     void SDL_Quit()
     
-    SDL_Window* SDL_CreateWindow(const char* title, int x, int y, int w, int h, unsigned int flags)
-    void SDL_DestroyWindow(SDL_Window* window)
-    
-    SDL_Renderer* SDL_CreateRenderer(SDL_Window* window, int index, unsigned int flags)
+    SDL_Renderer* SDL_CreateSoftwareRenderer(SDL_Surface* surface)
     void SDL_DestroyRenderer(SDL_Renderer* renderer)
     
     SDL_Texture* SDL_CreateTexture(SDL_Renderer* renderer, unsigned int format, int access, int w, int h)
@@ -51,17 +48,15 @@ cdef extern from "SDL2/SDL.h":
     
     SDL_Surface* SDL_CreateRGBSurfaceWithFormat(unsigned int flags, int width, int height, int depth, unsigned int format)
     void SDL_FreeSurface(SDL_Surface* surface)
-    
-    unsigned int SDL_INIT_VIDEO
-    unsigned int SDL_WINDOW_SHOWN
-    unsigned int SDL_WINDOW_HIDDEN
-    unsigned int SDL_RENDERER_ACCELERATED
-    unsigned int SDL_RENDERER_SOFTWARE
-    int SDL_TEXTUREACCESS_TARGET
-    unsigned int SDL_PIXELFORMAT_RGBA32
 
     int SDL_SetTextureBlendMode(SDL_Texture* texture, int blendMode)
     int SDL_SetRenderDrawColor(SDL_Renderer* renderer, int r, int g, int b, int a)
+        
+    unsigned int SDL_INIT_VIDEO
+    unsigned int SDL_RENDERER_SOFTWARE
+    unsigned int SDL_PIXELFORMAT_RGBA32
+
+    int SDL_TEXTUREACCESS_TARGET
     int SDL_BLENDMODE_BLEND
     int SDL_BLENDMODE_NONE
 
@@ -75,7 +70,8 @@ cdef extern from "SDL2/SDL_image.h":
 # -----------------------------------------------------------------------------
 # Global Singletons
 # -----------------------------------------------------------------------------
-cdef SDL_Window* _window = NULL
+# Replaced _window with a primary canvas surface for headless rendering
+cdef SDL_Surface* _canvas_surface = NULL
 # Note: _renderer is maintained in render.pxd
 
 # -----------------------------------------------------------------------------
@@ -84,24 +80,27 @@ cdef SDL_Window* _window = NULL
 
 def init(int w, int l):
     """Initializes SDL for true headless execution using the software renderer."""
-    global _window
+    global _canvas_surface
+    global _renderer
     
     SDL_Init(SDL_INIT_VIDEO)
     IMG_Init(IMG_INIT_PNG)
     
-    # SDL_WINDOW_HIDDEN does not appear to work.
-    #   
-    _window = SDL_CreateWindow(b"Ontology Offscreen Canvas", 0, 0, w, l, SDL_WINDOW_SHOWN)
+    # 1. Create a primary surface to act as our main window replacement
+    _canvas_surface = SDL_CreateRGBSurfaceWithFormat(
+        0, w, l, 32, SDL_PIXELFORMAT_RGBA32
+    )
+    if _canvas_surface == NULL:
+        raise RuntimeError("Failed to create main canvas surface.")
     
-    global _renderer
-    # Force Software Rendering so CPU memory buffers render fully while hidden
-    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_SOFTWARE)
+    # 2. Bind the software renderer directly to the main surface
+    _renderer = SDL_CreateSoftwareRenderer(_canvas_surface)
     
     if _renderer == NULL:
         raise RuntimeError("Failed to initialize software SDL_Renderer.")
         
 def canvas(int w, int l) -> TexturePtr:
-    """Instantiates a blank texture assigned as an accelerated rendering target using primitive integers."""
+    """Instantiates a blank texture assigned as a rendering target using primitive integers."""
     logger.debug(f"Generating blank VRAM render target canvas size: {w}x{l}")
     cdef SDL_Texture* tex = SDL_CreateTexture(
         _renderer, 
@@ -157,7 +156,7 @@ def construct(TexturePtr target, list tiles):
     tiles format: 
         (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l, mul_nx, mul_ny)
     """
-    logger.debug(f"Constructing hardware layer chunk with {len(tiles)} primitive tile coordinates.")
+    logger.debug(f"Constructing layer chunk with {len(tiles)} primitive tile coordinates.")
     
     SDL_SetRenderTarget(_renderer, target.ptr)
     
@@ -169,8 +168,6 @@ def construct(TexturePtr target, list tiles):
     for tile in tiles:
         # Unpack flat tuples cleanly onto the C-stack
         tex, sx, sy, sw, sl, dx, dy, dw, dl, nx, ny = tile
-        
-        logger.debug(f" > Unpacked stamp instruction: src=({sx},{sy},{sw},{sl}) dst=({dx},{dy},{dw},{dl}) multiples=({nx},{ny})")
         
         # Enforce overwrite of pure transparency on target canvas
         SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_NONE)
@@ -236,6 +233,8 @@ def save(str filename, int w, int l, TexturePtr target=None):
     
     logger.debug(f"Saving SDL surface: {filename} bounds: {w}x{l} targeting {'TexturePtr' if target else 'Viewport Default'}")
 
+    # We read pixels into a temporary surface instead of relying purely on _canvas_surface
+    # to maintain support for saving specific TexturePtr targets dynamically.
     cdef SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
         0, w, l, 32, SDL_PIXELFORMAT_RGBA32
     )
@@ -253,19 +252,21 @@ def save(str filename, int w, int l, TexturePtr target=None):
     IMG_SavePNG(surface, b_filename)
     SDL_FreeSurface(surface)
 
-    # Safely reset the target back to the hidden window if we changed it
+    # Safely reset the target back to the main canvas if we changed it
     if target is not None:
         SDL_SetRenderTarget(_renderer, NULL)
 
 def quit_sdl():
     """Safely terminate SDL bindings."""
-    global _window
+    global _canvas_surface
     global _renderer
+    
     if _renderer != NULL:
         SDL_DestroyRenderer(_renderer)
         _renderer = NULL
-    if _window != NULL:
-        SDL_DestroyWindow(_window)
-        _window = NULL
+    if _canvas_surface != NULL:
+        SDL_FreeSurface(_canvas_surface)
+        _canvas_surface = NULL
+        
     IMG_Quit()
     SDL_Quit()

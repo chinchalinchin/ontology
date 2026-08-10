@@ -20,6 +20,14 @@ In addition, Pydantic Models for validating the new state and properties have be
 - [x] Ensure POPOs are updated to match the data being received through the Pydantic DTOs.
 - [x] Implement Board Asset Caching. Refactor `src/app/game/board.py`. Pre-calculate and cache dictionaries for categories and instances mapped by layer during `__init__`. The methods `categories()` and `instances()` must return references to these existing lists, completely eliminating list comprehensions from the main loop.
 - [x] Optimize Mechanic Queries. Ensure no Mechanic class (`SwitchMechanics`, `CollisionMechanics`, etc.) utilizes `chain()` or list comprehensions inside `update()`. Rely entirely on the newly cached lists from the `Board`.
+- [x] Refactor orchestration complexity in `src/app/orchestrator.py`. The orchestrator functions are far too complex. Use the data structures intelligently to hydrate the asset models. 
+- [x] Ensure factory methods align with schemas and models.
+- [x] Ensure POPOs are updated to match the data being received through the Pydantic DTOs.
+- [x] Rewrite the CLI from scratch. CLI should not be interacting with low-level objects and SDL interfaces. Have it create an Orchestrator, retrieve the Board and Screens. 
+    - [x] Add default args to the CLI for screensize.
+    - [x] Add method to Board to calculate the boardsize based on the position and multiples of Tiles.
+    - [x] Add export methods to Screen.
+- [x] Fix `Board.relayer()` to accurately remove/append assets to the `_cached_layers` arrays so `board.assets(layer)` queries return accurate data.
 
 **Crafts**
 
