@@ -11,7 +11,12 @@ from typing import TYPE_CHECKING
 # Application Libraries
 if TYPE_CHECKING:
     from app.game.board import Board
-from app.config.enums import AssetCategories, AssetInstances
+
+from app.config.enums import (
+    AssetCategories, 
+    AssetInstances
+)
+from app.game.resolvers import DispositionResolver
 
 # Cython Libraries
 from libs.math import Geometry
@@ -178,8 +183,11 @@ class IntentionMechanics(Mechanic):
 
         for sprite in sprites:
             # TODO (Phase III): Intention logic and DSL matrix compilation is pending.
-            if not hasattr(sprite, 'transitions'):
-                continue
+
+            sprite.state.animation.action = DispositionResolver.action(
+                sprite.state,
+                board.properties["equipment"]
+            )
 
             transits = sprite.transitions()
             

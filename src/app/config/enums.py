@@ -101,6 +101,7 @@ class Dispositions(str, Enum):
     ENGAGE          = "engage"
     FIND            = "find"
     FOLLOW          = "follow"
+    HUNT            = "hunt"
     IDLE            = "idle"
     INTERACT        = "interact"
     SCAVENGE        = "scavenge"
