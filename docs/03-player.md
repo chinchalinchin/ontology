@@ -14,10 +14,12 @@ Devices have their input mapped to *Actions*, *Directions* and *Extensions*. The
 
 The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See [SDL documentation](https://wiki.libsdl.org/SDL2/SDL_Scancode) for more information.
 
-The default Keyboard mapping bundled with the game is provided below,
+**Defaults**
+
+The default mappings bundled with the game are provided below,
 
 ```yaml
---8<-- "docs/.static/yaml/examples/default-disposition-matrix.yaml"
+--8<-- "docs/.static/yaml/examples/default-mapping-matrix.yaml"
 ```
 
 ## Schemas
@@ -27,5 +29,5 @@ The default Keyboard mapping bundled with the game is provided below,
 * Location: `src/data/player/mappings.yaml`
 
 ```yaml
---8<-- "docs/.static/yaml/data-player-mappings.yaml"
+--8<-- "docs/.static/yaml/data-mappings.yaml"
 ```
