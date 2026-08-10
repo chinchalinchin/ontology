@@ -372,21 +372,38 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#keyboard" class="md-nav__link">
+  <a href="#mapping" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Keyboard
+        Mapping
       
     </span>
   </a>
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#controller" class="md-nav__link">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schemas" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Controller
+        Schemas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schemas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#device-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device Mappings
       
     </span>
   </a>
@@ -526,21 +543,38 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#keyboard" class="md-nav__link">
+  <a href="#mapping" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Keyboard
+        Mapping
       
     </span>
   </a>
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#controller" class="md-nav__link">
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#schemas" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Controller
+        Schemas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Schemas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#device-mappings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Device Mappings
       
     </span>
   </a>
@@ -575,10 +609,19 @@
 <h1 id="ontology-player">Ontology: Player</h1>
 <p>TODO</p>
 <h2 id="devices">Devices</h2>
-<h3 id="keyboard">Keyboard</h3>
-<p>TODO </p>
-<h3 id="controller">Controller</h3>
-<p>TODO</p>
+<p>The Player Asset contains a Device, which polls for user input. The main responsiblity of the Player is to translate the data received into Player state mutations. This is achieved through an input mapping.</p>
+<h3 id="mapping">Mapping</h3>
+<p>Devices have their input mapped to <em>Actions</em>, <em>Directions</em> and <em>Extensions</em>. The mapping configuration file provides a dictionary lookup for what input state corresponds to what game state.</p>
+<ul>
+<li><strong>Keyboard</strong>: The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See <a href="https://wiki.libsdl.org/SDL2/SDL_Scancode">SDL documentation</a> for more information.</li>
+</ul>
+<h2 id="schemas">Schemas</h2>
+<h3 id="device-mappings">Device Mappings</h3>
+<ul>
+<li>Location: <code>src/data/player/mappings.yaml</code></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-player-mappings.yaml&quot;</span>
+</code></pre></div>
 
 
 
