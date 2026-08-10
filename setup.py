@@ -11,6 +11,11 @@ ext_modules = [
         sources=["libs/core.pyx"],
     ),
     Extension(
+        "libs.input",
+        sources=["libs/input.pyx"],
+        libraries=["SDL2"],
+    ),
+    Extension(
         "libs.math",
         sources=["libs/math.pyx"],
     ),

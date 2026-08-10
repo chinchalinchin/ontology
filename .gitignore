@@ -2,7 +2,8 @@ build/**
 **/*.so
 **/*.c
 **/save/**
-!**/save/.gitkeep
 **/.DS_Store
 **/__pycache__/**
 **/**.pyc
+
+!**/.gitkeep

@@ -79,14 +79,14 @@ class Screen:
         construct(self.bg_canvas, cython_bg_tiles)
         construct(self.fg_canvas, cython_fg_tiles)
 
-    def camera(self, player: Player) -> Position:
+    def camera(self, focus: Position, dim: Dimensions) -> Position:
         """
-        Calculates the camera's top-left coordinates, centered on the player,
+        Calculates the camera's top-left coordinates, centered on the focus target,
         and clamps it to the boundaries of the board.
         """
-        # Center the camera on the player
-        cam_x = player.state.position.x + (player.dimensions.w // 2) - (self.screensize.w // 2)
-        cam_y = player.state.position.y + (player.dimensions.l // 2) - (self.screensize.l // 2)
+        # Center the camera on the target
+        cam_x = focus.x + (dim.w // 2) - (self.screensize.w // 2)
+        cam_y = focus.y + (dim.l // 2) - (self.screensize.l // 2)
 
         # Clamp to board edges
         max_x = max(0, self.boardsize.w - self.screensize.w)
@@ -99,13 +99,14 @@ class Screen:
 
     def draw(self, 
         assets: List[Asset], 
-        player: Player, 
+        focus: Position,
+        dim: Dimensions,
         registry: Registry
     ) -> None:
         """
         Calculates viewport positioning, culls non-visible items, and routes data to the renderer.
         """
-        pov = self.camera(player)
+        pov = self.camera(focus, dim)
         active_assets = []
         
         for asset in assets:

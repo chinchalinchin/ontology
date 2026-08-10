@@ -1,5 +1,12 @@
 mappings:
   keyboard:
+    actions:
+      cast:
+      thrust:
+      shoot:
+      slash:
+      walk:
+      die:
     directions:
       up: 26    # SDL_SCANCODE_W
       down: 22  # SDL_SCANCODE_S

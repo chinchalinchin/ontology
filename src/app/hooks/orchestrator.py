@@ -11,7 +11,7 @@ import yaml
 
 # Application Libraries
 import app.config.settings as settings
-from app.config.enums import AssetCategories
+from app.config.enums import AssetCategories, Devices
 from app.assets.base import Asset
 from app.game.board import Board
 from app.game.screen import Screen
@@ -193,9 +193,14 @@ class Orchestrator:
                     self.board.play(delta)
                     accumulator -= delta
 
+                # Determine camera target (Defaults to player, but could be a cutscene target)
+                target_pos = self.board.player.state.position
+                target_dim = self.board.player.dimensions
+
                 self.screens[self.board.player.layer].draw(
                     self.board.assets(self.board.player.layer), 
-                    self.board.player, 
+                    target_pos,
+                    target_dim,
                     self.registry
                 )
 
