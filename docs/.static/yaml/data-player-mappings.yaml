@@ -1,17 +1,8 @@
 mappings:
   keyboard:
     actions:
-      cast:
-      thrust:
-      shoot:
-      slash:
-      walk:
-      die:
+      <action-key>: <scancode>
     directions:
-      up: 26    # SDL_SCANCODE_W
-      down: 22  # SDL_SCANCODE_S
-      left: 4   # SDL_SCANCODE_A
-      right: 7  # SDL_SCANCODE_D
+     <direction-key>: <scancode>
     extensions:
-      interact: 44  # SDL_SCANCODE_SPACE
-      sprint: 225   # SDL_SCANCODE_LSHIFT
+      <extension-key>: <scancode>

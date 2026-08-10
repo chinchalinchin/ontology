@@ -417,13 +417,41 @@ TODO
 
 ## Equipment
 
-TODO
+- Equipment Sheets: `/src/assets/sheets/sprites/equipment/<kind-key>/<equipment-key>.png`
 
-- Equipment Sheets: `/src/assets/sheets/sprites/equipment/<equipment-key>.png`
+Equipment sheets are superimposed onto the Sprite Sheets based on their active Equipment keys in `sprite.state.inventory.equipment`, e.g.
+
+```yaml
+equipment:
+    armor: plate
+    tool: shovel
+    utility: lantern
+    weapon: dagger
+```
+
+Each piece of Equipment is associated with an (Action, Direction) grouping. When a piece of Equipment is active, the Sheet Asset corresponding to the Equipment will be stacked on top of the Sprite's Asset stack.
+
+Equipment is divided in four *Kinds*: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. 
+
+When a piece of Equipment is active, it affects what animation state results when the Sprite enters into the `attack` Disposition.
+
+```python
+# pseudocode
+if sprite.state.intention.disposition == 'atack':
+    sprite.state.animation.action = ActionResolver.attack(
+        sprite.state.inventory,
+        equipment.properties
+    )
 
 ### Equipment Schema
 
 - Location: `/src/data/equipment/main.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/data-equipment.yaml"
+```
+
+**Default Equipment Matrix**
 
 ```yaml
 --8<-- "docs/.static/yaml/data-equipment.yaml"

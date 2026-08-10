@@ -1,0 +1,41 @@
+equipment:
+  armor:
+    leather:
+      animation: 
+        action: all
+        direction: all
+      sheets:
+        - leather-gloves
+        - leather-shield
+        - leather-sandals
+    plate:
+      animation:
+        action: all
+        direction: all
+      sheets:
+        - plate-boots
+        - plate-chest
+        - plate-gloves
+        - plate-greaves
+        - plate-helmet
+        - plate-shoulders
+  tools:
+    shovel:
+      animation: 
+        action: thrust
+        direction: all
+    sheets:
+  utilites: 
+    lantern:
+      animation: 
+        action: all
+        direction: all
+    sheets:
+      - lantern
+  weapons:
+    dagger:
+      animation: 
+        action: slash
+        directon: all
+      sheets:
+        - dagger

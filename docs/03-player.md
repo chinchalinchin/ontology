@@ -10,7 +10,15 @@ The Player Asset contains a Device, which polls for user input. The main respons
 
 Devices have their input mapped to *Actions*, *Directions* and *Extensions*. The mapping configuration file provides a dictionary lookup for what input state corresponds to what game state.
 
-- **Keyboard**: The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See [SDL documentation](https://wiki.libsdl.org/SDL2/SDL_Scancode) for more information.
+**Keyboard Mappings**
+
+The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See [SDL documentation](https://wiki.libsdl.org/SDL2/SDL_Scancode) for more information.
+
+The default Keyboard mapping bundled with the game is provided below,
+
+```yaml
+--8<-- "docs/.static/yaml/examples/default-disposition-matrix.yaml"
+```
 
 ## Schemas
 

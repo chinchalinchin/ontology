@@ -14,6 +14,7 @@ from app.models.state import (
     AnimationState, 
     Character, 
     Inventory, 
+    Intention,
     Meters, 
     Magic, 
     Health
@@ -60,8 +61,8 @@ class Player(Asset):
             mapping = "TODO"
             self.device = Keyboard(mapping)
 
-    def poll(self) -> PlayerState:
-        # TODO: Map device to state
-        return PlayerState(
+    def poll(self) -> Intention:
+        # TODO: Map device to intention
+        return Intention(
             # TODO: init
         )

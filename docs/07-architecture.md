@@ -22,16 +22,6 @@ This section contains an in-depth presentation of the game engine's programmatic
     - Initialize and register the Mechanics (e.g., `PhysicsMechanic`, `CollisionMechanic`, `AnimationMechanic`).
 4. Init `Screen`
 
-TODO
-
-### Orchestrator
-
-TODO
-
-### Factory
-
-TODO
-
 ## Mechanics
 
 The `Board.play()` method never changes when new game features are added. It simply iterates through the registered Mechanics:
@@ -62,10 +52,16 @@ These Mechanics handle general game logic.
 
 These Mechanics handle the logic governing the Sprite Disposition Transtion matrix.
 
-- `IntentionMechanic`s: Runs the Disposition transition lambdas, etc.
+- `IntentionMechanics`: Runs the Disposition transition lambdas, etc.
 - `MotionMechanics`: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.
 - `CommerceMechanics`: Translate Intentions (barter, attract, etc.) into trades and price movements.
-- `CombatMechanic`: (Cython) Resolves attack hitbox overlaps, decrements health, etc.
+- `CombatMechanics`: (Cython) Resolves attack hitbox overlaps, decrements health, etc.
+
+## Resolvers
+
+Resolvers map Intentions to Actions.
+
+TODO
 
 ## Cython
 
