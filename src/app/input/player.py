@@ -9,11 +9,19 @@ from app.assets.animations import StateAnimation
 from app.assets.frames import StateFrame
 from app.config.enums import Devices
 from app.input.devices import Keyboard, Controller, Device
-from app.models.state import PlayerState, AnimationState, Character, Inventory, Meters, Magic, Health
-from app.models.properties import AssetProperties
+from app.models.state import (
+    PlayerState, 
+    AnimationState, 
+    Character, 
+    Inventory, 
+    Meters, 
+    Magic, 
+    Health
+)
+from app.models.properties import PlayerProperties
 
 # Cython Libraries
-from libs.core import Position
+from libs.core import Position, Dimensions
 
 class Player(Asset):
     device: Device
@@ -22,6 +30,7 @@ class Player(Asset):
         device: Devices
     ):
         # PLACEHOLDER SUPER.__INIT__ FOR NOW
+        #   CONSTRUCTING EVERYTHING MANUALLY...
         super().__init__(
             taxonomy =  Taxonomy(id="hero", name="hero", category="sheet", instance="sprite"),
             state = PlayerState(
@@ -35,10 +44,13 @@ class Player(Asset):
                     magic = Magic(100, 100)
                 )
             ),
-            properties = AssetProperties(), # PLACEHOLDER
+            properties = PlayerProperties(
+                dimensions = Dimensions(w=64, l=64)
+            ), # PLACEHOLDER
             frame = StateFrame(),
             animation = StateAnimation()
         )
+        
         if device == Devices.CONTROLLER:
             # load controller State <-> Input mapping
             mapping = "TODO"

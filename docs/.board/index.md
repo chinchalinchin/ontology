@@ -7,11 +7,14 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 
 **Table of Contents**
 
-- Implement
-  - [Phase I: Rendering](./phases/implement/phase-i.md)
-  - [Phase II: Editor](./phases/implement/phase-ii.md)
-  - [Phase III: Dispositions](./phases/implement/phase-iii.md)
-  - [Phase IV: Mechanics](./phases/implement/phase-iv.md)
-- Refactor
-  - [Phase I: Refactor I](./phases/refactor/phase-i-i.md)
-  - [Phase I: Refactor II](./phases/refactor/phase-i-ii.md)
+- Phase Actions
+  - Implement
+    - [Phase I: Renderer](./phases/implement/phase-i.md)
+    - [Phase II: Player](./phase/implement/phase-ii.md)
+    - [Phase III: Editor](./phases/implement/phase-iii.md)
+    - [Phase IV: Mechanics](./phases/implement/phase-iv.md)
+    - [Phase V: Dispositions](./phases/implement/phase-v.md)
+  - Refactor
+    - [Phase I: Refactor](./phases/refactor/phase-i.md)
+  - Debug
+    - [Phase I: Debug](./phases/debug/phase-i.md)

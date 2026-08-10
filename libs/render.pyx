@@ -33,28 +33,80 @@ cdef extern from "SDL2/SDL.h":
         
     int SDL_Init(unsigned int flags)
     void SDL_Quit()
-    
+
+    SDL_Window* SDL_CreateWindow(
+        const char* title, 
+        int x, 
+        int y, 
+        int w, 
+        int h, 
+        unsigned int flags
+    )
+    SDL_Renderer* SDL_CreateRenderer(
+        SDL_Window* window, 
+        int index, 
+        unsigned int flags
+    )
     SDL_Renderer* SDL_CreateSoftwareRenderer(SDL_Surface* surface)
     void SDL_DestroyRenderer(SDL_Renderer* renderer)
     
-    SDL_Texture* SDL_CreateTexture(SDL_Renderer* renderer, unsigned int format, int access, int w, int h)
-    int SDL_SetRenderTarget(SDL_Renderer* renderer, SDL_Texture* texture)
+    SDL_Texture* SDL_CreateTexture(
+        SDL_Renderer* renderer, 
+        unsigned int format, 
+        int access, 
+        int w, 
+        int h
+    )
+    int SDL_SetRenderTarget(
+        SDL_Renderer* renderer, 
+        SDL_Texture* texture
+    )
     
     int SDL_RenderClear(SDL_Renderer* renderer)
-    int SDL_RenderCopy(SDL_Renderer* renderer, SDL_Texture* texture, const SDL_Rect* srcrect, const SDL_Rect* dstrect)
+    int SDL_RenderCopy(
+        SDL_Renderer* renderer, 
+        SDL_Texture* texture, 
+        const SDL_Rect* srcrect, 
+        const SDL_Rect* dstrect
+    )
     void SDL_RenderPresent(SDL_Renderer* renderer)
     void SDL_PumpEvents()
-    int SDL_RenderReadPixels(SDL_Renderer* renderer, const SDL_Rect* rect, unsigned int format, void* pixels, int pitch)
+    int SDL_RenderReadPixels(
+        SDL_Renderer* renderer, 
+        const SDL_Rect* rect, 
+        unsigned int format, 
+        void* pixels, 
+        int pitch
+    )
     
-    SDL_Surface* SDL_CreateRGBSurfaceWithFormat(unsigned int flags, int width, int height, int depth, unsigned int format)
+    SDL_Surface* SDL_CreateRGBSurfaceWithFormat(
+        unsigned int flags, 
+        int width, 
+        int height, 
+        int depth, 
+        unsigned int format
+    )
     void SDL_FreeSurface(SDL_Surface* surface)
 
-    int SDL_SetTextureBlendMode(SDL_Texture* texture, int blendMode)
-    int SDL_SetRenderDrawColor(SDL_Renderer* renderer, int r, int g, int b, int a)
+    int SDL_SetTextureBlendMode(
+        SDL_Texture* texture, 
+        int blendMode
+    )
+    int SDL_SetRenderDrawColor(
+        SDL_Renderer* renderer, 
+        int r, 
+        int g, 
+        int b, 
+        int a
+    )
         
     unsigned int SDL_INIT_VIDEO
-    unsigned int SDL_RENDERER_SOFTWARE
     unsigned int SDL_PIXELFORMAT_RGBA32
+
+    unsigned int SDL_WINDOW_SHOWN
+    unsigned int SDL_WINDOW_HIDDEN
+    unsigned int SDL_RENDERER_ACCELERATED
+    unsigned int SDL_RENDERER_SOFTWARE
 
     int SDL_TEXTUREACCESS_TARGET
     int SDL_BLENDMODE_BLEND
@@ -72,32 +124,32 @@ cdef extern from "SDL2/SDL_image.h":
 # -----------------------------------------------------------------------------
 # Replaced _window with a primary canvas surface for headless rendering
 cdef SDL_Surface* _canvas_surface = NULL
+cdef SDL_Window* _window = NULL
 # Note: _renderer is maintained in render.pxd
 
 # -----------------------------------------------------------------------------
 # Public Python/Cython API
 # -----------------------------------------------------------------------------
 
-def init(int w, int l):
-    """Initializes SDL for true headless execution using the software renderer."""
-    global _canvas_surface
-    global _renderer
+def init(int w, int l, bint headless=True):
+    """Initializes SDL."""
+    global _window, _canvas_surface, _renderer
     
     SDL_Init(SDL_INIT_VIDEO)
     IMG_Init(IMG_INIT_PNG)
     
-    # 1. Create a primary surface to act as our main window replacement
-    _canvas_surface = SDL_CreateRGBSurfaceWithFormat(
-        0, w, l, 32, SDL_PIXELFORMAT_RGBA32
-    )
-    if _canvas_surface == NULL:
-        raise RuntimeError("Failed to create main canvas surface.")
-    
-    # 2. Bind the software renderer directly to the main surface
-    _renderer = SDL_CreateSoftwareRenderer(_canvas_surface)
-    
-    if _renderer == NULL:
-        raise RuntimeError("Failed to initialize software SDL_Renderer.")
+    if headless:
+        _canvas_surface = SDL_CreateRGBSurfaceWithFormat(0, w, l, 32, SDL_PIXELFORMAT_RGBA32)
+        _renderer = SDL_CreateSoftwareRenderer(_canvas_surface)
+        if _canvas_surface == NULL:
+            raise RuntimeError("Failed to create main canvas surface.")
+            
+    else:
+        _window = SDL_CreateWindow(b"Game", 100, 100, w, l, SDL_WINDOW_SHOWN)
+        _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED)
+        if _renderer == NULL:
+            raise RuntimeError("Failed to initialize software SDL_Renderer.")
+
         
 def canvas(int w, int l) -> TexturePtr:
     """Instantiates a blank texture assigned as a rendering target using primitive integers."""

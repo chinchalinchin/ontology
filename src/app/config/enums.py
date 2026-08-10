@@ -13,8 +13,6 @@ class Devices(str, Enum):
 # -------------------------------- ASSET ENUMERATIONS
 
 class AssetCategories(str, Enum):
-    """
-    """
     TILES           = "tiles"
     OBJECTS         = "objects"
     EFFECTS         = "effects"
@@ -23,8 +21,6 @@ class AssetCategories(str, Enum):
     CRAFTS          = "crafts"
 
 class AssetInstances(str, Enum):
-    """
-    """
     BACK            = "back"
     FORE            = "fore"
     EXPRESSIONS     = "expressions"
@@ -43,23 +39,17 @@ class AssetInstances(str, Enum):
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 
 class FrameRecipe(str, Enum):
-    """
-    """
     SINGLE          = "single"
     ITERABLE        = "iterable"
     STATE           = "state"
 
 class AnimationRecipe(str, Enum):
-    """
-    """
     TEMPORARY       = "temporary"
     PERSISTENT      = "persistent"
     BINARY          = "binary"
     STATE           = "state"
 
 class StateRecipe(str, Enum):
-    """
-    """
     SPRITE          = "sprite"
     SWITCH          = "switch"
     DOOR            = "door"
@@ -71,6 +61,12 @@ class StateRecipe(str, Enum):
     MULTIPLIER      = "multiplier"
 
 # -------------------------------- SPRITE STATE ENUMERATIONS
+
+class Directions(str, Enum):
+    UP              = "up"
+    LEFT            = "left"
+    DOWN            = "down"
+    RIGHT           = "right"
 
 class Actions(str, Enum):
     CAST            = "cast"

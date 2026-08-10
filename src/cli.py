@@ -31,7 +31,7 @@ def main():
     subparsers = parser.add_subparsers(dest="command", required=True)
     
     # Register common arguments across all subparsers
-    for cmd in ["construct", "render"]:
+    for cmd in ["prerender", "render"]:
         p = subparsers.add_parser(cmd)
         p.add_argument("board_key", type=str, help="The configuration key for the target board")
         p.add_argument("--out", type=str, required=True, help="Output directory path")
@@ -68,14 +68,14 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Step 2: Route to encapsulated screen export methods
-    if args.command == "construct":
-        out_path = out_dir / f"{args.board_key}_{args.layer}_chunk.png"
+    if args.command == "prerender":
+        out_path = out_dir / f"{args.board_key}-{args.layer}-background.png"
         logger.info(f"Constructing background map image for layer '{args.layer}'...")
         screen.export_background(str(out_path))
         logger.info(f"Background successfully exported to: {out_path}")
 
     elif args.command == "render":
-        out_path = out_dir / f"{args.board_key}_{args.layer}_render.png"
+        out_path = out_dir / f"{args.board_key}-{args.layer}.png"
         assets = board.assets(args.layer)
         logger.info(f"Rendering composite frame for layer '{args.layer}'...")
         screen.export_render(str(out_path), assets, board.player, registry)

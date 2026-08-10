@@ -7,6 +7,8 @@ Models for typing the state attributes of Assets. See documentation for a more i
 from typing import Callable, Dict, List, Union
 from dataclasses import dataclass, field
 
+# Application Libraries
+from app.config.enums import Actions, Directions
 # Cython Libraries
 from libs.core import Position, Multiple
 
@@ -25,14 +27,10 @@ class AssetState:
 class AnimationState:
     """
     Foundational class for animate Asset states.
-
-    - action: Action key, possibly null.
-    - direction: Direction key, possibly null.
-    - frame: Frame index, possible null.
     """
-    action: Union[str, None] = None
-    direction: Union[str, None] = None
-    frame: Union[int, None] = None
+    action: str = Actions.WALK
+    direction: str = Directions.DOWN
+    frame: int = 0
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------- ASSET STATE MODELS

@@ -79,6 +79,10 @@ class SheetProperties(AssetProperties):
     personas: Dict[str, Persona]
     actions: Dict[str, Action]
 
+@dataclass(slots=True)
+class PlayerProperties(AssetProperties):
+    dimensions: Dimensions
+    hitboxes: List[Hitbox] = field(default_factory=list)
 # ---------------------------------------------------------------------------------------
 # ---------------------------------------------------------------- DISPOSITION PROPERTIES
 

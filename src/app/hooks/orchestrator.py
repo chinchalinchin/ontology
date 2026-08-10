@@ -85,13 +85,10 @@ class Orchestrator:
         logger.info(f"Loading YAML state configurations from {target_dir}")
 
         for file_path in target_dir.glob("*.yaml"):
-            logger.info(file_path)
             with file_path.open("r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
                 if isinstance(data, dict):
                     merged_data = Orchestrator.merge(merged_data, data)
-
-        logger.info(merged_data)
 
         logger.debug(f"Validating loaded schema via Pydantic model.")
         self.state = PyStateConfiguration.model_validate(merged_data)
@@ -120,8 +117,6 @@ class Orchestrator:
                 for instance in instance_list:
 
                     recipe = getattr(getattr(self.recipes.assets, category_key), instance_key)
-
-                    logger.info(recipe)
                     
                     # Lookup properties using the 'id' before modifying the dictionary
                     if category_key == AssetCategories.TILES:

@@ -113,7 +113,6 @@ class Board:
                 self._all_instances[inst] = []
             self._all_instances[inst].append(asset)
 
-    @property
     def assets(self, layer=None) -> List[Asset]:
         if layer is None:
             return self._assets

@@ -1,5 +1,5 @@
 
-#### Implment: Phase I - Render
+#### Implement: Phase I - Render
 
 1. **Cython SDL2 Interface** (`libs/render.pyx`)
 
