@@ -5,8 +5,8 @@ cdef class Position:
     cdef public int y
 
 cdef class Dimensions:
-    cdef public int l
     cdef public int w
+    cdef public int l
 
 cdef class Multiple:
     cdef public int nx

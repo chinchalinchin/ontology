@@ -7,5 +7,23 @@ tiles:
         x: 0
         y: 0
       multiple:
-        nx: 4
+        nx: 10
+        ny: 10
+    - id: dirt
+      name: dirt-patch
+      layer: '0'
+      position: 
+        x: 320
+        y: 0
+      multiple: 
+        nx: 5
         ny: 4
+    - id: water
+      name: great-lake
+      layer: '0'
+      position: 
+        x: 320
+        y: 128
+      multiple:
+        nx: 5
+        ny: 6

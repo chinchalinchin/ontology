@@ -51,6 +51,7 @@ class Screen:
         for tile in tiles:
             # Query Registry using the computed tile key
             frame_key = tile.frame.key(tile.id, tile.state)
+            print(frame_key)
             tex_data = registry.data(frame_key)
             if tex_data:
                 tex, sx, sy, sw, sl = tex_data

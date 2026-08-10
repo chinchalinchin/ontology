@@ -81,6 +81,12 @@ def main():
         screen.export_render(str(out_path), assets, board.player, registry)
         logger.info(f"Composite frame successfully rendered and exported to: {out_path}")
 
+    del screen
+    del screens
+    del board
+    del registry
+    del maestro
+
     quit_sdl()
     logger.info("CLI processes completed.")
 

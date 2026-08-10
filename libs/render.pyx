@@ -6,7 +6,10 @@ Directly interfaces with SDL2 C-Headers to execute hardware-accelerated renderin
 bypassing the Python Global Interpreter Lock (GIL) and ctypes overhead.
 """
 
+import logging
 from libs.registry cimport TexturePtr
+
+logger = logging.getLogger("libs.render")
 
 # -----------------------------------------------------------------------------
 # C-Header Definitions
@@ -50,14 +53,17 @@ cdef extern from "SDL2/SDL.h":
     void SDL_FreeSurface(SDL_Surface* surface)
     
     unsigned int SDL_INIT_VIDEO
+    unsigned int SDL_WINDOW_SHOWN
     unsigned int SDL_WINDOW_HIDDEN
     unsigned int SDL_RENDERER_ACCELERATED
+    unsigned int SDL_RENDERER_SOFTWARE
     int SDL_TEXTUREACCESS_TARGET
     unsigned int SDL_PIXELFORMAT_RGBA32
 
     int SDL_SetTextureBlendMode(SDL_Texture* texture, int blendMode)
     int SDL_SetRenderDrawColor(SDL_Renderer* renderer, int r, int g, int b, int a)
     int SDL_BLENDMODE_BLEND
+    int SDL_BLENDMODE_NONE
 
 cdef extern from "SDL2/SDL_image.h":
     int IMG_Init(int flags)
@@ -77,23 +83,26 @@ cdef SDL_Window* _window = NULL
 # -----------------------------------------------------------------------------
 
 def init(int w, int l):
-    """Initializes the SDL subsystems and instantiates the hidden hardware renderer."""
+    """Initializes SDL for true headless execution using the software renderer."""
     global _window
     
     SDL_Init(SDL_INIT_VIDEO)
     IMG_Init(IMG_INIT_PNG)
     
-    _window = SDL_CreateWindow(b"Ontology Offscreen Canvas", 0, 0, w, l, SDL_WINDOW_HIDDEN)
+    # SDL_WINDOW_HIDDEN does not appear to work.
+    #   
+    _window = SDL_CreateWindow(b"Ontology Offscreen Canvas", 0, 0, w, l, SDL_WINDOW_SHOWN)
     
-    # Assign to global cython context mapped from .pxd
     global _renderer
-    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED)
+    # Force Software Rendering so CPU memory buffers render fully while hidden
+    _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_SOFTWARE)
     
     if _renderer == NULL:
-        raise RuntimeError("Failed to initialize hardware-accelerated SDL_Renderer.")
-
+        raise RuntimeError("Failed to initialize software SDL_Renderer.")
+        
 def canvas(int w, int l) -> TexturePtr:
     """Instantiates a blank texture assigned as an accelerated rendering target using primitive integers."""
+    logger.debug(f"Generating blank VRAM render target canvas size: {w}x{l}")
     cdef SDL_Texture* tex = SDL_CreateTexture(
         _renderer, 
         SDL_PIXELFORMAT_RGBA32, 
@@ -148,6 +157,8 @@ def construct(TexturePtr target, list tiles):
     tiles format: 
         (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l, mul_nx, mul_ny)
     """
+    logger.debug(f"Constructing hardware layer chunk with {len(tiles)} primitive tile coordinates.")
+    
     SDL_SetRenderTarget(_renderer, target.ptr)
     
     cdef SDL_Rect c_src, c_dst
@@ -158,6 +169,11 @@ def construct(TexturePtr target, list tiles):
     for tile in tiles:
         # Unpack flat tuples cleanly onto the C-stack
         tex, sx, sy, sw, sl, dx, dy, dw, dl, nx, ny = tile
+        
+        logger.debug(f" > Unpacked stamp instruction: src=({sx},{sy},{sw},{sl}) dst=({dx},{dy},{dw},{dl}) multiples=({nx},{ny})")
+        
+        # Enforce overwrite of pure transparency on target canvas
+        SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_NONE)
         
         c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sl
         c_dst.w, c_dst.h = dw, dl
@@ -196,7 +212,7 @@ def render(
         SDL_RenderCopy(_renderer, background.ptr, &bg_src, NULL)
         
     for asset in assets:
-        # Safely unpack the primitive git atuple directly into C-variables
+        # Safely unpack the primitive tuple directly into C-variables
         tex_wrapper, sx, sy, sw, sl, dx, dy, dw, dl = asset
         
         c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sl
@@ -214,11 +230,12 @@ def render(
     SDL_RenderPresent(_renderer)
     SDL_PumpEvents()
 
-# Update the signature in libs/render.pyx to accept an optional target
 def save(str filename, int w, int l, TexturePtr target=None):
     """Extracts pixel data from the active hardware renderer or a specific texture to disk."""
     cdef bytes b_filename = filename.encode('utf-8')
     
+    logger.debug(f"Saving SDL surface: {filename} bounds: {w}x{l} targeting {'TexturePtr' if target else 'Viewport Default'}")
+
     cdef SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
         0, w, l, 32, SDL_PIXELFORMAT_RGBA32
     )
