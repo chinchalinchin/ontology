@@ -8,20 +8,17 @@ This section contains an in-depth presentation of the game engine's programmatic
     * Load Configuration into memory
         - Load Asset Recipes YAML File from `/src/assets/main.yaml`
         - Load Asset Category properties YAML files from `/src/assets/<category>/main.yaml`
-        - Load Asset state YAML files from the `/src/data/state/<board-key>` directory, where `<board-key>` is the selected board. There may be an arbitrary number of state files, with any filename, in the `<board-key>` directory.
+        - Load Asset Instance state YAML files from the `/src/data/state/<board-key>` directory, where `<board-key>` is the selected board. There may be an arbitrary number of state files, with any filename, in the `<board-key>` directory.
         - Convert all heavy Pydantic DTOs into lightweight Plain Old Python Objects (POPOs) and Cython `cdef classes` for runtime use.
         - Initialize list of Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).
 2. Init: `Registry`
     * Load Assets into memory
         - Recursively load `/src/assets/**/*.png` (*not* `.mp3` or `.wav`!). Pydantic Models (DTOs) are used during this phase to read `main.yaml` files and ensure strict schema validation. 
-        - Create a map using the key-values `<registry-key>: <frame>`, where `<registry-key>` is calculated according to the Frame schema,
-            - Assets with SingleFrame index with `<asset-id>`
-            - Assets with BinaryFrames indexed with  `<asset-id>-<idle | activated>`.
-            - Assets with StateFrames indexed with `<asset-id>-<action>-<direction>-<frame>`, with `<frame>` starting at 0.
-3. Init `Board`
-    - Initialize and register the Mechanics (e.g., `PhysicsMechanic`, `CollisionMechanic`, `AnimationMechanic`).
-4. Init `Screen`
-
+        - Create a map using the key-values `<registry-key>: <frame>`, where `<registry-key>` is calculated according to the Frame schema.
+3. Init: `Board`
+    * Initialize and register the Mechanics (e.g., `PhysicsMechanic`, `CollisionMechanic`, `AnimationMechanic`).
+4. Init: `Screen`
+    * Initialize background and foreground tile canvases. 
 ## Mechanics
 
 The `Board.play()` method never changes when new game features are added. It simply iterates through the registered Mechanics:
