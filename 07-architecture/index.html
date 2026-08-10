@@ -432,34 +432,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Initialization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#orchestrator" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Orchestrator
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#factory" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Factory
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -509,6 +481,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resolvers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolvers
+      
+    </span>
+  </a>
   
 </li>
       
@@ -616,11 +599,6 @@
 </li>
 <li>Init <code>Screen</code></li>
 </ol>
-<p>TODO</p>
-<h3 id="orchestrator">Orchestrator</h3>
-<p>TODO</p>
-<h3 id="factory">Factory</h3>
-<p>TODO</p>
 <h2 id="mechanics">Mechanics</h2>
 <p>The <code>Board.play()</code> method never changes when new game features are added. It simply iterates through the registered Mechanics:</p>
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta_time</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -643,11 +621,14 @@
 <h3 id="dispositional-mechanics">Dispositional Mechanics</h3>
 <p>These Mechanics handle the logic governing the Sprite Disposition Transtion matrix.</p>
 <ul>
-<li><code>IntentionMechanic</code>s: Runs the Disposition transition lambdas, etc.</li>
+<li><code>IntentionMechanics</code>: Runs the Disposition transition lambdas, etc.</li>
 <li><code>MotionMechanics</code>: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.</li>
 <li><code>CommerceMechanics</code>: Translate Intentions (barter, attract, etc.) into trades and price movements.</li>
-<li><code>CombatMechanic</code>: (Cython) Resolves attack hitbox overlaps, decrements health, etc.</li>
+<li><code>CombatMechanics</code>: (Cython) Resolves attack hitbox overlaps, decrements health, etc.</li>
 </ul>
+<h2 id="resolvers">Resolvers</h2>
+<p>Resolvers map Intentions to Actions.</p>
+<p>TODO</p>
 <h2 id="cython">Cython</h2>
 <p>While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine strategically uses Cython to bridge this gap, adhering to a strict <strong>"Zero Heap Allocation in the Inner Loop"</strong> philosophy to prevent frame stutters caused by the Python Garbage Collector.</p>
 <h3 id="math-geometry-libsmathpyx">Math &amp; Geometry (<code>libs/math.pyx</code>)</h3>

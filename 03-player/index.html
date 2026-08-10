@@ -612,9 +612,11 @@
 <p>The Player Asset contains a Device, which polls for user input. The main responsiblity of the Player is to translate the data received into Player state mutations. This is achieved through an input mapping.</p>
 <h3 id="mapping">Mapping</h3>
 <p>Devices have their input mapped to <em>Actions</em>, <em>Directions</em> and <em>Extensions</em>. The mapping configuration file provides a dictionary lookup for what input state corresponds to what game state.</p>
-<ul>
-<li><strong>Keyboard</strong>: The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See <a href="https://wiki.libsdl.org/SDL2/SDL_Scancode">SDL documentation</a> for more information.</li>
-</ul>
+<p><strong>Keyboard Mappings</strong></p>
+<p>The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See <a href="https://wiki.libsdl.org/SDL2/SDL_Scancode">SDL documentation</a> for more information.</p>
+<p>The default Keyboard mapping bundled with the game is provided below,</p>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/examples/default-disposition-matrix.yaml&quot;</span>
+</code></pre></div>
 <h2 id="schemas">Schemas</h2>
 <h3 id="device-mappings">Device Mappings</h3>
 <ul>
