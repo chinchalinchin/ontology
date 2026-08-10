@@ -19,6 +19,7 @@ This section contains an in-depth presentation of the game engine's programmatic
     * Initialize and register the Mechanics (e.g., `PhysicsMechanic`, `CollisionMechanic`, `AnimationMechanic`).
 4. Init: `Screen`
     * Initialize background and foreground tile canvases. 
+    
 ## Mechanics
 
 The `Board.play()` method never changes when new game features are added. It simply iterates through the registered Mechanics:
