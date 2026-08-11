@@ -21,7 +21,7 @@
     
     
       
-        <title>Ontology: Intentions - Ontology</title>
+        <title>Ontology: Intentions & Goals - Ontology</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ontology-intentions" class="md-skip">
+        <a href="#ontology-intentions-goals" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Ontology: Intentions
+              Ontology: Intentions &amp; Goals
             
           </span>
         </div>
@@ -424,22 +424,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#animation-resolution" class="md-nav__link">
+  <a href="#animationmap" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Animation Resolution
+        AnimationMap
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Animation Resolution">
+    <nav class="md-nav" aria-label="AnimationMap">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#action-resolution" class="md-nav__link">
+  <a href="#actions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Action Resolution
+        Actions
       
     </span>
   </a>
@@ -447,10 +447,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#direction-resolution" class="md-nav__link">
+  <a href="#directions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Direction Resolution
+        Directions
       
     </span>
   </a>
@@ -458,10 +458,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#frame-resolution" class="md-nav__link">
+  <a href="#dialoge-resolution" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Frame Resolution
+        Dialoge Resolution
       
     </span>
   </a>
@@ -507,41 +507,19 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#motivation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Motivation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#communication" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Communication
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#expression" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Expression
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal
+      
+    </span>
+  </a>
   
 </li>
       
@@ -565,36 +543,49 @@
   
 
 
-<h1 id="ontology-intentions">Ontology: Intentions</h1>
+<h1 id="ontology-intentions-goals">Ontology: Intentions &amp; Goals</h1>
 <ul>
 <li>Location: <code>/src/data/intentions/main.yaml</code></li>
 </ul>
-<p><em>Intentions</em> are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state that is updated by the gameplay loop. Intention coordinates represent a node in the Sprite "finite automaton", the Disposition Transition Matrix.</p>
-<p>The complete Intention State for a Sprite is given by the tuple,</p>
-<pre><code>(Disposition, Expression, Extension, Motivation, Communication)
-</code></pre>
-<p>The dimensions of Intention are discussed in <a href="#dimensions">more detail below</a>.</p>
-<h2 id="animation-resolution">Animation Resolution</h2>
-<p>Each component of a Sprite's Animation is resolved through a different relation.</p>
-<h3 id="action-resolution">Action Resolution</h3>
-<p>Sprite Animation Actions can be viewed as a function of Sprite Intention state and Equipment state</p>
+<p><em>Intentions</em> and <em>Goals</em> are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite "finite automaton", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.</p>
+<p>Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the <a href="">Intention Transition Matrix</a>.</p>
+<h2 id="animationmap">AnimationMap</h2>
+<p>A Sprite's State is mapped onto an (Action, Direction) through an AnimationMap. This component of the Application statically ingests a Sprite State, applies formulas and returns the mapped tupel.</p>
+<p><strong>Player Device</strong></p>
+<p>Player Device mappings are applied to convert Device input to Intention and Goals, prior to the mapping of an Intention onto Animation (Action, Direction)-tuple. </p>
+<h3 id="actions">Actions</h3>
+<p>Sprite Animation Actions is as a function of Sprite Intention state and Equipment state</p>
 <pre><code>f(Intention, Equipment) = Action
 </code></pre>
-<p><strong>Formulas</strong></p>
+<p><strong>Formulae</strong></p>
 <ul>
-<li><code>if intention.disposition == attack: action = equipment.animation.action</code></li>
+<li><code>if intention == attack: action = equipment.animation.action</code></li>
 </ul>
-<h3 id="direction-resolution">Direction Resolution</h3>
-<p>TODO</p>
-<h3 id="frame-resolution">Frame Resolution</h3>
-<p>Frame resolution is covered in more detail in the <a href="../01-assets/">Asset documentation</a>. Frame resolution is handled entirely by the Frame component schema injected into the Asset during initialization. The schema is dependent on Asset Instance type and current Asset Action.</p>
-<pre><code>f(Instance, Action) = Frame
+<h3 id="directions">Directions</h3>
+<p>Sprite Animation Direction is a function of Sprite Position state and Goal state,</p>
+<pre><code>f(Position, Goal) = Direction
 </code></pre>
+<p><strong>Player Mappings</strong></p>
+<ul>
+<li><code>if input.scancode == rightarrow: goal.position.x += speed</code></li>
+<li><code>if input.scancode == leftarrow: goal.position.x -= speed</code></li>
+<li><code>if input.scancode == uparrow: goal.position.y -= speed</code></li>
+<li><code>if input.scancode == downarrow: goal.position.y += speed</code></li>
+</ul>
+<p><strong>Formulae</strong></p>
+<p>Let <code>dx = position.x - goal.position.x, dy = position.y - goal.position.y</code>.</p>
+<ul>
+<li><code>if dy &gt; dx, delta_y &gt; -dx: direction = down</code></li>
+<li><code>if dy &lt; dx, delta_y &gt; -dx: direction = right</code></li>
+<li><code>if dy &lt; dx, delta_y &lt; -dx: direction = up</code></li>
+<li><code>if dy &gt; dx, delta_y &gt; -dx: direction = left</code></li>
+</ul>
+<h3 id="dialoge-resolution">Dialoge Resolution</h3>
+<p><strong>Formulae</strong></p>
+<ul>
+<li><code>if intention.disposition == communicate and psyche.communication: popup = psyche.communcation</code></li>
+</ul>
 <h2 id="dimensions">Dimensions</h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Player Intentions do not contain the Motivation or Communication fields.</p>
-</div>
 <h3 id="extension">Extension</h3>
 <p>A Extension is a pseudo-state that does not factor into the Asset frame key calculation directly. It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the <code>sprint</code> Extension state increases the velocity of the <code>(walk, *)</code> states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the <code>interact</code> Extension state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.</p>
 <p>The default Extension states are enumerated below,</p>
@@ -612,6 +603,52 @@
 <p>The Player state does not observe the Disposition Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See <a href="../03-player/">Player documentation</a> for more information on the Player.</p>
 </div>
 <p>A Disposition determines which Intention states are currently reachable for a Sprite. In other words, a Sprite's <em>Disposition</em> is an element in its Disposition Transition matrix, covered below. Dispositions are enumerated below, along with their reachable states.</p>
+<table>
+<thead>
+<tr>
+<th>Start State</th>
+<th>Reachable Sprite States</th>
+<th>Player State</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>attack</code></td>
+<td><code>attack</code>, <code>hunt</code>, <code>loot</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>attract</code></td>
+<td><code>barter</code>, <code>speak</code></td>
+<td></td>
+</tr>
+<tr>
+<td><code>build</code></td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td><code>escape</code></td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td><code>find</code></td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td><code>sprint</code></td>
+<td>-</td>
+<td></td>
+</tr>
+<tr>
+<td><code>follow</code></td>
+<td>-</td>
+<td></td>
+</tr>
+</tbody>
+</table>
 <ol>
 <li><code>attack</code><ul>
 <li>Reachable Dispostions: <code>attack, hunt, loot</code></li>
@@ -741,32 +778,25 @@
 <p>The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if <code>sprite.goal.category == 'sprite'</code>, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back into <code>attack</code>.</p>
 </div>
 <p>Disposition conditions are converted into lambda functions by the application and then evaluated at runtime.</p>
-<h3 id="motivation">Motivation</h3>
-<p>Motivations are long-term variables that modulate the Disposition Transition matrix.</p>
-<p>The default Motivations are enumerated below,</p>
+<h2 id="goal">Goal</h2>
+<p><em>Goals</em> are provide the seed (or energy) for transitions through Dispositions and the application of Motivations to modulate said transitions. A Goal is a Sprite's <em>modus operandi</em>, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is <em>in order</em> to achieve a Goal.</p>
 <ul>
-<li><code>conquest</code></li>
-<li><code>profit</code></li>
-<li><code>survival</code></li>
-<li><code>love</code></li>
-<li><code>revenge</code></li>
-<li><code>rebellion</code></li>
-<li><code>safety</code></li>
+<li><code>name</code>: Unique Identifier of the Goal.</li>
+<li><code>category</code>: Category of the Goal. (<code>sprite</code>, <code>asset</code>, <code>position</code>, <code>loot</code>, <code>wealth</code>)</li>
+<li><code>intention</code>:<ul>
+<li><code>extension</code>: Extension to be applied when Goal achieved .</li>
+<li><code>action</code>: Action to be applied when Goal achieved.</li>
 </ul>
-<h3 id="communication">Communication</h3>
-<p>The Communication dimension of an Intention can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the <code>speak</code> Extension.</p>
-<h3 id="expression">Expression</h3>
-<p>The Expression dimension alter the Sprite's appearnce by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. </p>
-<p>The default Expressions are enumerated below,</p>
+</li>
+</ul>
+<p>When a Sprite has Goal, it will seek out (path-find) its way to the AssetName, provided the AssetName is within <code>mutators.parameters.vision.radius</code>.</p>
+<p>The <code>category</code> of a Goal affects the type of identifier given in <code>name</code>. </p>
 <ul>
-<li><code>agreement</code></li>
-<li><code>anger</code></li>
-<li><code>confusion</code></li>
-<li><code>curiosity</code></li>
-<li><code>disagreement</code></li>
-<li><code>loquacity</code></li>
-<li><code>surprise</code></li>
-<li><code>tired</code></li>
+<li><code>category == sprite</code>: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The <code>name</code> will be a Sprite <code>name</code>.</li>
+<li><code>category == asset</code>: The Goal is a non-Sprite Asset, i.e. the Sprite is trying to find an ingame Object. The <code>name</code> will be the Asset <code>name</code>.</li>
+<li><code>category == loot</code>: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The <code>name</code> will be an Inventory key. </li>
+<li><code>category == wealth</code>: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The <code>name</code> will be an Inventory key. The key will be of the value with the maximum value in the Sprite's Prices, e.g. the loot with the highest Price.</li>
+<li><code>category == position</code>: The Goal is Position, i.e. the Sprite is trying to find a Position on the Board. The <code>name</code> will be ... (TODO: PROPERTY MECHANICS).</li>
 </ul>
 
 

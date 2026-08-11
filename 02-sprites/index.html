@@ -528,6 +528,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#psyche" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Psyche
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Psyche">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Communication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expression
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Motivation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#goal" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -993,6 +1043,56 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#psyche" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Psyche
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Psyche">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#communication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Communication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expression
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#motivation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Motivation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#goal" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1144,10 +1244,6 @@
 <p>Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the gameplay loop and thus have many unique attributes and methods, as the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. </p>
 <p><strong>Player, NPCs and Enemies</strong></p>
 <p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to the Disposition Transition Matrix. However, all state changes of Sprites and the Player are communicated through the medium of Intentions.</p>
-<ul>
-<li>See <a href="../03-player/">Player</a> documentation for more information on the Player.</li>
-<li>See  <a href="../04-intentions/">Intentions</a> documentation for more information on the Intention Mechanics. </li>
-</ul>
 <p><strong>Layers</strong></p>
 <p>Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations should be separated by Layer, to avoid inter-Layer collisions.</p>
 <h2 id="overview">Overview</h2>
@@ -1156,7 +1252,7 @@
 <li><code>category: sheet</code></li>
 <li><code>instance: sprite</code></li>
 </ul>
-<p><strong>Properties</strong></p>
+<p><strong>Properties: SheetProperties</strong></p>
 <ul>
 <li><code>actions:</code> <ul>
 <li><code>count: int</code></li>
@@ -1170,9 +1266,8 @@
 <li><code>dimensions: Dimensions</code></li>
 <li><code>hitboxes: List[Hitbox]</code> </li>
 </ul>
-<p><strong>State</strong></p>
+<p><strong>State: SpriteState</strong></p>
 <ul>
-<li><code>name: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>layer: str</code></li>
 <li><code>meters:</code><ul>
@@ -1225,7 +1320,7 @@
 <li><code>memory:</code> <ul>
 <li><code>goal: Goal</code></li>
 <li><code>communication: List[str]</code> </li>
-<li><code>prices:</code>Dict[str, double]`</li>
+<li><code>prices: Dict[str, double]</code></li>
 </ul>
 </li>
 <li><code>goal:</code> <ul>
@@ -1239,10 +1334,14 @@
 </ul>
 </li>
 </ul>
-<p><code>state.animation.frame</code> is an integer that tracks the current animation frame. Its maximum value is dependent on the Action state and its corresponding properties. In other words, if a Sprite is in the <code>state.animation.action</code> Action state, then Frame will cycle from 0 to <code>properties.actions[state.animation.action].count</code>.</p>
-<p><strong>Frame</strong></p>
+<p><strong>Animation: StateAnimation</strong></p>
 <ul>
-<li><code>key(asset, animation): asset + animation.direction + animation.action + animation.frame</code></li>
+<li><code>state.animation.frame += 1</code></li>
+<li><code>if state.animation.frame &gt;= properties.actions[state.animation.action].count: state.animation.frame = 0</code></li>
+</ul>
+<p><strong>Frame: StateFrame</strong></p>
+<ul>
+<li><code>key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}</code></li>
 </ul>
 <h3 id="schema">Schema</h3>
 <ul>
@@ -1306,36 +1405,42 @@
 <p>In the LPC specification, the <code>thrust</code> Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the <code>thrust</code> state.</p>
 </div>
 <h2 id="intentions">Intentions</h2>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>The Player state does not observe the Disposition Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See <a href="../03-player/">Player documentation</a> for more information on the Player.</p>
-</div>
-<p><em>Intentions</em> are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state that is updated by the gameplay loop. Intention coordinates represent a node in the Sprite "finite automaton", the Disposition Transition Matrix.</p>
-<p>The complete Intention State for a Sprite is given by the tuple,</p>
-<pre><code>(Disposition, Expression, Extension, Motivation, Communication)
-</code></pre>
-<p>Intentions are configured through the <code>/src/data/intentions/main.yaml</code> file.</p>
+<p><em>Intentions</em> are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state that is updated by the gameplay loop. Intention coordinates represent a node in the Sprite's "finite automaton", the Intention Transition Matrix. </p>
 <p>See <a href="../04-intentions/">Intentions</a> for more information.</p>
+<h2 id="psyche">Psyche</h2>
+<p>The <em>Psyche</em> is an internal State data structure that governs a Sprite's ancillary Animation logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations to be applied to the Sprite Sheet's frame. The complete Psyche state for a Sprite is given by the tuple,</p>
+<pre><code>(Communcation, Expression, Motivation)
+</code></pre>
+<h3 id="communication">Communication</h3>
+<p>The Communication dimension of a Psyche can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the <code>speak</code> Extension.</p>
+<h3 id="expression">Expression</h3>
+<p>The Expression dimension alter the Sprite's appearnce by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. </p>
+<p>The default Expressions are enumerated below,</p>
+<ul>
+<li><code>agreement</code></li>
+<li><code>anger</code></li>
+<li><code>confusion</code></li>
+<li><code>curiosity</code></li>
+<li><code>disagreement</code></li>
+<li><code>loquacity</code></li>
+<li><code>surprise</code></li>
+<li><code>tired</code></li>
+</ul>
+<h3 id="motivation">Motivation</h3>
+<p>Motivations are long-term state variables that are used to modulate the <a href="../04-intentions/">Intention Transition matrix</a>.</p>
+<p>The default Motivations are enumerated below,</p>
+<ul>
+<li><code>conquest</code></li>
+<li><code>profit</code></li>
+<li><code>survival</code></li>
+<li><code>love</code></li>
+<li><code>revenge</code></li>
+<li><code>rebellion</code></li>
+<li><code>safety</code></li>
+</ul>
 <h2 id="goal">Goal</h2>
 <p><em>Goals</em> are provide the seed (or energy) for transitions through Dispositions and the application of Motivations to modulate said transitions. A Goal is a Sprite's <em>modus operandi</em>, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is <em>in order</em> to achieve a Goal.</p>
-<ul>
-<li><code>name</code>: Unique Identifier of the Goal.</li>
-<li><code>category</code>: Category of the Goal. (<code>sprite</code>, <code>asset</code>, <code>position</code>, <code>loot</code>, <code>wealth</code>)</li>
-<li><code>intention</code>:<ul>
-<li><code>extension</code>: Extension to be applied when Goal achieved .</li>
-<li><code>action</code>: Action to be applied when Goal achieved.</li>
-</ul>
-</li>
-</ul>
-<p>When a Sprite has Goal, it will seek out (path-find) its way to the AssetName, provided the AssetName is within <code>mutators.parameters.vision.radius</code>.</p>
-<p>The <code>category</code> of a Goal affects the type of identifier given in <code>name</code>. </p>
-<ul>
-<li><code>category == sprite</code>: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The <code>name</code> will be a Sprite <code>name</code>.</li>
-<li><code>category == asset</code>: The Goal is a non-Sprite Asset, i.e. the Sprite is trying to find an ingame Object. The <code>name</code> will be the Asset <code>name</code>.</li>
-<li><code>category == loot</code>: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The <code>name</code> will be an Inventory key. </li>
-<li><code>category == wealth</code>: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The <code>name</code> will be an Inventory key. The key will be of the value with the maximum value in the Sprite's Prices, e.g. the loot with the highest Price.</li>
-<li><code>category == position</code>: The Goal is Position, i.e. the Sprite is trying to find a Position on the Board. The <code>name</code> will be ... (TODO: PROPERTY MECHANICS).</li>
-</ul>
+<p>See <a href="../04-intentions/">Intentions and Goals documentation</a> for more information.</p>
 <h2 id="memory">Memory</h2>
 <p><em>Memory</em> is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Disposition and Motivation.</p>
 <ul>
@@ -1352,12 +1457,12 @@
 </ul>
 <h3 id="communications">Communications</h3>
 <p>Under certain conditions based on the Sprite's Intention, the Sprite may emit a Communication through the <code>speak</code> Extension. For example, a Sprite in the <code>mock</code> Disposition might receive a Communication key <code>insult</code>. This key gets stored at the <em>beginning</em> (0 index) of the <code>memory.communications</code> list. </p>
-<p>When a Sprite with a non-empty <code>memory.communications</code> enters into the <code>communicate</code> Disposition, the gameplay loop will then take the first entry out of this Sprites <code>memory.communications</code> list, delete it from this list and place it in the <code>intention.communication</code> cell. </p>
+<p>When a Sprite with a non-empty <code>memory.communications</code> enters into the <code>communicate</code> Disposition, the gameplay loop will then take the first entry out of this Sprites <code>memory.communications</code> list, delete it from this list and place it in the <code>psyche.communication</code> cell. </p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>The last entry in <code>memory.communications</code> is <em>never</em> deleted. The entry is termed <em>unforgettable</em>.</p>
 </div>
-<p>When a Sprite with a non-null <code>intention.communication</code> enters into the <code>speak</code> Extension, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the <code>intention.communication</code> cell.</p>
+<p>When a Sprite with a non-null <code>psyche.communication</code> enters into the <code>speak</code> Extension, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the <code>intention.communication</code> cell.</p>
 <h3 id="prices">Prices</h3>
 <p>Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the <code>trade</code> extension. This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.</p>
 <p>When two Sprites enter the <code>speak</code> Extension within a certain radius of each other, the <code>SpeechMechanic</code> does the following:</p>
@@ -1387,14 +1492,13 @@ A and visa versa. In other words, if a Sprite converses with another Sprite that
 </code></pre></div>
 <p>Each piece of Equipment is associated with an (Action, Direction) grouping. When a piece of Equipment is active, the Sheet Asset corresponding to the Equipment will be stacked on top of the Sprite's Asset stack. The Animation state associated with a piece of Equipment is configured by <a href="#equipment-matrix">the Equpiment Matrix</a> file.</p>
 <p>Equipment is divided in four <em>Kinds</em>: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. </p>
-<p>When a piece of Equipment is active, it affects what Animation state results when the Sprite enters into the <code>attack</code> Disposition. The translation between Disposition and Animation</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># pseudocode</span>
-<span class="k">if</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">intention</span><span class="o">.</span><span class="n">disposition</span> <span class="o">==</span> <span class="s1">&#39;atack&#39;</span><span class="p">:</span>
-    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">animation</span> <span class="o">=</span> <span class="n">DispositionResolver</span><span class="o">.</span><span class="n">animation</span><span class="p">(</span>
-        <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">inventory</span><span class="p">,</span>
-        <span class="n">equipment</span><span class="o">.</span><span class="n">properties</span>
-    <span class="p">)</span>
+<p>When a piece of Equipment is active, it affects what Animation Action state results when the Sprite enters into the <code>attack</code> Disposition. The translation between Disposition and Animation</p>
+<div class="highlight"><pre><span></span><code><span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">animation</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">AnimationResolver</span><span class="o">.</span><span class="n">action</span><span class="p">(</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
+    <span class="n">equipment</span><span class="o">.</span><span class="n">properties</span>
+<span class="p">)</span>
 </code></pre></div>
+<p>For more information on see <a href="../04-intentions/#action-resolution">Action Resolution</a> documentation.</p>
 <h3 id="equipment-matrix">Equipment Matrix</h3>
 <ul>
 <li>Location: <code>/src/data/equipment/main.yaml</code></li>
