@@ -121,6 +121,35 @@ objects:
 # ------------------------------------------------------------------
 # ----------------------------------------------------------- SHEETS
 sheets:
+  player: 
+    id: Asset ID
+    name: Deployment Key
+    layer: Layer Key
+    position:
+      x: Horizontal Position
+      y: Vertical Position
+    meters:
+      health: 
+        current: Current Health Meter
+        maximum: Maximum Health Meter
+      magic: 
+        current: Current Magic Meter
+        maximum: Maximum Magic Meter
+    character:
+      strength: Strength
+      defense: Defense
+      speed: Speed
+    mutators:
+      fear:
+        radius: Pixel Length
+        limit: Health Percentage
+        enemy: Enemy Count
+      vision:
+        radius: Pixel Length
+    intention:
+      disposition: Disposition Key
+      extension: Extension Key
+      expression: Expression Key
   pixies:
     - id: Asset ID
       name: Pixie Deployment

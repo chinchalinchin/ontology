@@ -18,7 +18,6 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
 
 **Properties**
 
-- AssetKey: `str`
 - Actions: 
     - Count: `int`
     - Directions:
@@ -185,9 +184,9 @@ The default Extension states are enumerated below,
 - `interact`: Sprites enter into this Extension to interact with Objects.
 - `speak`: Sprites enter into this Extension to draw their Communication on a Dialogue window.
 - `sprint`: Sprites enter into this Extension to increase their velocity.
-- `trade`: Sprites enter into this Extension to exchange Money for Inventory.
-- `build`: Sprites enter into this Extension to place Struts on the Board.
-- `mine`: Sprites enter into this Extension to convert Resources into Inventory. **NOTE**: This Extension is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel, i.e. the Spear Weapon and the Shovel Tool both use the same underlying animation rows.
+- `trade`: Sprites enter into this Extension to exchange Money for Inventory with another Sprite.
+- `build`: Sprites enter into this Extension to place Crafts on the Board.
+- `mine`: Sprites enter into this Extension to convert Resources into Inventory. **NOTE**: This Extension is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows.
 
 ### Disposition
     
@@ -419,9 +418,10 @@ TODO
 
 - Equipment Sheets: `/src/assets/sheets/sprites/equipment/<kind-key>/<equipment-key>.png`
 
-Equipment sheets are superimposed onto the Sprite Sheets based on their active Equipment keys in `sprite.state.inventory.equipment`, e.g.
+Equipment sheets are superimposed onto the Sprite Sheets based on the active Equipment keys in `sprite.state.inventory.equipment`, e.g.
 
 ```yaml
+# /src/data/state/<board-key>/sprite.state.inventory: 
 equipment:
     armor: plate
     tool: shovel
@@ -429,23 +429,26 @@ equipment:
     weapon: dagger
 ```
 
-Each piece of Equipment is associated with an (Action, Direction) grouping. When a piece of Equipment is active, the Sheet Asset corresponding to the Equipment will be stacked on top of the Sprite's Asset stack.
+Each piece of Equipment is associated with an (Action, Direction) grouping. When a piece of Equipment is active, the Sheet Asset corresponding to the Equipment will be stacked on top of the Sprite's Asset stack. The Animation state associated with a piece of Equipment is configured by [the Equpiment Matrix](#equipment-matrix) file.
 
 Equipment is divided in four *Kinds*: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. 
 
-When a piece of Equipment is active, it affects what animation state results when the Sprite enters into the `attack` Disposition.
+When a piece of Equipment is active, it affects what Animation state results when the Sprite enters into the `attack` Disposition. The translation between Disposition and Animation
 
 ```python
 # pseudocode
 if sprite.state.intention.disposition == 'atack':
-    sprite.state.animation.action = ActionResolver.attack(
+    sprite.state.animation = DispositionResolver.animation(
         sprite.state.inventory,
         equipment.properties
     )
+```
 
-### Equipment Schema
+### Equipment Matrix 
 
 - Location: `/src/data/equipment/main.yaml`
+
+**Schema**
 
 ```yaml
 --8<-- "docs/.static/yaml/data-equipment.yaml"

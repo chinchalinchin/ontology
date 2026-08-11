@@ -57,7 +57,7 @@ sheets:
             row: 3
   sprites:
     personas:
-      hero:
+      player:
         dimensions:
           w: 64
           l: 64

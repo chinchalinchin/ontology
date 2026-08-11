@@ -1,14 +1,77 @@
 # Ontology: Player
 
+A Player is a special type of Sprite Sheet Asset. 
+
+## Overview
+
+The Player Sprite Sheet is configured through the `player` Sheet [Persona Stack](./02-sprites.md#personas).
+
+**Taxonomy**
+
+- ID: `player`
+- Name: `player`
+- Category: `sheet`
+- Instance: `player`
+
+**Properties: SheetProperties**
+
+- Actions: 
+    - Count: `int`
+    - Directions:
+        - Row: `int`
+        - Attackboxes: `List[Attackbox]` 
+* Dimensions: `Tuple[int, int]
+* Hitboxes: `List[Tuple[int, int, int, int]]` 
+
+**State: PlayerState**
+
+- Name: `str`
+- Position: `Tuple[int, int]`
+- Layer: `str`
+- Meters
+    - Health: 
+        - Current: `int`
+        - Maximum: `int`
+    - Magic: `int`
+        - Current: `int`
+        - Maximum: `int`
+- Character
+    - Strength: `int`
+    - Defense: `int`
+    - Speed: `int`
+- Animation:
+    - Action: `str`
+    - Direction: `str`
+    - Frame: `int`
+- Intention: 
+    - Extension: `str`
+    - Disposition: `str`
+    - Motivation: `str`
+    - Expression: `str`
+- Inventory:
+    - Loot: `Dict[str, int]`
+    - Equipment:
+        Armor: `str`
+        Weapon: `str`
+        Tool: `str`
+        Utility: `str`
+    - Wallet: `int`
+
+### Intentions
+
+Player Intentions do not include the dimensions of Motivation and Communication,
+
+    (Disposition, Expression, Extension)
+
 TODO
 
 ## Devices
 
-The Player Asset contains a Device, which polls for user input. The main responsiblity of the Player is to translate the data received into Player state mutations. This is achieved through an input mapping.
+The Player Asset contains a Device, which polls for user input. The main responsiblity of the Player is to translate the data received into Intentions. This is achieved through an input mapping.
 
 ### Mapping
 
-Devices have their input mapped to *Actions*, *Directions* and *Extensions*. The mapping configuration file provides a dictionary lookup for what input state corresponds to what game state.
+Devices have their input mapped to *Intentions*. The mapping configuration file provides a dictionary lookup for what input state corresponds to what game state.
 
 **Keyboard Mappings**
 

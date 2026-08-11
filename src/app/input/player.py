@@ -8,7 +8,11 @@ from app.assets.base import Asset, Taxonomy
 from app.assets.animations import StateAnimation
 from app.assets.frames import StateFrame
 from app.config.enums import Devices
-from app.input.devices import Keyboard, Controller, Device
+from app.input.devices import (
+    Keyboard, 
+    Controller, 
+    Device
+)
 from app.models.state import (
     PlayerState, 
     AnimationState, 

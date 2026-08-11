@@ -27,3 +27,21 @@ tiles:
       multiple:
         nx: 5
         ny: 6
+    - id: lava
+      name: great-lake
+      layer: '0'
+      position: 
+        x: 480
+        y: 0
+      multiple:
+        nx: 4
+        ny: 10
+    - id: dirt
+      name: great-lake
+      layer: '0'
+      position: 
+        x: 608
+        y: 0
+      multiple:
+        nx: 4
+        ny: 10

@@ -258,7 +258,8 @@ class PlayerState(AssetState):
     character: Character
     inventory: Inventory
     meters: Meters
-    animation: AnimationState = None
+    # intention: Intention
+    animation: AnimationState
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- MENU STATE MODELS

@@ -23,7 +23,7 @@ python setup.py build_ext --inplace
 
 ```bash
 # 1.Render Background
-python src/cli.py construct world-01 \
+python src/cli.py prerender world-01 \
   --layer 0 \
   --out /home/grant/Projects/ontology/build
 

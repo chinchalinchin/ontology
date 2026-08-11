@@ -205,15 +205,12 @@ class IntentionMechanics(Mechanic):
 
 class PlayerMechanic(Mechanic):
     def update(self, board: Board, delta: float) -> None:
-        input_vector = board.player.device.poll()
+        """
+        """
+
+        poll = board.player.device.poll()
         
-        if input_vector["direction"]:
-            board.player.state.animation.direction = input_vector["direction"]
-            board.player.state.animation.action = input_vector["action"]
-            
-            # Apply physics/velocity based on sprint flag
-            speed_multiplier = 2 if input_vector["sprint"] else 1
-            # ... update player.state.position based on direction and speed ...
-        else:
-            # Revert to idle frame (frame 0) if no movement keys are pressed
-            board.player.state.animation.frame = 0
+        board.player.state.animation.action = DispositionResolver.action(
+            board.player.state, 
+            board.properties["equipment"]
+        )

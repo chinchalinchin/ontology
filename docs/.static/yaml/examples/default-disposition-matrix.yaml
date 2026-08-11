@@ -85,6 +85,13 @@ intents:
         - next: return
           conditions:
             -  
+    hunt: 
+      actions: null
+      extensions: null
+      transitions:
+        - next:
+          conditions: 
+            - 
     follow: 
       actions: null
       extensions: null

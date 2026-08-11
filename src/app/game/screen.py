@@ -154,5 +154,5 @@ class Screen:
         Draws a composited snapshot of the frame and extracts the VRAM buffer to disk.
         """
         logger.info(f"Extracting VRAM view buffer representing full composition to file system -> {out_path}")
-        self.draw(assets, player, registry)
-        save(out_path, self.screensize.w, self.screensize.l)
+        self.draw(assets, player.state.position, player.dimensions, registry)
+        save(out_path, self.screensize.w, self.screensize.l, )

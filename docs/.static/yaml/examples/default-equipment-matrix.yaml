@@ -24,7 +24,14 @@ equipment:
       animation: 
         action: thrust
         direction: all
-    sheets:
+      sheets:
+        - shovel
+    pickaxe:
+      animation:
+        action: thrust
+        direction: all
+      sheets:
+        - pickaxe
   utilites: 
     lantern:
       animation: 
@@ -39,3 +46,13 @@ equipment:
         directon: all
       sheets:
         - dagger
+    sword: 
+      animation:
+        action: slash
+        direction: all
+    warhammer:
+      animation:
+        action: slash
+        direction: all
+      sheets:
+        - warhammer

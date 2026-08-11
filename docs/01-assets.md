@@ -613,6 +613,12 @@ Asset Recipe files determine the specific (State, Animation, Frame) components i
 --8<-- "docs/.static/yaml/asset-recipes.yaml"
 ```
 
+**Default Recipes**
+
+```yaml
+--8<-- "docs/.static/yaml/examples/default-recipes.yaml"
+```
+
 ### Properties
 
 Asset Property files hydrate the application models.
