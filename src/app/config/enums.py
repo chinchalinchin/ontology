@@ -87,13 +87,7 @@ class Expressions(str, Enum):
     SURPRISE        = "surprise"
     TIRED           = "tired"
 
-class Extensions(str, Enum):
-    INTERACT        = "interact"
-    SPEAK           = "speak"
-    SPRINT          = "sprint"
-    TRADE           = "trade"
-
-class Dispositions(str, Enum):
+class Intentions(str, Enum):
     ATTACK          = "attack"
     ATTRACT         = "attract"
     BARTER          = "barter"

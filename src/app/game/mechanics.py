@@ -16,7 +16,7 @@ from app.config.enums import (
     AssetCategories, 
     AssetInstances
 )
-from app.game.resolvers import IntentionResolver
+from app.game.maps import AnimationMap
 
 # Cython Libraries
 from libs.math import Geometry
@@ -184,9 +184,13 @@ class IntentionMechanics(Mechanic):
         for sprite in sprites:
             # TODO (Phase III): Intention logic and DSL matrix compilation is pending.
 
-            sprite.state.animation.action = IntentionResolver.action(
+            sprite.state.animation.action = AnimationMap.action(
                 sprite.state,
                 board.properties["equipment"]
+            )
+            sprite.state.animation.direction = AnimationMap.direction(
+                sprite.state.position,
+                sprite.state.goal.position
             )
 
             transits = sprite.transitions()
@@ -211,7 +215,12 @@ class PlayerMechanic(Mechanic):
         poll = board.player.device.poll()
         # TODO: implement 
         
-        board.player.state.animation.action = IntentionResolver.action(
+        board.player.state.animation.action = AnimationMap.action(
             board.player.state, 
             board.properties["equipment"]
+        )
+
+        board.player.state.animation.direction = AnimationMap.direction(
+            board.player.state.position,
+            board.player.state.goal.position
         )

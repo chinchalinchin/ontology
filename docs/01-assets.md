@@ -558,7 +558,7 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 **Animation: StateAnimation**
 
 - `state.animation.frame += 1`
-- `if state.animation.frame > properties.actions[state.animation.action].count: state.animation.frame = 0`
+- `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
 
 **Frame: StateFrame**
 
@@ -580,7 +580,7 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 **Animation: StateAnimation**
 
 - `state.animation.frame += 1`
-- `if state.animation.frame > properties.actions[state.animation.action].count: state.animation.frame = 0`
+- `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
 
 **Frame: StateFrame**
 

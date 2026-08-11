@@ -1,7 +1,5 @@
-intents:
-  dispositions:
+intentions:
     attack:
-      extensions: null
       transitions:
         - next: attack
           conditions:  
@@ -14,9 +12,6 @@ intents:
           conditions: 
             - sprites[sprite.goal.name].mutators.triggers.dead
     attract:
-      extensions:
-        - interact
-        - speak
       transitions:
         - next: barter
           conditions:
@@ -26,9 +21,6 @@ intents:
           conditions: 
             - sprite.memory.communications
     barter:
-      extensions:
-        - trade
-        - speak
       transitions: 
         - next: threaten
           conditions:
@@ -101,15 +93,7 @@ intents:
         - next: wander
           conditions:
             - 
-    interact:
-      actions: null
-      extensions: null
-      transitions:
-        - next:
-          conditions:
-            - 
     mock:
-      actions: null
       extensions: null 
       transitions:
         - next: mock

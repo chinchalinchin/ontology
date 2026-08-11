@@ -6,9 +6,6 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 
 NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to the Disposition Transition Matrix. However, all state changes of Sprites and the Player are communicated through the medium of Intentions.
 
-- See [Player](./03-player.md) documentation for more information on the Player.
-- See  [Intentions](./04-intentions.md) documentation for more information on the Intention Mechanics. 
-
 **Layers**
 
 Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations should be separated by Layer, to avoid inter-Layer collisions.
@@ -20,7 +17,7 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
 - `category: sheet`
 - `instance: sprite`
 
-**Properties**
+**Properties: SheetProperties**
 
 - `actions:` 
     - `count: int`
@@ -30,9 +27,8 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
 * `dimensions: Dimensions`
 * `hitboxes: List[Hitbox]` 
 
-**State**
+**State: SpriteState**
 
-- `name: str`
 - `position: Position`
 - `layer: str`
 - `meters:`
@@ -69,7 +65,7 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
 - `memory:` 
     - `goal: Goal`
     - `communication: List[str]` 
-    - `prices: `Dict[str, double]`
+    - `prices: Dict[str, double]`
 - `goal:` 
     - `name: str`
     - `category: Enum[sprite | object | loot]`
@@ -77,11 +73,16 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
         - `action: str`
         - `extension: str`
 
-`state.animation.frame` is an integer that tracks the current animation frame. Its maximum value is dependent on the Action state and its corresponding properties. In other words, if a Sprite is in the `state.animation.action` Action state, then Frame will cycle from 0 to `properties.actions[state.animation.action].count`.
 
-**Frame**
+**Animation: StateAnimation**
 
-- `key(asset, animation): asset + animation.direction + animation.action + animation.frame`
+- `state.animation.frame += 1`
+- `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
+
+**Frame: StateFrame**
+
+* `key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}`
+
 
 ### Schema
 
@@ -163,38 +164,54 @@ The frames per Action Group are given below,
 
 ## Intentions
 
-!!! important
-    The Player state does not observe the Disposition Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See [Player documentation](./03-player.md) for more information on the Player.
-
-*Intentions* are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state that is updated by the gameplay loop. Intention coordinates represent a node in the Sprite "finite automaton", the Disposition Transition Matrix.
-
-The complete Intention State for a Sprite is given by the tuple,
-
-    (Disposition, Expression, Extension, Motivation, Communication)
-
-Intentions are configured through the `/src/data/intentions/main.yaml` file.
+*Intentions* are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state that is updated by the gameplay loop. Intention coordinates represent a node in the Sprite's "finite automaton", the Intention Transition Matrix. 
 
 See [Intentions](./04-intentions.md) for more information.
+
+## Psyche
+
+The *Psyche* is an internal State data structure that governs a Sprite's ancillary Animation logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations to be applied to the Sprite Sheet's frame. The complete Psyche state for a Sprite is given by the tuple,
+
+    (Communcation, Expression, Motivation)
+
+### Communication
+
+The Communication dimension of a Psyche can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the `speak` Extension.
+
+### Expression
+
+The Expression dimension alter the Sprite's appearnce by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. 
+
+The default Expressions are enumerated below,
+
+- `agreement`
+- `anger`
+- `confusion`
+- `curiosity`
+- `disagreement`
+- `loquacity`
+- `surprise`
+- `tired`
+
+### Motivation
+
+Motivations are long-term state variables that are used to modulate the [Intention Transition matrix](./04-intentions.md).
+
+The default Motivations are enumerated below,
+
+- `conquest`
+- `profit`
+- `survival`
+- `love`
+- `revenge`
+- `rebellion`
+- `safety`
 
 ## Goal
 
 *Goals* are provide the seed (or energy) for transitions through Dispositions and the application of Motivations to modulate said transitions. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is *in order* to achieve a Goal.
 
-- `name`: Unique Identifier of the Goal.
-- `category`: Category of the Goal. (`sprite`, `asset`, `position`, `loot`, `wealth`)
-- `intention`:
-    - `extension`: Extension to be applied when Goal achieved .
-    - `action`: Action to be applied when Goal achieved.
-
-When a Sprite has Goal, it will seek out (path-find) its way to the AssetName, provided the AssetName is within `mutators.parameters.vision.radius`.
-
-The `category` of a Goal affects the type of identifier given in `name`. 
-
-- `category == sprite`: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The `name` will be a Sprite `name`.
-- `category == asset`: The Goal is a non-Sprite Asset, i.e. the Sprite is trying to find an ingame Object. The `name` will be the Asset `name`.
-- `category == loot`: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The `name` will be an Inventory key. 
-- `category == wealth`: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The `name` will be an Inventory key. The key will be of the value with the maximum value in the Sprite's Prices, e.g. the loot with the highest Price.
-- `category == position`: The Goal is Position, i.e. the Sprite is trying to find a Position on the Board. The `name` will be ... (TODO: PROPERTY MECHANICS).
+See [Intentions and Goals documentation](04-intentions.md) for more information.
 
 ## Memory
 
@@ -211,12 +228,12 @@ The `category` of a Goal affects the type of identifier given in `name`.
 
 Under certain conditions based on the Sprite's Intention, the Sprite may emit a Communication through the `speak` Extension. For example, a Sprite in the `mock` Disposition might receive a Communication key `insult`. This key gets stored at the *beginning* (0 index) of the `memory.communications` list. 
 
-When a Sprite with a non-empty `memory.communications` enters into the `communicate` Disposition, the gameplay loop will then take the first entry out of this Sprites `memory.communications` list, delete it from this list and place it in the `intention.communication` cell. 
+When a Sprite with a non-empty `memory.communications` enters into the `communicate` Disposition, the gameplay loop will then take the first entry out of this Sprites `memory.communications` list, delete it from this list and place it in the `psyche.communication` cell. 
 
 !!! important
     The last entry in `memory.communications` is *never* deleted. The entry is termed *unforgettable*.
 
-When a Sprite with a non-null `intention.communication` enters into the `speak` Extension, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the `intention.communication` cell.
+When a Sprite with a non-null `psyche.communication` enters into the `speak` Extension, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the `intention.communication` cell.
 
 ### Prices
 
@@ -261,16 +278,16 @@ Each piece of Equipment is associated with an (Action, Direction) grouping. When
 
 Equipment is divided in four *Kinds*: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. 
 
-When a piece of Equipment is active, it affects what Animation state results when the Sprite enters into the `attack` Disposition. The translation between Disposition and Animation
+When a piece of Equipment is active, it affects what Animation Action state results when the Sprite enters into the `attack` Disposition. The translation between Disposition and Animation
 
 ```python
-# pseudocode
-if sprite.state.intention.disposition == 'atack':
-    sprite.state.animation = DispositionResolver.animation(
-        sprite.state.inventory,
-        equipment.properties
-    )
+sprite.state.animation.action = AnimationResolver.action(
+    sprite.state,
+    equipment.properties
+)
 ```
+
+For more information on see [Action Resolution](./04-intentions.md#action-resolution) documentation.
 
 ### Equipment Matrix 
 

@@ -1,43 +1,59 @@
-# Ontology: Intentions
+# Ontology: Intentions & Goals
 
 * Location: `/src/data/intentions/main.yaml`
 
-*Intentions* are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state that is updated by the gameplay loop. Intention coordinates represent a node in the Sprite "finite automaton", the Disposition Transition Matrix.
+*Intentions* and *Goals* are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite "finite automaton", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.
 
-The complete Intention State for a Sprite is given by the tuple,
+Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the [Intention Transition Matrix]().
 
-    (Disposition, Expression, Extension, Motivation, Communication)
+## AnimationMap
 
-The dimensions of Intention are discussed in [more detail below](#dimensions).
+A Sprite's State is mapped onto an (Action, Direction) through an AnimationMap. This component of the Application statically ingests a Sprite State, applies formulas and returns the mapped tupel.
 
-## Animation Resolution
+**Player Device**
 
-Each component of a Sprite's Animation is resolved through a different relation.
+Player Device mappings are applied to convert Device input to Intention and Goals, prior to the mapping of an Intention onto Animation (Action, Direction)-tuple. 
 
-### Action Resolution
+### Actions
 
-Sprite Animation Actions can be viewed as a function of Sprite Intention state and Equipment state
+Sprite Animation Actions is as a function of Sprite Intention state and Equipment state
 
     f(Intention, Equipment) = Action
 
-**Formulas**
+**Formulae**
 
-- `if intention.disposition == attack: action = equipment.animation.action`
+- `if intention == attack: action = equipment.animation.action`
 
-### Direction Resolution
+### Directions
 
-TODO
+Sprite Animation Direction is a function of Sprite Position state and Goal state,
 
-### Frame Resolution
+    f(Position, Goal) = Direction
 
-Frame resolution is covered in more detail in the [Asset documentation](./01-assets.md). Frame resolution is handled entirely by the Frame component schema injected into the Asset during initialization. The schema is dependent on Asset Instance type and current Asset Action.
+**Player Mappings**
 
-    f(Instance, Action) = Frame
+- `if input.scancode == rightarrow: goal.position.x += speed`
+- `if input.scancode == leftarrow: goal.position.x -= speed`
+- `if input.scancode == uparrow: goal.position.y -= speed`
+- `if input.scancode == downarrow: goal.position.y += speed`
+
+**Formulae**
+
+Let `dx = position.x - goal.position.x, dy = position.y - goal.position.y`.
+
+- `if dy > dx, delta_y > -dx: direction = down`
+- `if dy < dx, delta_y > -dx: direction = right`
+- `if dy < dx, delta_y < -dx: direction = up`
+- `if dy > dx, delta_y > -dx: direction = left`
+
+### Dialoge Resolution
+
+**Formulae**
+
+- `if intention.disposition == communicate and psyche.communication: popup = psyche.communcation`
+
 
 ## Dimensions
-
-!!! note
-    Player Intentions do not contain the Motivation or Communication fields.
 
 ### Extension
 
@@ -58,6 +74,16 @@ The default Extension states are enumerated below,
     The Player state does not observe the Disposition Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See [Player documentation](./03-player.md) for more information on the Player.
 
 A Disposition determines which Intention states are currently reachable for a Sprite. In other words, a Sprite's *Disposition* is an element in its Disposition Transition matrix, covered below. Dispositions are enumerated below, along with their reachable states.
+
+| Start State | Reachable Sprite States | Player State| 
+| - | - | - |
+| `attack` | `attack`, `hunt`, `loot` |
+| `attract` | `barter`, `speak` |
+| `build` |  - |
+| `escape` | - | 
+| `find` | - |
+| `sprint` | - | 
+| `follow` | - |  
 
 1. `attack`
     - Reachable Dispostions: `attack, hunt, loot`
@@ -169,35 +195,23 @@ Notice in the example there is a self-entrant transition. A Sprite with an `atta
 
 Disposition conditions are converted into lambda functions by the application and then evaluated at runtime.
 
-### Motivation
 
-Motivations are long-term variables that modulate the Disposition Transition matrix.
+## Goal
 
-The default Motivations are enumerated below,
+*Goals* are provide the seed (or energy) for transitions through Dispositions and the application of Motivations to modulate said transitions. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is *in order* to achieve a Goal.
 
-- `conquest`
-- `profit`
-- `survival`
-- `love`
-- `revenge`
-- `rebellion`
-- `safety`
+- `name`: Unique Identifier of the Goal.
+- `category`: Category of the Goal. (`sprite`, `asset`, `position`, `loot`, `wealth`)
+- `intention`:
+    - `extension`: Extension to be applied when Goal achieved .
+    - `action`: Action to be applied when Goal achieved.
 
-### Communication
+When a Sprite has Goal, it will seek out (path-find) its way to the AssetName, provided the AssetName is within `mutators.parameters.vision.radius`.
 
-The Communication dimension of an Intention can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the `speak` Extension.
+The `category` of a Goal affects the type of identifier given in `name`. 
 
-### Expression
-
-The Expression dimension alter the Sprite's appearnce by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. 
-
-The default Expressions are enumerated below,
-
-- `agreement`
-- `anger`
-- `confusion`
-- `curiosity`
-- `disagreement`
-- `loquacity`
-- `surprise`
-- `tired`
+- `category == sprite`: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The `name` will be a Sprite `name`.
+- `category == asset`: The Goal is a non-Sprite Asset, i.e. the Sprite is trying to find an ingame Object. The `name` will be the Asset `name`.
+- `category == loot`: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The `name` will be an Inventory key. 
+- `category == wealth`: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The `name` will be an Inventory key. The key will be of the value with the maximum value in the Sprite's Prices, e.g. the loot with the highest Price.
+- `category == position`: The Goal is Position, i.e. the Sprite is trying to find a Position on the Board. The `name` will be ... (TODO: PROPERTY MECHANICS).

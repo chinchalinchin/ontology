@@ -339,6 +339,7 @@ class PyObjectStateInstances(BaseModel):
 class PySheetStateInstances(BaseModel):
     pixies: Optional[List[PyAnimatorState]] = []
     sprites: Optional[List[PySpriteState]] = []
+    player: Optional[List[PyPlayerState]] = []
 
 # ---------------------------------------------------------------------------------------
 
@@ -349,7 +350,6 @@ class PyStateConfiguration(BaseModel):
     cursors: Optional[PyCursorStateInstances] = None
     effects: Optional[PyEffectStateInstances] = None
     sheets: Optional[PySheetStateInstances] = None
-    player: PyPlayerState
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ PROPERTY YAML SCHEMA

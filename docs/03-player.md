@@ -1,69 +1,61 @@
 # Ontology: Player
 
-A Player is a special type of Sprite Sheet Asset. Like all other Assets, its state is maintained in `/src/data/<board>/**.yaml`. 
+A Player is a special type of Sprite Sheet Asset. Like all other Assets, its state is maintained in `/src/data/<board>/**.yaml`.
 
 ## Overview
 
 The Player Sprite Sheet is configured through the `player` Sheet [Persona Stack](./02-sprites.md#personas).
 
+!!! note
+    The value of the Player ID is irrelevant, but  
+
 **Taxonomy**
 
-- ID: `player`
-- Name: `player`
-- Category: `sheet`
-- Instance: `player`
+- `category: sheet`
+- `instance: sprite`
 
-**Properties: SheetProperties**
+**Properties**
 
-- Actions: 
-    - Count: `int`
-    - Directions:
-        - Row: `int`
-        - Attackboxes: `List[Attackbox]` 
-* Dimensions: `Tuple[int, int]
-* Hitboxes: `List[Tuple[int, int, int, int]]` 
+- `actions:` 
+    - `count: int`
+    - `directions:`
+        - `row: int`
+        - `attackboxes: List[Attackbox]` 
+* `dimensions: Dimensions`
+* `hitboxes: List[Hitbox]` 
 
-**State: PlayerState**
+**State**
 
-- Name: `str`
-- Position: `Tuple[int, int]`
-- Layer: `str`
-- Meters
-    - Health: 
-        - Current: `int`
-        - Maximum: `int`
-    - Magic: `int`
-        - Current: `int`
-        - Maximum: `int`
-- Character
-    - Strength: `int`
-    - Defense: `int`
-    - Speed: `int`
-- Animation:
-    - Action: `str`
-    - Direction: `str`
-    - Frame: `int`
-- Intention: 
-    - Extension: `str`
-    - Disposition: `str`
-    - Motivation: `str`
-    - Expression: `str`
-- Inventory:
-    - Loot: `Dict[str, int]`
-    - Equipment:
-        Armor: `str`
-        Weapon: `str`
-        Tool: `str`
-        Utility: `str`
-    - Wallet: `int`
-
-### Intentions
-
-Player Intentions do not include the dimensions of Motivation and Communication,
-
-    (Disposition, Expression, Extension)
-
-See [Intentions documentation](./04-intentions.md) for more information.
+- `position: Position`
+- `layer: str`
+- `meters:`
+    - `health:` 
+        - `current: int`
+        - `maximum: int`
+    - `magic: int`
+        - `current: int`
+        - `maximum: int`
+- `character:`
+    - `strength: int`
+    - `defense: int`
+    - `speed: int`
+- `animation:`
+    - `action: str`
+    - `direction: str`
+    - `frame: int`
+- `intention:` 
+    - `extension: str`
+    - `disposition: str`
+    - `motivation: str`
+    - `expression: str`
+- `inventory:`
+    - `loot: Dict[str, int]`
+    - `equipment:`
+        `armor: str`
+        `weapon: str`
+        `tool: str`
+        `utility: str`
+    - `wallet: int`
 
 ## Devices
 
@@ -71,7 +63,7 @@ The Player Asset contains a Device, which polls for user input. The main respons
 
 ### Mapping
 
-Devices have their input mapped to *Intentions*. The mapping configuration file provides a dictionary lookup for what input state corresponds to what game state.
+Devices have their input mapped to *Intentions* and *Goals*. The mapping configuration file provides a dictionary lookup for what input state corresponds to what game state.
 
 **Keyboard Mappings**
 

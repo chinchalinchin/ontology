@@ -139,10 +139,7 @@ sheets:
         strength: Strength
         defense: Defense
         speed: Speed
-      intention:
-        disposition: Disposition Key
-        extension: Extension Key
-        expression: Expression Key
+      intention: Intention Key
   pixies:
     - id: Asset ID
       name: Pixie Deployment
@@ -175,31 +172,24 @@ sheets:
           enemy: Enemy Count
         vision:
           radius: Pixel Length
-      intention:
-        disposition: Disposition Key
-        extension: Extension Key
+      intention: Intention Key
+      psyche:
+        communication: Communication Key
         expression: Expression Key
         motivation: Motivation Key
-        communication: Communication Key
       goal:
         name: Goal Identifier
         category: Goal Category Identifier
-        intention:
-          disposition: Disposition Key
-          extension: Extension Key
-          expression: Expression Key
-          motivation: Motivation Key
-          communication: Communication Key
+        position: # last KNOWN position
+          x: Current X Coordinate Goal
+          y: Current Y Coordinate Goal
       memory:
         goal:
           name: Goal Identifier
           category: Goal Category Identifier
-          intention:
-            disposition: Disposition Key
-            extension: Extension Key
-            expression: Expression Key
-            motivation: Motivation Key
-            communication: Communication Key
+          position:
+            x: Saved X Coordinate Goal
+            y: Saved Y Coordinate Goal
         communications: 
           - Communication Key
           # unforgettable
