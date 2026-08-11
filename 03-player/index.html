@@ -360,6 +360,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#intentions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intentions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#devices" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -531,6 +559,34 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#intentions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intentions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#devices" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -607,11 +663,87 @@
 
 
 <h1 id="ontology-player">Ontology: Player</h1>
+<p>A Player is a special type of Sprite Sheet Asset. </p>
+<h2 id="overview">Overview</h2>
+<p>The Player Sprite Sheet is configured through the <code>player</code> Sheet <a href="../02-sprites/#personas">Persona Stack</a>.</p>
+<p><strong>Taxonomy</strong></p>
+<ul>
+<li>ID: <code>player</code></li>
+<li>Name: <code>player</code></li>
+<li>Category: <code>sheet</code></li>
+<li>Instance: <code>player</code></li>
+</ul>
+<p><strong>Properties: SheetProperties</strong></p>
+<ul>
+<li>Actions: <ul>
+<li>Count: <code>int</code></li>
+<li>Directions:<ul>
+<li>Row: <code>int</code></li>
+<li>Attackboxes: <code>List[Attackbox]</code> </li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Dimensions: `Tuple[int, int]</li>
+<li>Hitboxes: <code>List[Tuple[int, int, int, int]]</code> </li>
+</ul>
+<p><strong>State: PlayerState</strong></p>
+<ul>
+<li>Name: <code>str</code></li>
+<li>Position: <code>Tuple[int, int]</code></li>
+<li>Layer: <code>str</code></li>
+<li>Meters<ul>
+<li>Health: <ul>
+<li>Current: <code>int</code></li>
+<li>Maximum: <code>int</code></li>
+</ul>
+</li>
+<li>Magic: <code>int</code><ul>
+<li>Current: <code>int</code></li>
+<li>Maximum: <code>int</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Character<ul>
+<li>Strength: <code>int</code></li>
+<li>Defense: <code>int</code></li>
+<li>Speed: <code>int</code></li>
+</ul>
+</li>
+<li>Animation:<ul>
+<li>Action: <code>str</code></li>
+<li>Direction: <code>str</code></li>
+<li>Frame: <code>int</code></li>
+</ul>
+</li>
+<li>Intention: <ul>
+<li>Extension: <code>str</code></li>
+<li>Disposition: <code>str</code></li>
+<li>Motivation: <code>str</code></li>
+<li>Expression: <code>str</code></li>
+</ul>
+</li>
+<li>Inventory:<ul>
+<li>Loot: <code>Dict[str, int]</code></li>
+<li>Equipment:
+    Armor: <code>str</code>
+    Weapon: <code>str</code>
+    Tool: <code>str</code>
+    Utility: <code>str</code></li>
+<li>Wallet: <code>int</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="intentions">Intentions</h3>
+<p>Player Intentions do not include the dimensions of Motivation and Communication,</p>
+<pre><code>(Disposition, Expression, Extension)
+</code></pre>
 <p>TODO</p>
 <h2 id="devices">Devices</h2>
-<p>The Player Asset contains a Device, which polls for user input. The main responsiblity of the Player is to translate the data received into Player state mutations. This is achieved through an input mapping.</p>
+<p>The Player Asset contains a Device, which polls for user input. The main responsiblity of the Player is to translate the data received into Intentions. This is achieved through an input mapping.</p>
 <h3 id="mapping">Mapping</h3>
-<p>Devices have their input mapped to <em>Actions</em>, <em>Directions</em> and <em>Extensions</em>. The mapping configuration file provides a dictionary lookup for what input state corresponds to what game state.</p>
+<p>Devices have their input mapped to <em>Intentions</em>. The mapping configuration file provides a dictionary lookup for what input state corresponds to what game state.</p>
 <p><strong>Keyboard Mappings</strong></p>
 <p>The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See <a href="https://wiki.libsdl.org/SDL2/SDL_Scancode">SDL documentation</a> for more information.</p>
 <p><strong>Defaults</strong></p>

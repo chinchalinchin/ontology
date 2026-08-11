@@ -686,6 +686,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Equipment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#equipment-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Equipment Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1195,6 +1212,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Equipment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#equipment-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Equipment Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1242,7 +1276,6 @@
 <h2 id="overview">Overview</h2>
 <p><strong>Properties</strong></p>
 <ul>
-<li>AssetKey: <code>str</code></li>
 <li>Actions: <ul>
 <li>Count: <code>int</code></li>
 <li>Directions:<ul>
@@ -1412,9 +1445,9 @@
 <li><code>interact</code>: Sprites enter into this Extension to interact with Objects.</li>
 <li><code>speak</code>: Sprites enter into this Extension to draw their Communication on a Dialogue window.</li>
 <li><code>sprint</code>: Sprites enter into this Extension to increase their velocity.</li>
-<li><code>trade</code>: Sprites enter into this Extension to exchange Money for Inventory.</li>
-<li><code>build</code>: Sprites enter into this Extension to place Struts on the Board.</li>
-<li><code>mine</code>: Sprites enter into this Extension to convert Resources into Inventory. <strong>NOTE</strong>: This Extension is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel, i.e. the Spear Weapon and the Shovel Tool both use the same underlying animation rows.</li>
+<li><code>trade</code>: Sprites enter into this Extension to exchange Money for Inventory with another Sprite.</li>
+<li><code>build</code>: Sprites enter into this Extension to place Crafts on the Board.</li>
+<li><code>mine</code>: Sprites enter into this Extension to convert Resources into Inventory. <strong>NOTE</strong>: This Extension is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows.</li>
 </ul>
 <h3 id="disposition">Disposition</h3>
 <p>A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's <em>Disposition</em> is an element in its Disposition Transition matrix, covered below. Dispositions are enumerated below, along with their reachable states.</p>
@@ -1646,29 +1679,30 @@ A and visa versa. In other words, if a Sprite converses with another Sprite that
 <ul>
 <li>Equipment Sheets: <code>/src/assets/sheets/sprites/equipment/&lt;kind-key&gt;/&lt;equipment-key&gt;.png</code></li>
 </ul>
-<p>Equipment sheets are superimposed onto the Sprite Sheets based on their active Equipment keys in <code>sprite.state.inventory.equipment</code>, e.g.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">equipment</span><span class="p">:</span>
+<p>Equipment sheets are superimposed onto the Sprite Sheets based on the active Equipment keys in <code>sprite.state.inventory.equipment</code>, e.g.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># /src/data/state/&lt;board-key&gt;/sprite.state.inventory: </span>
+<span class="nt">equipment</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">armor</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">plate</span>
 <span class="w">    </span><span class="nt">tool</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shovel</span>
 <span class="w">    </span><span class="nt">utility</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">lantern</span>
 <span class="w">    </span><span class="nt">weapon</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dagger</span>
 </code></pre></div>
-<p>Each piece of Equipment is associated with an (Action, Direction) grouping. When a piece of Equipment is active, the Sheet Asset corresponding to the Equipment will be stacked on top of the Sprite's Asset stack.</p>
+<p>Each piece of Equipment is associated with an (Action, Direction) grouping. When a piece of Equipment is active, the Sheet Asset corresponding to the Equipment will be stacked on top of the Sprite's Asset stack. The Animation state associated with a piece of Equipment is configured by <a href="#equipment-matrix">the Equpiment Matrix</a> file.</p>
 <p>Equipment is divided in four <em>Kinds</em>: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. </p>
-<p>When a piece of Equipment is active, it affects what animation state results when the Sprite enters into the <code>attack</code> Disposition.</p>
+<p>When a piece of Equipment is active, it affects what Animation state results when the Sprite enters into the <code>attack</code> Disposition. The translation between Disposition and Animation</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># pseudocode</span>
 <span class="k">if</span> <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">intention</span><span class="o">.</span><span class="n">disposition</span> <span class="o">==</span> <span class="s1">&#39;atack&#39;</span><span class="p">:</span>
-    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">animation</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">ActionResolver</span><span class="o">.</span><span class="n">attack</span><span class="p">(</span>
+    <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">animation</span> <span class="o">=</span> <span class="n">DispositionResolver</span><span class="o">.</span><span class="n">animation</span><span class="p">(</span>
         <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">inventory</span><span class="p">,</span>
         <span class="n">equipment</span><span class="o">.</span><span class="n">properties</span>
     <span class="p">)</span>
-
-<span class="c1">### Equipment Schema</span>
-
-<span class="o">-</span> <span class="n">Location</span><span class="p">:</span> <span class="err">`</span><span class="o">/</span><span class="n">src</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">equipment</span><span class="o">/</span><span class="n">main</span><span class="o">.</span><span class="n">yaml</span><span class="err">`</span>
-
-<span class="err">```</span><span class="n">yaml</span>
-<span class="o">--</span><span class="mi">8</span><span class="o">&lt;--</span> <span class="s2">&quot;docs/.static/yaml/data-equipment.yaml&quot;</span>
+</code></pre></div>
+<h3 id="equipment-matrix">Equipment Matrix</h3>
+<ul>
+<li>Location: <code>/src/data/equipment/main.yaml</code></li>
+</ul>
+<p><strong>Schema</strong></p>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-equipment.yaml&quot;</span>
 </code></pre></div>
 <p><strong>Default Equipment Matrix</strong></p>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-equipment.yaml&quot;</span>
