@@ -11,7 +11,11 @@ import yaml
 
 # Application Libraries
 import app.config.settings as settings
-from app.config.enums import AssetCategories, Devices
+from app.config.enums import (
+    AssetCategories, 
+    AssetInstances,
+    Devices
+)
 from app.assets.base import Asset
 from app.game.board import Board
 from app.game.screen import Screen
@@ -93,7 +97,7 @@ class Orchestrator:
         logger.debug(f"Validating loaded schema via Pydantic model.")
         self.state = PyStateConfiguration.model_validate(merged_data)
 
-    def migrate(self) -> List[Asset]:
+    def migrate(self, device: Device) -> List[Asset]:
         """
         # migrate
 
@@ -130,15 +134,24 @@ class Orchestrator:
                     asset_id = instance.pop("id")
                     asset_name = instance.pop("name")
 
-                    assets.append(
-                        Asset(
-                            taxonomy   = Factory.taxonomy(category_key, instance_key, asset_id, asset_name),
-                            properties = Factory.properties(category_key, instance_props),
-                            state      = Factory.state(recipe.state, instance),
-                            frame      = Factory.frame(recipe.frame),
-                            animation  = Factory.animation(recipe.animation)
-                        )
-                    )
+                    if instance_key == AssetInstances.PLAYER:
+                        assets.append(Player(
+                            device      = device,
+                            taxonomy    = Factory.taxnomy(category_key, instance_key, asset_id, asset_name),
+                            properties  = Factory.properties(category_key, instance_props),
+                            state       = Factory.state(recipe.state, instance),
+                            frame       = Factory.frame(recipe.frame),
+                            animation   = Factory.animation(recipe.animation)
+                        ))
+                        continue
+                    
+                    assets.append(Asset(
+                        taxonomy   = Factory.taxonomy(category_key, instance_key, asset_id, asset_name),
+                        properties = Factory.properties(category_key, instance_props),
+                        state      = Factory.state(recipe.state, instance),
+                        frame      = Factory.frame(recipe.frame),
+                        animation  = Factory.animation(recipe.animation)
+                    ))
                     
         logger.info(f"Successfully migrated {len(assets)} assets.")
         return assets
@@ -155,7 +168,7 @@ class Orchestrator:
         logger.info("Bootstrapping internal SDL environment and initializing Registry.")
         render.init(screensize.w, screensize.l)
 
-        assets = self.migrate()
+        assets = self.migrate(device)
         player = Player(device)
 
         self.board = Board(assets, player)

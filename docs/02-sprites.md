@@ -4,11 +4,10 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 
 **Player, NPCs and Enemies**
 
-NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to Disposition Transitions.
+NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to the Disposition Transition Matrix. However, all state changes of Sprites and the Player are communicated through the medium of Intentions.
 
-- See [Intents](#intents) and [Intentions](#intentions) documentation below for more information on the Intention mechanics. 
-- See [Dispositions](#disposition) documentation below for more information on Disposition Transition Matrix.
 - See [Player](./03-player.md) documentation for more information on the Player.
+- See  [Intentions](./04-intentions.md) documentation for more information on the Intention Mechanics. 
 
 **Layers**
 
@@ -16,75 +15,80 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
 
 ## Overview 
 
+**Taxonomy**
+
+- `category: sheet`
+- `instance: sprite`
+
 **Properties**
 
-- Actions: 
-    - Count: `int`
-    - Directions:
-        - Row: `int`
-        - Attackboxes: `List[Attackbox]` 
-* Dimensions: `Tuple[int, int]
-* Hitboxes: `List[Tuple[int, int, int, int]]` 
+- `actions:` 
+    - `count: int`
+    - `directions:`
+        - `row: int`
+        - `attackboxes: List[Attackbox]` 
+* `dimensions: Dimensions`
+* `hitboxes: List[Hitbox]` 
 
 **State**
 
-- Name: `str`
-- Position: `Tuple[int, int]`
-- Layer: `str`
-- Meters
-    - Health: 
-        - Current: `int`
-        - Maximum: `int`
-    - Magic: `int`
-        - Current: `int`
-        - Maximum: `int`
-- Character
-    - Strength: `int`
-    - Defense: `int`
-    - Speed: `int`
-- Animation:
-    - Action: `str`
-    - Direction: `str`
-    - Frame: `int`
-- Intention: 
-    - Extension: `str`
-    - Disposition: `str`
-    - Motivation: `str`
-    - Expression: `str`
-- Inventory:
-    - Loot: `Dict[str, int]`
-    - Equipment:
-        Armor: `str`
-        Weapon: `str`
-        Tool: `str`
-        Utility: `str`
-    - Wallet: `int`
-- Mutators:
-    - Triggers: `Dict[str, bool]`
-    - Parameters: `Dict[str, Dict[str, Union[int, double]]]`
-- Memory: 
-    - Goal: `Goal (see below)`
-    - Communication: `List[str]` 
-    - Prices: `Dict[str, double]`
-- Goal: 
-    - Name: `str`
-    - Category: `Enum[sprite | object | loot]`
-    - Intention:
-        - Action: `str`
-        - Extension: `str`
+- `name: str`
+- `position: Position`
+- `layer: str`
+- `meters:`
+    - `health:` 
+        - `current: int`
+        - `maximum: int`
+    - `magic: int`
+        - `current: int`
+        - `maximum: int`
+- `character:`
+    - `strength: int`
+    - `defense: int`
+    - `speed: int`
+- `animation:`
+    - `action: str`
+    - `direction: str`
+    - `frame: int`
+- `intention:` 
+    - `extension: str`
+    - `disposition: str`
+    - `motivation: str`
+    - `expression: str`
+- `inventory:`
+    - `loot: Dict[str, int]`
+    - `equipment:`
+        `armor: str`
+        `weapon: str`
+        `tool: str`
+        `utility: str`
+    - `wallet: int`
+- `mutators:`
+    - `triggers: Dict[str, bool]`
+    - `parameters: Dict[str, Dict[str, Union[int, double]]]`
+- `memory:` 
+    - `goal: Goal`
+    - `communication: List[str]` 
+    - `prices: `Dict[str, double]`
+- `goal:` 
+    - `name: str`
+    - `category: Enum[sprite | object | loot]`
+    - `intention:`
+        - `action: str`
+        - `extension: str`
 
 `state.animation.frame` is an integer that tracks the current animation frame. Its maximum value is dependent on the Action state and its corresponding properties. In other words, if a Sprite is in the `state.animation.action` Action state, then Frame will cycle from 0 to `properties.actions[state.animation.action].count`.
 
 **Frame**
 
-- `key(asset, animation)`: `asset + animation.direction + animation.action + animation.frame`
+- `key(asset, animation): asset + animation.direction + animation.action + animation.frame`
 
 ### Schema
 
-- Location: `/src/assets/intents/main.yaml`
+- Location: `/src/data/intentions/main.yaml`
 
 ```yaml
---8<-- "docs/.static/yaml/data-intents.yaml"
+--8<-- "docs/.static/yaml/data-intentions.yaml"
 ```
 
 ## Meters
@@ -157,196 +161,20 @@ The frames per Action Group are given below,
 !!! note 
     In the LPC specification, the `thrust` Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the `thrust` state.
 
-!!! note
-    Any Actions defined in the `/src/assets/sheets/**.png` file rows must have its Action key entered in `/src/data/intents/main.yaml#actions` file to register as an Action enterable from a Disposition.
-
 ## Intentions
 
 !!! important
-    The Player state does not observe Intention Mechanics such as the Disposition Transition matrix; the Player state is entirely managed by polling the user's input and mapping input to state. See [Player documentation](./03-player.md) for more information on the Player.
+    The Player state does not observe the Disposition Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See [Player documentation](./03-player.md) for more information on the Player.
 
-*Intentions* are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given an Intention state, along with an Animation state, that is updated by the gameplay loop. The complex internal state of a Sprite is represented by its Intention. Intention is the medium through which Sprites transition into different Animation states. 
+*Intentions* are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state that is updated by the gameplay loop. Intention coordinates represent a node in the Sprite "finite automaton", the Disposition Transition Matrix.
 
 The complete Intention State for a Sprite is given by the tuple,
 
     (Disposition, Expression, Extension, Motivation, Communication)
 
-The attributes of Intention are discussed in more detail below.
+Intentions are configured through the `/src/data/intentions/main.yaml` file.
 
-Intentions are configured through the `/src/data/intents/main.yaml` file.
-
-### Extension
-
-A Extension is a pseudo-state that does not factor into the Asset frame key calculation directly. It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the `sprint` Extension state increases the velocity of the `(walk, *)` states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the `interact` Extension state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.
-
-The default Extension states are enumerated below,
-
-- `interact`: Sprites enter into this Extension to interact with Objects.
-- `speak`: Sprites enter into this Extension to draw their Communication on a Dialogue window.
-- `sprint`: Sprites enter into this Extension to increase their velocity.
-- `trade`: Sprites enter into this Extension to exchange Money for Inventory with another Sprite.
-- `build`: Sprites enter into this Extension to place Crafts on the Board.
-- `mine`: Sprites enter into this Extension to convert Resources into Inventory. **NOTE**: This Extension is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows.
-
-### Disposition
-    
-A Disposition determines which Actions are currently reachable for a Sprite. In other words, a Sprite's *Disposition* is an element in its Disposition Transition matrix, covered below. Dispositions are enumerated below, along with their reachable states.
-
-1. `attack`
-    - Reachable Actions: `cast, thrust, slash, shoot`
-    - Reachable Dispostions: `attack, hunt, loot`
-    - Reachable Extensions:
-2. `attract`
-    - Reachable Actions: `walk`
-    - Reachable Dispostions: `barter, communicate`
-    - Reachable Extensions: `interact`
-3. `barter`
-    - Reachable Actions:
-    - Reachable Dispostions:
-    - Reachable Extensions: `trade`
-4. `communicate`
-    - Reachable Actions:
-    - Reachable Dispostions:
-    - Reachable Extensions: `trade`, `speak`
-5. `construct`
-    - Reachable Actions: `walk`, `thrust` (Shovel is maps to Thrust Animation; see [above](#extension))
-    - Reachable Dispositions: 
-    - Reachable Extension: `build`, `mine`
-6. `engage`
-    - Reachable Actions: `walk`
-    - Reachable Dispostions: 
-    - Reachable Extensions: `interact`
-7. `escape`
-    - Reachable Actions: `walk`
-    - Reachable Dispostions: 
-    - Reachable Extensions: `sprint`
-8. `find`
-    - Reachable Actions: `walk, thrust`
-    - Reachable Dispostions: 
-    - Reachable Extensions: `sprint`
-9. `follow`
-    - Reachable Actions: `walk`
-    - Reachable Dispostions: 
-    - Reachable Extensions: `sprint`
-10. `idle`
-    - Reachable Actions: `walk`
-    - Reachable Dispostions: 
-    - Reachable Extensions:
-11. `mock`
-    - Reachable Actions: None
-    - Reachable Dispostions: `threaten`
-    - Reachable Extensions: `speak`
-12. `recoil`
-    - Reachable Actions: `die`
-    - Reachable Dispostions: 
-    - Reachable Extensions: 
-13. `return`
-    - Reachable Actions: `walk`
-    - Reachable Dispostions: `find`
-    - Reachable Extensions:
-14. `scavenge` 
-    - Reachable Actions:
-    - Reachable Dispostions:
-    - Reachable Extensions:
-15. `threaten`
-    - Reachable Actions: 
-    - Reachable Dispostions: `attack`
-    - Reachable Extensions: 
-16. `wander`
-    - Reachable Actions: `walk`
-    - Reachable Dispostions: `find`, `return`, `idle`
-    - Reachable Extensions:
-
-**Default Disposition Transition Matrix**
-
-Provided below is the Disposition Transition Matrix bundled with the application by default,
-
-```yaml
---8<-- "docs/.static/yaml/examples/default-disposition-matrix.yaml"
-```
-
-**Disposition Scripting Language (DSL)**
-
-The `condition` for each Disposition transition is given in a simple truth-valued language that admits the logical operations and terms,
-
-Operations:
-
-- `==`: equivalence
-- `!=`: non-equivalence
-- `not`: negation
-- `or`: disjunction
-- `and`: conjunction
-
-Terms:
-
-- `None`: null value
-- `str`: constants
-- `sprite.<state>`: self State variable
-- `sprites[<sprite-name>].<state>`: other Sprites state variable
-
-For example, in the default Disposition Transition matrix given above, the transition from `attack` to `hunt` is conditional on the following,
-
-```yaml
-- not sprite.goal
-- sprite.memory.goal.category == 'sprite'
-```
-
-`sprite` is a reference to the Sprite's state which is currently processing the given Disposition. Thus, the Sprite's Disposition state will transition to `hunt` if the Sprite currently does not have a target, but remembers having a target of category `sprite`.
-
-!!! note
-    The expression `not sprite.goal` is a *truthy* expression, i.e. it is to be interpretted as an existential claim. In other words, this expression evaluates to `true` if `sprite.goal` does not exist. If the expression involves a List, e.g. `sprite.memory.communications`, this expression evaluates to `true` in the event it has more than 0 entries.
-
-In another example, the transition from `attack` to `loot` in the default Disposition Transition matrix is given by,
-
-```yaml
-- sprites[sprite.target.name].mutators.triggers.dead
-```
-
-`sprites` is a reference to a dictionary of all ingame Sprites states keyed by their identifying and unique `name`, which provides access to their state attributes.
-
-Notice in the example there is a self-entrant transition. A Sprite with an `attack` Disposition can re-enter the `attack` Disposition conditional on the Sprite still having a target,
-
-```yaml 
-- sprite.goal.target.category == 'sprite'
-```
-
-!!! important
-    The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == 'sprite'`, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back into `attack`.
-
-Disposition conditions are converted into lambda functions by the application and then evaluated at runtime.
-
-### Motivation
-
-Motivations are long-term variables that modulate the Disposition Transition matrix.
-
-The default Motivations are enumerated below,
-
-- `conquest`
-- `profit`
-- `survival`
-- `love`
-- `revenge`
-- `rebellion`
-- `safety`
-
-### Communication
-
-The Communication dimension of an Intention can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the `speak` Extension.
-
-### Expression
-
-The Expression dimension alter the Sprite's appearnce by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. 
-
-The default Expressions are enumerated below,
-
-- `agreement`
-- `anger`
-- `confusion`
-- `curiosity`
-- `disagreement`
-- `loquacity`
-- `surprise`
-- `tired`
+See [Intentions](./04-intentions.md) for more information.
 
 ## Goal
 
@@ -381,7 +209,7 @@ The `category` of a Goal affects the type of identifier given in `name`.
 
 ### Communications
 
-Under certain conditions based on the Sprite's Disposition, the gameplay loop delivers to the Sprite an Intent containing a Communication key. For example, a Sprite in the `mock` Disposition might receive a Communication key `insult`. This key gets stored at the *beginning* (0 index) of the `memory.communications` list. 
+Under certain conditions based on the Sprite's Intention, the Sprite may emit a Communication through the `speak` Extension. For example, a Sprite in the `mock` Disposition might receive a Communication key `insult`. This key gets stored at the *beginning* (0 index) of the `memory.communications` list. 
 
 When a Sprite with a non-empty `memory.communications` enters into the `communicate` Disposition, the gameplay loop will then take the first entry out of this Sprites `memory.communications` list, delete it from this list and place it in the `intention.communication` cell. 
 

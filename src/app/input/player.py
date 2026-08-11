@@ -32,30 +32,10 @@ class Player(Asset):
     device: Device
 
     def __init__(self, 
-        device: Devices
+        device: Devices,
+        **kwargs
     ):
-        # PLACEHOLDER SUPER.__INIT__ FOR NOW
-        #   CONSTRUCTING EVERYTHING MANUALLY...
-        super().__init__(
-            taxonomy =  Taxonomy(id="hero", name="hero", category="sheet", instance="sprite"),
-            state = PlayerState(
-                layer = 0,
-                position = Position(x=0, y=0),
-                animation = AnimationState(),
-                character = Character(strength=10, defense=10, speed=10),
-                inventory = Inventory(),
-                meters = Meters(
-                    health = Health(100, 100),
-                    magic = Magic(100, 100)
-                )
-            ),
-            properties = PlayerProperties(
-                dimensions = Dimensions(w=64, l=64)
-            ), # PLACEHOLDER
-            frame = StateFrame(),
-            animation = StateAnimation()
-        )
-        
+        super().__init__(**kwargs)
         if device == Devices.CONTROLLER:
             # load controller State <-> Input mapping
             mapping = "TODO"

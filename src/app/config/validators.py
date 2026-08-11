@@ -6,11 +6,6 @@ Package for Pydantic models used for loading and validating YAML. These models a
 # Standard Libraries
 from typing import List, Union, Dict, Optional, Type, Tuple
 
-# Application Libraries
-import app.config.settings as settings
-
-from app.config.enums import FrameRecipe, AnimationRecipe, \
-                                StateRecipe
 
 # External Libraries
 from pydantic import BaseModel
@@ -19,6 +14,16 @@ from pydantic_settings import (
     SettingsConfigDict, 
     PydanticBaseSettingsSource, 
     YamlConfigSettingsSource
+)
+
+# Application Libraries
+import app.config.settings as settings
+from app.config.enums import (
+    FrameRecipe, 
+    AnimationRecipe,
+    StateRecipe, 
+    Actions, 
+    Directions
 )
 
 class YamlBaseSettings(BaseSettings):
@@ -119,9 +124,9 @@ class PyAssetState(BaseModel):
     name: str
 
 class PyAnimationState(BaseModel):
-    action: Union[str, None]
-    direction: Union[str, None]
-    frame: Union[int, None]
+    action: str = Actions.WALK
+    direction: str = Directions.DOWN
+    frame: int = 0
 
 class PyPropertyState(BaseModel):
     name: str
@@ -229,7 +234,7 @@ class PySwitchState(PyAssetState):
 
 class PySpriteState(BaseModel):
     name: str
-    animation: Optional[PyAnimationState] = None
+    animation: PyAnimationState
     position: PyPosition
     character: PyCharacterState
     intention: PyIntentionState
@@ -241,7 +246,8 @@ class PySpriteState(BaseModel):
 
 class PyPlayerState(BaseModel):
     position: PyPosition
-    animation: Optional[PyAnimationState] = None
+    animation: PyAnimationState
+    intention: PyIntentionState
     character: PyCharacterState
     inventory: PyInventoryState
     meters: PyMeterState
@@ -343,6 +349,7 @@ class PyStateConfiguration(BaseModel):
     cursors: Optional[PyCursorStateInstances] = None
     effects: Optional[PyEffectStateInstances] = None
     sheets: Optional[PySheetStateInstances] = None
+    player: PyPlayerState
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ PROPERTY YAML SCHEMA

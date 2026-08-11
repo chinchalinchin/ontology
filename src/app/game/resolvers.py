@@ -4,17 +4,21 @@
 # Application Libraries
 from app.config.enums import Actions, Dispositions
 
-class DispositionResolver:
+class AnimationResolver:
 
     @staticmethod
     def action(state, equipment) -> Actions:
         """
         Resolves Sprite Dispositions to Animation Actions.
+
+        - state: sprite state
+        - equipment: equipment properties
         """
         weapon = state.inventory.equipment.weapon
         tool = state.inventory.equipment.tool
         utility = state.inventory.equipment.utility
         armor = state.inventory.equipment.armor
+        disposition = state.intention.disposition
 
         if state.intention.disposition in [Dispositions.ATTACK, Dispositions.HUNT]:
             if not weapon:

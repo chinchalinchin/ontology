@@ -1,6 +1,6 @@
 # Ontology: Player
 
-A Player is a special type of Sprite Sheet Asset. 
+A Player is a special type of Sprite Sheet Asset. Like all other Assets, its state is maintained in `/src/data/<board>/**.yaml`. 
 
 ## Overview
 
@@ -63,7 +63,7 @@ Player Intentions do not include the dimensions of Motivation and Communication,
 
     (Disposition, Expression, Extension)
 
-TODO
+See [Intentions documentation](./04-intentions.md) for more information.
 
 ## Devices
 

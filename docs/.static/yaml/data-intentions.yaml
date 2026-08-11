@@ -1,12 +1,12 @@
-intents:
+intentions:
   # -------------------------- COMMUNICATIONS
   communications: 
     <plot-state-key>:
   # -------------------------- DISPOSITIONS
   dispositions:
     <disposition-key>:
-      actions:
-        - <reachable-action-key>
+      expressions:
+        - <reachable-expression-key>
       extensions:
         - <reachable-extension-key>
       transitions:

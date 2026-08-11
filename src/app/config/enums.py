@@ -35,6 +35,7 @@ class AssetInstances(str, Enum):
     STRUTS          = "struts"
     PIXIES          = "pixies"
     SPRITES         = "sprites"
+    PLAYER          = "player"
 
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 

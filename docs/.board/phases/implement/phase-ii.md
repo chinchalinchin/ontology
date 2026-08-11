@@ -2,8 +2,8 @@
 
 1. **Data-Driven Player Initialization**
 
-* [ ] **Configuration:** Create `src/data/state/<board>/player.yaml` to define the Player's initial state (Layer, Position, Character stats). Map the category to `sheets` and instance to `sprites`.
-* [ ] **Factory Migration:** Remove the hardcoded `__init__` in `src/app/input/player.py`. Route the Player's instantiation through `Orchestrator.migrate()` using the standard `Factory` methods.
+* [~] **Configuration:** Create `src/data/state/<board>/player.yaml` to define the Player's initial state (Layer, Position, Character stats). Map the category to `sheets` and instance to `sprites`.
+* [~] **Factory Migration:** Remove the hardcoded `__init__` in `src/app/input/player.py`. Route the Player's instantiation through `Orchestrator.migrate()` using the standard `Factory` methods.
 * [ ] **Board Integration:** Modify `Board.__init__` to ensure the Player is appended to `self._assets` so it successfully enters the `_cached_categories` and `_cached_instances` dictionaries.
 
 2. **Input Device Configuration & Mapping**

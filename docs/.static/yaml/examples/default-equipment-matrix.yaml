@@ -20,6 +20,12 @@ equipment:
         - plate-helmet
         - plate-shoulders
   tools:
+    axe:
+      animation:
+        action: slash
+        direction: all
+      sheets:
+        - axe
     shovel:
       animation: 
         action: thrust
@@ -56,3 +62,15 @@ equipment:
         direction: all
       sheets:
         - warhammer
+    longbow:
+      animation:
+        action: shoot
+        direction: all
+      sheets:
+        - longbow
+    crossbow: 
+      animation:
+        animation: cast
+        direction: all
+      sheets:
+        - crossbow

@@ -1,11 +1,6 @@
 intents:
   dispositions:
     attack:
-      actions:
-        - cast
-        - slash
-        - shoot
-        - thrust
       extensions: null
       transitions:
         - next: attack
@@ -19,7 +14,6 @@ intents:
           conditions: 
             - sprites[sprite.goal.name].mutators.triggers.dead
     attract:
-      actions: null
       extensions:
         - interact
         - speak
@@ -32,7 +26,6 @@ intents:
           conditions: 
             - sprite.memory.communications
     barter:
-      actions: null
       extensions:
         - trade
         - speak
@@ -43,26 +36,20 @@ intents:
             - sprite.inventory.wallet < sprite.prices[sprite.memory.goal.name]
             - sprite.intention.motivation == 'survival'
     communicate:
-      actions:
-        - walk
       extensions: 
         - speak
       transitions:
         - next: 
           conditions: 
     construct:
-      actions:
-        - walk
-        - thrust
       extension:
         - mine
         - build
+        - trade
       transitions:
         - next:
           conditions: 
     escape: 
-      actions: 
-        - walk
       extensions:
         - sprint
       transitions:
@@ -73,7 +60,6 @@ intents:
           conditions: 
             - not sprite.goal
     find: 
-      actions: null
       extensions: null
       transitions:
         - next: scavenge
@@ -86,14 +72,12 @@ intents:
           conditions:
             -  
     hunt: 
-      actions: null
       extensions: null
       transitions:
         - next:
           conditions: 
             - 
     follow: 
-      actions: null
       extensions: null
       transitions: 
         - next: follow
@@ -106,7 +90,6 @@ intents:
           conditions:
             -  
     idle: 
-      actions: null
       extensions: null
       transitions: 
         - next: idle
@@ -136,7 +119,6 @@ intents:
           conditions:
             -  
     recoil:
-      actions: null
       extensions: null
       transitions:
         - next: attack
@@ -146,7 +128,6 @@ intents:
           conditions: 
             - sprite.mutators.triggers.frightened
     return:
-      actions: null
       extensions: null
       transitions:
         - next: idle
@@ -159,14 +140,12 @@ intents:
           conditions: 
             - 
     scavenge:
-      actions: null
       extensions: null
       transitions:
         - next: return
           conditions:
             -  
     threaten:
-      actions: null
       extensions: null
       transitions:
         - next: attack
@@ -182,7 +161,6 @@ intents:
           conditions:
             - 
     wander:
-      actions: null
       extensions: null
       transitions:
         - next: recoil

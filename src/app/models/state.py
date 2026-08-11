@@ -120,6 +120,17 @@ class SwitchState(AssetState):
 # ---------------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------------- SHEET STATE TYPES
+
+@dataclass(slots=True)
+class Meter:
+    """
+    Representation of a Sprite meter.
+    """
+    current: int
+    maximum: int
+
+# ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------- SHEET STATE FIELDS
     
 @dataclass(slots=True)
@@ -142,20 +153,16 @@ class Equipment:
     utility: str = None
 
 @dataclass(slots=True)
-class Health:
+class Health(Meter):
     """
     Representation of a Sprite's health meter.
     """
-    current: int 
-    maximum: int
 
 @dataclass(slots=True)
-class Magic:
+class Magic(Meter):
     """
     Representation of a Sprite's magic meter.
     """
-    current: int 
-    maximum: int
 
 @dataclass(slots=True)
 class Meters:
@@ -258,7 +265,7 @@ class PlayerState(AssetState):
     character: Character
     inventory: Inventory
     meters: Meters
-    # intention: Intention
+    intention: Intention
     animation: AnimationState
 
 # ---------------------------------------------------------------------------------------

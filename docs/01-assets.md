@@ -412,7 +412,7 @@ Persistent Effects are long-term, continuous effects, such as water ripples or w
 
 **Frame: IterableFrame**
 
-* `key(asset, animation) -> <asset>-<animation.frame>`
+* `key(asset, animation) : {asset}-{animation.frame}`
 
 **State: AnimatorState**
 
@@ -553,7 +553,7 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 
 ### Pixies
 
-*Pixies* are *Sheets* that have simple game mechanics, e.g. are excluded from the complex calculations of the [Intention Mechanic](./02-sprites.md#intentions). *Pixies* encapsulate simple Characters, such as animals or bugs.
+*Pixies* are *Sheets* that have simple game mechanics, e.g. are excluded from the complex calculations of the [Intention Mechanic](./04-intentions.md). *Pixies* encapsulate simple Characters, such as animals or bugs.
 
 **Animation: StateAnimation**
 
@@ -575,7 +575,7 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 
 #### Sprites
 
-*Sprites* are *Sheets* over multiple rows of frames with a variable number of frames per row. They are meant to encapsulate the core Characters, e.g. the player, NPCs, and enemies.
+*Sprites* are *Sheets* over multiple rows of frames with a variable number of frames per row. They have a diverse palette of Actions. They are meant to encapsulate the core Characters, e.g. the player, NPCs, and enemies.
 
 **Animation: StateAnimation**
 
@@ -588,14 +588,14 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 
 **State: SpriteState**
 
-* `name: str`
 * `layer: str`
 * `position: Position`
 * `animation: Animation`
 * `character: Character`
 * `intention: Intention`
 * `inventory: Inventory`
-* `mutators: Mutator`
+* `meters: meter`
+* `mutators: Mutators`
 * `memory: Memory`
 * `goal: Goal`
 

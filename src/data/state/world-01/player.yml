@@ -1,0 +1,29 @@
+  player: 
+    id: player
+    name: player
+    layer: '0'
+    position:
+      x: 10
+      y: 10
+    meters:
+      health: 
+        current: 100
+        maximum: 100
+      magic: 
+        current: 100
+        maximum: 100
+    character:
+      strength: 5
+      defense: 5
+      speed: 5
+    mutators:
+      fear:
+        radius: Pixel Length
+        limit: Health Percentage
+        enemy: Enemy Count
+      vision:
+        radius: Pixel Length
+    intention:
+      disposition: Disposition Key
+      extension: Extension Key
+      expression: Expression Key
