@@ -38,10 +38,10 @@ The basis of the Intention system has been laid. Both Sprite and Player Assets h
 
 *Objective*: Remove runtime execution responsibilities from the Orchestrator.
 
-- [ ] Create an `Engine` class responsible for clock cycles, delta-time accumulation, and frame dispatching.
-- [ ] Move `Orchestrator.time()` and `Orchestrator.start()` into the Engine.
-- [ ] The `Engine` constructor should accept: the `Board`, the `Screens` dictionary, and the instantiated `Mechanics` list.
-- [ ] The `Engine` loop will replace `Board.play()` by explicitly iterating over its injected mechanics: `[m.update(board, delta) for m in self.mechanics]`.
+- [x] Create an `Engine` class responsible for clock cycles, delta-time accumulation, and frame dispatching.
+- [x] Move `Orchestrator.time()` and `Orchestrator.start()` into the Engine.
+- [x] The `Engine` constructor should accept: the `Board`, the `Screens` dictionary, and the instantiated `Mechanics` list.
+- [x] The `Engine` loop will replace `Board.play()` by explicitly iterating over its injected mechanics: `[m.update(board, delta) for m in self.mechanics]`.
 
 **Task 4: Streamline Orchestrator**
 

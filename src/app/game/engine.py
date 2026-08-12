@@ -5,11 +5,14 @@ Package for core game loop.
 """
 # Standard Library
 import time
+from typing import Dict, List
 import logging
 
 # Application Libraries
 from app.config.enums import Devices
 from app.game.board import Board
+from app.game.mechanics import Mechanic
+from app.game.screen import Screen
 
 # Cython Libraries
 from libs.core.models import Dimensions
@@ -24,6 +27,14 @@ class Engine:
     """
 
     board: Board
+    screens: List[Screen]
+    mechanics: List[Mechanic]
+
+    def __init__(self, board: Board, screens: List[Screen], mechanics: List[Mechanic]):
+        self.board = board
+        self.screens = screens
+        self.mechanics = mechanics
+
     @staticmethod
     def time() -> float:
         """
@@ -49,8 +60,9 @@ class Engine:
             
             while not self.board.paused:
                 while accumulator >= delta:
-                    self.board.play(delta)
-                    accumulator -= delta
+                    for this in self.mechanics:
+                        this.update(self.board, delta)
+                        accumulator -= delta
 
                 player = self.board.player()
 
