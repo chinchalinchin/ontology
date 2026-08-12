@@ -1487,9 +1487,9 @@
 <li><code>hitboxes: List[Hitbox]</code> </li>
 </ul>
 <h3 id="chests">Chests</h3>
-<p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>interact</code> Extension (see <a href="../02-sprites/#extension">Extensions</a> for more details on the distinction between Extension and Action) while intersecting the hitboxes of the <em>Chest</em>. When <code>switch == true</code>, the Chest is <em>on</em> (open). When <code>switch == false</code>, the Chest is <em>off</em> (closed).</p>
-<p>A Chest is <em>reusable</em> through the <code>interact</code> <a href="../02-sprites/#extension">Extension</a>, meaning <a href="../02-sprites/#inventory">Inventory Loot</a> can be taken out of and also placed into a Chest. The <code>content</code> state field manages the current contents of the Chest through a list of Inventory Loot keys.</p>
-<p>When <em>interacting</em> with a Chest, the <a href="../03-player/">Player</a> is shown a two windowed menu, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an <code>interact</code> Extension through its <a href="../02-sprites/#disposition">Disposition Transition Matrix</a>. This interaction is managed through a <a href="./06-architecture.md#mechanics">Mechanic</a>s</p>
+<p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>interact</code> <a href="../04-intentions/">Intention</a> while intersecting the hitboxes of the <em>Chest</em>. When <code>switch == true</code>, the Chest is <em>on</em> (open). When <code>switch == false</code>, the Chest is <em>off</em> (closed).</p>
+<p>A Chest is <em>reusable</em> through the <code>interact</code> <a href="../04-intentions/">Intention</a>, meaning <a href="../02-sprites/#inventory">Inventory Loot</a> can be taken out of and also placed into a Chest. The <code>content</code> state field manages the current contents of the Chest through a list of Inventory Loot keys.</p>
+<p>When <em>interacting</em> with a Chest, the <a href="../03-player/">Player</a> is shown a two windowed menu, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an <code>interact</code> Intention through its <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. This interaction is managed through a <a href="./06-architecture.md#mechanics">Mechanic</a>s</p>
 <p><strong>Animation: BinaryAnimation</strong></p>
 <ul>
 <li><code>if switch == true: animation.frame = 1</code></li>
@@ -1667,7 +1667,7 @@
 </ul>
 <h3 id="struts">Struts</h3>
 <p><em>Struts</em> are inanimate, immutable Assets. <em>Struts</em> are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an <code>owner</code>. </p>
-<p>Struts may be placed on the Board through the state files manually, but are instantiated ingame through the <code>build</code> Sprite Extension state (see <a href="../02-sprites/#extension">Sprite documentation</a> for more information on Extensions).</p>
+<p>Struts may be placed on the Board through the state files manually, but are instantiated ingame through the <code>build</code> Sprite <a href="../04-intentions/">Intention</a></p>
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>

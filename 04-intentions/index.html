@@ -423,6 +423,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Goal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-category" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal Category
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -653,6 +670,23 @@
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Goal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goal-category" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal Category
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -900,7 +934,7 @@
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[sprite.name].mutators.triggers.dead</span>
 </code></pre></div>
 <p><code>sprites</code> is a reference to a dictionary of all ingame Sprites states keyed by their identifying and unique <code>name</code>, which provides access to their state attributes.</p>
-<p>Notice in the example there is a self-entrant transition. A Sprite with an <code>attack</code> Disposition can re-enter the <code>attack</code> Disposition conditional on the Sprite still having a target,</p>
+<p>Notice in the example there is a self-entrant transition. A Sprite with an <code>attack</code> Intention can re-enter the <code>attack</code> Intention conditional on the Sprite still having a target,</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == &#39;sprite&#39;</span>
 </code></pre></div>
 <div class="admonition important">
@@ -909,12 +943,13 @@
 </div>
 <p>Intention transition conditions are converted into lambda functions by the application and then evaluated at runtime.</p>
 <h2 id="goal">Goal</h2>
-<p><em>Goals</em> provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's <em>modus operandi</em>, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is <em>in order</em> to achieve a Goal.</p>
+<p><em>Goals</em> provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's <em>modus operandi</em>, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Intention is <em>in order</em> to achieve a Goal.</p>
 <ul>
 <li><code>name</code>: Unique Identifier of the Goal.</li>
 <li><code>category</code>: Category of the Goal. (<code>sprite</code>, <code>loot</code>, <code>wealth</code>, <code>property</code>)</li>
 <li><code>position</code>: Last-known position of the Goal. When the Goal is within the <code>mutators.vision.radius</code>, this position is updated every game loop. Once the Goal exits the Sprites <code>mutators.vision.radius</code>, it becomes a static value that freezes on the last known Position of its Goal.</li>
 </ul>
+<h3 id="goal-category">Goal Category</h3>
 <p>When a Sprite has Goal, it will seek out (path-find) its way to <code>name</code>. The <code>category</code> of a Goal affects the type of identifier given in <code>name</code>. </p>
 <ul>
 <li><code>category == asset</code>: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The <code>name</code> will be the Asset <code>name</code>.</li>
