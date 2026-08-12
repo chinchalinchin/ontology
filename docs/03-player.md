@@ -20,6 +20,7 @@ The Player Sprite Sheet is configured through the `player` Sheet [Persona Stack]
         - `attackboxes: List[Attackbox]` 
 * `dimensions: Dimensions`
 * `hitboxes: List[Hitbox]` 
+* `stack: List[str]`
 
 **State**
 

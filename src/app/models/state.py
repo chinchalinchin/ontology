@@ -82,7 +82,7 @@ class AnimatorState(AssetState):
     - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     """
     position: Position
-    animation: AnimationState = None
+    animation: AnimationState = field(default_factory=AnimationState)
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- OBJECT STATE MODELS
@@ -94,7 +94,7 @@ class ContainerState(AssetState):
     content: List[str]
     position: Position
     switch: bool
-    animation: AnimationState = None
+    animation: AnimationState = field(default_factory=AnimationState)
 
 
 @dataclass(slots=True)
@@ -112,7 +112,7 @@ class SwitchState(AssetState):
     link: str
     position: Position
     switch: bool
-    animation: AnimationState = None
+    animation: AnimationState = field(default_factory=AnimationState)
 
 
 # ---------------------------------------------------------------------------------------
@@ -241,7 +241,7 @@ class SpriteState(AssetState):
     meters: Meters
     mutators: Mutators
     memory: Memory
-    animation: Union[AnimationState, None] = None
+    animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class PlayerState(AssetState):
@@ -254,7 +254,7 @@ class PlayerState(AssetState):
     meters: Meters
     goal: Union[Goal, None] = None
     intention: Union[str, None] = None
-    animation: Union[AnimationState, None] = None
+    animation: AnimationState = field(default_factory=AnimationState)
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------- MENU STATE MODELS

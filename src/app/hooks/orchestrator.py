@@ -103,10 +103,14 @@ class Orchestrator:
             return self.properties[category][instance]
 
         if category == AssetCategories.SHEETS and instance != AssetInstances.PLAYERS:
-            return self.properties[category][instance]["personas"][snapshot["id"]] 
+            props = self.properties[category][instance]["personas"][snapshot["id"]].copy()
+            props["actions"] = self.properties[category][instance]["actions"]
+            return props
 
         if category == AssetCategories.SHEETS and instance == AssetInstances.PLAYERS:
-            return self.properties[category][AssetInstances.SPRITES]["personas"][snapshot["id"]]
+            props = self.properties[category][AssetInstances.SPRITES]["personas"][snapshot["id"]].copy()
+            props["actions"] = self.properties[category][AssetInstances.SPRITES]["actions"]
+            return props
 
         return self.properties[category][instance][snapshot["id"]] 
 

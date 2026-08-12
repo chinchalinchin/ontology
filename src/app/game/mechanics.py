@@ -256,9 +256,9 @@ class PlayerMechanic(Mechanic):
                 category="position", 
                 position=Position(goal_x, goal_y)
             )
-        else:
-            player.state.goal.position.x = goal_x
-            player.state.goal.position.y = goal_y
+        elif player.state.goal:
+             player.state.goal.position.x = goal_x
+             player.state.goal.position.y = goal_y
 
         player.state.animation.action = AnimationMap.action(
             player.state, 

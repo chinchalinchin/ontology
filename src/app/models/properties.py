@@ -73,6 +73,7 @@ class SheetProperties(AssetProperties):
     dimensions: Dimensions
     stack: List[str]
     hitboxes: List[Hitbox] = field(default_factory=list)
+    actions: Dict[str, Action] = field(default_factory=dict)
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ EQUIPMENT PROPERTIES

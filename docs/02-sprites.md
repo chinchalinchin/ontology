@@ -26,6 +26,7 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
         - `attackboxes: List[Attackbox]` 
 * `dimensions: Dimensions`
 * `hitboxes: List[Hitbox]` 
+* `stack: List[str]`
 
 **State: SpriteState**
 

@@ -115,14 +115,14 @@ class Registry:
             if not cat_recipes: continue
             
             # Iterate through the Pydantic PyRecipe model fields
-            for inst_name, recipe in cat_recipes:
+            for inst_name, recipe in cat_recipes.items():
                 if not recipe: continue
 
                 inst_props = cat_props.get(inst_name)
                 if not inst_props: continue
 
                 # 1. SingleFrame 
-                if recipe.frame == FrameRecipe.SINGLE:
+                if recipe["frame"] == FrameRecipe.SINGLE:
 
                     # Tiles schema has a list of keys; others map key -> properties
                     if cat_name == AssetCategories.TILES:
@@ -139,14 +139,14 @@ class Registry:
                                 self._frames[id] = (self._textures[id], 0, 0, w, l)
 
                 # 2. IterableFrame
-                elif recipe.frame == FrameRecipe.ITERABLE:
+                elif recipe["frame"] == FrameRecipe.ITERABLE:
                     for key, props in inst_props.items():
                         if key not in self._textures: continue
                         
                         w, l = props["dimensions"]["w"], props["dimensions"]["l"]
                         
                         # Differentiate between Binary Objects and Sequential Effects
-                        if recipe.animation == AnimationRecipe.BINARY:
+                        if recipe["animation"] == AnimationRecipe.BINARY:
                             logger.debug(f"Indexed Binary IterableFrame: '{key}'")
                             self._frames[f"{key}-{settings.OFF}"] = (self._textures[key], 0, 0, w, l)
                             self._frames[f"{key}-{settings.ON}"] = (self._textures[key], w, 0, w, l)
@@ -156,7 +156,7 @@ class Registry:
                                 self._frames[f"{key}-{f}"] = (self._textures[key], f * w, 0, w, l)
 
                 # 3. StateFrame (Sheets)
-                elif recipe.frame == FrameRecipe.STATE:
+                elif recipe["frame"] == FrameRecipe.STATE:
                     for p_key, persona in inst_props["personas"].items():
                         if p_key not in self._textures: continue
 
@@ -171,7 +171,7 @@ class Registry:
                                     self._frames[frame_key] = (
                                         self._textures[p_key], f * w, row * l, w, l
                                     )
-
+                                    
     def load(self, filepath: str) -> TexturePtr:
         """Loads a physical .png file directly into GPU memory via SDL2 extensions."""
         cdef bytes b_filepath = filepath.encode('utf-8')

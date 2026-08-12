@@ -38,7 +38,7 @@ def main():
         p.add_argument("--layer", type=str, required=True, help="Target layer to construct/render")
         p.add_argument("--width", type=int, default=128, help="Simulated screen width")
         p.add_argument("--height", type=int, default=128, help="Simulated screen height")
-        p.add_argument("--device", type=str, default=Devices.KEYBOARD, help="Player device")
+        p.add_argument("--device", type=str, default=Devices.KEYBOARD.value, help="Player device")
 
     args = parser.parse_args()
 
