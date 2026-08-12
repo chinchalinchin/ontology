@@ -1,6 +1,6 @@
-#### Phase III: Dispositions
+#### Phase III: Intentions
 
-##### Disposition Propositional Language (DPL)
+##### Intentional Scripting Language (ISL)
 
 To maintain performance, the custom disposition DPL defined in `/src/assets/intents/main.yaml` must be compiled into executable Python `lambda` functions during the orchestration phase of the application bootstrap.
 

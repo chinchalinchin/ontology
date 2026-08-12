@@ -146,13 +146,11 @@ class PyEquipmentState(BaseModel):
     tool: str
     utility: str
 
-class PyHealthState(BaseModel):
+class PyMeterState(BaseModel):
     current: int 
     maximum: int
 
-class PyIntentionState(BaseModel):
-    extension: str
-    disposition: str
+class PyPsycheState(BaseModel):
     motivation: str
     expression: str
     communication: str
@@ -160,20 +158,16 @@ class PyIntentionState(BaseModel):
 class PyGoalState(BaseModel):
     name: str
     category: str
-    intention: PyIntentionState
+    position: PyPosition
 
 class PyInventoryState(BaseModel):
     loot: Dict[str, int]
     equipment: PyEquipmentState
     wallet: int
 
-class PyMagicState(BaseModel):
-    current: int
-    maximum: int
-
-class PyMeterState(BaseModel):
-    health: PyHealthState
-    magic: PyMagicState
+class PyMetersState(BaseModel):
+    health: PyMeterState
+    magic: PyMeterState
 
 class PyVisionMutator(BaseModel):
     radius: int
@@ -199,62 +193,56 @@ class PyMultiplierState(PyAssetState):
     multiple: PyMultiple 
 
 class PyPositionalState(PyAssetState):
-    name: str
     position: PyPosition
 
 class PyMetricState(PyAssetState):
-    name: str
     position: PyPosition
     initial: PyPosition
 
 class PyAnimatorState(PyAssetState):
-    name: str
     position: PyPosition
     animation: PyAnimationState
 
 class PyContainerState(PyAssetState):
-    name: str
     content: List[str]
     position: PyPosition
     animation: PyAnimationState
     switch: bool
     
 class PyDoorState(PyAssetState):
-    name: str
     position: PyPosition
     out: PyPosition
     outlayer: str
 
 class PySwitchState(PyAssetState):
-    name: str
     link: str
     position: PyPosition
     animation: PyAnimationState
     switch: bool
 
 class PySpriteState(BaseModel):
-    name: str
+    intention: str
     animation: PyAnimationState
     position: PyPosition
     character: PyCharacterState
-    intention: PyIntentionState
     inventory: PyInventoryState
-    meters: PyMeterState
+    meters: PyMetersState
     mutators: PyMutatorState
     memory: PyMemoryState
-    goal: PyGoalState
+    goal: Optional[PyGoalState] = None
 
 class PyPlayerState(BaseModel):
+    intention: str
     position: PyPosition
     animation: PyAnimationState
-    intention: PyIntentionState
     character: PyCharacterState
     inventory: PyInventoryState
-    meters: PyMeterState
+    meters: PyMetersState
+    goal: Optional[PyGoalState] = None
 
-# ---------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 # ------------------------------------------------------ RECIPE CONFIGURATION & VALIDATION
-# ---------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------
 
 class PyRecipe(BaseModel):
     frame: FrameRecipe
@@ -300,6 +288,23 @@ class PyRecipes(BaseModel):
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- YAML SCHEMAS
 # ---------------------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------------------
+# ----------------------------------------------------------------- EQUIPMENT YAML SCHEMA
+
+class PyEquipmentProperties(BaseModel):
+    animation: PyAnimationState
+    sheets: List[str]
+
+class PyEquipmentPropertyConfiguration(YamlBaseSettings):
+    armor: Dict[str, PyEquipmentProperties]
+    tools: Dict[str, PyEquipmentProperties]
+    utilties: Dict[str, PyEquipmentProperties]
+    weapons: Dict[str, PyEquipmentProperties]
+
+    model_config = SettingsConfigDict(
+        yaml_file = settings.DATA_DIR / "equipment" / settings.APP_EXT
+    )
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------- RECIPE YAML SCHEMA

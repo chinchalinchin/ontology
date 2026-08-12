@@ -68,6 +68,8 @@ class Directions(str, Enum):
     LEFT            = "left"
     DOWN            = "down"
     RIGHT           = "right"
+    # QUANTIFIERS
+    ALL             = "all"
 
 class Actions(str, Enum):
     CAST            = "cast"
@@ -76,6 +78,8 @@ class Actions(str, Enum):
     SLASH           = "slash"
     SHOOT           = "shoot"
     DIE             = "die"
+    # QUANTIFIERS
+    ALL             = "all"
 
 class Expressions(str, Enum):
     AGREEMENT       = "agreement"
@@ -114,3 +118,8 @@ class Motivations(str, Enum):
     REVENGE         = "revenge"
     SAFETY          = "safety"
     SURVIVAL        = "survival"
+
+class Relationships(str, Enum):
+    FAMILY          = "family"
+    FRIEND          = "friend"
+    FOE             = "foe"

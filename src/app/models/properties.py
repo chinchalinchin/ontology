@@ -7,6 +7,9 @@ Models for typing the property attributes of Assets. See documentation for a mor
 from typing import Dict, List, Callable
 from dataclasses import dataclass, field
 
+# Application Libraries
+from app.config.enums import Directions, Actions
+
 # Cython Libraries
 from libs.core import Dimensions, Hitbox, AttackBox
 
@@ -83,6 +86,27 @@ class SheetProperties(AssetProperties):
 class PlayerProperties(AssetProperties):
     dimensions: Dimensions
     hitboxes: List[Hitbox] = field(default_factory=list)
+
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------ EQUIPMENT PROPERTIES
+
+@dataclass(slots=True)
+class EquipmentAnimationProperty:
+    action: Actions
+    direction: Directions
+
+@dataclass(slots=True)
+class EquipmentProperty:
+    animation: EquipmentAnimationProperty
+    sheets: List[str]
+
+dataclass(slots=True)
+class EquipmentProperties:
+    armor: Dict[str, EquipmentProperty]
+    tools: Dict[str, EquipmentProperty]
+    utilities: Dict[str, EquipmentProperty]
+    weaposn: Dict[str, EquipmentProperty]
+
 # ---------------------------------------------------------------------------------------
 # ---------------------------------------------------------------- DISPOSITION PROPERTIES
 

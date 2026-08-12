@@ -1,5 +1,5 @@
 
-#### Phase II: EditOR
+#### Phase II: Editor
 
 TODO
 

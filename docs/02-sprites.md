@@ -245,6 +245,14 @@ When two Sprites enter the `speak` Extension within a certain radius of each oth
 2. For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to 
 A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the `SpeechMechanic` will populate the Sprite's Prices.
 
+### Relationships
+
+TODO
+
+### Property
+
+TODO
+
 ## Inventory
 
 TODO

@@ -6,9 +6,6 @@ A Player is a special type of Sprite Sheet Asset. Like all other Assets, its sta
 
 The Player Sprite Sheet is configured through the `player` Sheet [Persona Stack](./02-sprites.md#personas).
 
-!!! note
-    The value of the Player ID is irrelevant, but  
-
 **Taxonomy**
 
 - `category: sheet`

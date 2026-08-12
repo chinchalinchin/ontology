@@ -60,7 +60,7 @@ class PositionalState(AssetState):
 class PropertyState(AssetState):
     """
     """
-    owner: str                  # Unique Owner Identifer
+    owner: str
     position: Position
 
 @dataclass(slots=True)
@@ -91,9 +91,9 @@ class AnimatorState(AssetState):
 class ContainerState(AssetState):
     """
     """
-    content: List[str]      # Content Identifier Keys
-    position: Position      # Position of Asset on Board
-    switch: bool            # Binary state flag
+    content: List[str]
+    position: Position
+    switch: bool
     animation: AnimationState = None
 
 
@@ -101,17 +101,17 @@ class ContainerState(AssetState):
 class DoorState(AssetState):
     """
     """
-    position: Position      # Position of Asset on Board
-    out: Position           # Out Position of Asset
-    outlayer: str           # Out Layer Identifier Key
+    position: Position
+    out: Position
+    outlayer: str
 
 @dataclass(slots=True)
 class SwitchState(AssetState):
     """
     """
-    link: str               # Link Identifier Key
-    position: Position      # Position
-    switch: bool            # Binary state flag
+    link: str
+    position: Position
+    switch: bool
     animation: AnimationState = None
 
 
@@ -127,8 +127,8 @@ class Meter:
     """
     Representation of a Sprite meter.
     """
-    current: int
-    maximum: int
+    current: int = 100
+    maximum: int = 100
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------- SHEET STATE FIELDS
@@ -152,35 +152,22 @@ class Equipment:
     tool: str = None
     utility: str = None
 
-@dataclass(slots=True)
-class Health(Meter):
-    """
-    Representation of a Sprite's health meter.
-    """
-
-@dataclass(slots=True)
-class Magic(Meter):
-    """
-    Representation of a Sprite's magic meter.
-    """
 
 @dataclass(slots=True)
 class Meters:
     """
     Representation of a Sprite's Meter fields. Meters track values that change in response to Sprite Actions.
     """
-    health: Health
-    magic: Magic
+    health: Meter
+    magic: Meter
 
 # --------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
-class Intention:
+class Psyche:
     """
     Representation of the internal, hidden state of a Sprite. 
     """
-    extension: str
-    disposition: str
     motivation: str
     expression: str
     communication: str
@@ -192,7 +179,7 @@ class Goal:
     """
     name: str
     category: str
-    intention: Intention
+    position: Position
 
 @dataclass(slots=True)
 class Inventory:
@@ -246,14 +233,14 @@ class SpriteState(AssetState):
     """
     Central model for typing Sprite's state.
     """
+    intention: str
+    goal: Goal
     position: Position
     character: Character
-    intention: Intention
     inventory: Inventory
     meters: Meters
     mutators: Mutators
     memory: Memory
-    goal: Goal
     animation: AnimationState = None
 
 @dataclass(slots=True)
@@ -261,15 +248,16 @@ class PlayerState(AssetState):
     """
     Central model for typing Sprite's state.
     """
+    intention: str
+    goal: Goal
     position: Position
     character: Character
     inventory: Inventory
     meters: Meters
-    intention: Intention
     animation: AnimationState
 
 # ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------- MENU STATE MODELS
+# --------------------------------------------------------------------- MENU STATE MODELS
 
 @dataclass(slots=True)
 class IconState(AssetState):

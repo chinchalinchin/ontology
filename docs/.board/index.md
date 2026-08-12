@@ -13,7 +13,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [Phase II: Player](./phase/implement/phase-ii.md)
     - [Phase III: Editor](./phases/implement/phase-iii.md)
     - [Phase IV: Mechanics](./phases/implement/phase-iv.md)
-    - [Phase V: Dispositions](./phases/implement/phase-v.md)
+    - [Phase V: Intentions](./phases/implement/phase-v.md)
   - Refactor
     - [Phase I: Refactor](./phases/refactor/phase-i.md)
   - Debug

@@ -196,6 +196,10 @@ sheets:
           - Communication Key
         prices: 
           <loot-key>: Loot Price
+        relationships:
+          <sprite-name>: Relationship Key
+        property:
+          - <property-name>
       inventory: 
         loot:
           <loot-key>: Loot Key Quantity
