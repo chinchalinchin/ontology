@@ -11,6 +11,8 @@
         <link rel="canonical" href="https://chinchalinchin.github.io/ontology/08-architecture/">
       
       
+        <link rel="prev" href="../07-plots/">
+      
       
       
         
@@ -21,7 +23,7 @@
     
     
       
-        <title>Ontology: Architecture - Ontology</title>
+        <title>Architecture - Ontology</title>
       
     
     
@@ -63,7 +65,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent="deep-orange">
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -108,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Ontology: Architecture
+              Architecture
             
           </span>
         </div>
@@ -323,7 +325,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../04-menus.md" class="md-nav__link">
+      <a href="../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../05-menus/" class="md-nav__link">
         
   
   
@@ -350,7 +379,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../05-plots.md" class="md-nav__link">
+      <a href="../06-sounds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sounds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-plots/" class="md-nav__link">
         
   
   
@@ -374,10 +430,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../06-architecture.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -393,6 +476,148 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initialization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mechanics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#general-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        General Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#objective-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Objective Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dispositional-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dispositional Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resolvers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resolvers
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cython" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cython
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cython">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#math-geometry-libsmathpyx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Math &amp; Geometry (libs/math.pyx)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardware-rendering-libsrenderpyx-libsregistrypyx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardware Rendering (libs/render.pyx &amp; libs/registry.pyx)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headless-software-rendering-libsrenderpyx-libsregistrypyx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headless Software Rendering (libs/render.pyx &amp; libs/registry.pyx)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -589,7 +814,7 @@
 </ul>
 </li>
 <li>Init: <code>Board</code><ul>
-<li>Initialize and register the Mechanics (e.g., <code>PhysicsMechanic</code>, <code>CollisionMechanic</code>, <code>AnimationMechanic</code>).</li>
+<li>Initialize and register the Mechanics (e.g., <code>CollisionMechanic</code>, <code>AnimationMechanic</code>, etc.).</li>
 </ul>
 </li>
 <li>Init: <code>Screen</code><ul>
