@@ -701,6 +701,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#equipment-animation-sheets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Equipment Animation Sheets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#equipment-matrix" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1292,6 +1303,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#equipment-animation-sheets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Equipment Animation Sheets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#equipment-matrix" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1570,7 +1592,7 @@ A and visa versa. In other words, if a Sprite converses with another Sprite that
 <p>TODO</p>
 <h2 id="equipment">Equipment</h2>
 <ul>
-<li>Equipment Sheets: <code>/src/assets/sheets/sprites/equipment/&lt;kind-key&gt;/&lt;equipment-key&gt;.png</code></li>
+<li>Equipment Sheets: <code>/src/assets/sheets/sprites/equipment/&lt;category-key&gt;/&lt;equipment-key&gt;.png</code></li>
 </ul>
 <p>Equipment sheets are superimposed onto the Sprite Sheets based on the active Equipment keys in <code>sprite.state.inventory.equipment</code>, e.g.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># /src/data/state/&lt;board-key&gt;/sprite.state.inventory: </span>
@@ -1581,13 +1603,20 @@ A and visa versa. In other words, if a Sprite converses with another Sprite that
 <span class="w">    </span><span class="nt">weapon</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dagger</span>
 </code></pre></div>
 <p>Each piece of Equipment is associated with an (Action, Direction) grouping. When a piece of Equipment is active, the Sheet Asset corresponding to the Equipment will be stacked on top of the Sprite's Asset stack. The Animation state associated with a piece of Equipment is configured by <a href="#equipment-matrix">the Equpiment Matrix</a> file.</p>
-<p>Equipment is divided in four <em>Kinds</em>: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. </p>
+<p>Equipment is divided in four <em>Categories</em>: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. </p>
 <p>When a piece of Equipment is active, it affects what Animation Action state results when the Sprite enters into the <code>attack</code> Intention. The translation between Intention and Equipment into Animation is achieved through an <a href="../04-intentions/#animationmap">AnimationMap</a></p>
 <div class="highlight"><pre><span></span><code><span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">animation</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">AnimationMap</span><span class="o">.</span><span class="n">action</span><span class="p">(</span>
     <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
-    <span class="n">equipment</span><span class="o">.</span><span class="n">properties</span>
+    <span class="n">board</span><span class="o">.</span><span class="n">equipment</span>
 <span class="p">)</span>
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Equipment properties are stored in the <a href="../00-overview/#board">Board</a> database.</p>
+</div>
+<h3 id="equipment-animation-sheets">Equipment Animation Sheets</h3>
+<p>It assumed Equipment sheets conform to the same LPC-derived (Action, Direction) grouping described in previous sections (e.g. <a href="#action-direction">Sheets</a>). In other words, the frames in an Equipment sheet correspond exactly to frames in a Sprite Sheet. However, Equipment frames may not be present in every frame.</p>
+<p>The catchall quantifier <code>all</code> implies the Equipment sheet has frames associated with all (Action, Direction) row groups in a sheet. For example <code>lantern</code> has a frame for each (Action, Direction) frame (i.e. the <code>lantern</code> equipment is present in all (Action, Direction) rows when activated), whereas <code>shortsword</code> only has frames in the <code>(slash, *)</code> grouping (i.e. the <code>shortsword</code> equipment is present in <em>only</em> the rows with <code>action == slash</code>.). </p>
 <h3 id="equipment-matrix">Equipment Matrix</h3>
 <ul>
 <li>Location: <code>/src/data/equipment/main.yaml</code></li>
