@@ -1,10 +1,9 @@
 """
-# Ontology: Hierarchy
+# Ontology: Enums
 
 """
 # Standard Libraries
 from enum import Enum
-
 
 class Devices(str, Enum):
     CONTROLLER  = "controller"

@@ -12,7 +12,7 @@ from app.models.properties import AssetProperties
 from app.models.state import AssetState
 
 # Cython Libraries
-from libs.core import Dimensions
+from libs.core.models import Dimensions
 
 @dataclass(slots=True)
 class Taxonomy:

@@ -4,7 +4,7 @@
 Header file for Cythonized mathematical and geometric operations.
 """
 
-from libs.core cimport Position, Dimensions, Hitbox, Velocity
+from libs.core.models cimport Position, Dimensions, Hitbox, Velocity
 
 cdef class Geometry:
     

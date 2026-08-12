@@ -22,8 +22,8 @@ from app.game.maps import AnimationMap
 from app.models.state import Goal
 
 # Cython Libraries
-from libs.core import Position
-from libs.math import Geometry
+from libs.core.models import Position
+from libs.core.math import Geometry
 
 class Mechanic(ABC):
     """

@@ -1,16 +1,17 @@
 """
-# Ontology: Models
+# Ontology: State
 
 Models for typing the state attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
 """
 # Standard Libraries
-from typing import Callable, Dict, List, Union
+from typing import Dict, List, Union
 from dataclasses import dataclass, field
 
 # Application Libraries
 from app.config.enums import Actions, Directions
+
 # Cython Libraries
-from libs.core import Position, Multiple
+from libs.core.models import Position, Multiple
 
 # ---------------------------------------------------------------------------------------
 

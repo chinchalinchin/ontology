@@ -1,13 +1,14 @@
 # cython: language_level=3
 """
-# Ontology: Native Renderer (Cython)
+# Ontology: Render
 
-Directly interfaces with SDL2 C-Headers to execute headless rendering, 
-bypassing the Python Global Interpreter Lock (GIL) and ctypes overhead.
+Directly interfaces with SDL2 C-Headers to execute headless rendering, bypassing the Python Global Interpreter Lock (GIL) and ctypes overhead.
 """
-
+# Standard Libraries
 import logging
-from libs.registry cimport TexturePtr
+
+# Cython Libraries
+from libs.graphics.registry cimport TexturePtr
 
 logger = logging.getLogger("libs.render")
 

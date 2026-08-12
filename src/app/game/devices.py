@@ -7,7 +7,7 @@ from typing import Dict
 from app.config.enums import Directions, Actions
 
 # Cython Libraries
-import libs.input as sdl
+import libs.core.input as sdl
 
 class Device:
     mapping: Dict

@@ -10,7 +10,8 @@ from app.config.enums import Devices
 
 # Cython Libraries
 
-from libs.core import Dimensions
+from libs.core.models import Dimensions
+
 def main():
     # Set default logging for the standard application entrypoint
     logging.basicConfig(

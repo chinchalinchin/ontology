@@ -19,14 +19,14 @@ from app.config.enums import (
 import app.config.settings as settings
 
 # Cython Libraries
-from libs.render cimport (
+from libs.graphics.render cimport (
     _renderer, 
     SDL_Renderer, 
     SDL_Texture, 
     SDL_DestroyTexture, 
     SDL_QueryTexture
 )
-import libs.render as render
+import libs.graphics.render as render
 
 logger = logging.getLogger("libs.registry")
 

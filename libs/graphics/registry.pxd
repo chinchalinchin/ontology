@@ -5,7 +5,7 @@
 Header file for the Asset Registry and Texture Pointers.
 """
 
-from libs.render cimport SDL_Texture
+from libs.graphics.render cimport SDL_Texture
 
 # Define the memory layout for the TexturePtr extension type.
 cdef class TexturePtr:

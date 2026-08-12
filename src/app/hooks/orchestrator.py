@@ -5,17 +5,13 @@
 import time
 import logging
 from typing import (
-    Any, 
     Dict, 
     Tuple
 )
 
-# External Libraries
-import yaml
-
 # Application Libraries
 from app.assets.base import Asset
-import app.config.settings as settings
+from app.config.loader import Loader
 from app.config.enums import (
     AssetCategories, 
     AssetInstances,
@@ -24,24 +20,11 @@ from app.config.enums import (
 from app.game.board import Board
 from app.game.screen import Screen
 from app.hooks.factory import Factory
-from app.config.validators import (
-    PyRecipeConfiguration,
-    PyStateConfiguration,
-    PySheetPropertyConfiguration,
-    PyObjectPropertyConfiguration,
-    PyCursorPropertyConfiguration,
-    PyEffectPropertyConfiguration,
-    PyTilePropertyConfiguration,
-    PyCraftPropertyConfiguration,
-    PyEquipmentPropertyConfiguration,
-    PyIntentionPropertyConfiguration,
-    PyDeviceMappingConfiguration
-)
 
 # Cython Libraries
-from libs.core import Dimensions
-import libs.render as render
-from libs.registry import Registry
+from libs.core.models import Dimensions
+import libs.graphics.render as render
+from libs.graphics.registry import Registry
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +36,7 @@ class Orchestrator:
     recipes: Dict = {}
     state: Dict = {}
     devices: Dict = {}
+    equipment: Dict = {}
 
     # Game
     registry: Registry
@@ -61,38 +45,11 @@ class Orchestrator:
 
     def __init__(self, state: str):
         logger.info(f"Initializing Orchestrator for target state: {state} ...")
-        self.properties = {
-            **PyTilePropertyConfiguration().model_dump(),
-            **PyObjectPropertyConfiguration().model_dump(),
-            **PyEffectPropertyConfiguration().model_dump(),
-            **PyCursorPropertyConfiguration().model_dump(),
-            **PyCraftPropertyConfiguration().model_dump(),
-            **PySheetPropertyConfiguration().model_dump()
-        }
-        self.recipes = PyRecipeConfiguration().assets.model_dump()
-        self.devices = PyDeviceMappingConfiguration().model_dump()
-        self.load(state)
-
-    @staticmethod
-    def merge(
-        target: dict[str, Any], 
-        source: dict[str, Any]
-    ) -> dict[str, Any]:
-        """
-        Recursively merge source dictionary into target dictionary.
-        """
-        for key, value in source.items():
-            if key in target:
-                if isinstance(target[key], dict) and isinstance(value, dict):
-                    Orchestrator.merge(target[key], value)
-                elif isinstance(target[key], list) and isinstance(value, list):
-                    target[key].extend(value)
-                else:
-                    # If types clash or aren't combinable, source overwrites
-                    target[key] = value
-            else:
-                target[key] = value
-        return target
+        self.properties = Loader.load_properties()
+        self.recipes = Loader.load_recipes()
+        self.devices = Loader.load_devices()
+        self.equipment = Loader.load_equipment()
+        self.state = Loader.load_state(state)
 
     def instance_properties(self, category, instance, snapshot):
         """
@@ -114,24 +71,6 @@ class Orchestrator:
 
         return self.properties[category][instance][snapshot["id"]] 
 
-    def load(self, state: str) -> None:
-        """
-        """
-        board_path = settings.STATE_DIR / state  
-        target_dir = board_path.expanduser()
-        merged_data: dict[str, Any] = {}
-        
-        logger.info(f"Loading YAML state configurations from {target_dir} ...")
-
-        for file_path in target_dir.glob("*.yaml"):
-            with file_path.open("r", encoding="utf-8") as f:
-                data = yaml.safe_load(f)
-                if isinstance(data, dict):
-                    merged_data = Orchestrator.merge(merged_data, data)
-
-        logger.debug(f"Validating loaded state via Pydantic model.")
-        self.state = PyStateConfiguration.model_validate(merged_data).model_dump(exclude_none=True)
-
     def migrate(self) -> Board:
         """
         # migrate
@@ -141,13 +80,8 @@ class Orchestrator:
         logger.info("Migrating validated states to engine Application Objects...")
         assets = []
 
-        equipment = Factory.equipment(
-            PyEquipmentPropertyConfiguration().equipment.model_dump()
-        )
-
-        intentions = Factory.intentions(
-            PyIntentionPropertyConfiguration().model_dump()
-        )
+        equipment = Factory.equipment(self.equipment)
+        intentions = Factory.intentions(self.intentions)
 
         for category_key, instance_data in self.state.items():
             for instance_key, instance_list in instance_data.items():
@@ -169,6 +103,7 @@ class Orchestrator:
                     ))
                     
         logger.info(f"Successfully migrated {len(assets)} assets.")
+        
         return Board(assets, equipment, intentions)
     
     def orchestrate(self, screensize: Dimensions, device: Devices) -> Tuple[Board, Registry, Dict[str, Screen]]:
@@ -182,6 +117,8 @@ class Orchestrator:
 
         logger.info("Initializing Board...")
         self.board = self.migrate()
+
+        logger.info("Initializing Device...")
         device_mapping = self.devices.get("mappings", {}).get(device, {})
         device_instance = Factory.device(device, device_mapping)
         self.board.set_device(device_instance)
@@ -201,45 +138,3 @@ class Orchestrator:
         } 
         
         return self.board, self.registry, self.screens
-
-    # TODO: should probably isolate the game loop in a separate class
-    
-    @staticmethod
-    def time() -> float:
-        """
-        """
-        return time.perf_counter()
-    
-    def start(self, 
-        screensize: Dimensions, 
-        device: Devices
-    ) -> None:
-        self.orchestrate(screensize, device)
-        
-        logger.info("Entering Game Loop...")
-        delta = 1.0 / 60.0
-        accumulator = 0.0
-        last_time = self.time()
-
-        while self.board.loaded:
-            current_time = self.time()
-            frame_time = current_time - last_time
-            last_time = current_time
-            accumulator += frame_time
-            
-            while not self.board.paused:
-                while accumulator >= delta:
-                    self.board.play(delta)
-                    accumulator -= delta
-
-                player = self.board.player()
-
-                self.screens[player.state.layer].draw(
-                    self.board.assets(player.state.layer), 
-                    player.state.position,
-                    player.dimensions,
-                    self.registry
-                )
-
-            while self.board.paused: 
-                self.board.menu()

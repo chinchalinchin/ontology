@@ -16,8 +16,8 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from app.config.enums import Devices
 from app.hooks.orchestrator import Orchestrator
-from libs.core import Dimensions
-from libs.render import quit_sdl
+from libs.core.models import Dimensions
+from libs.graphics.render import quit_sdl
 
 logger = logging.getLogger(__name__)
 

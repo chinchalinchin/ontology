@@ -7,7 +7,7 @@ Cythonized high-performance geometry and physics logic.
 from typing import List
 
 # Cython Libraries
-from libs.core cimport Position, Dimensions, Hitbox
+from libs.core.models cimport Position, Dimensions, Hitbox
 
 
 cdef class Geometry:

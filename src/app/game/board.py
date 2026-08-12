@@ -31,7 +31,7 @@ from app.models.properties import (
 )
 
 # Cython Libraries
-from libs.core import Dimensions
+from libs.core.models import Dimensions
 
 logger = logging.getLogger(__name__)
 

@@ -35,31 +35,6 @@ Mechanics act as filters. Rather than the Board passing arguments to a system, a
 
 For example, the `SwitchMechanics` system strictly queries `board.plates`, `board.gates`, and any heavy entities (like `crates` and `sprites`) to resolve trigger logic, leaving the rest of the board untouched. This keeps execution tight and game loops strictly separated by behavior, not nouns.
 
-### General Mechanics
-
-These Mechanics handle general game logic.
-
-- `PlayerMechanics`: Resolve Device input into Player (Intention, Goal)-state.
-- `AnimationMechanics`: Translates current states into FrameKeys for the renderer.
-- `CollisioMechanics`: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.
-- `RemoveMechanics`: General garbage collection for Assets whose lifespan has expired.
-- `TransitionMechanics`: Applies the Intention Transition Matrix conditions to all Sprite Sheets.
-
-### Objective Mechanics
-
-These Mechanics handle Object game logic.
-
-- `SwitchMechanics`: Binds the Gate and Plate states together based on their `switch`.
-- `ProjectileMechanics`: Increment projectile positions, checks intersections and resolves impacts.
-
-### Intentional Mechanics
-
-These Mechanics handle the Sprite Intention logic.
-
-- `MotionMechanics`: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.
-- `CommerceMechanics`: Translate Intentions (barter, attract, etc.) into trades and price movements.
-- `CombatMechanics`: (Cython) Resolves attack hitbox overlaps, decrements health, etc.
-
 ## Maps
 
 Maps associate ancillary Asset states to their final Animation state.

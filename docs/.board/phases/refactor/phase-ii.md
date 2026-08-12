@@ -20,10 +20,10 @@ The basis of the Intention system has been laid. Both Sprite and Player Assets h
 
 *Objective*: Remove file parsing and dictionary merging from the Orchestrator.
 
-- [ ] Create a `Loader` utility class.
-- [ ] Move `Orchestrator.merge()` and `Orchestrator.load()` into `Loader`.
-- [ ] Ensure `Loader` returns the fully merged and Pydantic-validated dictionaries.
-- [ ] Update `Orchestrator.__init__` to instantiate and call `Loader`.
+- [x] Create a `Loader` utility class.
+- [x] Move `Orchestrator.merge()` and `Orchestrator.load()` into `Loader`.
+- [x] Ensure `Loader` returns the fully merged and Pydantic-validated dictionaries.
+- [x] Update `Orchestrator.__init__` to instantiate and call `Loader`.
 
 **Task 2: Implement Mechanic Registry and Pipeline**
 

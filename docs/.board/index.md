@@ -12,8 +12,9 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [Phase I: Renderer](./phases/implement/phase-i.md)
     - [Phase II: Player](./phase/implement/phase-ii.md)
     - [Phase III: Editor](./phases/implement/phase-iii.md)
-    - [Phase IV: Mechanics](./phases/implement/phase-iv.md)
-    - [Phase V: Intentions](./phases/implement/phase-v.md)
+    - [Phase IV: Intentions](./phases/implement/phase-iv.md)
+    - [Phase V: Commerce](./phases/implement/phase-v.md)
+    - [Phase VI: Pathfinding](./phase/implement/phase-vi.md)
   - Refactor
     - [Phase I: Renderer](./phases/refactor/phase-i.md)
     - [Phase II: Player](./phases/refactor/phase-ii.md)

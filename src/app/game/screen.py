@@ -13,9 +13,9 @@ from app.assets.base import Asset
 from app.config.enums import AssetInstances
 
 # Cython Libraries
-from libs.core import Position, Dimensions
-from libs.render import canvas, construct, render, save
-from libs.registry import Registry, TexturePtr
+from libs.core.models import Position, Dimensions
+from libs.graphics.render import canvas, construct, render, save
+from libs.graphics.registry import Registry, TexturePtr
 
 logger = logging.getLogger(__name__)
 

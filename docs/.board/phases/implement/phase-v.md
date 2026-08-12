@@ -1,6 +1,4 @@
-#### Implement: Phase V - Mechanics
-
-##### Commerce, Communication and Prices
+#### Implement: Phase V - Commerce
 
 1. Subjective Value and "Gossip" Pricing
 

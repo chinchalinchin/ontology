@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from app.config.enums import Directions, Actions
 
 # Cython Libraries
-from libs.core import Dimensions, Hitbox, AttackBox
+from libs.core.models import Dimensions, Hitbox, AttackBox
 
 # ---------------------------------------------------------------------------------------
 # ----------------------------------------------------------------------- PROPERTY MODELS

@@ -55,7 +55,12 @@ from app.game.devices import (
 )
 
 # Cython Libraries
-from libs.core import Position, Dimensions, Hitbox, AttackBox
+from libs.core.models import (
+    Position, 
+    Dimensions, 
+    Hitbox, 
+    AttackBox
+)
 
 class Factory:
     CYTHON_HINTS = {

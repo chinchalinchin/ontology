@@ -5,7 +5,7 @@
 from app.config.enums import Actions, Directions, Intentions
 
 # Cython Libraries
-from libs.core import Position
+from libs.core.models import Position
 
 class AnimationMap:
     """

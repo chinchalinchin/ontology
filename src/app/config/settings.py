@@ -1,10 +1,10 @@
 """
-# Ontology: Constants
+# Ontology: Settings
 
 """
 from pathlib import Path
 
-# APPLICATION CONSTANTS
+# APPLICATION SETTINGS
 
 ## ASSET KEY COMPONENT SEPARATOR
 SEPARATOR = "-"
