@@ -1,58 +1,89 @@
 sheets:
-  pixies:
-    - name: test
-      asset: test
-      layer: outside
+  players:
+    - id: Asset ID
+      name: Deployment Key
+      layer: Layer Key
       position:
-        x: 100
-        y: 100
-  sprites:
-    - name: test
-      asset: test
-      layer: outside
+        x: Horizontal Position
+        y: Vertical Position
       meters:
-        health:
-          current: 150 
-          max: 150
+        health: 
+          current: Current Health Meter
+          maximum: Maximum Health Meter
         magic: 
-          current: 100
-          max: 150
+          current: Current Magic Meter
+          maximum: Maximum Magic Meter
       character:
-        strength: 10
-        defense: 10
-        speed: 10
-      mutators: 
-        frightened:
-          radius: 15
-          limit: 0.25
-          enemy: 4
-        vision:
-          radius: 25
+        strength: Strength
+        defense: Defense
+        speed: Speed
+      intention: Intention Key
+  pixies:
+    - id: Asset ID
+      name: Pixie Deployment
+      layer: Layer Key
       position:
-        x: 0
-        y: 0
-      intention:
-        extension: null
-        disposition: null
-        motivation: null
-        communication: null
-        expression: null
-      goal: null
+        x: Horizontal Position
+        y: Vertical Position
+  sprites:
+    - id: Asset ID
+      name: Deployment Key
+      layer: Layer Key
+      position:
+        x: Horizontal Position
+        y: Vertical Position
+      meters:
+        health: 
+          current: Current Health Meter
+          maximum: Maximum Health Meter
+        magic: 
+          current: Current Magic Meter
+          maximum: Maximum Magic Meter
+      character:
+        strength: Strength
+        defense: Defense
+        speed: Speed
+      mutators:
+        fear:
+          radius: Pixel Length
+          limit: Health Percentage
+          enemy: Enemy Count
+        vision:
+          radius: Pixel Length
+      intention: Intention Key
+      psyche:
+        communication: Communication Key
+        expression: Expression Key
+        motivation: Motivation Key
+      goal:
+        name: Goal Identifier
+        category: Goal Category Identifier
+        position: # last KNOWN position
+          x: Current X Coordinate Goal
+          y: Current Y Coordinate Goal
       memory:
-        target: 
-          name: test2
-          category: sprite
+        goal:
+          name: Goal Identifier
+          category: Goal Category Identifier
+          position:
+            x: Saved X Coordinate Goal
+            y: Saved Y Coordinate Goal
         communications: 
-          - insult
+          - Communication Key
           # unforgettable
-          - greeting
-        prices:
-          <loot-key>: 
+          - Communication Key
+        prices: 
+          <loot-key>: Loot Price
+        relationships:
+          <sprite-name>: Relationship Key
+        property:
+          - <property-name>
       inventory: 
         loot:
-          <loot-key>: int
+          <loot-key>: Loot Key Quantity
         equipment:
           armor: Armor Key
-          weapon: Weapon Key
           tool: Tool Key
           utility: Utility Key
+          weapon: Weapon Key
+        wallet: Money Quantity

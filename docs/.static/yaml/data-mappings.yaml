@@ -1,15 +1,13 @@
 mappings:
   keyboard:
     intentions:
-      extensions:
-        interact: 44  # SDL_SCANCODE_SPACE
-        sprint: 225   # SDL_SCANCODE_LSHIFT
-        speak:
-        build: 
-        mine: 
-      dispositions:
-        attack:
-    directions:
+      interact: 44  # SDL_SCANCODE_SPACE
+      sprint: 225   # SDL_SCANCODE_LSHIFT
+      speak:
+      build: 
+      mine: 
+      attack:
+    goals:
       up: 26    # SDL_SCANCODE_W
       down: 22  # SDL_SCANCODE_S
       left: 4   # SDL_SCANCODE_A

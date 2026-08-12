@@ -140,6 +140,12 @@ sheets:
         defense: Defense
         speed: Speed
       intention: Intention Key
+      goal:
+        name: Goal Name Key
+        category: Goal Category Key
+        position:
+          x: Goal Position X
+          y: Goal Position Y
   pixies:
     - id: Asset ID
       name: Pixie Deployment

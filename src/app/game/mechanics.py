@@ -177,7 +177,7 @@ class IntentionMechanics(Mechanic):
     
     def update(self, board: Board, delta: float) -> None:
         """
-        Evaluates AST lambdas to transition Dispositions.
+        Evaluates AST lambdas to transition Intentions.
         """
         sprites = board.instances(AssetInstances.SPRITES)
 
@@ -201,7 +201,7 @@ class IntentionMechanics(Mechanic):
                     for condition in transit.conditions:
                         if condition(sprite, board):
                             # 3. Transition the state
-                            sprite.intention.disposition = transit.next
+                            sprite.intention = transit.next
                             
                             # Break immediately to avoid evaluating the NEW state's 
                             # transitions in this same frame.

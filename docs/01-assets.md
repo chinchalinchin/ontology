@@ -235,11 +235,11 @@ Binary objects frames are always organized in horizontal rows. The off frame wil
 
 ### Chests
 
-*Chests* are *Binary Objects* whose frame can be changed by the player entering into an `interact` Extension (see [Extensions](./02-sprites.md#extension) for more details on the distinction between Extension and Action) while intersecting the hitboxes of the *Chest*. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
+*Chests* are *Binary Objects* whose frame can be changed by the player entering into an `interact` [Intention](./04-intentions.md) while intersecting the hitboxes of the *Chest*. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
 
-A Chest is *reusable* through the `interact` [Extension](./02-sprites.md#extension), meaning [Inventory Loot](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory Loot keys.
+A Chest is *reusable* through the `interact` [Intention](./04-intentions.md), meaning [Inventory Loot](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory Loot keys.
 
-When *interacting* with a Chest, the [Player](./03-player.md) is shown a two windowed menu, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Extension through its [Disposition Transition Matrix](./02-sprites.md#disposition). This interaction is managed through a [Mechanic](./06-architecture.md#mechanics)s
+When *interacting* with a Chest, the [Player](./03-player.md) is shown a two windowed menu, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a [Mechanic](./06-architecture.md#mechanics)s
 
 **Animation: BinaryAnimation**
 
@@ -449,7 +449,7 @@ The `key` referenced in the `cost` depends on the Instance type of the Craft. Fo
 
 *Struts* are inanimate, immutable Assets. *Struts* are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an `owner`. 
 
-Struts may be placed on the Board through the state files manually, but are instantiated ingame through the `build` Sprite Extension state (see [Sprite documentation](./02-sprites.md#extension) for more information on Extensions).
+Struts may be placed on the Board through the state files manually, but are instantiated ingame through the `build` Sprite [Intention](./04-intentions.md)
 
 **Animation: None**
 

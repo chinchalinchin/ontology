@@ -8,7 +8,7 @@
 
 2. **Input Device Configuration & Mapping**
 
-* [ ] **Schemas:** Define a `PyInputConfiguration` Pydantic model and corresponding YAML schema (`src/app/config/input.yaml`) to map physical hardware keys (e.g., SDL scancodes) to `Actions`, `Directions`, and `Extensions`.
+* [ ] **Schemas:** Define a `PyInputConfiguration` Pydantic model and corresponding YAML schema (`src/app/config/input.yaml`) to map physical hardware keys (e.g., SDL scancodes) to `Intentions` and `Goals`.
 * [ ] **Device Polling:** Implement `Keyboard.poll()`. This method must query the hardware state (via Cython/SDL) and return a lightweight input bitmask or data structure, *not* a full `PlayerState` object.
 
 3. **Implement PlayerMechanic**

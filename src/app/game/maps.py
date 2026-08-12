@@ -10,9 +10,9 @@ from libs.core import Position
 class AnimationMap:
 
     @staticmethod
-    def action(state, equipment_properties) -> Actions:
+    def map(state, equipment_properties) -> Actions:
         """
-        Resolves Sprite Dispositions to Animation Actions.
+        Resolves Sprite Intentionss to Animation Actions.
 
         - state: sprite state
         - equipment: equipment properties
@@ -21,16 +21,16 @@ class AnimationMap:
         tool = state.inventory.equipment.tool
         utility = state.inventory.equipment.utility
         armor = state.inventory.equipment.armor
-        disposition = state.intention.disposition
+        intention = state.intention
 
-        if state.intention == Intentions.ATTACK:
+        if intention == Intentions.ATTACK:
             if not weapon:
                 return Actions.CAST  # Default fallback for unarmed/magic attacks
             
             # TODO: handle `all`
             return equipment_properties["weapons"][weapon].animation
     
-        elif state.intention in [Intentions.WANDER, Intentions.FIND]:
+        elif intention in [Intentions.WANDER, Intentions.FIND]:
             return Actions.WALK
 
         return Actions.WALK

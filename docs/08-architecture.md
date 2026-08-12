@@ -46,11 +46,11 @@ These Mechanics handle general game logic.
 
 - `SwitchMechanics`: Binds the Gate and Plate states together based on their `switch`.
 
-### Dispositional Mechanics
+### Intentional Mechanics
 
-These Mechanics handle the logic governing the Sprite Disposition Transtion matrix.
+These Mechanics handle the logic governing the Sprite Intention Transtion matrix.
 
-- `IntentionMechanics`: Runs the Disposition transition lambdas, etc.
+- `IntentionMechanics`: Runs the Intentions transition lambdas, etc.
 - `MotionMechanics`: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.
 - `CommerceMechanics`: Translate Intentions (barter, attract, etc.) into trades and price movements.
 - `CombatMechanics`: (Cython) Resolves attack hitbox overlaps, decrements health, etc.

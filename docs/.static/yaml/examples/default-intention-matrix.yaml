@@ -1,118 +1,118 @@
 intentions:
-    attack:
-      - next: attack
-        conditions:  
-          - sprite.goal.category == 'sprite'
-      - next: hunt
-        conditions: 
-          - not sprite.goal
-          - sprite.memory.goal.category == 'sprite'
-      - next: scavenge
-        conditions: 
-          - sprites[sprite.goal.name].mutators.triggers.dead
-    attract:
-      - next: barter
-        conditions:
-          - sprite.inventory.loot
-          - sprite.psyche.motivation == 'profit'
-      - next: speak
-        conditions: 
-          - sprite.memory.communications
-    barter:
-      - next: threaten
-        conditions:
-          - sprite.memory.goal.category == 'loot'
-          - sprite.inventory.wallet < sprite.prices[sprite.memory.goal.name]
-          - sprite.psyche.motivation == 'survival'
-      - next: speak
-        conditions: 
-          - 
-    build:
-      - next:
-        conditions: 
-    escape: 
-      - next: escape
-        conditions: 
-          - sprites[sprite.goal.name].intention == 'attack'
-      - next: return
-        conditions: 
-          - not sprite.goal
-    find: 
-      - next: scavenge
-        conditions: 
-          - 
-      - next: return
-        conditions:
-          -  
-    follow: 
-      - next: follow
-        conditions:
-          -  
-      - next: hunt
-        conditions:
-          -  
-      - next: wander
-        conditions:
-          -  
-    hunt: 
-      - next:
-        conditions: 
-          - 
-    idle: 
-      - next: idle
-        conditions:
-          -  
-      - next: wander
-        conditions:
-          - 
-    interact:
-      - next: 
-        conditions: 
-          - 
-    mine:
-      - next: 
-        conditions:
-          - 
-    mock:
-      - next: mock
-        conditions:
-          -  
-      - next: threaten
-        conditions:
-          -  
-    return:
-      - next: idle
-        conditions: 
-          - 
-      - next: return
-        conditions:
-          - 
-      - next: wander
-        conditions: 
-          - 
-    scavenge:
-      - next: return
-        conditions:
-          -  
-    speak:
-      - next: 
-        conditions: 
-          - 
-    sprint:
-      - next:
-        conditions: 
-          - 
-    threaten:
-      - next: attack
-        conditions:
-          -  
-      - next: hunt
-        conditions:
-          -   
-      - next: threaten
-        conditions:
-          -  
-    wander:
-      - next: idle
-        conditions:
-          - 
+  attack:
+    - next: attack
+      conditions:  
+        - sprite.goal.category == 'sprite'
+    - next: hunt
+      conditions: 
+        - not sprite.goal
+        - sprite.memory.goal.category == 'sprite'
+    - next: scavenge
+      conditions: 
+        - sprites[sprite.goal.name].mutators.triggers.dead
+  attract:
+    - next: barter
+      conditions:
+        - sprite.inventory.loot
+        - sprite.psyche.motivation == 'profit'
+    - next: speak
+      conditions: 
+        - sprite.memory.communications
+  barter:
+    - next: threaten
+      conditions:
+        - sprite.memory.goal.category == 'loot'
+        - sprite.inventory.wallet < sprite.prices[sprite.memory.goal.name]
+        - sprite.psyche.motivation == 'survival'
+    - next: speak
+      conditions: 
+        - 
+  build:
+    - next:
+      conditions: 
+  escape: 
+    - next: escape
+      conditions: 
+        - sprites[sprite.goal.name].intention == 'attack'
+    - next: return
+      conditions: 
+        - not sprite.goal
+  find: 
+    - next: scavenge
+      conditions: 
+        - 
+    - next: return
+      conditions:
+        -  
+  follow: 
+    - next: follow
+      conditions:
+        -  
+    - next: hunt
+      conditions:
+        -  
+    - next: wander
+      conditions:
+        -  
+  hunt: 
+    - next:
+      conditions: 
+        - 
+  idle: 
+    - next: idle
+      conditions:
+        -  
+    - next: wander
+      conditions:
+        - 
+  interact:
+    - next: 
+      conditions: 
+        - 
+  mine:
+    - next: 
+      conditions:
+        - 
+  mock:
+    - next: mock
+      conditions:
+        -  
+    - next: threaten
+      conditions:
+        -  
+  return:
+    - next: idle
+      conditions: 
+        - 
+    - next: return
+      conditions:
+        - 
+    - next: wander
+      conditions: 
+        - 
+  scavenge:
+    - next: return
+      conditions:
+        -  
+  speak:
+    - next: 
+      conditions: 
+        - 
+  sprint:
+    - next:
+      conditions: 
+        - 
+  threaten:
+    - next: attack
+      conditions:
+        -  
+    - next: hunt
+      conditions:
+        -   
+    - next: threaten
+      conditions:
+        -  
+  wander:
+    - next: idle
+      conditions:
+        - 

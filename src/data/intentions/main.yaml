@@ -1,239 +1,118 @@
-intents:
-  # -------------------------- ACTIONS
-  actions:
-    - cast
-    - thrust
-    - walk
-    - slash
-    - shoot
-    - die
-  # -------------------------- COMMUNICATIONS
-  communications: 
-    plot-a: null
-    plot-b: null
-  # -------------------------- DIRECTIONS
-  directions:
-    - up
-    - left
-    - down
-    - right
-  # --------------------------
-  # --------------------------
-  # -------------------------- DISPOSITIONS
-  dispositions:
-    attack:
-      actions:
-        - cast
-        - slash
-        - shoot
-        - thrust
-      extensions: null
-      transitions:
-        - next: attack
-          conditions:  
-            - sprite.goal.category == 'sprite'
-        - next: hunt
-          conditions: 
-            - not sprite.goal
-            - sprite.memory.goal.category == 'sprite'
-        - next: scavenge
-          conditions: 
-            - sprites[sprite.goal.name].mutators.triggers.dead
-    attract:
-      actions: null
-      extensions:
-        - interact
-        - speak
-      transitions:
-        - next: barter
-          conditions:
-            - sprite.inventory
-            - sprite.intention.motivation == 'profit'
-        - next: communicate
-          conditions: 
-            - sprite.memory.communications
-    barter:
-      actions: null
-      extensions:
-        - trade
-        - speak
-      transitions: 
-        - next: threaten
-          conditions:
-            - sprite.memory.goal.category == 'loot'
-            - sprite.inventory.wallet < sprite.prices[sprite.memory.goal.name]
-            - sprite.intention.motivation == 'survival'
-    communicate:
-      actions:
-        - walk
-      extensions: 
-        - speak
-      transitions:
-        - next: 
-          conditions: 
-    escape: 
-      actions: 
-        - walk
-      extensions:
-        - sprint
-      transitions:
-        - next: escape
-          conditions: 
-            - sprites[sprite.goal.name].intention.disposition == 'attack'
-        - next: return
-          conditions: 
-            - not sprite.goal
-    find: 
-      actions: null
-      extensions: null
-      transitions:
-        - next: scavenge
-          conditions: 
-            - 
-        - next: recoil
-          conditions:
-            -
-        - next: return
-          conditions:
-            -  
-    follow: 
-      actions: null
-      extensions: null
-      transitions: 
-        - next: follow
-          conditions:
-            -  
-        - next: hunt
-          conditions:
-            -  
-        - next: wander
-          conditions:
-            -  
-    idle: 
-      actions: null
-      extensions: null
-      transitions: 
-        - next: idle
-          conditions:
-            -  
-        - next: recoil
-          conditions: 
-            - sprite.mutators.triggers.struck
-        - next: wander
-          conditions:
-            - 
-    interact:
-      actions: null
-      extensions: null
-      transitions:
-        - next:
-          conditions:
-            - 
-    mock:
-      actions: null
-      extensions: null 
-      transitions:
-        - next: mock
-          conditions:
-            -  
-        - next: threaten
-          conditions:
-            -  
-    recoil:
-      actions: null
-      extensions: null
-      transitions:
-        - next: attack
-          conditions:
-            -  
-        - next: escape
-          conditions: 
-            - sprite.mutators.triggers.frightened
-    return:
-      actions: null
-      extensions: null
-      transitions:
-        - next: idle
-          conditions: 
-            - 
-        - next: return
-          conditions:
-            - 
-        - next: wander
-          conditions: 
-            - 
-    scavenge:
-      actions: null
-      extensions: null
-      transitions:
-        - next: return
-          conditions:
-            -  
-    threaten:
-      actions: null
-      extensions: null
-      transitions:
-        - next: attack
-          conditions:
-            -  
-        - next: hunt
-          conditions:
-            -   
-        - next: threaten
-          conditions:
-            -  
-        - next: recoil
-          conditions:
-            - 
-    wander:
-      actions: null
-      extensions: null
-      transitions:
-        - next: recoil
-          conditions:
-            - 
-  # -------------------------- EXPRESSIONS
-  expressions:
-    affection:
-      dispositions:
+intentions:
+  attack:
+    - next: attack
+      conditions:  
+        - sprite.goal.category == 'sprite'
+    - next: hunt
+      conditions: 
+        - not sprite.goal
+        - sprite.memory.goal.category == 'sprite'
+    - next: scavenge
+      conditions: 
+        - sprites[sprite.goal.name].mutators.triggers.dead
+  attract:
+    - next: barter
+      conditions:
+        - sprite.inventory.loot
+        - sprite.psyche.motivation == 'profit'
+    - next: speak
+      conditions: 
+        - sprite.memory.communications
+  barter:
+    - next: threaten
+      conditions:
+        - sprite.memory.goal.category == 'loot'
+        - sprite.inventory.wallet < sprite.prices[sprite.memory.goal.name]
+        - sprite.psyche.motivation == 'survival'
+    - next: speak
+      conditions: 
         - 
-    agreement:
-      dispositions:
-       - follow
-    anger:
-      dispositions: 
-        - attack
-    confusion:
-      disposition:
-       -
-    curiosity:
-      dispositions: 
-        - find
-        - interact
-        - return
-    disagreement:
-      disposition: null
-    loquacity:
-      dispositions:
-        - communicate
-    surprise:
-      dispositions: 
-       - recoil
-    tired:
-      dispositions: null
-  # -------------------------- EXTENSIONS
-  extensions:
-    interact: null
-    speak: null
-    sprint: null
-    trade: null
-  # -------------------------- MOTIVATIONS
-  motivations:
-    conquest: null
-    profit: null
-    survival: null
-    love: null
-    revenge: null
-    rebellion: null
-    
-    
+  build:
+    - next:
+      conditions: 
+  escape: 
+    - next: escape
+      conditions: 
+        - sprites[sprite.goal.name].intention == 'attack'
+    - next: return
+      conditions: 
+        - not sprite.goal
+  find: 
+    - next: scavenge
+      conditions: 
+        - 
+    - next: return
+      conditions:
+        -  
+  follow: 
+    - next: follow
+      conditions:
+        -  
+    - next: hunt
+      conditions:
+        -  
+    - next: wander
+      conditions:
+        -  
+  hunt: 
+    - next:
+      conditions: 
+        - 
+  idle: 
+    - next: idle
+      conditions:
+        -  
+    - next: wander
+      conditions:
+        - 
+  interact:
+    - next: 
+      conditions: 
+        - 
+  mine:
+    - next: 
+      conditions:
+        - 
+  mock:
+    - next: mock
+      conditions:
+        -  
+    - next: threaten
+      conditions:
+        -  
+  return:
+    - next: idle
+      conditions: 
+        - 
+    - next: return
+      conditions:
+        - 
+    - next: wander
+      conditions: 
+        - 
+  scavenge:
+    - next: return
+      conditions:
+        -  
+  speak:
+    - next: 
+      conditions: 
+        - 
+  sprint:
+    - next:
+      conditions: 
+        - 
+  threaten:
+    - next: attack
+      conditions:
+        -  
+    - next: hunt
+      conditions:
+        -   
+    - next: threaten
+      conditions:
+        -  
+  wander:
+    - next: idle
+      conditions:
+        - 

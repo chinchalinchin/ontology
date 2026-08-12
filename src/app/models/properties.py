@@ -118,12 +118,7 @@ class Transition:
     conditions: List[Callable] = field(default_factory=list)
 
 @dataclass(slots=True)
-class Disposition:
+class IntentionProperties:
     """
     """
-    # Reachable nodes
-    extensions: List[str] = field(default_factory=list)
-    actions: List[str] = field(default_factory=list)
-
-    # Disposition Scripting Language conditions
-    transitions: List[Transition] = field(default_factory=list)
+    intentions: Dict[str, List[Transition]] = field(default_factory=dict)

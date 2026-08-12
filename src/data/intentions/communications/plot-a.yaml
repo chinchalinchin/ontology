@@ -1,19 +1,16 @@
 busy:
-  conditions:
-    disposition: 
-      - idle
-      - meander
+  intentions: 
+    - idle
+    - wander
   content: Away with you! I am engaged in endeavors!
 greeting:
-  conditions: 
-    disposition:
-      - idle
-      - attract
-      - wander
-    content: Good morrow, neighbor!
+  intentions:
+    - idle
+    - attract
+    - wander
+  content: Good morrow, neighbor!
 insult:
-  conditions:
-    disposition:
-      - threaten
-      - mock
-    content: Thou art a brutish knave!
+  intentions:
+    - threaten
+    - mock
+  content: Thou art a brutish knave!

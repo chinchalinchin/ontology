@@ -1,26 +1,5 @@
 intentions:
-  # -------------------------- COMMUNICATIONS
-  communications: 
-    <plot-state-key>:
-  # -------------------------- DISPOSITIONS
-  dispositions:
-    <disposition-key>:
-      expressions:
-        - <reachable-expression-key>
-      extensions:
-        - <reachable-extension-key>
-      transitions:
-        - next: <next-disposition-key>
-          conditions: 
-            - <condition-for-transition>
-  # -------------------------- EXPRESSIONS
-  expressions:
-    <expression-key>:
-      dispositions: 
-        - <disposition-trigger-key>
-  # -------------------------- EXTENSIONS
-  extensions:
-    <extension-key>:
-  # -------------------------- MOTIVATIONS
-  motivations:
-    <motivation-key>:
+  <intention-key>:
+    - next: <intention-key>
+      conditions: 
+        - <condition-for-transition>

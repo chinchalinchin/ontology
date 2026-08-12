@@ -40,11 +40,8 @@ The Player Sprite Sheet is configured through the `player` Sheet [Persona Stack]
     - `action: str`
     - `direction: str`
     - `frame: int`
-- `intention:` 
-    - `extension: str`
-    - `disposition: str`
-    - `motivation: str`
-    - `expression: str`
+- `goal: Goal`
+- `intention: str` 
 - `inventory:`
     - `loot: Dict[str, int]`
     - `equipment:`

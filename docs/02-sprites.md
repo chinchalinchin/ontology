@@ -4,7 +4,7 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 
 **Player, NPCs and Enemies**
 
-NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to the Disposition Transition Matrix. However, all state changes of Sprites and the Player are communicated through the medium of Intentions.
+NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to the [Intention Transition Matrix](./04-intentions.md#transition-matrix). However, all state changes of Sprites and the Player are communicated through the medium of Intentions.
 
 **Layers**
 
@@ -46,11 +46,7 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
     - `action: str`
     - `direction: str`
     - `frame: int`
-- `intention:` 
-    - `extension: str`
-    - `disposition: str`
-    - `motivation: str`
-    - `expression: str`
+- `intention: str` 
 - `inventory:`
     - `loot: Dict[str, int]`
     - `equipment:`
@@ -66,12 +62,12 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
     - `goal: Goal`
     - `communication: List[str]` 
     - `prices: Dict[str, double]`
+    - `relationships: Dict[str, str]`
+    - `property: List[str]`
 - `goal:` 
     - `name: str`
     - `category: Enum[sprite | object | loot]`
-    - `intention:`
-        - `action: str`
-        - `extension: str`
+    - `position: Position`
 
 
 **Animation: StateAnimation**
@@ -164,7 +160,7 @@ The frames per Action Group are given below,
 
 ## Intentions
 
-*Intentions* are an internal State data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state that is updated by the gameplay loop. Intention coordinates represent a node in the Sprite's "finite automaton", the Intention Transition Matrix. 
+*Intentions* are an internal State data structure that governs a Sprite's core logic. 
 
 See [Intentions](./04-intentions.md) for more information.
 
@@ -176,7 +172,7 @@ The *Psyche* is an internal State data structure that governs a Sprite's ancilla
 
 ### Communication
 
-The Communication dimension of a Psyche can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the `speak` Extension.
+The Communication dimension of a Psyche can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the `speak` Intention.
 
 ### Expression
 
@@ -209,37 +205,36 @@ The default Motivations are enumerated below,
 
 ## Goal
 
-*Goals* are provide the seed (or energy) for transitions through Dispositions and the application of Motivations to modulate said transitions. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is *in order* to achieve a Goal.
+*Goals* are the current focus of the Sprite's path-finding and Direction resolution.
 
 See [Intentions and Goals documentation](04-intentions.md) for more information.
 
 ## Memory
 
-*Memory* is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Disposition and Motivation.
+*Memory* is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. 
 
-- `memory.goal`: 
-    - `name`: Unique Identifer of Asset Goal.
-    - `intention`:
-        - `extension`: Extension to be applied when Goal achieved. 
-        - `action`: Action to be applied when Goal achieved.
+- `memory.goal`: Remember Goal. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.
 - `memory.communications`: List of saved dialogue.
+- `memory.prices`:
+- `memory.relationship`:
+- `memory.property`:
 
 ### Communications
 
-Under certain conditions based on the Sprite's Intention, the Sprite may emit a Communication through the `speak` Extension. For example, a Sprite in the `mock` Disposition might receive a Communication key `insult`. This key gets stored at the *beginning* (0 index) of the `memory.communications` list. 
+Under certain conditions based on the Sprite's Intention, the Sprite may emit a Communication through the `speak` Intention. For example, a Sprite in the `mock` Intention might receive a Communication key `insult`. This key gets stored at the *beginning* (0 index) of the `memory.communications` list. 
 
-When a Sprite with a non-empty `memory.communications` enters into the `communicate` Disposition, the gameplay loop will then take the first entry out of this Sprites `memory.communications` list, delete it from this list and place it in the `psyche.communication` cell. 
+When a Sprite with a non-empty `memory.communications` enters into the `speak` Intention, the gameplay loop will then take the first entry out of this Sprites `memory.communications` list, delete it from this list and place it in the `psyche.communication` cell. 
 
 !!! important
     The last entry in `memory.communications` is *never* deleted. The entry is termed *unforgettable*.
 
-When a Sprite with a non-null `psyche.communication` enters into the `speak` Extension, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the `intention.communication` cell.
+When a Sprite with a non-null `psyche.communication` enters into the `speak` Intention, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the `intention.communication` cell.
 
 ### Prices
 
-Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the `trade` extension. This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.
+Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the `barter` Intention. This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.
 
-When two Sprites enter the `speak` Extension within a certain radius of each other, the `SpeechMechanic` does the following:
+When two Sprites enter the `speak` Intention within a certain radius of each other, the `SpeechMechanic` does the following:
 
 1. It averages the intersection of Prices. For example, if one Sprite has a price of 1 for Loot A and another has a price of 5 for Loot A, then the new price of Loot A for both Sprites will be (1 + 5)/2 = 3. It performs this calculation for every such Loot Key the Sprites have in common.
 2. For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to 
@@ -286,7 +281,7 @@ Each piece of Equipment is associated with an (Action, Direction) grouping. When
 
 Equipment is divided in four *Kinds*: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. 
 
-When a piece of Equipment is active, it affects what Animation Action state results when the Sprite enters into the `attack` Disposition. The translation between Disposition and Animation
+When a piece of Equipment is active, it affects what Animation Action state results when the Sprite enters into the `attack` Intention. The translation between Intention and Equipment into Animation is achieved through an [AnimationMap](./04-intentions.md#animationmap)
 
 ```python
 sprite.state.animation.action = AnimationResolver.action(
@@ -294,8 +289,6 @@ sprite.state.animation.action = AnimationResolver.action(
     equipment.properties
 )
 ```
-
-For more information on see [Action Resolution](./04-intentions.md#action-resolution) documentation.
 
 ### Equipment Matrix 
 

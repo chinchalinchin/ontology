@@ -110,7 +110,7 @@ In another example, the transition from `attack` to `scavenge` in the default In
 
 `sprites` is a reference to a dictionary of all ingame Sprites states keyed by their identifying and unique `name`, which provides access to their state attributes.
 
-Notice in the example there is a self-entrant transition. A Sprite with an `attack` Disposition can re-enter the `attack` Disposition conditional on the Sprite still having a target,
+Notice in the example there is a self-entrant transition. A Sprite with an `attack` Intention can re-enter the `attack` Intention conditional on the Sprite still having a target,
 
 ```yaml 
 - sprite.goal.category == 'sprite'
@@ -123,11 +123,13 @@ Intention transition conditions are converted into lambda functions by the appli
 
 ## Goal
 
-*Goals* provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is *in order* to achieve a Goal.
+*Goals* provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Intention is *in order* to achieve a Goal.
 
 - `name`: Unique Identifier of the Goal.
 - `category`: Category of the Goal. (`sprite`, `loot`, `wealth`, `property`)
 - `position`: Last-known position of the Goal. When the Goal is within the `mutators.vision.radius`, this position is updated every game loop. Once the Goal exits the Sprites `mutators.vision.radius`, it becomes a static value that freezes on the last known Position of its Goal.
+
+### Goal Category
 
 When a Sprite has Goal, it will seek out (path-find) its way to `name`. The `category` of a Goal affects the type of identifier given in `name`. 
 
