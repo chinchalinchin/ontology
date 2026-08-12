@@ -1,21 +1,26 @@
-# src/app/game/devices.py
+"""
+# Ontology: app.game.devices
 
+"""
 # Standard Libraries
 from typing import Dict
-
-# Application Libraries
-from app.config.enums import Directions, Actions
 
 # Cython Libraries
 import libs.core.input as sdl
 
 class Device:
+    """
+    """
+
     mapping: Dict
 
     def __init__(self, mapping):
         self.mapping = mapping
 
 class Keyboard(Device):
+    """
+    """
+
     def __init__(self, intentions: dict = None, goals: dict = None):
         mapping = {"intentions": intentions or {}, "goals": goals or {}}
         super().__init__(mapping)
@@ -26,6 +31,8 @@ class Keyboard(Device):
         self._scancodes = tuple(set(i_codes + g_codes))
 
     def poll(self) -> dict:
+        """
+        """
         # 1. Update SDL's internal array
         sdl.pump()
         

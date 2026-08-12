@@ -1,5 +1,5 @@
 """
-# Ontology: Engine
+# Ontology: app.game.engine
 
 Package for core game loop.
 """

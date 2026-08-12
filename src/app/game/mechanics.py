@@ -1,7 +1,7 @@
 """
-# Ontology: Mechanics
+# Ontology: app.game.mechanics
 
-Package for Asset Mechanic implementations.
+Package for game mechanic implementations.
 """
 # Standard Libraries
 from __future__ import annotations

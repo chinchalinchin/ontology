@@ -1,7 +1,7 @@
 """
-# Ontology: Screen
+# Ontology: app.game.screen
 
-Package for the Screen class, an abstraction over the Cython SDL rendering interface and image registries.
+Package for the Screen, an abstraction over the Cython SDL rendering interface and image registries.
 """
 
 # Standard Libraries

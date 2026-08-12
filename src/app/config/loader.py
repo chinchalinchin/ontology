@@ -1,5 +1,5 @@
 """
-# Ontology: Loader
+# Ontology: app.config.loader
 
 Package for loading in configuration files.
 """

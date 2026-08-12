@@ -1,6 +1,7 @@
 """
-# Ontology: Settings
+# Ontology: app.config.settings
 
+Package for global application constants.
 """
 from pathlib import Path
 

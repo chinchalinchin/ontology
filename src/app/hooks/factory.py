@@ -1,5 +1,5 @@
 """
-# Ontology: Factory
+# Ontology: app.hooks.factory
 
 Package for instantiating Asset classes and their components.
 """

@@ -1,5 +1,5 @@
 """
-# Ontology: Frames
+# Ontology: app.assets.frames
 
 Package for Asset Frame implementations.
 """

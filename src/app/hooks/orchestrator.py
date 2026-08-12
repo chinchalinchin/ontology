@@ -1,8 +1,9 @@
 """
-# Ontology: Orchestration
+# Ontology: app.hooks.orchestrator
+
+Package for managing dependency injection.
 """
 # Standard Libraries
-import time
 import logging
 from typing import (
     Dict, 
@@ -30,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 class Orchestrator:
     """
+    ## Orchestrator
     """
     # Configuration
     properties: Dict = {}
@@ -37,6 +39,7 @@ class Orchestrator:
     state: Dict = {}
     devices: Dict = {}
     equipment: Dict = {}
+    intentions: Dict = {}
 
     # Game
     registry: Registry
@@ -49,6 +52,7 @@ class Orchestrator:
         self.recipes = Loader.load_recipes()
         self.devices = Loader.load_devices()
         self.equipment = Loader.load_equipment()
+        self.intentions = Loader.load_intentions()
         self.state = Loader.load_state(state)
 
     def instance_properties(self, category, instance, snapshot):

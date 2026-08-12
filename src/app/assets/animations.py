@@ -1,5 +1,5 @@
 """
-# Ontology: Animations
+# Ontology: app.asset.animations
 
 Package for Asset Animation implementations.
 """

@@ -1,5 +1,7 @@
 """
-# Ontology: CLI
+# Ontology: cli
+
+Package for command line interface. Contains useful commands for debugging.
 """
 import sys
 import argparse

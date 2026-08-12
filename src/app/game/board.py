@@ -1,5 +1,5 @@
 """
-# Ontology: Board
+# Ontology: app.game.board
 
 Package for game Board. The Board holds and mutates the state of the game for the engine loop.
 """

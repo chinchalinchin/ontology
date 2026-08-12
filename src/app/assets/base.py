@@ -1,5 +1,5 @@
 """
-# Ontology: Asset Base
+# Ontology: app.assets.base
 
 Package for foundational Asset classes and interfaces.
 """

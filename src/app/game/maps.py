@@ -1,5 +1,5 @@
 """
-# Ontology: Resolvers
+# Ontology: app.game.maps
 """
 # Application Libraries
 from app.config.enums import Actions, Directions, Intentions
