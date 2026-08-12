@@ -21,8 +21,9 @@ from app.game.mechanics import (
     CollisionMechanics, 
     ProjectileMechanics, 
     SwitchMechanics, 
-    IntentionMechanics,
-    RemoveMechanics
+    TransitionMechanics,
+    RemoveMechanics,
+    PlayerMechanic
 )
 from app.models.properties import (
     IntentionProperties, 
@@ -66,22 +67,25 @@ class Board:
         self.paused = False
         self.equipment = equipment
         self.intentions = intentions
-        # TODO: instantiate and inject mechanics
+
+        # TODO: instantiate and inject from above
         self._mechanics = [ 
+            PlayerMechanic(),
             AnimationMechanics(),
-            IntentionMechanics(),
+            TransitionMechanics(),
             CollisionMechanics(),
             ProjectileMechanics(),
             SwitchMechanics(),
             RemoveMechanics()
         ]
+
         self._assets = assets
         self._catalogue()
         self._cache()
         
         self.loaded = True
         logger.info("Board completely hydrated and initialized.")
-
+        
     def _catalogue(self):
         """
         """
@@ -140,6 +144,9 @@ class Board:
         """
         self._device = device
 
+    def poll(self):
+        self._device.poll()
+        
     def player(self, slot = 0) -> Asset:
         """
         Returns the player at the indicated slot. Defaults 0.

@@ -130,6 +130,10 @@ class Screen:
                 
                 active_assets.append((tex, sx, sy, sw, sl, dx, dy, dw, dl))
 
+        # 5. Lightweight Python sort on active_assets based on Position Y + Dimension L
+        # primitive indexes: dx (5), dy (6), dw (7), dl (8) 
+        active_assets.sort(key=lambda x: x[6] + x[8])
+
         # Pass purely native integers to bypass heavy object allocation
         render(
             self.bg_canvas, 

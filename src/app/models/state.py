@@ -241,20 +241,20 @@ class SpriteState(AssetState):
     meters: Meters
     mutators: Mutators
     memory: Memory
-    animation: AnimationState = None
+    animation: Union[AnimationState, None] = None
 
 @dataclass(slots=True)
 class PlayerState(AssetState):
     """
     Central model for typing Sprite's state.
     """
-    intention: str
-    goal: Goal
     position: Position
     character: Character
     inventory: Inventory
     meters: Meters
-    animation: AnimationState
+    goal: Union[Goal, None] = None
+    intention: Union[str, None] = None
+    animation: Union[AnimationState, None] = None
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------- MENU STATE MODELS

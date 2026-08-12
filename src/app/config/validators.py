@@ -147,19 +147,19 @@ class PyPropertyState(BaseModel):
 # ------------------------------------------------------------- SPRITE STATE FIELDS
 
 class PyCharacterState(BaseModel):
-    strength: int
-    defense: int
-    speed: int
+    strength: int = 10
+    defense: int = 10
+    speed: int = 10
 
 class PyEquipmentState(BaseModel):
-    armor: str
-    weapon: str
-    tool: str
-    utility: str
+    armor: Optional[str] = None
+    weapon: Optional[str] = None
+    tool: Optional[str] = None
+    utility: Optional[str] = None
 
 class PyMeterState(BaseModel):
-    current: int 
-    maximum: int
+    current: int = 100
+    maximum: int = 100
 
 class PyPsycheState(BaseModel):
     motivation: str
@@ -172,7 +172,7 @@ class PyGoalState(BaseModel):
     position: PyPosition
 
 class PyInventoryState(BaseModel):
-    loot: Dict[str, int]
+    loot: Optional[Dict[str, int]] = None
     equipment: PyEquipmentState
     wallet: int
 
@@ -212,14 +212,14 @@ class PyMetricState(PyAssetState):
 
 class PyAnimatorState(PyAssetState):
     position: PyPosition
-    animation: PyAnimationState
+    animation: Optional[PyAnimationState] = None
 
 class PyContainerState(PyAssetState):
     content: List[str]
     position: PyPosition
-    animation: PyAnimationState
     switch: bool
-    
+    animation: Optional[PyAnimationState] = None
+
 class PyDoorState(PyAssetState):
     position: PyPosition
     out: PyPosition
@@ -228,12 +228,11 @@ class PyDoorState(PyAssetState):
 class PySwitchState(PyAssetState):
     link: str
     position: PyPosition
-    animation: PyAnimationState
     switch: bool
+    animation: Optional[PyAnimationState] = None
 
-class PySpriteState(BaseModel):
+class PySpriteState(PyAssetState):
     intention: str
-    animation: PyAnimationState
     position: PyPosition
     character: PyCharacterState
     inventory: PyInventoryState
@@ -241,15 +240,16 @@ class PySpriteState(BaseModel):
     mutators: PyMutatorState
     memory: PyMemoryState
     goal: Optional[PyGoalState] = None
+    animation: Optional[PyAnimationState] = None
 
-class PyPlayerState(BaseModel):
-    intention: str
+class PyPlayerState(PyAssetState):
     position: PyPosition
-    animation: PyAnimationState
     character: PyCharacterState
     inventory: PyInventoryState
     meters: PyMetersState
     goal: Optional[PyGoalState] = None
+    animation: Optional[PyAnimationState] = None
+    intention: Optional[str] = None
 
 # --------------------------------------------------------------------------------------
 # ---------------------------------------------------- RECIPE CONFIGURATION & VALIDATION
@@ -285,6 +285,7 @@ class PyObjectRecipe(BaseModel):
 class PySheetRecipe(BaseModel):
     pixies: PyRecipe
     sprites: PyRecipe
+    players: PyRecipe
 
 # ---------------------------------------------------------------------------------------
 
@@ -312,15 +313,25 @@ class PyDeviceMappings(BaseModel):
 
 # --------------------------------------------------------------------------- INTENTIONS
 
-class PyIntention(BaseModel):
+class PyIntentionTransition(BaseModel):
     next: str
     conditions: List[str]
 
 # ---------------------------------------------------------------------------- EQUIPMENT
 
-class PyEquipmentProperties(BaseModel):
-    animation: PyAnimationState
+class PyEquipmentAnimationProperty(BaseModel):
+    action: Actions
+    direction: Directions
+
+class PyEquipmentProperty(BaseModel):
+    animation: PyEquipmentAnimationProperty
     sheets: List[str]
+
+class PyEquipmentProperties(BaseModel):
+    armor: Dict[str, PyEquipmentProperty]
+    tools: Dict[str, PyEquipmentProperty]
+    utilities: Dict[str, PyEquipmentProperty]
+    weapons: Dict[str, PyEquipmentProperty]
 
 # -------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------ YAML SCHEMAS
@@ -340,7 +351,7 @@ class PyDeviceMappingConfiguration(YamlBaseSettings):
 # --------------------------------------------------------------- INTENTION YAML SCHEMA
 
 class PyIntentionPropertyConfiguration(YamlBaseSettings):
-    intentions: Dict[str, PyIntention]
+    intentions: Dict[str, List[PyIntentionTransition]]
 
     model_config = SettingsConfigDict(
         yaml_file = settings.DATA_DIR / "intentions" / settings.APP_EXT
@@ -350,10 +361,7 @@ class PyIntentionPropertyConfiguration(YamlBaseSettings):
 # --------------------------------------------------------------- EQUIPMENT YAML SCHEMA
 
 class PyEquipmentPropertyConfiguration(YamlBaseSettings):
-    armor: Dict[str, PyEquipmentProperties]
-    tools: Dict[str, PyEquipmentProperties]
-    utilities: Dict[str, PyEquipmentProperties]
-    weapons: Dict[str, PyEquipmentProperties]
+    equipment: PyEquipmentProperties
 
     model_config = SettingsConfigDict(
         yaml_file = settings.DATA_DIR / "equipment" / settings.APP_EXT
@@ -396,7 +404,7 @@ class PyObjectStateInstances(BaseModel):
 class PySheetStateInstances(BaseModel):
     pixies: Optional[List[PyAnimatorState]] = []
     sprites: Optional[List[PySpriteState]] = []
-    player: Optional[List[PyPlayerState]] = []
+    players: Optional[List[PyPlayerState]] = []
 
 # ---------------------------------------------------------------------------------------
 

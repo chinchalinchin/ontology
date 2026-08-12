@@ -1,50 +1,78 @@
-  equipment:
-    knife:
-      sheets:
-        - knife
-      kind: weapon
-    lantern:
-      sheets:
-        - lantern
-      kind: utility
+equipment:
+  armor:
     leather:
+      animation: 
+        action: all
+        direction: all
       sheets:
         - leather-gloves
         - leather-shield
-      kind: armor
-    pickaxe:
-      sheets:
-        - pickaxe
-      kind: tool
+        - leather-sandals
     plate:
+      animation:
+        action: all
+        direction: all
       sheets:
         - plate-boots
         - plate-chest
         - plate-gloves
         - plate-greaves
+        - plate-helmet
         - plate-shoulders
-      kind: armor
-    sandals:
+  tools:
+    axe:
+      animation:
+        action: slash
+        direction: all
       sheets:
-        - sandals
-      kind: armor
-    shortsword:
-      sheets:
-        - shortswords
-      kind: weapon
+        - axe
     shovel:
+      animation: 
+        action: thrust
+        direction: all
       sheets:
         - shovel
-      kind: utility
-    spear:
+    pickaxe:
+      animation:
+        action: thrust
+        direction: all
       sheets:
-        - spear
-      kind: weapon
-    stave:
+        - pickaxe
+  utilities: 
+    lantern:
+      animation: 
+        action: all
+        direction: all
       sheets:
-        - stave
-      kind: weapon
+        - lantern
+  weapons:
+    dagger:
+      animation: 
+        action: slash
+        direction: all
+      sheets:
+        - dagger
+    sword: 
+      animation:
+        action: slash
+        direction: all
+      sheets: 
+        - shortsword
     warhammer:
+      animation:
+        action: slash
+        direction: all
       sheets:
         - warhammer
-      kind: weapon
+    longbow:
+      animation:
+        action: shoot
+        direction: all
+      sheets:
+        - longbow
+    crossbow: 
+      animation:
+        action: cast
+        direction: all
+      sheets:
+        - crossbow

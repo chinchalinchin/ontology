@@ -78,7 +78,10 @@ def main():
         out_path = out_dir / f"{args.board_key}-{args.layer}.png"
         assets = board.assets(args.layer)
         logger.info(f"Rendering composite frame for layer '{args.layer}'...")
-        screen.export_render(str(out_path), assets, board.player, registry)
+        
+        # UPDATE: Call board.player() method and pass resolved arguments
+        player = board.player()
+        screen.export_render(str(out_path), assets, player.state.position, player.dimensions, registry)
         logger.info(f"Composite frame successfully rendered and exported to: {out_path}")
 
     del screen

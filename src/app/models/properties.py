@@ -31,13 +31,6 @@ class Action:
     directions: Dict[str, Direction]
 
 @dataclass(slots=True)
-class Persona:
-    dim: Dimensions
-    stack: List[str]
-    hitboxes: List[Hitbox] = field(default_factory=list)
-
-
-@dataclass(slots=True)
 class Cost:
     item: str
     quantity: int
@@ -77,14 +70,8 @@ class CraftProperties(AssetProperties):
 
 @dataclass(slots=True)
 class SheetProperties(AssetProperties):
-    # NOTE: key, dimension and hitboxes are embedded in the persona!
-    # -------------------------- Properties
-    personas: Dict[str, Persona]
-    actions: Dict[str, Action]
-
-@dataclass(slots=True)
-class PlayerProperties(AssetProperties):
     dimensions: Dimensions
+    stack: List[str]
     hitboxes: List[Hitbox] = field(default_factory=list)
 
 # ---------------------------------------------------------------------------------------

@@ -38,28 +38,33 @@ For example, the `SwitchMechanics` system strictly queries `board.plates`, `boar
 
 These Mechanics handle general game logic.
 
-- `ProjectileMechanics`: Increment projectile positions, checks intersections and garbage collects, if applicable.
-- `AnimationMechanic`: Translates current states into FrameKeys for the renderer.
-- `PhysicsMechanic`: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.
+- `PlayerMechanics`: Resolve Device input into Player (Intention, Goal)-state.
+- `AnimationMechanics`: Translates current states into FrameKeys for the renderer.
+- `CollisioMechanics`: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.
+- `RemoveMechanics`: General garbage collection for Assets whose lifespan has expired.
+- `TransitionMechanics`: Applies the Intention Transition Matrix conditions to all Sprite Sheets.
 
 ### Objective Mechanics
 
+These Mechanics handle Object game logic.
+
 - `SwitchMechanics`: Binds the Gate and Plate states together based on their `switch`.
+- `ProjectileMechanics`: Increment projectile positions, checks intersections and resolves impacts.
 
 ### Intentional Mechanics
 
-These Mechanics handle the logic governing the Sprite Intention Transtion matrix.
+These Mechanics handle the Sprite Intention logic.
 
-- `IntentionMechanics`: Runs the Intentions transition lambdas, etc.
 - `MotionMechanics`: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.
 - `CommerceMechanics`: Translate Intentions (barter, attract, etc.) into trades and price movements.
 - `CombatMechanics`: (Cython) Resolves attack hitbox overlaps, decrements health, etc.
 
-## Resolvers
+## Maps
 
-Resolvers map Intentions to Actions.
+Maps associate ancillary Asset states to their final Animation state.
 
-TODO
+See [AnimationMap](./04-intentions.md#animationmap) and [DialogueMap](./04-intentions.md#dialoguemap) for more information.
+
 
 ## Cython
 
@@ -70,27 +75,28 @@ While Python objects are fast enough for general logic, calculating collisions a
 
 ### Math & Geometry (`libs/math.pyx`)
 
-Spatial data like are modeled as Cython Extension Types (`cdef class` in `.pxd` definition files).
-
-- Position: 
-    - x: int
-    - y: int
-- Multiple:
-    - nx: int
-    - ny: int
-- Velocity:
-    - vx: int
-    - vy: int
-- Hitbox:
-    - position: Position
-    - dimension Dimensions
-- Attackbox
-    - position: Position
-    - dimensions: Dimensions
-
-This structure allows geometry methods like `Geometry.intersects` to access spatial properties (e.g., `position.x`, `hb.dimensions.l`) natively at C-speeds.
+Spatial data like are modeled as Cython Extension Types (`cdef class` in `.pxd` definition files). This structure allows geometry methods like `Geometry.intersects` to access spatial properties (e.g., `position.x`, `hb.dimensions.l`) natively at C-speeds.
 
 The engine explicitly retains the Global Interpreter Lock (GIL) during geometry calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax (like `for hb in hitboxes`), while executing the actual mathematical overlap checks inline using primitive C variables on the CPU stack.
+
+**Core Cython Models**
+
+- Position: 
+    - `x: int`
+    - `y: int`
+- Multiple:
+    - `nx: int`
+    - `ny: int`
+- Velocity:
+    - `vx: int`
+    - `vy: int`
+- Hitbox:
+    - `position: Position`
+    -` dimension Dimensions`
+- Attackbox
+    - `position: Position`
+    - `dimensions: Dimensions`
+    - `hitframe: int`
 
 ### Hardware Rendering (`libs/render.pyx` & `libs/registry.pyx`)
 

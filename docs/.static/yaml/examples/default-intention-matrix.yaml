@@ -22,14 +22,15 @@ intentions:
     - next: threaten
       conditions:
         - sprite.memory.goal.category == 'loot'
-        - sprite.inventory.wallet < sprite.memory.prices[sprite.memory.goal.name]
+        - sprite.inventory.wallet < sprite.prices[sprite.memory.goal.name]
         - sprite.psyche.motivation == 'survival'
     - next: speak
       conditions: 
-        - 
+        - sprite.intention
   build:
-    - next:
-      conditions: 
+    - next: find
+      conditions:
+        - sprite.intention 
   escape: 
     - next: escape
       conditions: 
@@ -40,79 +41,79 @@ intentions:
   find: 
     - next: scavenge
       conditions: 
-        - 
+        - sprite.intention
     - next: return
       conditions:
-        -  
+        - sprite.intention
   follow: 
     - next: follow
       conditions:
-        -  
+        - sprite.intention
     - next: hunt
       conditions:
-        -  
+        - sprite.intention  
     - next: wander
       conditions:
-        -  
+        - sprite.intention 
   hunt: 
     - next:
       conditions: 
-        - 
+        - sprite.intention 
   idle: 
     - next: idle
       conditions:
-        -  
+        - sprite.intention
     - next: wander
       conditions:
-        - 
+        - sprite.intention
   interact:
     - next: 
       conditions: 
-        - 
+        - sprite.intention
   mine:
-    - next: 
+    - next: build
       conditions:
-        - 
+        - sprite.intention
   mock:
     - next: mock
       conditions:
-        -  
+        - sprite.intention 
     - next: threaten
       conditions:
-        -  
+        - sprite.intention 
   return:
     - next: idle
       conditions: 
-        - 
+        - sprite.intention
     - next: return
       conditions:
-        - 
+        - sprite.intention
     - next: wander
       conditions: 
-        - 
+        - sprite.intention
   scavenge:
     - next: return
       conditions:
-        -  
+        - sprite.intention
   speak:
-    - next: 
+    - next: follow
       conditions: 
-        - 
+        - sprite.intention
   sprint:
-    - next:
+    - next: return
       conditions: 
-        - 
+        - sprite.intention
   threaten:
     - next: attack
       conditions:
-        -  
+        - sprite.intention
     - next: hunt
       conditions:
-        -   
+        - sprite.intention   
     - next: threaten
       conditions:
-        -  
+        - sprite.intention
   wander:
     - next: idle
       conditions:
-        - 
+        - sprite.intention

@@ -18,6 +18,7 @@ from app.assets.base import Asset
 import app.config.settings as settings
 from app.config.enums import (
     AssetCategories, 
+    AssetInstances,
     Devices
 )
 from app.game.board import Board
@@ -101,8 +102,11 @@ class Orchestrator:
         if category == AssetCategories.TILES:
             return self.properties[category][instance]
 
-        if category == AssetCategories.SHEETS:
+        if category == AssetCategories.SHEETS and instance != AssetInstances.PLAYERS:
             return self.properties[category][instance]["personas"][snapshot["id"]] 
+
+        if category == AssetCategories.SHEETS and instance == AssetInstances.PLAYERS:
+            return self.properties[category][AssetInstances.SPRITES]["personas"][snapshot["id"]]
 
         return self.properties[category][instance][snapshot["id"]] 
 
@@ -134,7 +138,7 @@ class Orchestrator:
         assets = []
 
         equipment = Factory.equipment(
-            PyEquipmentPropertyConfiguration().model_dump()
+            PyEquipmentPropertyConfiguration().equipment.model_dump()
         )
 
         intentions = Factory.intentions(
@@ -155,9 +159,9 @@ class Orchestrator:
                     assets.append(Asset(
                         taxonomy   = Factory.taxonomy(category_key, instance_key, asset_id, asset_name),
                         properties = Factory.properties(category_key, instance_props),
-                        state      = Factory.state(recipe.state, instance),
-                        frame      = Factory.frame(recipe.frame),
-                        animation  = Factory.animation(recipe.animation)
+                        state      = Factory.state(recipe["state"], instance),
+                        frame      = Factory.frame(recipe["frame"]),
+                        animation  = Factory.animation(recipe["animation"])
                     ))
                     
         logger.info(f"Successfully migrated {len(assets)} assets.")
@@ -174,7 +178,8 @@ class Orchestrator:
 
         logger.info("Initializing Board...")
         self.board = self.migrate()
-        device_instance = Factory.device(device, self.devices)
+        device_mapping = self.devices.get("mappings", {}).get(device, {})
+        device_instance = Factory.device(device, device_mapping)
         self.board.set_device(device_instance)
 
         logger.info("Initializing Registry..")
@@ -225,9 +230,9 @@ class Orchestrator:
 
                 player = self.board.player()
 
-                self.screens[player.layer].draw(
-                    self.board.assets(player.layer), 
-                    player.state.positions,
+                self.screens[player.state.layer].draw(
+                    self.board.assets(player.state.layer), 
+                    player.state.position,
                     player.dimensions,
                     self.registry
                 )

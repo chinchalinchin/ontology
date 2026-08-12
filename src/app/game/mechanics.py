@@ -19,8 +19,10 @@ from app.config.enums import (
     PlayerGoals
 )
 from app.game.maps import AnimationMap
+from app.models.state import Goal
 
 # Cython Libraries
+from libs.core import Position
 from libs.math import Geometry
 
 class Mechanic(ABC):
@@ -100,9 +102,6 @@ class ProjectileMechanics(Mechanic):
                     ):
                         # TODO: Resolve collision
                         pass
-                if not proj.alive():
-                    # TODO: garbage collect
-                    pass
 
 # ----------------------------------------------------------------------------------------
 
@@ -114,11 +113,13 @@ class RemoveMechanics(Mechanic):
         """
         """            
         temporary = board.instances(AssetInstances.TEMPORARY)
+        projectiles = board.instances(AssetInstances.PROJECTILES)
 
         for effect in temporary:
             if effect.state.animation.frame > effect.properties.count:
                 # TODO: implementation
                 pass
+            # TODO: projectile conditions
 
 class SwitchMechanics(Mechanic):
     """
@@ -177,13 +178,13 @@ class SwitchMechanics(Mechanic):
 
 # ----------------------------------------------------------------------------------------
 
-class IntentionMechanics(Mechanic):
+class TransitionMechanics(Mechanic):
     """
     """
     
     def update(self, board: Board, delta: float) -> None:
         """
-        Evaluates AST lambdas to transition Intentions.
+        Evaluates Intention condition lambdas for state transitions.
         """
         sprites = board.instances(AssetInstances.SPRITES)
 
@@ -221,10 +222,7 @@ class PlayerMechanic(Mechanic):
         """
         """
         player = board.player()
-        if not player or not board._device:
-            return
-
-        poll = board._device.poll()
+        poll = board.poll()
         
         if poll.get("intentions"):
             player.state.intention = poll["intentions"][0]
@@ -234,17 +232,31 @@ class PlayerMechanic(Mechanic):
         speed = player.state.character.speed
         goal_x = player.state.position.x
         goal_y = player.state.position.y
+        
+        # Track movement so the player doesn't instantly snap back to 'UP' when inputs are released.
+        has_movement = False
 
         if PlayerGoals.UP in poll.get("goals", []):
             goal_y -= speed
+            has_movement = True
         if PlayerGoals.DOWN in poll.get("goals", []):
             goal_y += speed
+            has_movement = True
         if PlayerGoals.LEFT in poll.get("goals", []):
             goal_x -= speed
+            has_movement = True
         if PlayerGoals.RIGHT in poll.get("goals", []):
             goal_x += speed
+            has_movement = True
 
-        if player.state.goal:
+        # UPDATE: Initialize missing goal tracking state
+        if has_movement and not player.state.goal:
+            player.state.goal = Goal(
+                name="player_target", 
+                category="position", 
+                position=Position(goal_x, goal_y)
+            )
+        else:
             player.state.goal.position.x = goal_x
             player.state.goal.position.y = goal_y
 
@@ -253,7 +265,7 @@ class PlayerMechanic(Mechanic):
             board.equipment
         )
 
-        if player.state.goal:
+        if player.state.goal and has_movement:
             player.state.animation.direction = AnimationMap.direction(
                 player.state.position,
                 player.state.goal.position
