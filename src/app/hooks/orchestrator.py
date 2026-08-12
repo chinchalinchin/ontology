@@ -4,19 +4,24 @@
 # Standard Libraries
 import time
 import logging
-from typing import List, Any, Dict, Tuple
+from typing import (
+    List, 
+    Any, 
+    Dict, 
+    Tuple
+)
 
 # External Libraries
 import yaml
 
 # Application Libraries
+from app.assets.base import Asset
 import app.config.settings as settings
 from app.config.enums import (
     AssetCategories, 
     AssetInstances,
     Devices
 )
-from app.assets.base import Asset
 from app.game.board import Board
 from app.game.screen import Screen
 from app.input.player import Player, Device
@@ -45,9 +50,7 @@ class Orchestrator:
     """
     """
     # Configuration
-    equipment: Dict = { }
-    intentions: Dict = { }
-    properties: Dict = { }
+    properties: Dict = {}
     recipes: Dict = {}
     state: Dict = {}
 
@@ -58,6 +61,15 @@ class Orchestrator:
 
     def __init__(self, state: str):
         logger.info(f"Initializing Orchestrator for target state: {state}")
+        self.properties = {
+            **PyTilePropertyConfiguration().model_dump(),
+            **PyObjectPropertyConfiguration().model_dump(),
+            **PyEffectPropertyConfiguration().model_dump(),
+            **PyCursorPropertyConfiguration().model_dump(),
+            **PyCraftPropertyConfiguration().model_dump(),
+            **PySheetPropertyConfiguration().model_dump()
+        }
+        self.recipes = PyRecipeConfiguration().assets.model_dump()
         self.load(state)
 
     @staticmethod
@@ -81,11 +93,10 @@ class Orchestrator:
                 target[key] = value
         return target
 
-    @staticmethod
-    def time() -> float:
-        return time.perf_counter()
-
     def instance_properties(self, category, instance, snapshot):
+        """
+        Returns Asset Properties based on their Taxonomy.
+        """
         # Lookup properties using the 'id' before modifying the dictionary
         if category == AssetCategories.TILES:
             return self.properties[category][instance]
@@ -96,6 +107,8 @@ class Orchestrator:
         return self.properties[category][instance][snapshot["id"]] 
 
     def load(self, state: str) -> None:
+        """
+        """
         board_path = settings.STATE_DIR / state  
         target_dir = board_path.expanduser()
         merged_data: dict[str, Any] = {}
@@ -111,33 +124,22 @@ class Orchestrator:
         logger.debug(f"Validating loaded schema via Pydantic model.")
         self.state = PyStateConfiguration.model_validate(merged_data).model_dump(exclude_none=True)
 
-    def migrate(self, device: Device) -> List[Asset]:
+    def migrate(self, device: Device) -> Board:
         """
         # migrate
 
-        Transfer the Pydantic DTOs to Python POPOs for the game engine.
+        Transfer the Pydantic DTOs to Python POPOs for the game engine and load them into the Board.
         """
         logger.info("Migrating configuration states to engine Application Objects (POPOs)...")
         assets = []
 
-        if not self.properties:
-            self.properties = {
-                **PyTilePropertyConfiguration().model_dump(),
-                **PyObjectPropertyConfiguration().model_dump(),
-                **PyEffectPropertyConfiguration().model_dump(),
-                **PyCursorPropertyConfiguration().model_dump(),
-                **PyCraftPropertyConfiguration().model_dump(),
-                **PySheetPropertyConfiguration().model_dump()
-            }
+        equipment = Factory.equipment(
+            PyEquipmentPropertyConfiguration().model_dump()
+        )
 
-        if not self.recipes:
-            self.recipes = PyRecipeConfiguration().assets.model_dump()
-
-        if not self.equipment:
-            validated_equipment = PyEquipmentPropertyConfiguration().model_dump()
-
-        if not self.intention:
-            validated_intention = PyIntentionPropertyConfiguration().model_dump()
+        intentions = Factory.intentions(
+            PyIntentionPropertyConfiguration().model_dump()
+        )
 
         for category_key, instance_data in self.state.items():
             for instance_key, instance_list in instance_data.items():
@@ -170,7 +172,7 @@ class Orchestrator:
                     ))
                     
         logger.info(f"Successfully migrated {len(assets)} assets.")
-        return assets
+        return Board(assets, equipment, intentions)
     
     def orchestrate(self, 
         screensize: Dimensions,
@@ -184,8 +186,7 @@ class Orchestrator:
         logger.info("Bootstrapping internal SDL environment and initializing Registry.")
         render.init(screensize.w, screensize.l)
 
-        assets = self.migrate(device)
-        self.board = Board(assets)
+        self.board = self.migrate(device)
         self.registry = Registry(self.properties, self.recipes)
         
         logger.info("Initializing game screens across layers...")
@@ -201,6 +202,13 @@ class Orchestrator:
         
         return self.board, self.registry, self.screens
 
+    # TODO: should probably isolate the game loop in a separate class
+    @staticmethod
+    def time() -> float:
+        """
+        """
+        return time.perf_counter()
+    
     def start(self, 
         screensize: Dimensions, 
         device: Devices

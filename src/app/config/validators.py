@@ -304,7 +304,6 @@ class PyIntention(BaseModel):
 
 # -------------------------------------------------------------------------------------
 
-
 class PyEquipmentProperties(BaseModel):
     animation: PyAnimationState
     sheets: List[str]

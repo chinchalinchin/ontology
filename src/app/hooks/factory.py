@@ -43,7 +43,9 @@ from app.models.properties import (
     ObjectProperties, 
     TileProperties, 
     CraftProperties, 
-    SheetProperties
+    SheetProperties,
+    EquipmentProperties,
+    IntentionProperties
 )
 
 # Cython Libraries
@@ -162,4 +164,11 @@ class Factory:
             instance    = instance,
             category    = category,
         )
-                    
+
+    @staticmethod
+    def equipment(snapshot):
+        return Factory._hydrate(EquipmentProperties, snapshot)
+
+    @staticmethod
+    def intentions(snapshot):
+        return Factory._hydrate(IntentionProperties, snapshot)

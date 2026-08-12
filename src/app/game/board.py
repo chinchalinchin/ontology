@@ -23,7 +23,10 @@ from app.game.mechanics import (
     IntentionMechanics,
     RemoveMechanics
 )
-from app.input.player import Player
+from app.models.properties import (
+    IntentionProperties, 
+    EquipmentProperties
+)
 
 # Cython Libraries
 from libs.core import Dimensions
@@ -33,26 +36,36 @@ logger = logging.getLogger(__name__)
 class Board:
     """
     """
-    mechanics: List[Mechanic]
-
+    # Flags
     loaded: bool
     paused: bool
-
+    # Public Fields
+    intentions: IntentionProperties
+    equipment: EquipmentProperties
+    # Hidden Fields
     _assets: List[Asset]
+    _mechanics: List[Mechanic]
+    # Caches
     _cached_categories: Dict[str, Dict[str, List[Asset]]]
     _cached_instances: Dict[str, Dict[str, List[Asset]]]
     _cached_layers: Dict[str, List[Asset]]
+    # Catalogues
     _all_categories: Dict[str, List[Asset]]
     _all_instances: Dict[str, List[Asset]]
 
     def __init__(self, 
         assets: List[Asset], 
+        equipment: EquipmentProperties,
+        intentions: IntentionProperties
     ):
         logger.info(f"Initializing Board with {len(assets)} incoming assets.")
         
         self.loaded = False
         self.paused = False
-        self.mechanics = [ 
+        self.equipment = equipment
+        self.intentions = intentions
+        # TODO: instantiate and inject mechanics
+        self._mechanics = [ 
             AnimationMechanics(),
             IntentionMechanics(),
             CollisionMechanics(),
@@ -61,10 +74,29 @@ class Board:
             RemoveMechanics()
         ]
         self._assets = assets
+        self._catalogue()
         self._cache()
         
         self.loaded = True
         logger.info("Board completely hydrated and initialized.")
+
+    def _catalogue(self):
+        """
+        """
+        self._all_categories = {}
+        self._all_instances = {}
+        for asset in self._assets:
+            layer = asset.state.layer
+            cat = asset.category
+            inst = asset.instance
+
+            if cat not in self._all_categories:
+                self._all_categories[cat] = []
+            self._all_categories[cat].append(asset)
+
+            if inst not in self._all_instances:
+                self._all_instances[inst] = []
+            self._all_instances[inst].append(asset)
 
     def _cache(self):
         """
@@ -76,8 +108,6 @@ class Board:
         self._cached_categories = {}
         self._cached_instances = {}
         self._cached_layers = {}
-        self._all_categories = {}
-        self._all_instances = {}
 
         for asset in self._assets:
             layer = asset.state.layer
@@ -102,16 +132,6 @@ class Board:
 
             # Cache by layer only
             self._cached_layers[layer].append(asset)
-
-            # Cache globally by category
-            if cat not in self._all_categories:
-                self._all_categories[cat] = []
-            self._all_categories[cat].append(asset)
-
-            # Cache globally by instance
-            if inst not in self._all_instances:
-                self._all_instances[inst] = []
-            self._all_instances[inst].append(asset)
 
     def player(self, slot = 0) -> Asset:
         """
@@ -207,13 +227,8 @@ class Board:
         # NOTE: Intentionally omitting logging here to prevent I/O bottlenecks in the core game loop.
         
         # ------------------------- MECHANIC HANDLING
-        for this in self.mechanics:
+        for this in self._mechanics:
             this.update(self, delta)
-
-        # ------------------------- PLAYER HANDLING
-        self.player
-        # TODO: player logic
-        # -------------------------
 
     def size(self, layer=None) -> List[Dimensions]:
         """
