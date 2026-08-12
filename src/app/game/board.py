@@ -14,6 +14,7 @@ from app.config.enums import (
     AssetCategories,
     AssetInstances
 )
+from app.game.devices import Device
 from app.game.mechanics import (
     Mechanic, 
     AnimationMechanics, 
@@ -45,6 +46,7 @@ class Board:
     # Hidden Fields
     _assets: List[Asset]
     _mechanics: List[Mechanic]
+    _device: Device
     # Caches
     _cached_categories: Dict[str, Dict[str, List[Asset]]]
     _cached_instances: Dict[str, Dict[str, List[Asset]]]
@@ -132,6 +134,11 @@ class Board:
 
             # Cache by layer only
             self._cached_layers[layer].append(asset)
+
+    def set_device(self, device: Device):
+        """
+        """
+        self._device = device
 
     def player(self, slot = 0) -> Asset:
         """

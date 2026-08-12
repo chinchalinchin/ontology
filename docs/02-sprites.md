@@ -284,7 +284,7 @@ Equipment is divided in four *Kinds*: Armor, Tools, Utilities and Weapons. Each 
 When a piece of Equipment is active, it affects what Animation Action state results when the Sprite enters into the `attack` Intention. The translation between Intention and Equipment into Animation is achieved through an [AnimationMap](./04-intentions.md#animationmap)
 
 ```python
-sprite.state.animation.action = AnimationResolver.action(
+sprite.state.animation.action = AnimationMap.action(
     sprite.state,
     equipment.properties
 )

@@ -8,9 +8,11 @@ from app.config.enums import Actions, Directions, Intentions
 from libs.core import Position
 
 class AnimationMap:
+    """
+    """
 
     @staticmethod
-    def map(state, equipment_properties) -> Actions:
+    def action(state, equipment_properties) -> Actions:
         """
         Resolves Sprite Intentionss to Animation Actions.
 
@@ -47,3 +49,8 @@ class AnimationMap:
         
         # Higher than both diagonals means it is physically UP
         return Directions.RIGHT if dy > -dx else Directions.UP
+
+class DialogueMap:
+    """
+    """
+    pass

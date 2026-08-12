@@ -53,6 +53,10 @@ assets:
       animation: binary
       state: switch
   sheets:
+    players:
+      frame: state
+      animation: state
+      state: player
     pixies:
       frame: state
       animation: state

@@ -22,7 +22,7 @@ intentions:
     - next: threaten
       conditions:
         - sprite.memory.goal.category == 'loot'
-        - sprite.inventory.wallet < sprite.prices[sprite.memory.goal.name]
+        - sprite.inventory.wallet < sprite.memory.prices[sprite.memory.goal.name]
         - sprite.psyche.motivation == 'survival'
     - next: speak
       conditions: 

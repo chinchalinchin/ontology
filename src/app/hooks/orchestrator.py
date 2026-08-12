@@ -5,7 +5,6 @@
 import time
 import logging
 from typing import (
-    List, 
     Any, 
     Dict, 
     Tuple
@@ -19,12 +18,10 @@ from app.assets.base import Asset
 import app.config.settings as settings
 from app.config.enums import (
     AssetCategories, 
-    AssetInstances,
     Devices
 )
 from app.game.board import Board
 from app.game.screen import Screen
-from app.input.player import Player, Device
 from app.hooks.factory import Factory
 from app.config.validators import (
     PyRecipeConfiguration,
@@ -36,7 +33,8 @@ from app.config.validators import (
     PyTilePropertyConfiguration,
     PyCraftPropertyConfiguration,
     PyEquipmentPropertyConfiguration,
-    PyIntentionPropertyConfiguration
+    PyIntentionPropertyConfiguration,
+    PyDeviceMappingConfiguration
 )
 
 # Cython Libraries
@@ -53,6 +51,7 @@ class Orchestrator:
     properties: Dict = {}
     recipes: Dict = {}
     state: Dict = {}
+    devices: Dict = {}
 
     # Game
     registry: Registry
@@ -60,7 +59,7 @@ class Orchestrator:
     screens: Dict[str, Screen]
 
     def __init__(self, state: str):
-        logger.info(f"Initializing Orchestrator for target state: {state}")
+        logger.info(f"Initializing Orchestrator for target state: {state} ...")
         self.properties = {
             **PyTilePropertyConfiguration().model_dump(),
             **PyObjectPropertyConfiguration().model_dump(),
@@ -70,6 +69,7 @@ class Orchestrator:
             **PySheetPropertyConfiguration().model_dump()
         }
         self.recipes = PyRecipeConfiguration().assets.model_dump()
+        self.devices = PyDeviceMappingConfiguration().model_dump()
         self.load(state)
 
     @staticmethod
@@ -113,7 +113,7 @@ class Orchestrator:
         target_dir = board_path.expanduser()
         merged_data: dict[str, Any] = {}
         
-        logger.info(f"Loading YAML state configurations from {target_dir}")
+        logger.info(f"Loading YAML state configurations from {target_dir} ...")
 
         for file_path in target_dir.glob("*.yaml"):
             with file_path.open("r", encoding="utf-8") as f:
@@ -121,16 +121,16 @@ class Orchestrator:
                 if isinstance(data, dict):
                     merged_data = Orchestrator.merge(merged_data, data)
 
-        logger.debug(f"Validating loaded schema via Pydantic model.")
+        logger.debug(f"Validating loaded state via Pydantic model.")
         self.state = PyStateConfiguration.model_validate(merged_data).model_dump(exclude_none=True)
 
-    def migrate(self, device: Device) -> Board:
+    def migrate(self) -> Board:
         """
         # migrate
 
         Transfer the Pydantic DTOs to Python POPOs for the game engine and load them into the Board.
         """
-        logger.info("Migrating configuration states to engine Application Objects (POPOs)...")
+        logger.info("Migrating validated states to engine Application Objects...")
         assets = []
 
         equipment = Factory.equipment(
@@ -152,17 +152,6 @@ class Orchestrator:
                     asset_id = instance.pop("id")
                     asset_name = instance.pop("name")
 
-                    if instance_key == AssetInstances.PLAYER:
-                        assets.append(Player(
-                            device      = device,
-                            taxonomy    = Factory.taxonomy(category_key, instance_key, asset_id, asset_name),
-                            properties  = Factory.properties(category_key, instance_props),
-                            state       = Factory.state(recipe.state, instance),
-                            frame       = Factory.frame(recipe.frame),
-                            animation   = Factory.animation(recipe.animation)
-                        ))
-                        continue
-                    
                     assets.append(Asset(
                         taxonomy   = Factory.taxonomy(category_key, instance_key, asset_id, asset_name),
                         properties = Factory.properties(category_key, instance_props),
@@ -174,22 +163,24 @@ class Orchestrator:
         logger.info(f"Successfully migrated {len(assets)} assets.")
         return Board(assets, equipment, intentions)
     
-    def orchestrate(self, 
-        screensize: Dimensions,
-        device: Devices
-    ) -> Tuple[Board, Registry, Dict[str, Screen]]:
+    def orchestrate(self, screensize: Dimensions, device: Devices) -> Tuple[Board, Registry, Dict[str, Screen]]:
         """
         # Ontology: Orchestrate
 
         Initialize and return game components.
         """
-        logger.info("Bootstrapping internal SDL environment and initializing Registry.")
+        logger.info("Initializing SDL...")
         render.init(screensize.w, screensize.l)
 
-        self.board = self.migrate(device)
+        logger.info("Initializing Board...")
+        self.board = self.migrate()
+        device_instance = Factory.device(device, self.devices)
+        self.board.set_device(device_instance)
+
+        logger.info("Initializing Registry..")
         self.registry = Registry(self.properties, self.recipes)
         
-        logger.info("Initializing game screens across layers...")
+        logger.info("Initializing Screens...")
         self.screens = {
             layer: Screen(
                 screensize, 
@@ -203,6 +194,7 @@ class Orchestrator:
         return self.board, self.registry, self.screens
 
     # TODO: should probably isolate the game loop in a separate class
+    
     @staticmethod
     def time() -> float:
         """
@@ -215,7 +207,7 @@ class Orchestrator:
     ) -> None:
         self.orchestrate(screensize, device)
         
-        logger.info("Entering Main Game Loop...")
+        logger.info("Entering Game Loop...")
         delta = 1.0 / 60.0
         accumulator = 0.0
         last_time = self.time()

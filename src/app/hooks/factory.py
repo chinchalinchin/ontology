@@ -24,7 +24,8 @@ from app.config.enums import (
     FrameRecipe, 
     AnimationRecipe, 
     StateRecipe,
-    AssetCategories
+    AssetCategories,
+    Devices
 )
 from app.models.state import (
     AnimatorState, 
@@ -35,7 +36,8 @@ from app.models.state import (
     MultiplierState, 
     PositionalState, 
     PropertyState,
-    SpriteState
+    SpriteState,
+    PlayerState
 )
 from app.models.properties import (
     EffectProperties,
@@ -46,6 +48,10 @@ from app.models.properties import (
     SheetProperties,
     EquipmentProperties,
     IntentionProperties
+)
+from app.game.devices import (
+    Keyboard,
+    Controller
 )
 
 # Cython Libraries
@@ -66,7 +72,8 @@ class Factory:
         StateRecipe.DOOR: DoorState,
         StateRecipe.SWITCH: SwitchState,
         StateRecipe.PROPERTY: PropertyState,
-        StateRecipe.SPRITE: SpriteState
+        StateRecipe.SPRITE: SpriteState,
+        StateRecipe.PLAYER: PlayerState
     }
 
     FRAME_MAP = {
@@ -90,6 +97,11 @@ class Factory:
         AssetCategories.CURSORS: CursorProperties,
         AssetCategories.CRAFTS: CraftProperties,
         AssetCategories.SHEETS: SheetProperties 
+    }
+
+    DEVICE_MAP = {
+        Devices.KEYBOARD: Keyboard,
+        Devices.CONTROLLER: Controller
     }
 
     @classmethod
@@ -172,3 +184,8 @@ class Factory:
     @staticmethod
     def intentions(snapshot):
         return Factory._hydrate(IntentionProperties, snapshot)
+
+    @staticmethod
+    def device(dev, mapping):
+        target_cls = Factory.DEVICE_MAP.get(dev)
+        return Factory._hydrate(target_cls, mapping)

@@ -52,14 +52,18 @@ class AnimationMechanics(Mechanic):
 # ----------------------------------------------------------------------------------------
 
 class CollisionMechanics(Mechanic):
+    """
+    """
+
     def update(self, board: Board, delta_time: float) -> None:
+        """
+        """
         for layer in board.layers():
             sheets = board.categories(AssetCategories.SHEETS, layer)
 
             for this in sheets:
                 for that in sheets:
                     if this.state.name != that.state.name:
-                        # Pass the raw components to your Cython math library
                         if Geometry.intersects(
                             this.state.position, 
                             this.dimensions, 
@@ -208,6 +212,9 @@ class IntentionMechanics(Mechanic):
                             break
 
 class PlayerMechanic(Mechanic):
+    """
+    """
+
     def update(self, board: Board, delta: float) -> None:
         """
         """

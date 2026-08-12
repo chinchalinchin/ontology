@@ -57,7 +57,7 @@ class Asset:
     taxonomy: Taxonomy
     properties: AssetProperties
     state: AssetState
-    frame: int
+    frame:  Frame
     animation: Animation
 
     def __init__(self,

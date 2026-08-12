@@ -42,7 +42,7 @@ Many Assets have Hitboxes. Hitboxes are *Properties*, i.e., they are static and 
 
 ### Factory
 
-The Factory builds Asset components based on Recipes.
+The Factory builds Asset components based on Recipes and other game components.
 
 ### Orchestrator
 
@@ -50,6 +50,9 @@ The Orchestrator is responsible for reading in the configuration files for prope
 
 The Orchestrator handles the core gameplay loop and framerate calculations.
 
+!!! todo
+  Separate the gameplay loop into different package.
+  
 ### Screen
 
 The Screen acts as a high-level container for a Cythonized SDL rendering interface.

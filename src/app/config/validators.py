@@ -31,7 +31,9 @@ from app.config.enums import (
     AnimationRecipe,
     StateRecipe, 
     Actions, 
-    Directions
+    Directions,
+    Intentions,
+    PlayerGoals
 )
 
 class YamlBaseSettings(BaseSettings):
@@ -295,14 +297,22 @@ class PyRecipes(BaseModel):
     sheets: Optional[PySheetRecipe] = None
 
 # --------------------------------------------------------------------------------------
-# --------------------------------------------------- VARIOUS CONFIGURATION & VALIDATION
+# ---------------------------------------------------- DEVICE CONFIGURATION & VALIDATION
 # --------------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------ DEVICES
+
+class PyDeviceMapping(BaseModel):
+    intentions: Dict[Intentions, int]
+    goals: Dict[PlayerGoals, int]
+
+# --------------------------------------------------------------------------- INTENTIONS
 
 class PyIntention(BaseModel):
     next: str
     conditions: List[str]
 
-# -------------------------------------------------------------------------------------
+# ---------------------------------------------------------------------------- EQUIPMENT
 
 class PyEquipmentProperties(BaseModel):
     animation: PyAnimationState
@@ -313,10 +323,21 @@ class PyEquipmentProperties(BaseModel):
 # -------------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------
+# ------------------------------------------------------------------ DEVICE YAML SCHEMA
+
+class PyDeviceMappingConfiguration(YamlBaseSettings):
+    keyboard: PyDeviceMapping
+    controller: Optional[PyDeviceMapping] = None
+    
+# -------------------------------------------------------------------------------------
 # --------------------------------------------------------------- INTENTION YAML SCHEMA
 
 class PyIntentionPropertyConfiguration(YamlBaseSettings):
     intentions: Dict[str, PyIntention]
+
+    model_config = SettingsConfigDict(
+        yaml_file = settings.DATA_DIR / "intentions" / settings.APP_EXT
+    )
 
 # -------------------------------------------------------------------------------------
 # --------------------------------------------------------------- EQUIPMENT YAML SCHEMA

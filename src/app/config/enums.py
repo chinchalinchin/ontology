@@ -60,6 +60,7 @@ class StateRecipe(str, Enum):
     ANIMATOR        = "animator"
     METRIC          = "metric"
     MULTIPLIER      = "multiplier"
+    PLAYER          = "player"
 
 # -------------------------------- SPRITE STATE ENUMERATIONS
 
@@ -125,3 +126,11 @@ class Relationships(str, Enum):
     FOE             = "foe"
     FRIEND          = "friend"
     STRANGER        = "stranger"
+
+# -------------------------------- PLAYER STATE ENUMERATIONS
+
+class PlayerGoals(str, Enum):
+    UP              = "up"
+    LEFT            = "left"
+    DOWN            = "down"
+    RIGHT           = "right"
