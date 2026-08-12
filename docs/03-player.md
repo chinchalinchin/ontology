@@ -11,7 +11,7 @@ The Player Sprite Sheet is configured through the `player` Sheet [Persona Stack]
 - `category: sheet`
 - `instance: sprite`
 
-**Properties**
+**Properties: SheetProperties**
 
 - `actions:` 
     - `count: int`
@@ -22,7 +22,7 @@ The Player Sprite Sheet is configured through the `player` Sheet [Persona Stack]
 * `hitboxes: List[Hitbox]` 
 * `stack: List[str]`
 
-**State**
+**State: PlayerState**
 
 - `position: Position`
 - `layer: str`
@@ -54,7 +54,7 @@ The Player Sprite Sheet is configured through the `player` Sheet [Persona Stack]
 
 ## Devices
 
-The Player Asset contains a Device, which polls for user input. The main responsiblity of the Player is to translate the data received into Intentions. This is achieved through an input mapping.
+The Player Asset contains a Device, which polls for user input. The main responsiblity of the Player is to translate the data received into a  (Intention, Goal)-tuple. This is achieved through an input mapping.
 
 ### Mapping
 

@@ -265,7 +265,7 @@ TODO
 
 ## Equipment
 
-- Equipment Sheets: `/src/assets/sheets/sprites/equipment/<kind-key>/<equipment-key>.png`
+- Equipment Sheets: `/src/assets/sheets/sprites/equipment/<category-key>/<equipment-key>.png`
 
 Equipment sheets are superimposed onto the Sprite Sheets based on the active Equipment keys in `sprite.state.inventory.equipment`, e.g.
 
@@ -280,16 +280,25 @@ equipment:
 
 Each piece of Equipment is associated with an (Action, Direction) grouping. When a piece of Equipment is active, the Sheet Asset corresponding to the Equipment will be stacked on top of the Sprite's Asset stack. The Animation state associated with a piece of Equipment is configured by [the Equpiment Matrix](#equipment-matrix) file.
 
-Equipment is divided in four *Kinds*: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. 
+Equipment is divided in four *Categories*: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. 
 
 When a piece of Equipment is active, it affects what Animation Action state results when the Sprite enters into the `attack` Intention. The translation between Intention and Equipment into Animation is achieved through an [AnimationMap](./04-intentions.md#animationmap)
 
 ```python
 sprite.state.animation.action = AnimationMap.action(
     sprite.state,
-    equipment.properties
+    board.equipment
 )
 ```
+
+!!! note
+    Equipment properties are stored in the [Board](./00-overview.md#board) database.
+
+### Equipment Animation Sheets
+
+It assumed Equipment sheets conform to the same LPC-derived (Action, Direction) grouping described in previous sections (e.g. [Sheets](#action-direction)). In other words, the frames in an Equipment sheet correspond exactly to frames in a Sprite Sheet. However, Equipment frames may not be present in every frame.
+
+The catchall quantifier `all` implies the Equipment sheet has frames associated with all (Action, Direction) row groups in a sheet. For example `lantern` has a frame for each (Action, Direction) frame (i.e. the `lantern` equipment is present in all (Action, Direction) rows when activated), whereas `shortsword` only has frames in the `(slash, *)` grouping (i.e. the `shortsword` equipment is present in *only* the rows with `action == slash`.). 
 
 ### Equipment Matrix 
 
