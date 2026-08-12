@@ -11,7 +11,6 @@ from typing import List
 # Application Libraries
 from app.assets.base import Asset
 from app.config.enums import AssetInstances
-from app.input.player import Player
 
 # Cython Libraries
 from libs.core import Position, Dimensions
@@ -149,10 +148,10 @@ class Screen:
         logger.info(f"Dumping pre-constructed map textures (bg_canvas) to file system -> {out_path}")
         save(out_path, self.boardsize.w, self.boardsize.l, target=self.bg_canvas)
 
-    def export_render(self, out_path: str, assets: List[Asset], player: Player, registry: Registry) -> None:
+    def export_render(self, out_path: str, assets: List[Asset], focus: Position, fdim: Dimensions, registry: Registry) -> None:
         """
         Draws a composited snapshot of the frame and extracts the VRAM buffer to disk.
         """
         logger.info(f"Extracting VRAM view buffer representing full composition to file system -> {out_path}")
-        self.draw(assets, player.state.position, player.dimensions, registry)
+        self.draw(assets, focus, fdim, registry)
         save(out_path, self.screensize.w, self.screensize.l, )

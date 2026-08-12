@@ -10,16 +10,16 @@
 
 2. **Input Device Configuration & Mapping**
 
-* [ ] **Schemas:** Define a `PyDeviceMappingConfiguration` Pydantic model and corresponding YAML schema (`src/app/data/player/mappings.yaml`) to map physical hardware keys (e.g., SDL scancodes) to `Intentions` and `Goals`.
+* [~] **Schemas:** Define a `PyDeviceMappingConfiguration` Pydantic model and corresponding YAML schema (`src/app/data/mappings/main.yaml`) to map physical hardware keys (e.g., SDL scancodes) to `Intentions` and `Goals`.
 * [ ] **Device Polling:** Implement `Keyboard.poll()` in Cython/Python to return a mapped dictionary of current active intents and vectors. This method must query the hardware state (via Cython/SDL) and return a lightweight input bitmask or data structure, *not* a full `PlayerState` object.
-* [ ] Modify `Orchestrator.orchestrate()` to initialize the `Keyboard` device and pass it directly to the `Board` (and subsequently the `PlayerMechanic`), completely decoupling it from the `Player` Asset.
+* [~] Modify `Orchestrator.orchestrate()` to initialize the `Keyboard` device and pass it directly to the `Board` (and subsequently the `PlayerMechanic`), completely decoupling it from the `Player` Asset.
 
 3. **Implement PlayerMechanic**
 
-* [~] Add PlayerMechanic(device: Device) to src/app/game/mechanics.py.
-* [ ] Implement the update() method to poll the device and apply the mapped Intention directly to the Player's state.intention.
-* [ ] Implement pseudo-goal projection: translate the polled directional vectors into a temporary state.goal.position relative to the Player's current position.
-* [ ] Pipe the updated state through AnimationMap.action and AnimationMap.direction to resolve the animation frame.
+* [~] Add `PlayerMechanic(device: Device)` to src/app/game/mechanics.py.
+* [ ] Implement the `update()` method to poll the device and apply the mapped Intention directly to the Player's state.intention.
+* [ ] Implement pseudo-goal projection: translate the polled directional vectors into a temporary` state.goal.position` relative to the Player's current position.
+* [ ] Pipe the updated state through `AnimationMap.action` and `AnimationMap.direction` to resolve the animation frame.
 
 4. **Unified Rendering Integration**
 
@@ -30,3 +30,7 @@
 5. **Physics & Collision Connectivity**
 
 * [ ] **Verification:** Ensure that once the Player is cached as `AssetCategories.SHEETS`, `CollisionMechanics` and `SwitchMechanics` correctly calculate overlaps with the Player's hitboxes. No new logic should be required in the mechanics classes if Task 1 is executed correctly.
+
+6. **Command Line**
+
+* [ ] **Verification:** Ensure the `prender` and `render` command line function still works 

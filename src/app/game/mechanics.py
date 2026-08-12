@@ -14,7 +14,9 @@ if TYPE_CHECKING:
 
 from app.config.enums import (
     AssetCategories, 
-    AssetInstances
+    AssetInstances,
+    Intentions,
+    PlayerGoals
 )
 from app.game.maps import AnimationMap
 
@@ -190,7 +192,7 @@ class IntentionMechanics(Mechanic):
 
             sprite.state.animation.action = AnimationMap.action(
                 sprite.state,
-                board.properties["equipment"]
+                board.equipment
             )
             sprite.state.animation.direction = AnimationMap.direction(
                 sprite.state.position,
@@ -218,16 +220,41 @@ class PlayerMechanic(Mechanic):
     def update(self, board: Board, delta: float) -> None:
         """
         """
+        player = board.player()
+        if not player or not board._device:
+            return
 
-        poll = board.player.device.poll()
-        # TODO: implement 
+        poll = board._device.poll()
         
-        board.player.state.animation.action = AnimationMap.action(
-            board.player.state, 
-            board.properties["equipment"]
+        if poll.get("intentions"):
+            player.state.intention = poll["intentions"][0]
+        else:
+            player.state.intention = Intentions.IDLE
+        
+        speed = player.state.character.speed
+        goal_x = player.state.position.x
+        goal_y = player.state.position.y
+
+        if PlayerGoals.UP in poll.get("goals", []):
+            goal_y -= speed
+        if PlayerGoals.DOWN in poll.get("goals", []):
+            goal_y += speed
+        if PlayerGoals.LEFT in poll.get("goals", []):
+            goal_x -= speed
+        if PlayerGoals.RIGHT in poll.get("goals", []):
+            goal_x += speed
+
+        if player.state.goal:
+            player.state.goal.position.x = goal_x
+            player.state.goal.position.y = goal_y
+
+        player.state.animation.action = AnimationMap.action(
+            player.state, 
+            board.equipment
         )
 
-        board.player.state.animation.direction = AnimationMap.direction(
-            board.player.state.position,
-            board.player.state.goal.position
-        )
+        if player.state.goal:
+            player.state.animation.direction = AnimationMap.direction(
+                player.state.position,
+                player.state.goal.position
+            )

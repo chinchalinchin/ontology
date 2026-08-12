@@ -30,7 +30,10 @@ class AnimationMap:
                 return Actions.CAST  # Default fallback for unarmed/magic attacks
             
             # TODO: handle `all`
-            return equipment_properties["weapons"][weapon].animation
+            weapon_prop = equipment_properties.weapons.get(weapon)
+            if weapon_prop:
+                return weapon_prop.animation
+            return Actions.CAST
     
         elif intention in [Intentions.WANDER, Intentions.FIND]:
             return Actions.WALK

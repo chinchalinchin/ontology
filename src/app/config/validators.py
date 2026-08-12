@@ -303,8 +303,12 @@ class PyRecipes(BaseModel):
 # ------------------------------------------------------------------------------ DEVICES
 
 class PyDeviceMapping(BaseModel):
-    intentions: Dict[Intentions, int]
-    goals: Dict[PlayerGoals, int]
+    intentions: Dict[Intentions, Optional[int]]
+    goals: Dict[PlayerGoals, Optional[int]]
+
+class PyDeviceMappings(BaseModel):
+    keyboard: PyDeviceMapping
+    controller: Optional[PyDeviceMapping] = None
 
 # --------------------------------------------------------------------------- INTENTIONS
 
@@ -326,9 +330,12 @@ class PyEquipmentProperties(BaseModel):
 # ------------------------------------------------------------------ DEVICE YAML SCHEMA
 
 class PyDeviceMappingConfiguration(YamlBaseSettings):
-    keyboard: PyDeviceMapping
-    controller: Optional[PyDeviceMapping] = None
-    
+    mappings: PyDeviceMappings
+
+    model_config = SettingsConfigDict(
+        yaml_file = settings.DATA_DIR / "mappings" / settings.APP_EXT
+    )
+
 # -------------------------------------------------------------------------------------
 # --------------------------------------------------------------- INTENTION YAML SCHEMA
 
@@ -345,13 +352,12 @@ class PyIntentionPropertyConfiguration(YamlBaseSettings):
 class PyEquipmentPropertyConfiguration(YamlBaseSettings):
     armor: Dict[str, PyEquipmentProperties]
     tools: Dict[str, PyEquipmentProperties]
-    utilties: Dict[str, PyEquipmentProperties]
+    utilities: Dict[str, PyEquipmentProperties]
     weapons: Dict[str, PyEquipmentProperties]
 
     model_config = SettingsConfigDict(
         yaml_file = settings.DATA_DIR / "equipment" / settings.APP_EXT
     )
-
 # -------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ RECIPE YAML SCHEMA
 

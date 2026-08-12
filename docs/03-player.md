@@ -75,7 +75,7 @@ The default mappings bundled with the game are provided below,
 
 ### Device Mappings
 
-* Location: `src/data/player/mappings.yaml`
+* Location: `src/data/mappings/main.yaml`
 
 ```yaml
 --8<-- "docs/.static/yaml/data-mappings.yaml"

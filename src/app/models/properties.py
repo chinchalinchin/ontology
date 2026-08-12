@@ -100,12 +100,12 @@ class EquipmentProperty:
     animation: EquipmentAnimationProperty
     sheets: List[str]
 
-dataclass(slots=True)
+@dataclass(slots=True)
 class EquipmentProperties:
     armor: Dict[str, EquipmentProperty]
     tools: Dict[str, EquipmentProperty]
     utilities: Dict[str, EquipmentProperty]
-    weaposn: Dict[str, EquipmentProperty]
+    weapons: Dict[str, EquipmentProperty]
 
 # ---------------------------------------------------------------------------------------
 # ---------------------------------------------------------------- DISPOSITION PROPERTIES
