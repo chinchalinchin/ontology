@@ -424,6 +424,45 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#intention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intention
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Intention">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transition-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transition Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#goal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#animationmap" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -457,66 +496,16 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#dialoge-resolution" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Dialoge Resolution
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#dimensions" class="md-nav__link">
+  <a href="#dialoguemap" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dimensions
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Dimensions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#extension" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Extension
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#disposition" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Disposition
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#goal" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Goal
+        DialogueMap
       
     </span>
   </a>
@@ -549,6 +538,196 @@
 </ul>
 <p><em>Intentions</em> and <em>Goals</em> are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite "finite automaton", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.</p>
 <p>Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the <a href="">Intention Transition Matrix</a>.</p>
+<h2 id="intention">Intention</h2>
+<p>A Intention is a pseudo-state that factors into the Asset Animation calculations indirectly. It may be thought of as a "hidden" state. It is a data structure that represents the "projection" of the animation state into the Sprite's game space. </p>
+<p>For Sprites, Intention is an attribute that controls state transitions and action mappings. For the Player, it controls action mappings.</p>
+<p>It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the <code>sprint</code> state increases the velocity of the <code>(walk, *)</code> states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the <code>interact</code> state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.</p>
+<h3 id="transition-matrix">Transition Matrix</h3>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The Player state does not observe the Intention Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See <a href="../03-player/">Player documentation</a> for more information on the Player.</p>
+</div>
+<p>The Intention Transition Matrix determines which Intention states are currently reachable for a Sprite from its current Intention. A brief explanation of each Intention state value is given below,</p>
+<ul>
+<li><code>attack</code>: Apply CombatMechanics, conditional on Equipment constraint.</li>
+<li><code>attract</code>: </li>
+<li><code>barter</code>: Apply CommerceMechanics for Sprites; Open a TradeWindow for Player.</li>
+<li><code>build</code>: Apply IndustryMechanics for Sprites; Open a BuildWindow for Player. </li>
+<li><code>escape</code>: </li>
+<li><code>find</code>: </li>
+<li><code>follow</code>: </li>
+<li><code>hunt</code>: </li>
+<li><code>idle</code>: </li>
+<li><code>interact</code>: Used to interact with Objects.</li>
+<li><code>mine</code>: Convert Resources into Inventory. </li>
+<li><code>return</code>:</li>
+<li><code>scavenge</code>: </li>
+<li><code>speak</code>: Draw their Communication on a Dialogue window.</li>
+<li><code>sprint</code>: Increase movement speed.</li>
+<li><code>threaten</code>: </li>
+<li><code>wander</code>: </li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>mine</code> is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows.</p>
+</div>
+<p><strong>Default Intention Transition Matrix</strong></p>
+<p>Provided below is the Intention Transition Matrix bundled with the application by default,</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Starting Intention</th>
+<th>Reachable Intentions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>attack</code></td>
+<td><code>attack</code>, <code>hunt</code>, <code>scavenge</code></td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>attract</code></td>
+<td><code>attract</code>, <code>barter</code>, <code>speak</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>barter</code></td>
+<td><code>speak</code>, <code>find</code>, <code>threaten</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>build</code></td>
+<td><code>barter</code>, <code>find</code>, <code>mine</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>escape</code></td>
+<td><code>return</code>, <code>find</code>, <code>sprint</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>find</code></td>
+<td><code>interact</code>, <code>speak</code>, <code>barter</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>follow</code></td>
+<td><code>find</code>, <code>sprint</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>hunt</code></td>
+<td><code>sprint</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td><code>idle</code></td>
+<td><code>return</code>, <code>wander</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>interact</code></td>
+<td><code>barter</code>, <code>speak</code>, <code>attract</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>mine</code></td>
+<td><code>barter</code>, <code>scavenge</code></td>
+</tr>
+<tr>
+<td>11</td>
+<td><code>mock</code></td>
+<td><code>threaten</code>, <code>escape</code></td>
+</tr>
+<tr>
+<td>12</td>
+<td><code>return</code></td>
+<td><code>find</code>, <code>wander</code></td>
+</tr>
+<tr>
+<td>13</td>
+<td><code>scavenge</code></td>
+<td><code>find</code></td>
+</tr>
+<tr>
+<td>14</td>
+<td><code>speak</code></td>
+<td><code>barter</code>, <code>mock</code>, <code>threaten</code></td>
+</tr>
+<tr>
+<td>15</td>
+<td><code>sprint</code></td>
+<td><code>escape</code>, <code>hunt</code></td>
+</tr>
+<tr>
+<td>16</td>
+<td><code>threaten</code></td>
+<td><code>attack</code>, <code>mock</code></td>
+</tr>
+<tr>
+<td>17</td>
+<td><code>wander</code></td>
+<td><code>idle</code>, <code>return</code></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/examples/default-intention-matrix.yaml&quot;</span>
+</code></pre></div>
+<p><strong>Intentional Scripting Language (ISL)</strong></p>
+<p>The <code>condition</code> for each Intention transition is given in a simple truth-valued language that admits the logical operations and terms,</p>
+<p>Operations:</p>
+<ul>
+<li><code>==</code>: equivalence</li>
+<li><code>!=</code>: non-equivalence</li>
+<li><code>not</code>: negation</li>
+<li><code>or</code>: disjunction</li>
+<li><code>and</code>: conjunction</li>
+</ul>
+<p>Terms:</p>
+<ul>
+<li><code>None</code>: null value</li>
+<li><code>str</code>: constants</li>
+<li><code>sprite.&lt;state&gt;</code>: self State variable</li>
+<li><code>sprites[&lt;sprite-name&gt;].&lt;state&gt;</code>: other Sprites state variable</li>
+</ul>
+<p>For example, in the default Intention Transition matrix given above, the transition from <code>attack</code> to <code>hunt</code> is conditional on the following,</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goal.category == &#39;sprite&#39;</span>
+</code></pre></div>
+<p><code>sprite</code> is a reference to the Sprite's state which is currently having its Intention processed by the game engine. Thus, the Sprite's Intention state will transition to <code>hunt</code> if the Sprite currently does not have a Goal, but remembers having a Goal of Category <code>sprite</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The expression <code>not sprite.goal</code> is a <em>truthy</em> expression, i.e. it is to be interpretted as an existential claim. In other words, this expression evaluates to <code>true</code> if <code>sprite.goal</code> does not exist. If the expression involves a List, e.g. <code>sprite.memory.communications</code>, this expression evaluates to <code>true</code> in the event it has more than 0 entries.</p>
+</div>
+<p>In another example, the transition from <code>attack</code> to <code>scavenge</code> in the default Intention Transition matrix is given by,</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[sprite.name].mutators.triggers.dead</span>
+</code></pre></div>
+<p><code>sprites</code> is a reference to a dictionary of all ingame Sprites states keyed by their identifying and unique <code>name</code>, which provides access to their state attributes.</p>
+<p>Notice in the example there is a self-entrant transition. A Sprite with an <code>attack</code> Disposition can re-enter the <code>attack</code> Disposition conditional on the Sprite still having a target,</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == &#39;sprite&#39;</span>
+</code></pre></div>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The conditions for an Intention transition are evaluated in the order they specified! In the given example, if <code>sprite.goal.category == 'sprite'</code>, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into <code>attack</code>.</p>
+</div>
+<p>Intention transition conditions are converted into lambda functions by the application and then evaluated at runtime.</p>
+<h2 id="goal">Goal</h2>
+<p><em>Goals</em> provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's <em>modus operandi</em>, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is <em>in order</em> to achieve a Goal.</p>
+<ul>
+<li><code>name</code>: Unique Identifier of the Goal.</li>
+<li><code>category</code>: Category of the Goal. (<code>sprite</code>, <code>loot</code>, <code>wealth</code>, <code>property</code>)</li>
+<li><code>position</code>: Last-known position of the Goal. When the Goal is within the <code>mutators.vision.radius</code>, this position is updated every game loop. Once the Goal exits the Sprites <code>mutators.vision.radius</code>, it becomes a static value that freezes on the last known Position of its Goal.</li>
+</ul>
+<p>When a Sprite has Goal, it will seek out (path-find) its way to <code>name</code>. The <code>category</code> of a Goal affects the type of identifier given in <code>name</code>. </p>
+<ul>
+<li><code>category == asset</code>: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The <code>name</code> will be the Asset <code>name</code>.</li>
+<li><code>category == loot</code>: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The <code>name</code> will be an Inventory key. </li>
+<li><code>category == wealth</code>: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The <code>name</code> will be an Inventory key. The key will be of the value with the maximum value in the Sprite's Prices, e.g. the loot with the highest Price.</li>
+<li><code>category == property</code>: The goal is Property, i.e. the Sprite is seeking the location of Property. The <code>name</code> will be an Asset name of an Asset that implements a <code>PropertyState</code>.</li>
+</ul>
 <h2 id="animationmap">AnimationMap</h2>
 <p>A Sprite's State is mapped onto an (Action, Direction) through an AnimationMap. This component of the Application statically ingests a Sprite State, applies formulas and returns the mapped tupel.</p>
 <p><strong>Player Device</strong></p>
@@ -575,228 +754,16 @@
 <p><strong>Formulae</strong></p>
 <p>Let <code>dx = position.x - goal.position.x, dy = position.y - goal.position.y</code>.</p>
 <ul>
-<li><code>if dy &gt; dx, delta_y &gt; -dx: direction = down</code></li>
-<li><code>if dy &lt; dx, delta_y &gt; -dx: direction = right</code></li>
-<li><code>if dy &lt; dx, delta_y &lt; -dx: direction = up</code></li>
-<li><code>if dy &gt; dx, delta_y &gt; -dx: direction = left</code></li>
+<li><code>if dy &gt; dx, dy &gt; -dx: direction = down</code></li>
+<li><code>if dy &lt; dx, dy &gt; -dx: direction = right</code></li>
+<li><code>if dy &lt; dx, dy &lt; -dx: direction = up</code></li>
+<li><code>if dy &gt; dx, dy &gt; -dx: direction = left</code></li>
 </ul>
-<h3 id="dialoge-resolution">Dialoge Resolution</h3>
+<h2 id="dialoguemap">DialogueMap</h2>
+<p>TODO</p>
 <p><strong>Formulae</strong></p>
 <ul>
-<li><code>if intention.disposition == communicate and psyche.communication: popup = psyche.communcation</code></li>
-</ul>
-<h2 id="dimensions">Dimensions</h2>
-<h3 id="extension">Extension</h3>
-<p>A Extension is a pseudo-state that does not factor into the Asset frame key calculation directly. It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the <code>sprint</code> Extension state increases the velocity of the <code>(walk, *)</code> states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the <code>interact</code> Extension state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.</p>
-<p>The default Extension states are enumerated below,</p>
-<ul>
-<li><code>interact</code>: Sprites enter into this Extension to interact with Objects.</li>
-<li><code>speak</code>: Sprites enter into this Extension to draw their Communication on a Dialogue window.</li>
-<li><code>sprint</code>: Sprites enter into this Extension to increase their velocity.</li>
-<li><code>trade</code>: Sprites enter into this Extension to exchange Money for Inventory with another Sprite.</li>
-<li><code>build</code>: Sprites enter into this Extension to place Crafts on the Board.</li>
-<li><code>mine</code>: Sprites enter into this Extension to convert Resources into Inventory. <strong>NOTE</strong>: This Extension is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows.</li>
-</ul>
-<h3 id="disposition">Disposition</h3>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>The Player state does not observe the Disposition Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See <a href="../03-player/">Player documentation</a> for more information on the Player.</p>
-</div>
-<p>A Disposition determines which Intention states are currently reachable for a Sprite. In other words, a Sprite's <em>Disposition</em> is an element in its Disposition Transition matrix, covered below. Dispositions are enumerated below, along with their reachable states.</p>
-<table>
-<thead>
-<tr>
-<th>Start State</th>
-<th>Reachable Sprite States</th>
-<th>Player State</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>attack</code></td>
-<td><code>attack</code>, <code>hunt</code>, <code>loot</code></td>
-<td></td>
-</tr>
-<tr>
-<td><code>attract</code></td>
-<td><code>barter</code>, <code>speak</code></td>
-<td></td>
-</tr>
-<tr>
-<td><code>build</code></td>
-<td>-</td>
-<td></td>
-</tr>
-<tr>
-<td><code>escape</code></td>
-<td>-</td>
-<td></td>
-</tr>
-<tr>
-<td><code>find</code></td>
-<td>-</td>
-<td></td>
-</tr>
-<tr>
-<td><code>sprint</code></td>
-<td>-</td>
-<td></td>
-</tr>
-<tr>
-<td><code>follow</code></td>
-<td>-</td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<ol>
-<li><code>attack</code><ul>
-<li>Reachable Dispostions: <code>attack, hunt, loot</code></li>
-<li>Reachable Extensions:</li>
-</ul>
-</li>
-<li><code>attract</code><ul>
-<li>Reachable Dispostions: <code>barter, communicate</code></li>
-<li>Reachable Extensions: <code>interact</code></li>
-</ul>
-</li>
-<li><code>barter</code><ul>
-<li>Reachable Dispostions:</li>
-<li>Reachable Extensions: <code>trade</code></li>
-</ul>
-</li>
-<li><code>communicate</code><ul>
-<li>Reachable Dispostions:</li>
-<li>Reachable Extensions: <code>trade</code>, <code>speak</code></li>
-</ul>
-</li>
-<li><code>construct</code><ul>
-<li>Reachable Dispositions: </li>
-<li>Reachable Extension: <code>build</code>, <code>mine</code></li>
-</ul>
-</li>
-<li><code>engage</code><ul>
-<li>Reachable Dispostions: </li>
-<li>Reachable Extensions: <code>interact</code></li>
-</ul>
-</li>
-<li><code>escape</code><ul>
-<li>Reachable Dispostions: </li>
-<li>Reachable Extensions: <code>sprint</code></li>
-</ul>
-</li>
-<li><code>find</code><ul>
-<li>Reachable Dispostions: </li>
-<li>Reachable Extensions: <code>sprint</code></li>
-</ul>
-</li>
-<li><code>follow</code><ul>
-<li>Reachable Dispostions: </li>
-<li>Reachable Extensions: <code>sprint</code></li>
-</ul>
-</li>
-<li><code>hunt</code>:<ul>
-<li>Reachable Dispositions:</li>
-<li>Reachable Extensions:</li>
-</ul>
-</li>
-<li><code>idle</code><ul>
-<li>Reachable Dispostions: </li>
-<li>Reachable Extensions:</li>
-</ul>
-</li>
-<li><code>mock</code><ul>
-<li>Reachable Dispostions: <code>threaten</code></li>
-<li>Reachable Extensions: <code>speak</code></li>
-</ul>
-</li>
-<li><code>recoil</code><ul>
-<li>Reachable Dispostions: </li>
-<li>Reachable Extensions: </li>
-</ul>
-</li>
-<li><code>return</code><ul>
-<li>Reachable Dispostions: <code>find</code></li>
-<li>Reachable Extensions:</li>
-</ul>
-</li>
-<li><code>scavenge</code> <ul>
-<li>Reachable Dispostions:</li>
-<li>Reachable Extensions:</li>
-</ul>
-</li>
-<li><code>threaten</code><ul>
-<li>Reachable Dispostions: <code>attack</code></li>
-<li>Reachable Extensions: </li>
-</ul>
-</li>
-<li><code>wander</code><ul>
-<li>Reachable Dispostions: <code>find</code>, <code>return</code>, <code>idle</code></li>
-<li>Reachable Extensions:</li>
-</ul>
-</li>
-</ol>
-<p><strong>Default Disposition Transition Matrix</strong></p>
-<p>Provided below is the Disposition Transition Matrix bundled with the application by default,</p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/examples/default-disposition-matrix.yaml&quot;</span>
-</code></pre></div>
-<p><strong>Disposition Scripting Language (DSL)</strong></p>
-<p>The <code>condition</code> for each Disposition transition is given in a simple truth-valued language that admits the logical operations and terms,</p>
-<p>Operations:</p>
-<ul>
-<li><code>==</code>: equivalence</li>
-<li><code>!=</code>: non-equivalence</li>
-<li><code>not</code>: negation</li>
-<li><code>or</code>: disjunction</li>
-<li><code>and</code>: conjunction</li>
-</ul>
-<p>Terms:</p>
-<ul>
-<li><code>None</code>: null value</li>
-<li><code>str</code>: constants</li>
-<li><code>sprite.&lt;state&gt;</code>: self State variable</li>
-<li><code>sprites[&lt;sprite-name&gt;].&lt;state&gt;</code>: other Sprites state variable</li>
-</ul>
-<p>For example, in the default Disposition Transition matrix given above, the transition from <code>attack</code> to <code>hunt</code> is conditional on the following,</p>
-<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goal.category == &#39;sprite&#39;</span>
-</code></pre></div>
-<p><code>sprite</code> is a reference to the Sprite's state which is currently processing the given Disposition. Thus, the Sprite's Disposition state will transition to <code>hunt</code> if the Sprite currently does not have a target, but remembers having a target of category <code>sprite</code>.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The expression <code>not sprite.goal</code> is a <em>truthy</em> expression, i.e. it is to be interpretted as an existential claim. In other words, this expression evaluates to <code>true</code> if <code>sprite.goal</code> does not exist. If the expression involves a List, e.g. <code>sprite.memory.communications</code>, this expression evaluates to <code>true</code> in the event it has more than 0 entries.</p>
-</div>
-<p>In another example, the transition from <code>attack</code> to <code>loot</code> in the default Disposition Transition matrix is given by,</p>
-<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[sprite.target.name].mutators.triggers.dead</span>
-</code></pre></div>
-<p><code>sprites</code> is a reference to a dictionary of all ingame Sprites states keyed by their identifying and unique <code>name</code>, which provides access to their state attributes.</p>
-<p>Notice in the example there is a self-entrant transition. A Sprite with an <code>attack</code> Disposition can re-enter the <code>attack</code> Disposition conditional on the Sprite still having a target,</p>
-<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.target.category == &#39;sprite&#39;</span>
-</code></pre></div>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>The conditions for a Disposition transition are evaluated in the order they specified! In the given example, if <code>sprite.goal.category == 'sprite'</code>, none of the other conditions for Disposition transitions are evaluated and the Disposition transitions back into <code>attack</code>.</p>
-</div>
-<p>Disposition conditions are converted into lambda functions by the application and then evaluated at runtime.</p>
-<h2 id="goal">Goal</h2>
-<p><em>Goals</em> are provide the seed (or energy) for transitions through Dispositions and the application of Motivations to modulate said transitions. A Goal is a Sprite's <em>modus operandi</em>, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Dispositions is <em>in order</em> to achieve a Goal.</p>
-<ul>
-<li><code>name</code>: Unique Identifier of the Goal.</li>
-<li><code>category</code>: Category of the Goal. (<code>sprite</code>, <code>asset</code>, <code>position</code>, <code>loot</code>, <code>wealth</code>)</li>
-<li><code>intention</code>:<ul>
-<li><code>extension</code>: Extension to be applied when Goal achieved .</li>
-<li><code>action</code>: Action to be applied when Goal achieved.</li>
-</ul>
-</li>
-</ul>
-<p>When a Sprite has Goal, it will seek out (path-find) its way to the AssetName, provided the AssetName is within <code>mutators.parameters.vision.radius</code>.</p>
-<p>The <code>category</code> of a Goal affects the type of identifier given in <code>name</code>. </p>
-<ul>
-<li><code>category == sprite</code>: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The <code>name</code> will be a Sprite <code>name</code>.</li>
-<li><code>category == asset</code>: The Goal is a non-Sprite Asset, i.e. the Sprite is trying to find an ingame Object. The <code>name</code> will be the Asset <code>name</code>.</li>
-<li><code>category == loot</code>: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The <code>name</code> will be an Inventory key. </li>
-<li><code>category == wealth</code>: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The <code>name</code> will be an Inventory key. The key will be of the value with the maximum value in the Sprite's Prices, e.g. the loot with the highest Price.</li>
-<li><code>category == position</code>: The Goal is Position, i.e. the Sprite is trying to find a Position on the Board. The <code>name</code> will be ... (TODO: PROPERTY MECHANICS).</li>
+<li><code>if intention == speak and psyche.communication: dialogue = psyche.communcation</code></li>
 </ul>
 
 
