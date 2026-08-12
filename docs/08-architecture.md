@@ -16,7 +16,7 @@ This section contains an in-depth presentation of the game engine's programmatic
         - Recursively load `/src/assets/**/*.png` (*not* `.mp3` or `.wav`!). Pydantic Models (DTOs) are used during this phase to read `main.yaml` files and ensure strict schema validation. 
         - Create a map using the key-values `<registry-key>: <frame>`, where `<registry-key>` is calculated according to the Frame schema.
 3. Init: `Board`
-    * Initialize and register the Mechanics (e.g., `PhysicsMechanic`, `CollisionMechanic`, `AnimationMechanic`).
+    * Initialize and register the Mechanics (e.g., `CollisionMechanic`, `AnimationMechanic`, etc.).
 4. Init: `Screen`
     * Initialize background and foreground tile canvases. 
     

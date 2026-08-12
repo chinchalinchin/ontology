@@ -113,6 +113,6 @@ intentions:
         conditions:
           -  
     wander:
-      - next: recoil
+      - next: idle
         conditions:
           - 

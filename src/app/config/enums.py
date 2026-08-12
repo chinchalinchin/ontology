@@ -35,7 +35,7 @@ class AssetInstances(str, Enum):
     STRUTS          = "struts"
     PIXIES          = "pixies"
     SPRITES         = "sprites"
-    PLAYER          = "player"
+    PLAYERS         = "players"
 
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 
@@ -95,18 +95,19 @@ class Intentions(str, Enum):
     ATTACK          = "attack"
     ATTRACT         = "attract"
     BARTER          = "barter"
-    COMMUNICATE     = "communicate"
+    BUILD           = "build"
     ESCAPE          = "escape"
-    ENGAGE          = "engage"
     FIND            = "find"
     FOLLOW          = "follow"
     HUNT            = "hunt"
     IDLE            = "idle"
     INTERACT        = "interact"
-    SCAVENGE        = "scavenge"
+    MINE            = "mine"
     MOCK            = "mock"
-    RECOIL          = "recoil"
     RETURN          = "return"
+    SCAVENGE        = "scavenge"
+    SPEAK           = "speak"
+    SPRINT          = "sprint"
     THREATEN        = "threaten"
     WANDER          = "wander"
 
@@ -121,5 +122,6 @@ class Motivations(str, Enum):
 
 class Relationships(str, Enum):
     FAMILY          = "family"
-    FRIEND          = "friend"
     FOE             = "foe"
+    FRIEND          = "friend"
+    STRANGER        = "stranger"

@@ -7,8 +7,8 @@ theme:
   name: material
   palette: 
     scheme: slate
-    primary: red
-    accent: deep orange
+    primary: deep purple
+    accent: blue
   features:
     - content.code.copy
     - navigation.expand
@@ -20,9 +20,11 @@ nav:
   - Assets: 01-assets.md
   - Sprites: 02-sprites.md
   - Player: 03-player.md
-  - Menus: 04-menus.md
-  - Plots: 05-plots.md
-  - Architecture: 06-architecture.md
+  - Intentions: 04-intentions.md
+  - Menus: 05-menus.md
+  - Sounds: 06-sounds.md
+  - Plots: 07-plots.md
+  - Architecture: 08-architecture.md
 
 markdown_extensions:
   - admonition
