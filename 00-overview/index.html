@@ -841,10 +841,14 @@
 <p>Many Assets have Hitboxes. Hitboxes are <em>Properties</em>, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. </p>
 <h2 id="application">Application</h2>
 <h3 id="factory">Factory</h3>
-<p>The Factory builds Asset components based on Recipes.</p>
+<p>The Factory builds Asset components based on Recipes and other game components.</p>
 <h3 id="orchestrator">Orchestrator</h3>
 <p>The Orchestrator is responsible for reading in the configuration files for properties and state, converting them into application data models and then instantiating the corresponding classes.</p>
 <p>The Orchestrator handles the core gameplay loop and framerate calculations.</p>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+</div>
+<p>Separate the gameplay loop into different package.</p>
 <h3 id="screen">Screen</h3>
 <p>The Screen acts as a high-level container for a Cythonized SDL rendering interface.</p>
 <h3 id="board">Board</h3>
