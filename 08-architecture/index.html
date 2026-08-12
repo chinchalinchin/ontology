@@ -854,6 +854,10 @@
 <p>TODO</p>
 <h2 id="cython">Cython</h2>
 <p>While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine strategically uses Cython to bridge this gap, adhering to a strict <strong>"Zero Heap Allocation in the Inner Loop"</strong> philosophy to prevent frame stutters caused by the Python Garbage Collector.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Zero Heap Allocation is more of an ideal/driving principle than an enforced constraint. </p>
+</div>
 <h3 id="math-geometry-libsmathpyx">Math &amp; Geometry (<code>libs/math.pyx</code>)</h3>
 <p>Spatial data like are modeled as Cython Extension Types (<code>cdef class</code> in <code>.pxd</code> definition files).</p>
 <ul>
