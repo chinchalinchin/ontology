@@ -1,14 +1,6 @@
 mappings:
   keyboard:
     intentions:
-      interact: 44  # SDL_SCANCODE_SPACE
-      sprint: 225   # SDL_SCANCODE_LSHIFT
-      speak:
-      build: 
-      mine: 
-      attack:
+      <intention-key>: <scancode>
     goals:
-      up: 26    # SDL_SCANCODE_W
-      down: 22  # SDL_SCANCODE_S
-      left: 4   # SDL_SCANCODE_A
-      right: 7  # SDL_SCANCODE_D
+      <goal-key>: <scancode>

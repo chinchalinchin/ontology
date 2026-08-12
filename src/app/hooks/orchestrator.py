@@ -29,7 +29,9 @@ from app.config.validators import (
     PyCursorPropertyConfiguration,
     PyEffectPropertyConfiguration,
     PyTilePropertyConfiguration,
-    PyCraftPropertyConfiguration
+    PyCraftPropertyConfiguration,
+    PyEquipmentPropertyConfiguration,
+    PyIntentionPropertyConfiguration
 )
 
 # Cython Libraries
@@ -42,18 +44,20 @@ logger = logging.getLogger(__name__)
 class Orchestrator:
     """
     """
+    # Configuration
+    equipment: Dict = { }
+    intentions: Dict = { }
+    properties: Dict = { }
+    recipes: Dict = {}
+    state: Dict = {}
 
-    properties: Dict
-    recipes: PyRecipeConfiguration
-    state: PyStateConfiguration
+    # Game
     registry: Registry
     board: Board
     screens: Dict[str, Screen]
 
     def __init__(self, state: str):
         logger.info(f"Initializing Orchestrator for target state: {state}")
-        self.recipes = PyRecipeConfiguration()
-        self.properties = { }
         self.load(state)
 
     @staticmethod
@@ -80,7 +84,17 @@ class Orchestrator:
     @staticmethod
     def time() -> float:
         return time.perf_counter()
-    
+
+    def instance_properties(self, category, instance, snapshot):
+        # Lookup properties using the 'id' before modifying the dictionary
+        if category == AssetCategories.TILES:
+            return self.properties[category][instance]
+
+        if category == AssetCategories.SHEETS:
+            return self.properties[category][instance]["personas"][snapshot["id"]] 
+
+        return self.properties[category][instance][snapshot["id"]] 
+
     def load(self, state: str) -> None:
         board_path = settings.STATE_DIR / state  
         target_dir = board_path.expanduser()
@@ -95,7 +109,7 @@ class Orchestrator:
                     merged_data = Orchestrator.merge(merged_data, data)
 
         logger.debug(f"Validating loaded schema via Pydantic model.")
-        self.state = PyStateConfiguration.model_validate(merged_data)
+        self.state = PyStateConfiguration.model_validate(merged_data).model_dump(exclude_none=True)
 
     def migrate(self, device: Device) -> List[Asset]:
         """
@@ -116,19 +130,21 @@ class Orchestrator:
                 **PySheetPropertyConfiguration().model_dump()
             }
 
-        for category_key, instance_data in self.state.model_dump(exclude_none=True).items():
+        if not self.recipes:
+            self.recipes = PyRecipeConfiguration().assets.model_dump()
+
+        if not self.equipment:
+            validated_equipment = PyEquipmentPropertyConfiguration().model_dump()
+
+        if not self.intention:
+            validated_intention = PyIntentionPropertyConfiguration().model_dump()
+
+        for category_key, instance_data in self.state.items():
             for instance_key, instance_list in instance_data.items():
                 for instance in instance_list:
 
-                    recipe = getattr(getattr(self.recipes.assets, category_key), instance_key)
-                    
-                    # Lookup properties using the 'id' before modifying the dictionary
-                    if category_key == AssetCategories.TILES:
-                        instance_props = self.properties[category_key][instance_key]
-                    elif category_key == AssetCategories.SHEETS:
-                        instance_props = self.properties[category_key][instance_key]["personas"][instance["id"]] 
-                    else:
-                        instance_props = self.properties[category_key][instance_key][instance["id"]] 
+                    recipe = self.recipes[category_key][instance_key]
+                    instance_props = self.instance_properties(category_key, instance_key, instance)
 
                     # Pop the taxonomy keys to strip them from the state snapshot
                     asset_id = instance.pop("id")
@@ -137,7 +153,7 @@ class Orchestrator:
                     if instance_key == AssetInstances.PLAYER:
                         assets.append(Player(
                             device      = device,
-                            taxonomy    = Factory.taxnomy(category_key, instance_key, asset_id, asset_name),
+                            taxonomy    = Factory.taxonomy(category_key, instance_key, asset_id, asset_name),
                             properties  = Factory.properties(category_key, instance_props),
                             state       = Factory.state(recipe.state, instance),
                             frame       = Factory.frame(recipe.frame),
@@ -158,7 +174,7 @@ class Orchestrator:
     
     def orchestrate(self, 
         screensize: Dimensions,
-        device: Device
+        device: Devices
     ) -> Tuple[Board, Registry, Dict[str, Screen]]:
         """
         # Ontology: Orchestrate
@@ -169,9 +185,7 @@ class Orchestrator:
         render.init(screensize.w, screensize.l)
 
         assets = self.migrate(device)
-        player = Player(device)
-
-        self.board = Board(assets, player)
+        self.board = Board(assets)
         self.registry = Registry(self.properties, self.recipes)
         
         logger.info("Initializing game screens across layers...")
@@ -187,8 +201,11 @@ class Orchestrator:
         
         return self.board, self.registry, self.screens
 
-    def start(self, screensize) -> None:
-        self.orchestrate(screensize, device=Devices.KEYBOARD) # Assuming keyboard as default for actual gameplay
+    def start(self, 
+        screensize: Dimensions, 
+        device: Devices
+    ) -> None:
+        self.orchestrate(screensize, device)
         
         logger.info("Entering Main Game Loop...")
         delta = 1.0 / 60.0
@@ -206,14 +223,12 @@ class Orchestrator:
                     self.board.play(delta)
                     accumulator -= delta
 
-                # Determine camera target (Defaults to player, but could be a cutscene target)
-                target_pos = self.board.player.state.position
-                target_dim = self.board.player.dimensions
+                player = self.board.player()
 
-                self.screens[self.board.player.layer].draw(
-                    self.board.assets(self.board.player.layer), 
-                    target_pos,
-                    target_dim,
+                self.screens[player.layer].draw(
+                    self.board.assets(player.layer), 
+                    player.state.positions,
+                    player.dimensions,
                     self.registry
                 )
 

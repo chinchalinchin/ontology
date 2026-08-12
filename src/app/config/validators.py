@@ -1,11 +1,19 @@
 """
 # Ontology: Validators
 
-Package for Pydantic models used for loading and validating YAML. These models are data-transfer-objects and are not used ingame to manage properties or state, due to the overhead with Pydantic models. They are used purely for easy-loading the YAML configuration files and ensuring they match schemas.
+Package for Pydantic models used for loading and validating YAML. These models are 
+data-transfer-objects and are not used ingame to manage properties or state, due 
+to the overhead with Pydantic models. They are used purely for easy-loading the YAML 
+configuration files and ensuring they match schemas.
 """
 # Standard Libraries
-from typing import List, Union, Dict, Optional, Type, Tuple
-
+from typing import (
+    List, 
+    Dict, 
+    Optional, 
+    Type, 
+    Tuple
+)
 
 # External Libraries
 from pydantic import BaseModel
@@ -41,7 +49,8 @@ class YamlBaseSettings(BaseSettings):
     ) -> Tuple[PydanticBaseSettingsSource, ...]:
         return (YamlConfigSettingsSource(settings_cls),)
     
-# NOTE: *Py-* prefix denotes Pydantic model that inherits from Pydantic's BaseModel, whereas no prefix indicates game object class.
+# NOTE: *Py-* prefix denotes Pydantic model that inherits from Pydantic's BaseModel, 
+#           whereas no prefix indicates game object class.
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------- PRIMITIVE MODELS CONFIGURATION & VALIDATION
@@ -186,7 +195,7 @@ class PyMemoryState(BaseModel):
     communications: Optional[List[str]] = []
     prices: Optional[Dict[str, float]] = {}
     
-# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------- STATE CONTAINERS
 
 class PyMultiplierState(PyAssetState):
     position: PyPosition
@@ -240,9 +249,9 @@ class PyPlayerState(BaseModel):
     meters: PyMetersState
     goal: Optional[PyGoalState] = None
 
-# ----------------------------------------------------------------------------------------
-# ------------------------------------------------------ RECIPE CONFIGURATION & VALIDATION
-# ----------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
+# ---------------------------------------------------- RECIPE CONFIGURATION & VALIDATION
+# --------------------------------------------------------------------------------------
 
 class PyRecipe(BaseModel):
     frame: FrameRecipe
@@ -285,16 +294,33 @@ class PyRecipes(BaseModel):
     objects: Optional[PyObjectRecipe] = None
     sheets: Optional[PySheetRecipe] = None
 
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------- YAML SCHEMAS
-# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
+# --------------------------------------------------- VARIOUS CONFIGURATION & VALIDATION
+# --------------------------------------------------------------------------------------
 
-# ---------------------------------------------------------------------------------------
-# ----------------------------------------------------------------- EQUIPMENT YAML SCHEMA
+class PyIntention(BaseModel):
+    next: str
+    conditions: List[str]
+
+# -------------------------------------------------------------------------------------
+
 
 class PyEquipmentProperties(BaseModel):
     animation: PyAnimationState
     sheets: List[str]
+
+# -------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------ YAML SCHEMAS
+# -------------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------------
+# --------------------------------------------------------------- INTENTION YAML SCHEMA
+
+class PyIntentionPropertyConfiguration(YamlBaseSettings):
+    intentions: Dict[str, PyIntention]
+
+# -------------------------------------------------------------------------------------
+# --------------------------------------------------------------- EQUIPMENT YAML SCHEMA
 
 class PyEquipmentPropertyConfiguration(YamlBaseSettings):
     armor: Dict[str, PyEquipmentProperties]
@@ -306,8 +332,8 @@ class PyEquipmentPropertyConfiguration(YamlBaseSettings):
         yaml_file = settings.DATA_DIR / "equipment" / settings.APP_EXT
     )
 
-# ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------------- RECIPE YAML SCHEMA
+# -------------------------------------------------------------------------------------
+# ------------------------------------------------------------------ RECIPE YAML SCHEMA
 
 class PyRecipeConfiguration(YamlBaseSettings):
     assets: PyRecipes
@@ -316,8 +342,8 @@ class PyRecipeConfiguration(YamlBaseSettings):
         yaml_file = settings.ASSET_DIR / settings.APP_EXT
     )
 
-# ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------------- STATE YAML SCHEMA
+# -------------------------------------------------------------------------------------
+# ------------------------------------------------------------------- STATE YAML SCHEMA
 
 class PyTileStateInstances(BaseModel):
     fore: Optional[List[PyMultiplierState]] = []
@@ -429,5 +455,3 @@ class PySheetPropertyConfiguration(YamlBaseSettings):
     model_config = SettingsConfigDict(
         yaml_file = settings.ASSET_DIR / "sheets" / settings.APP_EXT
     )
-
-# ---------------------------------------------------------------------------------------

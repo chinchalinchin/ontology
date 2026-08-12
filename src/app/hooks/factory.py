@@ -157,9 +157,9 @@ class Factory:
     @staticmethod
     def taxonomy(category, instance, id, name):
         return Taxonomy(
-            id = id,
-            name = name,
-            instance = instance,
-            category = category,
+            id          = id,
+            name        = name,
+            instance    = instance,
+            category    = category,
         )
                     

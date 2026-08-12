@@ -8,7 +8,7 @@ Both Sprites and Players utilize the interface of Intention and Goals to communi
 
 ## Intention
 
-A Intention is a pseudo-state that factors into the Asset Animation calculations indirectly. It may be thought of as a "hidden" state. It is a data structure that represents the "projection" of the animation state into the Sprite's game space. 
+A Intention is a "pseudo-state" that factors into the Asset Animation calculations indirectly; It may be thought of as a "hidden" state. An Animation is a "projection" of a Sprite's Intention into the (Action, Direction)-space. 
 
 For Sprites, Intention is an attribute that controls state transitions and action mappings. For the Player, it controls action mappings.
 

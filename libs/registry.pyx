@@ -110,7 +110,7 @@ class Registry:
         for cat_name, cat_props in self.properties.items():
             if not cat_props: continue
             
-            cat_recipes = getattr(self.recipes.assets, cat_name, None)
+            cat_recipes = self.recipes.get(cat_name, None)
             
             if not cat_recipes: continue
             

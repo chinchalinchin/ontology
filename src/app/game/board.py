@@ -10,7 +10,10 @@ from typing import List, Dict
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.enums import AssetCategories
+from app.config.enums import (
+    AssetCategories,
+    AssetInstances
+)
 from app.game.mechanics import (
     Mechanic, 
     AnimationMechanics, 
@@ -30,7 +33,6 @@ logger = logging.getLogger(__name__)
 class Board:
     """
     """
-    player: Player
     mechanics: List[Mechanic]
 
     loaded: bool
@@ -45,13 +47,11 @@ class Board:
 
     def __init__(self, 
         assets: List[Asset], 
-        player: Player
     ):
         logger.info(f"Initializing Board with {len(assets)} incoming assets.")
         
         self.loaded = False
         self.paused = False
-        self.player = player
         self.mechanics = [ 
             AnimationMechanics(),
             IntentionMechanics(),
@@ -113,7 +113,18 @@ class Board:
                 self._all_instances[inst] = []
             self._all_instances[inst].append(asset)
 
+    def player(self, slot = 0) -> Asset:
+        """
+        Returns the player at the indicated slot. Defaults 0.
+        """
+        if slot < len(self._all_instances[AssetInstances.PLAYERS]):
+            return self._all_instances[AssetInstances.PLAYERS][slot]
+        return self._all_instances[AssetInstances.PLAYERS][0]
+
     def assets(self, layer=None) -> List[Asset]:
+        """
+        Returns a list of Assets. If `layer` is specified, list will be filtered by Layer.
+        """
         if layer is None:
             return self._assets
         return self._cached_layers[layer]
