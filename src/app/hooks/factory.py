@@ -217,3 +217,7 @@ class Factory:
     def device(dev, mapping):
         target_cls = Factory.DEVICE_MAP.get(dev)
         return Factory._hydrate(target_cls, mapping)
+
+    @staticmethod 
+    def mechanic(kind):
+        return Factory.MECHANICS_MAP.get(kind)()
