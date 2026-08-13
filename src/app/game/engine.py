@@ -41,12 +41,7 @@ class Engine:
         """
         return time.perf_counter()
     
-    def start(self, 
-        screensize: Dimensions, 
-        device: Devices
-    ) -> None:
-        self.orchestrate(screensize, device)
-        
+    def start(self) -> None:        
         logger.info("Entering Game Loop...")
         delta = 1.0 / 60.0
         accumulator = 0.0

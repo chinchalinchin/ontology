@@ -25,7 +25,19 @@ from app.config.enums import (
     AnimationRecipe, 
     StateRecipe,
     AssetCategories,
-    Devices
+    Devices,
+    Mechanics
+)
+from app.game.mechanics import (
+    AnimationMechanics,
+    CollisionMechanics, 
+    ProjectileMechanics,
+    SwitchMechanics, 
+    MotionMechanics,
+    CommerceMechanics,
+    TransitionMechanics,
+    PlayerMechanics,
+    RemoveMechanics
 )
 from app.models.state import (
     AnimatorState, 
@@ -107,6 +119,17 @@ class Factory:
     DEVICE_MAP = {
         Devices.KEYBOARD: Keyboard,
         Devices.CONTROLLER: Controller
+    }
+
+    MECHANICS_MAP = {
+        Mechanics.ANIMATION: AnimationMechanics,
+        Mechanics.COLLISION: CollisionMechanics,
+        Mechanics.PROJECTILE: ProjectileMechanics,
+        Mechanics.SWITCH: SwitchMechanics,
+        Mechanics.COMMERCE: CommerceMechanics,
+        Mechanics.TRANSITION: TransitionMechanics,
+        Mechanics.PLAYER: PlayerMechanics,
+        Mechanics.REMOVE: RemoveMechanics
     }
 
     @classmethod

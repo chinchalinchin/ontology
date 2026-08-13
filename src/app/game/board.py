@@ -15,16 +15,7 @@ from app.config.enums import (
     AssetInstances
 )
 from app.game.devices import Device
-from app.game.mechanics import (
-    Mechanic, 
-    AnimationMechanics, 
-    CollisionMechanics, 
-    ProjectileMechanics, 
-    SwitchMechanics, 
-    TransitionMechanics,
-    RemoveMechanics,
-    PlayerMechanic
-)
+from app.game.mechanics import Mechanic
 from app.models.properties import (
     IntentionProperties, 
     EquipmentProperties
@@ -62,23 +53,10 @@ class Board:
         intentions: IntentionProperties
     ):
         logger.info(f"Initializing Board with {len(assets)} incoming assets.")
-        
         self.loaded = False
         self.paused = False
         self.equipment = equipment
         self.intentions = intentions
-
-        # TODO: instantiate and inject from above
-        self._mechanics = [ 
-            PlayerMechanic(),
-            AnimationMechanics(),
-            TransitionMechanics(),
-            CollisionMechanics(),
-            ProjectileMechanics(),
-            SwitchMechanics(),
-            RemoveMechanics()
-        ]
-
         self._assets = assets
         self._catalogue()
         self._cache()
@@ -234,15 +212,6 @@ class Board:
         """
         # TODO: implement
         pass 
-
-    def play(self, delta: float) -> None:
-        """
-        """
-        # NOTE: Intentionally omitting logging here to prevent I/O bottlenecks in the core game loop.
-        
-        # ------------------------- MECHANIC HANDLING
-        for this in self._mechanics:
-            this.update(self, delta)
 
     def size(self, layer=None) -> List[Dimensions]:
         """

@@ -133,3 +133,16 @@ class PlayerGoals(str, Enum):
     LEFT            = "left"
     DOWN            = "down"
     RIGHT           = "right"
+
+# -------------------------------- ENGINE ENUMERATIONS
+
+class Mechanics(str, Enum):
+    ANIMATION       = "animation"
+    COLLISION       = "collision"
+    PROJECTILE      = "projectile"
+    SWITCH          = "switch"
+    MOTION          = "motion"
+    COMMERCE        = "commerce"
+    TRANSITION      = "transition"
+    PLAYER          = "player"
+    REMOVE          = "remove"

@@ -78,7 +78,9 @@ class CollisionMechanics(Mechanic):
                         ):
                             # Resolve collision
                             pass
-                
+
+# ----------------------------------------------------------------------------------------
+
 class ProjectileMechanics(Mechanic):
     """
     """
@@ -120,6 +122,8 @@ class RemoveMechanics(Mechanic):
                 # TODO: implementation
                 pass
             # TODO: projectile conditions
+
+# ----------------------------------------------------------------------------------------
 
 class SwitchMechanics(Mechanic):
     """
@@ -214,7 +218,9 @@ class TransitionMechanics(Mechanic):
                             # transitions in this same frame.
                             break
 
-class PlayerMechanic(Mechanic):
+# ----------------------------------------------------------------------------------------
+
+class PlayerMechanics(Mechanic):
     """
     """
 
@@ -270,3 +276,25 @@ class PlayerMechanic(Mechanic):
                 player.state.position,
                 player.state.goal.position
             )
+
+# ----------------------------------------------------------------------------------------
+
+class MotionMechanics(Mechanic):
+    """
+    """
+
+    def update(self, board: Board, delta: float) -> None:
+        """
+        """
+        pass
+
+# ----------------------------------------------------------------------------------------
+
+class CommerceMechanics(Mechanic):
+    """
+    """
+
+    def update(self, board: Board, delta: float) -> None:
+        """
+        """
+        pass

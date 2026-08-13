@@ -54,9 +54,9 @@ The basis of the Intention system has been laid. Both Sprite and Player Assets h
 
 *Objective*: Evolve the Frame component interface to support multi-layered texture rendering for a single Asset.
 
-- [ ] Refactor the Frame.key() abstract method to Frame.keys(), updating the return type from str to List[str].
-- [ ] Update SingleFrame and IterableFrame to return a list containing their single resolved string.
-- [ ] Update the Registry.data() fallback mapping to anticipate lists.
+- [ ] Refactor the `Frame.key()` abstract method to `Frame.keys()`, updating the return type from `str` to `List[str]`.
+- [ ] Update SingleFrame and `IterableFrame` to return a list containing their single resolved string.
+- [ ] Update the `Registry.data()` fallback mapping to anticipate lists.
 
 **Task 6: Implement SpriteFrame for Dynamic Equipment**
 
@@ -64,19 +64,19 @@ The basis of the Intention system has been laid. Both Sprite and Player Assets h
 
 - [ ] Create a SpriteFrame class inheriting from StateFrame.
 - [ ] Inject a reference to EquipmentProperties into SpriteFrame via the Factory during initialization.
-- [ ] Override keys(id, state) to initialize a list, starting with the base Persona frame key: {persona}-{state.action}-{state.direction}-{state.frame}.
-- [ ] Iterate over the active equipment keys in state.inventory.equipment (armor, weapon, tool, utility).
+- [ ] Override `keys(id, state)` to initialize a list, starting with the base Persona frame key: `{persona}-{state.action}-{state.direction}-{state.frame}`.
+- [ ] Iterate over the active equipment keys in `state.inventory.equipment` (armor, weapon, tool, utility).
 - [ ] For each active equipment piece, fetch its EquipmentProperty.
-- [ ] Apply the Action Filter: Check if property.animation.action is Actions.ALL or matches the Sprite's current state.animation.action.
-- [ ] Apply the Direction Filter: Check if property.animation.direction is Directions.ALL or matches the Sprite's current state.animation.direction.
-- [ ] If both filters pass, format and append the equipment frame key: {equipment_key}-{state.action}-{state.direction}-{state.frame}. If either fails, skip this piece of equipment.
+- [ ] Apply the Action Filter: Check if `property.animation.action` is `Actions.ALL` or matches the Sprite's current state.`animation.action`.
+- [ ] Apply the Direction Filter: Check if `property.animation.direction` is `Directions.ALL` or matches the Sprite's current `state.animation.direction`.
+- [ ] If both filters pass, format and append the equipment frame key: `{equipment_key}-{state.action}-{state.direction}-{state.frame}`. If either fails, skip this piece of equipment.
 - [ ] Return the list of resolved keys in strict Z-index order (e.g., Base -> Armor -> Tool -> Weapon).
 
 **Task 7: Update Rendering Pipeline in Screen.draw()**
 
 *Objective*: Modify the Python-side culling and primitive extraction loop to handle multiple textures per Asset.
 
-- [ ] In Screen.draw(), update the loop to iterate over the List[str] returned by asset.frame.keys(asset.id, asset.state).
-- [ ] For each key in the returned list, query registry.data(key).
+- [ ] In `Screen.draw()`, update the loop to iterate over the List[str] returned by `asset.frame.keys(asset.id, asset.state)`.
+- [ ] For each key in the returned list, query `registry.data(key)`.
 - [ ] If the texture exists, flatten it into the primitive tuple and append it to active_assets.
-- [ ] Architectural Check: Ensure active_assets.sort() (the Z-index sorting algorithm based on the Y-coordinate) remains stable. Python's list.sort() is stable by default, meaning layers stacked on the exact same Sprite (same Y coordinate) will naturally render in the order they were yielded by SpriteFrame.keys().
+- [ ] Architectural Check: Ensure `active_assets.sort()` (the Z-index sorting algorithm based on the Y-coordinate) remains stable. Python's `list.sort() `is stable by default, meaning layers stacked on the exact same Sprite (same Y coordinate) will naturally render in the order they were yielded by `SpriteFrame.keys().`
