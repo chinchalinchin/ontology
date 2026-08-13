@@ -478,10 +478,21 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#configuratoin" class="md-nav__link">
+  <a href="#overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuratoin
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
       
     </span>
   </a>
@@ -509,6 +520,12 @@
 
 
 <h1 id="ontology-mechanics">Ontology: Mechanics</h1>
+<p>A Mechanic is an implementation of an abstract interface that defines what information the engine will inject into the Mechanic's logic.  All Mechanics must implement an <code>update(board, delta)</code> method. The arguments of this interface are the <a href="../00-overview/#board">Board</a> and a game loop time delta.</p>
+<h2 id="overview">Overview</h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Mechanics are listed below using <code>key: class</code>, where <code>key</code> is the unique string identifier for the associated Mechanic implementation class.</p>
+</div>
 <p><strong>General Mechanics</strong></p>
 <p>These Mechanics handle general game logic.</p>
 <ul>
@@ -532,7 +549,7 @@
 <li><code>combat: CombatMechanics</code>: (Cython) Resolves attack hitbox overlaps, decrements health, etc.</li>
 <li><code>speech: SpeechMechanics</code>: </li>
 </ul>
-<h2 id="configuratoin">Configuratoin</h2>
+<h2 id="configuration">Configuration</h2>
 <ul>
 <li>Location: <code>/src/data/mechanics/main.yaml</code></li>
 </ul>
