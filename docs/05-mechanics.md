@@ -1,5 +1,12 @@
 # Ontology: Mechanics
 
+A Mechanic is an implementation of an abstract interface that defines what information the engine will inject into the Mechanic's logic.  All Mechanics must implement an `update(board, delta)` method. The arguments of this interface are the [Board](./00-overview.md#board) and a game loop time delta.
+
+## Overview
+
+!!! note
+    Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation class.
+
 **General Mechanics**
 
 These Mechanics handle general game logic.
@@ -26,7 +33,7 @@ These Mechanics handle the Sprite Intention logic.
 - `combat: CombatMechanics`: (Cython) Resolves attack hitbox overlaps, decrements health, etc.
 - `speech: SpeechMechanics`: 
 
-## Configuratoin
+## Configuration
 
 * Location: `/src/data/mechanics/main.yaml`
 

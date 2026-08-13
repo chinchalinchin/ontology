@@ -34,10 +34,12 @@ from app.game.mechanics import (
     ProjectileMechanics,
     SwitchMechanics, 
     MotionMechanics,
+    CombatMechanics,
     CommerceMechanics,
     TransitionMechanics,
     PlayerMechanics,
-    RemoveMechanics
+    RemoveMechanics,
+    SpeechMechanics
 )
 from app.models.state import (
     AnimatorState, 
@@ -129,7 +131,10 @@ class Factory:
         Mechanics.COMMERCE: CommerceMechanics,
         Mechanics.TRANSITION: TransitionMechanics,
         Mechanics.PLAYER: PlayerMechanics,
-        Mechanics.REMOVE: RemoveMechanics
+        Mechanics.REMOVE: RemoveMechanics,
+        Mechanics.COMBAT: CombatMechanics,
+        Mechanics.MOTION: MotionMechanics,
+        Mechanics.SPEECH: SpeechMechanics
     }
 
     @classmethod
@@ -197,13 +202,8 @@ class Factory:
         return Factory.ANIMATION_MAP.get(recipe, PersistentAnimation)()
 
     @staticmethod
-    def taxonomy(category, instance, id, name):
-        return Taxonomy(
-            id          = id,
-            name        = name,
-            instance    = instance,
-            category    = category,
-        )
+    def taxonomy(id, name, category, instance,):
+        return Taxonomy(id, name, category, instance)
 
     @staticmethod
     def equipment(snapshot):
@@ -215,9 +215,9 @@ class Factory:
 
     @staticmethod
     def device(dev, mapping):
-        target_cls = Factory.DEVICE_MAP.get(dev)
+        target_cls = Factory.DEVICE_MAP.get(dev, Keyboard)
         return Factory._hydrate(target_cls, mapping)
 
     @staticmethod 
-    def mechanic(kind):
-        return Factory.MECHANICS_MAP.get(kind)()
+    def mechanics(kind):
+        return Factory.MECHANICS_MAP.get(kind, AnimationMechanics)()

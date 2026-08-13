@@ -1,8 +1,9 @@
 mechanics:
   order:
     - animation
-    - collision
     - projectile
+    - combat
+    - collision
     - switch
     - motion
     - commerce

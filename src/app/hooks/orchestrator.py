@@ -99,7 +99,7 @@ class Orchestrator:
                     asset_name = instance.pop("name")
 
                     assets.append(Asset(
-                        taxonomy   = Factory.taxonomy(category_key, instance_key, asset_id, asset_name),
+                        taxonomy   = Factory.taxonomy(asset_id, asset_name, category_key, instance_key),
                         properties = Factory.properties(category_key, instance_props),
                         state      = Factory.state(recipe["state"], instance),
                         frame      = Factory.frame(recipe["frame"]),

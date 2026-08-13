@@ -31,7 +31,8 @@ from app.config.enums import (
     Actions, 
     Directions,
     Intentions,
-    PlayerGoals
+    PlayerGoals,
+    Mechanics
 )
 
 class YamlBaseSettings(BaseSettings):
@@ -334,6 +335,16 @@ class PyEquipmentProperties(BaseModel):
 # -------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------ YAML SCHEMAS
 # -------------------------------------------------------------------------------------
+
+# -------------------------------------------------------------------------------------
+# ------------------------------------------------------------------ DEVICE YAML SCHEMA
+
+class PyMechanicsConfiguration(YamlBaseSettings):
+    order: List[Mechanics]
+
+    model_config = SettingsConfigDict(
+        yaml_file = settings.DATA_DIR / "mechanics" / settings.APP_EXT
+    )
 
 # -------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ DEVICE YAML SCHEMA

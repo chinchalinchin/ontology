@@ -25,6 +25,8 @@ from app.models.state import Goal
 from libs.core.models import Position
 from libs.core.math import Geometry
 
+# ----------------------------------------------------------------------------------------
+
 class Mechanic(ABC):
     """
     """
@@ -291,6 +293,28 @@ class MotionMechanics(Mechanic):
 # ----------------------------------------------------------------------------------------
 
 class CommerceMechanics(Mechanic):
+    """
+    """
+
+    def update(self, board: Board, delta: float) -> None:
+        """
+        """
+        pass
+
+# ----------------------------------------------------------------------------------------
+
+class CombatMechanics(Mechanic):
+    """
+    """
+
+    def update(self, board: Board, delta: float) -> None:
+        """
+        """
+        pass
+
+# ----------------------------------------------------------------------------------------
+
+class SpeechMechanics(Mechanic):
     """
     """
 
