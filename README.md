@@ -84,10 +84,15 @@ This section provides an overview of the project's directory and file structure.
 
 Cython interfaces and headers.
 
-* `render.pyx`: Cython interfaces for SDL2 rendering.
-* `registry.pyx`: Cython class for storing textures.
-* `core.pyx`: Cython data classes.
-* `math.pyx`: Cython calculations.
+* `/libs/core`: Core Cython models and functions.
+* `/libs/graphics`: Graphics rendering and asset storage.
+
+### /scripts
+
+Helper scripts.
+
+* `concatenate`: Script to concatenate `.png` horizontally.
+* `transpose`: Script to transpose a column of frames into a row of frames.
 
 ### /src
 
@@ -97,6 +102,12 @@ Application source code.
 * `/src/app/`: Application packages.
 * `/src/assets/`: Application assets.
 * `/src/data/`: Application data.
+
+### /tests
+
+Various test
+
+* `sdl`: Exploratory Cythonized SDL rendering test.
 
 ## References
 
