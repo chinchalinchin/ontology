@@ -9,3 +9,5 @@ setuptools==83.0.0
 mkdocs
 mkdocs-material
 mkdocstrings[python]
+# Scripts
+pillow==12.3.0

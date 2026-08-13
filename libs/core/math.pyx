@@ -1,6 +1,7 @@
 # cython: language_level=3
 """
-# Ontology: Math & Geometry
+# Ontology: libs.core.math
+
 Cythonized high-performance geometry and physics logic.
 """
 # Standard Libraries

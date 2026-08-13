@@ -60,6 +60,9 @@ The engine explicitly retains the Global Interpreter Lock (GIL) during geometry 
 - Position: 
     - `x: int`
     - `y: int`
+- Dimensions:
+    - `w: int`
+    - `l: int`
 - Multiple:
     - `nx: int`
     - `ny: int`
@@ -73,7 +76,10 @@ The engine explicitly retains the Global Interpreter Lock (GIL) during geometry 
     - `position: Position`
     - `dimensions: Dimensions`
     - `hitframe: int`
-
+- ScreenPosition:
+    - `px: double`
+    - `py: double`
+    
 ### Hardware Rendering (`libs/render.pyx` & `libs/registry.pyx`)
 
 ### Headless Software Rendering (`libs/render.pyx` & `libs/registry.pyx`)

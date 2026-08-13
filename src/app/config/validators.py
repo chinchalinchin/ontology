@@ -73,14 +73,14 @@ class PyHitbox(BaseModel):
     position: PyPosition
     dimensions: PyDimensions
 
-class PyAttackBox(BaseModel):
+class PyAttackbox(BaseModel):
     position: PyPosition
     dimensions: PyDimensions
     hitframe: int
 
 class PyDirection(BaseModel):
     row: int
-    attackboxes: Optional[List[PyAttackBox]] = []
+    attackboxes: Optional[List[PyAttackbox]] = []
 
 class PyAction(BaseModel):
     count: int

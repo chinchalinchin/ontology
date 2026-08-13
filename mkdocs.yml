@@ -21,10 +21,11 @@ nav:
   - Sprites: 02-sprites.md
   - Player: 03-player.md
   - Intentions: 04-intentions.md
-  - Menus: 05-menus.md
-  - Sounds: 06-sounds.md
-  - Plots: 07-plots.md
-  - Architecture: 08-architecture.md
+  - Mechanics: 05-mechanics.md
+  - Widgets: 06-widgets.md
+  - Sounds: 07-sounds.md
+  - Plots: 08-plots.md
+  - Architecture: 09-architecture.md
 
 markdown_extensions:
   - admonition

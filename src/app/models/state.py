@@ -131,6 +131,20 @@ class Meter:
     current: int = 100
     maximum: int = 100
 
+@dataclass(slots=True)
+class VisionMutator:
+    """
+    """
+    radius: int
+
+@dataclass(slots=True)
+class FearMutator:
+    """
+    """
+    radius: int
+    limit: float
+    enemy: int
+
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------- SHEET STATE FIELDS
     
@@ -194,20 +208,6 @@ class Inventory:
 # --------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
-class VisionMutator:
-    """
-    """
-    radius: int
-
-@dataclass(slots=True)
-class FearMutator:
-    """
-    """
-    radius: int
-    limit: float
-    enemy: int
-
-@dataclass(slots=True)
 class Mutators:
     """
     Representation of a Sprite's mutators. Mutators alter the Sprite's behavior during the gameplay loop.
@@ -260,20 +260,4 @@ class PlayerState(AssetState):
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------- MENU STATE MODELS
 
-@dataclass(slots=True)
-class IconState(AssetState):
-    """
-    """
-    pass
-
-@dataclass(slots=True)
-class SymbolState(AssetState):
-    """
-    """
-    pass
-
-@dataclass(slots=True)
-class WindowState(AssetState):
-    """
-    """
-    pass
+# TODO

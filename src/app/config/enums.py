@@ -12,12 +12,13 @@ class Devices(str, Enum):
 # -------------------------------- ASSET ENUMERATIONS
 
 class AssetCategories(str, Enum):
-    TILES           = "tiles"
-    OBJECTS         = "objects"
-    EFFECTS         = "effects"
-    CURSORS         = "cursors"
-    SHEETS          = "sheets"
     CRAFTS          = "crafts"
+    CURSORS         = "cursors"
+    EFFECTS         = "effects"
+    MENUS           = "menus"
+    OBJECTS         = "objects"
+    SHEETS          = "sheets"
+    TILES           = "tiles"
 
 class AssetInstances(str, Enum):
     BACK            = "back"

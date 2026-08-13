@@ -25,11 +25,10 @@ The basis of the Intention system has been laid. Both Sprite and Player Assets h
 - [x] Ensure `Loader` returns the fully merged and Pydantic-validated dictionaries.
 - [x] Update `Orchestrator.__init__` to instantiate and call `Loader`.
 
-**Task 2: Implement Mechanic Registry and Pipeline**
+**Task 2: Implement Mechanics Pipeline**
 
 *Objective*: Decouple Mechanics from the Board instantiation.
 
-- [ ] Create a `MechanicRegistry` that maps string identifiers to Mechanic class references (e.g., "collision": CollisionMechanics).
 - [ ] Define the execution order of mechanics in a YAML configuration file.
 - [ ] Update `Factory` to instantiate the list of `Mechanic` objects based on the YAML configuration.
 - [ ] Remove `self._mechanics` instantiation and the play() method from Board.

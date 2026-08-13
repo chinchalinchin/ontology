@@ -33,6 +33,19 @@ python src/cli.py render world-01 \
   --out /home/grant/Projects/ontology/build
 ```
 
+### Helper Scripts
+
+```bash
+# 1. Concatenate: Take all images in a directory and concatenate horizontally into a single row of frames.
+python ./scripts/concatenate/main.py \
+  -d /path/ \
+  -o /path/result.png
+# 2. Transpose: Convert a vertical column of frames into a horizontal row of frames.
+python ./scripts/concatenate/main.py \
+  -v int \
+  -f /path/ \
+  -o /path/result.png
+```
 ## Usage
 
 ### Cython

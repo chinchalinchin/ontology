@@ -17,7 +17,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [Phase VI: Pathfinding](./phase/implement/phase-vi.md)
   - Refactor
     - [Phase I: Renderer](./phases/refactor/phase-i.md)
-    - [Phase II: Player](./phases/refactor/phase-ii.md)
+    - [Phase II-I: Player](./phases/refactor/phase-ii-i.md)
+    - [Phase II-II: Registry](./phases/refactor/phase-ii-ii.md)
   - Debug
     - [Phase I: Renderer](./phases/debug/phase-i.md)
     - [Phase II: Player](./phases/debug/phase-ii.md)

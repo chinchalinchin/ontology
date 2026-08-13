@@ -1,0 +1,36 @@
+widgets:
+  buttons:
+  choices:
+  containers:
+  language:
+    digits:
+      dimensions:
+        w: 12
+        l: 14
+      ids:
+        - zero
+        - one
+        - two
+        - three
+        - four
+        - five
+        - six
+        - seven
+        - eight
+        - nine
+    icons:
+      dimensions:
+        w:
+        l:
+      ids:
+        - armor-bronze
+        - armor-gold
+        - arrow-fire
+        - arrow-magic
+        - arrow
+        - bolt-poison
+        - bolt-precision
+        - cane
+        - coin
+  meters:
+  windows:

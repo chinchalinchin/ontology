@@ -191,6 +191,7 @@ N/A
 **Frame: SingleFrame**
 
 * `key(asset, None): returns {asset}"`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 **State: MultiplerState**
 
@@ -209,6 +210,7 @@ N/A
 **Frame: SingleFrame**
 
 * `key(asset, None): returns {asset}"`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 **State: MultiplerState**
 
@@ -249,6 +251,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 **Frame: IterableFrame**
 
 * `key(asset, animation): returns {asset}-{animation.frame}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 **State: ContainerState**
 
@@ -269,6 +272,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 **Frame: SingleFrame**
 
 * `key(asset, animation): returns {asset}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 ### Doors
 
@@ -284,6 +288,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 **Frame: SingleFrame**
 
 * `key(asset, animation): returns {asset}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 ### Gates
 
@@ -297,6 +302,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 **Frame: IterableFrame**
 
 * `key(asset, animation): returns {asset}-{animation.frame}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 **State: SwitchState**
 
@@ -317,6 +323,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 **Frame: IterableFrame**
 
 * `key(asset, animation): returns {asset}-{animation.frame}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 **State: SwitchState**
 
@@ -346,6 +353,7 @@ N/A
 **Frame: SingleFrame**
 
 * `key(asset, animation): returns {asset}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 **State: PositionalState**
 
@@ -363,6 +371,7 @@ N/A
 **Frame: SingleFrame**
 
 * `key(asset, animation): returns {asset}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 **State: MetricState**
 
@@ -395,6 +404,7 @@ Temporary Effects are brief, short-lived effects, such as explosions or magic ef
 **Frame: IterableFrame**
 
 * `key(asset, animation): returns {asset}-{animation.frame}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 **State: AnimatorState**
 
@@ -413,6 +423,7 @@ Persistent Effects are long-term, continuous effects, such as water ripples or w
 **Frame: IterableFrame**
 
 * `key(asset, animation) : {asset}-{animation.frame}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 **State: AnimatorState**
 
@@ -458,6 +469,7 @@ N/A
 **Frame: SingleFrame**
 
 * `key(asset, None) returns {asset}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 **State: PropertyState**
 
@@ -563,6 +575,7 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 **Frame: StateFrame**
 
 * `key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 **State: AnimatorState**
 
@@ -585,6 +598,7 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 **Frame: StateFrame**
 
 * `key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
 **State: SpriteState**
 

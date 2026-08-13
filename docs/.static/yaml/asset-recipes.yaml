@@ -1,11 +1,12 @@
 assets:
-  # <asset-category>: tiles, cursors, effects, objects, sheets
+  # <asset-category>: tiles, cursors, effects, objects, sheets, widgets
   <asset-category>:
     # <asset-instance>: fore, back,
     #                   expressions, projectiles, 
     #                   temporary, persistent, 
     #                   chests, crates, doors, gates, plates, struts
     #                   pixies, sprites
+    #                   buttons, choices, containers, language, meters, windows
     <asset-instance>: 
         # <frame-implementation: single, iterable, state
       frame: <frame-implementation> 

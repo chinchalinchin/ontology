@@ -1,3 +1,7 @@
+"""
+Ontology: libs.core.models
+"""
+
 from typing import List
 
 cdef class Position:
@@ -32,7 +36,7 @@ cdef class Velocity:
         self.vx = vx
         self.vy = vy
 
-cdef class AttackBox:
+cdef class Attackbox:
     """
     """
     def __init__(self, Position position, Dimensions dimensions, int hitframe):
@@ -47,3 +51,14 @@ cdef class Hitbox:
     def __init__(self, Position position, Dimensions dimensions):
         self.position = position
         self.dimensions = dimensions
+
+cdef class ScreenPosition:
+    """
+    Screen position represented as percentages.
+    """
+    cdef public double px
+    cdef public double py
+
+    def __init__(self, double px, double py):
+        self.px = px
+        self.py = py

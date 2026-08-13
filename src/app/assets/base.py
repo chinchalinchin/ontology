@@ -35,6 +35,13 @@ class Frame(ABC):
         """
         pass
 
+    @abstractmethod
+    def index(self, id: str, properties: dict, recipe: str = None) -> dict[str, tuple[int, int, int, int]]:
+        """
+        Generates a mapping of all possible frame keys to their crop coordinates (sx, sy, w, l).
+        """
+        pass
+
 class Animation(ABC):
     """
     Foundational interface for Assets with animate states.

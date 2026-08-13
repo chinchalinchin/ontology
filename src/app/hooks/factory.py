@@ -73,13 +73,13 @@ from libs.core.models import (
     Position, 
     Dimensions, 
     Hitbox, 
-    AttackBox
+    Attackbox
 )
 
 class Factory:
     CYTHON_HINTS = {
         Hitbox: {'position': Position, 'dimensions': Dimensions},
-        AttackBox: {'position': Position, 'dimensions': Dimensions, 'hitframe': int}
+        Attackbox: {'position': Position, 'dimensions': Dimensions, 'hitframe': int}
     }
     # Map Enums directly to Runtime Data Classes
     STATE_MAP = {

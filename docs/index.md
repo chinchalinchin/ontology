@@ -13,7 +13,7 @@
 - [Player](./03-player.md)
 - [Intentions](./04-intentions.md)
 - [Mechanics](./05-mechanics.md)
-- [Menus](./06-menus.md)
+- [Widgets](./06-widgets.md)
 - [Sounds](./07-sounds.md)
 - [Plots](./08-plots.md)
 - [Architecture](./09-architecture.md)
