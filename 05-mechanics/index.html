@@ -478,10 +478,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#todo" class="md-nav__link">
+  <a href="#configuratoin" class="md-nav__link">
     <span class="md-ellipsis">
       
-        TODO
+        Configuratoin
       
     </span>
   </a>
@@ -512,27 +512,34 @@
 <p><strong>General Mechanics</strong></p>
 <p>These Mechanics handle general game logic.</p>
 <ul>
-<li><code>PlayerMechanics</code>: Resolve Device input into Player (Intention, Goal)-state.</li>
-<li><code>AnimationMechanics</code>: Translates current states into FrameKeys for the renderer.</li>
-<li><code>CollisioMechanics</code>: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.</li>
-<li><code>RemoveMechanics</code>: General garbage collection for Assets whose lifespan has expired.</li>
-<li><code>TransitionMechanics</code>: Applies the Intention Transition Matrix conditions to all Sprite Sheets.</li>
+<li><code>player: PlayerMechanics</code>: Resolve Device input into Player (Intention, Goal)-state.</li>
+<li><code>animation AnimationMechanics</code>: Translates current states into FrameKeys for the renderer.</li>
+<li><code>collision: CollisioMechanics</code>: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.</li>
+<li><code>remove: RemoveMechanics</code>: General garbage collection for Assets whose lifespan has expired.</li>
 </ul>
-<p><strong>Objective Mechanics</strong></p>
+<p><strong>Object Mechanics</strong></p>
 <p>These Mechanics handle Object game logic.</p>
 <ul>
 <li><code>SwitchMechanics</code>: Binds the Gate and Plate states together based on their <code>switch</code>.</li>
 <li><code>ProjectileMechanics</code>: Increment projectile positions, checks intersections and resolves impacts.</li>
 </ul>
-<p><strong>Intentional Mechanics</strong></p>
+<p><strong>Sprite Mechanics</strong></p>
 <p>These Mechanics handle the Sprite Intention logic.</p>
 <ul>
-<li><code>MotionMechanics</code>: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.</li>
-<li><code>CommerceMechanics</code>: Translate Intentions (barter, attract, etc.) into trades and price movements.</li>
-<li><code>CombatMechanics</code>: (Cython) Resolves attack hitbox overlaps, decrements health, etc.</li>
-<li><code>SpeechMechanics</code>: </li>
+<li><code>transition: TransitionMechanics</code>: Applies the Intention Transition Matrix conditions to all Sprite Sheets.</li>
+<li><code>motion: MotionMechanics</code>: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.</li>
+<li><code>commerce: CommerceMechanics</code>: Translate Intentions (barter, attract, etc.) into trades and price movements.</li>
+<li><code>combat: CombatMechanics</code>: (Cython) Resolves attack hitbox overlaps, decrements health, etc.</li>
+<li><code>speech: SpeechMechanics</code>: </li>
 </ul>
-<h2 id="todo">TODO</h2>
+<h2 id="configuratoin">Configuratoin</h2>
+<ul>
+<li>Location: <code>/src/data/mechanics/main.yaml</code></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nt">mechanics</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">order</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;mechanic-key&gt;</span>
+</code></pre></div>
 
 
 
