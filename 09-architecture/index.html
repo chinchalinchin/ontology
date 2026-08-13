@@ -11,6 +11,8 @@
         <link rel="canonical" href="https://chinchalinchin.github.io/ontology/09-architecture/">
       
       
+        <link rel="prev" href="../08-plots/">
+      
       
       
         
@@ -21,7 +23,7 @@
     
     
       
-        <title>Ontology: Architecture - Ontology</title>
+        <title>Architecture - Ontology</title>
       
     
     
@@ -108,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Ontology: Architecture
+              Architecture
             
           </span>
         </div>
@@ -350,14 +352,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../05-menus.md" class="md-nav__link">
+      <a href="../05-mechanics/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Menus
+    Mechanics
   
 
     
@@ -377,7 +379,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../06-sounds.md" class="md-nav__link">
+      <a href="../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-sounds/" class="md-nav__link">
         
   
   
@@ -404,7 +433,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../07-plots.md" class="md-nav__link">
+      <a href="../08-plots/" class="md-nav__link">
         
   
   
@@ -428,10 +457,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../08-architecture.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -447,6 +503,109 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Initialization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#maps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maps
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cython" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cython
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Cython">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#math-geometry-libsmathpyx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Math &amp; Geometry (libs/math.pyx)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hardware-rendering-libsrenderpyx-libsregistrypyx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hardware Rendering (libs/render.pyx &amp; libs/registry.pyx)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#headless-software-rendering-libsrenderpyx-libsregistrypyx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Headless Software Rendering (libs/render.pyx &amp; libs/registry.pyx)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -640,6 +799,11 @@
 <li><code>y: int</code></li>
 </ul>
 </li>
+<li>Dimensions:<ul>
+<li><code>w: int</code></li>
+<li><code>l: int</code></li>
+</ul>
+</li>
 <li>Multiple:<ul>
 <li><code>nx: int</code></li>
 <li><code>ny: int</code></li>
@@ -659,6 +823,11 @@
 <li><code>position: Position</code></li>
 <li><code>dimensions: Dimensions</code></li>
 <li><code>hitframe: int</code></li>
+</ul>
+</li>
+<li>ScreenPosition:<ul>
+<li><code>px: double</code></li>
+<li><code>py: double</code></li>
 </ul>
 </li>
 </ul>

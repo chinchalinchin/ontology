@@ -774,14 +774,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../05-menus.md" class="md-nav__link">
+      <a href="../05-mechanics/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Menus
+    Mechanics
   
 
     
@@ -801,7 +801,34 @@
   
   
     <li class="md-nav__item">
-      <a href="../06-sounds.md" class="md-nav__link">
+      <a href="../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../07-sounds/" class="md-nav__link">
         
   
   
@@ -828,7 +855,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../07-plots.md" class="md-nav__link">
+      <a href="../08-plots/" class="md-nav__link">
         
   
   
@@ -855,7 +882,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../08-architecture.md" class="md-nav__link">
+      <a href="../09-architecture/" class="md-nav__link">
         
   
   
@@ -1452,6 +1479,7 @@
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
 <li><code>key(asset, None): returns {asset}"</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
@@ -1466,6 +1494,7 @@
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
 <li><code>key(asset, None): returns {asset}"</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
@@ -1498,6 +1527,7 @@
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
 <li><code>key(asset, animation): returns {asset}-{animation.frame}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <p><strong>State: ContainerState</strong></p>
 <ul>
@@ -1516,6 +1546,7 @@
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
 <li><code>key(asset, animation): returns {asset}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <h3 id="doors">Doors</h3>
 <p><em>Doors</em> are <em>Objects</em> that alter a Sprite's <code>&lt;layer&gt;</code>. When a Sprite enters the hitbox of a door, the <code>&lt;layer&gt;</code> is changed to the <code>&lt;outlayer&gt;</code> at the <code>&lt;out&gt;</code> Position.</p>
@@ -1529,6 +1560,7 @@
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
 <li><code>key(asset, animation): returns {asset}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <h3 id="gates">Gates</h3>
 <p><em>Gates</em> are <em>Binary Objects</em> whose state is connected to <em>Plates</em>. When a <em>Gate</em> is on (open), it does not have hitboxes and the player can pass freely through it. When a Gate is off (closed), its hitboxes prevent the player from passing through its area.</p>
@@ -1540,6 +1572,7 @@
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
 <li><code>key(asset, animation): returns {asset}-{animation.frame}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <p><strong>State: SwitchState</strong></p>
 <ul>
@@ -1558,6 +1591,7 @@
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
 <li><code>key(asset, animation): returns {asset}-{animation.frame}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <p><strong>State: SwitchState</strong></p>
 <ul>
@@ -1582,6 +1616,7 @@
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
 <li><code>key(asset, animation): returns {asset}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <p><strong>State: PositionalState</strong></p>
 <ul>
@@ -1595,6 +1630,7 @@
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
 <li><code>key(asset, animation): returns {asset}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <p><strong>State: MetricState</strong></p>
 <ul>
@@ -1623,6 +1659,7 @@
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
 <li><code>key(asset, animation): returns {asset}-{animation.frame}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -1639,6 +1676,7 @@
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
 <li><code>key(asset, animation) : {asset}-{animation.frame}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -1673,6 +1711,7 @@
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
 <li><code>key(asset, None) returns {asset}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <p><strong>State: PropertyState</strong></p>
 <ul>
@@ -1762,6 +1801,7 @@
 <p><strong>Frame: StateFrame</strong></p>
 <ul>
 <li><code>key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -1783,6 +1823,7 @@
 <p><strong>Frame: StateFrame</strong></p>
 <ul>
 <li><code>key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <p><strong>State: SpriteState</strong></p>
 <ul>
