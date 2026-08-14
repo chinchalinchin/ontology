@@ -18,7 +18,7 @@ class SingleFrame(Frame):
         """
         return id
         
-    def index(self, id: str, properties: dict, recipe: str = None) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         w, l = properties["dimensions"]["w"], properties["dimensions"]["l"]
         return {id: (0, 0, w, l)}
         
@@ -32,16 +32,12 @@ class IterableFrame(Frame):
             str(state.animation.frame)
         ])
         
-    def index(self, id: str, properties: dict, recipe: str = None) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         w, l = properties["dimensions"]["w"], properties["dimensions"]["l"]
         crops = {}
-        if recipe == AnimationRecipe.BINARY:
-            crops[f"{id}-{settings.OFF}"] = (0, 0, w, l)
-            crops[f"{id}-{settings.ON}"] = (w, 0, w, l)
-        else:
-            count = properties.get("count", 1)
-            for f in range(count):
-                crops[f"{id}-{f}"] = (f * w, 0, w, l)
+        count = properties.get("count", 1)
+        for f in range(count):
+            crops[f"{id}-{f}"] = (f * w, 0, w, l)
         return crops
 
 class StateFrame(Frame):
@@ -58,7 +54,7 @@ class StateFrame(Frame):
             str(state.animation.frame)
         ])
 
-    def index(self, id: str, properties: dict, recipe: str = None) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         w, l = properties["dimensions"]["w"], properties["dimensions"]["l"]
         crops = {}
         for action, action_prop in properties.get("actions", {}).items():

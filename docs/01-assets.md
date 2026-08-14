@@ -190,8 +190,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `key(asset, None): returns {asset}"`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, None): returns <asset>"`
+* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }` 
 
 **State: MultiplerState**
 
@@ -209,8 +209,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `key(asset, None): returns {asset}"`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, None): returns <asset>"`
+* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MultiplerState**
 
@@ -228,12 +228,15 @@ N/A
 
 An Object with two frames is considered to have an *On* and *off* state, i.e. a binary trigger. *Binary Objects* are Objects whose frame is dependent on their internal state switch.
 
-Binary objects frames are always organized in horizontal rows. The off frame will always start at `(0,0)` and the on frame will always start at `(w,0)`. Because of this relation, the dimensions of a Chest image file will always be `(2w, h)`
+Binary Objects frames are always organized in horizontal rows. The off frame will always start at `(0,0)` and the on frame will always start at `(w,0)`. Because of this relation, the dimensions of a Chest image file will always be `(2w, h)`. 
+
+Binary Objects have a `count` of 2, where as all other Objects are initialized with `count = 1` by default.
 
 **Properties: ObjectProperties**
 
 * `dim: Dimensions`
 * `hitboxes: List[Hitbox]` 
+* `count: int = 1`
 
 ### Chests
 
@@ -250,8 +253,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: IterableFrame**
 
-* `key(asset, animation): returns {asset}-{animation.frame}`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, animation): returns <asset>-<animation.frame>`
+* `index(self, asset, properties, recipe): returns { <asset>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: ContainerState**
 
@@ -271,8 +274,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: SingleFrame**
 
-* `key(asset, animation): returns {asset}`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, animation): returns <asset>`
+* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 ### Doors
 
@@ -287,8 +290,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: SingleFrame**
 
-* `key(asset, animation): returns {asset}`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, animation): returns <asset>`
+* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 ### Gates
 
@@ -301,8 +304,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: IterableFrame**
 
-* `key(asset, animation): returns {asset}-{animation.frame}`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, animation): returns <asset>-<animation.frame>`
+* `index(self, asset, properties, recipe): returns { <asset>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SwitchState**
 
@@ -322,8 +325,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: IterableFrame**
 
-* `key(asset, animation): returns {asset}-{animation.frame}`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, animation): returns <asset>-<animation.frame>`
+* `index(self, asset, properties, recipe): returns { <asset>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SwitchState**
 
@@ -352,8 +355,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `key(asset, animation): returns {asset}`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, animation): returns <asset>`
+* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: PositionalState**
 
@@ -370,8 +373,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `key(asset, animation): returns {asset}`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, animation): returns <asset>`
+* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MetricState**
 
@@ -403,8 +406,8 @@ Temporary Effects are brief, short-lived effects, such as explosions or magic ef
 
 **Frame: IterableFrame**
 
-* `key(asset, animation): returns {asset}-{animation.frame}`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, animation): returns <asset>-<animation.frame>`
+* `index(self, asset, properties, recipe): returns { <asset>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: AnimatorState**
 
@@ -422,8 +425,8 @@ Persistent Effects are long-term, continuous effects, such as water ripples or w
 
 **Frame: IterableFrame**
 
-* `key(asset, animation) : {asset}-{animation.frame}`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, animation) : <asset>-<animation.frame>`
+* `index(self, asset, properties, recipe): returns { <asset>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: AnimatorState**
 
@@ -468,8 +471,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `key(asset, None) returns {asset}`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, None) returns <asset>`
+* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: PropertyState**
 
@@ -574,8 +577,8 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 
 **Frame: StateFrame**
 
-* `key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, animation): returns <asset>-<animation.action>-<animation.direction>-<animation.frame>`
+* `index(self, asset, properties, recipe): returns { <asset>-<properties.actions.*>-<properties.actions.*.directions.*>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: AnimatorState**
 
@@ -597,8 +600,8 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 
 **Frame: StateFrame**
 
-* `key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(asset, animation): returns <asset>-<animation.action>-<animation.direction>-<animation.frame>`
+* `index(self, asset, properties, recipe): returns { <asset>-<properties.actions.*>-<properties.actions.*.directions.*>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SpriteState**
 

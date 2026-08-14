@@ -19,6 +19,7 @@ from app.config.enums import (
     Devices
 )
 from app.game.board import Board
+from app.game.engine import Engine
 from app.game.screen import Screen
 from app.hooks.factory import Factory
 
@@ -45,6 +46,7 @@ class Orchestrator:
     registry: Registry
     board: Board
     screens: Dict[str, Screen]
+    engine: Engine
 
     def __init__(self, state: str):
         logger.info(f"Initializing Orchestrator for target state: {state} ...")
@@ -142,3 +144,12 @@ class Orchestrator:
         } 
         
         return self.board, self.registry, self.screens
+
+    def ignite(self, screensize: Dimensions, device: Devices) -> Engine:
+        """
+        """
+        self.orchestrate(screensize, device)
+        self.mechanics = { "TODO": "INIT" }
+        self.engine = Engine(self.board, self.screens, self.mechanics)
+
+        return self.engine

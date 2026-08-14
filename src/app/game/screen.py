@@ -27,6 +27,7 @@ class Screen:
     boardsize: Dimensions
     bg_canvas: TexturePtr
     fg_canvas: TexturePtr
+    registry: Registry
 
     def __init__(self, 
         screensize: Dimensions,
@@ -37,7 +38,8 @@ class Screen:
         logger.info(f"Initializing Screen overlay (Viewport: {screensize.w}x{screensize.l} | Board: {boardsize.w}x{boardsize.l})")
         self.screensize = screensize
         self.boardsize = boardsize
-        
+        self.registry = registry
+
         # Instantiate Painter's Algorithm Targets
         self.bg_canvas = canvas(self.boardsize.w, self.boardsize.l)
         self.fg_canvas = canvas(self.boardsize.w, self.boardsize.l)
@@ -50,7 +52,7 @@ class Screen:
         for tile in tiles:
             # Query Registry using the computed tile key
             frame_key = tile.frame.key(tile.id, tile.state)
-            tex_data = registry.data(frame_key)
+            tex_data = self.registry.data(frame_key)
             if tex_data:
                 tex, sx, sy, sw, sl = tex_data
                 
@@ -99,8 +101,7 @@ class Screen:
     def draw(self, 
         assets: List[Asset], 
         focus: Position,
-        dim: Dimensions,
-        registry: Registry
+        dim: Dimensions
     ) -> None:
         """
         Calculates viewport positioning, culls non-visible items, and routes data to the renderer.
@@ -113,7 +114,7 @@ class Screen:
             frame_key = asset.frame.key(asset.id, asset.state)
             
             # 2. Query registry for C-level source coordinates
-            tex_data = registry.data(frame_key)
+            tex_data = self.registry.data(frame_key)
 
             if not tex_data:
                 continue 

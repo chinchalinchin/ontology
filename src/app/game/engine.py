@@ -64,8 +64,7 @@ class Engine:
                 self.screens[player.state.layer].draw(
                     self.board.assets(player.state.layer), 
                     player.state.position,
-                    player.dimensions,
-                    self.registry
+                    player.dimensions
                 )
 
             while self.board.paused: 

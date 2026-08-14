@@ -54,7 +54,7 @@ assets:
       state: switch
   sheets:
     players:
-      frame: state
+      frame: sprite
       animation: state
       state: player
     pixies:
@@ -62,6 +62,6 @@ assets:
       animation: state
       state: animator
     sprites:
-      frame: state
+      frame: sprite
       animation: state
       state: sprite

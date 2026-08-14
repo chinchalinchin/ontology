@@ -43,6 +43,12 @@ class Registry:
     Centralized Asset Registry to ingest configuration, cache GPU textures, 
     and map dynamic string keys to crop coordinates.
     """
+    # Public Fields
+    properties: dict
+    recipes: dict
+    # Hidden Fields
+    _textures: dict
+    _frames: dict
     
     def __init__(self, properties, recipes):
         logger.debug("Initializing Asset Registry...")
@@ -85,9 +91,9 @@ class Registry:
     def _stack(self):
         """Data-Driven Texture Assembly."""
         logger.debug("Assembling Texture Stacks...")
-        for cat_name, cat_props in self.properties.items():
+        for _, cat_props in self.properties.items():
             if not cat_props: continue
-            for inst_name, inst_props in cat_props.items():
+            for _, inst_props in cat_props.items():
                 for item_id, item_props in self._extract(inst_props):
                     stack = item_props.get("stack", [])
                     if not stack: continue
@@ -123,13 +129,11 @@ class Registry:
                 if not inst_props: continue
 
                 frame_worker = Factory.frame(recipe["frame"])
-                anim_recipe = recipe.get("animation")
-
                 for item_id, item_props in self._extract(inst_props):
-                    if item_id not in self._textures:
-                        continue
                     
-                    crop_map = frame_worker.index(item_id, item_props, anim_recipe)
+                    if item_id not in self._textures: continue
+                    
+                    crop_map = frame_worker.index(item_id, item_props)
                     for frame_key, crop in crop_map.items():
                         logger.debug(f"Indexed frame: '{frame_key}'")
                         self._frames[frame_key] = (

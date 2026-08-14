@@ -78,7 +78,7 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
 
 **Frame: StateFrame**
 
-* `key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}`
+* `key(asset, animation): returns <asset>-<animation.action>-<animation.direction>-<animation.frame>`
 * `index(self, asset, properties, recipe): returns TODO` 
 
 ### Intentions

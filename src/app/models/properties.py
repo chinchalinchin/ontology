@@ -55,6 +55,7 @@ class EffectProperties(AssetProperties):
 @dataclass(slots=True)
 class ObjectProperties(AssetProperties):
     dimensions: Dimensions
+    count: int = 1
     hitboxes: List[Hitbox] = field(default_factory=list)
 
 @dataclass(slots=True)

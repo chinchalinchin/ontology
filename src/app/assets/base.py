@@ -36,7 +36,7 @@ class Frame(ABC):
         pass
 
     @abstractmethod
-    def index(self, id: str, properties: dict, recipe: str = None) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
         Generates a mapping of all possible frame keys to their crop coordinates (sx, sy, w, l).
         """

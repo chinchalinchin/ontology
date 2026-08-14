@@ -28,15 +28,6 @@ widgets:
       dimensions:
         w:
         l:
-  choices:
-    checkbox:
-      dimensions:
-        w:
-        l:
-    proposition:
-      dimension:
-        w: 
-        l:
   language:
     digits:
       dimensions:

@@ -19,7 +19,7 @@ When a Menu is instantiated, its Widgets acquire state. This state is populated 
 
 **Bus**
 
-The [Board](./00-overview.md#board) contains a `bus` fields that accumulates Events emitted by the game loop. These Events are processed by the [MenuMechanics](#mechanics).
+The [Board](./00-overview.md#board) contains a `bus` field that accumulates Events emitted by the game loop. These Events are processed by the [MenuMechanics](#mechanics) and then removed from the `bus`. The `bus` uses a First-In-First-Out processing order.
 
 ### Mechanics
 
@@ -95,9 +95,12 @@ Beyoned `layout` and `alignment`, Panes have several styling attributes to contr
 - `children: List[Widget]`
 - `root: bool`
 
+!!! note
+    `root` is only relevant when `layout == tab`, because the Pane's children are also Panes, i.e. `root` is used to distinguish Panes in `tab` layout.
+
 **Frame: SingleFrame**
 
-* `key(asset, state): returns {asset}`
+* `key(asset, state): returns <asset>`
 * `index(self, asset, properties, recipe): returns TODO` 
 
 ### Buttons
@@ -125,9 +128,9 @@ A Button may have `symbols`. Each element of the `symbols`  list is a Language W
 
 **Animation: TraversalAnimation**
 
-TODO
-
-- `if state.status != disabled:` 
+- `if state.status not in [disabled, selected]:`
+    - `if animation.frame == active: animation.frame = idle`
+    - `if animation.frame == idle: animation.frame = active`  
 
 **State: TraversalState**
 
@@ -136,7 +139,7 @@ TODO
 
 **Frame: TraversalFrame**
 
-* `key(asset, state): returns {asset}-{state.status}`
+* `key(asset, state): returns <asset>-<state.status>`
 * `index(self, asset, properties, recipe): returns TODO` 
 
 ### Pages
@@ -161,15 +164,6 @@ If a Page is rendering text, it is a `scroller` (`typeof(content) == str`). The 
 
 - `more(): return content[-len(current) : ] != current`
 - `scroll(): current = content[pageindex*pagesize : max(pageindex*(pagesize+1), len(content))]`
-
-### Choices
-
-**Taxonomy**
-
-* `category: widgets`
-* `instance: choices`
-
-TODO
 
 ### Language
 
@@ -202,7 +196,7 @@ TODO: calculate based on `reading / unit`
 
 **Frame: WidgetFrame**
 
-* `key(asset, state): returns {asset}-{state.status}`
+* `key(asset, state): returns <asset>-<state.status>`
 * `index(self, asset, properties, recipe): returns TODO` 
 
 ## Menus

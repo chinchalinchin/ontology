@@ -1,4 +1,4 @@
-#### Refactor: Phase II - Player
+#### Refactor: Phase II - Frames
 
 The basis of the Intention system has been laid. Both Sprite and Player Assets have been writed to transmit their Animations through (Intention, Goals). Before moving onto expanding the Intention mechanics, it is time to refactor what we have already. 
 
@@ -46,36 +46,52 @@ The basis of the Intention system has been laid. Both Sprite and Player Assets h
 
 *Objective*: Reduce Orchestrator to a pure dependency injection container.
 
-- [ ] Refactor `orchestrate()` to act as the single entrypoint that calls `Loader`, invokes the `Factory`, initializes the `Registry/Screens`, and wires them into the new `Engine`.
+- [~] Initialize `Mechanics` in `Orchestrator.ignite()`
+- [~] Initialize `Engine` in `Orchestrator.ignite()`
 - [x] Verify the `Orchestrator` no longer contains runtime logic or file-system traversal.
 
 **Task 5: Upgrade the Frame Interface**
 
 *Objective*: Evolve the Frame component interface to support multi-layered texture rendering for a single Asset.
 
-- [ ] Refactor the `Frame.key()` abstract method to `Frame.keys()`, updating the return type from `str` to `List[str]`.
-- [ ] Update SingleFrame and `IterableFrame` to return a list containing their single resolved string.
-- [ ] Update the `Registry.data()` fallback mapping to anticipate lists.
+* [ ] Refactor the `Frame.key()` abstract method to `Frame.keys()`, updating the return type from `str` to `List[str]`.
+* [ ] Update `SingleFrame`, `IterableFrame`, and `StateFrame` implementations to wrap their resolved string in a list.
+* [ ] Update `Registry.data()` to anticipate iterative querying if necessary, or ensure `Screen.draw()` handles the list iteration.
 
-**Task 6: Implement SpriteFrame for Dynamic Equipment**
+**Task 6: Implement SpriteFrame for Layered Equipment**
 
-*Objective*: Create a specialized Frame component for Sprites that dynamically filters and generates frame keys based on the Sprite's current state and the Equipment's supported animations.
+*Objective*: Create a specialized `Frame` component for Sprites that yields a strict Z-indexed list of frame keys based on the Sprite's inventory, delegating existence checks to the Registry.
 
-- [ ] Create a SpriteFrame class inheriting from StateFrame.
-- [ ] Inject a reference to EquipmentProperties into SpriteFrame via the Factory during initialization.
-- [ ] Override `keys(id, state)` to initialize a list, starting with the base Persona frame key: `{persona}-{state.action}-{state.direction}-{state.frame}`.
-- [ ] Iterate over the active equipment keys in `state.inventory.equipment` (armor, weapon, tool, utility).
-- [ ] For each active equipment piece, fetch its EquipmentProperty.
-- [ ] Apply the Action Filter: Check if `property.animation.action` is `Actions.ALL` or matches the Sprite's current state.`animation.action`.
-- [ ] Apply the Direction Filter: Check if `property.animation.direction` is `Directions.ALL` or matches the Sprite's current `state.animation.direction`.
-- [ ] If both filters pass, format and append the equipment frame key: `{equipment_key}-{state.action}-{state.direction}-{state.frame}`. If either fails, skip this piece of equipment.
-- [ ] Return the list of resolved keys in strict Z-index order (e.g., Base -> Armor -> Tool -> Weapon).
+* [ ] Create a `SpriteFrame` class inheriting from `StateFrame`.
+* [ ] Override `keys(id, state)` to initialize a list, starting with the base Persona frame key: `{persona}-{state.action}-{state.direction}-{state.frame}`.
+* [ ] Iterate over the active equipment keys in `state.inventory.equipment` in strict Z-index order (e.g., Base -> Armor -> Utility -> Tool -> Weapon).
+* [ ] For each active equipment piece, blindly format and append the equipment frame key: `{equipment_key}-{state.action}-{state.direction}-{state.frame}`.
 
 **Task 7: Update Rendering Pipeline in Screen.draw()**
 
 *Objective*: Modify the Python-side culling and primitive extraction loop to handle multiple textures per Asset.
 
-- [ ] In `Screen.draw()`, update the loop to iterate over the List[str] returned by `asset.frame.keys(asset.id, asset.state)`.
-- [ ] For each key in the returned list, query `registry.data(key)`.
-- [ ] If the texture exists, flatten it into the primitive tuple and append it to active_assets.
-- [ ] Architectural Check: Ensure `active_assets.sort()` (the Z-index sorting algorithm based on the Y-coordinate) remains stable. Python's `list.sort() `is stable by default, meaning layers stacked on the exact same Sprite (same Y coordinate) will naturally render in the order they were yielded by `SpriteFrame.keys().`
+* [ ] In `Screen.draw()`, update the loop to iterate over the `List[str]` returned by `asset.frame.keys(asset.id, asset.state)`.
+* [ ] For each key in the returned list, query `registry.data(key)`.
+* [ ] If the texture exists, flatten it into the primitive tuple and append it to `active_assets`.
+* [ ] Ensure `active_assets.sort(key=lambda x: x[6] + x[8])` remains untouched, relying on Python's stable sort to preserve the Z-index order yielded by `SpriteFrame`.
+
+### Documentation Updates
+
+!!! note
+    To be completed by user.
+
+The documentation currently reflects the older conceptual model and needs alignment with the grounded architecture.
+
+**1. `01-assets.md # Asset Architecture**`
+
+* **Update:** Explicitly state that the `Frame` component returns a `List[str]` rather than a single `str`. Clarify that an `Asset` can be a single logical entity composed of multiple superimposed rendered textures.
+
+**2. `02-sprites.md # Equipment**`
+
+* **Update:** Remove the section discussing `all` vs specific Action/Direction filters applied at runtime.
+* **Add:** Document the "Registry Miss" pattern. Explain that equipment rendering is dictated by `SheetProperties.actions` configured in the asset directory. If an equipment does not possess an action, its omission from the rendering pipeline is handled implicitly by the `Registry` returning `None`.
+
+**3. `06-architecture.md # Mechanics**`
+
+* **Add:** Elaborate on the `AnimationMap`. Detail how `TransitionMechanics` and `PlayerMechanics` use `AnimationMap.action(state, equipment)` to enforce logical constraints (e.g., preventing a `attack` intention from translating into a `thrust` action if the Sprite lacks the required tool/weapon).
