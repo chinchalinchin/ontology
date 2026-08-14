@@ -2,6 +2,7 @@ menus:
   dialogue:
     roots: 
       - id: dialogue
+        name: dialogue-menu
         position:
           px: 0.1
           py: 0.75
@@ -9,49 +10,53 @@ menus:
         alignment: left
         gap: 10
         children: 
-          - category: widget
-            instance: button
+          - category: widgets
+            instance: buttons
             id: slot
+            name: character-portrait
             bind: 
               ref: state
               data: sprite.state.character.portrait
-          - category: widget
-            instance: button
-            id: 
+          - category: widgets
+            instance: pages
+            id: scroll
+            name: character-speech
             bind: 
               ref: state
               data: sprite.state.psyche.communication
-          - category: widget
-            instance: button
-            id: arrow-left
+          - category: widgets
+            instance: buttons
+            id: arrow-up
+            name: character-speech-scroll-up
             bind: 
               ref: traversal
-              data:
+              data: self.children[1] # Bind to scroller
           - category: widget
             instance: button
-            id: 
+            id: arrow-down
+            name: character-speech-scroll-down
             bind: 
               ref: traversal
-              data: 
+              data: self.children[1] # Bind to scroller
   editor:
   inventory:
-    panes:
+    roots:
       - id: main_inventory_pane
-        position: { px: 0.1, py: 0.1 } 
+        position: 
+          px: 0.1
+          py: 0.1
         layout: tab
         gap: 10 
         headers:
-          - id: tab_loot
-            label: "Loot"
-            pane: 
-              layout: dock
-              widgets:
-                - category: widget
-                  instance: container
-                  bind: sprite.state.inventory.loot
-
-          - id: tab_equipment
-            label: "Equipment"
+          - category: widget
+            instance: button
+            id: icon
+            symbols:
+              - icons-equipment
+        children:
+          - category: widget
+            instance: button
+            id: icon
             pane:
               layout: stack
               widgets:

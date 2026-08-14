@@ -104,12 +104,12 @@ Button Statuses are enumerated below,
 - selected: Button has been selected by the traversal.
 - disabled: Button is intraversible.
 
-It assumed Button Asset files are arranged in horizontal rows ordered by their status in the order `idle, active, selected, disabled`. 
+It assumed Button Asset files are arranged in horizontal rows ordered by their status in the order `idle, active, selected, disabled`, where each frame is `properties.dimensions.w` wide.
 
-A Button may have `symbols`. Each element of the `symbols`  list is a Language Widget. Each Language Asset is concatenated horizontally across the Button frame.
+A Button may have `symbols`. Each element of the `symbols`  list is a Language Widget. Each Language Asset frame is concatenated horizontally across the Button frame.
 
 !!! warning
-    The Button Asset must have large enough dimensions to accomodate Language Asset embedding, i.e. the sum of the Language widths must not exceed the width of the Button.
+    The Button Asset must have large enough dimensions to accomodate the Language Asset embeddings, i.e. the sum of the Language widths must not exceed the width of the Button.
 
 **Taxonomy**
 
@@ -226,7 +226,6 @@ When the `Factory` reads the `bind:` key in the Menu schema, it acts as a dictio
 - `focus: str`: Widget that is currently being focused on for traversal.
 
 TODO
-
 
 **Menu Schema**
 
