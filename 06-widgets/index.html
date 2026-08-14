@@ -536,17 +536,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Choices
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#language" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -878,17 +867,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#choices" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Choices
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#language" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1043,7 +1021,7 @@
 <li>TerminalEvent: Event generated when the MenuEvent has ended.</li>
 </ul>
 <p><strong>Bus</strong></p>
-<p>The <a href="../00-overview/#board">Board</a> contains a <code>bus</code> fields that accumulates Events emitted by the game loop. These Events are processed by the <a href="#mechanics">MenuMechanics</a>.</p>
+<p>The <a href="../00-overview/#board">Board</a> contains a <code>bus</code> field that accumulates Events emitted by the game loop. These Events are processed by the <a href="#mechanics">MenuMechanics</a> and then removed from the <code>bus</code>. The <code>bus</code> uses a First-In-First-Out processing order.</p>
 <h3 id="mechanics">Mechanics</h3>
 <p>When the Board is paused by a MenuEvent, MenuMechanics take over. This <a href="../05-mechanics/">Mechanic</a> translates the <a href="../03-player/#device-mapping">Player Device mappings</a> to Menu state changes. These Menu state changes then map back onto game state changes. For example, a Player may traverse the Container Widgets in an Inventory Menu and select a new piece of Equipment (see <a href="#inventory">Inventory Menu</a> below for more detail); This in turn updates the Player state.  </p>
 <p>When the Menu enters certain end states, such as the user clicking an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.</p>
@@ -1103,9 +1081,13 @@
 <li><code>children: List[Widget]</code></li>
 <li><code>root: bool</code></li>
 </ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>root</code> is only relevant when <code>layout == tab</code>, because the Pane's children are also Panes, i.e. <code>root</code> is used to distinguish Panes in <code>tab</code> layout.</p>
+</div>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, state): returns {asset}</code></li>
+<li><code>key(asset, state): returns &lt;asset&gt;</code></li>
 <li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <h3 id="buttons">Buttons</h3>
@@ -1129,9 +1111,12 @@
 <li><code>instance: buttons</code></li>
 </ul>
 <p><strong>Animation: TraversalAnimation</strong></p>
-<p>TODO</p>
 <ul>
-<li><code>if state.status != disabled:</code> </li>
+<li><code>if state.status not in [disabled, selected]:</code><ul>
+<li><code>if animation.frame == active: animation.frame = idle</code></li>
+<li><code>if animation.frame == idle: animation.frame = active</code>  </li>
+</ul>
+</li>
 </ul>
 <p><strong>State: TraversalState</strong></p>
 <ul>
@@ -1140,7 +1125,7 @@
 </ul>
 <p><strong>Frame: TraversalFrame</strong></p>
 <ul>
-<li><code>key(asset, state): returns {asset}-{state.status}</code></li>
+<li><code>key(asset, state): returns &lt;asset&gt;-&lt;state.status&gt;</code></li>
 <li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <h3 id="pages">Pages</h3>
@@ -1164,13 +1149,6 @@
 <li><code>more(): return content[-len(current) : ] != current</code></li>
 <li><code>scroll(): current = content[pageindex*pagesize : max(pageindex*(pagesize+1), len(content))]</code></li>
 </ul>
-<h3 id="choices">Choices</h3>
-<p><strong>Taxonomy</strong></p>
-<ul>
-<li><code>category: widgets</code></li>
-<li><code>instance: choices</code></li>
-</ul>
-<p>TODO</p>
 <h3 id="language">Language</h3>
 <p><strong>Taxonomy</strong></p>
 <ul>
@@ -1195,7 +1173,7 @@
 </ul>
 <p><strong>Frame: WidgetFrame</strong></p>
 <ul>
-<li><code>key(asset, state): returns {asset}-{state.status}</code></li>
+<li><code>key(asset, state): returns &lt;asset&gt;-&lt;state.status&gt;</code></li>
 <li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <h2 id="menus">Menus</h2>

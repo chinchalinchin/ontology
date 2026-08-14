@@ -1478,8 +1478,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, None): returns {asset}"</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, None): returns &lt;asset&gt;"</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code> </li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
@@ -1493,8 +1493,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, None): returns {asset}"</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, None): returns &lt;asset&gt;"</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
@@ -1509,11 +1509,13 @@
 <p><em>Objects</em> are inanimate, mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.</p>
 <p><strong>Binary Frames</strong></p>
 <p>An Object with two frames is considered to have an <em>On</em> and <em>off</em> state, i.e. a binary trigger. <em>Binary Objects</em> are Objects whose frame is dependent on their internal state switch.</p>
-<p>Binary objects frames are always organized in horizontal rows. The off frame will always start at <code>(0,0)</code> and the on frame will always start at <code>(w,0)</code>. Because of this relation, the dimensions of a Chest image file will always be <code>(2w, h)</code></p>
+<p>Binary Objects frames are always organized in horizontal rows. The off frame will always start at <code>(0,0)</code> and the on frame will always start at <code>(w,0)</code>. Because of this relation, the dimensions of a Chest image file will always be <code>(2w, h)</code>. </p>
+<p>Binary Objects have a <code>count</code> of 2, where as all other Objects are initialized with <code>count = 1</code> by default.</p>
 <p><strong>Properties: ObjectProperties</strong></p>
 <ul>
 <li><code>dim: Dimensions</code></li>
 <li><code>hitboxes: List[Hitbox]</code> </li>
+<li><code>count: int = 1</code></li>
 </ul>
 <h3 id="chests">Chests</h3>
 <p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>interact</code> <a href="../04-intentions/">Intention</a> while intersecting the hitboxes of the <em>Chest</em>. When <code>switch == true</code>, the Chest is <em>on</em> (open). When <code>switch == false</code>, the Chest is <em>off</em> (closed).</p>
@@ -1526,8 +1528,8 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns {asset}-{animation.frame}</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.frame&gt;</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: ContainerState</strong></p>
 <ul>
@@ -1545,8 +1547,8 @@
 </ul>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns {asset}</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, animation): returns &lt;asset&gt;</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="doors">Doors</h3>
 <p><em>Doors</em> are <em>Objects</em> that alter a Sprite's <code>&lt;layer&gt;</code>. When a Sprite enters the hitbox of a door, the <code>&lt;layer&gt;</code> is changed to the <code>&lt;outlayer&gt;</code> at the <code>&lt;out&gt;</code> Position.</p>
@@ -1559,8 +1561,8 @@
 </ul>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns {asset}</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, animation): returns &lt;asset&gt;</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="gates">Gates</h3>
 <p><em>Gates</em> are <em>Binary Objects</em> whose state is connected to <em>Plates</em>. When a <em>Gate</em> is on (open), it does not have hitboxes and the player can pass freely through it. When a Gate is off (closed), its hitboxes prevent the player from passing through its area.</p>
@@ -1571,8 +1573,8 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns {asset}-{animation.frame}</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.frame&gt;</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SwitchState</strong></p>
 <ul>
@@ -1590,8 +1592,8 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns {asset}-{animation.frame}</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.frame&gt;</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SwitchState</strong></p>
 <ul>
@@ -1615,8 +1617,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns {asset}</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, animation): returns &lt;asset&gt;</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: PositionalState</strong></p>
 <ul>
@@ -1629,8 +1631,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns {asset}</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, animation): returns &lt;asset&gt;</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MetricState</strong></p>
 <ul>
@@ -1658,8 +1660,8 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns {asset}-{animation.frame}</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.frame&gt;</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -1675,8 +1677,8 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>key(asset, animation) : {asset}-{animation.frame}</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, animation) : &lt;asset&gt;-&lt;animation.frame&gt;</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -1710,8 +1712,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, None) returns {asset}</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, None) returns &lt;asset&gt;</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: PropertyState</strong></p>
 <ul>
@@ -1800,8 +1802,8 @@
 </ul>
 <p><strong>Frame: StateFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.action&gt;-&lt;animation.direction&gt;-&lt;animation.frame&gt;</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.actions.*&gt;-&lt;properties.actions.*.directions.*&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -1822,8 +1824,8 @@
 </ul>
 <p><strong>Frame: StateFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.action&gt;-&lt;animation.direction&gt;-&lt;animation.frame&gt;</code></li>
+<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.actions.*&gt;-&lt;properties.actions.*.directions.*&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SpriteState</strong></p>
 <ul>
