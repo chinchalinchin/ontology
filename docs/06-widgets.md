@@ -76,7 +76,7 @@ Buttons are selectable Widgets that enter into a Status of `selected` when trigg
 - If `reference == label`, then `content` is a string containing text to be displayed on the button.
 
 !!! warning
-    The Button Asset must have large enough dimensions to accomodate Language Asset embeddings.
+    The Button Asset must have large enough dimensions to accomodate Language Asset embedding.
 
 !!! warning
     Any label content added to a Button is truncated if it exceeds the dimensions of the Button.
