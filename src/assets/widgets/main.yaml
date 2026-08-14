@@ -5,7 +5,7 @@ widgets:
         w:
         l:
       frames:
-        - enabled 
+        - idle
         - active
         - selected
         - disabled
@@ -13,35 +13,72 @@ widgets:
       dimensions:
         w:
         l:
+      frames:
+        - idle
+        - active
+        - selected
+        - disabled
     right:
       dimensions:
         w:
         l:
+      frames:
+        - idle
+        - active
+        - selected
+        - disabled
     up:
       dimensions:
         w:
         l:
+      frames:
+        - idle
+        - active
+        - selected
+        - disabled
   buttons:
     icon:
       dimensions:
         w:
         l:
+      frames:
+        - idle
+        - active
+        - selected
+        - disabled
     label:
       dimensions:
         w:
         l:
+      frames:
+        - idle
+        - active
+        - selected
+        - disabled
   choices:
     checkbox:
       dimensions:
         w:
         l:
+      frames:
+        - unchecked
+        - checked
     proposition:
       dimension:
         w: 
         l:
       frames:
-        - 
+        - unchecked 
+        - checked
   containers:
+    slots:
+      dimensions:
+        w:
+        l:
+      frames:
+        - idle
+        - active
+        - selected 
   language:
     digits:
       dimensions:
@@ -74,3 +111,15 @@ widgets:
         - coin
   meters:
   panes:
+    dialogue:
+      dimensions:
+        w:
+        l:
+      frames:
+        - root
+    popup:
+      dimensions:
+        w:
+        l:
+      frames:
+        - root

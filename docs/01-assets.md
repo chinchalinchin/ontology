@@ -621,10 +621,10 @@ Sprite States are covered in more detail in the [Sprites documentation](./02-spr
 
 Asset Recipe files determine the specific (State, Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.
 
-* Location: `/src/assets/main.yaml`
+* Location: `/src/data/recipes/main.yaml`
 
 ```yaml
---8<-- "docs/.static/yaml/asset-recipes.yaml"
+--8<-- "docs/.static/yaml/data-recipes.yaml"
 ```
 
 **Default Recipes**

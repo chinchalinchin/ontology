@@ -1,5 +1,30 @@
 menus:
   dialogue:
+    panes:
+      - id: portrait
+        position: 
+          px: 0.1
+          py: 0.75
+        layout: stack
+        alignment: center
+        widgets:
+          - category: widget
+            instance: container
+            id: portrait_box
+            bind: { content: sprite.state.character.portrait }
+
+      - id: dialogue
+        position: 
+          px: 0.3
+          py: 0.75
+        layout: dock
+        alignment: left
+        spacing: 5 # Pixels between widgets
+        widgets:
+          - category: widget
+            instance: language
+            id: text_box
+            bind: { content: sprite.state.psyche.communication }
   editor:
   inventory:
   market:

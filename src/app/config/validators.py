@@ -337,7 +337,7 @@ class PyEquipmentProperties(BaseModel):
 # -------------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------
-# ------------------------------------------------------------------ DEVICE YAML SCHEMA
+# ---------------------------------------------------------------- MECHANIS YAML SCHEMA
 
 class PyMechanicsConfiguration(YamlBaseSettings):
     order: List[Mechanics]
@@ -382,7 +382,7 @@ class PyRecipeConfiguration(YamlBaseSettings):
     assets: PyRecipes
 
     model_config = SettingsConfigDict(
-        yaml_file = settings.ASSET_DIR / settings.APP_EXT
+        yaml_file = settings.DATA_DIR / "recipes" / settings.APP_EXT
     )
 
 # -------------------------------------------------------------------------------------
