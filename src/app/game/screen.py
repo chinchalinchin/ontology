@@ -50,32 +50,33 @@ class Screen:
         logger.debug(f"Offloading primitive coordinates to Cython background construct for {len(tiles)} total tiles.")
 
         for tile in tiles:
-            # Query Registry using the computed tile key
-            frame_key = tile.frame.key(tile.id, tile.state)
-            tex_data = self.registry.data(frame_key)
-            if tex_data:
-                tex, sx, sy, sw, sl = tex_data
-                
-                # Append flat primitives directly for the C-loop
-                tile_tuple = ( 
-                    tex,
-                    sx, 
-                    sy, 
-                    sw, 
-                    sl,
-                    tile.state.position.x, 
-                    tile.state.position.y,
-                    tile.dimensions.w, 
-                    tile.dimensions.l,
-                    tile.state.multiple.nx, 
-                    tile.state.multiple.ny
-                )
+            # Query Registry using the computed tile keys
+            frame_keys = tile.frame.keys(tile.id, tile.state)
+            for frame_key in frame_keys:
+                tex_data = self.registry.data(frame_key)
+                if tex_data:
+                    tex, sx, sy, sw, sl = tex_data
+                    
+                    # Append flat primitives directly for the C-loop
+                    tile_tuple = ( 
+                        tex,
+                        sx, 
+                        sy, 
+                        sw, 
+                        sl,
+                        tile.state.position.x, 
+                        tile.state.position.y,
+                        tile.dimensions.w, 
+                        tile.dimensions.l,
+                        tile.state.multiple.nx, 
+                        tile.state.multiple.ny
+                    )
 
-                # Route properties
-                if tile.taxonomy.instance == AssetInstances.BACK:
-                    cython_bg_tiles.append(tile_tuple)
-                elif tile.taxonomy.instance == AssetInstances.FORE:
-                    cython_fg_tiles.append(tile_tuple)
+                    # Route properties
+                    if tile.taxonomy.instance == AssetInstances.BACK:
+                        cython_bg_tiles.append(tile_tuple)
+                    elif tile.taxonomy.instance == AssetInstances.FORE:
+                        cython_fg_tiles.append(tile_tuple)
         
         construct(self.bg_canvas, cython_bg_tiles)
         construct(self.fg_canvas, cython_fg_tiles)
@@ -110,26 +111,27 @@ class Screen:
         active_assets = []
         
         for asset in assets:
-            # 1. Resolve current animation frame key
-            frame_key = asset.frame.key(asset.id, asset.state)
+            # 1. Resolve current animation frame keys
+            frame_keys = asset.frame.keys(asset.id, asset.state)
             
-            # 2. Query registry for C-level source coordinates
-            tex_data = self.registry.data(frame_key)
+            for frame_key in frame_keys:
+                # 2. Query registry for C-level source coordinates
+                tex_data = self.registry.data(frame_key)
 
-            if not tex_data:
-                continue 
+                if not tex_data:
+                    continue 
 
-            tex, sx, sy, sw, sl = tex_data
-            
-            # 3. Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
-            dx, dy = asset.state.position.x, asset.state.position.y
-            dw, dl = asset.dimensions.w, asset.dimensions.l
-            
-            # 4. Strict Camera Culling: Only pass geometry if intersecting the camera frame 
-            if (dx + dw >= pov.x and dx <= pov.x + self.screensize.w and
-                dy + dl >= pov.y and dy <= pov.y + self.screensize.l):
+                tex, sx, sy, sw, sl = tex_data
                 
-                active_assets.append((tex, sx, sy, sw, sl, dx, dy, dw, dl))
+                # 3. Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
+                dx, dy = asset.state.position.x, asset.state.position.y
+                dw, dl = asset.dimensions.w, asset.dimensions.l
+                
+                # 4. Strict Camera Culling: Only pass geometry if intersecting the camera frame 
+                if (dx + dw >= pov.x and dx <= pov.x + self.screensize.w and
+                    dy + dl >= pov.y and dy <= pov.y + self.screensize.l):
+                    
+                    active_assets.append((tex, sx, sy, sw, sl, dx, dy, dw, dl))
 
         # 5. Lightweight Python sort on active_assets based on Position Y + Dimension L
         # primitive indexes: dx (5), dy (6), dw (7), dl (8) 

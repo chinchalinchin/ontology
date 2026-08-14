@@ -18,15 +18,15 @@ All Assets have an *Key*, *Properties* and *State*.
 
 In addition, Assets are divided into several categories. See [Assets](./01-assets.md) for more information on each category. Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,
 
-- Crafts
-- Cursors
-- Effects
+- [Crafts](./01-assets.md#crafts)
+- [Cursors](./01-assets.md#cursors)
+- [Effects](./01-assets.md#effects)
 - Environ
-- Objects
-- Sheets
-- Sounds
-- Tiles
-- Widgets
+- [Objects](./01-assets.md#objects)
+- [Sheets](./01-assets.md#sheets)
+- [Sounds](./07-sounds.md)
+- [Tiles](./01-assets.md#tiles)
+- [Widgets](./06-widgets.md)
 
 Assets are placed in the `/src/assets/<category>/` directory and then added and configured to the Asset category index `/src/assets/<category>/main.yaml`. See [Asset Schema](./01-assets.md#schemas) for more information on each Asset category index schema.
 
@@ -34,20 +34,24 @@ The YAML index schema for each Asset configures its *properties*, i.e. its stati
 
 ## Data
 
-An Asset is deployed onto a *Board*, where it acquires its *state*, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests state data stored in the `/src/data/**` directory. 
+Runtime information is stored in the `/src/data/**` directory, otherwise known as the *data directory*. This information is divided in *state* and *configuration*, in the `/src/data/state/*` and the `/src/data/config/*` directories respectively, otherwise known as the *state directory* and the *configuration directory*.
+
+### State
+
+An Asset is deployed onto a *Board*, where it acquires its *state*, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests state data stored in the `/src/data/state/*` directory. 
 
 An Asset Category has a single schema for properties, but each individual Asset Instance may have a unique State, particular to particular deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).
 
-Various aspects of the Asset State are defined by the configuration stored in the `/src/data/**` directory,
+### Configuration
 
-- Corpus
-- Equipment
-- Intentions
-- Mappings
-- Mechanics
-- Menus
-- Recipes
-- State
+Mechanics and other components of the game engine (e.g. Menus, Orchestrator, etc.) utilize configuration stored in the `/src/data/config/*` directory. The following engine components are configured by the files in this directory.
+
+- Scripts
+- [Intentions](./04-intentions.md)
+- [Mappings](./03-player.md#mapping)
+- [Mechanics](./05-mechanics.md)
+- [Menus](./06-widgets.md#menus)
+- [Recipes](./01-assets.md#recipes)
 
 ## Application 
 

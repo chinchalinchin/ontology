@@ -6,6 +6,9 @@ A Player is a special type of Sprite Sheet Asset. Like all other Assets, its sta
 
 The Player Sprite Sheet is configured through the `player` Sheet [Persona Stack](./02-sprites.md#personas). However, its State differs significantly from the [Sprite state](./02-sprites.md).
 
+!!! important
+    The `player` Sprite *must* be defined in `/src/assets/sheets/main.yml#sprites`.
+
 **Taxonomy**
 
 - `category: sheets`
@@ -17,7 +20,6 @@ The Player Sprite Sheet is configured through the `player` Sheet [Persona Stack]
     - `count: int`
     - `directions:`
         - `row: int`
-        - `attackboxes: List[Attackbox]` 
 * `dimensions: Dimensions`
 * `hitboxes: List[Hitbox]` 
 * `stack: List[str]`
@@ -69,14 +71,14 @@ The input state of the Keyboard is polled through SDL. Keyboard mappings corresp
 The default mappings bundled with the game are provided below,
 
 ```yaml
---8<-- "docs/.static/yaml/examples/default-mapping-matrix.yaml"
+--8<-- "docs/.static/yaml/examples/default-mappings.yaml"
 ```
 
 ## Schemas
 
 ### Device Mappings
 
-* Location: `src/data/mappings/main.yaml`
+* Location: `src/data/config/mappings/main.yaml`
 
 ```yaml
 --8<-- "docs/.static/yaml/data-mappings.yaml"

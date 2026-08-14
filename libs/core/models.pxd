@@ -19,8 +19,3 @@ cdef class Velocity:
 cdef class Hitbox:
     cdef public Position position
     cdef public Dimensions dimensions
-
-cdef class Attackbox:
-    cdef public Position position
-    cdef public Dimensions dimensions
-    cdef public int hitframe

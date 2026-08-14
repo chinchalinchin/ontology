@@ -1,8 +1,0 @@
-equipment:
-  <kind>:
-    <key>:
-      animation: 
-        action: <action-key>
-        direction: <direction-key>
-      sheets:
-        - <equipment-sheet-key>

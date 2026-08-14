@@ -6,8 +6,8 @@
 from enum import Enum
 
 class Devices(str, Enum):
-    CONTROLLER  = "controller"
-    KEYBOARD    = "keyboard"
+    CONTROLLER      = "controller"
+    KEYBOARD        = "keyboard"
 
 # -------------------------------- ASSET ENUMERATIONS
 
@@ -19,6 +19,7 @@ class AssetCategories(str, Enum):
     OBJECTS         = "objects"
     SHEETS          = "sheets"
     TILES           = "tiles"
+    WIDGETS         = "widgets"
 
 class AssetInstances(str, Enum):
     BACK            = "back"
@@ -36,7 +37,16 @@ class AssetInstances(str, Enum):
     PIXIES          = "pixies"
     SPRITES         = "sprites"
     PLAYERS         = "players"
-
+    PANES           = "panes"
+    BUTTONS         = "buttons"
+    PAGES           = "pages"
+    METERS          = "meters"
+    LANGUAGE        = "language"
+    WEAPONS         = "weapons"
+    ARMOR           = "armor"
+    UTILITIES       = "utilities"
+    TOOLS           = "tools"
+    
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 
 class FrameRecipe(str, Enum):
@@ -69,8 +79,6 @@ class Directions(str, Enum):
     LEFT            = "left"
     DOWN            = "down"
     RIGHT           = "right"
-    # QUANTIFIERS
-    ALL             = "all"
 
 class Actions(str, Enum):
     CAST            = "cast"
@@ -79,8 +87,6 @@ class Actions(str, Enum):
     SLASH           = "slash"
     SHOOT           = "shoot"
     DIE             = "die"
-    # QUANTIFIERS
-    ALL             = "all"
 
 class Expressions(str, Enum):
     AGREEMENT       = "agreement"
@@ -149,3 +155,12 @@ class Mechanics(str, Enum):
     SPEECH          = "speech"
     SWITCH          = "switch"
     TRANSITION      = "transition"
+
+class Configurations(str, Enum):
+    EQUIPMENT       = "equipment"
+    INTENTIONS      = "intentions"
+    MAPPINGS        = "mappings"
+    MECHANICS       = "mechanics"
+    MENUS           = "menus"
+    RECIPES         = "recipes"
+    SCRIPTS         = "scripts"

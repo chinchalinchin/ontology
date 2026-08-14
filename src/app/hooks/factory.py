@@ -26,7 +26,8 @@ from app.config.enums import (
     StateRecipe,
     AssetCategories,
     Devices,
-    Mechanics
+    Mechanics,
+    Configurations
 )
 from app.game.mechanics import (
     AnimationMechanics,
@@ -40,6 +41,10 @@ from app.game.mechanics import (
     PlayerMechanics,
     RemoveMechanics,
     SpeechMechanics
+)
+from app.models.config import (
+    EquipmentConfiguration,
+    IntentionConfiguration
 )
 from app.models.state import (
     AnimatorState, 
@@ -59,9 +64,7 @@ from app.models.properties import (
     ObjectProperties, 
     TileProperties, 
     CraftProperties, 
-    SheetProperties,
-    EquipmentProperties,
-    IntentionProperties
+    SheetProperties
 )
 from app.game.devices import (
     Keyboard,
@@ -73,13 +76,11 @@ from libs.core.models import (
     Position, 
     Dimensions, 
     Hitbox, 
-    Attackbox
 )
 
 class Factory:
     CYTHON_HINTS = {
         Hitbox: {'position': Position, 'dimensions': Dimensions},
-        Attackbox: {'position': Position, 'dimensions': Dimensions, 'hitframe': int}
     }
     # Map Enums directly to Runtime Data Classes
     STATE_MAP = {
@@ -135,6 +136,11 @@ class Factory:
         Mechanics.COMBAT: CombatMechanics,
         Mechanics.MOTION: MotionMechanics,
         Mechanics.SPEECH: SpeechMechanics
+    }
+
+    CONFIGURATION_MAP = {
+        Configurations.EQUIPMENT: EquipmentConfiguration,
+        Configurations.INTENTIONS: IntentionConfiguration
     }
 
     @classmethod
@@ -194,6 +200,11 @@ class Factory:
         return Factory._hydrate(target_cls, snapshot)
 
     @staticmethod
+    def configuration(config, snapshot):
+        target_cls = Factory.CONFIGURATION_MAP.get(config)
+        return Factory._hydrate(target_cls, snapshot)
+    
+    @staticmethod
     def frame(recipe: FrameRecipe):
         return Factory.FRAME_MAP.get(recipe, SingleFrame)()
 
@@ -204,14 +215,6 @@ class Factory:
     @staticmethod
     def taxonomy(id, name, category, instance,):
         return Taxonomy(id, name, category, instance)
-
-    @staticmethod
-    def equipment(snapshot):
-        return Factory._hydrate(EquipmentProperties, snapshot)
-
-    @staticmethod
-    def intentions(snapshot):
-        return Factory._hydrate(IntentionProperties, snapshot)
 
     @staticmethod
     def device(dev, mapping):

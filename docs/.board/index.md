@@ -4,6 +4,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
   `[ ]`: Open
   `[~]`: In Progress
   `[x]`: Closed/Implemented
+  `[!]`: DO NOT COMPLETE
 
 **Table of Contents**
 

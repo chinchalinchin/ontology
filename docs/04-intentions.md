@@ -1,7 +1,5 @@
 # Ontology: Intentions & Goals
 
-* Location: `/src/data/intentions/main.yaml`
-
 *Intentions* and *Goals* are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite "finite automaton", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.
 
 Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the [Intention Transition Matrix](#transition-matrix).
@@ -16,6 +14,8 @@ It may indirectly alter the Sprite state changes or other properties of the Spri
 
 ### Transition Matrix
     
+* Location: `/src/data/config/intentions/main.yaml`
+
 !!! important
     The Player state does not observe the Intention Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See [Player documentation](./03-player.md) for more information on the Player.
 

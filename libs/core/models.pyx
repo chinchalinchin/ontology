@@ -36,14 +36,6 @@ cdef class Velocity:
         self.vx = vx
         self.vy = vy
 
-cdef class Attackbox:
-    """
-    """
-    def __init__(self, Position position, Dimensions dimensions, int hitframe):
-        self.position = position
-        self.dimensions = dimensions
-        self.hitframe = hitframe
-
 cdef class Hitbox:
     """
     """

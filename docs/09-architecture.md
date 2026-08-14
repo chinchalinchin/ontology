@@ -5,7 +5,7 @@ This section contains an in-depth presentation of the game engine's programmatic
 ## Initialization
 
 1. Entrypoint: `Orchestrate`
-    * Load Configuration into memory
+    * Load data into memory
         - Load Asset Recipes YAML File from `/src/assets/main.yaml`
         - Load Asset Category properties YAML files from `/src/assets/<category>/main.yaml`
         - Load Asset Instance state YAML files from the `/src/data/state/<board-key>` directory, where `<board-key>` is the selected board. There may be an arbitrary number of state files, with any filename, in the `<board-key>` directory.
@@ -41,6 +41,7 @@ Maps associate ancillary Asset states to their final Animation state.
 
 See [AnimationMap](./04-intentions.md#animationmap) and [DialogueMap](./04-intentions.md#dialoguemap) for more information.
 
+The `AnimationMap` plays a crucial role in enforcing logical constraints. For example, `TransitionMechanics` and `PlayerMechanics` utilize `AnimationMap.action(state, equipment)` to resolve whether an intended action is possible. This guarantees that an `attack` intention will not translate into a `thrust` animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.
 
 ## Cython
 
@@ -72,10 +73,6 @@ The engine explicitly retains the Global Interpreter Lock (GIL) during geometry 
 - Hitbox:
     - `position: Position`
     -` dimension Dimensions`
-- Attackbox
-    - `position: Position`
-    - `dimensions: Dimensions`
-    - `hitframe: int`
 - ScreenPosition:
     - `px: double`
     - `py: double`

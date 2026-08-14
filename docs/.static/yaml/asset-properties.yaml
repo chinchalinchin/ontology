@@ -139,57 +139,146 @@ objects:
 # ------------------------------------------------------------------
 # ----------------------------------------------------------- SHEETS
 sheets:
+  armor:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      stack:
+        - <sheet-asset-key>
+      actions:
+        <action-key>:
+          count: Frame Count of Pixie Sheets
+          directions:
+            <direction-key>:
+              row: <row-index>
+  shields:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      stack:
+        - <sheet-asset-key>
+      actions:
+        <action-key>:
+          count: Frame Count of Pixie Sheets
+          directions:
+            <direction-key>:
+              row: <row-index>
+  tools:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      stack:
+        - <sheet-asset-key>
+      actions:
+        <action-key>:
+          count: Frame Count of Pixie Sheets
+          directions:
+            <direction-key>:
+              row: <row-index>
+  utilities:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      stack:
+        - <sheet-asset-key>
+      actions:
+        <action-key>:
+          count: Frame Count of Pixie Sheets
+          directions:
+            <direction-key>:
+              row: <row-index>
+  weapons:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      stack:
+        - <sheet-asset-key>
+      actions:
+        <action-key>:
+          count: Frame Count of Pixie Sheets
+          directions:
+            <direction-key>:
+              row: <row-index>
   pixies:
-    personas:
-      <id>:
-        dimensions:
-          w: Pixel Horizontal Size
-          l: Pixel Vertical Size
-        hitboxes:
-          - position: 
-              x: Relative Horizontal Position
-              y: Relative Vertical Position
-            dimensions:
-              w: Pixel Horizontal Size
-              l: Pixel Vertical Size
-        stack:
-          - <sheet-asset-key>
-    actions:
-      <action-key>:
-        count: Frame Count of Pixie Sheets
-        directions:
-          <direction-key>:
-            row: <row-index>
-            attackboxes: null
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      stack:
+        - <sheet-asset-key>
+      actions:
+        <action-key>:
+          count: Frame Count of Pixie Sheets
+          directions:
+            <direction-key>:
+              row: <row-index>
   sprites:
-    personas:
-      <id>:
-        dimensions:
-          w: Pixel Horizontal Size
-          l: Pixel Vertical Size
-        hitboxes:
-          - position: 
-              x: Relative Horizontal Position
-              y: Relative Vertical Position
-            dim:
-              w: Pixel Horizontal Size
-              l: Pixel Vertical Size 
-        stack:
-          - <sheet-asset-key>
-    actions:
-      <action-key>:
-        count: Frame Count of Action Row Group
-        directions:
-          <direction-key>:
-            row: <row-index>
-            attackboxes:
-              - position: 
-                  x: Relative Horizontal position
-                  y: Relative Vertical position
-                dimensions:
-                  w: Pixel Horizontal Size
-                  l: Pixel Vertical Size
-                hitframe: <hitframe-index>
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dim:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size 
+      stack:
+        - <sheet-asset-key>
+      actions:
+        <action-key>:
+          count: Frame Count of Action Row Group
+          directions:
+            <direction-key>:
+              row: <row-index>
 # ------------------------------------------------------------------
 # ---------------------------------------------------------- WIDGETS
 widgets:

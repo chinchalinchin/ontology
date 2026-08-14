@@ -26,12 +26,12 @@ class Frame(ABC):
     Foundational interface for Assets.
     """
     @abstractmethod
-    def key(self, 
+    def keys(self, 
         id: str, 
         state: AssetState
-    ) -> str:
+    ) -> list[str]:
         """
-        Abstract method for Asset's frame key schema. 
+        Abstract method for Asset's frame key schema. Returns a list of keys for layered textures.
         """
         pass
 

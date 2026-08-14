@@ -99,14 +99,14 @@ State files are maintained in `/src/data/state/<board-key>/**`, where `<board-ke
 
 ### Asset Hierarchy
 
-While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still abide a strict Object hierarchy in terms of the configuration they ingest. The configuration [schemas](#schemas) encode Asset Categories and Instances into the top-level keys.
+While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict Object hierarchy. The property and state [schemas](#schemas) encode Asset Categories and Instances into the top-level keys.
 
 !!! note
-    The Asset Hierarchy can be thought of as a data abstraction governing the configuration schemas which drive the ECS instantiation. 
+    The Asset Hierarchy can be thought of as a data abstraction governing the schemas which drive the ECS instantiation. 
 
 **Categories & Instances**
 
-Asset *Categories* form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the configuration files and inject into its deployment. 
+Asset *Categories* form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the property files and inject into its deployment. 
 
 - Tiles: Properties = Dimensions 
 - Cursor: Properties = Dimensions
@@ -115,7 +115,7 @@ Asset *Categories* form the top layer of the hierarchy. Each Asset Category is d
 - Effects: Properties = Dimensions, Hitboxes, Count
 - Sheets: Properties = Dimensions, Hitboxes, Actions, Personas
 
-Each Category has Instances. Asset *Instances* form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Assets Instance determine what type of state it will parse from the configuration files and inject into its deployment. 
+Each Category has Instances. Asset *Instances* form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Assets Instance determine what type of state it will parse from the property and state files and inject into its deployment. 
 
 - Tile - BackTile: State = Position, Layer
 - Tile - ForeTile: State = Position, Layer
@@ -143,7 +143,7 @@ Every physical entity in the game is an instance of the unified `Asset` class. T
 1. **Properties:** A model defining immutable data (e.g., `TileProperties`, `ObjectProperties`, etc.).
 2. **State:** A model defining mutable data (e.g., `ContainerState`, `PositionalState`, etc.).
 3. **Animation** Stateless strategies (e.g. `BinaryAnimation`, `StateAnimation`, etc.) injected into the Asset. These contain the specific logic for updating frames.
-4. **Frame:** A static schema calculation used by the renderer to determine the correct texture string key.
+4. **Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. A `Frame` component returns a `List[str]` rather than a single `str`. An `Asset` can be a single logical entity composed of multiple superimposed rendered textures
 
 *Behaviors* are decoupled from Assets and managed entirely by *Mechanics* classes that iterate over the Board Assets. See [Mechanics documentation](./06-architecture.md#mechanics) for more information.
 
@@ -160,7 +160,7 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy is encod
 
 `id` uniquely identifies the Asset file. It must match a file found in the `src/assets/**` directory.
 
-`category` determines what property model is employed by the Asset. The category must be configured by a `src/assets/<category>/main.yaml` configuration file.
+`category` determines what property model is employed by the Asset. The category must be configured by a `src/assets/<category>/main.yaml` property file.
 
 `instance` determines what state model is employed by the Asset. An Asset's state is hydrated from the `data/state/<board>/*` directory.
 
@@ -517,22 +517,12 @@ This snippet from the [Schemas](#schemas) shows the general structure of an Acti
     count:
     directions:
         <direction-key>:
-            row: 
-            attackboxes:
-                - position:
-                    x:
-                    y: 
-                  dim:
-                    l:
-                    w:
-                  hitframe:
+            row:
 ```
 
 * `<action-key>: str` - Ranges over `cast, thrust, walk, slash, shoot, die`
 * `<direction-key> : str` -  Ranges over  `up, left, down, right`
 * `count: int` - is the number of frames in the Action row grouping. 
-* `row: int` - Index of the (Action, Direction) row in the Sheet file.
-* `attackboxes` - List of indexed Hitboxes, where the `hitframe` index denotes what frame of the animation it applies, i.e. the intersection calculation changes based on what frame in animation over which it is being evaluated. `pos` is an Position tuple and `dim` is a Dimensions tuple, exactly mirroring their Hitbox equivalents.
 
 **Personas**
 
@@ -589,7 +579,7 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 !!! note
     Pixies only have a single Action state, `walk`.
 
-#### Sprites
+### Sprites
 
 *Sprites* are *Sheets* over multiple rows of frames with a variable number of frames per row. They have a diverse palette of Actions. They are meant to encapsulate the core Characters, e.g. the player, NPCs, and enemies.
 
@@ -618,19 +608,25 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 
 Sprite States are covered in more detail in the [Sprites documentation](./02-sprites.md).
 
+### Equipment (Weapons, Utilities, Tools, Armor, Shields)
+
+Equipment is a group of Asset Instances within the Category of Sheets. They are closely tied to Sprites. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's inventory. Because of this relationship between the Assets,  i.e. Equipment rendering is dependent on Sprite state, Equipment does not possess its own state, frame or animation. Equipment only has properties.
+
+Equipment is covered in more detail in the [Sprites documentation](./02-sprites.md).
+
 ## Schemas
 
-### Recipes
+### Recipe Configuration
 
 Asset Recipe files determine the specific (State, Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.
 
-* Location: `/src/data/recipes/main.yaml`
+* Location: `/src/data/config/recipes/main.yaml`
 
 ```yaml
 --8<-- "docs/.static/yaml/data-recipes.yaml"
 ```
 
-**Default Recipes**
+**Default Recipe Configuration**
 
 ```yaml
 --8<-- "docs/.static/yaml/examples/default-recipes.yaml"

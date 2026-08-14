@@ -5,11 +5,10 @@ Package for core game loop.
 """
 # Standard Library
 import time
-from typing import Dict, List
+from typing import List
 import logging
 
 # Application Libraries
-from app.config.enums import Devices
 from app.game.board import Board
 from app.game.mechanics import Mechanic
 from app.game.screen import Screen
@@ -30,7 +29,11 @@ class Engine:
     screens: List[Screen]
     mechanics: List[Mechanic]
 
-    def __init__(self, board: Board, screens: List[Screen], mechanics: List[Mechanic]):
+    def __init__(self, 
+        board: Board, 
+        screens: List[Screen], 
+        mechanics: List[Mechanic]
+    ):
         self.board = board
         self.screens = screens
         self.mechanics = mechanics

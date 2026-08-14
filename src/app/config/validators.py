@@ -32,7 +32,9 @@ from app.config.enums import (
     Directions,
     Intentions,
     PlayerGoals,
-    Mechanics
+    Mechanics,
+    AssetCategories,
+    Configurations
 )
 
 class YamlBaseSettings(BaseSettings):
@@ -73,14 +75,8 @@ class PyHitbox(BaseModel):
     position: PyPosition
     dimensions: PyDimensions
 
-class PyAttackbox(BaseModel):
-    position: PyPosition
-    dimensions: PyDimensions
-    hitframe: int
-
 class PyDirection(BaseModel):
     row: int
-    attackboxes: Optional[List[PyAttackbox]] = []
 
 class PyAction(BaseModel):
     count: int
@@ -337,13 +333,13 @@ class PyEquipmentProperties(BaseModel):
 # -------------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------
-# ---------------------------------------------------------------- MECHANIS YAML SCHEMA
+# --------------------------------------------------------------- MECHANICS YAML SCHEMA
 
 class PyMechanicsConfiguration(YamlBaseSettings):
     order: List[Mechanics]
 
     model_config = SettingsConfigDict(
-        yaml_file = settings.DATA_DIR / "mechanics" / settings.APP_EXT
+        yaml_file = settings.CONFIG_DIR / Configurations.MECHANICS / settings.APP_EXT
     )
 
 # -------------------------------------------------------------------------------------
@@ -353,7 +349,7 @@ class PyDeviceMappingConfiguration(YamlBaseSettings):
     mappings: PyDeviceMappings
 
     model_config = SettingsConfigDict(
-        yaml_file = settings.DATA_DIR / "mappings" / settings.APP_EXT
+        yaml_file = settings.CONFIG_DIR / Configurations.MAPPINGS / settings.APP_EXT
     )
 
 # -------------------------------------------------------------------------------------
@@ -363,7 +359,7 @@ class PyIntentionPropertyConfiguration(YamlBaseSettings):
     intentions: Dict[str, List[PyIntentionTransition]]
 
     model_config = SettingsConfigDict(
-        yaml_file = settings.DATA_DIR / "intentions" / settings.APP_EXT
+        yaml_file = settings.CONFIG_DIR / Configurations.INTENTIONS / settings.APP_EXT
     )
 
 # -------------------------------------------------------------------------------------
@@ -373,7 +369,7 @@ class PyEquipmentPropertyConfiguration(YamlBaseSettings):
     equipment: PyEquipmentProperties
 
     model_config = SettingsConfigDict(
-        yaml_file = settings.DATA_DIR / "equipment" / settings.APP_EXT
+        yaml_file = settings.CONFIG_DIR / Configurations.EQUIPMENT / settings.APP_EXT
     )
 # -------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ RECIPE YAML SCHEMA
@@ -382,7 +378,7 @@ class PyRecipeConfiguration(YamlBaseSettings):
     assets: PyRecipes
 
     model_config = SettingsConfigDict(
-        yaml_file = settings.DATA_DIR / "recipes" / settings.APP_EXT
+        yaml_file = settings.CONFIG_DIR / Configurations.RECIPES / settings.APP_EXT
     )
 
 # -------------------------------------------------------------------------------------
@@ -460,7 +456,7 @@ class PyTilePropertyConfiguration(YamlBaseSettings):
     tiles: PyTilePropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = settings.ASSET_DIR / "tiles" / settings.APP_EXT
+        yaml_file = settings.ASSET_DIR / AssetCategories.TILES / settings.APP_EXT
     )
 
 
@@ -468,33 +464,33 @@ class PyEffectPropertyConfiguration(YamlBaseSettings):
     effects: PyEffectPropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = settings.ASSET_DIR / "effects" / settings.APP_EXT
+        yaml_file = settings.ASSET_DIR / AssetCategories.EFFECTS / settings.APP_EXT
     )
     
 class PyObjectPropertyConfiguration(YamlBaseSettings):
     objects: PyObjectPropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = settings.ASSET_DIR / "objects" / settings.APP_EXT
+        yaml_file = settings.ASSET_DIR / AssetCategories.OBJECTS / settings.APP_EXT
     )
 
 class PyCraftPropertyConfiguration(YamlBaseSettings):
     crafts: PyCraftPropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = settings.ASSET_DIR / "crafts" / settings.APP_EXT
+        yaml_file = settings.ASSET_DIR / AssetCategories.CRAFTS / settings.APP_EXT
     )
 
 class PyCursorPropertyConfiguration(YamlBaseSettings):
     cursors: PyCursorPropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = settings.ASSET_DIR / "cursors" / settings.APP_EXT
+        yaml_file = settings.ASSET_DIR / AssetCategories.CURSORS / settings.APP_EXT
     )
 
 class PySheetPropertyConfiguration(YamlBaseSettings):
     sheets: PySheetPropertyInstances
 
     model_config = SettingsConfigDict(
-        yaml_file = settings.ASSET_DIR / "sheets" / settings.APP_EXT
+        yaml_file = settings.ASSET_DIR / AssetCategories.SHEETS / settings.APP_EXT
     )

@@ -35,7 +35,7 @@ These Mechanics handle the Sprite Intention logic.
 
 ## Configuration
 
-* Location: `/src/data/mechanics/main.yaml`
+* Location: `/src/data/config/mechanics/main.yaml`
 
 ```yaml
 mechanics:

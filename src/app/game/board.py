@@ -16,9 +16,10 @@ from app.config.enums import (
 )
 from app.game.devices import Device
 from app.game.mechanics import Mechanic
-from app.models.properties import (
-    IntentionProperties, 
-    EquipmentProperties
+
+from app.models.config import (
+    EquipmentConfiguration,
+    IntentionConfiguration
 )
 
 # Cython Libraries
@@ -32,30 +33,32 @@ class Board:
     # Flags
     loaded: bool
     paused: bool
+    
     # Public Fields
-    intentions: IntentionProperties
-    equipment: EquipmentProperties
+    intentions: IntentionConfiguration
+
     # Hidden Fields
     _assets: List[Asset]
     _mechanics: List[Mechanic]
     _device: Device
+
     # Caches
     _cached_categories: Dict[str, Dict[str, List[Asset]]]
     _cached_instances: Dict[str, Dict[str, List[Asset]]]
     _cached_layers: Dict[str, List[Asset]]
+
     # Catalogues
     _all_categories: Dict[str, List[Asset]]
     _all_instances: Dict[str, List[Asset]]
 
+
     def __init__(self, 
         assets: List[Asset], 
-        equipment: EquipmentProperties,
-        intentions: IntentionProperties
+        intentions: IntentionConfiguration
     ):
         logger.info(f"Initializing Board with {len(assets)} incoming assets.")
         self.loaded = False
         self.paused = False
-        self.equipment = equipment
         self.intentions = intentions
         self._assets = assets
         self._catalogue()
@@ -63,6 +66,7 @@ class Board:
         
         self.loaded = True
         logger.info("Board completely hydrated and initialized.")
+
         
     def _catalogue(self):
         """
@@ -81,6 +85,7 @@ class Board:
             if inst not in self._all_instances:
                 self._all_instances[inst] = []
             self._all_instances[inst].append(asset)
+
 
     def _cache(self):
         """
@@ -122,8 +127,10 @@ class Board:
         """
         self._device = device
 
+
     def poll(self):
         self._device.poll()
+
         
     def player(self, slot = 0) -> Asset:
         """
@@ -133,6 +140,7 @@ class Board:
             return self._all_instances[AssetInstances.PLAYERS][slot]
         return self._all_instances[AssetInstances.PLAYERS][0]
 
+
     def assets(self, layer=None) -> List[Asset]:
         """
         Returns a list of Assets. If `layer` is specified, list will be filtered by Layer.
@@ -140,9 +148,11 @@ class Board:
         if layer is None:
             return self._assets
         return self._cached_layers[layer]
+
     
     def layers(self) -> List[str]:
         return list(self._cached_categories.keys())
+
 
     def categories(self, category, layer = None) -> List[Asset]:
         """
@@ -152,6 +162,7 @@ class Board:
             return self._cached_categories.get(layer, {}).get(category, [])
         return self._all_categories.get(category, [])
 
+
     def instances(self, instance, layer = None) -> List[Asset]:
         """
         Returns a reference to the cached list of instanced Assets. O(1) fetch.
@@ -159,6 +170,7 @@ class Board:
         if layer is not None:
             return self._cached_instances.get(layer, {}).get(instance, [])
         return self._all_instances.get(instance, [])
+
         
     def relayer(self, asset: Asset, new_layer: str) -> None:
         """
@@ -206,12 +218,14 @@ class Board:
         if new_layer not in self._cached_layers:
             self._cached_layers[new_layer] = []
         self._cached_layers[new_layer].append(asset)
+
         
     def menu(self) -> None:
         """
         """
         # TODO: implement
         pass 
+
 
     def size(self, layer=None) -> List[Dimensions]:
         """

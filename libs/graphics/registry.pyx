@@ -11,6 +11,7 @@ from typing import Tuple
 
 # Application Libraries
 import app.config.settings as settings
+from app.config.enums import Actions
 from app.hooks.factory import Factory
 
 # Cython Libraries
@@ -44,22 +45,42 @@ class Registry:
     and map dynamic string keys to crop coordinates.
     """
     # Public Fields
+    equipment: dict
     properties: dict
     recipes: dict
+
     # Hidden Fields
     _textures: dict
     _frames: dict
-    
-    def __init__(self, properties, recipes):
+    _equipment: dict
+
+    def __init__(self, properties, recipes, equipment):
         logger.debug("Initializing Asset Registry...")
         self._textures = {}
         self._frames = {}
+        self._equipment = self._flatten(equipment)
         self.properties = properties
         self.recipes = recipes
-
+        self._flatten()
         self._cache()
         self._stack()
         self._index()
+
+    @staticmethod
+    def _flatten(equipment) -> dict:
+        """Creates a flattened lookup of sheet key -> valid animation action."""
+        eq_map = {}
+        for category in (
+            equipment["armor"], 
+            equipment["tools"], 
+            equipment["utilities"], 
+            equipment["weapons"]
+        ):
+            if not category: continue
+            for eq_key, eq_prop in category.items():
+                for sheet in eq_prop["sheets"]:
+                    eq_map[sheet] = eq_prop["animation"]["action"] 
+        return eq_map
 
     def _cache(self):
         """Recursively parses all physical PNG files across the static asset directory."""
@@ -135,11 +156,22 @@ class Registry:
                     
                     crop_map = frame_worker.index(item_id, item_props)
                     for frame_key, crop in crop_map.items():
+                        # Evaluate Equipment constraints before indexing
+                        if item_id in self._equipment:
+                            eq_action = self._equipment[item_id]
+                            if eq_action != Actions.ALL:
+                                # Extract the specific action from the generated string key
+                                # Format: {id}-{action}-{direction}-{frame}
+                                parts = frame_key.split(settings.SEPARATOR)
+                                if len(parts) > 1 and parts[1] != eq_action:
+                                    continue # Drop transparent/empty frame
+
                         logger.debug(f"Indexed frame: '{frame_key}'")
                         self._frames[frame_key] = (
                             self._textures[item_id], 
                             crop[0], crop[1], crop[2], crop[3]
                         )
+
 
     def load(self, filepath: str) -> TexturePtr:
         """Loads a physical .png file directly into GPU memory via SDL2 extensions."""

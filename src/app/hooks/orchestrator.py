@@ -16,7 +16,8 @@ from app.config.loader import Loader
 from app.config.enums import (
     AssetCategories, 
     AssetInstances,
-    Devices
+    Devices,
+    Configurations
 )
 from app.game.board import Board
 from app.game.engine import Engine
@@ -86,8 +87,8 @@ class Orchestrator:
         logger.info("Migrating validated states to engine Application Objects...")
         assets = []
 
-        equipment = Factory.equipment(self.equipment)
-        intentions = Factory.intentions(self.intentions)
+        equipment = Factory.configuration(self.equipment, Configurations.EQUIPMENT)
+        intentions = Factory.configuration(self.intentions, Configurations.INTENTIONS)
 
         for category_key, instance_data in self.state.items():
             for instance_key, instance_list in instance_data.items():
@@ -130,7 +131,7 @@ class Orchestrator:
         self.board.set_device(device_instance)
 
         logger.info("Initializing Registry..")
-        self.registry = Registry(self.properties, self.recipes)
+        self.registry = Registry(self.properties, self.recipes, self.equipment)
         
         logger.info("Initializing Screens...")
         self.screens = {

@@ -3,8 +3,10 @@
 
 Package for Asset Frame implementations.
 """
+# Stamdard Libraries
+from typing import List
+
 # Application Libraries
-from app.config.enums import AnimationRecipe
 import app.config.settings as settings
 from app.assets.base import Frame
 from app.models.state import AssetState
@@ -13,10 +15,10 @@ class SingleFrame(Frame):
     """
     """
 
-    def key(self, id: str, state: AssetState) -> str:
+    def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
-        return id
+        return [id]
         
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         w, l = properties["dimensions"]["w"], properties["dimensions"]["l"]
@@ -24,13 +26,13 @@ class SingleFrame(Frame):
         
 class IterableFrame(Frame):
 
-    def key(self, id: str, state: AssetState) -> str:
+    def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
-        return settings.SEPARATOR.join([
+        return [settings.SEPARATOR.join([
             id, 
             str(state.animation.frame)
-        ])
+        ])]
         
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         w, l = properties["dimensions"]["w"], properties["dimensions"]["l"]
@@ -44,15 +46,15 @@ class StateFrame(Frame):
     """
     """
 
-    def key(self, id: str, state: AssetState) -> str:
+    def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
-        return settings.SEPARATOR.join([
+        return [settings.SEPARATOR.join([
             id, 
             state.animation.action, 
             state.animation.direction,
             str(state.animation.frame)
-        ])
+        ])]
 
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         w, l = properties["dimensions"]["w"], properties["dimensions"]["l"]
@@ -65,3 +67,27 @@ class StateFrame(Frame):
                     frame_key = f"{id}-{action}-{direction}-{f}"
                     crops[frame_key] = (f * w, row * l, w, l)
         return crops
+
+class SpriteFrame(StateFrame):
+    """
+    Specialized Frame component for Sprites that yields a strict Z-indexed list of 
+    frame keys based on the Sprite's inventory.
+    """
+
+    def keys(self, id: str, state: AssetState) -> List[str]:
+        # Start with the base Persona frame key
+        frame_keys = super().keys(id, state)
+        
+        # Iterate over active equipment in strict Z-index order: Base -> Armor -> Utility -> Tool -> Weapon
+        if hasattr(state, 'inventory') and state.inventory and state.inventory.equipment:
+            eq = state.inventory.equipment
+            for eq_key in (eq.armor, eq.utility, eq.tool, eq.weapon):
+                if eq_key:
+                    frame_keys.append(settings.SEPARATOR.join([
+                        eq_key,
+                        state.animation.action,
+                        state.animation.direction,
+                        str(state.animation.frame)
+                    ]))
+        
+        return frame_keys

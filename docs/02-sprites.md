@@ -22,8 +22,7 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
 * `actions:` 
     * `count: int`
     * `directions:`
-        * `row: int`
-        * `attackboxes: List[Attackbox]` 
+        * `row: int` 
 * `dimensions: Dimensions`
 * `hitboxes: List[Hitbox]` 
 * `stack: List[str]`
@@ -255,9 +254,22 @@ TODO
 
 TODO
 
+## Personas
+
+Personas are stacks of superimposed Sprite Sheets. They are assembled in the [Registry](./00-overview.md#registry) using the `stack` property in the Asset property file during the [application bootstrap](./06-architecture.md). The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona through the Asset Key property. In other words, once assembled, Personas are effectively new "virtualized" Assets.
+
+Personas are assembled from a Base Sheet and Feature Sheets. The Base Sheet is the background of the resultant Sheet. Feature Sheets are pasted over the Base in the order they are specified.
+
+!!! note
+    It is assumed the Base and Feature Sheets conform to the same (Action, Direction) row mapping as the Sprite Sheets themselves. As always, the game engine assumes and implements the LPC specification by default.
+
+- Base Sheets: `/src/assets/sheets/sprites/base/<base-key>.png`
+- Feature Sheets: `/src/assets/sheets/sprites/features/<feature-key>.png`
+
+
 ## Equipment
 
-- Equipment Sheets: `/src/assets/sheets/sprites/equipment/<category-key>/<equipment-key>.png`
+- Equipment Sheets: `/src/assets/sheets/equipment/<instance-key>/<equipment-id>.png`
 
 Equipment sheets are superimposed onto the Sprite Sheets based on the active Equipment keys in `sprite.state.inventory.equipment`, e.g.
 
@@ -290,32 +302,10 @@ sprite.state.animation.action = AnimationMap.action(
 
 It assumed Equipment sheets conform to the same LPC-derived (Action, Direction) grouping described in previous sections (e.g. [Sheets](#action-direction)). In other words, the frames in an Equipment sheet correspond exactly to frames in a Sprite Sheet. However, Equipment frames may not be present in every frame.
 
-The catchall quantifier `all` implies the Equipment sheet has frames associated with all (Action, Direction) row groups in a sheet. For example `lantern` has a frame for each (Action, Direction) frame (i.e. the `lantern` equipment is present in all (Action, Direction) rows when activated), whereas `shortsword` only has frames in the `(slash, *)` grouping (i.e. the `shortsword` equipment is present in *only* the rows with `action == slash`.). 
+The catchall quantifier `all` implies the Equipment sheet has frames associated with all (Action, Direction) row groups in a sheet. For example `lantern` has a frame for each (Action, Direction) frame (i.e. the `lantern` equipment is present in all (Action, Direction) rows when activated), whereas `shortsword` only has frames in the `(slash, *)` grouping (i.e. the `shortsword` equipment is present in *only* the rows with `action == slash`.).
 
-### Equipment Matrix 
+Equipment rendering adheres to the **Registry Miss** pattern. It is dictated by the `SheetProperties.actions` configured in the Asset directory. If an equipment does not possess a specific action, its omission from the rendering pipeline is handled implicitly by the `Registry` returning `None`. This allows for robust and sparse equipment sheets that only render when they possess the relevant animation rows without additional filtering logic.
 
-- Location: `/src/data/equipment/main.yaml`
+**Equipment Stacks**
 
-**Schema**
-
-```yaml
---8<-- "docs/.static/yaml/data-equipment.yaml"
-```
-
-**Default Equipment Matrix**
-
-```yaml
---8<-- "docs/.static/yaml/data-equipment.yaml"
-```
-
-## Personas
-
-Personas are stacks of superimposed Sprite Sheets. They are assembled in the [Registry](./00-overview.md#registry) using the `compositions` property in the configuration file during the [application bootstrap](./06-architecture.md). The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona through the Asset Key property. In other words, once assembled, Personas are effectively new "virtualized" Assets.
-
-Personas are assembled from a Base Sheet and Feature Sheets. The Base Sheet is the background of the resultant Sheet. Feature Sheets are pasted over the Base in the order they are specified.
-
-!!! note
-    It is assumed the Base and Feature Sheets conform to the same (Action, Direction) row mapping as the Sprite Sheets themselves. As always, the game engine assumes and implements the LPC specification by default.
-
-- Base Sheets: `/src/assets/sheets/sprites/base/<base-key>.png`
-- Feature Sheets: `/src/assets/sheets/sprites/features/<feature-key>.png`
+Equipment Sheets may be stacked like Sprite Sheet [Personas](#personas) to form a piece of Equipment. The `stack` for a piece of Equipment is given in the Equipment configuration file.
