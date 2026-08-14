@@ -29,9 +29,9 @@ The basis of the Intention system has been laid. Both Sprite and Player Assets h
 
 *Objective*: Decouple Mechanics from the Board instantiation.
 
-- [ ] Define the execution order of mechanics in a YAML configuration file.
+- [x] Define the execution order of mechanics in a YAML configuration file.
 - [ ] Update `Factory` to instantiate the list of `Mechanic` objects based on the YAML configuration.
-- [ ] Remove `self._mechanics` instantiation and the play() method from Board.
+- [x] Remove `self._mechanics` instantiation and the play() method from Board.
 
 **Task 3: Extract Game Loop into Engine Class**
 
@@ -47,7 +47,7 @@ The basis of the Intention system has been laid. Both Sprite and Player Assets h
 *Objective*: Reduce Orchestrator to a pure dependency injection container.
 
 - [ ] Refactor `orchestrate()` to act as the single entrypoint that calls `Loader`, invokes the `Factory`, initializes the `Registry/Screens`, and wires them into the new `Engine`.
-- [ ] Verify the `Orchestrator` no longer contains runtime logic or file-system traversal.
+- [x] Verify the `Orchestrator` no longer contains runtime logic or file-system traversal.
 
 **Task 5: Upgrade the Frame Interface**
 

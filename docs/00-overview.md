@@ -18,25 +18,36 @@ All Assets have an *Key*, *Properties* and *State*.
 
 In addition, Assets are divided into several categories. See [Assets](./01-assets.md) for more information on each category. Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,
 
-- Menu
-- Object
-- Effect
-- Cursor
-- Craft
-- Sheet
-- Tile
+- Crafts
+- Cursors
+- Effects
+- Environ
+- Objects
+- Sheets
+- Sounds
+- Tiles
+- Widgets
 
 Assets are placed in the `/src/assets/<category>/` directory and then added and configured to the Asset category index `/src/assets/<category>/main.yaml`. See [Asset Schema](./01-assets.md#schemas) for more information on each Asset category index schema.
 
-The index schema for each Asset configures its *Properties*, i.e. its static attributes that are constant and do not change as a result of gameplay.
+The YAML index schema for each Asset configures its *properties*, i.e. its static attributes that are constant and do not change as a result of gameplay.
 
-An Asset is deployed onto a *Board*, where it acquires its *State*, i.e. its dynamic attributes that are variable and change as a result of gameplay. 
+## Data
 
-A group of Assets of the same category have a single set of Properties, but each individual Asset may have a unique State, unique to its particular deployment. For example, a treasure chest is configured once by its Properties (its height, weight, etc.), but each instance of a treasure chest on a Board has a unique State (its position, content, etc.).
+An Asset is deployed onto a *Board*, where it acquires its *state*, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests state data stored in the `/src/data/**` directory. 
 
-### Hitboxes
+An Asset Category has a single schema for properties, but each individual Asset Instance may have a unique State, particular to particular deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).
 
-Many Assets have Hitboxes. Hitboxes are *Properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. 
+Various aspects of the Asset State are defined by the configuration stored in the `/src/data/**` directory,
+
+- Corpus
+- Equipment
+- Intentions
+- Mappings
+- Mechanics
+- Menus
+- Recipes
+- State
 
 ## Application 
 
@@ -77,3 +88,7 @@ The Registry loads in all of the Asset files when the application bootstraps. Th
 All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire frame, it is rendering a Layer.  
 
 Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at `(x_1, y_1)` and get released on Layer 3 at `(x_2, y_2)`. For this reason, each Layer may have different dimensions.
+
+### Hitboxes
+
+Many Assets have Hitboxes. Hitboxes are *properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. 

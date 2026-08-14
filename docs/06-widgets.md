@@ -34,17 +34,49 @@ It is assumed all Widget frames are organized in single row in a `.png` image fi
 - `dimensions: Dimension`: Dimensions of a single frame.
 - `frames: List[str]`: List of frame keys.
 
+### Panes
+
+Panes are the *root* Widgets of a Menu. They are the only Widget which has a ScreenPosition. ScreenPosition for a root Pane is specified in the [Menu Schema](#menus).
+
+Panes contain other Widgets. Their child Widgets have their Positions calculated relative to the root Pane based on the `layout` and `alignment`. Layouts are enumerated below,
+
+- Dock: A horizontal row of Widgets.
+- Stack: A vertical column of Widgets
+
+Alignments are enumerated below,
+
+- Start: Widgets are aligned at the start of the Pane.
+- End: Widgets are aligned at the end of the Pane.
+- Center: Widgets are aligned at the center of the Pane.
+
+**Taxonomy**
+
+* `category: widget`
+* `instance: pane`
+
+**State: PaneState**
+
+- `position: ScreenPosition`
+- `layout: Layout`
+- `alignment: Alignment`
+- `gap: int` : Pixel gap between child Widgets.
+- `margins: Tuple[int, int, int, int]`: Margins applied around the edge of the Pane before aligning children in the layout.
+- `children: List[Widget]`: List of Widgets contained in the Pane.
+
+**Frame: SingleFrame**
+
+* `key(asset, state): returns {asset}`
+* `index(self, asset, properties, recipe): returns TODO` 
+
 ### Buttons
 
-TODO
+Buttons are selectable Widgets that enter into a Status of `selected` when triggered. Buttons contain references and content. Reference determines what is indicated by content. 
 
-Buttons contain references and content. Reference determines what is indicated by content. 
-
-- If `reference == icon`, then `content` is a key to an Icon. This Icon is embedded in the button. 
-- If `reference == label`, then `content` is a string containing text to be displayed.
+- If `reference == language`, then `content` is a key to an Language Widget. This Widget is embedded in the Button. 
+- If `reference == label`, then `content` is a string containing text to be displayed on the button.
 
 !!! warning
-    The Button Asset must have large enough dimensions to accomodate Icon Asset embeddings.
+    The Button Asset must have large enough dimensions to accomodate Language Asset embedding.
 
 !!! warning
     Any label content added to a Button is truncated if it exceeds the dimensions of the Button.
@@ -54,7 +86,7 @@ Buttons contain references and content. Reference determines what is indicated b
 * `category: widget`
 * `instance: button`
 
-**Animation: WidgetAnimation**
+**Animation: TraversalAnimation**
 
 TODO
 
@@ -64,9 +96,9 @@ TODO
 
 * `content: str`
 * `reference: Enum[label, icon]` 
-* `status: Enum[enabled, active, selected, disabled]`
+* `status: Enum[idle, active, selected, disabled]`
 
-**Frame: WidgetFrame**
+**Frame: TraversalFrame**
 
 * `key(asset, state): returns {asset}-{state.status}`
 * `index(self, asset, properties, recipe): returns TODO` 
@@ -130,28 +162,25 @@ TODO: calculate marker formula based on `measurement / unit`
 * `key(asset, state): returns {asset}-{state.status}`
 * `index(self, asset, properties, recipe): returns TODO` 
 
-### Panes
-
-TODO
-
 ## Menus
 
 * Location: `/src/data/menus/main.yaml`
 
 Menus are pre-defined arrangements of Widgets. 
 
-**State**
+**Menu State**
 
 - `focus: str`: Widget that is currently being focused on for traversal.
-
-**Layouts**
-
-- Dock: A horizontal row of Widgets.
-- Stack: A vertical column of Widgets
 
 **Menu Traversal**
 
 TODO
+
+**Menu Mechanics**
+
+When the Board is paused, the only Mechanics that is applied during the game loop is the MenuMechanic. This Mechanic translates the [Player Device mappings](./03-player.md#device-mapping) to Menu state changes. 
+
+The rest of this section details Menus bundled with the application.
 
 **Menu Schema**
 
@@ -161,17 +190,23 @@ TODO
 --8<-- "docs/.static/yaml/data-menus.yaml"
 ```
 
-**MenuMechanics**
+**Default Menus**
 
-When the Board is paused, the only Mechanics that is applied during the game loop is the MenuMechanic. This Mechanic translates the [Player Device mappings](./03-player.md#device-mapping) to Menu state changes. 
+```yaml
+--8<-- "docs/.static/yaml/examples/default-menus.yaml"
+```
 
-The rest of this section details Menus bundled with the application.
-
-###  Dialogue
+### Dialogue
 
 TODO
 
 **Arguments**: `sprite.state.psyche.communication`
+
+### Editor
+
+TODO
+
+**Arguments**: `Board`
 
 ### Inventory
 
@@ -189,6 +224,8 @@ TODO
 
 TODO
 
+**Arguments**: `None`
+
 ### Pause
 
 TODO
@@ -203,4 +240,4 @@ TODO
 
 TODO
 
-**Arguments**: `sprite.state.inventory`
+**Arguments**: `sprite.state`
