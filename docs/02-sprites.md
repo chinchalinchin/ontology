@@ -14,8 +14,8 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
 
 **Taxonomy**
 
-* `category: sheet`
-* `instance: sprite`
+* `category: sheets`
+* `instance: sprites`
 
 **Properties: SheetProperties**
 

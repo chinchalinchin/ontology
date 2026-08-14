@@ -7,25 +7,48 @@ menus:
           py: 0.75
         layout: stack
         alignment: center
+        gap: 5
         widgets:
           - category: widget
             instance: container
             id: portrait_box
-            bind: { content: sprite.state.character.portrait }
-
+            bind: sprite.state.character.portrait
       - id: dialogue
         position: 
           px: 0.3
           py: 0.75
         layout: dock
         alignment: left
-        spacing: 5 # Pixels between widgets
+        gap: 5
         widgets:
           - category: widget
             instance: language
             id: text_box
-            bind: { content: sprite.state.psyche.communication }
+            bind: sprite.state.psyche.communication
   editor:
   inventory:
+    panes:
+      - id: main_inventory_pane
+        position: { px: 0.1, py: 0.1 } 
+        layout: tabbed      # Signals the Layout Engine to build headers + 1 body
+        header_spacing: 10  # Space between the tab headers
+        tabs:
+          - id: tab_loot
+            label: "Loot"
+            pane: 
+              layout: dock
+              widgets:
+                - category: widget
+                  instance: container
+                  bind: sprite.state.inventory.loot
+
+          - id: tab_equipment
+            label: "Equipment"
+            pane:
+              layout: stack
+              widgets:
+                - category: widget
+                  instance: container
+                  bind: sprite.state.inventory.equipment
   market:
   pause:

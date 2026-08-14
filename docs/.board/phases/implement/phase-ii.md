@@ -29,4 +29,4 @@
 
 5. **Debug**
 
-* [ ] **Verification:** Ensure the `prender` and `render` command line function still works 
+* [x] **Verification:** Ensure the `prender` and `render` command line function still works 

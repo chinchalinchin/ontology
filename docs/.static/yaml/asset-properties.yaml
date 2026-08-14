@@ -190,3 +190,12 @@ sheets:
                   w: Pixel Horizontal Size
                   l: Pixel Vertical Size
                 hitframe: <hitframe-index>
+# ------------------------------------------------------------------
+# ---------------------------------------------------------- WIDGETS
+widgets:
+  buttons: # TODO
+  choices: # TODO 
+  language: # TODO
+  meters: # TODO
+  pages: # TODO 
+  panes: # TODO

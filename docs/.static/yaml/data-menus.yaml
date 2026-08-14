@@ -1,6 +1,17 @@
 menus:
-  dialogue:
-  editor:
-  inventory:
-  market:
-  pause:
+  <menu-key>:
+    roots: 
+      - id:
+        position:
+          px:
+          py: 
+        layout:
+        alignment:
+        gap: 
+        children: 
+          - category:
+            instance:
+            id: 
+            bind: 
+              ref: state | traversal
+              data: 

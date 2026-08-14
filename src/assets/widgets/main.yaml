@@ -1,84 +1,42 @@
 widgets:
-  arrows:
-    down:
-      dimensions:
-        w:
-        l:
-      frames:
-        - idle
-        - active
-        - selected
-        - disabled
-    left:
-      dimensions:
-        w:
-        l:
-      frames:
-        - idle
-        - active
-        - selected
-        - disabled
-    right:
-      dimensions:
-        w:
-        l:
-      frames:
-        - idle
-        - active
-        - selected
-        - disabled
-    up:
-      dimensions:
-        w:
-        l:
-      frames:
-        - idle
-        - active
-        - selected
-        - disabled
   buttons:
+    slot: 
+      dimensions:
+        w: 
+        l:
     icon:
       dimensions:
         w:
         l:
-      frames:
-        - idle
-        - active
-        - selected
-        - disabled
-    label:
+    text:
       dimensions:
         w:
         l:
-      frames:
-        - idle
-        - active
-        - selected
-        - disabled
+    arrow-down:
+      dimensions:
+        w:
+        l:
+    arrow-left:
+      dimensions:
+        w:
+        l:
+    arrow-right:
+      dimensions:
+        w:
+        l:
+    arrow-up:
+      dimensions:
+        w:
+        l:
   choices:
     checkbox:
       dimensions:
         w:
         l:
-      frames:
-        - unchecked
-        - checked
     proposition:
       dimension:
         w: 
         l:
-      frames:
-        - unchecked 
-        - checked
-  containers:
-    slots:
-      dimensions:
-        w:
-        l:
-      frames:
-        - idle
-        - active
-        - selected 
   language:
     digits:
       dimensions:
@@ -110,16 +68,17 @@ widgets:
         - cane
         - coin
   meters:
+    meter: 
   panes:
     dialogue:
       dimensions:
         w:
         l:
-      frames:
-        - root
     popup:
       dimensions:
         w:
         l:
-      frames:
-        - root
+    scroll:
+      dimensions:
+        w:
+        l:
