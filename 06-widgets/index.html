@@ -558,6 +558,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#inventory" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -850,6 +861,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Editor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#inventory" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1006,7 +1028,7 @@
 <li><code>category: widget</code></li>
 <li><code>instance: button</code></li>
 </ul>
-<p><strong>Animation: WidgetAnimation</strong></p>
+<p><strong>Animation: TraversalAnimation</strong></p>
 <p>TODO</p>
 <ul>
 <li><code>if state.status != disabled:</code> </li>
@@ -1017,7 +1039,7 @@
 <li><code>reference: Enum[label, icon]</code> </li>
 <li><code>status: Enum[idle, active, selected, disabled]</code></li>
 </ul>
-<p><strong>Frame: WidgetFrame</strong></p>
+<p><strong>Frame: TraversalFrame</strong></p>
 <ul>
 <li><code>key(asset, state): returns {asset}-{state.status}</code></li>
 <li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
@@ -1029,19 +1051,56 @@
 <h3 id="language">Language</h3>
 <p>TODO</p>
 <h3 id="meters">Meters</h3>
-<p>TODO </p>
+<p>Meters are "continuous" indicators. They require a <code>unit</code> to calibrate their reading and then express a <code>measurement</code> in terms of the <code>unit</code>; All readings are expressed relative to the <code>unit</code>, e.g. the ration of the current value of the Player's health to maximum value of the Player's health is expressed as the proportion of a Meter that is filled.</p>
+<p>Meters rows are broken up as follows:</p>
+<ul>
+<li><strong>Meter</strong> First Frame: width = w</li>
+<li><strong>Marker</strong> Second Frame: width = 0.25w, fill = 100%</li>
+<li><strong>Marker</strong> Third Frame: width = 0.25w, fill = 75%</li>
+<li><strong>Marker</strong> Fourth Frame: width = 0.25w, fill = 50%</li>
+<li><strong>Marker</strong> Fifth Frame: width = 0.25w, fill = 25%</li>
+</ul>
+<p>So the total width of a Meter Asset is 2w. </p>
+<p>The first frame of the Meter is the Meter itself. Each subsequent frame is a <em>Marker</em>. Each Marker's width is 25% of the width of Meter. The second frame is Marker width completely filled. The third frame is the Marker width 75% filled. The fourth frame is the Marker width 50% filled. The fifth frame is Marker width 25% filled. This division of the Meter and Marker frames allows a Meter to resolve an ingame attribute down to increments of 1/16. If <code>measurement / unit % 16 != 0</code>, then the increment displayed is rounded to the nearest 1/16th.</p>
+<p>In other words, a Meter is broken up into four <code>markers</code> whose frames that are superimposed over the Meter itself, which is at frame index 0. Each Marker maps to a frame index (1 - 4). </p>
+<p>For example, if <code>player.state.meters.health.current == 75</code>, so that <code>measurement / unit = 0.625</code>, then</p>
+<ul>
+<li>marker 1: frame = 1</li>
+<li>marker 2: frame = 1</li>
+<li>marker 3: frame = 3</li>
+<li>marker 4: frame = None</li>
+</ul>
+<p>The sequence to frames (1, 1, 3, None) would be superimposed over frame 0 at the positions (0, 0.25w, 0.5w, 0.75w).</p>
+<p><strong>Taxonomy</strong></p>
+<ul>
+<li><code>category: widget</code></li>
+<li><code>instance: meter</code></li>
+</ul>
+<p><strong>Animation: MeterAnimation</strong></p>
+<p>TODO: calculate marker formula based on <code>measurement / unit</code></p>
+<p><strong>State: MeterState</strong></p>
+<ul>
+<li><code>unit: int</code></li>
+<li><code>measurement: int</code></li>
+<li><code>markers: List[int | None]</code></li>
+</ul>
+<p><strong>Frame: WidgetFrame</strong></p>
+<ul>
+<li><code>key(asset, state): returns {asset}-{state.status}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+</ul>
 <h2 id="menus">Menus</h2>
 <ul>
 <li>Location: <code>/src/data/menus/main.yaml</code></li>
 </ul>
 <p>Menus are pre-defined arrangements of Widgets. </p>
-<p><strong>MenuState</strong></p>
+<p><strong>Menu State</strong></p>
 <ul>
 <li><code>focus: str</code>: Widget that is currently being focused on for traversal.</li>
 </ul>
 <p><strong>Menu Traversal</strong></p>
 <p>TODO</p>
-<p><strong>MenuMechanics</strong></p>
+<p><strong>Menu Mechanics</strong></p>
 <p>When the Board is paused, the only Mechanics that is applied during the game loop is the MenuMechanic. This Mechanic translates the <a href="../03-player/#device-mapping">Player Device mappings</a> to Menu state changes. </p>
 <p>The rest of this section details Menus bundled with the application.</p>
 <p><strong>Menu Schema</strong></p>
@@ -1054,6 +1113,9 @@
 <h3 id="dialogue">Dialogue</h3>
 <p>TODO</p>
 <p><strong>Arguments</strong>: <code>sprite.state.psyche.communication</code></p>
+<h3 id="editor">Editor</h3>
+<p>TODO</p>
+<p><strong>Arguments</strong>: <code>Board</code></p>
 <h3 id="inventory">Inventory</h3>
 <p>TODO</p>
 <p><strong>Arguments</strong>: <code>sprite.state.inventory</code></p>
@@ -1062,6 +1124,7 @@
 <p><strong>Arguments</strong>: <code>buyer.state.inventory</code>, <code>seller.state.inventory</code></p>
 <h3 id="main">Main</h3>
 <p>TODO</p>
+<p><strong>Arguments</strong>: <code>None</code></p>
 <h3 id="pause">Pause</h3>
 <p>TODO</p>
 <p><strong>Arguments</strong></p>
@@ -1071,7 +1134,7 @@
 <p>Also known as the Heads-Up Display (HUD).</p>
 </div>
 <p>TODO</p>
-<p><strong>Arguments</strong>: <code>sprite.state.inventory</code></p>
+<p><strong>Arguments</strong>: <code>sprite.state</code></p>
 
 
 
