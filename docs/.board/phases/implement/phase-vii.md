@@ -1,0 +1,114 @@
+#### Implement: Phase VII - Pathfinding
+
+The goal is to introduce the concept of "time" to the Sprites' memory to solve the conflict of competing facts. Without a timestamp, a Sprite with new information could be overwritten by a Sprite with outdated information.
+
+##### Data Structures
+
+**1. The Location Record**
+
+Create a data structure to hold the coordinates and the exact engine time (or frame count) when the coordinates were logged.
+
+```python
+@dataclass(slots=True)
+class LocationRecord:
+    position: Position
+    timestamp: float
+```
+
+**2. Expanding Memory**
+
+Add a tracking dictionary to the Sprite's `Memory` state.
+
+```python
+@dataclass(slots=True)
+class Memory:
+    goal: Goal
+    communications: List[str]
+    prices: Dict[str, float]
+    # NEW: Keyed by the Sprite's unique `name`
+    locations: Dict[str, LocationRecord] = field(default_factory=dict)
+```
+
+**3. The 'Lost' Trigger**
+
+The Sprite needs a physiological realization that its goal has failed. Add a boolean trigger to the `Mutators` state.
+
+```python
+@dataclass(slots=True)
+class Triggers:
+    animated: bool
+    dead: bool
+    struck: bool
+    frightened: bool
+    vision: bool
+    # NEW: Triggered when position == goal.position but target is absent
+    lost: bool 
+```
+
+##### Application Flow
+
+The flow relies on existing mechanics intercepting new state conditions and mutating the data.
+
+1. **Pathfinding & Verification (`MotionMechanics`):**
+    * The Sprite enters the `find` Intention and travels to `goal.position`.
+    * Upon arrival (distance ≤ epsilon), `MotionMechanics` checks the Sprite's `vision` radius.
+    * If `goal.name` is not in vision, it sets `sprite.state.mutators.triggers.lost = True`.
+2. **State Transition (`TransitionMechanics`):**
+    * The Intention Transition Matrix evaluates the `find` state.
+    * **Condition:** `sprite.mutators.triggers.lost == True`.
+    * **Result:** Transition to `attract` to seek out the nearest visible Sprite.
+3. **Information Exchange (`SpeechMechanics`):**
+    * The Sprite intersects another Sprite and transitions to `speak`.
+    * `SpeechMechanics` processes the `locations` dictionaries of both Sprites.
+    * **The Logic:** Perform a union of the `locations` keys. For shared keys, compare `timestamp`. Both Sprites inherit the `LocationRecord` with the highest `timestamp`.
+4. **Resolution (`TransitionMechanics`):**
+    * The Sprite evaluates its next move out of `speak`.
+    * **Condition A:** If `memory.locations[goal.name].timestamp` is strictly greater than the timestamp of the Sprite's current `goal`, update `goal.position`, set `triggers.lost = False`, and transition back to `find`.
+    * **Condition B:** If the timestamp has not changed (the encountered Sprite knew nothing new), transition to `wander` (or `idle`) to find a different Sprite to interrogate.
+
+##### Tasks
+
+**Goals**
+
+Enable emergent pathfinding behavior where Sprites track, lose, and ask other Sprites for directions to specific entities. Information will propagate across the Board organically through the `SpeechMechanics`.
+
+**Tasks**
+
+**Task 1: Implement Timestamping and Tracking Models**
+
+*Objective*: Give the application a way to measure information decay.
+
+* [ ] Inject the `Engine` clock (or frame counter) into the `Board` state so Mechanics can query the current time.
+* [ ] Create the `LocationRecord` dataclass in `src/app/models/state.py`.
+* [ ] Add `locations: Dict[str, LocationRecord]` to the `Memory` model.
+* [ ] Add `lost: bool = False` to the `Triggers` model.
+
+**Task 2: Implement Visual Logging in `VisionMechanics**`
+
+*Objective*: Sprites must constantly log the locations of everything they see to become vectors for rumors.
+
+* [ ] Update the mechanic that handles vision radii (e.g., `VisionMechanics` or `MotionMechanics`).
+* [ ] Every game tick, for every Sprite A in the vision radius of Sprite B: update Sprite B's `memory.locations[A.name]` with A's current `position` and the `board.time`.
+
+**Task 3: Implement Goal Verification**
+
+*Objective*: Trigger the `lost` state when pathfinding fails.
+
+* [ ] In the mechanic controlling movement, check if `sprite.position == sprite.goal.position` (with a small pixel tolerance).
+* [ ] If true, and `sprite.goal.category == 'sprite'`, verify if the target `name` is currently in the Sprite's vision list.
+* [ ] If absent, set `mutators.triggers.lost = True`.
+
+**Task 4: Implement Rumor Exchange in `SpeechMechanics**`
+
+*Objective*: Allow Sprites to share and update location tracking.
+
+* [ ] In `SpeechMechanics`, when two Sprites interact, iterate through both `memory.locations` dictionaries.
+* [ ] If Sprite A has a `LocationRecord` with a higher timestamp than Sprite B, overwrite Sprite B's record (and vice versa).
+
+**Task 5: Update Intentional Scripting Language (ISL)**
+
+*Objective*: Bind the new logic into the Intention Transition Matrix.
+
+* [ ] Add ISL condition to transition `find` -> `attract`: `sprite.mutators.triggers.lost`.
+* [ ] Add ISL condition to transition `speak` -> `find`: `sprite.memory.locations[sprite.goal.name].timestamp > sprite.goal.timestamp` (Requires adding a timestamp to the `Goal` model).
+* [ ] Add fallback ISL condition to transition `speak` -> `wander`: if the above condition fails.

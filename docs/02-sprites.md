@@ -14,36 +14,36 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
 
 **Taxonomy**
 
-- `category: sheet`
-- `instance: sprite`
+* `category: sheet`
+* `instance: sprite`
 
 **Properties: SheetProperties**
 
-- `actions:` 
-    - `count: int`
-    - `directions:`
-        - `row: int`
-        - `attackboxes: List[Attackbox]` 
+* `actions:` 
+    * `count: int`
+    * `directions:`
+        * `row: int`
+        * `attackboxes: List[Attackbox]` 
 * `dimensions: Dimensions`
 * `hitboxes: List[Hitbox]` 
 * `stack: List[str]`
 
 **State: SpriteState**
 
-- `position: Position`
-- `layer: str`
-- `meters:`
-    - `health:` 
+* `position: Position`
+* `layer: str`
+* `meters: List[Meter]`
+    * `health: Meter` 
+        * `current: int`
+        - `maximum: int`
+    - `magic: Meter`
         - `current: int`
         - `maximum: int`
-    - `magic: int`
-        - `current: int`
-        - `maximum: int`
-- `character:`
+- `character: Character`
     - `strength: int`
     - `defense: int`
     - `speed: int`
-- `animation:`
+- `animation: AnimationState`
     - `action: str`
     - `direction: str`
     - `frame: int`
@@ -79,47 +79,51 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
 **Frame: StateFrame**
 
 * `key(asset, animation): returns {asset}-{animation.action}-{animation.direction}-{animation.frame}`
+* `index(self, asset, properties, recipe): returns TODO` 
 
+### Intentions
 
-### Schema
+*Intentions* are an internal State data structure that governs a Sprite's core logic. 
 
-- Location: `/src/data/intentions/main.yaml`
+See [Intentions](./04-intentions.md) for more information.
 
-```yaml
---8<-- "docs/.static/yaml/data-intentions.yaml"
-```
+### Goal
 
-## Meters
+*Goals* are the current focus of the Sprite's path-finding and Direction resolution.
 
-TODO
+See [Goals documentation](04-intentions.md) for more information.
 
-### Health
-
-TODO
-
-### Magic
+### Meters
 
 TODO
 
-## Character
-
-### Strength
+**Health**
 
 TODO
 
-### Defense
+**Magic**
 
 TODO
 
-### Speed
+### Character
+
+**Strength**
 
 TODO
 
-## Mutators
+**Defense**
+
+TODO
+
+**Speed**
+
+TODO
+
+### Mutators
 
 *Mutators* are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated from state attributes, not *primitive* state attributes themselves.
 
-### Triggers
+**Triggers**
 
 - `trigger.animated`: Triggered if a Sprite is currently able to animate, i.e. increment its Frame. When this Mutator trigger is false, the Sprite does not receive animation updates from the game loop, e.g. if the user releases the right arrow button on the keyboard, leaving the Player in a `(walk, right)` state, then this mutator prevents the animation from progressing until the Player resumes pressing the right arrow button.
 - `triggers.dead`: Triggered if a Sprite dies. This can only occur if the Sprite's `character.health.current = 0`
@@ -129,16 +133,16 @@ TODO
     - Triggered if Sprite is surrounded by more than `frightened.enemy` enemies with the pixel distance of `frightened.radius`.
 - `triggers.vision`: Trigger if a Sprite is within visible distance of its Goal.
 
-### Parameters
+**Parameters**
 
 - `parameters.frightened.radius`: Radius of separation within which the Sprite triggers the `triggers.frightened` mutator. Measured in pixels.
 - `parameters.frightened.limit`: Percentage of health below which Sprite triggers the `triggers.frightened` mutator.
 - `parameters.frightened.enemy`: Number of enemies within the `parameters.frightened.radius` that must be present to trigger the `triggers.frightened` mutator.
 - `parameters.vision.radius`: Radius of separation within which the Sprite triggers the `triggers.vision` mutator. Measured in pixels.
 
-## Animation
+### Animation
 
-### Action, Direction
+**Action, Direction**
 
 Action and Direction were previously defined in the [Assets documentation](./01-assets.md), since these two state attributes determine the animation frame currently being rendered in the gameloop. 
 
@@ -159,23 +163,17 @@ The frames per Action Group are given below,
 !!! note 
     In the LPC specification, the `thrust` Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the `thrust` state.
 
-## Intentions
-
-*Intentions* are an internal State data structure that governs a Sprite's core logic. 
-
-See [Intentions](./04-intentions.md) for more information.
-
-## Psyche
+### Psyche
 
 The *Psyche* is an internal State data structure that governs a Sprite's ancillary Animation logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations to be applied to the Sprite Sheet's frame. The complete Psyche state for a Sprite is given by the tuple,
 
     (Communcation, Expression, Motivation)
 
-### Communication
+**Communication**
 
 The Communication dimension of a Psyche can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the `speak` Intention.
 
-### Expression
+**Expression**
 
 The Expression dimension alter the Sprite's appearnce by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. 
 
@@ -190,7 +188,7 @@ The default Expressions are enumerated below,
 - `surprise`
 - `tired`
 
-### Motivation
+**Motivation**
 
 Motivations are long-term state variables that are used to modulate the [Intention Transition matrix](./04-intentions.md).
 
@@ -204,13 +202,7 @@ The default Motivations are enumerated below,
 - `rebellion`
 - `safety`
 
-## Goal
-
-*Goals* are the current focus of the Sprite's path-finding and Direction resolution.
-
-See [Intentions and Goals documentation](04-intentions.md) for more information.
-
-## Memory
+### Memory
 
 *Memory* is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. 
 
@@ -220,7 +212,7 @@ See [Intentions and Goals documentation](04-intentions.md) for more information.
 - `memory.relationship`:
 - `memory.property`:
 
-### Communications
+**Communications**
 
 Under certain conditions based on the Sprite's Intention, the Sprite may emit a Communication through the `speak` Intention. For example, a Sprite in the `mock` Intention might receive a Communication key `insult`. This key gets stored at the *beginning* (0 index) of the `memory.communications` list. 
 
@@ -231,7 +223,7 @@ When a Sprite with a non-empty `memory.communications` enters into the `speak` I
 
 When a Sprite with a non-null `psyche.communication` enters into the `speak` Intention, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the `intention.communication` cell.
 
-### Prices
+**Prices**
 
 Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the `barter` Intention. This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.
 
@@ -241,25 +233,25 @@ When two Sprites enter the `speak` Intention within a certain radius of each oth
 2. For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to 
 A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the `SpeechMechanic` will populate the Sprite's Prices.
 
-### Relationships
+**Relationships**
 
 TODO
 
-### Property
+**Property**
 
 TODO
 
-## Inventory
+### Inventory
 
 TODO
 
 Equipment, while part of the Inventory, affects the rendering of the Sprite, and thus is covered in its own section, [Equipment](#equipment).
 
-### Loot
+**Loot**
 
 TODO
 
-### Wallet
+**Wallet**
 
 TODO
 

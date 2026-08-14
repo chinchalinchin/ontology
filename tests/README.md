@@ -1,6 +1,6 @@
 # Ontology: Tests
 
-## SDL Tests
+## Exploratory Cythonized SDL Test
 
 ```bash
 cd ontology/tests/sdl

@@ -1,13 +1,53 @@
 widgets:
+  arrows:
+    down:
+      dimensions:
+        w:
+        l:
+      frames:
+        - enabled 
+        - active
+        - selected
+        - disabled
+    left:
+      dimensions:
+        w:
+        l:
+    right:
+      dimensions:
+        w:
+        l:
+    up:
+      dimensions:
+        w:
+        l:
   buttons:
+    icon:
+      dimensions:
+        w:
+        l:
+    label:
+      dimensions:
+        w:
+        l:
   choices:
+    checkbox:
+      dimensions:
+        w:
+        l:
+    proposition:
+      dimension:
+        w: 
+        l:
+      frames:
+        - 
   containers:
   language:
     digits:
       dimensions:
         w: 12
         l: 14
-      ids:
+      frames:
         - zero
         - one
         - two
@@ -22,7 +62,7 @@ widgets:
       dimensions:
         w:
         l:
-      ids:
+      frames:
         - armor-bronze
         - armor-gold
         - arrow-fire
@@ -33,4 +73,4 @@ widgets:
         - cane
         - coin
   meters:
-  windows:
+  panes:

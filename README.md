@@ -91,7 +91,7 @@ Cython interfaces and headers.
 
 Helper scripts.
 
-* `concatenate`: Script to concatenate `.png` horizontally.
+* `concatenate`: Script to concatenate image files into a row of frames.
 * `transpose`: Script to transpose a column of frames into a row of frames.
 
 ### /src

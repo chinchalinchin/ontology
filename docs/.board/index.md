@@ -9,16 +9,14 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 
 - Phase Actions
   - Implement
-    - [Phase I: Renderer](./phases/implement/phase-i.md)
-    - [Phase II: Player](./phase/implement/phase-ii.md)
-    - [Phase III: Editor](./phases/implement/phase-iii.md)
-    - [Phase IV: Intentions](./phases/implement/phase-iv.md)
-    - [Phase V: Commerce](./phases/implement/phase-v.md)
-    - [Phase VI: Pathfinding](./phase/implement/phase-vi.md)
+    - [x]: [Phase I: Renderer](./phases/implement/phase-i.md)
+    - [x]: [Phase II: Player](./phases/implement/phase-ii.md)
+    - [~]: [Phase III: Widgets](./phases/implement/phase-iii.md)
+    - [ ]: [Phase IV: Editor](./phases/implement/phase-iv.md)
+    - [ ]: [Phase V: Intentions](./phases/implement/phase-v.md)
+    - [ ]: [Phase VI: Commerce](./phases/implement/phase-vi.md)
+    - [ ]: [Phase VII: Pathfinding](./phase/implement/phase-vii.md)
   - Refactor
-    - [Phase I: Renderer](./phases/refactor/phase-i.md)
-    - [Phase II-I: Player](./phases/refactor/phase-ii-i.md)
-    - [Phase II-II: Registry](./phases/refactor/phase-ii-ii.md)
-  - Debug
-    - [Phase I: Renderer](./phases/debug/phase-i.md)
-    - [Phase II: Player](./phases/debug/phase-ii.md)
+    - [x]: [Phase I: Renderer](./phases/refactor/phase-i.md)
+    - [ ]: [Phase II-I: Player](./phases/refactor/phase-ii-i.md)
+    - [x]: [Phase II-II: Registry](./phases/refactor/phase-ii-ii.md)

@@ -608,7 +608,7 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 * `character: Character`
 * `intention: Intention`
 * `inventory: Inventory`
-* `meters: meter`
+* `meters: Dict[str, Meter]`
 * `mutators: Mutators`
 * `memory: Memory`
 * `goal: Goal`
