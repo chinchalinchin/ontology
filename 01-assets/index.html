@@ -604,8 +604,7 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Pixies">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#sprites" class="md-nav__link">
@@ -618,8 +617,14 @@
   
 </li>
         
-      </ul>
-    </nav>
+          <li class="md-nav__item">
+  <a href="#equipment-weapons-utilities-tools-armor-shields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Equipment (Weapons, Utilities, Tools, Armor, Shields)
+      
+    </span>
+  </a>
   
 </li>
         
@@ -641,10 +646,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#recipes" class="md-nav__link">
+  <a href="#recipe-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Recipes
+        Recipe Configuration
       
     </span>
   </a>
@@ -1227,8 +1232,7 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Pixies">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#sprites" class="md-nav__link">
@@ -1241,8 +1245,14 @@
   
 </li>
         
-      </ul>
-    </nav>
+          <li class="md-nav__item">
+  <a href="#equipment-weapons-utilities-tools-armor-shields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Equipment (Weapons, Utilities, Tools, Armor, Shields)
+      
+    </span>
+  </a>
   
 </li>
         
@@ -1264,10 +1274,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#recipes" class="md-nav__link">
+  <a href="#recipe-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Recipes
+        Recipe Configuration
       
     </span>
   </a>
@@ -1402,13 +1412,13 @@
 </div>
 <p>State files are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code>, where <code>&lt;board-key&gt;</code> is a unique identifer for a <a href="../00-overview/#board">Board</a>.</p>
 <h3 id="asset-hierarchy">Asset Hierarchy</h3>
-<p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still abide a strict Object hierarchy in terms of the configuration they ingest. The configuration <a href="#schemas">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
+<p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict Object hierarchy. The property and state <a href="#schemas">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The Asset Hierarchy can be thought of as a data abstraction governing the configuration schemas which drive the ECS instantiation. </p>
+<p>The Asset Hierarchy can be thought of as a data abstraction governing the schemas which drive the ECS instantiation. </p>
 </div>
 <p><strong>Categories &amp; Instances</strong></p>
-<p>Asset <em>Categories</em> form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the configuration files and inject into its deployment. </p>
+<p>Asset <em>Categories</em> form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the property files and inject into its deployment. </p>
 <ul>
 <li>Tiles: Properties = Dimensions </li>
 <li>Cursor: Properties = Dimensions</li>
@@ -1417,7 +1427,7 @@
 <li>Effects: Properties = Dimensions, Hitboxes, Count</li>
 <li>Sheets: Properties = Dimensions, Hitboxes, Actions, Personas</li>
 </ul>
-<p>Each Category has Instances. Asset <em>Instances</em> form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Assets Instance determine what type of state it will parse from the configuration files and inject into its deployment. </p>
+<p>Each Category has Instances. Asset <em>Instances</em> form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Assets Instance determine what type of state it will parse from the property and state files and inject into its deployment. </p>
 <ul>
 <li>Tile - BackTile: State = Position, Layer</li>
 <li>Tile - ForeTile: State = Position, Layer</li>
@@ -1445,7 +1455,7 @@
 <li><strong>Properties:</strong> A model defining immutable data (e.g., <code>TileProperties</code>, <code>ObjectProperties</code>, etc.).</li>
 <li><strong>State:</strong> A model defining mutable data (e.g., <code>ContainerState</code>, <code>PositionalState</code>, etc.).</li>
 <li><strong>Animation</strong> Stateless strategies (e.g. <code>BinaryAnimation</code>, <code>StateAnimation</code>, etc.) injected into the Asset. These contain the specific logic for updating frames.</li>
-<li><strong>Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string key.</li>
+<li><strong>Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string keys. A <code>Frame</code> component returns a <code>List[str]</code> rather than a single <code>str</code>. An <code>Asset</code> can be a single logical entity composed of multiple superimposed rendered textures</li>
 </ol>
 <p><em>Behaviors</em> are decoupled from Assets and managed entirely by <em>Mechanics</em> classes that iterate over the Board Assets. See <a href="./06-architecture.md#mechanics">Mechanics documentation</a> for more information.</p>
 <p>The Recipe for an Asset is specified in the <a href="#recipes">Recipe</a> configuration file. A recipe includes the Frame implementation, the Animation implementation, the State model and the Properties model. The recipe configuration file defines each of the Asset categories in the following headings.</p>
@@ -1458,7 +1468,7 @@
 <li><code>name: str</code></li>
 </ul>
 <p><code>id</code> uniquely identifies the Asset file. It must match a file found in the <code>src/assets/**</code> directory.</p>
-<p><code>category</code> determines what property model is employed by the Asset. The category must be configured by a <code>src/assets/&lt;category&gt;/main.yaml</code> configuration file.</p>
+<p><code>category</code> determines what property model is employed by the Asset. The category must be configured by a <code>src/assets/&lt;category&gt;/main.yaml</code> property file.</p>
 <p><code>instance</code> determines what state model is employed by the Asset. An Asset's state is hydrated from the <code>data/state/&lt;board&gt;/*</code> directory.</p>
 <p><code>name</code> is the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique <code>name</code>.</p>
 <p><code>(category, instance)</code> collectively determine the components <code>(frame, animation, properties, state)</code> injected into an Asset class during the <a href="./07-architecture.md#initialization">Initialization</a>. More specifically, category determines properties (<code>category -&gt; properties</code>), and instance determines everything else (<code>instance -&gt; (frame, animation, state)</code>).</p>
@@ -1751,22 +1761,12 @@
 <span class="w">    </span><span class="nt">count</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">directions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">&lt;direction-key&gt;</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">row</span><span class="p">:</span><span class="w"> </span>
-<span class="w">            </span><span class="nt">attackboxes</span><span class="p">:</span>
-<span class="w">                </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span>
-<span class="w">                    </span><span class="nt">x</span><span class="p">:</span>
-<span class="w">                    </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span>
-<span class="w">                  </span><span class="nt">dim</span><span class="p">:</span>
-<span class="w">                    </span><span class="nt">l</span><span class="p">:</span>
-<span class="w">                    </span><span class="nt">w</span><span class="p">:</span>
-<span class="w">                  </span><span class="nt">hitframe</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">row</span><span class="p">:</span>
 </code></pre></div>
 <ul>
 <li><code>&lt;action-key&gt;: str</code> - Ranges over <code>cast, thrust, walk, slash, shoot, die</code></li>
 <li><code>&lt;direction-key&gt; : str</code> -  Ranges over  <code>up, left, down, right</code></li>
 <li><code>count: int</code> - is the number of frames in the Action row grouping. </li>
-<li><code>row: int</code> - Index of the (Action, Direction) row in the Sheet file.</li>
-<li><code>attackboxes</code> - List of indexed Hitboxes, where the <code>hitframe</code> index denotes what frame of the animation it applies, i.e. the intersection calculation changes based on what frame in animation over which it is being evaluated. <code>pos</code> is an Position tuple and <code>dim</code> is a Dimensions tuple, exactly mirroring their Hitbox equivalents.</li>
 </ul>
 <p><strong>Personas</strong></p>
 <p>This snippet from the <a href="#schemas">Schemas</a> shows the general structure of a Persona,</p>
@@ -1815,7 +1815,7 @@
 <p class="admonition-title">Note</p>
 <p>Pixies only have a single Action state, <code>walk</code>.</p>
 </div>
-<h4 id="sprites">Sprites</h4>
+<h3 id="sprites">Sprites</h3>
 <p><em>Sprites</em> are <em>Sheets</em> over multiple rows of frames with a variable number of frames per row. They have a diverse palette of Actions. They are meant to encapsulate the core Characters, e.g. the player, NPCs, and enemies.</p>
 <p><strong>Animation: StateAnimation</strong></p>
 <ul>
@@ -1841,30 +1841,33 @@
 <li><code>goal: Goal</code></li>
 </ul>
 <p>Sprite States are covered in more detail in the <a href="../02-sprites/">Sprites documentation</a>.</p>
+<h3 id="equipment-weapons-utilities-tools-armor-shields">Equipment (Weapons, Utilities, Tools, Armor, Shields)</h3>
+<p>Equipment is a group of Asset Instances within the Category of Sheets. They are closely tied to Sprites. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's inventory. Because of this relationship between the Assets,  i.e. Equipment rendering is dependent on Sprite state, Equipment does not possess its own state, frame or animation. Equipment only has properties.</p>
+<p>Equipment is covered in more detail in the <a href="../02-sprites/">Sprites documentation</a>.</p>
 <h2 id="schemas">Schemas</h2>
-<h3 id="recipes">Recipes</h3>
+<h3 id="recipe-configuration">Recipe Configuration</h3>
 <p>Asset Recipe files determine the specific (State, Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.</p>
 <ul>
-<li>Location: <code>/src/data/recipes/main.yaml</code></li>
+<li>Location: <code>/src/data/config/recipes/main.yaml</code></li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-recipes.yaml&quot;</span>
+<div class="highlight"><pre><span></span><code>
 </code></pre></div>
-<p><strong>Default Recipes</strong></p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/examples/default-recipes.yaml&quot;</span>
+<p><strong>Default Recipe Configuration</strong></p>
+<div class="highlight"><pre><span></span><code>
 </code></pre></div>
 <h3 id="properties">Properties</h3>
 <p>Asset Property files hydrate the application models.</p>
 <ul>
 <li>Location: <code>/src/assets/&lt;category&gt;/main.yaml</code></li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/asset-properties.yaml&quot;</span>
+<div class="highlight"><pre><span></span><code>
 </code></pre></div>
 <h3 id="state">State</h3>
 <p>Asset State files populate the <a href="../00-overview/#board">Board</a>.</p>
 <ul>
 <li>Location: <code>/src/data/state/&lt;board-key&gt;/*.yaml</code></li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/asset-state.yaml&quot;</span>
+<div class="highlight"><pre><span></span><code>
 </code></pre></div>
 
 

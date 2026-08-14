@@ -788,9 +788,6 @@
 
 
 <h1 id="ontology-intentions-goals">Ontology: Intentions &amp; Goals</h1>
-<ul>
-<li>Location: <code>/src/data/intentions/main.yaml</code></li>
-</ul>
 <p><em>Intentions</em> and <em>Goals</em> are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite "finite automaton", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.</p>
 <p>Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the <a href="#transition-matrix">Intention Transition Matrix</a>.</p>
 <h2 id="intention">Intention</h2>
@@ -798,6 +795,9 @@
 <p>For Sprites, Intention is an attribute that controls state transitions and action mappings. For the Player, it controls action mappings.</p>
 <p>It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the <code>sprint</code> state increases the velocity of the <code>(walk, *)</code> states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the <code>interact</code> state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.</p>
 <h3 id="transition-matrix">Transition Matrix</h3>
+<ul>
+<li>Location: <code>/src/data/config/intentions/main.yaml</code></li>
+</ul>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>The Player state does not observe the Intention Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See <a href="../03-player/">Player documentation</a> for more information on the Player.</p>
@@ -929,7 +929,7 @@
 </tr>
 </tbody>
 </table>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/examples/default-intention-matrix.yaml&quot;</span>
+<div class="highlight"><pre><span></span><code>
 </code></pre></div>
 <p><strong>Intentional Scripting Language (ISL)</strong></p>
 <p>The <code>condition</code> for each Intention transition is given in a simple truth-valued language that admits the logical operations and terms,</p>

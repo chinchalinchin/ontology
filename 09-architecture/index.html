@@ -744,7 +744,7 @@
 <h2 id="initialization">Initialization</h2>
 <ol>
 <li>Entrypoint: <code>Orchestrate</code><ul>
-<li>Load Configuration into memory<ul>
+<li>Load data into memory<ul>
 <li>Load Asset Recipes YAML File from <code>/src/assets/main.yaml</code></li>
 <li>Load Asset Category properties YAML files from <code>/src/assets/&lt;category&gt;/main.yaml</code></li>
 <li>Load Asset Instance state YAML files from the <code>/src/data/state/&lt;board-key&gt;</code> directory, where <code>&lt;board-key&gt;</code> is the selected board. There may be an arbitrary number of state files, with any filename, in the <code>&lt;board-key&gt;</code> directory.</li>
@@ -783,6 +783,7 @@
 <h2 id="maps">Maps</h2>
 <p>Maps associate ancillary Asset states to their final Animation state.</p>
 <p>See <a href="../04-intentions/#animationmap">AnimationMap</a> and <a href="../04-intentions/#dialoguemap">DialogueMap</a> for more information.</p>
+<p>The <code>AnimationMap</code> plays a crucial role in enforcing logical constraints. For example, <code>TransitionMechanics</code> and <code>PlayerMechanics</code> utilize <code>AnimationMap.action(state, equipment)</code> to resolve whether an intended action is possible. This guarantees that an <code>attack</code> intention will not translate into a <code>thrust</code> animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.</p>
 <h2 id="cython">Cython</h2>
 <p>While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine strategically uses Cython to bridge this gap, adhering to a strict <strong>"Zero Heap Allocation in the Inner Loop"</strong> philosophy to prevent frame stutters caused by the Python Garbage Collector.</p>
 <div class="admonition important">
@@ -817,12 +818,6 @@
 <li>Hitbox:<ul>
 <li><code>position: Position</code>
 -<code>dimension Dimensions</code></li>
-</ul>
-</li>
-<li>Attackbox<ul>
-<li><code>position: Position</code></li>
-<li><code>dimensions: Dimensions</code></li>
-<li><code>hitframe: int</code></li>
 </ul>
 </li>
 <li>ScreenPosition:<ul>

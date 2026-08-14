@@ -449,6 +449,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#personas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Personas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#equipment" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -471,30 +482,8 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#equipment-matrix" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Equipment Matrix
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#personas" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Personas
-      
-    </span>
-  </a>
   
 </li>
       
@@ -838,6 +827,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#personas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Personas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#equipment" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -860,30 +860,8 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#equipment-matrix" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Equipment Matrix
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#personas" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Personas
-      
-    </span>
-  </a>
   
 </li>
       
@@ -924,8 +902,7 @@
 <li><code>actions:</code> <ul>
 <li><code>count: int</code></li>
 <li><code>directions:</code><ul>
-<li><code>row: int</code></li>
-<li><code>attackboxes: List[Attackbox]</code> </li>
+<li><code>row: int</code> </li>
 </ul>
 </li>
 </ul>
@@ -1132,9 +1109,20 @@ A and visa versa. In other words, if a Sprite converses with another Sprite that
 <p>TODO</p>
 <p><strong>Wallet</strong></p>
 <p>TODO</p>
+<h2 id="personas">Personas</h2>
+<p>Personas are stacks of superimposed Sprite Sheets. They are assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>stack</code> property in the Asset property file during the <a href="./06-architecture.md">application bootstrap</a>. The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona through the Asset Key property. In other words, once assembled, Personas are effectively new "virtualized" Assets.</p>
+<p>Personas are assembled from a Base Sheet and Feature Sheets. The Base Sheet is the background of the resultant Sheet. Feature Sheets are pasted over the Base in the order they are specified.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is assumed the Base and Feature Sheets conform to the same (Action, Direction) row mapping as the Sprite Sheets themselves. As always, the game engine assumes and implements the LPC specification by default.</p>
+</div>
+<ul>
+<li>Base Sheets: <code>/src/assets/sheets/sprites/base/&lt;base-key&gt;.png</code></li>
+<li>Feature Sheets: <code>/src/assets/sheets/sprites/features/&lt;feature-key&gt;.png</code></li>
+</ul>
 <h2 id="equipment">Equipment</h2>
 <ul>
-<li>Equipment Sheets: <code>/src/assets/sheets/sprites/equipment/&lt;category-key&gt;/&lt;equipment-key&gt;.png</code></li>
+<li>Equipment Sheets: <code>/src/assets/sheets/equipment/&lt;instance-key&gt;/&lt;equipment-id&gt;.png</code></li>
 </ul>
 <p>Equipment sheets are superimposed onto the Sprite Sheets based on the active Equipment keys in <code>sprite.state.inventory.equipment</code>, e.g.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># /src/data/state/&lt;board-key&gt;/sprite.state.inventory: </span>
@@ -1158,28 +1146,10 @@ A and visa versa. In other words, if a Sprite converses with another Sprite that
 </div>
 <h3 id="equipment-animation-sheets">Equipment Animation Sheets</h3>
 <p>It assumed Equipment sheets conform to the same LPC-derived (Action, Direction) grouping described in previous sections (e.g. <a href="#action-direction">Sheets</a>). In other words, the frames in an Equipment sheet correspond exactly to frames in a Sprite Sheet. However, Equipment frames may not be present in every frame.</p>
-<p>The catchall quantifier <code>all</code> implies the Equipment sheet has frames associated with all (Action, Direction) row groups in a sheet. For example <code>lantern</code> has a frame for each (Action, Direction) frame (i.e. the <code>lantern</code> equipment is present in all (Action, Direction) rows when activated), whereas <code>shortsword</code> only has frames in the <code>(slash, *)</code> grouping (i.e. the <code>shortsword</code> equipment is present in <em>only</em> the rows with <code>action == slash</code>.). </p>
-<h3 id="equipment-matrix">Equipment Matrix</h3>
-<ul>
-<li>Location: <code>/src/data/equipment/main.yaml</code></li>
-</ul>
-<p><strong>Schema</strong></p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-equipment.yaml&quot;</span>
-</code></pre></div>
-<p><strong>Default Equipment Matrix</strong></p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-equipment.yaml&quot;</span>
-</code></pre></div>
-<h2 id="personas">Personas</h2>
-<p>Personas are stacks of superimposed Sprite Sheets. They are assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>compositions</code> property in the configuration file during the <a href="./06-architecture.md">application bootstrap</a>. The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona through the Asset Key property. In other words, once assembled, Personas are effectively new "virtualized" Assets.</p>
-<p>Personas are assembled from a Base Sheet and Feature Sheets. The Base Sheet is the background of the resultant Sheet. Feature Sheets are pasted over the Base in the order they are specified.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>It is assumed the Base and Feature Sheets conform to the same (Action, Direction) row mapping as the Sprite Sheets themselves. As always, the game engine assumes and implements the LPC specification by default.</p>
-</div>
-<ul>
-<li>Base Sheets: <code>/src/assets/sheets/sprites/base/&lt;base-key&gt;.png</code></li>
-<li>Feature Sheets: <code>/src/assets/sheets/sprites/features/&lt;feature-key&gt;.png</code></li>
-</ul>
+<p>The catchall quantifier <code>all</code> implies the Equipment sheet has frames associated with all (Action, Direction) row groups in a sheet. For example <code>lantern</code> has a frame for each (Action, Direction) frame (i.e. the <code>lantern</code> equipment is present in all (Action, Direction) rows when activated), whereas <code>shortsword</code> only has frames in the <code>(slash, *)</code> grouping (i.e. the <code>shortsword</code> equipment is present in <em>only</em> the rows with <code>action == slash</code>.).</p>
+<p>Equipment rendering adheres to the <strong>Registry Miss</strong> pattern. It is dictated by the <code>SheetProperties.actions</code> configured in the Asset directory. If an equipment does not possess a specific action, its omission from the rendering pipeline is handled implicitly by the <code>Registry</code> returning <code>None</code>. This allows for robust and sparse equipment sheets that only render when they possess the relevant animation rows without additional filtering logic.</p>
+<p><strong>Equipment Stacks</strong></p>
+<p>Equipment Sheets may be stacked like Sprite Sheet <a href="#personas">Personas</a> to form a piece of Equipment. The <code>stack</code> for a piece of Equipment is given in the Equipment configuration file.</p>
 
 
 

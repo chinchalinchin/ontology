@@ -713,6 +713,10 @@
 <p>A Player is a special type of Sprite Sheet Asset. Like all other Assets, its state is maintained in <code>/src/data/&lt;board&gt;/**.yaml</code>.</p>
 <h2 id="overview">Overview</h2>
 <p>The Player Sprite Sheet is configured through the <code>player</code> Sheet <a href="../02-sprites/#personas">Persona Stack</a>. However, its State differs significantly from the <a href="../02-sprites/">Sprite state</a>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The <code>player</code> Sprite <em>must</em> be defined in <code>/src/assets/sheets/main.yml#sprites</code>.</p>
+</div>
 <p><strong>Taxonomy</strong></p>
 <ul>
 <li><code>category: sheets</code></li>
@@ -724,7 +728,6 @@
 <li><code>count: int</code></li>
 <li><code>directions:</code><ul>
 <li><code>row: int</code></li>
-<li><code>attackboxes: List[Attackbox]</code> </li>
 </ul>
 </li>
 </ul>
@@ -783,14 +786,14 @@
 <p>The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See <a href="https://wiki.libsdl.org/SDL2/SDL_Scancode">SDL documentation</a> for more information.</p>
 <p><strong>Defaults</strong></p>
 <p>The default mappings bundled with the game are provided below,</p>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/examples/default-mapping-matrix.yaml&quot;</span>
+<div class="highlight"><pre><span></span><code>
 </code></pre></div>
 <h2 id="schemas">Schemas</h2>
 <h3 id="device-mappings">Device Mappings</h3>
 <ul>
-<li>Location: <code>src/data/mappings/main.yaml</code></li>
+<li>Location: <code>src/data/config/mappings/main.yaml</code></li>
 </ul>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-mappings.yaml&quot;</span>
+<div class="highlight"><pre><span></span><code>
 </code></pre></div>
 
 

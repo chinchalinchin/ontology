@@ -298,6 +298,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -719,6 +747,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#state" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -884,31 +940,32 @@
 <p>All Assets have an <em>Key</em>, <em>Properties</em> and <em>State</em>. </p>
 <p>In addition, Assets are divided into several categories. See <a href="../01-assets/">Assets</a> for more information on each category. Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,</p>
 <ul>
-<li>Crafts</li>
-<li>Cursors</li>
-<li>Effects</li>
+<li><a href="../01-assets/#crafts">Crafts</a></li>
+<li><a href="../01-assets/#cursors">Cursors</a></li>
+<li><a href="../01-assets/#effects">Effects</a></li>
 <li>Environ</li>
-<li>Objects</li>
-<li>Sheets</li>
-<li>Sounds</li>
-<li>Tiles</li>
-<li>Widgets</li>
+<li><a href="../01-assets/#objects">Objects</a></li>
+<li><a href="../01-assets/#sheets">Sheets</a></li>
+<li><a href="../07-sounds/">Sounds</a></li>
+<li><a href="../01-assets/#tiles">Tiles</a></li>
+<li><a href="../06-widgets/">Widgets</a></li>
 </ul>
 <p>Assets are placed in the <code>/src/assets/&lt;category&gt;/</code> directory and then added and configured to the Asset category index <code>/src/assets/&lt;category&gt;/main.yaml</code>. See <a href="../01-assets/#schemas">Asset Schema</a> for more information on each Asset category index schema.</p>
 <p>The YAML index schema for each Asset configures its <em>properties</em>, i.e. its static attributes that are constant and do not change as a result of gameplay.</p>
 <h2 id="data">Data</h2>
-<p>An Asset is deployed onto a <em>Board</em>, where it acquires its <em>state</em>, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests state data stored in the <code>/src/data/**</code> directory. </p>
+<p>Runtime information is stored in the <code>/src/data/**</code> directory, otherwise known as the <em>data directory</em>. This information is divided in <em>state</em> and <em>configuration</em>, in the <code>/src/data/state/*</code> and the <code>/src/data/config/*</code> directories respectively, otherwise known as the <em>state directory</em> and the <em>configuration directory</em>.</p>
+<h3 id="state">State</h3>
+<p>An Asset is deployed onto a <em>Board</em>, where it acquires its <em>state</em>, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests state data stored in the <code>/src/data/state/*</code> directory. </p>
 <p>An Asset Category has a single schema for properties, but each individual Asset Instance may have a unique State, particular to particular deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).</p>
-<p>Various aspects of the Asset State are defined by the configuration stored in the <code>/src/data/**</code> directory,</p>
+<h3 id="configuration">Configuration</h3>
+<p>Mechanics and other components of the game engine (e.g. Menus, Orchestrator, etc.) utilize configuration stored in the <code>/src/data/config/*</code> directory. The following engine components are configured by the files in this directory.</p>
 <ul>
-<li>Corpus</li>
-<li>Equipment</li>
-<li>Intentions</li>
-<li>Mappings</li>
-<li>Mechanics</li>
-<li>Menus</li>
-<li>Recipes</li>
-<li>State</li>
+<li>Scripts</li>
+<li><a href="../04-intentions/">Intentions</a></li>
+<li><a href="../03-player/#mapping">Mappings</a></li>
+<li><a href="../05-mechanics/">Mechanics</a></li>
+<li><a href="../06-widgets/#menus">Menus</a></li>
+<li><a href="../01-assets/#recipes">Recipes</a></li>
 </ul>
 <h2 id="application">Application</h2>
 <h3 id="factory">Factory</h3>
