@@ -1113,11 +1113,11 @@
 <li>selected: Button has been selected by the traversal.</li>
 <li>disabled: Button is intraversible.</li>
 </ul>
-<p>It assumed Button Asset files are arranged in horizontal rows ordered by their status in the order <code>idle, active, selected, disabled</code>. </p>
-<p>A Button may have <code>symbols</code>. Each element of the <code>symbols</code>  list is a Language Widget. Each Language Asset is concatenated horizontally across the Button frame.</p>
+<p>It assumed Button Asset files are arranged in horizontal rows ordered by their status in the order <code>idle, active, selected, disabled</code>, where each frame is <code>properties.dimensions.w</code> wide.</p>
+<p>A Button may have <code>symbols</code>. Each element of the <code>symbols</code>  list is a Language Widget. Each Language Asset frame is concatenated horizontally across the Button frame.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The Button Asset must have large enough dimensions to accomodate Language Asset embedding, i.e. the sum of the Language widths must not exceed the width of the Button.</p>
+<p>The Button Asset must have large enough dimensions to accomodate the Language Asset embeddings, i.e. the sum of the Language widths must not exceed the width of the Button.</p>
 </div>
 <p><strong>Taxonomy</strong></p>
 <ul>
