@@ -287,22 +287,16 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Assets">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hitboxes" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Hitboxes
+        Data
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -417,6 +411,17 @@
     <span class="md-ellipsis">
       
         Layers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hitboxes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hitboxes
       
     </span>
   </a>
@@ -714,22 +719,16 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Assets">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#hitboxes" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Hitboxes
+        Data
       
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -850,6 +849,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#hitboxes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hitboxes
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -896,20 +906,32 @@
 <p>All Assets have an <em>Key</em>, <em>Properties</em> and <em>State</em>. </p>
 <p>In addition, Assets are divided into several categories. See <a href="../01-assets/">Assets</a> for more information on each category. Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,</p>
 <ul>
-<li>Menu</li>
-<li>Object</li>
-<li>Effect</li>
-<li>Cursor</li>
-<li>Craft</li>
-<li>Sheet</li>
-<li>Tile</li>
+<li>Crafts</li>
+<li>Cursors</li>
+<li>Effects</li>
+<li>Environ</li>
+<li>Objects</li>
+<li>Sheets</li>
+<li>Sounds</li>
+<li>Tiles</li>
+<li>Widgets</li>
 </ul>
 <p>Assets are placed in the <code>/src/assets/&lt;category&gt;/</code> directory and then added and configured to the Asset category index <code>/src/assets/&lt;category&gt;/main.yaml</code>. See <a href="../01-assets/#schemas">Asset Schema</a> for more information on each Asset category index schema.</p>
-<p>The index schema for each Asset configures its <em>Properties</em>, i.e. its static attributes that are constant and do not change as a result of gameplay.</p>
-<p>An Asset is deployed onto a <em>Board</em>, where it acquires its <em>State</em>, i.e. its dynamic attributes that are variable and change as a result of gameplay. </p>
-<p>A group of Assets of the same category have a single set of Properties, but each individual Asset may have a unique State, unique to its particular deployment. For example, a treasure chest is configured once by its Properties (its height, weight, etc.), but each instance of a treasure chest on a Board has a unique State (its position, content, etc.).</p>
-<h3 id="hitboxes">Hitboxes</h3>
-<p>Many Assets have Hitboxes. Hitboxes are <em>Properties</em>, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. </p>
+<p>The YAML index schema for each Asset configures its <em>properties</em>, i.e. its static attributes that are constant and do not change as a result of gameplay.</p>
+<h2 id="data">Data</h2>
+<p>An Asset is deployed onto a <em>Board</em>, where it acquires its <em>state</em>, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests state data stored in the <code>/src/data/**</code> directory. </p>
+<p>An Asset Category has a single schema for properties, but each individual Asset Instance may have a unique State, particular to particular deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).</p>
+<p>Various aspects of the Asset State are defined by the configuration stored in the <code>/src/data/**</code> directory,</p>
+<ul>
+<li>Corpus</li>
+<li>Equipment</li>
+<li>Intentions</li>
+<li>Mappings</li>
+<li>Mechanics</li>
+<li>Menus</li>
+<li>Recipes</li>
+<li>State</li>
+</ul>
 <h2 id="application">Application</h2>
 <h3 id="factory">Factory</h3>
 <p>The Factory builds Asset components based on Recipes and other game components.</p>
@@ -930,6 +952,8 @@
 <h3 id="layers">Layers</h3>
 <p>All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire frame, it is rendering a Layer.  </p>
 <p>Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at <code>(x_1, y_1)</code> and get released on Layer 3 at <code>(x_2, y_2)</code>. For this reason, each Layer may have different dimensions.</p>
+<h3 id="hitboxes">Hitboxes</h3>
+<p>Many Assets have Hitboxes. Hitboxes are <em>properties</em>, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. </p>
 
 
 

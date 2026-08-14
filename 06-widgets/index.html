@@ -464,6 +464,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#panes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Panes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#buttons" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -512,17 +523,6 @@
     <span class="md-ellipsis">
       
         Meters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#panes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Panes
       
     </span>
   </a>
@@ -756,6 +756,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#panes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Panes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#buttons" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -804,17 +815,6 @@
     <span class="md-ellipsis">
       
         Meters
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#panes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Panes
       
     </span>
   </a>
@@ -955,16 +955,47 @@
 <li><code>dimensions: Dimension</code>: Dimensions of a single frame.</li>
 <li><code>frames: List[str]</code>: List of frame keys.</li>
 </ul>
-<h3 id="buttons">Buttons</h3>
-<p>TODO</p>
-<p>Buttons contain references and content. Reference determines what is indicated by content. </p>
+<h3 id="panes">Panes</h3>
+<p>Panes are the <em>root</em> Widgets of a Menu. They are the only Widget which has a ScreenPosition. ScreenPosition for a root Pane is specified in the <a href="#menus">Menu Schema</a>.</p>
+<p>Panes contain other Widgets. Their child Widgets have their Positions calculated relative to the root Pane based on the <code>layout</code> and <code>alignment</code>. Layouts are enumerated below,</p>
 <ul>
-<li>If <code>reference == icon</code>, then <code>content</code> is a key to an Icon. This Icon is embedded in the button. </li>
-<li>If <code>reference == label</code>, then <code>content</code> is a string containing text to be displayed.</li>
+<li>Dock: A horizontal row of Widgets.</li>
+<li>Stack: A vertical column of Widgets</li>
+</ul>
+<p>Alignments are enumerated below,</p>
+<ul>
+<li>Start: Widgets are aligned at the start of the Pane.</li>
+<li>End: Widgets are aligned at the end of the Pane.</li>
+<li>Center: Widgets are aligned at the center of the Pane.</li>
+</ul>
+<p><strong>Taxonomy</strong></p>
+<ul>
+<li><code>category: widget</code></li>
+<li><code>instance: pane</code></li>
+</ul>
+<p><strong>State: PaneState</strong></p>
+<ul>
+<li><code>position: ScreenPosition</code></li>
+<li><code>layout: Layout</code></li>
+<li><code>alignment: Alignment</code></li>
+<li><code>gap: int</code> : Pixel gap between child Widgets.</li>
+<li><code>margins: Tuple[int, int, int, int]</code>: Margins applied around the edge of the Pane before aligning children in the layout.</li>
+<li><code>children: List[Widget]</code>: List of Widgets contained in the Pane.</li>
+</ul>
+<p><strong>Frame: SingleFrame</strong></p>
+<ul>
+<li><code>key(asset, state): returns {asset}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+</ul>
+<h3 id="buttons">Buttons</h3>
+<p>Buttons are selectable Widgets that enter into a Status of <code>selected</code> when triggered. Buttons contain references and content. Reference determines what is indicated by content. </p>
+<ul>
+<li>If <code>reference == language</code>, then <code>content</code> is a key to an Language Widget. This Widget is embedded in the Button. </li>
+<li>If <code>reference == label</code>, then <code>content</code> is a string containing text to be displayed on the button.</li>
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The Button Asset must have large enough dimensions to accomodate Icon Asset embeddings.</p>
+<p>The Button Asset must have large enough dimensions to accomodate Language Asset embeddings.</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -984,7 +1015,7 @@
 <ul>
 <li><code>content: str</code></li>
 <li><code>reference: Enum[label, icon]</code> </li>
-<li><code>status: Enum[enabled, active, selected, disabled]</code></li>
+<li><code>status: Enum[idle, active, selected, disabled]</code></li>
 </ul>
 <p><strong>Frame: WidgetFrame</strong></p>
 <ul>
@@ -999,35 +1030,27 @@
 <p>TODO</p>
 <h3 id="meters">Meters</h3>
 <p>TODO </p>
-<h3 id="panes">Panes</h3>
-<p>TODO</p>
 <h2 id="menus">Menus</h2>
 <ul>
 <li>Location: <code>/src/data/menus/main.yaml</code></li>
 </ul>
 <p>Menus are pre-defined arrangements of Widgets. </p>
-<p><strong>Properties</strong></p>
-<ul>
-<li><code>layout: Enum[dock, stack]</code>: Layout of the Menu.</li>
-</ul>
-<p><strong>State</strong></p>
+<p><strong>MenuState</strong></p>
 <ul>
 <li><code>focus: str</code>: Widget that is currently being focused on for traversal.</li>
 </ul>
-<p><strong>Layouts</strong></p>
-<ul>
-<li>Dock: A horizontal row of Widgets.</li>
-<li>Stack: A vertical column of Widgets</li>
-</ul>
 <p><strong>Menu Traversal</strong></p>
 <p>TODO</p>
+<p><strong>MenuMechanics</strong></p>
+<p>When the Board is paused, the only Mechanics that is applied during the game loop is the MenuMechanic. This Mechanic translates the <a href="../03-player/#device-mapping">Player Device mappings</a> to Menu state changes. </p>
+<p>The rest of this section details Menus bundled with the application.</p>
 <p><strong>Menu Schema</strong></p>
 <p>TODO</p>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-menus.yaml&quot;</span>
 </code></pre></div>
-<p><strong>MenuMechanics</strong></p>
-<p>When the Board is paused, the only Mechanics that is applied during the game loop is the MenuMechanic. This Mechanic translates the <a href="../03-player/#device-mapping">Player Device mappings</a> to Menu state changes. </p>
-<p>The rest of this section details Menus bundled with the application.</p>
+<p><strong>Default Menus</strong></p>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/examples/default-menus.yaml&quot;</span>
+</code></pre></div>
 <h3 id="dialogue">Dialogue</h3>
 <p>TODO</p>
 <p><strong>Arguments</strong>: <code>sprite.state.psyche.communication</code></p>
