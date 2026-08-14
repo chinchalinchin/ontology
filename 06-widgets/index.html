@@ -441,6 +441,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#asset-specification" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -508,10 +519,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#windows" class="md-nav__link">
+  <a href="#panes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Windows
+        Panes
       
     </span>
   </a>
@@ -722,6 +733,17 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#asset-specification" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -789,10 +811,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#windows" class="md-nav__link">
+  <a href="#panes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Windows
+        Panes
       
     </span>
   </a>
@@ -909,12 +931,11 @@
 
 <h1 id="ontology-widgets">Ontology: Widgets</h1>
 <p>Widgets are a type of <a href="../01-assets/">Asset</a>; however, they reside outside of the core loop and have a special place in the application flow.</p>
+<h2 id="overview">Overview</h2>
 <p>Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets. Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus are controlled through the flow of Events.</p>
 <p><strong>Events</strong></p>
-<p>To illustrate Events, consider the following example. A Player may enter into the <code>barter</code> <a href="../04-intentions/">Intention</a> with another Sprite. This causes the gameplay loop to emit an Event containing the Menu key <code>trade</code> along with the Event data, i.e. the Sprite States. When an Event is detected by the gameplay, it causes the Board to pause the game loop and pass the Event to be processed by the Bus. The Bus in turn uses the Event data to construct and display the Menu referenced by the Event's Menu key. </p>
+<p>To illustrate Events, consider the following example. A Player may enter into the <code>barter</code> <a href="../04-intentions/">Intention</a> with another Sprite. This causes the gameplay loop to emit an Event containing the Menu key <code>trade</code> along with the Event data, i.e. the Sprite States. When an Event is detected by the gameplay, it causes the Board to pause the game loop and pass the Event to be processed to the Bus. The Bus in turn uses the Event data to construct and display the Menu referenced by the Event's Menu key. </p>
 <p>When a Menu is instantiated, its Widgets acquire state. This state is populated through transformations applied to the Menu arguments (in most cases, Sprite state).</p>
-<p><strong>MenuMechanics</strong></p>
-<p>When the Board is paused, the only Mechanics that is applied during the game loop is the MenuMechanic. This Mechanic translates the <a href="../03-player/#mapping">Player mapping</a> of (Goal, Intention) to a Menu state change.</p>
 <p><strong>ScreenPosition</strong></p>
 <ul>
 <li><code>ScreenPosition</code>:<ul>
@@ -923,32 +944,52 @@
 </ul>
 </li>
 </ul>
-<p>Menu positions are specified as ScreenPositions. A ScreenPosition is a tuple of percentages relative to the screensize, e.g. the following coordinates denote a position <code>(0.75w, 0.85h)</code>, where <code>(w, h)</code> is the screensize.</p>
+<p>Some Menu positions (e.g. Windows) are specified as ScreenPositions. A ScreenPosition is a tuple of percentages relative to the screensize, e.g. the following coordinates denote a position <code>(0.75w, 0.85h)</code>, where <code>(w, h)</code> is the screensize.</p>
 <div class="highlight"><pre><span></span><code><span class="n">menu</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.75</span>
 <span class="n">menu</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.75</span>
 </code></pre></div>
 <h2 id="asset-specification">Asset Specification</h2>
+<p>It is assumed all Widget frames are organized in single row in a <code>.png</code> image file. The number of frames (i.e. <code>len(frames)</code>) multipled by the width of a single frame(i.e. <code>dimension.w</code>) must equal the width of the image file.</p>
 <p><strong>Properties: WidgetProperties</strong></p>
 <ul>
-<li><code>dimensions: Dimension</code></li>
-<li><code>ids: List[str]</code></li>
+<li><code>dimensions: Dimension</code>: Dimensions of a single frame.</li>
+<li><code>frames: List[str]</code>: List of frame keys.</li>
 </ul>
 <h3 id="buttons">Buttons</h3>
 <p>TODO</p>
+<p>Buttons contain references and content. Reference determines what is indicated by content. </p>
+<ul>
+<li>If <code>reference == icon</code>, then <code>content</code> is a key to an Icon. This Icon is embedded in the button. </li>
+<li>If <code>reference == label</code>, then <code>content</code> is a string containing text to be displayed.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The Button Asset must have large enough dimensions to accomodate Icon Asset embeddings.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Any label content added to a Button is truncated if it exceeds the dimensions of the Button.</p>
+</div>
 <p><strong>Taxonomy</strong></p>
 <ul>
 <li><code>category: widget</code></li>
 <li><code>instance: button</code></li>
 </ul>
 <p><strong>Animation: WidgetAnimation</strong></p>
+<p>TODO</p>
+<ul>
+<li><code>if state.status != disabled:</code> </li>
+</ul>
 <p><strong>State: ButtonState</strong></p>
 <ul>
-<li><code>content: str</code> </li>
+<li><code>content: str</code></li>
+<li><code>reference: Enum[label, icon]</code> </li>
 <li><code>status: Enum[enabled, active, selected, disabled]</code></li>
 </ul>
 <p><strong>Frame: WidgetFrame</strong></p>
 <ul>
 <li><code>key(asset, state): returns {asset}-{state.status}</code></li>
+<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <h3 id="choices">Choices</h3>
 <p>TODO</p>
@@ -958,17 +999,34 @@
 <p>TODO</p>
 <h3 id="meters">Meters</h3>
 <p>TODO </p>
-<h3 id="windows">Windows</h3>
+<h3 id="panes">Panes</h3>
 <p>TODO</p>
 <h2 id="menus">Menus</h2>
 <ul>
 <li>Location: <code>/src/data/menus/main.yaml</code></li>
 </ul>
-<p>Menus are pre-defined arrangements of widgets. </p>
+<p>Menus are pre-defined arrangements of Widgets. </p>
+<p><strong>Properties</strong></p>
+<ul>
+<li><code>layout: Enum[dock, stack]</code>: Layout of the Menu.</li>
+</ul>
+<p><strong>State</strong></p>
+<ul>
+<li><code>focus: str</code>: Widget that is currently being focused on for traversal.</li>
+</ul>
+<p><strong>Layouts</strong></p>
+<ul>
+<li>Dock: A horizontal row of Widgets.</li>
+<li>Stack: A vertical column of Widgets</li>
+</ul>
+<p><strong>Menu Traversal</strong></p>
+<p>TODO</p>
 <p><strong>Menu Schema</strong></p>
 <p>TODO</p>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/data-menus.yaml&quot;</span>
 </code></pre></div>
+<p><strong>MenuMechanics</strong></p>
+<p>When the Board is paused, the only Mechanics that is applied during the game loop is the MenuMechanic. This Mechanic translates the <a href="../03-player/#device-mapping">Player Device mappings</a> to Menu state changes. </p>
 <p>The rest of this section details Menus bundled with the application.</p>
 <h3 id="dialogue">Dialogue</h3>
 <p>TODO</p>
