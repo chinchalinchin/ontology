@@ -5,12 +5,15 @@ menus:
         position:
           px:
           py: 
-        layout:
+        layout: dock | stack | tab
         alignment:
         gap: 
+        headers:
+          - instance:
+            id:
+            synbols: 
         children: 
-          - category:
-            instance:
+          - instance:
             id: 
             bind: 
               ref: state | traversal

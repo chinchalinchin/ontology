@@ -67,18 +67,52 @@ widgets:
         - bolt-precision
         - cane
         - coin
+    portraits:
+      dimensions:
+        w:
+        l:
+      frames:
+        - 
   meters:
-    meter: 
-  panes:
+    meter:
+      dimensions:
+        w:
+        l:
+  pages:
     dialogue:
       dimensions:
         w:
         l:
-    popup:
+    header:
       dimensions:
         w:
         l:
-    scroll:
+    label:
       dimensions:
         w:
         l:
+    notification:
+      dimensions:
+        w:
+        l:
+    parchment:
+      dimensions:
+        w:
+        l:
+    portrait:
+      dimensions:
+        w:
+        l:
+  panes:
+    dark:
+      dimensions:
+        w: 318
+        l: 180
+    neutral:
+      dimensions:
+        w: 318
+        l: 180
+    light:
+      dimensions:
+        w: 318 
+        l: 180

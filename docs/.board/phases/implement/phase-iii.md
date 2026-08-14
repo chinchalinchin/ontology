@@ -7,15 +7,15 @@ Goals: Widget Creation, Menu Configuration and Instantiation, Menu Traversal
 
 **1. Data Models & Application Hooks**
 
-* [ ] **Define Widget Properties**: Implement `WidgetProperties`, `MenuProperties`, and derived classes (e.g., `ButtonProperties`) in `app.models.properties`.
-* [ ] **Define Widget State**: Implement `WidgetState` (managing `status: Enum`), `MenuState` (managing `focus`), and `ScreenPosition` in `app.models.state`.
+* [ ] **Define Widget Properties**: Implement `WidgetProperties` in `app.models.properties`.
+* [ ] **Define Widget State**: Implement `WidgetState` (managing `status: Enum`), `MenuState` (managing `focus`) in `app.models.state`. `ScreenPosition` should be a core Cython model.
 * [ ] **Extend Factory Hydration**: Update `Factory.PROPERTY_MAP`, `Factory.STATE_MAP`, and `_hydrate` to parse the new schemas.
 * [ ] **Configure Loaders**: Update `Loader` and `Orchestrator` to ingest `assets/widgets/main.yaml` and `data/menus/main.yaml`.
 
 **2. Frame & Animation Implementation**
 
-* [ ] **Widget Frames**: Implement `WidgetFrame` in `app.assets.frames`. The key schema must map to the Widget's status (e.g., `{id}-{state.status}`).
-* [ ] **Widget Animations**: Implement `WidgetAnimation` in `app.assets.animations` to handle status transitions (e.g., `enabled` -> `selected` -> `active`).
+* [ ] **Widget Frames**: Implement `TraversalFrame` in `app.assets.frames`. The key schema must map to the Widget's status (e.g., `{id}-{state.status}`).
+* [ ] **Widget Animations**: Implement `TraversalAnimation` in `app.assets.animations` to handle status transitions (e.g., `enabled` -> `selected` -> `active`).
 
 **3. Event Bus & Game Loop Interruption**
 
@@ -44,15 +44,16 @@ Goals: Widget Creation, Menu Configuration and Instantiation, Menu Traversal
 **Task 1. Configuration & Models**
 
 * [ ] **Menu Layout Enums**: Add `Layouts (DOCK, STACK)` and `Alignments (LEFT, RIGHT, CENTER, TOP, BOTTOM)` to `app.config.enums`.
-* [ ] **Menu Models**: Define `PaneProperty` and `MenuProperty` in `app.models.properties`. `MenuProperty` should contain a list of `PaneProperty` objects, which in turn contain `ScreenPosition`, layout enums, spacing integers, and a list of `WidgetConfig` references.
-* [ ] **Data Binding Schema**: Create a generic `bind` dictionary mapping in the `WidgetConfig` model to allow YAML properties to map to dynamic state variables.
+* [ ] **Menu Models**: Define `Menu` schema.
+* [ ] **Data Binding Schema**: Create a generic `bind` dictionary mapping in the model to allow YAML properties to map to dynamic state variables.
 
 **2. The Layout Engine**
 
 * [ ] **Create `app.game.menus.layout**`: Implement a purely mathematical `LayoutEngine` module.
 * [ ] **Calculate Anchors**: Write a method that takes `ScreenPosition` and `screensize: Dimensions` and returns a primitive `Position(x, y)`.
-* [ ] **Stack Algorithm**: Implement the vertical stacking algorithm, incorporating `spacing` and horizontal `alignment` offsets based on child widths.
-* [ ] **Dock Algorithm**: Implement the horizontal docking algorithm, incorporating `spacing` and vertical `alignment` offsets based on child lengths.
+* [ ] **Stack Algorithm**: Implement the stacking algorithm, incorporating `gap` and `alignment` offsets based on child widths.
+* [ ] **Dock Algorithm**: Implement the docking algorithm, incorporating `gap` and `alignment` offsets based on child lengths.
+* [ ] **Tab Algorithm**: Implement the tabbing algorithms.
 
 **3. The Menu Factory**
 
@@ -68,13 +69,13 @@ Goals: Widget Creation, Menu Configuration and Instantiation, Menu Traversal
 
 #### 1. Schema & Models
 
-* [ ] **Tab Enums & Types**: Add `TABBED` to `Layouts` enum. Create a `TabConfig` data model to support `label/icon` and a nested `PaneProperty`.
+* [ ] **Tab Enums & Types**: Add `tab` to `Layouts` enum.
 * [ ] **MenuState Dictionary**: Add `active_tabs: Dict[str, str]` to `MenuState` to track active tab IDs by Pane ID.
 
 #### 2. Layout Engine Expansion
 
-* [ ] **Tab Header Generation**: Inside `LayoutEngine`, implement logic to dynamically instantiate `Button` widgets for Tab headers based on the schema, anchoring them horizontally.
-* [ ] **Conditional Flattening**: Implement logic so that when processing a `tab` pane, the engine checks `PaneState.children`, executes the layout algorithm *only* on the matching sub-pane, and shifts its Y-anchor below the headers.
+* [ ] **Tab Header Generation**: Inside `Layout`, implement logic to dynamically instantiate `Button` widgets for Tab headers based on the schema, anchoring them horizontally.
+* [ ] **Conditional Flattening**: Implement logic so that when processing a `tab` pane, the engine checks `pane.children`, executes the layout algorithm *only* on the matching sub-pane, and shifts its Y-anchor below the headers.
 
 #### 3. MenuMechanics Controls
 

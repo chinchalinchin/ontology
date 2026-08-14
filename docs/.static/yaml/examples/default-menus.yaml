@@ -1,7 +1,7 @@
 menus:
   dialogue:
     roots: 
-      - id: dialogue
+      - id: neutral
         name: dialogue-menu
         position:
           px: 0.1
@@ -10,58 +10,66 @@ menus:
         alignment: left
         gap: 10
         children: 
-          - category: widgets
-            instance: buttons
-            id: slot
+          - instance: page
+            id: portrait
             name: character-portrait
             bind: 
               ref: state
               data: sprite.state.character.portrait
-          - category: widgets
-            instance: pages
-            id: scroll
+          - instance: page
+            id: dialogue
             name: character-speech
             bind: 
               ref: state
               data: sprite.state.psyche.communication
-          - category: widgets
-            instance: buttons
+          - instance: button
             id: arrow-up
             name: character-speech-scroll-up
             bind: 
               ref: traversal
-              data: self.children[1] # Bind to scroller
-          - category: widget
-            instance: button
+              data: self.children[1] # Bind to scroller Page
+          - instance: button
             id: arrow-down
             name: character-speech-scroll-down
             bind: 
               ref: traversal
-              data: self.children[1] # Bind to scroller
+              data: self.children[1] # Bind to scroller Page
   editor:
   inventory:
     roots:
-      - id: main_inventory_pane
+      - id: dark
+        name: equipment-menu
         position: 
           px: 0.1
           py: 0.1
         layout: tab
-        gap: 10 
         headers:
-          - category: widget
-            instance: button
-            id: icon
+          - id: icon
+            name: armor-header
             symbols:
-              - icons-equipment
+              - icon-armor
+          - id: icon
+            name: weapon-header
+            symbols:
+              - icon-weapon
         children:
-          - category: widget
-            instance: button
-            id: icon
-            pane:
-              layout: stack
-              widgets:
-                - category: widget
-                  instance: container
-                  bind: sprite.state.inventory.equipment
+          - instance: pane
+            id: dark
+            name: armor-pane
+            layout: dock
+            gap: 10
+            children: 
+              - instance: button
+                id: slot
+                name: equipped-armor
+                bind:
+                  ref: state
+                  data: sprite.state.inventory.equipment
+              - instance: button
+                id: slot
+                name: available-armor
+                bind:
+                  ref: state
+                  data: sprite.state.inventory.equipment
   market:
   pause:
