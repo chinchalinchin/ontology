@@ -247,7 +247,7 @@ equipment:
     weapon: dagger
 ```
 
-When this Sprite's frame `keys()` interface is called, it will return a list of Frame keys that include Equipment frame keys. The Screen will then retrieve each of these keys from the Registry and render them in the order they were received, thus stacking the Equipment on top of the Sprite who is equipping it.
+When this Sprite's Frame `keys()` interface is called, it will return a list of Frame keys that include Equipment Frame keys. The Screen will then retrieve each of these keys from the Registry and render them in the order they were received, thus stacking the Equipment on top of the Sprite who is equipping it.
 
 ### Equipment Animations
 

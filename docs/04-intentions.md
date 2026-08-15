@@ -1,6 +1,6 @@
 # Ontology: Intentions & Goals
 
-*Intentions* and *Goals* are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite "finite automaton", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.
+Intentions and Goals are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite "finite automaton", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.
 
 Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the [Intention Transition Matrix](#transition-matrix).
 
@@ -154,7 +154,7 @@ Sprite Animation Actions is as a function of Sprite Intention state and Equipmen
 
 **Formulae**
 
-- `if intention == attack: action = equipment.animation.action`
+- `if state.intention == attack: state.animation.action = board.equipment[weapons][state.inventory.weapon].action`
 
 ### Directions
 
@@ -184,5 +184,5 @@ TODO
 
 **Formulae**
 
-- `if intention == speak and psyche.communication: dialogue = psyche.communcation`
+- `if state.intention == speak and state.psyche.communication: dialogue = state.psyche.communcation`
 

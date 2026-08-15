@@ -1,10 +1,10 @@
 # Ontology: Player
 
-A Player is a special type of Sprite Sheet Asset. Like all other Assets, its state is maintained in `/src/data/<board>/**.yaml`.
+A Player is a special type of Sprite Sheet Asset. 
 
 ## Overview
 
-The Player Sprite Sheet is configured through the `player` Sheet [Persona Stack](./02-sprites.md#personas). However, its State differs significantly from the [Sprite state](./02-sprites.md).
+The Player Sprite Sheet is configured through the `player` Sprite Sheet. 
 
 !!! important
     The `player` Sprite *must* be defined in `/src/assets/sheets/main.yml#sprites`.
@@ -56,13 +56,9 @@ The Player Sprite Sheet is configured through the `player` Sheet [Persona Stack]
 
 ## Devices
 
-The Player Asset contains a Device, which polls for user input. The main responsiblity of the Player is to translate the data received into a  (Intention, Goal)-tuple. This is achieved through an input mapping.
+The [Board](./00-overview.md#board) contains a Device, which polls for user input. The PlayerMechanic uses a Mapping to translate the polling data into a [(Intention, Goal)](./04-intentions.md)-tuple. The [Mapping Configuration](#mapping-configuration) file provides a translation key between input state and game state.
 
-### Mapping
-
-Devices have their input mapped to *Intentions* and *Goals*. The mapping configuration file provides a dictionary lookup for what input state corresponds to what game state.
-
-**Keyboard Mappings**
+### Keyboard
 
 The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See [SDL documentation](https://wiki.libsdl.org/SDL2/SDL_Scancode) for more information.
 
@@ -76,7 +72,7 @@ The default mappings bundled with the game are provided below,
 
 ## Schemas
 
-### Device Mappings
+### Mapping Configuration
 
 * Location: `src/data/config/mappings/main.yaml`
 
