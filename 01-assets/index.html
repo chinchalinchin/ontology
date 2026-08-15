@@ -1907,7 +1907,7 @@
 <ul>
 <li>Property File: <code>/src/assets/sheets/main.yaml</code></li>
 </ul>
-<p><em>Sheets</em> are animate, mutable configurations arranged in rows of frames.</p>
+<p><em>Sheets</em> are animate, mutable Assets whose files are arranged in rows of Frames. Sheet form the core Asset of the gameplay loop; they are used to encapsulate character entities, such as the Player and NPC Sprites. Most of the application is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact.</p>
 <p><strong>Sheet Specification</strong></p>
 <p>The rows of a Sheet are identified by <em>Direction</em>, <em>Action</em> and <em>Frame</em>. Each row is identified by a tuple (Direction, Action), and then divided horizontally into contiguous horizontal Frames. </p>
 <div class="admonition important">
@@ -1915,13 +1915,13 @@
 <p>For Sheets, it is assumed coordinates of an image in the Asset file are <em>completely determined</em> by Action, Direction and Frame. It is assumed Actions form contiguous rows partitioned by Direction, and frames are organized in horizontal cells of equal length. This specification is enforced on the application level.</p>
 </div>
 <p><strong>LPC Specification</strong></p>
-<p>While an Action set an be defined in <code>/src/data/config/actions/main.yaml</code>, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame. The values for these fields in the LPC Spec are enumerated below,</p>
+<p>While an Action set an be defined in <code>/src/data/config/actions/main.yaml</code>, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame, without loss of generality. The values for these fields in the LPC Spec are enumerated below,</p>
 <ul>
 <li>Direction: <code>up, left, down, right</code></li>
 <li>Action: <code>cast, thrust, walk, slash, shoot, die</code></li>
 <li>Frame: <code>0, 1, 2 , ... , n(Action)</code></li>
 </ul>
-<p>Where <code>n(Action)</code> is the number of frames per Action. The frames per Action are given below,</p>
+<p>Where <code>n(Action)</code> is the number of frames per Action. The frames per Action for the LPC Spec are given below,</p>
 <ul>
 <li><code>cast</code>: Count = 7</li>
 <li><code>thrust</code>: Count = 8</li>
@@ -1940,10 +1940,10 @@
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>In the LPC specification, the <code>thrust</code> Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the <code>thrust</code> state.</p>
+<p>In the LPC specification, the <code>thrust</code> Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is a Tool. With LPC assets, the animations of these pieces of Equipment are governed by the <code>thrust</code> state. In other words, different types of Equipment do not necessarily map to different Action states. The engine accounts for this by treating the Equipment Group of Assets as "stateless" and inherently bound to the state of a Sprite Sheet Asset. See <a href="../02-sprites/#equipment">Equipment documentation</a> for more information.</p>
 </div>
 <p><strong>Action</strong></p>
-<p>Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without an accompanying Direction. The "space" of the (Action, Direction) space is configured by Sheet Properties. </p>
+<p>Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without accompanying Direction(s). The "space" of the (Action, Direction) space is configured by Sheet Properties. </p>
 <p>This snippet from the <a href="#schemas">Schemas</a> shows the general structure of an Action,</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;action-key&gt;</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">count</span><span class="p">:</span>
