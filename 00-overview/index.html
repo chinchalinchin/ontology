@@ -352,6 +352,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#loader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loader
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#orchestrator" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -812,6 +823,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#loader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Loader
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#orchestrator" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -959,7 +981,7 @@
 <p>Width is a horizontal displacement, length is a vertical displacement.</p>
 </div>
 <h2 id="assets">Assets</h2>
-<p>All Assets have an <em>Id</em>, <em>Properties</em> and <em>State</em>. </p>
+<p>All Assets have an <em>Id</em> and <em>Properties</em>. Most, but not all, Assets have <em>State</em>. </p>
 <p>In addition, Assets are divided into non-overlapping categories, known as the <a href="../01-assets/#asset-hierarchy">Asset Hierarchy</a>. Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,</p>
 <ul>
 <li><a href="../01-assets/#crafts">Crafts</a></li>
@@ -972,17 +994,26 @@
 <li><a href="../01-assets/#tiles">Tiles</a></li>
 <li><a href="../06-widgets/">Widgets</a></li>
 </ul>
-<p>Assets are placed in the <code>/src/assets/&lt;category&gt;/</code> directory and then added and configured to the Asset category index <code>/src/assets/&lt;category&gt;/main.yaml</code>. See <a href="../01-assets/#schemas">Asset Schema</a> for more information on each Asset category index schema.</p>
-<p>The YAML index schema for each Asset configures its <em>properties</em>, i.e. its static attributes that are constant and do not change as a result of gameplay.</p>
+<p>Assets are placed in the <code>/src/assets/&lt;category&gt;/</code> directory and then registered to the Asset category index <code>/src/assets/&lt;category&gt;/main.yaml</code> file. The YAML index schema for each Asset configures its <em>properties</em>, i.e. the static attributes that are constant and do not change as a result of gameplay.</p>
+<p>See <a href="../01-assets/#schemas">Asset Schema</a> for more information on the Asset Property index.</p>
 <h2 id="data">Data</h2>
-<p>Runtime information is stored in the <code>/src/data/**</code> directory, otherwise known as the <em>data directory</em>. This information is divided into <em>state</em> and <em>configuration</em> across the <code>/src/data/state/*</code> and the <code>/src/data/config/*</code> directories respectively, otherwise known as the <em>state directory</em> and the <em>configuration directory</em>.</p>
+<ul>
+<li>Location: <code>/src/data/</code></li>
+</ul>
+<p>Runtime information is stored in the <code>/src/data/**</code> directory, otherwise known as the <em>data directory</em>. This information is divided into <em>state</em> and <em>configuration</em> across the <code>/src/data/state/*</code> and the <code>/src/data/config/*</code> directories, respectively. These directories are otherwise known as the <em>state directory</em> and the <em>configuration directory</em>.</p>
 <h3 id="state">State</h3>
-<p>An Asset is deployed onto a <em>Board</em>, where it acquires its <em>state</em>, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests state data stored in the <code>/src/data/state/*</code> directory. </p>
+<ul>
+<li>Location: <code>/src/data/state/</code></li>
+</ul>
+<p>An Asset is deployed onto a <em>Board</em>, where it acquires its <em>state</em>, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests and stores state in the state directory.</p>
 <p>An Asset Category has a single schema for properties, but each individual Asset Instance has a unique State, particular to particular deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).</p>
 <h3 id="configuration">Configuration</h3>
-<p>Mechanics and other components of the game engine (e.g. Menus, Orchestrator, etc.) utilize configuration stored in the <code>/src/data/config/*</code> directory. The following engine components are configured by the files in this directory.</p>
 <ul>
-<li>Scripts</li>
+<li>Location: <code>/src/data/config</code></li>
+</ul>
+<p>Mechanics and other components of the game engine (e.g. Menus, Orchestrator, etc.) utilize configuration stored in the configuration directory. The following engine components are configured by the files in this directory.</p>
+<ul>
+<li><a href="../08-plots/">Scripts</a></li>
 <li><a href="../04-intentions/">Intentions</a></li>
 <li><a href="../03-player/#mapping">Mappings</a></li>
 <li><a href="../05-mechanics/">Mechanics</a></li>
@@ -991,15 +1022,17 @@
 </ul>
 <h2 id="application">Application</h2>
 <h3 id="factory">Factory</h3>
-<p>The Factory builds Asset components based on Recipes and other game components.</p>
+<p>The Factory builds Asset and other game components based on Recipes.</p>
+<h3 id="loader">Loader</h3>
+<p>The Loader is responsible for reading in the configuration files for properties and state, converting them into Python data structure.</p>
 <h3 id="orchestrator">Orchestrator</h3>
-<p>The Orchestrator is responsible for reading in the configuration files for properties and state, converting them into application data models and then instantiating the corresponding classes.</p>
+<p>The Orchestrator is the dependency injection system. It is responsible for converting data structures into application data models and supplying them to application classes.</p>
 <h3 id="engine">Engine</h3>
 <p>The Engine handles the core gameplay loop and framerate calculations.</p>
 <h3 id="screen">Screen</h3>
 <p>The Screen acts as a high-level container for a Cythonized SDL rendering interface.</p>
 <h3 id="board">Board</h3>
-<p>The Board is the Game's "database". It holds all ingame Assets during the course of the game loop and exposes them to the engine through queryable interfaces.</p>
+<p>The Board is the Game's "database". It holds all ingame Assets and Configurations during the course of the game loop and exposes them to the engine through queryable interfaces.</p>
 <p>The state files for each Board are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code>.</p>
 <h3 id="registry">Registry</h3>
 <p>The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. </p>
