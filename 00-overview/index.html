@@ -424,6 +424,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hitboxes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hitboxes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#layers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -435,10 +446,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#hitboxes" class="md-nav__link">
+  <a href="#sprites" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Hitboxes
+        Sprites
       
     </span>
   </a>
@@ -873,6 +884,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#hitboxes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hitboxes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#layers" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -884,10 +906,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#hitboxes" class="md-nav__link">
+  <a href="#sprites" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Hitboxes
+        Sprites
       
     </span>
   </a>
@@ -937,8 +959,8 @@
 <p>Width is a horizontal displacement, length is a vertical displacement.</p>
 </div>
 <h2 id="assets">Assets</h2>
-<p>All Assets have an <em>Key</em>, <em>Properties</em> and <em>State</em>. </p>
-<p>In addition, Assets are divided into several categories. See <a href="../01-assets/">Assets</a> for more information on each category. Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,</p>
+<p>All Assets have an <em>Id</em>, <em>Properties</em> and <em>State</em>. </p>
+<p>In addition, Assets are divided into non-overlapping categories, known as the <a href="../01-assets/#asset-hierarchy">Asset Hierarchy</a>. Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,</p>
 <ul>
 <li><a href="../01-assets/#crafts">Crafts</a></li>
 <li><a href="../01-assets/#cursors">Cursors</a></li>
@@ -953,10 +975,10 @@
 <p>Assets are placed in the <code>/src/assets/&lt;category&gt;/</code> directory and then added and configured to the Asset category index <code>/src/assets/&lt;category&gt;/main.yaml</code>. See <a href="../01-assets/#schemas">Asset Schema</a> for more information on each Asset category index schema.</p>
 <p>The YAML index schema for each Asset configures its <em>properties</em>, i.e. its static attributes that are constant and do not change as a result of gameplay.</p>
 <h2 id="data">Data</h2>
-<p>Runtime information is stored in the <code>/src/data/**</code> directory, otherwise known as the <em>data directory</em>. This information is divided in <em>state</em> and <em>configuration</em>, in the <code>/src/data/state/*</code> and the <code>/src/data/config/*</code> directories respectively, otherwise known as the <em>state directory</em> and the <em>configuration directory</em>.</p>
+<p>Runtime information is stored in the <code>/src/data/**</code> directory, otherwise known as the <em>data directory</em>. This information is divided into <em>state</em> and <em>configuration</em> across the <code>/src/data/state/*</code> and the <code>/src/data/config/*</code> directories respectively, otherwise known as the <em>state directory</em> and the <em>configuration directory</em>.</p>
 <h3 id="state">State</h3>
 <p>An Asset is deployed onto a <em>Board</em>, where it acquires its <em>state</em>, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests state data stored in the <code>/src/data/state/*</code> directory. </p>
-<p>An Asset Category has a single schema for properties, but each individual Asset Instance may have a unique State, particular to particular deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).</p>
+<p>An Asset Category has a single schema for properties, but each individual Asset Instance has a unique State, particular to particular deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).</p>
 <h3 id="configuration">Configuration</h3>
 <p>Mechanics and other components of the game engine (e.g. Menus, Orchestrator, etc.) utilize configuration stored in the <code>/src/data/config/*</code> directory. The following engine components are configured by the files in this directory.</p>
 <ul>
@@ -982,11 +1004,14 @@
 <h3 id="registry">Registry</h3>
 <p>The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. </p>
 <h2 id="concepts">Concepts</h2>
+<h3 id="hitboxes">Hitboxes</h3>
+<p>Many Assets have Hitboxes. Hitboxes are <em>properties</em>, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. </p>
 <h3 id="layers">Layers</h3>
 <p>All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire frame, it is rendering a Layer.  </p>
 <p>Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at <code>(x_1, y_1)</code> and get released on Layer 3 at <code>(x_2, y_2)</code>. For this reason, each Layer may have different dimensions.</p>
-<h3 id="hitboxes">Hitboxes</h3>
-<p>Many Assets have Hitboxes. Hitboxes are <em>properties</em>, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. </p>
+<p>Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations should be separated by Layer, to avoid inter-Layer collisions</p>
+<h3 id="sprites">Sprites</h3>
+<p>NPC and Enemy Sprites are undifferentiated. Conflict is driven entirely by internal Sprite data structures and the gameplay loop. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to the <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. However, all state changes of Sprites and the Player are communicated through the medium of <a href="../04-intentions/">Goals and Intentions</a>.</p>
 
 
 

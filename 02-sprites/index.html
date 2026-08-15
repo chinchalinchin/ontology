@@ -865,10 +865,6 @@
 
 <h1 id="ontology-sprites">Ontology: Sprites</h1>
 <p>Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the gameplay loop and thus have many unique attributes and methods, as the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. </p>
-<p><strong>Player, NPCs and Enemies</strong></p>
-<p>NPC and Enemy Sprites are undifferentiated. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to the <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. However, all state changes of Sprites and the Player are communicated through the medium of Intentions.</p>
-<p><strong>Layers</strong></p>
-<p>Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations should be separated by Layer, to avoid inter-Layer collisions.</p>
 <h2 id="overview">Overview</h2>
 <p><strong>Taxonomy</strong></p>
 <ul>
