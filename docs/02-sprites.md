@@ -1,6 +1,6 @@
 # Ontology: Sprites
 
-Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the gameplay loop and thus have many unique attributes and methods, as the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. 
+Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the game and thus have many unique attributes and methods; the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. 
 
 ## Overview 
 
@@ -73,13 +73,13 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 
 ### Intentions
 
-*Intentions* are an internal State data structure that governs a Sprite's core logic. 
+Intentions are an internal State data structure that governs a Sprite's core logic. 
 
-See [Intentions](./04-intentions.md) for more information.
+See [Intentions documentation](./04-intentions.md) for more information.
 
 ### Goal
 
-*Goals* are the current focus of the Sprite's path-finding and Direction resolution.
+Goals are the current focus of the Sprite's path-finding and Direction resolution.
 
 See [Goals documentation](04-intentions.md) for more information.
 
@@ -132,14 +132,7 @@ TODO
 
 ### Animation
 
-**Action, Direction**
-
-Action and Direction were previously defined in the [Assets documentation](./01-assets.md), since these two state attributes determine the animation frame currently being rendered in the gameloop. 
-
-As a reminder, the default Actions and Directions for the game engine (and LPC specification) are given below,
-
-- Actions: `cast, thrust, walk, slash, shoot, die`
-- Directions: `up, down, left, right`
+Animations are tuples of (Action, Direction, Frame). Action and Direction were previously defined in the [Assets documentation](./01-assets.md).
 
 ### Psyche
 
@@ -208,8 +201,7 @@ Sprites keep a dictionary keyed by inventory loot for the loot's associated valu
 When two Sprites enter the `speak` Intention within a certain radius of each other, the `SpeechMechanic` does the following:
 
 1. It averages the intersection of Prices. For example, if one Sprite has a price of 1 for Loot A and another has a price of 5 for Loot A, then the new price of Loot A for both Sprites will be (1 + 5)/2 = 3. It performs this calculation for every such Loot Key the Sprites have in common.
-2. For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to 
-A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the `SpeechMechanic` will populate the Sprite's Prices.
+2. For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the `SpeechMechanic` will populate the Sprite's Prices.
 
 **Relationships**
 
@@ -235,12 +227,12 @@ TODO
 
 ## Equipment
 
-Equipment is a grouping of several Sheet Asset Instances that share the common feature of having no state. Instead, their rendering is dependent on a Sprite state. Equipment is not an Asset Category, but a descriptive feature of particular Instances in the Hierarchy. 
+Equipment is a grouping of several Sheet Asset Instances that share the common feature of having no state. Instead, their rendering is dependent on a Sprite state. Equipment is not an Asset Category in and of itself, but a label applied to particular Instances of Sheets in the Hierarchy. 
 
 - Equipment: Armor, Tools, Utilities, Weapons
 
 !!! important
-    It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the [Sprite Sheets](#action-direction) equipping. In other words, the frames coordinates in an Equipment Sheet correspond exactly to frames in a Sprite Sheet. However, Equipment frames may not be present in every frame.
+    It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the [Sprite Sheets](#action-direction) equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This means Equipment frames may not be present in every frame. For example, the `longbow` only occupies the `(shoot, *)` rows of a Sheet, while all other rows of the `longbow` Asset file are blank.
 
 ### Equipment Frames
 
