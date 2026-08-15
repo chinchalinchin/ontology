@@ -28,7 +28,9 @@ In addition, Assets are divided into non-overlapping categories, known as the [A
 - [Tiles](./01-assets.md#tiles)
 - [Widgets](./06-widgets.md)
 
-Assets are placed in the `/src/assets/<category>/` directory and then registered to the Asset category index `/src/assets/<category>/main.yaml` file. The YAML index schema for each Asset configures its *properties*, i.e. the static attributes that are constant and do not change as a result of gameplay.
+Assets are placed in the `/src/assets/<category>/` directory and then registered to the Asset category index `/src/assets/<category>/main.yaml` file. The YAML index schema for each Asset configures its *properties*, i.e. the static attributes that are constant and do not change as a result of gameplay. 
+
+The `/src/assets` directory is known as the *asset directory*.
 
 See [Asset Schema](./01-assets.md#schemas) for more information on the Asset Property index.
 

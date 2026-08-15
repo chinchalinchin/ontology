@@ -67,39 +67,39 @@ IDs are used to map Assets to images loaded into the [Registry](./00-overview.md
 
 Names are used to uniquely identify an ingame entity. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. 
 
-A Name identifies an Asset's deployment. A ID is what binds an Asset deployed state to its deployed properties.
+In short, a Name identifies an Asset's deployment. A ID is what binds an Asset deployed state to its deployed properties.
 
 **Mutability & Animability**
 
 !!! note
-    These terms are useful for refering to the state and properties, but do not play a formal role in the application's implementation. They are included to make precise what is meant when they are employed.
+    These terms are useful for refering to the state, but do not play a formal role in the application's implementation. They are included to make precise what is meant when they are employed.
 
-Assets are divided along *mutable* and *immutable* axes. *Immutable* Assets never have their state altered by the game loop. *Mutable* Assets change their state based on the game loop.
+Assets are divided along an axis of mutability, into *mutable* and *immutable* groups. *Immutable* Assets never have their state altered by the game loop. *Mutable* Assets change their state based on the game loop.
 
-Assets are also divided along *animate* and *inanimate* axes. *Inanimate* Assets possess a single frame. *Animate* objects possess rows of frames for different animation states.
+Assets are also divided along axis of animability, into *animate* and *inanimate* groups. *Inanimate* Assets possess a single frame. *Animate* objects possess rows of frames for different animation states.
 
-These terms form a partition of the Asset "*space*". An inanimate Asset is not necessarily immutable; Crates, for example, do not have animation, but do have mutable states. An animate Asset is not necessarily mutable; Effects, such as water ripples, has an animation, but does not have a mutable state.
+These terms form a partition of the Asset "*space*". An inanimate Asset is not necessarily immutable; Crates, for example, do not have animation, but do have mutable states. An animate Asset is not necessarily mutable; Effects, such as water ripples, have an animation, but do not have a mutable state.
 
 In other words, an Asset's *mutability* refers to the capacity of its state (not including its animation) to change.
 
 **Direction & Action**
 
-The frame rows of *animate* Assets are further categorized by the axes of *Direction* and *Action*. See [Sheets section](#sheets) below for more information on the division of *Direction* and *Action*.
+The frame rows of Sheet Assets are categorized by the axes of *Direction* and *Action*. See [Sheets section](#sheets) below for more information on the division of *Direction* and *Action*.
 
 **Properties & State**
 
-*Properties* are static and never changed by game Mechanics. Properties determine the immutable characteristics of an ingame Asset, e.g. dimensions and hitboxes. They are loaded side-by-side with the asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective length and width. Dimensions are Cartesian coordinate tuples.
+*Properties* are static and never changed by game Mechanics. Properties determine the immutable characteristics of an ingame Asset, e.g. dimensions and hitboxes. They are loaded side-by-side with the asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length. Dimensions are Cartesian coordinate tuples.
 
-*State* is dynamic and is changed by game Mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current position of an ingame Asset, the current animation, etc.. All Assets have a *position* and a *layer* mutable state. Position are given as Cartesian coordinates, whereas Layer is a categorical variable.
+*State* is dynamic and can be changed by game Mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current position of an ingame Asset, the current animation, etc.. All Assets have a *position* mutable state; most (except for Widgets) have a *LAYER*. Position is given as a Cartesian coordinate (tuple), whereas Layer is a categorical variable.
 
 !!! note "Layers"
-    The concept of a Layer is defined more explicitly in [World documentation](./00-overview.md#world). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.
+    The concept of a Layer is defined more explicitly in [Overview documentation](./00-overview.md#world). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.
 
-State files are maintained in `/src/data/state/<board-key>/**`, where `<board-key>` is a unique identifer for a [Board](./00-overview.md#board).
+State files are maintained in `/src/data/state/<board-key>/**` directory, where `<board-key>` is a unique identifer for a [Board](./00-overview.md#board).
 
 ### Asset Hierarchy
 
-While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict Object hierarchy. The property and state [schemas](#schemas) encode Asset Categories and Instances into the top-level keys.
+While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state [schemas](#schemas) encode Asset Categories and Instances into the top-level keys.
 
 !!! note
     The Asset Hierarchy can be thought of as a data abstraction governing the schemas which drive the ECS instantiation. 
@@ -108,50 +108,61 @@ While Assets are instantiated by injecting a common root class with component be
 
 Asset *Categories* form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the property files and inject into its deployment. 
 
-- Tiles: Properties = Dimensions 
-- Cursor: Properties = Dimensions
-- Objects: Properties = Dimensions, Hitboxes
-- Craft: Properties = Dimensions, Hitboxes, Cost
-- Effects: Properties = Dimensions, Hitboxes, Count
-- Sheets: Properties = Dimensions, Hitboxes, Actions, Personas
+| Asset Category | Properties |
+| - | - |
+| Tiles | Dimensions |
+| Cursors | Dimensions |
+| Objects | Dimensions, Hitboxes |
+| Crafts | Dimensions, Hitboxes, Cost |
+| Effects | Dimensions, Hitboxes, Count |
+| Sheets | Dimensions, Hitboxes, Stack, Actions |
+| Widgets | Dimensions, Frames |
 
 Each Category has Instances. Asset *Instances* form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Assets Instance determine what type of state it will parse from the property and state files and inject into its deployment. 
 
-- Tile - BackTile: State = Position, Layer
-- Tile - ForeTile: State = Position, Layer
-- Object - Crate: State = Position, Layer
-- Object - Door: State = Position, Layer, OutLayer
-- Object - Chest: State = Position, Layer, Switch, Content
-- Object - Gate: State = Position, Layer, Switch, Link
-- Object - Plate: State = Position, Layer, Switch, Link
-- Craft - Strut: State = Position, Layer, Owner
-- Craft - Tract: State = Position, Layer, Owner, Stage
-- Cursor - Expression: State = Position, Layer
-- Cursor - Projectile: State = Position, Layer, Initial
-- Effect - Temporary: State = Position, Layer
-- Effect - Persistent: State = Position, Layer
-- Sheet - Pixie, State: Postion = Position, Layer
-- Sheet - Sprite, State: Position = Position, Layer, Intention, Inventory, Meters, Memory, Mutators, Goal
+| Asset Category | Asset Instance | State |
+| - | - | - | 
+| Tile | Back | Position, Layer |
+| Tile | Fore | Position, Layer |
+| Object | Crate | Position, Layer |
+| Object | Door | Position, Layer, OutLayer |
+| Object | Chest | Position, Layer, Switch, Content |
+| Object | Gate | Position, Layer, Switch, Link |
+| Object | Plate | Position, Layer, Switch, Link |
+| Craft | Strut | Position, Layer, Owner |
+| Craft | Plot | Position, Layer, Owner, Season |
+| Cursor | Expression | Position, Layer |
+| Cursor | Projectile | Position, Layer, Initial |
+| Effect | Temporary | Position, Layer |
+| Effect | Persistent | Position, Layer |
+| Sheet | Pixie | Position, Layer. Animation |
+| Sheet | Sprite | Position, Layer, Intention, Inventory, Meters, Memory, Mutators, Goal |
+| Widget | Pane | TODO |
+| Widget | Button | TODO |
+| Widget | Language | TODO |
+| Widget | Meters | TODO |
+| Widget | Pages | TODO |
 
 !!! note
-    Animation and Frame states are not shown in the above table to save space, but belong in the Instance as well. See [Asset Recipes](#recipes) for more details.
+    [Equipment](./02-sprites.md#equipment) and [Player](./03-player.md) Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is stateless, whereas the Player is a special type of [Sprite](./02-sprites.md).
 
 ### Asset Architecture
 
-Every physical entity in the game is an instance of the unified `Asset` class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and stateless behaviors injected into them:
+Every physical entity in the game is an instance of the unified `Asset` class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. *Behaviors* are decoupled from Assets and managed entirely by *Mechanics* classes that iterate over the Board Assets. See [Mechanics documentation](./06-architecture.md#mechanics) for more information.
 
-1. **Properties:** A model defining immutable data (e.g., `TileProperties`, `ObjectProperties`, etc.).
-2. **State:** A model defining mutable data (e.g., `ContainerState`, `PositionalState`, etc.).
-3. **Animation** Stateless strategies (e.g. `BinaryAnimation`, `StateAnimation`, etc.) injected into the Asset. These contain the specific logic for updating frames.
-4. **Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. A `Frame` component returns a `List[str]` rather than a single `str`. An `Asset` can be a single logical entity composed of multiple superimposed rendered textures
+The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the [Recipe](#recipes) configuration file. The components of each Assets are enumerated below,
 
-*Behaviors* are decoupled from Assets and managed entirely by *Mechanics* classes that iterate over the Board Assets. See [Mechanics documentation](./06-architecture.md#mechanics) for more information.
-
-The Recipe for an Asset is specified in the [Recipe](#recipes) configuration file. A recipe includes the Frame implementation, the Animation implementation, the State model and the Properties model. The recipe configuration file defines each of the Asset categories in the following headings.
+1. **Model: Properties:** A model defining immutable data (e.g., `TileProperties`, `ObjectProperties`, etc.).
+2. **Model: State:** A model defining mutable data (e.g., `ContainerState`, `PositionalState`, etc.).
+3. **Behavior: Animation** Stateless strategies (e.g. `BinaryAnimation`, `StateAnimation`, etc.) injected into the Asset. These contain the specific logic for updating Animation frames.
+    - `animate(state, properties)`: Interface for applying animation logic to Asset state.
+4. **Behavior: Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. A `Frame` component returns a `List[str]` rather than a single `str`. An `Asset` can be a single logical entity composed of multiple superimposed rendered textures. In addition, Frames provide the texture indexing schema used by the [Registry](./00-overview.md#registry) to store Assets in memory.
+    - `keys(id, state)`: Interface for retrieving Asset's current Frame key.
+    - `index(id, properties)`: Interface for indexing Asset frames in Registry.
 
 ### Asset Taxonomy
 
-An Asset's position in the Asset Hierarchy is encoded into its Taxonomy is encoded into each Asset's attributes. These attributes exist on every Asset instantiated within the game,
+An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These attributes exist on every Asset instantiated within the game. A Taxonomy is neither state, configuration or properties.
 
 - `id: str`
 - `category: str`
@@ -160,7 +171,7 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy is encod
 
 `id` uniquely identifies the Asset file. It must match a file found in the `src/assets/**` directory.
 
-`category` determines what property model is employed by the Asset. The category must be configured by a `src/assets/<category>/main.yaml` property file.
+`category` determines what property model is employed by the Asset. The category must be configured by a `src/assets/<category>/main.yaml` property index file.
 
 `instance` determines what state model is employed by the Asset. An Asset's state is hydrated from the `data/state/<board>/*` directory.
 
@@ -172,9 +183,9 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy is encod
 
 * Property File: `/src/assets/tiles/main.yaml`
 
-*Tiles* are inanimate, immutable Assets. *Tiles* are the most basic type of Asset. They have a single frame. They have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds and foregrounds by breaking each rendered image into a grid of tiles.
+Tiles are inanimate, immutable Assets. Tiles are the most basic type of Asset. They have a single frame, have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds and foregrounds by breaking each rendered image into a grid of tiles. 
 
-*Tiles* are always assumed to be sized 32x32 pixels. These dimensions configurable in the property file, but they apply to all Tiles universally.
+Tiles are always assumed to be sized 32x32 pixels. These dimensions are configurable in the property file, but they apply to all Tiles universally. When a Tile is drawn, it is rendered as a `multiple` of the unit Tile configured in the asset directory.
 
 **Properties: TileProperties**
 
@@ -182,7 +193,7 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy is encod
 
 ### Back
 
-A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets. Back Tiles will always be rendered *under* all of the other Assets.
+A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Back Tiles will always be rendered *under* all of the other Assets.
 
 **Animation: None**
 
@@ -222,11 +233,11 @@ N/A
 
 * Property File: `/src/assets/objects/main.yaml`
 
-*Objects* are inanimate, mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.
+*Objects* are mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.
 
 **Binary Frames**
 
-An Object with two frames is considered to have an *On* and *off* state, i.e. a binary trigger. *Binary Objects* are Objects whose frame is dependent on their internal state switch.
+An Object with two frames is considered to have an *on* and *off* state, i.e. a binary trigger. *Binary Objects* are Objects whose frame is dependent on their internal state switch.
 
 Binary Objects frames are always organized in horizontal rows. The off frame will always start at `(0,0)` and the on frame will always start at `(w,0)`. Because of this relation, the dimensions of a Chest image file will always be `(2w, h)`. 
 
@@ -240,11 +251,11 @@ Binary Objects have a `count` of 2, where as all other Objects are initialized w
 
 ### Chests
 
-*Chests* are *Binary Objects* whose frame can be changed by the player entering into an `interact` [Intention](./04-intentions.md) while intersecting the hitboxes of the *Chest*. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
+*Chests* are *Binary Objects* whose frame can be changed by the player entering into an `interact` [Intention](./04-intentions.md) while intersecting the hitboxes of the Chest. When `switch == true`, the Chest is *on* (open). When `switch == false`, the Chest is *off* (closed).
 
 A Chest is *reusable* through the `interact` [Intention](./04-intentions.md), meaning [Inventory Loot](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory Loot keys.
 
-When *interacting* with a Chest, the [Player](./03-player.md) is shown a two windowed menu, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a [Mechanic](./06-architecture.md#mechanics)s
+When *interacting* with a Chest, the [Player](./03-player.md) is shown the [Chest menu](./06-widgets.md#menus), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](./06-architecture.md#mechanics)s
 
 **Animation: BinaryAnimation**
 
@@ -253,7 +264,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: IterableFrame**
 
-* `keys(id, animation): returns [ "{id}-{animation.frame}"`
+* `keys(id, animation): returns [ "{id}-{animation.frame}" ]`
 * `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: ContainerState**
@@ -265,7 +276,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 ### Crates
 
-*Crates* are *Objects* who state can be altered by in-game physics. For example, when a *Sprite* collides with a *Crate*, the *Crate* moves in the direction of the *Sprite*, with the same speed.
+Crates are Objects who state can be altered by in-game physics. For example, when a Sprite collides with a Crate, the Crate moves in the direction of the Sprite, with the same speed.
 
 **State: PositionalState**
 
@@ -279,7 +290,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 ### Doors
 
-*Doors* are *Objects* that alter a Sprite's `<layer>`. When a Sprite enters the hitbox of a door, the `<layer>` is changed to the `<outlayer>` at the `<out>` Position.
+Doors are Objects that alter a Sprite's `<layer>`. When a Sprite enters the hitbox of a door, the `<layer>` is changed to the `<outlayer>` at the `<out>` Position.
 
 **State: DoorState**
 
@@ -290,12 +301,12 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: SingleFrame**
 
-* `keys(id, animation): returns id`
+* `keys(id, animation): returns [ id ]`
 * `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 ### Gates
 
-*Gates* are *Binary Objects* whose state is connected to *Plates*. When a *Gate* is on (open), it does not have hitboxes and the player can pass freely through it. When a Gate is off (closed), its hitboxes prevent the player from passing through its area.
+Gates are Binary Objects whose state is connected to Plates. When a Gate is on (open), it does not have hitboxes and the player can pass freely through it. When a Gate is off (closed), its hitboxes prevent the player from passing through its area.
 
 **Animation: BinaryAnimation**
 
@@ -304,7 +315,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: IterableFrame**
 
-* `keys(id, animation): returns [ "{id}-{animation.frame}"`
+* `keys(id, animation): returns [ "{id}-{animation.frame}" ]`
 * `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SwitchState**
@@ -316,7 +327,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 ### Plates
 
-*Plates* are *Binary Objects* whose state can be changed by collision, i.e. when a player enters its hitbox and flips its state. When activated, a *Plate* in turn flips the state of its keyed *Gate*.
+Plates are Binary Objects whose state can be changed by collision, i.e. when a player enters its hitbox and flips its state. When activated, a Plate in turn notifies the state of its `link`-keyed Gate to change.
 
 **Animation: BinaryAnimation**
 
@@ -325,7 +336,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: IterableFrame**
 
-* `keys(id, animation): returns [ "{id}-{animation.frame}"`
+* `keys(id, animation): returns [ "{id}-{animation.frame}" ]`
 * `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SwitchState**
@@ -339,7 +350,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 * Property File: `/src/assets/cursors/main.yaml`
 
-*Cursors* are inanimate, mutable Assets made of a single frame. They are divided into *Expressions* and *Projectiles*.
+Cursors are inanimate, mutable Assets. Cursors track positions and trajectories. They are divided into Expressions and Projectiles.
 
 **Properties: ObjectProperties**
 
@@ -365,7 +376,7 @@ N/A
 
 ### Projectiles
 
-Projectiles are spawned via the `shoot` Action with a certain direction and velocity and then follow a fixed trajectory based on the spawn conditions. They will either impact a hitbox or get garbage-collected.
+Projectiles are spawned via the `shoot` Action (entered through the `attack` [Intention](./04-intentions.md) when the `longbow` [Equipment](./02-sprites.md#equipment) is slotted, for instance) with a certain direction and velocity and then follow a fixed trajectory based on the spawn conditions. Projectiles will either impact a hitbox or trigger garbage-collection and be removed from the [Board](./00-overview.md#board).
 
 **Animation: None**
 
@@ -373,7 +384,7 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id), animation): returns [ id ]`
+* `keys(id, animation): returns [ id ]`
 * `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MetricState**
@@ -386,9 +397,7 @@ N/A
 
 * Property File: `/src/assets/effects/main.yaml`
 
-*Effects* are animate, immutable Objects. *Effects* are defined over a single row of frames. *Effects* utilize an injected *Animation* behavior that iterates over the row of frames as the game loop progresses.
-
-*Effects* are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface. The dust cloud is an *Effect*.
+Effects are animate, immutable Objects. Effects iterate over a single row of frames. They are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface or body of water may ripple when a Sprite moves through it. The dust cloud and ripples are Effects.
 
 **Properties**
 
@@ -398,11 +407,11 @@ N/A
 
 ### Temporary
 
-Temporary Effects are brief, short-lived effects, such as explosions or magic effects. After their animation is concluded, they are garbage-collected and removed from the Board after they "die"
+Temporary Effects are brief, short-lived effects, such as explosions or magic. After their animation is concluded, they are garbage-collected and removed from the Board.
 
 **Animation: TemporaryAnimation**
 
-- `if animation.frame < properties.count: animation.frame += 1`
+- `if animation.frame =< properties.count: animation.frame += 1`
 
 **Frame: IterableFrame**
 
@@ -415,13 +424,13 @@ Temporary Effects are brief, short-lived effects, such as explosions or magic ef
 * `position: Position`
 * `animation: Animation`
 
-### Persistant
+### Persistent
 
-Persistent Effects are long-term, continuous effects, such as water ripples or windmills, whose animation continually cycles through its loop.
+Persistent Effects are long-term, continuous effects, such as water ripples or windmills, whose animation continuously cycles when the frame count is reached.
 
 **Animation: PersistantAnimation**
 
-- `if animation.frame > properties.count: animation.frame = 0`
+- `if animation.frame >= properties.count: animation.frame = 0`
 
 **Frame: IterableFrame**
 
@@ -462,7 +471,7 @@ The `key` referenced in the `cost` depends on the Instance type of the Craft. Fo
 
 *Struts* are inanimate, immutable Assets. *Struts* are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an `owner`. 
 
-Struts may be placed on the Board through the state files manually, but are instantiated ingame through the `build` Sprite [Intention](./04-intentions.md)
+Struts may be placed on the Board through the state files manually, but are instantiated ingame through the `build` [Intention](./04-intentions.md)
 
 **Animation: None**
 
