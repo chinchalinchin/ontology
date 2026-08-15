@@ -492,7 +492,7 @@ N/A
 
 * Property File: `/src/assets/sheets/main.yaml`
 
-*Sheets* are animate, mutable configurations arranged in rows of frames.
+*Sheets* are animate, mutable Assets whose files are arranged in rows of Frames. Sheet form the core Asset of the gameplay loop; they are used to encapsulate character entities, such as the Player and NPC Sprites. Most of the application is scaffolding for the complex interactions and calculations that occur when Sheet Assets interact.
 
 **Sheet Specification**
 
@@ -503,13 +503,13 @@ The rows of a Sheet are identified by *Direction*, *Action* and *Frame*. Each ro
 
 **LPC Specification**
 
-While an Action set an be defined in `/src/data/config/actions/main.yaml`, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame. The values for these fields in the LPC Spec are enumerated below,
+While an Action set an be defined in `/src/data/config/actions/main.yaml`, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame, without loss of generality. The values for these fields in the LPC Spec are enumerated below,
 
 * Direction: `up, left, down, right`
 * Action: `cast, thrust, walk, slash, shoot, die`
 * Frame: `0, 1, 2 , ... , n(Action)`
 
-Where `n(Action)` is the number of frames per Action. The frames per Action are given below,
+Where `n(Action)` is the number of frames per Action. The frames per Action for the LPC Spec are given below,
 
 - `cast`: Count = 7
 - `thrust`: Count = 8
@@ -525,11 +525,11 @@ Where `n(Action)` is the number of frames per Action. The frames per Action are 
     The row indexing starts at 0.
 
 !!! note 
-    In the LPC specification, the `thrust` Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the `thrust` state.
+    In the LPC specification, the `thrust` Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is a Tool. With LPC assets, the animations of these pieces of Equipment are governed by the `thrust` state. In other words, different types of Equipment do not necessarily map to different Action states. The engine accounts for this by treating the Equipment Group of Assets as "stateless" and inherently bound to the state of a Sprite Sheet Asset. See [Equipment documentation](./02-sprites.md#equipment) for more information.
 
 **Action**
 
-Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without an accompanying Direction. The "space" of the (Action, Direction) space is configured by Sheet Properties. 
+Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without accompanying Direction(s). The "space" of the (Action, Direction) space is configured by Sheet Properties. 
 
 This snippet from the [Schemas](#schemas) shows the general structure of an Action,
 
