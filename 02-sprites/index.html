@@ -886,7 +886,7 @@
 
 
 <h1 id="ontology-sprites">Ontology: Sprites</h1>
-<p>Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the gameplay loop and thus have many unique attributes and methods, as the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. </p>
+<p>Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Assets. Sprites, however, unique in their deployment, are the most important Asset to the game and thus have many unique attributes and methods; the gameplay loop can be understood mainly as a medium for the Sprite states to interact and react to one another, the Player included. </p>
 <h2 id="overview">Overview</h2>
 <p><strong>Taxonomy</strong></p>
 <ul>
@@ -978,10 +978,10 @@
 <li><code>index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="intentions">Intentions</h3>
-<p><em>Intentions</em> are an internal State data structure that governs a Sprite's core logic. </p>
-<p>See <a href="../04-intentions/">Intentions</a> for more information.</p>
+<p>Intentions are an internal State data structure that governs a Sprite's core logic. </p>
+<p>See <a href="../04-intentions/">Intentions documentation</a> for more information.</p>
 <h3 id="goal">Goal</h3>
-<p><em>Goals</em> are the current focus of the Sprite's path-finding and Direction resolution.</p>
+<p>Goals are the current focus of the Sprite's path-finding and Direction resolution.</p>
 <p>See <a href="../04-intentions/">Goals documentation</a> for more information.</p>
 <h3 id="meters">Meters</h3>
 <p>TODO</p>
@@ -1018,13 +1018,7 @@
 <li><code>parameters.vision.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.vision</code> mutator. Measured in pixels.</li>
 </ul>
 <h3 id="animation">Animation</h3>
-<p><strong>Action, Direction</strong></p>
-<p>Action and Direction were previously defined in the <a href="../01-assets/">Assets documentation</a>, since these two state attributes determine the animation frame currently being rendered in the gameloop. </p>
-<p>As a reminder, the default Actions and Directions for the game engine (and LPC specification) are given below,</p>
-<ul>
-<li>Actions: <code>cast, thrust, walk, slash, shoot, die</code></li>
-<li>Directions: <code>up, down, left, right</code></li>
-</ul>
+<p>Animations are tuples of (Action, Direction, Frame). Action and Direction were previously defined in the <a href="../01-assets/">Assets documentation</a>.</p>
 <h3 id="psyche">Psyche</h3>
 <p>The <em>Psyche</em> is an internal State data structure that governs a Sprite's ancillary Animation logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations to be applied to the Sprite Sheet's frame. The complete Psyche state for a Sprite is given by the tuple,</p>
 <pre><code>(Communcation, Expression, Motivation)
@@ -1078,8 +1072,7 @@
 <p>When two Sprites enter the <code>speak</code> Intention within a certain radius of each other, the <code>SpeechMechanic</code> does the following:</p>
 <ol>
 <li>It averages the intersection of Prices. For example, if one Sprite has a price of 1 for Loot A and another has a price of 5 for Loot A, then the new price of Loot A for both Sprites will be (1 + 5)/2 = 3. It performs this calculation for every such Loot Key the Sprites have in common.</li>
-<li>For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to 
-A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the <code>SpeechMechanic</code> will populate the Sprite's Prices.</li>
+<li>For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the <code>SpeechMechanic</code> will populate the Sprite's Prices.</li>
 </ol>
 <p><strong>Relationships</strong></p>
 <p>TODO</p>
@@ -1093,13 +1086,13 @@ A and visa versa. In other words, if a Sprite converses with another Sprite that
 <p><strong>Wallet</strong></p>
 <p>TODO</p>
 <h2 id="equipment">Equipment</h2>
-<p>Equipment is a grouping of several Sheet Asset Instances that share the common feature of having no state. Instead, their rendering is dependent on a Sprite state. Equipment is not an Asset Category, but a descriptive feature of particular Instances in the Hierarchy. </p>
+<p>Equipment is a grouping of several Sheet Asset Instances that share the common feature of having no state. Instead, their rendering is dependent on a Sprite state. Equipment is not an Asset Category in and of itself, but a label applied to particular Instances of Sheets in the Hierarchy. </p>
 <ul>
 <li>Equipment: Armor, Tools, Utilities, Weapons</li>
 </ul>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the <a href="#action-direction">Sprite Sheets</a> equipping. In other words, the frames coordinates in an Equipment Sheet correspond exactly to frames in a Sprite Sheet. However, Equipment frames may not be present in every frame.</p>
+<p>It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the <a href="#action-direction">Sprite Sheets</a> equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This means Equipment frames may not be present in every frame. For example, the <code>longbow</code> only occupies the <code>(shoot, *)</code> rows of a Sheet, while all other rows of the <code>longbow</code> Asset file are blank.</p>
 </div>
 <h3 id="equipment-frames">Equipment Frames</h3>
 <p>Equipment is a stateless Sheet Asset. It is not deployed onto the Board in a fashion like other Assets. Instead, only properties are supplied for Equipment. This allows the Registry to index and load all Equipment Sheets. However, since Equipment does not possess a Recipe and therefore does not possess State, it is not instantiated by the game engine when the state directory is traversed during the bootstrapping. Instead, Equipment frame keys are generated by SpriteFrames when Sprites have Equipment slotted into their <code>sprite.state.inventory.equipment</code>, e.g.</p>
