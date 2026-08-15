@@ -449,17 +449,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#personas" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Personas
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#equipment" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -827,17 +816,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#personas" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Personas
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#equipment" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -976,10 +954,10 @@
 <li><code>state.animation.frame += 1</code></li>
 <li><code>if state.animation.frame &gt;= properties.actions[state.animation.action].count: state.animation.frame = 0</code></li>
 </ul>
-<p><strong>Frame: StateFrame</strong></p>
+<p><strong>Frame: SpriteFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.action&gt;-&lt;animation.direction&gt;-&lt;animation.frame&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>keys(id, animation): returns [ "{id}-{animation.action}-{animation.direction}-{animation.frame}" ] + [ &lt;equipment-frames&gt;]</code></li>
+<li><code>index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="intentions">Intentions</h3>
 <p><em>Intentions</em> are an internal State data structure that governs a Sprite's core logic. </p>
@@ -1029,19 +1007,6 @@
 <li>Actions: <code>cast, thrust, walk, slash, shoot, die</code></li>
 <li>Directions: <code>up, down, left, right</code></li>
 </ul>
-<p>The frames per Action Group are given below,</p>
-<ul>
-<li><code>cast</code>: Count = 7</li>
-<li><code>thrust</code>: Count = 8</li>
-<li><code>walk</code>: Count = 9</li>
-<li><code>slash</code>: Count = 6</li>
-<li><code>shoot</code>: Count = 13</li>
-<li><code>die</code>: Count = 6</li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In the LPC specification, the <code>thrust</code> Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the <code>thrust</code> state.</p>
-</div>
 <h3 id="psyche">Psyche</h3>
 <p>The <em>Psyche</em> is an internal State data structure that governs a Sprite's ancillary Animation logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations to be applied to the Sprite Sheet's frame. The complete Psyche state for a Sprite is given by the tuple,</p>
 <pre><code>(Communcation, Expression, Motivation)
@@ -1109,17 +1074,6 @@ A and visa versa. In other words, if a Sprite converses with another Sprite that
 <p>TODO</p>
 <p><strong>Wallet</strong></p>
 <p>TODO</p>
-<h2 id="personas">Personas</h2>
-<p>Personas are stacks of superimposed Sprite Sheets. They are assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>stack</code> property in the Asset property file during the <a href="./06-architecture.md">application bootstrap</a>. The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona through the Asset Key property. In other words, once assembled, Personas are effectively new "virtualized" Assets.</p>
-<p>Personas are assembled from a Base Sheet and Feature Sheets. The Base Sheet is the background of the resultant Sheet. Feature Sheets are pasted over the Base in the order they are specified.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>It is assumed the Base and Feature Sheets conform to the same (Action, Direction) row mapping as the Sprite Sheets themselves. As always, the game engine assumes and implements the LPC specification by default.</p>
-</div>
-<ul>
-<li>Base Sheets: <code>/src/assets/sheets/sprites/base/&lt;base-key&gt;.png</code></li>
-<li>Feature Sheets: <code>/src/assets/sheets/sprites/features/&lt;feature-key&gt;.png</code></li>
-</ul>
 <h2 id="equipment">Equipment</h2>
 <ul>
 <li>Equipment Sheets: <code>/src/assets/sheets/equipment/&lt;instance-key&gt;/&lt;equipment-id&gt;.png</code></li>

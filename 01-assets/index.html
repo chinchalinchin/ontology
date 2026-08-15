@@ -657,6 +657,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#action-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Action Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#properties" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1285,6 +1296,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#action-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Action Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#properties" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1488,8 +1510,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, None): returns &lt;asset&gt;"</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code> </li>
+<li><code>keys(id, None): returns [ id ] "</code></li>
+<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
@@ -1503,8 +1525,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, None): returns &lt;asset&gt;"</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, None): returns [ id ] "</code></li>
+<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
@@ -1538,8 +1560,8 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.frame&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, animation): returns [ "{id}-{animation.frame}"</code></li>
+<li><code>index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: ContainerState</strong></p>
 <ul>
@@ -1557,8 +1579,8 @@
 </ul>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns &lt;asset&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, None): returns [ id ] "</code></li>
+<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="doors">Doors</h3>
 <p><em>Doors</em> are <em>Objects</em> that alter a Sprite's <code>&lt;layer&gt;</code>. When a Sprite enters the hitbox of a door, the <code>&lt;layer&gt;</code> is changed to the <code>&lt;outlayer&gt;</code> at the <code>&lt;out&gt;</code> Position.</p>
@@ -1571,8 +1593,8 @@
 </ul>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns &lt;asset&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, animation): returns id</code></li>
+<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="gates">Gates</h3>
 <p><em>Gates</em> are <em>Binary Objects</em> whose state is connected to <em>Plates</em>. When a <em>Gate</em> is on (open), it does not have hitboxes and the player can pass freely through it. When a Gate is off (closed), its hitboxes prevent the player from passing through its area.</p>
@@ -1583,8 +1605,8 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.frame&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, animation): returns [ "{id}-{animation.frame}"</code></li>
+<li><code>index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SwitchState</strong></p>
 <ul>
@@ -1602,8 +1624,8 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.frame&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, animation): returns [ "{id}-{animation.frame}"</code></li>
+<li><code>index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SwitchState</strong></p>
 <ul>
@@ -1627,8 +1649,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns &lt;asset&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>key(asset, id): returns [ id ]</code></li>
+<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: PositionalState</strong></p>
 <ul>
@@ -1641,8 +1663,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns &lt;asset&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id), animation): returns [ id ]</code></li>
+<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MetricState</strong></p>
 <ul>
@@ -1670,8 +1692,8 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.frame&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, animation): returns [ "{id}-{animation.frame}" ]</code></li>
+<li><code>index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -1687,8 +1709,8 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>key(asset, animation) : &lt;asset&gt;-&lt;animation.frame&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, animation) : [ "{id}-{animation.frame}" ]</code></li>
+<li><code>index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -1710,7 +1732,6 @@
 <p>The <code>key</code> referenced in the <code>cost</code> depends on the Instance type of the Craft. For example, a Strut costs Inventory Loot. The <code>cost</code> of a Strut is deducted from a Sprite's Inventory Loot when being instantiated.</p>
 <p><strong>Properties: CraftProperties</strong></p>
 <ul>
-<li><code>key: str</code></li>
 <li><code>dimensions: Dimensions</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
 <li><code>cost: Cost</code></li>
@@ -1722,8 +1743,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, None) returns &lt;asset&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, None) returns [ id ]</code></li>
+<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: PropertyState</strong></p>
 <ul>
@@ -1737,22 +1758,38 @@
 </ul>
 <p><em>Sheets</em> are animate, mutable configurations arranged in rows of frames.</p>
 <p><strong>Sheet Specification</strong></p>
-<p>The rows of a Sheet are identified by <em>Direction</em>, <em>Action</em> and <em>Frame</em>. Each row is identified by a tuple (Direction, Action), and then divided horizontally into contiguous Frames. </p>
-<p>The values for these fields are enumerated below,</p>
+<p>The rows of a Sheet are identified by <em>Direction</em>, <em>Action</em> and <em>Frame</em>. Each row is identified by a tuple (Direction, Action), and then divided horizontally into contiguous horizontal Frames. </p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>For Sheets, it is assumed coordinates of an image in the Asset file are <em>completely determined</em> by Action, Direction and Frame. It is assumed Actions form contiguous rows partitioned by Direction, and frames are organized in horizontal cells of equal length. This specification is enforced on the application level.</p>
+</div>
+<p><strong>LPC Specification</strong></p>
+<p>While an Action set an be defined in <code>/src/data/config/actions/main.yaml</code>, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame. The values for these fields in the LPC Spec are enumerated below,</p>
 <ul>
 <li>Direction: <code>up, left, down, right</code></li>
 <li>Action: <code>cast, thrust, walk, slash, shoot, die</code></li>
 <li>Frame: <code>0, 1, 2 , ... , n(Action)</code></li>
 </ul>
-<p>Where <code>n(Action)</code> is the number of frames per Action.</p>
-<p><strong>IMPORTANT</strong> For Sheets, it is assumed coordinates of an image in the Asset file are <em>completely determined</em> by Action, Direction and Frame. It is assumed Actions form contiguous rows partitioned by Direction, and frames are organized in horizontal cells of equal length. This specification is enforced on the application level.</p>
+<p>Where <code>n(Action)</code> is the number of frames per Action. The frames per Action are given below,</p>
+<ul>
+<li><code>cast</code>: Count = 7</li>
+<li><code>thrust</code>: Count = 8</li>
+<li><code>walk</code>: Count = 9</li>
+<li><code>slash</code>: Count = 6</li>
+<li><code>shoot</code>: Count = 13</li>
+<li><code>die</code>: Count = 6</li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code>die</code> is only associated with a single row in the specification.</p>
+<p><code>die</code> is only associated with a single row in the LPC specification.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The row indexing starts at 0.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the LPC specification, the <code>thrust</code> Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the <code>thrust</code> state.</p>
 </div>
 <p><strong>Action</strong></p>
 <p>Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without an accompanying Direction. The "space" of the (Action, Direction) space is configured by Sheet Properties. </p>
@@ -1764,33 +1801,25 @@
 <span class="w">            </span><span class="nt">row</span><span class="p">:</span>
 </code></pre></div>
 <ul>
-<li><code>&lt;action-key&gt;: str</code> - Ranges over <code>cast, thrust, walk, slash, shoot, die</code></li>
-<li><code>&lt;direction-key&gt; : str</code> -  Ranges over  <code>up, left, down, right</code></li>
+<li><code>&lt;action-key&gt;: str</code> - Ranges over <code>cast, thrust, walk, slash, shoot, die</code> (LPC)</li>
+<li><code>&lt;direction-key&gt; : str</code> -  Ranges over  <code>up, left, down, right</code> (LPC)</li>
 <li><code>count: int</code> - is the number of frames in the Action row grouping. </li>
 </ul>
-<p><strong>Personas</strong></p>
-<p>This snippet from the <a href="#schemas">Schemas</a> shows the general structure of a Persona,</p>
-<div class="highlight"><pre><span></span><code><span class="nt">&lt;persona-key&gt;</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">dim</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">l</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">w</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">hitboxes</span><span class="p">:</span><span class="w"> </span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">x</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">y</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">dim</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span>
-<span class="w">            </span><span class="nt">w</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">stack</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;stack-key&gt;</span>
-</code></pre></div>
-<p><code>dim</code> and <code>hitboxes</code> are similar to most other Asset types, whereas <code>stack</code> is unique to Sheets. <code>stack</code> is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. </p>
-<p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. These "stack" of Sheets is keyed in the <a href="../00-overview/#registry">Registry</a> using the <code>&lt;persona-key&gt;</code>. </p>
-<p>The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.</p>
+<p><strong>Action Sets</strong></p>
+<p>Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property file. See <a href="#action-configuration">Action Configuration Schema</a> below for more details. </p>
+<p><strong>Stacks</strong></p>
+<p>A Stack is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.</p>
+<p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. These "stack" of Sheets is keyed in the <a href="../00-overview/#registry">Registry</a> using the <code>&lt;sheet-id&gt;</code>. </p>
+<p>Stacks are assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>stack</code> property in the Asset property file during the <a href="./06-architecture.md">application bootstrap</a>. The assembled <code>stack</code> is saved as a Sheet Asset, using the <code>&lt;sheet-id&gt;</code> as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.</p>
+</div>
 <p><strong>Properties: SheetProperties</strong></p>
 <ul>
-<li><code>key: str</code></li>
-<li><code>personas: Personas</code></li>
+<li><code>dimensions: Dimensions</code></li>
+<li><code>stack: List[str]</code></li>
+<li><code>hitboxes: List[Hitbox]</code></li>
 <li><code>actions: Actions</code></li>
 </ul>
 <h3 id="pixies">Pixies</h3>
@@ -1802,8 +1831,8 @@
 </ul>
 <p><strong>Frame: StateFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.action&gt;-&lt;animation.direction&gt;-&lt;animation.frame&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.actions.*&gt;-&lt;properties.actions.*.directions.*&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, animation): returns [ "{id}-{animation.action}-{animation.direction}-{animation.frame}" ]</code></li>
+<li><code>index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -1811,10 +1840,6 @@
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
 </ul>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Pixies only have a single Action state, <code>walk</code>.</p>
-</div>
 <h3 id="sprites">Sprites</h3>
 <p><em>Sprites</em> are <em>Sheets</em> over multiple rows of frames with a variable number of frames per row. They have a diverse palette of Actions. They are meant to encapsulate the core Characters, e.g. the player, NPCs, and enemies.</p>
 <p><strong>Animation: StateAnimation</strong></p>
@@ -1822,10 +1847,10 @@
 <li><code>state.animation.frame += 1</code></li>
 <li><code>if state.animation.frame &gt;= properties.actions[state.animation.action].count: state.animation.frame = 0</code></li>
 </ul>
-<p><strong>Frame: StateFrame</strong></p>
+<p><strong>Frame: SpriteFrame</strong></p>
 <ul>
-<li><code>key(asset, animation): returns &lt;asset&gt;-&lt;animation.action&gt;-&lt;animation.direction&gt;-&lt;animation.frame&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns { &lt;asset&gt;-&lt;properties.actions.*&gt;-&lt;properties.actions.*.directions.*&gt;-&lt;properties.count&gt;: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, animation): returns [ "{id}-{animation.action}-{animation.direction}-{animation.frame}" ] + [ &lt;equipment-frames&gt;]</code></li>
+<li><code>index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SpriteState</strong></p>
 <ul>
@@ -1842,7 +1867,7 @@
 </ul>
 <p>Sprite States are covered in more detail in the <a href="../02-sprites/">Sprites documentation</a>.</p>
 <h3 id="equipment-weapons-utilities-tools-armor-shields">Equipment (Weapons, Utilities, Tools, Armor, Shields)</h3>
-<p>Equipment is a group of Asset Instances within the Category of Sheets. They are closely tied to Sprites. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's inventory. Because of this relationship between the Assets,  i.e. Equipment rendering is dependent on Sprite state, Equipment does not possess its own state, frame or animation. Equipment only has properties.</p>
+<p>Equipment is a group of Asset Instances within the Category of Sheets (known as the Equipment Instance Group). They are closely tied to Sprites Animations. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's inventory. Because of this relationship between the Assets,  i.e. Equipment rendering is dependent on Sprite state, Equipment does not possess its own state, frame or animation implementation. Equipment only has properties.</p>
 <p>Equipment is covered in more detail in the <a href="../02-sprites/">Sprites documentation</a>.</p>
 <h2 id="schemas">Schemas</h2>
 <h3 id="recipe-configuration">Recipe Configuration</h3>
@@ -1854,6 +1879,16 @@
 </code></pre></div>
 <p><strong>Default Recipe Configuration</strong></p>
 <div class="highlight"><pre><span></span><code>
+</code></pre></div>
+<h3 id="action-configuration">Action Configuration</h3>
+<p>Action Configurations determine the (Action, Direction) partitions employed by a Sheet Asset.</p>
+<ul>
+<li>Location: <code>/src/data/config/actions/main.yaml</code></li>
+</ul>
+<div class="highlight"><pre><span></span><code>
+</code></pre></div>
+<p><strong>Default Action Configuration</strong></p>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;docs/.static/yaml/examples/default-actions.yaml</span>
 </code></pre></div>
 <h3 id="properties">Properties</h3>
 <p>Asset Property files hydrate the application models.</p>
