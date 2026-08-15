@@ -611,7 +611,13 @@ Sprite States are covered in more detail in the [Sprites documentation](./02-spr
 
 Equipment is a group of Asset Instances within the Category of Sheets (known as the Equipment Instance Group). They are closely tied to Sprites Animations. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's inventory. Because of this relationship between the Assets,  i.e. Equipment rendering is dependent on Sprite state, Equipment does not possess its own state, frame or animation implementation. Equipment only has properties.
 
-Equipment is covered in more detail in the [Sprites documentation](./02-sprites.md).
+Equipment is covered in more detail in the [Sprites documentation](./02-sprites.md#equipment).
+
+## Widgets
+
+Widgets are used to constructs Menus. They are not a part of the core gameplay loopjku and have special Mechanics for their interaction. 
+
+Widgets are covered in their own section, [Widgets](./06-widgets.md).
 
 ## Schemas
 

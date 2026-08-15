@@ -14,16 +14,16 @@ import yaml
 import app.config.settings as settings
 from app.config.validators import (
     PyRecipeConfiguration,
-    PyStateConfiguration,
-    PySheetPropertyConfiguration,
-    PyObjectPropertyConfiguration,
-    PyCursorPropertyConfiguration,
-    PyEffectPropertyConfiguration,
-    PyTilePropertyConfiguration,
-    PyCraftPropertyConfiguration,
-    PyEquipmentPropertyConfiguration,
-    PyIntentionPropertyConfiguration,
-    PyDeviceMappingConfiguration
+    PyMappingConfiguration,
+    PyIntentionConfiguration,
+    PyActionsConfiguration,
+    PyStateSchema,
+    PySheetPropertySchema,
+    PyObjectPropertySchema,
+    PyCursorPropertySchema,
+    PyEffectPropertySchema,
+    PyTilePropertySchema,
+    PyCraftPropertySchema,
 )
 
 logger = logging.getLogger(__name__)
@@ -76,51 +76,32 @@ class Loader:
                     merged_data = Loader.merge(merged_data, data)
 
         logger.debug(f"Validating loaded state via Pydantic model.")
-        return PyStateConfiguration.model_validate(merged_data).model_dump(exclude_none=True)
+        return PyStateSchema.model_validate(merged_data).model_dump(exclude_none=True)
 
     def load_properties() -> dict:
         """
         ### load_properties
 
-        Load validated property configuration from `/src/assets/**/main.yaml`
+        Load validated property schemas from `/src/assets/**/main.yaml`
         """
         return {
-            **PyTilePropertyConfiguration().model_dump(),
-            **PyObjectPropertyConfiguration().model_dump(),
-            **PyEffectPropertyConfiguration().model_dump(),
-            **PyCursorPropertyConfiguration().model_dump(),
-            **PyCraftPropertyConfiguration().model_dump(),
-            **PySheetPropertyConfiguration().model_dump()
+            **PyTilePropertySchema().model_dump(),
+            **PyObjectPropertySchema().model_dump(),
+            **PyEffectPropertySchema().model_dump(),
+            **PyCursorPropertySchema().model_dump(),
+            **PyCraftPropertySchema().model_dump(),
+            **PySheetPropertySchema().model_dump()
         }
 
-    def load_recipes() -> dict:
+    def load_configurations() -> dict:
         """
-        ### load_recipes
+        ### load_configurations
 
-        Load validated Asset recipe configuration from `/src/assets/main.yaml`
+        Load validated configurations from `/src/data/config/**/main.yaml`.
         """
-        return PyRecipeConfiguration().assets.model_dump()
-
-    def load_devices() -> dict:
-        """
-        ### load_devices
-
-        Load validated Device mapping configuration from `/src/data/mappings/main.yaml`
-        """
-        return PyDeviceMappingConfiguration().model_dump()
-
-    def load_equipment() -> dict:
-        """
-        ### load_equipment
-
-        Load validated Equipment configuration from `/src/data/equipment/main.yaml`
-        """
-        return PyEquipmentPropertyConfiguration().equipment.model_dump()
-
-    def load_intentions() -> dict:
-        """
-        ### load_intentions
-
-        Load validated Intention configuration from `/src/data/intentions/main/yaml`
-        """
-        return PyIntentionPropertyConfiguration().model_dump()
+        return {
+            **PyRecipeConfiguration().model_dump(),
+            **PyMappingConfiguration().model_dump(),
+            **PyIntentionConfiguration().model_dump(),
+            **PyActionsConfiguration().model_dumo()
+        }

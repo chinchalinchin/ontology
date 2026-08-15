@@ -200,7 +200,7 @@ class TransitionMechanics(Mechanic):
         sprites = board.instances(AssetInstances.SPRITES)
 
         for sprite in sprites:
-            # TODO (Phase III): Intention logic and DSL matrix compilation is pending.
+            # TODO (Phase V): Intention logic and DSL matrix compilation is pending.
 
             sprite.state.animation.action = AnimationMap.action(
                 sprite.state,

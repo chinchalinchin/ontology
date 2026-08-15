@@ -1,4 +1,4 @@
-assets:
+recipes:
   tiles:
     back:
       frame: single
@@ -65,3 +65,19 @@ assets:
       frame: sprite
       animation: state
       state: sprite
+    armor:
+      frame: null
+      animation: null
+      state: null
+    tools:
+      frame: null
+      animation: null
+      state: null
+    utilities:
+      frame: null
+      animation: null
+      state: null
+    weapons:
+      frame: null
+      animation: null
+      state: null

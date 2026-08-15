@@ -47,7 +47,7 @@ class AssetInstances(str, Enum):
     UTILITIES       = "utilities"
     TOOLS           = "tools"
 
-class EquipmentInstanceGroup(str, Enum):
+class EquipmentGroup(str, Enum):
     WEAPONS         = "weapons"
     ARMOR           = "armor"
     UTILITIES       = "utilities"

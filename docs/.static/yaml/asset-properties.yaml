@@ -153,12 +153,7 @@ sheets:
             l: Pixel Vertical Size
       stack:
         - <sheet-asset-key>
-      actions:
-        <action-key>:
-          count: Frame Count of Pixie Sheets
-          directions:
-            <direction-key>:
-              row: <row-index>
+      actions: <action-set-key>
   shields:
     <id>:
       dimensions:
@@ -173,12 +168,7 @@ sheets:
             l: Pixel Vertical Size
       stack:
         - <sheet-asset-key>
-      actions:
-        <action-key>:
-          count: Frame Count of Pixie Sheets
-          directions:
-            <direction-key>:
-              row: <row-index>
+      actions: <action-set-key>
   tools:
     <id>:
       dimensions:
@@ -193,12 +183,7 @@ sheets:
             l: Pixel Vertical Size
       stack:
         - <sheet-asset-key>
-      actions:
-        <action-key>:
-          count: Frame Count of Pixie Sheets
-          directions:
-            <direction-key>:
-              row: <row-index>
+      actions: <action-set-key>
   utilities:
     <id>:
       dimensions:
@@ -213,12 +198,7 @@ sheets:
             l: Pixel Vertical Size
       stack:
         - <sheet-asset-key>
-      actions:
-        <action-key>:
-          count: Frame Count of Pixie Sheets
-          directions:
-            <direction-key>:
-              row: <row-index>
+      actions: <action-set-key>
   weapons:
     <id>:
       dimensions:
@@ -233,12 +213,7 @@ sheets:
             l: Pixel Vertical Size
       stack:
         - <sheet-asset-key>
-      actions:
-        <action-key>:
-          count: Frame Count of Pixie Sheets
-          directions:
-            <direction-key>:
-              row: <row-index>
+      actions: <action-set-key>
   pixies:
     <id>:
       dimensions:
@@ -253,12 +228,7 @@ sheets:
             l: Pixel Vertical Size
       stack:
         - <sheet-asset-key>
-      actions:
-        <action-key>:
-          count: Frame Count of Pixie Sheets
-          directions:
-            <direction-key>:
-              row: <row-index>
+      actions: <action-set-key>
   sprites:
     <id>:
       dimensions:

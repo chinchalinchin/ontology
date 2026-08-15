@@ -21,8 +21,8 @@ from app.assets.frames import (
     StateFrame
 )
 from app.config.enums import (
-    FrameRecipe, 
     AnimationRecipe, 
+    FrameRecipe, 
     StateRecipe,
     AssetCategories,
     Devices,
@@ -44,7 +44,9 @@ from app.game.mechanics import (
 )
 from app.models.config import (
     ActionConfiguration,
-    IntentionConfiguration
+    IntentionConfiguration,
+    RecipeConfiguration,
+    MappingConfiguration
 )
 from app.models.state import (
     AnimatorState, 
@@ -82,7 +84,7 @@ class Factory:
     CYTHON_HINTS = {
         Hitbox: {'position': Position, 'dimensions': Dimensions},
     }
-    # Map Enums directly to Runtime Data Classes
+
     STATE_MAP = {
         StateRecipe.MULTIPLIER: MultiplierState,
         StateRecipe.POSITIONAL: PositionalState,
@@ -109,7 +111,6 @@ class Factory:
         AnimationRecipe.STATE: StateAnimation
     }
 
-    # Properties are strictly grouped by their broad categories
     PROPERTY_MAP = {
         AssetCategories.TILES: TileProperties,
         AssetCategories.EFFECTS: EffectProperties,
@@ -141,6 +142,8 @@ class Factory:
     CONFIGURATION_MAP = {
         Configurations.ACTIONS: ActionConfiguration,
         Configurations.INTENTIONS: IntentionConfiguration,
+        Configurations.RECIPES: RecipeConfiguration,
+        Configurations.MAPPINGS: MappingConfiguration
     }
 
     @classmethod

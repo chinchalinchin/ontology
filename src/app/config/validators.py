@@ -56,7 +56,7 @@ class YamlBaseSettings(BaseSettings):
 #           whereas no prefix indicates game object class.
 
 # ---------------------------------------------------------------------------------------
-# ------------------------------------------- PRIMITIVE MODELS CONFIGURATION & VALIDATION
+# ----------------------------------------------------------- PRIMITIVE MODELS VALIDATION
 # ---------------------------------------------------------------------------------------
 
 class PyPosition(BaseModel):
@@ -92,7 +92,7 @@ class PyCost(BaseModel):
     quantity: int
 
 # ---------------------------------------------------------------------------------------
-# --------------------------------------------------- PROPERTY CONFIGURATION & VALIDATION
+# ------------------------------------------------------------------- PROPERTY VALIDATION
 # ---------------------------------------------------------------------------------------
 
 class PyCursorProperties(BaseModel):
@@ -121,7 +121,7 @@ class PySheetProperties(BaseModel):
     actions: Dict[str, PyAction]
 
 # ---------------------------------------------------------------------------------------
-# ------------------------------------------------------ STATE CONFIGURATION & VALIDATION
+# ---------------------------------------------------------------------- STATE VALIDATION
 # ---------------------------------------------------------------------------------------
 
 class PyAssetState(BaseModel):
@@ -139,7 +139,8 @@ class PyPropertyState(BaseModel):
     owner: str
     position: PyPosition
 
-# ------------------------------------------------------------- SPRITE STATE FIELDS
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------- SPRITE STATE FIELDS
 
 class PyCharacterState(BaseModel):
     strength: int = 10
@@ -191,8 +192,9 @@ class PyMemoryState(BaseModel):
     goal: Optional[PyGoalState] = None
     communications: Optional[List[str]] = []
     prices: Optional[Dict[str, float]] = {}
-    
-# --------------------------------------------------------------- STATE CONTAINERS
+
+# -----------------------------------------------------------------------------------
+# ------------------------------------------------------------------ STATE CONTAINERS
 
 class PyMultiplierState(PyAssetState):
     position: PyPosition
@@ -247,13 +249,13 @@ class PyPlayerState(PyAssetState):
     intention: Optional[str] = None
 
 # --------------------------------------------------------------------------------------
-# ---------------------------------------------------- RECIPE CONFIGURATION & VALIDATION
+# ------------------------------------------------------------- CONFIGURATION VALIDATION
 # --------------------------------------------------------------------------------------
 
 class PyRecipe(BaseModel):
-    frame: FrameRecipe
+    frame: Optional[FrameRecipe] = None
     animation: Optional[AnimationRecipe] = None
-    state: StateRecipe
+    state: Optional[StateRecipe]
 
 class PyTileRecipe(BaseModel):
     fore: PyRecipe
@@ -282,8 +284,6 @@ class PySheetRecipe(BaseModel):
     sprites: PyRecipe
     players: PyRecipe
 
-# ---------------------------------------------------------------------------------------
-
 class PyRecipes(BaseModel):
     tiles: Optional[PyTileRecipe] = None
     crafts: Optional[PyCraftRecipe] = None
@@ -293,9 +293,6 @@ class PyRecipes(BaseModel):
     sheets: Optional[PySheetRecipe] = None
 
 # --------------------------------------------------------------------------------------
-# ---------------------------------------------------- DEVICE CONFIGURATION & VALIDATION
-# --------------------------------------------------------------------------------------
-
 # ------------------------------------------------------------------------------ DEVICES
 
 class PyDeviceMapping(BaseModel):
@@ -306,27 +303,12 @@ class PyDeviceMappings(BaseModel):
     keyboard: PyDeviceMapping
     controller: Optional[PyDeviceMapping] = None
 
+# --------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------- INTENTIONS
 
 class PyIntentionTransition(BaseModel):
     next: str
     conditions: List[str]
-
-# ---------------------------------------------------------------------------- EQUIPMENT
-
-class PyEquipmentAnimationProperty(BaseModel):
-    action: Actions
-    direction: Directions
-
-class PyEquipmentProperty(BaseModel):
-    animation: PyEquipmentAnimationProperty
-    sheets: List[str]
-
-class PyEquipmentProperties(BaseModel):
-    armor: Dict[str, PyEquipmentProperty]
-    tools: Dict[str, PyEquipmentProperty]
-    utilities: Dict[str, PyEquipmentProperty]
-    weapons: Dict[str, PyEquipmentProperty]
 
 # -------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------ YAML SCHEMAS
@@ -360,7 +342,7 @@ class PyMechanicsConfiguration(YamlBaseSettings):
 # -------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ DEVICE YAML SCHEMA
 
-class PyDeviceMappingConfiguration(YamlBaseSettings):
+class PyMappingConfiguration(YamlBaseSettings):
     mappings: PyDeviceMappings
 
     model_config = SettingsConfigDict(
@@ -370,21 +352,11 @@ class PyDeviceMappingConfiguration(YamlBaseSettings):
 # -------------------------------------------------------------------------------------
 # --------------------------------------------------------------- INTENTION YAML SCHEMA
 
-class PyIntentionPropertyConfiguration(YamlBaseSettings):
+class PyIntentionConfiguration(YamlBaseSettings):
     intentions: Dict[str, List[PyIntentionTransition]]
 
     model_config = SettingsConfigDict(
         yaml_file = settings.CONFIG_DIR / Configurations.INTENTIONS / settings.APP_EXT
-    )
-
-# -------------------------------------------------------------------------------------
-# --------------------------------------------------------------- EQUIPMENT YAML SCHEMA
-
-class PyEquipmentPropertyConfiguration(YamlBaseSettings):
-    equipment: PyEquipmentProperties
-
-    model_config = SettingsConfigDict(
-        yaml_file = settings.CONFIG_DIR / Configurations.EQUIPMENT / settings.APP_EXT
     )
 # -------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ RECIPE YAML SCHEMA
@@ -428,7 +400,7 @@ class PySheetStateInstances(BaseModel):
 
 # ---------------------------------------------------------------------------------------
 
-class PyStateConfiguration(BaseModel):
+class PyStateSchema(BaseModel):
     tiles: Optional[PyTileStateInstances] = None
     objects: Optional[PyObjectStateInstances] = None
     crafts: Optional[PyCraftStateInstances] = None
@@ -467,7 +439,7 @@ class PySheetPropertyInstances(BaseModel):
 
 # ---------------------------------------------------------------------------------------
 
-class PyTilePropertyConfiguration(YamlBaseSettings):
+class PyTilePropertySchema(YamlBaseSettings):
     tiles: PyTilePropertyInstances
 
     model_config = SettingsConfigDict(
@@ -475,35 +447,35 @@ class PyTilePropertyConfiguration(YamlBaseSettings):
     )
 
 
-class PyEffectPropertyConfiguration(YamlBaseSettings):
+class PyEffectPropertySchema(YamlBaseSettings):
     effects: PyEffectPropertyInstances
 
     model_config = SettingsConfigDict(
         yaml_file = settings.ASSET_DIR / AssetCategories.EFFECTS / settings.APP_EXT
     )
     
-class PyObjectPropertyConfiguration(YamlBaseSettings):
+class PyObjectPropertySchema(YamlBaseSettings):
     objects: PyObjectPropertyInstances
 
     model_config = SettingsConfigDict(
         yaml_file = settings.ASSET_DIR / AssetCategories.OBJECTS / settings.APP_EXT
     )
 
-class PyCraftPropertyConfiguration(YamlBaseSettings):
+class PyCraftPropertySchema(YamlBaseSettings):
     crafts: PyCraftPropertyInstances
 
     model_config = SettingsConfigDict(
         yaml_file = settings.ASSET_DIR / AssetCategories.CRAFTS / settings.APP_EXT
     )
 
-class PyCursorPropertyConfiguration(YamlBaseSettings):
+class PyCursorPropertySchema(YamlBaseSettings):
     cursors: PyCursorPropertyInstances
 
     model_config = SettingsConfigDict(
         yaml_file = settings.ASSET_DIR / AssetCategories.CURSORS / settings.APP_EXT
     )
 
-class PySheetPropertyConfiguration(YamlBaseSettings):
+class PySheetPropertySchema(YamlBaseSettings):
     sheets: PySheetPropertyInstances
 
     model_config = SettingsConfigDict(

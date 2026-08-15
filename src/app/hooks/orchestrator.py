@@ -17,6 +17,7 @@ from app.config.enums import (
     AssetCategories, 
     AssetInstances,
     Devices,
+    EquipmentGroup,
     Configurations
 )
 from app.game.board import Board
@@ -35,14 +36,10 @@ class Orchestrator:
     """
     ## Orchestrator
     """
-    # Configuration
+    # Data
     properties: Dict = {}
-    recipes: Dict = {}
     state: Dict = {}
-    devices: Dict = {}
-    equipment: Dict = {}
-    intentions: Dict = {}
-
+    configuration: Dict = {}
     # Game
     registry: Registry
     board: Board
@@ -52,10 +49,7 @@ class Orchestrator:
     def __init__(self, state: str):
         logger.info(f"Initializing Orchestrator for target state: {state} ...")
         self.properties = Loader.load_properties()
-        self.recipes = Loader.load_recipes()
-        self.devices = Loader.load_devices()
-        self.equipment = Loader.load_equipment()
-        self.intentions = Loader.load_intentions()
+        self.configuration = Loader.load_configurations()
         self.state = Loader.load_state(state)
 
     def instance_properties(self, category, instance, snapshot):
@@ -68,12 +62,14 @@ class Orchestrator:
 
         if category == AssetCategories.SHEETS and instance != AssetInstances.PLAYERS:
             props = self.properties[category][instance][snapshot["id"]].copy()
-            props["actions"] = self.properties[category][instance]["actions"]
+            action_set = self.properties[category][instance]["actions"]
+            props["actions"]
             return props
 
         if category == AssetCategories.SHEETS and instance == AssetInstances.PLAYERS:
             props = self.properties[category][AssetInstances.SPRITES][snapshot["id"]].copy()
-            props["actions"] = self.properties[category][AssetInstances.SPRITES]["actions"]
+            action_set = self.properties[category][AssetInstances.SPRITES]["actions"]
+            props["actions"]
             return props
 
         return self.properties[category][instance][snapshot["id"]] 
@@ -84,18 +80,27 @@ class Orchestrator:
 
         Transfer the Pydantic DTOs to Python POPOs for the game engine and load them into the Board.
         """
-        logger.info("Migrating validated states to engine Application Objects...")
+        logger.info("Migrating validated states and configurations to engine data structures...")
         assets = []
+        configurations = { }
+        equipment = { }
 
-        # TODO: update for new Sheet Instances
-        equipment = Factory.configuration(self.equipment, Configurations.EQUIPMENT)
-        intentions = Factory.configuration(self.intentions, Configurations.INTENTIONS)
+        # 1. Migrate Configurations
+        for config_key, config_data in self.configuration.items():
+            configurations[config_key] = Factory.configuration(config_key, config_data)
 
-        for category_key, instance_data in self.state.items():
-            for instance_key, instance_list in instance_data.items():
+        # 2. Migrate Assets without State
+        for equip_key in EquipmentGroup:
+            equipment[equip_key] = Factory.properties(
+                equip_key,
+                self.properties[AssetCategories.SHEETS][equip_key]
+            )
+        # 3. Migrate Assets with State
+        for category_key, category_data in self.state.items():
+            for instance_key, instance_list in category_data.items():
                 for instance in instance_list:
 
-                    recipe = self.recipes[category_key][instance_key]
+                    recipe = self.configuration["recipes"][category_key][instance_key]
                     instance_props = self.instance_properties(category_key, instance_key, instance)
 
                     # Pop the taxonomy keys to strip them from the state snapshot
@@ -112,9 +117,9 @@ class Orchestrator:
                     
         logger.info(f"Successfully migrated {len(assets)} assets.")
         
-        return Board(assets, equipment, intentions)
+        return Board(assets, configurations, equipment)
     
-    def orchestrate(self, screensize: Dimensions, device: Devices) -> Tuple[Board, Registry, Dict[str, Screen]]:
+    def init(self, screensize: Dimensions, device: Devices) -> Tuple[Board, Registry, Dict[str, Screen]]:
         """
         # Ontology: Orchestrate
 
@@ -132,7 +137,7 @@ class Orchestrator:
         self.board.set_device(device_instance)
 
         logger.info("Initializing Registry..")
-        self.registry = Registry(self.properties, self.recipes, self.equipment)
+        self.registry = Registry(self.properties, self.configurations["recipes"])
         
         logger.info("Initializing Screens...")
         self.screens = {

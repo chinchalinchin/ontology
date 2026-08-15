@@ -16,11 +16,8 @@ from app.config.enums import (
 )
 from app.game.devices import Device
 from app.game.mechanics import Mechanic
-
-from app.models.config import (
-    EquipmentConfiguration,
-    IntentionConfiguration
-)
+from app.models.config import Configuration
+from app.models.properties import SheetProperties
 
 # Cython Libraries
 from libs.core.models import Dimensions
@@ -34,8 +31,8 @@ class Board:
     loaded: bool
     paused: bool
     # Public Fields
-    intentions: IntentionConfiguration
-    properties: dict
+    configurations: Dict[str, Configuration]
+    equipment: Dict[str, SheetProperties]
     # Hidden Fields
     _assets: List[Asset]
     _mechanics: List[Mechanic]
@@ -50,14 +47,14 @@ class Board:
 
     def __init__(self, 
         assets: List[Asset], 
-        intentions: IntentionConfiguration,
-        properties: dict
+        configurations: Dict[str, Configuration],
+        equipment: Dict[str, SheetProperties]
     ):
         logger.info(f"Initializing Board with {len(assets)} incoming assets.")
         self.loaded = False
         self.paused = False
-        self.intentions = intentions
-        self.properties = properties
+        self.configurations = configurations
+        self.equipment = equipment
         self._assets = assets
         self._catalogue()
         self._cache()

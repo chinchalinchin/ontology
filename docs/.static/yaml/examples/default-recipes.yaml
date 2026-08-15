@@ -1,4 +1,4 @@
-assets:
+recipes:
   tiles:
     back:
       frame: single
@@ -53,15 +53,31 @@ assets:
       animation: binary
       state: switch
   sheets:
+    players:
+      frame: sprite
+      animation: state
+      state: player
     pixies:
       frame: state
       animation: state
       state: animator
     sprites:
-      frame: state
+      frame: sprite
       animation: state
       state: sprite
-    player:
-      frame: state
-      animation: state
-      state: player
+    armor:
+      frame: null
+      animation: null
+      state: null
+    tools:
+      frame: null
+      animation: null
+      state: null
+    utilities:
+      frame: null
+      animation: null
+      state: null
+    weapons:
+      frame: null
+      animation: null
+      state: null

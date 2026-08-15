@@ -14,9 +14,9 @@
     
 ## Assets
 
-All Assets have an *Key*, *Properties* and *State*. 
+All Assets have an *Id*, *Properties* and *State*. 
 
-In addition, Assets are divided into several categories. See [Assets](./01-assets.md) for more information on each category. Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,
+In addition, Assets are divided into non-overlapping categories, known as the [Asset Hierarchy](./01-assets.md#asset-hierarchy). Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,
 
 - [Crafts](./01-assets.md#crafts)
 - [Cursors](./01-assets.md#cursors)
@@ -34,13 +34,13 @@ The YAML index schema for each Asset configures its *properties*, i.e. its stati
 
 ## Data
 
-Runtime information is stored in the `/src/data/**` directory, otherwise known as the *data directory*. This information is divided in *state* and *configuration*, in the `/src/data/state/*` and the `/src/data/config/*` directories respectively, otherwise known as the *state directory* and the *configuration directory*.
+Runtime information is stored in the `/src/data/**` directory, otherwise known as the *data directory*. This information is divided into *state* and *configuration* across the `/src/data/state/*` and the `/src/data/config/*` directories respectively, otherwise known as the *state directory* and the *configuration directory*.
 
 ### State
 
 An Asset is deployed onto a *Board*, where it acquires its *state*, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests state data stored in the `/src/data/state/*` directory. 
 
-An Asset Category has a single schema for properties, but each individual Asset Instance may have a unique State, particular to particular deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).
+An Asset Category has a single schema for properties, but each individual Asset Instance has a unique State, particular to particular deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).
 
 ### Configuration
 
@@ -83,12 +83,18 @@ The Registry loads in all of the Asset files when the application bootstraps. Th
 
 ## Concepts
 
+### Hitboxes
+
+Many Assets have Hitboxes. Hitboxes are *properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. 
+
 ### Layers
 
 All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire frame, it is rendering a Layer.  
 
 Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at `(x_1, y_1)` and get released on Layer 3 at `(x_2, y_2)`. For this reason, each Layer may have different dimensions.
 
-### Hitboxes
+Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations should be separated by Layer, to avoid inter-Layer collisions
 
-Many Assets have Hitboxes. Hitboxes are *properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. 
+### Sprites
+
+NPC and Enemy Sprites are undifferentiated. Conflict is driven entirely by internal Sprite data structures and the gameplay loop. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to the [Intention Transition Matrix](./04-intentions.md#transition-matrix). However, all state changes of Sprites and the Player are communicated through the medium of [Goals and Intentions](./04-intentions.md).

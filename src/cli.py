@@ -38,8 +38,8 @@ def main():
         p.add_argument("board_key", type=str, help="The configuration key for the target board")
         p.add_argument("--out", type=str, required=True, help="Output directory path")
         p.add_argument("--layer", type=str, required=True, help="Target layer to construct/render")
-        p.add_argument("--width", type=int, default=128, help="Simulated screen width")
-        p.add_argument("--height", type=int, default=128, help="Simulated screen height")
+        p.add_argument("--width", type=int, default=480, help="Simulated screen width")
+        p.add_argument("--height", type=int, default=480, help="Simulated screen height")
         p.add_argument("--device", type=str, default=Devices.KEYBOARD.value, help="Player device")
 
     args = parser.parse_args()
@@ -54,11 +54,11 @@ def main():
 
     # Step 1: Initialize Orchestrator and abstract components
     screensize = Dimensions(w=args.width, l=args.height)
-    maestro = Orchestrator(args.board_key)
+    orchestrator = Orchestrator(args.board_key)
     
     # Device is None since we are headless and relying on static rendering
     logger.info("Orchestrating engine components for headless execution...")
-    board, registry, screens = maestro.orchestrate(screensize, device=args.device)
+    board, registry, screens = orchestrator.init(screensize, device=args.device)
 
     if args.layer not in screens:
         logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
