@@ -322,7 +322,7 @@ class PyActionData(BaseModel):
     data: Dict[str, PyAction]
 
 class PyActionsConfiguration(YamlBaseSettings):
-    order: List[Mechanics]
+    actions: List[Mechanics]
 
     model_config = SettingsConfigDict(
         yaml_file = settings.CONFIG_DIR / Configurations.ACTIONS / settings.APP_EXT

@@ -14,7 +14,7 @@
     
 ## Assets
 
-All Assets have an *Id*, *Properties* and *State*. 
+All Assets have an *Id* and *Properties*. Most, but not all, Assets have *State*. 
 
 In addition, Assets are divided into non-overlapping categories, known as the [Asset Hierarchy](./01-assets.md#asset-hierarchy). Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,
 
@@ -28,25 +28,31 @@ In addition, Assets are divided into non-overlapping categories, known as the [A
 - [Tiles](./01-assets.md#tiles)
 - [Widgets](./06-widgets.md)
 
-Assets are placed in the `/src/assets/<category>/` directory and then added and configured to the Asset category index `/src/assets/<category>/main.yaml`. See [Asset Schema](./01-assets.md#schemas) for more information on each Asset category index schema.
+Assets are placed in the `/src/assets/<category>/` directory and then registered to the Asset category index `/src/assets/<category>/main.yaml` file. The YAML index schema for each Asset configures its *properties*, i.e. the static attributes that are constant and do not change as a result of gameplay.
 
-The YAML index schema for each Asset configures its *properties*, i.e. its static attributes that are constant and do not change as a result of gameplay.
+See [Asset Schema](./01-assets.md#schemas) for more information on the Asset Property index.
 
 ## Data
 
-Runtime information is stored in the `/src/data/**` directory, otherwise known as the *data directory*. This information is divided into *state* and *configuration* across the `/src/data/state/*` and the `/src/data/config/*` directories respectively, otherwise known as the *state directory* and the *configuration directory*.
+* Location: `/src/data/`
+
+Runtime information is stored in the `/src/data/**` directory, otherwise known as the *data directory*. This information is divided into *state* and *configuration* across the `/src/data/state/*` and the `/src/data/config/*` directories, respectively. These directories are otherwise known as the *state directory* and the *configuration directory*.
 
 ### State
 
-An Asset is deployed onto a *Board*, where it acquires its *state*, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests state data stored in the `/src/data/state/*` directory. 
+* Location: `/src/data/state/`
+
+An Asset is deployed onto a *Board*, where it acquires its *state*, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests and stores state in the state directory.
 
 An Asset Category has a single schema for properties, but each individual Asset Instance has a unique State, particular to particular deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).
 
 ### Configuration
 
-Mechanics and other components of the game engine (e.g. Menus, Orchestrator, etc.) utilize configuration stored in the `/src/data/config/*` directory. The following engine components are configured by the files in this directory.
+* Location: `/src/data/config`
 
-- Scripts
+Mechanics and other components of the game engine (e.g. Menus, Orchestrator, etc.) utilize configuration stored in the configuration directory. The following engine components are configured by the files in this directory.
+
+- [Scripts](./08-plots.md)
 - [Intentions](./04-intentions.md)
 - [Mappings](./03-player.md#mapping)
 - [Mechanics](./05-mechanics.md)
@@ -57,11 +63,15 @@ Mechanics and other components of the game engine (e.g. Menus, Orchestrator, etc
 
 ### Factory
 
-The Factory builds Asset components based on Recipes and other game components.
+The Factory builds Asset and other game components based on Recipes.
+
+### Loader
+
+The Loader is responsible for reading in the configuration files for properties and state, converting them into Python data structure.
 
 ### Orchestrator
 
-The Orchestrator is responsible for reading in the configuration files for properties and state, converting them into application data models and then instantiating the corresponding classes.
+The Orchestrator is the dependency injection system. It is responsible for converting data structures into application data models and supplying them to application classes.
 
 ### Engine
 
@@ -73,7 +83,7 @@ The Screen acts as a high-level container for a Cythonized SDL rendering interfa
 
 ### Board
 
-The Board is the Game's "database". It holds all ingame Assets during the course of the game loop and exposes them to the engine through queryable interfaces.
+The Board is the Game's "database". It holds all ingame Assets and Configurations during the course of the game loop and exposes them to the engine through queryable interfaces.
 
 The state files for each Board are maintained in `/src/data/state/<board-key>/**`.
 

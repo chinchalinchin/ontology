@@ -63,12 +63,14 @@ class Orchestrator:
         if category == AssetCategories.SHEETS and instance != AssetInstances.PLAYERS:
             props = self.properties[category][instance][snapshot["id"]].copy()
             action_set = self.properties[category][instance]["actions"]
+            # TODO: Query ActionConfiguration
             props["actions"]
             return props
 
         if category == AssetCategories.SHEETS and instance == AssetInstances.PLAYERS:
             props = self.properties[category][AssetInstances.SPRITES][snapshot["id"]].copy()
             action_set = self.properties[category][AssetInstances.SPRITES]["actions"]
+            # TODO: Query ActionConfiguration
             props["actions"]
             return props
 
