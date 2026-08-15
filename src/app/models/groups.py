@@ -3,10 +3,13 @@
 
 """
 # Standard Libraries
-from typing import Dict
-from dataclasses import dataclass
+from typing import Dict, List
+from dataclasses import dataclass, field
 
 # Application Libraries
+from app.config.enums import (
+    Intentions
+)
 from app.models.properties import (
     AssetProperties,
     SheetProperties
@@ -30,6 +33,7 @@ class EquipmentGroup(AssetProperties):
     tools: Dict[str, SheetProperties]
     utilities: Dict[str, SheetProperties]
     weapons: Dict[str, SheetProperties]
+    shields: Dict[str, SheetProperties] = field(default_factory=dict)
 
 @dataclass(slots=True)
 class ConfigurationGroup:
@@ -37,5 +41,5 @@ class ConfigurationGroup:
     """
     recipes: RecipeConfiguration
     mappings: MappingConfiguration
-    intentions: IntentionConfiguration
-    actions: ActionConfiguration
+    intentions: Dict[Intentions, List[IntentionConfiguration]]
+    actions: List[ActionConfiguration]

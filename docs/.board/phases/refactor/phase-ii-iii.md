@@ -10,14 +10,18 @@ In addition, the Sheet Property schema has been updated to accomodated this new 
 
 - Goal: Ensure Equipment is fully clarified and integrated in the application. Verify no bugs have entered into the application.
 
+**Further Analysis:**
+
+Analyze code for bugs and logical errors.
+
 **Tasks:**
 
-- [ ] **Fix Data Ingestion Pipeline:** Update `PySheetPropertyInstances` and `PySheetProperties` Pydantic schemas in `validators.py` to accept dictionary groupings and string-based action keys to unblock CLI rendering. Include `shields`.
-- [ ] **Hydrate Equipment Actions:** Update `Orchestrator.migrate()` to intercept Equipment `actions` strings and resolve them into actual `Action` dictionaries via `self.instance_actions()` before passing them to the `Factory`.
-- [ ] **Resolve Registry Indexing:** Ensure Equipment instances have a defined recipe in `recipes/main.yaml` mapping to `StateRecipe.NONE` and `AnimationRecipe.NONE`, but utilizing `FrameRecipe.STATE` so the Registry can pre-compute their crop coordinates.
-- [ ] **Correct Animation Mapping Logic:** Refactor `AnimationMap.action()` in `maps.py` to retrieve the resolved action key (e.g., 'slash', 'shoot') dynamically from the equipped weapon's properties, rather than querying a non-existent `animation` field.
+- [x] **Fix Data Ingestion Pipeline:** Update `PySheetPropertyInstances` and `PySheetProperties` Pydantic schemas in `validators.py` to accept dictionary groupings and string-based action keys to unblock CLI rendering. Include `shields`.
+- [x] **Hydrate Equipment Actions:** Update `Orchestrator.migrate()` to intercept Equipment `actions` strings and resolve them into actual `Action` dictionaries via `self.instance_actions()` before passing them to the `Factory`.
+- [x] **Resolve Registry Indexing:** Ensure Equipment instances have a defined recipe in `recipes/main.yaml` mapping to `StateRecipe.NONE` and `AnimationRecipe.NONE`, but utilizing `FrameRecipe.STATE` so the Registry can pre-compute their crop coordinates.
+- [x] **Correct Animation Mapping Logic:** Refactor `AnimationMap.action()` in `maps.py` to retrieve the resolved action key (e.g., 'slash', 'shoot') dynamically from the equipped weapon's properties, rather than querying a non-existent `animation` field.
 - [x] **Squash Peripheral Bugs:** 
   - [x] Fix `self.configuration` typo in `Orchestrator`.
   - [x] Fix `del maestro` unbound variable in `cli.py`.
   - [x] Fix `export_render` signature mismatch passing `registry` to `draw()` in `screen.py`.
-- [ ] **Documentation Sync:** Update Asset/Equipment documentation to clarify that Equipment *does* possess a Recipe purely to expose its Frame schema to the `Registry`, but it is skipped during State instantiation.
+- [x] **Documentation Sync:** Update Asset/Equipment documentation to clarify that Equipment *does* possess a Recipe purely to expose its Frame schema to the `Registry`, but it is skipped during State instantiation.

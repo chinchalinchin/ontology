@@ -31,9 +31,10 @@ class AnimationMap:
             
             weapon_property = equipment.weapons.get(weapon)
 
-            # TODO: need to check what action weapon has enabled
+            
             if weapon_property:
-                return weapon_prop.animation
+                return next(iter(weapon_property.actions), Actions.CAST)
+            
             return Actions.CAST
     
         elif intention in [Intentions.WANDER, Intentions.FIND]:

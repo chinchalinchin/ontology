@@ -46,12 +46,14 @@ class AssetInstances(str, Enum):
     ARMOR           = "armor"
     UTILITIES       = "utilities"
     TOOLS           = "tools"
+    SHIELDS         = "shields"
 
 class Equipment(str, Enum):
     WEAPONS         = "weapons"
     ARMOR           = "armor"
     UTILITIES       = "utilities"
     TOOLS           = "tools"
+    SHIELDS         = "shields"
     
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 
@@ -60,6 +62,7 @@ class FrameRecipe(str, Enum):
     SINGLE          = "single"
     ITERABLE        = "iterable"
     STATE           = "state"
+    SPRITE          = "sprite"
 
 class AnimationRecipe(str, Enum):
     NONE            = "none"

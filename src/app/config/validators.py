@@ -53,7 +53,7 @@ class YamlBaseSettings(BaseSettings):
         return (YamlConfigSettingsSource(settings_cls),)
     
 # NOTE: *Py-* prefix denotes Pydantic model that inherits from Pydantic's BaseModel, 
-#           whereas no prefix indicates game object class.
+#       whereas no prefix indicates game object class.
 
 # ---------------------------------------------------------------------------------------
 # ----------------------------------------------------------- PRIMITIVE MODELS VALIDATION
@@ -118,8 +118,8 @@ class PyCraftProperties(BaseModel):
     
 class PySheetProperties(BaseModel):
     dimensions: PyDimensions
-    hitboxes: Optional[List[PyHitbox]] = []
-    stack: List[str]
+    hitboxes: Optional[List[PyHitbox]] = None
+    stack: Optional[List[str]] = None
     actions: str
 
 # ---------------------------------------------------------------------------------------
@@ -188,6 +188,7 @@ class PyEquipmentState(BaseModel):
     weapon: Optional[str] = None
     tool: Optional[str] = None
     utility: Optional[str] = None
+    shield: Optional[str] = None
 
 class PyMeterState(BaseModel):
     current: int = 100
@@ -324,7 +325,7 @@ class PySheetStateInstances(BaseModel):
 class PyRecipe(BaseModel):
     frame: Optional[FrameRecipe] = None
     animation: Optional[AnimationRecipe] = None
-    state: Optional[StateRecipe]
+    state: Optional[StateRecipe] = None
 
 class PyTileRecipe(BaseModel):
     fore: PyRecipe
@@ -352,6 +353,11 @@ class PySheetRecipe(BaseModel):
     pixies: PyRecipe
     sprites: PyRecipe
     players: PyRecipe
+    armor: PyRecipe
+    tools: PyRecipe
+    shields: PyRecipe
+    utilities: PyRecipe
+    weapons: PyRecipe
 
 class PyRecipes(BaseModel):
     tiles: Optional[PyTileRecipe] = None
@@ -395,7 +401,7 @@ class PyActionData(BaseModel):
 
 
 class PyActionsConfiguration(YamlBaseSettings):
-    actions: List[Mechanics]
+    actions: List[PyActionData]
 
     model_config = SettingsConfigDict(
         yaml_file = settings.CONFIG_DIR / Configurations.ACTIONS / settings.APP_EXT
@@ -426,7 +432,7 @@ class PyMappingConfiguration(YamlBaseSettings):
 # --------------------------------------------------------------- INTENTION YAML SCHEMA
 
 class PyIntentionConfiguration(YamlBaseSettings):
-    intentions: Dict[str, List[PyIntentionTransition]]
+    intentions: Dict[Intentions, List[PyIntentionTransition]]
 
     model_config = SettingsConfigDict(
         yaml_file = settings.CONFIG_DIR / Configurations.INTENTIONS / settings.APP_EXT
@@ -435,7 +441,7 @@ class PyIntentionConfiguration(YamlBaseSettings):
 # ------------------------------------------------------------------ RECIPE YAML SCHEMA
 
 class PyRecipeConfiguration(YamlBaseSettings):
-    assets: PyRecipes
+    recipes: PyRecipes
 
     model_config = SettingsConfigDict(
         yaml_file = settings.CONFIG_DIR / Configurations.RECIPES / settings.APP_EXT

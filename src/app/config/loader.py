@@ -103,5 +103,5 @@ class Loader:
             **PyRecipeConfiguration().model_dump(),
             **PyMappingConfiguration().model_dump(),
             **PyIntentionConfiguration().model_dump(),
-            **PyActionsConfiguration().model_dumo()
+            **PyActionsConfiguration().model_dump()
         }

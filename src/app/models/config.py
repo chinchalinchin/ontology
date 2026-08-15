@@ -1,5 +1,5 @@
 """
-# Ontology: app.models.configuration
+# Ontology: app.models.config
 
 Models for typing the configuration attributes of Mechanics and other game components. See documentation for a more in-depth explanation of each field and its purpose. 
 """
@@ -33,35 +33,54 @@ class Recipe:
     animation: AnimationRecipe = None
     state: StateRecipe = None
 
+@dataclass(slots=True)
+class TileRecipe:
+    fore: Recipe = None
+    back: Recipe = None
+
+@dataclass(slots=True)
+class CraftRecipe:
+    struts: Recipe = None
+
+@dataclass(slots=True)
+class CursorRecipe:
+    expressions: Recipe = None
+    projectiles: Recipe = None
+
+@dataclass(slots=True)
+class EffectRecipe:
+    temporary: Recipe = None
+    persistent: Recipe = None
+
+@dataclass(slots=True)
+class ObjectRecipe:
+    chests: Recipe = None
+    crates: Recipe = None
+    doors: Recipe = None
+    gates: Recipe = None
+    plates: Recipe = None
+
+@dataclass(slots=True)
+class SheetRecipe:
+    pixies: Recipe = None
+    sprites: Recipe = None
+    players: Recipe = None
+    weapons: Recipe = None
+    utilities: Recipe = None
+    armor: Recipe = None
+    tools: Recipe = None
+    shields: Recipe = None
+
 @dataclass(slots=True) 
 class RecipeConfiguration(Configuration):
     """
     """
-    # SHEETS
-    pixies: Recipe
-    sprites: Recipe
-    players: Recipe
-    weapons: Recipe
-    utilities: Recipe
-    armor: Recipe
-    tools: Recipe
-    # OBJECTS
-    chests: Recipe
-    crates: Recipe
-    doors: Recipe
-    gates: Recipe
-    plates: Recipe
-    # EFFECTS
-    temporary: Recipe
-    persistent: Recipe
-    # CURSORS
-    expressions: Recipe
-    projectiles: Recipe
-    # CRAFTS
-    struts: Recipe
-    # Tiles
-    fore: Recipe
-    back: Recipe
+    tiles: TileRecipe = None
+    crafts: CraftRecipe = None
+    cursors: CursorRecipe = None
+    effects: EffectRecipe = None
+    objects: ObjectRecipe = None
+    sheets: SheetRecipe = None
 
 # ---------------------------------------------------------------------------------------
 # ----------------------------------------------------------------- MAPPING CONFIGURATION
@@ -81,8 +100,6 @@ class MappingConfiguration(Configuration):
 
 @dataclass(slots=True)
 class ActionConfiguration(Configuration):
-    """
-    """
     id: str
     data: Dict[str, Action]
     
@@ -90,14 +107,8 @@ class ActionConfiguration(Configuration):
 # --------------------------------------------------------------- INTENTION CONFIGURATION
 
 @dataclass(slots=True)
-class Transition:
+class IntentionConfiguration(Configuration):
     """
     """
     next: str
     conditions: List[Callable] = field(default_factory=list)
-
-@dataclass(slots=True)
-class IntentionConfiguration(Configuration):
-    """
-    """
-    intentions: Dict[str, List[Transition]] = field(default_factory=dict)

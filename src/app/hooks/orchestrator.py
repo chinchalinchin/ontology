@@ -57,32 +57,29 @@ class Orchestrator:
         self.state = Loader.load_state(state)
 
     def instance_actions(self, category, instance, id) -> dict:
-        action_set_key = self.properties[category][instance][id]["actions"]
+        action_set_key = self.properties[category][instance][id].get("actions")
+        
+        if isinstance(action_set_key, dict):
+            return action_set_key
+            
         try:
             return next(
-                action["data"] for action in self.configurations["actions"]
+                action["data"] for action in self.configurations.get("actions", [])
                 if action["id"] == action_set_key
             )
         except StopIteration:
             logger.warning(f"No actions exist for {action_set_key}")
+            return {}
 
     def instance_properties(self, category, instance, snapshot):
         """
         Returns Asset Properties based on their Taxonomy.
         """
-        # Lookup properties using the 'id' before modifying the dictionary
         if category == AssetCategories.TILES:
             return self.properties[category][instance]
 
-        if category == AssetCategories.SHEETS and instance != AssetInstances.PLAYERS:
-            props = self.properties[category][instance][snapshot["id"]].copy()
-            props["actions"] = self.instance_actions(category, instance, snapshot["id"])
-            return props
-
         if category == AssetCategories.SHEETS and instance == AssetInstances.PLAYERS:
-            props = self.properties[category][AssetInstances.SPRITES][snapshot["id"]].copy()
-            props["actions"] = self.instance_actions(category, AssetInstances.SPRITES, snapshot["id"])
-            return props
+            return self.properties[category][AssetInstances.SPRITES][snapshot["id"]]
 
         return self.properties[category][instance][snapshot["id"]] 
 
@@ -98,14 +95,24 @@ class Orchestrator:
         # 1. Migrate Configuration
         configurations = Factory.group(Groups.CONFIGURATIONS, self.configurations)
 
+        # Pre-hydrate all Action strings in properties to unblock Factory and Registry processing.
+        if AssetCategories.SHEETS in self.properties:
+            for instance, instance_props in self.properties[AssetCategories.SHEETS].items():
+                if not instance_props: continue
+                for item_id, props in instance_props.items():
+                    if isinstance(props.get("actions"), str):
+                        props["actions"] = self.instance_actions(AssetCategories.SHEETS, instance, item_id)
+
         # 2. Migrate Assets without State
         raw_equipment = { }
         for equip_instance_key in Equipment:
             raw_equipment[equip_instance_key] = { }
 
-            for equip_instance_id, equip_instance in \
-                self.properties[AssetCategories.SHEETS][equip_instance_key].items():
+            equip_dict = self.properties[AssetCategories.SHEETS].get(equip_instance_key, {})
+            if not equip_dict:
+                continue
 
+            for equip_instance_id, equip_instance in equip_dict.items():
                 raw_equipment[equip_instance_key][equip_instance_id] = Factory.properties(
                     AssetCategories.SHEETS,
                     equip_instance

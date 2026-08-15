@@ -348,7 +348,10 @@ class MenuMechanics(Mechanic):
             state.inventory.equipment.utility = item
             
         elif item in board.equipment.tools.keys():
-            state.inventory.equipment.utility = item
+            state.inventory.equipment.tool = item
+            
+        elif item in board.equipment.shields.keys():
+            state.inventory.equipment.shield = item
 
 
     def update(self, board: Board, delta: float) -> None:

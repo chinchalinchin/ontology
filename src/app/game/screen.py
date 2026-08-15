@@ -161,4 +161,4 @@ class Screen:
         """
         logger.info(f"Extracting VRAM view buffer representing full composition to file system -> {out_path}")
         self.draw(assets, focus, fdim)
-        save(out_path, self.screensize.w, self.screensize.l, )
+        save(out_path, self.screensize.w, self.screensize.l)

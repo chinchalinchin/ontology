@@ -169,6 +169,7 @@ class Equipment:
     weapon: str = None
     tool: str = None
     utility: str = None
+    shield: str = None
 
 
 @dataclass(slots=True)

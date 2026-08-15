@@ -20,7 +20,7 @@ OFF = 0
 SRC_DIR = Path(__file__).resolve().parent.parent.parent
 ASSET_DIR = SRC_DIR / "assets"
 DATA_DIR = SRC_DIR / "data"
-CONFIG_DIR = SRC_DIR / "config"
+CONFIG_DIR = DATA_DIR / "config"
 STATE_DIR = DATA_DIR / "state"
 
 APP_EXT = "main.yaml"

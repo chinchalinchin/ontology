@@ -66,18 +66,22 @@ recipes:
       animation: state
       state: sprite
     armor:
-      frame: none
+      frame: state
       animation: none
       state: none
     tools:
-      frame: none
+      frame: state
+      animation: none
+      state: none
+    shields:
+      frame: state
       animation: none
       state: none
     utilities:
-      frame: none
+      frame: state
       animation: none
       state: none
     weapons:
-      frame: none
+      frame: state
       animation: none
       state: none
