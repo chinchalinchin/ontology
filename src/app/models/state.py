@@ -13,6 +13,9 @@ from app.config.enums import Actions, Directions
 # Cython Libraries
 from libs.core.models import Position, Multiple
 
+class NoState:
+    pass
+
 # ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)

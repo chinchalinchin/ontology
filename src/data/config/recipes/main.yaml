@@ -2,25 +2,25 @@ recipes:
   tiles:
     back:
       frame: single
-      animation: null
+      animation: none
       state: multiplier
     fore:
       frame: single
-      animation: null
+      animation: none
       state: multiplier
   crafts:
     struts:
       frame: single
-      animation: null
+      animation: none
       state: property
   cursors:
     expressions:
       frame: single
-      animation: null
+      animation: none
       state: positional
     projectiles:
       frame: single
-      animation: null
+      animation: none
       state: metric
   effects:
     temporary:
@@ -38,11 +38,11 @@ recipes:
       state: container
     crates:
       frame: single
-      animation: null
+      animation: none
       state: positional
     doors:
       frame: single
-      animation: null
+      animation: none
       state: door
     gates: 
       frame: iterable
@@ -66,18 +66,18 @@ recipes:
       animation: state
       state: sprite
     armor:
-      frame: null
-      animation: null
-      state: null
+      frame: none
+      animation: none
+      state: none
     tools:
-      frame: null
-      animation: null
-      state: null
+      frame: none
+      animation: none
+      state: none
     utilities:
-      frame: null
-      animation: null
-      state: null
+      frame: none
+      animation: none
+      state: none
     weapons:
-      frame: null
-      animation: null
-      state: null
+      frame: none
+      animation: none
+      state: none

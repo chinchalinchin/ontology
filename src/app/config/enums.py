@@ -47,7 +47,7 @@ class AssetInstances(str, Enum):
     UTILITIES       = "utilities"
     TOOLS           = "tools"
 
-class EquipmentGroup(str, Enum):
+class Equipment(str, Enum):
     WEAPONS         = "weapons"
     ARMOR           = "armor"
     UTILITIES       = "utilities"
@@ -173,3 +173,7 @@ class Configurations(str, Enum):
     MENUS           = "menus"
     RECIPES         = "recipes"
     SCRIPTS         = "scripts"
+
+class Groups(str, Enum):
+    CONFIGURATIONS  = "configurations"
+    EQUIPMENT       = "equipment"

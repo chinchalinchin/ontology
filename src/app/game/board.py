@@ -16,7 +16,10 @@ from app.config.enums import (
 )
 from app.game.devices import Device
 from app.game.mechanics import Mechanic
-from app.models.config import Configuration
+from app.models.groups import (
+    ConfigurationGroup,
+    EquipmentGroup
+)
 from app.models.properties import SheetProperties
 
 # Cython Libraries
@@ -31,8 +34,8 @@ class Board:
     loaded: bool
     paused: bool
     # Public Fields
-    configurations: Dict[str, Configuration]
-    equipment: Dict[str, SheetProperties]
+    configurations: ConfigurationGroup
+    equipment: EquipmentGroup
     # Hidden Fields
     _assets: List[Asset]
     _mechanics: List[Mechanic]
@@ -47,8 +50,8 @@ class Board:
 
     def __init__(self, 
         assets: List[Asset], 
-        configurations: Dict[str, Configuration],
-        equipment: Dict[str, SheetProperties]
+        configurations: ConfigurationGroup,
+        equipment: EquipmentGroup
     ):
         logger.info(f"Initializing Board with {len(assets)} incoming assets.")
         self.loaded = False
@@ -120,10 +123,6 @@ class Board:
         """
         """
         self._device = device
-
-
-    def poll(self):
-        self._device.poll()
 
         
     def player(self, slot = 0) -> Asset:
@@ -212,13 +211,6 @@ class Board:
         if new_layer not in self._cached_layers:
             self._cached_layers[new_layer] = []
         self._cached_layers[new_layer].append(asset)
-
-        
-    def menu(self) -> None:
-        """
-        """
-        # TODO: implement
-        pass 
 
 
     def size(self, layer=None) -> List[Dimensions]:

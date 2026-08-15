@@ -117,8 +117,44 @@ class PyCraftProperties(BaseModel):
     cost: List[PyCost]
     
 class PySheetProperties(BaseModel):
-    personas: Dict[str, PyPersona]
-    actions: Dict[str, PyAction]
+    dimensions: PyDimensions
+    hitboxes: Optional[List[PyHitbox]] = []
+    stack: List[str]
+    actions: str
+
+# ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------- PROPERTY DATA STRUCTURES
+
+class PyTilePropertyInstances(BaseModel):
+    fore: PyTileProperties
+    back: PyTileProperties
+
+class PyEffectPropertyInstances(BaseModel):
+    persistent: Dict[str, PyEffectProperties] = {}
+    temporary: Dict[str, PyEffectProperties] = {}
+
+class PyObjectPropertyInstances(BaseModel):
+    chests: Dict[str, PyObjectProperties] = {}
+    crates: Dict[str, PyObjectProperties] = {}
+    doors: Dict[str, PyObjectProperties] = {}
+    gates: Dict[str, PyObjectProperties] = {}
+    plates: Dict[str, PyObjectProperties] = {}
+
+class PyCraftPropertyInstances(BaseModel):
+    struts: Dict[str, PyCraftProperties] = {}
+
+class PyCursorPropertyInstances(BaseModel):
+    expressions: Dict[str, PyCursorProperties] = {}
+    projectiles: Dict[str, PyCursorProperties] = {}
+
+class PySheetPropertyInstances(BaseModel):
+    pixies: Optional[Dict[str, PySheetProperties]] = {}
+    sprites: Optional[Dict[str, PySheetProperties]] = {}
+    weapons: Optional[Dict[str, PySheetProperties]] = {}
+    utilities: Optional[Dict[str, PySheetProperties]] = {}
+    armor: Optional[Dict[str, PySheetProperties]] = {}
+    tools: Optional[Dict[str, PySheetProperties]] = {}
+    shields: Optional[Dict[str, PySheetProperties]] = {}
 
 # ---------------------------------------------------------------------------------------
 # ---------------------------------------------------------------------- STATE VALIDATION
@@ -248,9 +284,42 @@ class PyPlayerState(PyAssetState):
     animation: Optional[PyAnimationState] = None
     intention: Optional[str] = None
 
+# ---------------------------------------------------------------------------------------
+# ----------------------------------------------------------------- STATE DATA STRUCTURES
+
+class PyTileStateInstances(BaseModel):
+    fore: Optional[List[PyMultiplierState]] = []
+    back: List[PyMultiplierState] = []
+
+class PyCraftStateInstances(BaseModel):
+    struts: Optional[List[PyPropertyState]] = []
+
+class PyCursorStateInstances(BaseModel):
+    expressions: Optional[List[PyPositionalState]] = []
+    projectiles: Optional[List[PyMetricState]] = []
+
+class PyEffectStateInstances(BaseModel):
+    temporary: Optional[List[PyPositionalState]] = []
+    persistent: Optional[List[PyAnimatorState]] = []
+
+class PyObjectStateInstances(BaseModel):
+    chests: Optional[List[PyContainerState]] = []
+    crates: Optional[List[PyPositionalState]] = []
+    doors: Optional[List[PyDoorState]] = []
+    gates: Optional[List[PySwitchState]] = []
+    plates: Optional[List[PySwitchState]] = []
+
+class PySheetStateInstances(BaseModel):
+    pixies: Optional[List[PyAnimatorState]] = []
+    sprites: Optional[List[PySpriteState]] = []
+    players: Optional[List[PyPlayerState]] = []
+
 # --------------------------------------------------------------------------------------
 # ------------------------------------------------------------- CONFIGURATION VALIDATION
 # --------------------------------------------------------------------------------------
+
+# --------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------ RECIPES
 
 class PyRecipe(BaseModel):
     frame: Optional[FrameRecipe] = None
@@ -310,16 +379,20 @@ class PyIntentionTransition(BaseModel):
     next: str
     conditions: List[str]
 
+# --------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------ ACTIONS
+
+class PyActionData(BaseModel):
+    id: str 
+    data: Dict[str, PyAction]
+
 # -------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------ YAML SCHEMAS
 # -------------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------
-# --------------------------------------------------------------- ACTIONS YAML SCHEMA
+# ----------------------------------------------------------------- ACTIONS YAML SCHEMA
 
-class PyActionData(BaseModel):
-    id: str 
-    data: Dict[str, PyAction]
 
 class PyActionsConfiguration(YamlBaseSettings):
     actions: List[Mechanics]
@@ -371,35 +444,6 @@ class PyRecipeConfiguration(YamlBaseSettings):
 # -------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- STATE YAML SCHEMA
 
-class PyTileStateInstances(BaseModel):
-    fore: Optional[List[PyMultiplierState]] = []
-    back: List[PyMultiplierState] = []
-
-class PyCraftStateInstances(BaseModel):
-    struts: Optional[List[PyPropertyState]] = []
-
-class PyCursorStateInstances(BaseModel):
-    expressions: Optional[List[PyPositionalState]] = []
-    projectiles: Optional[List[PyMetricState]] = []
-
-class PyEffectStateInstances(BaseModel):
-    temporary: Optional[List[PyPositionalState]] = []
-    persistent: Optional[List[PyAnimatorState]] = []
-
-class PyObjectStateInstances(BaseModel):
-    chests: Optional[List[PyContainerState]] = []
-    crates: Optional[List[PyPositionalState]] = []
-    doors: Optional[List[PyDoorState]] = []
-    gates: Optional[List[PySwitchState]] = []
-    plates: Optional[List[PySwitchState]] = []
-
-class PySheetStateInstances(BaseModel):
-    pixies: Optional[List[PyAnimatorState]] = []
-    sprites: Optional[List[PySpriteState]] = []
-    players: Optional[List[PyPlayerState]] = []
-
-# ---------------------------------------------------------------------------------------
-
 class PyStateSchema(BaseModel):
     tiles: Optional[PyTileStateInstances] = None
     objects: Optional[PyObjectStateInstances] = None
@@ -410,32 +454,6 @@ class PyStateSchema(BaseModel):
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ PROPERTY YAML SCHEMA
-
-class PyTilePropertyInstances(BaseModel):
-    fore: PyTileProperties
-    back: PyTileProperties
-
-class PyEffectPropertyInstances(BaseModel):
-    persistent: Dict[str, PyEffectProperties] = {}
-    temporary: Dict[str, PyEffectProperties] = {}
-
-class PyObjectPropertyInstances(BaseModel):
-    chests: Dict[str, PyObjectProperties] = {}
-    crates: Dict[str, PyObjectProperties] = {}
-    doors: Dict[str, PyObjectProperties] = {}
-    gates: Dict[str, PyObjectProperties] = {}
-    plates: Dict[str, PyObjectProperties] = {}
-
-class PyCraftPropertyInstances(BaseModel):
-    struts: Dict[str, PyCraftProperties] = {}
-
-class PyCursorPropertyInstances(BaseModel):
-    expressions: Dict[str, PyCursorProperties] = {}
-    projectiles: Dict[str, PyCursorProperties] = {}
-
-class PySheetPropertyInstances(BaseModel):
-    pixies: Optional[PySheetProperties] = None
-    sprites: Optional[PySheetProperties] = None
 
 # ---------------------------------------------------------------------------------------
 

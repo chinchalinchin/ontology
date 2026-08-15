@@ -1,7 +1,7 @@
 """
 # Ontology: app.hooks.orchestrator
 
-Package for managing dependency injection.
+Package for managing dependency injection. 
 """
 # Standard Libraries
 import logging
@@ -17,8 +17,8 @@ from app.config.enums import (
     AssetCategories, 
     AssetInstances,
     Devices,
-    EquipmentGroup,
-    Configurations
+    Equipment,
+    Groups
 )
 from app.game.board import Board
 from app.game.engine import Engine
@@ -35,11 +35,15 @@ logger = logging.getLogger(__name__)
 class Orchestrator:
     """
     ## Orchestrator
+
+    The Orchestrator and the Loader are the only pure Python classes in the application that interact with the game data as dictionaries. The Loader accesses the data in the host environment and validates it with Pydantic models. The Orchestrator pipes the Pydantic-validated dictionaries retrieved from the Loader data dump into the in-game Python objects.
+
+    The Registry, a Cython interface, uses dictionary representations of the data for speed as well.
     """
     # Data
     properties: Dict = {}
     state: Dict = {}
-    configuration: Dict = {}
+    configurations: Dict = {}
     # Game
     registry: Registry
     board: Board
@@ -49,8 +53,18 @@ class Orchestrator:
     def __init__(self, state: str):
         logger.info(f"Initializing Orchestrator for target state: {state} ...")
         self.properties = Loader.load_properties()
-        self.configuration = Loader.load_configurations()
+        self.configurations = Loader.load_configurations()
         self.state = Loader.load_state(state)
+
+    def instance_actions(self, category, instance, id) -> dict:
+        action_set_key = self.properties[category][instance][id]["actions"]
+        try:
+            return next(
+                action["data"] for action in self.configurations["actions"]
+                if action["id"] == action_set_key
+            )
+        except StopIteration:
+            logger.warning(f"No actions exist for {action_set_key}")
 
     def instance_properties(self, category, instance, snapshot):
         """
@@ -62,16 +76,12 @@ class Orchestrator:
 
         if category == AssetCategories.SHEETS and instance != AssetInstances.PLAYERS:
             props = self.properties[category][instance][snapshot["id"]].copy()
-            action_set = self.properties[category][instance]["actions"]
-            # TODO: Query ActionConfiguration
-            props["actions"]
+            props["actions"] = self.instance_actions(category, instance, snapshot["id"])
             return props
 
         if category == AssetCategories.SHEETS and instance == AssetInstances.PLAYERS:
             props = self.properties[category][AssetInstances.SPRITES][snapshot["id"]].copy()
-            action_set = self.properties[category][AssetInstances.SPRITES]["actions"]
-            # TODO: Query ActionConfiguration
-            props["actions"]
+            props["actions"] = self.instance_actions(category, AssetInstances.SPRITES, snapshot["id"])
             return props
 
         return self.properties[category][instance][snapshot["id"]] 
@@ -82,27 +92,34 @@ class Orchestrator:
 
         Transfer the Pydantic DTOs to Python POPOs for the game engine and load them into the Board.
         """
-        logger.info("Migrating validated states and configurations to engine data structures...")
+        logger.info("Migrating validated data to engine models...")
         assets = []
-        configurations = { }
-        equipment = { }
 
-        # 1. Migrate Configurations
-        for config_key, config_data in self.configuration.items():
-            configurations[config_key] = Factory.configuration(config_key, config_data)
+        # 1. Migrate Configuration
+        configurations = Factory.group(Groups.CONFIGURATIONS, self.configurations)
 
         # 2. Migrate Assets without State
-        for equip_key in EquipmentGroup:
-            equipment[equip_key] = Factory.properties(
-                equip_key,
-                self.properties[AssetCategories.SHEETS][equip_key]
-            )
-        # 3. Migrate Assets with State
+        raw_equipment = { }
+        for equip_instance_key in Equipment:
+            raw_equipment[equip_instance_key] = { }
+
+            for equip_instance_id, equip_instance in \
+                self.properties[AssetCategories.SHEETS][equip_instance_key].items():
+
+                raw_equipment[equip_instance_key][equip_instance_id] = Factory.properties(
+                    AssetCategories.SHEETS,
+                    equip_instance
+                )
+
+        equipment = Factory.group(Groups.EQUIPMENT, raw_equipment)
+
+        # 3. Migrate Assets with State        
+        assets = []
         for category_key, category_data in self.state.items():
             for instance_key, instance_list in category_data.items():
                 for instance in instance_list:
 
-                    recipe = self.configuration["recipes"][category_key][instance_key]
+                    recipe = self.configurations["recipes"][category_key][instance_key]
                     instance_props = self.instance_properties(category_key, instance_key, instance)
 
                     # Pop the taxonomy keys to strip them from the state snapshot
@@ -134,7 +151,7 @@ class Orchestrator:
         self.board = self.migrate()
 
         logger.info("Initializing Device...")
-        device_mapping = self.devices.get("mappings", {}).get(device, {})
+        device_mapping = self.configurations.get("mappings", {}).get(device, {})
         device_instance = Factory.device(device, device_mapping)
         self.board.set_device(device_instance)
 

@@ -69,6 +69,3 @@ class Engine:
                     player.state.position,
                     player.dimensions
                 )
-
-            while self.board.paused: 
-                self.board.menu()

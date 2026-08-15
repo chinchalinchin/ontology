@@ -249,16 +249,16 @@ class PlayerMechanics(Mechanic):
         # Track movement so the player doesn't instantly snap back to 'UP' when inputs are released.
         has_movement = False
 
-        if PlayerGoals.UP in poll.get("goals", []):
+        if PlayerGoals.UP in poll.goals:
             goal_y -= speed
             has_movement = True
-        if PlayerGoals.DOWN in poll.get("goals", []):
+        if PlayerGoals.DOWN in poll.goals:
             goal_y += speed
             has_movement = True
-        if PlayerGoals.LEFT in poll.get("goals", []):
+        if PlayerGoals.LEFT in poll.goals:
             goal_x -= speed
             has_movement = True
-        if PlayerGoals.RIGHT in poll.get("goals", []):
+        if PlayerGoals.RIGHT in poll.goals:
             goal_x += speed
             has_movement = True
 
@@ -334,24 +334,24 @@ class MenuMechanics(Mechanic):
     """
     """
 
+    def equip(item: str, state: SpriteState, board: Board) -> None:
+        """
+        """
+
+        if item in board.equipment.weapons.keys():
+            state.inventory.equipment.weapon = item
+            
+        elif item in board.equipment.armor.keys():
+            state.inventory.equipment.armor = item
+            
+        elif item in board.equipment.utilities.keys():
+            state.inventory.equipment.utility = item
+            
+        elif item in board.equipment.tools.keys():
+            state.inventory.equipment.utility = item
+
+
     def update(self, board: Board, delta: float) -> None:
         """
         """
         pass
-
-    def equip_item(state: SpriteState, item_key: str, properties: dict) -> None:
-    
-        # The property dictionary is structured as: properties[Category][Instance][Key]
-        sheets = properties[AssetCategories.SHEETS]
-
-        if item_key in sheets.get(AssetInstances.WEAPONS, {}):
-            state.inventory.equipment.weapon = item_key
-            
-        elif item_key in sheets.get(AssetInstances.ARMOR, {}):
-            state.inventory.equipment.armor = item_key
-            
-        elif item_key in sheets.get(AssetInstances.TOOLS, {}):
-            state.inventory.equipment.tool = item_key
-            
-        elif item_key in sheets.get(AssetInstances.UTILITIES, {}):
-            sstate.inventory.equipment.utility = item_key

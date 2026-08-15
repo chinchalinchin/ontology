@@ -5,6 +5,9 @@
 # Standard Libraries
 from typing import Dict
 
+# Application Libraries
+from app.models.config import Mapping
+
 # Cython Libraries
 import libs.core.input as sdl
 
@@ -21,16 +24,16 @@ class Keyboard(Device):
     """
     """
 
-    def __init__(self, intentions: dict = None, goals: dict = None):
-        mapping = {"intentions": intentions or {}, "goals": goals or {}}
+    def __init__(self, mapping):
+        self.mapping = mapping
         super().__init__(mapping)
         
         # Pre-calculate the tuple of scancodes to query every frame, stripping Nones
-        i_codes = [v for v in mapping["intentions"].values() if v is not None]
-        g_codes = [v for v in mapping["goals"].values() if v is not None]
+        i_codes = [v for v in mapping.intentions.values() if v is not None]
+        g_codes = [v for v in mapping.goals.values() if v is not None]
         self._scancodes = tuple(set(i_codes + g_codes))
 
-    def poll(self) -> dict:
+    def poll(self) -> Mapping:
         """
         """
         # 1. Update SDL's internal array
@@ -50,7 +53,7 @@ class Keyboard(Device):
             if v is not None and state_dict.get(v):
                 res["goals"].append(k)
         
-        return res
+        return Mapping(**res)
 
 class Controller(Device):
     pass

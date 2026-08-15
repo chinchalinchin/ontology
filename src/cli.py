@@ -90,7 +90,7 @@ def main():
     del screens
     del board
     del registry
-    del maestro
+    del orchestrator
 
     quit_sdl()
     logger.info("CLI processes completed.")

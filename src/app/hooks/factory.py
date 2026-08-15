@@ -12,13 +12,15 @@ from app.assets.animations import (
     BinaryAnimation, 
     PersistentAnimation, 
     TemporaryAnimation, 
-    StateAnimation
+    StateAnimation,
+    NoAnimation
 )
 from app.assets.base import Taxonomy
 from app.assets.frames import (
     SingleFrame, 
     IterableFrame, 
-    StateFrame
+    StateFrame,
+    NoFrame
 )
 from app.config.enums import (
     AnimationRecipe, 
@@ -27,7 +29,8 @@ from app.config.enums import (
     AssetCategories,
     Devices,
     Mechanics,
-    Configurations
+    Configurations,
+    Groups
 )
 from app.game.mechanics import (
     AnimationMechanics,
@@ -54,7 +57,8 @@ from app.models.state import (
     DoorState, 
     SwitchState, 
     MetricState, 
-    MultiplierState, 
+    MultiplierState,
+    NoState, 
     PositionalState, 
     PropertyState,
     SpriteState,
@@ -67,6 +71,10 @@ from app.models.properties import (
     TileProperties, 
     CraftProperties, 
     SheetProperties
+)
+from app.models.groups import (
+    EquipmentGroup,
+    ConfigurationGroup
 )
 from app.game.devices import (
     Keyboard,
@@ -95,20 +103,23 @@ class Factory:
         StateRecipe.SWITCH: SwitchState,
         StateRecipe.PROPERTY: PropertyState,
         StateRecipe.SPRITE: SpriteState,
-        StateRecipe.PLAYER: PlayerState
+        StateRecipe.PLAYER: PlayerState,
+        StateRecipe.NONE: NoState
     }
 
     FRAME_MAP = {
         FrameRecipe.SINGLE: SingleFrame,
         FrameRecipe.ITERABLE: IterableFrame,
-        FrameRecipe.STATE: StateFrame
+        FrameRecipe.STATE: StateFrame,
+        FrameRecipe.NONE: NoFrame
     }
 
     ANIMATION_MAP = {
         AnimationRecipe.BINARY: BinaryAnimation,
         AnimationRecipe.PERSISTENT: PersistentAnimation,
         AnimationRecipe.TEMPORARY: TemporaryAnimation,
-        AnimationRecipe.STATE: StateAnimation
+        AnimationRecipe.STATE: StateAnimation,
+        AnimationRecipe.NONE: NoAnimation,
     }
 
     PROPERTY_MAP = {
@@ -144,6 +155,11 @@ class Factory:
         Configurations.INTENTIONS: IntentionConfiguration,
         Configurations.RECIPES: RecipeConfiguration,
         Configurations.MAPPINGS: MappingConfiguration
+    }
+
+    GROUP_MAP = {
+        Groups.EQUIPMENT: EquipmentGroup,
+        Groups.CONFIGURATIONS: ConfigurationGroup
     }
 
     @classmethod
@@ -205,6 +221,11 @@ class Factory:
     @staticmethod
     def configuration(config, snapshot):
         target_cls = Factory.CONFIGURATION_MAP.get(config)
+        return Factory._hydrate(target_cls, snapshot)
+
+    @staticmethod
+    def group(grouping, snapshot):
+        target_cls = Factory.GROUP_MAP.get(grouping)
         return Factory._hydrate(target_cls, snapshot)
     
     @staticmethod

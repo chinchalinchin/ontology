@@ -67,17 +67,17 @@ class RecipeConfiguration(Configuration):
 # ----------------------------------------------------------------- MAPPING CONFIGURATION
 
 @dataclass(slots=True)
-class DeviceMapping:
+class Mapping:
     intentions: Dict[Intentions, int]
     goals: Dict[PlayerGoals, int]
 
 @dataclass(slots=True)
 class MappingConfiguration(Configuration):
-    keyboard: DeviceMapping
-    controller: DeviceMapping = None
+    keyboard: Mapping
+    controller: Mapping = None
 
 # ---------------------------------------------------------------------------------------
-# ------------------------------------------------------------------- ACTION CONFIGURTION
+# ------------------------------------------------------------------ ACTION CONFIGURATION
 
 @dataclass(slots=True)
 class ActionConfiguration(Configuration):
@@ -87,7 +87,7 @@ class ActionConfiguration(Configuration):
     data: Dict[str, Action]
     
 # ---------------------------------------------------------------------------------------
-# ---------------------------------------------------------------- INTENTION CONFIGURTION
+# --------------------------------------------------------------- INTENTION CONFIGURATION
 
 @dataclass(slots=True)
 class Transition:

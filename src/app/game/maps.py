@@ -12,7 +12,7 @@ class AnimationMap:
     """
 
     @staticmethod
-    def action(state, equipment_properties) -> Actions:
+    def action(state, equipment) -> Actions:
         """
         Resolves Sprite Intentionss to Animation Actions.
 
@@ -29,9 +29,10 @@ class AnimationMap:
             if not weapon:
                 return Actions.CAST  # Default fallback for unarmed/magic attacks
             
-            # TODO: handle `all`
-            weapon_prop = equipment_properties.weapons.get(weapon)
-            if weapon_prop:
+            weapon_property = equipment.weapons.get(weapon)
+
+            # TODO: need to check what action weapon has enabled
+            if weapon_property:
                 return weapon_prop.animation
             return Actions.CAST
     
