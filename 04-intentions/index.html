@@ -788,7 +788,7 @@
 
 
 <h1 id="ontology-intentions-goals">Ontology: Intentions &amp; Goals</h1>
-<p><em>Intentions</em> and <em>Goals</em> are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite "finite automaton", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.</p>
+<p>Intentions and Goals are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite "finite automaton", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.</p>
 <p>Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the <a href="#transition-matrix">Intention Transition Matrix</a>.</p>
 <h2 id="intention">Intention</h2>
 <p>A Intention is a "pseudo-state" that factors into the Asset Animation calculations indirectly; It may be thought of as a "hidden" state. An Animation is a "projection" of a Sprite's Intention into the (Action, Direction)-space. </p>
@@ -994,7 +994,7 @@
 </code></pre>
 <p><strong>Formulae</strong></p>
 <ul>
-<li><code>if intention == attack: action = equipment.animation.action</code></li>
+<li><code>if state.intention == attack: state.animation.action = board.equipment[weapons][state.inventory.weapon].action</code></li>
 </ul>
 <h3 id="directions">Directions</h3>
 <p>Sprite Animation Direction is a function of Sprite Position state and Goal state,</p>
@@ -1019,7 +1019,7 @@
 <p>TODO</p>
 <p><strong>Formulae</strong></p>
 <ul>
-<li><code>if intention == speak and psyche.communication: dialogue = psyche.communcation</code></li>
+<li><code>if state.intention == speak and state.psyche.communication: dialogue = state.psyche.communcation</code></li>
 </ul>
 
 

@@ -383,10 +383,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#mapping" class="md-nav__link">
+  <a href="#keyboard" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Mapping
+        Keyboard
       
     </span>
   </a>
@@ -411,10 +411,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#device-mappings" class="md-nav__link">
+  <a href="#mapping-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Device Mappings
+        Mapping Configuration
       
     </span>
   </a>
@@ -646,10 +646,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#mapping" class="md-nav__link">
+  <a href="#keyboard" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Mapping
+        Keyboard
       
     </span>
   </a>
@@ -674,10 +674,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#device-mappings" class="md-nav__link">
+  <a href="#mapping-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Device Mappings
+        Mapping Configuration
       
     </span>
   </a>
@@ -710,9 +710,9 @@
 
 
 <h1 id="ontology-player">Ontology: Player</h1>
-<p>A Player is a special type of Sprite Sheet Asset. Like all other Assets, its state is maintained in <code>/src/data/&lt;board&gt;/**.yaml</code>.</p>
+<p>A Player is a special type of Sprite Sheet Asset. </p>
 <h2 id="overview">Overview</h2>
-<p>The Player Sprite Sheet is configured through the <code>player</code> Sheet <a href="../02-sprites/#personas">Persona Stack</a>. However, its State differs significantly from the <a href="../02-sprites/">Sprite state</a>.</p>
+<p>The Player Sprite Sheet is configured through the <code>player</code> Sprite Sheet. </p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>The <code>player</code> Sprite <em>must</em> be defined in <code>/src/assets/sheets/main.yml#sprites</code>.</p>
@@ -779,17 +779,15 @@
 </li>
 </ul>
 <h2 id="devices">Devices</h2>
-<p>The Player Asset contains a Device, which polls for user input. The main responsiblity of the Player is to translate the data received into a  (Intention, Goal)-tuple. This is achieved through an input mapping.</p>
-<h3 id="mapping">Mapping</h3>
-<p>Devices have their input mapped to <em>Intentions</em> and <em>Goals</em>. The mapping configuration file provides a dictionary lookup for what input state corresponds to what game state.</p>
-<p><strong>Keyboard Mappings</strong></p>
+<p>The <a href="../00-overview/#board">Board</a> contains a Device, which polls for user input. The PlayerMechanic uses a Mapping to translate the polling data into a <a href="../04-intentions/">(Intention, Goal)</a>-tuple. The <a href="#mapping-configuration">Mapping Configuration</a> file provides a translation key between input state and game state.</p>
+<h3 id="keyboard">Keyboard</h3>
 <p>The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See <a href="https://wiki.libsdl.org/SDL2/SDL_Scancode">SDL documentation</a> for more information.</p>
 <p><strong>Defaults</strong></p>
 <p>The default mappings bundled with the game are provided below,</p>
 <div class="highlight"><pre><span></span><code>
 </code></pre></div>
 <h2 id="schemas">Schemas</h2>
-<h3 id="device-mappings">Device Mappings</h3>
+<h3 id="mapping-configuration">Mapping Configuration</h3>
 <ul>
 <li>Location: <code>src/data/config/mappings/main.yaml</code></li>
 </ul>
