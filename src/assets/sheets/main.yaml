@@ -4,25 +4,107 @@ sheets:
       dimensions:
         w: 64
         l: 64
-      actions: lpc
+      actions: lpc-full
       hitboxes: null
       stack:
-        - 
+        - leather-gloves
+        - leather-sandals
     plate:
+      dimensions:
+        w: 64
+        l: 64
+      actions: lpc-full
+      hitboxes: null
+      stack:
+        - plate-boots
+        - plate-chest
+        - plate-gloves
+        - plate-greaves
+        - plate-helmet
+        - plate-shoulders
   shields:
     buckler:
+      dimensions:
+        w: 64
+        l: 64
+      actions: lpc-full
+      hitboxes: null
+      stack:
+        - leather-shield
   tools:
     axe:
+      dimensions:
+        w: 64
+        l: 64
+      actions: lpc-slash
+      hitboxes: null
+      stack:
+        - axe
     shovel:
+      dimensions:
+        w: 64
+        l: 64
+      actions: lpc-thrust
+      stack:
+        - shovel
     pickaxe:
+      dimensions:
+        w: 64
+        l: 64
+      actions: lpc-thrust
+      hitboxes: null
+      stack:
+        - pickaxe
   utilities:
     lantern:
+      dimensions:
+        w: 64
+        l: 64
+      actions: lpc-full
+      hitboxes: null
+      stack:
+        - lantern
   weapons:
     dagger:
-    sword:
+      dimensions:
+        w: 32
+        l: 32
+      hitboxes: null
+      actions: lpc-slash
+      stack:
+        - dagger
+    shortsword:
+      dimensions:
+        w: 32
+        l: 32
+      hitboxes: null
+      actions: lpc-slash
+      stack:
+        - shortsword
     warhammer:
+      dimensions:
+        w: 32
+        l: 32
+      hitboxes: null
+      actions: lpc-slash
+      stack:
+        - warhammer
     longbow:
+      dimensions:
+        w: 32
+        l: 32
+      hitboxes: null
+      actions: lpc-shoot
+      stack:
+        - longbow
     crossbow:
+      dimensions:
+        w: 32
+        l: 32
+      hitboxes: null
+      actions: lpc-cast
+      stack:
+        - warhammer
   pixies:
     bee:
       dimensions:
@@ -31,7 +113,7 @@ sheets:
       hitboxes: null
       stack:
         - bee
-      actions: simple
+      actions: simple-walk
     eyeball:
       dimensions:
         w: 64 
@@ -39,7 +121,7 @@ sheets:
       hitboxes: null
       stack:
         - eyeball
-      actions: simple
+      actions: simple-walk
     ghost:
       dimensions:
         w: 64
@@ -47,7 +129,7 @@ sheets:
       hitboxes: null
       stack: 
         - ghost
-      actions: simple
+      actions: simple-walk
     malboro:
       dimensions:
         w: 128
@@ -55,7 +137,7 @@ sheets:
       hitboxes: null
       stack:
         - malboro
-      actions: simple
+      actions: simple-walk
     sandworm:
       dimensions:
         w: 64
@@ -63,7 +145,7 @@ sheets:
       hitboxes: null
       stack:
         - sandworm
-      actions: simple
+      actions: simple-walk
     slime:
       dimensions:
         w: 64
@@ -71,7 +153,7 @@ sheets:
       hitboxes: null
       stack:
         - slime
-      actions: simple
+      actions: simple-walk
   sprites:
     player:
       dimensions:
@@ -84,4 +166,4 @@ sheets:
         - boots-brown
         - pants-green
         - shirt-male-green
-      actions: lpc
+      actions: lpc-full

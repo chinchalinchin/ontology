@@ -190,8 +190,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `key(asset, None): returns <asset>"`
-* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }` 
+* `keys(id, None): returns [ id ] "`
+* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MultiplerState**
 
@@ -209,8 +209,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `key(asset, None): returns <asset>"`
-* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, None): returns [ id ] "`
+* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MultiplerState**
 
@@ -253,8 +253,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: IterableFrame**
 
-* `key(asset, animation): returns <asset>-<animation.frame>`
-* `index(self, asset, properties, recipe): returns { <asset>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, animation): returns [ "{id}-{animation.frame}"`
+* `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: ContainerState**
 
@@ -274,8 +274,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: SingleFrame**
 
-* `key(asset, animation): returns <asset>`
-* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, None): returns [ id ] "`
+* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 ### Doors
 
@@ -290,8 +290,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: SingleFrame**
 
-* `key(asset, animation): returns <asset>`
-* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, animation): returns id`
+* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 ### Gates
 
@@ -304,8 +304,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: IterableFrame**
 
-* `key(asset, animation): returns <asset>-<animation.frame>`
-* `index(self, asset, properties, recipe): returns { <asset>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, animation): returns [ "{id}-{animation.frame}"`
+* `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SwitchState**
 
@@ -325,8 +325,8 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown a two win
 
 **Frame: IterableFrame**
 
-* `key(asset, animation): returns <asset>-<animation.frame>`
-* `index(self, asset, properties, recipe): returns { <asset>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, animation): returns [ "{id}-{animation.frame}"`
+* `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SwitchState**
 
@@ -355,8 +355,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `key(asset, animation): returns <asset>`
-* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `key(asset, id): returns [ id ]`
+* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: PositionalState**
 
@@ -373,8 +373,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `key(asset, animation): returns <asset>`
-* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id), animation): returns [ id ]`
+* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MetricState**
 
@@ -406,8 +406,8 @@ Temporary Effects are brief, short-lived effects, such as explosions or magic ef
 
 **Frame: IterableFrame**
 
-* `key(asset, animation): returns <asset>-<animation.frame>`
-* `index(self, asset, properties, recipe): returns { <asset>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, animation): returns [ "{id}-{animation.frame}" ]`
+* `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: AnimatorState**
 
@@ -425,8 +425,8 @@ Persistent Effects are long-term, continuous effects, such as water ripples or w
 
 **Frame: IterableFrame**
 
-* `key(asset, animation) : <asset>-<animation.frame>`
-* `index(self, asset, properties, recipe): returns { <asset>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, animation) : [ "{id}-{animation.frame}" ]`
+* `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: AnimatorState**
 
@@ -454,7 +454,6 @@ The `key` referenced in the `cost` depends on the Instance type of the Craft. Fo
 
 **Properties: CraftProperties**
 
-* `key: str`
 * `dimensions: Dimensions`
 * `hitboxes: List[Hitbox]`
 * `cost: Cost`
@@ -471,8 +470,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `key(asset, None) returns <asset>`
-* `index(self, asset, properties, recipe): returns { <asset>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, None) returns [ id ]`
+* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: PropertyState**
 
@@ -488,23 +487,36 @@ N/A
 
 **Sheet Specification**
 
-The rows of a Sheet are identified by *Direction*, *Action* and *Frame*. Each row is identified by a tuple (Direction, Action), and then divided horizontally into contiguous Frames. 
+The rows of a Sheet are identified by *Direction*, *Action* and *Frame*. Each row is identified by a tuple (Direction, Action), and then divided horizontally into contiguous horizontal Frames. 
 
-The values for these fields are enumerated below,
+!!! important
+    For Sheets, it is assumed coordinates of an image in the Asset file are *completely determined* by Action, Direction and Frame. It is assumed Actions form contiguous rows partitioned by Direction, and frames are organized in horizontal cells of equal length. This specification is enforced on the application level.
+
+**LPC Specification**
+
+While an Action set an be defined in `/src/data/config/actions/main.yaml`, the documentation will often assume the LPC (Liberated Pixel Cup) specification when discussing Action, Direction and Frame. The values for these fields in the LPC Spec are enumerated below,
 
 * Direction: `up, left, down, right`
 * Action: `cast, thrust, walk, slash, shoot, die`
 * Frame: `0, 1, 2 , ... , n(Action)`
 
-Where `n(Action)` is the number of frames per Action.
+Where `n(Action)` is the number of frames per Action. The frames per Action are given below,
 
-**IMPORTANT** For Sheets, it is assumed coordinates of an image in the Asset file are *completely determined* by Action, Direction and Frame. It is assumed Actions form contiguous rows partitioned by Direction, and frames are organized in horizontal cells of equal length. This specification is enforced on the application level.
+- `cast`: Count = 7
+- `thrust`: Count = 8
+- `walk`: Count = 9
+- `slash`: Count = 6
+- `shoot`: Count = 13
+- `die`: Count = 6
 
 !!! note
-    `die` is only associated with a single row in the specification.
+    `die` is only associated with a single row in the LPC specification.
 
 !!! note
     The row indexing starts at 0.
+
+!!! note 
+    In the LPC specification, the `thrust` Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the `thrust` state.
 
 **Action**
 
@@ -520,40 +532,30 @@ This snippet from the [Schemas](#schemas) shows the general structure of an Acti
             row:
 ```
 
-* `<action-key>: str` - Ranges over `cast, thrust, walk, slash, shoot, die`
-* `<direction-key> : str` -  Ranges over  `up, left, down, right`
+* `<action-key>: str` - Ranges over `cast, thrust, walk, slash, shoot, die` (LPC)
+* `<direction-key> : str` -  Ranges over  `up, left, down, right` (LPC)
 * `count: int` - is the number of frames in the Action row grouping. 
 
-**Personas**
+**Action Sets**
 
-This snippet from the [Schemas](#schemas) shows the general structure of a Persona,
+Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property file. See [Action Configuration Schema](#action-configuration) below for more details. 
 
-```yaml
-<persona-key>:
-    dim:
-        l:
-        w:
-    hitboxes: 
-        - position:
-            x:
-            y:
-          dim:
-            l: 
-            w:
-    stack:
-        - <stack-key>
-```
+**Stacks**
 
-`dim` and `hitboxes` are similar to most other Asset types, whereas `stack` is unique to Sheets. `stack` is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. 
+A Stack is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
 
-For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. These "stack" of Sheets is keyed in the [Registry](./00-overview.md#registry) using the `<persona-key>`. 
+For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. These "stack" of Sheets is keyed in the [Registry](./00-overview.md#registry) using the `<sheet-id>`. 
 
-The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
+Stacks are assembled in the [Registry](./00-overview.md#registry) using the `stack` property in the Asset property file during the [application bootstrap](./06-architecture.md). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
+
+!!! note
+    It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.
 
 **Properties: SheetProperties**
 
-* `key: str`
-* `personas: Personas`
+* `dimensions: Dimensions`
+* `stack: List[str]`
+* `hitboxes: List[Hitbox]`
 * `actions: Actions`
 
 ### Pixies
@@ -567,17 +569,14 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 
 **Frame: StateFrame**
 
-* `key(asset, animation): returns <asset>-<animation.action>-<animation.direction>-<animation.frame>`
-* `index(self, asset, properties, recipe): returns { <asset>-<properties.actions.*>-<properties.actions.*.directions.*>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, animation): returns [ "{id}-{animation.action}-{animation.direction}-{animation.frame}" ]`
+* `index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: AnimatorState**
 
 * `layer: str`
 * `position: Position`
 * `animation: Animation`
-
-!!! note
-    Pixies only have a single Action state, `walk`.
 
 ### Sprites
 
@@ -588,10 +587,10 @@ The Sheet stacks are drawn in the order they are specified, i.e. the first entry
 - `state.animation.frame += 1`
 - `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
 
-**Frame: StateFrame**
+**Frame: SpriteFrame**
 
-* `key(asset, animation): returns <asset>-<animation.action>-<animation.direction>-<animation.frame>`
-* `index(self, asset, properties, recipe): returns { <asset>-<properties.actions.*>-<properties.actions.*.directions.*>-<properties.count>: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, animation): returns [ "{id}-{animation.action}-{animation.direction}-{animation.frame}" ] + [ <equipment-frames>]`
+* `index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SpriteState**
 
@@ -610,7 +609,7 @@ Sprite States are covered in more detail in the [Sprites documentation](./02-spr
 
 ### Equipment (Weapons, Utilities, Tools, Armor, Shields)
 
-Equipment is a group of Asset Instances within the Category of Sheets. They are closely tied to Sprites. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's inventory. Because of this relationship between the Assets,  i.e. Equipment rendering is dependent on Sprite state, Equipment does not possess its own state, frame or animation. Equipment only has properties.
+Equipment is a group of Asset Instances within the Category of Sheets (known as the Equipment Instance Group). They are closely tied to Sprites Animations. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's inventory. Because of this relationship between the Assets,  i.e. Equipment rendering is dependent on Sprite state, Equipment does not possess its own state, frame or animation implementation. Equipment only has properties.
 
 Equipment is covered in more detail in the [Sprites documentation](./02-sprites.md).
 
@@ -630,6 +629,22 @@ Asset Recipe files determine the specific (State, Animation, Frame) components i
 
 ```yaml
 --8<-- "docs/.static/yaml/examples/default-recipes.yaml"
+```
+
+### Action Configuration
+
+Action Configurations determine the (Action, Direction) partitions employed by a Sheet Asset.
+
+* Location: `/src/data/config/actions/main.yaml`
+
+```yaml
+--8<-- "docs/.static/yaml/data-actions.yaml"
+```
+
+**Default Action Configuration**
+
+```yaml
+--8<-- "docs/.static/yaml/examples/default-actions.yaml
 ```
 
 ### Properties

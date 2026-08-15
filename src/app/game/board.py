@@ -33,40 +33,37 @@ class Board:
     # Flags
     loaded: bool
     paused: bool
-    
     # Public Fields
     intentions: IntentionConfiguration
-
+    properties: dict
     # Hidden Fields
     _assets: List[Asset]
     _mechanics: List[Mechanic]
     _device: Device
-
     # Caches
     _cached_categories: Dict[str, Dict[str, List[Asset]]]
     _cached_instances: Dict[str, Dict[str, List[Asset]]]
     _cached_layers: Dict[str, List[Asset]]
-
     # Catalogues
     _all_categories: Dict[str, List[Asset]]
     _all_instances: Dict[str, List[Asset]]
 
-
     def __init__(self, 
         assets: List[Asset], 
-        intentions: IntentionConfiguration
+        intentions: IntentionConfiguration,
+        properties: dict
     ):
         logger.info(f"Initializing Board with {len(assets)} incoming assets.")
         self.loaded = False
         self.paused = False
         self.intentions = intentions
+        self.properties = properties
         self._assets = assets
         self._catalogue()
         self._cache()
         
         self.loaded = True
         logger.info("Board completely hydrated and initialized.")
-
         
     def _catalogue(self):
         """
@@ -85,7 +82,6 @@ class Board:
             if inst not in self._all_instances:
                 self._all_instances[inst] = []
             self._all_instances[inst].append(asset)
-
 
     def _cache(self):
         """
@@ -121,6 +117,7 @@ class Board:
 
             # Cache by layer only
             self._cached_layers[layer].append(asset)
+
 
     def set_device(self, device: Device):
         """

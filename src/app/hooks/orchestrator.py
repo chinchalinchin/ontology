@@ -67,12 +67,12 @@ class Orchestrator:
             return self.properties[category][instance]
 
         if category == AssetCategories.SHEETS and instance != AssetInstances.PLAYERS:
-            props = self.properties[category][instance]["personas"][snapshot["id"]].copy()
+            props = self.properties[category][instance][snapshot["id"]].copy()
             props["actions"] = self.properties[category][instance]["actions"]
             return props
 
         if category == AssetCategories.SHEETS and instance == AssetInstances.PLAYERS:
-            props = self.properties[category][AssetInstances.SPRITES]["personas"][snapshot["id"]].copy()
+            props = self.properties[category][AssetInstances.SPRITES][snapshot["id"]].copy()
             props["actions"] = self.properties[category][AssetInstances.SPRITES]["actions"]
             return props
 
@@ -87,6 +87,7 @@ class Orchestrator:
         logger.info("Migrating validated states to engine Application Objects...")
         assets = []
 
+        # TODO: update for new Sheet Instances
         equipment = Factory.configuration(self.equipment, Configurations.EQUIPMENT)
         intentions = Factory.configuration(self.intentions, Configurations.INTENTIONS)
 

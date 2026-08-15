@@ -11,8 +11,21 @@ import app.config.settings as settings
 from app.assets.base import Frame
 from app.models.state import AssetState
 
+class NoFrame(Frame):
+    def keys(self, id: str, state: AssetState) -> List[str]:
+        """
+        ## NoFrame
+        """
+        return [id]
+            
+    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+        """
+        """
+        return {id: (0, 0, 0, 0)}
+        
 class SingleFrame(Frame):
     """
+    ## SingleFrame
     """
 
     def keys(self, id: str, state: AssetState) -> List[str]:
@@ -21,11 +34,15 @@ class SingleFrame(Frame):
         return [id]
         
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+        """
+        """
         w, l = properties["dimensions"]["w"], properties["dimensions"]["l"]
         return {id: (0, 0, w, l)}
         
 class IterableFrame(Frame):
-
+    """
+    ## IterableFrame
+    """
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
@@ -35,6 +52,8 @@ class IterableFrame(Frame):
         ])]
         
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+        """
+        """
         w, l = properties["dimensions"]["w"], properties["dimensions"]["l"]
         crops = {}
         count = properties.get("count", 1)
@@ -44,6 +63,7 @@ class IterableFrame(Frame):
 
 class StateFrame(Frame):
     """
+    ## StateFrame
     """
 
     def keys(self, id: str, state: AssetState) -> List[str]:
@@ -57,6 +77,8 @@ class StateFrame(Frame):
         ])]
 
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+        """
+        """
         w, l = properties["dimensions"]["w"], properties["dimensions"]["l"]
         crops = {}
         for action, action_prop in properties.get("actions", {}).items():
@@ -70,8 +92,9 @@ class StateFrame(Frame):
 
 class SpriteFrame(StateFrame):
     """
-    Specialized Frame component for Sprites that yields a strict Z-indexed list of 
-    frame keys based on the Sprite's inventory.
+    ## SpriteFrame
+
+    Specialized Frame component for Sprites that yields a strict Z-indexed list of frame keys based on the Sprite's inventory.
     """
 
     def keys(self, id: str, state: AssetState) -> List[str]:

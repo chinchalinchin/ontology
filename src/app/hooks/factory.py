@@ -43,7 +43,7 @@ from app.game.mechanics import (
     SpeechMechanics
 )
 from app.models.config import (
-    EquipmentConfiguration,
+    ActionConfiguration,
     IntentionConfiguration
 )
 from app.models.state import (
@@ -139,8 +139,8 @@ class Factory:
     }
 
     CONFIGURATION_MAP = {
-        Configurations.EQUIPMENT: EquipmentConfiguration,
-        Configurations.INTENTIONS: IntentionConfiguration
+        Configurations.ACTIONS: ActionConfiguration,
+        Configurations.INTENTIONS: IntentionConfiguration,
     }
 
     @classmethod

@@ -18,8 +18,13 @@ from app.config.enums import (
     Intentions,
     PlayerGoals
 )
-from app.game.maps import AnimationMap
-from app.models.state import Goal
+from app.game.maps import (
+    AnimationMap
+)
+from app.models.state import (
+    Goal,
+    SpriteState
+)
 
 # Cython Libraries
 from libs.core.models import Position
@@ -322,3 +327,31 @@ class SpeechMechanics(Mechanic):
         """
         """
         pass
+
+# ----------------------------------------------------------------------------------------
+
+class MenuMechanics(Mechanic):
+    """
+    """
+
+    def update(self, board: Board, delta: float) -> None:
+        """
+        """
+        pass
+
+    def equip_item(state: SpriteState, item_key: str, properties: dict) -> None:
+    
+        # The property dictionary is structured as: properties[Category][Instance][Key]
+        sheets = properties[AssetCategories.SHEETS]
+
+        if item_key in sheets.get(AssetInstances.WEAPONS, {}):
+            state.inventory.equipment.weapon = item_key
+            
+        elif item_key in sheets.get(AssetInstances.ARMOR, {}):
+            state.inventory.equipment.armor = item_key
+            
+        elif item_key in sheets.get(AssetInstances.TOOLS, {}):
+            state.inventory.equipment.tool = item_key
+            
+        elif item_key in sheets.get(AssetInstances.UTILITIES, {}):
+            sstate.inventory.equipment.utility = item_key

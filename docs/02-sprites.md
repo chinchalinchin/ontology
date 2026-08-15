@@ -69,16 +69,15 @@ Sprite interactions are constrained by their Layers. Because Layers are superimp
     - `category: Enum[sprite | object | loot]`
     - `position: Position`
 
-
 **Animation: StateAnimation**
 
 - `state.animation.frame += 1`
 - `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
 
-**Frame: StateFrame**
+**Frame: SpriteFrame**
 
-* `key(asset, animation): returns <asset>-<animation.action>-<animation.direction>-<animation.frame>`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `keys(id, animation): returns [ "{id}-{animation.action}-{animation.direction}-{animation.frame}" ] + [ <equipment-frames>]`
+* `index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 ### Intentions
 
@@ -149,18 +148,6 @@ As a reminder, the default Actions and Directions for the game engine (and LPC s
 
 - Actions: `cast, thrust, walk, slash, shoot, die`
 - Directions: `up, down, left, right`
-
-The frames per Action Group are given below,
-
-- `cast`: Count = 7
-- `thrust`: Count = 8
-- `walk`: Count = 9
-- `slash`: Count = 6
-- `shoot`: Count = 13
-- `die`: Count = 6
-
-!!! note 
-    In the LPC specification, the `thrust` Action plays double-duty for spears and shovels. The spear is a Weapon, whereas the shovel is Equipment. With LPC assets, the animations of these pieces of Equipment is governed by the `thrust` state.
 
 ### Psyche
 
@@ -253,19 +240,6 @@ TODO
 **Wallet**
 
 TODO
-
-## Personas
-
-Personas are stacks of superimposed Sprite Sheets. They are assembled in the [Registry](./00-overview.md#registry) using the `stack` property in the Asset property file during the [application bootstrap](./06-architecture.md). The assembled Persona Sheet is saved as Sprite Sheet, using the Persona key as the Asset key. In this way, Sprites can specify their Persona through the Asset Key property. In other words, once assembled, Personas are effectively new "virtualized" Assets.
-
-Personas are assembled from a Base Sheet and Feature Sheets. The Base Sheet is the background of the resultant Sheet. Feature Sheets are pasted over the Base in the order they are specified.
-
-!!! note
-    It is assumed the Base and Feature Sheets conform to the same (Action, Direction) row mapping as the Sprite Sheets themselves. As always, the game engine assumes and implements the LPC specification by default.
-
-- Base Sheets: `/src/assets/sheets/sprites/base/<base-key>.png`
-- Feature Sheets: `/src/assets/sheets/sprites/features/<feature-key>.png`
-
 
 ## Equipment
 

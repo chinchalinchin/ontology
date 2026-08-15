@@ -273,12 +273,7 @@ sheets:
             l: Pixel Vertical Size 
       stack:
         - <sheet-asset-key>
-      actions:
-        <action-key>:
-          count: Frame Count of Action Row Group
-          directions:
-            <direction-key>:
-              row: <row-index>
+      actions: <action-set-key>
 # ------------------------------------------------------------------
 # ---------------------------------------------------------- WIDGETS
 widgets:

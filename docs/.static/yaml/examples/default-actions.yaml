@@ -1,5 +1,5 @@
 actions:
-  - id: simple
+  - id: simple-walk
     data:
       walk:
         count: 6
@@ -12,7 +12,59 @@ actions:
             row: 2
           right:
             row: 3
-  - id: lpc
+  - id: lpc-thrust
+    data:
+      thrust:
+        count: 8
+        directions:
+          up:
+            row: 4
+          down:
+            row: 5
+          left:
+            row: 6
+          right:
+            row: 7
+  - id: lpc-slash
+    data:
+      slash:
+        count: 6
+        directions:
+          up:
+            row: 12
+          down:
+            row: 13
+          left:
+            row: 14
+          right:
+            row: 15
+  - id: lpc-shoot
+    data:
+      shoot:
+        count: 13
+        directions:
+          up:
+            row: 16
+          down:
+            row: 17
+          left:
+            row: 18
+          right:
+            row: 19
+  - id: lpc-cast
+    data:
+      cast:
+        count: 7
+        directions:
+          up:
+            row: 0
+          down:
+            row: 1
+          left:
+            row: 2
+          right:
+            row: 3
+  - id: lpc-full
     data:
       cast:
         count: 7

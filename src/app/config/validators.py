@@ -333,6 +333,21 @@ class PyEquipmentProperties(BaseModel):
 # -------------------------------------------------------------------------------------
 
 # -------------------------------------------------------------------------------------
+# --------------------------------------------------------------- ACTIONS YAML SCHEMA
+
+class PyActionData(BaseModel):
+    id: str 
+    data: Dict[str, PyAction]
+
+class PyActionsConfiguration(YamlBaseSettings):
+    order: List[Mechanics]
+
+    model_config = SettingsConfigDict(
+        yaml_file = settings.CONFIG_DIR / Configurations.ACTIONS / settings.APP_EXT
+    )
+
+
+# -------------------------------------------------------------------------------------
 # --------------------------------------------------------------- MECHANICS YAML SCHEMA
 
 class PyMechanicsConfiguration(YamlBaseSettings):
