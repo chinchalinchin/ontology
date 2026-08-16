@@ -46,7 +46,7 @@ The Intention Transition Matrix determines which Intention states are currently 
 
 Provided below is the Intention Transition Matrix bundled with the application by default,
 
-```mmd
+```mermaid
 --8<-- "docs/.static/mmd/intention-transitions.mmd"
 ```
 
