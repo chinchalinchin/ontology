@@ -371,8 +371,50 @@ class CombatMechanics(Mechanic):
 
     def update(self, board: Board, delta: float) -> None:
         """
+        Resolves attack overlaps, decrements health, and triggers mutators.
         """
-        pass
+        # Gather all attacking entities
+        attackers = [
+            asset for asset in board.instances(AssetInstances.PLAYERS) + board.instances(AssetInstances.SPRITES)
+            if asset.state.intention == Intentions.ATTACK.value
+        ]
+
+        for attacker in attackers:
+            # Determine effective hitboxes (fallback to base asset hitboxes if unarmed)
+            active_hitboxes = attacker.hitboxes
+            
+            if getattr(attacker.state, 'inventory', None) and getattr(attacker.state.inventory, 'equipment', None):
+                weapon_key = attacker.state.inventory.equipment.weapon
+                if weapon_key and weapon_key in board.equipment.weapons:
+                    weapon_props = board.equipment.weapons[weapon_key]
+                    if weapon_props.hitboxes:
+                        active_hitboxes = weapon_props.hitboxes
+
+            # Gather targets on the same layer
+            layer = attacker.state.layer
+            targets = board.instances(AssetInstances.SPRITES, layer) + board.instances(AssetInstances.PLAYERS, layer)
+
+            for target in targets:
+                if attacker.name == target.name or target.state.mutators.triggers.dead:
+                    continue
+
+                if Geometry.intersects(
+                    attacker.state.position, 
+                    attacker.dimensions, 
+                    active_hitboxes,
+                    target.state.position, 
+                    target.dimensions, 
+                    target.hitboxes
+                ):
+                    # Calculate and apply damage
+                    damage = attacker.state.character.strength - target.state.character.defense
+                    damage = max(1, damage)  # Minimum 1 damage on hit
+                    
+                    target.state.meters.health.current = max(0, target.state.meters.health.current - damage)
+                    target.state.mutators.triggers.struck = True
+                    
+                    if target.state.meters.health.current == 0:
+                        target.state.mutators.triggers.dead = True
 
 # ----------------------------------------------------------------------------------------
 

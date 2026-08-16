@@ -50,13 +50,9 @@ While Python objects are fast enough for general logic, calculating collisions a
 !!! important
     Zero Heap Allocation is more of an ideal/driving principle than an enforced constraint. 
 
-### Math & Geometry (`libs/math.pyx`)
+### Models
 
-Spatial data like are modeled as Cython Extension Types (`cdef class` in `.pxd` definition files). This structure allows geometry methods like `Geometry.intersects` to access spatial properties (e.g., `position.x`, `hb.dimensions.l`) natively at C-speeds.
-
-The engine explicitly retains the Global Interpreter Lock (GIL) during geometry calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax (like `for hb in hitboxes`), while executing the actual mathematical overlap checks inline using primitive C variables on the CPU stack.
-
-**Core Cython Models**
+- `libs/core/models.pyx`
 
 - Position: 
     - `x: int`
@@ -76,14 +72,30 @@ The engine explicitly retains the Global Interpreter Lock (GIL) during geometry 
 - ScreenPosition:
     - `px: double`
     - `py: double`
-    
-### Hardware Rendering (`libs/render.pyx` & `libs/registry.pyx`)
 
-### Headless Software Rendering (`libs/render.pyx` & `libs/registry.pyx`)
+### Math
+
+- `libs/core/math.pyx`
+
+Spatial data like are modeled as Cython Extension Types (`cdef class` in `.pxd` definition files). This structure allows geometry methods like `Geometry.intersects` to access spatial properties (e.g., `position.x`, `hb.dimensions.l`) natively at C-speeds.
+
+The engine explicitly retains the Global Interpreter Lock (GIL) during geometry calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax (like `for hb in hitboxes`), while executing the actual mathematical overlap checks inline using primitive C variables on the CPU stack.
+
+**Collisions**
+
+At the start of every collision, the physics pipeline executes a spatial hashing procedure, given in the following sequence:
+
+1. **Hash (Populate the Grid)**: Maintain a 1D array or hash map (dictionary) where the keys are the `(cell_x, cell_y)` tuples, and the values are lists of integer Asset IDs. Iterate over all dynamic entities exactly once (`O(N)`). For each Asset, calculate its cell using integer division and append its ID to that cell's list.(Note: If an Asset overlaps a cell boundary, insert it into all cells it touches. This is easily calculated using its width and length divided by the cell size).
+2. **Query (Generate Candidate Pairs)**: Iterate over the populated cells. For each cell, look at the list of Asset IDs inside the grid. Only generate collision pairs for entities that exist in the same cell.
+3. **Narrow Phase (Raw Intersection)**: Pass this much smaller list of candidate pairs into `Geometry.intersects`.
+    
+The grid's blueprint (`cdef class SpatialHash`) must be defined in the Cython math library.
+
+### Rendering
 
 The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate the overhead of crossing the Python-to-C boundary, the rendering pipeline does not pass heavy Python objects (like `SpriteState` or `Dimensions`) to the renderer. Instead, it extracts raw integers on the Python side and unpacks them cleanly onto the C-stack.
 
-- **Context Initialization (`init`):** Sets up a true headless SDL software rendering context (`_renderer`) bound directly to a master memory surface (`SDL_Surface`), completely bypassing window creation.
+- **Context Initialization (`init`):** Sets up a SDL environment. If `headless`, a SDL software rendering context (`_renderer`) is bound directly to a master memory surface (`SDL_Surface`), completely bypassing window creation.
 - **Asset Allocation (`load`):** Loads physical image assets from disk directly into system memory, returning a safe, reference-counted Python wrapper (`TexturePtr`).
 - **Background Compilation (`canvas` & `construct`):** A blank texture (`SDL_TEXTUREACCESS_TARGET`) is created in memory to match the full size of the Board. Python passes a single list of flattened integer tuples representing the source/destination coordinates and grid multipliers. Cython unpacks these primitives and executes thousands of `SDL_RenderCopy` calls natively via the C-level software rasterizer. This caches a unified map texture, eliminating the need to instantiate and re-render thousands of background tiles every frame.
 - **Frame Rendering (`render`):** During the main game loop, `Screen.draw()` performs lightweight integer-based AABB camera culling natively in Python. This intentionally avoids paying the micro-transaction overhead of calling a Cython function repeatedly inside a massive Python loop. The visible assets are flattened into primitive integer tuples and passed across the C-boundary in a single list. `render()` clears the canvas buffer, copies the cropped background texture, stamps the active primitives, and finalizes the buffer in memory (`SDL_RenderPresent`), ready for extraction to disk.
