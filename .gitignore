@@ -5,5 +5,5 @@ build/**
 **/.DS_Store
 **/__pycache__/**
 **/**.pyc
-
+**/*state-dump.md
 !**/.gitkeep

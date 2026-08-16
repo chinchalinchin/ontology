@@ -133,6 +133,7 @@ Intention transition conditions are converted into lambda functions by the appli
 
 When a Sprite has Goal, it will seek out (path-find) its way to `name`. The `category` of a Goal affects the type of identifier given in `name`. 
 
+- `category == position`: The Goal is a Position, i.e. the Sprite is trying to find a location on the Board. The `name` will be the Sprite's name.
 - `category == asset`: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The `name` will be the Asset `name`.
 - `category == loot`: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The `name` will be an Inventory key. 
 - `category == wealth`: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The `name` will be an Inventory key. The key will be of the value with the maximum value in the Sprite's Prices, e.g. the loot with the highest Price.

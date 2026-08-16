@@ -3,10 +3,15 @@
 
 Package for command line interface. Contains useful commands for debugging.
 """
+# Standard Libraries
 import sys
 import argparse
 import logging
 from pathlib import Path
+import datetime
+
+# External Libraries
+import jinja2
 
 # ---------------------------------------------------------
 # PATH RESOLUTION: Add project root to sys.path
@@ -16,19 +21,50 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+# Application Libraries
+import app.config.settings as settings
 from app.config.enums import Devices
 from app.hooks.orchestrator import Orchestrator
+
+# Cython Libraries
 from libs.core.models import Dimensions
 from libs.graphics.render import quit_sdl
 
 logger = logging.getLogger(__name__)
 
+def dump(board_key, board):
+    logger.info("Generating state dump...")
+    template_path = settings.TEMPLATE_DIR / ".state-dump.md.j2"
+    
+    if template_path.exists():
+        with open(template_path, "r", encoding="utf-8") as f:
+            template_str = f.read()
+        
+        template = jinja2.Template(template_str)
+        timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        dump_str = template.render(
+            board_key=board_key,
+            timestamp=timestamp,
+            assets=board.assets()
+        )
+        
+        dump_out_path = Path.cwd() / f"{timestamp}-state-dump.md"
+        with open(dump_out_path, "w", encoding="utf-8") as f:
+            f.write(dump_str)
+            
+        logger.info(f"State dump successfully written to {dump_out_path}")
+    else:
+        logger.error(f"State dump template not found at {template_path}")
+        
 def main():
     parser = argparse.ArgumentParser(description="Ontology CLI Tools")
     # Added logging argument to the global CLI scope
     parser.add_argument("--log-level", type=str, default="INFO", 
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], 
                         help="Set the application logging level.")
+    parser.add_argument("--dump", action="store_true", default=False,
+                        help="Generate a state dump markdown file after execution.")
     
     subparsers = parser.add_subparsers(dest="command", required=True)
     
@@ -38,8 +74,8 @@ def main():
         p.add_argument("board_key", type=str, help="The configuration key for the target board")
         p.add_argument("--out", type=str, required=True, help="Output directory path")
         p.add_argument("--layer", type=str, required=True, help="Target layer to construct/render")
-        p.add_argument("--width", type=int, default=480, help="Simulated screen width")
-        p.add_argument("--height", type=int, default=480, help="Simulated screen height")
+        p.add_argument("--width", type=int, default=300, help="Simulated screen width")
+        p.add_argument("--height", type=int, default=300, help="Simulated screen height")
         p.add_argument("--device", type=str, default=Devices.KEYBOARD.value, help="Player device")
 
     args = parser.parse_args()
@@ -78,14 +114,16 @@ def main():
 
     elif args.command == "render":
         out_path = out_dir / f"{args.board_key}-{args.layer}.png"
-        assets = board.assets(args.layer)
         logger.info(f"Rendering composite frame for layer '{args.layer}'...")
-        
-        # UPDATE: Call board.player() method and pass resolved arguments
+        assets = board.renderables(args.layer)        
         player = board.player()
+
         screen.export_render(str(out_path), assets, player.state.position, player.dimensions)
         logger.info(f"Composite frame successfully rendered and exported to: {out_path}")
 
+    if args.dump:
+        dump(args.board_key, board)
+    
     del screen
     del screens
     del board

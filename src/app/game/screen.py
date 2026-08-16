@@ -10,7 +10,7 @@ from typing import List
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.enums import AssetInstances
+from app.config.enums import AssetInstances, AssetCategories
 
 # Cython Libraries
 from libs.core.models import Position, Dimensions
@@ -81,7 +81,10 @@ class Screen:
         construct(self.bg_canvas, cython_bg_tiles)
         construct(self.fg_canvas, cython_fg_tiles)
 
-    def camera(self, focus: Position, dim: Dimensions) -> Position:
+    def camera(self, 
+        focus: Position, 
+        dim: Dimensions
+    ) -> Position:
         """
         Calculates the camera's top-left coordinates, centered on the focus target,
         and clamps it to the boundaries of the board.
@@ -111,6 +114,11 @@ class Screen:
         active_assets = []
         
         for asset in assets:
+            # Filter out Tile assets to avoid dynamic rendering artifacts; 
+            # they are already drawn on the pre-compiled canvases.
+            if asset.category == AssetCategories.TILES:
+                continue
+
             # 1. Resolve current animation frame keys
             frame_keys = asset.frame.keys(asset.id, asset.state)
             
@@ -155,7 +163,12 @@ class Screen:
         logger.info(f"Dumping pre-constructed map textures (bg_canvas) to file system -> {out_path}")
         save(out_path, self.boardsize.w, self.boardsize.l, target=self.bg_canvas)
 
-    def export_render(self, out_path: str, assets: List[Asset], focus: Position, fdim: Dimensions) -> None:
+    def export_render(self, 
+        out_path: str, 
+        assets: List[Asset], 
+        focus: Position, 
+        fdim: Dimensions
+    ) -> None:
         """
         Draws a composited snapshot of the frame and extracts the VRAM buffer to disk.
         """

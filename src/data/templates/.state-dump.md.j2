@@ -1,0 +1,70 @@
+# Ontology State Dump
+
+**Board:** {{ board_key }}
+**Timestamp:** {{ timestamp }}
+
+---
+
+{% for asset in assets -%}
+## {{ asset.name }} (`{{ asset.id }}`)
+
+**Taxonomy:** `{{ asset.category }}` / `{{ asset.instance }}`
+**Layer:** {{ asset.state.layer }}
+
+### State
+
+{% if asset.state.position -%}
+- **Position:** ({{ asset.state.position.x }}, {{ asset.state.position.y }})
+{% endif -%}
+{% if asset.state.multiple -%}
+- **Multiple:** nx: {{ asset.state.multiple.nx }}, ny: {{ asset.state.multiple.ny }}
+{% endif -%}
+{% if asset.state.animation -%}
+- **Animation:** 
+  - Action: `{{ asset.state.animation.action }}`
+  - Direction: `{{ asset.state.animation.direction }}`
+  - Frame: `{{ asset.state.animation.frame }}`
+{% endif -%}
+{% if asset.state.switch is defined -%}
+- **Switch:** {{ asset.state.switch }}
+{% endif -%}
+{% if asset.state.content is defined -%}
+- **Content:** {{ asset.state.content }}
+{% endif -%}
+{% if asset.state.link -%}
+- **Link:** {{ asset.state.link }}
+{% endif -%}
+{% if asset.state.outlayer -%}
+- **Door Out:** Layer: {{ asset.state.outlayer }}, Position: ({{ asset.state.out.x }}, {{ asset.state.out.y }})
+{% endif -%}
+{% if asset.state.owner -%}
+- **Owner:** {{ asset.state.owner }}
+{% endif -%}
+{% if asset.state.character -%}
+- **Character:** STR: {{ asset.state.character.strength }}, DEF: {{ asset.state.character.defense }}, SPD: {{ asset.state.character.speed }}
+{% endif -%}
+{% if asset.state.meters -%}
+- **Meters:**
+  - Health: {{ asset.state.meters.health.current }} / {{ asset.state.meters.health.maximum }}
+  - Magic: {{ asset.state.meters.magic.current }} / {{ asset.state.meters.magic.maximum }}
+{% endif -%}
+{% if asset.state.inventory -%}
+- **Inventory:**
+  - Wallet: {{ asset.state.inventory.wallet }}
+  - Equipment: 
+    - Armor: `{{ asset.state.inventory.equipment.armor }}` 
+    - Weapon: `{{ asset.state.inventory.equipment.weapon }}`
+    - Tool: `{{ asset.state.inventory.equipment.tool }}`
+    - Utility: `{{ asset.state.inventory.equipment.utility }}`
+    - Shield: `{{ asset.state.inventory.equipment.shield }}`
+{% endif -%}
+{% if asset.state.goal -%}
+- **Goal:** 
+  - Name: `{{ asset.state.goal.name }}`
+  - Category: `{{ asset.state.goal.category }}`
+  - Position: ({{ asset.state.goal.position.x }}, {{ asset.state.goal.position.y }})
+{% endif -%}
+{% if asset.state.intention -%}
+- **Intention:** `{{ asset.state.intention }}`
+{% endif %}
+{% endfor %}

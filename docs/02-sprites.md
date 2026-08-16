@@ -251,6 +251,7 @@ When this Sprite's Frame `keys()` interface is called, it will return a list of 
 
 !!! important
     Equipment must utilize the StateFrame to get indexed by the Registry.
+    
 ### Equipment Animations
 
 When Equipment is configured in the Sheet Property index file, the Equipment `actions` property determines which Actions in a Sprite's state will result in extra Frame Keys being appended to the `keys()` return result. 

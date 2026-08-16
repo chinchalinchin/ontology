@@ -64,14 +64,15 @@ class Orchestrator:
             
         try:
             return next(
-                action["data"] for action in self.configurations.get("actions", [])
+                action["data"] for action 
+                in self.configurations.get("actions", [])
                 if action["id"] == action_set_key
             )
         except StopIteration:
             logger.warning(f"No actions exist for {action_set_key}")
             return {}
 
-    def instance_properties(self, category, instance, snapshot):
+    def instance_properties(self, category, instance, id):
         """
         Returns Asset Properties based on their Taxonomy.
         """
@@ -79,9 +80,9 @@ class Orchestrator:
             return self.properties[category][instance]
 
         if category == AssetCategories.SHEETS and instance == AssetInstances.PLAYERS:
-            return self.properties[category][AssetInstances.SPRITES][snapshot["id"]]
+            return self.properties[category][AssetInstances.SPRITES][id]
 
-        return self.properties[category][instance][snapshot["id"]] 
+        return self.properties[category][instance][id] 
 
     def migrate(self) -> Board:
         """
@@ -127,7 +128,7 @@ class Orchestrator:
                 for instance in instance_list:
 
                     recipe = self.configurations["recipes"][category_key][instance_key]
-                    instance_props = self.instance_properties(category_key, instance_key, instance)
+                    instance_props = self.instance_properties(category_key, instance_key, instance["id"])
 
                     # Pop the taxonomy keys to strip them from the state snapshot
                     asset_id = instance.pop("id")

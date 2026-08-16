@@ -22,5 +22,6 @@ ASSET_DIR = SRC_DIR / "assets"
 DATA_DIR = SRC_DIR / "data"
 CONFIG_DIR = DATA_DIR / "config"
 STATE_DIR = DATA_DIR / "state"
+TEMPLATE_DIR = DATA_DIR / "templates"
 
 APP_EXT = "main.yaml"

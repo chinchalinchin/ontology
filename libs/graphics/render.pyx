@@ -250,7 +250,7 @@ def render(
     assets format: (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l)
     """
     SDL_RenderClear(_renderer)
-    cdef SDL_Rect c_src, c_dst, bg_src
+    cdef SDL_Rect c_src, c_dst, bg_src, bg_dst
     cdef TexturePtr tex_wrapper
     cdef int sx, sy, sw, sl, dx, dy, dw, dl
 
@@ -259,7 +259,14 @@ def render(
         bg_src.y = cam_y
         bg_src.w = screen_w
         bg_src.h = screen_l
-        SDL_RenderCopy(_renderer, background.ptr, &bg_src, NULL)
+        
+        # Define destination rectangle to prevent stretching over mismatched canvas/screen sizes
+        bg_dst.x = 0
+        bg_dst.y = 0
+        bg_dst.w = screen_w
+        bg_dst.h = screen_l
+
+        SDL_RenderCopy(_renderer, background.ptr, &bg_src, &bg_dst)
         
     for asset in assets:
         # Safely unpack the primitive tuple directly into C-variables
@@ -275,7 +282,18 @@ def render(
 
     # Execute Painter's algorithm
     if foreground is not None:
-        SDL_RenderCopy(_renderer, foreground.ptr, &bg_src, NULL)
+        bg_src.x = cam_x
+        bg_src.y = cam_y
+        bg_src.w = screen_w
+        bg_src.h = screen_l
+        
+        # Define destination rectangle
+        bg_dst.x = 0
+        bg_dst.y = 0
+        bg_dst.w = screen_w
+        bg_dst.h = screen_l
+                    
+        SDL_RenderCopy(_renderer, foreground.ptr, &bg_src, &bg_dst)
                     
     SDL_RenderPresent(_renderer)
     SDL_PumpEvents()

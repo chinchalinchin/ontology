@@ -145,6 +145,14 @@ class Relationships(str, Enum):
     FRIEND          = "friend"
     STRANGER        = "stranger"
 
+# -------------------------------- GOAL ENUMERATIONS
+
+class GoalCategories(str, Enum):
+    ASSET           = "asset"
+    LOOT            = "loot"
+    WEALTH          = "wealth"
+    PROPERTY        = "property"
+    
 # -------------------------------- PLAYER STATE ENUMERATIONS
 
 class PlayerGoals(str, Enum):

@@ -4,7 +4,7 @@
 Package for instantiating Asset classes and their components.
 """
 # Standard Libraries
-from typing import get_type_hints, get_origin, get_args, Union
+from typing import get_type_hints, get_origin, get_args, Union, List, Dict
 import types
 
 # Application Libraries
@@ -20,6 +20,7 @@ from app.assets.frames import (
     SingleFrame, 
     IterableFrame, 
     StateFrame,
+    SpriteFrame,
     NoFrame
 )
 from app.config.enums import (
@@ -46,10 +47,11 @@ from app.game.mechanics import (
     SpeechMechanics
 )
 from app.models.config import (
-    ActionConfiguration,
-    IntentionConfiguration,
     RecipeConfiguration,
-    MappingConfiguration
+    MappingConfiguration,
+    IntentionConfiguration,
+    ActionConfiguration,
+    Mapping
 )
 from app.models.state import (
     AnimatorState, 
@@ -108,6 +110,7 @@ class Factory:
     }
 
     FRAME_MAP = {
+        FrameRecipe.SPRITE: SpriteFrame,
         FrameRecipe.SINGLE: SingleFrame,
         FrameRecipe.ITERABLE: IterableFrame,
         FrameRecipe.STATE: StateFrame,
@@ -167,6 +170,20 @@ class Factory:
         """
         Recursively instantiate dataclasses and Cython structs from dictionaries.
         """
+        origin = get_origin(target_cls)
+
+        # Handle native collection types seamlessly
+        if origin is list and isinstance(data, list):
+            inner_type = get_args(target_cls)[0]
+            return [cls._hydrate(inner_type, item) for item in data]
+            
+        if origin is dict and isinstance(data, dict):
+            inner_type = get_args(target_cls)[1]
+            return {k: cls._hydrate(inner_type, v) for k, v in data.items()}
+
+        if target_cls is dict or target_cls is list:
+            return data
+
         if not isinstance(data, dict):
             return data
 
@@ -186,25 +203,14 @@ class Factory:
                 continue
 
             field_type = hints[key]
-            origin = get_origin(field_type)
+            field_origin = get_origin(field_type)
 
             # Resolve Optional/Union types
-            if origin is Union or origin is getattr(types, 'UnionType', type(None)):
+            if field_origin is Union or field_origin is getattr(types, 'UnionType', type(None)):
                 args = get_args(field_type)
                 field_type = next((t for t in args if t is not type(None)), field_type)
-                origin = get_origin(field_type)
 
-            # Recursively apply instantiation 
-            if origin is list and isinstance(value, list):
-                inner_type = get_args(field_type)[0]
-                kwargs[key] = [cls._hydrate(inner_type, item) for item in value]
-            elif origin is dict and isinstance(value, dict):
-                inner_type = get_args(field_type)[1]
-                kwargs[key] = {k: cls._hydrate(inner_type, v) for k, v in value.items()}
-            elif isinstance(value, dict) and isinstance(field_type, type):
-                kwargs[key] = cls._hydrate(field_type, value)
-            else:
-                kwargs[key] = value
+            kwargs[key] = cls._hydrate(field_type, value)
 
         return target_cls(**kwargs)
     
@@ -243,7 +249,8 @@ class Factory:
     @staticmethod
     def device(dev, mapping):
         target_cls = Factory.DEVICE_MAP.get(dev, Keyboard)
-        return Factory._hydrate(target_cls, mapping)
+        mapping_obj = Factory._hydrate(Mapping, mapping)
+        return target_cls(mapping_obj)
 
     @staticmethod 
     def mechanics(kind):

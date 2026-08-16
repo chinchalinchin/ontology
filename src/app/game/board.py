@@ -20,7 +20,7 @@ from app.models.groups import (
     ConfigurationGroup,
     EquipmentGroup
 )
-from app.models.properties import SheetProperties
+from app.models.config import Mapping
 
 # Cython Libraries
 from libs.core.models import Dimensions
@@ -44,6 +44,7 @@ class Board:
     _cached_categories: Dict[str, Dict[str, List[Asset]]]
     _cached_instances: Dict[str, Dict[str, List[Asset]]]
     _cached_layers: Dict[str, List[Asset]]
+    _cached_renderables: Dict[str, List[Asset]]
     # Catalogues
     _all_categories: Dict[str, List[Asset]]
     _all_instances: Dict[str, List[Asset]]
@@ -86,13 +87,12 @@ class Board:
     def _cache(self):
         """
         Cache Assets queries by layer to prevent excessive list generations.
-
-        Anytime an Asset changes layer, the `relayer()` method must be called, to invalidate the Asset caches.
         """
         logger.debug("Building initial board spatial caching dictionaries by layer/category/instance.")
         self._cached_categories = {}
         self._cached_instances = {}
         self._cached_layers = {}
+        self._cached_renderables = {}
 
         for asset in self._assets:
             layer = asset.state.layer
@@ -104,6 +104,7 @@ class Board:
                 self._cached_categories[layer] = {}
                 self._cached_instances[layer] = {}
                 self._cached_layers[layer] = []
+                self._cached_renderables[layer] = []
             
             # Cache by layer and category
             if cat not in self._cached_categories[layer]:
@@ -117,13 +118,15 @@ class Board:
 
             # Cache by layer only
             self._cached_layers[layer].append(asset)
-
+            
+            # Cache exclusively dynamic assets for the inner draw loop
+            if cat != AssetCategories.TILES:
+                self._cached_renderables[layer].append(asset)
 
     def set_device(self, device: Device):
         """
         """
         self._device = device
-
         
     def player(self, slot = 0) -> Asset:
         """
@@ -133,6 +136,12 @@ class Board:
             return self._all_instances[AssetInstances.PLAYERS][slot]
         return self._all_instances[AssetInstances.PLAYERS][0]
 
+    def poll(self) -> Mapping:
+        """
+        """
+        if self._device:
+            return self._device.poll()
+        return Mapping()
 
     def assets(self, layer=None) -> List[Asset]:
         """
@@ -142,10 +151,8 @@ class Board:
             return self._assets
         return self._cached_layers[layer]
 
-    
     def layers(self) -> List[str]:
         return list(self._cached_categories.keys())
-
 
     def categories(self, category, layer = None) -> List[Asset]:
         """
@@ -155,7 +162,6 @@ class Board:
             return self._cached_categories.get(layer, {}).get(category, [])
         return self._all_categories.get(category, [])
 
-
     def instances(self, instance, layer = None) -> List[Asset]:
         """
         Returns a reference to the cached list of instanced Assets. O(1) fetch.
@@ -163,8 +169,20 @@ class Board:
         if layer is not None:
             return self._cached_instances.get(layer, {}).get(instance, [])
         return self._all_instances.get(instance, [])
-
         
+    def renderables(self, layer=None) -> List[Asset]:
+        """
+        Returns a cached list of non-tile dynamic assets for rendering, saving frame iteration time.
+        """
+        if layer is None:
+            return [
+                asset 
+                for asset 
+                in self._assets 
+                if asset.category != AssetCategories.TILES
+            ]
+        return self._cached_renderables.get(layer, [])
+
     def relayer(self, asset: Asset, new_layer: str) -> None:
         """
         Safely moves an asset between cached layer lists.
@@ -191,6 +209,10 @@ class Board:
             if asset in self._cached_layers[old_layer]:
                 self._cached_layers[old_layer].remove(asset)
 
+        if old_layer in self._cached_renderables:
+            if asset in self._cached_renderables[old_layer]:
+                self._cached_renderables[old_layer].remove(asset)
+
         # 2. Update state
         asset.state.layer = new_layer
 
@@ -199,6 +221,7 @@ class Board:
             self._cached_categories[new_layer] = {}
             self._cached_instances[new_layer] = {}
             self._cached_layers[new_layer] = []
+            self._cached_renderables[new_layer] = []
             
         if cat not in self._cached_categories[new_layer]:
             self._cached_categories[new_layer][cat] = []
@@ -211,7 +234,11 @@ class Board:
         if new_layer not in self._cached_layers:
             self._cached_layers[new_layer] = []
         self._cached_layers[new_layer].append(asset)
-
+        
+        if new_layer not in self._cached_renderables:
+            self._cached_renderables[new_layer] = []
+        if cat != AssetCategories.TILES:
+            self._cached_renderables[new_layer].append(asset)
 
     def size(self, layer=None) -> List[Dimensions]:
         """

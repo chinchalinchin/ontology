@@ -22,13 +22,22 @@ python setup.py build_ext --inplace
 ### Debug
 
 ```bash
+# 0. Clean up state dumps.
+rm -rf **/*state-dump.md
+
 # 1.Render Background
-python src/cli.py prerender world-01 \
+python src/cli.py \
+  --dump \
+  --log-level DEBUG \
+  prerender world-01 \
   --layer 0 \
   --out /home/grant/Projects/ontology/build
 
 # 2.Render Stateful Assets
-python src/cli.py render world-01 \
+python src/cli.py  \
+  --dump \
+  --log-level DEBUG \
+  render world-01 \
   --layer 0 \
   --out /home/grant/Projects/ontology/build
 ```

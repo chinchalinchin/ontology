@@ -16,7 +16,8 @@ from app.config.enums import (
     AssetCategories, 
     AssetInstances,
     Intentions,
-    PlayerGoals
+    PlayerGoals,
+    GoalCategories
 )
 from app.game.maps import (
     AnimationMap
@@ -237,8 +238,8 @@ class PlayerMechanics(Mechanic):
         player = board.player()
         poll = board.poll()
         
-        if poll.get("intentions"):
-            player.state.intention = poll["intentions"][0]
+        if poll.intentions:
+            player.state.intention = poll.intentions[0]
         else:
             player.state.intention = Intentions.IDLE
         
@@ -265,8 +266,8 @@ class PlayerMechanics(Mechanic):
         # UPDATE: Initialize missing goal tracking state
         if has_movement and not player.state.goal:
             player.state.goal = Goal(
-                name="player_target", 
-                category="position", 
+                name=player.name, 
+                category=GoalCategories.POSITION, 
                 position=Position(goal_x, goal_y)
             )
         elif player.state.goal:

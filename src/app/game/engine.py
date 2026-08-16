@@ -65,7 +65,7 @@ class Engine:
                 player = self.board.player()
 
                 self.screens[player.state.layer].draw(
-                    self.board.assets(player.state.layer), 
+                    self.board.renderables(player.state.layer), 
                     player.state.position,
                     player.dimensions
                 )

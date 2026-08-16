@@ -87,8 +87,8 @@ class RecipeConfiguration(Configuration):
 
 @dataclass(slots=True)
 class Mapping:
-    intentions: Dict[Intentions, int]
-    goals: Dict[PlayerGoals, int]
+    intentions: Dict[Intentions, int] = field(default_factory=dict)
+    goals: Dict[PlayerGoals, int] = field(default_factory=dict)
 
 @dataclass(slots=True)
 class MappingConfiguration(Configuration):

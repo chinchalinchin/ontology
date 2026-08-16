@@ -15,17 +15,16 @@ class Device:
     """
     """
 
-    mapping: Dict
+    mapping: Mapping
 
-    def __init__(self, mapping):
+    def __init__(self, mapping: Mapping):
         self.mapping = mapping
 
 class Keyboard(Device):
     """
     """
 
-    def __init__(self, mapping):
-        self.mapping = mapping
+    def __init__(self, mapping: Mapping):
         super().__init__(mapping)
         
         # Pre-calculate the tuple of scancodes to query every frame, stripping Nones
@@ -45,11 +44,11 @@ class Keyboard(Device):
         
         # 3. Translate raw array values into game semantics
         res = {"intentions": [], "goals": []}
-        for k, v in self.mapping["intentions"].items():
+        for k, v in self.mapping.intentions.items():
             if v is not None and state_dict.get(v):
                 res["intentions"].append(k)
         
-        for k, v in self.mapping["goals"].items():
+        for k, v in self.mapping.goals.items():
             if v is not None and state_dict.get(v):
                 res["goals"].append(k)
         
