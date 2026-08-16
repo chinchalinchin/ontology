@@ -27,11 +27,13 @@ python setup.py build_ext --inplace
 # 0. Clean up debug dumps.
 rm -rf **/*dump.md
 
+export LOG_LEVEL=INFO
+
 # 1.Render Background
 python src/cli.py \
   --dump-state \
   --dump-sdl \
-  --log-level DEBUG \
+  --log-level $LOG_LEVEL \
     prerender world-01 \
     --layer 0 \
     --out /home/grant/Projects/ontology/build
@@ -40,19 +42,17 @@ python src/cli.py \
 python src/cli.py  \
   --dump-state \
   --dump-sdl \
-  --log-level DEBUG \
+  --log-level $LOG_LEVEL \
     render world-01 \
     --layer 0 \
     --out /home/grant/Projects/ontology/build
 
-# 2.Render Stateful Assets
+# 3. Start Game Engine
 python src/cli.py  \
   --dump-state \
   --dump-sdl \
-  --log-level DEBUG \
-    render world-01 \
-    --layer 0 \
-    --out /home/grant/Projects/ontology/build
+  --log-level $LOG_LEVEL \
+    start world-01
 ```
 
 ### Helper Scripts
