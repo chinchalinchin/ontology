@@ -16,45 +16,52 @@ The Asset directory is organized as follows,
 assets % tree -L 2
 .
 ├── crafts
+│   ├── main.yaml
 │   └── struts
-│   └── main.yaml
 ├── cursors
 │   ├── expressions
-│   ├── projectiles
-│   └── main.yaml
+│   ├── main.yaml
+│   └── projectiles
 ├── effects
+│   ├── main.yaml
 │   ├── persistent
-│   ├── temporary
-│   └── main.yaml
-├── environ
-│   └── main.yaml
-├── main.yaml
-├── menu
-│   ├── icons
-│   ├── symbols
-│   ├── windows
-│   └── main.yaml
+│   └── temporary
 ├── objects
 │   ├── chests
 │   ├── crates
 │   ├── doors
 │   ├── gates
+│   ├── main.yaml
 │   ├── plates
-│   ├── struts
-│   └── main.yaml
+│   └── struts
+├── resources
+│   ├── crops
+│   ├── main.yaml
+│   └── ore
 ├── sheets
+│   ├── armor
+│   ├── main.yaml
 │   ├── pixies
+│   ├── shields
 │   ├── sprites
-│   └── main.yaml
+│   ├── tools
+│   ├── utilities
+│   └── weapons
 ├── sounds
+│   ├── main.yaml
 │   ├── music
-│   ├── speech
-│   └── main.yaml
-└── tiles
+│   └── speech
+├── tiles
 │   ├── back
 │   ├── fore
 │   └── main.yaml
-└── main.yaml
+└── widgets
+    ├── buttons
+    ├── language
+    ├── main.yaml
+    ├── meters
+    ├── pages
+    └── panes
 ```
 
 The root `main.yaml` configures [Asset Recipes](#recipes). The `main.yaml` files in each subdirectory conform to the [Asset property schema](#schemas) of their respective Asset Category. 

@@ -8,8 +8,6 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 
 **Table of Contents**
 
-- Incidents:
-  - [x]: [2026-08-09: SDL Rendering Pipeline Failure](./incidents/2026-08-16.md)
 - Phases
   - Implement
     - [x]: [Phase 01: Renderer](./phases/implement/phase-01.md)
@@ -27,3 +25,5 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 02.02: Registry Indexing](./phases/refactor/phase-02-02.md)
     - [x]: [Phase 02-03: Equipment Animations](./phases/refactor/phase-02-03.md)
     - [x]: [Phase 02-04: Engine](./phases/refactor/phase-02-04.md)
+  - Report:
+    - [x]: [2026-08-09: SDL Rendering Pipeline Failure](./phases/report/2026-08-16.md)
