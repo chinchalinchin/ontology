@@ -1,4 +1,4 @@
-#### Refactor: Phase II - Frames
+#### Refactor: Phase 02.01 - Frames
 
 The basis of the Intention system has been laid. Both Sprite and Player Assets have been writed to transmit their Animations through (Intention, Goals). Before moving onto expanding the Intention mechanics, it is time to refactor what we have already. 
 

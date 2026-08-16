@@ -240,6 +240,37 @@ class Board:
         if cat != AssetCategories.TILES:
             self._cached_renderables[new_layer].append(asset)
 
+    def remove(self, removals: List[Asset]) -> None:
+        """
+        Removes Assets from the board.
+        """
+        for asset in removals:
+            layer = asset.state.layer
+            cat = asset.category
+            inst = asset.instance
+
+            if asset in self._assets:
+                self._assets.remove(asset)
+
+            if layer in self._cached_categories and cat in self._cached_categories[layer]:
+                if asset in self._cached_categories[layer][cat]:
+                    self._cached_categories[layer][cat].remove(asset)
+            
+            if layer in self._cached_instances and inst in self._cached_instances[layer]:
+                if asset in self._cached_instances[layer][inst]:
+                    self._cached_instances[layer][inst].remove(asset)
+
+            if layer in self._cached_layers and asset in self._cached_layers[layer]:
+                self._cached_layers[layer].remove(asset)
+
+            if layer in self._cached_renderables and asset in self._cached_renderables[layer]:
+                self._cached_renderables[layer].remove(asset)
+
+            if cat in self._all_categories and asset in self._all_categories[cat]:
+                self._all_categories[cat].remove(asset)
+                
+            if inst in self._all_instances and asset in self._all_instances[inst]:
+                self._all_instances[inst].remove(asset)
     def size(self, layer=None) -> List[Dimensions]:
         """
         Calculates the size of Board by layer. 

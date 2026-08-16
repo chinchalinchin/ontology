@@ -1,4 +1,4 @@
-#### Implement: Phase VIII - Pathfinding
+#### Implement: Phase 09 - Pathfinding
 
 The goal is to introduce the concept of "time" to the Sprites' memory to solve the conflict of competing facts. Without a timestamp, a Sprite with new information could be overwritten by a Sprite with outdated information.
 

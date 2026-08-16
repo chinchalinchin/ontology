@@ -1,4 +1,4 @@
-#### Refactor: Phase II - Registry Indexing
+#### Refactor: Phase 02.02 - Registry Indexing
 
 The Registry should be completely agnostic to the concept of Tiles, Sprites, or Widgets. Its only responsibility should be managing memory (`TexturePtr`) and holding a map of `string_key -> (src_x, src_y, w, l)`.
 

@@ -1,4 +1,4 @@
-#### Implement: Phase II - Player
+#### Implement: Phase 02 - Player
 
 1. **Data-Driven Player Initialization**
 

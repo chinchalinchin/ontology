@@ -121,15 +121,25 @@ class RemoveMechanics(Mechanic):
 
     def update(self, board: Board, delta_time: float) -> None: 
         """
+        Garbage collection for expired temporary effects and dead sprites.
         """            
-        temporary = board.instances(AssetInstances.TEMPORARY)
-        projectiles = board.instances(AssetInstances.PROJECTILES)
+        removals = []
 
-        for effect in temporary:
-            if effect.state.animation.frame > effect.properties.count:
-                # TODO: implementation
-                pass
-            # TODO: projectile conditions
+        # 1. Identify expired Temporary Effects
+        for effect in board.instances(AssetInstances.TEMPORARY):
+            if effect.state.animation.frame >= effect.properties.count:
+                removals.append(effect)
+                
+        # 2. Identify Dead Sprites
+        for sprite in board.instances(AssetInstances.SPRITES):
+            if sprite.state.mutators.triggers.dead:
+                removals.append(sprite)
+
+        # 3. Identify expired Projectiles
+        # TODO
+
+        # 4. Safely evict from Board tracking caches
+        board.remove(removals)
 
 # ----------------------------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
-#### Refactor: Phase II - Equipment Animations
+#### Refactor: Phase 02.03 - Equipment Animations
 
-Phase II Refactor I & II has revealed a core deficit in the application data models. Previously Equipment was treated as a configuration, instead of Asset. The documentation and specification surrounding Equipment has radically changed.
+Phase Refactor 02.01 & 02.02 has revealed a core deficit in the application data models. Previously Equipment was treated as a configuration, instead of Asset. The documentation and specification surrounding Equipment has radically changed.
 
 As a result, Actions are now decoupled from Sheets. They have been added to the configuration to define "Action Sets". This allows the Action Set for each instance of Equipment to be set, so only Equipment frames that are occupied are indexed. In addition, this allows other Sheets to reuse Action Sets.
 

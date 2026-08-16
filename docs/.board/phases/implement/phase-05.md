@@ -1,4 +1,4 @@
-#### Implement: Phase IV - Widgets
+#### Implement: Phase 05 - Widgets
 
 Goals: Widget Creation, Menu Configuration and Instantiation, Menu Traversal
 
