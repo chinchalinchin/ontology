@@ -19,7 +19,7 @@ from app.config.enums import (
     PlayerGoals,
     GoalCategories
 )
-from app.game.maps import (
+from app.game.logic.maps import (
     AnimationMap
 )
 from app.models.state import (
@@ -51,15 +51,15 @@ class AnimationMechanics(Mechanic):
         """
         """
         for asset in board.categories(AssetCategories.EFFECTS):
-            asset.animate(asset.state, asset.properties)
+            asset.animation.animate(asset.state, asset.properties)
         for asset in board.categories(AssetCategories.SHEETS):
-            asset.animate(asset.state, asset.properties)
+            asset.animation.animate(asset.state, asset.properties)
         for asset in board.instances(AssetInstances.CHESTS):
-            asset.animate(asset.state, asset.properties)
+            asset.animation.animate(asset.state, asset.properties)
         for asset in board.instances(AssetInstances.GATES):
-            asset.animate(asset.state, asset.properties)
+            asset.animation.animate(asset.state, asset.properties)
         for asset in board.instances(AssetInstances.PLATES):
-            asset.animate(asset.state, asset.properties)
+            asset.animation.animate(asset.state, asset.properties)
 
 # ----------------------------------------------------------------------------------------
 
@@ -75,7 +75,7 @@ class CollisionMechanics(Mechanic):
 
             for this in sheets:
                 for that in sheets:
-                    if this.state.name != that.state.name:
+                    if this.name != that.name:
                         if Geometry.intersects(
                             this.state.position, 
                             this.dimensions, 
@@ -207,12 +207,18 @@ class TransitionMechanics(Mechanic):
                 sprite.state,
                 board.equipment
             )
-            sprite.state.animation.direction = AnimationMap.direction(
-                sprite.state.position,
-                sprite.state.goal.position
-            )
+            
+            if sprite.state.goal:
+                sprite.state.animation.direction = AnimationMap.direction(
+                    sprite.state.position,
+                    sprite.state.goal.position
+                )
 
-            transits = sprite.transitions()
+            # Query configuration Intentions using the Sprite's actual Intention State
+            if sprite.state.intention not in board.configurations.intentions:
+                continue
+
+            transits = board.configurations.intentions[sprite.state.intention]
             
             # 2. Evaluate conditions
             for transit in transits:
@@ -220,7 +226,7 @@ class TransitionMechanics(Mechanic):
                     for condition in transit.conditions:
                         if condition(sprite, board):
                             # 3. Transition the state
-                            sprite.intention = transit.next
+                            sprite.state.intention = transit.next
                             
                             # Break immediately to avoid evaluating the NEW state's 
                             # transitions in this same frame.
@@ -241,7 +247,7 @@ class PlayerMechanics(Mechanic):
         if poll.intentions:
             player.state.intention = poll.intentions[0]
         else:
-            player.state.intention = Intentions.IDLE
+            player.state.intention = Intentions.IDLE.value
         
         speed = player.state.character.speed
         goal_x = player.state.position.x
@@ -250,16 +256,16 @@ class PlayerMechanics(Mechanic):
         # Track movement so the player doesn't instantly snap back to 'UP' when inputs are released.
         has_movement = False
 
-        if PlayerGoals.UP in poll.goals:
+        if PlayerGoals.UP.value in poll.goals:
             goal_y -= speed
             has_movement = True
-        if PlayerGoals.DOWN in poll.goals:
+        if PlayerGoals.DOWN.value in poll.goals:
             goal_y += speed
             has_movement = True
-        if PlayerGoals.LEFT in poll.goals:
+        if PlayerGoals.LEFT.value in poll.goals:
             goal_x -= speed
             has_movement = True
-        if PlayerGoals.RIGHT in poll.goals:
+        if PlayerGoals.RIGHT.value in poll.goals:
             goal_x += speed
             has_movement = True
 
@@ -267,7 +273,7 @@ class PlayerMechanics(Mechanic):
         if has_movement and not player.state.goal:
             player.state.goal = Goal(
                 name=player.name, 
-                category=GoalCategories.POSITION, 
+                category=GoalCategories.POSITION.value, 
                 position=Position(goal_x, goal_y)
             )
         elif player.state.goal:
@@ -293,8 +299,35 @@ class MotionMechanics(Mechanic):
 
     def update(self, board: Board, delta: float) -> None:
         """
+        Iterates over mutable entities and applies vectors based on speed offsets to reach their goals.
         """
-        pass
+        sprites = board.instances(AssetInstances.SPRITES)
+        players = board.instances(AssetInstances.PLAYERS)
+
+        for asset in sprites + players:
+            if not asset.state.goal:
+                continue
+
+            dx = asset.state.goal.position.x - asset.state.position.x
+            dy = asset.state.goal.position.y - asset.state.position.y
+
+            # Entity has reached its exact target coordinate destination
+            if dx == 0 and dy == 0:
+                continue
+
+            speed = asset.state.character.speed
+
+            # Apply X Vector offset 
+            if dx > 0:
+                asset.state.position.x += min(speed, dx)
+            elif dx < 0:
+                asset.state.position.x -= min(speed, abs(dx))
+
+            # Apply Y Vector offset
+            if dy > 0:
+                asset.state.position.y += min(speed, dy)
+            elif dy < 0:
+                asset.state.position.y -= min(speed, abs(dy))
 
 # ----------------------------------------------------------------------------------------
 
@@ -335,7 +368,7 @@ class MenuMechanics(Mechanic):
     """
     """
 
-    def equip(item: str, state: SpriteState, board: Board) -> None:
+    def equip(self, item: str, state: SpriteState, board: Board) -> None:
         """
         """
 

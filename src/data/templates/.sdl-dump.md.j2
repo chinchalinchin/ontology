@@ -1,0 +1,16 @@
+# SDL Configuration Dump
+
+**Board:** `{{ board_key }}`
+**Timestamp:** `{{ timestamp }}`
+
+## Graphics Subsystem
+
+| Property | Value |
+|----------|-------|
+| **Video Driver** | `{{ sys_info.video_driver }}` |
+| **Renderer Name** | `{{ sys_info.renderer_name }}` |
+| **Accelerated** | `{{ sys_info.accelerated }}` |
+| **Max Texture Width** | `{{ sys_info.max_texture_width }}px` |
+| **Max Texture Height** | `{{ sys_info.max_texture_height }}px` |
+
+> *Note: If Accelerated is False, the game is running on a CPU-bound software fallback.*

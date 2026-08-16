@@ -25,3 +25,8 @@ STATE_DIR = DATA_DIR / "state"
 TEMPLATE_DIR = DATA_DIR / "templates"
 
 APP_EXT = "main.yaml"
+
+DUMP_TEMPLATES = {
+    'state': ".state-dump.md.j2",
+    'sdl': ".sdl-dump.md.j2"
+}

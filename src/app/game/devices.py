@@ -3,13 +3,15 @@
 
 """
 # Standard Libraries
-from typing import Dict
+import logging 
 
 # Application Libraries
 from app.models.config import Mapping
 
 # Cython Libraries
 import libs.core.input as sdl
+
+logger = logging.getLogger(__name__)
 
 class Device:
     """
@@ -31,6 +33,8 @@ class Keyboard(Device):
         i_codes = [v for v in mapping.intentions.values() if v is not None]
         g_codes = [v for v in mapping.goals.values() if v is not None]
         self._scancodes = tuple(set(i_codes + g_codes))
+        
+        logger.debug(f"Keyboard initialized mapping to SDL scancodes: {self._scancodes}")
 
     def poll(self) -> Mapping:
         """
@@ -46,11 +50,17 @@ class Keyboard(Device):
         res = {"intentions": [], "goals": []}
         for k, v in self.mapping.intentions.items():
             if v is not None and state_dict.get(v):
-                res["intentions"].append(k)
+                # Ensure we capture the string value since Factory dict keys are natively strings
+                key_val = k.value if hasattr(k, 'value') else k
+                res["intentions"].append(key_val)
         
         for k, v in self.mapping.goals.items():
             if v is not None and state_dict.get(v):
-                res["goals"].append(k)
+                key_val = k.value if hasattr(k, 'value') else k
+                res["goals"].append(key_val)
+        
+        if res["intentions"] or res["goals"]:
+            logger.debug(f"Keyboard Poll Detected - Intentions: {res['intentions']} | Goals: {res['goals']}")
         
         return Mapping(**res)
 

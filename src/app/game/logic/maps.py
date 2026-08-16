@@ -12,48 +12,47 @@ class AnimationMap:
     """
 
     @staticmethod
-    def action(state, equipment) -> Actions:
+    def action(state, equipment) -> str:
         """
         Resolves Sprite Intentionss to Animation Actions.
 
         - state: sprite state
         - equipment: equipment properties
         """
-        weapon = state.inventory.equipment.weapon
-        tool = state.inventory.equipment.tool
-        utility = state.inventory.equipment.utility
-        armor = state.inventory.equipment.armor
+        weapon = None
+        if getattr(state, 'inventory', None) and getattr(state.inventory, 'equipment', None):
+            weapon = state.inventory.equipment.weapon
+
         intention = state.intention
 
-        if intention == Intentions.ATTACK:
+        if intention == Intentions.ATTACK.value:
             if not weapon:
-                return Actions.CAST  # Default fallback for unarmed/magic attacks
+                return Actions.CAST.value  # Default fallback for unarmed/magic attacks
             
             weapon_property = equipment.weapons.get(weapon)
 
+            if weapon_property and weapon_property.actions:
+                return next(iter(weapon_property.actions))
             
-            if weapon_property:
-                return next(iter(weapon_property.actions), Actions.CAST)
-            
-            return Actions.CAST
+            return Actions.CAST.value
     
-        elif intention in [Intentions.WANDER, Intentions.FIND]:
-            return Actions.WALK
+        elif intention in (Intentions.WANDER.value, Intentions.FIND.value):
+            return Actions.WALK.value
 
-        return Actions.WALK
+        return Actions.WALK.value
 
     @staticmethod
-    def direction(position: Position, target: Position) -> Directions:
+    def direction(position: Position, target: Position) -> str:
         dx = target.x - position.x
         dy = target.y - position.y
     
         # In graphics coordinates, larger y is physically lower.
         if dy > dx:
             # Lower than both diagonals means it is physically DOWN
-            return Directions.DOWN if dy > -dx else Directions.LEFT
+            return Directions.DOWN.value if dy > -dx else Directions.LEFT.value
         
         # Higher than both diagonals means it is physically UP
-        return Directions.RIGHT if dy > -dx else Directions.UP
+        return Directions.RIGHT.value if dy > -dx else Directions.UP.value
 
 class DialogueMap:
     """

@@ -15,7 +15,7 @@ from app.config.enums import (
     AssetInstances
 )
 from app.game.devices import Device
-from app.game.mechanics import Mechanic
+from app.game.logic.mechanics import Mechanic
 from app.models.groups import (
     ConfigurationGroup,
     EquipmentGroup

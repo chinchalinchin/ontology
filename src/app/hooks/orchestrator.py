@@ -18,7 +18,8 @@ from app.config.enums import (
     AssetInstances,
     Devices,
     Equipment,
-    Groups
+    Groups,
+    Mechanics
 )
 from app.game.board import Board
 from app.game.engine import Engine
@@ -146,14 +147,14 @@ class Orchestrator:
         
         return Board(assets, configurations, equipment)
     
-    def init(self, screensize: Dimensions, device: Devices) -> Tuple[Board, Registry, Dict[str, Screen]]:
+    def init(self, screensize: Dimensions, device: Devices, headless: bool = True) -> Tuple[Board, Registry, Dict[str, Screen]]:
         """
         # Ontology: Orchestrate
 
         Initialize and return game components.
         """
         logger.info("Initializing SDL...")
-        render.init(screensize.w, screensize.l)
+        render.init(screensize.w, screensize.l, headless)
 
         logger.info("Initializing Board...")
         self.board = self.migrate()
@@ -163,9 +164,14 @@ class Orchestrator:
         device_instance = Factory.device(device, device_mapping)
         self.board.set_device(device_instance)
 
+        # Map the window to the OS to validate the OpenGL context
+        # strictly prior to allocating VRAM target textures.
+        if not headless:
+            render.show()
+
         logger.info("Initializing Registry..")
         self.registry = Registry(self.properties, self.configurations["recipes"])
-        
+
         logger.info("Initializing Screens...")
         self.screens = {
             layer: Screen(
@@ -181,9 +187,26 @@ class Orchestrator:
 
     def ignite(self, screensize: Dimensions, device: Devices) -> Engine:
         """
+        Entry point to fire up the dependency-injected execution sequence.
         """
-        self.orchestrate(screensize, device)
-        self.mechanics = { "TODO": "INIT" }
+        # Explicitly initialize as a windowed application for gameplay
+        self.init(screensize, device, headless=False)
+
+        # Instantiate list of all Mechanic objects replacing placeholder dictionary
+        self.mechanics = [
+            Factory.mechanics(Mechanics.PLAYER),
+            Factory.mechanics(Mechanics.TRANSITION),
+            Factory.mechanics(Mechanics.MOTION),
+            Factory.mechanics(Mechanics.COLLISION),
+            Factory.mechanics(Mechanics.SWITCH),
+            Factory.mechanics(Mechanics.PROJECTILE),
+            Factory.mechanics(Mechanics.COMBAT),
+            Factory.mechanics(Mechanics.COMMERCE),
+            Factory.mechanics(Mechanics.SPEECH),
+            Factory.mechanics(Mechanics.ANIMATION),
+            Factory.mechanics(Mechanics.REMOVE)
+        ]
+
         self.engine = Engine(self.board, self.screens, self.mechanics)
 
         return self.engine

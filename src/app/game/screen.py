@@ -113,17 +113,21 @@ class Screen:
         pov = self.camera(focus, dim)
         active_assets = []
         
+        # 1. Depth-sort the assets directly prior to querying asset.frame.keys()
+        # This properly maintains multi-layered entity compositions (e.g., equipment layered on players)
+        assets.sort(key=lambda a: a.state.position.y + (a.dimensions.l if a.dimensions else 0))
+        
         for asset in assets:
             # Filter out Tile assets to avoid dynamic rendering artifacts; 
             # they are already drawn on the pre-compiled canvases.
             if asset.category == AssetCategories.TILES:
                 continue
 
-            # 1. Resolve current animation frame keys
+            # 2. Resolve current animation frame keys
             frame_keys = asset.frame.keys(asset.id, asset.state)
             
             for frame_key in frame_keys:
-                # 2. Query registry for C-level source coordinates
+                # 3. Query registry for C-level source coordinates
                 tex_data = self.registry.data(frame_key)
 
                 if not tex_data:
@@ -131,19 +135,17 @@ class Screen:
 
                 tex, sx, sy, sw, sl = tex_data
                 
-                # 3. Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
+                # 4. Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
                 dx, dy = asset.state.position.x, asset.state.position.y
                 dw, dl = asset.dimensions.w, asset.dimensions.l
                 
-                # 4. Strict Camera Culling: Only pass geometry if intersecting the camera frame 
+                # 5. Strict Camera Culling: Only pass geometry if intersecting the camera frame 
                 if (dx + dw >= pov.x and dx <= pov.x + self.screensize.w and
                     dy + dl >= pov.y and dy <= pov.y + self.screensize.l):
                     
                     active_assets.append((tex, sx, sy, sw, sl, dx, dy, dw, dl))
 
-        # 5. Lightweight Python sort on active_assets based on Position Y + Dimension L
-        # primitive indexes: dx (5), dy (6), dw (7), dl (8) 
-        active_assets.sort(key=lambda x: x[6] + x[8])
+        logger.debug(f"Render Payload: Camera({pov.x}, {pov.y}) | Passing {len(active_assets)} dynamic primitive matrices to Cython.")
 
         # Pass purely native integers to bypass heavy object allocation
         render(

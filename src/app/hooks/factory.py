@@ -33,7 +33,7 @@ from app.config.enums import (
     Configurations,
     Groups
 )
-from app.game.mechanics import (
+from app.game.logic.mechanics import (
     AnimationMechanics,
     CollisionMechanics, 
     ProjectileMechanics,
@@ -198,12 +198,22 @@ class Factory:
 
         kwargs = {}
         for key, value in data.items():
-            if value is None or key not in hints:
+            if key not in hints:
                 kwargs[key] = value
                 continue
 
             field_type = hints[key]
             field_origin = get_origin(field_type)
+
+            # Manually trigger collection initialization for explicit null/None mappings
+            if value is None:
+                if field_type is list or field_origin is list:
+                    kwargs[key] = []
+                elif field_type is dict or field_origin is dict:
+                    kwargs[key] = {}
+                else:
+                    kwargs[key] = None
+                continue
 
             # Resolve Optional/Union types
             if field_origin is Union or field_origin is getattr(types, 'UnionType', type(None)):

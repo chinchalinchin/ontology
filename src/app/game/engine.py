@@ -10,11 +10,8 @@ import logging
 
 # Application Libraries
 from app.game.board import Board
-from app.game.mechanics import Mechanic
+from app.game.logic.mechanics import Mechanic
 from app.game.screen import Screen
-
-# Cython Libraries
-from libs.core.models import Dimensions
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +43,7 @@ class Engine:
     
     def start(self) -> None:        
         logger.info("Entering Game Loop...")
+
         delta = 1.0 / 60.0
         accumulator = 0.0
         last_time = self.time()
@@ -56,11 +54,12 @@ class Engine:
             last_time = current_time
             accumulator += frame_time
             
-            while not self.board.paused:
+            # Changed from 'while' to 'if'
+            if not self.board.paused:
                 while accumulator >= delta:
                     for this in self.mechanics:
                         this.update(self.board, delta)
-                        accumulator -= delta
+                    accumulator -= delta
 
                 player = self.board.player()
 

@@ -25,13 +25,23 @@ cdef extern from "SDL2/SDL.h":
     ctypedef struct SDL_Surface:
         void* pixels
         int pitch
-        
+    ctypedef struct SDL_RendererInfo:
+        const char *name
+        unsigned int flags
+        unsigned int num_texture_formats
+        unsigned int texture_formats[16]
+        int max_texture_width
+        int max_texture_height
     ctypedef struct SDL_Rect:
         int x
         int y
         int w
         int h
-        
+
+    int SDL_GetRendererInfo(SDL_Renderer* renderer, SDL_RendererInfo* info)
+    const char* SDL_GetCurrentVideoDriver()
+    const char* SDL_GetError()
+    
     int SDL_Init(unsigned int flags)
     void SDL_Quit()
 
@@ -43,6 +53,9 @@ cdef extern from "SDL2/SDL.h":
         int h, 
         unsigned int flags
     )
+    void SDL_DestroyWindow(SDL_Window* window)
+    void SDL_ShowWindow(SDL_Window* window)
+
     SDL_Renderer* SDL_CreateRenderer(
         SDL_Window* window, 
         int index, 
@@ -132,26 +145,79 @@ cdef SDL_Window* _window = NULL
 # Public Python/Cython API
 # -----------------------------------------------------------------------------
 
+def get_system_info() -> dict:
+    """Retrieves low-level SDL context and driver details."""
+    cdef SDL_RendererInfo info
+    cdef dict sys_info = {
+        "video_driver": "Unknown",
+        "renderer_name": "Unknown",
+        "max_texture_width": 0,
+        "max_texture_height": 0,
+        "accelerated": False
+    }
+    
+    if SDL_GetCurrentVideoDriver() != NULL:
+        sys_info["video_driver"] = SDL_GetCurrentVideoDriver().decode('utf-8')
+        
+    if _renderer != NULL:
+        if SDL_GetRendererInfo(_renderer, &info) == 0:
+            sys_info["renderer_name"] = info.name.decode('utf-8')
+            sys_info["max_texture_width"] = info.max_texture_width
+            sys_info["max_texture_height"] = info.max_texture_height
+            sys_info["accelerated"] = bool(info.flags & SDL_RENDERER_ACCELERATED)
+            
+    return sys_info
+
 def init(int w, int l, bint headless=True):
     """Initializes SDL."""
     global _window, _canvas_surface, _renderer
     
-    SDL_Init(SDL_INIT_VIDEO)
+    if SDL_Init(SDL_INIT_VIDEO) != 0:
+        raise RuntimeError(f"SDL_Init Error: {SDL_GetError().decode('utf-8')}")
+        
     IMG_Init(IMG_INIT_PNG)
     
     if headless:
         _canvas_surface = SDL_CreateRGBSurfaceWithFormat(0, w, l, 32, SDL_PIXELFORMAT_RGBA32)
-        _renderer = SDL_CreateSoftwareRenderer(_canvas_surface)
         if _canvas_surface == NULL:
-            raise RuntimeError("Failed to create main canvas surface.")
+            raise RuntimeError(f"Failed to create main canvas surface: {SDL_GetError().decode('utf-8')}")
+            
+        _renderer = SDL_CreateSoftwareRenderer(_canvas_surface)
+        if _renderer == NULL:
+            raise RuntimeError(f"Failed to create software renderer: {SDL_GetError().decode('utf-8')}")
             
     else:
-        _window = SDL_CreateWindow(b"Game", 100, 100, w, l, SDL_WINDOW_SHOWN)
+        # Instantiate window as HIDDEN so the registry can load in the background
+        _window = SDL_CreateWindow(b"Game", 100, 100, w, l, SDL_WINDOW_HIDDEN)
+        if _window == NULL:
+            raise RuntimeError(f"Failed to create window: {SDL_GetError().decode('utf-8')}")
+            
         _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED)
-        if _renderer == NULL:
-            raise RuntimeError("Failed to initialize software SDL_Renderer.")
-
         
+        if _renderer == NULL:
+            logger.info("Using SDL_RENDERER_SOFTWARE")
+            logger.warning(f"Accelerated renderer failed: {SDL_GetError().decode('utf-8')}. Falling back to software.")
+            _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_SOFTWARE)
+            
+            if _renderer == NULL:
+                raise RuntimeError(f"Failed to initialize SDL_Renderer fallback: {SDL_GetError().decode('utf-8')}")
+
+def show():
+    """Reveals the hidden SDL window and paints a clean black loading screen."""
+    if _window != NULL:
+        SDL_ShowWindow(_window)
+        
+        # 1. Clear the uninitialized VRAM garbage to solid black
+        SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255)
+        SDL_RenderClear(_renderer)
+        
+        # 2. Push the black frame to the monitor
+        SDL_RenderPresent(_renderer)
+        
+        # 3. Tell the OS window manager we are alive so it doesn't 
+        # flag the blank window as "Not Responding" during the Registry load
+        SDL_PumpEvents()
+
 def canvas(int w, int l) -> TexturePtr:
     """Instantiates a blank texture assigned as a rendering target using primitive integers."""
     logger.debug(f"Generating blank VRAM render target canvas size: {w}x{l}")
@@ -235,7 +301,7 @@ def construct(TexturePtr target, list tiles):
                 SDL_RenderCopy(_renderer, tex.ptr, &c_src, &c_dst)
                 
     SDL_SetRenderTarget(_renderer, NULL)
-    
+
 def render(
     TexturePtr background, 
     TexturePtr foreground, 
@@ -259,15 +325,19 @@ def render(
         bg_src.y = cam_y
         bg_src.w = screen_w
         bg_src.h = screen_l
-        
+
         # Define destination rectangle to prevent stretching over mismatched canvas/screen sizes
         bg_dst.x = 0
         bg_dst.y = 0
         bg_dst.w = screen_w
         bg_dst.h = screen_l
 
-        SDL_RenderCopy(_renderer, background.ptr, &bg_src, &bg_dst)
-        
+        bg_status = SDL_RenderCopy(_renderer, background.ptr, &bg_src, &bg_dst)
+        if bg_status < 0:
+            logger.error(f"Background RenderCopy failed: {SDL_GetError().decode('utf-8')} "
+                        f"| Texture Size: {background.w}x{background.l} "
+                        f"| Requested Source: {bg_src.w}x{bg_src.h}")
+
     for asset in assets:
         # Safely unpack the primitive tuple directly into C-variables
         tex_wrapper, sx, sy, sw, sl, dx, dy, dw, dl = asset
@@ -329,12 +399,15 @@ def save(str filename, int w, int l, TexturePtr target=None):
 
 def quit_sdl():
     """Safely terminate SDL bindings."""
-    global _canvas_surface
+    global _canvas_surface, _window
     global _renderer
     
     if _renderer != NULL:
         SDL_DestroyRenderer(_renderer)
         _renderer = NULL
+    if _window != NULL:
+        SDL_DestroyWindow(_window)
+        _window = NULL
     if _canvas_surface != NULL:
         SDL_FreeSurface(_canvas_surface)
         _canvas_surface = NULL
