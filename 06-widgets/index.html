@@ -1213,10 +1213,103 @@
 <p>TODO</p>
 <p><strong>Menu Schema</strong></p>
 <p>TODO</p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="nt">menus</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">&lt;menu-key&gt;</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">roots</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">px</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">py</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dock | stack | tab</span>
+<span class="w">        </span><span class="nt">alignment</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="nt">headers</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">id</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">synbols</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="nt">children</span><span class="p">:</span><span class="w"> </span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span>
+<span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
+<span class="w">              </span><span class="nt">ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state | traversal</span>
+<span class="w">              </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span>
 </code></pre></div>
 <p><strong>Default Menus</strong></p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="nt">menus</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">dialogue</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">roots</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neutral</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dialogue-menu</span>
+<span class="w">        </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">px</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">          </span><span class="nt">py</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.75</span>
+<span class="w">        </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dock</span>
+<span class="w">        </span><span class="nt">alignment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">left</span>
+<span class="w">        </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">        </span><span class="nt">children</span><span class="p">:</span><span class="w"> </span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">page</span>
+<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">portrait</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">character-portrait</span>
+<span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
+<span class="w">              </span><span class="nt">ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
+<span class="w">              </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.state.character.portrait</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">page</span>
+<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dialogue</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">character-speech</span>
+<span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
+<span class="w">              </span><span class="nt">ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
+<span class="w">              </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.state.psyche.communication</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">button</span>
+<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-up</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">character-speech-scroll-up</span>
+<span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
+<span class="w">              </span><span class="nt">ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">traversal</span>
+<span class="w">              </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">self.children[1]</span><span class="w"> </span><span class="c1"># Bind to scroller Page</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">button</span>
+<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-down</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">character-speech-scroll-down</span>
+<span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
+<span class="w">              </span><span class="nt">ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">traversal</span>
+<span class="w">              </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">self.children[1]</span><span class="w"> </span><span class="c1"># Bind to scroller Page</span>
+<span class="w">  </span><span class="nt">editor</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">inventory</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">roots</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dark</span>
+<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">equipment-menu</span>
+<span class="w">        </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span>
+<span class="w">          </span><span class="nt">px</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">          </span><span class="nt">py</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">        </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tab</span>
+<span class="w">        </span><span class="nt">headers</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">icon</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">armor-header</span>
+<span class="w">            </span><span class="nt">symbols</span><span class="p">:</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">icon-armor</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">icon</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">weapon-header</span>
+<span class="w">            </span><span class="nt">symbols</span><span class="p">:</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">icon-weapon</span>
+<span class="w">        </span><span class="nt">children</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pane</span>
+<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dark</span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">armor-pane</span>
+<span class="w">            </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dock</span>
+<span class="w">            </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">            </span><span class="nt">children</span><span class="p">:</span><span class="w"> </span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">button</span>
+<span class="w">                </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">slot</span>
+<span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">equipped-armor</span>
+<span class="w">                </span><span class="nt">bind</span><span class="p">:</span>
+<span class="w">                  </span><span class="nt">ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
+<span class="w">                  </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.state.inventory.equipment</span>
+<span class="w">              </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">button</span>
+<span class="w">                </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">slot</span>
+<span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">available-armor</span>
+<span class="w">                </span><span class="nt">bind</span><span class="p">:</span>
+<span class="w">                  </span><span class="nt">ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
+<span class="w">                  </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.state.inventory.equipment</span>
+<span class="w">  </span><span class="nt">market</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">pause</span><span class="p">:</span>
 </code></pre></div>
 <h3 id="dialogue">Dialogue</h3>
 <p>TODO</p>
