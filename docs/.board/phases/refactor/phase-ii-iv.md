@@ -1,6 +1,9 @@
-#### Refactor: Phase II - 
+#### Refactor: Phase II - Engine
 
-- Goal: 
+**Goals** 
+
+- CLI function for starting game engine.
+- Sufficient Mechanics for basic animation, user input and Asset functionality.
 
 **Further Analysis:**
 

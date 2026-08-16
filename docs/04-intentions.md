@@ -47,7 +47,7 @@ The Intention Transition Matrix determines which Intention states are currently 
 Provided below is the Intention Transition Matrix bundled with the application by default,
 
 ```mermaid
---8<-- "docs/.static/mmd/intention-transitions.mmd"
+--8<-- ".static/mmd/intention-transitions.mmd"
 ```
 
 | # | Starting Intention | Reachable Intentions |
@@ -72,7 +72,7 @@ Provided below is the Intention Transition Matrix bundled with the application b
 | 17 | `wander` | `idle`, `return` |
 
 ```yaml
---8<-- "docs/.static/yaml/examples/default-intention-matrix.yaml"
+--8<-- ".static/yaml/examples/default-intention-matrix.yaml"
 ```
 
 **Intentional Scripting Language (ISL)**

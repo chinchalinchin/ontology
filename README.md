@@ -1,5 +1,7 @@
 # Ontology
 
+- [Documentation](https://chinchalinchin.github.io/ontology/)
+
 ## Setup
 
 Install and build the application dependencies.

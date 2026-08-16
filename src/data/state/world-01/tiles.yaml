@@ -28,7 +28,7 @@ tiles:
         nx: 5
         ny: 6
     - id: lava
-      name: great-lake
+      name: lava-river
       layer: '0'
       position: 
         x: 480
@@ -37,7 +37,7 @@ tiles:
         nx: 4
         ny: 10
     - id: dirt
-      name: great-lake
+      name: badlands
       layer: '0'
       position: 
         x: 608

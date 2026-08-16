@@ -39,7 +39,7 @@ graph TD
     Sheets --> Sprites[Sprites]
     Sheets --> Players[Players]
     Sheets --> Equipment[Equipment Group]
-    
+
     Equipment -.-> Armor[Armor]
     Equipment -.-> Tools[Tools]
     Equipment -.-> Utilities[Utilities]
@@ -58,7 +58,7 @@ graph TD
     classDef category fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
     classDef instance fill:#e8f5e9,stroke:#388e3c,stroke-width:1px;
     classDef virtual fill:#f3e5f5,stroke:#8e24aa,stroke-width:1px,stroke-dasharray: 5 5;
-    
+
     class Asset base;
     class Tiles,Cursors,Objects,Crafts,Effects,Sheets,Widgets category;
     class Back,Fore,Expressions,Projectiles,Chests,Crates,Doors,Gates,Plates,Struts,Plots,Temporary,Persistent,Pixies,Sprites,Players,Panes,Buttons,Languages,Meters,Pages instance;
