@@ -1020,14 +1020,13 @@
 <h3 id="animation">Animation</h3>
 <p>Animations are tuples of (Action, Direction, Frame). Action and Direction were previously defined in the <a href="../01-assets/">Assets documentation</a>.</p>
 <h3 id="psyche">Psyche</h3>
-<p>The <em>Psyche</em> is an internal State data structure that governs a Sprite's ancillary Animation logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations to be applied to the Sprite Sheet's frame. The complete Psyche state for a Sprite is given by the tuple,</p>
+<p>The <em>Psyche</em> is an internal State data structure that governs a Sprite's ancillary Animation and Intention logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations and modulations of the Sprite state. The complete Psyche state for a Sprite is given by the tuple,</p>
 <pre><code>(Communcation, Expression, Motivation)
 </code></pre>
 <p><strong>Communication</strong></p>
 <p>The Communication dimension of a Psyche can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the <code>speak</code> Intention.</p>
 <p><strong>Expression</strong></p>
-<p>The Expression dimension alter the Sprite's appearnce by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. </p>
-<p>The default Expressions are enumerated below,</p>
+<p>The Expression dimension alter the Sprite's appearnce by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. Expressions are enumerated below,</p>
 <ul>
 <li><code>agreement</code></li>
 <li><code>anger</code></li>
@@ -1039,8 +1038,7 @@
 <li><code>tired</code></li>
 </ul>
 <p><strong>Motivation</strong></p>
-<p>Motivations are long-term state variables that are used to modulate the <a href="../04-intentions/">Intention Transition matrix</a>.</p>
-<p>The default Motivations are enumerated below,</p>
+<p>Motivations are long-term state variables that are used to modulate the <a href="../04-intentions/">Intention Transition matrix</a>. Motivations are enumerated below,</p>
 <ul>
 <li><code>conquest</code></li>
 <li><code>profit</code></li>
@@ -1061,12 +1059,12 @@
 </ul>
 <p><strong>Communications</strong></p>
 <p>Under certain conditions based on the Sprite's Intention, the Sprite may emit a Communication through the <code>speak</code> Intention. For example, a Sprite in the <code>mock</code> Intention might receive a Communication key <code>insult</code>. This key gets stored at the <em>beginning</em> (0 index) of the <code>memory.communications</code> list. </p>
-<p>When a Sprite with a non-empty <code>memory.communications</code> enters into the <code>speak</code> Intention, the gameplay loop will then take the first entry out of this Sprites <code>memory.communications</code> list, delete it from this list and place it in the <code>psyche.communication</code> cell. </p>
+<p>When a Sprite with a non-empty <code>memory.communications</code> enters the <code>speak</code> Intention, the gameplay loop will then take the first entry out of this Sprites <code>memory.communications</code> list, delete it from this list and place it in the <code>psyche.communication</code> cell. </p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>The last entry in <code>memory.communications</code> is <em>never</em> deleted. The entry is termed <em>unforgettable</em>.</p>
 </div>
-<p>When a Sprite with a non-null <code>psyche.communication</code> enters into the <code>speak</code> Intention, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the <code>intention.communication</code> cell.</p>
+<p>When a Sprite with a non-null <code>psyche.communication</code> (re-)enters the <code>speak</code> Intention, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the <code>intention.communication</code> cell.</p>
 <p><strong>Prices</strong></p>
 <p>Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the <code>barter</code> Intention. This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.</p>
 <p>When two Sprites enter the <code>speak</code> Intention within a certain radius of each other, the <code>SpeechMechanic</code> does the following:</p>
@@ -1110,7 +1108,7 @@
 </div>
 <h3 id="equipment-animations">Equipment Animations</h3>
 <p>When Equipment is configured in the Sheet Property index file, the Equipment <code>actions</code> property determines which Actions in a Sprite's state will result in extra Frame Keys being appended to the <code>keys()</code> return result. </p>
-<p>Equipment is divided in four kinds: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. Just as active Equipment affects the Frame Keys returned by a Sheet Asset, it also affects state transitions. When a piece of Equipment is active, it directly determines which Animation Action state are enterable from the <code>attack</code> Intention. The translation between Intention and Equipment into Animation is achieved through an <a href="../04-intentions/#animationmap">AnimationMap</a></p>
+<p>Equipment is divided in four kinds: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. Just as active Equipment affects the Frame Keys returned by a Sheet Asset, it also affects state transitions. When a piece of Equipment is active, it directly determines which Animation Action state are enterable from the <code>attack</code> Intention (or the <code>build</code> Intention, etc.). The translation between Intention and Equipment into Animation is achieved through an <a href="../04-intentions/#animationmap">AnimationMap</a></p>
 <div class="highlight"><pre><span></span><code><span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">animation</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="n">AnimationMap</span><span class="o">.</span><span class="n">action</span><span class="p">(</span>
     <span class="n">sprite</span><span class="o">.</span><span class="n">state</span><span class="p">,</span>
     <span class="n">board</span><span class="o">.</span><span class="n">equipment</span>
