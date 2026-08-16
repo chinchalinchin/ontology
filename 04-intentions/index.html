@@ -979,6 +979,7 @@
 <h3 id="goal-category">Goal Category</h3>
 <p>When a Sprite has Goal, it will seek out (path-find) its way to <code>name</code>. The <code>category</code> of a Goal affects the type of identifier given in <code>name</code>. </p>
 <ul>
+<li><code>category == position</code>: The Goal is a Position, i.e. the Sprite is trying to find a location on the Board. The <code>name</code> will be the Sprite's name.</li>
 <li><code>category == asset</code>: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The <code>name</code> will be the Asset <code>name</code>.</li>
 <li><code>category == loot</code>: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The <code>name</code> will be an Inventory key. </li>
 <li><code>category == wealth</code>: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The <code>name</code> will be an Inventory key. The key will be of the value with the maximum value in the Sprite's Prices, e.g. the loot with the highest Price.</li>
