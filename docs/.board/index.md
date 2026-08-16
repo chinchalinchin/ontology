@@ -22,3 +22,4 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase II-I: Frames](./phases/refactor/phase-ii-i.md)
     - [x]: [Phase II-II: Registry](./phases/refactor/phase-ii-ii.md)
     - [x]: [Phase II-III: Equipment](./phases/refactor/phase-ii-iii.md)
+    - [ ]: [Phase II-IV: ](./phases/refactor/phase-ii-iv.md)

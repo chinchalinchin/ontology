@@ -136,7 +136,7 @@ Animations are tuples of (Action, Direction, Frame). Action and Direction were p
 
 ### Psyche
 
-The *Psyche* is an internal State data structure that governs a Sprite's ancillary Animation logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations to be applied to the Sprite Sheet's frame. The complete Psyche state for a Sprite is given by the tuple,
+The *Psyche* is an internal State data structure that governs a Sprite's ancillary Animation and Intention logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations and modulations of the Sprite state. The complete Psyche state for a Sprite is given by the tuple,
 
     (Communcation, Expression, Motivation)
 
@@ -146,9 +146,7 @@ The Communication dimension of a Psyche can be thought of as the short-term memo
 
 **Expression**
 
-The Expression dimension alter the Sprite's appearnce by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. 
-
-The default Expressions are enumerated below,
+The Expression dimension alter the Sprite's appearnce by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. Expressions are enumerated below,
 
 - `agreement`
 - `anger`
@@ -161,9 +159,7 @@ The default Expressions are enumerated below,
 
 **Motivation**
 
-Motivations are long-term state variables that are used to modulate the [Intention Transition matrix](./04-intentions.md).
-
-The default Motivations are enumerated below,
+Motivations are long-term state variables that are used to modulate the [Intention Transition matrix](./04-intentions.md). Motivations are enumerated below,
 
 - `conquest`
 - `profit`
@@ -187,12 +183,12 @@ The default Motivations are enumerated below,
 
 Under certain conditions based on the Sprite's Intention, the Sprite may emit a Communication through the `speak` Intention. For example, a Sprite in the `mock` Intention might receive a Communication key `insult`. This key gets stored at the *beginning* (0 index) of the `memory.communications` list. 
 
-When a Sprite with a non-empty `memory.communications` enters into the `speak` Intention, the gameplay loop will then take the first entry out of this Sprites `memory.communications` list, delete it from this list and place it in the `psyche.communication` cell. 
+When a Sprite with a non-empty `memory.communications` enters the `speak` Intention, the gameplay loop will then take the first entry out of this Sprites `memory.communications` list, delete it from this list and place it in the `psyche.communication` cell. 
 
 !!! important
     The last entry in `memory.communications` is *never* deleted. The entry is termed *unforgettable*.
 
-When a Sprite with a non-null `psyche.communication` enters into the `speak` Intention, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the `intention.communication` cell.
+When a Sprite with a non-null `psyche.communication` (re-)enters the `speak` Intention, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the `intention.communication` cell.
 
 **Prices**
 
@@ -256,7 +252,7 @@ When this Sprite's Frame `keys()` interface is called, it will return a list of 
 
 When Equipment is configured in the Sheet Property index file, the Equipment `actions` property determines which Actions in a Sprite's state will result in extra Frame Keys being appended to the `keys()` return result. 
 
-Equipment is divided in four kinds: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. Just as active Equipment affects the Frame Keys returned by a Sheet Asset, it also affects state transitions. When a piece of Equipment is active, it directly determines which Animation Action state are enterable from the `attack` Intention. The translation between Intention and Equipment into Animation is achieved through an [AnimationMap](./04-intentions.md#animationmap)
+Equipment is divided in four kinds: Armor, Tools, Utilities and Weapons. Each Kind modifies the gameplay in different ways. Just as active Equipment affects the Frame Keys returned by a Sheet Asset, it also affects state transitions. When a piece of Equipment is active, it directly determines which Animation Action state are enterable from the `attack` Intention (or the `build` Intention, etc.). The translation between Intention and Equipment into Animation is achieved through an [AnimationMap](./04-intentions.md#animationmap)
 
 ```python
 sprite.state.animation.action = AnimationMap.action(
