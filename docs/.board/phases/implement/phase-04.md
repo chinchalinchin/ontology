@@ -6,6 +6,28 @@ The current collision system relies on a brute-force $O(N^2)$ nested loop execut
 
 By serializing spatial data, partitioning the board with a Broad-Phase grid, and returning integer pairs for Python to resolve, we preserve readability while guaranteeing massive performance gains for dense environments.
 
+The grid's blueprint (`cdef class SpatialHash`) must be defined in the Cython math library.
+
+Because the entire point of the spatial hash is to operate at C-speeds, it cannot rely on Python lists or dictionaries under the hood. It needs to be built using contiguous C-memory (like a flat C-array or a C++ `std::vector`). Defining it in `math.pyx` allows us to strictly type the variables and bypass the Python Global Interpreter Lock (GIL) during the hashing and querying steps.
+
+The *instance* of the grid should be an attribute of the `CollisionMechanics` class. Here is why it shouldn't live on the `Board` or as a static variable in `Physics`:
+
+* **The Board is a Database:** The `Board` is designed to hold the absolute truth of the game state (Assets, Configurations, Equipment). The spatial grid, however, is a transient, algorithmic data structure. Its data is only valid for a single frame. It represents *behavioral context*, not absolute state.
+* **Mechanics are Filters:** The engine's philosophy states that Mechanics query the Board for what they need. `CollisionMechanics` is the system responsible for physics. It should own the tools required to perform its job.
+* **The "Zero Heap Allocation" Rule:** If we define the grid inside a static `Physics.collisions` method, we would have to instantiate a new grid and destroy it every single frame. At 60 FPS, that means allocating and garbage-collecting 60 objects a second, which causes micro-stutters.
+
+By making the grid an attribute of `CollisionMechanics`, we instantiate it *exactly once* when the game bootstraps:
+
+```python
+class CollisionMechanics(Mechanic):
+    def __init__(self):
+        # Allocated once in memory during orchestration
+        self.grid = SpatialHash(cell_size=64, max_entities=2000)
+
+```
+
+Then, at the start of every frame's `update(self, board, delta)` loop, we simply call `self.grid.clear()`. This zeroes out the underlying C-array but keeps the memory allocated. We repopulate it, query it, and move on. No heap allocation, no garbage collection, and maximum performance.
+
 **1. Task: The Data Bridge (Serialization)**
 
 *Objective*: Prevent Python objects from crossing the Cython boundary. `CollisionMechanics` must extract and flatten spatial data into primitive structures before passing it to the C-stack.
