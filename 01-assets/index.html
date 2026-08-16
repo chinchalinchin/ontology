@@ -1390,45 +1390,52 @@
 <div class="highlight"><pre><span></span><code>assets<span class="w"> </span>%<span class="w"> </span>tree<span class="w"> </span>-L<span class="w"> </span><span class="m">2</span>
 .
 ├──<span class="w"> </span>crafts
+│<span class="w">   </span>├──<span class="w"> </span>main.yaml
 │<span class="w">   </span>└──<span class="w"> </span>struts
-│<span class="w">   </span>└──<span class="w"> </span>main.yaml
 ├──<span class="w"> </span>cursors
 │<span class="w">   </span>├──<span class="w"> </span>expressions
-│<span class="w">   </span>├──<span class="w"> </span>projectiles
-│<span class="w">   </span>└──<span class="w"> </span>main.yaml
+│<span class="w">   </span>├──<span class="w"> </span>main.yaml
+│<span class="w">   </span>└──<span class="w"> </span>projectiles
 ├──<span class="w"> </span>effects
+│<span class="w">   </span>├──<span class="w"> </span>main.yaml
 │<span class="w">   </span>├──<span class="w"> </span>persistent
-│<span class="w">   </span>├──<span class="w"> </span>temporary
-│<span class="w">   </span>└──<span class="w"> </span>main.yaml
-├──<span class="w"> </span>environ
-│<span class="w">   </span>└──<span class="w"> </span>main.yaml
-├──<span class="w"> </span>main.yaml
-├──<span class="w"> </span>menu
-│<span class="w">   </span>├──<span class="w"> </span>icons
-│<span class="w">   </span>├──<span class="w"> </span>symbols
-│<span class="w">   </span>├──<span class="w"> </span>windows
-│<span class="w">   </span>└──<span class="w"> </span>main.yaml
+│<span class="w">   </span>└──<span class="w"> </span>temporary
 ├──<span class="w"> </span>objects
 │<span class="w">   </span>├──<span class="w"> </span>chests
 │<span class="w">   </span>├──<span class="w"> </span>crates
 │<span class="w">   </span>├──<span class="w"> </span>doors
 │<span class="w">   </span>├──<span class="w"> </span>gates
+│<span class="w">   </span>├──<span class="w"> </span>main.yaml
 │<span class="w">   </span>├──<span class="w"> </span>plates
-│<span class="w">   </span>├──<span class="w"> </span>struts
-│<span class="w">   </span>└──<span class="w"> </span>main.yaml
+│<span class="w">   </span>└──<span class="w"> </span>struts
+├──<span class="w"> </span>resources
+│<span class="w">   </span>├──<span class="w"> </span>crops
+│<span class="w">   </span>├──<span class="w"> </span>main.yaml
+│<span class="w">   </span>└──<span class="w"> </span>ore
 ├──<span class="w"> </span>sheets
+│<span class="w">   </span>├──<span class="w"> </span>armor
+│<span class="w">   </span>├──<span class="w"> </span>main.yaml
 │<span class="w">   </span>├──<span class="w"> </span>pixies
+│<span class="w">   </span>├──<span class="w"> </span>shields
 │<span class="w">   </span>├──<span class="w"> </span>sprites
-│<span class="w">   </span>└──<span class="w"> </span>main.yaml
+│<span class="w">   </span>├──<span class="w"> </span>tools
+│<span class="w">   </span>├──<span class="w"> </span>utilities
+│<span class="w">   </span>└──<span class="w"> </span>weapons
 ├──<span class="w"> </span>sounds
+│<span class="w">   </span>├──<span class="w"> </span>main.yaml
 │<span class="w">   </span>├──<span class="w"> </span>music
-│<span class="w">   </span>├──<span class="w"> </span>speech
-│<span class="w">   </span>└──<span class="w"> </span>main.yaml
-└──<span class="w"> </span>tiles
+│<span class="w">   </span>└──<span class="w"> </span>speech
+├──<span class="w"> </span>tiles
 │<span class="w">   </span>├──<span class="w"> </span>back
 │<span class="w">   </span>├──<span class="w"> </span>fore
 │<span class="w">   </span>└──<span class="w"> </span>main.yaml
-└──<span class="w"> </span>main.yaml
+└──<span class="w"> </span>widgets
+<span class="w">    </span>├──<span class="w"> </span>buttons
+<span class="w">    </span>├──<span class="w"> </span>language
+<span class="w">    </span>├──<span class="w"> </span>main.yaml
+<span class="w">    </span>├──<span class="w"> </span>meters
+<span class="w">    </span>├──<span class="w"> </span>pages
+<span class="w">    </span>└──<span class="w"> </span>panes
 </code></pre></div>
 <p>The root <code>main.yaml</code> configures <a href="#recipes">Asset Recipes</a>. The <code>main.yaml</code> files in each subdirectory conform to the <a href="#schemas">Asset property schema</a> of their respective Asset Category. </p>
 <h3 id="asset-concepts">Asset Concepts</h3>
