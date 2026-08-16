@@ -1457,6 +1457,8 @@
 <p>State files are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code> directory, where <code>&lt;board-key&gt;</code> is a unique identifer for a <a href="../00-overview/#board">Board</a>.</p>
 <h3 id="asset-hierarchy">Asset Hierarchy</h3>
 <p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state <a href="#schemas">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
+<div class="highlight"><pre><span></span><code>
+</code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The Asset Hierarchy can be thought of as a data abstraction governing the schemas which drive the ECS instantiation. </p>
@@ -1617,8 +1619,6 @@
 <p class="admonition-title">Note</p>
 <p><a href="../02-sprites/#equipment">Equipment</a> and <a href="../03-player/">Player</a> Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is stateless, whereas the Player is a special type of <a href="../02-sprites/">Sprite</a>.</p>
 </div>
-<div class="highlight"><pre><span></span><code>
-</code></pre></div>
 <h3 id="asset-architecture">Asset Architecture</h3>
 <p>Every physical entity in the game is an instance of the unified <code>Asset</code> class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. <em>Behaviors</em> are decoupled from Assets and managed entirely by <em>Mechanics</em> classes that iterate over the Board Assets. See <a href="./06-architecture.md#mechanics">Mechanics documentation</a> for more information.</p>
 <p>The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the <a href="#recipes">Recipe</a> configuration file. The components of each Assets are enumerated below,</p>
