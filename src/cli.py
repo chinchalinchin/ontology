@@ -71,7 +71,7 @@ def main():
     parser.add_argument("--log-level", type=str, default="INFO", 
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], 
                         help="Set the application logging level.")
-    parser.add_argument("--dump", action="store_true", default=False,
+    parser.add_argument("--dump-state", action="store_true", default=False,
                         help="Generate a state dump markdown file after execution.")
     parser.add_argument("--dump-sdl", action="store_true", default=False,
                         help="Generate an SDL configuration dump markdown file after execution.")
@@ -160,7 +160,7 @@ def main():
         except KeyboardInterrupt:
             logger.info("Game engine loop interrupted by user.")
 
-    if args.dump:
+    if args.dump_state:
         dump(args.board_key, board, 'state')
     
     # Cleanly release memory bounds
