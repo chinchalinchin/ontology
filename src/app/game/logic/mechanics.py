@@ -269,7 +269,7 @@ class PlayerMechanics(Mechanic):
             goal_x += speed
             has_movement = True
 
-        # UPDATE: Initialize missing goal tracking state
+        # Initialize missing goal tracking state
         if has_movement and not player.state.goal:
             player.state.goal = Goal(
                 name=player.name, 
@@ -277,8 +277,13 @@ class PlayerMechanics(Mechanic):
                 position=Position(goal_x, goal_y)
             )
         elif player.state.goal:
-             player.state.goal.position.x = goal_x
-             player.state.goal.position.y = goal_y
+            player.state.goal.position.x = goal_x
+            player.state.goal.position.y = goal_y
+
+        if player.state.intention == Intentions.ATTACK.value:
+            player.state.mutators.triggers.animated = True
+        else:
+            player.state.mutators.triggers.animated = has_movement
 
         player.state.animation.action = AnimationMap.action(
             player.state, 
@@ -290,7 +295,6 @@ class PlayerMechanics(Mechanic):
                 player.state.position,
                 player.state.goal.position
             )
-
 # ----------------------------------------------------------------------------------------
 
 class MotionMechanics(Mechanic):
@@ -316,18 +320,27 @@ class MotionMechanics(Mechanic):
                 continue
 
             speed = asset.state.character.speed
+            speed_x = speed
+            speed_y = speed
+
+            # Integer approximation for diagonal vector normalization (~0.707)
+            if dx != 0 and dy != 0:
+                # max(1, ...) prevents truncation paralysis for slow entities (speed < 2)
+                diag_speed = max(1, (speed * 707) // 1000)
+                speed_x = diag_speed
+                speed_y = diag_speed
 
             # Apply X Vector offset 
             if dx > 0:
-                asset.state.position.x += min(speed, dx)
+                asset.state.position.x += min(speed_x, dx)
             elif dx < 0:
-                asset.state.position.x -= min(speed, abs(dx))
+                asset.state.position.x -= min(speed_x, abs(dx))
 
             # Apply Y Vector offset
             if dy > 0:
-                asset.state.position.y += min(speed, dy)
+                asset.state.position.y += min(speed_y, dy)
             elif dy < 0:
-                asset.state.position.y -= min(speed, abs(dy))
+                asset.state.position.y -= min(speed_y, abs(dy))
 
 # ----------------------------------------------------------------------------------------
 

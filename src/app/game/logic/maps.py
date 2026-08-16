@@ -25,6 +25,9 @@ class AnimationMap:
 
         intention = state.intention
 
+        if intention == Intentions.IDLE.value:
+            return Actions.WALK.value
+
         if intention == Intentions.ATTACK.value:
             if not weapon:
                 return Actions.CAST.value  # Default fallback for unarmed/magic attacks
@@ -40,6 +43,7 @@ class AnimationMap:
             return Actions.WALK.value
 
         return Actions.WALK.value
+    
 
     @staticmethod
     def direction(position: Position, target: Position) -> str:

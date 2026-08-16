@@ -39,15 +39,18 @@ mappings:
 **2. Task: Reconcile Mutator Schemas & Implement Animation Triggers**
 
 *Objective*: Allow Sprites to halt animation cycles based on behavioral state.
-- [ ] Subtask: Modify `app.models.state.Mutators` to include `triggers: Dict[str, bool]` as dictated by the documentation.
-- [ ] Subtask: Update `PlayerMechanics` to set `player.state.mutators.triggers['animated'] = has_movement`. Ensure this evaluation ignores movement if the player is locked in a non-interruptible action (e.g., `attack`).
-- [ ] Subtask: Update `StateAnimation.animate()` in `app/assets/animations.py` to check `state.mutators.triggers.get('animated', True)`. If False, force `state.animation.frame = 0` and bypass the increment calculation.
+- [x] Subtask: Modify `app.models.state.Mutators` to include `triggers: Dict[str, bool]` as dictated by the documentation. Nest `fear` and `vision` under `parameters`.
+- [~] Subtask: Update Pydantic validators. Ensure validated models are correctly migrated during orchestration.
+- [~] Subtask: Since Mutators may be absent from the Player State YAML file (e.g. Player mutators are not parameterized), ensure the new models set defaults to prevent validation failures. 
+- [ ] Subtask: Update `PlayerMechanics` to set `player.state.mutators.triggers.animated = has_movement`. Ensure this evaluation ignores movement if the player is locked in a non-interruptible action (e.g., `attack`).
+- [ ] Subtask: Update `StateAnimation.animate()` in `app/assets/animations.py` to check `state.mutators.triggers.animated`. If False, force `state.animation.frame = 0` and bypass the increment calculation.
 
 **3. Task: Resolve Cartesian Motion Mechanics**
 
 *Objective*: Standardize velocity calculations to prevent diagonal speed exploitation.
 
-- [ ] Subtask: Refactor `MotionMechanics.update()` to calculate the Euclidean distance to the goal. Normalize the $dx, dy$ components into a unit vector, then multiply by `speed` before applying the positional translation.
+- [!] Subtask: Refactor `MotionMechanics.update()` to calculate the Euclidean distance to the goal. Normalize the `dx, dy` components into a unit vector, then multiply by `speed` before applying the positional translation.
+    - [] Subtask: Before completing this task, discuss whether introducing square-root calculations into the engine and turning the game space into the continuum presents any problems. I am not against this approach, but I want to consider all angles.
 
 **4. Task: Implement Rendering Constraint (Frame Limiter)**
 

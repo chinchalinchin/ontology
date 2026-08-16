@@ -8,7 +8,11 @@ from typing import Dict, List, Union
 from dataclasses import dataclass, field
 
 # Application Libraries
-from app.config.enums import Actions, Directions
+from app.config.enums import (
+    Actions, 
+    Directions,
+    Intentions
+)
 
 # Cython Libraries
 from libs.core.models import Position, Multiple
@@ -124,31 +128,6 @@ class SwitchState(AssetState):
 # ---------------------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------------- SHEET STATE TYPES
-
-@dataclass(slots=True)
-class Meter:
-    """
-    Representation of a Sprite meter.
-    """
-    current: int = 100
-    maximum: int = 100
-
-@dataclass(slots=True)
-class VisionMutator:
-    """
-    """
-    radius: int
-
-@dataclass(slots=True)
-class FearMutator:
-    """
-    """
-    radius: int
-    limit: float
-    enemy: int
-
-# ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------- SHEET STATE FIELDS
     
 @dataclass(slots=True)
@@ -171,6 +150,13 @@ class Equipment:
     utility: str = None
     shield: str = None
 
+@dataclass(slots=True)
+class Meter:
+    """
+    Representation of a Sprite meter.
+    """
+    current: int = 100
+    maximum: int = 100
 
 @dataclass(slots=True)
 class Meters:
@@ -212,12 +198,41 @@ class Inventory:
 # --------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
+class VisionMutatorParameters:
+    """
+    """
+    radius: int
+
+@dataclass(slots=True)
+class FearMutatorParameters:
+    """
+    """
+    radius: int
+    limit: float
+    enemy: int
+
+@dataclass(slots=True)
+class MutatorTriggers:
+    """
+    """
+    animated: bool = False
+    struck: bool = False
+    frightened: bool = False
+    dead: bool = False
+    vision: bool = False
+
+@dataclass(slots=True)
+class MutatorParameters:
+    fear: FearMutatorParameters
+    vision: VisionMutatorParameters
+
+@dataclass(slots=True)
 class Mutators:
     """
     Representation of a Sprite's mutators. Mutators alter the Sprite's behavior during the gameplay loop.
     """
-    fear: FearMutator
-    vision: VisionMutator
+    triggers: MutatorTriggers = field(default_factory=MutatorTriggers)
+    parameters: MutatorParameters = None
 
 # --------------------------------------------------------------------------------------
 
@@ -238,7 +253,7 @@ class SpriteState(AssetState):
     """
     Central model for typing Sprite's state.
     """
-    intention: str
+    intention: Intentions
     goal: Goal
     position: Position
     character: Character
@@ -257,8 +272,9 @@ class PlayerState(AssetState):
     character: Character
     inventory: Inventory
     meters: Meters
+    mutators: Mutators = field(default_factory=Mutators)    
     goal: Union[Goal, None] = None
-    intention: Union[str, None] = None
+    intention: Union[Intentions, None] = None
     animation: AnimationState = field(default_factory=AnimationState)
 
 # ---------------------------------------------------------------------------------------

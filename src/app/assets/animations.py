@@ -53,6 +53,11 @@ class StateAnimation(Animation):
     def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
         """
         """
+        if hasattr(state, 'mutators') and state.mutators and hasattr(state.mutators, 'triggers'):
+            if not state.mutators.triggers.animated:
+                state.animation.frame = 0
+                return state
+
         state.animation.frame += 1
 
         if state.animation.frame >= properties.actions[state.animation.action].count:

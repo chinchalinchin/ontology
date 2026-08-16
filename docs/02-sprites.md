@@ -111,23 +111,28 @@ TODO
 
 ### Mutators
 
-*Mutators* are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated from state attributes, not *primitive* state attributes themselves.
+Mutators are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated from state attributes, not *primitive* state attributes themselves.
+
+Mutators may be *condition-driven*, and separately, they be *parameterized*; In other words, all Mutators are *conditional* but  not all Mutators are parameterized. Parameters modulate the conditions underlying the Mutator calculation. Both Sprites and the [Player](./03-player.md) have Mutator fields, but only Sprites have parameterized Mutators; the Player Mutators are all purely driven by game logic. In other words, the Player Mutator triggers serve to flag the game-loop to apply trigger-specific procedures to the Player Asset, whereas Sprite Mutators triggers depend on the specific parameters unique to the Sprite's deployment. 
+
+- Parameterized Mutators: `fear`, `vision`
+- Event-driven Mutators: `animated`, `dead`, `struck`
 
 **Triggers**
 
 - `trigger.animated`: Triggered if a Sprite is currently able to animate, i.e. increment its Frame. When this Mutator trigger is false, the Sprite does not receive animation updates from the game loop, e.g. if the user releases the right arrow button on the keyboard, leaving the Player in a `(walk, right)` state, then this mutator prevents the animation from progressing until the Player resumes pressing the right arrow button.
 - `triggers.dead`: Triggered if a Sprite dies. This can only occur if the Sprite's `character.health.current = 0`
 - `triggers.struck`: Triggered if a Sprite collides with a hitbox.
-- `triggers.frightened`: Triggered for the logical disjunction of the following conditions:
+- `triggers.fear`: Triggered for the logical disjunction of the following conditions:
     - Triggered if Sprite's health dips below `frightened.limit`
     - Triggered if Sprite is surrounded by more than `frightened.enemy` enemies with the pixel distance of `frightened.radius`.
 - `triggers.vision`: Trigger if a Sprite is within visible distance of its Goal.
 
 **Parameters**
 
-- `parameters.frightened.radius`: Radius of separation within which the Sprite triggers the `triggers.frightened` mutator. Measured in pixels.
-- `parameters.frightened.limit`: Percentage of health below which Sprite triggers the `triggers.frightened` mutator.
-- `parameters.frightened.enemy`: Number of enemies within the `parameters.frightened.radius` that must be present to trigger the `triggers.frightened` mutator.
+- `parameters.fear.radius`: Radius of separation within which the Sprite triggers the `triggers.frightened` mutator. Measured in pixels.
+- `parameters.fear.limit`: Percentage of health below which Sprite triggers the `triggers.frightened` mutator.
+- `parameters.fear.enemy`: Number of enemies within the `parameters.frightened.radius` that must be present to trigger the `triggers.frightened` mutator.
 - `parameters.vision.radius`: Radius of separation within which the Sprite triggers the `triggers.vision` mutator. Measured in pixels.
 
 ### Animation

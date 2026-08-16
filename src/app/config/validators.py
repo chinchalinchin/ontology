@@ -213,18 +213,26 @@ class PyMetersState(BaseModel):
     health: PyMeterState
     magic: PyMeterState
 
-class PyVisionMutator(BaseModel):
+class PyVisionMutatorParameters(BaseModel):
     radius: int
 
-class PyFearMutator(BaseModel):
+class PyFearMutatorParameters(BaseModel):
     radius: int
     limit: float
     enemy: int
 
-class PyMutatorState(BaseModel):
-    fear: PyFearMutator
-    vision: PyVisionMutator
+class PyMutatorTriggers(BaseModel):
+    fear: bool = False
+    vision: bool = False
 
+class PyMutatorParameters(BaseModel):
+    fear: PyFearMutatorParameters
+    vision: PyVisionMutatorParameters
+
+class PyMutatorState(BaseModel):
+    parameters: Optional[PyMutatorParameters] = None
+    triggers: Optional[PyMutatorTriggers] = None
+    
 class PyMemoryState(BaseModel):
     goal: Optional[PyGoalState] = None
     communications: Optional[List[str]] = []
@@ -281,6 +289,7 @@ class PyPlayerState(PyAssetState):
     character: PyCharacterState
     inventory: PyInventoryState
     meters: PyMetersState
+    mutators: Optional[PyMutatorState] = None
     goal: Optional[PyGoalState] = None
     animation: Optional[PyAnimationState] = None
     intention: Optional[str] = None
