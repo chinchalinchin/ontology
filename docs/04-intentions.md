@@ -71,6 +71,10 @@ Provided below is the Intention Transition Matrix bundled with the application b
 --8<-- "docs/.static/yaml/examples/default-intention-matrix.yaml"
 ```
 
+```mmd
+--8<-- "docs/.static/mmd/intention-transitions.mmd"
+```
+
 **Intentional Scripting Language (ISL)**
 
 The `condition` for each Intention transition is given in a simple truth-valued language that admits the logical operations and terms,

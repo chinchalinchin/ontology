@@ -146,6 +146,10 @@ Each Category has Instances. Asset *Instances* form the bottom layer of the hier
 !!! note
     [Equipment](./02-sprites.md#equipment) and [Player](./03-player.md) Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is stateless, whereas the Player is a special type of [Sprite](./02-sprites.md).
 
+```mmd
+--8<-- "docs/.static/mmd/asset-hierarchy.mmd"
+```
+
 ### Asset Architecture
 
 Every physical entity in the game is an instance of the unified `Asset` class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. *Behaviors* are decoupled from Assets and managed entirely by *Mechanics* classes that iterate over the Board Assets. See [Mechanics documentation](./06-architecture.md#mechanics) for more information.

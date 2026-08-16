@@ -1,0 +1,65 @@
+graph TD
+    %% Base
+    Asset[Asset]
+
+    %% Categories
+    Asset --> Tiles[Tiles]
+    Asset --> Cursors[Cursors]
+    Asset --> Objects[Objects]
+    Asset --> Crafts[Crafts]
+    Asset --> Effects[Effects]
+    Asset --> Sheets[Sheets]
+    Asset --> Widgets[Widgets]
+
+    %% Tile Instances
+    Tiles --> Back[Back]
+    Tiles --> Fore[Fore]
+
+    %% Cursor Instances
+    Cursors --> Expressions[Expressions]
+    Cursors --> Projectiles[Projectiles]
+
+    %% Object Instances
+    Objects --> Chests[Chests]
+    Objects --> Crates[Crates]
+    Objects --> Doors[Doors]
+    Objects --> Gates[Gates]
+    Objects --> Plates[Plates]
+
+    %% Craft Instances
+    Crafts --> Struts[Struts]
+    Crafts --> Plots[Plot]
+
+    %% Effect Instances
+    Effects --> Temporary[Temporary]
+    Effects --> Persistent[Persistent]
+
+    %% Sheet Instances & Sub-groups
+    Sheets --> Pixies[Pixies]
+    Sheets --> Sprites[Sprites]
+    Sheets --> Players[Players]
+    Sheets --> Equipment[Equipment Group]
+    
+    Equipment -.-> Armor[Armor]
+    Equipment -.-> Tools[Tools]
+    Equipment -.-> Utilities[Utilities]
+    Equipment -.-> Weapons[Weapons]
+    Equipment -.-> Shields[Shields]
+
+    %% Widget Instances
+    Widgets --> Panes[Panes]
+    Widgets --> Buttons[Buttons]
+    Widgets --> Languages[Language]
+    Widgets --> Meters[Meters]
+    Widgets --> Pages[Pages]
+
+    %% Styling
+    classDef base fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef category fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef instance fill:#e8f5e9,stroke:#388e3c,stroke-width:1px;
+    classDef virtual fill:#f3e5f5,stroke:#8e24aa,stroke-width:1px,stroke-dasharray: 5 5;
+    
+    class Asset base;
+    class Tiles,Cursors,Objects,Crafts,Effects,Sheets,Widgets category;
+    class Back,Fore,Expressions,Projectiles,Chests,Crates,Doors,Gates,Plates,Struts,Plots,Temporary,Persistent,Pixies,Sprites,Players,Panes,Buttons,Languages,Meters,Pages instance;
+    class Equipment,Armor,Tools,Utilities,Weapons,Shields virtual;
