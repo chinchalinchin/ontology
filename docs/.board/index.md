@@ -8,18 +8,21 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 
 **Table of Contents**
 
-- Phase Actions
+- Incidents:
+  - [x]: [2026-08-09: SDL Rendering Pipeline Failure](./incidents/2026-08-16.md)
+- Phases
   - Implement
     - [x]: [Phase I: Renderer](./phases/implement/phase-i.md)
     - [x]: [Phase II: Player](./phases/implement/phase-ii.md)
-    - [~]: [Phase III: Widgets](./phases/implement/phase-iii.md)
-    - [~]: [Phase IV: Editor](./phases/implement/phase-iv.md)
-    - [~]: [Phase V: Intentions](./phases/implement/phase-v.md)
-    - [ ]: [Phase VI: Commerce](./phases/implement/phase-vi.md)
-    - [ ]: [Phase VII: Pathfinding](./phase/implement/phase-vii.md)
+    - [~]: [Phase III: Finetuning](./phases/implement/phase-iii.md)
+    - [~]: [Phase IV: Widgets](./phases/implement/phase-iv.md)
+    - [~]: [Phase V: Editor](./phases/implement/phase-v.md)
+    - [~]: [Phase VI: Intentions](./phases/implement/phase-vi.md)
+    - [ ]: [Phase VII: Commerce](./phases/implement/phase-vii.md)
+    - [ ]: [Phase VIII: Pathfinding](./phase/implement/phase-viii.md)
   - Refactor
     - [x]: [Phase I: Orchestration](./phases/refactor/phase-i.md)
     - [x]: [Phase II-I: Frames](./phases/refactor/phase-ii-i.md)
     - [x]: [Phase II-II: Registry](./phases/refactor/phase-ii-ii.md)
     - [x]: [Phase II-III: Equipment](./phases/refactor/phase-ii-iii.md)
-    - [~]: [Phase II-IV: Engine](./phases/refactor/phase-ii-iv.md)
+    - [x]: [Phase II-IV: Engine](./phases/refactor/phase-ii-iv.md)
