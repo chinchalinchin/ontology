@@ -46,6 +46,10 @@ The Intention Transition Matrix determines which Intention states are currently 
 
 Provided below is the Intention Transition Matrix bundled with the application by default,
 
+```mmd
+--8<-- "docs/.static/mmd/intention-transitions.mmd"
+```
+
 | # | Starting Intention | Reachable Intentions |
 | - | - | - |
 | 1 | `attack` | `attack`, `hunt`, `scavenge` |
@@ -69,10 +73,6 @@ Provided below is the Intention Transition Matrix bundled with the application b
 
 ```yaml
 --8<-- "docs/.static/yaml/examples/default-intention-matrix.yaml"
-```
-
-```mmd
---8<-- "docs/.static/mmd/intention-transitions.mmd"
 ```
 
 **Intentional Scripting Language (ISL)**

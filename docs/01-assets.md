@@ -101,6 +101,10 @@ State files are maintained in `/src/data/state/<board-key>/**` directory, where 
 
 While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state [schemas](#schemas) encode Asset Categories and Instances into the top-level keys.
 
+```mmd
+--8<-- "docs/.static/mmd/asset-hierarchy.mmd"
+```
+
 !!! note
     The Asset Hierarchy can be thought of as a data abstraction governing the schemas which drive the ECS instantiation. 
 
@@ -145,10 +149,6 @@ Each Category has Instances. Asset *Instances* form the bottom layer of the hier
 
 !!! note
     [Equipment](./02-sprites.md#equipment) and [Player](./03-player.md) Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is stateless, whereas the Player is a special type of [Sprite](./02-sprites.md).
-
-```mmd
---8<-- "docs/.static/mmd/asset-hierarchy.mmd"
-```
 
 ### Asset Architecture
 
