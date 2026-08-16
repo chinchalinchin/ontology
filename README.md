@@ -8,7 +8,7 @@ Install and build the application dependencies.
 
 ### Install
 
-Cython needs the actual C development headers to compile agains
+Cython needs the actual C development headers to compile against,
 
 * **macOS:** `brew install sdl2 sdl2_image`
 * **Linux (Debian/Ubuntu):** `sudo apt install libsdl2-dev libsdl2-image-dev`
@@ -21,58 +21,49 @@ To compile the C extensions, run the following command in your terminal:
 python setup.py build_ext --inplace
 ```
 
-### Debug
+### Usage
 
 ```bash
-# 0. Clean up debug dumps.
-rm -rf **/*dump.md
+# 0. Clean Up Dump Logs
+rm *dump.md
 
+# 1. Configure Command Line Arguments
 export LOG_LEVEL=INFO
+export WORLD=world-01
+export LAYER=0
+export BUILD_DIR=/home/grant/Projects/ontology/build
 
-# 1.Render Background
+# 1. DEBUG: Render Background
 python src/cli.py \
   --dump-state \
   --dump-sdl \
   --log-level $LOG_LEVEL \
-    prerender world-01 \
-    --layer 0 \
-    --out /home/grant/Projects/ontology/build
+    prerender $WORLD \
+    --layer $LAYER \
+    --out $BUILD_DIR
 
-# 2.Render Stateful Assets
+# 2. DEBUG: Render Stateful Assets
 python src/cli.py  \
   --dump-state \
   --dump-sdl \
   --log-level $LOG_LEVEL \
-    render world-01 \
-    --layer 0 \
-    --out /home/grant/Projects/ontology/build
+    render $WORLD \
+    --layer $LAYER \
+    --out $BUILD_DIR
 
-# 3. Start Game Engine
+# 3. APP: Start Game Engine
 python src/cli.py  \
   --dump-state \
   --dump-sdl \
   --log-level $LOG_LEVEL \
-    start world-01
+    start $WORLD
 ```
 
-### Helper Scripts
-
-```bash
-# 1. Concatenate: Take all images in a directory and concatenate horizontally into a single row of frames.
-python ./scripts/concatenate/main.py \
-  -d /path/ \
-  -o /path/result.png
-# 2. Transpose: Convert a vertical column of frames into a horizontal row of frames.
-python ./scripts/concatenate/main.py \
-  -v int \
-  -f /path/ \
-  -o /path/result.png
-```
-## Usage
+## Information
 
 ### Cython
 
-With the separated extensions, you can now import each compiled binary natively and directly into your Python scripts like so:
+With the separated extensions, you can import each compiled binary natively and directly into your Python scripts like so:
 
 ```python
 import libs.core
@@ -81,7 +72,9 @@ from libs import render
 from libs import registry
 ```
 
-### VSCode
+**VSCode**
+
+To add the Cython libraries to the Pylance linter in VSCODE,
 
 ```json
 {
@@ -89,6 +82,21 @@ from libs import registry
     "./libs"
   ]
 }
+```
+
+### Scripts
+
+```bash
+# 1. Concatenate: Take all images in a directory and concatenate horizontally into a single row of frames.
+python ./scripts/concatenate/main.py \
+  -d /path/ \
+  -o /path/result.png
+
+# 2. Transpose: Convert a vertical column of frames into a horizontal row of frames.
+python ./scripts/concatenate/main.py \
+  -v int \
+  -f /path/ \
+  -o /path/result.png
 ```
 
 ## Index
@@ -113,8 +121,8 @@ Cython interfaces and headers.
 
 Helper scripts.
 
-* `concatenate`: Script to concatenate image files into a row of frames.
-* `transpose`: Script to transpose a column of frames into a row of frames.
+* `/scripts/concatenate`: Script to concatenate image files into a row of frames.
+* `/scripts/transpose`: Script to transpose a column of frames into a row of frames.
 
 ### /src
 

@@ -54,4 +54,4 @@ mappings:
 *Objective*: Stop the engine from busy-waiting and rendering visually redundant frames.
 
 - [x] Subtask: Introduce a `TARGET_FPS` configuration into `app.config.settings` (e.g., 60 or 144).
-- [ ] Subtask: Update app.game.engine.Engine.start() to track a render_accumulator or sleep delta. If the time elapsed since the last draw() call is less than 1.0 / target_fps, invoke time.sleep() or an equivalent SDL yield to release the CPU thread back to the operating system.
+- [x] Subtask: Update `app.game.engine.Engine.start()` to track a render_accumulator or sleep delta. If the time elapsed since the last `draw()` call is less than 1.0 / `target_fps`, invoke time.sleep() or an equivalent SDL yield to release the CPU thread back to the operating system.
