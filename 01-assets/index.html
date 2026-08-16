@@ -1457,7 +1457,7 @@
 <p>State files are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code> directory, where <code>&lt;board-key&gt;</code> is a unique identifer for a <a href="../00-overview/#board">Board</a>.</p>
 <h3 id="asset-hierarchy">Asset Hierarchy</h3>
 <p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state <a href="#schemas">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
-<pre class="mermaid"><code>graph TD
+<pre class="mermaid"><code>graph LR
     %% Base
     Asset[Asset]
 
