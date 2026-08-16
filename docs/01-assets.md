@@ -122,7 +122,7 @@ Asset *Categories* form the top layer of the hierarchy. Each Asset Category is d
 | Sheets | Dimensions, Hitboxes, Stack, Actions |
 | Widgets | Dimensions, Frames |
 
-Each Category has Instances. Asset *Instances* form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Assets Instance determine what type of state it will parse from the property and state files and inject into its deployment. 
+Each Category has Instances. Asset *Instances* form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. 
 
 | Asset Category | Asset Instance | State |
 | - | - | - | 
