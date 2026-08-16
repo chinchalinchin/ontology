@@ -32,7 +32,7 @@ mappings:
 **1. Task: Resolve Critical Initialization Exceptions**
 
 *Objective*: Fix schema and enum misalignments preventing engine loop execution.
-- [ ] Subtask: Add `POSITION` to the `GoalCategories` Enum in `app/config/enums.py`.
+- [x] Subtask: Add `POSITION` to the `GoalCategories` Enum in `app/config/enums.py`.
 - [!] Subtask: Update `Board.player()` to use `.get()` with safe list checking to prevent `KeyError` exceptions when evaluating the `PLAYERS` instance array. (CLOSED: There is currently no reason for the board to exist without a player.)
 - [ ] Subtask: Update `AnimationMap.action()` to explicitly handle the `IDLE` intention, returning a locked `WALK` action but preparing the state for frame 0.
 
@@ -46,4 +46,12 @@ mappings:
 **3. Task: Resolve Cartesian Motion Mechanics**
 
 *Objective*: Standardize velocity calculations to prevent diagonal speed exploitation.
+
 - [ ] Subtask: Refactor `MotionMechanics.update()` to calculate the Euclidean distance to the goal. Normalize the $dx, dy$ components into a unit vector, then multiply by `speed` before applying the positional translation.
+
+**4. Task: Implement Rendering Constraint (Frame Limiter)**
+
+*Objective*: Stop the engine from busy-waiting and rendering visually redundant frames.
+
+- [x] Subtask: Introduce a `TARGET_FPS` configuration into `app.config.settings` (e.g., 60 or 144).
+- [ ] Subtask: Update app.game.engine.Engine.start() to track a render_accumulator or sleep delta. If the time elapsed since the last draw() call is less than 1.0 / target_fps, invoke time.sleep() or an equivalent SDL yield to release the CPU thread back to the operating system.

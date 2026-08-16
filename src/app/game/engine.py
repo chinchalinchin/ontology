@@ -9,6 +9,7 @@ from typing import List
 import logging
 
 # Application Libraries
+import app.config.settings as settings
 from app.game.board import Board
 from app.game.logic.mechanics import Mechanic
 from app.game.screen import Screen
@@ -44,8 +45,12 @@ class Engine:
     def start(self) -> None:        
         logger.info("Entering Game Loop...")
 
-        delta = 1.0 / 60.0
+        delta = 1.0 / settings.TARGET_FPS
         accumulator = 0.0
+        
+        # 2ms buffer to account for OS thread-wake scheduling inaccuracy
+        spin_threshold = 0.002 
+        
         last_time = self.time()
 
         # Telemetry Trackers
@@ -60,6 +65,7 @@ class Engine:
             accumulator += frame_time
             
             if not self.board.paused:
+                # 1. Fixed-timestep Logic Updates
                 while accumulator >= delta:
                     for this in self.mechanics:
                         this.update(self.board, delta)
@@ -68,6 +74,7 @@ class Engine:
 
                 player = self.board.player()
 
+                # 2. Rendering
                 self.screens[player.state.layer].draw(
                     self.board.renderables(player.state.layer), 
                     player.state.position,
@@ -75,18 +82,30 @@ class Engine:
                 )
                 telemetry_frames += 1
 
-                # Output Diagnostics every ~10 seconds
-                if telemetry_frames % 600 == 0:
-                    elapsed = current_time - telemetry_start_time
-                    avg_fps = telemetry_frames / elapsed
-                    avg_ups = telemetry_updates / elapsed
-                    
-                    logger.info(
-                        f"[TELEMETRY] Avg FPS: {avg_fps:.1f} | Avg UPS (Ticks): {avg_ups:.1f} | "
-                        f"Frame Time: {frame_time * 1000:.2f}ms | Render Queue: {len(self.board.renderables(player.state.layer))}"
-                    )
-                    
-                    # Reset trackers for the next 10-second window
-                    telemetry_frames = 0
-                    telemetry_updates = 0
-                    telemetry_start_time = current_time
+            # 3. Hybrid Pacing (Sleep + Spin)
+            work_time = self.time() - current_time
+            sleep_time = delta - work_time
+            
+            if sleep_time > 0:
+                # Yield to the OS scheduler if we have substantial time remaining
+                if sleep_time > spin_threshold:
+                    time.sleep(sleep_time - spin_threshold)
+                
+                # Spin-lock the final fraction of a millisecond for precise timing
+                while (self.time() - current_time) < delta:
+                    pass
+
+            # Output Diagnostics every ~10 seconds
+            if telemetry_frames % 600 == 0:
+                elapsed = self.time() - telemetry_start_time
+                avg_fps = telemetry_frames / elapsed
+                avg_ups = telemetry_updates / elapsed
+                
+                logger.info(
+                    f"[TELEMETRY] Avg FPS: {avg_fps:.1f} | Avg UPS (Ticks): {avg_ups:.1f} | "
+                    f"Frame Time: {frame_time * 1000:.2f}ms | Render Queue: {len(self.board.renderables(player.state.layer))}"
+                )
+                
+                telemetry_frames = 0
+                telemetry_updates = 0
+                telemetry_start_time = self.time()

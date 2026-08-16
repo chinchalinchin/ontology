@@ -24,24 +24,35 @@ python setup.py build_ext --inplace
 ### Debug
 
 ```bash
-# 0. Clean up state dumps.
-rm -rf **/*state-dump.md
+# 0. Clean up debug dumps.
+rm -rf **/*dump.md
 
 # 1.Render Background
 python src/cli.py \
-  --dump \
+  --dump-state \
+  --dump-sdl \
   --log-level DEBUG \
-  prerender world-01 \
-  --layer 0 \
-  --out /home/grant/Projects/ontology/build
+    prerender world-01 \
+    --layer 0 \
+    --out /home/grant/Projects/ontology/build
 
 # 2.Render Stateful Assets
 python src/cli.py  \
-  --dump \
+  --dump-state \
+  --dump-sdl \
   --log-level DEBUG \
-  render world-01 \
-  --layer 0 \
-  --out /home/grant/Projects/ontology/build
+    render world-01 \
+    --layer 0 \
+    --out /home/grant/Projects/ontology/build
+
+# 2.Render Stateful Assets
+python src/cli.py  \
+  --dump-state \
+  --dump-sdl \
+  --log-level DEBUG \
+    render world-01 \
+    --layer 0 \
+    --out /home/grant/Projects/ontology/build
 ```
 
 ### Helper Scripts
