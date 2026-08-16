@@ -152,6 +152,7 @@ class GoalCategories(str, Enum):
     LOOT            = "loot"
     WEALTH          = "wealth"
     PROPERTY        = "property"
+    POSITION        = "position"
     
 # -------------------------------- PLAYER STATE ENUMERATIONS
 
