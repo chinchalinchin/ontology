@@ -565,10 +565,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#math-geometry-libsmathpyx" class="md-nav__link">
+  <a href="#models" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Math &amp; Geometry (libs/math.pyx)
+        Models
       
     </span>
   </a>
@@ -576,10 +576,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#hardware-rendering-libsrenderpyx-libsregistrypyx" class="md-nav__link">
+  <a href="#math" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Hardware Rendering (libs/render.pyx &amp; libs/registry.pyx)
+        Math
       
     </span>
   </a>
@@ -587,10 +587,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#headless-software-rendering-libsrenderpyx-libsregistrypyx" class="md-nav__link">
+  <a href="#rendering" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Headless Software Rendering (libs/render.pyx &amp; libs/registry.pyx)
+        Rendering
       
     </span>
   </a>
@@ -682,10 +682,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#math-geometry-libsmathpyx" class="md-nav__link">
+  <a href="#models" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Math &amp; Geometry (libs/math.pyx)
+        Models
       
     </span>
   </a>
@@ -693,10 +693,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#hardware-rendering-libsrenderpyx-libsregistrypyx" class="md-nav__link">
+  <a href="#math" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Hardware Rendering (libs/render.pyx &amp; libs/registry.pyx)
+        Math
       
     </span>
   </a>
@@ -704,10 +704,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#headless-software-rendering-libsrenderpyx-libsregistrypyx" class="md-nav__link">
+  <a href="#rendering" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Headless Software Rendering (libs/render.pyx &amp; libs/registry.pyx)
+        Rendering
       
     </span>
   </a>
@@ -790,12 +790,14 @@
 <p class="admonition-title">Important</p>
 <p>Zero Heap Allocation is more of an ideal/driving principle than an enforced constraint. </p>
 </div>
-<h3 id="math-geometry-libsmathpyx">Math &amp; Geometry (<code>libs/math.pyx</code>)</h3>
-<p>Spatial data like are modeled as Cython Extension Types (<code>cdef class</code> in <code>.pxd</code> definition files). This structure allows geometry methods like <code>Geometry.intersects</code> to access spatial properties (e.g., <code>position.x</code>, <code>hb.dimensions.l</code>) natively at C-speeds.</p>
-<p>The engine explicitly retains the Global Interpreter Lock (GIL) during geometry calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax (like <code>for hb in hitboxes</code>), while executing the actual mathematical overlap checks inline using primitive C variables on the CPU stack.</p>
-<p><strong>Core Cython Models</strong></p>
+<h3 id="models">Models</h3>
 <ul>
-<li>Position: <ul>
+<li>
+<p><code>libs/core/models.pyx</code></p>
+</li>
+<li>
+<p>Position: </p>
+<ul>
 <li><code>x: int</code></li>
 <li><code>y: int</code></li>
 </ul>
@@ -826,11 +828,24 @@
 </ul>
 </li>
 </ul>
-<h3 id="hardware-rendering-libsrenderpyx-libsregistrypyx">Hardware Rendering (<code>libs/render.pyx</code> &amp; <code>libs/registry.pyx</code>)</h3>
-<h3 id="headless-software-rendering-libsrenderpyx-libsregistrypyx">Headless Software Rendering (<code>libs/render.pyx</code> &amp; <code>libs/registry.pyx</code>)</h3>
+<h3 id="math">Math</h3>
+<ul>
+<li><code>libs/core/math.pyx</code></li>
+</ul>
+<p>Spatial data like are modeled as Cython Extension Types (<code>cdef class</code> in <code>.pxd</code> definition files). This structure allows geometry methods like <code>Geometry.intersects</code> to access spatial properties (e.g., <code>position.x</code>, <code>hb.dimensions.l</code>) natively at C-speeds.</p>
+<p>The engine explicitly retains the Global Interpreter Lock (GIL) during geometry calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax (like <code>for hb in hitboxes</code>), while executing the actual mathematical overlap checks inline using primitive C variables on the CPU stack.</p>
+<p><strong>Collisions</strong></p>
+<p>At the start of every collision, the physics pipeline executes a spatial hashing procedure, given in the following sequence:</p>
+<ol>
+<li><strong>Hash (Populate the Grid)</strong>: Maintain a 1D array or hash map (dictionary) where the keys are the <code>(cell_x, cell_y)</code> tuples, and the values are lists of integer Asset IDs. Iterate over all dynamic entities exactly once (<code>O(N)</code>). For each Asset, calculate its cell using integer division and append its ID to that cell's list.(Note: If an Asset overlaps a cell boundary, insert it into all cells it touches. This is easily calculated using its width and length divided by the cell size).</li>
+<li><strong>Query (Generate Candidate Pairs)</strong>: Iterate over the populated cells. For each cell, look at the list of Asset IDs inside the grid. Only generate collision pairs for entities that exist in the same cell.</li>
+<li><strong>Narrow Phase (Raw Intersection)</strong>: Pass this much smaller list of candidate pairs into <code>Geometry.intersects</code>.</li>
+</ol>
+<p>The grid's blueprint (<code>cdef class SpatialHash</code>) must be defined in the Cython math library.</p>
+<h3 id="rendering">Rendering</h3>
 <p>The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate the overhead of crossing the Python-to-C boundary, the rendering pipeline does not pass heavy Python objects (like <code>SpriteState</code> or <code>Dimensions</code>) to the renderer. Instead, it extracts raw integers on the Python side and unpacks them cleanly onto the C-stack.</p>
 <ul>
-<li><strong>Context Initialization (<code>init</code>):</strong> Sets up a true headless SDL software rendering context (<code>_renderer</code>) bound directly to a master memory surface (<code>SDL_Surface</code>), completely bypassing window creation.</li>
+<li><strong>Context Initialization (<code>init</code>):</strong> Sets up a SDL environment. If <code>headless</code>, a SDL software rendering context (<code>_renderer</code>) is bound directly to a master memory surface (<code>SDL_Surface</code>), completely bypassing window creation.</li>
 <li><strong>Asset Allocation (<code>load</code>):</strong> Loads physical image assets from disk directly into system memory, returning a safe, reference-counted Python wrapper (<code>TexturePtr</code>).</li>
 <li><strong>Background Compilation (<code>canvas</code> &amp; <code>construct</code>):</strong> A blank texture (<code>SDL_TEXTUREACCESS_TARGET</code>) is created in memory to match the full size of the Board. Python passes a single list of flattened integer tuples representing the source/destination coordinates and grid multipliers. Cython unpacks these primitives and executes thousands of <code>SDL_RenderCopy</code> calls natively via the C-level software rasterizer. This caches a unified map texture, eliminating the need to instantiate and re-render thousands of background tiles every frame.</li>
 <li><strong>Frame Rendering (<code>render</code>):</strong> During the main game loop, <code>Screen.draw()</code> performs lightweight integer-based AABB camera culling natively in Python. This intentionally avoids paying the micro-transaction overhead of calling a Cython function repeatedly inside a massive Python loop. The visible assets are flattened into primitive integer tuples and passed across the C-boundary in a single list. <code>render()</code> clears the canvas buffer, copies the cropped background texture, stamps the active primitives, and finalizes the buffer in memory (<code>SDL_RenderPresent</code>), ready for extraction to disk.</li>
