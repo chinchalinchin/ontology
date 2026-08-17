@@ -1039,11 +1039,18 @@
 <p>The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. </p>
 <h2 id="concepts">Concepts</h2>
 <h3 id="hitboxes">Hitboxes</h3>
-<p>Many Assets have Hitboxes. Hitboxes are <em>properties</em>, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. </p>
+<p>Many Assets have Hitboxes. Hitboxes are <em>properties</em>, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,</p>
+<div class="highlight"><pre><span></span><code><span class="nt">position</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">21</span>
+<span class="w">    </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">23</span>
+<span class="nt">dimensions</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">22</span>
+<span class="w">    </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">21</span>
+</code></pre></div>
 <figure>
 <p><img alt="LPC Sprite Hitboxes" src="../static/png/lpc-sprite-hitboxes-walk-down-0.png" /></p>
 <figcaption>
-<p>LPC Sprite Hitboxes in (Walk, Down, 0) State</p>
+<p>LPC Sprite Hitbox in (Walk, Down, 0) State</p>
 </figcaption>
 </figure>
 <h3 id="layers">Layers</h3>
