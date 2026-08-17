@@ -1,7 +1,7 @@
 """
-# Ontology: app.game.mechanics
+# Ontology: app.game.logic.mechanics.core
 
-Package for Mechanic implementations.
+Package for core game Mechanic implementations.
 """
 # Standard Libraries
 from __future__ import annotations
@@ -73,6 +73,9 @@ class AnimationMechanics(Mechanic):
 
 class RemoveMechanics(Mechanic):
     """
+    ## RemoveMechanics
+
+    Mechanic response for garbage collecting Assets.
     """
 
     def update(self, board: Board, delta_time: float) -> None: 
@@ -101,6 +104,9 @@ class RemoveMechanics(Mechanic):
 
 class MotionMechanics(Mechanic):
     """
+    ## MotionMechanics
+
+    Mechanic responsible for altering Asset position.
     """
 
     def update(self, board: Board, delta: float) -> None:
@@ -148,6 +154,9 @@ class MotionMechanics(Mechanic):
 
 class MenuMechanics(Mechanic):
     """
+    ## MenuMechanics
+
+    Mechanic responsbile for handling menu interactions.
     """
 
     def equip(self, item: str, state: SpriteState, board: Board) -> None:

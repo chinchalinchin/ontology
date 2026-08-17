@@ -1,7 +1,7 @@
 """
-# Ontology: app.game.mechanics
+# Ontology: app.game.logic.mechanics.intentional
 
-Package for Mechanic implementations.
+Package for intentional Mechanic implementations, i.e. Sprite and Player logic.
 """
 # Standard Libraries
 from __future__ import annotations

@@ -1,7 +1,7 @@
 """
-# Ontology: app.game.mechanics
+# Ontology: app.game.logic.mechanics.spatial
 
-Package for Mechanic implementations.
+Package for SpatialMechanic implementations, i.e. Mechanics that relies on spatial hashing Spaces.
 """
 # Standard Libraries
 from __future__ import annotations
