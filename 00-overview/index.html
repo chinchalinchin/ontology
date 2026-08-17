@@ -1040,6 +1040,12 @@
 <h2 id="concepts">Concepts</h2>
 <h3 id="hitboxes">Hitboxes</h3>
 <p>Many Assets have Hitboxes. Hitboxes are <em>properties</em>, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. </p>
+<figure>
+<p><img alt="LPC Sprite Hitboxes" src="../.static/png/lpc-sprite-hitboxes-walk-down-0.png" /></p>
+<figcaption>
+<p>LPC Sprite Hitboxes in (Walk, Down, 0) State</p>
+</figcaption>
+</figure>
 <h3 id="layers">Layers</h3>
 <p>All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire frame, it is rendering a Layer.  </p>
 <p>Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at <code>(x_1, y_1)</code> and get released on Layer 3 at <code>(x_2, y_2)</code>. For this reason, each Layer may have different dimensions.</p>
