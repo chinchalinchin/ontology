@@ -34,7 +34,8 @@ from app.config.enums import (
     PlayerGoals,
     Mechanics,
     AssetCategories,
-    Configurations
+    Configurations,
+    Relationships
 )
 
 class YamlBaseSettings(BaseSettings):
@@ -82,11 +83,6 @@ class PyAction(BaseModel):
     count: int
     directions: Dict[str, PyDirection]
 
-class PyPersona(BaseModel):
-    dimensions: PyDimensions
-    hitboxes: Optional[List[PyHitbox]] = []
-    stack: List[str]
-
 class PyCost(BaseModel):
     item: str
     quantity: int
@@ -100,12 +96,12 @@ class PyCursorProperties(BaseModel):
 
 class PyEffectProperties(BaseModel):
     dimensions: PyDimensions
-    hitboxes: Optional[List[PyHitbox]] = []
-    count: int 
+    count: int
 
 class PyObjectProperties(BaseModel):
     dimensions: PyDimensions
     hitboxes: Optional[List[PyHitbox]] = []
+    mass: int
 
 class PyTileProperties(BaseModel):
     dimensions: PyDimensions
@@ -115,12 +111,14 @@ class PyCraftProperties(BaseModel):
     dimensions: PyDimensions
     hitboxes: Optional[List[PyHitbox]] = []
     cost: List[PyCost]
-    
+    mass: int
+
 class PySheetProperties(BaseModel):
     dimensions: PyDimensions
     hitboxes: Optional[List[PyHitbox]] = None
     stack: Optional[List[str]] = None
     actions: str
+    mass: Optional[int] = -1
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------- PROPERTY DATA STRUCTURES
@@ -237,6 +235,8 @@ class PyMemoryState(BaseModel):
     goal: Optional[PyGoalState] = None
     communications: Optional[List[str]] = []
     prices: Optional[Dict[str, float]] = {}
+    relationships: Optional[Dict[str, Relationships]] = {}
+    property: List[str]
 
 # -----------------------------------------------------------------------------------
 # ------------------------------------------------------------------ STATE CONTAINERS

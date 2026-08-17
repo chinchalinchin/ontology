@@ -11,7 +11,8 @@ from dataclasses import dataclass, field
 from app.config.enums import (
     Actions, 
     Directions,
-    Intentions
+    Intentions,
+    Relationships
 )
 
 # Cython Libraries
@@ -25,7 +26,13 @@ class NoState:
 @dataclass(slots=True)
 class AssetState:
     """
+    ## AssetState
+
     Foundational class for Asset states. 
+    
+    ### Fields
+
+    - layer: Asset Layer Key
     """
     layer: str
     
@@ -34,7 +41,15 @@ class AssetState:
 @dataclass(slots=True)
 class AnimationState:
     """
+    ## AnimationState
+
     Foundational class for animate Asset states.
+    
+    ### Fields
+
+    - action: Stringified Action Enum
+    - direction: Stringified Direction Enum
+    - frame: Integer Frame Count
     """
     action: str = Actions.WALK
     direction: str = Directions.DOWN
@@ -47,7 +62,11 @@ class AnimationState:
 @dataclass(slots=True)
 class MultiplierState(AssetState):
     """
+    ## MultiplierState
+
     Asset state for multiplying Assets across the screen.
+
+    ### Fields
 
     - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     - multiple: Vector (horizontal, vertical) of Asset's multiples.
@@ -58,7 +77,11 @@ class MultiplierState(AssetState):
 @dataclass(slots=True)
 class PositionalState(AssetState):
     """
+    ## PositionalState
+
     Asset state for Assets that only track position.
+
+    ### Fields
 
     - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     """
@@ -67,6 +90,14 @@ class PositionalState(AssetState):
 @dataclass(slots=True)
 class PropertyState(AssetState):
     """
+    ## PropertyState
+
+    Asset state for Assets that have "owners".
+
+    ### Fields
+
+    - owner: Asset name of owner.
+    - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     """
     owner: str
     position: Position
@@ -74,7 +105,11 @@ class PropertyState(AssetState):
 @dataclass(slots=True)
 class MetricState(AssetState):
     """
+    ## MetricState
+
     Asset state for measuring distance from spawn point.
+
+    ### Fields
 
     - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     - initial: Coordinates (horizontal, vertical) of Asset's initial position, relative to it's upper-left corner.
@@ -85,9 +120,14 @@ class MetricState(AssetState):
 @dataclass(slots=True)
 class AnimatorState(AssetState):
     """
+    ## AnimatorState
+
     Asset state for Assets that possess both position and animation.
 
+    ### Fields
+
     - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
+    - animation: Nested AnimationState.
     """
     position: Position
     animation: AnimationState = field(default_factory=AnimationState)
@@ -133,7 +173,15 @@ class SwitchState(AssetState):
 @dataclass(slots=True)
 class Character:
     """
+    ## Character
+    
     Representation of a Sprite's game characteristics.
+    
+    ### Fields
+    
+    - strength:
+    - defense:
+    - speed:
     """
     strength: int = 10
     defense: int = 10
@@ -142,7 +190,17 @@ class Character:
 @dataclass(slots=True)
 class Equipment:
     """
+    ## Equipment
+
     Representation of the Sprite's equipment set.
+    
+    ### Fields
+
+    - armor:
+    - weapon:
+    - tool:
+    - utility:
+    - shield:
     """
     armor: str = None
     weapon: str = None
@@ -153,7 +211,14 @@ class Equipment:
 @dataclass(slots=True)
 class Meter:
     """
+    ## Meter
+
     Representation of a Sprite meter.
+    
+    ### Fields
+
+    - current:
+    - maximum:
     """
     current: int = 100
     maximum: int = 100
@@ -161,7 +226,14 @@ class Meter:
 @dataclass(slots=True)
 class Meters:
     """
+    ## Meters
+
     Representation of a Sprite's Meter fields. Meters track values that change in response to Sprite Actions.
+    
+    ### Fields
+
+    - health:
+    - magic:
     """
     health: Meter
     magic: Meter
@@ -171,7 +243,15 @@ class Meters:
 @dataclass(slots=True)
 class Psyche:
     """
+    ## Psyche
+
     Representation of the internal, hidden state of a Sprite. 
+    
+    ### Fields
+
+    - motivation:
+    - expression:
+    - communication:
     """
     motivation: str
     expression: str
@@ -180,7 +260,15 @@ class Psyche:
 @dataclass(slots=True)
 class Goal:
     """
+    ## Goal
+
     Representation of a Sprite's overarching Goal.
+    
+    ### Fields
+
+    - name:
+    - category:
+    - position:
     """
     name: str
     category: str
@@ -189,11 +277,39 @@ class Goal:
 @dataclass(slots=True)
 class Inventory:
     """
+    ## Inventory
+
     Representation of a Sprite's Inventory.
+    
+    ### Fields
+
+    - loot:
+    - equipment:
+    - wallet:
     """
     loot: Dict[str, int] = field(default_factory=dict)
     equipment: Equipment = None
     wallet: int = 0
+
+@dataclass(slots=True)
+class Memory:
+    """
+    ## Memory
+
+    Representation of a Sprite's memory. 
+    
+    ### Fields
+
+    - goal:
+    - communications:
+    - prices:
+    - relationships:
+    """
+    goal: Goal
+    communications: List[str]
+    prices: Dict[str, float]
+    relationships: Dict[str, Relationships]
+    property: List[str]
 
 # --------------------------------------------------------------------------------------
 
@@ -233,17 +349,6 @@ class Mutators:
     """
     triggers: MutatorTriggers = field(default_factory=MutatorTriggers)
     parameters: MutatorParameters = None
-
-# --------------------------------------------------------------------------------------
-
-@dataclass(slots=True)
-class Memory:
-    """
-    Representation of a Sprite's memory. 
-    """
-    goal: Goal
-    communications: List[str]
-    prices: Dict[str, float]
 
 # --------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- SHEET STATE MODELS

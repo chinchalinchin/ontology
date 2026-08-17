@@ -46,11 +46,11 @@ class CursorProperties(AssetProperties):
 class EffectProperties(AssetProperties):
     dimensions: Dimensions
     count: int 
-    hitboxes: List[Hitbox] = field(default_factory=list)
 
 @dataclass(slots=True)
 class ObjectProperties(AssetProperties):
     dimensions: Dimensions
+    mass: int
     count: int = 1
     hitboxes: List[Hitbox] = field(default_factory=list)
 
@@ -62,6 +62,7 @@ class TileProperties(AssetProperties):
 @dataclass(slots=True)
 class CraftProperties(AssetProperties):
     dimensions: Dimensions
+    mass: int
     cost: List[Cost]
     hitboxes: List[Hitbox] = field(default_factory=list)
 
@@ -69,5 +70,6 @@ class CraftProperties(AssetProperties):
 class SheetProperties(AssetProperties):
     dimensions: Dimensions
     stack: List[str]
+    mass: int
     hitboxes: List[Hitbox] = field(default_factory=list)
     actions: Dict[str, Action] = field(default_factory=dict)

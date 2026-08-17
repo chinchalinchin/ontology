@@ -104,6 +104,14 @@ The frame rows of Sheet Assets are categorized by the axes of *Direction* and *A
 
 State files are maintained in `/src/data/state/<board-key>/**` directory, where `<board-key>` is a unique identifer for a [Board](./00-overview.md#board).
 
+**Mass**
+
+Some Assets have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.
+ 
+- $m > 0$: **Dynamic Body**. Participates in momentum calculations.
+- $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physics equations. Its velocity is unaffected by collisions, but it forces dynamic bodies to resolve overlap.
+- $m = -1$: **Sensor**. The engine detects the spatial intersection for game logic (like `SwitchMechanics` or `DoorMechanics`), but `CollisionMechanics` bypasses it completely during the overlap resolution phase.
+
 ### Asset Hierarchy
 
 While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state [schemas](#schemas) encode Asset Categories and Instances into the top-level keys.
@@ -115,7 +123,7 @@ While Assets are instantiated by injecting a common root class with component be
 !!! note
     The Asset Hierarchy can be thought of as a data abstraction governing the schemas which drive the ECS instantiation. 
 
-**Categories & Instances**
+**Categories**
 
 Asset *Categories* form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the property files and inject into its deployment. 
 
@@ -123,11 +131,13 @@ Asset *Categories* form the top layer of the hierarchy. Each Asset Category is d
 | - | - |
 | Tiles | Dimensions |
 | Cursors | Dimensions |
-| Objects | Dimensions, Hitboxes |
-| Crafts | Dimensions, Hitboxes, Cost |
-| Effects | Dimensions, Hitboxes, Count |
-| Sheets | Dimensions, Hitboxes, Stack, Actions |
+| Effects | Dimensions, Count |
+| Objects | Dimensions, Hitboxes, Mass |
+| Crafts | Dimensions, Hitboxes, Mass, Cost |
+| Sheets | Dimensions, Hitboxes, Mass, Stack, Actions |
 | Widgets | Dimensions, Frames |
+
+**Instances**
 
 Each Category has Instances. Asset *Instances* form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. 
 
@@ -259,6 +269,7 @@ Binary Objects have a `count` of 2, where as all other Objects are initialized w
 * `dim: Dimensions`
 * `hitboxes: List[Hitbox]` 
 * `count: int = 1`
+* `mass: int`
 
 ### Chests
 
@@ -413,7 +424,6 @@ Effects are animate, immutable Objects. Effects iterate over a single row of fra
 **Properties**
 
 * `dim: Dimensions`
-* `hitboxes: List[Hitbox]` 
 * `count: int`
 
 ### Temporary
@@ -477,6 +487,7 @@ The `key` referenced in the `cost` depends on the Instance type of the Craft. Fo
 * `dimensions: Dimensions`
 * `hitboxes: List[Hitbox]`
 * `cost: Cost`
+* `mass: int`
 
 ### Struts 
 
@@ -555,18 +566,17 @@ This snippet from the [Schemas](#schemas) shows the general structure of an Acti
 * `<action-key>: str` - Ranges over `cast, thrust, walk, slash, shoot, die` (LPC)
 * `<direction-key> : str` -  Ranges over  `up, left, down, right` (LPC)
 * `count: int` - is the number of frames in the Action row grouping. 
+* `mass: int`
 
 **Action Sets**
 
-Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property file. See [Action Configuration Schema](#action-configuration) below for more details. 
+Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See [Action Configuration Schema](#action-configuration) below for more details. 
 
 **Stacks**
 
 A Stack is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
 
-For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. These "stack" of Sheets is keyed in the [Registry](./00-overview.md#registry) using the `<sheet-id>`. 
-
-Stacks are assembled in the [Registry](./00-overview.md#registry) using the `stack` property in the Asset property file during the [application bootstrap](./06-architecture.md). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
+For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#registry) using the `stack` property during the [application bootstrap](./06-architecture.md). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
 
 !!! note
     It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.
@@ -580,7 +590,7 @@ Stacks are assembled in the [Registry](./00-overview.md#registry) using the `sta
 
 ### Pixies
 
-*Pixies* are *Sheets* that have simple game mechanics, e.g. are excluded from the complex calculations of the [Intention Mechanic](./04-intentions.md). *Pixies* encapsulate simple Characters, such as animals or bugs.
+Pixies are Sheets that have simple game mechanics, e.g. are excluded from the complex calculations of the [Intention Mechanic](./04-intentions.md). *Pixies* encapsulate simple Characters, such as animals or bugs.
 
 **Animation: StateAnimation**
 
@@ -600,7 +610,7 @@ Stacks are assembled in the [Registry](./00-overview.md#registry) using the `sta
 
 ### Sprites
 
-*Sprites* are *Sheets* over multiple rows of frames with a variable number of frames per row. They have a diverse palette of Actions. They are meant to encapsulate the core Characters, e.g. the player, NPCs, and enemies.
+Sprites are Sheets over multiple rows of frames, where each row may have a variable number of frames. Sprite have a diverse palette of Animation Actions. They are meant to encapsulate the core game entities, e.g. the player, NPCs, and enemies.
 
 **Animation: StateAnimation**
 

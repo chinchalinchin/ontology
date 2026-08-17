@@ -6,6 +6,7 @@ crafts:
       dimensions:
         w: 100
         l: 100
+      mass: 0
       hitboxes:
         - position: 
             x: 0

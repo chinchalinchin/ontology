@@ -88,8 +88,8 @@ At the start of every collision, the physics pipeline executes a spatial hashing
 1. **Hash (Populate the Grid)**: Maintain a 1D array or hash map (dictionary) where the keys are the `(cell_x, cell_y)` tuples, and the values are lists of integer Asset IDs. Iterate over all dynamic Assets exactly once (`O(N)`). For each Asset, calculate its cell using integer division and append its ID to that cell's list.(Note: If an Asset overlaps a cell boundary, insert it into all cells it touches. This is easily calculated using its width and length divided by the cell size).
 2. **Query (Generate Candidate Pairs)**: Iterate over the populated cells. For each cell, look at the list of Asset IDs inside the grid. Only generate collision pairs for Assets that exist in the same cell.
 3. **Narrow Phase (Raw Intersection)**: Pass this much smaller list of candidate pairs into `Geometry.intersects`.
-    
-The grid's blueprint (`cdef class SpatialHash`) is defined in the Cython math library.
+
+The grid's blueprint (`cdef class Space`) is defined in the Cython math library.
 
 ### Rendering
 

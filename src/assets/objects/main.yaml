@@ -5,6 +5,7 @@ objects:
       dimensions:
         w: 32
         l: 32
+      mass: 1
       hitboxes: null
   # -------------------------------------------------------
   crates:
@@ -12,6 +13,7 @@ objects:
       dimensions:
         w: 30
         l: 64
+      mass: 1
       hitboxes:
         - position:
             x: 0
@@ -23,6 +25,7 @@ objects:
       dimensions:
         w: 28
         l: 38
+      mass: 1
       hitboxes:
         - position:
             x: 0
@@ -34,35 +37,44 @@ objects:
       dimensions:
         w: 28
         l: 30
+      mass: 1
       hitboxes: null
   # -------------------------------------------------------
   doors:
     double-door:
+      mass: -1
       dimensions:
         w: 64
         l: 64
       hitboxes: null
     dungeon-door:
+      mass: -1
       dimensions:
         w: 32
         l: 48
       hitboxes: null
     mansion-door:
+      mass: -1
       dimensions:
         w: 32
         l: 48
-      hitxboes: null
+      hitboxes: null
     open-door:
+      mass: -1
       dimensions:
         w: 32
         l: 57
+      hitboxes: null 
     shack-door:
+      mass: -1 
       dimensions:
         w: 32
         l: 48
+      hitboxes: null
   # -------------------------------------------------------
   gates:
     stone-gate:
+      mass: 0
       dimensions:
         w: 64
         l: 64
@@ -70,16 +82,19 @@ objects:
   # -------------------------------------------------------
   plates:
     stone-crack:
+      mass: -1
       dimensions:
         w: 32
         l: 32
       hitboxes: null
     stone-switch:
+      mass: -1
       dimensions:
         w: 15
         l: 14
       hitboxes: null
     stone-sword:
+      mass: -1
       dimensions:
         w: 26
         l: 38

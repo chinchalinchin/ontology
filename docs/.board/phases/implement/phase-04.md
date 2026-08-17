@@ -6,7 +6,7 @@ The current collision system relies on a brute-force $O(N^2)$ nested loop execut
 
 By serializing spatial data, partitioning the board with a Broad-Phase grid, and returning integer pairs for Python to resolve, we preserve readability while guaranteeing massive performance gains for dense environments.
 
-The grid's blueprint (`cdef class SpatialHash`) must be defined in the Cython math library.
+The grid's blueprint (`cdef class Space`) must be defined in the Cython math library.
 
 Because the entire point of the spatial hash is to operate at C-speeds, it cannot rely on Python lists or dictionaries under the hood. It needs to be built using contiguous C-memory (like a flat C-array or a C++ `std::vector`). Defining it in `math.pyx` allows us to strictly type the variables and bypass the Python Global Interpreter Lock (GIL) during the hashing and querying steps.
 
