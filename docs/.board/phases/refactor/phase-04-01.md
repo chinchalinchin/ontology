@@ -41,8 +41,8 @@ The current implementation stub only queries `Projectiles` and `Sheets`. Project
 
 *Objective*: Centralize runtime Asset hydration to support dynamic spawning triggered by Mechanics.
 
-* [ ] **Subtask**: Create a `Cradle` class initialized with references to `RecipeConfiguration`. Attach `Cradle` to `Board`.
-* [ ] **Subtask**: Expose `spawn_projectile(id, position, direction, speed)`, `spawn_effect(id, instance, position)`, and `spawn_strut(id, instance, position, owner)` methods on the `Cradle` that assemble the components and append them to the `Board` asset lists.
+* [~] **Subtask**: Create a `Cradle` class initialized with references to `RecipeConfiguration`. Attach `Cradle` to `Board`.
+* [~] **Subtask**: Expose `spawn_projectile(id, properties, position, direction, speed)`, `spawn_temporary(id, properties, position)`, and `spawn_strut(id, properties, position, owner)` methods on the `Cradle` that assemble the components and append them to the `Board` asset lists.
 
 **3. Task: Implement World Interaction (`InteractionMechanics` & `MenuMechanics`)**
 

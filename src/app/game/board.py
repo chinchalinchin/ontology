@@ -14,6 +14,7 @@ from app.config.enums import (
     AssetCategories,
     AssetInstances
 )
+from app.game.cradle import Cradle
 from app.game.devices import Device
 from app.game.logic.mechanics import Mechanic
 from app.models.groups import (
@@ -39,6 +40,7 @@ class Board:
     # Public Fields
     configurations: ConfigurationGroup
     equipment: EquipmentGroup
+    cradle: Cradle
     # Hidden Fields
     _assets: List[Asset]
     _mechanics: List[Mechanic]
@@ -66,7 +68,6 @@ class Board:
         self._assets = assets
         self._catalogue()
         self._cache()
-        
         self.loaded = True
         logger.info("Board completely hydrated and initialized.")
 
@@ -155,6 +156,11 @@ class Board:
         """
         self._device = device
 
+
+    def set_cradle(self, cradle: Cradle):
+        """
+        """
+        self.cradle = cradle
         
     def player(self, slot = 0) -> Asset:
         """

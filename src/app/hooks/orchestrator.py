@@ -25,6 +25,7 @@ from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
 from app.hooks.factory import Factory
+from app.models.groups import SpawnableGroup
 
 # Cython Libraries
 from libs.core.models import Dimensions
@@ -144,7 +145,7 @@ class Orchestrator:
                     ))
                     
         logger.info(f"Successfully migrated {len(assets)} assets.")
-        
+
         return Board(assets, configurations, equipment)
     
     def init(self, screensize: Dimensions, device: Devices, headless: bool=True) -> Tuple[Board, Registry, Dict[str, Screen]]:
@@ -163,6 +164,19 @@ class Orchestrator:
         device_mapping = self.configurations.get("mappings", {}).get(device, {})
         device_instance = Factory.device(device, device_mapping)
         self.board.set_device(device_instance)
+
+        # SOMETHING TO THIS EFFECT
+        # spawnable_props = {
+        #     k: v
+        #     for k,v in self.properties.items()
+        #     if k in SpawnableGroup
+        # }
+        # cradle_data = {
+        #     **spawnable_props,
+        #     **self.configurations.recipes.to_dict()
+        # }
+        # cradle_groups = Factory.group(Groups.SPAWNABLE, cradle_data)
+        # self.board.set_cradle(cradle)
 
         # Map the window to the OS to validate the OpenGL context
         # strictly prior to allocating VRAM target textures.

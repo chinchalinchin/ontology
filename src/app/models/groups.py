@@ -12,7 +12,10 @@ from app.config.enums import (
 )
 from app.models.properties import (
     AssetProperties,
-    SheetProperties
+    SheetProperties,
+    CursorProperties,
+    CraftProperties,
+    EffectProperties
 )
 from app.models.config import (
     RecipeConfiguration,
@@ -43,3 +46,11 @@ class ConfigurationGroup:
     mappings: MappingConfiguration
     intentions: Dict[Intentions, List[IntentionConfiguration]]
     actions: List[ActionConfiguration]
+
+@dataclass(slots=True)
+class SpawnableGroup:
+    """
+    """
+    projectiles: Dict[str, CursorProperties]
+    temporary: Dict[str, EffectProperties]
+    struts: Dict[str, CraftProperties]

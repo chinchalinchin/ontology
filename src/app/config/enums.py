@@ -184,9 +184,15 @@ class Configurations(str, Enum):
     RECIPES         = "recipes"
     SCRIPTS         = "scripts"
 
+class Spawnables(str, Enum):
+    TEMPORARY       = "temporary"
+    PROJECTILES     = "projectiles"
+    STRUTS          = "struts"
+    
 class Groups(str, Enum):
     CONFIGURATIONS  = "configurations"
     EQUIPMENT       = "equipment"
+    SPAWNABLES      = "spawnables"
 
 # -------------------------------- WIDGET ENUMERATIONS
 

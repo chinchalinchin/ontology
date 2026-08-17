@@ -76,7 +76,8 @@ from app.models.properties import (
 )
 from app.models.groups import (
     EquipmentGroup,
-    ConfigurationGroup
+    ConfigurationGroup,
+    SpawnableGroup
 )
 from app.game.devices import (
     Keyboard,
@@ -162,7 +163,8 @@ class Factory:
 
     GROUP_MAP = {
         Groups.EQUIPMENT: EquipmentGroup,
-        Groups.CONFIGURATIONS: ConfigurationGroup
+        Groups.CONFIGURATIONS: ConfigurationGroup,
+        Groups.SPAWNABLES: SpawnableGroup
     }
 
     @classmethod
