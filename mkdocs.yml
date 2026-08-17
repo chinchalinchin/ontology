@@ -29,6 +29,7 @@ nav:
 
 markdown_extensions:
   - admonition
+  - pymdownx.blocks.caption
   - pymdownx.details
   - pymdownx.tabbed:
       alternate_style: true 

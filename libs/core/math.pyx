@@ -150,7 +150,7 @@ cdef class Physics:
     """
 
     @staticmethod
-    cpdef list collisions(list primitive_data, Space grid):
+    def collisions(list primitive_data, Space grid) -> list:
         """
         Iterates over a list of primitive spatial data tuples and resolves geometric overlap.
         Returns a Python list of colliding integer ID pairs.

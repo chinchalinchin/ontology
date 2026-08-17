@@ -12,7 +12,11 @@ from app.models.properties import AssetProperties
 from app.models.state import AssetState
 
 # Cython Libraries
-from libs.core.models import Dimensions
+from libs.core.models import (
+    Dimensions, 
+    Hitbox, 
+    Position
+)
 
 @dataclass(slots=True)
 class Taxonomy:
@@ -105,10 +109,18 @@ class Asset:
 
     @property
     def hitboxes(self) -> list:
-        """Unified hitbox retrieval for Mechanics."""
-        if hasattr(self.properties, 'hitboxes'):
-            return self.properties.hitboxes
-        return []
+        """Unified hitbox retrieval. Defaults to sprite bounding box if none explicitly defined."""
+        hbs = []
+        if hasattr(self.properties, 'hitboxes') and self.properties.hitboxes:
+            hbs = self.properties.hitboxes
+        elif hasattr(self.properties, 'personas') and self.properties.personas.get(self.taxonomy.id) and self.properties.personas[self.taxonomy.id].hitboxes:
+            hbs = self.properties.personas[self.taxonomy.id].hitboxes
+            
+        # Automatically generate a default physics body matching the visual dimensions
+        if not hbs and self.dimensions:
+            hbs = [Hitbox(Position(0, 0), self.dimensions)]
+            
+        return hbs
 
     def primitive(self, index: int = 0, hitboxes: list = None) -> tuple:
         """

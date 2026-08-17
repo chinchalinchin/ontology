@@ -42,6 +42,4 @@ cdef class Space:
     cdef list query(self)
 
 cdef class Physics:
-
-    @staticmethod
-    cpdef list collisions(list primitive_data, Space grid)
+    pass

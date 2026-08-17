@@ -1,0 +1,8 @@
+objects:
+  crates: 
+    - id: wooden-barrel
+      name: the-barrel
+      layer: '0'
+      position:
+        x: 80
+        y: 100

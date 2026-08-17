@@ -12,12 +12,24 @@ objects:
       dimensions:
         w: 30
         l: 64
-      hitboxes: null
+      hitboxes:
+        - position:
+            x: 0
+            y: 0
+          dimensions:
+            w: 30
+            l: 64
     wooden-barrel:
       dimensions:
         w: 28
         l: 38
-      hitboxes: null
+      hitboxes:
+        - position:
+            x: 0
+            y: 0
+          dimensions:
+            w: 28
+            l: 38
     wooden-box:
       dimensions:
         w: 28
