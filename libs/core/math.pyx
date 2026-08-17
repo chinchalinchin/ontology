@@ -87,26 +87,21 @@ cdef class Physics:
     """
 
     @staticmethod
-    cdef void collisions(list assets):
+    cpdef list collisions(list primitive_data):
         """
-        Iterates over a list of active Assets and resolves any geometric overlap.
+        Iterates over a list of primitive spatial data tuples and resolves geometric overlap.
+        Returns a Python list of colliding integer ID pairs.
         """
         cdef int i, j
-        cdef int length = len(assets)
-        cdef object asset_a, asset_b
+        cdef int length = len(primitive_data)
+        cdef tuple data_a, data_b
+        cdef list colliding_pairs = []
         
+        # TODO: Task 2/3 - Broad-Phase Spatial Hash & Native Narrow-Phase Implementation
         for i in range(length):
             for j in range(i + 1, length):
-                asset_a = assets[i]
-                asset_b = assets[j]
-                
-                if Geometry.intersects(
-                    asset_a.state.position, 
-                    asset_a.properties.dimensions, 
-                    getattr(asset_a.properties, 'hitboxes', []),
-                    asset_b.state.position, 
-                    asset_b.properties.dimensions,
-                    getattr(asset_b.properties, 'hitboxes', [])
-                ):
-                    # TODO: Trigger collision mutators or halt vectors (Resolution Phase)
-                    pass
+                data_a = primitive_data[i]
+                data_b = primitive_data[j]
+                pass
+
+        return colliding_pairs

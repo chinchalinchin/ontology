@@ -24,7 +24,7 @@ The [Board](./00-overview.md#board) contains a `bus` field that accumulates Even
 
 ### Mechanics
 
-When the Board is paused by a MenuEvent, MenuMechanics take over. This [Mechanic](./05-mechanics.md) translates the [Player Device mappings](./03-player.md#device-mapping) to Menu state changes. These Menu state changes then map back onto game state changes through Event notifications sent to the Bus. For example, a Player may traverse the Container Widgets in an Inventory Menu and select a new piece of Equipment (see [Inventory Menu](#inventory) below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  
+When the Board is paused by a MenuEvent, MenuMechanics take over. This [Mechanic](./05-mechanics.md) translates the [Player Device mappings](./03-player.md#device-mapping) to Menu state changes. These Menu state changes then map back onto game state changes through Event notifications sent to the Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see [Inventory Menu](#inventory) below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  
 
 When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.
 
@@ -78,7 +78,7 @@ Alignments are enumerated below,
 - End: Widgets are aligned at the end of the Pane.
 - Center: Widgets are aligned at the center of the Pane.
 
-Panes may optionally have a `header`. `headers` is a list of Buttons. `len(headers) == len(children)` must be the case; A header is composed of nontraversible Buttons whose Status is tied to the Pane's children. When a child Widget has `focus` from a Menu, the header Button which corresponds to it (by having the same index in its list) has `status == active`. When a child Widget does not have `focus` from a Menu, the header Button which corresponds to it has `status == idle`.
+Panes may optionally have `headers`. `headers` is a list of Buttons. `len(headers) == len(children)` must be the case. A header is composed of nontraversible Buttons whose Status is tied to the Pane's children. When a child Widget has `focus` from a Menu, the header Button which corresponds to it (by having the same index in its list) has `status == active`. When a child Widget does not have `focus` from a Menu, the header Button which corresponds to it has `status == idle`.
 
 Beyoned `layout` and `alignment`, Panes have several styling attributes to control their look and feel. `margins` are applied around the edge of the Pane before aligning children in the layout. For `layout != tab, alignment != center`, `gap` can be used to add spacing between child Widgets.
 
@@ -212,13 +212,13 @@ Menus are pre-defined arrangements of Widgets. Every Menu contains atleast one P
 2. **Measure Children**: Retrieve the `properties` for the dimensions `(w, l)` of each child Widget.
 3. **Apply Algorithm**:
     * If `pane.layout == dock`
-        * If `alignment == left`: TODO
-        * If `alignment == right`: TODO
-        * If `alignment == center`: TODO
-    * If `pane.layout == stack`:
-        * If `alignment == left`: TODO
-        * If `alignment == right`: TODO
+        * If `alignment == start`: TODO
+        * If `alignment == end`: TODO
         * If `alignment == center`: Calculate the maximum width of all children. Offset each child's X coordinate by (Max Width - Child Width) // 2.
+    * If `pane.layout == stack`:
+        * If `alignment == start`: TODO
+        * If `alignment == end`: TODO
+        * If `alignment == center`: Calculate the maximum height of all children. Offset each child's Y coordinate by (Max Height - Child Height) // 2.
     * If `pane.layout == tab`: Alignments do not apply. Pane children are Panes. Each receives the same ScreenPosition. Algorithm recurses to find the coordinates of the grandchildren.
 4. **Flatten**: Return a list of standard Asset objects. The engine now treats them exactly like Game Board assets, completely ignoring the UI hierarchy.
 

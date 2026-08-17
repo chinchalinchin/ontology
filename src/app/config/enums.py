@@ -154,8 +154,6 @@ class GoalCategories(str, Enum):
     PROPERTY        = "property"
     POSITION        = "position"
     
-# -------------------------------- PLAYER STATE ENUMERATIONS
-
 class PlayerGoals(str, Enum):
     UP              = "up"
     LEFT            = "left"
@@ -189,3 +187,19 @@ class Configurations(str, Enum):
 class Groups(str, Enum):
     CONFIGURATIONS  = "configurations"
     EQUIPMENT       = "equipment"
+
+# -------------------------------- WIDGET ENUMERATIONS
+
+class Layouts(str, Enum):
+    DOCK            = "dock"
+    STACK           = "stack"
+    TAB             = "tab"
+
+class Alignments(str, Enum):
+    START           = "start"
+    END             = "end"
+    CENTER          = "center"
+
+class Traversal(str, Enum):
+    FORE            = "fore"
+    AFT             = "aft"

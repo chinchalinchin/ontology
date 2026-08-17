@@ -1,54 +1,94 @@
 menus:
   dialogue:
-    panes:
-      - id: portrait
-        position: 
+    roots: 
+      - id: neutral
+        name: dialogue-menu
+        position:
           px: 0.1
-          py: 0.75
-        layout: stack
-        alignment: center
-        gap: 5
-        widgets:
-          - category: widget
-            instance: container
-            id: portrait_box
-            bind: sprite.state.character.portrait
-      - id: dialogue
-        position: 
-          px: 0.3
           py: 0.75
         layout: dock
         alignment: left
-        gap: 5
-        widgets:
-          - category: widget
-            instance: language
-            id: text_box
-            bind: sprite.state.psyche.communication
-  editor:
+        gap: 10
+        children: 
+          - instance: page
+            id: portrait
+            name: character-portrait
+            bind: 
+              ref: state
+              data: sprite.state.character.portrait
+          - instance: page
+            id: dialogue
+            name: character-speech
+            bind: 
+              ref: state
+              data: sprite.state.psyche.communication
+          - instance: button
+            id: arrow-up
+            name: character-speech-scroll-up
+            bind: 
+              ref: traversal
+              data: self.children[1] # Bind to scroller Page
+          - instance: button
+            id: arrow-down
+            name: character-speech-scroll-down
+            bind: 
+              ref: traversal
+              data: self.children[1] # Bind to scroller Page
   inventory:
-    panes:
-      - id: main_inventory_pane
-        position: { px: 0.1, py: 0.1 } 
-        layout: tabbed      # Signals the Layout Engine to build headers + 1 body
-        header_spacing: 10  # Space between the tab headers
-        tabs:
-          - id: tab_loot
-            label: "Loot"
-            pane: 
-              layout: dock
-              widgets:
-                - category: widget
-                  instance: container
-                  bind: sprite.state.inventory.loot
-
-          - id: tab_equipment
-            label: "Equipment"
-            pane:
-              layout: stack
-              widgets:
-                - category: widget
-                  instance: container
-                  bind: sprite.state.inventory.equipment
-  market:
-  pause:
+    roots:
+      - id: dark
+        name: equipment-menu
+        position: 
+          px: 0.1
+          py: 0.1
+        layout: tab
+        headers:
+          - id: icon
+            name: armor-header
+            symbols:
+              - icon-armor
+          - id: icon
+            name: weapon-header
+            symbols:
+              - icon-weapon
+        children:
+          - instance: pane
+            id: dark
+            name: armor-pane
+            layout: dock
+            gap: 10
+            children: 
+              - instance: button
+                id: slot
+                name: equipped-armor
+                bind:
+                  ref: state
+                  data: sprite.state.inventory.equipment.armor
+              # TODO: need some sort of listing widget
+              - instance: button
+                id: slot
+                name: available-armor
+                bind:
+                  ref: traversal
+                  # TODO: need field in sprite for available armor
+                  data: sprite.state.inventory.store.equipment.armor
+          - instance: pane
+            id: dark
+            name: weapon-pane
+            layout: dock
+            gap: 10
+            children: 
+              - instance: button
+                id: slot
+                name: equipped-weapon
+                bind:
+                  ref: state
+                  data: sprite.state.inventory.equipment
+              # TODO: need some sort of listing widget
+              - instance: button
+                id: slot
+                name: available-weapon
+                bind:
+                  ref: traversal
+                  # TODO: need field in sprite for availanle weapon
+                  data: sprite.state.inventory.store.equipment.weapon

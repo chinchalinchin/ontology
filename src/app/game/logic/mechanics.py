@@ -29,7 +29,7 @@ from app.models.state import (
 
 # Cython Libraries
 from libs.core.models import Position
-from libs.core.math import Geometry
+from libs.core.math import Geometry, Physics
 
 # ----------------------------------------------------------------------------------------
 
@@ -69,24 +69,41 @@ class CollisionMechanics(Mechanic):
 
     def update(self, board: Board, delta_time: float) -> None:
         """
+        Extracts primitive properties from active game entities and passes them 
+        into the Cython physics pipeline for intersection checks. 
         """
         for layer in board.layers():
-            sheets = board.categories(AssetCategories.SHEETS, layer)
+            # 1. Gather dynamic assets on the current layer
+            dynamic_assets = (
+                board.instances(AssetInstances.SPRITES, layer) +
+                board.instances(AssetInstances.PLAYERS, layer) +
+                board.instances(AssetInstances.CRATES, layer)
+            )
 
-            for this in sheets:
-                for that in sheets:
-                    if this.name != that.name:
-                        if Geometry.intersects(
-                            this.state.position, 
-                            this.dimensions, 
-                            this.hitboxes,
-                            that.state.position, 
-                            that.dimensions, 
-                            that.hitboxes
-                        ):
-                            # Resolve collision
-                            pass
+            asset_map = {}
+            primitive_data = []
 
+            # 2. Extract and flatten spatial data into primitives
+            for i, asset in enumerate(dynamic_assets):
+                asset_map[i] = asset
+                
+                # Fetch spatial and dimensional state natively
+                x = asset.state.position.x if asset.state.position else 0
+                y = asset.state.position.y if asset.state.position else 0
+                w = asset.dimensions.w if asset.dimensions else 0
+                l = asset.dimensions.l if asset.dimensions else 0
+                
+                # Retrieve standard hitboxes
+                hitboxes = asset.hitboxes
+
+                primitive_data.append((i, x, y, w, l, hitboxes))
+
+            # 3. Offload detection natively
+            colliding_pairs = Physics.collisions(primitive_data)
+            
+            # TODO: Task 4 - Implement physics kinematics and state resolution 
+            # using `colliding_pairs` against the indexed `asset_map`
+            pass
 # ----------------------------------------------------------------------------------------
 
 class ProjectileMechanics(Mechanic):

@@ -31,4 +31,4 @@ cdef class Geometry:
 cdef class Physics:
 
     @staticmethod
-    cdef void collisions(list assets)
+    cpdef list collisions(list primitive_data)
