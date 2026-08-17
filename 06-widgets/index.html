@@ -1024,7 +1024,7 @@
 <p><strong>Bus</strong></p>
 <p>The <a href="../00-overview/#board">Board</a> contains a <code>bus</code> field that accumulates Events emitted by the game loop. These Events are processed by the <a href="#mechanics">MenuMechanics</a> and then removed from the <code>bus</code>. The <code>bus</code> uses a First-In-First-Out processing order.</p>
 <h3 id="mechanics">Mechanics</h3>
-<p>When the Board is paused by a MenuEvent, MenuMechanics take over. This <a href="../05-mechanics/">Mechanic</a> translates the <a href="../03-player/#device-mapping">Player Device mappings</a> to Menu state changes. These Menu state changes then map back onto game state changes through Event notifications sent to the Bus. For example, a Player may traverse the Container Widgets in an Inventory Menu and select a new piece of Equipment (see <a href="#inventory">Inventory Menu</a> below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  </p>
+<p>When the Board is paused by a MenuEvent, MenuMechanics take over. This <a href="../05-mechanics/">Mechanic</a> translates the <a href="../03-player/#device-mapping">Player Device mappings</a> to Menu state changes. These Menu state changes then map back onto game state changes through Event notifications sent to the Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see <a href="#inventory">Inventory Menu</a> below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  </p>
 <p>When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.</p>
 <h3 id="traversal">Traversal</h3>
 <p>Some Widgets bind to state inputs. Others bind to Traversal. </p>
@@ -1065,7 +1065,7 @@
 <li>End: Widgets are aligned at the end of the Pane.</li>
 <li>Center: Widgets are aligned at the center of the Pane.</li>
 </ul>
-<p>Panes may optionally have a <code>header</code>. <code>headers</code> is a list of Buttons. <code>len(headers) == len(children)</code> must be the case; A header is composed of nontraversible Buttons whose Status is tied to the Pane's children. When a child Widget has <code>focus</code> from a Menu, the header Button which corresponds to it (by having the same index in its list) has <code>status == active</code>. When a child Widget does not have <code>focus</code> from a Menu, the header Button which corresponds to it has <code>status == idle</code>.</p>
+<p>Panes may optionally have <code>headers</code>. <code>headers</code> is a list of Buttons. <code>len(headers) == len(children)</code> must be the case. A header is composed of nontraversible Buttons whose Status is tied to the Pane's children. When a child Widget has <code>focus</code> from a Menu, the header Button which corresponds to it (by having the same index in its list) has <code>status == active</code>. When a child Widget does not have <code>focus</code> from a Menu, the header Button which corresponds to it has <code>status == idle</code>.</p>
 <p>Beyoned <code>layout</code> and <code>alignment</code>, Panes have several styling attributes to control their look and feel. <code>margins</code> are applied around the edge of the Pane before aligning children in the layout. For <code>layout != tab, alignment != center</code>, <code>gap</code> can be used to add spacing between child Widgets.</p>
 <p><strong>Taxonomy</strong></p>
 <ul>
@@ -1188,15 +1188,15 @@
 <li><strong>Measure Children</strong>: Retrieve the <code>properties</code> for the dimensions <code>(w, l)</code> of each child Widget.</li>
 <li><strong>Apply Algorithm</strong>:<ul>
 <li>If <code>pane.layout == dock</code><ul>
-<li>If <code>alignment == left</code>: TODO</li>
-<li>If <code>alignment == right</code>: TODO</li>
-<li>If <code>alignment == center</code>: TODO</li>
+<li>If <code>alignment == start</code>: TODO</li>
+<li>If <code>alignment == end</code>: TODO</li>
+<li>If <code>alignment == center</code>: Calculate the maximum width of all children. Offset each child's X coordinate by (Max Width - Child Width) // 2.</li>
 </ul>
 </li>
 <li>If <code>pane.layout == stack</code>:<ul>
-<li>If <code>alignment == left</code>: TODO</li>
-<li>If <code>alignment == right</code>: TODO</li>
-<li>If <code>alignment == center</code>: Calculate the maximum width of all children. Offset each child's X coordinate by (Max Width - Child Width) // 2.</li>
+<li>If <code>alignment == start</code>: TODO</li>
+<li>If <code>alignment == end</code>: TODO</li>
+<li>If <code>alignment == center</code>: Calculate the maximum height of all children. Offset each child's Y coordinate by (Max Height - Child Height) // 2.</li>
 </ul>
 </li>
 <li>If <code>pane.layout == tab</code>: Alignments do not apply. Pane children are Panes. Each receives the same ScreenPosition. Algorithm recurses to find the coordinates of the grandchildren.</li>
