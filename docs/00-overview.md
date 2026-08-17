@@ -99,7 +99,7 @@ The Registry loads in all of the Asset files when the application bootstraps. Th
 
 Many Assets have Hitboxes. Hitboxes are *properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. 
 
-![LPC Sprite Hitboxes](.static/png/lpc-sprite-hitboxes-walk-down-0.png)
+![LPC Sprite Hitboxes](static/png/lpc-sprite-hitboxes-walk-down-0.png)
 /// caption
 LPC Sprite Hitboxes in (Walk, Down, 0) State
 ///

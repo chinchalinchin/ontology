@@ -109,7 +109,7 @@ State files are maintained in `/src/data/state/<board-key>/**` directory, where 
 While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state [schemas](#schemas) encode Asset Categories and Instances into the top-level keys.
 
 ```mermaid
---8<-- ".static/mmd/asset-hierarchy.mmd"
+--8<-- "static/mmd/asset-hierarchy.mmd"
 ```
 
 !!! note
@@ -648,13 +648,13 @@ Asset Recipe files determine the specific (State, Animation, Frame) components i
 * Location: `/src/data/config/recipes/main.yaml`
 
 ```yaml
---8<-- ".static/yaml/data-recipes.yaml"
+--8<-- "static/yaml/data-recipes.yaml"
 ```
 
 **Default Recipe Configuration**
 
 ```yaml
---8<-- ".static/yaml/examples/default-recipes.yaml"
+--8<-- "static/yaml/examples/default-recipes.yaml"
 ```
 
 ### Action Configuration
@@ -664,13 +664,13 @@ Action Configurations determine the (Action, Direction) partitions employed by a
 * Location: `/src/data/config/actions/main.yaml`
 
 ```yaml
---8<-- ".static/yaml/data-actions.yaml"
+--8<-- "static/yaml/data-actions.yaml"
 ```
 
 **Default Action Configuration**
 
 ```yaml
---8<-- ".static/yaml/examples/default-actions.yaml
+--8<-- "static/yaml/examples/default-actions.yaml
 ```
 
 ### Properties
@@ -680,7 +680,7 @@ Asset Property files hydrate the application models.
 * Location: `/src/assets/<category>/main.yaml`
 
 ```yaml
---8<-- ".static/yaml/asset-properties.yaml"
+--8<-- "static/yaml/asset-properties.yaml"
 ```
 
 ### State
@@ -690,6 +690,6 @@ Asset State files populate the [Board](./00-overview.md#board).
 * Location: `/src/data/state/<board-key>/*.yaml`
 
 ```yaml
---8<-- ".static/yaml/asset-state.yaml"
+--8<-- "static/yaml/asset-state.yaml"
 ```
 

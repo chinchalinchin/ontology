@@ -237,13 +237,13 @@ TODO
 TODO
 
 ```yaml
---8<-- ".static/yaml/data-menus.yaml"
+--8<-- "static/yaml/data-menus.yaml"
 ```
 
 **Default Menus**
 
 ```yaml
---8<-- ".static/yaml/examples/default-menus.yaml"
+--8<-- "static/yaml/examples/default-menus.yaml"
 ```
 
 ### Dialogue

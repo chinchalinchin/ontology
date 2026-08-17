@@ -67,7 +67,7 @@ The input state of the Keyboard is polled through SDL. Keyboard mappings corresp
 The default mappings bundled with the game are provided below,
 
 ```yaml
---8<-- ".static/yaml/examples/default-mappings.yaml"
+--8<-- "static/yaml/examples/default-mappings.yaml"
 ```
 
 ## Schemas
@@ -77,5 +77,5 @@ The default mappings bundled with the game are provided below,
 * Location: `src/data/config/mappings/main.yaml`
 
 ```yaml
---8<-- ".static/yaml/data-mappings.yaml"
+--8<-- "static/yaml/data-mappings.yaml"
 ```

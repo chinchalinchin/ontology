@@ -44,11 +44,15 @@ markdown_extensions:
       base_path: docs
 
 exclude:
-  - '**/.*/*.md'
+  - '**/.board/*.md'
+  - '**/.assets/**'
   - '**/.*.md'
-  
+exclude_docs: |
+  .board/*.md
+  .assets/**
+  .*.md
 extra_javascript:
-  - .static/js/mathjax.js
+  - static/js/mathjax.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 plugins:
