@@ -29,6 +29,9 @@ logger = logging.getLogger(__name__)
 
 class Board:
     """
+    ## Board
+
+    Central database for the game Engine. Holds all Asset state and configuration, and provides queryable interfaces for Mechanics to retrieve pertinent game data.
     """
     # Flags
     loaded: bool
@@ -45,6 +48,7 @@ class Board:
     _cached_instances: Dict[str, Dict[str, List[Asset]]]
     _cached_layers: Dict[str, List[Asset]]
     _cached_renderables: Dict[str, List[Asset]]
+    _cached_weights: Dict[str, List[Asset]]
     # Catalogues
     _all_categories: Dict[str, List[Asset]]
     _all_instances: Dict[str, List[Asset]]
@@ -65,7 +69,10 @@ class Board:
         
         self.loaded = True
         logger.info("Board completely hydrated and initialized.")
-        
+
+    # ---------------------------------------------------------
+    # ----------------------------------------- PRIVATE METHODS
+
     def _catalogue(self):
         """
         """
@@ -84,15 +91,30 @@ class Board:
                 self._all_instances[inst] = []
             self._all_instances[inst].append(asset)
 
+
+    def _init_cache(self, layer = None) -> None:
+        if layer is None:
+            self._cached_categories = {}
+            self._cached_instances = {}
+            self._cached_layers = {}
+            self._cached_renderables = {}
+            self._cached_weights = {}
+            return
+
+        self._cached_categories[layer] = {}
+        self._cached_instances[layer] = {}
+        self._cached_layers[layer] = []
+        self._cached_renderables[layer] = []
+        self._cached_weights[layer] = []
+        return
+
+
     def _cache(self):
         """
         Cache Assets queries by layer to prevent excessive list generations.
         """
         logger.debug("Building initial board spatial caching dictionaries by layer/category/instance.")
-        self._cached_categories = {}
-        self._cached_instances = {}
-        self._cached_layers = {}
-        self._cached_renderables = {}
+        self._init_cache()
 
         for asset in self._assets:
             layer = asset.state.layer
@@ -101,11 +123,8 @@ class Board:
 
             # Initialize layer dictionaries if not present
             if layer not in self._cached_categories:
-                self._cached_categories[layer] = {}
-                self._cached_instances[layer] = {}
-                self._cached_layers[layer] = []
-                self._cached_renderables[layer] = []
-            
+                self._init_cache(layer)
+
             # Cache by layer and category
             if cat not in self._cached_categories[layer]:
                 self._cached_categories[layer][cat] = []
@@ -123,10 +142,19 @@ class Board:
             if cat != AssetCategories.TILES:
                 self._cached_renderables[layer].append(asset)
 
+            # Cached Assets with Weight
+            if hasattr(asset.properties, 'mass'):
+                self._cached_weights[layer].append(asset)
+
+    # ---------------------------------------------------------
+    # ------------------------------------------ PUBLIC METHODS
+
     def set_device(self, device: Device):
         """
+        Sets the Device on the board for polling.
         """
         self._device = device
+
         
     def player(self, slot = 0) -> Asset:
         """
@@ -138,6 +166,7 @@ class Board:
 
     def poll(self) -> Mapping:
         """
+        Polls the Board device.
         """
         if self._device:
             return self._device.poll()
@@ -151,7 +180,22 @@ class Board:
             return self._assets
         return self._cached_layers[layer]
 
+    def weights(self, layer=None) -> List[Asset]:
+        """
+        Returns a list of Assets that have weight. If `layer` is specified, list will be filtered by Layer.
+        """
+        if layer is None:
+            return [
+                asset 
+                for asset in self._assets 
+                if hasattr(asset.properties, 'mass')
+            ]
+        return self._cached_weights.get(layer, [])
+
     def layers(self) -> List[str]:
+        """
+        Returns a list of Layers.
+        """
         return list(self._cached_categories.keys())
 
     def categories(self, category, layer = None) -> List[Asset]:
@@ -177,8 +221,7 @@ class Board:
         if layer is None:
             return [
                 asset 
-                for asset 
-                in self._assets 
+                for asset in self._assets 
                 if asset.category != AssetCategories.TILES
             ]
         return self._cached_renderables.get(layer, [])
@@ -186,6 +229,9 @@ class Board:
     def relayer(self, asset: Asset, new_layer: str) -> None:
         """
         Safely moves an asset between cached layer lists.
+
+        !!! warning
+            *Must* be called by DoorMechanics to ensure Assets and the Cache stay in sync.
         """
         old_layer = asset.state.layer
         if old_layer == new_layer:
@@ -213,15 +259,16 @@ class Board:
             if asset in self._cached_renderables[old_layer]:
                 self._cached_renderables[old_layer].remove(asset)
 
+        if old_layer in self._cached_weights:
+            if asset in self._cached_weights[old_layer]:
+                self._cached_weights[old_layer].remove(asset)
+
         # 2. Update state
         asset.state.layer = new_layer
 
         # 3. Append to new cached lists
         if new_layer not in self._cached_categories:
-            self._cached_categories[new_layer] = {}
-            self._cached_instances[new_layer] = {}
-            self._cached_layers[new_layer] = []
-            self._cached_renderables[new_layer] = []
+            self._init_cache(new_layer)
             
         if cat not in self._cached_categories[new_layer]:
             self._cached_categories[new_layer][cat] = []
@@ -237,6 +284,12 @@ class Board:
         
         if new_layer not in self._cached_renderables:
             self._cached_renderables[new_layer] = []
+        self._cached_renderables[new_layer].append(asset)
+
+        if new_layer not in self._cached_weights:
+            self._cached_weights[new_layer] = []
+        self._cached_weights[new_layer].append(asset)
+
         if cat != AssetCategories.TILES:
             self._cached_renderables[new_layer].append(asset)
 
@@ -266,16 +319,18 @@ class Board:
             if layer in self._cached_renderables and asset in self._cached_renderables[layer]:
                 self._cached_renderables[layer].remove(asset)
 
+            if layer in self._cached_weights and asset in self._cached_weights[layer]:
+                self._cached_weights[layer].remove(asset)
+
             if cat in self._all_categories and asset in self._all_categories[cat]:
                 self._all_categories[cat].remove(asset)
                 
             if inst in self._all_instances and asset in self._all_instances[inst]:
                 self._all_instances[inst].remove(asset)
+
     def size(self, layer=None) -> List[Dimensions]:
         """
-        Calculates the size of Board by layer. 
-
-        If no layer is specified, method will return a list of all layer sizes as a List.
+        Calculates the size of Board by layer. If no layer is specified, method will return a list of all layer sizes as a List.
         """
 
         layers = [ layer ] if layer is not None else self.layers()

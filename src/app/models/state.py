@@ -103,9 +103,9 @@ class PropertyState(AssetState):
     position: Position
 
 @dataclass(slots=True)
-class MetricState(AssetState):
+class MotorState(AssetState):
     """
-    ## MetricState
+    ## MotorState
 
     Asset state for measuring distance from spawn point.
 
@@ -113,9 +113,13 @@ class MetricState(AssetState):
 
     - position: Coordinates (horizontal, vertical) of Asset's upper-left corner.
     - initial: Coordinates (horizontal, vertical) of Asset's initial position, relative to it's upper-left corner.
+    - direction: Direction of motion.
+    - speed: Speed of motion.
     """
     position: Position
     initial: Position
+    direction: Directions
+    speed: int
 
 @dataclass(slots=True)
 class AnimatorState(AssetState):

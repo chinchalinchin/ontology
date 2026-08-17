@@ -7,30 +7,46 @@ A Mechanic is an implementation of an abstract interface that defines what infor
 !!! note
     Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation class.
 
-**General Mechanics**
+### Core
 
-These Mechanics handle general game logic.
+These Mechanics handle the core engine logic.
 
-- `player: PlayerMechanics`: Resolve Device input into Player (Intention, Goal)-state.
 - `animation AnimationMechanics`: Translates current states into FrameKeys for the renderer.
-- `collision: CollisioMechanics`: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.
 - `remove: RemoveMechanics`: General garbage collection for Assets whose lifespan has expired.
+- `motion: MotionMechanics`: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.
 
-**Object Mechanics**
+### Spatial
 
-These Mechanics handle Object game logic.
+These Mechanics handle spatial interactions and collisions between Assets.
 
-- `SwitchMechanics`: Binds the Gate and Plate states together based on their `switch`.
-- `ProjectileMechanics`: Increment projectile positions, checks intersections and resolves impacts.
+- `switch: SwitchMechanics`: (Cython) Binds the Gate and Plate states together based on their `switch`.
+- `projectile: ProjectileMechanics`: (Cython) Increment projectile positions, checks intersections and resolves impacts.
+- `collision: CollisioMechanics`: Resolves collisions.
+- `combat: CombatMechanics`: (Cython) Resolves attack hitbox overlaps, decrements health, etc.
+- `interaction: InteractionMechanics`: (Cython) Resolves Asset interactions.
 
-**Sprite Mechanics**
+**InteractionMechanics**
+
+!!! note
+    `|` is used as a quantifier in the following.
+
+- Source: `source = sprite | sprite.state.intention = 'interact'`
+- Target: `target = asset | intersects(sprite, asset)`
+- Logic:
+    - `if source.instance == 'sprites'`:
+        - `if target.instance == 'chests':`
+        - `if target.instance == 'doors': source.state.layer = door.state.outlayer` 
+    - `if source.instance == 'players':`
+        - `if target.instance == 'chests': bus.append(MenuEvent('inventory', player.state)` 
+        - `if target.instance == 'doors': source.state.layer = door.state.outlayer` 
+
+### Intentional
 
 These Mechanics handle the Sprite Intention logic.
 
+- `player: PlayerMechanics`: Resolve Device input into Player (Intention, Goal)-state.
 - `transition: TransitionMechanics`: Applies the Intention Transition Matrix conditions to all Sprite Sheets.
-- `motion: MotionMechanics`: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.
 - `commerce: CommerceMechanics`: Translate Intentions (barter, attract, etc.) into trades and price movements.
-- `combat: CombatMechanics`: (Cython) Resolves attack hitbox overlaps, decrements health, etc.
 - `speech: SpeechMechanics`: 
 
 ## Configuration

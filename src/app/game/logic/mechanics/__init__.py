@@ -2,6 +2,7 @@ from app.game.logic.mechanics.core import (
     AnimationMechanics,
     RemoveMechanics,
     MotionMechanics,
+    MenuMechanics,
     Mechanic
 )
 from app.game.logic.mechanics.spatial import (
@@ -21,12 +22,14 @@ __all__ = [
     'AnimationMechanics',
     'RemoveMechanics',
     'MotionMechanics',
+    'MenuMechanics',
     'Mechanic',
     #
     'SwitchMechanics', 
     'ProjectileMechanics', 
     'CollisionMechanics',
     'CombatMechanics',
+    'InteractionMechanics',
     'SpatialMechanic',
     #
     'TransitionMechanics',

@@ -26,51 +26,52 @@ The current implementation stub only queries `Projectiles` and `Sheets`. Project
 
 ##### Tasks
 
-**1. Task: Implement Layer Traversal (`DoorMechanics`)**
+**1. Task: Implement Door Traversal & Sprite Chest Interaction**
 
 *Objective*: Allow entities to traverse independent Layer coordinate planes when intersecting Door hitboxes.
 
-* [ ] **Subtask**: Assign `mass: -1` to Door properties.
-* [ ] **Subtask**: Create `DoorMechanics(SpatialMechanic)`. Query intersections between `PLAYERS`/`SPRITES` and `DOORS`.
-* [ ] **Subtask**: Check if the mutating entity's center point intersects the Door. If true, execute `board.relayer(asset, door.state.outlayer)`.
-* [ ] **Subtask**: Update the entity's `position` to match `door.state.out`.
+* [ ] **Subtask**: Assign `mass: -1` (Sensor) to Door properties schema.
+* [ ] **Subtask**: Implement Door mechanics in `InteractionMechanics`. Query intersections between Sprites and Doors conditional on `sprite.state.intention == 'interact'`.
+* [ ] **Subtask**: Check if the mutating Sprite's center point intersects the Door. If true, execute `board.relayer(asset, door.state.outlayer)`.
+* [ ] **Subtask**: Update the Sprite's `position` to match `door.state.out`.
+* [ ] **Subtask**: Implement Sprite interaction mechanics in `InteractionMechanics`. Query intersections between Sprites and Chests conditional on `sprite.state.intention == 'interact'`.
+* [ ] **Subtask**: Check if the mutating Sprite's center point intersects the Chest. If true, remove `chest.state.contents` and append to `sprite.state.inventory.loot`.
 
-**2. Task: Implement Instantiation (`SpawnMechanics`)**
+**2. Task: Implement the Runtime Factory (`Cradle`)**
 
-*Objective*: Bridge the gap between a Sprite's Animation Action and the spawning of dynamic entities (Projectiles, Effects) onto the Board.
+*Objective*: Centralize runtime Asset hydration to support dynamic spawning triggered by Mechanics.
 
-* [ ] **Subtask**: Introduce a `Factory` or `Spawner` reference into `Board` to allow mid-loop instantiation.
-* [ ] **Subtask**: Create `SpawnMechanics`. Iterate over `SHEETS`. Filter for specific `(Action, Frame)` tuples (e.g., frame 4 of the `shoot` action).
-* [ ] **Subtask**: Instantiate the corresponding `Projectile` or `Effect` Asset. Inject `Asset.state.initial` and `Asset.state.velocity` based on the Sprite's `position` and `direction`. Append to `Board`.
+* [ ] **Subtask**: Create a `Cradle` class initialized with references to `RecipeConfiguration`. Attach `Cradle` to `Board`.
+* [ ] **Subtask**: Expose `spawn_projectile(id, position, direction, speed)`, `spawn_effect(id, instance, position)`, and `spawn_strut(id, instance, position, owner)` methods on the `Cradle` that assemble the components and append them to the `Board` asset lists.
 
-**3. Task: Implement World Interaction (`InteractionMechanics`)**
+**3. Task: Implement World Interaction (`InteractionMechanics` & `MenuMechanics`)**
 
-*Objective*: Translate Sprite Intentions into physical state changes for in-game Objects.
+*Objective*: Separate autonomous in-game object interactions from Player-driven UI Menu events.
 
-* [ ] **Subtask**: Create `InteractionMechanics(SpatialMechanic)`. Query overlaps between `SHEETS` (where `intention == INTERACT`) and `CHESTS` (or other interactables).
-* [ ] **Subtask**: For `PLAYERS`: Pause the board, append a `MenuEvent(trade)` to the `Board.bus` (Ensure Event Bus is implemented in Engine loop).
-* [ ] **Subtask**: For `SPRITES`: Calculate inventory transfer logic autonomously. Toggle `chest.state.switch`.
+* [ ] **Subtask**: Introduce UI-specific Intentions (e.g., `MENU_INVENTORY`, `MENU_TRADE`, `MENU_PAUSE`) to the configuration schemas.
+* [ ] **Subtask**: Create `InteractionMechanics(SpatialMechanic)`. For Sprites with `intention == INTERACT` overlapping Chests, autonomously exchange inventory data and toggle `chest.state.switch`.
+* [ ] **Subtask**: Update `MenuMechanics` to poll strictly for the Player's UI Intentions. When triggered, append the appropriate `MenuEvent` to the `Board.bus` and halt the simulation (`board.paused = True`).
 
-**4. Task: Update `CombatMechanics` (Spatial Regression)**
+**4. Task: Update `CombatMechanics` (Spatial Regression & Cradle Spawning)**
 
-*Objective*: Eradicate the $O(N^2)$ nested loop in favor of the Cython spatial hash grid.
+*Objective*: Eradicate the $O(N^2)$ nested loop and utilize the `Cradle` for ranged combat.
 
-* [ ] **Subtask**: Refactor `CombatMechanics` to inherit `SpatialMechanic`.
-* [ ] **Subtask**: Extract `attackers` (Sprites/Players where `intention == ATTACK`). Query `self.query_collisions(attackers + targets)`.
-* [ ] **Subtask**: Map active weapon hitboxes dynamically during the collision check. Decrement `target.state.meters.health` and trigger `mutators.triggers.struck` for valid overlaps.
+* [ ] **Subtask**: Refactor `CombatMechanics` to inherit `SpatialMechanic`. Query overlaps for melee attackers using active weapon hitboxes.
+* [ ] **Subtask**: Implement ranged attack logic: If the attacker's animation matches the critical `shoot` or `cast` frame, call `board.cradle.spawn_projectile()` with the initial vector.
 
 **5. Task: Update `MotionMechanics` & `CollisionMechanics` (Newtonian Integration)**
 
 *Objective*: Apply mass-based physics, momentum conservation, and true AABB sliding.
 
-* [ ] **Subtask**: Add `mass: int` property to `AssetProperties`. Define $m > 0$ (Dynamic), $m = 0$ (Static), $m = -1$ (Sensor).
+* [ ] **Subtask**: Add `mass: int` property to `AssetProperties` ($m > 0$ for Dynamic, $m = 0$ for Static, $m = -1$ for Sensor).
 * [ ] **Subtask**: Implement `Board.weights(layer)` to return a cached list of Assets where `mass >= 0`.
-* [ ] **Subtask**: Modify `MotionMechanics` to apply `acceleration` to `velocity`, and `velocity * delta_time` to `position`. Implement a linear damping factor to simulate surface friction.
-* [ ] **Subtask**: Modify `CollisionMechanics` to exclusively query `Board.weights(layer)`. Calculate overlap resolution and update post-collision velocities using inelastic momentum conservation formulae.
+* [ ] **Subtask**: Modify `MotionMechanics` to integrate `velocity = speed * delta_time` and apply linear surface friction.
+* [ ] **Subtask**: Modify `CollisionMechanics` to query `Board.weights(layer)` and resolve spatial overlap using inelastic momentum transfer formulae.
 
-### 6. Task: Update `ProjectileMechanics` (Environmental Collisions)
+**6. Task: Implement Board Boundaries & Environmental Collisions**
 
-*Objective*: Detect impacts against solid environmental barriers and board boundaries, triggering entity garbage-collection.
+*Objective*: Calculate rigid board boundaries dynamically and allow projectiles to impact solid matter.
 
-* [ ] **Subtask**: Append solid objects (Assets where `mass == 0`) and the calculated boundaries of the `Board` to the spatial query in `ProjectileMechanics`.
-* [ ] **Subtask**: On impact, instantiate a `TemporaryEffect` (e.g., dust puff) at the impact coordinate, and flag the `Projectile` for removal by `RemoveMechanics`.
+* [ ] **Subtask**: Define an `Environ` Asset property.
+* [ ] **Subtask**: In `Board.__init__`, implement the Orthogonal Boundary Algorithm: scan the Tile coordinate set and instantiate $m=0$ `Environ` Hitboxes on any adjacent empty grid space.
+* [ ] **Subtask**: Update `ProjectileMechanics` to query collisions against `Board.weights(layer)`. On impact with $m \ge 0$ objects, call `board.cradle.spawn_effect(dust)` and flag the projectile for garbage collection.

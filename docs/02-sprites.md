@@ -113,10 +113,10 @@ TODO
 
 Mutators are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated from state attributes, not *primitive* state attributes themselves.
 
-Mutators may be *condition-driven*, and separately, they be *parameterized*; In other words, all Mutators are *conditional* but  not all Mutators are parameterized. Parameters modulate the conditions underlying the Mutator calculation. Both Sprites and the [Player](./03-player.md) have Mutator fields, but only Sprites have parameterized Mutators; the Player Mutators are all purely driven by game logic. In other words, the Player Mutator triggers serve to flag the game-loop to apply trigger-specific procedures to the Player Asset, whereas Sprite Mutators triggers depend on the specific parameters unique to the Sprite's deployment. 
+Mutators are *condition-driven*. They may also be *parameterized*; In other words, all Mutators are *conditional* but not all Mutators are parameterized. Parameters modulate the conditions underlying the Mutator calculation. Both Sprites and the [Player](./03-player.md) have Mutator fields, but only Sprites have parameterized Mutators; the Player Mutators are all purely driven by game logic. In other words, the Player Mutator triggers serve to flag the game-loop to apply trigger-specific procedures to the Player Asset, whereas Sprite Mutator triggers depend on the specific parameters unique to the Sprite's deployment. 
 
 - Parameterized Mutators: `fear`, `vision`
-- Event-driven Mutators: `animated`, `dead`, `struck`
+- Conditional Mutators: `animated`, `dead`, `struck`
 
 **Triggers**
 

@@ -248,9 +248,11 @@ class PyMultiplierState(PyAssetState):
 class PyPositionalState(PyAssetState):
     position: PyPosition
 
-class PyMetricState(PyAssetState):
+class PyMotorState(PyAssetState):
     position: PyPosition
     initial: PyPosition
+    direction: Directions
+    speed: int
 
 class PyAnimatorState(PyAssetState):
     position: PyPosition
@@ -306,7 +308,7 @@ class PyCraftStateInstances(BaseModel):
 
 class PyCursorStateInstances(BaseModel):
     expressions: Optional[List[PyPositionalState]] = []
-    projectiles: Optional[List[PyMetricState]] = []
+    projectiles: Optional[List[PyMotorState]] = []
 
 class PyEffectStateInstances(BaseModel):
     temporary: Optional[List[PyPositionalState]] = []

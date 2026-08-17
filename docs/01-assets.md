@@ -5,8 +5,8 @@ This document serves to specify the Asset architecture and provide key definitio
 !!! note "Definition"
     An Asset is an image file.
 
-!!! note
-    LPC Assets are bundled with the application by default.
+!!! note "Liberated Pixel Cup"
+    [LPC](https://lpc.opengameart.org/) Assets are bundled with the application by default.
 
 ## Overview 
 
@@ -56,15 +56,15 @@ assets % tree -L 2
 │   ├── fore
 │   └── main.yaml
 └── widgets
-    ├── buttons
-    ├── language
-    ├── main.yaml
-    ├── meters
-    ├── pages
-    └── panes
+│   ├── buttons
+│   ├── language
+│   ├── main.yaml
+│   ├── meters
+│   ├── pages
+│   ├── panes
 ```
 
-The root `main.yaml` configures [Asset Recipes](#recipes). The `main.yaml` files in each subdirectory conform to the [Asset property schema](#schemas) of their respective Asset Category. 
+The `main.yaml` files in each subdirectory conform to the [Asset property schema](#schemas) of their respective Asset Category. 
 
 ### Asset Concepts
 
@@ -409,11 +409,13 @@ N/A
 * `keys(id, animation): returns [ id ]`
 * `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
-**State: MetricState**
+**State: MotorState**
 
 * `layer: str`
 * `position: Position`
 * `initial: Position`
+* `direction: Direction`
+* `speed: int`
 
 ## Effects
 
@@ -653,7 +655,7 @@ Widgets are covered in their own section, [Widgets](./06-widgets.md).
 
 ### Recipe Configuration
 
-Asset Recipe files determine the specific (State, Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.
+Recipe Configuration files determine the specific (State, Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.
 
 * Location: `/src/data/config/recipes/main.yaml`
 
@@ -683,9 +685,9 @@ Action Configurations determine the (Action, Direction) partitions employed by a
 --8<-- "static/yaml/examples/default-actions.yaml
 ```
 
-### Properties
+### Property Indices
 
-Asset Property files hydrate the application models.
+Asset property index files hydrate the Registry and set the static attributes of Assets.
 
 * Location: `/src/assets/<category>/main.yaml`
 
@@ -693,9 +695,9 @@ Asset Property files hydrate the application models.
 --8<-- "static/yaml/asset-properties.yaml"
 ```
 
-### State
+### State Files
 
-Asset State files populate the [Board](./00-overview.md#board).
+Asset state files populate the [Board](./00-overview.md#board). 
 
 * Location: `/src/data/state/<board-key>/*.yaml`
 

@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from app.game.board import Board
 
+from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories, 
     AssetInstances,
@@ -164,6 +165,45 @@ class CollisionMechanics(SpatialMechanic):
     def __init__(self):
         super().__init__(max_entities=2000)
 
+
+    def _resolve(self, asset_a: Asset, asset_b: Asset):
+        """
+        """
+        # Calculate centers
+        cx_a = asset_a.state.position.x + (asset_a.dimensions.w / 2)
+        cy_a = asset_a.state.position.y + (asset_a.dimensions.l / 2)
+        cx_b = asset_b.state.position.x + (asset_b.dimensions.w / 2)
+        cy_b = asset_b.state.position.y + (asset_b.dimensions.l / 2)
+
+        dx = cx_b - cx_a
+        dy = cy_b - cy_a
+
+        if dx == 0 and dy == 0:
+            dx = 1
+
+        # Resolve spatial overlap
+        overlap_x = (asset_a.dimensions.w / 2 + asset_b.dimensions.w / 2) - abs(dx)
+        overlap_y = (asset_a.dimensions.l / 2 + asset_b.dimensions.l / 2) - abs(dy)
+
+        if overlap_x > 0 and overlap_y > 0:
+            # Push along the shallowest axis of penetration
+            if overlap_x < overlap_y:
+                shift = int(overlap_x / 2) + 1
+                if dx > 0:
+                    asset_a.state.position.x -= shift
+                    asset_b.state.position.x += shift
+                else:
+                    asset_a.state.position.x += shift
+                    asset_b.state.position.x -= shift
+            else:
+                shift = int(overlap_y / 2) + 1
+                if dy > 0:
+                    asset_a.state.position.y -= shift
+                    asset_b.state.position.y += shift
+                else:
+                    asset_a.state.position.y += shift
+                    asset_b.state.position.y -= shift
+
     def update(self, board: Board, delta: float) -> None:
         """
         ### update(board, delta)
@@ -181,45 +221,14 @@ class CollisionMechanics(SpatialMechanic):
             
             for asset_a, asset_b in colliding_pairs:
                 # Setup trigger interactions
-                if hasattr(asset_a.state, 'mutators') and hasattr(asset_a.state.mutators, 'triggers'):
+                if hasattr(asset_a.state, 'mutators') and \
+                    hasattr(asset_a.state.mutators, 'triggers'):
                     asset_a.state.mutators.triggers.struck = True
-                if hasattr(asset_b.state, 'mutators') and hasattr(asset_b.state.mutators, 'triggers'):
+                if hasattr(asset_b.state, 'mutators') and \
+                    hasattr(asset_b.state.mutators, 'triggers'):
                     asset_b.state.mutators.triggers.struck = True
 
-                # Calculate centers
-                cx_a = asset_a.state.position.x + (asset_a.dimensions.w / 2)
-                cy_a = asset_a.state.position.y + (asset_a.dimensions.l / 2)
-                cx_b = asset_b.state.position.x + (asset_b.dimensions.w / 2)
-                cy_b = asset_b.state.position.y + (asset_b.dimensions.l / 2)
-
-                dx = cx_b - cx_a
-                dy = cy_b - cy_a
-
-                if dx == 0 and dy == 0:
-                    dx = 1
-
-                # Resolve spatial overlap
-                overlap_x = (asset_a.dimensions.w / 2 + asset_b.dimensions.w / 2) - abs(dx)
-                overlap_y = (asset_a.dimensions.l / 2 + asset_b.dimensions.l / 2) - abs(dy)
-
-                if overlap_x > 0 and overlap_y > 0:
-                    # Push along the shallowest axis of penetration
-                    if overlap_x < overlap_y:
-                        shift = int(overlap_x / 2) + 1
-                        if dx > 0:
-                            asset_a.state.position.x -= shift
-                            asset_b.state.position.x += shift
-                        else:
-                            asset_a.state.position.x += shift
-                            asset_b.state.position.x -= shift
-                    else:
-                        shift = int(overlap_y / 2) + 1
-                        if dy > 0:
-                            asset_a.state.position.y -= shift
-                            asset_b.state.position.y += shift
-                        else:
-                            asset_a.state.position.y += shift
-                            asset_b.state.position.y -= shift
+                self._resolve(asset_a, asset_b)
 
 # ----------------------------------------------------------------------------------------
 
@@ -275,3 +284,16 @@ class CombatMechanics(SpatialMechanic):
                     
                     if target.state.meters.health.current == 0:
                         target.state.mutators.triggers.dead = True
+
+# ----------------------------------------------------------------------------------------
+
+class InteractionMechanic(SpatialMechanic):
+    """
+    """
+    def __init__(self):
+        super().__init__(max_entities=2000)
+
+    def update(self, board: Board, delta: float) -> None:
+        """
+        """
+        pass

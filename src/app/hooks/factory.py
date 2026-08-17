@@ -58,7 +58,7 @@ from app.models.state import (
     ContainerState, 
     DoorState, 
     SwitchState, 
-    MetricState, 
+    MotorState, 
     MultiplierState,
     NoState, 
     PositionalState, 
@@ -98,7 +98,7 @@ class Factory:
     STATE_MAP = {
         StateRecipe.MULTIPLIER: MultiplierState,
         StateRecipe.POSITIONAL: PositionalState,
-        StateRecipe.METRIC: MetricState,
+        StateRecipe.METRIC: MotorState,
         StateRecipe.ANIMATOR: AnimatorState,
         StateRecipe.CONTAINER: ContainerState,
         StateRecipe.DOOR: DoorState,

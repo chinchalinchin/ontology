@@ -14,17 +14,17 @@
     
 ## Assets
 
-All Assets have an *Id* and *Properties*. Most, but not all, Assets have *State*. 
+All Assets have an *ID* and *properties*. Most, but not all, Assets have *state*. 
 
-In addition, Assets are divided into non-overlapping categories, known as the [Asset Hierarchy](./01-assets.md#asset-hierarchy). Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,
+Assets are divided into non-overlapping categories, known as the [Asset Hierarchy](./01-assets.md#asset-hierarchy). Different categories of Assets expand the base properties and states in various ways. In brief, the Asset categories are,
 
 - [Crafts](./01-assets.md#crafts)
 - [Cursors](./01-assets.md#cursors)
 - [Effects](./01-assets.md#effects)
-- Environ
 - [Objects](./01-assets.md#objects)
 - [Sheets](./01-assets.md#sheets)
 - [Sounds](./07-sounds.md)
+- Resources
 - [Tiles](./01-assets.md#tiles)
 - [Widgets](./06-widgets.md)
 
@@ -32,7 +32,7 @@ Assets are placed in the `/src/assets/<category>/` directory and then registered
 
 The `/src/assets` directory is known as the *asset directory*.
 
-See [Asset Schema](./01-assets.md#schemas) for more information on the Asset Property index.
+See [Asset Schema](./01-assets.md#schemas) for more information on the Asset property index.
 
 ## Data
 
@@ -44,60 +44,83 @@ Runtime information is stored in the `/src/data/**` directory, otherwise known a
 
 * Location: `/src/data/state/`
 
-An Asset is deployed onto a *Board*, where it acquires its *state*, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests and stores state in the state directory.
+An Asset is deployed onto a Board, where it acquires its state, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests and stores state in the state directory.
 
-An Asset Category has a single schema for properties, but each individual Asset Instance has a unique State, particular to particular deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).
+An Asset Category has a single schema for properties that each Instance utilizes, but each individual Asset Instance has a unique State, particular to its deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).
 
 ### Configuration
 
 * Location: `/src/data/config`
 
-Mechanics and other components of the game engine (e.g. Menus, Orchestrator, etc.) utilize configuration stored in the configuration directory. The following engine components are configured by the files in this directory.
+Mechanics and other components of the game Engine (e.g. Menus, Actions, etc.) utilize configuration stored in the configuration directory. The following Engine components are configured by the files in this directory.
 
-- [Scripts](./08-plots.md)
+- [Actions](./01-assets.md#action-configuration)
 - [Intentions](./04-intentions.md)
 - [Mappings](./03-player.md#mapping)
 - [Mechanics](./05-mechanics.md)
 - [Menus](./06-widgets.md#menus)
 - [Recipes](./01-assets.md#recipes)
+- [Scripts](./08-plots.md)
 
 ## Application 
 
-### Factory
+The core components of the application are listed below in this seciton, in the rough order they are called in the course of bootstrapping.
 
-The Factory builds Asset and other game components based on Recipes.
+See [Architecture documentation](./09-architecture.md) for more information.
 
 ### Loader
 
+- Package: `app.config.loader`
+
 The Loader is responsible for reading in the configuration files for properties and state, converting them into Python data structure.
+
+### Factory
+
+- Package: `app.hooks.factory`
+
+The Factory builds Assets and other game components based on Recipes. 
 
 ### Orchestrator
 
+- Package: `app.hooks.orchestrator`
+
 The Orchestrator is the dependency injection system. It is responsible for converting data structures into application data models and supplying them to application classes.
+
+### Registry
+
+- Package: `libs.graphics.registry`
+
+The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. 
 
 ### Engine
 
+- Package: `app.game.engine`
+
 The Engine handles the core gameplay loop and framerate calculations.
 
-### Screen
-
-The Screen acts as a high-level container for a Cythonized SDL rendering interface.
-
 ### Board
+
+- Package: `app.game.board`
 
 The Board is the Game's "database". It holds all ingame Assets and Configurations during the course of the game loop and exposes them to the engine through queryable interfaces.
 
 The state files for each Board are maintained in `/src/data/state/<board-key>/**`.
 
-### Registry
+**Cradle**
 
-The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. 
+The Board posseses a Cradle field for instantiating Assets through game Mechanics, e.g. `CombatMechanics` uses the Cradle to inject new Projectiles into the Board state.
+
+### Screen
+
+- Package: `app.game.screen`
+
+The Screen acts as a high-level container for a Cythonized SDL rendering interface.
 
 ## Concepts
 
 ### Hitboxes
 
-Many Assets have Hitboxes. Hitboxes are *properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,
+Many Assets have Hitboxes. Hitboxes are *properties*, i.e., they are static and do not change. Hitboxes have positions and dimensions. To Hitboxes static, Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,
 
 ```yaml
 position:
@@ -119,7 +142,7 @@ All deployed Assets have a Layer. Layers represent a "view" where the Asset is l
 
 Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at `(x_1, y_1)` and get released on Layer 3 at `(x_2, y_2)`. For this reason, each Layer may have different dimensions.
 
-Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations should be separated by Layer, to avoid inter-Layer collisions
+Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations should be separated by Layer, to avoid inter-Layer collisions and interactions.
 
 ### Sprites
 
