@@ -101,9 +101,6 @@ class Asset:
         """Unified spatial retrieval for rendering and camera culling."""
         if hasattr(self.properties, 'dimensions'):
             return self.properties.dimensions
-        # Fallback for polymorphic Sheets which nest spatial data in Personas
-        elif hasattr(self.properties, 'personas'):
-            return self.properties.personas[self.taxonomy.id].dimensions
         return None
 
     @property
@@ -111,7 +108,16 @@ class Asset:
         """Unified hitbox retrieval for Mechanics."""
         if hasattr(self.properties, 'hitboxes'):
             return self.properties.hitboxes
-        # Fallback for polymorphic Sheets
-        elif hasattr(self.properties, 'personas'):
-            return self.properties.personas[self.taxonomy.id].hitboxes
         return []
+
+    def primitive(self, index: int = 0, hitboxes: list = None) -> tuple:
+        """
+        Extracts spatial attributes into primitive integers for Cython math operations.
+        Returns: (index, x, y, w, l, hitboxes)
+        """
+        pos = getattr(self.state, 'position', None)
+        x = pos.x if pos else 0
+        y = pos.y if pos else 0
+        w = self.dimensions.w if self.dimensions else 0
+        l = self.dimensions.l if self.dimensions else 0
+        return (index, x, y, w, l, hitboxes if hitboxes is not None else self.hitboxes)
