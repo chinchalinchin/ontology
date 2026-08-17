@@ -1,0 +1,75 @@
+menus:
+  dialogue:
+    roots: 
+      - id: neutral
+        name: dialogue-menu
+        position:
+          px: 0.1
+          py: 0.75
+        layout: dock
+        alignment: left
+        gap: 10
+        children: 
+          - instance: page
+            id: portrait
+            name: character-portrait
+            bind: 
+              ref: state
+              data: sprite.state.character.portrait
+          - instance: page
+            id: dialogue
+            name: character-speech
+            bind: 
+              ref: state
+              data: sprite.state.psyche.communication
+          - instance: button
+            id: arrow-up
+            name: character-speech-scroll-up
+            bind: 
+              ref: traversal
+              data: self.children[1] # Bind to scroller Page
+          - instance: button
+            id: arrow-down
+            name: character-speech-scroll-down
+            bind: 
+              ref: traversal
+              data: self.children[1] # Bind to scroller Page
+  editor:
+  inventory:
+    roots:
+      - id: dark
+        name: equipment-menu
+        position: 
+          px: 0.1
+          py: 0.1
+        layout: tab
+        headers:
+          - id: icon
+            name: armor-header
+            symbols:
+              - icon-armor
+          - id: icon
+            name: weapon-header
+            symbols:
+              - icon-weapon
+        children:
+          - instance: pane
+            id: dark
+            name: armor-pane
+            layout: dock
+            gap: 10
+            children: 
+              - instance: button
+                id: slot
+                name: equipped-armor
+                bind:
+                  ref: state
+                  data: sprite.state.inventory.equipment
+              - instance: button
+                id: slot
+                name: available-armor
+                bind:
+                  ref: state
+                  data: sprite.state.inventory.equipment
+  market:
+  pause:

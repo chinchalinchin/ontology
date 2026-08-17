@@ -1,0 +1,255 @@
+# ------------------------------------------------------------------
+# ------------------------------------------------------------ TILES
+tiles:
+  back:
+    dimensions:
+      w: Pixel Horizontal Size
+      l: Pixel Vertical Size
+    ids:
+      - <asset-id>
+  fore:
+    dimensions:
+      w: Pixel Horizontal Size
+      l: Pixel Vertical Size
+    ids:
+      - <asset-id>
+# ------------------------------------------------------------------
+# ----------------------------------------------------------- CRAFTS
+crafts:
+  struts:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      cost:
+        - item: <inventory-key>
+          quantity: <quantity-key>
+# ------------------------------------------------------------------
+# ---------------------------------------------------------- CURSORS
+cursors:
+  expressions:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Sizeh
+  projectiles:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+# ------------------------------------------------------------------
+# ---------------------------------------------------------- EFFECTS
+effects:
+  persistent:
+    <id>:
+      count: Number of Frames
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Postion
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+  temporary:
+    <id>:
+      count: Number of Frames
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Postion
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+# ------------------------------------------------------------------
+# ---------------------------------------------------------- OBJECTS
+objects:
+  chests:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Postion
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+  crates:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Postion
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+  doors:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Postion
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+  gates:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Postion
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+  plates:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Postion
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+# ------------------------------------------------------------------
+# ----------------------------------------------------------- SHEETS
+sheets:
+  armor:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      stack:
+        - <sheet-asset-key>
+      actions: <action-set-key>
+  shields:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      stack:
+        - <sheet-asset-key>
+      actions: <action-set-key>
+  tools:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      stack:
+        - <sheet-asset-key>
+      actions: <action-set-key>
+  utilities:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      stack:
+        - <sheet-asset-key>
+      actions: <action-set-key>
+  weapons:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      stack:
+        - <sheet-asset-key>
+      actions: <action-set-key>
+  pixies:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dimensions:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size
+      stack:
+        - <sheet-asset-key>
+      actions: <action-set-key>
+  sprites:
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      hitboxes:
+        - position: 
+            x: Relative Horizontal Position
+            y: Relative Vertical Position
+          dim:
+            w: Pixel Horizontal Size
+            l: Pixel Vertical Size 
+      stack:
+        - <sheet-asset-key>
+      actions: <action-set-key>
+# ------------------------------------------------------------------
+# ---------------------------------------------------------- WIDGETS
+widgets:
+  buttons: # TODO
+  choices: # TODO 
+  language: # TODO
+  meters: # TODO
+  pages: # TODO 
+  panes: # TODO

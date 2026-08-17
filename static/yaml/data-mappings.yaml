@@ -1,0 +1,6 @@
+mappings:
+  keyboard:
+    intentions:
+      <intention-key>: <scancode>
+    goals:
+      <goal-key>: <scancode>
