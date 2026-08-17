@@ -57,7 +57,7 @@ class Orchestrator:
         self.configurations = Loader.load_configurations()
         self.state = Loader.load_state(state)
 
-    def instance_actions(self, category, instance, id) -> dict:
+    def instance_actions(self, category: str, instance: str, id: str) -> dict:
         action_set_key = self.properties[category][instance][id].get("actions")
         
         if isinstance(action_set_key, dict):
@@ -73,7 +73,7 @@ class Orchestrator:
             logger.warning(f"No actions exist for {action_set_key}")
             return {}
 
-    def instance_properties(self, category, instance, id):
+    def instance_properties(self, category: str, instance: str, id: str) -> dict:
         """
         Returns Asset Properties based on their Taxonomy.
         """
@@ -147,7 +147,7 @@ class Orchestrator:
         
         return Board(assets, configurations, equipment)
     
-    def init(self, screensize: Dimensions, device: Devices, headless: bool = True) -> Tuple[Board, Registry, Dict[str, Screen]]:
+    def init(self, screensize: Dimensions, device: Devices, headless: bool=True) -> Tuple[Board, Registry, Dict[str, Screen]]:
         """
         # Ontology: Orchestrate
 
@@ -192,7 +192,7 @@ class Orchestrator:
         # Explicitly initialize as a windowed application for gameplay
         self.init(screensize, device, headless=False)
 
-        # Instantiate list of all Mechanic objects replacing placeholder dictionary
+        # TODO: iterate over Mechanics Configuration and instantiate in order
         self.mechanics = [
             Factory.mechanics(Mechanics.PLAYER),
             Factory.mechanics(Mechanics.TRANSITION),

@@ -13,7 +13,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 01: Renderer](./phases/implement/phase-01.md)
     - [x]: [Phase 02: Player](./phases/implement/phase-02.md)
     - [x]: [Phase 03: Finetuning](./phases/implement/phase-03.md)
-    - [~]: [Phase 04: Physics](./phases/implement/phase-04.md)
+    - [x]: [Phase 04: Physics](./phases/implement/phase-04.md)
     - [~]: [Phase 05: Widgets](./phases/implement/phase-05.md)
     - [~]: [Phase 06: Editor](./phases/implement/phase-06.md)
     - [~]: [Phase 07: Intentions](./phases/implement/phase-07.md)

@@ -1,7 +1,7 @@
 """
 # Ontology: app.game.mechanics
 
-Package for game mechanic implementations.
+Package for Mechanic implementations.
 """
 # Standard Libraries
 from __future__ import annotations
@@ -29,26 +29,47 @@ from app.models.state import (
 
 # Cython Libraries
 from libs.core.models import Position
-from libs.core.math import Geometry, Physics
+from libs.core.math import (
+    Geometry, 
+    Physics, 
+    Space
+)
 
 # ----------------------------------------------------------------------------------------
 
 class Mechanic(ABC):
     """
+    ## Mechanic
+
+    Foundational class for game Mechanics. Defines the `update()` interface used by the Engine.
     """
 
     @abstractmethod 
     def update(self, board: Board, delta: float) -> None:
+        """
+        ### update(board, delta)
+
+        Engine interface. Injects:
+
+        - board: Game Board
+        - delta: Time Delta
+        """
         pass
 
 # ----------------------------------------------------------------------------------------
 
 class AnimationMechanics(Mechanic):
     """
+    ## AnimationMechanics
+
+    Mechanic responsible for animating Assets.
     """
 
     def update(self, board: Board, delta: float) -> None:
         """
+        ### update(board, delta)
+
+        Iterates over animate Asset and injects state and property data into their Animation interface.
         """
         for asset in board.categories(AssetCategories.EFFECTS):
             asset.animation.animate(asset.state, asset.properties)
@@ -65,13 +86,25 @@ class AnimationMechanics(Mechanic):
 
 class CollisionMechanics(Mechanic):
     """
+    ## CollisionMechanics
+
+    Mechanic responsible for resolving Asset collisions natively.
     """
 
-    def update(self, board: Board, delta_time: float) -> None:
+    def __init__(self):
+        # Allocated exactly once in memory during orchestration to avoid heap-allocation overheads 
+        self.grid = Space(cell_size=64, max_entities=2000)
+
+    def update(self, board: Board, delta: float) -> None:
         """
-        Extracts primitive properties from active game entities and passes them 
-        into the Cython physics pipeline for intersection checks. 
+        ### update(board, delta)
+
+        Extracts primitive properties from Assets, partitions them spatially, and 
+        resolves kinematic overlap constraints.
         """
+        # Zero out the underlying C-array for this frame
+        self.grid.clear()
+
         for layer in board.layers():
             # 1. Gather dynamic assets on the current layer
             dynamic_assets = (
@@ -99,36 +132,120 @@ class CollisionMechanics(Mechanic):
                 primitive_data.append((i, x, y, w, l, hitboxes))
 
             # 3. Offload detection natively
-            colliding_pairs = Physics.collisions(primitive_data)
+            colliding_pairs = Physics.collisions(primitive_data, self.grid)
             
-            # TODO: Task 4 - Implement physics kinematics and state resolution 
-            # using `colliding_pairs` against the indexed `asset_map`
-            pass
+            # 4. Implement Physics & State Resolution 
+            for id_a, id_b in colliding_pairs:
+                asset_a = asset_map[id_a]
+                asset_b = asset_map[id_b]
+
+                # Setup trigger interactions
+                if hasattr(asset_a.state, 'mutators') and hasattr(asset_a.state.mutators, 'triggers'):
+                    asset_a.state.mutators.triggers.struck = True
+                if hasattr(asset_b.state, 'mutators') and hasattr(asset_b.state.mutators, 'triggers'):
+                    asset_b.state.mutators.triggers.struck = True
+
+                # Calculate centers
+                cx_a = asset_a.state.position.x + (asset_a.dimensions.w / 2)
+                cy_a = asset_a.state.position.y + (asset_a.dimensions.l / 2)
+                cx_b = asset_b.state.position.x + (asset_b.dimensions.w / 2)
+                cy_b = asset_b.state.position.y + (asset_b.dimensions.l / 2)
+
+                dx = cx_b - cx_a
+                dy = cy_b - cy_a
+
+                if dx == 0 and dy == 0:
+                    dx = 1
+
+                # Resolve spatial overlap
+                overlap_x = (asset_a.dimensions.w / 2 + asset_b.dimensions.w / 2) - abs(dx)
+                overlap_y = (asset_a.dimensions.l / 2 + asset_b.dimensions.l / 2) - abs(dy)
+
+                if overlap_x > 0 and overlap_y > 0:
+                    # Push along the shallowest axis of penetration
+                    if overlap_x < overlap_y:
+                        shift = int(overlap_x / 2) + 1
+                        if dx > 0:
+                            asset_a.state.position.x -= shift
+                            asset_b.state.position.x += shift
+                        else:
+                            asset_a.state.position.x += shift
+                            asset_b.state.position.x -= shift
+                    else:
+                        shift = int(overlap_y / 2) + 1
+                        if dy > 0:
+                            asset_a.state.position.y -= shift
+                            asset_b.state.position.y += shift
+                        else:
+                            asset_a.state.position.y += shift
+                            asset_b.state.position.y -= shift
+
 # ----------------------------------------------------------------------------------------
 
 class ProjectileMechanics(Mechanic):
     """
+    ## ProjectileMechanics
+
+    Mechanic responsible for tracking projectile trajectories and impacts.
     """
+
+    def __init__(self):
+        # Allocated exactly once in memory during orchestration
+        self.grid = Space(cell_size=64, max_entities=1000)
 
     def update(self, board: Board, delta_time: float) -> None:
         """
+        Extracts primitive properties from projectiles and targets, partitions them spatially, and resolves overlap.
         """
-        for layer in board.layers():
-            sheets = board.categories(AssetCategories.SHEETS, layer)
-            projectiles = board.instances(AssetInstances.PROJECTILES, layer)
+        # Zero out the underlying C-array for this frame
+        self.grid.clear()
 
-            for proj in projectiles:
-                for target in sheets:
-                    if Geometry.intersects(
-                        proj.state.position,
-                        proj.dimensions, 
-                        proj.hitboxes,
-                        target.state.position, 
-                        target.dimensions, 
-                        target.hitboxes
-                    ):
-                        # TODO: Resolve collision
-                        pass
+        for layer in board.layers():
+            projectiles = board.instances(AssetInstances.PROJECTILES, layer)
+            
+            # Fast exit: Skip spatial hashing entirely if there are no projectiles on this layer
+            if not projectiles:
+                continue
+                
+            sheets = board.categories(AssetCategories.SHEETS, layer)
+            dynamic_assets = projectiles + sheets
+
+            asset_map = {}
+            primitive_data = []
+
+            # 1. Extract and flatten spatial data into primitives
+            for i, asset in enumerate(dynamic_assets):
+                asset_map[i] = asset
+                
+                x = asset.state.position.x if asset.state.position else 0
+                y = asset.state.position.y if asset.state.position else 0
+                w = asset.dimensions.w if asset.dimensions else 0
+                l = asset.dimensions.l if asset.dimensions else 0
+                
+                primitive_data.append((i, x, y, w, l, asset.hitboxes))
+
+            # 2. Offload detection natively
+            colliding_pairs = Physics.collisions(primitive_data, self.grid)
+
+            # 3. State Resolution
+            for id_a, id_b in colliding_pairs:
+                asset_a = asset_map[id_a]
+                asset_b = asset_map[id_b]
+
+                # Filter out sheet-sheet and proj-proj collisions 
+                # (sheet-sheet collisions are handled natively by CollisionMechanics)
+                is_a_proj = asset_a.taxonomy.instance == AssetInstances.PROJECTILES
+                is_b_proj = asset_b.taxonomy.instance == AssetInstances.PROJECTILES
+
+                if is_a_proj and not is_b_proj:
+                    proj, target = asset_a, asset_b
+                elif is_b_proj and not is_a_proj:
+                    proj, target = asset_b, asset_a
+                else:
+                    continue
+
+                # TODO: Resolve projectile impact (e.g., mark proj for GC, apply damage to target)
+                pass
 
 # ----------------------------------------------------------------------------------------
 
@@ -162,59 +279,87 @@ class RemoveMechanics(Mechanic):
 
 class SwitchMechanics(Mechanic):
     """
+    ## SwitchMechanics
+
+    Mechanic responsible for triggering plates and linking their states to gates.
     """
+
+    def __init__(self):
+        # Allocated exactly once in memory during orchestration
+        self.grid = Space(cell_size=64, max_entities=1000)
 
     def update(self, board: Board, delta_time: float) -> None:
         """
+        Extracts primitive properties from plates, crates, and sheets,
+        partitions them spatially, and resolves switch triggers natively.
         """
+        self.grid.clear()
+
         for layer in board.layers():
             plates = board.instances(AssetInstances.PLATES, layer)
+            
+            # Fast exit: Skip spatial hashing entirely if there are no plates on this layer
+            if not plates:
+                continue
+                
             crates = board.instances(AssetInstances.CRATES, layer)
             gates = board.instances(AssetInstances.GATES, layer)
             sheets = board.categories(AssetCategories.SHEETS, layer)
 
-            for plate in plates:
-                switched = False
-                
-                # Verify crate overlap independently
-                for weight in crates:
-                    if Geometry.intersects(
-                        plate.state.position,
-                        plate.dimensions, 
-                        plate.hitboxes,
-                        weight.state.position, 
-                        weight.dimensions,
-                        weight.hitboxes
-                    ):
-                        current_state = plate.state.switch
-                        plate.state.switch = True
-                        switched = not (current_state == plate.state.switch)
-                        break 
-                        
-                # Verify sheet overlap independently
-                if not switched:
-                    for weight in sheets:
-                        if Geometry.intersects(
-                            plate.state.position,
-                            plate.dimensions, 
-                            plate.hitboxes,
-                            weight.state.position, 
-                            weight.dimensions,
-                            weight.hitboxes
-                        ):
-                            current_state = plate.state.switch
-                            plate.state.switch = True
-                            switched = not (current_state == plate.state.switch)
-                            break 
-                
-                # Notify linked gates 
-                if switched:
-                    for gate in gates:
-                        if plate.state.link == gate.state.link:
-                            gate.state.switch = plate.state.switch
-                else:
-                    plate.state.switch = switched
+            dynamic_assets = plates + crates + sheets
 
+            asset_map = {}
+            primitive_data = []
+
+            # 1. Extract and flatten spatial data into primitives
+            for i, asset in enumerate(dynamic_assets):
+                asset_map[i] = asset
+                
+                x = asset.state.position.x if asset.state.position else 0
+                y = asset.state.position.y if asset.state.position else 0
+                w = asset.dimensions.w if asset.dimensions else 0
+                l = asset.dimensions.l if asset.dimensions else 0
+                
+                primitive_data.append((i, x, y, w, l, asset.hitboxes))
+
+            # 2. Offload detection natively
+            colliding_pairs = Physics.collisions(primitive_data, self.grid)
+
+            # 3. State Resolution
+            pressed_plates = set()
+
+            for id_a, id_b in colliding_pairs:
+                asset_a = asset_map[id_a]
+                asset_b = asset_map[id_b]
+
+                is_a_plate = asset_a.taxonomy.instance == AssetInstances.PLATES
+                is_b_plate = asset_b.taxonomy.instance == AssetInstances.PLATES
+
+                # Filter: Only care if exactly one is a plate
+                if is_a_plate and not is_b_plate:
+                    plate, weight = asset_a, asset_b
+                elif is_b_plate and not is_a_plate:
+                    plate, weight = asset_b, asset_a
+                else:
+                    continue
+
+                # Validate the overlapping entity is a valid weight (Crate or Sheet)
+                if (weight.taxonomy.instance == AssetInstances.CRATES or 
+                    weight.taxonomy.category == AssetCategories.SHEETS):
+                    pressed_plates.add(plate)
+
+            # 4. Apply State and Notify Gates
+            for plate in plates:
+                is_pressed = plate in pressed_plates
+                
+                # Check if the state has mutated this frame
+                if plate.state.switch != is_pressed:
+                    plate.state.switch = is_pressed
+                    
+                    # Synchronize linked gates
+                    for gate in gates:
+                        if gate.state.link == plate.state.link:
+                            gate.state.switch = plate.state.switch
 # ----------------------------------------------------------------------------------------
 
 class TransitionMechanics(Mechanic):

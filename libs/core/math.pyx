@@ -1,3 +1,4 @@
+# /home/grant/Projects/ontology/libs/core/math.pyx
 # cython: language_level=3
 """
 # Ontology: libs.core.math
@@ -9,7 +10,8 @@ from typing import List
 
 # Cython Libraries
 from libs.core.models cimport Position, Dimensions, Hitbox
-
+from libc.stdlib cimport malloc, free
+from libc.string cimport memset
 
 cdef class Geometry:
     """
@@ -80,6 +82,67 @@ cdef class Geometry:
         return (pos.x < cam_x + screen.w and pos.x + dim.w > cam_x and
                 pos.y < cam_y + screen.l and pos.y + dim.l > cam_y)
 
+cdef class Space:
+    """
+    Broad-Phase Spatial Partitioning Grid for O(1) bucket lookups.
+    """
+    def __init__(self, int cell_size=64, int max_entities=2000):
+        self.cell_size = cell_size
+        self.max_entities = max_entities
+        self.num_buckets = max_entities * 2
+        self.max_per_bucket = 50
+        self.bucket_counts = <int*>malloc(self.num_buckets * sizeof(int))
+        self.bucket_data = <int*>malloc(self.num_buckets * self.max_per_bucket * sizeof(int))
+        self.clear()
+
+    def __dealloc__(self):
+        if self.bucket_counts is not NULL:
+            free(self.bucket_counts)
+        if self.bucket_data is not NULL:
+            free(self.bucket_data)
+
+    cpdef void clear(self):
+        if self.bucket_counts is not NULL:
+            memset(self.bucket_counts, 0, self.num_buckets * sizeof(int))
+
+    cdef inline int _hash(self, int cx, int cy):
+        return (abs(cx * 73856093 ^ cy * 19349663)) % self.num_buckets
+
+    cdef void insert(self, int entity_id, int x, int y, int w, int l):
+        cdef int min_x = x // self.cell_size
+        cdef int min_y = y // self.cell_size
+        cdef int max_x = (x + w) // self.cell_size
+        cdef int max_y = (y + l) // self.cell_size
+        cdef int cx, cy, h, idx
+
+        for cx in range(min_x, max_x + 1):
+            for cy in range(min_y, max_y + 1):
+                h = self._hash(cx, cy)
+                if self.bucket_counts[h] < self.max_per_bucket:
+                    idx = h * self.max_per_bucket + self.bucket_counts[h]
+                    self.bucket_data[idx] = entity_id
+                    self.bucket_counts[h] += 1
+
+    cdef list query(self):
+        cdef list pairs = []
+        cdef set seen = set()
+        cdef int b, i, j, count, id1, id2
+        cdef tuple pair
+
+        for b in range(self.num_buckets):
+            count = self.bucket_counts[b]
+            if count > 1:
+                for i in range(count):
+                    for j in range(i + 1, count):
+                        id1 = self.bucket_data[b * self.max_per_bucket + i]
+                        id2 = self.bucket_data[b * self.max_per_bucket + j]
+                        if id1 > id2:
+                            id1, id2 = id2, id1
+                        pair = (id1, id2)
+                        if pair not in seen:
+                            seen.add(pair)
+                            pairs.append(pair)
+        return pairs
 
 cdef class Physics:
     """
@@ -87,21 +150,55 @@ cdef class Physics:
     """
 
     @staticmethod
-    cpdef list collisions(list primitive_data):
+    cpdef list collisions(list primitive_data, Space grid):
         """
         Iterates over a list of primitive spatial data tuples and resolves geometric overlap.
         Returns a Python list of colliding integer ID pairs.
         """
-        cdef int i, j
-        cdef int length = len(primitive_data)
-        cdef tuple data_a, data_b
-        cdef list colliding_pairs = []
+        cdef int i, x, y, w, l
+        cdef tuple data
         
-        # TODO: Task 2/3 - Broad-Phase Spatial Hash & Native Narrow-Phase Implementation
-        for i in range(length):
-            for j in range(i + 1, length):
-                data_a = primitive_data[i]
-                data_b = primitive_data[j]
-                pass
+        # 1. Broad-Phase Spatial Hash (Populate)
+        for data in primitive_data:
+            i = data[0]
+            x = data[1]
+            y = data[2]
+            w = data[3]
+            l = data[4]
+            grid.insert(i, x, y, w, l)
+            
+        # 2. Broad-Phase Query Pairs
+        cdef list candidate_pairs = grid.query()
+        
+        # 3. Narrow-Phase Detection
+        cdef list colliding_pairs = []
+        cdef int id_a, id_b
+        cdef tuple data_a, data_b
+        
+        # Pre-allocate to adhere to the "Zero Heap Allocation" inner loop philosophy
+        cdef Position pos_a = Position(0, 0)
+        cdef Dimensions dim_a = Dimensions(0, 0)
+        cdef Position pos_b = Position(0, 0)
+        cdef Dimensions dim_b = Dimensions(0, 0)
+        cdef tuple pair
+        
+        for pair in candidate_pairs:
+            id_a = pair[0]
+            id_b = pair[1]
+            data_a = primitive_data[id_a]
+            data_b = primitive_data[id_b]
+            
+            pos_a.x = data_a[1]
+            pos_a.y = data_a[2]
+            dim_a.w = data_a[3]
+            dim_a.l = data_a[4]
 
+            pos_b.x = data_b[1]
+            pos_b.y = data_b[2]
+            dim_b.w = data_b[3]
+            dim_b.l = data_b[4]
+
+            if Geometry.intersects(pos_a, dim_a, data_a[5], pos_b, dim_b, data_b[5]):
+                colliding_pairs.append(pair)
+                
         return colliding_pairs

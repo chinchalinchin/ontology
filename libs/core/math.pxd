@@ -1,3 +1,4 @@
+# /home/grant/Projects/ontology/libs/core/math.pxd
 # cython: language_level=3
 """
 # libs/math.pxd
@@ -27,8 +28,20 @@ cdef class Geometry:
         Dimensions screen
     )
 
+cdef class Space:
+    cdef int cell_size
+    cdef int max_entities
+    cdef int num_buckets
+    cdef int max_per_bucket
+    cdef int* bucket_counts
+    cdef int* bucket_data
+
+    cpdef void clear(self)
+    cdef inline int _hash(self, int cx, int cy)
+    cdef void insert(self, int entity_id, int x, int y, int w, int l)
+    cdef list query(self)
 
 cdef class Physics:
 
     @staticmethod
-    cpdef list collisions(list primitive_data)
+    cpdef list collisions(list primitive_data, SpatialHash grid)
