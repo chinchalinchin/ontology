@@ -1462,6 +1462,13 @@
 <p>The concept of a Layer is defined more explicitly in <a href="../00-overview/#world">Overview documentation</a>. It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.</p>
 </div>
 <p>State files are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code> directory, where <code>&lt;board-key&gt;</code> is a unique identifer for a <a href="../00-overview/#board">Board</a>.</p>
+<p><strong>Mass</strong></p>
+<p>Some Assets have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.</p>
+<ul>
+<li><span class="arithmatex">\(m &gt; 0\)</span>: <strong>Dynamic Body</strong>. Participates in momentum calculations.</li>
+<li><span class="arithmatex">\(m = 0\)</span>: <strong>Static Body</strong>. Treated as having infinite mass (<span class="arithmatex">\(m \to \infty\)</span>) in physics equations. Its velocity is unaffected by collisions, but it forces dynamic bodies to resolve overlap.</li>
+<li><span class="arithmatex">\(m = -1\)</span>: <strong>Sensor</strong>. The engine detects the spatial intersection for game logic (like <code>SwitchMechanics</code> or <code>DoorMechanics</code>), but <code>CollisionMechanics</code> bypasses it completely during the overlap resolution phase.</li>
+</ul>
 <h3 id="asset-hierarchy">Asset Hierarchy</h3>
 <p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state <a href="#schemas">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
 <pre class="mermaid"><code>graph LR
@@ -1533,7 +1540,7 @@
 <p class="admonition-title">Note</p>
 <p>The Asset Hierarchy can be thought of as a data abstraction governing the schemas which drive the ECS instantiation. </p>
 </div>
-<p><strong>Categories &amp; Instances</strong></p>
+<p><strong>Categories</strong></p>
 <p>Asset <em>Categories</em> form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the property files and inject into its deployment. </p>
 <table>
 <thead>
@@ -1552,20 +1559,20 @@
 <td>Dimensions</td>
 </tr>
 <tr>
+<td>Effects</td>
+<td>Dimensions, Count</td>
+</tr>
+<tr>
 <td>Objects</td>
-<td>Dimensions, Hitboxes</td>
+<td>Dimensions, Hitboxes, Mass</td>
 </tr>
 <tr>
 <td>Crafts</td>
-<td>Dimensions, Hitboxes, Cost</td>
-</tr>
-<tr>
-<td>Effects</td>
-<td>Dimensions, Hitboxes, Count</td>
+<td>Dimensions, Hitboxes, Mass, Cost</td>
 </tr>
 <tr>
 <td>Sheets</td>
-<td>Dimensions, Hitboxes, Stack, Actions</td>
+<td>Dimensions, Hitboxes, Mass, Stack, Actions</td>
 </tr>
 <tr>
 <td>Widgets</td>
@@ -1573,6 +1580,7 @@
 </tr>
 </tbody>
 </table>
+<p><strong>Instances</strong></p>
 <p>Each Category has Instances. Asset <em>Instances</em> form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. </p>
 <table>
 <thead>
@@ -1772,6 +1780,7 @@
 <li><code>dim: Dimensions</code></li>
 <li><code>hitboxes: List[Hitbox]</code> </li>
 <li><code>count: int = 1</code></li>
+<li><code>mass: int</code></li>
 </ul>
 <h3 id="chests">Chests</h3>
 <p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>interact</code> <a href="../04-intentions/">Intention</a> while intersecting the hitboxes of the Chest. When <code>switch == true</code>, the Chest is <em>on</em> (open). When <code>switch == false</code>, the Chest is <em>off</em> (closed).</p>
@@ -1904,7 +1913,6 @@
 <p><strong>Properties</strong></p>
 <ul>
 <li><code>dim: Dimensions</code></li>
-<li><code>hitboxes: List[Hitbox]</code> </li>
 <li><code>count: int</code></li>
 </ul>
 <h3 id="temporary">Temporary</h3>
@@ -1958,6 +1966,7 @@
 <li><code>dimensions: Dimensions</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
 <li><code>cost: Cost</code></li>
+<li><code>mass: int</code></li>
 </ul>
 <h3 id="struts">Struts</h3>
 <p><em>Struts</em> are inanimate, immutable Assets. <em>Struts</em> are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an <code>owner</code>. </p>
@@ -2027,13 +2036,13 @@
 <li><code>&lt;action-key&gt;: str</code> - Ranges over <code>cast, thrust, walk, slash, shoot, die</code> (LPC)</li>
 <li><code>&lt;direction-key&gt; : str</code> -  Ranges over  <code>up, left, down, right</code> (LPC)</li>
 <li><code>count: int</code> - is the number of frames in the Action row grouping. </li>
+<li><code>mass: int</code></li>
 </ul>
 <p><strong>Action Sets</strong></p>
-<p>Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property file. See <a href="#action-configuration">Action Configuration Schema</a> below for more details. </p>
+<p>Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See <a href="#action-configuration">Action Configuration Schema</a> below for more details. </p>
 <p><strong>Stacks</strong></p>
 <p>A Stack is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.</p>
-<p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. These "stack" of Sheets is keyed in the <a href="../00-overview/#registry">Registry</a> using the <code>&lt;sheet-id&gt;</code>. </p>
-<p>Stacks are assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>stack</code> property in the Asset property file during the <a href="./06-architecture.md">application bootstrap</a>. The assembled <code>stack</code> is saved as a Sheet Asset, using the <code>&lt;sheet-id&gt;</code> as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.</p>
+<p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. This Sprite stack is assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>stack</code> property during the <a href="./06-architecture.md">application bootstrap</a>. The assembled <code>stack</code> is saved as a Sheet Asset, using the <code>&lt;sheet-id&gt;</code> as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.</p>
@@ -2046,7 +2055,7 @@
 <li><code>actions: Actions</code></li>
 </ul>
 <h3 id="pixies">Pixies</h3>
-<p><em>Pixies</em> are <em>Sheets</em> that have simple game mechanics, e.g. are excluded from the complex calculations of the <a href="../04-intentions/">Intention Mechanic</a>. <em>Pixies</em> encapsulate simple Characters, such as animals or bugs.</p>
+<p>Pixies are Sheets that have simple game mechanics, e.g. are excluded from the complex calculations of the <a href="../04-intentions/">Intention Mechanic</a>. <em>Pixies</em> encapsulate simple Characters, such as animals or bugs.</p>
 <p><strong>Animation: StateAnimation</strong></p>
 <ul>
 <li><code>state.animation.frame += 1</code></li>
@@ -2064,7 +2073,7 @@
 <li><code>animation: Animation</code></li>
 </ul>
 <h3 id="sprites">Sprites</h3>
-<p><em>Sprites</em> are <em>Sheets</em> over multiple rows of frames with a variable number of frames per row. They have a diverse palette of Actions. They are meant to encapsulate the core Characters, e.g. the player, NPCs, and enemies.</p>
+<p>Sprites are Sheets over multiple rows of frames, where each row may have a variable number of frames. Sprite have a diverse palette of Animation Actions. They are meant to encapsulate the core game entities, e.g. the player, NPCs, and enemies.</p>
 <p><strong>Animation: StateAnimation</strong></p>
 <ul>
 <li><code>state.animation.frame += 1</code></li>
@@ -2247,6 +2256,7 @@
 <span class="nt">crafts</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">struts</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">&lt;id&gt;</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mass Quantity</span>
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
 <span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
@@ -2310,6 +2320,7 @@
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
 <span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mass Quantity</span>
 <span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span>
 <span class="w">            </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Relative Horizontal Position</span>
@@ -2322,6 +2333,7 @@
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
 <span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mass Quantity</span>
 <span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span>
 <span class="w">            </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Relative Horizontal Position</span>
@@ -2334,6 +2346,7 @@
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
 <span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mass Quantity</span>
 <span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span>
 <span class="w">            </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Relative Horizontal Position</span>
@@ -2346,6 +2359,7 @@
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
 <span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mass Quantity</span>
 <span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span>
 <span class="w">            </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Relative Horizontal Position</span>
@@ -2355,6 +2369,7 @@
 <span class="w">            </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
 <span class="w">  </span><span class="nt">plates</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">&lt;id&gt;</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mass Quantity</span>
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
 <span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>

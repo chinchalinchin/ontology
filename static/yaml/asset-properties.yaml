@@ -18,6 +18,7 @@ tiles:
 crafts:
   struts:
     <id>:
+      mass: Mass Quantity
       dimensions:
         w: Pixel Horizontal Size
         l: Pixel Vertical Size
@@ -81,6 +82,7 @@ objects:
       dimensions:
         w: Pixel Horizontal Size
         l: Pixel Vertical Size
+      mass: Mass Quantity
       hitboxes:
         - position: 
             x: Relative Horizontal Position
@@ -93,6 +95,7 @@ objects:
       dimensions:
         w: Pixel Horizontal Size
         l: Pixel Vertical Size
+      mass: Mass Quantity
       hitboxes:
         - position: 
             x: Relative Horizontal Position
@@ -105,6 +108,7 @@ objects:
       dimensions:
         w: Pixel Horizontal Size
         l: Pixel Vertical Size
+      mass: Mass Quantity
       hitboxes:
         - position: 
             x: Relative Horizontal Position
@@ -117,6 +121,7 @@ objects:
       dimensions:
         w: Pixel Horizontal Size
         l: Pixel Vertical Size
+      mass: Mass Quantity
       hitboxes:
         - position: 
             x: Relative Horizontal Position
@@ -126,6 +131,7 @@ objects:
             l: Pixel Vertical Size
   plates:
     <id>:
+      mass: Mass Quantity
       dimensions:
         w: Pixel Horizontal Size
         l: Pixel Vertical Size

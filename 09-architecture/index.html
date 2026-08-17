@@ -841,7 +841,7 @@
 <li><strong>Query (Generate Candidate Pairs)</strong>: Iterate over the populated cells. For each cell, look at the list of Asset IDs inside the grid. Only generate collision pairs for Assets that exist in the same cell.</li>
 <li><strong>Narrow Phase (Raw Intersection)</strong>: Pass this much smaller list of candidate pairs into <code>Geometry.intersects</code>.</li>
 </ol>
-<p>The grid's blueprint (<code>cdef class SpatialHash</code>) is defined in the Cython math library.</p>
+<p>The grid's blueprint (<code>cdef class Space</code>) is defined in the Cython math library.</p>
 <h3 id="rendering">Rendering</h3>
 <p>The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate the overhead of crossing the Python-to-C boundary, the rendering pipeline does not pass heavy Python objects (like <code>SpriteState</code> or <code>Dimensions</code>) to the renderer. Instead, it extracts raw integers on the Python side and unpacks them cleanly onto the C-stack.</p>
 <ul>
