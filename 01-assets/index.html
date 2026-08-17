@@ -679,10 +679,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#properties" class="md-nav__link">
+  <a href="#property-indices" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Properties
+        Property Indices
       
     </span>
   </a>
@@ -690,10 +690,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#state" class="md-nav__link">
+  <a href="#state-files" class="md-nav__link">
     <span class="md-ellipsis">
       
-        State
+        State Files
       
     </span>
   </a>
@@ -1329,10 +1329,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#properties" class="md-nav__link">
+  <a href="#property-indices" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Properties
+        Property Indices
       
     </span>
   </a>
@@ -1340,10 +1340,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#state" class="md-nav__link">
+  <a href="#state-files" class="md-nav__link">
     <span class="md-ellipsis">
       
-        State
+        State Files
       
     </span>
   </a>
@@ -1382,8 +1382,8 @@
 <p>An Asset is an image file.</p>
 </div>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>LPC Assets are bundled with the application by default.</p>
+<p class="admonition-title">Liberated Pixel Cup</p>
+<p><a href="https://lpc.opengameart.org/">LPC</a> Assets are bundled with the application by default.</p>
 </div>
 <h2 id="overview">Overview</h2>
 <p>The Asset directory is organized as follows,</p>
@@ -1430,14 +1430,14 @@
 │<span class="w">   </span>├──<span class="w"> </span>fore
 │<span class="w">   </span>└──<span class="w"> </span>main.yaml
 └──<span class="w"> </span>widgets
-<span class="w">    </span>├──<span class="w"> </span>buttons
-<span class="w">    </span>├──<span class="w"> </span>language
-<span class="w">    </span>├──<span class="w"> </span>main.yaml
-<span class="w">    </span>├──<span class="w"> </span>meters
-<span class="w">    </span>├──<span class="w"> </span>pages
-<span class="w">    </span>└──<span class="w"> </span>panes
+│<span class="w">   </span>├──<span class="w"> </span>buttons
+│<span class="w">   </span>├──<span class="w"> </span>language
+│<span class="w">   </span>├──<span class="w"> </span>main.yaml
+│<span class="w">   </span>├──<span class="w"> </span>meters
+│<span class="w">   </span>├──<span class="w"> </span>pages
+│<span class="w">   </span>├──<span class="w"> </span>panes
 </code></pre></div>
-<p>The root <code>main.yaml</code> configures <a href="#recipes">Asset Recipes</a>. The <code>main.yaml</code> files in each subdirectory conform to the <a href="#schemas">Asset property schema</a> of their respective Asset Category. </p>
+<p>The <code>main.yaml</code> files in each subdirectory conform to the <a href="#schemas">Asset property schema</a> of their respective Asset Category. </p>
 <h3 id="asset-concepts">Asset Concepts</h3>
 <p><strong>IDs &amp; Names</strong></p>
 <p>IDs are used to map Assets to images loaded into the <a href="../00-overview/#registry">Registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset, but not in-game entities.</p>
@@ -1899,11 +1899,13 @@
 <li><code>keys(id, animation): returns [ id ]</code></li>
 <li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
-<p><strong>State: MetricState</strong></p>
+<p><strong>State: MotorState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>initial: Position</code></li>
+<li><code>direction: Direction</code></li>
+<li><code>speed: int</code></li>
 </ul>
 <h2 id="effects">Effects</h2>
 <ul>
@@ -2106,7 +2108,7 @@
 <p>Widgets are covered in their own section, <a href="../06-widgets/">Widgets</a>.</p>
 <h2 id="schemas">Schemas</h2>
 <h3 id="recipe-configuration">Recipe Configuration</h3>
-<p>Asset Recipe files determine the specific (State, Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.</p>
+<p>Recipe Configuration files determine the specific (State, Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.</p>
 <ul>
 <li>Location: <code>/src/data/config/recipes/main.yaml</code></li>
 </ul>
@@ -2231,8 +2233,8 @@
 <p><strong>Default Action Configuration</strong></p>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">--8&lt;-- &quot;static/yaml/examples/default-actions.yaml</span>
 </code></pre></div>
-<h3 id="properties">Properties</h3>
-<p>Asset Property files hydrate the application models.</p>
+<h3 id="property-indices">Property Indices</h3>
+<p>Asset property index files hydrate the Registry and set the static attributes of Assets.</p>
 <ul>
 <li>Location: <code>/src/assets/&lt;category&gt;/main.yaml</code></li>
 </ul>
@@ -2498,8 +2500,8 @@
 <span class="w">  </span><span class="nt">pages</span><span class="p">:</span><span class="w"> </span><span class="c1"># TODO </span>
 <span class="w">  </span><span class="nt">panes</span><span class="p">:</span><span class="w"> </span><span class="c1"># TODO</span>
 </code></pre></div>
-<h3 id="state">State</h3>
-<p>Asset State files populate the <a href="../00-overview/#board">Board</a>.</p>
+<h3 id="state-files">State Files</h3>
+<p>Asset state files populate the <a href="../00-overview/#board">Board</a>. </p>
 <ul>
 <li>Location: <code>/src/data/state/&lt;board-key&gt;/*.yaml</code></li>
 </ul>

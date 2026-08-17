@@ -998,10 +998,10 @@
 <p>TODO</p>
 <h3 id="mutators">Mutators</h3>
 <p>Mutators are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated from state attributes, not <em>primitive</em> state attributes themselves.</p>
-<p>Mutators may be <em>condition-driven</em>, and separately, they be <em>parameterized</em>; In other words, all Mutators are <em>conditional</em> but  not all Mutators are parameterized. Parameters modulate the conditions underlying the Mutator calculation. Both Sprites and the <a href="../03-player/">Player</a> have Mutator fields, but only Sprites have parameterized Mutators; the Player Mutators are all purely driven by game logic. In other words, the Player Mutator triggers serve to flag the game-loop to apply trigger-specific procedures to the Player Asset, whereas Sprite Mutators triggers depend on the specific parameters unique to the Sprite's deployment. </p>
+<p>Mutators are <em>condition-driven</em>. They may also be <em>parameterized</em>; In other words, all Mutators are <em>conditional</em> but not all Mutators are parameterized. Parameters modulate the conditions underlying the Mutator calculation. Both Sprites and the <a href="../03-player/">Player</a> have Mutator fields, but only Sprites have parameterized Mutators; the Player Mutators are all purely driven by game logic. In other words, the Player Mutator triggers serve to flag the game-loop to apply trigger-specific procedures to the Player Asset, whereas Sprite Mutator triggers depend on the specific parameters unique to the Sprite's deployment. </p>
 <ul>
 <li>Parameterized Mutators: <code>fear</code>, <code>vision</code></li>
-<li>Event-driven Mutators: <code>animated</code>, <code>dead</code>, <code>struck</code></li>
+<li>Conditional Mutators: <code>animated</code>, <code>dead</code>, <code>struck</code></li>
 </ul>
 <p><strong>Triggers</strong></p>
 <ul>

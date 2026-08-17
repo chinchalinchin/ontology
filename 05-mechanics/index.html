@@ -422,6 +422,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spatial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spatial
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intentional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intentional
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -586,6 +625,45 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#spatial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spatial
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intentional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Intentional
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -626,27 +704,50 @@
 <p class="admonition-title">Note</p>
 <p>Mechanics are listed below using <code>key: class</code>, where <code>key</code> is the unique string identifier for the associated Mechanic implementation class.</p>
 </div>
-<p><strong>General Mechanics</strong></p>
-<p>These Mechanics handle general game logic.</p>
+<h3 id="core">Core</h3>
+<p>These Mechanics handle the core engine logic.</p>
 <ul>
-<li><code>player: PlayerMechanics</code>: Resolve Device input into Player (Intention, Goal)-state.</li>
 <li><code>animation AnimationMechanics</code>: Translates current states into FrameKeys for the renderer.</li>
-<li><code>collision: CollisioMechanics</code>: (Cython) Adds velocity to position, resolves wall/crate collisions, etc.</li>
 <li><code>remove: RemoveMechanics</code>: General garbage collection for Assets whose lifespan has expired.</li>
+<li><code>motion: MotionMechanics</code>: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.</li>
 </ul>
-<p><strong>Object Mechanics</strong></p>
-<p>These Mechanics handle Object game logic.</p>
+<h3 id="spatial">Spatial</h3>
+<p>These Mechanics handle spatial interactions and collisions between Assets.</p>
 <ul>
-<li><code>SwitchMechanics</code>: Binds the Gate and Plate states together based on their <code>switch</code>.</li>
-<li><code>ProjectileMechanics</code>: Increment projectile positions, checks intersections and resolves impacts.</li>
+<li><code>switch: SwitchMechanics</code>: (Cython) Binds the Gate and Plate states together based on their <code>switch</code>.</li>
+<li><code>projectile: ProjectileMechanics</code>: (Cython) Increment projectile positions, checks intersections and resolves impacts.</li>
+<li><code>collision: CollisioMechanics</code>: Resolves collisions.</li>
+<li><code>combat: CombatMechanics</code>: (Cython) Resolves attack hitbox overlaps, decrements health, etc.</li>
+<li><code>interaction: InteractionMechanics</code>: (Cython) Resolves Asset interactions.</li>
 </ul>
-<p><strong>Sprite Mechanics</strong></p>
+<p><strong>InteractionMechanics</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>|</code> is used as a quantifier in the following.</p>
+</div>
+<ul>
+<li>Source: <code>source = sprite | sprite.state.intention = 'interact'</code></li>
+<li>Target: <code>target = asset | intersects(sprite, asset)</code></li>
+<li>Logic:<ul>
+<li><code>if source.instance == 'sprites'</code>:<ul>
+<li><code>if target.instance == 'chests':</code></li>
+<li><code>if target.instance == 'doors': source.state.layer = door.state.outlayer</code> </li>
+</ul>
+</li>
+<li><code>if source.instance == 'players':</code><ul>
+<li><code>if target.instance == 'chests': bus.append(MenuEvent('inventory', player.state)</code> </li>
+<li><code>if target.instance == 'doors': source.state.layer = door.state.outlayer</code> </li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="intentional">Intentional</h3>
 <p>These Mechanics handle the Sprite Intention logic.</p>
 <ul>
+<li><code>player: PlayerMechanics</code>: Resolve Device input into Player (Intention, Goal)-state.</li>
 <li><code>transition: TransitionMechanics</code>: Applies the Intention Transition Matrix conditions to all Sprite Sheets.</li>
-<li><code>motion: MotionMechanics</code>: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.</li>
 <li><code>commerce: CommerceMechanics</code>: Translate Intentions (barter, attract, etc.) into trades and price movements.</li>
-<li><code>combat: CombatMechanics</code>: (Cython) Resolves attack hitbox overlaps, decrements health, etc.</li>
 <li><code>speech: SpeechMechanics</code>: </li>
 </ul>
 <h2 id="configuration">Configuration</h2>

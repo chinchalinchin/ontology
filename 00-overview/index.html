@@ -341,10 +341,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#factory" class="md-nav__link">
+  <a href="#loader" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Factory
+        Loader
       
     </span>
   </a>
@@ -352,10 +352,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#loader" class="md-nav__link">
+  <a href="#factory" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Loader
+        Factory
       
     </span>
   </a>
@@ -374,10 +374,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#engine" class="md-nav__link">
+  <a href="#registry" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Engine
+        Registry
       
     </span>
   </a>
@@ -385,10 +385,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#screen" class="md-nav__link">
+  <a href="#engine" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Screen
+        Engine
       
     </span>
   </a>
@@ -407,10 +407,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#registry" class="md-nav__link">
+  <a href="#screen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Registry
+        Screen
       
     </span>
   </a>
@@ -812,10 +812,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#factory" class="md-nav__link">
+  <a href="#loader" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Factory
+        Loader
       
     </span>
   </a>
@@ -823,10 +823,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#loader" class="md-nav__link">
+  <a href="#factory" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Loader
+        Factory
       
     </span>
   </a>
@@ -845,10 +845,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#engine" class="md-nav__link">
+  <a href="#registry" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Engine
+        Registry
       
     </span>
   </a>
@@ -856,10 +856,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#screen" class="md-nav__link">
+  <a href="#engine" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Screen
+        Engine
       
     </span>
   </a>
@@ -878,10 +878,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#registry" class="md-nav__link">
+  <a href="#screen" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Registry
+        Screen
       
     </span>
   </a>
@@ -981,22 +981,22 @@
 <p>Width is a horizontal displacement, length is a vertical displacement.</p>
 </div>
 <h2 id="assets">Assets</h2>
-<p>All Assets have an <em>Id</em> and <em>Properties</em>. Most, but not all, Assets have <em>State</em>. </p>
-<p>In addition, Assets are divided into non-overlapping categories, known as the <a href="../01-assets/#asset-hierarchy">Asset Hierarchy</a>. Different categories of Assets expand the Properties and States in various ways. In brief, the Asset categories are,</p>
+<p>All Assets have an <em>ID</em> and <em>properties</em>. Most, but not all, Assets have <em>state</em>. </p>
+<p>Assets are divided into non-overlapping categories, known as the <a href="../01-assets/#asset-hierarchy">Asset Hierarchy</a>. Different categories of Assets expand the base properties and states in various ways. In brief, the Asset categories are,</p>
 <ul>
 <li><a href="../01-assets/#crafts">Crafts</a></li>
 <li><a href="../01-assets/#cursors">Cursors</a></li>
 <li><a href="../01-assets/#effects">Effects</a></li>
-<li>Environ</li>
 <li><a href="../01-assets/#objects">Objects</a></li>
 <li><a href="../01-assets/#sheets">Sheets</a></li>
 <li><a href="../07-sounds/">Sounds</a></li>
+<li>Resources</li>
 <li><a href="../01-assets/#tiles">Tiles</a></li>
 <li><a href="../06-widgets/">Widgets</a></li>
 </ul>
 <p>Assets are placed in the <code>/src/assets/&lt;category&gt;/</code> directory and then registered to the Asset category index <code>/src/assets/&lt;category&gt;/main.yaml</code> file. The YAML index schema for each Asset configures its <em>properties</em>, i.e. the static attributes that are constant and do not change as a result of gameplay. </p>
 <p>The <code>/src/assets</code> directory is known as the <em>asset directory</em>.</p>
-<p>See <a href="../01-assets/#schemas">Asset Schema</a> for more information on the Asset Property index.</p>
+<p>See <a href="../01-assets/#schemas">Asset Schema</a> for more information on the Asset property index.</p>
 <h2 id="data">Data</h2>
 <ul>
 <li>Location: <code>/src/data/</code></li>
@@ -1006,40 +1006,66 @@
 <ul>
 <li>Location: <code>/src/data/state/</code></li>
 </ul>
-<p>An Asset is deployed onto a <em>Board</em>, where it acquires its <em>state</em>, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests and stores state in the state directory.</p>
-<p>An Asset Category has a single schema for properties, but each individual Asset Instance has a unique State, particular to particular deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).</p>
+<p>An Asset is deployed onto a Board, where it acquires its state, i.e. its dynamic attributes that are variable and change as a result of gameplay. The application ingests and stores state in the state directory.</p>
+<p>An Asset Category has a single schema for properties that each Instance utilizes, but each individual Asset Instance has a unique State, particular to its deployment. For example, a treasure Chest is configured once by its Properties (its width, length, etc.), but each instance of a treasure Chest on a Board has a unique state (its position, content, etc.).</p>
 <h3 id="configuration">Configuration</h3>
 <ul>
 <li>Location: <code>/src/data/config</code></li>
 </ul>
-<p>Mechanics and other components of the game engine (e.g. Menus, Orchestrator, etc.) utilize configuration stored in the configuration directory. The following engine components are configured by the files in this directory.</p>
+<p>Mechanics and other components of the game Engine (e.g. Menus, Actions, etc.) utilize configuration stored in the configuration directory. The following Engine components are configured by the files in this directory.</p>
 <ul>
-<li><a href="../08-plots/">Scripts</a></li>
+<li><a href="../01-assets/#action-configuration">Actions</a></li>
 <li><a href="../04-intentions/">Intentions</a></li>
 <li><a href="../03-player/#mapping">Mappings</a></li>
 <li><a href="../05-mechanics/">Mechanics</a></li>
 <li><a href="../06-widgets/#menus">Menus</a></li>
 <li><a href="../01-assets/#recipes">Recipes</a></li>
+<li><a href="../08-plots/">Scripts</a></li>
 </ul>
 <h2 id="application">Application</h2>
-<h3 id="factory">Factory</h3>
-<p>The Factory builds Asset and other game components based on Recipes.</p>
+<p>The core components of the application are listed below in this seciton, in the rough order they are called in the course of bootstrapping.</p>
+<p>See <a href="../09-architecture/">Architecture documentation</a> for more information.</p>
 <h3 id="loader">Loader</h3>
+<ul>
+<li>Package: <code>app.config.loader</code></li>
+</ul>
 <p>The Loader is responsible for reading in the configuration files for properties and state, converting them into Python data structure.</p>
+<h3 id="factory">Factory</h3>
+<ul>
+<li>Package: <code>app.hooks.factory</code></li>
+</ul>
+<p>The Factory builds Assets and other game components based on Recipes. </p>
 <h3 id="orchestrator">Orchestrator</h3>
+<ul>
+<li>Package: <code>app.hooks.orchestrator</code></li>
+</ul>
 <p>The Orchestrator is the dependency injection system. It is responsible for converting data structures into application data models and supplying them to application classes.</p>
+<h3 id="registry">Registry</h3>
+<ul>
+<li>Package: <code>libs.graphics.registry</code></li>
+</ul>
+<p>The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. </p>
 <h3 id="engine">Engine</h3>
+<ul>
+<li>Package: <code>app.game.engine</code></li>
+</ul>
 <p>The Engine handles the core gameplay loop and framerate calculations.</p>
-<h3 id="screen">Screen</h3>
-<p>The Screen acts as a high-level container for a Cythonized SDL rendering interface.</p>
 <h3 id="board">Board</h3>
+<ul>
+<li>Package: <code>app.game.board</code></li>
+</ul>
 <p>The Board is the Game's "database". It holds all ingame Assets and Configurations during the course of the game loop and exposes them to the engine through queryable interfaces.</p>
 <p>The state files for each Board are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code>.</p>
-<h3 id="registry">Registry</h3>
-<p>The Registry loads in all of the Asset files when the application bootstraps. The frames are indexed and stored in the memory. </p>
+<p><strong>Cradle</strong></p>
+<p>The Board posseses a Cradle field for instantiating Assets through game Mechanics, e.g. <code>CombatMechanics</code> uses the Cradle to inject new Projectiles into the Board state.</p>
+<h3 id="screen">Screen</h3>
+<ul>
+<li>Package: <code>app.game.screen</code></li>
+</ul>
+<p>The Screen acts as a high-level container for a Cythonized SDL rendering interface.</p>
 <h2 id="concepts">Concepts</h2>
 <h3 id="hitboxes">Hitboxes</h3>
-<p>Many Assets have Hitboxes. Hitboxes are <em>properties</em>, i.e., they are static and do not change. Hitboxes have positions and dimensions. Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,</p>
+<p>Many Assets have Hitboxes. Hitboxes are <em>properties</em>, i.e., they are static and do not change. Hitboxes have positions and dimensions. To Hitboxes static, Hitbox positions are always given relative to the Asset, i.e. treating the upper-left corner of the Asset frame as the origin. Hitbox dimensions are always absolute. The following snippet shows the hitbox schema for an LPC Sprite Frame, with the image below showing how the hitbox translates into the physical image with a blue rectangle,</p>
 <div class="highlight"><pre><span></span><code><span class="nt">position</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">21</span>
 <span class="w">    </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">23</span>
@@ -1056,7 +1082,7 @@
 <h3 id="layers">Layers</h3>
 <p>All deployed Assets have a Layer. Layers represent a "view" where the Asset is located. When the Screen renders an entire frame, it is rendering a Layer.  </p>
 <p>Layers on a board can be traversed through Doors. The coordinate plane of each Layer is independent of every other. For example, a Sprite may enter a Door on Layer 1 at <code>(x_1, y_1)</code> and get released on Layer 3 at <code>(x_2, y_2)</code>. For this reason, each Layer may have different dimensions.</p>
-<p>Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations should be separated by Layer, to avoid inter-Layer collisions</p>
+<p>Sprite interactions are constrained by their Layers. Because Layers are superimposed coordinates, all interaction calculations should be separated by Layer, to avoid inter-Layer collisions and interactions.</p>
 <h3 id="sprites">Sprites</h3>
 <p>NPC and Enemy Sprites are undifferentiated. Conflict is driven entirely by internal Sprite data structures and the gameplay loop. The Player Sprite is the only unique Sprite in terms of the gameplay loop, insofar the Player's state is determined by polling from the Player's input device, as opposed to the <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. However, all state changes of Sprites and the Player are communicated through the medium of <a href="../04-intentions/">Goals and Intentions</a>.</p>
 
