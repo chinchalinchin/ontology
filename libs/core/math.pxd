@@ -44,4 +44,4 @@ cdef class Space:
 cdef class Physics:
 
     @staticmethod
-    cpdef list collisions(list primitive_data, SpatialHash grid)
+    cpdef list collisions(list primitive_data, Space grid)
