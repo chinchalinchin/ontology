@@ -698,11 +698,11 @@
 
 
 <h1 id="ontology-mechanics">Ontology: Mechanics</h1>
-<p>A Mechanic is an implementation of an abstract interface that defines what information the engine will inject into the Mechanic's logic.  All Mechanics must implement an <code>update(board, delta)</code> method. The arguments of this interface are the <a href="../00-overview/#board">Board</a> and a game loop time delta.</p>
+<p>A Mechanic is an implementation of an abstract interface that defines what information the engine will inject into the Mechanic's logic; All Mechanics must implement an <code>update(board, delta)</code> method. The arguments of this interface are the <a href="../00-overview/#board">Board</a> and a game loop time delta.</p>
 <h2 id="overview">Overview</h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Mechanics are listed below using <code>key: class</code>, where <code>key</code> is the unique string identifier for the associated Mechanic implementation class.</p>
+<p>Mechanics are listed below using <code>key: class</code>, where <code>key</code> is the unique string identifier for the associated Mechanic implementation class. This <code>key</code> is used in the <a href="#configuration">Mechanics Configuration</a> to specify the order of execution.</p>
 </div>
 <h3 id="core">Core</h3>
 <p>These Mechanics handle the core engine logic.</p>
@@ -710,7 +710,16 @@
 <li><code>animation AnimationMechanics</code>: Translates current states into FrameKeys for the renderer.</li>
 <li><code>remove: RemoveMechanics</code>: General garbage collection for Assets whose lifespan has expired.</li>
 <li><code>motion: MotionMechanics</code>: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.</li>
+<li><code>menu: MenuMechanics</code>: Handles Menu and Widget interactions.</li>
 </ul>
+<p><strong>MotionMechanics</strong></p>
+<ul>
+<li>Motive Assets: Players, Projectiles, Sprites</li>
+<li>Frictive Assets: Crates</li>
+</ul>
+<p>Assets with Mass are divided into Motive and Frictive Assets. Motive Assets have (Velocity, Speed, Impulse) states; Frictive Assets have only (Velocity) state. </p>
+<p>Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to it is Speed.</p>
+<p>Frictive Assets have motion imparted to them via collisions and then the force of friction is applied to the resultant velocity every game tick until their velocity has been brought to zero, where the force of friction is proportional to the currently occupied Tile's  <code>properties.friction</code></p>
 <h3 id="spatial">Spatial</h3>
 <p>These Mechanics handle spatial interactions and collisions between Assets.</p>
 <ul>
@@ -743,7 +752,10 @@
 </li>
 </ul>
 <p><strong>CollisionMechanics</strong></p>
-<p>TODO</p>
+<p>When Assets collide, overlap resolution uses inverse mass ratios to correct spatial positioning, ensuring immutable Assets with no Mass (<code>m = 0</code>) remain completely immobile while dynamic Assets with Mass (<code>m &gt; 0</code>) absorb 100% of the displacement shift. Post-separation, Velocities are updated via 1D elastic collision formulas, conserving momentum cleanly across all participating masses,</p>
+<div class="arithmatex">\[
+v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
+\]</div>
 <h3 id="intentional">Intentional</h3>
 <p>These Mechanics handle the Sprite Intention logic.</p>
 <ul>
@@ -756,6 +768,7 @@
 <ul>
 <li>Location: <code>/src/data/config/mechanics/main.yaml</code></li>
 </ul>
+<p>Mechanics Configuration defines what Mechanic classes are instantiated by the game engine. The order in which they are specified in the schema becomes the order of execution in the game engine.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">mechanics</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">order</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;mechanic-key&gt;</span>
