@@ -1,11 +1,11 @@
 # Ontology: Mechanics
 
-A Mechanic is an implementation of an abstract interface that defines what information the engine will inject into the Mechanic's logic.  All Mechanics must implement an `update(board, delta)` method. The arguments of this interface are the [Board](./00-overview.md#board) and a game loop time delta.
+A Mechanic is an implementation of an abstract interface that defines what information the engine will inject into the Mechanic's logic; All Mechanics must implement an `update(board, delta)` method. The arguments of this interface are the [Board](./00-overview.md#board) and a game loop time delta.
 
 ## Overview
 
 !!! note
-    Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation class.
+    Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation class. This `key` is used in the [Mechanics Configuration](#configuration) to specify the order of execution.
 
 ### Core
 
@@ -14,6 +14,18 @@ These Mechanics handle the core engine logic.
 - `animation AnimationMechanics`: Translates current states into FrameKeys for the renderer.
 - `remove: RemoveMechanics`: General garbage collection for Assets whose lifespan has expired.
 - `motion: MotionMechanics`: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.
+- `menu: MenuMechanics`: Handles Menu and Widget interactions.
+
+**MotionMechanics**
+
+- Motive Assets: Players, Projectiles, Sprites
+- Frictive Assets: Crates
+
+Assets with Mass are divided into Motive and Frictive Assets. Motive Assets have (Velocity, Speed, Impulse) states; Frictive Assets have only (Velocity) state. 
+
+Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to it is Speed.
+
+Frictive Assets have motion imparted to them via collisions and then the force of friction is applied to the resultant velocity every game tick until their velocity has been brought to zero, where the force of friction is proportional to the currently occupied Tile's  `properties.friction`
 
 ### Spatial
 
@@ -42,7 +54,12 @@ These Mechanics handle spatial interactions and collisions between Assets.
 
 **CollisionMechanics**
 
-TODO
+When Assets collide, overlap resolution uses inverse mass ratios to correct spatial positioning, ensuring immutable Assets with no Mass (`m = 0`) remain completely immobile while dynamic Assets with Mass (`m > 0`) absorb 100% of the displacement shift. Post-separation, Velocities are updated via 1D elastic collision formulas, conserving momentum cleanly across all participating masses,
+
+$$
+v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
+$$
+
 
 ### Intentional
 
@@ -56,6 +73,8 @@ These Mechanics handle the Sprite Intention logic.
 ## Configuration
 
 * Location: `/src/data/config/mechanics/main.yaml`
+
+Mechanics Configuration defines what Mechanic classes are instantiated by the game engine. The order in which they are specified in the schema becomes the order of execution in the game engine.
 
 ```yaml
 mechanics:
