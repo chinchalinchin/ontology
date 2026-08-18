@@ -25,7 +25,16 @@ Assets with Mass are divided into Motive and Frictive Assets. Motive Assets have
 
 Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to it is Speed.
 
-Frictive Assets have motion imparted to them via collisions and then the force of friction is applied to the resultant velocity every game tick until their velocity has been brought to zero, where the force of friction is proportional to the currently occupied Tile's  `properties.friction`
+Frictive Assets have motion imparted to them via collisions and then the force of friction is applied to the resultant velocity every game tick until their velocity has been brought to zero, where the force of friction is proportional to the currently occupied Tile's  `properties.friction`.
+
+Projectiles are exluded from these considerations. They are spawned with a Velocity vector and an initial position; They follow the trajectory determined by these parameters until the distance between their initial and current position exceeds the garbage collection limit.
+
+The general flow of MotionMechanics is given by,
+
+* **Player Motion** Check `device.poll()`. If directional input is present, calculate impulse vector, apply to `velocity`, and clamp magnitude to `character.speed`. If no input is present, hardcode `velocity = (0,0)`.
+* **Sprite Motion** Calculate the unit vector pointing from `current_position` to `goal_position`. Multiply by `character.impulse` and $\Delta t$. Add to `velocity`. Clamp magnitude to `character.speed`.
+* **Frictive Asset Motion** Query `Board.tile()` at asset's center. Calculate $\Delta v = \text{friction} \cdot \Delta t$. Apply $\Delta v$ in the direction opposite to the current `velocity`. If $\Delta v > \vert{}\text{velocity}\vert{}$, set `velocity = (0,0)`.
+* **Projectile Motion** Exclude Projectiles from the above steps. For all assets, apply $v \cdot \Delta t$ to the sub-pixel accumulators `rx/ry`. When `rx/ry` exceed $1.0$ or $-1.0$, cast to `int`, shift the physical `Position`, and decrement the accumulator.
 
 ### Spatial
 
@@ -59,7 +68,6 @@ When Assets collide, overlap resolution uses inverse mass ratios to correct spat
 $$
 v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 $$
-
 
 ### Intentional
 

@@ -60,7 +60,7 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
     - `property: List[str]`
 - `goal:` 
     - `name: str`
-    - `category: Enum[sprite | object | loot]`
+    - `category: Enum[sprite, loot, wealth, property, position]`
     - `position: Position`
 
 **Animation: StateAnimation**

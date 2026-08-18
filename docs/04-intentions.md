@@ -130,7 +130,7 @@ Intention transition conditions are converted into lambda functions by the appli
 *Goals* provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Intention is *in order* to achieve a Goal.
 
 - `name`: Unique Identifier of the Goal.
-- `category`: Category of the Goal. (`sprite`, `loot`, `wealth`, `property`)
+- `category`: Category of the Goal. (`sprite`, `loot`, `wealth`, `property`, `position`)
 - `position`: Last-known position of the Goal. When the Goal is within the `mutators.vision.radius`, this position is updated every game loop. Once the Goal exits the Sprites `mutators.vision.radius`, it becomes a static value that freezes on the last known Position of its Goal.
 
 ### Goal Category

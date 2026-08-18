@@ -131,6 +131,8 @@ class MotionMechanics(Mechanic):
             speed_x = speed
             speed_y = speed
 
+            # TODO: rip out and replace with velocity-impulse-friction calculations
+            
             # Integer approximation for diagonal vector normalization (~0.707)
             if dx != 0 and dy != 0:
                 # max(1, ...) prevents truncation paralysis for slow entities (speed < 2)
