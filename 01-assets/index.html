@@ -1463,7 +1463,7 @@
 </div>
 <p>State files are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code> directory, where <code>&lt;board-key&gt;</code> is a unique identifer for a <a href="../00-overview/#board">Board</a>.</p>
 <p><strong>Mass</strong></p>
-<p>Some Assets have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.</p>
+<p>Some Asset Categories have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.</p>
 <ul>
 <li><span class="arithmatex">\(m &gt; 0\)</span>: <strong>Dynamic Body</strong>. Participates in momentum calculations.</li>
 <li><span class="arithmatex">\(m = 0\)</span>: <strong>Static Body</strong>. Treated as having infinite mass (<span class="arithmatex">\(m \to \infty\)</span>) in physics equations. Its velocity is unaffected by collisions, but it forces dynamic bodies to resolve overlap.</li>
@@ -1552,7 +1552,7 @@
 <tbody>
 <tr>
 <td>Tiles</td>
-<td>Dimensions</td>
+<td>Dimensions, Friction</td>
 </tr>
 <tr>
 <td>Cursors</td>
@@ -1732,9 +1732,11 @@
 </ul>
 <p>Tiles are inanimate, immutable Assets. Tiles are the most basic type of Asset. They have a single frame, have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds and foregrounds by breaking each rendered image into a grid of tiles. </p>
 <p>Tiles are always assumed to be sized 32x32 pixels. These dimensions are configurable in the property file, but they apply to all Tiles universally. When a Tile is drawn, it is rendered as a <code>multiple</code> of the unit Tile configured in the asset directory.</p>
+<p>Tiles have coefficients of friction. These coefficient are used by <a href="../05-mechanics/#spatial">MotionMechanics</a> to determine the rate of velocity decay for Assets traversing their area.</p>
 <p><strong>Properties: TileProperties</strong></p>
 <ul>
 <li><code>dimensions: Dimensions</code></li>
+<li><code>friction: float</code></li>
 </ul>
 <h3 id="back">Back</h3>
 <p>A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Back Tiles will always be rendered <em>under</em> all of the other Assets.</p>
@@ -1809,6 +1811,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
+<li><code>velocity: Velocity</code></li>
 </ul>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
@@ -1874,7 +1877,7 @@
 <p>Cursors are inanimate, mutable Assets. Cursors track positions and trajectories. They are divided into Expressions and Projectiles.</p>
 <p><strong>Properties: ObjectProperties</strong></p>
 <ul>
-<li><code>dim: Dimensions</code></li>
+<li><code>dimensions: Dimensions</code></li>
 </ul>
 <h3 id="expressions">Expressions</h3>
 <p>Expressions are pinned to other Assets and have their position state updated in tandem with the Asset to which they are linked. </p>
@@ -1882,13 +1885,14 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>key(asset, id): returns [ id ]</code></li>
+<li><code>keys(asset, id): returns [ id ]</code></li>
 <li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: PositionalState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
+<li><code>velocity: Velocity</code></li>
 </ul>
 <h3 id="projectiles">Projectiles</h3>
 <p>Projectiles are spawned via the <code>shoot</code> Action (entered through the <code>attack</code> <a href="../04-intentions/">Intention</a> when the <code>longbow</code> <a href="../02-sprites/#equipment">Equipment</a> is slotted, for instance) with a certain direction and velocity and then follow a fixed trajectory based on the spawn conditions. Projectiles will either impact a hitbox or trigger garbage-collection and be removed from the <a href="../00-overview/#board">Board</a>.</p>
@@ -1904,7 +1908,7 @@
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>initial: Position</code></li>
-<li><code>direction: Direction</code></li>
+<li><code>velocity: Velocity</code></li>
 <li><code>speed: int</code></li>
 </ul>
 <h2 id="effects">Effects</h2>
@@ -1936,7 +1940,7 @@
 </ul>
 <h3 id="persistent">Persistent</h3>
 <p>Persistent Effects are long-term, continuous effects, such as water ripples or windmills, whose animation continuously cycles when the frame count is reached.</p>
-<p><strong>Animation: PersistantAnimation</strong></p>
+<p><strong>Animation: PersistentAnimation</strong></p>
 <ul>
 <li><code>if animation.frame &gt;= properties.count: animation.frame = 0</code></li>
 </ul>
@@ -2038,7 +2042,6 @@
 <li><code>&lt;action-key&gt;: str</code> - Ranges over <code>cast, thrust, walk, slash, shoot, die</code> (LPC)</li>
 <li><code>&lt;direction-key&gt; : str</code> -  Ranges over  <code>up, left, down, right</code> (LPC)</li>
 <li><code>count: int</code> - is the number of frames in the Action row grouping. </li>
-<li><code>mass: int</code></li>
 </ul>
 <p><strong>Action Sets</strong></p>
 <p>Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See <a href="#action-configuration">Action Configuration Schema</a> below for more details. </p>
@@ -2055,6 +2058,7 @@
 <li><code>stack: List[str]</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
 <li><code>actions: Actions</code></li>
+<li><code>mass: int</code></li>
 </ul>
 <h3 id="pixies">Pixies</h3>
 <p>Pixies are Sheets that have simple game mechanics, e.g. are excluded from the complex calculations of the <a href="../04-intentions/">Intention Mechanic</a>. <em>Pixies</em> encapsulate simple Characters, such as animals or bugs.</p>
@@ -2090,6 +2094,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>position: Position</code></li>
+<li><code>velocity: Velocity</code></li>
 <li><code>animation: Animation</code></li>
 <li><code>character: Character</code></li>
 <li><code>intention: Intention</code></li>
@@ -2242,17 +2247,17 @@
 <span class="c1"># ------------------------------------------------------------ TILES</span>
 <span class="nt">tiles</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">back</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">dimensions</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
-<span class="w">      </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
-<span class="w">    </span><span class="nt">ids</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;asset-id&gt;</span>
+<span class="w">    </span><span class="nt">&lt;id&gt;</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
+<span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
+<span class="w">      </span><span class="nt">friction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Coefficent of Friction</span>
 <span class="w">  </span><span class="nt">fore</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">dimensions</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
-<span class="w">      </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
-<span class="w">    </span><span class="nt">ids</span><span class="p">:</span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;asset-id&gt;</span>
+<span class="w">    </span><span class="nt">&lt;id&gt;</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
+<span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
+<span class="w">      </span><span class="nt">friction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 <span class="c1"># ------------------------------------------------------------------</span>
 <span class="c1"># ----------------------------------------------------------- CRAFTS</span>
 <span class="nt">crafts</span><span class="p">:</span>

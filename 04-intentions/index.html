@@ -1153,7 +1153,7 @@
 <p><em>Goals</em> provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's <em>modus operandi</em>, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Intention is <em>in order</em> to achieve a Goal.</p>
 <ul>
 <li><code>name</code>: Unique Identifier of the Goal.</li>
-<li><code>category</code>: Category of the Goal. (<code>sprite</code>, <code>loot</code>, <code>wealth</code>, <code>property</code>)</li>
+<li><code>category</code>: Category of the Goal. (<code>sprite</code>, <code>loot</code>, <code>wealth</code>, <code>property</code>, <code>position</code>)</li>
 <li><code>position</code>: Last-known position of the Goal. When the Goal is within the <code>mutators.vision.radius</code>, this position is updated every game loop. Once the Goal exits the Sprites <code>mutators.vision.radius</code>, it becomes a static value that freezes on the last known Position of its Goal.</li>
 </ul>
 <h3 id="goal-category">Goal Category</h3>

@@ -910,6 +910,7 @@
 <p><strong>State: SpriteState</strong></p>
 <ul>
 <li><code>position: Position</code></li>
+<li><code>velocity: Velocity</code></li>
 <li><code>layer: str</code></li>
 <li><code>meters: List[Meter]</code><ul>
 <li><code>health: Meter</code> <ul>
@@ -927,7 +928,8 @@
 <li><code>character: Character</code><ul>
 <li><code>strength: int</code></li>
 <li><code>defense: int</code></li>
-<li><code>speed: int</code></li>
+<li><code>speed: int</code> (Maximum magnitude of Velocity vector)</li>
+<li><code>impulse: int</code>: (Amount of acceleration applied to Velocity per game-tick)</li>
 </ul>
 </li>
 <li><code>animation: AnimationState</code><ul>
@@ -962,7 +964,7 @@
 </li>
 <li><code>goal:</code> <ul>
 <li><code>name: str</code></li>
-<li><code>category: Enum[sprite | object | loot]</code></li>
+<li><code>category: Enum[sprite, loot, wealth, property, position]</code></li>
 <li><code>position: Position</code></li>
 </ul>
 </li>
