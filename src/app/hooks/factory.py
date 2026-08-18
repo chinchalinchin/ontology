@@ -4,7 +4,7 @@
 Package for instantiating Asset classes and their components.
 """
 # Standard Libraries
-from typing import get_type_hints, get_origin, get_args, Union, List, Dict
+from typing import get_type_hints, get_origin, get_args, Union
 import types
 
 # Application Libraries
@@ -33,6 +33,7 @@ from app.config.enums import (
     Configurations,
     Groups
 )
+from app.game.cradle import Cradle
 from app.game.logic.mechanics import (
     AnimationMechanics,
     CollisionMechanics, 
@@ -237,12 +238,12 @@ class Factory:
         return Factory._hydrate(target_cls, snapshot)
 
     @staticmethod
-    def configuration(config, snapshot):
+    def configuration(config: str, snapshot: dict):
         target_cls = Factory.CONFIGURATION_MAP.get(config)
         return Factory._hydrate(target_cls, snapshot)
 
     @staticmethod
-    def group(grouping, snapshot):
+    def group(grouping: dict, snapshot: dict):
         target_cls = Factory.GROUP_MAP.get(grouping)
         return Factory._hydrate(target_cls, snapshot)
     
@@ -255,15 +256,21 @@ class Factory:
         return Factory.ANIMATION_MAP.get(recipe, PersistentAnimation)()
 
     @staticmethod
-    def taxonomy(id, name, category, instance,):
+    def taxonomy(id: str, name: str, category: str, instance: str):
         return Taxonomy(id, name, category, instance)
 
     @staticmethod
-    def device(dev, mapping):
+    def device(dev:str, mapping: dict):
         target_cls = Factory.DEVICE_MAP.get(dev, Keyboard)
         mapping_obj = Factory._hydrate(Mapping, mapping)
         return target_cls(mapping_obj)
 
     @staticmethod 
-    def mechanics(kind):
+    def mechanics(kind: str):
         return Factory.MECHANICS_MAP.get(kind, AnimationMechanics)()
+
+    @staticmethod
+    def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration):
+        """
+        """
+        return Cradle(spawnables, recipes)

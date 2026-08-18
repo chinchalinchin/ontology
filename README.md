@@ -137,7 +137,8 @@ Application source code.
 
 Various test
 
-* `sdl`: Exploratory Cythonized SDL rendering test.
+* `/tests/sdl/graphics`: Exploratory Cythonized SDL rendering test.
+* `/tests/sdl/sound`: Exploratory Cythonized SDL mixing test.
 
 ## References
 

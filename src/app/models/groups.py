@@ -52,5 +52,6 @@ class SpawnableGroup:
     """
     """
     projectiles: Dict[str, CursorProperties]
+    expressions: Dict[str, CursorProperties]
     temporary: Dict[str, EffectProperties]
     struts: Dict[str, CraftProperties]

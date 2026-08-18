@@ -160,6 +160,10 @@ class PlayerGoals(str, Enum):
     DOWN            = "down"
     RIGHT           = "right"
 
+class PlayerIntentions(str, Enum):
+    INVENTORY       = "inventory"
+    PAUSE           = "pause"
+
 # -------------------------------- ENGINE ENUMERATIONS
 
 class Mechanics(str, Enum):
@@ -188,7 +192,7 @@ class Spawnables(str, Enum):
     TEMPORARY       = "temporary"
     PROJECTILES     = "projectiles"
     STRUTS          = "struts"
-    
+
 class Groups(str, Enum):
     CONFIGURATIONS  = "configurations"
     EQUIPMENT       = "equipment"

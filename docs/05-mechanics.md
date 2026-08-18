@@ -40,6 +40,10 @@ These Mechanics handle spatial interactions and collisions between Assets.
         - `if target.instance == 'chests': bus.append(MenuEvent('inventory', player.state)` 
         - `if target.instance == 'doors': source.state.layer = door.state.outlayer` 
 
+**CollisionMechanics**
+
+TODO
+
 ### Intentional
 
 These Mechanics handle the Sprite Intention logic.
