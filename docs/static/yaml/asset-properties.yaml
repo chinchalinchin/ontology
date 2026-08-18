@@ -2,17 +2,17 @@
 # ------------------------------------------------------------ TILES
 tiles:
   back:
-    dimensions:
-      w: Pixel Horizontal Size
-      l: Pixel Vertical Size
-    ids:
-      - <asset-id>
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      friction: Coefficent of Friction
   fore:
-    dimensions:
-      w: Pixel Horizontal Size
-      l: Pixel Vertical Size
-    ids:
-      - <asset-id>
+    <id>:
+      dimensions:
+        w: Pixel Horizontal Size
+        l: Pixel Vertical Size
+      friction: 0
 # ------------------------------------------------------------------
 # ----------------------------------------------------------- CRAFTS
 crafts:

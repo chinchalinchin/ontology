@@ -58,6 +58,7 @@ class Orchestrator:
         self.configurations = Loader.load_configurations()
         self.state = Loader.load_state(state)
 
+
     def instance_actions(self, category: str, instance: str, id: str) -> dict:
         action_set_key = self.properties[category][instance][id].get("actions")
         
@@ -74,6 +75,7 @@ class Orchestrator:
             logger.warning(f"No actions exist for {action_set_key}")
             return {}
 
+
     def instance_properties(self, category: str, instance: str, id: str) -> dict:
         """
         Returns Asset Properties based on their Taxonomy.
@@ -85,6 +87,7 @@ class Orchestrator:
             return self.properties[category][AssetInstances.SPRITES][id]
 
         return self.properties[category][instance][id] 
+
 
     def migrate(self) -> Board:
         """
@@ -148,6 +151,7 @@ class Orchestrator:
 
         return Board(assets, configurations, equipment)
 
+
     def inject(self, device: Devices):
         """
         Inject the board with ancillary game components.
@@ -166,6 +170,7 @@ class Orchestrator:
         spawnable_groups = Factory.groups(Groups.Spawnable, spawnable_props)
         cradle = Factory.cradle(spawnable_groups, self.configurations["recipes"])
         self.board.set_cradle(cradle)
+
         
     def init(self, screensize: Dimensions, device: Devices, headless: bool=True) -> Tuple[Board, Registry, Dict[str, Screen]]:
         """
@@ -208,6 +213,7 @@ class Orchestrator:
         } 
         
         return self.board, self.registry, self.screens
+
 
     def ignite(self, screensize: Dimensions, device: Devices) -> Engine:
         """

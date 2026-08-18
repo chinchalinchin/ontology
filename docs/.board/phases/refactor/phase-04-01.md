@@ -10,7 +10,7 @@
 
 * [ ] **Subtack**: Add MechanicsConfiguration to `app.models.config`. Update corresonding DTO Pydantic validators. 
 * [ ] **Subtack**: Enumerate Mechanics in `app.config.enums`.
-* [ ] **Subtack**: Use configuration in Orchestrator to hydrate the Mechanics.
+* [ ] **Subtack**: Use configuration in Orchestrator to hydrate the Mechanics and inject into Board.
 
 **1. Task: Implement Door Traversal & Sprite Chest Interaction**
 
@@ -101,3 +101,47 @@
 * [!] **Subtask**: In `Board.__init__`, implement the Orthogonal Boundary Algorithm: scan the Tile coordinate set and instantiate $m=0$ Hitboxes on any adjacent empty grid space.
 
 ---
+
+
+
+
+
+## Task Backlog Updates
+
+Below are the updated subtasks for Phase 04.01 reflecting the required changes across the core components.
+
+**5. Task: Update Data Structures for Newtonian Physics**
+
+*Objective*: Support continuous integration without integer truncation failure. Introduce Vectors, Friction, and standard taxonomy to Tiles.
+
+* [ ] **Subtask**: Update `libs.core.models.Position` to track `cdef public double rx, ry` for sub-pixel accumulation.
+* [ ] **Subtask**: Create `Velocity(vx: double, vy: double)` in `libs.core.models.pxd`.
+* [ ] **Subtask**: Add `velocity: Velocity` to `SpriteState`, `MotorState`, and `PositionalState` schemas.
+* [ ] **Subtask**: Add `impulse: int` to `Character` properties.
+* [ ] **Subtask**: **Tile Refactor - Schema**: Update `/src/assets/tiles/main.yaml` to nest IDs under instances, mapping each to `dimensions` and `friction`.
+* [ ] **Subtask**: **Tile Refactor - Models**: Update `app.models.properties.TileProperties`. Remove `ids: List[str]`, add `friction: float`.
+* [ ] **Subtask**: **Tile Refactor - Orchestrator**: Remove the `if category == AssetCategories.TILES:` bypass in `Orchestrator.instance_properties()`.
+* [ ] **Subtask**: **Tile Refactor - Registry**: Remove the `elif "ids" in inst_props:` block in `Registry._extract()`.
+* [ ] **Subtask**: **Tile Refactor - Cache**: Implement a spatial `TileMap` dictionary in `Board._cache()`. Expose `Board.tile(layer, position) -> Asset` for $O(1)$ friction lookups.
+
+
+
+---
+
+
+**6. Task: Overhaul `MotionMechanics` (Symplectic Euler Integration)**
+*Objective*: Apply impulses to modify velocity, then use the resulting velocity to translate position.
+
+* [ ] **Subtask**: **Velocity Update (Player):** Check `device.poll()`. If directional input is present, calculate impulse vector, apply to `velocity`, and clamp magnitude to `character.speed`. If no input is present, hardcode `velocity = (0,0)`.
+* [ ] **Subtask**: **Velocity Update (Sprites):** Calculate the unit vector pointing from `current_position` to `goal_position`. Multiply by `impulse` and $\Delta t$. Add to `velocity`. Clamp magnitude to `character.speed`.
+* [ ] **Subtask**: **Velocity Update (Frictive):** Query `Board.tile()` at asset's center. Calculate $\Delta v = \text{friction} \cdot \Delta t$. Apply $\Delta v$ in the direction opposite to the current `velocity`. If $\Delta v > \vert{}\text{velocity}\vert{}$, set `velocity = (0,0)`.
+* [ ] **Subtask**: **Position Update (All Mutable Assets):** Exclude Projectiles from the above steps. For all assets, apply $v \cdot \Delta t$ to the sub-pixel accumulators `rx/ry`. When `rx/ry` exceed $1.0$ or $-1.0$, cast to `int`, shift the physical `Position`, and decrement the accumulator.
+
+**7. Task: Overhaul `CollisionMechanics` (Mass Resolution & Momentum)**
+*Objective*: Isolate overlap resolution from physical momentum transfer.
+
+* [ ] **Subtask**: Query `Board.weights(layer)` to evaluate overlaps.
+* [ ] **Subtask**: **Spatial Resolution:** Calculate the inverse mass for both colliding assets ($1/m$). Treat $m=0$ as an inverse mass of $0$. Distribute the `overlap_x` and `overlap_y` displacement proportionally to their inverse mass ratio, immediately shifting the `Position` coordinates.
+* [ ] **Subtask**: **Momentum Transfer:** Following separation, calculate the new 1D elastic velocities for the `x` and `y` axes independently using the formula: 
+$$v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}$$
+* [ ] Update the `velocity` vectors for both bodies.

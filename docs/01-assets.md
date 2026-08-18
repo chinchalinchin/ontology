@@ -106,7 +106,7 @@ State files are maintained in `/src/data/state/<board-key>/**` directory, where 
 
 **Mass**
 
-Some Assets have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.
+Some Asset Categories have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.
  
 - $m > 0$: **Dynamic Body**. Participates in momentum calculations.
 - $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physics equations. Its velocity is unaffected by collisions, but it forces dynamic bodies to resolve overlap.
@@ -129,7 +129,7 @@ Asset *Categories* form the top layer of the hierarchy. Each Asset Category is d
 
 | Asset Category | Properties |
 | - | - |
-| Tiles | Dimensions |
+| Tiles | Dimensions, Friction |
 | Cursors | Dimensions |
 | Effects | Dimensions, Count |
 | Objects | Dimensions, Hitboxes, Mass |
@@ -208,9 +208,12 @@ Tiles are inanimate, immutable Assets. Tiles are the most basic type of Asset. T
 
 Tiles are always assumed to be sized 32x32 pixels. These dimensions are configurable in the property file, but they apply to all Tiles universally. When a Tile is drawn, it is rendered as a `multiple` of the unit Tile configured in the asset directory.
 
+Tiles have coefficients of friction. These coefficient are used by [MotionMechanics](./05-mechanics.md#spatial) to determine the rate of velocity decay for Assets traversing their area.
+
 **Properties: TileProperties**
 
 * `dimensions: Dimensions`
+* `friction: float`
 
 ### Back
 
@@ -304,6 +307,7 @@ Crates are Objects who state can be altered by in-game physics. For example, whe
 
 * `layer: str`
 * `position: Position`
+* `velocity: Velocity`
 
 **Frame: SingleFrame**
 
@@ -376,7 +380,7 @@ Cursors are inanimate, mutable Assets. Cursors track positions and trajectories.
 
 **Properties: ObjectProperties**
 
-* `dim: Dimensions`
+* `dimensions: Dimensions`
 
 ### Expressions
 
@@ -388,13 +392,14 @@ N/A
 
 **Frame: SingleFrame**
 
-* `key(asset, id): returns [ id ]`
+* `keys(asset, id): returns [ id ]`
 * `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: PositionalState**
 
 * `layer: str`
 * `position: Position`
+* `velocity: Velocity`
 
 ### Projectiles
 
@@ -414,7 +419,7 @@ N/A
 * `layer: str`
 * `position: Position`
 * `initial: Position`
-* `direction: Direction`
+* `velocity: Velocity`
 * `speed: int`
 
 ## Effects
@@ -451,7 +456,7 @@ Temporary Effects are brief, short-lived effects, such as explosions or magic. A
 
 Persistent Effects are long-term, continuous effects, such as water ripples or windmills, whose animation continuously cycles when the frame count is reached.
 
-**Animation: PersistantAnimation**
+**Animation: PersistentAnimation**
 
 - `if animation.frame >= properties.count: animation.frame = 0`
 
@@ -568,7 +573,6 @@ This snippet from the [Schemas](#schemas) shows the general structure of an Acti
 * `<action-key>: str` - Ranges over `cast, thrust, walk, slash, shoot, die` (LPC)
 * `<direction-key> : str` -  Ranges over  `up, left, down, right` (LPC)
 * `count: int` - is the number of frames in the Action row grouping. 
-* `mass: int`
 
 **Action Sets**
 
@@ -589,6 +593,7 @@ For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.
 * `stack: List[str]`
 * `hitboxes: List[Hitbox]`
 * `actions: Actions`
+* `mass: int`
 
 ### Pixies
 
@@ -628,6 +633,7 @@ Sprites are Sheets over multiple rows of frames, where each row may have a varia
 
 * `layer: str`
 * `position: Position`
+* `velocity: Velocity`
 * `animation: Animation`
 * `character: Character`
 * `intention: Intention`

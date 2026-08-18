@@ -22,6 +22,7 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 **State: SpriteState**
 
 * `position: Position`
+* `velocity: Velocity`
 * `layer: str`
 * `meters: List[Meter]`
     * `health: Meter` 
@@ -33,7 +34,8 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 - `character: Character`
     - `strength: int`
     - `defense: int`
-    - `speed: int`
+    - `speed: int` (Maximum magnitude of Velocity vector)
+    - `impulse: int`: (Amount of acceleration applied to Velocity per game-tick)
 - `animation: AnimationState`
     - `action: str`
     - `direction: str`

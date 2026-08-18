@@ -21,7 +21,7 @@ These Mechanics handle the core engine logic.
 - Motive Assets: Players, Projectiles, Sprites
 - Frictive Assets: Crates
 
-Assets with Mass are divided into Motive and Frictive Assets. Motive Assets have (Velocity, Speed, Impulse) states; Frictive Assets have only (Velocity) state. 
+Assets with Mass are divided into Motive and Frictive Assets. Motive Assets have (Velocity) states with (Speed, Impulse) properties; Frictive Assets have a (Velocity) state. 
 
 Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to it is Speed.
 
