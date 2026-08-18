@@ -35,8 +35,21 @@ class Cradle:
     def spawn_expression(self, id, position):
         """
         """
-
-        pass
+        recipe = self.recipes.cursors.expressions
+        properties = self.spawnables.cursors
+        name = self._generate()
+        state = Factory.state(recipe.state, {
+            'position': position,
+        })
+        frame = Factory.frame(recipe.frame)
+        animation = Factory.animation(recipe.animation)
+        taxonomy = Factory.taxonomy(
+            id, 
+            name,
+            AssetCategories.CURSORS, 
+            AssetInstances.EXPRESSIONS
+        )
+        return Asset(taxonomy, properties, state, frame, animation)
 
     def spawn_projectile(self, id, position, direction, speed):
         """
@@ -75,8 +88,8 @@ class Cradle:
         taxonomy = Factory.taxonomy(
             id, 
             name,
-            AssetCategories.CURSORS, 
-            AssetInstances.PROJECTILES
+            AssetCategories.EFFECTS, 
+            AssetInstances.TEMPORARY
         )
         return Asset(taxonomy, properties, state, frame, animation)
 
@@ -95,7 +108,7 @@ class Cradle:
         taxonomy = Factory.taxonomy(
             id, 
             name,
-            AssetCategories.CURSORS, 
-            AssetInstances.PROJECTILES
+            AssetCategories.CRAFTS, 
+            AssetInstances.STRUTS
         )
         return Asset(taxonomy, properties, state, frame, animation)
