@@ -82,7 +82,7 @@ objects:
       dimensions:
         w: Pixel Horizontal Size
         l: Pixel Vertical Size
-      mass: Mass Quantity
+      mass: 0
       hitboxes:
         - position: 
             x: Relative Horizontal Position
@@ -108,7 +108,7 @@ objects:
       dimensions:
         w: Pixel Horizontal Size
         l: Pixel Vertical Size
-      mass: Mass Quantity
+      mass: -1
       hitboxes:
         - position: 
             x: Relative Horizontal Position
@@ -121,7 +121,7 @@ objects:
       dimensions:
         w: Pixel Horizontal Size
         l: Pixel Vertical Size
-      mass: Mass Quantity
+      mass: 0
       hitboxes:
         - position: 
             x: Relative Horizontal Position
@@ -135,6 +135,7 @@ objects:
       dimensions:
         w: Pixel Horizontal Size
         l: Pixel Vertical Size
+      mass: -1
       hitboxes:
         - position: 
             x: Relative Horizontal Position
@@ -160,6 +161,7 @@ sheets:
       stack:
         - <sheet-asset-key>
       actions: <action-set-key>
+      mass: -1
   shields:
     <id>:
       dimensions:
@@ -175,6 +177,7 @@ sheets:
       stack:
         - <sheet-asset-key>
       actions: <action-set-key>
+      mass: -1
   tools:
     <id>:
       dimensions:
@@ -190,6 +193,7 @@ sheets:
       stack:
         - <sheet-asset-key>
       actions: <action-set-key>
+      mass: -1
   utilities:
     <id>:
       dimensions:
@@ -205,6 +209,7 @@ sheets:
       stack:
         - <sheet-asset-key>
       actions: <action-set-key>
+      mass: -1
   weapons:
     <id>:
       dimensions:
@@ -220,6 +225,7 @@ sheets:
       stack:
         - <sheet-asset-key>
       actions: <action-set-key>
+      mass: -1
   pixies:
     <id>:
       dimensions:
@@ -235,6 +241,7 @@ sheets:
       stack:
         - <sheet-asset-key>
       actions: <action-set-key>
+      mass: Mass of Sheet
   sprites:
     <id>:
       dimensions:
@@ -250,6 +257,7 @@ sheets:
       stack:
         - <sheet-asset-key>
       actions: <action-set-key>
+      mass: Mass of Sheet
 # ------------------------------------------------------------------
 # ---------------------------------------------------------- WIDGETS
 widgets:

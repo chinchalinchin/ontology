@@ -1469,6 +1469,7 @@
 <li><span class="arithmatex">\(m = 0\)</span>: <strong>Static Body</strong>. Treated as having infinite mass (<span class="arithmatex">\(m \to \infty\)</span>) in physics equations. Its velocity is unaffected by collisions, but it forces dynamic bodies to resolve overlap.</li>
 <li><span class="arithmatex">\(m = -1\)</span>: <strong>Sensor</strong>. The engine detects the spatial intersection for game logic (like <code>SwitchMechanics</code> or <code>DoorMechanics</code>), but <code>CollisionMechanics</code> bypasses it completely during the overlap resolution phase.</li>
 </ul>
+<p>See <a href="../05-mechanics/#spatial">MotionMechanics</a> for more information.</p>
 <h3 id="asset-hierarchy">Asset Hierarchy</h3>
 <p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state <a href="#schemas">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
 <pre class="mermaid"><code>graph LR
@@ -2327,7 +2328,7 @@
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
 <span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
-<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mass Quantity</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 <span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span>
 <span class="w">            </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Relative Horizontal Position</span>
@@ -2353,7 +2354,7 @@
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
 <span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
-<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mass Quantity</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
 <span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span>
 <span class="w">            </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Relative Horizontal Position</span>
@@ -2366,7 +2367,7 @@
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
 <span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
-<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mass Quantity</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
 <span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span>
 <span class="w">            </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Relative Horizontal Position</span>
@@ -2380,6 +2381,7 @@
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Horizontal Size</span>
 <span class="w">        </span><span class="nt">l</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Vertical Size</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
 <span class="w">      </span><span class="nt">hitboxes</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span>
 <span class="w">            </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Relative Horizontal Position</span>
@@ -2405,6 +2407,7 @@
 <span class="w">      </span><span class="nt">stack</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;sheet-asset-key&gt;</span>
 <span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;action-set-key&gt;</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
 <span class="w">  </span><span class="nt">shields</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">&lt;id&gt;</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
@@ -2420,6 +2423,7 @@
 <span class="w">      </span><span class="nt">stack</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;sheet-asset-key&gt;</span>
 <span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;action-set-key&gt;</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
 <span class="w">  </span><span class="nt">tools</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">&lt;id&gt;</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
@@ -2435,6 +2439,7 @@
 <span class="w">      </span><span class="nt">stack</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;sheet-asset-key&gt;</span>
 <span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;action-set-key&gt;</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
 <span class="w">  </span><span class="nt">utilities</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">&lt;id&gt;</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
@@ -2450,6 +2455,7 @@
 <span class="w">      </span><span class="nt">stack</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;sheet-asset-key&gt;</span>
 <span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;action-set-key&gt;</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
 <span class="w">  </span><span class="nt">weapons</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">&lt;id&gt;</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
@@ -2465,6 +2471,7 @@
 <span class="w">      </span><span class="nt">stack</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;sheet-asset-key&gt;</span>
 <span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;action-set-key&gt;</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-1</span>
 <span class="w">  </span><span class="nt">pixies</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">&lt;id&gt;</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
@@ -2480,6 +2487,7 @@
 <span class="w">      </span><span class="nt">stack</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;sheet-asset-key&gt;</span>
 <span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;action-set-key&gt;</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mass of Sheet</span>
 <span class="w">  </span><span class="nt">sprites</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">&lt;id&gt;</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">dimensions</span><span class="p">:</span>
@@ -2495,6 +2503,7 @@
 <span class="w">      </span><span class="nt">stack</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;sheet-asset-key&gt;</span>
 <span class="w">      </span><span class="nt">actions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;action-set-key&gt;</span>
+<span class="w">      </span><span class="nt">mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Mass of Sheet</span>
 <span class="c1"># ------------------------------------------------------------------</span>
 <span class="c1"># ---------------------------------------------------------- WIDGETS</span>
 <span class="nt">widgets</span><span class="p">:</span>
@@ -2650,7 +2659,8 @@
 <span class="w">      </span><span class="nt">character</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">strength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Strength</span>
 <span class="w">        </span><span class="nt">defense</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Defense</span>
-<span class="w">        </span><span class="nt">speed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Speed</span>
+<span class="w">        </span><span class="nt">speed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Maximum Speed</span>
+<span class="w">        </span><span class="nt">impulse</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Acceleration Delta</span>
 <span class="w">      </span><span class="nt">intention</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Intention Key</span>
 <span class="w">      </span><span class="nt">goal</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Goal Name Key</span>
@@ -2682,7 +2692,8 @@
 <span class="w">      </span><span class="nt">character</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">strength</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Strength</span>
 <span class="w">        </span><span class="nt">defense</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Defense</span>
-<span class="w">        </span><span class="nt">speed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Speed</span>
+<span class="w">        </span><span class="nt">speed</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Maximum Speed</span>
+<span class="w">        </span><span class="nt">impulse</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Acceleration Delta</span>
 <span class="w">      </span><span class="nt">mutators</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">fear</span><span class="p">:</span>
 <span class="w">          </span><span class="nt">radius</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Pixel Length</span>
