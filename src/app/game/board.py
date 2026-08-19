@@ -6,7 +6,7 @@ Package for game Board. The Board holds and mutates the state of the game for th
 
 # Standard Libraries 
 import logging
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 # Application Libraries
 from app.assets.base import Asset
@@ -14,6 +14,7 @@ from app.config.enums import (
     AssetCategories,
     AssetInstances
 )
+import app.config.settings as settings
 from app.game.cradle import Cradle
 from app.game.devices import Device
 from app.game.logic.mechanics import Mechanic
@@ -24,7 +25,7 @@ from app.models.groups import (
 from app.models.config import Mapping
 
 # Cython Libraries
-from libs.core.models import Dimensions
+from libs.core.models import Dimensions, Position
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,7 @@ class Board:
     _cached_layers: Dict[str, List[Asset]]
     _cached_renderables: Dict[str, List[Asset]]
     _cached_weights: Dict[str, List[Asset]]
+    _cached_tilemap: Dict[str, Dict[Tuple[int, int], Asset]]
     # Catalogues
     _all_categories: Dict[str, List[Asset]]
     _all_instances: Dict[str, List[Asset]]
@@ -80,7 +82,6 @@ class Board:
         self._all_categories = {}
         self._all_instances = {}
         for asset in self._assets:
-            layer = asset.state.layer
             cat = asset.category
             inst = asset.instance
 
@@ -100,6 +101,7 @@ class Board:
             self._cached_layers = {}
             self._cached_renderables = {}
             self._cached_weights = {}
+            self._cached_tilemap = {}
             return
 
         self._cached_categories[layer] = {}
@@ -107,6 +109,7 @@ class Board:
         self._cached_layers[layer] = []
         self._cached_renderables[layer] = []
         self._cached_weights[layer] = []
+        self._cached_tilemap[layer] = {}
         return
 
 
@@ -144,11 +147,34 @@ class Board:
                 self._cached_renderables[layer].append(asset)
 
             # Cached Assets with Weight
-            if hasattr(asset.properties, 'mass'):
+            if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0:
                 self._cached_weights[layer].append(asset)
+
+            # Cache TileMap for O(1) friction/environment lookups
+            if cat == AssetCategories.TILES:
+                w = asset.properties.dimensions.w
+                l = asset.properties.dimensions.l
+                
+                start_x = int(asset.state.position.x)
+                start_y = int(asset.state.position.y)
+                end_x = start_x + (asset.state.multiple.nx * w)
+                end_y = start_y + (asset.state.multiple.ny * l)
+
+                # Hash the tile into every HASH_SIZE cell it intersects
+                for cx in range(
+                    start_x // settings.TILE_HASH_SIZE, 
+                    (end_x - 1) // settings.TILE_HASH_SIZE + 1
+                ):
+                    for cy in range(
+                        start_y // settings.TILE_HASH_SIZE, 
+                        (end_y - 1) // settings.TILE_HASH_SIZE + 1
+                    ):
+                        self._cached_tilemap[layer][(cx, cy)] = asset
 
     # ---------------------------------------------------------
     # ------------------------------------------ PUBLIC METHODS
+
+    # ------------------------------------------------ SETTERS 
 
     def set_device(self, device: Device):
         """
@@ -161,7 +187,9 @@ class Board:
         """
         """
         self.cradle = cradle
-        
+
+    # ------------------------------------------------ GETTERS
+
     def player(self, slot = 0) -> Asset:
         """
         Returns the player at the indicated slot. Defaults 0.
@@ -169,6 +197,7 @@ class Board:
         if slot < len(self._all_instances[AssetInstances.PLAYERS]):
             return self._all_instances[AssetInstances.PLAYERS][slot]
         return self._all_instances[AssetInstances.PLAYERS][0]
+
 
     def poll(self) -> Mapping:
         """
@@ -178,6 +207,16 @@ class Board:
             return self._device.poll()
         return Mapping()
 
+
+    def tile(self, layer: str, position: Position) -> Asset:
+        """
+        Returns the Tile at the specified coordinate using O(1) grid-index lookup.
+        """
+        cx = int(position.x) // settings.TILE_HASH_SIZE
+        cy = int(position.y) // settings.TILE_HASH_SIZE
+        return self._cached_tilemap.get(layer, {}).get((cx, cy))
+
+
     def assets(self, layer=None) -> List[Asset]:
         """
         Returns a list of Assets. If `layer` is specified, list will be filtered by Layer.
@@ -186,23 +225,26 @@ class Board:
             return self._assets
         return self._cached_layers[layer]
 
+
     def weights(self, layer=None) -> List[Asset]:
         """
-        Returns a list of Assets that have weight. If `layer` is specified, list will be filtered by Layer.
+        Returns a list of Assets that have mass. If `layer` is specified, list will be filtered by Layer.
         """
         if layer is None:
             return [
                 asset 
                 for asset in self._assets 
-                if hasattr(asset.properties, 'mass')
+                if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0
             ]
         return self._cached_weights.get(layer, [])
+
 
     def layers(self) -> List[str]:
         """
         Returns a list of Layers.
         """
         return list(self._cached_categories.keys())
+
 
     def categories(self, category, layer = None) -> List[Asset]:
         """
@@ -212,6 +254,7 @@ class Board:
             return self._cached_categories.get(layer, {}).get(category, [])
         return self._all_categories.get(category, [])
 
+
     def instances(self, instance, layer = None) -> List[Asset]:
         """
         Returns a reference to the cached list of instanced Assets. O(1) fetch.
@@ -219,6 +262,7 @@ class Board:
         if layer is not None:
             return self._cached_instances.get(layer, {}).get(instance, [])
         return self._all_instances.get(instance, [])
+
         
     def renderables(self, layer=None) -> List[Asset]:
         """
@@ -231,6 +275,7 @@ class Board:
                 if asset.category != AssetCategories.TILES
             ]
         return self._cached_renderables.get(layer, [])
+
 
     def relayer(self, asset: Asset, new_layer: str) -> None:
         """
@@ -294,10 +339,39 @@ class Board:
 
         if new_layer not in self._cached_weights:
             self._cached_weights[new_layer] = []
-        self._cached_weights[new_layer].append(asset)
+            
+        if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0:
+            self._cached_weights[new_layer].append(asset)
 
         if cat != AssetCategories.TILES:
             self._cached_renderables[new_layer].append(asset)
+
+
+    def add(self, additions: List[Asset]) -> None:
+        """
+        Add Assets to the Board
+        """
+
+        for asset in additions:
+            layer = asset.state.layer
+
+            self._assets.append(asset)
+            self._all_categories.setdefault(asset.category, []).append(asset)
+            self._all_instances.setdefault(asset.instance, []).append(asset)
+            
+            if layer not in self._cached_categories:
+                self._init_cache(layer)
+                
+            self._cached_categories[layer].setdefault(asset.category, []).append(asset)
+            self._cached_instances[layer].setdefault(asset.instance, []).append(asset)
+            self._cached_layers[layer].append(asset)
+            
+            if asset.category != AssetCategories.TILES:
+                self._cached_renderables[layer].append(asset)
+
+            if hasattr(asset.properties, 'mass'):
+                self._cached_weights[asset.layer].append(asset)
+
 
     def remove(self, removals: List[Asset]) -> None:
         """
@@ -333,6 +407,7 @@ class Board:
                 
             if inst in self._all_instances and asset in self._all_instances[inst]:
                 self._all_instances[inst].remove(asset)
+
 
     def size(self, layer=None) -> List[Dimensions]:
         """

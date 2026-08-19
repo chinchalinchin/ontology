@@ -112,3 +112,21 @@ class IntentionConfiguration(Configuration):
     """
     next: str
     conditions: List[Callable] = field(default_factory=list)
+
+# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------- INTENTION CONFIGURATION
+
+@dataclass(slots=True)
+class MechanicsConfiguration(Configuration):
+    order: List[str] = field(default_factory=list)
+
+# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------- ROOT SCHEMA
+
+@dataclass(slots=True)
+class ConfigurationSchema:
+    recipes: RecipeConfiguration = field(default_factory=RecipeConfiguration)
+    mappings: MappingConfiguration = field(default_factory=MappingConfiguration)
+    intentions: Dict[Intentions, List[IntentionConfiguration]] = field(default_factory=dict)
+    actions: List[ActionConfiguration] = field(default_factory=list)
+    mechanics: MechanicsConfiguration = field(default_factory=MechanicsConfiguration)

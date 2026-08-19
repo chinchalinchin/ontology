@@ -1,23 +1,25 @@
-
 """
 # Ontology: app.game.cradle
 
 Package for ingame Asset instantiation.
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
+# Application Libraries
+if TYPE_CHECKING:
+    from app.hooks.factory import Factory
+    
 from app.assets.base import Asset
-from app.config.enums import (
-    AssetInstances,
-    AssetCategories
-)
-from app.hooks.factory import Factory
+from app.config.enums import AssetInstances, AssetCategories
 from app.models.config import RecipeConfiguration
 from app.models.groups import SpawnableGroup
+from app.models.state import PositionalState, MotorState, PropertyState
 
 class Cradle:
     """
     ## Cradle
-
-    The Cradle class is the "live" Factory. It is responsible for creating Asset Instances on the fly for the engine and mechanics, while the game loop is engaged.
+    Responsible for creating Asset Instances on the fly during the engine loop.
     """
     recipes: RecipeConfiguration
     spawnables: SpawnableGroup
@@ -27,88 +29,60 @@ class Cradle:
         self.recipes = recipes
 
     def _generate(self):
-        """
-        Returns a unique name for each spawned instance.
-        """
         return "TODO"
     
-    def spawn_expression(self, id, position):
-        """
-        """
+    def spawn_expression(self, id, position, layer):
         recipe = self.recipes.cursors.expressions
-        properties = self.spawnables.cursors
+        properties = self.spawnables.expressions
         name = self._generate()
-        state = Factory.state(recipe.state, {
-            'position': position,
-        })
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        taxonomy = Factory.taxonomy(
-            id, 
-            name,
-            AssetCategories.CURSORS, 
-            AssetInstances.EXPRESSIONS
-        )
+        
+        state = PositionalState(id=id, name=name, layer=layer, position=position)
+        frame = Factory.frame(recipe.frame) if recipe else Factory.frame(None)
+        animation = Factory.animation(recipe.animation) if recipe else Factory.animation(None)
+        taxonomy = Factory.taxonomy(id, name, AssetCategories.CURSORS, AssetInstances.EXPRESSIONS)
+        
         return Asset(taxonomy, properties, state, frame, animation)
 
-    def spawn_projectile(self, id, position, direction, speed):
-        """
-        """
+    def spawn_projectile(self, id, position, layer, velocity):
         recipe = self.recipes.cursors.projectiles
         properties = self.spawnables.projectiles
         name = self._generate()
-        state = Factory.state(recipe.state, {
-            'position': position,
-            'initial': position, 
-            'direction': direction, 
-            'speed': speed
-        })
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        taxonomy = Factory.taxonomy(
-            id, 
-            name,
-            AssetCategories.CURSORS, 
-            AssetInstances.PROJECTILES
+        
+        # Instantiate natively
+        state = MotorState(
+            id=id, name=name, layer=layer, 
+            position=position, initial=position, 
+            direction="down", speed=10
         )
+        # Inject velocity for the physics loop
+        state.velocity = velocity 
+        
+        frame = Factory.frame(recipe.frame) if recipe else Factory.frame(None)
+        animation = Factory.animation(recipe.animation) if recipe else Factory.animation(None)
+        taxonomy = Factory.taxonomy(id, name, AssetCategories.CURSORS, AssetInstances.PROJECTILES)
+        
         return Asset(taxonomy, properties, state, frame, animation)
 
-
-    def spawn_temporary(self, id, position):
-        """
-        """
+    def spawn_temporary(self, id, layer, position):
         recipe = self.recipes.effects.temporary
         properties = self.spawnables.temporary
         name = self._generate()
-        state = Factory.state(recipe.state, {
-            'position': position,
-        })
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        taxonomy = Factory.taxonomy(
-            id, 
-            name,
-            AssetCategories.EFFECTS, 
-            AssetInstances.TEMPORARY
-        )
+        
+        state = PositionalState(id=id, name=name, layer=layer, position=position)
+        frame = Factory.frame(recipe.frame) if recipe else Factory.frame(None)
+        animation = Factory.animation(recipe.animation) if recipe else Factory.animation(None)
+        taxonomy = Factory.taxonomy(id, name, AssetCategories.EFFECTS, AssetInstances.TEMPORARY)
+        
         return Asset(taxonomy, properties, state, frame, animation)
 
-    def spawn_strut(self, id, position, owner):
-        """
-        """
+    def spawn_strut(self, id, position, layer, owner):
         recipe = self.recipes.crafts.struts
-        properties = self.spawnables.crafts
+        properties = self.spawnables.struts  # FIXED: Was .crafts
         name = self._generate()
-        state = Factory.state(recipe.state, {
-            'position': position,
-            'owner': owner
-        })
-        frame = Factory.frame(recipe.frame)
-        animation = Factory.animation(recipe.animation)
-        taxonomy = Factory.taxonomy(
-            id, 
-            name,
-            AssetCategories.CRAFTS, 
-            AssetInstances.STRUTS
-        )
+        
+        state = PropertyState(id=id, name=name, layer=layer, position=position, owner=owner)
+        frame = Factory.frame(recipe.frame) if recipe else Factory.frame(None)
+        animation = Factory.animation(recipe.animation) if recipe else Factory.animation(None)
+        taxonomy = Factory.taxonomy(id, name, AssetCategories.CRAFTS, AssetInstances.STRUTS)
+        
         return Asset(taxonomy, properties, state, frame, animation)

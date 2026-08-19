@@ -1,21 +1,13 @@
 """
 # Ontology: app.models.properties
-
-Models for typing the property attributes of Assets. See documentation for a more in-depth explanation of each field and its purpose. 
 """
-# Standard Libraries
-from typing import Dict, List
+from typing import Dict, List, Union
 from dataclasses import dataclass, field
 
-# Cython Libraries
-from libs.core.models import Dimensions, Hitbox
-
-# ---------------------------------------------------------------------------------------
-# ----------------------------------------------------------------------- PROPERTY MODELS
-# ---------------------------------------------------------------------------------------
-
-# ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------------- NESTED PROPERTIES
+from app.models.adapters import (
+    PydanticDimensions as Dimensions, 
+    PydanticHitbox as Hitbox
+)
 
 @dataclass(slots=True)
 class Direction:
@@ -30,9 +22,6 @@ class Action:
 class Cost:
     item: str
     quantity: int
-
-# ---------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------- ASSET PROPERTIES
 
 @dataclass(slots=True)
 class AssetProperties:
@@ -50,26 +39,76 @@ class EffectProperties(AssetProperties):
 @dataclass(slots=True)
 class ObjectProperties(AssetProperties):
     dimensions: Dimensions
-    mass: int
+    mass: int = 0
     count: int = 1
     hitboxes: List[Hitbox] = field(default_factory=list)
 
 @dataclass(slots=True)
 class TileProperties(AssetProperties):
     dimensions: Dimensions
-    ids: List[str]
+    friction: float = 0.0
 
 @dataclass(slots=True)
 class CraftProperties(AssetProperties):
     dimensions: Dimensions
-    mass: int
     cost: List[Cost]
+    mass: int = 0
     hitboxes: List[Hitbox] = field(default_factory=list)
 
 @dataclass(slots=True)
 class SheetProperties(AssetProperties):
     dimensions: Dimensions
-    stack: List[str]
-    mass: int
+    stack: List[str] = field(default_factory=list)
+    mass: int = 0
     hitboxes: List[Hitbox] = field(default_factory=list)
-    actions: Dict[str, Action] = field(default_factory=dict)
+    actions: Union[str, Dict[str, Action]] = field(default_factory=dict)
+
+# ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------- ROOT SCHEMAS
+
+@dataclass(slots=True)
+class TilePropertyInstances:
+    back: Dict[str, TileProperties] = field(default_factory=dict)
+    fore: Dict[str, TileProperties] = field(default_factory=dict)
+
+@dataclass(slots=True)
+class EffectPropertyInstances:
+    persistent: Dict[str, EffectProperties] = field(default_factory=dict)
+    temporary: Dict[str, EffectProperties] = field(default_factory=dict)
+
+@dataclass(slots=True)
+class ObjectPropertyInstances:
+    chests: Dict[str, ObjectProperties] = field(default_factory=dict)
+    crates: Dict[str, ObjectProperties] = field(default_factory=dict)
+    doors: Dict[str, ObjectProperties] = field(default_factory=dict)
+    gates: Dict[str, ObjectProperties] = field(default_factory=dict)
+    plates: Dict[str, ObjectProperties] = field(default_factory=dict)
+
+@dataclass(slots=True)
+class CraftPropertyInstances:
+    struts: Dict[str, CraftProperties] = field(default_factory=dict)
+
+@dataclass(slots=True)
+class CursorPropertyInstances:
+    expressions: Dict[str, CursorProperties] = field(default_factory=dict)
+    projectiles: Dict[str, CursorProperties] = field(default_factory=dict)
+
+@dataclass(slots=True)
+class SheetPropertyInstances:
+    pixies: Dict[str, SheetProperties] = field(default_factory=dict)
+    sprites: Dict[str, SheetProperties] = field(default_factory=dict)
+    weapons: Dict[str, SheetProperties] = field(default_factory=dict)
+    utilities: Dict[str, SheetProperties] = field(default_factory=dict)
+    armor: Dict[str, SheetProperties] = field(default_factory=dict)
+    tools: Dict[str, SheetProperties] = field(default_factory=dict)
+    shields: Dict[str, SheetProperties] = field(default_factory=dict)
+    players: Dict[str, SheetProperties] = field(default_factory=dict)
+
+@dataclass(slots=True)
+class PropertiesSchema:
+    tiles: TilePropertyInstances = field(default_factory=TilePropertyInstances)
+    effects: EffectPropertyInstances = field(default_factory=EffectPropertyInstances)
+    objects: ObjectPropertyInstances = field(default_factory=ObjectPropertyInstances)
+    crafts: CraftPropertyInstances = field(default_factory=CraftPropertyInstances)
+    cursors: CursorPropertyInstances = field(default_factory=CursorPropertyInstances)
+    sheets: SheetPropertyInstances = field(default_factory=SheetPropertyInstances)

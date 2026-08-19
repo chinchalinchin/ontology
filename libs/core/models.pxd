@@ -3,6 +3,8 @@
 cdef class Position:
     cdef public int x
     cdef public int y
+    cdef public double rx
+    cdef public double ry
 
 cdef class Dimensions:
     cdef public int w
@@ -13,8 +15,8 @@ cdef class Multiple:
     cdef public int ny
     
 cdef class Velocity:
-    cdef public int vx
-    cdef public int vy
+    cdef public double vx
+    cdef public double vy
 
 cdef class Hitbox:
     cdef public Position position

@@ -78,12 +78,6 @@ class Registry:
         """Helper to agnostically extract property items from schema variations."""
         if not isinstance(inst_props, dict):
             return
-        if "personas" in inst_props:
-            for k, v in inst_props["personas"].items():
-                yield k, {**v, "actions": inst_props.get("actions", {})}
-        elif "ids" in inst_props:
-            for k in inst_props["ids"]:
-                yield k, inst_props
         else:
             for k, v in inst_props.items():
                 if isinstance(v, dict):

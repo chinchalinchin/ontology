@@ -9,12 +9,14 @@ cdef class Position:
     """
     """
 
-    def __init__(self, int x, int y):
+    def __init__(self, int x, int y, double rx=0.0, double ry=0.0):
         self.x = x
         self.y = y
+        self.rx = rx
+        self.ry = ry
 
     def to_dict(self) -> dict:
-        return {"x": self.x, "y": self.y}
+        return {"x": self.x, "y": self.y, "rx": self.rx, "ry": self.ry}
 
 cdef class Dimensions:
     """
@@ -42,7 +44,7 @@ cdef class Velocity:
     """
     """
     
-    def __init__(self, int vx, int vy):
+    def __init__(self, double vx, double vy):
         self.vx = vx
         self.vy = vy
 

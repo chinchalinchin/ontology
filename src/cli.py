@@ -66,7 +66,7 @@ def dump(board_key, board, temp = 'state'):
     logger.info(f"State dump successfully written to {dump_out_path}")
 
 
-def main():
+def arguments():
     parser = argparse.ArgumentParser(description="Ontology CLI Tools")
     parser.add_argument("--log-level", type=str, default="INFO", 
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], 
@@ -97,7 +97,16 @@ def main():
     p_start.add_argument("--height", type=int, default=300, help="Window screen height")
     p_start.add_argument("--device", type=str, default=Devices.KEYBOARD.value, help="Player device")
 
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def main():
+    """
+    ## main
+
+    Command line entrypoint for the application.
+    """
+    args = arguments()
 
     # Configure logging level dynamically based on args
     logging.basicConfig(
@@ -120,7 +129,7 @@ def main():
     if args.command in ["prerender", "render"]:
         # Headless static execution
         logger.info("Orchestrating engine components for headless execution...")
-        board, registry, screens = orchestrator.init(screensize, device=args.device)
+        board, _, screens, _ = orchestrator.init(screensize, device=args.device)
 
         if args.layer not in screens:
             logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")

@@ -16,12 +16,10 @@ from app.config.enums import (
 )
 
 # Cython Libraries
-from libs.core.models import Position, Multiple
+from app.models.adapters import PydanticPosition as Position, PydanticMultiple as Multiple, PydanticVelocity as Velocity
 
 class NoState:
     pass
-
-# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class AssetState:
@@ -34,8 +32,10 @@ class AssetState:
 
     - layer: Asset Layer Key
     """
+    id: str
+    name: str
     layer: str
-    
+
 # ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
@@ -386,6 +386,51 @@ class PlayerState(AssetState):
     intention: Union[Intentions, None] = None
     animation: AnimationState = field(default_factory=AnimationState)
 
+# ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------- ROOT SCHEMAS
+
+@dataclass(slots=True)
+class TileStateInstances:
+    back: List[MultiplierState] = field(default_factory=list)
+    fore: List[MultiplierState] = field(default_factory=list)
+
+@dataclass(slots=True)
+class ObjectStateInstances:
+    chests: List[ContainerState] = field(default_factory=list)
+    crates: List[PositionalState] = field(default_factory=list)
+    doors: List[DoorState] = field(default_factory=list)
+    gates: List[SwitchState] = field(default_factory=list)
+    plates: List[SwitchState] = field(default_factory=list)
+
+@dataclass(slots=True)
+class CraftStateInstances:
+    struts: List[PropertyState] = field(default_factory=list)
+
+@dataclass(slots=True)
+class CursorStateInstances:
+    expressions: List[PositionalState] = field(default_factory=list)
+    projectiles: List[MotorState] = field(default_factory=list)
+
+@dataclass(slots=True)
+class EffectStateInstances:
+    temporary: List[PositionalState] = field(default_factory=list)
+    persistent: List[AnimatorState] = field(default_factory=list)
+
+@dataclass(slots=True)
+class SheetStateInstances:
+    pixies: List[AnimatorState] = field(default_factory=list)
+    sprites: List[SpriteState] = field(default_factory=list)
+    players: List[PlayerState] = field(default_factory=list)
+
+@dataclass(slots=True)
+class StateSchema:
+    tiles: TileStateInstances = field(default_factory=TileStateInstances)
+    objects: ObjectStateInstances = field(default_factory=ObjectStateInstances)
+    crafts: CraftStateInstances = field(default_factory=CraftStateInstances)
+    cursors: CursorStateInstances = field(default_factory=CursorStateInstances)
+    effects: EffectStateInstances = field(default_factory=EffectStateInstances)
+    sheets: SheetStateInstances = field(default_factory=SheetStateInstances)
+    
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------- MENU STATE MODELS
 

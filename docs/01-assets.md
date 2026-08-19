@@ -112,6 +112,8 @@ Some Asset Categories have a Mass property. Only Assets with Mass can participat
 - $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physics equations. Its velocity is unaffected by collisions, but it forces dynamic bodies to resolve overlap.
 - $m = -1$: **Sensor**. The engine detects the spatial intersection for game logic (like `SwitchMechanics` or `DoorMechanics`), but `CollisionMechanics` bypasses it completely during the overlap resolution phase.
 
+See [MotionMechanics](./05-mechanics.md#spatial) for more information.
+
 ### Asset Hierarchy
 
 While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state [schemas](#schemas) encode Asset Categories and Instances into the top-level keys.

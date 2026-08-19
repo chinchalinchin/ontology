@@ -1,27 +1,25 @@
 #### Refactor: Phase 04.01 - Mechanics
 
-- **CURRENT FOCUS (Tile Refactoring)**: If friction is added to Tiles, then Tiles need to be separated by `id` in the property schema, where each has a unique taxonomy, e.g. `<category>.<instance>.<id>`. Analyze the impacts this will have on the application Registry, Orchestrator, Factory and other core components. Document anything that needs changed in Tasks.
-
 ##### Tasks
 
 **0. Task: Mechanics Prepartion**
 
 *Objective*: Abstract Mechanics instantiation using configuration.
 
-* [ ] **Subtack**: Add MechanicsConfiguration to `app.models.config`. Update corresonding DTO Pydantic validators. 
-* [ ] **Subtack**: Enumerate Mechanics in `app.config.enums`.
-* [ ] **Subtack**: Use configuration in Orchestrator to hydrate the Mechanics and inject into Board.
+* [x] **Subtack**: Add MechanicsConfiguration to `app.models.config`. Update corresonding DTO Pydantic validators. 
+* [x] **Subtack**: Enumerate Mechanics in `app.config.enums`.
+* [x] **Subtack**: Use configuration in Orchestrator to hydrate the Mechanics and inject into Board in order they are specified.
 
 **1. Task: Implement Door Traversal & Sprite Chest Interaction**
 
 *Objective*: Allow entities to traverse independent Layer coordinate planes when intersecting Door hitboxes.
 
 * [x] **Subtask**: Assign `mass: -1` (Sensor) to Door properties schema.
-* [ ] **Subtask**: Implement Door mechanics in `InteractionMechanics`. Query intersections between Sprites and Doors conditional on `sprite.state.intention == 'interact'`.
-* [ ] **Subtask**: Check if the mutating Sprite's center point intersects the Door. If true, execute `board.relayer(asset, door.state.outlayer)`.
-* [ ] **Subtask**: Update the Sprite's `position` to match `door.state.out`.
-* [ ] **Subtask**: Implement Sprite interaction mechanics in `InteractionMechanics`. Query intersections between Sprites and Chests conditional on `sprite.state.intention == 'interact'`.
-* [ ] **Subtask**: Check if the mutating Sprite's center point intersects the Chest. If true, remove `chest.state.contents` and append to `sprite.state.inventory.loot`.
+* [x] **Subtask**: Implement Door mechanics in `InteractionMechanics`. Query intersections between Sprites and Doors conditional on `sprite.state.intention == 'interact'`.
+* [x] **Subtask**: Check if the mutating Sprite's center point intersects the Door. If true, execute `board.relayer(asset, door.state.outlayer)`.
+* [x] **Subtask**: Update the Sprite's `position` to match `door.state.out`.
+* [x] **Subtask**: Implement Sprite interaction mechanics in `InteractionMechanics`. Query intersections between Sprites and Chests conditional on `sprite.state.intention == 'interact'`.
+* [x] **Subtask**: Check if the mutating Sprite's center point intersects the Chest. If true, remove `chest.state.contents` and append to `sprite.state.inventory.loot`.
 
 ---
 
@@ -30,17 +28,17 @@
 *Objective*: Separate autonomous in-game object interactions from Player-driven UI Menu events.
 
 * [x] **Subtask**: Introduce UI-specific Intentions to the configuration schemas.
-* [ ] **Subtask**: Create conditional-stub for instantiating MenuEvents in the `InteractionMechanics`
+* [x] **Subtask**: Create conditional-stub for instantiating MenuEvents in the `InteractionMechanics`
 
 ---
 
-**3. Task: Implement the Runtime Factory (`Cradle`)**
+**3. Task: Implement the Runtime Factory (Cradle)**
 
 *Objective*: Centralize runtime Asset hydration to support dynamic spawning triggered by Mechanics.
 
-* [~] **Subtask**: Create a `Cradle` class initialized with references to `RecipeConfiguration` and `Spawnable. Attach `Cradle` to `Board`.
-* [~] **Subtask**: Create a Group model for Spawnable Assets (projectiles, temporary effects, struts). Ensure this Group is hydrated with spawnable Asset properties in the Factory and passed into the Cradle by the Orchestrator.
-* [~] **Subtask**: Expose `spawn_projectile(id, position, direction, speed)`, `spawn_temporary(id, position)`, and `spawn_strut(id, position, owner)` methods on the `Cradle` that assemble the components and append them to the `Board` asset lists.
+* [x] **Subtask**: Create a Cradle class initialized with references to `RecipeConfiguration` and `Spawnable`. Attach Cradle to Board.
+* [x] **Subtask**: Create a Group model for Spawnable Assets (projectiles, temporary effects, struts). Ensure this Group is hydrated with spawnable Asset properties in the Factory and passed into the Cradle by the Orchestrator.
+* [x] **Subtask**: Expose `spawn_projectile(id, position, direction, speed)`, `spawn_temporary(id, position)`, and `spawn_strut(id, position, owner)` methods on the Cradle that assemble the components and append them for the Board.
 
 ---
 
@@ -49,9 +47,9 @@
 *Objective*: Eradicate the $O(N^2)$ nested loop and utilize the `Cradle` for ranged combat.
 
 * [x] **Subtask**: Refactor `CombatMechanics` to inherit `SpatialMechanic`. 
-* [ ] **Subtask**: Remove the nested for target in targets: loop in `CombatMechanics.update()`.
-* [ ] **Subtask**: Feed attackers and targets into `self.query_collisions(attackers + targets)`. Iterate over the returned candidate pairs to apply `Geometry.intersects` with the attacker's active weapon hitboxes.
-* [ ] **Subtask**: Implement ranged attack logic: If the attacker's animation matches the critical `shoot` or `cast` frame, call `board.cradle.spawn_projectile()` with the initial vector after the Equipment animation check.
+* [x] **Subtask**: Remove the nested for target in targets: loop in `CombatMechanics.update()`.
+* [x] **Subtask**: Feed attackers and targets into `self.query_collisions(attackers + targets)`. Iterate over the returned candidate pairs to apply `Geometry.intersects` with the attacker's active weapon hitboxes.
+* [x] **Subtask**: Implement ranged attack logic: If the attacker's animation matches the critical `shoot` or `cast` frame, call `board.cradle.spawn_projectile()` with the initial vector after the Equipment animation check.
 
 ---
 
@@ -59,42 +57,49 @@
 
 *Objective*: Support continuous integration without integer truncation failure. Introduce Vectors and Steering properties to the schemas.
 
-* [ ] **Subtask**: Update `libs.core.models.Position` to track `cdef public double rx, ry` for sub-pixel accumulation.
-* [ ] **Subtask**: Create `Velocity(vx: double, vy: double)` in `libs.core.models.pxd`.
-* [ ] **Subtask**: Add `velocity: Velocity` to `SpriteState`, `MotorState`, and `PositionalState` schemas.
-* [ ] **Subtask**: Add `impulse: int` to `Character` properties (the rate of acceleration for self-propelled Sprites).
-* [ ] **Subtask**: Add `friction: float` to `TileProperties`.
-    * [ ] Refactor Tile property parsing. Currently all Tile `ids` are listed under a field, instead of the `<category>.<instance>.<id>` nesting data structure applied to the other assets. Separating Tiles by friction will require modifying the Tile Property schema to fit the normal Asset data shape.
-    * [ ] Update documentation and asset schemas.
-* [ ] **Subtask**: Implement `Board.tile(layer, position) -> Asset` using grid-index math ($O(1)$) to return the Tile at a specific coordinate.
+* [x] **Subtask**: Update `libs.core.models.Position` to track `cdef public double rx, ry` for sub-pixel accumulation.
+* [x] **Subtask**: Create `Velocity(vx: double, vy: double)` in `libs.core.models.pxd`.
+* [x] **Subtask**: Add `velocity: Velocity` to `SpriteState`, `MotorState`, and `PositionalState` schemas.
+* [x] **Subtask**: Add `impulse: int` to `Character` properties (the rate of acceleration for self-propelled Sprites).
+* [x] **Subtask**: Add `friction: float` to `TileProperties`.
+* [x] **Subtask**: Implement `Board.tile(layer, position) -> Asset` using grid-index math ($O(1)$) to return the Tile at a specific coordinate.
 * [x] **Subtask**: Add `mass: int` property to collidable Asset Properties ($m > 0$ for Dynamic, $m = 0$ for Static, $m = -1$ for Sensor).
-* [~] **Subtask**: Implement `Board.weights(layer)` to return a cached list of Assets where `mass >= 0`.
+* [x] **Subtask**: Create `Velocity(vx: double, vy: double)` in `libs.core.models.pxd`.
+* [x] **Subtask**: Add `velocity: Velocity` to `SpriteState`, `MotorState`, and `PositionalState` schemas.
+* [x] **Subtask**: Add `impulse: int` to `Character` properties.
+* [x] **Subtask**: **Tile Refactor - Schema**: Update `/src/assets/tiles/main.yaml` to nest IDs under instances, mapping each to `dimensions` and `friction`.
+* [x] **Subtask**: **Tile Refactor - Models**: Update `app.models.properties.TileProperties`. Remove `ids: List[str]`, add `friction: float`.
+* [x] **Subtask**: **Tile Refactor - Orchestrator**: Remove the `if category == AssetCategories.TILES:` bypass in `Orchestrator.instance_properties()`.
+* [x] **Subtask**: **Tile Refactor - Registry**: Remove the `elif "ids" in inst_props:` block in `Registry._extract()`.
+* [x] **Subtask**: **Tile Refactor - Cache**: Implement a spatial `TileMap` dictionary in `Board._cache()`. Expose `Board.tile(layer, position) -> Asset` for $O(1)$ friction lookups.
+* [x] **Subtask**: Implement `Board.weights(layer)` to return a cached list of Assets where `mass >= 0`.
 
 ---
 
-**6. Task: Overhaul `MotionMechanics` (Time, Velocity & Friction)**
+**6. Task: Overhaul `MotionMechanics` (Symplectic Euler Integration)**
 
-*Objective*: Apply velocity, friction, and sub-pixel accumulation.
+*Objective*: Apply impulses to modify velocity, then use the resulting velocity to translate position.
 
-* [ ] **Subtask**: Remove kinematic integer snapping. Map Intention and Goal directly to a target velocity vector.
-* [ ] **Subtask**: **Sprites & Players:** Calculate the desired direction based on Intention/Goal. Apply `impulse` to `velocity` in that direction. Cap the magnitude of `velocity` at `character.speed`.
-* [ ] **Subtask**: **Crates & Inert Objects:** Query `Board.tile()` using the asset's center point. Multiply `velocity` by $(1 - \text{friction} \cdot \text{delta})$.
-* [ ] **Subtask**: **Integration:** Apply `velocity * delta` to `rx/ry`. When the accumulators exceed $1.0$ or $-1.0$, cast to `int`, shift the physical `Position`, and decrement the accumulator.
-
----
-
-**7. Task: Overhaul `CollisionMechanics` (Inverse Mass Resolution)**
-
-*Objective*: Stop static environments from being displaced by dynamic bodies.
-
-* [ ] **Subtask**: Modify `CollisionMechanics` to query `Board.weights(layer)` and resolve spatial overlap using inelastic momentum transfer formulae.
-* [ ] **Subtask**: Update `CollisionMechanics._resolve()` to calculate the inverse mass of both objects. If $m=0$, $m_{inv} = 0$.
-* [ ] **Subtask**: **Positional Correction:** Modify `_resolve()` to calculate the inverse mass of both objects ($1/m$, where $m=0 \to 0$). Distribute the `overlap_x` and `overlap_y` shifts proportionally to their inverse mass ratio, ensuring static walls do not move.
-* [ ] **Subtask**: **Elastic Velocity:** Apply 1D elastic collision formulae to the `Velocity` vectors post-separation: $v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}$. (Treat $m=0$ as infinite mass mathematically so objects bounce cleanly off walls).
+* [x] **Subtask**: **Velocity Update (Player):** Check `device.poll()`. If directional input is present, calculate impulse vector, apply to `velocity`, and clamp magnitude to `character.speed`. If no input is present, hardcode `velocity = (0,0)`.
+* [x] **Subtask**: **Velocity Update (Sprites):** Calculate the unit vector pointing from `current_position` to `goal_position`. Multiply by `impulse` and $\Delta t$. Add to `velocity`. Clamp magnitude to `character.speed`.
+* [x] **Subtask**: **Velocity Update (Frictive):** Query `Board.tile()` at asset's center. Calculate $\Delta v = \text{friction} \cdot \Delta t$. Apply $\Delta v$ in the direction opposite to the current `velocity`. If $\Delta v > \vert{}\text{velocity}\vert{}$, set `velocity = (0,0)`.
+* [x] **Subtask**: **Position Update (All Mutable Assets):** Exclude Projectiles from the above steps. For all assets, apply $v \cdot \Delta t$ to the sub-pixel accumulators `rx/ry`. When `rx/ry` exceed $1.0$ 
 
 ---
 
-**x. Task: Implement Board Boundaries & Environmental Collisions**
+**7. Task: Overhaul `CollisionMechanics` (Mass Resolution & Momentum)**
+
+*Objective*: Isolate overlap resolution from physical momentum transfer.
+
+* [x] **Subtask**: Query `Board.weights(layer)` to evaluate overlaps.
+* [x] **Subtask**: **Spatial Resolution:** Calculate the inverse mass for both colliding assets ($1/m$). Treat $m=0$ as an inverse mass of $0$. Distribute the `overlap_x` and `overlap_y` displacement proportionally to their inverse mass ratio, immediately shifting the `Position` coordinates.
+* [x] **Subtask**: **Momentum Transfer:** Following separation, calculate the new 1D elastic velocities for the `x` and `y` axes independently using the formula: 
+$$v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}$$
+* [x] Update the `velocity` vectors for both bodies.
+
+---
+
+**!. Task: Implement Board Boundaries & Environmental Collisions**
 
 *Objective*: Calculate rigid board boundaries dynamically and allow projectiles to impact solid matter.
 
@@ -103,45 +108,3 @@
 ---
 
 
-
-
-
-## Task Backlog Updates
-
-Below are the updated subtasks for Phase 04.01 reflecting the required changes across the core components.
-
-**5. Task: Update Data Structures for Newtonian Physics**
-
-*Objective*: Support continuous integration without integer truncation failure. Introduce Vectors, Friction, and standard taxonomy to Tiles.
-
-* [ ] **Subtask**: Update `libs.core.models.Position` to track `cdef public double rx, ry` for sub-pixel accumulation.
-* [ ] **Subtask**: Create `Velocity(vx: double, vy: double)` in `libs.core.models.pxd`.
-* [ ] **Subtask**: Add `velocity: Velocity` to `SpriteState`, `MotorState`, and `PositionalState` schemas.
-* [ ] **Subtask**: Add `impulse: int` to `Character` properties.
-* [ ] **Subtask**: **Tile Refactor - Schema**: Update `/src/assets/tiles/main.yaml` to nest IDs under instances, mapping each to `dimensions` and `friction`.
-* [ ] **Subtask**: **Tile Refactor - Models**: Update `app.models.properties.TileProperties`. Remove `ids: List[str]`, add `friction: float`.
-* [ ] **Subtask**: **Tile Refactor - Orchestrator**: Remove the `if category == AssetCategories.TILES:` bypass in `Orchestrator.instance_properties()`.
-* [ ] **Subtask**: **Tile Refactor - Registry**: Remove the `elif "ids" in inst_props:` block in `Registry._extract()`.
-* [ ] **Subtask**: **Tile Refactor - Cache**: Implement a spatial `TileMap` dictionary in `Board._cache()`. Expose `Board.tile(layer, position) -> Asset` for $O(1)$ friction lookups.
-
-
-
----
-
-
-**6. Task: Overhaul `MotionMechanics` (Symplectic Euler Integration)**
-*Objective*: Apply impulses to modify velocity, then use the resulting velocity to translate position.
-
-* [ ] **Subtask**: **Velocity Update (Player):** Check `device.poll()`. If directional input is present, calculate impulse vector, apply to `velocity`, and clamp magnitude to `character.speed`. If no input is present, hardcode `velocity = (0,0)`.
-* [ ] **Subtask**: **Velocity Update (Sprites):** Calculate the unit vector pointing from `current_position` to `goal_position`. Multiply by `impulse` and $\Delta t$. Add to `velocity`. Clamp magnitude to `character.speed`.
-* [ ] **Subtask**: **Velocity Update (Frictive):** Query `Board.tile()` at asset's center. Calculate $\Delta v = \text{friction} \cdot \Delta t$. Apply $\Delta v$ in the direction opposite to the current `velocity`. If $\Delta v > \vert{}\text{velocity}\vert{}$, set `velocity = (0,0)`.
-* [ ] **Subtask**: **Position Update (All Mutable Assets):** Exclude Projectiles from the above steps. For all assets, apply $v \cdot \Delta t$ to the sub-pixel accumulators `rx/ry`. When `rx/ry` exceed $1.0$ or $-1.0$, cast to `int`, shift the physical `Position`, and decrement the accumulator.
-
-**7. Task: Overhaul `CollisionMechanics` (Mass Resolution & Momentum)**
-*Objective*: Isolate overlap resolution from physical momentum transfer.
-
-* [ ] **Subtask**: Query `Board.weights(layer)` to evaluate overlaps.
-* [ ] **Subtask**: **Spatial Resolution:** Calculate the inverse mass for both colliding assets ($1/m$). Treat $m=0$ as an inverse mass of $0$. Distribute the `overlap_x` and `overlap_y` displacement proportionally to their inverse mass ratio, immediately shifting the `Position` coordinates.
-* [ ] **Subtask**: **Momentum Transfer:** Following separation, calculate the new 1D elastic velocities for the `x` and `y` axes independently using the formula: 
-$$v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}$$
-* [ ] Update the `velocity` vectors for both bodies.

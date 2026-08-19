@@ -11,18 +11,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from app.game.board import Board
 
-from app.config.enums import (
-    AssetInstances,
-    Intentions,
-    PlayerGoals,
-    GoalCategories
-)
-from app.game.logic.maps import AnimationMap
 from app.game.logic.mechanics import Mechanic
-from app.models.state import Goal
 
-# Cython Libraries
-from libs.core.models import Position
+
 # ----------------------------------------------------------------------------------------
 
 class CommerceMechanics(Mechanic):

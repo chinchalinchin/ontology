@@ -1,12 +1,13 @@
 mechanics:
   order:
-    - animation
-    - projectile
-    - combat
+    - player
+    - transition
+    - motion
     - collision
     - switch
-    - motion
+    - projectile
+    - combat
     - commerce
-    - transition
-    - player
-    - remove 
+    - speech
+    - animation 
+    - remove

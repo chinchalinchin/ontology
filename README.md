@@ -18,8 +18,7 @@ Cython needs the actual C development headers to compile against,
 To compile the C extensions, run the following command in your terminal:
 
 ```bash
-python setup.py build_ext --inplace
-```
+ ```
 
 ### Usage
 

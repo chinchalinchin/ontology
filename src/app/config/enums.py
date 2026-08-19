@@ -198,6 +198,15 @@ class Groups(str, Enum):
     EQUIPMENT       = "equipment"
     SPAWNABLES      = "spawnables"
 
+class MotiveAssets(str, Enum):
+    PLAYERS         = "players"
+    SPRITES         = "sprites"
+
+class FrictiveAssets(str, Enum):
+    CRATES          = "crates"
+
+class InertAssets(str, Enum):
+    PROJECTILES     = "projectiles"
 # -------------------------------- WIDGET ENUMERATIONS
 
 class Layouts(str, Enum):

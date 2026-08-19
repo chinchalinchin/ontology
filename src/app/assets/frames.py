@@ -11,10 +11,22 @@ import app.config.settings as settings
 from app.assets.base import Frame
 from app.models.state import AssetState
 
+def _safe_dim(properties: dict) -> tuple[int, int]:
+    """Extract dimensions safely whether it's a raw dict or a Cython object bypassing asdict()"""
+    dim = properties.get("dimensions")
+    if hasattr(dim, 'w'):
+        return dim.w, dim.l
+    elif isinstance(dim, dict):
+        return dim.get("w", 0), dim.get("l", 0)
+    return 0, 0
+
 class NoFrame(Frame):
+    """
+    ## NoFrame
+    """
+
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
-        ## NoFrame
         """
         return [id]
             
@@ -36,7 +48,7 @@ class SingleFrame(Frame):
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
         """
-        w, l = properties["dimensions"]["w"], properties["dimensions"]["l"]
+        w, l = _safe_dim(properties)
         return {id: (0, 0, w, l)}
         
 class IterableFrame(Frame):
@@ -54,13 +66,13 @@ class IterableFrame(Frame):
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
         """
-        w, l = properties["dimensions"]["w"], properties["dimensions"]["l"]
+        w, l = _safe_dim(properties)
         crops = {}
         count = properties.get("count", 1)
         for f in range(count):
             crops[f"{id}-{f}"] = (f * w, 0, w, l)
         return crops
-
+    
 class StateFrame(Frame):
     """
     ## StateFrame
@@ -79,8 +91,10 @@ class StateFrame(Frame):
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
         """
-        w, l = properties["dimensions"]["w"], properties["dimensions"]["l"]
+        w, l = _safe_dim(properties)
         crops = {}
+        
+        # Handle dict format since this goes through dataclasses.asdict()
         for action, action_prop in properties.get("actions", {}).items():
             for direction, dir_prop in action_prop.get("directions", {}).items():
                 row = dir_prop["row"]
@@ -104,7 +118,7 @@ class SpriteFrame(StateFrame):
         # Iterate over active equipment in strict Z-index order: Base -> Armor -> Utility -> Tool -> Weapon
         if hasattr(state, 'inventory') and state.inventory and state.inventory.equipment:
             eq = state.inventory.equipment
-            for eq_key in (eq.armor, eq.utility, eq.tool, eq.weapon):
+            for eq_key in (eq.armor, eq.utility, eq.tool, eq.weapon, eq.shield):
                 if eq_key:
                     frame_keys.append(settings.SEPARATOR.join([
                         eq_key,

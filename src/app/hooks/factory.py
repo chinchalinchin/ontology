@@ -3,9 +3,6 @@
 
 Package for instantiating Asset classes and their components.
 """
-# Standard Libraries
-from typing import get_type_hints, get_origin, get_args, Union
-import types
 
 # Application Libraries
 from app.assets.animations import (
@@ -26,12 +23,8 @@ from app.assets.frames import (
 from app.config.enums import (
     AnimationRecipe, 
     FrameRecipe, 
-    StateRecipe,
-    AssetCategories,
     Devices,
-    Mechanics,
-    Configurations,
-    Groups
+    Mechanics
 )
 from app.game.cradle import Cradle
 from app.game.logic.mechanics import (
@@ -49,68 +42,14 @@ from app.game.logic.mechanics import (
 )
 from app.models.config import (
     RecipeConfiguration,
-    MappingConfiguration,
-    IntentionConfiguration,
-    ActionConfiguration,
-    Mapping
 )
-from app.models.state import (
-    AnimatorState, 
-    ContainerState, 
-    DoorState, 
-    SwitchState, 
-    MotorState, 
-    MultiplierState,
-    NoState, 
-    PositionalState, 
-    PropertyState,
-    SpriteState,
-    PlayerState
-)
-from app.models.properties import (
-    EffectProperties,
-    CursorProperties, 
-    ObjectProperties, 
-    TileProperties, 
-    CraftProperties, 
-    SheetProperties
-)
-from app.models.groups import (
-    EquipmentGroup,
-    ConfigurationGroup,
-    SpawnableGroup
-)
+from app.models.groups import SpawnableGroup
 from app.game.devices import (
     Keyboard,
     Controller
 )
 
-# Cython Libraries
-from libs.core.models import (
-    Position, 
-    Dimensions, 
-    Hitbox, 
-)
-
 class Factory:
-    CYTHON_HINTS = {
-        Hitbox: {'position': Position, 'dimensions': Dimensions},
-    }
-
-    STATE_MAP = {
-        StateRecipe.MULTIPLIER: MultiplierState,
-        StateRecipe.POSITIONAL: PositionalState,
-        StateRecipe.METRIC: MotorState,
-        StateRecipe.ANIMATOR: AnimatorState,
-        StateRecipe.CONTAINER: ContainerState,
-        StateRecipe.DOOR: DoorState,
-        StateRecipe.SWITCH: SwitchState,
-        StateRecipe.PROPERTY: PropertyState,
-        StateRecipe.SPRITE: SpriteState,
-        StateRecipe.PLAYER: PlayerState,
-        StateRecipe.NONE: NoState
-    }
-
     FRAME_MAP = {
         FrameRecipe.SPRITE: SpriteFrame,
         FrameRecipe.SINGLE: SingleFrame,
@@ -125,15 +64,6 @@ class Factory:
         AnimationRecipe.TEMPORARY: TemporaryAnimation,
         AnimationRecipe.STATE: StateAnimation,
         AnimationRecipe.NONE: NoAnimation,
-    }
-
-    PROPERTY_MAP = {
-        AssetCategories.TILES: TileProperties,
-        AssetCategories.EFFECTS: EffectProperties,
-        AssetCategories.OBJECTS: ObjectProperties,
-        AssetCategories.CURSORS: CursorProperties,
-        AssetCategories.CRAFTS: CraftProperties,
-        AssetCategories.SHEETS: SheetProperties 
     }
 
     DEVICE_MAP = {
@@ -155,98 +85,6 @@ class Factory:
         Mechanics.SPEECH: SpeechMechanics
     }
 
-    CONFIGURATION_MAP = {
-        Configurations.ACTIONS: ActionConfiguration,
-        Configurations.INTENTIONS: IntentionConfiguration,
-        Configurations.RECIPES: RecipeConfiguration,
-        Configurations.MAPPINGS: MappingConfiguration
-    }
-
-    GROUP_MAP = {
-        Groups.EQUIPMENT: EquipmentGroup,
-        Groups.CONFIGURATIONS: ConfigurationGroup,
-        Groups.SPAWNABLES: SpawnableGroup
-    }
-
-    @classmethod
-    def _hydrate(cls, target_cls, data):
-        """
-        Recursively instantiate dataclasses and Cython structs from dictionaries.
-        """
-        origin = get_origin(target_cls)
-
-        # Handle native collection types seamlessly
-        if origin is list and isinstance(data, list):
-            inner_type = get_args(target_cls)[0]
-            return [cls._hydrate(inner_type, item) for item in data]
-            
-        if origin is dict and isinstance(data, dict):
-            inner_type = get_args(target_cls)[1]
-            return {k: cls._hydrate(inner_type, v) for k, v in data.items()}
-
-        if target_cls is dict or target_cls is list:
-            return data
-
-        if not isinstance(data, dict):
-            return data
-
-        # Extract type hints, failing gracefully for Cython extension types
-        try:
-            hints = get_type_hints(target_cls)
-        except (TypeError, AttributeError):
-            hints = {}
-
-        if not hints:
-            hints = cls.CYTHON_HINTS.get(target_cls, {})
-
-        kwargs = {}
-        for key, value in data.items():
-            if key not in hints:
-                kwargs[key] = value
-                continue
-
-            field_type = hints[key]
-            field_origin = get_origin(field_type)
-
-            # Manually trigger collection initialization for explicit null/None mappings
-            if value is None:
-                if field_type is list or field_origin is list:
-                    kwargs[key] = []
-                elif field_type is dict or field_origin is dict:
-                    kwargs[key] = {}
-                else:
-                    kwargs[key] = None
-                continue
-
-            # Resolve Optional/Union types
-            if field_origin is Union or field_origin is getattr(types, 'UnionType', type(None)):
-                args = get_args(field_type)
-                field_type = next((t for t in args if t is not type(None)), field_type)
-
-            kwargs[key] = cls._hydrate(field_type, value)
-
-        return target_cls(**kwargs)
-    
-    @staticmethod
-    def state(recipe: StateRecipe, snapshot: dict):
-        target_cls = Factory.STATE_MAP.get(recipe)
-        return Factory._hydrate(target_cls, snapshot)
-
-    @staticmethod
-    def properties(category: str, snapshot: dict):
-        target_cls = Factory.PROPERTY_MAP.get(category)
-        return Factory._hydrate(target_cls, snapshot)
-
-    @staticmethod
-    def configuration(config: str, snapshot: dict):
-        target_cls = Factory.CONFIGURATION_MAP.get(config)
-        return Factory._hydrate(target_cls, snapshot)
-
-    @staticmethod
-    def group(grouping: dict, snapshot: dict):
-        target_cls = Factory.GROUP_MAP.get(grouping)
-        return Factory._hydrate(target_cls, snapshot)
-    
     @staticmethod
     def frame(recipe: FrameRecipe):
         return Factory.FRAME_MAP.get(recipe, SingleFrame)()
@@ -260,10 +98,9 @@ class Factory:
         return Taxonomy(id, name, category, instance)
 
     @staticmethod
-    def device(dev:str, mapping: dict):
+    def device(dev: str, mapping: dict):
         target_cls = Factory.DEVICE_MAP.get(dev, Keyboard)
-        mapping_obj = Factory._hydrate(Mapping, mapping)
-        return target_cls(mapping_obj)
+        return target_cls(mapping)
 
     @staticmethod 
     def mechanics(kind: str):
@@ -271,6 +108,4 @@ class Factory:
 
     @staticmethod
     def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration):
-        """
-        """
         return Cradle(spawnables, recipes)

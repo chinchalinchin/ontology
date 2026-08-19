@@ -5,8 +5,10 @@ Package for managing dependency injection.
 """
 # Standard Libraries
 import logging
+import dataclasses
 from typing import (
-    Dict, 
+    Dict,
+    List, 
     Tuple
 )
 
@@ -17,15 +19,21 @@ from app.config.enums import (
     AssetCategories, 
     AssetInstances,
     Devices,
-    Equipment,
     Groups,
-    Mechanics
+    Mechanics,
+    Equipment
 )
 from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
 from app.hooks.factory import Factory
-from app.models.groups import SpawnableGroup
+from app.models.groups import (
+    SpawnableGroup,
+    EquipmentGroup
+)
+from app.models.state import StateSchema
+from app.models.properties import PropertiesSchema
+from app.models.config import ConfigurationSchema
 
 # Cython Libraries
 from libs.core.models import Dimensions
@@ -43,9 +51,9 @@ class Orchestrator:
     The Registry, a Cython interface, uses dictionary representations of the data for speed as well.
     """
     # Data
-    properties: Dict = {}
-    state: Dict = {}
-    configurations: Dict = {}
+    properties: PropertiesSchema
+    state: StateSchema
+    configurations: ConfigurationSchema
     # Game
     registry: Registry
     board: Board
@@ -57,7 +65,6 @@ class Orchestrator:
         self.properties = Loader.load_properties()
         self.configurations = Loader.load_configurations()
         self.state = Loader.load_state(state)
-
 
     def instance_actions(self, category: str, instance: str, id: str) -> dict:
         action_set_key = self.properties[category][instance][id].get("actions")
@@ -80,9 +87,6 @@ class Orchestrator:
         """
         Returns Asset Properties based on their Taxonomy.
         """
-        if category == AssetCategories.TILES:
-            return self.properties[category][instance]
-
         if category == AssetCategories.SHEETS and instance == AssetInstances.PLAYERS:
             return self.properties[category][AssetInstances.SPRITES][id]
 
@@ -96,147 +100,155 @@ class Orchestrator:
         Transfer the Pydantic DTOs to Python POPOs for the game engine and load them into the Board.
         """
         logger.info("Migrating validated data to engine models...")
+
+        # 1. Migrate Assets without State (Equipment)
+        raw_equipment = {}
+        for equip_key in Equipment:
+            equip_dict = getattr(self.properties.sheets, equip_key, {})
+            resolved_equip = {}
+            for e_id, e_props in equip_dict.items():
+                if isinstance(e_props.actions, str):
+                    action_data = next((
+                        a.data 
+                        for a in self.configurations.actions 
+                        if a.id == e_props.actions
+                    ), {})
+                    resolved_equip[e_id] = dataclasses.replace(e_props, actions=action_data)
+                else:
+                    resolved_equip[e_id] = e_props
+            raw_equipment[equip_key] = resolved_equip
+        
+        equipment = EquipmentGroup(**raw_equipment)
+
+        # 2. Migrate Assets with State        
         assets = []
-
-        # 1. Migrate Configuration
-        configurations = Factory.group(Groups.CONFIGURATIONS, self.configurations)
-
-        # Pre-hydrate all Action strings in properties to unblock Factory and Registry processing.
-        if AssetCategories.SHEETS in self.properties:
-            for instance, instance_props in self.properties[AssetCategories.SHEETS].items():
-                if not instance_props: continue
-                for item_id, props in instance_props.items():
-                    if isinstance(props.get("actions"), str):
-                        props["actions"] = self.instance_actions(AssetCategories.SHEETS, instance, item_id)
-
-        # 2. Migrate Assets without State
-        raw_equipment = { }
-        for equip_instance_key in Equipment:
-            raw_equipment[equip_instance_key] = { }
-
-            equip_dict = self.properties[AssetCategories.SHEETS].get(equip_instance_key, {})
-            if not equip_dict:
-                continue
-
-            for equip_instance_id, equip_instance in equip_dict.items():
-                raw_equipment[equip_instance_key][equip_instance_id] = Factory.properties(
-                    AssetCategories.SHEETS,
-                    equip_instance
-                )
-
-        equipment = Factory.group(Groups.EQUIPMENT, raw_equipment)
-
-        # 3. Migrate Assets with State        
-        assets = []
-        for category_key, category_data in self.state.items():
-            for instance_key, instance_list in category_data.items():
-                for instance in instance_list:
-
-                    recipe = self.configurations["recipes"][category_key][instance_key]
-                    instance_props = self.instance_properties(category_key, instance_key, instance["id"])
-
-                    # Pop the taxonomy keys to strip them from the state snapshot
-                    asset_id = instance.pop("id")
-                    asset_name = instance.pop("name")
-
+        
+        for cat_field in dataclasses.fields(self.state):
+            category_key = cat_field.name
+            category_data = getattr(self.state, category_key)
+            if not category_data: continue
+            
+            for inst_field in dataclasses.fields(category_data):
+                instance_key = inst_field.name
+                instance_list = getattr(category_data, instance_key)
+                if not instance_list: continue
+                
+                for state_obj in instance_list:
+                    asset_id = state_obj.id
+                    asset_name = state_obj.name
+                    
+                    cat_recipes = getattr(self.configurations.recipes, category_key, None)
+                    recipe = getattr(cat_recipes, instance_key, None) if cat_recipes else None
+                    
+                    cat_props = getattr(self.properties, category_key, None)
+                    inst_props = getattr(cat_props, instance_key, {}) if cat_props else {}
+                    props = inst_props.get(asset_id)
+                    
+                    if category_key == AssetCategories.SHEETS and props \
+                        and isinstance(props.actions, str):
+                        action_data = next((
+                            a.data 
+                            for a in self.configurations.actions 
+                            if a.id == props.actions
+                        ), {})
+                        props = dataclasses.replace(props, actions=action_data)
+                        
                     assets.append(Asset(
                         taxonomy   = Factory.taxonomy(asset_id, asset_name, category_key, instance_key),
-                        properties = Factory.properties(category_key, instance_props),
-                        state      = Factory.state(recipe["state"], instance),
-                        frame      = Factory.frame(recipe["frame"]),
-                        animation  = Factory.animation(recipe["animation"])
+                        properties = props,
+                        state      = state_obj,
+                        frame      = Factory.frame(recipe.frame) if recipe and recipe.frame else Factory.frame(None),
+                        animation  = Factory.animation(recipe.animation) if recipe and recipe.animation else Factory.animation(None)
                     ))
                     
         logger.info(f"Successfully migrated {len(assets)} assets.")
 
-        return Board(assets, configurations, equipment)
+        self.board = Board(assets, self.configurations, equipment)
+        return self.board
 
 
-    def inject(self, device: Devices):
+    def inject(self, device: Devices) -> Board:
         """
         Inject the board with ancillary game components.
         """
         # 1. Instantiate Device and inject into Board
-        device_mapping = self.configurations.get("mappings", {}).get(device, {})
-        device_instance = Factory.device(device, device_mapping)
+        device_mapping = getattr(self.configurations.mappings, device.value, None)
+        if not device_mapping:
+            from app.models.config import Mapping
+            device_mapping = Mapping()
+            
+        device_instance = Factory.device(device.value, device_mapping)
         self.board.set_device(device_instance)
 
-        # 2. Instantiate Cradle and inject into Board
-        spawnable_props = {
-            k: v
-            for k,v in self.properties.items()
-            if k in SpawnableGroup
-        }
-        spawnable_groups = Factory.groups(Groups.Spawnable, spawnable_props)
-        cradle = Factory.cradle(spawnable_groups, self.configurations["recipes"])
+        # 2. Assemble SpawnableGroup directly from POPOs, bypassing missing Factory functions
+        spawnable_groups = SpawnableGroup(
+            projectiles=self.properties.cursors.projectiles,
+            expressions=self.properties.cursors.expressions,
+            temporary=self.properties.effects.temporary,
+            struts=self.properties.crafts.struts
+        )
+        cradle = Factory.cradle(spawnable_groups, self.configurations.recipes)
         self.board.set_cradle(cradle)
 
+        return self.board
         
-    def init(self, screensize: Dimensions, device: Devices, headless: bool=True) -> Tuple[Board, Registry, Dict[str, Screen]]:
+    def init(self, 
+        screensize: Dimensions, 
+        device: Devices, 
+        headless: bool=True
+    ) -> Tuple[Board, Registry, Dict[str, Screen], List[Mechanics]]:
         """
         # Ontology: Orchestrate
-
         Initialize and return game components.
         """
         logger.info("Initializing SDL...")
         render.init(screensize.w, screensize.l, headless)
 
         logger.info("Initializing Board...")
-        self.board = self.migrate()
+        self.migrate()
+        self.inject(device)
 
-        # TODO: replace with call to self.inject(device)
-        logger.info("Initializing Device...")
-        device_mapping = self.configurations.get("mappings", {}).get(device, {})
-        device_instance = Factory.device(device, device_mapping)
-        self.board.set_device(device_instance)
-
-        # TODO
-        # self.inject(device)
-
-        # Map the window to the OS to validate the OpenGL context
-        # strictly prior to allocating VRAM target textures.
+        # NOTE: Map the window to the OS to validate the OpenGL context
+        #   strictly prior to allocating VRAM target textures.
         if not headless:
             render.show()
 
         logger.info("Initializing Registry..")
-        self.registry = Registry(self.properties, self.configurations["recipes"])
+        # Registry is Cython and expects dictionaries. dataclasses.asdict safely extracts them.
+        self.registry = Registry(
+            dataclasses.asdict(self.properties), 
+            dataclasses.asdict(self.configurations.recipes)
+        )
 
         logger.info("Initializing Screens...")
         self.screens = {
             layer: Screen(
                 screensize, 
-                self.board.size(layer)[0],
+                self.board.size(layer)[0] if self.board.size(layer) else Dimensions(0, 0),
                 self.board.categories(AssetCategories.TILES, layer),
                 self.registry
             )
             for layer in self.board.layers()
         } 
-        
-        return self.board, self.registry, self.screens
 
+        logger.info("Initializing Mechanics...")
+        order = getattr(self.configurations.mechanics, 'order', None)
+        if not order:
+            order = [
+                Mechanics.PLAYER,
+                Mechanics.MOTION,
+                Mechanics.ANIMATION,
+                Mechanics.REMOVE
+            ]
+            
+        self.mechanics = [Factory.mechanics(m) for m in order]
+        
+        return self.board, self.registry, self.screens, self.mechanics
 
     def ignite(self, screensize: Dimensions, device: Devices) -> Engine:
         """
         Entry point to fire up the dependency-injected execution sequence.
         """
-        # Explicitly initialize as a windowed application for gameplay
         self.init(screensize, device, headless=False)
-
-        # TODO: iterate over Mechanics Configuration and instantiate in order
-        self.mechanics = [
-            Factory.mechanics(Mechanics.PLAYER),
-            Factory.mechanics(Mechanics.TRANSITION),
-            Factory.mechanics(Mechanics.MOTION),
-            Factory.mechanics(Mechanics.COLLISION),
-            Factory.mechanics(Mechanics.SWITCH),
-            Factory.mechanics(Mechanics.PROJECTILE),
-            Factory.mechanics(Mechanics.COMBAT),
-            Factory.mechanics(Mechanics.COMMERCE),
-            Factory.mechanics(Mechanics.SPEECH),
-            Factory.mechanics(Mechanics.ANIMATION),
-            Factory.mechanics(Mechanics.REMOVE)
-        ]
-
         self.engine = Engine(self.board, self.screens, self.mechanics)
-
         return self.engine
