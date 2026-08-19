@@ -1,41 +1,29 @@
 """
 # Ontology: app.hooks.orchestrator
-
-Package for managing dependency injection. 
 """
-# Standard Libraries
 import logging
 import dataclasses
-from typing import (
-    Dict,
-    List, 
-    Tuple
-)
+from typing import Dict, List, Tuple
 
-# Application Libraries
 from app.assets.base import Asset
 from app.config.loader import Loader
 from app.config.enums import (
     AssetCategories, 
     AssetInstances,
     Devices,
+    Equipment,
     Groups,
-    Mechanics,
-    Equipment
+    Mechanics
 )
 from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
 from app.hooks.factory import Factory
-from app.models.groups import (
-    SpawnableGroup,
-    EquipmentGroup
-)
+from app.models.groups import SpawnableGroup, ConfigurationGroup, EquipmentGroup
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
 
-# Cython Libraries
 from libs.core.models import Dimensions
 import libs.graphics.render as render
 from libs.graphics.registry import Registry
@@ -43,18 +31,10 @@ from libs.graphics.registry import Registry
 logger = logging.getLogger(__name__)
 
 class Orchestrator:
-    """
-    ## Orchestrator
-
-    The Orchestrator and the Loader are the only pure Python classes in the application that interact with the game data as dictionaries. The Loader accesses the data in the host environment and validates it with Pydantic models. The Orchestrator pipes the Pydantic-validated dictionaries retrieved from the Loader data dump into the in-game Python objects.
-
-    The Registry, a Cython interface, uses dictionary representations of the data for speed as well.
-    """
-    # Data
     properties: PropertiesSchema
     state: StateSchema
     configurations: ConfigurationSchema
-    # Game
+    
     registry: Registry
     board: Board
     screens: Dict[str, Screen]
@@ -66,61 +46,43 @@ class Orchestrator:
         self.configurations = Loader.load_configurations()
         self.state = Loader.load_state(state)
 
-    def instance_actions(self, category: str, instance: str, id: str) -> dict:
-        action_set_key = self.properties[category][instance][id].get("actions")
-        
-        if isinstance(action_set_key, dict):
-            return action_set_key
-            
-        try:
-            return next(
-                action["data"] for action 
-                in self.configurations.get("actions", [])
-                if action["id"] == action_set_key
-            )
-        except StopIteration:
-            logger.warning(f"No actions exist for {action_set_key}")
-            return {}
-
-
-    def instance_properties(self, category: str, instance: str, id: str) -> dict:
-        """
-        Returns Asset Properties based on their Taxonomy.
-        """
-        if category == AssetCategories.SHEETS and instance == AssetInstances.PLAYERS:
-            return self.properties[category][AssetInstances.SPRITES][id]
-
-        return self.properties[category][instance][id] 
-
-
     def migrate(self) -> Board:
-        """
-        # migrate
-
-        Transfer the Pydantic DTOs to Python POPOs for the game engine and load them into the Board.
-        """
         logger.info("Migrating validated data to engine models...")
-
-        # 1. Migrate Assets without State (Equipment)
-        raw_equipment = {}
-        for equip_key in Equipment:
-            equip_dict = getattr(self.properties.sheets, equip_key, {})
-            resolved_equip = {}
-            for e_id, e_props in equip_dict.items():
-                if isinstance(e_props.actions, str):
-                    action_data = next((
-                        a.data 
-                        for a in self.configurations.actions 
-                        if a.id == e_props.actions
-                    ), {})
-                    resolved_equip[e_id] = dataclasses.replace(e_props, actions=action_data)
-                else:
-                    resolved_equip[e_id] = e_props
-            raw_equipment[equip_key] = resolved_equip
         
-        equipment = EquipmentGroup(**raw_equipment)
+        # 1. Migrate Configuration
+        configurations = ConfigurationGroup(
+            recipes=self.configurations.recipes,
+            mappings=self.configurations.mappings,
+            intentions=self.configurations.intentions,
+            actions=self.configurations.actions
+        )
 
-        # 2. Migrate Assets with State        
+        # 2. Globally pre-hydrate Actions in Properties.
+        resolved_sheets = {}
+        for sheet_field in dataclasses.fields(self.properties.sheets):
+            sheet_type = sheet_field.name
+            sheet_dict = getattr(self.properties.sheets, sheet_type, {})
+            resolved_dict = {}
+            for e_id, e_props in sheet_dict.items():
+                if isinstance(e_props.actions, str):
+                    action_data = next((a.data for a in configurations.actions if a.id == e_props.actions), {})
+                    resolved_dict[e_id] = dataclasses.replace(e_props, actions=action_data)
+                else:
+                    resolved_dict[e_id] = e_props
+            resolved_sheets[sheet_type] = resolved_dict
+            
+        self.properties.sheets = dataclasses.replace(self.properties.sheets, **resolved_sheets)
+
+        # 3. Migrate Assets without State (Equipment)
+        equipment = EquipmentGroup(
+            armor=self.properties.sheets.armor,
+            weapons=self.properties.sheets.weapons,
+            tools=self.properties.sheets.tools,
+            utilities=self.properties.sheets.utilities,
+            shields=self.properties.sheets.shields
+        )
+
+        # 4. Migrate Assets with State        
         assets = []
         
         for cat_field in dataclasses.fields(self.state):
@@ -140,19 +102,17 @@ class Orchestrator:
                     cat_recipes = getattr(self.configurations.recipes, category_key, None)
                     recipe = getattr(cat_recipes, instance_key, None) if cat_recipes else None
                     
-                    cat_props = getattr(self.properties, category_key, None)
-                    inst_props = getattr(cat_props, instance_key, {}) if cat_props else {}
-                    props = inst_props.get(asset_id)
-                    
-                    if category_key == AssetCategories.SHEETS and props \
-                        and isinstance(props.actions, str):
-                        action_data = next((
-                            a.data 
-                            for a in self.configurations.actions 
-                            if a.id == props.actions
-                        ), {})
-                        props = dataclasses.replace(props, actions=action_data)
+                    # --- RESTORED PROPERTY MAPPING ---
+                    # Players are state instances, but their physical properties map to the Sprites schema
+                    prop_instance_key = instance_key
+                    if category_key == AssetCategories.SHEETS and instance_key == AssetInstances.PLAYERS:
+                        prop_instance_key = AssetInstances.SPRITES
                         
+                    cat_props = getattr(self.properties, category_key, None)
+                    inst_props = getattr(cat_props, prop_instance_key, {}) if cat_props else {}
+                    props = inst_props.get(asset_id)
+                    # ---------------------------------
+                    
                     assets.append(Asset(
                         taxonomy   = Factory.taxonomy(asset_id, asset_name, category_key, instance_key),
                         properties = props,
@@ -163,24 +123,21 @@ class Orchestrator:
                     
         logger.info(f"Successfully migrated {len(assets)} assets.")
 
-        self.board = Board(assets, self.configurations, equipment)
+        self.board = Board(assets, configurations, equipment)
         return self.board
-
 
     def inject(self, device: Devices) -> Board:
         """
         Inject the board with ancillary game components.
         """
-        # 1. Instantiate Device and inject into Board
-        device_mapping = getattr(self.configurations.mappings, device.value, None)
+        device_mapping = getattr(self.configurations.mappings, device, None)
         if not device_mapping:
             from app.models.config import Mapping
             device_mapping = Mapping()
             
-        device_instance = Factory.device(device.value, device_mapping)
+        device_instance = Factory.device(device, device_mapping)
         self.board.set_device(device_instance)
 
-        # 2. Assemble SpawnableGroup directly from POPOs, bypassing missing Factory functions
         spawnable_groups = SpawnableGroup(
             projectiles=self.properties.cursors.projectiles,
             expressions=self.properties.cursors.expressions,
@@ -191,12 +148,12 @@ class Orchestrator:
         self.board.set_cradle(cradle)
 
         return self.board
-        
+
     def init(self, 
         screensize: Dimensions, 
         device: Devices, 
         headless: bool=True
-    ) -> Tuple[Board, Registry, Dict[str, Screen], List[Mechanics]]:
+    ) -> Tuple[Board, Registry, Dict[str, Screen], List]:
         """
         # Ontology: Orchestrate
         Initialize and return game components.
@@ -208,13 +165,10 @@ class Orchestrator:
         self.migrate()
         self.inject(device)
 
-        # NOTE: Map the window to the OS to validate the OpenGL context
-        #   strictly prior to allocating VRAM target textures.
         if not headless:
             render.show()
 
         logger.info("Initializing Registry..")
-        # Registry is Cython and expects dictionaries. dataclasses.asdict safely extracts them.
         self.registry = Registry(
             dataclasses.asdict(self.properties), 
             dataclasses.asdict(self.configurations.recipes)

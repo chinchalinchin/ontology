@@ -3,28 +3,24 @@
 
 Pydantic adapters for instantiating Cython structs across the GIL during YAML parsing.
 """
-# Standard Libraries
-from typing import Annotated, Any
+from typing import Annotated, Any, TYPE_CHECKING
+from pydantic import PlainValidator
 
-# External Libraries
-from pydantic import BeforeValidator
-
-# Application Libraries
 from libs.core.models import Position, Dimensions, Hitbox, Multiple, Velocity
 
-def parse_pos(v: Any) -> Position:
+def parse_pos(v: Any) -> Any:
     return Position(**v) if isinstance(v, dict) else v
 
-def parse_dim(v: Any) -> Dimensions:
+def parse_dim(v: Any) -> Any:
     return Dimensions(**v) if isinstance(v, dict) else v
 
-def parse_mul(v: Any) -> Multiple:
+def parse_mul(v: Any) -> Any:
     return Multiple(**v) if isinstance(v, dict) else v
 
-def parse_vel(v: Any) -> Velocity:
+def parse_vel(v: Any) -> Any:
     return Velocity(**v) if isinstance(v, dict) else v
 
-def parse_hb(v: Any) -> Hitbox:
+def parse_hb(v: Any) -> Any:
     if isinstance(v, dict):
         return Hitbox(
             position=parse_pos(v.get('position', {})), 
@@ -32,8 +28,18 @@ def parse_hb(v: Any) -> Hitbox:
         )
     return v
 
-PydanticPosition = Annotated[Position, BeforeValidator(parse_pos)]
-PydanticDimensions = Annotated[Dimensions, BeforeValidator(parse_dim)]
-PydanticMultiple = Annotated[Multiple, BeforeValidator(parse_mul)]
-PydanticVelocity = Annotated[Velocity, BeforeValidator(parse_vel)]
-PydanticHitbox = Annotated[Hitbox, BeforeValidator(parse_hb)]
+# 1. Provide strict C-types to static analyzers and IDEs
+if TYPE_CHECKING:
+    PydanticPosition = Position
+    PydanticDimensions = Dimensions
+    PydanticMultiple = Multiple
+    PydanticVelocity = Velocity
+    PydanticHitbox = Hitbox
+
+# 2. Provide `Any` to Pydantic at runtime to bypass schema generation crashes
+else:
+    PydanticPosition = Annotated[Any, PlainValidator(parse_pos)]
+    PydanticDimensions = Annotated[Any, PlainValidator(parse_dim)]
+    PydanticMultiple = Annotated[Any, PlainValidator(parse_mul)]
+    PydanticVelocity = Annotated[Any, PlainValidator(parse_vel)]
+    PydanticHitbox = Annotated[Any, PlainValidator(parse_hb)]

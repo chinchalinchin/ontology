@@ -4,7 +4,7 @@
 Models for typing the configuration attributes of Mechanics and other game components. See documentation for a more in-depth explanation of each field and its purpose. 
 """
 # Standard Libraries
-from typing import Dict, List, Callable
+from typing import Dict, List
 from dataclasses import dataclass, field
 
 # Application Libraries
@@ -111,7 +111,7 @@ class IntentionConfiguration(Configuration):
     """
     """
     next: str
-    conditions: List[Callable] = field(default_factory=list)
+    conditions: List[str] = field(default_factory=list)
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------- INTENTION CONFIGURATION

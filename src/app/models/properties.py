@@ -1,13 +1,10 @@
 """
 # Ontology: app.models.properties
 """
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Optional
 from dataclasses import dataclass, field
 
-from app.models.adapters import (
-    PydanticDimensions as Dimensions, 
-    PydanticHitbox as Hitbox
-)
+from app.models.adapters import PydanticDimensions as Dimensions, PydanticHitbox as Hitbox
 
 @dataclass(slots=True)
 class Direction:
@@ -41,7 +38,7 @@ class ObjectProperties(AssetProperties):
     dimensions: Dimensions
     mass: int = 0
     count: int = 1
-    hitboxes: List[Hitbox] = field(default_factory=list)
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
 
 @dataclass(slots=True)
 class TileProperties(AssetProperties):
@@ -53,14 +50,14 @@ class CraftProperties(AssetProperties):
     dimensions: Dimensions
     cost: List[Cost]
     mass: int = 0
-    hitboxes: List[Hitbox] = field(default_factory=list)
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
 
 @dataclass(slots=True)
 class SheetProperties(AssetProperties):
     dimensions: Dimensions
     stack: List[str] = field(default_factory=list)
     mass: int = 0
-    hitboxes: List[Hitbox] = field(default_factory=list)
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
     actions: Union[str, Dict[str, Action]] = field(default_factory=dict)
 
 # ---------------------------------------------------------------------------------------

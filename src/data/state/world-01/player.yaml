@@ -16,7 +16,8 @@ sheets:
       character:
         strength: 5
         defense: 5
-        speed: 5
+        speed: 100
+        impulse: 25
       inventory: 
         loot: null
         equipment:

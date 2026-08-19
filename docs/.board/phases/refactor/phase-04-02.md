@@ -12,10 +12,10 @@
 
 *Objective*: Remove redundant DTOs and parse YAML directly into POPOs.
 
-- [ ] Subtask: Delete `app.config.validators`.
-- [ ] Subtask: Implement `__get_pydantic_core_schema__` or `BeforeValidator` annotations for Cython models (`Position`, `Dimensions`, `Hitbox`, `Velocity`).
-- [ ] Subtask: Update `Loader` to use `pydantic.TypeAdapter` on `app.models.*` classes.
-- [ ] Subtask: Remove `Factory._hydrate` and simplify `Orchestrator.migrate()`.
+- [x] Subtask: Delete `app.config.validators`.
+- [x] Subtask: Implement `__get_pydantic_core_schema__` or `BeforeValidator` annotations for Cython models (`Position`, `Dimensions`, `Hitbox`, `Velocity`).
+- [x] Subtask: Update `Loader` to use `pydantic.TypeAdapter` on `app.models.*` classes.
+- [x] Subtask: Remove `Factory._hydrate` and simplify `Orchestrator.migrate()`.
 
 **2. Task: Spatial Mechanics Refactor**
 
@@ -29,7 +29,7 @@
 *Objective*: Resolve fatal typos and logic drift.
 
 - [ ] Subtask: Fix `self.mechaniccs` typo in `Orchestrator.init()`.
-- [ ] Subtask: Refactor `Action` mapping in `Orchestrator.migrate()` to prevent mutating `self.properties`.
+- [x] Subtask: Refactor `Action` mapping in `Orchestrator.migrate()` to prevent mutating `self.properties`.
 - [ ] Subtask: Add an `action_executed` boolean flag to `SpriteState` to prevent `CombatMechanics` from spawning multiple projectiles on `frame == 0`.
 
 **4. Task: Event Bus Bootstrapping**

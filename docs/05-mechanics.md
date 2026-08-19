@@ -37,6 +37,20 @@ The general flow of MotionMechanics is given by,
 * **Frictive Motion** Query `Board.tile()` at asset's center. Calculate $\Delta v = \text{friction} \cdot \Delta t$. Apply $\Delta v$ in the direction opposite to the current `velocity`. If $\Delta v > \vert{}\text{velocity}\vert{}$, set `velocity = (0,0)`.
 * **Inert Motion** Exclude Inert from the above steps. For all assets, apply $v \cdot \Delta t$ to the sub-pixel accumulators `rx/ry`. When `rx/ry` exceed $1.0$ or $-1.0$, cast to `int`, shift the physical `Position`, and decrement the accumulator.
 
+The mathematical bounds for Friction are $[0, \infty)$.
+
+* **Lower Bound ($0$):** A value of exactly $0$ yields $\Delta v = 0$, meaning the asset will glide indefinitely without losing momentum until it strikes a static body. A value $< 0$ violates thermodynamic priors; it would yield a negative $\Delta v$, causing the asset to accelerate infinitely opposite to its current trajectory.
+* **Upper Bound ($\infty$):** There is no programmatic upper bound. Any value satisfying the condition $\text{friction} \cdot \Delta t \ge \vert v \vert$ instantly halts the asset in a single frame.
+
+The `friction` property defines the rate of linear velocity decay, measured in pixels per second squared ($px/s^2$).
+
+The engine updates the velocity magnitude $v$ via Symplectic Euler Integration:
+
+$$v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)$$
+
+* **Low Friction (e.g., $0.01$):** The deceleration scalar is minute. The asset bleeds momentum extremely slowly, simulating a frictionless surface like ice.
+* **High Friction (e.g., $100.0$):** The asset sheds velocity rapidly and comes to rest in a short distance, simulating dense surfaces like mud or deep grass.
+
 ### Spatial
 
 These Mechanics handle spatial interactions and collisions between Assets.

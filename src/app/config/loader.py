@@ -1,41 +1,21 @@
 """
 # Ontology: app.config.loader
-
-Package for loading in configuration files.
 """
-# Standard Libraries
 from typing import Any
 import logging
-
-# External Libraries
 import yaml
 from pydantic import TypeAdapter
 
-# Application Libraries
 import app.config.settings as settings
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
 
-
 logger = logging.getLogger(__name__)
 
 class Loader:
-    """
-    ## Loader
-
-    """
-
     @staticmethod
-    def merge(
-        target: dict[str, Any], 
-        source: dict[str, Any]
-    ) -> dict[str, Any]:
-        """
-        ### merge
-
-        Recursively merge source dictionary into target dictionary.
-        """
+    def merge(target: dict[str, Any], source: dict[str, Any]) -> dict[str, Any]:
         for key, value in source.items():
             if key in target:
                 if isinstance(target[key], dict) and isinstance(value, dict):
@@ -48,13 +28,8 @@ class Loader:
                 target[key] = value
         return target
 
-
-    def load_state(state: str) -> dict:
-        """
-        ### load_state
-
-        Load validated state data from `/src/data/state/<state>/*.yaml`
-        """
+    @staticmethod
+    def load_state(state: str) -> StateSchema:
         target_dir = (settings.STATE_DIR / state).expanduser()
         merged_data: dict[str, Any] = {}
         
@@ -68,13 +43,8 @@ class Loader:
         logger.debug("Validating loaded state natively via Pydantic TypeAdapter.")
         return TypeAdapter(StateSchema).validate_python(merged_data)
 
-
-    def load_properties() -> dict:
-        """
-        ### load_properties
-
-        Load validated property schemas from `/src/assets/**/main.yaml`
-        """
+    @staticmethod
+    def load_properties() -> PropertiesSchema:
         merged_data: dict[str, Any] = {}
         logger.info("Loading YAML property schemas...")
         
@@ -86,13 +56,8 @@ class Loader:
                     
         return TypeAdapter(PropertiesSchema).validate_python(merged_data)
 
-
-    def load_configurations() -> dict:
-        """
-        ### load_configurations
-
-        Load validated configurations from `/src/data/config/**/main.yaml`.
-        """
+    @staticmethod
+    def load_configurations() -> ConfigurationSchema:
         merged_data: dict[str, Any] = {}
         logger.info("Loading YAML configurations...")
         

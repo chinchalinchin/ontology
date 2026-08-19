@@ -156,6 +156,7 @@ sheets:
       actions: simple-walk
   sprites:
     player:
+      mass: 7
       dimensions:
         w: 64
         l: 64

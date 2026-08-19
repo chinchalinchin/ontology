@@ -1,23 +1,59 @@
 # -------------------------------------------------------
   tiles:
     back:
-      dimensions:
-        w: 32
-        l: 32
-      ids:
-        - clay
-        - coal
-        - dirt
-        - grass
-        - lava
-        - mud
-        - sand
-        - soil
-        - water
-        - wheat
+      clay:
+        dimensions:
+          w: 32
+          l: 32
+        friction: 0
+      coal:
+        dimensions:
+          w: 32
+          l: 32
+        friction: 0
+      dirt:
+        dimensions:
+          w: 32
+          l: 32
+        friction: 0
+      grass:
+        dimensions:
+          w: 32
+          l: 32
+        friction: 10
+      lava: 
+        dimensions:
+          w: 32
+          l: 32
+        friction: 0
+      mud:
+        dimensions:
+          w: 32
+          l: 32
+        friction: 0
+      sand:
+        dimensions:
+          w: 32
+          l: 32
+        friction: 0
+      soil:
+        dimensions:
+          w: 32
+          l: 32
+        friction: 0
+      water:
+        dimensions:
+          w: 32
+          l: 32
+        friction: 0
+      wheat:
+        dimensions:
+          w: 32
+          l: 32
+        friction: 0
     fore:
-      dimensions:
-        w: 32
-        l: 32
-      ids:
-        - canopy
+      canopy:
+        dimensions:
+          w: 32
+          l: 32
+        friction: 0
