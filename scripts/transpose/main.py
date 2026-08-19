@@ -2,6 +2,10 @@ import argparse
 import os
 from PIL import Image
 
+def resolve_path(path: str) -> str:
+    """Normalize relative paths (including './' notation) against the CWD, while preserving absolute paths."""
+    return os.path.abspath(os.path.expanduser(path))
+
 def main():
     # Set up command line argument parsing
     parser = argparse.ArgumentParser(
@@ -22,20 +26,24 @@ def main():
     parser.add_argument(
         '-o', '--out', 
         type=str, 
-        default=os.path.join(os.getcwd(), "output.png"), 
+        default="output.png", 
         help="Output filepath (defaults to output.png in the present working directory)"
     )
     
     args = parser.parse_args()
     
+    # Resolve input and output filepaths
+    input_path = resolve_path(args.file)
+    output_path = resolve_path(args.out)
+    
     # Check if the input file exists
-    if not os.path.isfile(args.file):
-        print(f"Error: The file '{args.file}' does not exist.")
+    if not os.path.isfile(input_path):
+        print(f"Error: The file '{input_path}' does not exist.")
         return
 
     try:
         # Open the vertical image
-        img = Image.open(args.file)
+        img = Image.open(input_path)
     except Exception as e:
         print(f"Error opening image: {e}")
         return
@@ -52,7 +60,7 @@ def main():
     # Create a new blank image with the transposed dimensions (Width * Number of Frames, Single Frame Height)
     horizontal_image = Image.new("RGBA", (w * args.vert, frame_h))
 
-    print(f"Processing '{args.file}' ({w}x{h})...")
+    print(f"Processing '{input_path}' ({w}x{h})...")
     print(f"Extracting {args.vert} frames (size: {w}x{frame_h} each).")
 
     # Loop through each vertical slice, crop it, and paste it horizontally
@@ -66,8 +74,8 @@ def main():
         horizontal_image.paste(frame, paste_coords)
 
     # Save the resulting image
-    horizontal_image.save(args.out)
-    print(f"Successfully saved horizontal image to: {args.out}")
+    horizontal_image.save(output_path)
+    print(f"Successfully saved horizontal image to: {output_path}")
 
     # Close open file handles
     img.close()
