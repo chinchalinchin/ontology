@@ -11,6 +11,10 @@
         <link rel="canonical" href="https://chinchalinchin.github.io/ontology/03-compositions/">
       
       
+        <link rel="prev" href="../02-sprites/">
+      
+      
+        <link rel="next" href="../04-intentions/">
       
       
         
@@ -21,7 +25,7 @@
     
     
       
-        <title>Ontology: Compositions - Ontology</title>
+        <title>Compositions - Ontology</title>
       
     
     
@@ -108,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Ontology: Compositions
+              Compositions
             
           </span>
         </div>
@@ -293,17 +297,44 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../03-player.md" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
   <span class="md-ellipsis">
     
   
-    Player
+    Compositions
   
 
     
@@ -312,6 +343,76 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#root-struts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root Struts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#state-hydration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        State Hydration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pseudostates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PseudoStates
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -674,6 +775,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#pseudostates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PseudoStates
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -698,9 +810,10 @@
 <p>A Composition is collection of multiple Assets organized into a common configuration to allow their "<em>virtualization</em>" and reuse. A Composition Configuration defines a Composition <code>id</code> that can be referenced like any other Asset in the <a href="../00-overview/#state">state file</a>. </p>
 <h2 id="overview">Overview</h2>
 <p>From the perspective of the state directory, Compositions are another type of Asset that can be deployed onto a Board. Similar to the <a href="../02-sprites/#player">Player</a>, they are a "<em>virtual</em>" Asset composed of other Assets. Unlike the Player, which is a special type of Sprite, Compositions are collections of multiple Assets.</p>
+<p>A Composition is a way to reuse common Asset configurations in the state without have to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the Board's perspective. They only serve to simplify the amount of state specification that is required to fully declare a complex, high-level game Board.</p>
 <p>Compositions are organized around <a href="../01-assets/#struts">Struts</a>.</p>
 <h3 id="root-struts">Root Struts</h3>
-<p>Every Composition has atleast one root <a href="../01-assets/#struts">Strut</a>. A Composition also contains other Assets in predefined configurations, known as the Composition components. For example, a <code>brick</code> Composition might contain a <code>frame-brick</code> Strut as its root Strut and then a <code>mansion</code> Door as a component Asset. The Composition specifies the relative position of the <code>mansion</code> Door with respect to the origin of the <code>frame-brick</code> Strut. In other words, all component Assets in a Composition have their positions unpacked relative to the root Strut's deployed position. </p>
+<p>Every Composition has atleast one root <a href="../01-assets/#struts">Strut</a>. A Composition also contains other Assets in predefined configurations, known as the Composition components. For example, a <code>brick-house</code> Composition might contain a <code>frame-brick</code> Strut as its root Strut and then a <code>mansion</code> Door as a component Asset. The Composition specifies the relative position of the <code>mansion</code> Door with respect to the origin of the <code>frame-brick</code> Strut. In other words, all component Assets in a Composition have their positions unpacked relative to the root Strut's deployed position. </p>
 <h3 id="state-hydration">State Hydration</h3>
 <p>The state files specify Compositions to deploy. The game converts these Compositions into ingame Assets that belong to the <a href="../01-assets/#asset-hierarchy">Asset Hierarchy</a>. When Compositions are unpacked by the <a href="../00-overview/#orchestrator">Orchestrator</a> during the <a href="../09-architecture/#initialization">bootstrapping</a>, each Asset in a Composition is appended to the <a href="../00-overview/#board">Board</a> state dynamically. In other words, the Assets in Compositions, once unpacked, are treated separately by the Engine, as if they had been specified in the state directory individually.</p>
 <p>Components of Compositions have a PseudoState. During the <a href="../09-architecture/#initialization">application bootstrap</a>, each component's PseudoState is hydrated into an actual Asset State and injected into the Board.</p>
@@ -763,6 +876,8 @@
 <p>Likewise, in this example, the state <code>layer</code> is passed down as a reference to component Asset PseudoStates that use <code>bind(root.layer)</code></p>
 <p>All component Assets can <code>bind(state)</code> to a root Strut state attribute injected into the Composition from the state directory files. When component Asset reference <code>bind(root.layer)</code> this is a reference to the root Strut's layer. Only state attribute defined on the root Strut can be bound.</p>
 <p>In addition, unique names are generated for each Composition Asset according to the schema: <code>&lt;instance.name&gt;-&lt;strut.name&gt;-&lt;component.name&gt;-&lt;increment&gt;</code>, where <code>&lt;increment&gt;</code> is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.</p>
+<h2 id="pseudostates">PseudoStates</h2>
+<p>TODO</p>
 
 
 
