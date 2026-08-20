@@ -1,5 +1,8 @@
 #### Implement: Phase 07 - Intentions
 
+!!! note
+    Out of date and possibly superseded by subsequent design. Needs updated to take into account current state of application.
+
 ##### Intentional Scripting Language (ISL)
 
 To maintain performance, the custom ISL defined in `/src/data/intentions/main.yaml` must be compiled into executable Python `lambda` functions during the orchestration phase of the application bootstrap.

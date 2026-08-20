@@ -17,7 +17,7 @@ It may indirectly alter the Sprite state changes or other properties of the Spri
 * Location: `/src/data/config/intentions/main.yaml`
 
 !!! important
-    The Player state does not observe the Intention Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See [Player documentation](./03-player.md) for more information on the Player.
+    The Player state does not observe the Intention Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See [Player documentation](./02-sprites.md#player) for more information on the Player.
 
 The Intention Transition Matrix determines which Intention states are currently reachable for a Sprite from its current Intention. A brief explanation of each Intention state value is given below,
 

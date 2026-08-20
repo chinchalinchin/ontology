@@ -64,7 +64,7 @@ assets % tree -L 2
 │   ├── panes
 ```
 
-The `main.yaml` files in each subdirectory conform to the [Asset property schema](./a0-appendix.md#schemas) of their respective Asset Category. 
+The `main.yaml` files in each subdirectory conform to the [Asset property schema](./appendices/01-schemas.md#property-indices) of their respective Asset Category. 
 
 ### Asset Concepts
 
@@ -100,7 +100,7 @@ The frame rows of Sheet Assets are categorized by the axes of *Direction* and *A
 *State* is dynamic and can be changed by game Mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current position of an ingame Asset, the current animation, etc.. All Assets have a *position* mutable state; most (except for Widgets) have a *LAYER*. Position is given as a Cartesian coordinate (tuple), whereas Layer is a categorical variable.
 
 !!! note "Layers"
-    The concept of a Layer is defined more explicitly in [Overview documentation](./00-overview.md#world). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.
+    The concept of a Layer is defined more explicitly in [Overview documentation](./00-overview.md#layers). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.
 
 State files are maintained in `/src/data/state/<board-key>/**` directory, where `<board-key>` is a unique identifer for a [Board](./00-overview.md#board).
 
@@ -116,7 +116,7 @@ See [MotionMechanics](./05-mechanics.md#spatial) for more information.
 
 ### Asset Hierarchy
 
-While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state [schemas](./a0-appendix.md#schemas) encode Asset Categories and Instances into the top-level keys.
+While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state [schemas](./appendices/01-schemas.md) encode Asset Categories and Instances into the top-level keys.
 
 ```mermaid
 --8<-- "static/mmd/asset-hierarchy.mmd"
@@ -167,11 +167,11 @@ Each Category has Instances. Asset *Instances* form the bottom layer of the hier
 | Widget | Pages | TODO |
 
 !!! note
-    [Equipment](./02-sprites.md#equipment) and [Player](./03-player.md) Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is stateless, whereas the Player is a special type of [Sprite](./02-sprites.md).
+    [Equipment](./02-sprites.md#equipment) and [Player](./02-sprites.md#player) Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is stateless, whereas the Player is a special type of [Sprite](./02-sprites.md).
 
 ### Asset Architecture
 
-Every physical entity in the game is an instance of the unified `Asset` class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. *Behaviors* are decoupled from Assets and managed entirely by *Mechanics* classes that iterate over the Board Assets. See [Mechanics documentation](./06-architecture.md#mechanics) for more information.
+Every physical entity in the game is an instance of the unified `Asset` class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. *Behaviors* are decoupled from Assets and managed entirely by *Mechanics* classes that iterate over the Board Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
 
 The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the [Recipe](#recipes) configuration file. The components of each Assets are enumerated below,
 
@@ -200,7 +200,7 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These a
 
 `name` is the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique `name`.
 
-`(category, instance)` collectively determine the components `(frame, animation, properties, state)` injected into an Asset class during the [Initialization](./07-architecture.md#initialization). More specifically, category determines properties (`category -> properties`), and instance determines everything else (`instance -> (frame, animation, state)`).
+`(category, instance)` collectively determine the components `(frame, animation, properties, state)` injected into an Asset class during the [Initialization](./09-architecture.md#initialization). More specifically, category determines properties (`category -> properties`), and instance determines everything else (`instance -> (frame, animation, state)`).
 
 ## Tiles
 
@@ -282,7 +282,7 @@ Binary Objects have a `count` of 2, where as all other Objects are initialized w
 
 A Chest is *reusable* through the `interact` [Intention](./04-intentions.md), meaning [Inventory Loot](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory Loot keys.
 
-When *interacting* with a Chest, the [Player](./03-player.md) is shown the [Chest menu](./06-widgets.md#menus), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](./06-architecture.md#mechanics)s
+When *interacting* with a Chest, the [Player](./03-player.md) is shown the [Chest menu](./06-widgets.md#menus), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
 
 **Animation: BinaryAnimation**
 
@@ -477,7 +477,7 @@ Persistent Effects are long-term, continuous effects, such as water ripples or w
 
 * Property File: `/src/assets/crafts/main.yaml`
 
-Crafts are Assets that can be instantiated through game [Mechanics](./06-architecture.md#mechanics), such as `CommerceMechanics` or `ChemistryMechanics`. All Crafts have a `cost` associated with them. 
+Crafts are Assets that can be instantiated through game [Mechanics](./05-mechanics.md), such as `CommerceMechanics` or `ChemistryMechanics`. All Crafts have a `cost` associated with them. 
 
 **Cost**
 
@@ -562,7 +562,7 @@ Where `n(Action)` is the number of frames per Action. The frames per Action for 
 
 Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without accompanying Direction(s). The "space" of the (Action, Direction) space is configured by Sheet Properties. 
 
-This snippet from the [Schemas](./a0-appendix.md#schemas) shows the general structure of an Action,
+This snippet from the [Schemas](./appendices/01-schemas.md#action-configuration) shows the general structure of an Action,
 
 ```yaml
 <action-key>:
@@ -584,7 +584,7 @@ Many Sheet Assets reuse the same Action specification. Common Asset Action speci
 
 A Stack is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
 
-For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#registry) using the `stack` property during the [application bootstrap](./06-architecture.md). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
+For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#registry) using the `stack` property during the [application bootstrap](./09-architecture.md#initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
 
 !!! note
     It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.

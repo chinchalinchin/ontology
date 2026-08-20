@@ -1,15 +1,19 @@
-# Ontology: Appendix
+# Ontology: Appendix I - Schemas
 
 ## Hitboxes
 
 ### Category: Sheet, Instance: Sprite
+
+- [Download xcf](../static/xcf/sheet-sprite-walk-down-0.xcf)
 
 ![LPC Sprite Hitboxes](static/png/hitboxes/sheet-sprite-walk-down-0.png)
 /// caption
 LPC Sprite Hitbox in (Walk, Down, 0) State
 ///
 
-### Category: Sheet, Instance: Sprite
+### Category: Craft, Instance: Strut
+
+- [Download xcf](../static/png/hitboxes/craft-strut-brick-house.png)
 
 ![House Strut Hitboxes](static/png/hitboxes/craft-strut-brick-house.png)
 /// caption

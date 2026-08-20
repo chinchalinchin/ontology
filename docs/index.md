@@ -10,14 +10,15 @@
 - [Overview](./00-overview.md)
 - [Assets](./01-assets.md)
 - [Sprites](./02-sprites.md)
-- [Player](./03-player.md)
+- [Compositions](./03-compositions.md)
 - [Intentions](./04-intentions.md)
 - [Mechanics](./05-mechanics.md)
 - [Widgets](./06-widgets.md)
 - [Sounds](./07-sounds.md)
 - [Plots](./08-plots.md)
 - [Architecture](./09-architecture.md)
-- [Appendix I](./a0-appendix.md)
+- [Appendices]
+    - [Appendix I](./appendices/00-schemas.md)
 
 ## References
 

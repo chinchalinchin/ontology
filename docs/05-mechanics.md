@@ -1,6 +1,6 @@
 # Ontology: Mechanics
 
-A Mechanic is an implementation of an abstract interface that defines what information the engine will inject into the Mechanic's signature; All Mechanics must implement an `update(board: Board, delta: float)` method. The arguments of this interface are the [Board](./00-overview.md#board) and a game loop time delta.
+A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an `update(board: Board, delta: float)` method. The arguments of this interface are the [Board](./00-overview.md#board) and a game loop time delta. These arguments are injected from above by the [Enegine](./00-overview.md#engine)
 
 ## Overview
 

@@ -26,7 +26,10 @@ nav:
   - Sounds: 07-sounds.md
   - Plots: 08-plots.md
   - Architecture: 09-architecture.md
-  - Appendix: a0-appendix.md
+  - Appendix: 
+    - Index: appendices/index.md
+    - References: appendices/00-references.md
+    - Schemas: appendices/01-schemas.md
 
 markdown_extensions:
   - admonition
