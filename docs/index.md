@@ -17,6 +17,7 @@
 - [Sounds](./07-sounds.md)
 - [Plots](./08-plots.md)
 - [Architecture](./09-architecture.md)
+- [Appendix I](./a0-appendix.md)
 
 ## References
 

@@ -61,21 +61,3 @@ The [Board](./00-overview.md#board) contains a Device, which polls for user inpu
 ### Keyboard
 
 The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See [SDL documentation](https://wiki.libsdl.org/SDL2/SDL_Scancode) for more information.
-
-**Defaults**
-
-The default mappings bundled with the game are provided below,
-
-```yaml
---8<-- "static/yaml/examples/default-mappings.yaml"
-```
-
-## Schemas
-
-### Mapping Configuration
-
-* Location: `src/data/config/mappings/main.yaml`
-
-```yaml
---8<-- "static/yaml/data-mappings.yaml"
-```

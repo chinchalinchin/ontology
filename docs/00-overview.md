@@ -131,7 +131,7 @@ dimensions:
     l: 21
 ```
 
-![LPC Sprite Hitboxes](static/png/lpc-sprite-hitboxes-walk-down-0.png)
+![LPC Sprite Hitboxes](static/png/hitboxes/sheet-sprite-walk-down-0.png)
 /// caption
 LPC Sprite Hitbox in (Walk, Down, 0) State
 ///

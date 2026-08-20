@@ -1,0 +1,9 @@
+crafts:
+  struts:
+    - id: brick-house
+      name: home
+      layer: '0'
+      position:
+        x: 150
+        y: 150
+      owner: player

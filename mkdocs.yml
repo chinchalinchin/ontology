@@ -26,6 +26,7 @@ nav:
   - Sounds: 07-sounds.md
   - Plots: 08-plots.md
   - Architecture: 09-architecture.md
+  - Appendix: a0-appendix.md
 
 markdown_extensions:
   - admonition

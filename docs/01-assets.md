@@ -64,7 +64,7 @@ assets % tree -L 2
 │   ├── panes
 ```
 
-The `main.yaml` files in each subdirectory conform to the [Asset property schema](#schemas) of their respective Asset Category. 
+The `main.yaml` files in each subdirectory conform to the [Asset property schema](./a0-appendix.md#schemas) of their respective Asset Category. 
 
 ### Asset Concepts
 
@@ -116,7 +116,7 @@ See [MotionMechanics](./05-mechanics.md#spatial) for more information.
 
 ### Asset Hierarchy
 
-While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state [schemas](#schemas) encode Asset Categories and Instances into the top-level keys.
+While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state [schemas](./a0-appendix.md#schemas) encode Asset Categories and Instances into the top-level keys.
 
 ```mermaid
 --8<-- "static/mmd/asset-hierarchy.mmd"
@@ -562,7 +562,7 @@ Where `n(Action)` is the number of frames per Action. The frames per Action for 
 
 Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without accompanying Direction(s). The "space" of the (Action, Direction) space is configured by Sheet Properties. 
 
-This snippet from the [Schemas](#schemas) shows the general structure of an Action,
+This snippet from the [Schemas](./a0-appendix.md#schemas) shows the general structure of an Action,
 
 ```yaml
 <action-key>:
@@ -658,58 +658,3 @@ Equipment is covered in more detail in the [Sprites documentation](./02-sprites.
 Widgets are used to constructs Menus. They are not a part of the core gameplay loopjku and have special Mechanics for their interaction. 
 
 Widgets are covered in their own section, [Widgets](./06-widgets.md).
-
-## Schemas
-
-### Recipe Configuration
-
-Recipe Configuration files determine the specific (State, Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.
-
-* Location: `/src/data/config/recipes/main.yaml`
-
-```yaml
---8<-- "static/yaml/data-recipes.yaml"
-```
-
-**Default Recipe Configuration**
-
-```yaml
---8<-- "static/yaml/examples/default-recipes.yaml"
-```
-
-### Action Configuration
-
-Action Configurations determine the (Action, Direction) partitions employed by a Sheet Asset.
-
-* Location: `/src/data/config/actions/main.yaml`
-
-```yaml
---8<-- "static/yaml/data-actions.yaml"
-```
-
-**Default Action Configuration**
-
-```yaml
---8<-- "static/yaml/examples/default-actions.yaml
-```
-
-### Property Indices
-
-Asset property index files hydrate the Registry and set the static attributes of Assets.
-
-* Location: `/src/assets/<category>/main.yaml`
-
-```yaml
---8<-- "static/yaml/asset-properties.yaml"
-```
-
-### State Files
-
-Asset state files populate the [Board](./00-overview.md#board). 
-
-* Location: `/src/data/state/<board-key>/*.yaml`
-
-```yaml
---8<-- "static/yaml/asset-state.yaml"
-```
-

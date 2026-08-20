@@ -71,9 +71,6 @@ Provided below is the Intention Transition Matrix bundled with the application b
 | 16 | `threaten` | `attack`, `mock` |
 | 17 | `wander` | `idle`, `return` |
 
-```yaml
---8<-- "static/yaml/examples/default-intention-matrix.yaml"
-```
 
 **Intentional Scripting Language (ISL)**
 

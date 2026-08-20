@@ -232,20 +232,6 @@ When the `Factory` reads the `bind:` key in the Menu schema, it acts as a dictio
 
 TODO
 
-**Menu Schema**
-
-TODO
-
-```yaml
---8<-- "static/yaml/data-menus.yaml"
-```
-
-**Default Menus**
-
-```yaml
---8<-- "static/yaml/examples/default-menus.yaml"
-```
-
 ### Dialogue
 
 TODO

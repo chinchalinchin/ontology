@@ -2,18 +2,63 @@
 # ----------------------------------------------------------- CRAFTS
 crafts:
   struts:
-    placeholder:
+    adobe-house:
       dimensions:
-        w: 100
-        l: 100
+        w: 96
+        l: 160
       mass: 0
       hitboxes:
         - position: 
             x: 0
             y: 0
           dimensions:
-            w: 100
-            l: 100
+            w: 96
+            l: 160
+      cost:
+        - item: clay
+          quantity: 10
+    brick-house:
+      dimensions:
+        w: 96
+        l: 190
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 10
+            y: 20
+          dimensions:
+            w: 76
+            l: 144
+      cost:
+        - item: stone
+          quantity: 10
+    wooden-fence-horizontal:
+      dimensions:
+        w: 72
+        l: 73
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 0
+            y: 0
+          dimensions:
+            w: 72
+            l: 73
+      cost:
+        - item: wood
+          quantity: 10
+    wooden-fence-vertical:
+      dimensions:
+        w: 8 
+        l: 87
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 0
+            y: 0
+          dimensions:
+            w: 8
+            l: 87
       cost:
         - item: wood
           quantity: 10
