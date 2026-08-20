@@ -686,7 +686,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../03-player/" class="md-nav__link">
+      <a href="../03-player.md" class="md-nav__link">
         
   
   
@@ -874,9 +874,33 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../a0-appendix/" class="md-nav__link">
+    
+    
+      
         
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../appendices/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -890,7 +914,87 @@
   
   
 
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12" id="__nav_12_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1342,7 +1446,7 @@
 │<span class="w">   </span>├──<span class="w"> </span>pages
 │<span class="w">   </span>├──<span class="w"> </span>panes
 </code></pre></div>
-<p>The <code>main.yaml</code> files in each subdirectory conform to the <a href="../a0-appendix/#schemas">Asset property schema</a> of their respective Asset Category. </p>
+<p>The <code>main.yaml</code> files in each subdirectory conform to the <a href="../appendices/01-schemas/#property-indices">Asset property schema</a> of their respective Asset Category. </p>
 <h3 id="asset-concepts">Asset Concepts</h3>
 <p><strong>IDs &amp; Names</strong></p>
 <p>IDs are used to map Assets to images loaded into the <a href="../00-overview/#registry">Registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset, but not in-game entities.</p>
@@ -1364,7 +1468,7 @@
 <p><em>State</em> is dynamic and can be changed by game Mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current position of an ingame Asset, the current animation, etc.. All Assets have a <em>position</em> mutable state; most (except for Widgets) have a <em>LAYER</em>. Position is given as a Cartesian coordinate (tuple), whereas Layer is a categorical variable.</p>
 <div class="admonition note">
 <p class="admonition-title">Layers</p>
-<p>The concept of a Layer is defined more explicitly in <a href="../00-overview/#world">Overview documentation</a>. It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.</p>
+<p>The concept of a Layer is defined more explicitly in <a href="../00-overview/#layers">Overview documentation</a>. It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.</p>
 </div>
 <p>State files are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code> directory, where <code>&lt;board-key&gt;</code> is a unique identifer for a <a href="../00-overview/#board">Board</a>.</p>
 <p><strong>Mass</strong></p>
@@ -1376,7 +1480,7 @@
 </ul>
 <p>See <a href="../05-mechanics/#spatial">MotionMechanics</a> for more information.</p>
 <h3 id="asset-hierarchy">Asset Hierarchy</h3>
-<p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state <a href="../a0-appendix/#schemas">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
+<p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state <a href="../appendices/01-schemas/">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
 <pre class="mermaid"><code>graph LR
     %% Base
     Asset[Asset]
@@ -1601,10 +1705,10 @@
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><a href="../02-sprites/#equipment">Equipment</a> and <a href="../03-player/">Player</a> Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is stateless, whereas the Player is a special type of <a href="../02-sprites/">Sprite</a>.</p>
+<p><a href="../02-sprites/#equipment">Equipment</a> and <a href="../02-sprites/#player">Player</a> Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is stateless, whereas the Player is a special type of <a href="../02-sprites/">Sprite</a>.</p>
 </div>
 <h3 id="asset-architecture">Asset Architecture</h3>
-<p>Every physical entity in the game is an instance of the unified <code>Asset</code> class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. <em>Behaviors</em> are decoupled from Assets and managed entirely by <em>Mechanics</em> classes that iterate over the Board Assets. See <a href="./06-architecture.md#mechanics">Mechanics documentation</a> for more information.</p>
+<p>Every physical entity in the game is an instance of the unified <code>Asset</code> class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. <em>Behaviors</em> are decoupled from Assets and managed entirely by <em>Mechanics</em> classes that iterate over the Board Assets. See <a href="../05-mechanics/">Mechanics documentation</a> for more information.</p>
 <p>The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the <a href="#recipes">Recipe</a> configuration file. The components of each Assets are enumerated below,</p>
 <ol>
 <li><strong>Model: Properties:</strong> A model defining immutable data (e.g., <code>TileProperties</code>, <code>ObjectProperties</code>, etc.).</li>
@@ -1631,7 +1735,7 @@
 <p><code>category</code> determines what property model is employed by the Asset. The category must be configured by a <code>src/assets/&lt;category&gt;/main.yaml</code> property index file.</p>
 <p><code>instance</code> determines what state model is employed by the Asset. An Asset's state is hydrated from the <code>data/state/&lt;board&gt;/*</code> directory.</p>
 <p><code>name</code> is the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique <code>name</code>.</p>
-<p><code>(category, instance)</code> collectively determine the components <code>(frame, animation, properties, state)</code> injected into an Asset class during the <a href="./07-architecture.md#initialization">Initialization</a>. More specifically, category determines properties (<code>category -&gt; properties</code>), and instance determines everything else (<code>instance -&gt; (frame, animation, state)</code>).</p>
+<p><code>(category, instance)</code> collectively determine the components <code>(frame, animation, properties, state)</code> injected into an Asset class during the <a href="../09-architecture/#initialization">Initialization</a>. More specifically, category determines properties (<code>category -&gt; properties</code>), and instance determines everything else (<code>instance -&gt; (frame, animation, state)</code>).</p>
 <h2 id="tiles">Tiles</h2>
 <ul>
 <li>Property File: <code>/src/assets/tiles/main.yaml</code></li>
@@ -1693,7 +1797,7 @@
 <h3 id="chests">Chests</h3>
 <p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>interact</code> <a href="../04-intentions/">Intention</a> while intersecting the hitboxes of the Chest. When <code>switch == true</code>, the Chest is <em>on</em> (open). When <code>switch == false</code>, the Chest is <em>off</em> (closed).</p>
 <p>A Chest is <em>reusable</em> through the <code>interact</code> <a href="../04-intentions/">Intention</a>, meaning <a href="../02-sprites/#inventory">Inventory Loot</a> can be taken out of and also placed into a Chest. The <code>content</code> state field manages the current contents of the Chest through a list of Inventory Loot keys.</p>
-<p>When <em>interacting</em> with a Chest, the <a href="../03-player/">Player</a> is shown the <a href="../06-widgets/#menus">Chest menu</a>, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an <code>interact</code> Intention with a Chest through its <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. This interaction is managed through a dedicated Sprite <a href="./06-architecture.md#mechanics">Mechanic</a>s</p>
+<p>When <em>interacting</em> with a Chest, the <a href="./03-player.md">Player</a> is shown the <a href="../06-widgets/#menus">Chest menu</a>, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an <code>interact</code> Intention with a Chest through its <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. This interaction is managed through a dedicated Sprite <a href="../05-mechanics/">Mechanic</a></p>
 <p><strong>Animation: BinaryAnimation</strong></p>
 <ul>
 <li><code>if switch == true: animation.frame = 1</code></li>
@@ -1865,7 +1969,7 @@
 <ul>
 <li>Property File: <code>/src/assets/crafts/main.yaml</code></li>
 </ul>
-<p>Crafts are Assets that can be instantiated through game <a href="./06-architecture.md#mechanics">Mechanics</a>, such as <code>CommerceMechanics</code> or <code>ChemistryMechanics</code>. All Crafts have a <code>cost</code> associated with them. </p>
+<p>Crafts are Assets that can be instantiated through game <a href="../05-mechanics/">Mechanics</a>, such as <code>CommerceMechanics</code> or <code>ChemistryMechanics</code>. All Crafts have a <code>cost</code> associated with them. </p>
 <p><strong>Cost</strong></p>
 <p>Cost is a set of quantities that must be satisfied before the Craft can be instantiated. It is a "formula" for the Craft's creation. </p>
 <div class="highlight"><pre><span></span><code><span class="nt">cost</span><span class="p">:</span>
@@ -1882,7 +1986,7 @@
 </ul>
 <h3 id="struts">Struts</h3>
 <p><em>Struts</em> are inanimate, immutable Assets. <em>Struts</em> are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an <code>owner</code>. </p>
-<p>Struts may be placed on the Board through the state files manually, but are instantiated ingame through the <code>build</code> <a href="../04-intentions/">Intention</a></p>
+<p>Struts may be placed on the Board through the state files manually, but are instantiated ingame through the <code>build</code> <a href="../04-intentions/">Intention</a>. This is an oversimplification, as Struts are closely related to <a href="../03-compositions/">Asset Compositions</a>, but generally true.</p>
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
@@ -1937,7 +2041,7 @@
 </div>
 <p><strong>Action</strong></p>
 <p>Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without accompanying Direction(s). The "space" of the (Action, Direction) space is configured by Sheet Properties. </p>
-<p>This snippet from the <a href="../a0-appendix/#schemas">Schemas</a> shows the general structure of an Action,</p>
+<p>This snippet from the <a href="../appendices/01-schemas/#action-configuration">Schemas</a> shows the general structure of an Action,</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;action-key&gt;</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">count</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">directions</span><span class="p">:</span>
@@ -1953,7 +2057,7 @@
 <p>Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See <a href="#action-configuration">Action Configuration Schema</a> below for more details. </p>
 <p><strong>Stacks</strong></p>
 <p>A Stack is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.</p>
-<p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. This Sprite stack is assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>stack</code> property during the <a href="./06-architecture.md">application bootstrap</a>. The assembled <code>stack</code> is saved as a Sheet Asset, using the <code>&lt;sheet-id&gt;</code> as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.</p>
+<p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. This Sprite stack is assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>stack</code> property during the <a href="../09-architecture/#initialization">application bootstrap</a>. The assembled <code>stack</code> is saved as a Sheet Asset, using the <code>&lt;sheet-id&gt;</code> as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.</p>

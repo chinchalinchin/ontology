@@ -14,7 +14,7 @@
         <link rel="prev" href="../01-assets/">
       
       
-        <link rel="next" href="../03-player/">
+        <link rel="next" href="../04-intentions/">
       
       
         
@@ -487,6 +487,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#player" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Player
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Player">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#devices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Devices
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -502,7 +530,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../03-player/" class="md-nav__link">
+      <a href="../03-player.md" class="md-nav__link">
         
   
   
@@ -690,9 +718,33 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../a0-appendix/" class="md-nav__link">
+    
+    
+      
         
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../appendices/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -706,7 +758,87 @@
   
   
 
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12" id="__nav_12_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -892,6 +1024,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#player" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Player
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Player">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#devices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Devices
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1019,15 +1179,15 @@
 <p><strong>Magic</strong></p>
 <p>TODO</p>
 <h3 id="character">Character</h3>
-<p><strong>Strength</strong></p>
-<p>TODO</p>
-<p><strong>Defense</strong></p>
-<p>TODO</p>
-<p><strong>Speed</strong></p>
-<p>TODO</p>
+<ul>
+<li><strong>Strength</strong>: TODO</li>
+<li><strong>Defense</strong>: TODO</li>
+<li><strong>Speed</strong>: Speed determines the maximum magnitude of a Sprite's Velocity vector.</li>
+<li><strong>Impulse</strong>: Impulse determines the rate of change of a Sprite's Velocity vector.</li>
+</ul>
 <h3 id="mutators">Mutators</h3>
 <p>Mutators are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated from state attributes, not <em>primitive</em> state attributes themselves.</p>
-<p>Mutators are <em>condition-driven</em>. They may also be <em>parameterized</em>; In other words, all Mutators are <em>conditional</em> but not all Mutators are parameterized. Parameters modulate the conditions underlying the Mutator calculation. Both Sprites and the <a href="../03-player/">Player</a> have Mutator fields, but only Sprites have parameterized Mutators; the Player Mutators are all purely driven by game logic. In other words, the Player Mutator triggers serve to flag the game-loop to apply trigger-specific procedures to the Player Asset, whereas Sprite Mutator triggers depend on the specific parameters unique to the Sprite's deployment. </p>
+<p>Mutators are <em>condition-driven</em>. They may also be <em>parameterized</em>; In other words, all Mutators are <em>conditional</em> but not all Mutators are parameterized. Parameters modulate the conditions underlying the Mutator calculation. Both Sprites and the <a href="#player">Player</a> have Mutator fields, but only Sprites have parameterized Mutators; the Player Mutators are all purely driven by game logic. In other words, the Player Mutator triggers serve to flag the game-loop to apply trigger-specific procedures to the Player Asset, whereas Sprite Mutator triggers depend on the specific parameters unique to the Sprite's deployment. </p>
 <ul>
 <li>Parameterized Mutators: <code>fear</code>, <code>vision</code></li>
 <li>Conditional Mutators: <code>animated</code>, <code>dead</code>, <code>struck</code></li>
@@ -1124,7 +1284,7 @@
 </ul>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the <a href="#action-direction">Sprite Sheets</a> equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This means Equipment frames may not be present in every frame. For example, the <code>longbow</code> only occupies the <code>(shoot, *)</code> rows of a Sheet, while all other rows of the <code>longbow</code> Asset file are blank.</p>
+<p>It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the <a href="../01-assets/#sheets">Sprite Sheets</a> equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This means Equipment frames may not be present in every frame. For example, the <code>longbow</code> only occupies the <code>(shoot, *)</code> rows of a Sheet, while all other rows of the <code>longbow</code> Asset file are blank.</p>
 </div>
 <h3 id="equipment-frames">Equipment Frames</h3>
 <p>Equipment is a stateless Sheet Asset. It is not deployed onto the Board in a fashion like other Assets. Instead, only properties and frames are supplied for Equipment, i.e. Equipment has a Frame Recipe. This allows the Registry to index and load all Equipment Sheets. However, since Equipment does not possess a State Recipe and therefore does not possess State, it is not instantiated by the game engine when the state directory is traversed during the bootstrapping. Instead, Equipment frame keys are generated by SpriteFrames when Sprites have Equipment slotted into their <code>sprite.state.inventory.equipment</code>, e.g.</p>
@@ -1152,6 +1312,66 @@
 <p class="admonition-title">Note</p>
 <p>Equipment properties are stored in the <a href="../00-overview/#board">Board</a> database.</p>
 </div>
+<h2 id="player">Player</h2>
+<p>A Player is a special type of Sprite Sheet Asset Instance. It may be thought of as a "<em>pseudo</em>"-Asset. It has no properties that differentiate it in the Hierarchy; Instead, it utilizes Sprite Sheet properties. It has own state and Intention management Mechanics. </p>
+<p>The Player Sprite Sheet is configured through the <code>player</code> Sprite Sheet. </p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The <code>player</code> Sprite <em>must</em> be defined in <code>/src/assets/sheets/main.yml#sprites</code>.</p>
+</div>
+<p><strong>Taxonomy</strong></p>
+<ul>
+<li><code>category: sheets</code></li>
+<li><code>instance: players</code></li>
+</ul>
+<p><strong>State: PlayerState</strong></p>
+<ul>
+<li><code>position: Position</code></li>
+<li><code>layer: str</code></li>
+<li><code>meters:</code><ul>
+<li><code>health:</code> <ul>
+<li><code>current: int</code></li>
+<li><code>maximum: int</code></li>
+</ul>
+</li>
+<li><code>magic: int</code><ul>
+<li><code>current: int</code></li>
+<li><code>maximum: int</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>character:</code><ul>
+<li><code>strength: int</code></li>
+<li><code>defense: int</code></li>
+<li><code>speed: int</code></li>
+</ul>
+</li>
+<li><code>animation:</code><ul>
+<li><code>action: str</code></li>
+<li><code>direction: str</code></li>
+<li><code>frame: int</code></li>
+</ul>
+</li>
+<li><code>goal: Goal</code></li>
+<li><code>intention: str</code> </li>
+<li><code>inventory:</code><ul>
+<li><code>loot: Dict[str, int]</code></li>
+<li><code>equipment:</code><ul>
+<li><code>armor: str</code></li>
+<li><code>weapon: str</code></li>
+<li><code>tool: str</code></li>
+<li><code>utility: str</code></li>
+</ul>
+</li>
+<li><code>wallet: int</code></li>
+</ul>
+</li>
+</ul>
+<h3 id="devices">Devices</h3>
+<p>The <a href="../00-overview/#board">Board</a> contains a Device, which polls for user input. The PlayerMechanic uses a Mapping to translate the polling data into a <a href="../04-intentions/">(Intention, Goal)</a>-tuple. The <a href="../appendices/01-schemas/#mapping-configuration">Mapping Configuration</a> file provides a translation key between input state and game state.</p>
+<p><strong>Keyboard</strong></p>
+<p>The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See <a href="https://wiki.libsdl.org/SDL2/SDL_Scancode">SDL documentation</a> for more information.</p>
 
 
 

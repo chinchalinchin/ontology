@@ -300,7 +300,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../03-player/" class="md-nav__link">
+      <a href="../03-player.md" class="md-nav__link">
         
   
   
@@ -596,9 +596,33 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../a0-appendix/" class="md-nav__link">
+    
+    
+      
         
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../appendices/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -612,7 +636,87 @@
   
   
 
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12" id="__nav_12_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -725,7 +829,7 @@
 
 
 <h1 id="ontology-mechanics">Ontology: Mechanics</h1>
-<p>A Mechanic is an implementation of an abstract interface that defines what information the engine will inject into the Mechanic's signature; All Mechanics must implement an <code>update(board: Board, delta: float)</code> method. The arguments of this interface are the <a href="../00-overview/#board">Board</a> and a game loop time delta.</p>
+<p>A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an <code>update(board: Board, delta: float)</code> method. The arguments of this interface are the <a href="../00-overview/#board">Board</a> and a game loop time delta. These arguments are injected from above by the <a href="../00-overview/#engine">Enegine</a></p>
 <h2 id="overview">Overview</h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -806,7 +910,7 @@
 <div class="arithmatex">\[
 v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 \]</div>
-<p>The <a href="../03-player/">Player</a> does not observe momentum transfers. Instead, the Player follows the procedures outlined below,</p>
+<p>The <a href="./03-player.md">Player</a> does not observe momentum transfers. Instead, the Player follows the procedures outlined below,</p>
 <ul>
 <li><strong>Property Level:</strong> The Player retains a normal, dynamic mass (e.g., <span class="arithmatex">\(m = 10\)</span>).</li>
 <li><strong>Phase 1 - Spatial Resolution (Unchanged):</strong><ul>

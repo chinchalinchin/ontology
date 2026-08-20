@@ -17,7 +17,7 @@
          <lastmod>2026-08-20</lastmod>
     </url>
     <url>
-         <loc>https://chinchalinchin.github.io/ontology/03-player/</loc>
+         <loc>https://chinchalinchin.github.io/ontology/03-compositions/</loc>
          <lastmod>2026-08-20</lastmod>
     </url>
     <url>
@@ -45,7 +45,15 @@
          <lastmod>2026-08-20</lastmod>
     </url>
     <url>
-         <loc>https://chinchalinchin.github.io/ontology/a0-appendix/</loc>
+         <loc>https://chinchalinchin.github.io/ontology/appendices/</loc>
+         <lastmod>2026-08-20</lastmod>
+    </url>
+    <url>
+         <loc>https://chinchalinchin.github.io/ontology/appendices/00-references/</loc>
+         <lastmod>2026-08-20</lastmod>
+    </url>
+    <url>
+         <loc>https://chinchalinchin.github.io/ontology/appendices/01-schemas/</loc>
          <lastmod>2026-08-20</lastmod>
     </url>
 </urlset>

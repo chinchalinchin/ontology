@@ -541,7 +541,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../03-player/" class="md-nav__link">
+      <a href="../03-player.md" class="md-nav__link">
         
   
   
@@ -729,9 +729,33 @@
   
   
   
-    <li class="md-nav__item">
-      <a href="../a0-appendix/" class="md-nav__link">
+    
+    
+      
         
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../appendices/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -745,7 +769,87 @@
   
   
 
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12" id="__nav_12_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1023,7 +1127,7 @@
 </ul>
 <p>Assets are placed in the <code>/src/assets/&lt;category&gt;/</code> directory and then registered to the Asset category index <code>/src/assets/&lt;category&gt;/main.yaml</code> file. The YAML index schema for each Asset configures its <em>properties</em>, i.e. the static attributes that are constant and do not change as a result of gameplay. </p>
 <p>The <code>/src/assets</code> directory is known as the <em>asset directory</em>.</p>
-<p>See <a href="../01-assets/#schemas">Asset Schema</a> for more information on the Asset property index.</p>
+<p>See <a href="../appendices/01-schemas/#property-indices">Asset Schema</a> for more information on the Asset property index.</p>
 <h2 id="data">Data</h2>
 <ul>
 <li>Location: <code>/src/data/</code></li>
@@ -1041,9 +1145,9 @@
 </ul>
 <p>Mechanics and other components of the game Engine (e.g. Menus, Actions, etc.) utilize configuration stored in the configuration directory. The following Engine components are configured by the files in this directory.</p>
 <ul>
-<li><a href="../01-assets/#action-configuration">Actions</a></li>
+<li><a href="../01-assets/#sheets">Actions</a></li>
 <li><a href="../04-intentions/">Intentions</a></li>
-<li><a href="../03-player/#mapping">Mappings</a></li>
+<li><a href="../02-sprites/#devices">Mappings</a></li>
 <li><a href="../05-mechanics/">Mechanics</a></li>
 <li><a href="../06-widgets/#menus">Menus</a></li>
 <li><a href="../01-assets/#recipes">Recipes</a></li>
@@ -1056,7 +1160,7 @@
 <ul>
 <li>Package: <code>app.config.loader</code></li>
 </ul>
-<p>The Loader is responsible for reading in the configuration files for properties and state, converting them into Python data structure.</p>
+<p>The Loader is responsible for reading in the configuration files for properties and state, converting them into Python data structures.</p>
 <h3 id="factory">Factory</h3>
 <ul>
 <li>Package: <code>app.hooks.factory</code></li>
@@ -1066,7 +1170,7 @@
 <ul>
 <li>Package: <code>app.hooks.orchestrator</code></li>
 </ul>
-<p>The Orchestrator is the dependency injection system. It is responsible for converting data structures into application data models and supplying them to application classes.</p>
+<p>The Orchestrator is the dependency injection system. It is responsible for converting validated data structures into application data models and supplying them to application classes.</p>
 <h3 id="registry">Registry</h3>
 <ul>
 <li>Package: <code>libs.graphics.registry</code></li>
@@ -1081,7 +1185,7 @@
 <ul>
 <li>Package: <code>app.game.board</code></li>
 </ul>
-<p>The Board is the Game's "database". It holds all ingame Assets and Configurations during the course of the game loop and exposes them to the engine through queryable interfaces.</p>
+<p>The Board is the Game's "<em>database</em>". It holds all ingame Assets and Configurations during the course of the game loop and exposes them to the engine through queryable interfaces.</p>
 <p>The state files for each Board are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code>.</p>
 <p><strong>Cradle</strong></p>
 <p>The Board posseses a Cradle field for instantiating Assets through game Mechanics, e.g. <code>CombatMechanics</code> uses the Cradle to inject new Projectiles into the Board state.</p>
