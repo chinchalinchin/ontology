@@ -15,7 +15,7 @@ theme:
     - navigation.indexes
 
 nav:
-  - Home: index.md
+  - Index: index.md
   - Overview: 00-overview.md
   - Assets: 01-assets.md
   - Sprites: 02-sprites.md
