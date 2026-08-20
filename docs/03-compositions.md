@@ -6,11 +6,13 @@ A Composition is collection of multiple Assets organized into a common configura
 
 From the perspective of the state directory, Compositions are another type of Asset that can be deployed onto a Board. Similar to the [Player](./02-sprites.md#player), they are a "*virtual*" Asset composed of other Assets. Unlike the Player, which is a special type of Sprite, Compositions are collections of multiple Assets.
 
+A Composition is a way to reuse common Asset configurations in the state without have to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the Board's perspective. They only serve to simplify the amount of state specification that is required to fully declare a complex, high-level game Board.
+
 Compositions are organized around [Struts](./01-assets.md#struts).
 
 ### Root Struts
 
-Every Composition has atleast one root [Strut](./01-assets.md#struts). A Composition also contains other Assets in predefined configurations, known as the Composition components. For example, a `brick` Composition might contain a `frame-brick` Strut as its root Strut and then a `mansion` Door as a component Asset. The Composition specifies the relative position of the `mansion` Door with respect to the origin of the `frame-brick` Strut. In other words, all component Assets in a Composition have their positions unpacked relative to the root Strut's deployed position. 
+Every Composition has atleast one root [Strut](./01-assets.md#struts). A Composition also contains other Assets in predefined configurations, known as the Composition components. For example, a `brick-house` Composition might contain a `frame-brick` Strut as its root Strut and then a `mansion` Door as a component Asset. The Composition specifies the relative position of the `mansion` Door with respect to the origin of the `frame-brick` Strut. In other words, all component Assets in a Composition have their positions unpacked relative to the root Strut's deployed position. 
 
 ### State Hydration
 
@@ -86,3 +88,7 @@ Likewise, in this example, the state `layer` is passed down as a reference to co
 All component Assets can `bind(state)` to a root Strut state attribute injected into the Composition from the state directory files. When component Asset reference `bind(root.layer)` this is a reference to the root Strut's layer. Only state attribute defined on the root Strut can be bound.
 
 In addition, unique names are generated for each Composition Asset according to the schema: `<instance.name>-<strut.name>-<component.name>-<increment>`, where `<increment>` is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.
+
+## PseudoStates
+
+TODO
