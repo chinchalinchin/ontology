@@ -20,7 +20,7 @@
         dimensions:
           w: 32
           l: 32
-        friction: 10
+        friction: 100
       lava: 
         dimensions:
           w: 32
@@ -47,12 +47,6 @@
           l: 32
         friction: 0
       wheat:
-        dimensions:
-          w: 32
-          l: 32
-        friction: 0
-    fore:
-      canopy:
         dimensions:
           w: 32
           l: 32

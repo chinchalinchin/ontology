@@ -103,7 +103,7 @@ These Mechanics handle the Sprite Intention logic.
 - `player: PlayerMechanics`: Resolve Device input into Player (Intention, Goal)-state.
 - `transition: TransitionMechanics`: Applies the Intention Transition Matrix conditions to all Sprite Sheets.
 - `commerce: CommerceMechanics`: Translate Intentions (barter, attract, etc.) into trades and price movements.
-- `speech: SpeechMechanics`: 
+- `speech: SpeechMechanics`: TODO
 
 ## Configuration
 

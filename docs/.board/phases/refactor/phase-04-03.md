@@ -59,40 +59,50 @@ By decoupling the spatial shift (to keep player from breaking the map) from the 
 
 *Objective*: Decouple monolithic motion logic into discrete procedural modules.
 
-* [ ] Subtask: Create `app.game.logic.mechanics.core.motion` package.
-* [ ] Subtask: Implement `kinematic.py` to handle Symplectic Euler integration and sub-pixel accumulation (`rx`, `ry`) for all assets.
-* [ ] Subtask: Implement `motive.py` to handle directional impulses, device polling resolution for Players, and pathfinding vector calculations for Sprites.
-* [ ] Subtask: Implement `frictive.py` to handle spatial Tile queries and linear velocity decay for Crates/Inert objects.
-* [ ] Subtask: Refactor `MotionMechanics.update()` to map assets to their respective motion strategies in a single pass.
+* [x] Subtask: Create `app.game.logic.mechanics.core.motion` package.
+* [x] Subtask: Implement `kinematic.py` to handle Symplectic Euler integration and sub-pixel accumulation (`rx`, `ry`) for all assets.
+* [x] Subtask: Implement `motive.py` to handle directional impulses, device polling resolution for Players, and pathfinding vector calculations for Sprites.
+* [x] Subtask: Implement `frictive.py` to handle spatial Tile queries and linear velocity decay for Crates/Inert objects.
+* [x] Subtask: Refactor `MotionMechanics.update()` to map assets to their respective motion strategies in a single pass.
 
 **2. Task: Correct Physics Integrations**
 
 *Objective*: Resolve mathematical flaws in movement and collision code.
 
-* [ ] Subtask: Update `motive.py` pathfinding to evaluate distance to `goal.position` and clamp velocity to prevent target oscillation.
-* [ ] Subtask: Update `CollisionMechanics._resolve` to determine the collision normal based on the shallowest penetration axis.
-* [ ] Subtask: Apply the 1D elastic collision formula *only* to the determined normal axis.
+* [x] Subtask: Update `motive.py` pathfinding to evaluate distance to `goal.position` and clamp velocity to prevent target oscillation.
+* [!] Subtask: Update `CollisionMechanics._resolve` to determine the collision normal based on the shallowest penetration axis.
+* [!] Subtask: Apply the 1D elastic collision formula *only* to the determined normal axis.
 
 **3. Task: Implement Kinematic Player Motion**
 
 *Objective*: Create a dedicated motion module for snappy, instant-response player controls.
 
-* [ ] Subtask: Implement `kinematic.py`.
-* [ ] Subtask: Add Axis-Snapping logic. When calculating player velocity from the `Mapping` poll, explicitly nullify the orthogonal axis. If input is strictly horizontal, set $v_y = 0$. If input is strictly vertical, set $v_x = 0$.
-* [ ] Subtask: Bypass `impulse` for the Player. Map input directions directly to the maximum `speed` magnitude.
-* [ ] Subtask: Retain diagonal support. If both axes are polled simultaneously, normalize the vector and multiply by `speed` to prevent faster diagonal movement.
+* [x] Subtask: Implement `kinematic.py`.
+* [x] Subtask: Add Axis-Snapping logic. When calculating player velocity from the `Mapping` poll, explicitly nullify the orthogonal axis. If input is strictly horizontal, set $v_y = 0$. If input is strictly vertical, set $v_x = 0$.
+* [x] Subtask: Bypass `impulse` for the Player. Map input directions directly to the maximum `speed` magnitude.
+* [x] Subtask: Retain diagonal support. If both axes are polled simultaneously, normalize the vector and multiply by `speed` to prevent faster diagonal movement.
 
 **4. Task: Kinematic Collision Bypass**
 
 *Objective*: Allow the player to slide along walls without bouncing, while still pushing dynamic objects.
 
-* [ ] Subtask: In `CollisionMechanics._resolve`, separate the Spatial Resolution phase from the Momentum Transfer phase.
-* [ ] Subtask: Update Spatial Resolution. The player should still be pushed out of static walls (to prevent boundary breaking) and should still push dynamic crates based on mass ratios.
-* [ ] Subtask: Update Momentum Transfer. Add a conditional check: `if asset.taxonomy.instance == AssetInstances.PLAYERS`, bypass the elastic rebound formula entirely. The player's velocity must remain untouched by physical impacts.
+* [x] Subtask: In `CollisionMechanics._resolve`, separate the Spatial Resolution phase from the Momentum Transfer phase.
+* [x] Subtask: Update Spatial Resolution. The player should still be pushed out of static walls (to prevent boundary breaking) and should still push dynamic crates based on mass ratios.
+* [x] Subtask: Update Momentum Transfer. Add a conditional check: `if asset.taxonomy.instance == AssetInstances.PLAYERS`, bypass the elastic rebound formula entirely. The player's velocity must remain untouched by physical impacts.
 
-**5. Task: Cython Layer Migration**
+**5. Task: Cython Physics Migration**
 
-*Objective*: Offload position integrations to the C-stack.
+*Objective*: Offload all heavy floating-point integrations and overlap resolutions to `libs.core.math.Physics`.
 
-* [ ] Subtask: Move the sub-pixel accumulator logic ($rx, ry \to x, y$) from Python to a static Cython function in `libs.core.math.Physics`.
-* [ ] Subtask: Expose an interface in `libs.core.math` that accepts a flattened array of velocities and positions, applying Symplectic Euler across all dynamic entities natively without GIL interference.
+* [x] Subtask: Define `cdef void resolve_collision(...)` in `libs.core.math.pxd`. It should accept typed arguments: `Position p1`, `Dimensions d1`, `Velocity v1`, `float m1`, `bint is_kinematic1` (and the same for asset 2).
+* [x] Subtask: Port the spatial resolution and momentum transfer logic from `CollisionMechanics._resolve` into `resolve_collision`. Use C-native `abs()` and float division.
+* [x] Subtask: Define `cpdef void integrate_kinematics(list assets, float delta)` in `Physics`.
+* [x] Subtask: In `integrate_kinematics`, loop through the provided objects, extract their `Position` and `Velocity` extension types, and perform the `rx/ry` accumulation and threshold shifting natively.
+
+**6. Task: Python Mechanics Refactor**
+
+*Objective*: Strip raw math from the Python game loop, turning Mechanics into lightweight dispatchers.
+
+* [x] Subtask: Refactor `CollisionMechanics._resolve` to evaluate the game logic (e.g., determining `m1`, `m2`, `is_a_player`), and pass those variables into `Physics.resolve_collision()`.
+* [x] Subtask: Refactor the final integration step of `MotionMechanics` (or the new `kinematic.py` submodule) to strip the `rx/ry` accumulation math and instead call `Physics.integrate_kinematics()`.
+

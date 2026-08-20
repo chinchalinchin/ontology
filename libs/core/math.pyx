@@ -86,7 +86,10 @@ cdef class Space:
     """
     Broad-Phase Spatial Partitioning Grid for O(1) bucket lookups.
     """
-    def __init__(self, int cell_size=64, int max_entities=2000):
+    def __init__(self, 
+        int cell_size=64, 
+        int max_entities=2000
+    ):
         self.cell_size = cell_size
         self.max_entities = max_entities
         self.num_buckets = max_entities * 2
@@ -105,10 +108,19 @@ cdef class Space:
         if self.bucket_counts is not NULL:
             memset(self.bucket_counts, 0, self.num_buckets * sizeof(int))
 
-    cdef inline int _hash(self, int cx, int cy):
+    cdef inline int _hash(self,
+        int cx, 
+        int cy
+    ):
         return (abs(cx * 73856093 ^ cy * 19349663)) % self.num_buckets
 
-    cdef void insert(self, int entity_id, int x, int y, int w, int l):
+    cdef void insert(self, 
+        int entity_id, 
+        int x, 
+        int y, 
+        int w, 
+        int l
+    ):
         cdef int min_x = x // self.cell_size
         cdef int min_y = y // self.cell_size
         cdef int max_x = (x + w) // self.cell_size
@@ -150,7 +162,10 @@ cdef class Physics:
     """
 
     @staticmethod
-    def collisions(list primitive_data, Space grid) -> list:
+    def collisions(
+        list primitive_data, 
+        Space grid
+    ) -> list:
         """
         Iterates over a list of primitive spatial data tuples and resolves geometric overlap.
         Returns a Python list of colliding integer ID pairs.
@@ -202,3 +217,126 @@ cdef class Physics:
                 colliding_pairs.append(pair)
                 
         return colliding_pairs
+
+    @staticmethod
+    def resolve_collision(
+        Position pos1, 
+        Dimensions dim1, 
+        Velocity vel1, 
+        float m1, 
+        bint is_kinematic1,
+        Position pos2, 
+        Dimensions dim2, 
+        Velocity vel2, 
+        float m2, 
+        bint is_kinematic2
+    ):
+        cdef float cx_a = pos1.x + dim1.w / 2.0
+        cdef float cy_a = pos1.y + dim1.l / 2.0
+        cdef float cx_b = pos2.x + dim2.w / 2.0
+        cdef float cy_b = pos2.y + dim2.l / 2.0
+
+        cdef float dx = cx_b - cx_a
+        cdef float dy = cy_b - cy_a
+
+        if dx == 0 and dy == 0:
+            dx = 1.0
+
+        cdef float overlap_x = (dim1.w / 2.0 + dim2.w / 2.0) - abs(dx)
+        cdef float overlap_y = (dim1.l / 2.0 + dim2.l / 2.0) - abs(dy)
+
+        cdef float inv_m1, inv_m2, inv_total, p1, p2
+        cdef float shift_x1, shift_x2, shift_y1, shift_y2
+        cdef float v1x, v1y, v2x, v2y, v1f_x, v1f_y, v2f_x, v2f_y
+
+        if overlap_x > 0 and overlap_y > 0:
+            inv_m1 = 1.0 / m1 if m1 > 0 else 0.0
+            inv_m2 = 1.0 / m2 if m2 > 0 else 0.0
+            inv_total = inv_m1 + inv_m2
+
+            if inv_total > 0:
+                p1 = inv_m1 / inv_total
+                p2 = inv_m2 / inv_total
+
+                if overlap_x < overlap_y:
+                    shift_x1 = overlap_x * p1
+                    shift_x2 = overlap_x * p2
+                    if dx > 0:
+                        pos1.x -= int(shift_x1)
+                        pos2.x += int(shift_x2)
+                    else:
+                        pos1.x += int(shift_x1)
+                        pos2.x -= int(shift_x2)
+
+                    if m1 == 0 and m2 == 0:
+                        pass
+                    elif m1 == 0:
+                        if vel2 is not None and not is_kinematic2:
+                            vel2.vx = -vel2.vx
+                    elif m2 == 0:
+                        if vel1 is not None and not is_kinematic1:
+                            vel1.vx = -vel1.vx
+                    else:
+                        v1x = vel1.vx if vel1 is not None else 0.0
+                        v2x = vel2.vx if vel2 is not None else 0.0
+                        v1f_x = (v1x * (m1 - m2) + 2 * m2 * v2x) / (m1 + m2)
+                        v2f_x = (v2x * (m2 - m1) + 2 * m1 * v1x) / (m1 + m2)
+                        
+                        if vel1 is not None and not is_kinematic1:
+                            vel1.vx = v1f_x
+                        if vel2 is not None and not is_kinematic2:
+                            vel2.vx = v2f_x
+                else:
+                    shift_y1 = overlap_y * p1
+                    shift_y2 = overlap_y * p2
+                    if dy > 0:
+                        pos1.y -= int(shift_y1)
+                        pos2.y += int(shift_y2)
+                    else:
+                        pos1.y += int(shift_y1)
+                        pos2.y -= int(shift_y2)
+
+                    if m1 == 0 and m2 == 0:
+                        pass
+                    elif m1 == 0:
+                        if vel2 is not None and not is_kinematic2:
+                            vel2.vy = -vel2.vy
+                    elif m2 == 0:
+                        if vel1 is not None and not is_kinematic1:
+                            vel1.vy = -vel1.vy
+                    else:
+                        v1y = vel1.vy if vel1 is not None else 0.0
+                        v2y = vel2.vy if vel2 is not None else 0.0
+                        v1f_y = (v1y * (m1 - m2) + 2 * m2 * v2y) / (m1 + m2)
+                        v2f_y = (v2y * (m2 - m1) + 2 * m1 * v1y) / (m1 + m2)
+                        
+                        if vel1 is not None and not is_kinematic1:
+                            vel1.vy = v1f_y
+                        if vel2 is not None and not is_kinematic2:
+                            vel2.vy = v2f_y
+
+    @staticmethod
+    def integrate_kinematics(
+        list assets, 
+        float delta
+    ):
+        cdef int shift
+        cdef Position p
+        cdef Velocity v
+        for asset in assets:
+            if getattr(asset.state, 'velocity', None) is not None:
+                p = <Position>asset.state.position
+                v = <Velocity>asset.state.velocity
+
+                p.rx += v.vx * delta
+                p.ry += v.vy * delta
+
+                if p.rx >= 1.0 or p.rx <= -1.0:
+                    shift = int(p.rx)
+                    p.x += shift
+                    p.rx -= shift
+
+                if p.ry >= 1.0 or p.ry <= -1.0:
+                    shift = int(p.ry)
+                    p.y += shift
+                    p.ry -= shift

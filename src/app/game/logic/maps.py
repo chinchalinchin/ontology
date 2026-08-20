@@ -14,7 +14,7 @@ class AnimationMap:
     @staticmethod
     def action(state, equipment) -> str:
         """
-        Resolves Sprite Intentionss to Animation Actions.
+        Resolves Sprite Intentions to Animation Actions.
 
         - state: sprite state
         - equipment: equipment properties
