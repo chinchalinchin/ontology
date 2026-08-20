@@ -18,22 +18,25 @@ These Mechanics handle the core engine logic.
 
 **MotionMechanics**
 
-- Motive Assets: Players, Sprites
+- Kinematic Assets: Players
+- Motive Assets: Sprites
 - Inert Assets: Projectiles
 - Frictive Assets: Crates
 
-Assets with Mass are divided into Motive, Inert and Frictive Assets. Motive Assets have Velocity states with (Speed, Impulse) properties that control their rate of change of Velocity; Frictive and Inert Assets have a Velocity state, but have their Velocities controlled through external forces, i.e. Friction and garbage collection. 
+Assets with Mass are divided into Kinenamtic, Motive, Inert and Frictive Assets. Kinematic and Motive Assets have Velocity states with (Speed, Impulse) properties that control their rate of change of Velocity; Frictive and Inert Assets have a Velocity state, but have their Velocities controlled through external forces, i.e. Friction and garbage collection. 
 
-Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to Speed.
+Kinematic Assets snap to velocity vectors and do not change vectorally. This is used for the Player. When the Player presses right, the Player Sprite immediately changes *Velocity* (not Position) to right, snapping to the inputted direction without getting sent into circular motion. In other words, velocities orthogonal to the Player's inputted direction are nulled out by the game loop; Velocity is used to control Player position updates through Symplectic Euler updates, but only applies changes in one direction at once.
 
-Frictive Assets have motion imparted to them via collisions. Afterwards, the force of friction is applied to the resultant velocity every game tick until their velocity has been brought to zero, where the force of friction is proportional to the currently occupied Tile's  `properties.friction`.
+Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to Speed. Motive Assets experience friction to prevent the conservation of momentum sending them into "orbit" around their Goal.
+
+Frictive Assets have motion imparted to them via collisions. Afterwards, the force of friction is applied to the resultant Velocity every game tick until that Velocity has been brought to zero. The force of friction is proportional to the currently occupied Tile's  `properties.friction`.
 
 Inert Assets are exluded from these considerations. They are spawned with a Velocity vector and an initial position; They follow the trajectory determined by these parameters until the distance between their initial and current position exceeds the garbage collection limit.
 
 The general flow of MotionMechanics is given by,
 
-* **(Player) Motive Motion** Check `device.poll()`. If directional input is present, calculate impulse vector, apply to `velocity`, and clamp magnitude to `character.speed`. If no input is present, hardcode `velocity = (0,0)`.
-* **(Sprite) Motive Motion** Calculate the unit vector pointing from `current_position` to `goal_position`. Multiply by `character.impulse` and $\Delta t$. Add to `velocity`. Clamp magnitude to `character.speed`.
+* **Kinematic Motion** Check `device.poll()`. If directional input is present, calculate accelerate velocity to direction and null out orthogonal velocity. If no input is present, hardcode `velocity = (0,0)`.
+* **Motive Motion** Calculate the unit vector pointing from `current_position` to `goal_position`. Multiply by `character.impulse` and $\Delta t$. Add to `velocity`. Clamp magnitude to `character.speed`.
 * **Frictive Motion** Query `Board.tile()` at asset's center. Calculate $\Delta v = \text{friction} \cdot \Delta t$. Apply $\Delta v$ in the direction opposite to the current `velocity`. If $\Delta v > \vert{}\text{velocity}\vert{}$, set `velocity = (0,0)`.
 * **Inert Motion** Exclude Inert from the above steps. For all assets, apply $v \cdot \Delta t$ to the sub-pixel accumulators `rx/ry`. When `rx/ry` exceed $1.0$ or $-1.0$, cast to `int`, shift the physical `Position`, and decrement the accumulator.
 
@@ -83,6 +86,15 @@ When Assets collide, overlap resolution uses inverse mass ratios to correct spat
 $$
 v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 $$
+
+The [Player](./03-player.md) does not observe momentum transfers. Instead, the Player follows the procedures outlined below,
+
+* **Property Level:** The Player retains a normal, dynamic mass (e.g., $m = 10$).
+* **Phase 1 - Spatial Resolution (Unchanged):**
+    * **Player vs. Wall ($m=0$):** `inv_total` is $> 0$. The Wall absorbs 0% of the overlap shift, and the Player absorbs 100%. The Player correctly halts at the wall boundary.
+    * **Player vs. Crate ($m=5$):** Both absorb the spatial shift proportional to their inverse mass. The Player effectively pushes the Crate out of the way.
+* **Phase 2 - Momentum Transfer (The Fix):** Bypass the 1D elastic collision calculation *only* for the Player.
+
 
 ### Intentional
 
