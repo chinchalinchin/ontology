@@ -398,34 +398,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#schemas" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Schemas
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Schemas">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#mapping-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Mapping Configuration
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -596,6 +568,33 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../a0-appendix/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -650,34 +649,6 @@
     <span class="md-ellipsis">
       
         Keyboard
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#schemas" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Schemas
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Schemas">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#mapping-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Mapping Configuration
       
     </span>
   </a>
@@ -782,35 +753,6 @@
 <p>The <a href="../00-overview/#board">Board</a> contains a Device, which polls for user input. The PlayerMechanic uses a Mapping to translate the polling data into a <a href="../04-intentions/">(Intention, Goal)</a>-tuple. The <a href="#mapping-configuration">Mapping Configuration</a> file provides a translation key between input state and game state.</p>
 <h3 id="keyboard">Keyboard</h3>
 <p>The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See <a href="https://wiki.libsdl.org/SDL2/SDL_Scancode">SDL documentation</a> for more information.</p>
-<p><strong>Defaults</strong></p>
-<p>The default mappings bundled with the game are provided below,</p>
-<div class="highlight"><pre><span></span><code><span class="nt">mappings</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">keyboard</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">intentions</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">interact</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">44</span><span class="w">  </span><span class="c1"># SDL_SCANCODE_SPACE</span>
-<span class="w">      </span><span class="nt">sprint</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">225</span><span class="w">   </span><span class="c1"># SDL_SCANCODE_LSHIFT</span>
-<span class="w">      </span><span class="nt">speak</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span>
-<span class="w">      </span><span class="nt">mine</span><span class="p">:</span><span class="w"> </span>
-<span class="w">      </span><span class="nt">attack</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">goals</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">up</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">26</span><span class="w">    </span><span class="c1"># SDL_SCANCODE_W</span>
-<span class="w">      </span><span class="nt">down</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">22</span><span class="w">  </span><span class="c1"># SDL_SCANCODE_S</span>
-<span class="w">      </span><span class="nt">left</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span><span class="w">   </span><span class="c1"># SDL_SCANCODE_A</span>
-<span class="w">      </span><span class="nt">right</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7</span><span class="w">  </span><span class="c1"># SDL_SCANCODE_D</span>
-</code></pre></div>
-<h2 id="schemas">Schemas</h2>
-<h3 id="mapping-configuration">Mapping Configuration</h3>
-<ul>
-<li>Location: <code>src/data/config/mappings/main.yaml</code></li>
-</ul>
-<div class="highlight"><pre><span></span><code><span class="nt">mappings</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">keyboard</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">intentions</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">&lt;intention-key&gt;</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;scancode&gt;</span>
-<span class="w">    </span><span class="nt">goals</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">&lt;goal-key&gt;</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;scancode&gt;</span>
-</code></pre></div>
 
 
 
