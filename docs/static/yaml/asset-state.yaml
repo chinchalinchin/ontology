@@ -36,7 +36,7 @@ crafts:
 # ---------------------------------------------------------- CURSORS
 cursors:
   expressions:
-    - id: Cursor Asset ID
+    - id: Asset ID
       name: Deployment Name
       layer: Layer Key
       position: 
