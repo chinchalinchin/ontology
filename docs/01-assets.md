@@ -208,7 +208,7 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These a
 
 Tiles are inanimate, immutable Assets. Tiles are the most basic type of Asset. They have a single frame, have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds and foregrounds by breaking each rendered image into a grid of tiles. 
 
-Tiles are always assumed to be sized 32x32 pixels. These dimensions are configurable in the property file, but they apply to all Tiles universally. When a Tile is drawn, it is rendered as a `multiple` of the unit Tile configured in the asset directory.
+Tiles Instances have their dimensions fixed by their properties. These dimensions are configurable in the property file, but they apply to all Tiles of a particular instance universally. When a Tile is drawn, it is rendered as a `multiple` of the unit Tile configured in the asset directory.
 
 Tiles have coefficients of friction. These coefficient are used by [MotionMechanics](./05-mechanics.md#spatial) to determine the rate of velocity decay for Assets traversing their area.
 
