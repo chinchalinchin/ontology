@@ -502,7 +502,7 @@ The `key` referenced in the `cost` depends on the Instance type of the Craft. Fo
 
 *Struts* are inanimate, immutable Assets. *Struts* are meant to encapsulate the concept of property in the game, e.g. houses, fences, etc. In other words, they possess an `owner`. 
 
-Struts may be placed on the Board through the state files manually, but are instantiated ingame through the `build` [Intention](./04-intentions.md)
+Struts may be placed on the Board through the state files manually, but are instantiated ingame through the `build` [Intention](./04-intentions.md). This is an oversimplification, as Struts are closely related to [Asset Compositions](./03-compositions.md), but generally true.
 
 **Animation: None**
 
