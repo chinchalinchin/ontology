@@ -1,3 +1,19 @@
 resources:
   crops:
   ore:
+    gold:
+      dimensions:
+        w: 384
+        l: 32
+    silver:
+      dimensions:
+        w: 384
+        l: 32
+    copper:
+      dimensions:
+        w: 384
+        l: 32
+    tin:
+      dimensions:
+        w: 384
+        l: 32
