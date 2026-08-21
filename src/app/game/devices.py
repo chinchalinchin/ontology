@@ -23,44 +23,40 @@ class Device:
         self.mapping = mapping
 
 class Keyboard(Device):
-    """
-    """
-
     def __init__(self, mapping: Mapping):
         super().__init__(mapping)
         
-        # Pre-calculate the tuple of scancodes to query every frame, stripping Nones
         i_codes = [v for v in mapping.intentions.values() if v is not None]
         g_codes = [v for v in mapping.goals.values() if v is not None]
         self._scancodes = tuple(set(i_codes + g_codes))
         
+        # Track the snapshot of the previous frame
+        self._last_state = {code: 0 for code in self._scancodes}
+        
         logger.debug(f"Keyboard initialized mapping to SDL scancodes: {self._scancodes}")
 
     def poll(self) -> Mapping:
-        """
-        """
-        # 1. Update SDL's internal array
         sdl.pump()
+        current_state = sdl.poll(self._scancodes)
+        current_dict = dict(zip(self._scancodes, current_state))
         
-        # 2. Retrieve C-level array values
-        state = sdl.poll(self._scancodes)
-        state_dict = dict(zip(self._scancodes, state))
-        
-        # 3. Translate raw array values into game semantics
         res = {"intentions": [], "goals": []}
-        for k, v in self.mapping.intentions.items():
-            if v is not None and state_dict.get(v):
-                # Ensure we capture the string value since Factory dict keys are natively strings
-                key_val = k.value if hasattr(k, 'value') else k
-                res["intentions"].append(key_val)
         
+        # 1. Edge-Triggered Intentions (Only trigger if 0 -> 1)
+        for k, v in self.mapping.intentions.items():
+            if v is not None and current_dict.get(v):
+                if not self._last_state.get(v):  # The key was NOT held last frame
+                    key_val = k.value if hasattr(k, 'value') else k
+                    res["intentions"].append(key_val)
+        
+        # 2. Level-Triggered Goals (Movement is continuous)
         for k, v in self.mapping.goals.items():
-            if v is not None and state_dict.get(v):
+            if v is not None and current_dict.get(v):
                 key_val = k.value if hasattr(k, 'value') else k
                 res["goals"].append(key_val)
         
-        if res["intentions"] or res["goals"]:
-            logger.debug(f"Keyboard Poll Detected - Intentions: {res['intentions']} | Goals: {res['goals']}")
+        # 3. Update the state tracker for the next tick
+        self._last_state = current_dict
         
         return Mapping(**res)
 

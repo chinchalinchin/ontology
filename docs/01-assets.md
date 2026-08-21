@@ -114,9 +114,13 @@ Some Asset Categories have a Mass property. Only Assets with Mass can participat
 
 See [MotionMechanics](./05-mechanics.md#spatial) for more information.
 
-**Depth**
+**Depth & Height**
 
 All Assets have a `depth` state attribute. This attribute controls the Z-ordering of the Asset being rendered. Most of the time, it can be ignored, since it defaults to `0`. `depth` is important in the context of [Compositions](./03-compositions.md), where multiple Assets need to be superimposed and rendered on top of one another.
+
+All Assets have an optional `height` state attribute. This attribute also modulates the Z-ordering, but the relationship is more complex than `depth`, relating to the application of the Painter's Algorithm. `height` is only a factor when dealing with [Compositions](./03-compositions.md). 
+
+See [Rendering documentation](./09-architecture.md#rendering) for a complete overview of `depth` and `height`.
 
 ### Asset Hierarchy
 
@@ -149,21 +153,21 @@ Each Category has Instances. Asset *Instances* form the bottom layer of the hier
 
 | Asset Category | Asset Instance | State |
 | - | - | - | 
-| Tile | Back | Position, Layer, Depth |
-| Tile | Fore | Position, Layer, Depth |
-| Object | Crate | Position, Layer, Depth |
-| Object | Door | Position, Layer, Depth, OutLayer |
-| Object | Chest | Position, Layer, Depth, Switch, Content |
-| Object | Gate | Position, Layer, Depth, Switch, Link |
-| Object | Plate | Position, Layer, Depth, Switch, Link |
-| Craft | Strut | Position, Layer, Depth, Owner |
-| Craft | Plot | Position, Layer, Depth, Owner, Season |
-| Cursor | Expression | Position, Layer, Depth |
-| Cursor | Projectile | Position, Layer, Depth, Initial |
-| Effect | Temporary | Position, Layer, Depth |
-| Effect | Persistent | Position, Layer, Depth |
-| Sheet | Pixie | Position, Layer. Depth, Animation |
-| Sheet | Sprite | Position, Layer, Depth, Intention, Inventory, Meters, Memory, Mutators, Goal |
+| Tile | Back | Position, Layer, Depth, Height |
+| Tile | Fore | Position, Layer, Depth, Height |
+| Object | Crate | Position, Layer, Depth, Height |
+| Object | Door | Position, Layer, Depth, Height, OutLayer |
+| Object | Chest | Position, Layer, Depth, Height, Switch, Content |
+| Object | Gate | Position, Layer, Depth, Height, Switch, Link |
+| Object | Plate | Position, Layer, Depth, Height, Switch, Link |
+| Craft | Strut | Position, Layer, Depth, Height, Owner |
+| Craft | Plot | Position, Layer, Depth, Height, Owner, Season |
+| Cursor | Expression | Position, Layer, Depth, Height |
+| Cursor | Projectile | Position, Layer, Depth, Height, Initial |
+| Effect | Temporary | Position, Layer, Depth, Height |
+| Effect | Persistent | Position, Layer, Depth, Height |
+| Sheet | Pixie | Position, Layer. Depth, Height |
+| Sheet | Sprite | Position, Layer, Depth, Height, Intention, Inventory, Meters, Memory, Mutators, Goal |
 | Widget | Pane | TODO |
 | Widget | Button | TODO |
 | Widget | Language | TODO |
@@ -238,6 +242,7 @@ N/A
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `position: Position`
 * `multiple: Multiple`
 
@@ -258,6 +263,7 @@ N/A
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `position: Position`
 * `multiple: Multiple`
 
@@ -304,6 +310,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown the [Ches
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `position: Position`
 * `switch: bool`
 * `content: List[str]`
@@ -331,6 +338,7 @@ Doors are Objects that alter a Sprite's `<layer>`. When a Sprite enters the hitb
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `outlayer: str`
 * `position: Position`
 * `out: Position`
@@ -358,6 +366,7 @@ Gates are Binary Objects whose state is connected to Plates. When a Gate is on (
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `link: str`
 * `position: Position`
 * `switch: bool`
@@ -380,6 +389,7 @@ Plates are Binary Objects whose state can be changed by collision, i.e. when a p
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `link: str`
 * `position: Position`
 * `switch: bool`
@@ -411,6 +421,7 @@ N/A
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `position: Position`
 * `velocity: Velocity`
 
@@ -431,6 +442,7 @@ N/A
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `position: Position`
 * `initial: Position`
 * `velocity: Velocity`
@@ -464,6 +476,7 @@ Temporary Effects are brief, short-lived effects, such as explosions or magic. A
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `position: Position`
 * `animation: Animation`
 
@@ -484,6 +497,7 @@ Persistent Effects are long-term, continuous effects, such as water ripples or w
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `position: Position`
 * `animation: Animation`
 
@@ -531,6 +545,7 @@ N/A
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `position: Position`
 * `owner: str`
 
@@ -630,6 +645,7 @@ Pixies are Sheets that have simple game mechanics, e.g. are excluded from the co
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `position: Position`
 * `animation: Animation`
 
@@ -651,6 +667,7 @@ Sprites are Sheets over multiple rows of frames, where each row may have a varia
 
 * `layer: str`
 * `depth: int`
+* `height: int`
 * `position: Position`
 * `velocity: Velocity`
 * `animation: Animation`

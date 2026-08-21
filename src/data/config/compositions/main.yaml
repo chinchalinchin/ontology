@@ -39,7 +39,7 @@ compositions:
                 depth: 0 # Normal depth
                 # height: bind(parent.height) <--- REMOVED
                 position:
-                  x: 0
+                  x: 47
                   y: 142
                 out:
                   x: 75
