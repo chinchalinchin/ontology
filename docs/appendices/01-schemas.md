@@ -13,11 +13,11 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 ### Category: Craft, Instance: Strut
 
-- [Download xcf](../static/png/hitboxes/craft-strut-brick-house.png)
+- [Download xcf](../static/png/hitboxes/craft-strut-frame-brick.png)
 
-![House Strut Hitboxes](static/png/hitboxes/craft-strut-brick-house.png)
+![Brick Frame Strut Hitboxes](static/png/hitboxes/craft-strut-frame-brick.png)
 /// caption
-House Strut Hitbox
+Brick Frame Strut Hitbox
 ///
 
 ## Schemas

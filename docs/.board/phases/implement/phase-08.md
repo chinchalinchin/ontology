@@ -23,20 +23,20 @@ Compositions can be instantiated both at boot (via state files) and at runtime (
 
 *Objective*: Create a shared `Decomposer` utility to decouple expansion logic from the Orchestrator.
 
-- [ ] Subtask: Implement recursive relative coordinate mapping.
-- [ ] Subtask: Implement regex string parser for `bind(root.x)` syntax.
-- [ ] Subtask: Implement global increment counter for unique naming.
+- [x] Subtask: Implement recursive relative coordinate mapping.
+- [x] Subtask: Implement regex string parser for `bind(root.x)` syntax.
+- [x] Subtask: Implement global increment counter for unique naming.
 
 **3. Task: Orchestrator Integration**
 
 *Objective*: Intercept Compositions during bootstrapping and flatten them before Board initialization.
 
-- [ ] Subtask: Update `Orchestrator.migrate()` to process `self.state.compositions`
-- [ ] Subtask: Feed expanded Pseudo States into the standard `Asset` instantiation flow.
+- [x] Subtask: Update `Orchestrator.migrate()` to process `self.state.compositions`
+- [x] Subtask: Feed expanded Pseudo States into the standard `Asset` instantiation flow.
 
 **4. Cradle Integration**
 
 *Objective*: Enable runtime instantiation of Compositions for IndustryMechanics.
 
-- [ ] Subtask: Add `spawn_composition()` to `Cradle`.
-- [ ] Subtask: Implement aggregate `Cost` calculation for the entire Composition tree.
+- [x] Subtask: Add `spawn_composition()` to `Cradle`.
+- [x] Subtask: Implement aggregate `Cost` calculation for the entire Composition tree.
