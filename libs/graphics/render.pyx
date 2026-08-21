@@ -136,7 +136,6 @@ cdef extern from "SDL2/SDL_image.h":
 # -----------------------------------------------------------------------------
 # Global Singletons
 # -----------------------------------------------------------------------------
-# Replaced _window with a primary canvas surface for headless rendering
 cdef SDL_Surface* _canvas_surface = NULL
 cdef SDL_Window* _window = NULL
 # Note: _renderer is maintained in render.pxd
@@ -187,7 +186,6 @@ def init(int w, int l, bint headless=True):
             raise RuntimeError(f"Failed to create software renderer: {SDL_GetError().decode('utf-8')}")
             
     else:
-        # Instantiate window as HIDDEN so the registry can load in the background
         _window = SDL_CreateWindow(b"Game", 100, 100, w, l, SDL_WINDOW_HIDDEN)
         if _window == NULL:
             raise RuntimeError(f"Failed to create window: {SDL_GetError().decode('utf-8')}")
@@ -206,21 +204,14 @@ def show():
     """Reveals the hidden SDL window and paints a clean black loading screen."""
     if _window != NULL:
         SDL_ShowWindow(_window)
-        
-        # 1. Clear the uninitialized VRAM garbage to solid black
         SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255)
         SDL_RenderClear(_renderer)
-        
-        # 2. Push the black frame to the monitor
         SDL_RenderPresent(_renderer)
-        
-        # 3. Tell the OS window manager we are alive so it doesn't 
-        # flag the blank window as "Not Responding" during the Registry load
         SDL_PumpEvents()
 
-def canvas(int w, int l) -> TexturePtr:
+def canvas(int w, int l, bint opaque=False) -> TexturePtr:
     """Instantiates a blank texture assigned as a rendering target using primitive integers."""
-    logger.debug(f"Generating blank VRAM render target canvas size: {w}x{l}")
+    logger.debug(f"Generating blank VRAM render target canvas size: {w}x{l} | Opaque: {opaque}")
     cdef SDL_Texture* tex = SDL_CreateTexture(
         _renderer, 
         SDL_PIXELFORMAT_RGBA32, 
@@ -234,9 +225,13 @@ def canvas(int w, int l) -> TexturePtr:
     # 1. Enable Alpha Blending
     SDL_SetTextureBlendMode(tex, SDL_BLENDMODE_BLEND)
 
-    # 2. Clear VRAM garbage with pure transparency
+    # 2. Clear VRAM garbage with pure transparency or solid black
     SDL_SetRenderTarget(_renderer, tex)
-    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0)
+    if opaque:
+        SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255)
+    else:
+        SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 0)
+    
     SDL_RenderClear(_renderer)
     SDL_SetRenderTarget(_renderer, NULL)
 
@@ -253,20 +248,14 @@ def compose(TexturePtr base_ptr, list feature_ptrs) -> TexturePtr:
     """
     cdef TexturePtr target = canvas(base_ptr.w, base_ptr.l)
 
-    # 1. Bind new target texture
     SDL_SetRenderTarget(_renderer, target.ptr)
-
-    # 2. Draw base foundation
     SDL_RenderCopy(_renderer, base_ptr.ptr, NULL, NULL)
 
-    # 3. Stack arbitrary features on top
     cdef TexturePtr feat
     for feat in feature_ptrs:
         SDL_RenderCopy(_renderer, feat.ptr, NULL, NULL)
 
-    # 4. Unbind render target
     SDL_SetRenderTarget(_renderer, NULL)
-
     return target
 
 def construct(TexturePtr target, list tiles):
@@ -285,10 +274,8 @@ def construct(TexturePtr target, list tiles):
     cdef int i, j
     
     for tile in tiles:
-        # Unpack flat tuples cleanly onto the C-stack
         tex, sx, sy, sw, sl, dx, dy, dw, dl, nx, ny = tile
         
-        # Enforce overwrite of pure transparency on target canvas
         SDL_SetTextureBlendMode(tex.ptr, SDL_BLENDMODE_NONE)
         
         c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sl
@@ -326,7 +313,6 @@ def render(
         bg_src.w = screen_w
         bg_src.h = screen_l
 
-        # Define destination rectangle to prevent stretching over mismatched canvas/screen sizes
         bg_dst.x = 0
         bg_dst.y = 0
         bg_dst.w = screen_w
@@ -339,7 +325,6 @@ def render(
                         f"| Requested Source: {bg_src.w}x{bg_src.h}")
 
     for asset in assets:
-        # Safely unpack the primitive tuple directly into C-variables
         tex_wrapper, sx, sy, sw, sl, dx, dy, dw, dl = asset
         
         c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sl
@@ -350,14 +335,12 @@ def render(
             
         SDL_RenderCopy(_renderer, tex_wrapper.ptr, &c_src, &c_dst)
 
-    # Execute Painter's algorithm
     if foreground is not None:
         bg_src.x = cam_x
         bg_src.y = cam_y
         bg_src.w = screen_w
         bg_src.h = screen_l
         
-        # Define destination rectangle
         bg_dst.x = 0
         bg_dst.y = 0
         bg_dst.w = screen_w
@@ -374,8 +357,6 @@ def save(str filename, int w, int l, TexturePtr target=None):
     
     logger.debug(f"Saving SDL surface: {filename} bounds: {w}x{l} targeting {'TexturePtr' if target else 'Viewport Default'}")
 
-    # We read pixels into a temporary surface instead of relying purely on _canvas_surface
-    # to maintain support for saving specific TexturePtr targets dynamically.
     cdef SDL_Surface* surface = SDL_CreateRGBSurfaceWithFormat(
         0, w, l, 32, SDL_PIXELFORMAT_RGBA32
     )
@@ -383,7 +364,6 @@ def save(str filename, int w, int l, TexturePtr target=None):
     if surface == NULL:
         raise RuntimeError("Failed to create SDL_Surface for saving PNG.")
         
-    # If a specific target is provided, bind it so we can read its pixels
     if target is not None:
         SDL_SetRenderTarget(_renderer, target.ptr)
         
@@ -393,7 +373,6 @@ def save(str filename, int w, int l, TexturePtr target=None):
     IMG_SavePNG(surface, b_filename)
     SDL_FreeSurface(surface)
 
-    # Safely reset the target back to the main canvas if we changed it
     if target is not None:
         SDL_SetRenderTarget(_renderer, NULL)
 

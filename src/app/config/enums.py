@@ -187,11 +187,13 @@ class Configurations(str, Enum):
     MENUS           = "menus"
     RECIPES         = "recipes"
     SCRIPTS         = "scripts"
+    COMPOSITIONS    = "compositions"
 
 class Spawnables(str, Enum):
     TEMPORARY       = "temporary"
     PROJECTILES     = "projectiles"
     STRUTS          = "struts"
+    COMPOSITIONS    = "compositions"
 
 class Groups(str, Enum):
     CONFIGURATIONS  = "configurations"
@@ -207,6 +209,7 @@ class FrictiveAssets(str, Enum):
 
 class InertAssets(str, Enum):
     PROJECTILES     = "projectiles"
+    
 # -------------------------------- WIDGET ENUMERATIONS
 
 class Layouts(str, Enum):

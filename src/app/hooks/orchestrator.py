@@ -19,6 +19,7 @@ from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
 from app.hooks.factory import Factory
+from app.hooks.decomposer import Decomposer
 from app.models.groups import SpawnableGroup, ConfigurationGroup, EquipmentGroup
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
@@ -35,6 +36,7 @@ class Orchestrator:
     state: StateSchema
     configurations: ConfigurationSchema
     
+    decomposer: Decomposer
     registry: Registry
     board: Board
     screens: Dict[str, Screen]
@@ -45,6 +47,13 @@ class Orchestrator:
         self.properties = Loader.load_properties()
         self.configurations = Loader.load_configurations()
         self.state = Loader.load_state(state)
+
+        # Instantiate Decomposer ahead of standard Asset migrations
+        self.decomposer = Decomposer(
+            compositions=self.configurations.compositions,
+            properties=self.properties,
+            recipes=self.configurations.recipes
+        )
 
     def migrate(self) -> Board:
         logger.info("Migrating validated data to engine models...")
@@ -81,12 +90,19 @@ class Orchestrator:
             utilities=self.properties.sheets.utilities,
             shields=self.properties.sheets.shields
         )
-
-        # 4. Migrate Assets with State        
+      
         assets = []
         
+        # 4. Intercept and Migrate Compositions
+        if hasattr(self.state, 'compositions') and self.state.compositions:
+            for comp_deployed_state in self.state.compositions:
+                expanded_assets = self.decomposer.unpack(comp_deployed_state)
+                assets.extend(expanded_assets)
+
+        # 5. Migrate Assets With State        
         for cat_field in dataclasses.fields(self.state):
             category_key = cat_field.name
+            if category_key == 'compositions': continue  # Pre-handled above
             category_data = getattr(self.state, category_key)
             if not category_data: continue
             
@@ -102,7 +118,7 @@ class Orchestrator:
                     cat_recipes = getattr(self.configurations.recipes, category_key, None)
                     recipe = getattr(cat_recipes, instance_key, None) if cat_recipes else None
                     
-                    # --- RESTORED PROPERTY MAPPING ---
+                    # --- PLAYER PROPERTY MAPPING ---
                     # Players are state instances, but their physical properties map to the Sprites schema
                     prop_instance_key = instance_key
                     if category_key == AssetCategories.SHEETS and instance_key == AssetInstances.PLAYERS:
@@ -144,7 +160,7 @@ class Orchestrator:
             temporary=self.properties.effects.temporary,
             struts=self.properties.crafts.struts
         )
-        cradle = Factory.cradle(spawnable_groups, self.configurations.recipes)
+        cradle = Factory.cradle(spawnable_groups, self.configurations.recipes, self.decomposer)
         self.board.set_cradle(cradle)
 
         return self.board

@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.intentional.speech
+# Ontology: app.game.logic.mechanics.intentional.industry
 """
 # Standard Libraries
 from __future__ import annotations
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 from app.game.logic.mechanics import Mechanic
 
 
-class SpeechMechanics(Mechanic):
+class IndustryMechanics(Mechanic):
     """
     """
 

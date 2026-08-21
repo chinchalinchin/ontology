@@ -125,14 +125,14 @@ class MechanicsConfiguration(Configuration):
 # ------------------------------------------------------------- COMPOSITION CONFIGURATION
 
 @dataclass(slots=True)
-class CompositionNode:
+class CompositionPseudoState:
     strut: PropertyState
     components: StateSchema
 
 @dataclass(slots=True)
-class CompositionPseudoState:
-    root: CompositionNode
-    branches: List[CompositionNode]
+class CompositionConfiguration:
+    root: CompositionPseudoState
+    branches: List[CompositionPseudoState]
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------- ROOT SCHEMA
@@ -144,3 +144,4 @@ class ConfigurationSchema:
     intentions: Dict[Intentions, List[IntentionConfiguration]] = field(default_factory=dict)
     actions: List[ActionConfiguration] = field(default_factory=list)
     mechanics: MechanicsConfiguration = field(default_factory=MechanicsConfiguration)
+    compositions: Dict[str, CompositionConfiguration] = field(default_factory=dict)

@@ -114,6 +114,10 @@ Some Asset Categories have a Mass property. Only Assets with Mass can participat
 
 See [MotionMechanics](./05-mechanics.md#spatial) for more information.
 
+**Depth**
+
+All Assets have a `depth` state attribute. This attribute controls the Z-ordering of the Asset being rendered. Most of the time, it can be ignored, since it defaults to `0`. `depth` is important in the context of [Compositions](./03-compositions.md), where multiple Assets need to be superimposed and rendered on top of one another.
+
 ### Asset Hierarchy
 
 While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state [schemas](./appendices/01-schemas.md) encode Asset Categories and Instances into the top-level keys.
@@ -145,21 +149,21 @@ Each Category has Instances. Asset *Instances* form the bottom layer of the hier
 
 | Asset Category | Asset Instance | State |
 | - | - | - | 
-| Tile | Back | Position, Layer |
-| Tile | Fore | Position, Layer |
-| Object | Crate | Position, Layer |
-| Object | Door | Position, Layer, OutLayer |
-| Object | Chest | Position, Layer, Switch, Content |
-| Object | Gate | Position, Layer, Switch, Link |
-| Object | Plate | Position, Layer, Switch, Link |
-| Craft | Strut | Position, Layer, Owner |
-| Craft | Plot | Position, Layer, Owner, Season |
-| Cursor | Expression | Position, Layer |
-| Cursor | Projectile | Position, Layer, Initial |
-| Effect | Temporary | Position, Layer |
-| Effect | Persistent | Position, Layer |
-| Sheet | Pixie | Position, Layer. Animation |
-| Sheet | Sprite | Position, Layer, Intention, Inventory, Meters, Memory, Mutators, Goal |
+| Tile | Back | Position, Layer, Depth |
+| Tile | Fore | Position, Layer, Depth |
+| Object | Crate | Position, Layer, Depth |
+| Object | Door | Position, Layer, Depth, OutLayer |
+| Object | Chest | Position, Layer, Depth, Switch, Content |
+| Object | Gate | Position, Layer, Depth, Switch, Link |
+| Object | Plate | Position, Layer, Depth, Switch, Link |
+| Craft | Strut | Position, Layer, Depth, Owner |
+| Craft | Plot | Position, Layer, Depth, Owner, Season |
+| Cursor | Expression | Position, Layer, Depth |
+| Cursor | Projectile | Position, Layer, Depth, Initial |
+| Effect | Temporary | Position, Layer, Depth |
+| Effect | Persistent | Position, Layer, Depth |
+| Sheet | Pixie | Position, Layer. Depth, Animation |
+| Sheet | Sprite | Position, Layer, Depth, Intention, Inventory, Meters, Memory, Mutators, Goal |
 | Widget | Pane | TODO |
 | Widget | Button | TODO |
 | Widget | Language | TODO |
@@ -233,6 +237,7 @@ N/A
 **State: MultiplerState**
 
 * `layer: str`
+* `depth: int`
 * `position: Position`
 * `multiple: Multiple`
 
@@ -252,6 +257,7 @@ N/A
 **State: MultiplerState**
 
 * `layer: str`
+* `depth: int`
 * `position: Position`
 * `multiple: Multiple`
 
@@ -297,6 +303,7 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown the [Ches
 **State: ContainerState**
 
 * `layer: str`
+* `depth: int`
 * `position: Position`
 * `switch: bool`
 * `content: List[str]`
@@ -323,6 +330,7 @@ Doors are Objects that alter a Sprite's `<layer>`. When a Sprite enters the hitb
 **State: DoorState**
 
 * `layer: str`
+* `depth: int`
 * `outlayer: str`
 * `position: Position`
 * `out: Position`
@@ -349,6 +357,7 @@ Gates are Binary Objects whose state is connected to Plates. When a Gate is on (
 **State: SwitchState**
 
 * `layer: str`
+* `depth: int`
 * `link: str`
 * `position: Position`
 * `switch: bool`
@@ -370,6 +379,7 @@ Plates are Binary Objects whose state can be changed by collision, i.e. when a p
 **State: SwitchState**
 
 * `layer: str`
+* `depth: int`
 * `link: str`
 * `position: Position`
 * `switch: bool`
@@ -400,6 +410,7 @@ N/A
 **State: PositionalState**
 
 * `layer: str`
+* `depth: int`
 * `position: Position`
 * `velocity: Velocity`
 
@@ -419,6 +430,7 @@ N/A
 **State: MotorState**
 
 * `layer: str`
+* `depth: int`
 * `position: Position`
 * `initial: Position`
 * `velocity: Velocity`
@@ -451,6 +463,7 @@ Temporary Effects are brief, short-lived effects, such as explosions or magic. A
 **State: AnimatorState**
 
 * `layer: str`
+* `depth: int`
 * `position: Position`
 * `animation: Animation`
 
@@ -470,6 +483,7 @@ Persistent Effects are long-term, continuous effects, such as water ripples or w
 **State: AnimatorState**
 
 * `layer: str`
+* `depth: int`
 * `position: Position`
 * `animation: Animation`
 
@@ -516,6 +530,7 @@ N/A
 **State: PropertyState**
 
 * `layer: str`
+* `depth: int`
 * `position: Position`
 * `owner: str`
 
@@ -614,6 +629,7 @@ Pixies are Sheets that have simple game mechanics, e.g. are excluded from the co
 **State: AnimatorState**
 
 * `layer: str`
+* `depth: int`
 * `position: Position`
 * `animation: Animation`
 
@@ -634,6 +650,7 @@ Sprites are Sheets over multiple rows of frames, where each row may have a varia
 **State: SpriteState**
 
 * `layer: str`
+* `depth: int`
 * `position: Position`
 * `velocity: Velocity`
 * `animation: Animation`

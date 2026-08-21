@@ -3,6 +3,7 @@
 
 Package for instantiating Asset classes and their components.
 """
+from typing import Any
 
 # Application Libraries
 from app.assets.animations import (
@@ -107,5 +108,5 @@ class Factory:
         return Factory.MECHANICS_MAP.get(kind, AnimationMechanics)()
 
     @staticmethod
-    def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration):
-        return Cradle(spawnables, recipes)
+    def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration, decomposer: Any):
+        return Cradle(spawnables, recipes, decomposer)

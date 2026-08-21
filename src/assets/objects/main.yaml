@@ -1,7 +1,7 @@
 objects:
   # -------------------------------------------------------
   chests:
-    wooden-chest:
+    chest-wood:
       dimensions:
         w: 32
         l: 32
@@ -9,7 +9,7 @@ objects:
       hitboxes: null
   # -------------------------------------------------------
   crates:
-    stone-statue:
+    crate-statue:
       dimensions:
         w: 30
         l: 64
@@ -21,7 +21,7 @@ objects:
           dimensions:
             w: 30
             l: 64
-    wooden-barrel:
+    crate-barrel:
       dimensions:
         w: 28
         l: 38
@@ -33,7 +33,7 @@ objects:
           dimensions:
             w: 28
             l: 38
-    wooden-box:
+    crate-wood:
       dimensions:
         w: 28
         l: 30
@@ -41,39 +41,44 @@ objects:
       hitboxes: null
   # -------------------------------------------------------
   doors:
-    double-door:
+    door-double:
       mass: -1
       dimensions:
         w: 64
         l: 64
-      hitboxes: null
-    dungeon-door:
+    door-dungeon:
       mass: -1
       dimensions:
         w: 32
         l: 48
-      hitboxes: null
-    mansion-door:
+    door-mansion:
       mass: -1
       dimensions:
         w: 32
         l: 48
-      hitboxes: null
-    open-door:
+    door-house:
+      mass: -1
+      dimensions: 
+        w: 32
+        l: 48
+    door-shadow:
+      mass: -1
+      dimensions:
+        w: 32
+        l: 48
+    door-open:
       mass: -1
       dimensions:
         w: 32
         l: 57
-      hitboxes: null 
-    shack-door:
+    door-shack:
       mass: -1 
       dimensions:
         w: 32
         l: 48
-      hitboxes: null
   # -------------------------------------------------------
   gates:
-    stone-gate:
+    gate-stone:
       mass: 0
       dimensions:
         w: 64
@@ -81,21 +86,8 @@ objects:
       hitboxes: null
   # -------------------------------------------------------
   plates:
-    stone-crack:
-      mass: -1
-      dimensions:
-        w: 32
-        l: 32
-      hitboxes: null
-    stone-switch:
+    plate-stone:
       mass: -1
       dimensions:
         w: 15
         l: 14
-      hitboxes: null
-    stone-sword:
-      mass: -1
-      dimensions:
-        w: 26
-        l: 38
-      hitboxes: null

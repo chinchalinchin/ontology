@@ -35,14 +35,24 @@ class Screen:
         tiles: List[Asset],
         registry: Registry
     ):
-        logger.info(f"Initializing Screen overlay (Viewport: {screensize.w}x{screensize.l} | Board: {boardsize.w}x{boardsize.l})")
         self.screensize = screensize
-        self.boardsize = boardsize
+        
+        # Hardware Minimum Clamp: Guarantee rendering bounds never drop below viewport size
+        self.boardsize = Dimensions(
+            w=max(boardsize.w, screensize.w),
+            l=max(boardsize.l, screensize.l)
+        )
+        
+        logger.info(f"Initializing Screen overlay (Viewport: {self.screensize.w}x{self.screensize.l} | Board: {self.boardsize.w}x{self.boardsize.l})")
+        
         self.registry = registry
 
+        # Canvas Opacity Flag: If layer has no tiles, initialize to opaque black
+        is_opaque = len(tiles) == 0
+
         # Instantiate Painter's Algorithm Targets
-        self.bg_canvas = canvas(self.boardsize.w, self.boardsize.l)
-        self.fg_canvas = canvas(self.boardsize.w, self.boardsize.l)
+        self.bg_canvas = canvas(self.boardsize.w, self.boardsize.l, opaque=is_opaque)
+        self.fg_canvas = canvas(self.boardsize.w, self.boardsize.l) # Foreground stays transparent
         
         cython_bg_tiles = []
         cython_fg_tiles = []
@@ -114,8 +124,12 @@ class Screen:
         active_assets = []
         
         # 1. Depth-sort the assets directly prior to querying asset.frame.keys()
-        # This properly maintains multi-layered entity compositions (e.g., equipment layered on players)
-        assets.sort(key=lambda a: a.state.position.y + (a.dimensions.l if a.dimensions else 0))
+        # Primary Sort: Explicit Z-index
+        # Secondary Sort: Y-Coordinate + Length (Painter's Algorithm)
+        assets.sort(key=lambda a: (
+            getattr(a.state, 'depth', 0), 
+            a.state.position.y + (a.dimensions.l if a.dimensions else 0)
+        ))
         
         for asset in assets:
             # Filter out Tile assets to avoid dynamic rendering artifacts; 

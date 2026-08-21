@@ -23,8 +23,9 @@ class NoState:
 @dataclass(slots=True)
 class AssetState:
     id: str
-    name: str
-    layer: str
+    name: Optional[str] = None
+    layer: Optional[str] = None
+    depth: int = 0
 
 @dataclass(slots=True)
 class AnimationState:
@@ -36,50 +37,50 @@ class AnimationState:
 
 @dataclass(slots=True)
 class MultiplierState(AssetState):
-    position: Position
-    multiple: Multiple 
+    position: Optional[Position] = None
+    multiple: Optional[Multiple] = None 
 
 @dataclass(slots=True)
 class PositionalState(AssetState):
-    position: Position
+    position: Optional[Position] = None
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0))
 
 @dataclass(slots=True)
 class PropertyState(AssetState):
-    owner: str
-    position: Position
+    owner: Optional[str] = None
+    position: Optional[Position] = None
 
 @dataclass(slots=True)
 class MotorState(AssetState):
-    position: Position
-    initial: Position
+    position: Optional[Position] = None
+    initial: Optional[Position] = None
     direction: str = "down"
     speed: int = 10
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0))
 
 @dataclass(slots=True)
 class AnimatorState(AssetState):
-    position: Position
+    position: Optional[Position] = None
     animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class ContainerState(AssetState):
-    content: List[str]
-    position: Position
-    switch: bool
+    content: Optional[List[str]] = field(default_factory=list)
+    position: Optional[Position] = None
+    switch: Optional[bool] = False
     animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class DoorState(AssetState):
-    position: Position
-    out: Position
-    outlayer: str
+    position: Optional[Position] = None
+    out: Optional[Position] = None
+    outlayer: Optional[str] = None
 
 @dataclass(slots=True)
 class SwitchState(AssetState):
-    link: str
-    position: Position
-    switch: bool
+    link: Optional[str] = None
+    position: Optional[Position] = None
+    switch: Optional[bool] = False
     animation: AnimationState = field(default_factory=AnimationState)
 
 # ---------------------------------------------------------------------------------------
@@ -167,24 +168,24 @@ class Mutators:
 
 @dataclass(slots=True)
 class SpriteState(AssetState):
-    intention: Intentions
-    goal: Goal
-    position: Position
-    character: Character
-    inventory: Inventory
-    meters: Meters
-    mutators: Mutators
-    memory: Memory
+    intention: Optional[Intentions] = None
+    goal: Optional[Goal] = None
+    position: Optional[Position] = None
+    character: Optional[Character] = None
+    inventory: Optional[Inventory] = None
+    meters: Optional[Meters] = None
+    mutators: Optional[Mutators] = None
+    memory: Optional[Memory] = None
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0))
     animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class PlayerState(AssetState):
-    position: Position
-    character: Character
-    inventory: Inventory
-    meters: Meters
-    mutators: Mutators = field(default_factory=Mutators)    
+    position: Optional[Position] = None
+    character: Optional[Character] = None
+    inventory: Optional[Inventory] = None
+    meters: Optional[Meters] = None
+    mutators: Mutators = field(default_factory=Mutators)   
     goal: Optional[Goal] = None
     intention: Optional[Intentions] = None
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0))
@@ -234,3 +235,4 @@ class StateSchema:
     cursors: CursorStateInstances = field(default_factory=CursorStateInstances)
     effects: EffectStateInstances = field(default_factory=EffectStateInstances)
     sheets: SheetStateInstances = field(default_factory=SheetStateInstances)
+    compositions: List[PropertyState] = field(default_factory=list)

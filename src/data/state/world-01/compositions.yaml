@@ -1,0 +1,8 @@
+compositions:
+  - id: brick-house
+    name: player-home
+    layer: '0'
+    owner: player
+    position:
+      x: 350
+      y: 350

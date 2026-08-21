@@ -2,7 +2,7 @@
 # ----------------------------------------------------------- CRAFTS
 crafts:
   struts:
-    adobe-house:
+    frame-adobe:
       dimensions:
         w: 96
         l: 160
@@ -32,7 +32,7 @@ crafts:
       cost:
         - item: stone
           quantity: 10
-    wooden-fence-horizontal:
+    fence-horizontal:
       dimensions:
         w: 72
         l: 73
@@ -47,7 +47,7 @@ crafts:
       cost:
         - item: wood
           quantity: 10
-    wooden-fence-vertical:
+    fence-vertical:
       dimensions:
         w: 8 
         l: 87
@@ -60,5 +60,13 @@ crafts:
             w: 8
             l: 87
       cost:
+        - item: wood
+          quantity: 10
+    wall-blue:
+      dimensions:
+        w: 128
+        l: 96
+      mass: -1
+      cost: 
         - item: wood
           quantity: 10

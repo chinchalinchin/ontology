@@ -17,7 +17,7 @@ Compositions can be instantiated both at boot (via state files) and at runtime (
 *Objective*: Expand Pydantic models to ingest Composition YAML data from both state and config directories.
 
 - [x] Subtack: Define `CompositionConfig` in `models/config.py`
-- [ ] Subtask: Update root schemas to include these fields.
+- [x] Subtask: Update root schemas to include these fields.
 
 **2. Task: Hydration Engine**
 

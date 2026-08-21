@@ -1,12 +1,13 @@
 compositions:
   <id>:
     root:
-      id: Strut Asset ID
-      name: Strut Name Prefix
-    components:
-      objects: Object Schema
-      crafts: Craft Schema
-      effects: Effect Schema
+      strut:
+        id: Strut Asset ID
+        name: Strut Name Prefix
+      components:
+        objects: Object Schema
+        crafts: Craft Schema
+        effects: Effect Schema
     branches: 
       - strut:
           id: Strut Asset ID
