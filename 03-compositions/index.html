@@ -908,6 +908,7 @@
 <span class="w">                    </span><span class="nt">doors</span><span class="p">:</span>
 <span class="w">                        </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mansion</span>
 <span class="w">                            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">house-door</span>
+<span class="w">                            </span><span class="nt">depth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 <span class="w">                            </span><span class="nt">outlayer</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;compose-layer&#39;</span>
 <span class="w">                            </span><span class="nt">position</span><span class="p">:</span>
 <span class="w">                                </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
@@ -930,6 +931,7 @@
 <span class="w">                            </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">door-shadow</span>
 <span class="w">                                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">door-frame</span>
 <span class="w">                                </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;compose-layer&#39;</span>
+<span class="w">                                </span><span class="nt">depth</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 <span class="w">                                </span><span class="nt">outlayer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bind(root.layer)</span>
 <span class="w">                                </span><span class="nt">position</span><span class="p">:</span>
 <span class="w">                                    </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
@@ -941,6 +943,10 @@
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code>components</code> is an <a href="../00-overview/#state">Asset State</a> schema, identical to a state file.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Doors in this Configuration utilize the <code>depth</code> attribute to ensure they are rendered on top of their parent Struts.</p>
 </div>
 <p>This is a formula for a <code>brick-house</code> composed of two Struts on different <a href="../00-overview/#layers">Layers</a>, each of which have their own <a href="../01-assets/#doors">Door</a>, each Door being linked to one another through a circuit (<code>'compose-layer' &lt;-&gt; bind(root.layer)</code>). In this way, the "inside" of Assets can be traversed. In other words, each Composition may be composed of separate, independent Layers. </p>
 <div class="admonition note">
