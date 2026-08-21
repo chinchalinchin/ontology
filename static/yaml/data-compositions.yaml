@@ -1,0 +1,20 @@
+compositions:
+  <id>:
+    root:
+      id: Strut Asset ID
+      name: Strut Name Prefix
+    components:
+      objects: Object Schema
+      crafts: Craft Schema
+      effects: Effect Schema
+    branches: 
+      - strut:
+          id: Strut Asset ID
+          name: Strut Name Prefix
+          owner: Strut Owner
+          layer: Strut Layer
+          position: Strut Position
+        components: 
+          objects: Object Schema
+          crafts: Craft Schema
+          effects: Effect Schema

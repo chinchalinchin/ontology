@@ -694,6 +694,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#composition-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composition Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mapping-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -704,12 +715,7 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
+          <li class="md-nav__item">
   <a href="#mechanics-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -718,8 +724,7 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Mechanics Configuration">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#menu-configuration" class="md-nav__link">
@@ -886,6 +891,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#composition-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Composition Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#mapping-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -896,12 +912,7 @@
   
 </li>
         
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
+          <li class="md-nav__item">
   <a href="#mechanics-configuration" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -910,8 +921,7 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Mechanics Configuration">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
   <a href="#menu-configuration" class="md-nav__link">
@@ -1027,9 +1037,35 @@
 </figcaption>
 </figure>
 <h2 id="schemas">Schemas</h2>
+<h3 id="composition-configuration">Composition Configuration</h3>
+<p>Composition Configuration defines a collection of Assets that can be deployed as a unit onto the Board.</p>
+<ul>
+<li>Location: <code>/src/data/config/compositions.yaml</code></li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="nt">compositions</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">&lt;id&gt;</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">root</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Strut Asset ID</span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Strut Name Prefix</span>
+<span class="w">    </span><span class="nt">components</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">objects</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Object Schema</span>
+<span class="w">      </span><span class="nt">crafts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Craft Schema</span>
+<span class="w">      </span><span class="nt">effects</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Effect Schema</span>
+<span class="w">    </span><span class="nt">branches</span><span class="p">:</span><span class="w"> </span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">strut</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Strut Asset ID</span>
+<span class="w">          </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Strut Name Prefix</span>
+<span class="w">          </span><span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Strut Owner</span>
+<span class="w">          </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Strut Layer</span>
+<span class="w">          </span><span class="nt">position</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Strut Position</span>
+<span class="w">        </span><span class="nt">components</span><span class="p">:</span><span class="w"> </span>
+<span class="w">          </span><span class="nt">objects</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Object Schema</span>
+<span class="w">          </span><span class="nt">crafts</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Craft Schema</span>
+<span class="w">          </span><span class="nt">effects</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Effect Schema</span>
+</code></pre></div>
 <h3 id="mapping-configuration">Mapping Configuration</h3>
 <ul>
-<li>Location: <code>src/data/config/mappings/main.yaml</code></li>
+<li>Location: <code>/src/data/config/mappings/main.yaml</code></li>
 </ul>
 <div class="highlight"><pre><span></span><code><span class="nt">mappings</span><span class="p">:</span>
 <span class="w">  </span><span class="nt">keyboard</span><span class="p">:</span>
@@ -1055,7 +1091,7 @@
 <span class="w">      </span><span class="nt">left</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span><span class="w">   </span><span class="c1"># SDL_SCANCODE_A</span>
 <span class="w">      </span><span class="nt">right</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7</span><span class="w">  </span><span class="c1"># SDL_SCANCODE_D</span>
 </code></pre></div>
-<h2 id="mechanics-configuration">Mechanics Configuration</h2>
+<h3 id="mechanics-configuration">Mechanics Configuration</h3>
 <p>Mechanics Configuration defines what Mechanic classes are instantiated by the game engine. The order in which they are specified in the schema becomes the order of execution in the game engine.</p>
 <ul>
 <li>Location: <code>/src/data/config/mechanics/main.yaml</code></li>
