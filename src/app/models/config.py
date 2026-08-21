@@ -15,6 +15,7 @@ from app.config.enums import (
     Intentions,
     PlayerGoals,
 )
+from app.models.state import PropertyState, StateSchema
 from app.models.properties import Action
 
 class Configuration:
@@ -119,6 +120,19 @@ class IntentionConfiguration(Configuration):
 @dataclass(slots=True)
 class MechanicsConfiguration(Configuration):
     order: List[str] = field(default_factory=list)
+
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------- COMPOSITION CONFIGURATION
+
+@dataclass(slots=True)
+class CompositionNode:
+    strut: PropertyState
+    components: StateSchema
+
+@dataclass(slots=True)
+class CompositionPseudoState:
+    root: CompositionNode
+    branches: List[CompositionNode]
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------- ROOT SCHEMA

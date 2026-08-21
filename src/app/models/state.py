@@ -1,11 +1,20 @@
 """
 # Ontology: app.models.state
 """
-from typing import Dict, List, Union, Optional
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 
-from app.config.enums import Actions, Directions, Intentions, Relationships
-from app.models.adapters import PydanticPosition as Position, PydanticMultiple as Multiple, PydanticVelocity as Velocity
+from app.config.enums import (
+    Actions, 
+    Directions, 
+    Intentions, 
+    Relationships
+)
+from app.models.adapters import (
+    PydanticPosition as Position, 
+    PydanticMultiple as Multiple, 
+    PydanticVelocity as Velocity
+)
 from libs.core.models import Velocity as CoreVelocity
 
 class NoState:
@@ -22,6 +31,8 @@ class AnimationState:
     action: str = Actions.WALK
     direction: str = Directions.DOWN
     frame: int = 0
+
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class MultiplierState(AssetState):
@@ -70,6 +81,8 @@ class SwitchState(AssetState):
     position: Position
     switch: bool
     animation: AnimationState = field(default_factory=AnimationState)
+
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class Character:
@@ -149,6 +162,8 @@ class MutatorParameters:
 class Mutators:
     triggers: MutatorTriggers = field(default_factory=MutatorTriggers)
     parameters: Optional[MutatorParameters] = None
+
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class SpriteState(AssetState):

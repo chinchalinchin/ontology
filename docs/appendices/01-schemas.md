@@ -22,9 +22,19 @@ House Strut Hitbox
 
 ## Schemas
 
+### Composition Configuration
+
+Composition Configuration defines a collection of Assets that can be deployed as a unit onto the Board.
+
+* Location: `/src/data/config/compositions.yaml`
+
+```yaml
+--8<-- "static/yaml/data-compositions.yaml"
+```
+
 ### Mapping Configuration
 
-* Location: `src/data/config/mappings/main.yaml`
+* Location: `/src/data/config/mappings/main.yaml`
 
 ```yaml
 --8<-- "static/yaml/data-mappings.yaml"
@@ -38,7 +48,7 @@ The default mappings bundled with the game are provided below,
 --8<-- "static/yaml/examples/default-mappings.yaml"
 ```
 
-## Mechanics Configuration
+### Mechanics Configuration
 
 Mechanics Configuration defines what Mechanic classes are instantiated by the game engine. The order in which they are specified in the schema becomes the order of execution in the game engine.
 

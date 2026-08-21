@@ -21,7 +21,7 @@ sheets:
       inventory: 
         loot: null
         equipment:
-          armor: leather
+          armor: null
           tool: null
           utility: null
           weapon: null
