@@ -1,7 +1,7 @@
 """
 # Ontology: app.models.state
 """
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Union
 from dataclasses import dataclass, field
 
 from app.config.enums import (
@@ -26,6 +26,7 @@ class AssetState:
     name: Optional[str] = None
     layer: Optional[str] = None
     depth: int = 0
+    height: Optional[Union[int, str]] = None
 
 @dataclass(slots=True)
 class AnimationState:
@@ -153,6 +154,7 @@ class MutatorTriggers:
     frightened: bool = False
     dead: bool = False
     vision: bool = False
+    executed: bool = False
 
 @dataclass(slots=True)
 class MutatorParameters:

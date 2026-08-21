@@ -3,7 +3,7 @@ sheets:
     - id: player
       name: player
       layer: '0'
-      depth: 100
+      depth: 0
       position:
         x: 10
         y: 10

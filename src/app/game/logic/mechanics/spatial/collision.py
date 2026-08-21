@@ -16,7 +16,7 @@ from app.config.enums import AssetInstances
 from app.game.logic.mechanics.spatial.base import SpatialMechanic
 
 # Cython Libraries
-from libs.core.math import Physics
+from libs.core.math import Physics, Geometry
 
 class CollisionMechanics(SpatialMechanic):
     """
@@ -40,9 +40,19 @@ class CollisionMechanics(SpatialMechanic):
         vel1 = getattr(asset_a.state, 'velocity', None)
         vel2 = getattr(asset_b.state, 'velocity', None)
 
+        intersection = Geometry.intersects(
+            asset_a.state.position, asset_a.dimensions, asset_a.hitboxes,
+            asset_b.state.position, asset_b.dimensions, asset_b.hitboxes
+        )
+
+        if not intersection:
+            return
+
+        hb_a, hb_b = intersection
+
         Physics.resolve_collision(
-            asset_a.state.position, asset_a.dimensions, vel1, m1, is_kinematic1,
-            asset_b.state.position, asset_b.dimensions, vel2, m2, is_kinematic2
+            asset_a.state.position, hb_a, vel1, m1, is_kinematic1,
+            asset_b.state.position, hb_b, vel2, m2, is_kinematic2
         )
 
     def update(self, board: Board, delta: float) -> None:

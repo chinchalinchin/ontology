@@ -19,7 +19,7 @@ cdef class Geometry:
     """
 
     @staticmethod
-    cdef bint intersects(
+    cdef tuple _intersects(
         Position pos1, 
         Dimensions dim1, 
         list hitboxes1,
@@ -37,7 +37,7 @@ cdef class Geometry:
         # Fast path: If an object doesn't have hitboxes (e.g., background tiles), 
         # they inherently cannot collide in this engine's narrow phase.
         if not hitboxes1 or not hitboxes2:
-            return False
+            return None
         
         # Iterate over hitboxes. 
         # Notice we typecast `<Hitbox>item` so Cython knows the exact memory layout 
@@ -59,9 +59,23 @@ cdef class Geometry:
                 # Inline AABB collision check using the integer primitives 
                 if (x1 < x2 + w2 and x1 + w1 > x2 and
                     y1 < y2 + h2 and y1 + h1 > y2):
-                    return True
+                    return (hb1, hb2)
                     
-        return False
+        return None
+
+    @staticmethod
+    def intersects(
+        Position pos1, 
+        Dimensions dim1, 
+        list hitboxes1,
+        Position pos2, 
+        Dimensions dim2, 
+        list hitboxes2
+    ):
+        """
+        Python-accessible wrapper for the Cython _intersects method.
+        """
+        return Geometry._intersects(pos1, dim1, hitboxes1, pos2, dim2, hitboxes2)
 
     @staticmethod
     cdef bint onscreen(
@@ -213,7 +227,7 @@ cdef class Physics:
             dim_b.w = data_b[3]
             dim_b.l = data_b[4]
 
-            if Geometry.intersects(pos_a, dim_a, data_a[5], pos_b, dim_b, data_b[5]):
+            if Geometry._intersects(pos_a, dim_a, data_a[5], pos_b, dim_b, data_b[5]) is not None:
                 colliding_pairs.append(pair)
                 
         return colliding_pairs
@@ -221,20 +235,20 @@ cdef class Physics:
     @staticmethod
     def resolve_collision(
         Position pos1, 
-        Dimensions dim1, 
+        Hitbox hb1, 
         Velocity vel1, 
         float m1, 
         bint is_kinematic1,
         Position pos2, 
-        Dimensions dim2, 
+        Hitbox hb2, 
         Velocity vel2, 
         float m2, 
         bint is_kinematic2
     ):
-        cdef float cx_a = pos1.x + dim1.w / 2.0
-        cdef float cy_a = pos1.y + dim1.l / 2.0
-        cdef float cx_b = pos2.x + dim2.w / 2.0
-        cdef float cy_b = pos2.y + dim2.l / 2.0
+        cdef float cx_a = pos1.x + hb1.position.x + hb1.dimensions.w / 2.0
+        cdef float cy_a = pos1.y + hb1.position.y + hb1.dimensions.l / 2.0
+        cdef float cx_b = pos2.x + hb2.position.x + hb2.dimensions.w / 2.0
+        cdef float cy_b = pos2.y + hb2.position.y + hb2.dimensions.l / 2.0
 
         cdef float dx = cx_b - cx_a
         cdef float dy = cy_b - cy_a
@@ -242,8 +256,8 @@ cdef class Physics:
         if dx == 0 and dy == 0:
             dx = 1.0
 
-        cdef float overlap_x = (dim1.w / 2.0 + dim2.w / 2.0) - abs(dx)
-        cdef float overlap_y = (dim1.l / 2.0 + dim2.l / 2.0) - abs(dy)
+        cdef float overlap_x = (hb1.dimensions.w / 2.0 + hb2.dimensions.w / 2.0) - abs(dx)
+        cdef float overlap_y = (hb1.dimensions.l / 2.0 + hb2.dimensions.l / 2.0) - abs(dy)
 
         cdef float inv_m1, inv_m2, inv_total, p1, p2
         cdef float shift_x1, shift_x2, shift_y1, shift_y2

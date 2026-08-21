@@ -38,3 +38,12 @@
 - [!] Subtask: Define `MenuEvent`, `SelectionEvent`, and `StateEvent` dataclasses in `app.models.state`.
 - [!] Subtask: Add `bus: collections.deque` to `app.game.board.Board` to handle FIFO event queueing.
 - [!] Subtask: Implement the `MenuMechanics` shell to drain and parse the `Board.bus` queue per tick.
+
+**5. Task: Unit Test Coverage**
+
+*Objective*: Lock in application functionality with unit-test coverage for core components.
+
+- [ ] Subtask: Setup test fixtures for properties, state and configuration by reading in the data in the `src/assets/**/main.yaml` and `src/data/**/main.yaml` files. 
+- [ ] Subtask: Write unit tests for the Factory.
+- [ ] Subtask: Write unit tests for the Cradle. 
+- [ ] Subtask: Write unit tests for the Orchestrator

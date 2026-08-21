@@ -10,7 +10,7 @@ from libs.core.models cimport Position, Dimensions, Hitbox, Velocity
 cdef class Geometry:
     
     @staticmethod
-    cdef bint intersects(
+    cdef tuple _intersects(
         Position pos1, 
         Dimensions dim1, 
         list hitboxes1,

@@ -74,7 +74,14 @@ crafts:
       dimensions:
         w: 128
         l: 96
-      mass: -1
+      mass: 0
       cost: 
         - item: wood
           quantity: 10
+      hitboxes:
+        - position:
+            x: 6
+            y: 17
+          dimensions:
+            w: 116
+            l: 54

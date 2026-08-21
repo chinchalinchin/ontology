@@ -123,12 +123,14 @@ class Screen:
         pov = self.camera(focus, dim)
         active_assets = []
         
-        # 1. Depth-sort the assets directly prior to querying asset.frame.keys()
-        # Primary Sort: Explicit Z-index
-        # Secondary Sort: Y-Coordinate + Length (Painter's Algorithm)
+        # 1. Height-sort the assets directly prior to querying asset.frame.keys()
+        # Primary Sort: Explicit Height OR (Y + Length)
+        # Secondary Sort: Depth-index tie-breaker for overlapping entities
         assets.sort(key=lambda a: (
-            getattr(a.state, 'depth', 0), 
-            a.state.position.y + (a.dimensions.l if a.dimensions else 0)
+            a.state.height if getattr(a.state, 'height', None) is not None else (
+                (a.state.position.y + (a.dimensions.l if a.dimensions else 0))
+            ),
+            getattr(a.state, 'depth', 0)
         ))
         
         for asset in assets:

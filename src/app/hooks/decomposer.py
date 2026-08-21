@@ -95,14 +95,29 @@ class Decomposer:
     # ---------------------------------------------------------
     # ------------------------------------- HYDRATION UTILITIES
 
-    def _resolve_bind(self, val: Any, root_context: Dict[str, Any]) -> Any:
+    def _resolve_bind(self, 
+        val: Any, 
+        root_context: Dict[str, Any], 
+        parent_context: Dict[str, Any]
+    ) -> Any:
+        """
+        Map Composition `bind(root|parent.(.*))` binding to context.
+        """
         if not isinstance(val, str):
             return val
             
-        match = re.match(r"^bind\((?:root\.)?(.*?)\)$", val)
-        if match:
-            key = match.group(1)
+        # Prioritize explicit parent bindings
+        match_parent = re.match(r"^bind\(parent\.(.*?)\)$", val)
+        if match_parent:
+            key = match_parent.group(1)
+            return parent_context.get(key, val)
+            
+        # Support root bindings (and legacy bindings without a prefix)
+        match_root = re.match(r"^bind\((?:root\.)?(.*?)\)$", val)
+        if match_root:
+            key = match_root.group(1)
             return root_context.get(key, val)
+            
         return val
 
     def _hydrate_state(self, 
@@ -113,10 +128,12 @@ class Decomposer:
         inst_key: str, 
         is_strut: bool = False
     ) -> AssetState:
+        """
+        """
         kwargs = {}
         for f in dataclasses.fields(state_obj):
             val = getattr(state_obj, f.name, None)
-            kwargs[f.name] = self._resolve_bind(val, root_context)
+            kwargs[f.name] = self._resolve_bind(val, root_context, parent_context)
         
         if 'layer' in kwargs and not kwargs['layer']:
             kwargs['layer'] = parent_context['layer']
@@ -163,12 +180,15 @@ class Decomposer:
             prop_instance_key = AssetInstances.SPRITES
             
         cat_props = getattr(self.properties, cat_key, None)
-        inst_props = getattr(cat_props, prop_instance_key, {}) if cat_props else {}
+        inst_props = getattr(cat_props, prop_instance_key, {}) \
+                        if cat_props else {}
         props = inst_props.get(state_obj.id)
         
         taxonomy = Factory.taxonomy(state_obj.id, state_obj.name, cat_key, inst_key)
-        frame = Factory.frame(recipe.frame) if recipe and recipe.frame else Factory.frame(None)
-        animation = Factory.animation(recipe.animation) if recipe and recipe.animation else Factory.animation(None)
+        frame = Factory.frame(recipe.frame) \
+                        if recipe and recipe.frame else Factory.frame(None)
+        animation = Factory.animation(recipe.animation) \
+                        if recipe and recipe.animation else Factory.animation(None)
         
         return Asset(taxonomy, props, state_obj, frame, animation)
 
@@ -193,19 +213,21 @@ class Decomposer:
             "position": getattr(deployed_state, 'position', Position(0,0))
         }
 
-        assets.extend(self._unpack_node(comp_config.root, root_context, root_context, inc))
+        # Unpack Root node first, explicitly flagging it as the root
+        assets.extend(self._unpack_node(comp_config.root, root_context, root_context, inc, is_root=True))
 
         if comp_config.branches:
             for branch in comp_config.branches:
-                assets.extend(self._unpack_node(branch, root_context, root_context, inc))
+                assets.extend(self._unpack_node(branch, root_context, root_context, inc, is_root=False))
 
         return assets
 
     def _unpack_node(self, 
         node: Any, 
-        root_context: Dict[str, Any],
+        root_context: Dict[str, Any], 
         parent_context: Dict[str, Any], 
-        inc: int
+        inc: int, 
+        is_root: bool = False
     ) -> List[Asset]:
         assets = []
         
@@ -217,14 +239,24 @@ class Decomposer:
             AssetInstances.STRUTS,
             is_strut=True
         )
-        assets.append(self._create_asset(AssetCategories.CRAFTS, AssetInstances.STRUTS, strut_state))
+        strut_asset = self._create_asset(AssetCategories.CRAFTS, AssetInstances.STRUTS, strut_state)
+        assets.append(strut_asset)
 
+        # 1. Calculate the physical bottom edge (height) of the instantiated Strut
+        node_height = strut_state.position.y + (strut_asset.dimensions.l if strut_asset.dimensions else 0)
+
+        # 2. Inject it into the context dictionary for child components to reference
         node_context = {
             "position": strut_state.position,
             "layer": strut_state.layer,
             "owner": getattr(strut_state, 'owner', None),
-            "name": strut_state.name
+            "name": strut_state.name,
+            "height": node_height
         }
+        
+        # 3. If this is the root strut, its height becomes the root height
+        if is_root:
+            root_context["height"] = node_height
 
         self._unpack_components(node.components, root_context, node_context, inc, assets)
         return assets

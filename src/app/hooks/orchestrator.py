@@ -195,13 +195,14 @@ class Orchestrator:
         )
 
         logger.info("Initializing Screens...")
+
         max_width = max(self.board.size(layer)[0].w for layer in self.board.layers())
-        max_height = max(self.board.size(layer)[0].w for layer in self.board.layers())
+        max_length = max(self.board.size(layer)[0].l for layer in self.board.layers())
 
         self.screens = {
             layer: Screen(
                 screensize, 
-                Dimensions(max_width, max_height),
+                Dimensions(max_width, max_length),
                 # self.board.size(layer)[0] if self.board.size(layer) else Dimensions(0, 0),
                 self.board.categories(AssetCategories.TILES, layer),
                 self.registry
