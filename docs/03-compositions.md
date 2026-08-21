@@ -57,6 +57,7 @@ compositions:
                     doors:
                         -   id: mansion
                             name: house-door
+                            depth: 1
                             outlayer: 'compose-layer'
                             position:
                                 x: 20
@@ -79,6 +80,7 @@ compositions:
                             -   id: door-shadow
                                 name: door-frame
                                 layer: 'compose-layer'
+                                depth: 1
                                 outlayer: bind(root.layer)
                                 position:
                                     x: 20
@@ -91,6 +93,9 @@ compositions:
 !!! note
     `components` is an [Asset State](./00-overview.md#state) schema, identical to a state file.
 
+!!! note
+    The Doors in this Configuration utilize the `depth` attribute to ensure they are rendered on top of their parent Struts.
+    
 This is a formula for a `brick-house` composed of two Struts on different [Layers](./00-overview.md#layers), each of which have their own [Door](./01-assets.md#doors), each Door being linked to one another through a circuit (`'compose-layer' <-> bind(root.layer)`). In this way, the "inside" of Assets can be traversed. In other words, each Composition may be composed of separate, independent Layers. 
 
 !!! note
