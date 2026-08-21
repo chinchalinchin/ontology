@@ -1479,8 +1479,10 @@
 <li><span class="arithmatex">\(m = -1\)</span>: <strong>Sensor</strong>. The engine detects the spatial intersection for game logic (like <code>SwitchMechanics</code> or <code>DoorMechanics</code>), but <code>CollisionMechanics</code> bypasses it completely during the overlap resolution phase.</li>
 </ul>
 <p>See <a href="../05-mechanics/#spatial">MotionMechanics</a> for more information.</p>
-<p><strong>Depth</strong></p>
+<p><strong>Depth &amp; Height</strong></p>
 <p>All Assets have a <code>depth</code> state attribute. This attribute controls the Z-ordering of the Asset being rendered. Most of the time, it can be ignored, since it defaults to <code>0</code>. <code>depth</code> is important in the context of <a href="../03-compositions/">Compositions</a>, where multiple Assets need to be superimposed and rendered on top of one another.</p>
+<p>All Assets have an optional <code>height</code> state attribute. This attribute also modulates the Z-ordering, but the relationship is more complex than <code>depth</code>, relating to the application of the Painter's Algorithm. <code>height</code> is only a factor when dealing with <a href="../03-compositions/">Compositions</a>. </p>
+<p>See <a href="../09-architecture/#rendering">Rendering documentation</a> for a complete overview of <code>depth</code> and <code>height</code>.</p>
 <h3 id="asset-hierarchy">Asset Hierarchy</h3>
 <p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state <a href="../appendices/01-schemas/">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
 <pre class="mermaid"><code>graph LR
@@ -1606,77 +1608,77 @@
 <tr>
 <td>Tile</td>
 <td>Back</td>
-<td>Position, Layer, Depth</td>
+<td>Position, Layer, Depth, Height</td>
 </tr>
 <tr>
 <td>Tile</td>
 <td>Fore</td>
-<td>Position, Layer, Depth</td>
+<td>Position, Layer, Depth, Height</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Crate</td>
-<td>Position, Layer, Depth</td>
+<td>Position, Layer, Depth, Height</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Door</td>
-<td>Position, Layer, Depth, OutLayer</td>
+<td>Position, Layer, Depth, Height, OutLayer</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Chest</td>
-<td>Position, Layer, Depth, Switch, Content</td>
+<td>Position, Layer, Depth, Height, Switch, Content</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Gate</td>
-<td>Position, Layer, Depth, Switch, Link</td>
+<td>Position, Layer, Depth, Height, Switch, Link</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Plate</td>
-<td>Position, Layer, Depth, Switch, Link</td>
+<td>Position, Layer, Depth, Height, Switch, Link</td>
 </tr>
 <tr>
 <td>Craft</td>
 <td>Strut</td>
-<td>Position, Layer, Depth, Owner</td>
+<td>Position, Layer, Depth, Height, Owner</td>
 </tr>
 <tr>
 <td>Craft</td>
 <td>Plot</td>
-<td>Position, Layer, Depth, Owner, Season</td>
+<td>Position, Layer, Depth, Height, Owner, Season</td>
 </tr>
 <tr>
 <td>Cursor</td>
 <td>Expression</td>
-<td>Position, Layer, Depth</td>
+<td>Position, Layer, Depth, Height</td>
 </tr>
 <tr>
 <td>Cursor</td>
 <td>Projectile</td>
-<td>Position, Layer, Depth, Initial</td>
+<td>Position, Layer, Depth, Height, Initial</td>
 </tr>
 <tr>
 <td>Effect</td>
 <td>Temporary</td>
-<td>Position, Layer, Depth</td>
+<td>Position, Layer, Depth, Height</td>
 </tr>
 <tr>
 <td>Effect</td>
 <td>Persistent</td>
-<td>Position, Layer, Depth</td>
+<td>Position, Layer, Depth, Height</td>
 </tr>
 <tr>
 <td>Sheet</td>
 <td>Pixie</td>
-<td>Position, Layer. Depth, Animation</td>
+<td>Position, Layer. Depth, Height</td>
 </tr>
 <tr>
 <td>Sheet</td>
 <td>Sprite</td>
-<td>Position, Layer, Depth, Intention, Inventory, Meters, Memory, Mutators, Goal</td>
+<td>Position, Layer, Depth, Height, Intention, Inventory, Meters, Memory, Mutators, Goal</td>
 </tr>
 <tr>
 <td>Widget</td>
@@ -1763,6 +1765,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>multiple: Multiple</code></li>
 </ul>
@@ -1779,6 +1782,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>multiple: Multiple</code></li>
 </ul>
@@ -1816,6 +1820,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>switch: bool</code></li>
 <li><code>content: List[str]</code></li>
@@ -1839,6 +1844,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>outlayer: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>out: Position</code></li>
@@ -1864,6 +1870,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>link: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>switch: bool</code></li>
@@ -1884,6 +1891,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>link: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>switch: bool</code></li>
@@ -1910,6 +1918,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>velocity: Velocity</code></li>
 </ul>
@@ -1926,6 +1935,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>initial: Position</code></li>
 <li><code>velocity: Velocity</code></li>
@@ -1956,6 +1966,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
 </ul>
@@ -1974,6 +1985,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
 </ul>
@@ -2010,6 +2022,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>owner: str</code></li>
 </ul>
@@ -2099,6 +2112,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
 </ul>
@@ -2118,6 +2132,7 @@
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>velocity: Velocity</code></li>
 <li><code>animation: Animation</code></li>

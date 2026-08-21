@@ -555,6 +555,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rendering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#depth-height" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Depth &amp; Height
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cython" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -589,10 +617,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#rendering" class="md-nav__link">
+  <a href="#sdl" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Rendering
+        SDL
       
     </span>
   </a>
@@ -803,6 +831,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#rendering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rendering
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Rendering">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#depth-height" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Depth &amp; Height
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#cython" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -837,10 +893,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#rendering" class="md-nav__link">
+  <a href="#sdl" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Rendering
+        SDL
       
     </span>
   </a>
@@ -917,6 +973,20 @@
 <p>Maps associate ancillary Asset states to their final Animation state.</p>
 <p>See <a href="../04-intentions/#animationmap">AnimationMap</a> and <a href="../04-intentions/#dialoguemap">DialogueMap</a> for more information.</p>
 <p>The <code>AnimationMap</code> plays a crucial role in enforcing logical constraints. For example, <code>TransitionMechanics</code> and <code>PlayerMechanics</code> utilize <code>AnimationMap.action(state, equipment)</code> to resolve whether an intended action is possible. This guarantees that an <code>attack</code> intention will not translate into a <code>thrust</code> animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.</p>
+<h2 id="rendering">Rendering</h2>
+<h3 id="depth-height">Depth &amp; Height</h3>
+<p>To accurately render perspective, the Screen <code>draw()</code> loop relies on a tuple-based sorting mechanism applied to all active Assets before they are passed across the Cython boundary. This system resolves the classic "Painter's Algorithm" dilemma where architectural decals (like Doors) need to render <em>on top of</em> their parent structures (like Strut), but <em>behind</em> dynamic entities (like Players) that walk in front of the building.</p>
+<p>The rendering pipeline sorts Assets using a two-part tuple: <code>(Primary Key, Secondary Key)</code></p>
+<ul>
+<li><strong>Primary Key: Height</strong>: By default, an Asset's height is calculated dynamically using its Y-coordinate plus its physical length (<code>state.position.y + dimensions.l</code>). This ensures entities closer to the bottom of the screen are drawn last, appearing "in front" of objects higher up. <ul>
+<li><strong>The Height Override:</strong> Assets can optionally declare an explicit <code>state.height</code>. When present, this value bypasses the geometric calculation entirely. This is heavily utilized by Compositions via late-binding (e.g., <code>bind(parent.depth)</code>), forcing Component assets like Doors or Chests to occupy the exact same spatial "slice" as the wall to which they are attached.</li>
+</ul>
+</li>
+<li><strong>Secondary Key: Depth</strong> If two Assets share the exact same height (either by coincidence or by explicit binding), the engine falls back to <code>state.depth</code> as a tie-breaker. All standard Assets default to <code>depth: 0</code>.<ul>
+<li><strong>Decal Rendering:</strong> By assigning a component (like a Door) an explicit depth matching its parent Strut, and elevating its <code>z</code> index (e.g., <code>z: 1</code>), the engine guarantees the Door will always paint directly on top of the Strut, while both objects will collectively sort correctly against a Player walking in front of or behind them.</li>
+</ul>
+</li>
+</ul>
 <h2 id="cython">Cython</h2>
 <p>While Python objects are fast enough for general logic, calculating collisions and processing rendering instructions for thousands of entities requires maximum performance. The engine strategically uses Cython to bridge this gap, adhering to a strict <strong>"Zero Heap Allocation in the Inner Loop"</strong> philosophy to prevent frame stutters caused by the Python Garbage Collector.</p>
 <div class="admonition important">
@@ -975,7 +1045,7 @@
 <li><strong>Narrow Phase (Raw Intersection)</strong>: Pass this much smaller list of candidate pairs into <code>Geometry.intersects</code>.</li>
 </ol>
 <p>The grid's blueprint (<code>cdef class Space</code>) is defined in the Cython math library.</p>
-<h3 id="rendering">Rendering</h3>
+<h3 id="sdl">SDL</h3>
 <p>The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate the overhead of crossing the Python-to-C boundary, the rendering pipeline does not pass heavy Python objects (like <code>SpriteState</code> or <code>Dimensions</code>) to the renderer. Instead, it extracts raw integers on the Python side and unpacks them cleanly onto the C-stack.</p>
 <ul>
 <li><strong>Context Initialization (<code>init</code>):</strong> Sets up a SDL environment. If <code>headless</code>, a SDL software rendering context (<code>_renderer</code>) is bound directly to a master memory surface (<code>SDL_Surface</code>), completely bypassing window creation.</li>
