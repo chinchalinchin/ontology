@@ -4,7 +4,6 @@
 
 - Eliminate the parallel Pydantic DTO pipeline.
 - Fix critical bugs in spatial resolution and engine initialization.
-- Bridge the gap between documentation and codebase for the Event Bus to unblock Phase 05.
 
 ##### Tasks
 
@@ -28,13 +27,14 @@
 
 *Objective*: Resolve fatal typos and logic drift.
 
-- [ ] Subtask: Fix `self.mechaniccs` typo in `Orchestrator.init()`.
+- [x] Subtask: Fix `self.mechaniccs` typo in `Orchestrator.init()`.
 - [x] Subtask: Refactor `Action` mapping in `Orchestrator.migrate()` to prevent mutating `self.properties`.
-- [ ] Subtask: Add an `action_executed` boolean flag to `SpriteState` to prevent `CombatMechanics` from spawning multiple projectiles on `frame == 0`.
+- [ ] Subtask: Add an `executed` boolean flag to `SpriteState.mutators.triggers` to prevent `CombatMechanics` from spawning multiple projectiles on `frame == 0`.
 
 **4. Task: Event Bus Bootstrapping**
 
 *Objective*: Prepare the engine for Phase 05: Widgets.
-- [ ] Subtask: Define `MenuEvent`, `SelectionEvent`, and `StateEvent` dataclasses in `app.models.state`.
-- [ ] Subtask: Add `bus: collections.deque` to `app.game.board.Board` to handle FIFO event queueing.
-- [ ] Subtask: Implement the `MenuMechanics` shell to drain and parse the `Board.bus` queue per tick.
+
+- [!] Subtask: Define `MenuEvent`, `SelectionEvent`, and `StateEvent` dataclasses in `app.models.state`.
+- [!] Subtask: Add `bus: collections.deque` to `app.game.board.Board` to handle FIFO event queueing.
+- [!] Subtask: Implement the `MenuMechanics` shell to drain and parse the `Board.bus` queue per tick.

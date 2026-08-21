@@ -171,6 +171,7 @@ class Mechanics(str, Enum):
     COLLISION       = "collision"
     COMBAT          = "combat"
     COMMERCE        = "commerce"
+    INTERACTION     = "interaction"
     MOTION          = "motion"
     PLAYER          = "player"
     PROJECTILE      = "projectile"

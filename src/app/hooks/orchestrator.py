@@ -1,18 +1,18 @@
 """
 # Ontology: app.hooks.orchestrator
 """
+# Standard Libraries
 import logging
 import dataclasses
 from typing import Dict, List, Tuple
 
+# Application Libraries
 from app.assets.base import Asset
 from app.config.loader import Loader
 from app.config.enums import (
     AssetCategories, 
     AssetInstances,
     Devices,
-    Equipment,
-    Groups,
     Mechanics
 )
 from app.game.board import Board
@@ -20,7 +20,11 @@ from app.game.engine import Engine
 from app.game.screen import Screen
 from app.hooks.factory import Factory
 from app.hooks.decomposer import Decomposer
-from app.models.groups import SpawnableGroup, ConfigurationGroup, EquipmentGroup
+from app.models.groups import (
+    SpawnableGroup, 
+    ConfigurationGroup, 
+    EquipmentGroup
+)
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
@@ -191,10 +195,14 @@ class Orchestrator:
         )
 
         logger.info("Initializing Screens...")
+        max_width = max(self.board.size(layer)[0].w for layer in self.board.layers())
+        max_height = max(self.board.size(layer)[0].w for layer in self.board.layers())
+
         self.screens = {
             layer: Screen(
                 screensize, 
-                self.board.size(layer)[0] if self.board.size(layer) else Dimensions(0, 0),
+                Dimensions(max_width, max_height),
+                # self.board.size(layer)[0] if self.board.size(layer) else Dimensions(0, 0),
                 self.board.categories(AssetCategories.TILES, layer),
                 self.registry
             )
@@ -204,6 +212,7 @@ class Orchestrator:
         logger.info("Initializing Mechanics...")
         order = getattr(self.configurations.mechanics, 'order', None)
         if not order:
+            logger.warning("No Mechanics configured. Default to basic set...")
             order = [
                 Mechanics.PLAYER,
                 Mechanics.MOTION,

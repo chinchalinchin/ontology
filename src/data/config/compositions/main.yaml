@@ -9,34 +9,43 @@ compositions:
           doors:
             - id: door-house
               name: entrance
-              outlayer: 'compose-layer'
+              outlayer: brick-house-compose-layer
               depth: 1
               position:
-                x: 20
-                y: 20
+                x: 32
+                y: 118
               out:
-                x: 10
-                y: 10
+                x: 36
+                y: 148
     branches:
       - strut: 
           id: wall-blue
           name: house-interior
           owner: bind(root.owner)
-          layer: 'compose-layer'
+          layer: brick-house-compose-layer
           position:
-            x: 10
-            y: 10
+            x: 0
+            y: 0
         components:
           objects:
             doors:
               - id: door-shadow
                 name: house-doorframe
-                layer: 'compose-layer'
+                layer: brick-house-compose-layer
                 outlayer: bind(root.layer)
                 depth: 1
                 position:
-                  x: 20
-                  y: 20
+                  x: 0
+                  y: 142
                 out:
-                  x: 10
-                  y: 10
+                  x: 75
+                  y: 155
+          crafts: 
+            struts:
+              - id: floor-wood
+                name: house-floor
+                layer: brick-house-compose-layer
+                owner: bind(root.owner)
+                position:
+                  x: 0
+                  y: 96

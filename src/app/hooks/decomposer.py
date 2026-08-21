@@ -132,6 +132,14 @@ class Decomposer:
         else:
             kwargs['position'] = Position(parent_context['position'].x, parent_context['position'].y)
 
+        # Apply spatial superposition to the teleport out coordinate
+        pseudo_out = kwargs.get('out')
+        if pseudo_out:
+            kwargs['out'] = Position(
+                x=root_context['position'].x + pseudo_out.x,
+                y=root_context['position'].y + pseudo_out.y
+            )
+
         base_inst = inst_key[:-1] if inst_key.endswith('s') else inst_key
         
         if is_strut:

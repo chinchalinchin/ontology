@@ -1,9 +1,0 @@
-crafts:
-  struts:
-    - id: frame-brick
-      name: home
-      layer: '0'
-      position:
-        x: 150
-        y: 150
-      owner: player

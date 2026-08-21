@@ -1,10 +1,14 @@
 # Ontology: Appendix I - Schemas
 
+## Compositions
+
+- [brick-house](../static/xcf/compositions/brick-house.xcf)
+
 ## Hitboxes
 
 ### Category: Sheet, Instance: Sprite
 
-- [Download xcf](../static/xcf/sheet-sprite-walk-down-0.xcf)
+- [Download xcf](../static/xcf/hitboxes/sheet-sprite-walk-down-0.xcf)
 
 ![LPC Sprite Hitboxes](static/png/hitboxes/sheet-sprite-walk-down-0.png)
 /// caption
@@ -13,7 +17,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 ### Category: Craft, Instance: Strut
 
-- [Download xcf](../static/png/hitboxes/craft-strut-frame-brick.png)
+- [Download xcf](../static/xcf/hitboxes/craft-strut-frame-brick.xcf)
 
 ![Brick Frame Strut Hitboxes](static/png/hitboxes/craft-strut-frame-brick.png)
 /// caption

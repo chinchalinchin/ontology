@@ -39,7 +39,8 @@ from app.game.logic.mechanics import (
     TransitionMechanics,
     PlayerMechanics,
     RemoveMechanics,
-    SpeechMechanics
+    SpeechMechanics,
+    InteractionMechanics
 )
 from app.models.config import (
     RecipeConfiguration,
@@ -79,6 +80,7 @@ class Factory:
         Mechanics.SWITCH: SwitchMechanics,
         Mechanics.COMMERCE: CommerceMechanics,
         Mechanics.TRANSITION: TransitionMechanics,
+        Mechanics.INTERACTION: InteractionMechanics,
         Mechanics.PLAYER: PlayerMechanics,
         Mechanics.REMOVE: RemoveMechanics,
         Mechanics.COMBAT: CombatMechanics,

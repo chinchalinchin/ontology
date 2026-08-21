@@ -62,6 +62,14 @@ crafts:
       cost:
         - item: wood
           quantity: 10
+    floor-wood:
+      dimensions:
+        w: 128
+        l: 96
+      mass: -1
+      cost: 
+        - item: wood
+          quantity: 10
     wall-blue:
       dimensions:
         w: 128

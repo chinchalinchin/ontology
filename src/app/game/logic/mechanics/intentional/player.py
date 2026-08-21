@@ -4,7 +4,7 @@
 # Standard Libraries
 from __future__ import annotations
 from typing import TYPE_CHECKING
-
+import logging
 # Application Libraries
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -20,6 +20,8 @@ from app.models.state import Goal
 
 # Cython Libraries
 from libs.core.models import Position
+
+logger = logging.getLogger(__name__)
 
 class PlayerMechanics(Mechanic):
     """
