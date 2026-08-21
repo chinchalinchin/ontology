@@ -17,7 +17,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [~]: [Phase 05: Widgets](./phases/implement/phase-05.md)
     - [~]: [Phase 06: Editor](./phases/implement/phase-06.md)
     - [~]: [Phase 07: Intentions](./phases/implement/phase-07.md)
-    - [ ]: [Phase 08: Compositions](./phases/implement/phase-08.md)
+    - [~]: [Phase 08: Compositions](./phases/implement/phase-08.md)
     - [ ]: [Phase 09: Commerce](./phases/implement/phase-09.md)
     - [ ]: [Phase 10: Pathfinding](./phase/implement/phase-10.md)
   - Refactor

@@ -17,7 +17,7 @@ crafts:
       cost:
         - item: clay
           quantity: 10
-    brick-house:
+    frame-brick:
       dimensions:
         w: 96
         l: 190

@@ -1,6 +1,6 @@
 crafts:
   struts:
-    - id: brick-house
+    - id: frame-brick
       name: home
       layer: '0'
       position:
