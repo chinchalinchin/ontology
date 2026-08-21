@@ -398,17 +398,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#pseudostates" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        PseudoStates
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -775,17 +764,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#pseudostates" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        PseudoStates
-      
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -813,56 +791,65 @@
 <p>A Composition is a way to reuse common Asset configurations in the state without have to specify their individual components each time they are deployed. Functionally, Compositions serve no purpose from the Board's perspective. They only serve to simplify the amount of state specification that is required to fully declare a complex, high-level game Board.</p>
 <p>Compositions are organized around <a href="../01-assets/#struts">Struts</a>.</p>
 <h3 id="root-struts">Root Struts</h3>
-<p>Every Composition has atleast one root <a href="../01-assets/#struts">Strut</a>. A Composition also contains other Assets in predefined configurations, known as the Composition components. For example, a <code>brick-house</code> Composition might contain a <code>frame-brick</code> Strut as its root Strut and then a <code>mansion</code> Door as a component Asset. The Composition specifies the relative position of the <code>mansion</code> Door with respect to the origin of the <code>frame-brick</code> Strut. In other words, all component Assets in a Composition have their positions unpacked relative to the root Strut's deployed position. </p>
+<p>Every Composition has atleast one <a href="../01-assets/#struts">Strut</a>, known as the root Strut. If it has more than one, the other Struts are known as branch Struts. </p>
+<p>A Composition contains other Assets in predefined configurations, known as the Composition components. Each Strut in a Composition has components.</p>
+<p>For example, a <code>brick-house</code> Composition might contain a <code>frame-brick</code> Strut as its root Strut and then a <code>mansion</code> Door as a component Asset. The Composition specifies the relative position of the <code>mansion</code> Door with respect to the origin of the <code>frame-brick</code> Strut, i.e. all component Assets in a Composition have their positions unpacked relative to the root Strut's deployed position. </p>
 <h3 id="state-hydration">State Hydration</h3>
 <p>The state files specify Compositions to deploy. The game converts these Compositions into ingame Assets that belong to the <a href="../01-assets/#asset-hierarchy">Asset Hierarchy</a>. When Compositions are unpacked by the <a href="../00-overview/#orchestrator">Orchestrator</a> during the <a href="../09-architecture/#initialization">bootstrapping</a>, each Asset in a Composition is appended to the <a href="../00-overview/#board">Board</a> state dynamically. In other words, the Assets in Compositions, once unpacked, are treated separately by the Engine, as if they had been specified in the state directory individually.</p>
 <p>Components of Compositions have a PseudoState. During the <a href="../09-architecture/#initialization">application bootstrap</a>, each component's PseudoState is hydrated into an actual Asset State and injected into the Board.</p>
 <p>For example, consider the following Composition configuration (defined in <code>/src/data/config/compositions/main.yml</code>, i.e., the <em>composition directory</em>.),</p>
 <div class="highlight"><pre><span></span><code><span class="nt">compositions</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">brick-house</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">strut</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="nt">root</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">strut</span><span class="p">:</span><span class="w"> </span>
 <span class="w">                </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">frame-brick</span>
 <span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">house-exterior</span>
 <span class="w">            </span><span class="nt">components</span><span class="p">:</span>
-<span class="w">                </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mansion</span>
-<span class="w">                    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">house-door</span>
-<span class="w">                    </span><span class="nt">category</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">objects</span>
-<span class="w">                    </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">doors</span>
-<span class="w">                    </span><span class="nt">outlayer</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;compose-layer&#39;</span>
-<span class="w">                    </span><span class="nt">position</span><span class="p">:</span>
-<span class="w">                        </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">                        </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">                    </span><span class="nt">out</span><span class="p">:</span>
-<span class="w">                        </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">                        </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">strut</span><span class="p">:</span><span class="w"> </span>
-<span class="w">                </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wall-blue</span>
-<span class="w">                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">house-interior</span>
-<span class="w">                </span><span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bind(root.owner)</span>
-<span class="w">                </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;compose-layer&#39;</span>
-<span class="w">                </span><span class="nt">position</span><span class="p">:</span>
-<span class="w">                    </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25</span>
-<span class="w">                    </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">25</span>
-<span class="w">            </span><span class="nt">components</span><span class="p">:</span>
-<span class="w">                </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">door-shadow</span>
-<span class="w">                    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">door-frame</span>
-<span class="w">                    </span><span class="nt">category</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">objects</span>
-<span class="w">                    </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">doors</span>
+<span class="w">                </span><span class="nt">objects</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">doors</span><span class="p">:</span>
+<span class="w">                        </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mansion</span>
+<span class="w">                            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">house-door</span>
+<span class="w">                            </span><span class="nt">outlayer</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;compose-layer&#39;</span>
+<span class="w">                            </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">                                </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">                                </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">                            </span><span class="nt">out</span><span class="p">:</span>
+<span class="w">                                </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">                                </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">        </span><span class="nt">branches</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">strut</span><span class="p">:</span><span class="w"> </span>
+<span class="w">                    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wall-blue</span>
+<span class="w">                    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">house-interior</span>
+<span class="w">                    </span><span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bind(root.owner)</span>
 <span class="w">                    </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;compose-layer&#39;</span>
-<span class="w">                    </span><span class="nt">outlayer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bind(root.layer)</span>
 <span class="w">                    </span><span class="nt">position</span><span class="p">:</span>
 <span class="w">                        </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
 <span class="w">                        </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">                    </span><span class="nt">out</span><span class="p">:</span>
-<span class="w">                        </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">                        </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">                </span><span class="nt">components</span><span class="p">:</span>
+<span class="w">                    </span><span class="nt">objects</span><span class="p">:</span>
+<span class="w">                        </span><span class="nt">doors</span><span class="p">:</span>
+<span class="w">                            </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">door-shadow</span>
+<span class="w">                                </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">door-frame</span>
+<span class="w">                                </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;compose-layer&#39;</span>
+<span class="w">                                </span><span class="nt">outlayer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bind(root.layer)</span>
+<span class="w">                                </span><span class="nt">position</span><span class="p">:</span>
+<span class="w">                                    </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">                                    </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">                                </span><span class="nt">out</span><span class="p">:</span>
+<span class="w">                                    </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">                                    </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
 </code></pre></div>
-<p>This is a formula for a <code>brick-house</code> composed of two Struts on different <a href="../00-overview/#layers">Layers</a>, each of which have their own Door, each Door being linked to one another through a circuit (<code>'compose-layer' &lt;-&gt; bind(root.layer)</code>). In this way, the "inside" of Assets can be traversed. In other words, each Composition may be composed of separate, independent Layers. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The PseudoState of the Composition overrides or modifies the deployed State. In this example, the <code>state.layer</code> of <code>door-frame</code> would be <code>compose-layer</code>, as opposed <code>root.layer</code>. </p>
+<p><code>components</code> is an <a href="../00-overview/#state">Asset State</a> schema, identical to a state file.</p>
 </div>
-<p>The root Strut (first entry of the Composition list) does not have a Position, where as the next Strut does; this is what is meant by Composition PseudoState. The Composition configuration leaves the root Strut Position state "empty", so that it can be injected by the state file for deployment; however the configuration for component Assets contain information for constructing their states from the root Strut state. When the above Composition is deployed into the Board state, e.g.,</p>
+<p>This is a formula for a <code>brick-house</code> composed of two Struts on different <a href="../00-overview/#layers">Layers</a>, each of which have their own <a href="../01-assets/#doors">Door</a>, each Door being linked to one another through a circuit (<code>'compose-layer' &lt;-&gt; bind(root.layer)</code>). In this way, the "inside" of Assets can be traversed. In other words, each Composition may be composed of separate, independent Layers. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Except for Position (see immediately below), the PseudoState of the components of a Composition overrides the deployed state of the root Strut. In this example, the <code>state.layer</code> of <code>door-frame</code> would be <code>compose-layer</code>, regardless of the <code>layer</code> passed to the root Strut when deployed. </p>
+</div>
+<p>The root Strut (<code>brick-house.root</code>) does not have a Position, where as the <code>brick-house.branches</code> Strut(s) does
+(do); this is what is meant by Composition PseudoState. The Composition configuration leaves the root Strut Position state and layer "empty", so that it can be injected by the state file during deployment; however the configuration for component Assets contain information for constructing their states from the root Strut state. When the above Composition is deployed into the Board state, e.g.,</p>
 <div class="highlight"><pre><span></span><code><span class="nt">compositions</span><span class="p">:</span>
 <span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">brick-house</span>
 <span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">player-home</span>
@@ -872,12 +859,10 @@
 <span class="w">        </span><span class="nt">x</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 <span class="w">        </span><span class="nt">y</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
 </code></pre></div>
-<p>The root Position, <code>(100, 100)</code>, is added to the component Assets' PseudoState, so that <code>house-door</code> is located at <code>(110, 110)</code>, whereas the <code>house-interior</code> is located at <code>(125, 125)</code>. </p>
-<p>Likewise, in this example, the state <code>layer</code> is passed down as a reference to component Asset PseudoStates that use <code>bind(root.layer)</code></p>
-<p>All component Assets can <code>bind(state)</code> to a root Strut state attribute injected into the Composition from the state directory files. When component Asset reference <code>bind(root.layer)</code> this is a reference to the root Strut's layer. Only state attribute defined on the root Strut can be bound.</p>
-<p>In addition, unique names are generated for each Composition Asset according to the schema: <code>&lt;instance.name&gt;-&lt;strut.name&gt;-&lt;component.name&gt;-&lt;increment&gt;</code>, where <code>&lt;increment&gt;</code> is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.</p>
-<h2 id="pseudostates">PseudoStates</h2>
-<p>TODO</p>
+<p>The root Position, <code>(100, 100)</code>, is added to the component Assets' PseudoState, so that <code>house-door</code> is located at <code>(120, 120)</code>, whereas the <code>house-interior</code> is located at <code>(110, 110)</code>. Any state attribute <em>not</em> specified in a component Asset PseudoState automatically inherits the root Strut State, if those attributes exist on the root Strut. </p>
+<p>The PseudoState attribute of component Assets (and branching Struts) can be bound to the root Strut as well, to allow for parameterization of relationships. In this example, the state <code>layer</code> is passed down as a reference to the component <code>door-frame</code> Asset, which then uses it to specify its (PseudoState) attribute for <code>outlayer</code> through the use of <code>bind(root.layer)</code>; This is how the interior door leads back to the deployed layer, allowing the Player to return from whence they came. In other words, a binding is a formal constraints between Asset states that makes component Asset states dependent on the root Strut state. This constraint is realized during the Composition unpacking and PseudoState hydration.</p>
+<p>All component Assets can <code>bind(state)</code> to a root Strut state attribute injected into the Composition from the state directory files. When component Asset reference <code>bind(root.layer)</code> this is a reference to the root Strut's layer. Only state attributes defined on the root Strut can be bound.</p>
+<p>In addition, unique names are generated for each component Asset of a Composition according to the schema: <code>&lt;instance.name&gt;-&lt;strut.name&gt;-&lt;component.name&gt;-&lt;increment&gt;</code>, where <code>&lt;increment&gt;</code> is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.</p>
 
 
 
