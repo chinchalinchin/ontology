@@ -399,6 +399,18 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#decomposer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decomposer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decomposer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#decomposition" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -406,6 +418,22 @@
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -776,6 +804,18 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#decomposer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decomposer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Decomposer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#decomposition" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -783,6 +823,22 @@
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -916,8 +972,9 @@
 <p>The Pseudo State of component Assets (and branching Struts) can be bound to the root Struts Deployed State as well, to allow for the parameterization of relationships. In this example, the Deployed State <code>layer</code> is passed down as a reference to the component <code>door-frame</code> Asset, which then uses it to specify its (Pseudo State) attribute for <code>outlayer</code> through the use of <code>bind(root.layer)</code>; This is how the interior Door leads back to the deployed layer, allowing the Player to return from whence they came. In other words, a binding is a formal constraints between Asset states that makes component Asset states dependent on the root Strut state. This constraint is realized during the Composition unpacking and Pseudo State hydration.</p>
 <p>All component Assets can <code>bind(state)</code> to a root Strut state attribute injected into the Composition from the state directory files. When component Asset reference <code>bind(root.layer)</code> this is a reference to the root Strut's layer. Only state attributes defined on the root Strut can be bound.</p>
 <p>In addition, unique names are generated for each component Asset of a Composition according to the schema: <code>&lt;instance.name&gt;-&lt;strut.name&gt;-&lt;component.name&gt;-&lt;increment&gt;</code>, where <code>&lt;increment&gt;</code> is an index to track the number of unique Compositions deployed on the Board to ensure each has a correspondingly unique name.</p>
-<h2 id="decomposition">Decomposition</h2>
+<h2 id="decomposer">Decomposer</h2>
 <p>The Decomposer is the package of the application responsible for translating Composition Configuration into Assets. Taking the example from the previous section, the algorithm for the expansion (decomposition) logic can be modeled as a tree traversal (like Depth-First Search), where spatial data and inherited state propagate downward from parent to child.</p>
+<h3 id="decomposition">Decomposition</h3>
 <p><strong>1. Root Hydration (The Context)</strong></p>
 <ul>
 <li><strong>Action:</strong> Instantiate the root Strut using the exact deployment state provided by the <code>Board</code> (e.g., <code>position: (100, 100)</code>).</li>
@@ -943,15 +1000,47 @@
 <p><strong>4. Unique Nomenclature Generation</strong></p>
 <ul>
 <li><strong>Action:</strong> To prevent namespace collisions on the <code>Board</code> when multiple identical Compositions are deployed, apply a global monotonic incrementor.</li>
-<li><strong>Format:</strong></li>
+<li><strong>Format:</strong><ul>
 <li>For Root/Branches: <code>&lt;instance&gt;-&lt;deployment_name&gt;-&lt;increment&gt;</code> (e.g., <code>strut-player-home-1</code>)</li>
 <li>For Components: <code>&lt;instance&gt;-&lt;parent_name&gt;-&lt;increment&gt;</code> (e.g., <code>door-house-interior-1</code>)</li>
+</ul>
+</li>
 </ul>
 <p><strong>5. Flattening</strong></p>
 <ul>
 <li><strong>Action:</strong> As each node is fully resolved, instantiated, and named, append it to a flat, 1D list.</li>
 <li><strong>Result:</strong> The engine receives a standard list of <code>Asset</code> objects, completely ignorant of the fact that they were generated from a nested Composition macro.</li>
 </ul>
+<h3 id="application-flow">Application Flow</h3>
+<p>The Decomposer is a standalone service instantiated <em>before</em> the Board and Cradle; it is used during the initial Asset hydration phase of the bootstrapping <strong>and</strong> it is employed ingame by <a href="../05-mechanics/">Mechanics</a> through the Board interface of the Cradle to instantiate Compositions through the <a href="../04-intentions/"><code>build</code> Intention</a>.</p>
+<p>Because the Decomposer inherently generates <code>Asset</code> instances, it acts as a higher-level orchestrator of the <code>Factory</code>. To do this, it needs access to the global <a href="../00-overview/#assets">Asset properties</a>, <a href="../appendices/01-schemas/#recipe-configuration">Recipes</a> and Composition configuraiton.</p>
+<p><strong>1. Initialization (The Setup)</strong></p>
+<p>The Decomposer must be instantiated inside the <code>Orchestrator</code>, immediately after the YAML files are loaded and validated, but <em>before</em> <code>migrate()</code> is called.</p>
+<ul>
+<li><strong>Dependencies:</strong> The Orchestrator passes the <code>configurations.compositions</code> (the macro blueprints), the <code>properties</code> (for hitbox/dimension lookups), and the <code>configurations.recipes</code> into the Decomposer's constructor.</li>
+<li><strong>Statefulness:</strong> Because it is instantiated once as a singleton-like service for the session, its internal <code>increment</code> counter starts at 0 and safely scales upwards, guaranteeing unique names whether a Composition is spawned at boot or 10 hours into the game.</li>
+</ul>
+<p><strong>2. Bootstrap Hydration (The Orchestrator Flow)</strong></p>
+<p>During <code>Orchestrator.migrate()</code>, the application parses the <code>state</code> directory.</p>
+<ul>
+<li><strong>Interception:</strong> When the Orchestrator loop encounters the <code>self.state.compositions</code> list (the Compositions placed manually in the YAML state files), it does not try to process them natively.</li>
+<li><strong>Execution:</strong> Instead, it passes each deployed state object directly to <code>Decomposer.unpack(deployed_state)</code>.</li>
+<li><strong>Flattening:</strong> The Decomposer returns a flat <code>List[Asset]</code>. The Orchestrator simply calls <code>.extend()</code> to append these to the master <code>assets</code> list being compiled for the <code>Board</code>. The Board boots up completely unaware that these assets originated from a macro.</li>
+</ul>
+<p><strong>3. Runtime Injection (The Cradle Flow)</strong></p>
+<p>During <code>Orchestrator.inject()</code>, when the <code>Cradle</code> is instantiated, the Orchestrator passes the <em>exact same Decomposer instance</em> into the Cradle's constructor.</p>
+<ul>
+<li><strong>The Interface:</strong> The Cradle exposes a new method: <code>spawn_composition(id, position, layer, owner)</code>.</li>
+<li><strong>Execution:</strong> When a Mechanic (like <code>IndustryMechanics</code> processing a <code>build</code> Intention) requests a Composition, it calls this Cradle method. The Cradle creates a temporary pseudo-state from the arguments and passes it to its internal <code>Decomposer.unpack()</code>.</li>
+<li><strong>The Return:</strong> The Decomposer applies the exact same relative positioning, string binding, and unique incrementing as it did at boot, returning the flat <code>List[Asset]</code>.</li>
+<li><strong>Board Integration:</strong> The Mechanic receives the list and pushes it directly into the game loop via <code>Board.add()</code>.</li>
+</ul>
+<p><strong>Result</strong></p>
+<ol>
+<li><strong>Single Source of Truth:</strong> Whether a house is placed in a YAML file or built by an NPC Sprite dynamically, the exact same mathematical superposition and binding logic executes.</li>
+<li><strong>State Safety:</strong> The global increment tracker lives safely inside the Decomposer. Because both the Orchestrator and the Cradle share the exact same Decomposer instance in memory, <code>house-door-1</code> at boot ensures that the first runtime built door becomes <code>house-door-2</code>.</li>
+<li><strong>Strict Boundaries:</strong> The <code>Board</code> remains a dumb database. It never knows what a "Composition" is; it just holds the resulting tiles, doors, and struts.</li>
+</ol>
 
 
 
