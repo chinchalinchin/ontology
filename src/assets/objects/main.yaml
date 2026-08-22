@@ -41,6 +41,11 @@ objects:
       hitboxes: null
   # -------------------------------------------------------
   doors:
+    door-castle-open:
+      mass: -1
+      dimensions:
+        w: 64
+        l: 64
     door-double:
       mass: -1
       dimensions:
@@ -84,6 +89,7 @@ objects:
         w: 64
         l: 64
       hitboxes: null
+      count: 2
   # -------------------------------------------------------
   plates:
     plate-stone:
@@ -91,3 +97,4 @@ objects:
       dimensions:
         w: 15
         l: 14
+      count: 2

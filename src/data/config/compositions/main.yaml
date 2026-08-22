@@ -38,13 +38,12 @@ compositions:
                 layer: brick-house-compose-layer
                 outlayer: bind(root.layer)
                 depth: 0 # Normal depth
-                # height: bind(parent.height) <--- REMOVED
                 position:
                   x: 47
                   y: 142
                 out:
-                  x: 75
-                  y: 155
+                  x: 43
+                  y: 163
           crafts: 
             struts:
               - id: floor-wood
@@ -69,7 +68,7 @@ compositions:
               name: castle-entrance
               link: castle-gate-link
               depth: 1
-              height: bind(parent.height)
+              height: bind(root.height)
               position:
                 x: 81
                 y: 49
@@ -78,7 +77,16 @@ compositions:
               name: castle-entrance-switch
               link: castle-gate-link
               depth: 1
-              height: bind(parent.height)
+              height: bind(root.height)
               position:
                 x: 24
                 y: 145
+          doors: 
+            - id: door-castle-open
+              name: castle-entrance-open
+              height: bind(root.height)
+              depth: 0
+              position:
+                x: 81
+                y: 49
+              outlayer: castle-compose-layer
