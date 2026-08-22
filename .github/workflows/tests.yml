@@ -23,7 +23,20 @@ jobs:
           uv pip install -r requirements.txt
           uv pip install pytest
 
+      - name: cache
+        id: cache-cython
+        uses: actions/cache@v4
+        with:
+          path: |
+            libs/**/*.so
+            libs/**/*.c
+            build/
+          # Invalidate cache if any Cython source file or the build script changes
+          key: ${{ runner.os }}-cython-${{ hashFiles('libs/**/*.pyx', 'libs/**/*.pxd', 'setup.py') }}
+
       - name: compile
+        # Only run compilation if an exact cache match was not found
+        if: steps.cache-cython.outputs.cache-hit != 'true'
         run: |
           uv run python setup.py build_ext --inplace
 
