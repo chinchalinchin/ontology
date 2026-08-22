@@ -31,7 +31,8 @@ ext_modules = [
         sources=["src/libs/graphics/registry.pyx"],
         libraries=["SDL2", "SDL2_image"],
         include_dirs=include_dirs,
-        library_dirs=library_dirs
+        library_dirs=library_dirs,
+        define_macros=[('CYTHON_TRACE', '1')] 
     )
 ]
 
@@ -43,6 +44,7 @@ setup(
         include_path=["src"],
         compiler_directives={
             'language_level': "3",
+            'linetrace': True 
         }
     ),
 )

@@ -27,21 +27,21 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            libs/**/*.so
-            libs/**/*.c
+            src/libs/**/*.so
+            src/libs/**/*.c
             build/
-          # Invalidate cache if any Cython source file or the build script changes
-          key: ${{ runner.os }}-cython-${{ hashFiles('libs/**/*.pyx', 'libs/**/*.pxd', 'setup.py') }}
+          # Update the glob patterns to check inside src/
+          key: ${{ runner.os }}-cython-${{ hashFiles('src/libs/**/*.pyx', 'src/libs/**/*.pxd', 'setup.py') }}
 
       - name: compile
-        # Only run compilation if an exact cache match was not found
         if: steps.cache-cython.outputs.cache-hit != 'true'
         run: |
-          uv run python setup.py build_ext --inplace
+          uv run python setup.cicd.py build_ext --inplace
 
       - name: test
+        # Remove --cov=libs, as --cov=src handles the entire source tree now
         run: |
-          uv run pytest --cov=src --cov=libs --cov-report=html:coverage-html tests/unit/
+          uv run pytest --cov=src --cov-report=html:coverage-html tests/unit/
 
       - name: upload-coverage
         uses: actions/upload-artifact@v4

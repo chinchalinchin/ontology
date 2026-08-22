@@ -21,7 +21,10 @@ To compile the C extensions, run the following command in your terminal:
 
 ```bash
 python setup.py build_ext --inplace
+
 ```
+
+*Note: For CI/CD environments or test runs requiring coverage reporting, use `python setup.cicd.py build_ext --inplace --force` to compile with Cython line-tracing enabled.*
 
 ### Usage
 
@@ -59,31 +62,34 @@ python src/cli.py  \
   --dump-sdl \
   --log-level $LOG_LEVEL \
     start $WORLD
+
 ```
 
 ## Information
 
 ### Cython
 
-With the separated extensions, you can import each compiled binary natively and directly into your Python scripts like so:
+The Cython extensions are located in `src/libs/`. Once compiled, you can import each binary natively into your Python scripts:
 
 ```python
-import libs.core
-import libs.math
-from libs import render
-from libs import registry
+import libs.core.models
+import libs.core.math
+from libs.graphics import render
+from libs.graphics import registry
+
 ```
 
 **VSCode**
 
-To add the Cython libraries to the Pylance linter in VSCODE,
+To ensure the Pylance linter correctly resolves the compiled Cython libraries from the `src/` directory, add the following to your workspace settings:
 
 ```json
 {
   "python.analysis.extraPaths": [
-    "./libs"
+    "./src"
   ]
 }
+
 ```
 
 ### Scripts
@@ -99,19 +105,20 @@ python ./scripts/concatenate/main.py \
   -v int \
   -f /path/ \
   -o /path/result.png
+
 ```
 
 ## Index
 
 This section provides an overview of the project's directory and file structure.
 
-* `setup.py`: Script for compiling Cython libraries.
+* `setup.py`: Standard script for compiling Cython libraries.
+* `setup.cicd.py`: Build script with C-level tracing macros for coverage reports.
 * `main.py`: Application entrypoint.
 
 ### /docs
 
 `mkdocs` documentation markdown files.
-
 
 ### /scripts
 
