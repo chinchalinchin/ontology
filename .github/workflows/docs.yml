@@ -1,7 +1,10 @@
 name: ontology-docs
 
 on:
-  push:
+  workflow_run:
+    workflows: ["ontology-tests"]
+    types:
+      - completed
     branches:
       - main
 
@@ -11,12 +14,20 @@ permissions:
 jobs:
   docs:
     name: ontology-docs
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - name: checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: download-coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-report
+          path: docs/coverage
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: docs
         run: |
           pip install mkdocs mkdocs-material mkdocstrings[python]

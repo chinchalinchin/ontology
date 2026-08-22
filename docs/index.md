@@ -17,10 +17,10 @@
 - [Sounds](./07-sounds.md)
 - [Plots](./08-plots.md)
 - [Architecture](./09-architecture.md)
-- [Appendices]
+- Appendices
     - [Appendix I: References](./appendices/00-references.md)
     - [Appendix II: Schemas](./appendices/01-schemas.md)
-
+    
 ## CI/CD
 
 [![ontology-tests](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml)
