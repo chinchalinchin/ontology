@@ -52,3 +52,5 @@
     - Mock SDL input. 
     - Ensure Mapping return type and mappings have been applied correctly.
     - Ensure Edge-Triggered polling behaves appropriately.  
+- [ ] Subtask: Write unit tests for the Engine and AnimationMechanics
+    - The goal is to ensure the `animate()` is being called correctly for each Animation implementation. 
