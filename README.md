@@ -112,12 +112,6 @@ This section provides an overview of the project's directory and file structure.
 
 `mkdocs` documentation markdown files.
 
-### /libs
-
-Cython interfaces and headers.
-
-* `/libs/core`: Core Cython models and functions.
-* `/libs/graphics`: Graphics rendering and asset storage.
 
 ### /scripts
 
@@ -131,6 +125,7 @@ Helper scripts.
 Application source code.
 
 * `cli.py`: Application command line interface.
+* `/src/libs`: Cython packages.
 * `/src/app/`: Application packages.
 * `/src/assets/`: Application assets.
 * `/src/data/`: Application data.

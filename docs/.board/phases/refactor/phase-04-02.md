@@ -50,5 +50,6 @@
 - [x] Subtask: Write unit tests for the Orchestrator
 - [x] Subtask: Write unit tests for the Board.
 - [x] Subtask: Write unit tests for the Decomposer.
-- [ ] Subtask: Write unit tests for the Registry. 
-    - Ensure all Frame indexing and retrieval schemas are battle-tested.
+- [x] Subtask: Write unit tests for the Registry. 
+- [ ] Subtask: Write unit tests for the Screen.
+    - The primary goal is to get coverage on the `keys()` Frame methods and ensure they are being calculated correctly. 
