@@ -4,7 +4,7 @@
 Models for typing the configuration attributes of Mechanics and other game components. See documentation for a more in-depth explanation of each field and its purpose. 
 """
 # Standard Libraries
-from typing import Dict, List
+from typing import Dict, List, Optional
 from dataclasses import dataclass, field
 
 # Application Libraries
@@ -132,7 +132,7 @@ class CompositionPseudoState:
 @dataclass(slots=True)
 class CompositionConfiguration:
     root: CompositionPseudoState
-    branches: List[CompositionPseudoState]
+    branches: Optional[List[CompositionPseudoState]] = field(default_factory=list)
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------- ROOT SCHEMA

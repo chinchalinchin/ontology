@@ -31,7 +31,6 @@ class InteractionMechanics(SpatialMechanic):
         """
         Resolves interactions between Sprites/Players and Objects (e.g., Doors, Chests).
         """
-        # 1. MOVED OUTSIDE THE LOOP:
         # Ensures an entity can only interact ONCE per frame, 
         # preventing same-frame teleport bounces across layers.
         processed_sources = set()
@@ -44,7 +43,8 @@ class InteractionMechanics(SpatialMechanic):
             sources = [
                 asset for asset in sprites + players
                 if getattr(asset.state, 'intention', None) == Intentions.INTERACT.value
-                and asset.name not in processed_sources # 2. Filter out already processed sources instantly
+                and asset.name not in processed_sources 
+                # Filter out already processed sources instantly
             ]
             
             if not sources:

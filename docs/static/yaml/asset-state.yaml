@@ -79,7 +79,6 @@ objects:
       position:
         x: Horizontal Position
         y: Vertical Position
-      switch: Switch Flag
       content:
         - Content Key
   crates:
@@ -108,7 +107,6 @@ objects:
       position:
         x: Horizontal Position
         y: Vertical Position
-      switch: Switch Flag
   plates:
     - id: Asset ID
       name: Deployment Key
@@ -117,7 +115,6 @@ objects:
       position:
         x: Horizontal Position
         y: Vertical Position
-      switch: Switch Flag
 # ------------------------------------------------------------------
 # ----------------------------------------------------------- SHEETS
 sheets:

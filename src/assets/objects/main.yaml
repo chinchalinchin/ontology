@@ -78,7 +78,7 @@ objects:
         l: 48
   # -------------------------------------------------------
   gates:
-    gate-stone:
+    gate-castle:
       mass: 0
       dimensions:
         w: 64

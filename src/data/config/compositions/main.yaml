@@ -1,4 +1,5 @@
 compositions:
+  # --------------------------------------------------------------------------- 
   brick-house:
     root:
       strut: 
@@ -55,3 +56,29 @@ compositions:
                 position:
                   x: 0
                   y: 96
+  # --------------------------------------------------------------------------- 
+  postern-gate:
+    root:
+      strut: 
+        id: wall-castle
+        name: castle-wall
+      components:
+        objects:
+          gates:
+            - id: gate-castle
+              name: castle-entrance
+              link: castle-gate-link
+              depth: 1
+              height: bind(parent.height)
+              position:
+                x: 81
+                y: 49
+          plates:
+            - id: plate-stone
+              name: castle-entrance-switch
+              link: castle-gate-link
+              depth: 1
+              height: bind(parent.height)
+              position:
+                x: 24
+                y: 145

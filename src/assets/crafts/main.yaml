@@ -2,6 +2,7 @@
 # ----------------------------------------------------------- CRAFTS
 crafts:
   struts:
+    # ----------------------------------------------------- FRAMES
     frame-adobe:
       dimensions:
         w: 96
@@ -32,6 +33,7 @@ crafts:
       cost:
         - item: stone
           quantity: 10
+    # ----------------------------------------------------- FENCES
     fence-horizontal:
       dimensions:
         w: 72
@@ -62,6 +64,7 @@ crafts:
       cost:
         - item: wood
           quantity: 10
+    # ----------------------------------------------------- FLOORS
     floor-wood:
       dimensions:
         w: 128
@@ -70,6 +73,7 @@ crafts:
       cost: 
         - item: wood
           quantity: 10
+    # ----------------------------------------------------- WALLS
     wall-blue:
       dimensions:
         w: 128
@@ -85,3 +89,30 @@ crafts:
           dimensions:
             w: 116
             l: 54
+    wall-castle:
+      dimensions:
+        w: 222
+        l: 133
+      mass: 0
+      cost: 
+        - item: stone
+          quantity: 100
+      hitboxes:
+        - position:
+            x: 178
+            y: 102
+          dimensions:
+            w: 25
+            l: 12
+        - position: 
+            x: 17
+            y: 102
+          dimensions:
+            w: 25
+            l: 12
+        - position:
+            x: 5
+            y: 39
+          dimensions:
+            w: 203
+            l: 63
