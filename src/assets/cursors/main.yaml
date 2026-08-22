@@ -1,41 +1,19 @@
 cursors:
   expressions:
-    affection:
+    bubbles:
       dimensions:
-        w: 16
+        w: 144
         l: 16
-    agreement:
-      dimensions:
-        w: 16
-        l: 16
-    anger:
-      dimensions:
-        w: 16
-        l: 16
-    confusion:
-      dimensions:
-        w: 16
-        l: 16
-    curiosity:
-      dimensions:
-        w: 16
-        l: 16
-    disagreement:
-      dimensions:
-        w: 16
-        l: 16
-    loquacity:
-      dimensions:
-        w: 16
-        l: 16
-    surprise:
-      dimensions:
-        w: 16
-        l: 16
-    tired:
-      dimensions:
-        w: 16
-        l: 16
+      indices:
+        - affection
+        - agreement
+        - anger
+        - confusion
+        - curiosity
+        - disagreement
+        - loquacity
+        - surprise
+        - tired
   projectiles:
     arrow-fire:
       dimensions:

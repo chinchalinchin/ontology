@@ -417,6 +417,9 @@ N/A
 * `keys(asset, id): returns [ id ]`
 * `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
+!!! todo
+    Rethink how Expressions work in relation to Sprite's Intention and Psyche. Expressions should be a sheet, and should attach to Sprites based on formulas involving Intention and Psyche. This will involve refining the `keys()` and `index()` schemas. 
+
 **State: PositionalState**
 
 * `layer: str`
@@ -459,6 +462,9 @@ Effects are animate, immutable Objects. Effects iterate over a single row of fra
 * `dim: Dimensions`
 * `count: int`
 
+!!! todo
+    Further Refinement of Effects. After examining Asset files, the groupings that seem to logically classify this Asset through its "differentia" are: Permanent-Continuous, Permanent-Periodic, Permanent-Hazard, Temporary-Collectables, Temporary-Hazard. Needs more thought.
+    
 ### Temporary
 
 Temporary Effects are brief, short-lived effects, such as explosions or magic. After their animation is concluded, they are garbage-collected and removed from the Board.
