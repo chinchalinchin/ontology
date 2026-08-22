@@ -38,7 +38,7 @@ class Cradle:
     def __init__(self, 
         spawnables: SpawnableGroup, 
         recipes: RecipeConfiguration, 
-        decomposer: Decomposer
+        decomposer: 'Decomposer'
     ):
         self.spawnables = spawnables
         self.recipes = recipes
@@ -52,6 +52,7 @@ class Cradle:
         position: Position, 
         layer: str
     ):
+        from app.hooks.factory import Factory
         recipe = self.recipes.cursors.expressions
         properties = self.spawnables.expressions
         name = self._generate()
@@ -81,6 +82,7 @@ class Cradle:
         layer: str, 
         velocity: Velocity
     ):
+        from app.hooks.factory import Factory
         recipe = self.recipes.cursors.projectiles
         properties = self.spawnables.projectiles
         name = self._generate()
@@ -118,6 +120,7 @@ class Cradle:
         layer: str, 
         position: Position
     ):
+        from app.hooks.factory import Factory
         recipe = self.recipes.effects.temporary
         properties = self.spawnables.temporary
         name = self._generate()
@@ -147,6 +150,7 @@ class Cradle:
         layer: str, 
         owner: str
     ):
+        from app.hooks.factory import Factory
         recipe = self.recipes.crafts.struts
         properties = self.spawnables.struts 
         name = self._generate()

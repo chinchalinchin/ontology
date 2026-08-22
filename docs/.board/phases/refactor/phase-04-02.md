@@ -4,6 +4,7 @@
 
 - Eliminate the parallel Pydantic DTO pipeline.
 - Fix critical bugs in spatial resolution and engine initialization.
+- Ensure stability of core application component as development proceeds.
 
 ##### Tasks
 
@@ -20,8 +21,8 @@
 
 *Objective*: Ensure top-down physics fidelity.
 
-- [ ] Subtask: Refactor `CollisionMechanics._resolve` to calculate `overlap_x` and `overlap_y` using `Hitbox` coordinates rather than `Dimensions`.
-- [ ] Subtask: Update `Geometry.intersects` to return the specific intersecting `Hitbox` pair, rather than a simple boolean, so the narrow-phase solver knows exactly which boundaries to push apart.
+- [x] Subtask: Refactor `CollisionMechanics._resolve` to calculate `overlap_x` and `overlap_y` using `Hitbox` coordinates rather than `Dimensions`.
+- [x] Subtask: Update `Geometry.intersects` to return the specific intersecting `Hitbox` pair, rather than a simple boolean, so the narrow-phase solver knows exactly which boundaries to push apart.
 
 **3. Task: Engine & Orchestrator Patches**
 
@@ -29,7 +30,7 @@
 
 - [x] Subtask: Fix `self.mechaniccs` typo in `Orchestrator.init()`.
 - [x] Subtask: Refactor `Action` mapping in `Orchestrator.migrate()` to prevent mutating `self.properties`.
-- [ ] Subtask: Add an `executed` boolean flag to `SpriteState.mutators.triggers` to prevent `CombatMechanics` from spawning multiple projectiles on `frame == 0`.
+- [!] Subtask: Add an `executed` boolean flag to `SpriteState.mutators.triggers` to prevent `CombatMechanics` from spawning multiple projectiles on `frame == 0`.
 
 **4. Task: Event Bus Bootstrapping**
 
@@ -43,7 +44,7 @@
 
 *Objective*: Lock in application functionality with unit-test coverage for core components.
 
-- [ ] Subtask: Setup test fixtures for properties, state and configuration by reading in the data in the `src/assets/**/main.yaml` and `src/data/**/main.yaml` files. 
+- [ ] Subtask: Setup test fixtures for properties, state and configuration. 
 - [ ] Subtask: Write unit tests for the Factory.
 - [ ] Subtask: Write unit tests for the Cradle. 
 - [ ] Subtask: Write unit tests for the Orchestrator
