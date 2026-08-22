@@ -44,7 +44,7 @@
 
 *Objective*: Lock in application functionality with unit-test coverage for core components.
 
-- [ ] Subtask: Setup test fixtures for properties, state and configuration. 
-- [ ] Subtask: Write unit tests for the Factory.
-- [ ] Subtask: Write unit tests for the Cradle. 
-- [ ] Subtask: Write unit tests for the Orchestrator
+- [x] Subtask: Setup test fixtures for properties, state and configuration. 
+- [x] Subtask: Write unit tests for the Factory.
+- [x] Subtask: Write unit tests for the Cradle. 
+- [x] Subtask: Write unit tests for the Orchestrator

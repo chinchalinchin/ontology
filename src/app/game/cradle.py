@@ -54,7 +54,7 @@ class Cradle:
     ):
         from app.hooks.factory import Factory
         recipe = self.recipes.cursors.expressions
-        properties = self.spawnables.expressions
+        properties = self.spawnables.expressions.get(id)
         name = self._generate()
         
         state = PositionalState(
@@ -84,7 +84,7 @@ class Cradle:
     ):
         from app.hooks.factory import Factory
         recipe = self.recipes.cursors.projectiles
-        properties = self.spawnables.projectiles
+        properties = self.spawnables.projectiles.get(id)
         name = self._generate()
         
         # Instantiate natively
@@ -122,7 +122,7 @@ class Cradle:
     ):
         from app.hooks.factory import Factory
         recipe = self.recipes.effects.temporary
-        properties = self.spawnables.temporary
+        properties = self.spawnables.temporary.get(id)
         name = self._generate()
         
         state = PositionalState(
@@ -152,7 +152,7 @@ class Cradle:
     ):
         from app.hooks.factory import Factory
         recipe = self.recipes.crafts.struts
-        properties = self.spawnables.struts 
+        properties = self.spawnables.struts.get(id)
         name = self._generate()
         
         state = PropertyState(
