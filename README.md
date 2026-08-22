@@ -114,7 +114,6 @@ This section provides an overview of the project's directory and file structure.
 
 * `setup.py`: Standard script for compiling Cython libraries.
 * `setup.cicd.py`: Build script with C-level tracing macros for coverage reports.
-* `main.py`: Application entrypoint.
 
 ### /docs
 
@@ -131,6 +130,7 @@ Helper scripts.
 
 Application source code.
 
+* `main.py`: Application entrypoint.
 * `cli.py`: Application command line interface.
 * `/src/libs`: Cython packages.
 * `/src/app/`: Application packages.
