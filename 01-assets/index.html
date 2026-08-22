@@ -1914,6 +1914,10 @@
 <li><code>keys(asset, id): returns [ id ]</code></li>
 <li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>Rethink how Expressions work in relation to Sprite's Intention and Psyche. Expressions should be a sheet, and should attach to Sprites based on formulas involving Intention and Psyche. This will involve refining the <code>keys()</code> and <code>index()</code> schemas. </p>
+</div>
 <p><strong>State: PositionalState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
@@ -1951,6 +1955,10 @@
 <li><code>dim: Dimensions</code></li>
 <li><code>count: int</code></li>
 </ul>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>Further Refinement of Effects. After examining Asset files, the groupings that seem to logically classify this Asset through its "differentia" are: Permanent-Continuous, Permanent-Periodic, Permanent-Hazard, Temporary-Collectables, Temporary-Hazard. Needs more thought.</p>
+</div>
 <h3 id="temporary">Temporary</h3>
 <p>Temporary Effects are brief, short-lived effects, such as explosions or magic. After their animation is concluded, they are garbage-collected and removed from the Board.</p>
 <p><strong>Animation: TemporaryAnimation</strong></p>
