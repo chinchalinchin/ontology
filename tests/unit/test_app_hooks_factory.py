@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.test_hooks_factory
+# Ontology: tests.unit.test_app_hooks_factory
 """
 from app.hooks.factory import Factory
 from app.config.enums import FrameRecipe, AnimationRecipe, Devices, Mechanics

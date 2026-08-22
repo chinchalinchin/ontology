@@ -4,7 +4,7 @@
 
 - Eliminate the parallel Pydantic DTO pipeline.
 - Fix critical bugs in spatial resolution and engine initialization.
-- Ensure stability of core application component as development proceeds.
+- Ensure stability of core application components as development proceeds.
 
 ##### Tasks
 
@@ -48,3 +48,7 @@
 - [x] Subtask: Write unit tests for the Factory.
 - [x] Subtask: Write unit tests for the Cradle. 
 - [x] Subtask: Write unit tests for the Orchestrator
+- [x] Subtask: Write unit tests for the Board.
+- [x] Subtask: Write unit tests for the Decomposer.
+- [ ] Subtask: Write unit tests for the Registry. 
+    - Ensure all Frame indexing and retrieval schemas are battle-tested.

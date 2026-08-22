@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.test_hooks_orchestrator
+# Ontology: tests.unit.test_app_hooks_orchestrator
 """
 import pytest
 from unittest.mock import patch

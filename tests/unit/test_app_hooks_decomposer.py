@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.test_hooks_decomposer
+# Ontology: tests.unit.test_app_hooks_decomposer
 """
 import pytest
 from app.hooks.decomposer import Decomposer

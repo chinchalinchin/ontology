@@ -216,9 +216,9 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These a
 
 Tiles are inanimate, immutable Assets. Tiles are the most basic type of Asset. They have a single frame, have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds and foregrounds by breaking each rendered image into a grid of tiles. 
 
-Tiles Instances have their dimensions fixed by their properties. These dimensions are configurable in the property file, but they apply to all Tiles of a particular instance universally. When a Tile is drawn, it is rendered as a `multiple` of the unit Tile configured in the asset directory.
+Tiles Instances have their dimensions fixed by their properties. These dimensions are configurable in the property file, but they apply to all Tiles of a particular instance universally. When a Tile is drawn, it is rendered as a `multiple` of the unit Tile configured in the Asset directory.
 
-Tiles have coefficients of friction. These coefficient are used by [MotionMechanics](./05-mechanics.md#spatial) to determine the rate of velocity decay for Assets traversing their area.
+Tiles have coefficients of friction. These coefficient are used by [MotionMechanics](./05-mechanics.md#spatial) to determine the rate of velocity decay for Frictive Assets traversing their area.
 
 **Properties: TileProperties**
 
@@ -227,7 +227,7 @@ Tiles have coefficients of friction. These coefficient are used by [MotionMechan
 
 ### Back
 
-A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Back Tiles will always be rendered *under* all of the other Assets.
+A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Back Tiles will *always* be rendered *under* all of the other Assets, regardless of their `depth` or `height`.
 
 **Animation: None**
 
@@ -317,11 +317,13 @@ When *interacting* with a Chest, the [Player](./03-player.md) is shown the [Ches
 
 ### Crates
 
-Crates are Objects who state can be altered by in-game physics. For example, when a Sprite collides with a Crate, the Crate moves in the direction of the Sprite, with the same speed.
+Crates are Objects who state can be altered by in-game physics. For example, when a Sprite collides with a Crate, momentum is transferred from the Sprite to the Crate. See [CollisionMechanics](./05-mechanics.md#spatial) for more information on the physics of game collisions.
 
 **State: PositionalState**
 
 * `layer: str`
+* `depth: int`
+* `height: int`
 * `position: Position`
 * `velocity: Velocity`
 
@@ -373,7 +375,10 @@ Gates are Binary Objects whose state is connected to Plates. When a Gate is on (
 
 ### Plates
 
-Plates are Binary Objects whose state can be changed by collision, i.e. when a player enters its hitbox and flips its state. When activated, a Plate in turn notifies the state of its `link`-keyed Gate to change.
+Plates are Binary Objects whose state can be changed by intersection, e.g. when a Sprite enters its hitbox a Plate will flip its `switch`. When activated, a Plate in turn notifies the state of its `link`-keyed Gate to change.
+
+!!! note
+    Plates must have their `mass` property configured to be `-1`, to exclude them from the collision resolution while keeping the collision detection active, i.e. Plates do not move due to collisions, but register when other Assets are intersecting them. Plates are considered *Sensors*. See [CollisionMechanics](./05-mechanics.md#spatial) for more information.
 
 **Animation: BinaryAnimation**
 
@@ -418,7 +423,7 @@ N/A
 * `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 !!! todo
-    Rethink how Expressions work in relation to Sprite's Intention and Psyche. Expressions should be a sheet, and should attach to Sprites based on formulas involving Intention and Psyche. This will involve refining the `keys()` and `index()` schemas. 
+    Rethink how Expressions work in relation to Sprite's Intention and Psyche. Expressions should be a sheet, and should attach to Sprites based on formulas involving Intention and Psyche. This will involve refining the `keys()` and `index()` schemas. Perhaps a new Frame type.
 
 **State: PositionalState**
 
