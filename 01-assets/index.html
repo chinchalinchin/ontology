@@ -1745,15 +1745,15 @@
 <li>Property File: <code>/src/assets/tiles/main.yaml</code></li>
 </ul>
 <p>Tiles are inanimate, immutable Assets. Tiles are the most basic type of Asset. They have a single frame, have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds and foregrounds by breaking each rendered image into a grid of tiles. </p>
-<p>Tiles Instances have their dimensions fixed by their properties. These dimensions are configurable in the property file, but they apply to all Tiles of a particular instance universally. When a Tile is drawn, it is rendered as a <code>multiple</code> of the unit Tile configured in the asset directory.</p>
-<p>Tiles have coefficients of friction. These coefficient are used by <a href="../05-mechanics/#spatial">MotionMechanics</a> to determine the rate of velocity decay for Assets traversing their area.</p>
+<p>Tiles Instances have their dimensions fixed by their properties. These dimensions are configurable in the property file, but they apply to all Tiles of a particular instance universally. When a Tile is drawn, it is rendered as a <code>multiple</code> of the unit Tile configured in the Asset directory.</p>
+<p>Tiles have coefficients of friction. These coefficient are used by <a href="../05-mechanics/#spatial">MotionMechanics</a> to determine the rate of velocity decay for Frictive Assets traversing their area.</p>
 <p><strong>Properties: TileProperties</strong></p>
 <ul>
 <li><code>dimensions: Dimensions</code></li>
 <li><code>friction: float</code></li>
 </ul>
 <h3 id="back">Back</h3>
-<p>A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Back Tiles will always be rendered <em>under</em> all of the other Assets.</p>
+<p>A Back Tile is the first Asset rendered on screen. It has the lowest Z coordinate of all Assets; Back Tiles will <em>always</em> be rendered <em>under</em> all of the other Assets, regardless of their <code>depth</code> or <code>height</code>.</p>
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
@@ -1826,10 +1826,12 @@
 <li><code>content: List[str]</code></li>
 </ul>
 <h3 id="crates">Crates</h3>
-<p>Crates are Objects who state can be altered by in-game physics. For example, when a Sprite collides with a Crate, the Crate moves in the direction of the Sprite, with the same speed.</p>
+<p>Crates are Objects who state can be altered by in-game physics. For example, when a Sprite collides with a Crate, momentum is transferred from the Sprite to the Crate. See <a href="../05-mechanics/#spatial">CollisionMechanics</a> for more information on the physics of game collisions.</p>
 <p><strong>State: PositionalState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
+<li><code>depth: int</code></li>
+<li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>velocity: Velocity</code></li>
 </ul>
@@ -1876,7 +1878,11 @@
 <li><code>switch: bool</code></li>
 </ul>
 <h3 id="plates">Plates</h3>
-<p>Plates are Binary Objects whose state can be changed by collision, i.e. when a player enters its hitbox and flips its state. When activated, a Plate in turn notifies the state of its <code>link</code>-keyed Gate to change.</p>
+<p>Plates are Binary Objects whose state can be changed by intersection, e.g. when a Sprite enters its hitbox a Plate will flip its <code>switch</code>. When activated, a Plate in turn notifies the state of its <code>link</code>-keyed Gate to change.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Plates must have their <code>mass</code> property configured to be <code>-1</code>, to exclude them from the collision resolution while keeping the collision detection active, i.e. Plates do not move due to collisions, but register when other Assets are intersecting them. Plates are considered <em>Sensors</em>. See <a href="../05-mechanics/#spatial">CollisionMechanics</a> for more information.</p>
+</div>
 <p><strong>Animation: BinaryAnimation</strong></p>
 <ul>
 <li><code>if switch == true: animation.frame = 1</code></li>
@@ -1916,7 +1922,7 @@
 </ul>
 <div class="admonition todo">
 <p class="admonition-title">Todo</p>
-<p>Rethink how Expressions work in relation to Sprite's Intention and Psyche. Expressions should be a sheet, and should attach to Sprites based on formulas involving Intention and Psyche. This will involve refining the <code>keys()</code> and <code>index()</code> schemas. </p>
+<p>Rethink how Expressions work in relation to Sprite's Intention and Psyche. Expressions should be a sheet, and should attach to Sprites based on formulas involving Intention and Psyche. This will involve refining the <code>keys()</code> and <code>index()</code> schemas. Perhaps a new Frame type.</p>
 </div>
 <p><strong>State: PositionalState</strong></p>
 <ul>
