@@ -1,0 +1,32 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Run Pytest Suite
+    runs-on: ubuntu-latest
+    container:
+      image: chinchalinchin/ontology-builder:latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create Environment & Install Dependencies
+        run: |
+          uv venv --python 3.14
+          uv pip install -r requirements.txt
+          uv pip install pytest
+
+      - name: Compile Cython Extensions
+        run: |
+          uv run python setup.py build_ext --inplace
+
+      - name: Run Unit Tests
+        run: |
+          uv run pytest tests/unit/
