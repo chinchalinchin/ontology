@@ -1,4 +1,3 @@
-# /home/grant/Projects/ontology/libs/core/math.pyx
 # cython: language_level=3
 """
 # Ontology: libs.core.math

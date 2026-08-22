@@ -1,4 +1,4 @@
-# src/app/models/core.pxd
+# src/libs/cores/models.pxd
 
 cdef class Position:
     cdef public int x

@@ -38,5 +38,9 @@ ext_modules = [
 setup(
     name="Ontology Cython Libraries",
     package_dir={"": "src"}, # Maps the root package namespace to the src/ directory
-    ext_modules=cythonize(ext_modules, compiler_directives={'language_level': "3"}),
+    ext_modules=cythonize(
+        ext_modules, 
+        compiler_directives={'language_level': "3"},
+        include_path=["src"]  # Tells Cython to look in src/ for cimports
+    ),
 )

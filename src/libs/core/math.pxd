@@ -1,7 +1,6 @@
-# /home/grant/Projects/ontology/libs/core/math.pxd
 # cython: language_level=3
 """
-# libs/math.pxd
+# src/libs/core/math.pxd
 Header file for Cythonized mathematical and geometric operations.
 """
 
