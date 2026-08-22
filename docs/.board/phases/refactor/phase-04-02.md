@@ -30,17 +30,9 @@
 
 - [x] Subtask: Fix `self.mechaniccs` typo in `Orchestrator.init()`.
 - [x] Subtask: Refactor `Action` mapping in `Orchestrator.migrate()` to prevent mutating `self.properties`.
-- [!] Subtask: Add an `executed` boolean flag to `SpriteState.mutators.triggers` to prevent `CombatMechanics` from spawning multiple projectiles on `frame == 0`.
+- [x] Subtask: Add an `executed` boolean flag to `SpriteState.mutators.triggers` to prevent `CombatMechanics` from spawning multiple projectiles on `frame == 0`.
 
-**4. Task: Event Bus Bootstrapping**
-
-*Objective*: Prepare the engine for Phase 05: Widgets.
-
-- [!] Subtask: Define `MenuEvent`, `SelectionEvent`, and `StateEvent` dataclasses in `app.models.state`.
-- [!] Subtask: Add `bus: collections.deque` to `app.game.board.Board` to handle FIFO event queueing.
-- [!] Subtask: Implement the `MenuMechanics` shell to drain and parse the `Board.bus` queue per tick.
-
-**5. Task: Unit Test Coverage**
+**4. Task: Unit Test Coverage**
 
 *Objective*: Lock in application functionality with unit-test coverage for core components.
 
@@ -50,6 +42,9 @@
 - [x] Subtask: Write unit tests for the Orchestrator
 - [x] Subtask: Write unit tests for the Board.
 - [x] Subtask: Write unit tests for the Decomposer.
-- [x] Subtask: Write unit tests for the Registry. 
+- [ ] Subtask: Write unit tests for the Registry. 
+    - The primary goal is to get coverage on the `index()` Frame methods and ensure they are being calculated correctly for all possible Frame implementations.
+    - Ensure the rest of the code has good coverage and SDL methods are mocked.
 - [ ] Subtask: Write unit tests for the Screen.
-    - The primary goal is to get coverage on the `keys()` Frame methods and ensure they are being calculated correctly. 
+    - The primary goal is to get coverage on the `keys()` Frame methods and ensure they are being calculated correctly for all possible Frame implementations.
+    - Ensure the rest of the code has good coverage and SDL methods are mocked.

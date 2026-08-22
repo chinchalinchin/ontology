@@ -7,8 +7,8 @@ from unittest.mock import patch, MagicMock
 
 from libs.graphics.registry import Registry
 from app.config.enums import FrameRecipe
-from app.models.config import SheetRecipe, EffectRecipe, Recipe
-from app.models.properties import Action, Direction, EffectProperties
+from app.models.config import SheetRecipe, EffectRecipe, ObjectRecipe, Recipe
+from app.models.properties import Action, Direction, EffectProperties, ObjectProperties
 from libs.core.models import Dimensions
 
 
@@ -182,3 +182,75 @@ def test_registry_stack_assembly(mock_properties, mock_configurations):
         args, _ = mock_compose.call_args
         assert args[0] == registry._textures["base_body"]
         assert len(args[1]) == 2
+
+
+def test_registry_noframe_indexing(mock_properties, mock_configurations):
+    """Test NoFrame indexing returns a zeroed crop."""
+    mock_configurations.recipes.objects = ObjectRecipe(
+        chests=Recipe(frame=FrameRecipe.NONE)
+    )
+    mock_properties.objects.chests["invisible_chest"] = ObjectProperties(
+        dimensions=Dimensions(w=32, l=32)
+    )
+
+    with patch('libs.graphics.registry.os.walk') as mock_walk, \
+         patch('libs.graphics.registry.Registry.load') as mock_load:
+         
+        mock_walk.return_value = [
+            ('/mock/assets', [], ['invisible_chest.png'])
+        ]
+        
+        mock_tex = MagicMock()
+        mock_load.return_value = mock_tex
+        
+        registry = Registry(
+            dataclasses.asdict(mock_properties), 
+            dataclasses.asdict(mock_configurations.recipes)
+        )
+        
+        assert "invisible_chest" in registry._frames
+        data = registry.data("invisible_chest")
+        
+        assert data is not None
+        assert data[1] == 0
+        assert data[2] == 0
+        assert data[3] == 0
+        assert data[4] == 0
+
+
+def test_registry_spriteframe_indexing(mock_properties, mock_configurations):
+    """Test SpriteFrame correctly inherits StateFrame indexing rules."""
+    mock_configurations.recipes.sheets = SheetRecipe(
+        sprites=Recipe(frame=FrameRecipe.SPRITE)
+    )
+    
+    actions = {
+        "slash": Action(count=6, directions={"left": Direction(row=2)})
+    }
+    mock_properties.sheets.sprites["player"].actions = actions
+    
+    with patch('libs.graphics.registry.os.walk') as mock_walk, \
+         patch('libs.graphics.registry.Registry.load') as mock_load:
+         
+        mock_walk.return_value = [
+            ('/mock/assets', [], ['player.png'])
+        ]
+        
+        mock_tex = MagicMock()
+        mock_tex.w = 64
+        mock_tex.l = 64
+        mock_load.return_value = mock_tex
+        
+        registry = Registry(
+            dataclasses.asdict(mock_properties), 
+            dataclasses.asdict(mock_configurations.recipes)
+        )
+        
+        expected_key = "player-slash-left-5"
+        assert expected_key in registry._frames
+        
+        data = registry.data(expected_key)
+        assert data[1] == 320  # src_x = frame(5) * w(64)
+        assert data[2] == 128  # src_y = row(2) * l(64)
+        assert data[3] == 64
+        assert data[4] == 64

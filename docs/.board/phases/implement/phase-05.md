@@ -17,8 +17,10 @@ Goals: Widget Creation, Menu Configuration and Instantiation, Menu Traversal
 **Task 3. Event Bus & Game Loop Interruption**
 
 * [ ] **Implement Event Queue**: Add an `Event` data class and an event queue to `Board` (or create a dedicated `Bus` class).
+    - [!] Subtask: Define `MenuEvent`, `SelectionEvent`, and `StateEvent` dataclasses in `app.models.state`.
+    - [!] Subtask: Add `bus: collections.deque` to `app.game.board.Board` to handle FIFO event queueing.
 * [ ] **Trigger Events via Intentions**: Update `SpeechMechanics` and `CommerceMechanics` to push Events (e.g., `DialogueEvent`, `TradeEvent`) to the queue when specific Intentions are resolved.
-* [ ] **Handle Interruptions**: Modify `Board` to process the event queue at the end of a tick. If an Event exists, set `self.paused = True`, instantiate the requested Menu, and load it into a temporary active UI state.
+* [ ] **Handle Interruptions**: Implement the `MenuMechanics` shell to drain and parse the `Board.bus` queue per tick. If an Event exists, set `board.paused = True`, instantiate the requested Menu, and load it into a temporary active UI state.
 
 **Task 4. Layout Engine & Instantiation**
 
