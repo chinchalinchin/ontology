@@ -35,10 +35,11 @@ jobs:
       - name: compile
         if: steps.cache-cython.outputs.cache-hit != 'true'
         run: |
-          # Ensure you are calling the new script with the force flag
           uv run python setup.cicd.py build_ext --inplace --force
 
       - name: test
+        env:
+          COVERAGE_CORE: ctrace
         run: |
           uv run pytest --cov=src --cov-report=html:coverage-html tests/unit/
 

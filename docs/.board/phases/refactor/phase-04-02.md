@@ -48,7 +48,7 @@
 - [x] Subtask: Write unit tests for the Screen.
     - The primary goal is to get coverage on the `keys()` Frame methods and ensure they are being calculated correctly for all possible Frame implementations.
     - Ensure the rest of the code has good coverage and SDL methods are mocked.
-- [ ] Subtask: Write unit tests for Keyboard.
+- [x] Subtask: Write unit tests for Keyboard.
     - Mock SDL input. 
     - Ensure Mapping return type and mappings have been applied correctly.
     - Ensure Edge-Triggered polling behaves appropriately.  
