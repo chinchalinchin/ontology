@@ -213,10 +213,18 @@ class InertAssets(str, Enum):
     
 # -------------------------------- WIDGET ENUMERATIONS
 
+class Controls(str, Enum):
+    button          = "button"
+    meter           = "meter"
+    page            = "page"
+    
 class Layouts(str, Enum):
+    # Widget Layouts
     DOCK            = "dock"
     STACK           = "stack"
+    # Pane Layouts
     TAB             = "tab"
+    NEST            = "nest"
 
 class Alignments(str, Enum):
     START           = "start"
@@ -224,5 +232,7 @@ class Alignments(str, Enum):
     CENTER          = "center"
 
 class Traversal(str, Enum):
-    FORE            = "fore"
-    AFT             = "aft"
+    NORTH           = "north"
+    SOUTH           = "south"
+    EAST            = "east"
+    WEST            = "West"

@@ -4,7 +4,11 @@ Widgets are a type of [Asset](./01-assets.md); however, they reside outside of t
 
 ## Overview
 
-Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets. Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.
+Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets. Like most Assets, Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.
+
+**Panes vs. Controls**
+
+The overarching division of Widgets resides in the functional difference between Panes and Controls. Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen size in proportionate ways. Controls bind to game state and are *traversed*. Controls are organized in Panes.
 
 ### Events
 
@@ -30,13 +34,14 @@ When the Menu enters certain end states, such as the user selecting an Exit Butt
 
 ### Traversal
 
-Some Widgets bind to state inputs. Others bind to Traversal. 
+Some Widgets bind to state. Others bind to Traversal. 
 
 A Menu has focus. Focus is a field that points to the currently `active` traversible Widget. When the user issues a command to traverse the Menu, the focus shifts to the next traversible widget.
 
 For example, suppose a Menu Pane has two traversible Widgets. Widget A is currently in `active` Status, Widget B is currently `idle` Status. When the user issues the command to traverse, these states will shift so A is `idle` and B is `active`. If the user issues the command to select, the Widget that is `active` will be `selected` and a SelectionEvent will be generated for processing by the MenuMechanics.
 
-Traversal directions are `FORE` and `AFT`. Each Layout in a Pane (`dock`, `stack`, `tab`) corresponded to a cardinal axis (x, y, z). `FORE` indicates traversal in the position direction, `AFT` indicates traversal in the negative direction. For example, `FORE` will move right in `dock`, up in a `stack` and into the screen in a `tab` (note right-hand rule).
+!!! todo: no longer accurate
+    Traversal directions are `FORE` and `AFT`. Each Layout in a Pane (`dock`, `stack`, `tab`) corresponded to a cardinal axis (x, y, z). `FORE` indicates traversal in the position direction, `AFT` indicates traversal in the negative direction. For example, `FORE` will move right in `dock`, up in a `stack` and into the screen in a `tab` (note right-hand rule).
 
 ## Asset Specification
 
@@ -48,7 +53,7 @@ It is assumed all Widget frames are organized in single row in the image file. T
     - `px: double`
     - `py: double`
 
-Some Menu positions (e.g. Panes) are specified as ScreenPositions. A ScreenPosition is a tuple of percentages relative to the screensize, e.g. the following coordinates denote a position `(0.75w, 0.85h)`, where `(w, h)` is the screensize.
+Pane positions are specified as ScreenPositions. A ScreenPosition is a tuple of percentages relative to the screensize, e.g. the following coordinates denote a position `(0.75w, 0.85h)`, where `(w, h)` is the screensize.
 
 ```python
 menu.position.x = 0.75
@@ -62,25 +67,36 @@ menu.position.y = 0.75
 
 ### Panes
 
-Panes are the main Widgets of a Menu. They are the only Widget which can have a ScreenPosition, but not all Panes have ScreenPosition. Only the `root` Pane has ScreenPosition. ScreenPosition for a root Pane is specified in the [Menu Schema](#menus).
+All Menus must have atleast one Pane. Panes are the main Widgets of a Menu around which all child Widgets are laid out. They are the only Widget which can have a ScreenPosition, but not all Panes have ScreenPosition. Only the `root` Pane has ScreenPosition. ScreenPosition for a root Pane is specified in the [Menu Schema](#menus).
 
-Panes contain other Widgets. A Pane can contain other Panes as well (but only in the case `pane.layout == tab`). A root Pane's child Widgets have their Positions calculated relative to the `root` ScreenPosition based on the `layout` and `alignment`. 
+Panes contain other Widgets. A Pane can contain other Panes as well (i.e., when `pane.layout in ['tab', 'nest']`). A root Pane's child Widgets have their Positions calculated relative to the `root` ScreenPosition based on the `layout` and `alignment`. `layout` provides the general scheme for constructing the position of its Children, whereas `alignment` applies rules to fit the given child Widgets to that scheme.
+
+Beyond `layout` and `alignment`, Panes have several styling attributes to control their look and feel. `margins` are applied around the edge of the Pane before aligning children in the layout. For `layout != tab, alignment != center`, `gap` can be used to add spacing between child Widgets.
+
+**Layout**
 
 Layouts are enumerated below,
 
-- Dock: A horizontal row of Widgets.
-- Stack: A vertical column of Widgets
-- Tab: A sagittal axis (out-of-the-screen) of Panes.
+- Dock (Widget): A horizontal row of Widgets.
+- Stack (Widget): A vertical column of Widgets
+- Tab (Pane): A sagittal axis (out-of-the-screen) of Panes.
+- Nest (Pane): A vertical column of Panes.
 
-Alignments are enumerated below,
+The `dock` and `stack` Layouts only apply to "endpoints" in the Pane tree. These two types of Layouts are ultimately where all Controls displayed in a Menu must be organized. These two Layouts can *only* contains Control Widgets.
+
+The `tab` and `nest` Layouts are specifically for laying out configurations of Panes. These two types of Layouts *cannot* contain Controls. These types of Panes *must* contain children Panes. Furthermore, to avoid deeply nested Widget trees, the children of these Pane types *must* be `dock` or `stack` Layouts.
+
+**Alignment**
+
+Every Alignments are enumerated below,
 
 - Start: Widgets are aligned at the start of the Pane.
 - End: Widgets are aligned at the end of the Pane.
 - Center: Widgets are aligned at the center of the Pane.
 
-Panes may optionally have `headers`. `headers` is a list of Buttons. `len(headers) == len(children)` must be the case. A header is composed of nontraversible Buttons whose Status is tied to the Pane's children. When a child Widget has `focus` from a Menu, the header Button which corresponds to it (by having the same index in its list) has `status == active`. When a child Widget does not have `focus` from a Menu, the header Button which corresponds to it has `status == idle`.
+**Headers**
 
-Beyoned `layout` and `alignment`, Panes have several styling attributes to control their look and feel. `margins` are applied around the edge of the Pane before aligning children in the layout. For `layout != tab, alignment != center`, `gap` can be used to add spacing between child Widgets.
+Panes may optionally have `headers`. `headers` is a list of Buttons. `len(headers) == len(children)` must be the case. A header is composed of nontraversible Buttons whose Status is tied to the Pane's children. When a child Widget has `focus` from a Menu Pane, the header Button which corresponds to it (by having the same index in its list) has `status == active`. When a child Widget does not have `focus` from a Menu, the header Button which corresponds to it has `status == idle`.
 
 **Taxonomy**
 
@@ -99,7 +115,7 @@ Beyoned `layout` and `alignment`, Panes have several styling attributes to contr
 - `root: bool`
 
 !!! note
-    `root` is only relevant when `layout == tab`, because the Pane's children are also Panes, i.e. `root` is used to distinguish Panes in `tab` layout.
+    `root` is only relevant when `layout in ['tab', 'nest']`, because the Pane's children are also Panes, i.e. `root` is used to distinguish Panes in Layouts where the root Pane may have Pane children.
 
 **Frame: SingleFrame**
 
