@@ -4,7 +4,13 @@
 from typing import Dict, List, Union, Optional
 from dataclasses import dataclass, field
 
-from app.models.adapters import PydanticDimensions as Dimensions, PydanticHitbox as Hitbox
+from app.config.enums import Alignments
+from app.models.adapters import (
+    PydanticDimensions as Dimensions, 
+    PydanticHitbox as Hitbox
+)
+
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class Direction:
@@ -20,9 +26,30 @@ class Cost:
     item: str
     quantity: int
 
+# ---------------------------------------------------------------------------------------
+
 @dataclass(slots=True)
 class AssetProperties:
     pass 
+
+# ---------------------------------------------------------------------------------------
+
+@dataclass(slots=True)
+class RGBA:
+    r: int
+    g: int
+    b: int
+    a: float
+
+@dataclass(slots=True)
+class FontProperties:
+    alignment: Alignments
+    bold: bool
+    italics: bool
+    margin: int
+    color: RGBA
+
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class CursorProperties(AssetProperties):
@@ -109,3 +136,5 @@ class PropertiesSchema:
     crafts: CraftPropertyInstances = field(default_factory=CraftPropertyInstances)
     cursors: CursorPropertyInstances = field(default_factory=CursorPropertyInstances)
     sheets: SheetPropertyInstances = field(default_factory=SheetPropertyInstances)
+    #
+    fonts: Dict[str, FontProperties] = field(default_factory=dict)

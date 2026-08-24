@@ -1,9 +1,9 @@
 fonts:
     dialogue:
-      alignment: left 
+      alignment: start
       bold: false
       italics: false
-      margins: 5
+      margin: 5
       color:
         r: 200
         g: 147
@@ -13,7 +13,7 @@ fonts:
       alignment: center
       bold: false
       italics: false
-      margins: 0
+      margin: 0
       color: 
         r: 186
         g: 104
