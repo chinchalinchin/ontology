@@ -23,6 +23,14 @@ python setup.py build_ext --inplace
 python -c "import test; test.play_audio(b'bite.wav', b'arabesque.mp3')"
 ```
 
+**exploratory/sdl/typography**
+
+```bash
+cd ontology/tests/exploratory/sdl/sound
+python setup.py build_ext --inplace
+python -c "import test; test.run_text_viewer()"
+```
+
 ### Unit
 
 TODO

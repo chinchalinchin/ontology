@@ -6,9 +6,15 @@ Widgets are a type of [Asset](./01-assets.md); however, they reside outside of t
 
 Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets. Like most Assets, Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.
 
-**Panes vs. Controls**
+**Panes, Controls & Decals**
 
-The overarching division of Widgets resides in the functional difference between Panes and Controls. Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen size in proportionate ways. Controls bind to game state and are *traversed*. Controls are organized in Panes.
+The overarching division of Widgets resides in the functional difference between Panes, Controls & Decals. 
+
+Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen size in proportionate ways. 
+
+Controls bind to game state and are *traversed*. Controls are organized in Panes.
+
+Decals are painted onto Controls.
 
 ### Events
 
@@ -32,17 +38,6 @@ When the Board is paused by a MenuEvent, MenuMechanics take over. This [Mechanic
 
 When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.
 
-### Traversal
-
-Some Widgets bind to state. Others bind to Traversal. 
-
-A Menu has focus. Focus is a field that points to the currently `active` traversible Widget. When the user issues a command to traverse the Menu, the focus shifts to the next traversible widget.
-
-For example, suppose a Menu Pane has two traversible Widgets. Widget A is currently in `active` Status, Widget B is currently `idle` Status. When the user issues the command to traverse, these states will shift so A is `idle` and B is `active`. If the user issues the command to select, the Widget that is `active` will be `selected` and a SelectionEvent will be generated for processing by the MenuMechanics.
-
-!!! todo: no longer accurate
-    Traversal directions are `FORE` and `AFT`. Each Layout in a Pane (`dock`, `stack`, `tab`) corresponded to a cardinal axis (x, y, z). `FORE` indicates traversal in the position direction, `AFT` indicates traversal in the negative direction. For example, `FORE` will move right in `dock`, up in a `stack` and into the screen in a `tab` (note right-hand rule).
-
 ## Asset Specification
 
 It is assumed all Widget frames are organized in single row in the image file. The number of frames (i.e. `len(frames)`) multipled by the width of a single frame(i.e. `dimension.w`) must equal the width of the image file.
@@ -65,7 +60,7 @@ menu.position.y = 0.75
 - `dimensions: Dimension`: Dimensions of a single frame.
 - `frames: Optional[List[str]]`: List of frame keys. Used for indexing Language Assets.
 
-### Panes
+### Root: Panes
 
 All Menus must have atleast one Pane. Panes are the main Widgets of a Menu around which all child Widgets are laid out. They are the only Widget which can have a ScreenPosition, but not all Panes have ScreenPosition. Only the `root` Pane has ScreenPosition. ScreenPosition for a root Pane is specified in the [Menu Schema](#menus).
 
@@ -122,7 +117,7 @@ Panes may optionally have `headers`. `headers` is a list of Buttons. `len(header
 * `key(asset, state): returns <asset>`
 * `index(self, asset, properties, recipe): returns TODO` 
 
-### Buttons
+### Control: Buttons
 
 Buttons are Widgets that are *traversed*. They have Status that changes as they are traversed. When they enter into a `selected` Status, they emit Selection events. 
 
@@ -161,7 +156,7 @@ A Button may have `symbols`. Each element of the `symbols`  list is a Language W
 * `key(asset, state): returns <asset>-<state.status>`
 * `index(self, asset, properties, recipe): returns TODO` 
 
-### Pages
+### Control: Pages
 
 Pages render text or Language Assets.
 
@@ -184,18 +179,7 @@ If a Page is rendering text, it is a `scroller` (`typeof(content) == str`). The 
 - `more(): return content[-len(current) : ] != current`
 - `scroll(): current = content[pageindex*pagesize : max(pageindex*(pagesize+1), len(content))]`
 
-### Language
-
-**Taxonomy**
-
-* `category: widgets`
-* `instance: language`
-
-Language serves the purpose of labelling within the Widget family. Each Language sheet can be thought of as a catalogue of icons. The frame keys for each icon in a Language sheet are defined by the `properties.frames` field.
-
-TODO
-
-### Meters
+### Control: Meters
 
 Meters are "continuous" indicators. They require a `unit` to calibrate their reading and then express a `reading` in terms of the `unit`; All readings are expressed relative to the `unit`, e.g. the ratio of the current value of the Player's health to maximum value of the Player's health is expressed as the proportion of a Meter that is filled.
 
@@ -217,6 +201,28 @@ TODO: calculate based on `reading / unit`
 
 * `key(asset, state): returns <asset>-<state.status>`
 * `index(self, asset, properties, recipe): returns TODO` 
+
+### Decal: Language
+
+**Taxonomy**
+
+* `category: widgets`
+* `instance: language`
+
+Language serves the purpose of labelling within the Widget family. Each Language sheet can be thought of as a catalogue of icons. The frame keys for each icon in a Language sheet are defined by the `properties.frames` field.
+
+TODO
+
+## Traversal
+
+Some Widgets bind to state. Others bind to Traversal. 
+
+A Menu has focus. Focus is a field that points to the currently `active` traversible Widget. When the user issues a command to traverse the Menu, the focus shifts to the next traversible widget.
+
+For example, suppose a Menu Pane has two traversible Widgets. Widget A is currently in `active` Status, Widget B is currently `idle` Status. When the user issues the command to traverse, these states will shift so A is `idle` and B is `active`. If the user issues the command to select, the Widget that is `active` will be `selected` and a SelectionEvent will be generated for processing by the MenuMechanics.
+
+!!! todo: no longer accurate
+    Traversal directions are `FORE` and `AFT`. Each Layout in a Pane (`dock`, `stack`, `tab`) corresponded to a cardinal axis (x, y, z). `FORE` indicates traversal in the position direction, `AFT` indicates traversal in the negative direction. For example, `FORE` will move right in `dock`, up in a `stack` and into the screen in a `tab` (note right-hand rule).
 
 ## Menus
 

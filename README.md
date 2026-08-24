@@ -12,8 +12,8 @@ Install and build the application dependencies.
 
 Cython needs the actual C development headers to compile against,
 
-* **macOS:** `brew install sdl2 sdl2_image`
-* **Linux (Debian/Ubuntu):** `sudo apt install libsdl2-dev libsdl2-image-dev`
+* **macOS:** `brew install sdl2 sdl2_image sdl2_ttf`
+* **Linux (Debian/Ubuntu):** `sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev`
 
 ### Build
 
