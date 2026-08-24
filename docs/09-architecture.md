@@ -6,12 +6,12 @@ This section contains an in-depth presentation of the game engine's programmatic
 
 1. Entrypoint: `Orchestrate`
     * Load data into memory
-        - Load Asset Recipes YAML File from `/src/assets/main.yaml`
-        - Load Asset Category properties YAML files from `/src/assets/<category>/main.yaml`
-        - Load Asset Instance state YAML files from the `/src/data/state/<board-key>` directory, where `<board-key>` is the selected board. There may be an arbitrary number of state files, with any filename, in the `<board-key>` directory.
+        - Load (Image) Asset Recipes YAML File from `/src/assets/main.yaml`
+        - Load (Image and Font) Asset Category properties YAML files from `/src/assets/<category>/main.yaml`
+        - Load (Image) Asset Instance state YAML files from the `/src/data/state/<board-key>` directory, where `<board-key>` is the selected board. There may be an arbitrary number of state files, with any filename, in the `<board-key>` directory.
         - Validate all data models against Pydantic TypeAdapters and convert into Plain-Old-Python-Objects (POPOs) and Cython `cdef classes` for runtime use.
-        - Initialize list of Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).
-        - Initialize Fonts with configured Styles. 
+        - Initialize list of (Image) Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).
+        - Initialize Font Assets with configured Styles. 
     * Construct application components and manage dependency-injections (Cradle, Decomposer, etc.)
 2. Init: `Registry`
     * Load Assets into memory

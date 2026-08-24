@@ -700,6 +700,24 @@ Equipment is covered in more detail in the [Sprites documentation](./02-sprites.
 
 ## Widgets
 
-Widgets are used to constructs Menus. They are not a part of the core gameplay loopjku and have special Mechanics for their interaction. 
+Widgets are used to constructs Menus. They are not a part of the core gameplay loop and have special Mechanics for their interaction. 
 
 Widgets are covered in their own section, [Widgets](./06-widgets.md).
+
+## Fonts
+
+Fonts are stateless Assets initialized at [runtime](./09-architecture.md#initialization). A Font is a `.ttf` file and a data structure used to configure the Font styling. Each styled Font is stored in the [Registy](./00-overview.md#registry) using its file name. The application [Screen](./00-overview.md#screen)retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.
+
+In other words, a Font Asset encapsulates both the script and the styling applied to the script. 
+
+**Properties: SheetProperties**
+
+* `alignment: str`
+* `bold: bool`
+* `italics: bool`
+* `margins: int`
+* `color:`
+    * `r: int`
+    * `g: int`
+    * `b: int`
+    * `a: float`
