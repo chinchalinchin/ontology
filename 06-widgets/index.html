@@ -1229,7 +1229,9 @@
 <h1 id="ontology-widgets">Ontology: Widgets</h1>
 <p>Widgets are a type of <a href="../01-assets/">Asset</a>; however, they reside outside of the core loop and have a special place in the application flow.</p>
 <h2 id="overview">Overview</h2>
-<p>Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets. Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.</p>
+<p>Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets. Like most Assets, Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.</p>
+<p><strong>Panes vs. Controls</strong></p>
+<p>The overarching division of Widgets resides in the functional difference between Panes and Controls. Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen size in proportionate ways. Controls bind to game state and are <em>traversed</em>. Controls are organized in Panes.</p>
 <h3 id="events">Events</h3>
 <p>To illustrate Events, consider the following example. A Player may enter into the <code>barter</code> <a href="../04-intentions/">Intention</a> with another Sprite. This causes the gameplay loop to emit an Event containing the Menu key <code>trade</code> along with the Event data, i.e. the Sprite States. When an Event is detected by the gameplay, it causes the Board to pause the game loop and pass the Event to be processed to the Bus. The Bus in turn uses the Event data to construct and display the Menu referenced by the Event's Menu key. </p>
 <p>When a Menu is instantiated, its Widgets acquire state. This state is populated through transformations applied to the Menu arguments (in most cases, Sprite state). </p>
@@ -1246,10 +1248,11 @@
 <p>When the Board is paused by a MenuEvent, MenuMechanics take over. This <a href="../05-mechanics/">Mechanic</a> translates the <a href="./03-player.md#device-mapping">Player Device mappings</a> to Menu state changes. These Menu state changes then map back onto game state changes through Event notifications sent to the Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see <a href="#inventory">Inventory Menu</a> below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  </p>
 <p>When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.</p>
 <h3 id="traversal">Traversal</h3>
-<p>Some Widgets bind to state inputs. Others bind to Traversal. </p>
+<p>Some Widgets bind to state. Others bind to Traversal. </p>
 <p>A Menu has focus. Focus is a field that points to the currently <code>active</code> traversible Widget. When the user issues a command to traverse the Menu, the focus shifts to the next traversible widget.</p>
 <p>For example, suppose a Menu Pane has two traversible Widgets. Widget A is currently in <code>active</code> Status, Widget B is currently <code>idle</code> Status. When the user issues the command to traverse, these states will shift so A is <code>idle</code> and B is <code>active</code>. If the user issues the command to select, the Widget that is <code>active</code> will be <code>selected</code> and a SelectionEvent will be generated for processing by the MenuMechanics.</p>
-<p>Traversal directions are <code>FORE</code> and <code>AFT</code>. Each Layout in a Pane (<code>dock</code>, <code>stack</code>, <code>tab</code>) corresponded to a cardinal axis (x, y, z). <code>FORE</code> indicates traversal in the position direction, <code>AFT</code> indicates traversal in the negative direction. For example, <code>FORE</code> will move right in <code>dock</code>, up in a <code>stack</code> and into the screen in a <code>tab</code> (note right-hand rule).</p>
+<p>!!! todo: no longer accurate
+    Traversal directions are <code>FORE</code> and <code>AFT</code>. Each Layout in a Pane (<code>dock</code>, <code>stack</code>, <code>tab</code>) corresponded to a cardinal axis (x, y, z). <code>FORE</code> indicates traversal in the position direction, <code>AFT</code> indicates traversal in the negative direction. For example, <code>FORE</code> will move right in <code>dock</code>, up in a <code>stack</code> and into the screen in a <code>tab</code> (note right-hand rule).</p>
 <h2 id="asset-specification">Asset Specification</h2>
 <p>It is assumed all Widget frames are organized in single row in the image file. The number of frames (i.e. <code>len(frames)</code>) multipled by the width of a single frame(i.e. <code>dimension.w</code>) must equal the width of the image file.</p>
 <p><strong>ScreenPosition</strong></p>
@@ -1260,7 +1263,7 @@
 </ul>
 </li>
 </ul>
-<p>Some Menu positions (e.g. Panes) are specified as ScreenPositions. A ScreenPosition is a tuple of percentages relative to the screensize, e.g. the following coordinates denote a position <code>(0.75w, 0.85h)</code>, where <code>(w, h)</code> is the screensize.</p>
+<p>Pane positions are specified as ScreenPositions. A ScreenPosition is a tuple of percentages relative to the screensize, e.g. the following coordinates denote a position <code>(0.75w, 0.85h)</code>, where <code>(w, h)</code> is the screensize.</p>
 <div class="highlight"><pre><span></span><code><span class="n">menu</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.75</span>
 <span class="n">menu</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.75</span>
 </code></pre></div>
@@ -1270,22 +1273,28 @@
 <li><code>frames: Optional[List[str]]</code>: List of frame keys. Used for indexing Language Assets.</li>
 </ul>
 <h3 id="panes">Panes</h3>
-<p>Panes are the main Widgets of a Menu. They are the only Widget which can have a ScreenPosition, but not all Panes have ScreenPosition. Only the <code>root</code> Pane has ScreenPosition. ScreenPosition for a root Pane is specified in the <a href="#menus">Menu Schema</a>.</p>
-<p>Panes contain other Widgets. A Pane can contain other Panes as well (but only in the case <code>pane.layout == tab</code>). A root Pane's child Widgets have their Positions calculated relative to the <code>root</code> ScreenPosition based on the <code>layout</code> and <code>alignment</code>. </p>
+<p>All Menus must have atleast one Pane. Panes are the main Widgets of a Menu around which all child Widgets are laid out. They are the only Widget which can have a ScreenPosition, but not all Panes have ScreenPosition. Only the <code>root</code> Pane has ScreenPosition. ScreenPosition for a root Pane is specified in the <a href="#menus">Menu Schema</a>.</p>
+<p>Panes contain other Widgets. A Pane can contain other Panes as well (i.e., when <code>pane.layout in ['tab', 'nest']</code>). A root Pane's child Widgets have their Positions calculated relative to the <code>root</code> ScreenPosition based on the <code>layout</code> and <code>alignment</code>. <code>layout</code> provides the general scheme for constructing the position of its Children, whereas <code>alignment</code> applies rules to fit the given child Widgets to that scheme.</p>
+<p>Beyond <code>layout</code> and <code>alignment</code>, Panes have several styling attributes to control their look and feel. <code>margins</code> are applied around the edge of the Pane before aligning children in the layout. For <code>layout != tab, alignment != center</code>, <code>gap</code> can be used to add spacing between child Widgets.</p>
+<p><strong>Layout</strong></p>
 <p>Layouts are enumerated below,</p>
 <ul>
-<li>Dock: A horizontal row of Widgets.</li>
-<li>Stack: A vertical column of Widgets</li>
-<li>Tab: A sagittal axis (out-of-the-screen) of Panes.</li>
+<li>Dock (Widget): A horizontal row of Widgets.</li>
+<li>Stack (Widget): A vertical column of Widgets</li>
+<li>Tab (Pane): A sagittal axis (out-of-the-screen) of Panes.</li>
+<li>Nest (Pane): A vertical column of Panes.</li>
 </ul>
-<p>Alignments are enumerated below,</p>
+<p>The <code>dock</code> and <code>stack</code> Layouts only apply to "endpoints" in the Pane tree. These two types of Layouts are ultimately where all Controls displayed in a Menu must be organized. These two Layouts can <em>only</em> contains Control Widgets.</p>
+<p>The <code>tab</code> and <code>nest</code> Layouts are specifically for laying out configurations of Panes. These two types of Layouts <em>cannot</em> contain Controls. These types of Panes <em>must</em> contain children Panes. Furthermore, to avoid deeply nested Widget trees, the children of these Pane types <em>must</em> be <code>dock</code> or <code>stack</code> Layouts.</p>
+<p><strong>Alignment</strong></p>
+<p>Every Alignments are enumerated below,</p>
 <ul>
 <li>Start: Widgets are aligned at the start of the Pane.</li>
 <li>End: Widgets are aligned at the end of the Pane.</li>
 <li>Center: Widgets are aligned at the center of the Pane.</li>
 </ul>
-<p>Panes may optionally have <code>headers</code>. <code>headers</code> is a list of Buttons. <code>len(headers) == len(children)</code> must be the case. A header is composed of nontraversible Buttons whose Status is tied to the Pane's children. When a child Widget has <code>focus</code> from a Menu, the header Button which corresponds to it (by having the same index in its list) has <code>status == active</code>. When a child Widget does not have <code>focus</code> from a Menu, the header Button which corresponds to it has <code>status == idle</code>.</p>
-<p>Beyoned <code>layout</code> and <code>alignment</code>, Panes have several styling attributes to control their look and feel. <code>margins</code> are applied around the edge of the Pane before aligning children in the layout. For <code>layout != tab, alignment != center</code>, <code>gap</code> can be used to add spacing between child Widgets.</p>
+<p><strong>Headers</strong></p>
+<p>Panes may optionally have <code>headers</code>. <code>headers</code> is a list of Buttons. <code>len(headers) == len(children)</code> must be the case. A header is composed of nontraversible Buttons whose Status is tied to the Pane's children. When a child Widget has <code>focus</code> from a Menu Pane, the header Button which corresponds to it (by having the same index in its list) has <code>status == active</code>. When a child Widget does not have <code>focus</code> from a Menu, the header Button which corresponds to it has <code>status == idle</code>.</p>
 <p><strong>Taxonomy</strong></p>
 <ul>
 <li><code>category: widget</code></li>
@@ -1304,7 +1313,7 @@
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code>root</code> is only relevant when <code>layout == tab</code>, because the Pane's children are also Panes, i.e. <code>root</code> is used to distinguish Panes in <code>tab</code> layout.</p>
+<p><code>root</code> is only relevant when <code>layout in ['tab', 'nest']</code>, because the Pane's children are also Panes, i.e. <code>root</code> is used to distinguish Panes in Layouts where the root Pane may have Pane children.</p>
 </div>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
