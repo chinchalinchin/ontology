@@ -474,17 +474,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#traversal" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Traversal
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -503,10 +492,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#panes" class="md-nav__link">
+  <a href="#root-panes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Panes
+        Root: Panes
       
     </span>
   </a>
@@ -514,10 +503,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#buttons" class="md-nav__link">
+  <a href="#control-buttons" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Buttons
+        Control: Buttons
       
     </span>
   </a>
@@ -525,10 +514,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pages" class="md-nav__link">
+  <a href="#control-pages" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pages
+        Control: Pages
       
     </span>
   </a>
@@ -536,10 +525,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#language" class="md-nav__link">
+  <a href="#control-meters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Language
+        Control: Meters
       
     </span>
   </a>
@@ -547,10 +536,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#meters" class="md-nav__link">
+  <a href="#decal-language" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Meters
+        Decal: Language
       
     </span>
   </a>
@@ -559,6 +548,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traversal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traversal
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1024,17 +1024,6 @@
   
 </li>
         
-          <li class="md-nav__item">
-  <a href="#traversal" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Traversal
-      
-    </span>
-  </a>
-  
-</li>
-        
       </ul>
     </nav>
   
@@ -1053,10 +1042,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#panes" class="md-nav__link">
+  <a href="#root-panes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Panes
+        Root: Panes
       
     </span>
   </a>
@@ -1064,10 +1053,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#buttons" class="md-nav__link">
+  <a href="#control-buttons" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Buttons
+        Control: Buttons
       
     </span>
   </a>
@@ -1075,10 +1064,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#pages" class="md-nav__link">
+  <a href="#control-pages" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Pages
+        Control: Pages
       
     </span>
   </a>
@@ -1086,10 +1075,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#language" class="md-nav__link">
+  <a href="#control-meters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Language
+        Control: Meters
       
     </span>
   </a>
@@ -1097,10 +1086,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#meters" class="md-nav__link">
+  <a href="#decal-language" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Meters
+        Decal: Language
       
     </span>
   </a>
@@ -1109,6 +1098,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#traversal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Traversal
+      
+    </span>
+  </a>
   
 </li>
       
@@ -1230,8 +1230,11 @@
 <p>Widgets are a type of <a href="../01-assets/">Asset</a>; however, they reside outside of the core loop and have a special place in the application flow.</p>
 <h2 id="overview">Overview</h2>
 <p>Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets. Like most Assets, Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.</p>
-<p><strong>Panes vs. Controls</strong></p>
-<p>The overarching division of Widgets resides in the functional difference between Panes and Controls. Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen size in proportionate ways. Controls bind to game state and are <em>traversed</em>. Controls are organized in Panes.</p>
+<p><strong>Panes, Controls &amp; Decals</strong></p>
+<p>The overarching division of Widgets resides in the functional difference between Panes, Controls &amp; Decals. </p>
+<p>Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen size in proportionate ways. </p>
+<p>Controls bind to game state and are <em>traversed</em>. Controls are organized in Panes.</p>
+<p>Decals are painted onto Controls.</p>
 <h3 id="events">Events</h3>
 <p>To illustrate Events, consider the following example. A Player may enter into the <code>barter</code> <a href="../04-intentions/">Intention</a> with another Sprite. This causes the gameplay loop to emit an Event containing the Menu key <code>trade</code> along with the Event data, i.e. the Sprite States. When an Event is detected by the gameplay, it causes the Board to pause the game loop and pass the Event to be processed to the Bus. The Bus in turn uses the Event data to construct and display the Menu referenced by the Event's Menu key. </p>
 <p>When a Menu is instantiated, its Widgets acquire state. This state is populated through transformations applied to the Menu arguments (in most cases, Sprite state). </p>
@@ -1247,12 +1250,6 @@
 <h3 id="mechanics">Mechanics</h3>
 <p>When the Board is paused by a MenuEvent, MenuMechanics take over. This <a href="../05-mechanics/">Mechanic</a> translates the <a href="./03-player.md#device-mapping">Player Device mappings</a> to Menu state changes. These Menu state changes then map back onto game state changes through Event notifications sent to the Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see <a href="#inventory">Inventory Menu</a> below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  </p>
 <p>When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.</p>
-<h3 id="traversal">Traversal</h3>
-<p>Some Widgets bind to state. Others bind to Traversal. </p>
-<p>A Menu has focus. Focus is a field that points to the currently <code>active</code> traversible Widget. When the user issues a command to traverse the Menu, the focus shifts to the next traversible widget.</p>
-<p>For example, suppose a Menu Pane has two traversible Widgets. Widget A is currently in <code>active</code> Status, Widget B is currently <code>idle</code> Status. When the user issues the command to traverse, these states will shift so A is <code>idle</code> and B is <code>active</code>. If the user issues the command to select, the Widget that is <code>active</code> will be <code>selected</code> and a SelectionEvent will be generated for processing by the MenuMechanics.</p>
-<p>!!! todo: no longer accurate
-    Traversal directions are <code>FORE</code> and <code>AFT</code>. Each Layout in a Pane (<code>dock</code>, <code>stack</code>, <code>tab</code>) corresponded to a cardinal axis (x, y, z). <code>FORE</code> indicates traversal in the position direction, <code>AFT</code> indicates traversal in the negative direction. For example, <code>FORE</code> will move right in <code>dock</code>, up in a <code>stack</code> and into the screen in a <code>tab</code> (note right-hand rule).</p>
 <h2 id="asset-specification">Asset Specification</h2>
 <p>It is assumed all Widget frames are organized in single row in the image file. The number of frames (i.e. <code>len(frames)</code>) multipled by the width of a single frame(i.e. <code>dimension.w</code>) must equal the width of the image file.</p>
 <p><strong>ScreenPosition</strong></p>
@@ -1272,7 +1269,7 @@
 <li><code>dimensions: Dimension</code>: Dimensions of a single frame.</li>
 <li><code>frames: Optional[List[str]]</code>: List of frame keys. Used for indexing Language Assets.</li>
 </ul>
-<h3 id="panes">Panes</h3>
+<h3 id="root-panes">Root: Panes</h3>
 <p>All Menus must have atleast one Pane. Panes are the main Widgets of a Menu around which all child Widgets are laid out. They are the only Widget which can have a ScreenPosition, but not all Panes have ScreenPosition. Only the <code>root</code> Pane has ScreenPosition. ScreenPosition for a root Pane is specified in the <a href="#menus">Menu Schema</a>.</p>
 <p>Panes contain other Widgets. A Pane can contain other Panes as well (i.e., when <code>pane.layout in ['tab', 'nest']</code>). A root Pane's child Widgets have their Positions calculated relative to the <code>root</code> ScreenPosition based on the <code>layout</code> and <code>alignment</code>. <code>layout</code> provides the general scheme for constructing the position of its Children, whereas <code>alignment</code> applies rules to fit the given child Widgets to that scheme.</p>
 <p>Beyond <code>layout</code> and <code>alignment</code>, Panes have several styling attributes to control their look and feel. <code>margins</code> are applied around the edge of the Pane before aligning children in the layout. For <code>layout != tab, alignment != center</code>, <code>gap</code> can be used to add spacing between child Widgets.</p>
@@ -1320,7 +1317,7 @@
 <li><code>key(asset, state): returns &lt;asset&gt;</code></li>
 <li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
-<h3 id="buttons">Buttons</h3>
+<h3 id="control-buttons">Control: Buttons</h3>
 <p>Buttons are Widgets that are <em>traversed</em>. They have Status that changes as they are traversed. When they enter into a <code>selected</code> Status, they emit Selection events. </p>
 <p>Button Statuses are enumerated below,</p>
 <ul>
@@ -1358,7 +1355,7 @@
 <li><code>key(asset, state): returns &lt;asset&gt;-&lt;state.status&gt;</code></li>
 <li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
-<h3 id="pages">Pages</h3>
+<h3 id="control-pages">Control: Pages</h3>
 <p>Pages render text or Language Assets.</p>
 <div class="admonition todo">
 <p class="admonition-title">Todo</p>
@@ -1379,15 +1376,7 @@
 <li><code>more(): return content[-len(current) : ] != current</code></li>
 <li><code>scroll(): current = content[pageindex*pagesize : max(pageindex*(pagesize+1), len(content))]</code></li>
 </ul>
-<h3 id="language">Language</h3>
-<p><strong>Taxonomy</strong></p>
-<ul>
-<li><code>category: widgets</code></li>
-<li><code>instance: language</code></li>
-</ul>
-<p>Language serves the purpose of labelling within the Widget family. Each Language sheet can be thought of as a catalogue of icons. The frame keys for each icon in a Language sheet are defined by the <code>properties.frames</code> field.</p>
-<p>TODO</p>
-<h3 id="meters">Meters</h3>
+<h3 id="control-meters">Control: Meters</h3>
 <p>Meters are "continuous" indicators. They require a <code>unit</code> to calibrate their reading and then express a <code>reading</code> in terms of the <code>unit</code>; All readings are expressed relative to the <code>unit</code>, e.g. the ratio of the current value of the Player's health to maximum value of the Player's health is expressed as the proportion of a Meter that is filled.</p>
 <p><strong>Taxonomy</strong></p>
 <ul>
@@ -1406,6 +1395,20 @@
 <li><code>key(asset, state): returns &lt;asset&gt;-&lt;state.status&gt;</code></li>
 <li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
+<h3 id="decal-language">Decal: Language</h3>
+<p><strong>Taxonomy</strong></p>
+<ul>
+<li><code>category: widgets</code></li>
+<li><code>instance: language</code></li>
+</ul>
+<p>Language serves the purpose of labelling within the Widget family. Each Language sheet can be thought of as a catalogue of icons. The frame keys for each icon in a Language sheet are defined by the <code>properties.frames</code> field.</p>
+<p>TODO</p>
+<h2 id="traversal">Traversal</h2>
+<p>Some Widgets bind to state. Others bind to Traversal. </p>
+<p>A Menu has focus. Focus is a field that points to the currently <code>active</code> traversible Widget. When the user issues a command to traverse the Menu, the focus shifts to the next traversible widget.</p>
+<p>For example, suppose a Menu Pane has two traversible Widgets. Widget A is currently in <code>active</code> Status, Widget B is currently <code>idle</code> Status. When the user issues the command to traverse, these states will shift so A is <code>idle</code> and B is <code>active</code>. If the user issues the command to select, the Widget that is <code>active</code> will be <code>selected</code> and a SelectionEvent will be generated for processing by the MenuMechanics.</p>
+<p>!!! todo: no longer accurate
+    Traversal directions are <code>FORE</code> and <code>AFT</code>. Each Layout in a Pane (<code>dock</code>, <code>stack</code>, <code>tab</code>) corresponded to a cardinal axis (x, y, z). <code>FORE</code> indicates traversal in the position direction, <code>AFT</code> indicates traversal in the negative direction. For example, <code>FORE</code> will move right in <code>dock</code>, up in a <code>stack</code> and into the screen in a <code>tab</code> (note right-hand rule).</p>
 <h2 id="menus">Menus</h2>
 <ul>
 <li>Location: <code>/src/data/menus/main.yaml</code></li>
