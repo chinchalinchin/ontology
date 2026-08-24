@@ -190,8 +190,10 @@ class Orchestrator:
 
         logger.info("Initializing Registry..")
         self.registry = Registry(
+            # TODO: exclude fonts from image properties
             dataclasses.asdict(self.properties), 
-            dataclasses.asdict(self.configurations.recipes)
+            dataclasses.asdict(self.configurations.recipes),
+            dataclasses.asdict(self.properties.fonts)
         )
 
         logger.info("Initializing Screens...")
@@ -213,7 +215,7 @@ class Orchestrator:
         logger.info("Initializing Mechanics...")
         order = getattr(self.configurations.mechanics, 'order', None)
         if not order:
-            logger.warning("No Mechanics configured. Default to basic set...")
+            logger.warning("No Mechanics configured. Defaulting to basic set...")
             order = [
                 Mechanics.PLAYER,
                 Mechanics.MOTION,

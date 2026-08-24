@@ -15,7 +15,7 @@ from libs.core.models import Dimensions
 def test_registry_initialization_and_caching(mock_properties, mock_configurations):
     """Test that Registry walks the asset directory and caches textures."""
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
-         patch('libs.graphics.registry.Registry.load') as mock_load:
+         patch('libs.graphics.registry.Registry._load_image') as mock_load:
          
         mock_walk.return_value = [
             ('/mock/assets', [], ['player.png', 'sword.png'])
@@ -49,7 +49,7 @@ def test_registry_indexing_and_retrieval(mock_properties, mock_configurations):
     mock_properties.sheets.sprites["player"].actions = actions
     
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
-         patch('libs.graphics.registry.Registry.load') as mock_load:
+         patch('libs.graphics.registry.Registry._load_image') as mock_load:
          
         mock_walk.return_value = [
             ('/mock/assets', [], ['player.png'])
@@ -92,7 +92,7 @@ def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
     )
     
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
-         patch('libs.graphics.registry.Registry.load') as mock_load:
+         patch('libs.graphics.registry.Registry._load_image') as mock_load:
          
         mock_walk.return_value = [
             ('/mock/assets', [], ['explosion.png'])
@@ -123,7 +123,7 @@ def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
 def test_registry_fallback_retrieval(mock_properties, mock_configurations):
     """Test that Registry correctly falls back to raw textures for unindexed assets."""
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
-         patch('libs.graphics.registry.Registry.load') as mock_load:
+         patch('libs.graphics.registry.Registry._load_iamge') as mock_load:
          
         mock_walk.return_value = [
             ('/mock/assets', [], ['single_frame_tile.png'])
@@ -156,7 +156,7 @@ def test_registry_stack_assembly(mock_properties, mock_configurations):
     mock_properties.sheets.sprites["player"].stack = ["base_body", "armor", "helmet"]
     
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
-         patch('libs.graphics.registry.Registry.load') as mock_load, \
+         patch('libs.graphics.registry.Registry._load_image') as mock_load, \
          patch('libs.graphics.registry.render.compose') as mock_compose:
          
         mock_composed_tex = MagicMock()
@@ -194,7 +194,7 @@ def test_registry_noframe_indexing(mock_properties, mock_configurations):
     )
 
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
-         patch('libs.graphics.registry.Registry.load') as mock_load:
+         patch('libs.graphics.registry.Registry._load_image') as mock_load:
          
         mock_walk.return_value = [
             ('/mock/assets', [], ['invisible_chest.png'])
@@ -230,7 +230,7 @@ def test_registry_spriteframe_indexing(mock_properties, mock_configurations):
     mock_properties.sheets.sprites["player"].actions = actions
     
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
-         patch('libs.graphics.registry.Registry.load') as mock_load:
+         patch('libs.graphics.registry.Registry._load_image') as mock_load:
          
         mock_walk.return_value = [
             ('/mock/assets', [], ['player.png'])

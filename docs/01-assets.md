@@ -706,11 +706,15 @@ Widgets are covered in their own section, [Widgets](./06-widgets.md).
 
 ## Fonts
 
-Fonts are stateless Assets initialized at [runtime](./09-architecture.md#initialization). A Font is a `.ttf` file and a data structure used to configure the Font styling. Each styled Font is stored in the [Registy](./00-overview.md#registry) using its file name. The application [Screen](./00-overview.md#screen)retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.
+Fonts are stateless Assets initialized at [runtime](./09-architecture.md#initialization), i.e. they are not deployed onto the Board; instead Fonts are utilized by the [Screen](./00-overview.md#screen) to render text whenever the game loop calls for text. 
+
+A Font is a wrapper `.ttf` file and a data structure used to configure the Font styling. Each styled Font is stored in the [Registy](./00-overview.md#registry) using its file name. The [Screen](./00-overview.md#screen)retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.
 
 In other words, a Font Asset encapsulates both the script and the styling applied to the script. 
 
-**Properties: SheetProperties**
+See [SDL Architecture documentation](./09-architecture.md#sdl) for more information on Fonts.
+
+**Properties: FontProperties**
 
 * `alignment: str`
 * `bold: bool`

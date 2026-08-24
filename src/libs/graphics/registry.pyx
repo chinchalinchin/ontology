@@ -193,6 +193,9 @@ class Registry:
         """Maps runtime dynamic frame keys to their GPU mapping tuple coordinates."""
         logger.debug("Indexing Frame Keys to Texture Crops...")
         for cat_name, cat_props in self.properties.items():
+            # TODO: handle font indexing separately, i.e. ignore fonts here.
+            #       perhaps ensure Orchestrator only passes image properties in
+            #       in self.properties and passes font properties through self.typography.
             if not cat_props: continue
             
             cat_recipes = self.recipes.get(cat_name)

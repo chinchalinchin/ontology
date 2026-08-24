@@ -24,6 +24,7 @@
 - [x] Subtask: Implement `Registry._load_font()` to instantiate fonts and apply configuration properties parsed from dictionaries (e.g., `bold`, `italics`, `alignment`, `margins`, and `color` RGBA channels).
 - [x] Subtask: Apply SDL styles natively to the `TTF_Font*` pointer during initialization to avoid repeatedly setting styles in the active render loop.
 - [x] Subtask: Provide a `font(font_key)` retrieval method for the application to pass styled fonts to the renderer.
+- [ ] Subtask: Ensure Registry image indexing is unaffected by the addition of Font keys, i.e. separate the font and image properties at the Orchestrator level and ensure they are injected properly.
 
 **3. Task: Implement Typography Rendering Pipeline**
 
@@ -39,5 +40,3 @@
 *Objective*: Document the modified initialization and rendering procedures.
 
 - [x] Subtask: Update the MkDocs architecture page to outline the `Registry` font ingestion process, the `TTFFont` wrapper, and the `measure`/`write` zero-allocation typography mechanics.
-
-```
