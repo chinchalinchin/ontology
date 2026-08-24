@@ -40,3 +40,11 @@
 *Objective*: Document the modified initialization and rendering procedures.
 
 - [x] Subtask: Update the MkDocs architecture page to outline the `Registry` font ingestion process, the `TTFFont` wrapper, and the `measure`/`write` zero-allocation typography mechanics.
+
+**5. Task: Update Unit Tests**
+
+*Objective*: Ensure changes are captured by unit tests.
+
+- [ ] Subtask: Ensure unit tests for previous Registry implementation are passing.
+- [ ] Subtask: Add font fixtures.
+- [ ] Subtask: Ensure the `font()` method and font indexing are adequately covered by unit tests.
