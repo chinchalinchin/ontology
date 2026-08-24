@@ -9,12 +9,15 @@ This section contains an in-depth presentation of the game engine's programmatic
         - Load Asset Recipes YAML File from `/src/assets/main.yaml`
         - Load Asset Category properties YAML files from `/src/assets/<category>/main.yaml`
         - Load Asset Instance state YAML files from the `/src/data/state/<board-key>` directory, where `<board-key>` is the selected board. There may be an arbitrary number of state files, with any filename, in the `<board-key>` directory.
-        - Convert all heavy Pydantic DTOs into lightweight Plain Old Python Objects (POPOs) and Cython `cdef classes` for runtime use.
+        - Validate all data models against Pydantic TypeAdapters and convert into Plain-Old-Python-Objects (POPOs) and Cython `cdef classes` for runtime use.
         - Initialize list of Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).
+        - Initialize Fonts with configured Styles. 
+    * Construct application components and manage dependency-injections (Cradle, Decomposer, etc.)
 2. Init: `Registry`
     * Load Assets into memory
-        - Recursively load `/src/assets/**/*.png` (*not* `.mp3` or `.wav`!). Pydantic Models (DTOs) are used during this phase to read `main.yaml` files and ensure strict schema validation. 
-        - Create a map using the key-values `<registry-key>: <frame>`, where `<registry-key>` is calculated according to the Frame schema.
+        - Recursively load `/src/assets/**/*.png`, `/src/assets/**/*.tff`
+            - For image Assets, create a map using the key-values `<registry-key>: <frame>`, where `<registry-key>` is calculated according to the Frame schema.
+            - For font Assets, create a map using the key-value `<registry-key>: <font>`, where `<registry-key>` is the font name.
 3. Init: `Board`
     * Initialize and register the Mechanics (e.g., `CollisionMechanics`, `AnimationMechanics`, etc.).
     * Initialize and register Device (e.g. `Keyboard`, `Controller`)

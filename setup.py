@@ -22,14 +22,14 @@ ext_modules = [
     Extension(
         "libs.graphics.render",
         sources=["src/libs/graphics/render.pyx"],
-        libraries=["SDL2", "SDL2_image"],
+        libraries=["SDL2", "SDL2_image", "SDL2_ttf"],
         include_dirs=include_dirs,
         library_dirs=library_dirs,
     ),
     Extension(
         "libs.graphics.registry",
         sources=["src/libs/graphics/registry.pyx"],
-        libraries=["SDL2", "SDL2_image"],
+        libraries=["SDL2", "SDL2_image", "SDL2_ttf"],
         include_dirs=include_dirs,
         library_dirs=library_dirs
     )

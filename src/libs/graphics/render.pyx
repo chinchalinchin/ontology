@@ -8,7 +8,7 @@ Directly interfaces with SDL2 C-Headers to execute headless rendering, bypassing
 import logging
 
 # Cython Libraries
-from libs.graphics.registry cimport TexturePtr
+from libs.graphics.registry cimport TexturePtr, TTFFont, TTF_Font, SDL_Color
 
 logger = logging.getLogger("libs.render")
 
@@ -25,6 +25,8 @@ cdef extern from "SDL2/SDL.h":
     ctypedef struct SDL_Surface:
         void* pixels
         int pitch
+        int w
+        int h
     ctypedef struct SDL_RendererInfo:
         const char *name
         unsigned int flags
@@ -70,6 +72,10 @@ cdef extern from "SDL2/SDL.h":
         int access, 
         int w, 
         int h
+    )
+    SDL_Texture* SDL_CreateTextureFromSurface(
+        SDL_Renderer* renderer, 
+        SDL_Surface* surface
     )
     int SDL_SetRenderTarget(
         SDL_Renderer* renderer, 
@@ -133,6 +139,12 @@ cdef extern from "SDL2/SDL_image.h":
     
     int IMG_INIT_PNG
 
+cdef extern from "SDL2/SDL_ttf.h":
+    int TTF_Init()
+    void TTF_Quit()
+    SDL_Surface* TTF_RenderUTF8_Blended_Wrapped(TTF_Font* font, const char* text, SDL_Color fg, unsigned int wrapLength)
+    int TTF_SizeUTF8(TTF_Font* font, const char* text, int* w, int* h)
+
 # -----------------------------------------------------------------------------
 # Global Singletons
 # -----------------------------------------------------------------------------
@@ -168,13 +180,16 @@ def get_system_info() -> dict:
     return sys_info
 
 def init(int w, int l, bint headless=True):
-    """Initializes SDL."""
+    """Initializes SDL subsystems."""
     global _window, _canvas_surface, _renderer
     
     if SDL_Init(SDL_INIT_VIDEO) != 0:
         raise RuntimeError(f"SDL_Init Error: {SDL_GetError().decode('utf-8')}")
         
     IMG_Init(IMG_INIT_PNG)
+    
+    if TTF_Init() != 0:
+        raise RuntimeError("TTF_Init Error: Failed to initialize SDL2_ttf.")
     
     if headless:
         _canvas_surface = SDL_CreateRGBSurfaceWithFormat(0, w, l, 32, SDL_PIXELFORMAT_RGBA32)
@@ -289,6 +304,74 @@ def construct(TexturePtr target, list tiles):
                 
     SDL_SetRenderTarget(_renderer, NULL)
 
+def measure(
+    str content, 
+    TTFFont font
+) -> int:
+    """Determines how many pixels wide a given string is in a given font."""
+    if font is None or font.ptr == NULL:
+        return 0
+        
+    cdef int w = 0, h = 0
+    cdef bytes b_content = content.encode('utf-8')
+    TTF_SizeUTF8(font.ptr, b_content, &w, &h)
+    
+    return w
+
+def write(
+    tuple asset, 
+    str content, 
+    TTFFont font
+):
+    """
+    Renders text directly onto an asset's texture target. 
+    asset format: (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l)
+    """
+    if font is None or font.ptr == NULL:
+        raise RuntimeError("Invalid or uninitialized font provided.")
+        
+    cdef TexturePtr tex
+    cdef int sx, sy, sw, sl, dx, dy, dw, dl
+    tex, sx, sy, sw, sl, dx, dy, dw, dl = asset
+    
+    cdef int margin_px_w = int(sw * font.margins)
+    cdef int margin_px_h = int(sl * font.margins)
+    
+    cdef int wrap_width = sw - (2 * margin_px_w)
+    if wrap_width <= 0:
+        wrap_width = 1
+        
+    cdef bytes b_content = content.encode('utf-8')
+    cdef SDL_Surface* text_surface = TTF_RenderUTF8_Blended_Wrapped(
+        font.ptr, b_content, font.color, wrap_width
+    )
+    
+    if text_surface == NULL:
+        return
+        
+    cdef SDL_Texture* text_tex = SDL_CreateTextureFromSurface(_renderer, text_surface)
+    
+    cdef SDL_Rect dst_rect
+    dst_rect.y = sy + margin_px_h
+    dst_rect.w = text_surface.w
+    dst_rect.h = text_surface.h
+    
+    if font.align_str == "center":
+        dst_rect.x = sx + margin_px_w + ((wrap_width - text_surface.w) // 2)
+    elif font.align_str == "right":
+        dst_rect.x = sx + sw - margin_px_w - text_surface.w
+    else:
+        dst_rect.x = sx + margin_px_w
+        
+    # Bake the text string permanently into the asset texture
+    SDL_SetRenderTarget(_renderer, tex.ptr)
+    SDL_SetTextureBlendMode(text_tex, SDL_BLENDMODE_BLEND)
+    SDL_RenderCopy(_renderer, text_tex, NULL, &dst_rect)
+    SDL_SetRenderTarget(_renderer, NULL)
+    
+    SDL_DestroyTexture(text_tex)
+    SDL_FreeSurface(text_surface)
+
 def render(
     TexturePtr background, 
     TexturePtr foreground, 
@@ -391,5 +474,6 @@ def quit_sdl():
         SDL_FreeSurface(_canvas_surface)
         _canvas_surface = NULL
         
+    TTF_Quit()
     IMG_Quit()
     SDL_Quit()

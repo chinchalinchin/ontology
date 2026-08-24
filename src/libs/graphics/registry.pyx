@@ -28,6 +28,15 @@ logger = logging.getLogger("libs.registry")
 
 cdef extern from "SDL2/SDL_image.h":
     SDL_Texture* IMG_LoadTexture(SDL_Renderer* renderer, const char* file)
+    
+cdef extern from "SDL2/SDL_ttf.h":
+    int TTF_STYLE_NORMAL
+    int TTF_STYLE_BOLD
+    int TTF_STYLE_ITALIC
+    void TTF_SetFontStyle(TTF_Font* font, int style)
+
+    TTF_Font* TTF_OpenFont(const char* file, int ptsize)
+    void TTF_CloseFont(TTF_Font* font)
 
 cdef class TexturePtr:
     """
@@ -39,6 +48,16 @@ cdef class TexturePtr:
             SDL_DestroyTexture(self.ptr)
             self.ptr = NULL
 
+cdef class TTFFont:
+    """
+    Cython extension type wrapping the raw C-pointer for an TTF_Font.
+    Provides automated memory leak prevention on pointer garbage collection.
+    """
+    def __dealloc__(self):
+        if self.ptr != NULL:
+            TTF_CloseFont(self.ptr)
+            self.ptr = NULL
+
 class Registry:
     """
     Centralized Asset Registry to ingest configuration, cache GPU textures, 
@@ -47,32 +66,94 @@ class Registry:
     # Public Fields
     properties: dict
     recipes: dict
+    typography: dict
 
     # Hidden Fields
     _textures: dict
     _frames: dict
+    _fonts: dict
 
-    def __init__(self, properties, recipes):
+    def __init__(self, properties, recipes, typography={}):
         logger.debug("Initializing Asset Registry...")
         self._textures = {}
         self._frames = {}
+        self._fonts = {}
         self.properties = properties
         self.recipes = recipes
+        self.typography = typography
         self._cache()
         self._stack()
         self._index()
 
     def _cache(self):
-        """Recursively parses all physical PNG files across the static asset directory."""
+        """Recursively parses all physical PNG and TTF files across the static asset directory."""
         asset_dir = str(settings.ASSET_DIR)
-        logger.debug(f"Walking asset directory for textures: {asset_dir}")
+        logger.debug(f"Walking asset directory for assets: {asset_dir}")
         for root, _, files in os.walk(asset_dir):
             for file in files:
+                asset_key = file[:-4]
+                filepath = os.path.join(root, file)
+
                 if file.endswith('.png'):
-                    asset_key = file[:-4]
-                    filepath = os.path.join(root, file)
                     logger.debug(f"Caching texture from {filepath} as '{asset_key}'")
-                    self._textures[asset_key] = self.load(filepath)
+                    self._load_image(asset_key, filepath)
+                elif file.endswith('.ttf'):
+                    logger.debug(f"Caching font from {filepath} as '{asset_key}'")
+                    self._load_font(asset_key, filepath)
+
+    def _load_image(self, image_key, filepath: str) -> TexturePtr:
+        """Loads a physical .png file directly into GPU memory via SDL2 extensions."""
+        cdef bytes b_filepath = filepath.encode('utf-8')
+        cdef SDL_Texture* tex = IMG_LoadTexture(_renderer, b_filepath)
+        
+        if tex == NULL:
+            raise RuntimeError(f"Failed to load texture into GPU memory: {filepath}")
+
+        cdef int w, l
+        SDL_QueryTexture(tex, NULL, NULL, &w, &l)
+
+        cdef TexturePtr wrapper = TexturePtr()
+        wrapper.ptr = tex
+        wrapper.w = w
+        wrapper.l = l
+        self._textures[image_key] = wrapper
+
+    def _load_font(self, font_key: str, filepath: str):
+        """Loads and pre-styles a .ttf file into memory based on its configuration block."""
+        if font_key not in self.typography:
+            logger.debug(f"Skipping unconfigured font: {font_key}")
+            return
+            
+        cdef dict style = self.typography[font_key]
+        cdef int pt_size = style.get("size", 24)
+        cdef bytes b_filepath = filepath.encode('utf-8')
+        
+        cdef TTF_Font* f_ptr = TTF_OpenFont(b_filepath, pt_size)
+        if f_ptr == NULL:
+            raise RuntimeError(f"Failed to load font into memory: {filepath}")
+            
+        # Apply standard styles directly to the C-pointer
+        cdef int sdl_style = TTF_STYLE_NORMAL
+        if style.get("bold", False):
+            sdl_style |= TTF_STYLE_BOLD
+        if style.get("italics", False):
+            sdl_style |= TTF_STYLE_ITALIC
+        TTF_SetFontStyle(f_ptr, sdl_style)
+        
+        # Hydrate the Cython object
+        cdef TTFFont font_obj = TTFFont()
+        font_obj.ptr = f_ptr
+        font_obj.margins = style.get("margins", 0.05)
+        font_obj.align_str = style.get("alignment", "left")
+        
+        # Parse the nested dictionary for RGBA channels
+        cdef dict color_cfg = style.get("color", {})
+        font_obj.color.r = color_cfg.get("r", 255)
+        font_obj.color.g = color_cfg.get("g", 255)
+        font_obj.color.b = color_cfg.get("b", 255)
+        font_obj.color.a = color_cfg.get("a", 255)
+        
+        self._fonts[font_key] = font_obj
 
     def _extract(self, inst_props):
         """Helper to agnostically extract property items from schema variations."""
@@ -135,24 +216,6 @@ class Registry:
                             self._textures[item_id], 
                             crop[0], crop[1], crop[2], crop[3]
                         )
-
-
-    def load(self, filepath: str) -> TexturePtr:
-        """Loads a physical .png file directly into GPU memory via SDL2 extensions."""
-        cdef bytes b_filepath = filepath.encode('utf-8')
-        cdef SDL_Texture* tex = IMG_LoadTexture(_renderer, b_filepath)
-        
-        if tex == NULL:
-            raise RuntimeError(f"Failed to load texture into GPU memory: {filepath}")
-
-        cdef int w, l
-        SDL_QueryTexture(tex, NULL, NULL, &w, &l)
-
-        cdef TexturePtr wrapper = TexturePtr()
-        wrapper.ptr = tex
-        wrapper.w = w
-        wrapper.l = l
-        return wrapper
         
     def data(self, frame_key: str) -> Tuple:
         """
@@ -162,14 +225,17 @@ class Registry:
         logger.debug(f"Querying registry for frame_key: '{frame_key}'")
         
         if frame_key in self._frames:
-            logger.debug(f" -> Hit identified in precomputed _frames mapping.")
             return self._frames[frame_key]
             
-        # Fallback for single-frame immutables like Tiles where schema crop === texture bounds
         if frame_key in self._textures:
-            logger.debug(f" -> Hit identified in raw _textures mapping (fallback).")
             tex = self._textures[frame_key]
             return (tex, 0, 0, tex.w, tex.l)
             
-        logger.debug(f" -> MISS: Frame key '{frame_key}' not found.")
         return None
+
+    def font(self, font_key: str) -> TTFFont:
+        """Returns the pre-configured TTFFont wrapper indexed during initialization."""
+        if font_key not in self._fonts:
+            logger.warning(f"Font key '{font_key}' not found in registry.")
+            return None
+        return self._fonts[font_key]
