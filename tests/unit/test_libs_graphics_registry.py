@@ -123,7 +123,7 @@ def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
 def test_registry_fallback_retrieval(mock_properties, mock_configurations):
     """Test that Registry correctly falls back to raw textures for unindexed assets."""
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
-         patch('libs.graphics.registry.Registry._load_iamge') as mock_load:
+         patch('libs.graphics.registry.Registry._load_image') as mock_load:
          
         mock_walk.return_value = [
             ('/mock/assets', [], ['single_frame_tile.png'])

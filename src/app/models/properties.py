@@ -136,5 +136,4 @@ class PropertiesSchema:
     crafts: CraftPropertyInstances = field(default_factory=CraftPropertyInstances)
     cursors: CursorPropertyInstances = field(default_factory=CursorPropertyInstances)
     sheets: SheetPropertyInstances = field(default_factory=SheetPropertyInstances)
-    #
     fonts: Dict[str, FontProperties] = field(default_factory=dict)
