@@ -5,6 +5,7 @@
 import logging
 import dataclasses
 from typing import Dict, List, Tuple
+from enum import Enum
 
 # Application Libraries
 from app.assets.base import Asset
@@ -59,6 +60,17 @@ class Orchestrator:
             recipes=self.configurations.recipes
         )
 
+    @staticmethod
+    def _unbox_enums(data):
+        """Recursively resolves Enum instances to their primitive values."""
+        if isinstance(data, dict):
+            return {k: Orchestrator._unbox_enums(v) for k, v in data.items()}
+        elif isinstance(data, list):
+            return [Orchestrator._unbox_enums(v) for v in data]
+        elif isinstance(data, Enum):
+            return data.value
+        return data
+    
     def migrate(self) -> Board:
         logger.info("Migrating validated data to engine models...")
         
@@ -189,11 +201,24 @@ class Orchestrator:
             render.show()
 
         logger.info("Initializing Registry..")
+        # 1. Unpack the root dataclass (this recursively unpacks everything, including fonts)
+        # 1. Unpack root dataclasses and resolve Enums to primitives
+        properties_dict = self._unbox_enums(dataclasses.asdict(self.properties))
+        recipes_dict = self._unbox_enums(dataclasses.asdict(self.configurations.recipes))
+        
+        # 2. Extract fonts
+        fonts_dict = properties_dict.pop("fonts")
+        
+        # 3. Pass clean, primitive-only dictionaries to Cython
         self.registry = Registry(
-            # TODO: exclude fonts from image properties
-            dataclasses.asdict(self.properties), 
+            properties_dict, 
+            recipes_dict,
+            fonts_dict
+        )
+        self.registry = Registry(
+            properties_dict, 
             dataclasses.asdict(self.configurations.recipes),
-            dataclasses.asdict(self.properties.fonts)
+            fonts_dict
         )
 
         logger.info("Initializing Screens...")

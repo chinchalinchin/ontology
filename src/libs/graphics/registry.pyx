@@ -11,7 +11,6 @@ from typing import Tuple
 
 # Application Libraries
 import app.config.settings as settings
-from app.config.enums import Actions
 from app.hooks.factory import Factory
 
 # Cython Libraries
