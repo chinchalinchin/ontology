@@ -140,11 +140,11 @@ With the controllers handling the semantic meaning of button presses, `MenuMecha
 
 **Task 1. Data Models & Application Hooks**
 
-* [ ] **Define Widget Properties:** Implement `WidgetProperties` in `app.models.properties`.
-* [ ] **Define WidgetState State:** Implement `TraversalState` ,  `MeterState`, etc. in `app.models.state`. 
-* [ ] **Define Controller States**: Implement `Menu` and `MenuState` dataclasses in `app.models.menus` (holding `focus`, `graph`, `context`, `widgets`, and `controller`).
+* [x] **Define WidgetProperties:** Implement `WidgetProperties` in `app.models.properties`.
+* [~] **Define States:** Implement `MenuState`, `TraversalState` ,  `MeterState`, etc. in `app.models.state`. 
+* [x] **Define Menu**: Implement `MenuInstance` in `app.game.menus.core`.
 * [ ] **Extend Factory Hydration:** Update `Factory` schemas to parse the new models. Configure `Loader` to ingest `assets/widgets/main.yaml` and `data/menus/main.yaml`.
-* [ ] **Add Menu Stack** Update `Board` to include `menus: List[Menu]`
+* [~] **Add Menu Stack** Update `Board` to include `menus: List[Menu]`
 
 **Task 2. Frame & Animation Implementation**
 
@@ -185,7 +185,6 @@ With the controllers handling the semantic meaning of button presses, `MenuMecha
 * [ ] Implement `app.game.menus.controllers.inventory.InventoryController`.
 * [ ] Implement `app.game.menus.controllers.main.MainMenuController`.
 * [ ] Map `Menu` IDs to their respective controllers in the `Factory`.
-
 
 **Task 7. Mechanics & Input Handling**
 

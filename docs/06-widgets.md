@@ -60,7 +60,7 @@ No other Widgets besides Panes have ScreenPosition. All other Widgets have their
 **Properties: WidgetProperties**
 
 - `dimensions: Dimension`: Dimensions of a single frame.
-- `frames: Optional[List[str]]`: List of frame keys. Used for indexing Language Assets.
+- `frames: Optional[List[str]]`: List of frame keys. Used for indexing Icon Widget Assets.
 
 ### Root: Panes
 
@@ -137,14 +137,14 @@ Button Statuses are enumerated below,
 
 It assumed Button Asset files are arranged in horizontal rows ordered by their status in the sequence: `idle, active, selected, disabled`, where each frame is `properties.dimensions.w` wide.
 
-A Button may have `symbols`. Each element of the `symbols`  list is a Language Widget. Each Language Asset frame is concatenated horizontally across the Button frame.
+A Button may have `icons`. Each element of the `icon`  list is an Icon Widget. Each Icon Asset frame is concatenated horizontally across the Button frame.
 
 !!! warning
-    The Button Asset must have large enough dimensions to accomodate the Language Asset embeddings, i.e. the sum of the Language widths must not exceed the width of the Button.
+    The Button Asset must have large enough dimensions to accomodate the Icon Asset embeddings, i.e. the sum of the Icon widths must not exceed the width of the Button.
 
 **State: TraversalState**
 
-* `symbols: Optional[List[Language]]`
+* `icons: Optional[List[Icon]]`
 * `status: Status`
 
 **Animation: TraversalAnimation**
@@ -223,16 +223,20 @@ N/A
 * `keys(id, None): returns [ id ] "`
 * `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
-### Decal: Language
+### Decal: Icons
 
 **Taxonomy**
 
 * `category: widgets`
-* `instance: language`
+* `instance: icons`
 
-Language serves the purpose of labelling within the Widget family. Each Language sheet can be thought of as a catalogue of icons. The frame keys for each icon in a Language sheet are defined by the `properties.frames` field.
+Icons serves the purpose of labelling within the Widget family. Each Icon sheet can be thought of as a dictionary of frames, indexed by their frame keys. The frame keys for each image in a Icon sheet are defined by the `properties.frames` field; The order of frames in this attribute *must* match the order of horizontal frames in the actual Asset file. 
 
 TODO
+
+**State: IconState**
+
+- `icon: str`: Frame key (from `properties.frames`) determining which frame from Icon sheet is displayed. 
 
 **Animation: ?**
 

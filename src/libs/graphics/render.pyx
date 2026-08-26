@@ -10,7 +10,7 @@ import logging
 # Cython Libraries
 from libs.graphics.registry cimport TexturePtr, TTFFont, TTF_Font, SDL_Color
 
-logger = logging.getLogger("libs.render")
+logger = logging.getLogger("libs.graphics.render")
 
 # -----------------------------------------------------------------------------
 # C-Header Definitions

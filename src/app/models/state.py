@@ -1,9 +1,11 @@
 """
 # Ontology: app.models.state
 """
-from typing import Dict, List, Optional, Union
+# Standard Libraries
+from typing import Dict, List, Optional, Union, Any
 from dataclasses import dataclass, field
 
+# Application Libraries
 from app.config.enums import (
     Actions, 
     Directions, 
@@ -15,10 +17,16 @@ from app.models.adapters import (
     PydanticMultiple as Multiple, 
     PydanticVelocity as Velocity
 )
+
+# Cython Libraries
 from libs.core.models import Velocity as CoreVelocity
+
+# ---------------------------------------------------------------------------------------
 
 class NoState:
     pass
+
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class AssetState:
@@ -33,6 +41,12 @@ class AnimationState:
     action: str = Actions.WALK
     direction: str = Directions.DOWN
     frame: int = 0
+
+@dataclass(slots=True)
+class MenuState:
+    focus: str  # The ID of the currently focused widget
+    graph: Dict[str, Dict[str, str]]  # The traversal adjacency list
+    context: Dict[str, Any]  # The injected state (e.g., player, npc)
 
 # ---------------------------------------------------------------------------------------
 

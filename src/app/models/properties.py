@@ -87,6 +87,11 @@ class SheetProperties(AssetProperties):
     hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
     actions: Union[str, Dict[str, Action]] = field(default_factory=dict)
 
+@dataclass(slots=True)
+class WidgetProperties(AssetProperties):
+    dimensions: Dimensions
+    frames: Optional[List[str]] = field(default_factory=list)
+
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- ROOT SCHEMAS
 
@@ -127,6 +132,14 @@ class SheetPropertyInstances:
     tools: Dict[str, SheetProperties] = field(default_factory=dict)
     shields: Dict[str, SheetProperties] = field(default_factory=dict)
     players: Dict[str, SheetProperties] = field(default_factory=dict)
+
+@dataclass(slots=True)
+class WidgetPropertyInstances:
+    buttons: Dict[str, WidgetProperties] = field(default_factory=dict)
+    icons: Dict[str, WidgetProperties] = field(default_factory=dict)
+    meters: Dict[str, WidgetProperties] = field(default_factory=dict)
+    pages: Dict[str, WidgetProperties] = field(default_factory=dict)
+    panes: Dict[str, WidgetProperties] = field(default_factory=dict)
 
 @dataclass(slots=True)
 class PropertiesSchema:

@@ -23,7 +23,7 @@ from libs.graphics.render cimport (
 )
 import libs.graphics.render as render
 
-logger = logging.getLogger("libs.registry")
+logger = logging.getLogger("libs.graphics.registry")
 
 cdef extern from "SDL2/SDL_image.h":
     SDL_Texture* IMG_LoadTexture(SDL_Renderer* renderer, const char* file)

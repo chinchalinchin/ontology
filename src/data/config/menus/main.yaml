@@ -27,13 +27,13 @@ menus:
             name: character-speech-scroll-up
             bind: 
               ref: traversal
-              data: self.children[1] # Bind to scroller Page
+              data: self.children['character-portrait'] # Bind to scroller Page
           - instance: button
             id: arrow-down
             name: character-speech-scroll-down
             bind: 
               ref: traversal
-              data: self.children[1] # Bind to scroller Page
+              data: self.children['character-portrait'] # Bind to scroller Page
   inventory:
     roots:
       - id: dark

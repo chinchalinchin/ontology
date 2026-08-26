@@ -9,14 +9,15 @@ import logging
 from typing import List, Dict, Tuple
 
 # Application Libraries
+import app.config.settings as settings
 from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories,
     AssetInstances
 )
-import app.config.settings as settings
 from app.game.cradle import Cradle
 from app.game.devices import Device
+from app.game.menus.core import Menu
 from app.game.logic.mechanics import Mechanic
 from app.models.groups import (
     ConfigurationGroup,
@@ -45,6 +46,7 @@ class Board:
     # Hidden Fields
     _assets: List[Asset]
     _mechanics: List[Mechanic]
+    _menus: List[Menu]
     _device: Device
     # Caches
     _cached_categories: Dict[str, Dict[str, List[Asset]]]
