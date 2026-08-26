@@ -962,6 +962,21 @@
 <li><strong>Low Friction (e.g., <span class="arithmatex">\(0.01\)</span>):</strong> The deceleration scalar is minute. The asset bleeds momentum extremely slowly, simulating a frictionless surface like ice.</li>
 <li><strong>High Friction (e.g., <span class="arithmatex">\(100.0\)</span>):</strong> The asset sheds velocity rapidly and comes to rest in a short distance, simulating dense surfaces like mud or deep grass.</li>
 </ul>
+<p><strong>MenuMechanics</strong></p>
+<p>To keep <code>MenuMechanics</code> clean, the Engine uses the <strong>Strategy Pattern</strong> and delegates to <code>MenuController</code> classes. </p>
+<p><code>MenuMechanics</code> is responsible for <em>Universal Menu Physics</em> (traversal, opening, closing). The <code>MenuController</code> is responsible for <em>Bespoke UI Logic</em> (equipping, buying, selling). <code>MenuMechanics</code> only ever interacts with <code>board.menus[-1]</code> (the top of the stack).</p>
+<p>With the controllers handling the semantic meaning of button presses, <code>MenuMechanics</code> becomes a very simple router. Its <code>update()</code> loop looks like this:</p>
+<ol>
+<li><strong>Check Stack:</strong> If <code>len(board.menus) == 0</code>, exit early.</li>
+<li><strong>Get Top Menu:</strong> <code>active_menu = board.menus[-1]</code></li>
+<li><strong>Poll Input:</strong><ul>
+<li>If <code>UP/DOWN/LEFT/RIGHT</code>: Look at <code>active_menu.state.focus</code>. Look up the key in <code>active_menu.state.graph</code>. If a neighbor exists, change <code>focus</code> and update the <code>TraversalAnimation</code> status of the respective Button Assets.</li>
+<li>If <code>SELECT</code>: Call <code>active_menu.controller.select(active_menu.state.focus, active_menu, board)</code>.</li>
+<li>If <code>CANCEL</code>: Pop the menu off the stack. (Unpause the board if the stack is now empty).</li>
+</ul>
+</li>
+<li><strong>Tick:</strong> Call <code>active_menu.controller.on_update()</code> so continuous menus (like the HUD) can update their meters.</li>
+</ol>
 <h3 id="spatial">Spatial</h3>
 <p>These Mechanics handle spatial interactions and collisions between Assets.</p>
 <ul>
