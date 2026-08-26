@@ -39,26 +39,6 @@ class Decomposer:
     # ---------------------------------------------------------
     # ------------------------------------------ COST UTILITIES
 
-    def cost(self, comp_id: str) -> List[Cost]:
-        """Calculates the aggregate cost of an entire Composition tree."""
-        config = self.compositions.get(comp_id)
-        if not config: 
-            return []
-        
-        cost_map = {}
-        
-        # Traverse Root
-        self._accumulate_cost(AssetCategories.CRAFTS, AssetInstances.STRUTS, config.root.strut.id, cost_map)
-        self._aggregate_components_cost(config.root.components, cost_map)
-        
-        # Traverse Branches
-        if config.branches:
-            for branch in config.branches:
-                self._accumulate_cost(AssetCategories.CRAFTS, AssetInstances.STRUTS, branch.strut.id, cost_map)
-                self._aggregate_components_cost(branch.components, cost_map)
-                
-        return [Cost(item=k, quantity=v) for k, v in cost_map.items()]
-
     def _accumulate_cost(self, 
         cat: str, 
         inst: str, 
@@ -195,33 +175,6 @@ class Decomposer:
     # ---------------------------------------------------------
     # ------------------------------------- EXPANSION UTILITIES
 
-    def unpack(self, deployed_state: PropertyState) -> List[Asset]:
-        """Flattens a Composition configuration into a native 1D list of fully hydrated Assets."""
-        assets = []
-        comp_config = self.compositions.get(deployed_state.id)
-        if not comp_config:
-            return assets
-
-        self._increment += 1
-        inc = self._increment
-
-        root_context = {
-            "id": deployed_state.id,
-            "name": getattr(deployed_state, 'name', ''),
-            "layer": getattr(deployed_state, 'layer', ''),
-            "owner": getattr(deployed_state, 'owner', None),
-            "position": getattr(deployed_state, 'position', Position(0,0))
-        }
-
-        # Unpack Root node first, explicitly flagging it as the root
-        assets.extend(self._unpack_node(comp_config.root, root_context, root_context, inc, is_root=True))
-
-        if comp_config.branches:
-            for branch in comp_config.branches:
-                assets.extend(self._unpack_node(branch, root_context, root_context, inc, is_root=False))
-
-        return assets
-
     def _unpack_node(self, 
         node: Any, 
         root_context: Dict[str, Any], 
@@ -291,3 +244,53 @@ class Decomposer:
                         is_strut=False
                     )
                     assets.append(self._create_asset(cat_key, inst_key, new_state))
+
+    # ---------------------------------------------------------
+    # ------------------------------------------ PUBLIC METHODS
+
+    def unpack(self, deployed_state: PropertyState) -> List[Asset]:
+        """Flattens a Composition configuration into a native 1D list of fully hydrated Assets."""
+        assets = []
+        comp_config = self.compositions.get(deployed_state.id)
+        if not comp_config:
+            return assets
+
+        self._increment += 1
+        inc = self._increment
+
+        root_context = {
+            "id": deployed_state.id,
+            "name": getattr(deployed_state, 'name', ''),
+            "layer": getattr(deployed_state, 'layer', ''),
+            "owner": getattr(deployed_state, 'owner', None),
+            "position": getattr(deployed_state, 'position', Position(0,0))
+        }
+
+        # Unpack Root node first, explicitly flagging it as the root
+        assets.extend(self._unpack_node(comp_config.root, root_context, root_context, inc, is_root=True))
+
+        if comp_config.branches:
+            for branch in comp_config.branches:
+                assets.extend(self._unpack_node(branch, root_context, root_context, inc, is_root=False))
+
+        return assets
+
+    def cost(self, comp_id: str) -> List[Cost]:
+        """Calculates the aggregate cost of an entire Composition tree."""
+        config = self.compositions.get(comp_id)
+        if not config: 
+            return []
+        
+        cost_map = {}
+        
+        # Traverse Root
+        self._accumulate_cost(AssetCategories.CRAFTS, AssetInstances.STRUTS, config.root.strut.id, cost_map)
+        self._aggregate_components_cost(config.root.components, cost_map)
+        
+        # Traverse Branches
+        if config.branches:
+            for branch in config.branches:
+                self._accumulate_cost(AssetCategories.CRAFTS, AssetInstances.STRUTS, branch.strut.id, cost_map)
+                self._aggregate_components_cost(branch.components, cost_map)
+                
+        return [Cost(item=k, quantity=v) for k, v in cost_map.items()]

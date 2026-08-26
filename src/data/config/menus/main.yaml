@@ -14,18 +14,19 @@ menus:
           - instance: page
             id: text
             name: text-display
-            bind: 
+            bind:
+              selector: SCROLL
               state: context.content
           - instance: button
             id: arrow-up
             name: text-scroll-up
             bind: 
-              action: SCROLL_UP
+              selection: SCROLLUP
           - instance: button
             id: arrow-down
             name: text-scroll-down
             bind: 
-              action: SCROLL_DOWN
+              selection: SCROLLDOWN
   dialogue:
     controller: scroll
     roots: 
@@ -46,18 +47,19 @@ menus:
           - instance: page
             id: dialogue
             name: character-speech
-            bind: 
+            bind:
+              selector: SCROLL 
               state: context.sprite.state.psyche.communication
           - instance: button
             id: arrow-up
             name: character-speech-scroll-up
             bind: 
-              action: SCROLL_UP
+              selection: SCROLLUP
           - instance: button
             id: arrow-down
             name: character-speech-scroll-down
             bind: 
-              action: SCROLL_DOWN
+              selection: SCROLLDOWN
   view:
     controller: display
     roots: 
@@ -73,13 +75,12 @@ menus:
           - instance: meter
             id: health
             name: health-meter
-            status: disabled
             bind: 
               state: context.sprite.state.meters.health
           - instance: button
             id: slot
             name: weapon-slot
-            status: disable
+            status: disabled
             bind:
               state: context.sprite.state.inventory.equipment.weapon
           - instance: button 

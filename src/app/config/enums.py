@@ -217,7 +217,7 @@ class Controls(str, Enum):
     button          = "button"
     meter           = "meter"
     page            = "page"
-    
+
 class Layouts(str, Enum):
     # Widget Layouts
     DOCK            = "dock"
@@ -236,3 +236,8 @@ class Traversal(str, Enum):
     SOUTH           = "south"
     EAST            = "east"
     WEST            = "West"
+
+class WidgetActionBindings(str, Enum):
+    SCROLLER        = "SCROLLER"
+    UP              = "SCROLLUP"
+    DOWN            = "SCROLLDOWN"

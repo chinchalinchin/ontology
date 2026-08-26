@@ -12,9 +12,11 @@ The overarching division of Widgets resides in the functional difference between
 
 Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen sizes in proportionate ways. 
 
-Controls bind to game state. They are either *active* or *disabled*. When active, they may be *traversed* and *selected*; When disabled, they may passively receive updates to their state to change their display, but they cannot be traversed. Controls are the endpoints in the Menu tree, organized in Panes. Controls receive focus. 
+Controls bind to game state. They are either *active* or *disabled*. When active, they may be *traversed* and *selected*; When disabled, they may passively receive updates to their state to change their display, but they cannot be traversed. Controls receive focus. 
 
-Decals are painted onto Controls. They function like embedded icons and exist simply to display content. They do not hold focus and are not traversible.
+Decals are painted onto Controls or Panes. They function like embedded frames and exist simply to display content. They do not hold focus and are not traversible.
+
+Controls and Decals are the endpoints in the Menu tree, organized in Panes.
 
 **Traversal & Focus**
 
@@ -166,7 +168,7 @@ A Button may have `icons`. Each element of the `icon`  list is an Icon Widget. E
 * `key(id, state): returns [ "{id}-{state.status}" ]`
 * `index(self, id, properties, recipe): returns TODO` 
 
-### Control: Meters
+### Decal: Meters
 
 **Taxonomy**
 
@@ -258,7 +260,38 @@ TODO
 
 * Location: `/src/data/menus/main.yaml`
 
-Menus are pre-defined arrangements of Widgets. Every Menu contains atleast one Pane. 
+Menus are pre-defined arrangements of Widgets. Every Menu contains atleast one Pane. As a simple example, text Menu can be instantiated using the following schema,
+
+```yaml
+  text:
+    controller: scroll
+    roots: 
+      - id: neutral
+        name: text-menu
+        position:
+          px: 0.1
+          py: 0.75
+        layout: dock
+        alignment: left
+        gap: 10
+        children: 
+          - instance: page
+            id: text
+            name: text-display
+            bind: 
+              selector: SCROLL
+              state: context.content
+          - instance: button
+            id: arrow-up
+            name: text-scroll-up
+            bind: 
+              selection: SCROLLUP
+          - instance: button
+            id: arrow-down
+            name: text-scroll-down
+            bind: 
+              selection: SCROLLDOWN
+```
 
 **MenuState**
 
@@ -266,7 +299,28 @@ Menus are pre-defined arrangements of Widgets. Every Menu contains atleast one P
 - `graph: Dict[str, Dict[str, str]]`: Traversal adjacent graph.
 - `context: Dict[str, Any]`: Injected state.
 
-**Layouts**
+### Controllers
+
+Every Menu has a Controller that handles Menu-specific logic. Widgets that are embedded into Menus have their states altered through action-reaction bindings which specify how traversal and selection propagates through the Menu. This logic is handled by the Controller.
+
+Every child Widget of a Pane in a Menu configuration may bind to a `selection`, `state` or `selector`.
+
+The `selection` binding is a reference to an action to be consumed by Menu Controller when the `focus` selected a Widget. The `selector` binding is a reference to a reaction to be propagated by the Menu controller when an action is initiated. The `state` binding is a reference to the Event Context and may be updated in response to an action or reaction.
+
+In the provided `text` Menu example, the `text-scroll-up` and `text-scroll-down` Buttons are bounded to the `selection` actions `SCROLLUP` and `SCROLLDOWN`, respectively. Buttons are traversible, so when a Button is seleted, the `selection` binding ensures the Event propagates and is handled by the appropriate controller, in this case the `scroll` controller.  
+
+In addition, the `text` Menu binds the `text-display` as the recipient of the `selection` actions, via `SCROLL`.
+
+- `selections`:  Widget action binding.
+    - `SCROLLUP`
+    - `SCROLLDOWN`
+    - `SELECT`
+- `state`: Reference to Event Context.
+- `selector`: Widget reaction binding
+    - `SCROLL`
+    - `SLOT`
+
+### Layouts
 
 Consider a `nest` Pane with two children `dock` Panes, each with three buttons, represented by the matrix, `[[a,b,c], [d, e, f]]`. Consider th problem of the Menu focus residing on the `b` element when the user presses `SOUTH`. In this case, the Menu must shift focus to the `e` element. The `graph` attribute of the MenuState holds this relational struture. 
 
@@ -299,57 +353,26 @@ To generate the Render List, when a Menu is triggered, a `Layout` class executes
     * If `pane.layout == tab`: Alignments do not apply. Pane children are Panes. Each receives the same ScreenPosition. Algorithm recurses to find the coordinates of the grandchildren.    
 4. **Flatten**: Return a list of standard Asset objects. The engine now treats them exactly like Game Board assets, completely ignoring the UI hierarchy.
 
-### Dialogue
+### Configurations
 
-TODO
-
-- **Arguments**: `sprite.state.psyche.communication`
-- **Outputs**: 
-
-### Editor
-
-TODO
-
-- **Arguments**: `Board`
-- **Outputs**:
-
-### Inventory
-
-TODO
-
-- **Arguments**: `sprite.state.inventory`
-- **Outputs**:
-
-### Market
-
-TODO 
-
-- **Arguments**: `buyer.state.inventory`, `seller.state.inventory`
-- **Outputs**:
-
-### Main
-
-TODO
-
-The Main Menu is not instantiated by MenuEvents. It is created before the Board initializes and the game loop starts. 
-
-- **Arguments**: `None`
-- **Outputs**: `<board-key>` for `/src/data/state/<board-key>`
-
-### Pause
-
-TODO
-
-**Arguments**
-
-### View
-
-!!! note
-
-    Also known as the Heads-Up Display (HUD).
-
-The View Menu is not instantiated by the MenuEvents. It is created when the game loop initializes and is painted onto the screen along with every frame. It is updated when UpdateEvents are fired by other Menus.
-
-TODO
-
-**Arguments**: `sprite.state`
+1. Dialogue: TODO
+    - **Arguments**: `sprite.state.psyche.communication`
+    - **Events**:  TODO
+2. Editor: TODO
+    - **Arguments**: `board`
+    - **Events**: TODO
+3. Inventory: TODO 
+    - **Arguments**: `sprite.state.inventory`
+    - **Evemts**: TODO
+4. Market: TODO
+    - **Arguments**: `buyer.state.inventory`, `seller.state.inventory`
+    - **Evemts**: TODO
+5. Main: The Main Menu is not instantiated by MenuEvents. It is created before the Board initializes and the game loop starts. 
+    - **Arguments**: `None`
+    - **Outputs**: `<board-key>` for `/src/data/state/<board-key>`
+6. Pause: TODO
+    - **Arguments**: TODO
+    - **Events**: TODO
+7. View: Also known as the Heads-Up Display (HUD). The View Menu is not instantiated by the MenuEvents. It is created when the game loop initializes and is painted onto the screen along with every frame. It is updated when UpdateEvents are fired by other Menus.
+    - **Arguments**: `sprite.state`
+    - **Events**: TODO

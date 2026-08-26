@@ -278,6 +278,24 @@ class Board:
             ]
         return self._cached_renderables.get(layer, [])
 
+    def size(self, layer=None) -> List[Dimensions]:
+        """
+        Calculates the size of Board by layer. If no layer is specified, method will return a list of all layer sizes as a List.
+        """
+
+        layers = [ layer ] if layer is not None else self.layers()
+        layer_sizes = []
+
+        for layer in layers:
+            tiles = self.categories(AssetCategories.TILES, layer)
+            w = max([ tile.state.position.x + tile.state.multiple.nx * tile.properties.dimensions.w 
+                    for tile in tiles ], default = 0)
+            l = max([tile.state.position.y + tile.state.multiple.ny * tile.properties.dimensions.l
+                    for tile in tiles], default = 0)
+            layer_sizes.append(Dimensions(w=w, l=l))
+        return layer_sizes
+
+    # ------------------------------------------------ MUTATORS
 
     def relayer(self, asset: Asset, new_layer: str) -> None:
         """
@@ -409,21 +427,3 @@ class Board:
                 
             if inst in self._all_instances and asset in self._all_instances[inst]:
                 self._all_instances[inst].remove(asset)
-
-
-    def size(self, layer=None) -> List[Dimensions]:
-        """
-        Calculates the size of Board by layer. If no layer is specified, method will return a list of all layer sizes as a List.
-        """
-
-        layers = [ layer ] if layer is not None else self.layers()
-        layer_sizes = []
-
-        for layer in layers:
-            tiles = self.categories(AssetCategories.TILES, layer)
-            w = max([ tile.state.position.x + tile.state.multiple.nx * tile.properties.dimensions.w 
-                    for tile in tiles ], default = 0)
-            l = max([tile.state.position.y + tile.state.multiple.ny * tile.properties.dimensions.l
-                    for tile in tiles], default = 0)
-            layer_sizes.append(Dimensions(w=w, l=l))
-        return layer_sizes

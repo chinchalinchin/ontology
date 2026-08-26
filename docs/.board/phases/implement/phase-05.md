@@ -2,17 +2,11 @@
 
 - Goals: Widget Creation, Menu Configuration and Instantiation, Menu Traversal
 
-**CURRENT FOCUS**
+**CURRENT FOCUS** 
 
-Consider the `src/data/config/menus/main.yaml` dialogue and inventory menu. Note this schema is not yet finalized. How can the schema be setup so buttons can bind to the state of other components in the menu?
-
-For the dialogue menu, the idea is the page display will have text content that is paged through by the buttons.
-
-For the inventory menu, the idea is a slot will display the currently equipped armor next to a list of slots that contain all of the player's armor inventory. Selecting a slot updates the equipped armor slot.
-
-Consider when events are sent. How does that factor into the binding?
-
-In short, consider how binding can be implemented. How can a system be setup that allows buttons to bind to player state, other widget states, etc?
+- Consider how Icons will be embedded onto Buttons
+- Consider how text will be embedded onto Pages.
+- Consider how MenuMechanics knows not to process View (HUD).
 
 ##### Bugs
 
@@ -41,7 +35,7 @@ In short, consider how binding can be implemented. How can a system be setup tha
 
 **5. The ScreenPosition Y-Sort Crash (`app.game.screen.py`)**
 
-**The Bug**: In `Screen.draw()`, the sorting lambda attempts to calculate height via `a.state.position.y`.
+**The Bug**: In `Screen.draw()`, the sorting lambda attempts to calculate height via `state.position.y`.
 **The Consequence**: Fatal AttributeError. PaneState and other UI components use ScreenPosition which possesses px and py attributes, not x and y. When the Cython renderer attempts to sort UI assets against world assets, it will crash.
 **The Fix**: The lambda must safely check if the position attribute is a world Position or a UI ScreenPosition, or `Screen.draw()` must separate UI assets from world assets before sorting, rendering UI universally on top.
 
@@ -61,10 +55,12 @@ In short, consider how binding can be implemented. How can a system be setup tha
 * [ ] **Widget Frames:** Implement `TraversalFrame` and `MeterFrame`.
 * [ ] **Widget Animations:** Implement `TraversalAnimation` to handle status transitions based on `MenuState.focus`.
 
-**Task 3. The Menu Factory & Data Binding**
+**Task 3. The Menu "Factory" & Data Binding**
 
-* [ ] **Context Resolver:** Write a helper method in `Factory` that parses the dot-notation `bind` string (e.g., `"sprite.state.inventory"`) and recursively fetches the value from the `EventContext`.
-* [ ] **Menu Generation:** Create `Factory.menu(menu_key, context, screensize)`. This method reads the YAML schema, uses the Context Resolver to stamp data into the Widget states, and passes the hierarchy to the Layout Engine.
+* [~] **Implement Provider:** Create a service similar to `Decomposer` called the Provider in `app.game.provider`. It accepts a `MenuConfiguration` and an `EventContext`.
+* [ ] **Context Binding:** Implement string parsing to replace YAML bindings (e.g., `context.sprite.state.psyche.communication`) with values from the runtime `EventContext`.
+* [ ] Resolves bindings, runs the `Layout`, instantiates the mapped `MenuController`
+* [ ] Orchestrator uses the Provider to create View (HUD) and Main Menu. Orchestrator then pushes the resulting Menus onto `board.menus`.
 
 **Task 4. The Layout Engine (Spatial & Logical)**
 
@@ -80,21 +76,22 @@ In short, consider how binding can be implemented. How can a system be setup tha
 * [ ] **Trigger Events:** Update `Intentions` (like `barter`, `build`) to push `MenuEvent` to the queue.
 * [ ] Implement `MenuEvent(menu_id, context_args)`.
 * [ ] When `MenuMechanics` drains a `MenuEvent`, it passes `menu_id` and `context_args` to `Factory.menu()`.
-* [ ] `Factory.menu()` resolves bindings, runs the `LayoutEngine`, instantiates the mapped `MenuController`, and pushes the resulting `Menu` onto `board.menus`.
 * [ ] Implement `MenuEvent(menu_id, context_args)`.
 * [ ] When `MenuMechanics` drains a `MenuEvent`, it passes `menu_id` and `context_args` to `Factory.menu()`.
-* [ ] `Factory.menu()` resolves bindings, runs the `LayoutEngine`, instantiates the mapped `MenuController`, and pushes the resulting `Menu` onto `board.menus`.
 
 **Task 6. Menu Controllers (Strategy Pattern)**
 
-* [ ] Define `MenuController` abstract base class with `open`, `select`, `update`, and `close`.
+* [x] Define `MenuController` abstract base class with `open`, `select`, `update`, and `close`.
 * [ ] Map `Menu` IDs to their respective controllers in the `Factory`.
-* [ ] Implement `app.game.menus.controllers.ScrollController`.
-* [ ] Implement `app.game.menus.controllers.DisplayController`.
+* [ ] Implement `app.game.menus.controllers.scroll.ScrollController`.
+    * [ ] TODO
+* [ ] Implement `app.game.menus.controllers.display.DisplayController`.
+    * [ ] TODO
 
 **Task 7. Mechanics & Input Handling**
 
 * [ ] **Device Context Switching:** Update `Device` mappings to support a `MENU` context, translating raw SDL inputs into UI commands (Up, Down, Left, Right, Select, Cancel).
+    - [ ] Add nested attributes, `mappings.<device>.game` and `mappings.<device>.menu`
 * [ ] **Implement MenuMechanics:** Drain the `Board.bus`. If a `MenuEvent` exists, set `board.paused = True`, instantiate the Menu via `Factory`, and hold it in `Board.active_menu`.
 * [ ] **Focus Resolution:** In `MenuMechanics.update()`, apply directional input against the current `MenuState.graph` to update `MenuState.focus`. Emit `TerminalEvent` to unpause the board when the user exits.
     * [ ] If the stack has a menu, intercept `Device` polling.
@@ -105,3 +102,10 @@ In short, consider how binding can be implemented. How can a system be setup tha
 
 * [ ] **Fix Camera Culling:** Update `Screen.draw()` to identify UI Assets and to iterate over `board.menus`
 * [ ] **Absolute UI Rendering:** Bypass the `pov` camera subtraction and visibility culling for UI Assets, appending them to the Cython array with raw screen coordinates at the highest Z-index.
+* [ ] **Widget Indexing**: Ensure the frame index/key schemas properly index Widget assets.
+
+**Task 9. Unit Test Updates**
+
+* [ ] Ensure all unit tests are passing after prior Task updates.
+* [ ] `tests/unit/test_lib_graphics_registry.py`: Ensure new Widget frame indexing is adequately covered.
+* [ ] `tests/unit/test_hooks_factory.py`: Ensure new Widget instantiation is adequately covered.

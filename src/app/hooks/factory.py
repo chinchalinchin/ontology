@@ -27,7 +27,7 @@ from app.config.enums import (
     Devices,
     Mechanics
 )
-from app.game.cradle import Cradle
+from app.hooks.cradle import Cradle
 from app.game.logic.mechanics import (
     AnimationMechanics,
     CollisionMechanics, 
