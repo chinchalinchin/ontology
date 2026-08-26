@@ -4,7 +4,7 @@ Widgets are a type of [Asset](./01-assets.md); however, they reside outside of t
 
 ## Overview
 
-Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets. Like most Assets, Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.
+Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets; the branches of this configuration are sometimes referred to as the *Menu Tree*. Like most Assets, Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.
 
 **Panes, Controls & Decals**
 
@@ -14,7 +14,7 @@ Panes are displays; They have Layouts and ScreenPosition, to provide a schema fo
 
 Controls bind to game state. They are either *active* or *disabled*. When active, they may be *traversed* and *selected*; When disabled, they may passively receive updates to their state to change their display, but they cannot be traversed. Controls are the endpoints in the Menu tree, organized in Panes. Controls receive focus. 
 
-Decals are painted onto Controls. They function like embedded icons.
+Decals are painted onto Controls. They function like embedded icons and exist simply to display content. They do not hold focus and are not traversible.
 
 ### Events
 
@@ -40,7 +40,7 @@ When the Menu enters certain end states, such as the user selecting an Exit Butt
 
 ## Asset Specification
 
-It is assumed all Widget frames are organized in single row in the image file. The number of frames (i.e. `len(frames)`) multipled by the width of a single frame(i.e. `dimension.w`) must equal the width of the image file.
+It is assumed all Widget frames are organized in single row in the Asset image file. The number of frames (i.e. `len(frames)`) multipled by the width of a single frame(i.e. `dimension.w`) must equal the width of the image file.
 
 **ScreenPosition**
 
@@ -48,12 +48,14 @@ It is assumed all Widget frames are organized in single row in the image file. T
     - `px: double`
     - `py: double`
 
-Pane positions are specified as ScreenPositions. A ScreenPosition is a tuple of percentages relative to the screensize, e.g. the following coordinates denote a position `(0.75w, 0.85h)`, where `(w, h)` is the screensize.
+Pane positions are specified as ScreenPositions. A ScreenPosition is a tuple of percentages relative to the screensize, e.g. the following coordinates denote a position `(0.75w, 0.85h)`, where `(w, h)` is the screensize,
 
 ```python
 menu.position.x = 0.75
 menu.position.y = 0.75
 ```
+
+No other Widgets besides Panes have ScreenPosition. All other Widgets have their on screen Positions calculated relative to the Pane in which they are embedded.
 
 **Properties: WidgetProperties**
 
@@ -77,13 +79,13 @@ Layouts are enumerated below,
 - Tab (Pane): A sagittal axis (out-of-the-screen) of Panes.
 - Nest (Pane): A vertical column of Panes.
 
-The `dock` and `stack` Layouts only apply to "endpoints" in the Pane tree. These two types of Layouts are ultimately where all Controls displayed in a Menu must be organized. These two Layouts can *only* contains Control Widgets.
+The `dock` and `stack` Layouts only apply to "endpoints" in the Menu tree. These two types of Layouts are ultimately where all Controls displayed in a Menu must be organized. These two Layouts can *only* contains Control Widgets.
 
-The `tab` and `nest` Layouts are specifically for laying out configurations of Panes. These two types of Layouts *cannot* contain Controls. These types of Panes *must* contain children Panes. Furthermore, to avoid deeply nested Widget trees, the children of these Pane types *must* be `dock` or `stack` Layouts.
+The `tab` and `nest` Layouts are specifically for laying out configurations of Panes. These two types of Layouts *cannot* contain Controls. These types of Panes *must* contain children Panes. Furthermore, to avoid deeply nested Widget trees, the children of these nested Pane types *must* be `dock` or `stack` Layouts, i.e. only one layer of nesting is allowed in Menu trees.
 
 **Alignment**
 
-Every Alignments are enumerated below,
+Alignments are enumerated below,
 
 - Start: Widgets are aligned at the start of the Pane.
 - End: Widgets are aligned at the end of the Pane.
@@ -91,7 +93,7 @@ Every Alignments are enumerated below,
 
 **Headers**
 
-Panes may optionally have `headers`. `headers` is a list of Buttons. `len(headers) == len(children)` must be the case. A header is composed of nontraversible Buttons whose Status is tied to the Pane's children. When a child Widget has `focus` from a Menu Pane, the header Button which corresponds to it (by having the same index in its list) has `status == active`. When a child Widget does not have `focus` from a Menu, the header Button which corresponds to it has `status == idle`.
+Panes may optionally have `headers`. `headers` is a list of Buttons. `len(headers) == len(children)` must be the case. A header is composed of intraversible (*disabled*) Buttons whose Status is tied to the Pane's children. When a child Widget has `focus` from a Menu Pane, the header Button which corresponds to it (by having the same index in its list) has `status == active`. When a child Widget does not have `focus` from a Menu, the header Button which corresponds to it has `status == idle`.
 
 **Taxonomy**
 
@@ -119,26 +121,31 @@ Panes may optionally have `headers`. `headers` is a list of Buttons. `len(header
 
 ### Control: Buttons
 
-Buttons are Widgets that are *traversed*. They have Status that changes as they are traversed. When they enter into a `selected` Status, they emit Selection events. 
+**Taxonomy**
+
+* `category: widgets`
+* `instance: buttons`
+
+Buttons are Widgets that are *traversed*. They have Status that changes as they are traversed. When a Button enters into the `selected` Status, they emit Selection events. 
 
 Button Statuses are enumerated below,
 
-- idle: Button is not currently being traversed.
-- active: Button is currently focused in the traversal.
-- selected: Button has been selected by the traversal.
+- idle: Button is not currently focused in traversed.
+- active: Button is currently focused in traversal.
+- selected: Button has been selected by traversal.
 - disabled: Button is intraversible.
 
-It assumed Button Asset files are arranged in horizontal rows ordered by their status in the order `idle, active, selected, disabled`, where each frame is `properties.dimensions.w` wide.
+It assumed Button Asset files are arranged in horizontal rows ordered by their status in the sequence: `idle, active, selected, disabled`, where each frame is `properties.dimensions.w` wide.
 
 A Button may have `symbols`. Each element of the `symbols`  list is a Language Widget. Each Language Asset frame is concatenated horizontally across the Button frame.
 
 !!! warning
     The Button Asset must have large enough dimensions to accomodate the Language Asset embeddings, i.e. the sum of the Language widths must not exceed the width of the Button.
 
-**Taxonomy**
+**State: TraversalState**
 
-* `category: widgets`
-* `instance: buttons`
+* `symbols: Optional[List[Language]]`
+* `status: Status`
 
 **Animation: TraversalAnimation**
 
@@ -146,38 +153,10 @@ A Button may have `symbols`. Each element of the `symbols`  list is a Language W
     - `if animation.frame == active: animation.frame = idle`
     - `if animation.frame == idle: animation.frame = active`  
 
-**State: TraversalState**
-
-* `symbols: Optional[List[Language]]`
-* `status: Status`
-
 **Frame: TraversalFrame**
 
-* `key(asset, state): returns <asset>-<state.status>`
-* `index(self, asset, properties, recipe): returns TODO` 
-
-### Control: Pages
-
-Pages render text or Language Assets.
-
-!!! todo
-    Investigate typography in SDL for string rendering.
-
-If a Page is rendering text, it is a `scroller` (`typeof(content) == str`). The amount of text a scroller Page is capable of rendering at once is calculated during Asset initialization. This is used to populate the `pages` and `pagesize` fields.
-
-**State: PageState**
-
-- `content: Union[str, List[Language]`
-- `current: str:`  = `content[0 : max(pagesize, len(content)]`
-- `pages`
-- `pageindex: int` = 0
-- `pagesize: int`
-- `scroller: bool`
-
-**Methods**
-
-- `more(): return content[-len(current) : ] != current`
-- `scroll(): current = content[pageindex*pagesize : max(pageindex*(pagesize+1), len(content))]`
+* `key(id, state): returns [ "{id}-{state.status}" ]`
+* `index(self, id, properties, recipe): returns TODO` 
 
 ### Control: Meters
 
@@ -211,8 +190,38 @@ When the Asset key for Meters is retrieved by the [Screen](./00-overview.md#scre
 
 **Frame: MeterFrame**
 
-* `key(asset, state): returns <asset>-<state.animation.frame>`
-* `index(self, asset, properties, recipe): returns TODO` 
+* `key(id, state): returns [ "{id}-{state.animation.frame}" ]`
+* `index(self, id, properties, recipe): returns { "{id}-{resolution}" : (0, 0, properties.dimensions.w, properties.dimensions.l) }` 
+    * Cardinality of Meter "space": $\frac{1}{\text{resolution}} + 1$
+
+### Decal: Pages
+
+Pages render text or Language Assets.
+
+If a Page is rendering text, it is a `scroller` (`typeof(content) == str`). The amount of text a scroller Page is capable of rendering at once is calculated during Asset initialization. This is used to populate the `pages` and `pagesize` fields.
+
+**State: PageState**
+
+- `content: Union[str, List[Language]`
+- `current: str:`  = `content[0 : max(pagesize, len(content)]`
+- `pages`
+- `pageindex: int` = 0
+- `pagesize: int`
+- `scroller: bool`
+
+**Methods**
+
+- `more(): return content[-len(current) : ] != current`
+- `scroll(): current = content[pageindex*pagesize : max(pageindex*(pagesize+1), len(content))]`
+
+**Animation: None**
+
+N/A
+
+**Frame: SingleFrame**
+
+* `keys(id, None): returns [ id ] "`
+* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 ### Decal: Language
 
@@ -222,6 +231,14 @@ When the Asset key for Meters is retrieved by the [Screen](./00-overview.md#scre
 * `instance: language`
 
 Language serves the purpose of labelling within the Widget family. Each Language sheet can be thought of as a catalogue of icons. The frame keys for each icon in a Language sheet are defined by the `properties.frames` field.
+
+TODO
+
+**Animation: ?**
+
+TODO
+
+**Frame: IndexedFrame**
 
 TODO
 
@@ -235,6 +252,8 @@ For example, suppose a Menu Pane has two traversible Widgets. Widget A is curren
 
 !!! todo: no longer accurate
     Traversal directions are `FORE` and `AFT`. Each Layout in a Pane (`dock`, `stack`, `tab`) corresponded to a cardinal axis (x, y, z). `FORE` indicates traversal in the position direction, `AFT` indicates traversal in the negative direction. For example, `FORE` will move right in `dock`, up in a `stack` and into the screen in a `tab` (note right-hand rule).
+
+TODO
 
 ## Menus
 
