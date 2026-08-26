@@ -514,10 +514,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#control-pages" class="md-nav__link">
+  <a href="#control-meters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Control: Pages
+        Control: Meters
       
     </span>
   </a>
@@ -525,10 +525,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#control-meters" class="md-nav__link">
+  <a href="#decal-pages" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Control: Meters
+        Decal: Pages
       
     </span>
   </a>
@@ -1064,10 +1064,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#control-pages" class="md-nav__link">
+  <a href="#control-meters" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Control: Pages
+        Control: Meters
       
     </span>
   </a>
@@ -1075,10 +1075,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#control-meters" class="md-nav__link">
+  <a href="#decal-pages" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Control: Meters
+        Decal: Pages
       
     </span>
   </a>
@@ -1229,12 +1229,12 @@
 <h1 id="ontology-widgets">Ontology: Widgets</h1>
 <p>Widgets are a type of <a href="../01-assets/">Asset</a>; however, they reside outside of the core loop and have a special place in the application flow.</p>
 <h2 id="overview">Overview</h2>
-<p>Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets. Like most Assets, Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.</p>
+<p>Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets; the branches of this configuration are sometimes referred to as the <em>Menu Tree</em>. Like most Assets, Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.</p>
 <p><strong>Panes, Controls &amp; Decals</strong></p>
 <p>The overarching division of Widgets resides in the functional difference between Panes, Controls &amp; Decals. </p>
 <p>Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen sizes in proportionate ways. </p>
 <p>Controls bind to game state. They are either <em>active</em> or <em>disabled</em>. When active, they may be <em>traversed</em> and <em>selected</em>; When disabled, they may passively receive updates to their state to change their display, but they cannot be traversed. Controls are the endpoints in the Menu tree, organized in Panes. Controls receive focus. </p>
-<p>Decals are painted onto Controls. They function like embedded icons.</p>
+<p>Decals are painted onto Controls. They function like embedded icons and exist simply to display content. They do not hold focus and are not traversible.</p>
 <h3 id="events">Events</h3>
 <p>To illustrate Events, consider the following example. A Player may enter into the <code>barter</code> <a href="../04-intentions/">Intention</a> with another Sprite. This causes the gameplay loop to emit an Event containing the Menu key <code>trade</code> along with the Event data, i.e. the Sprite States. When an Event is detected by the gameplay, it causes the Board to pause the game loop and pass the Event to be processed to the Bus. The Bus in turn uses the Event data to construct and display the Menu referenced by the Event's Menu key. </p>
 <p>When a Menu is instantiated, its Widgets acquire state. This state is populated through transformations applied to the Menu arguments (in most cases, Sprite state). </p>
@@ -1251,7 +1251,7 @@
 <p>When the Board is paused by a MenuEvent, MenuMechanics take over. This <a href="../05-mechanics/">Mechanic</a> translates the <a href="./03-player.md#device-mapping">Player Device mappings</a> to Menu state changes. These Menu state changes then map back onto game state changes through Event notifications sent to the Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see <a href="#inventory">Inventory Menu</a> below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  </p>
 <p>When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.</p>
 <h2 id="asset-specification">Asset Specification</h2>
-<p>It is assumed all Widget frames are organized in single row in the image file. The number of frames (i.e. <code>len(frames)</code>) multipled by the width of a single frame(i.e. <code>dimension.w</code>) must equal the width of the image file.</p>
+<p>It is assumed all Widget frames are organized in single row in the Asset image file. The number of frames (i.e. <code>len(frames)</code>) multipled by the width of a single frame(i.e. <code>dimension.w</code>) must equal the width of the image file.</p>
 <p><strong>ScreenPosition</strong></p>
 <ul>
 <li><code>ScreenPosition</code>:<ul>
@@ -1260,10 +1260,11 @@
 </ul>
 </li>
 </ul>
-<p>Pane positions are specified as ScreenPositions. A ScreenPosition is a tuple of percentages relative to the screensize, e.g. the following coordinates denote a position <code>(0.75w, 0.85h)</code>, where <code>(w, h)</code> is the screensize.</p>
+<p>Pane positions are specified as ScreenPositions. A ScreenPosition is a tuple of percentages relative to the screensize, e.g. the following coordinates denote a position <code>(0.75w, 0.85h)</code>, where <code>(w, h)</code> is the screensize,</p>
 <div class="highlight"><pre><span></span><code><span class="n">menu</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.75</span>
 <span class="n">menu</span><span class="o">.</span><span class="n">position</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.75</span>
 </code></pre></div>
+<p>No other Widgets besides Panes have ScreenPosition. All other Widgets have their on screen Positions calculated relative to the Pane in which they are embedded.</p>
 <p><strong>Properties: WidgetProperties</strong></p>
 <ul>
 <li><code>dimensions: Dimension</code>: Dimensions of a single frame.</li>
@@ -1281,17 +1282,17 @@
 <li>Tab (Pane): A sagittal axis (out-of-the-screen) of Panes.</li>
 <li>Nest (Pane): A vertical column of Panes.</li>
 </ul>
-<p>The <code>dock</code> and <code>stack</code> Layouts only apply to "endpoints" in the Pane tree. These two types of Layouts are ultimately where all Controls displayed in a Menu must be organized. These two Layouts can <em>only</em> contains Control Widgets.</p>
-<p>The <code>tab</code> and <code>nest</code> Layouts are specifically for laying out configurations of Panes. These two types of Layouts <em>cannot</em> contain Controls. These types of Panes <em>must</em> contain children Panes. Furthermore, to avoid deeply nested Widget trees, the children of these Pane types <em>must</em> be <code>dock</code> or <code>stack</code> Layouts.</p>
+<p>The <code>dock</code> and <code>stack</code> Layouts only apply to "endpoints" in the Menu tree. These two types of Layouts are ultimately where all Controls displayed in a Menu must be organized. These two Layouts can <em>only</em> contains Control Widgets.</p>
+<p>The <code>tab</code> and <code>nest</code> Layouts are specifically for laying out configurations of Panes. These two types of Layouts <em>cannot</em> contain Controls. These types of Panes <em>must</em> contain children Panes. Furthermore, to avoid deeply nested Widget trees, the children of these nested Pane types <em>must</em> be <code>dock</code> or <code>stack</code> Layouts, i.e. only one layer of nesting is allowed in Menu trees.</p>
 <p><strong>Alignment</strong></p>
-<p>Every Alignments are enumerated below,</p>
+<p>Alignments are enumerated below,</p>
 <ul>
 <li>Start: Widgets are aligned at the start of the Pane.</li>
 <li>End: Widgets are aligned at the end of the Pane.</li>
 <li>Center: Widgets are aligned at the center of the Pane.</li>
 </ul>
 <p><strong>Headers</strong></p>
-<p>Panes may optionally have <code>headers</code>. <code>headers</code> is a list of Buttons. <code>len(headers) == len(children)</code> must be the case. A header is composed of nontraversible Buttons whose Status is tied to the Pane's children. When a child Widget has <code>focus</code> from a Menu Pane, the header Button which corresponds to it (by having the same index in its list) has <code>status == active</code>. When a child Widget does not have <code>focus</code> from a Menu, the header Button which corresponds to it has <code>status == idle</code>.</p>
+<p>Panes may optionally have <code>headers</code>. <code>headers</code> is a list of Buttons. <code>len(headers) == len(children)</code> must be the case. A header is composed of intraversible (<em>disabled</em>) Buttons whose Status is tied to the Pane's children. When a child Widget has <code>focus</code> from a Menu Pane, the header Button which corresponds to it (by having the same index in its list) has <code>status == active</code>. When a child Widget does not have <code>focus</code> from a Menu, the header Button which corresponds to it has <code>status == idle</code>.</p>
 <p><strong>Taxonomy</strong></p>
 <ul>
 <li><code>category: widget</code></li>
@@ -1318,24 +1319,29 @@
 <li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <h3 id="control-buttons">Control: Buttons</h3>
-<p>Buttons are Widgets that are <em>traversed</em>. They have Status that changes as they are traversed. When they enter into a <code>selected</code> Status, they emit Selection events. </p>
+<p><strong>Taxonomy</strong></p>
+<ul>
+<li><code>category: widgets</code></li>
+<li><code>instance: buttons</code></li>
+</ul>
+<p>Buttons are Widgets that are <em>traversed</em>. They have Status that changes as they are traversed. When a Button enters into the <code>selected</code> Status, they emit Selection events. </p>
 <p>Button Statuses are enumerated below,</p>
 <ul>
-<li>idle: Button is not currently being traversed.</li>
-<li>active: Button is currently focused in the traversal.</li>
-<li>selected: Button has been selected by the traversal.</li>
+<li>idle: Button is not currently focused in traversed.</li>
+<li>active: Button is currently focused in traversal.</li>
+<li>selected: Button has been selected by traversal.</li>
 <li>disabled: Button is intraversible.</li>
 </ul>
-<p>It assumed Button Asset files are arranged in horizontal rows ordered by their status in the order <code>idle, active, selected, disabled</code>, where each frame is <code>properties.dimensions.w</code> wide.</p>
+<p>It assumed Button Asset files are arranged in horizontal rows ordered by their status in the sequence: <code>idle, active, selected, disabled</code>, where each frame is <code>properties.dimensions.w</code> wide.</p>
 <p>A Button may have <code>symbols</code>. Each element of the <code>symbols</code>  list is a Language Widget. Each Language Asset frame is concatenated horizontally across the Button frame.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>The Button Asset must have large enough dimensions to accomodate the Language Asset embeddings, i.e. the sum of the Language widths must not exceed the width of the Button.</p>
 </div>
-<p><strong>Taxonomy</strong></p>
+<p><strong>State: TraversalState</strong></p>
 <ul>
-<li><code>category: widgets</code></li>
-<li><code>instance: buttons</code></li>
+<li><code>symbols: Optional[List[Language]]</code></li>
+<li><code>status: Status</code></li>
 </ul>
 <p><strong>Animation: TraversalAnimation</strong></p>
 <ul>
@@ -1345,36 +1351,10 @@
 </ul>
 </li>
 </ul>
-<p><strong>State: TraversalState</strong></p>
-<ul>
-<li><code>symbols: Optional[List[Language]]</code></li>
-<li><code>status: Status</code></li>
-</ul>
 <p><strong>Frame: TraversalFrame</strong></p>
 <ul>
-<li><code>key(asset, state): returns &lt;asset&gt;-&lt;state.status&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
-</ul>
-<h3 id="control-pages">Control: Pages</h3>
-<p>Pages render text or Language Assets.</p>
-<div class="admonition todo">
-<p class="admonition-title">Todo</p>
-<p>Investigate typography in SDL for string rendering.</p>
-</div>
-<p>If a Page is rendering text, it is a <code>scroller</code> (<code>typeof(content) == str</code>). The amount of text a scroller Page is capable of rendering at once is calculated during Asset initialization. This is used to populate the <code>pages</code> and <code>pagesize</code> fields.</p>
-<p><strong>State: PageState</strong></p>
-<ul>
-<li><code>content: Union[str, List[Language]</code></li>
-<li><code>current: str:</code>  = <code>content[0 : max(pagesize, len(content)]</code></li>
-<li><code>pages</code></li>
-<li><code>pageindex: int</code> = 0</li>
-<li><code>pagesize: int</code></li>
-<li><code>scroller: bool</code></li>
-</ul>
-<p><strong>Methods</strong></p>
-<ul>
-<li><code>more(): return content[-len(current) : ] != current</code></li>
-<li><code>scroll(): current = content[pageindex*pagesize : max(pageindex*(pagesize+1), len(content))]</code></li>
+<li><code>key(id, state): returns [ "{id}-{state.status}" ]</code></li>
+<li><code>index(self, id, properties, recipe): returns TODO</code> </li>
 </ul>
 <h3 id="control-meters">Control: Meters</h3>
 <p><strong>Taxonomy</strong></p>
@@ -1404,8 +1384,35 @@
 </ul>
 <p><strong>Frame: MeterFrame</strong></p>
 <ul>
-<li><code>key(asset, state): returns &lt;asset&gt;-&lt;state.animation.frame&gt;</code></li>
-<li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
+<li><code>key(id, state): returns [ "{id}-{state.animation.frame}" ]</code></li>
+<li><code>index(self, id, properties, recipe): returns { "{id}-{resolution}" : (0, 0, properties.dimensions.w, properties.dimensions.l) }</code> <ul>
+<li>Cardinality of Meter "space": <span class="arithmatex">\(\frac{1}{\text{resolution}} + 1\)</span></li>
+</ul>
+</li>
+</ul>
+<h3 id="decal-pages">Decal: Pages</h3>
+<p>Pages render text or Language Assets.</p>
+<p>If a Page is rendering text, it is a <code>scroller</code> (<code>typeof(content) == str</code>). The amount of text a scroller Page is capable of rendering at once is calculated during Asset initialization. This is used to populate the <code>pages</code> and <code>pagesize</code> fields.</p>
+<p><strong>State: PageState</strong></p>
+<ul>
+<li><code>content: Union[str, List[Language]</code></li>
+<li><code>current: str:</code>  = <code>content[0 : max(pagesize, len(content)]</code></li>
+<li><code>pages</code></li>
+<li><code>pageindex: int</code> = 0</li>
+<li><code>pagesize: int</code></li>
+<li><code>scroller: bool</code></li>
+</ul>
+<p><strong>Methods</strong></p>
+<ul>
+<li><code>more(): return content[-len(current) : ] != current</code></li>
+<li><code>scroll(): current = content[pageindex*pagesize : max(pageindex*(pagesize+1), len(content))]</code></li>
+</ul>
+<p><strong>Animation: None</strong></p>
+<p>N/A</p>
+<p><strong>Frame: SingleFrame</strong></p>
+<ul>
+<li><code>keys(id, None): returns [ id ] "</code></li>
+<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="decal-language">Decal: Language</h3>
 <p><strong>Taxonomy</strong></p>
@@ -1415,12 +1422,17 @@
 </ul>
 <p>Language serves the purpose of labelling within the Widget family. Each Language sheet can be thought of as a catalogue of icons. The frame keys for each icon in a Language sheet are defined by the <code>properties.frames</code> field.</p>
 <p>TODO</p>
+<p><strong>Animation: ?</strong></p>
+<p>TODO</p>
+<p><strong>Frame: IndexedFrame</strong></p>
+<p>TODO</p>
 <h2 id="traversal">Traversal</h2>
 <p>Some Widgets bind to state. Others bind to Traversal. </p>
 <p>A Menu has focus. Focus is a field that points to the currently <code>active</code> traversible Widget. When the user issues a command to traverse the Menu, the focus shifts to the next traversible widget.</p>
 <p>For example, suppose a Menu Pane has two traversible Widgets. Widget A is currently in <code>active</code> Status, Widget B is currently <code>idle</code> Status. When the user issues the command to traverse, these states will shift so A is <code>idle</code> and B is <code>active</code>. If the user issues the command to select, the Widget that is <code>active</code> will be <code>selected</code> and a SelectionEvent will be generated for processing by the MenuMechanics.</p>
 <p>!!! todo: no longer accurate
     Traversal directions are <code>FORE</code> and <code>AFT</code>. Each Layout in a Pane (<code>dock</code>, <code>stack</code>, <code>tab</code>) corresponded to a cardinal axis (x, y, z). <code>FORE</code> indicates traversal in the position direction, <code>AFT</code> indicates traversal in the negative direction. For example, <code>FORE</code> will move right in <code>dock</code>, up in a <code>stack</code> and into the screen in a <code>tab</code> (note right-hand rule).</p>
+<p>TODO</p>
 <h2 id="menus">Menus</h2>
 <ul>
 <li>Location: <code>/src/data/menus/main.yaml</code></li>
