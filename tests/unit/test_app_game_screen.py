@@ -5,15 +5,30 @@ import pytest
 from unittest.mock import patch, MagicMock
 
 from app.game.screen import Screen
-from app.assets.base import Asset
-from app.assets.frames import NoFrame, SingleFrame, IterableFrame, StateFrame, SpriteFrame
-from app.models.state import (
-    AssetState, AnimationState, SpriteState, AnimatorState,
-    Inventory, Equipment
+from app.assets.frames import (
+    NoFrame, 
+    SingleFrame, 
+    IterableFrame, 
+    StateFrame, 
+    SpriteFrame
 )
-from libs.core.models import Position, Dimensions
-from app.config.enums import AssetCategories, Actions, Directions
-
+from app.models.state import (
+    AssetState, 
+    AnimationState, 
+    SpriteState, 
+    AnimatorState,
+    Inventory, 
+    Equipment
+)
+from libs.core.models import (
+    Position, 
+    Dimensions
+)
+from app.config.enums import (
+    AssetCategories, 
+    Actions, 
+    Directions
+)
 
 @pytest.fixture
 def mock_registry():

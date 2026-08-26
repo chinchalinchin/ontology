@@ -3,6 +3,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 !!! "Task Progress Key"
   `[ ]`: Open
   `[~]`: In Progress
+  `[?]`: Needs Further Analysis
   `[x]`: Closed/Implemented
   `[!]`: DO NOT COMPLETE
 
@@ -27,8 +28,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 02.03: Equipment Animations](./phases/refactor/phase-02-03.md)
     - [x]: [Phase 02.04: Engine](./phases/refactor/phase-02-04.md)
     - [x]: [Phase 04.01: Mechanics](./phases/refactor/phase-04-01.md)
-    - [~]: [Phase 04.02: Consolidation](./phases/refactor/phase-04-02.md)
+    - [x]: [Phase 04.02: Consolidation](./phases/refactor/phase-04-02.md)
     - [x]: [Phase 04.03: Motion](./phases/refactor/phase-04-03.md)
-    - [~]: [Phase 05.01: Typography](./phases/refactor/phase-05-01.md)
+    - [x]: [Phase 05.01: Typography](./phases/refactor/phase-05-01.md)
   - Report:
     - [x]: [2026-08-09: SDL Rendering Pipeline Failure](./phases/report/2026-08-16.md)

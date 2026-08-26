@@ -45,6 +45,6 @@
 
 *Objective*: Ensure changes are captured by unit tests.
 
-- [ ] Subtask: Ensure unit tests for previous Registry implementation are passing.
-- [ ] Subtask: Add font fixtures.
-- [ ] Subtask: Ensure the `font()` method and font indexing are adequately covered by unit tests.
+- [x] Subtask: Ensure unit tests for previous Registry implementation are passing.
+- [x] Subtask: Add font fixtures.
+- [x] Subtask: Ensure the `font()` method and font indexing are adequately covered by unit tests.

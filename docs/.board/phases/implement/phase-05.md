@@ -1,6 +1,10 @@
 #### Implement: Phase 05 - Widgets
 
-Goals: Widget Creation, Menu Configuration and Instantiation, Menu Traversal
+- Goals: Widget Creation, Menu Configuration and Instantiation, Menu Traversal
+
+**CURRENT FOCUS**: The Widget spec has changed in the documentation slightly. Review the tasking and ensure it still aligns with the intended end result.
+
+##### Tasks 
 
 **Task 1. Data Models & Application Hooks**
 
@@ -17,8 +21,8 @@ Goals: Widget Creation, Menu Configuration and Instantiation, Menu Traversal
 **Task 3. Event Bus & Game Loop Interruption**
 
 * [ ] **Implement Event Queue**: Add an `Event` data class and an event queue to `Board` (or create a dedicated `Bus` class).
-    - [!] Subtask: Define `MenuEvent`, `SelectionEvent`, and `StateEvent` dataclasses in `app.models.state`.
-    - [!] Subtask: Add `bus: collections.deque` to `app.game.board.Board` to handle FIFO event queueing.
+    - [?] Subtask: Define `MenuEvent`, `SelectionEvent`, and `StateEvent` dataclasses in `app.models.state`.
+    - [?] Subtask: Add `bus: collections.deque` to `app.game.board.Board` to handle FIFO event queueing.
 * [ ] **Trigger Events via Intentions**: Update `SpeechMechanics` and `CommerceMechanics` to push Events (e.g., `DialogueEvent`, `TradeEvent`) to the queue when specific Intentions are resolved.
 * [ ] **Handle Interruptions**: Implement the `MenuMechanics` shell to drain and parse the `Board.bus` queue per tick. If an Event exists, set `board.paused = True`, instantiate the requested Menu, and load it into a temporary active UI state.
 
@@ -36,7 +40,7 @@ Goals: Widget Creation, Menu Configuration and Instantiation, Menu Traversal
 
 **Task 6. HUD / Screen Rendering**
 
-* [ ] **Absolute Rendering Pass**: Add a `draw_menu()` method to `Screen` (or update `draw()`) that skips the `camera` clamping logic. Widget primitives must be flattened directly using their absolute `Position` and stamped onto the composite buffer without world-space culling.
+* [ ] **Absolute Rendering Pass**: Add a `menu()` method to `Screen` (or update `draw()`) that skips the `camera` clamping logic. Widget primitives must be flattened directly using their absolute `Position` and stamped onto the composite buffer without world-space culling.
 
 **Task 7. Configuration & Models**
 

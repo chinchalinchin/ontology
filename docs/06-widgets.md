@@ -10,11 +10,11 @@ Widgets are components of Menus. Or put another way, Menus are assembled from sc
 
 The overarching division of Widgets resides in the functional difference between Panes, Controls & Decals. 
 
-Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen size in proportionate ways. 
+Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen sizes in proportionate ways. 
 
-Controls bind to game state and are *traversed*. Controls are organized in Panes.
+Controls bind to game state. They are either *active* or *disabled*. When active, they may be *traversed* and *selected*; When disabled, they may passively receive updates to their state to change their display, but they cannot be traversed. Controls are the endpoints in the Menu tree, organized in Panes. Controls receive focus. 
 
-Decals are painted onto Controls.
+Decals are painted onto Controls. They function like embedded icons.
 
 ### Events
 
@@ -181,25 +181,37 @@ If a Page is rendering text, it is a `scroller` (`typeof(content) == str`). The 
 
 ### Control: Meters
 
-Meters are "continuous" indicators. They require a `unit` to calibrate their reading and then express a `reading` in terms of the `unit`; All readings are expressed relative to the `unit`, e.g. the ratio of the current value of the Player's health to maximum value of the Player's health is expressed as the proportion of a Meter that is filled.
-
 **Taxonomy**
 
 * `category: widget`
 * `instance: meter`
 
+Meters are "continuous" indicators. They require a `unit` to calibrate their reading and then express a `reading` in terms of the `unit`; All readings are expressed relative to the `unit`, e.g. the ratio of the current value of the Player's health to maximum value of the Player's health is expressed as the proportion of a Meter that is filled.
+
+A Meter Asset has two frames. The first frame is an Empty. The second frame is Filled at 100% (i.e., $\frac{reading}{unit}=1$). Each frame is `dimensions.w` wide and `dimensions.l` long. 
+
+During Asset initialization, the second frame of the Meter is divided into increments determined by `app.config.settings.METER_RESOLUTION`. The discrete steps of increments implied by the resolution are then used to index the entire Meter "space" in the [Registry](./00-overview.md#registry). For example, if `app.config.settings.METER_RESOLUTION=0.25`, then the following frames will be index,
+
+- `<asset>-0`: Empty frame.
+- `<asset>-25`: Empty frame superimposed by 25% of Filled frame.
+- `<asset>-50`: Empty frame superimposed by 50% of Filled frame.
+- `<asset>-75`: Empty frame superimposed by 75% of Filled frame.
+- `<asset>-100`: Empty frame superimposed by 100% of Filled frame.
+
+When the Asset key for Meters is retrieved by the [Screen](./00-overview.md#screen), the current ratio of `reading` and `unit` is rounded to the nearest resolution.
+
 **Animation: MeterAnimation**
 
-TODO: calculate based on `reading / unit`
+- `animation.frame = round(state.reading/state.unit, settings.METER_RESOLUTION)*100`
 
 **State: MeterState**
 
-* `unit: int`
 * `reading: int`
+* `unit: int`
 
-**Frame: WidgetFrame**
+**Frame: MeterFrame**
 
-* `key(asset, state): returns <asset>-<state.status>`
+* `key(asset, state): returns <asset>-<state.animation.frame>`
 * `index(self, asset, properties, recipe): returns TODO` 
 
 ### Decal: Language
