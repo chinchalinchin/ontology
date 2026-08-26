@@ -3,119 +3,6 @@
 - Goals: Widget Creation, Menu Configuration and Instantiation, Menu Traversal
 - **CURRENT FOCUS**: 
 
-**Traversal Graphs**
-
-A flat list of spatial coordinates cannot reliably deduce logical UI intent (e.g., jumping from `[a, b, c]` down to `[d, e, f]`). Deducing neighbors via runtime spatial raycasting is error-prone.
-
-The `LayoutEngine` must do two things, not one. When `Factory.menu()` calls the `LayoutEngine`, the engine must output:
-
-1. **The Render List:** The 1D flat list of `Asset` objects with absolute screen coordinates (for `Screen.draw()`).
-2. **The Traversal Graph:** A directed graph (adjacency list) mapping each interactive `Button.name` to its logical neighbors (`UP`, `DOWN`, `LEFT`, `RIGHT`).
-
-When the `LayoutEngine` processes a `nest` pane containing two `dock` (horizontal) panes stacked vertically:
-
-* It inherently knows the matrix structure: `[[a, b, c], [d, e, f]]`.
-* It programmatically creates the links: `a.neighbors = {RIGHT: 'b', DOWN: 'd'}`.
-* This graph is saved in `MenuState.graph`.
-
-When `MenuMechanics.update()` fires, it does not care about spatial layout. It simply looks at `MenuState.focus` (e.g., `'a'`), checks the Device poll for a `RIGHT` command, looks up `MenuState.graph['a'][RIGHT]`, and updates the focus to `'b'`. This entirely decouples UI visual layout from UI logical input.
-
-**Menu Stack**
-
-A Menu is **not** an Asset. It is a distinct data structure—a logical container. It should live on the `Board`, but outside of the standard `_assets` array.
-
-Since Menus can overlap (e.g., a "Confirm Purchase" modal popping up *over* the "Trade" menu, or the permanent HUD underneath the "Pause" menu), the Board should maintain a **Menu Stack**.
-
-```python
-# app/models/menus.py
-@dataclass
-class MenuState:
-    focus: str  # The ID of the currently focused widget
-    graph: Dict[str, Dict[str, str]]  # The traversal adjacency list
-    context: Dict[str, Any]  # The injected state (e.g., player, npc)
-
-class Menu:
-    id: str
-    state: MenuState
-    widgets: List[Asset]  # The flattened renderables
-    controller: 'MenuController' # (See next section)
-```
-
-In `app.game.board`:
-
-```python
-class Board:
-    # ... existing fields
-    menus: List[Menu] = [] # The UI Stack
-```
-
-1. **Rendering:** `Screen.draw()` iterates through `board.menus`. It takes the flattened `menu.widgets` and passes them directly to Cython (bypassing the camera cull, as discussed previously).
-2. **Input:** `MenuMechanics` only ever interacts with `board.menus[-1]` (the top of the stack).
-
-**The Controller Pattern**
-
-To keep `MenuMechanics` clean, use the **Strategy Pattern** and introduce `MenuController` classes.
-
-`MenuMechanics` is responsible for *Universal Menu Physics* (traversal, opening, closing). The `MenuController` is responsible for *Bespoke UI Logic* (equipping, buying, selling).
-
-```python
-# app/game/menus/controllers/base.py
-class MenuController(ABC):
-    @abstractmethod
-    def open(self, menu: Menu, board: Board) -> None:
-        pass
-
-    @abstractmethod
-    def select(self, widget_id: str, menu: Menu, board: Board) -> None:
-        """Fires when the user presses SELECT on a focused widget."""
-        pass
-        
-    @abstractmethod
-    def update(self, menu: Menu, board: Board) -> None:
-        """Fires every frame, used for dynamic HUDs or timers."""
-        pass
-```
-
-Isolate highly specific logic, e.g.,
-
-```python
-class InventoryController(MenuController):
-    def select(self, widget_id: str, menu: Menu, board: Board) -> None:
-        player = board.player()
-        item = menu.state.context['items'][widget_id]
-        
-        # Bespoke equipping logic
-        if item.category == 'weapon':
-            player.state.inventory.equipment.weapon = item.id
-            
-        # Update widget decals to show the "Equipped" icon
-        # ...
-```
-
-```python
-class TradeController(MenuController):
-    def select(self, widget_id: str, menu: Menu, board: Board) -> None:
-        buyer = menu.state.context['buyer']
-        seller = menu.state.context['seller']
-        item, price = menu.state.context['market_data'][widget_id]
-        
-        if buyer.state.inventory.wallet >= price:
-            buyer.state.inventory.wallet -= price
-            seller.state.inventory.wallet += price
-            # Transfer item...
-```
-
-With the controllers handling the semantic meaning of button presses, `MenuMechanics` becomes a very simple router. Its `update()` loop looks like this:
-
-1. **Check Stack:** If `len(board.menus) == 0`, exit early.
-2. **Get Top Menu:** `active_menu = board.menus[-1]`
-3. **Poll Input:**
-    * If `UP/DOWN/LEFT/RIGHT`: Look at `active_menu.state.focus`. Look up the key in `active_menu.state.graph`. If a neighbor exists, change `focus` and update the `TraversalAnimation` status of the respective Button Assets.
-    * If `SELECT`: Call `active_menu.controller.select(active_menu.state.focus, active_menu, board)`.
-    * If `CANCEL`: Pop the menu off the stack. (Unpause the board if the stack is now empty).
-4. **Tick:** Call `active_menu.controller.on_update()` so continuous menus (like the HUD) can update their meters.
-
-
 ##### Bugs
 
 **1. The Engine Pause Deadlock (`app.game.engine.py`)**
@@ -163,8 +50,6 @@ With the controllers handling the semantic meaning of button presses, `MenuMecha
 * [ ] When `MenuMechanics` drains a `MenuEvent`, it passes `menu_id` and `context_args` to `Factory.menu()`.
 * [ ] `Factory.menu()` resolves bindings, runs the `LayoutEngine`, instantiates the mapped `MenuController`, and pushes the resulting `Menu` onto `board.menus`.
 
-
-
 **Task 4. The Menu Factory & Data Binding**
 
 * [ ] **Context Resolver:** Write a helper method in `Factory` that parses the dot-notation `bind` string (e.g., `"sprite.state.inventory"`) and recursively fetches the value from the `EventContext`.
@@ -177,7 +62,6 @@ With the controllers handling the semantic meaning of button presses, `MenuMecha
 * [ ] **Stack/Dock/Tab Algorithms:** Implement the spatial layout algorithms, incorporating `gap` and `alignment` offsets.
 * [ ] **Generate Traversal Graph:** During layout generation, build an adjacency dictionary linking traversable `Button` widgets based on their positional matrix.
 * [ ] **Return Tuple:** Layout Engine returns `(List[Asset], TraversalGraph)`. Factory injects this into the `MenuState`.
-
 
 **Task 6. Menu Controllers (Strategy Pattern)**
 

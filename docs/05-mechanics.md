@@ -54,6 +54,22 @@ $$v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)$$
 * **Low Friction (e.g., $0.01$):** The deceleration scalar is minute. The asset bleeds momentum extremely slowly, simulating a frictionless surface like ice.
 * **High Friction (e.g., $100.0$):** The asset sheds velocity rapidly and comes to rest in a short distance, simulating dense surfaces like mud or deep grass.
 
+**MenuMechanics**
+
+To keep `MenuMechanics` clean, the Engine uses the **Strategy Pattern** and delegates to `MenuController` classes. 
+
+`MenuMechanics` is responsible for *Universal Menu Physics* (traversal, opening, closing). The `MenuController` is responsible for *Bespoke UI Logic* (equipping, buying, selling). `MenuMechanics` only ever interacts with `board.menus[-1]` (the top of the stack).
+
+With the controllers handling the semantic meaning of button presses, `MenuMechanics` becomes a very simple router. Its `update()` loop looks like this:
+
+1. **Check Stack:** If `len(board.menus) == 0`, exit early.
+2. **Get Top Menu:** `active_menu = board.menus[-1]`
+3. **Poll Input:**
+    * If `UP/DOWN/LEFT/RIGHT`: Look at `active_menu.state.focus`. Look up the key in `active_menu.state.graph`. If a neighbor exists, change `focus` and update the `TraversalAnimation` status of the respective Button Assets.
+    * If `SELECT`: Call `active_menu.controller.select(active_menu.state.focus, active_menu, board)`.
+    * If `CANCEL`: Pop the menu off the stack. (Unpause the board if the stack is now empty).
+4. **Tick:** Call `active_menu.controller.on_update()` so continuous menus (like the HUD) can update their meters.
+
 ### Spatial
 
 These Mechanics handle spatial interactions and collisions between Assets.
