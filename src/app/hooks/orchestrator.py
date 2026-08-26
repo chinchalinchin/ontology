@@ -201,31 +201,21 @@ class Orchestrator:
             render.show()
 
         logger.info("Initializing Registry..")
-        # 1. Unpack the root dataclass (this recursively unpacks everything, including fonts)
         # 1. Unpack root dataclasses and resolve Enums to primitives
         properties_dict = self._unbox_enums(dataclasses.asdict(self.properties))
         recipes_dict = self._unbox_enums(dataclasses.asdict(self.configurations.recipes))
-        
         # 2. Extract fonts
         fonts_dict = properties_dict.pop("fonts")
-        
         # 3. Pass clean, primitive-only dictionaries to Cython
         self.registry = Registry(
             properties_dict, 
             recipes_dict,
             fonts_dict
         )
-        self.registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(self.configurations.recipes),
-            fonts_dict
-        )
 
         logger.info("Initializing Screens...")
-
         max_width = max(self.board.size(layer)[0].w for layer in self.board.layers())
         max_length = max(self.board.size(layer)[0].l for layer in self.board.layers())
-
         self.screens = {
             layer: Screen(
                 screensize, 

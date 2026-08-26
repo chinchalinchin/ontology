@@ -21,7 +21,6 @@ To compile the C extensions, run the following command in your terminal:
 
 ```bash
 python setup.py build_ext --inplace
-
 ```
 
 *Note: For CI/CD environments or test runs requiring coverage reporting, use `python setup.cicd.py build_ext --inplace --force` to compile with Cython line-tracing enabled.*
@@ -62,7 +61,6 @@ python src/cli.py  \
   --dump-sdl \
   --log-level $LOG_LEVEL \
     start $WORLD
-
 ```
 
 ## Information
@@ -76,7 +74,6 @@ import libs.core.models
 import libs.core.math
 from libs.graphics import render
 from libs.graphics import registry
-
 ```
 
 **VSCode**
@@ -89,7 +86,6 @@ To ensure the Pylance linter correctly resolves the compiled Cython libraries fr
     "./src"
   ]
 }
-
 ```
 
 ### Scripts
@@ -105,7 +101,6 @@ python ./scripts/concatenate/main.py \
   -v int \
   -f /path/ \
   -o /path/result.png
-
 ```
 
 ## Index

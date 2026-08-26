@@ -95,10 +95,14 @@ class Registry:
 
                 if file.endswith('.png'):
                     logger.debug(f"Caching texture from {filepath} as '{asset_key}'")
-                    self._load_image(asset_key, filepath)
+                    tex = self._load_image(asset_key, filepath)
+                    if tex is not None:
+                        self._textures[asset_key] = tex
                 elif file.endswith('.ttf'):
                     logger.debug(f"Caching font from {filepath} as '{asset_key}'")
-                    self._load_font(asset_key, filepath)
+                    font_obj = self._load_font(asset_key, filepath)
+                    if font_obj is not None:
+                        self._fonts[asset_key] = font_obj
 
     def _load_image(self, image_key, filepath: str) -> TexturePtr:
         """Loads a physical .png file directly into GPU memory via SDL2 extensions."""
@@ -115,13 +119,13 @@ class Registry:
         wrapper.ptr = tex
         wrapper.w = w
         wrapper.l = l
-        self._textures[image_key] = wrapper
+        return wrapper
 
     def _load_font(self, font_key: str, filepath: str):
         """Loads and pre-styles a .ttf file into memory based on its configuration block."""
         if font_key not in self.typography:
             logger.debug(f"Skipping unconfigured font: {font_key}")
-            return
+            return None
             
         cdef dict style = self.typography[font_key]
         cdef int pt_size = style.get("size", 24)
@@ -152,7 +156,7 @@ class Registry:
         font_obj.color.b = color_cfg.get("b", 255)
         font_obj.color.a = color_cfg.get("a", 255)
         
-        self._fonts[font_key] = font_obj
+        return font_obj
 
     def _extract(self, inst_props):
         """Helper to agnostically extract property items from schema variations."""
@@ -192,9 +196,6 @@ class Registry:
         """Maps runtime dynamic frame keys to their GPU mapping tuple coordinates."""
         logger.debug("Indexing Frame Keys to Texture Crops...")
         for cat_name, cat_props in self.properties.items():
-            # TODO: handle font indexing separately, i.e. ignore fonts here.
-            #       perhaps ensure Orchestrator only passes image properties in
-            #       in self.properties and passes font properties through self.typography.
             if not cat_props: continue
             
             cat_recipes = self.recipes.get(cat_name)
@@ -219,7 +220,7 @@ class Registry:
                             crop[0], crop[1], crop[2], crop[3]
                         )
         
-    def data(self, frame_key: str) -> Tuple:
+    def image(self, frame_key: str) -> Tuple:
         """
         Returns a lightweight Python tuple resolving mapped texture configurations for the camera.
         Format: (TexturePtr, src_x, src_y, src_w, src_l)

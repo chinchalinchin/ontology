@@ -5,15 +5,18 @@ import pytest
 import dataclasses
 from unittest.mock import patch, MagicMock
 
-from libs.graphics.registry import Registry
+from libs.graphics.registry import Registry, TTFFont
 from app.config.enums import FrameRecipe
 from app.models.config import SheetRecipe, EffectRecipe, ObjectRecipe, Recipe
-from app.models.properties import Action, Direction, EffectProperties, ObjectProperties
+from app.models.properties import Action, Direction, EffectProperties, ObjectProperties, FontProperties, RGBA
 from libs.core.models import Dimensions
 
 
 def test_registry_initialization_and_caching(mock_properties, mock_configurations):
     """Test that Registry walks the asset directory and caches textures."""
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry.Registry._load_image') as mock_load:
          
@@ -27,8 +30,9 @@ def test_registry_initialization_and_caching(mock_properties, mock_configuration
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            dataclasses.asdict(mock_properties), 
-            dataclasses.asdict(mock_configurations.recipes)
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
         )
         
         mock_walk.assert_called_once()
@@ -48,6 +52,9 @@ def test_registry_indexing_and_retrieval(mock_properties, mock_configurations):
     }
     mock_properties.sheets.sprites["player"].actions = actions
     
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry.Registry._load_image') as mock_load:
          
@@ -61,8 +68,9 @@ def test_registry_indexing_and_retrieval(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            dataclasses.asdict(mock_properties), 
-            dataclasses.asdict(mock_configurations.recipes)
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
         )
         
         expected_key_1 = "player-walk-down-0"
@@ -71,7 +79,7 @@ def test_registry_indexing_and_retrieval(mock_properties, mock_configurations):
         assert expected_key_1 in registry._frames
         assert expected_key_2 in registry._frames
         
-        data = registry.data("player-walk-up-2")
+        data = registry.image("player-walk-up-2")
         
         assert data is not None
         assert data[0] == mock_tex
@@ -91,6 +99,9 @@ def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
         temporary=Recipe(frame=FrameRecipe.ITERABLE)
     )
     
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry.Registry._load_image') as mock_load:
          
@@ -104,15 +115,16 @@ def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            dataclasses.asdict(mock_properties), 
-            dataclasses.asdict(mock_configurations.recipes)
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
         )
         
         for f in range(3):
             key = f"explosion-{f}"
             assert key in registry._frames
             
-            data = registry.data(key)
+            data = registry.image(key)
             assert data is not None
             assert data[1] == f * 32  # src_x
             assert data[2] == 0       # src_y
@@ -122,6 +134,9 @@ def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
 
 def test_registry_fallback_retrieval(mock_properties, mock_configurations):
     """Test that Registry correctly falls back to raw textures for unindexed assets."""
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry.Registry._load_image') as mock_load:
          
@@ -135,13 +150,14 @@ def test_registry_fallback_retrieval(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            dataclasses.asdict(mock_properties), 
-            dataclasses.asdict(mock_configurations.recipes)
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
         )
         
         assert "single_frame_tile" not in registry._frames
         
-        data = registry.data("single_frame_tile")
+        data = registry.image("single_frame_tile")
         
         assert data is not None
         assert data[0] == mock_tex
@@ -155,6 +171,9 @@ def test_registry_stack_assembly(mock_properties, mock_configurations):
     """Test that Registry data-driven stacking works correctly."""
     mock_properties.sheets.sprites["player"].stack = ["base_body", "armor", "helmet"]
     
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry.Registry._load_image') as mock_load, \
          patch('libs.graphics.registry.render.compose') as mock_compose:
@@ -172,8 +191,9 @@ def test_registry_stack_assembly(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            dataclasses.asdict(mock_properties), 
-            dataclasses.asdict(mock_configurations.recipes)
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
         )
         
         assert registry._textures["player"] == mock_composed_tex
@@ -193,6 +213,9 @@ def test_registry_noframe_indexing(mock_properties, mock_configurations):
         dimensions=Dimensions(w=32, l=32)
     )
 
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry.Registry._load_image') as mock_load:
          
@@ -204,12 +227,13 @@ def test_registry_noframe_indexing(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            dataclasses.asdict(mock_properties), 
-            dataclasses.asdict(mock_configurations.recipes)
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
         )
         
         assert "invisible_chest" in registry._frames
-        data = registry.data("invisible_chest")
+        data = registry.image("invisible_chest")
         
         assert data is not None
         assert data[1] == 0
@@ -229,6 +253,9 @@ def test_registry_spriteframe_indexing(mock_properties, mock_configurations):
     }
     mock_properties.sheets.sprites["player"].actions = actions
     
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry.Registry._load_image') as mock_load:
          
@@ -242,15 +269,68 @@ def test_registry_spriteframe_indexing(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            dataclasses.asdict(mock_properties), 
-            dataclasses.asdict(mock_configurations.recipes)
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
         )
         
         expected_key = "player-slash-left-5"
         assert expected_key in registry._frames
         
-        data = registry.data(expected_key)
+        data = registry.image(expected_key)
         assert data[1] == 320  # src_x = frame(5) * w(64)
         assert data[2] == 128  # src_y = row(2) * l(64)
         assert data[3] == 64
         assert data[4] == 64
+
+
+def test_registry_font_loading_and_retrieval(mock_properties, mock_configurations):
+    """Test that Registry correctly loads and retrieves fonts."""
+    mock_properties.fonts["arial"] = FontProperties(
+        alignment="left",
+        bold=True,
+        italics=False,
+        margin=0.05,
+        color=RGBA(255, 255, 255, 255)
+    )
+    
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+    
+    with patch('libs.graphics.registry.os.walk') as mock_walk, \
+         patch('libs.graphics.registry.Registry._load_font') as mock_font:
+         
+        mock_walk.return_value = [
+            ('/mock/assets', [], ['arial.ttf'])
+        ]
+        
+        # Instantiate real extension type to bypass Cython type checking
+        mock_font_obj = TTFFont()
+        mock_font.return_value = mock_font_obj
+        
+        registry = Registry(
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
+        )
+        
+        assert "arial" in registry._fonts
+        
+        retrieved_font = registry.font("arial")
+        assert retrieved_font == mock_font_obj
+
+
+def test_registry_missing_font(mock_properties, mock_configurations):
+    """Test font retrieval for missing font returns None."""
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+    
+    with patch('libs.graphics.registry.os.walk') as mock_walk:
+        mock_walk.return_value = []
+        registry = Registry(
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
+        )
+    
+    assert registry.font("missing_font") is None

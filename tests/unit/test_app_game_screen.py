@@ -20,7 +20,7 @@ def mock_registry():
     registry = MagicMock()
     # By default, pretend every requested frame key exists and returns a dummy crop tuple.
     # Expected format: (TexturePtr, src_x, src_y, src_w, src_l)
-    registry.data.side_effect = lambda key: (MagicMock(), 0, 0, 32, 32)
+    registry.image.side_effect = lambda key: (MagicMock(), 0, 0, 32, 32)
     return registry
 
 

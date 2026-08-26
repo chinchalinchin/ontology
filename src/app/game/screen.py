@@ -63,7 +63,7 @@ class Screen:
             # Query Registry using the computed tile keys
             frame_keys = tile.frame.keys(tile.id, tile.state)
             for frame_key in frame_keys:
-                tex_data = self.registry.data(frame_key)
+                tex_data = self.registry.image(frame_key)
                 if tex_data:
                     tex, sx, sy, sw, sl = tex_data
                     
@@ -144,7 +144,7 @@ class Screen:
             
             for frame_key in frame_keys:
                 # 3. Query registry for C-level source coordinates
-                tex_data = self.registry.data(frame_key)
+                tex_data = self.registry.image(frame_key)
 
                 if not tex_data:
                     continue 
