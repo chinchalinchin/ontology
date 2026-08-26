@@ -1,28 +1,22 @@
 """
-# Ontology: app.game.menus.controllers.base
+# Ontology: app.gane.menus.controllers.scroll
 """
-# Standard Libraries
-from abc import ABC, abstractmethod
-
 # Application Libraries
+from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
 from app.game.board import Board
 
-class MenuController(ABC):
-    @abstractmethod
+class ScrollController(MenuController):
     def open(self, menu: Menu, board: Board) -> None:
         pass
 
-    @abstractmethod
     def select(self, widget_id: str, menu: Menu, board: Board) -> None:
         """Fires when the user presses SELECT on a focused widget."""
         pass
         
-    @abstractmethod
     def update(self, menu: Menu, board: Board) -> None:
         """Fires every frame, used for dynamic HUDs or timers."""
         pass
 
-    @abstractmethod
     def close(self, menu: Menu, board: Board) -> None:
         pass
