@@ -1022,19 +1022,24 @@
 <ol>
 <li>Entrypoint: <code>Orchestrate</code><ul>
 <li>Load data into memory<ul>
-<li>Load Asset Recipes YAML File from <code>/src/assets/main.yaml</code></li>
-<li>Load Asset Category properties YAML files from <code>/src/assets/&lt;category&gt;/main.yaml</code></li>
-<li>Load Asset Instance state YAML files from the <code>/src/data/state/&lt;board-key&gt;</code> directory, where <code>&lt;board-key&gt;</code> is the selected board. There may be an arbitrary number of state files, with any filename, in the <code>&lt;board-key&gt;</code> directory.</li>
-<li>Convert all heavy Pydantic DTOs into lightweight Plain Old Python Objects (POPOs) and Cython <code>cdef classes</code> for runtime use.</li>
-<li>Initialize list of Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).</li>
+<li>Load (Image) Asset Recipes YAML File from <code>/src/assets/main.yaml</code></li>
+<li>Load (Image and Font) Asset Category properties YAML files from <code>/src/assets/&lt;category&gt;/main.yaml</code></li>
+<li>Load (Image) Asset Instance state YAML files from the <code>/src/data/state/&lt;board-key&gt;</code> directory, where <code>&lt;board-key&gt;</code> is the selected board. There may be an arbitrary number of state files, with any filename, in the <code>&lt;board-key&gt;</code> directory.</li>
+<li>Validate all data models against Pydantic TypeAdapters and convert into Plain-Old-Python-Objects (POPOs) and Cython <code>cdef classes</code> for runtime use.</li>
+<li>Initialize list of (Image) Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).</li>
+<li>Initialize Font Assets with configured Styles. </li>
 </ul>
 </li>
+<li>Construct application components and manage dependency-injections (Cradle, Decomposer, etc.)</li>
 </ul>
 </li>
 <li>Init: <code>Registry</code><ul>
 <li>Load Assets into memory<ul>
-<li>Recursively load <code>/src/assets/**/*.png</code> (<em>not</em> <code>.mp3</code> or <code>.wav</code>!). Pydantic Models (DTOs) are used during this phase to read <code>main.yaml</code> files and ensure strict schema validation. </li>
-<li>Create a map using the key-values <code>&lt;registry-key&gt;: &lt;frame&gt;</code>, where <code>&lt;registry-key&gt;</code> is calculated according to the Frame schema.</li>
+<li>Recursively load <code>/src/assets/**/*.png</code>, <code>/src/assets/**/*.tff</code><ul>
+<li>For image Assets, create a map using the key-values <code>&lt;registry-key&gt;: &lt;frame&gt;</code>, where <code>&lt;registry-key&gt;</code> is calculated according to the Frame schema.</li>
+<li>For font Assets, create a map using the key-value <code>&lt;registry-key&gt;: &lt;font&gt;</code>, where <code>&lt;registry-key&gt;</code> is the font name.</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -1136,11 +1141,19 @@
 <h3 id="sdl">SDL</h3>
 <p>The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate the overhead of crossing the Python-to-C boundary, the rendering pipeline does not pass heavy Python objects (like <code>SpriteState</code> or <code>Dimensions</code>) to the renderer. Instead, it extracts raw integers on the Python side and unpacks them cleanly onto the C-stack.</p>
 <ul>
-<li><strong>Context Initialization (<code>init</code>):</strong> Sets up a SDL environment. If <code>headless</code>, a SDL software rendering context (<code>_renderer</code>) is bound directly to a master memory surface (<code>SDL_Surface</code>), completely bypassing window creation.</li>
-<li><strong>Asset Allocation (<code>load</code>):</strong> Loads physical image assets from disk directly into system memory, returning a safe, reference-counted Python wrapper (<code>TexturePtr</code>).</li>
+<li><strong>Context Initialization (<code>init</code>):</strong> Sets up the SDL environment, including video, images, and typography (<code>SDL2_ttf</code>). If <code>headless</code>, a SDL software rendering context (<code>_renderer</code>) is bound directly to a master memory surface (<code>SDL_Surface</code>), completely bypassing window creation.</li>
+<li><strong>Asset &amp; Font Allocation (<code>load</code>, <code>_load_font</code>):</strong> Loads physical image (<code>.png</code>) and font (<code>.ttf</code>) assets from disk directly into system memory, returning safe, reference-counted Cython wrappers (<code>TexturePtr</code> and <code>TTFFont</code>). To prevent styling overhead in the inner loop, fonts are pre-styled (bold, italics, RGBA color, margins) natively via SDL during ingestion using the YAML configuration properties.</li>
+<li><strong>Typography (<code>measure</code>, <code>write</code>):</strong> The <code>measure</code> function queries the exact pixel dimensions of a string without allocating a rendering surface. The <code>write</code> function calculates wrapping bounds and alignment, rendering UTF-8 characters as a blended surface that is permanently stamped (baked) directly onto a target <code>TexturePtr</code>. This zero-allocation technique ensures typography does not generate memory garbage during the main game loop.</li>
 <li><strong>Background Compilation (<code>canvas</code> &amp; <code>construct</code>):</strong> A blank texture (<code>SDL_TEXTUREACCESS_TARGET</code>) is created in memory to match the full size of the Board. Python passes a single list of flattened integer tuples representing the source/destination coordinates and grid multipliers. Cython unpacks these primitives and executes thousands of <code>SDL_RenderCopy</code> calls natively via the C-level software rasterizer. This caches a unified map texture, eliminating the need to instantiate and re-render thousands of background tiles every frame.</li>
 <li><strong>Frame Rendering (<code>render</code>):</strong> During the main game loop, <code>Screen.draw()</code> performs lightweight integer-based AABB camera culling natively in Python. This intentionally avoids paying the micro-transaction overhead of calling a Cython function repeatedly inside a massive Python loop. The visible assets are flattened into primitive integer tuples and passed across the C-boundary in a single list. <code>render()</code> clears the canvas buffer, copies the cropped background texture, stamps the active primitives, and finalizes the buffer in memory (<code>SDL_RenderPresent</code>), ready for extraction to disk.</li>
 </ul>
+<p><strong>Memory Management</strong></p>
+<p>The engine uses Cython extension types (<code>cdef class</code>) to bridge Python's garbage collector with SDL's manual memory management.</p>
+<ul>
+<li><strong><code>TexturePtr</code></strong>: Wraps a raw <code>SDL_Texture*</code> pointer alongside its integer dimensions (<code>w</code>, <code>l</code>).</li>
+<li><strong><code>TTFFont</code></strong>: Wraps a raw <code>TTF_Font*</code> pointer alongside its pre-configured styling metadata (<code>color</code>, <code>margins</code>, <code>align_str</code>).</li>
+</ul>
+<p>Both classes implement the Cython <code>__dealloc__</code> method. When the Python interpreter garbage-collects these objects out of scope, they automatically invoke <code>SDL_DestroyTexture</code> and <code>TTF_CloseFont</code>. This architecture guarantees safe C-level memory cleanup and prevents VRAM leaks without requiring explicit teardown commands in the Python application layer.</p>
 
 
 

@@ -644,6 +644,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#fonts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fonts
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1452,6 +1463,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#fonts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fonts
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2251,8 +2273,27 @@
 <p>Equipment is a group of Asset Instances within the Category of Sheets (known as the Equipment Instance Group). They are closely tied to Sprites Animations. Equipment Assets are rendered on top of a Sprite when those pieces of Equipment are active in the Sprite's inventory. Because of this relationship between the Assets,  i.e. Equipment rendering is dependent on Sprite state, Equipment does not possess its own state, frame or animation implementation. Equipment only has properties.</p>
 <p>Equipment is covered in more detail in the <a href="../02-sprites/#equipment">Sprites documentation</a>.</p>
 <h2 id="widgets">Widgets</h2>
-<p>Widgets are used to constructs Menus. They are not a part of the core gameplay loopjku and have special Mechanics for their interaction. </p>
+<p>Widgets are used to constructs Menus. They are not a part of the core gameplay loop and have special Mechanics for their interaction. </p>
 <p>Widgets are covered in their own section, <a href="../06-widgets/">Widgets</a>.</p>
+<h2 id="fonts">Fonts</h2>
+<p>Fonts are stateless Assets initialized at <a href="../09-architecture/#initialization">runtime</a>, i.e. they are not deployed onto the Board; instead Fonts are utilized by the <a href="../00-overview/#screen">Screen</a> to render text whenever the game loop calls for text. </p>
+<p>A Font is a wrapper <code>.ttf</code> file and a data structure used to configure the Font styling. Each styled Font is stored in the <a href="../00-overview/#registry">Registy</a> using its file name. The <a href="../00-overview/#screen">Screen</a>retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.</p>
+<p>In other words, a Font Asset encapsulates both the script and the styling applied to the script. </p>
+<p>See <a href="../09-architecture/#sdl">SDL Architecture documentation</a> for more information on Fonts.</p>
+<p><strong>Properties: FontProperties</strong></p>
+<ul>
+<li><code>alignment: str</code></li>
+<li><code>bold: bool</code></li>
+<li><code>italics: bool</code></li>
+<li><code>margins: int</code></li>
+<li><code>color:</code><ul>
+<li><code>r: int</code></li>
+<li><code>g: int</code></li>
+<li><code>b: int</code></li>
+<li><code>a: float</code></li>
+</ul>
+</li>
+</ul>
 
 
 
