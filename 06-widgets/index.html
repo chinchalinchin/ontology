@@ -1232,9 +1232,9 @@
 <p>Widgets are components of Menus. Or put another way, Menus are assembled from schemas of Widgets. Like most Assets, Widgets have properties that configure their static attributes and state that describes their dynamic attributes. However, their state is not updated in concert with the game loop. Instead, Menus and Widgets are managed through the flow of Events.</p>
 <p><strong>Panes, Controls &amp; Decals</strong></p>
 <p>The overarching division of Widgets resides in the functional difference between Panes, Controls &amp; Decals. </p>
-<p>Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen size in proportionate ways. </p>
-<p>Controls bind to game state and are <em>traversed</em>. Controls are organized in Panes.</p>
-<p>Decals are painted onto Controls.</p>
+<p>Panes are displays; They have Layouts and ScreenPosition, to provide a schema for organizing child Widgets across varying screen sizes in proportionate ways. </p>
+<p>Controls bind to game state. They are either <em>active</em> or <em>disabled</em>. When active, they may be <em>traversed</em> and <em>selected</em>; When disabled, they may passively receive updates to their state to change their display, but they cannot be traversed. Controls are the endpoints in the Menu tree, organized in Panes. Controls receive focus. </p>
+<p>Decals are painted onto Controls. They function like embedded icons.</p>
 <h3 id="events">Events</h3>
 <p>To illustrate Events, consider the following example. A Player may enter into the <code>barter</code> <a href="../04-intentions/">Intention</a> with another Sprite. This causes the gameplay loop to emit an Event containing the Menu key <code>trade</code> along with the Event data, i.e. the Sprite States. When an Event is detected by the gameplay, it causes the Board to pause the game loop and pass the Event to be processed to the Bus. The Bus in turn uses the Event data to construct and display the Menu referenced by the Event's Menu key. </p>
 <p>When a Menu is instantiated, its Widgets acquire state. This state is populated through transformations applied to the Menu arguments (in most cases, Sprite state). </p>
@@ -1377,22 +1377,34 @@
 <li><code>scroll(): current = content[pageindex*pagesize : max(pageindex*(pagesize+1), len(content))]</code></li>
 </ul>
 <h3 id="control-meters">Control: Meters</h3>
-<p>Meters are "continuous" indicators. They require a <code>unit</code> to calibrate their reading and then express a <code>reading</code> in terms of the <code>unit</code>; All readings are expressed relative to the <code>unit</code>, e.g. the ratio of the current value of the Player's health to maximum value of the Player's health is expressed as the proportion of a Meter that is filled.</p>
 <p><strong>Taxonomy</strong></p>
 <ul>
 <li><code>category: widget</code></li>
 <li><code>instance: meter</code></li>
 </ul>
+<p>Meters are "continuous" indicators. They require a <code>unit</code> to calibrate their reading and then express a <code>reading</code> in terms of the <code>unit</code>; All readings are expressed relative to the <code>unit</code>, e.g. the ratio of the current value of the Player's health to maximum value of the Player's health is expressed as the proportion of a Meter that is filled.</p>
+<p>A Meter Asset has two frames. The first frame is an Empty. The second frame is Filled at 100% (i.e., <span class="arithmatex">\(\frac{reading}{unit}=1\)</span>). Each frame is <code>dimensions.w</code> wide and <code>dimensions.l</code> long. </p>
+<p>During Asset initialization, the second frame of the Meter is divided into increments determined by <code>app.config.settings.METER_RESOLUTION</code>. The discrete steps of increments implied by the resolution are then used to index the entire Meter "space" in the <a href="../00-overview/#registry">Registry</a>. For example, if <code>app.config.settings.METER_RESOLUTION=0.25</code>, then the following frames will be index,</p>
+<ul>
+<li><code>&lt;asset&gt;-0</code>: Empty frame.</li>
+<li><code>&lt;asset&gt;-25</code>: Empty frame superimposed by 25% of Filled frame.</li>
+<li><code>&lt;asset&gt;-50</code>: Empty frame superimposed by 50% of Filled frame.</li>
+<li><code>&lt;asset&gt;-75</code>: Empty frame superimposed by 75% of Filled frame.</li>
+<li><code>&lt;asset&gt;-100</code>: Empty frame superimposed by 100% of Filled frame.</li>
+</ul>
+<p>When the Asset key for Meters is retrieved by the <a href="../00-overview/#screen">Screen</a>, the current ratio of <code>reading</code> and <code>unit</code> is rounded to the nearest resolution.</p>
 <p><strong>Animation: MeterAnimation</strong></p>
-<p>TODO: calculate based on <code>reading / unit</code></p>
+<ul>
+<li><code>animation.frame = round(state.reading/state.unit, settings.METER_RESOLUTION)*100</code></li>
+</ul>
 <p><strong>State: MeterState</strong></p>
 <ul>
-<li><code>unit: int</code></li>
 <li><code>reading: int</code></li>
+<li><code>unit: int</code></li>
 </ul>
-<p><strong>Frame: WidgetFrame</strong></p>
+<p><strong>Frame: MeterFrame</strong></p>
 <ul>
-<li><code>key(asset, state): returns &lt;asset&gt;-&lt;state.status&gt;</code></li>
+<li><code>key(asset, state): returns &lt;asset&gt;-&lt;state.animation.frame&gt;</code></li>
 <li><code>index(self, asset, properties, recipe): returns TODO</code> </li>
 </ul>
 <h3 id="decal-language">Decal: Language</h3>
