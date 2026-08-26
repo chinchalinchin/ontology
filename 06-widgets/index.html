@@ -536,10 +536,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#decal-language" class="md-nav__link">
+  <a href="#decal-icons" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Decal: Language
+        Decal: Icons
       
     </span>
   </a>
@@ -1086,10 +1086,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#decal-language" class="md-nav__link">
+  <a href="#decal-icons" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Decal: Language
+        Decal: Icons
       
     </span>
   </a>
@@ -1268,7 +1268,7 @@
 <p><strong>Properties: WidgetProperties</strong></p>
 <ul>
 <li><code>dimensions: Dimension</code>: Dimensions of a single frame.</li>
-<li><code>frames: Optional[List[str]]</code>: List of frame keys. Used for indexing Language Assets.</li>
+<li><code>frames: Optional[List[str]]</code>: List of frame keys. Used for indexing Icon Widget Assets.</li>
 </ul>
 <h3 id="root-panes">Root: Panes</h3>
 <p>All Menus must have atleast one Pane. Panes are the main Widgets of a Menu around which all child Widgets are laid out. They are the only Widget which can have a ScreenPosition, but not all Panes have ScreenPosition. Only the <code>root</code> Pane has ScreenPosition. ScreenPosition for a root Pane is specified in the <a href="#menus">Menu Schema</a>.</p>
@@ -1333,14 +1333,14 @@
 <li>disabled: Button is intraversible.</li>
 </ul>
 <p>It assumed Button Asset files are arranged in horizontal rows ordered by their status in the sequence: <code>idle, active, selected, disabled</code>, where each frame is <code>properties.dimensions.w</code> wide.</p>
-<p>A Button may have <code>symbols</code>. Each element of the <code>symbols</code>  list is a Language Widget. Each Language Asset frame is concatenated horizontally across the Button frame.</p>
+<p>A Button may have <code>icons</code>. Each element of the <code>icon</code>  list is an Icon Widget. Each Icon Asset frame is concatenated horizontally across the Button frame.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The Button Asset must have large enough dimensions to accomodate the Language Asset embeddings, i.e. the sum of the Language widths must not exceed the width of the Button.</p>
+<p>The Button Asset must have large enough dimensions to accomodate the Icon Asset embeddings, i.e. the sum of the Icon widths must not exceed the width of the Button.</p>
 </div>
 <p><strong>State: TraversalState</strong></p>
 <ul>
-<li><code>symbols: Optional[List[Language]]</code></li>
+<li><code>icons: Optional[List[Icon]]</code></li>
 <li><code>status: Status</code></li>
 </ul>
 <p><strong>Animation: TraversalAnimation</strong></p>
@@ -1414,14 +1414,18 @@
 <li><code>keys(id, None): returns [ id ] "</code></li>
 <li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
-<h3 id="decal-language">Decal: Language</h3>
+<h3 id="decal-icons">Decal: Icons</h3>
 <p><strong>Taxonomy</strong></p>
 <ul>
 <li><code>category: widgets</code></li>
-<li><code>instance: language</code></li>
+<li><code>instance: icons</code></li>
 </ul>
-<p>Language serves the purpose of labelling within the Widget family. Each Language sheet can be thought of as a catalogue of icons. The frame keys for each icon in a Language sheet are defined by the <code>properties.frames</code> field.</p>
+<p>Icons serves the purpose of labelling within the Widget family. Each Icon sheet can be thought of as a dictionary of frames, indexed by their frame keys. The frame keys for each image in a Icon sheet are defined by the <code>properties.frames</code> field; The order of frames in this attribute <em>must</em> match the order of horizontal frames in the actual Asset file. </p>
 <p>TODO</p>
+<p><strong>State: IconState</strong></p>
+<ul>
+<li><code>icon: str</code>: Frame key (from <code>properties.frames</code>) determining which frame from Icon sheet is displayed. </li>
+</ul>
 <p><strong>Animation: ?</strong></p>
 <p>TODO</p>
 <p><strong>Frame: IndexedFrame</strong></p>
