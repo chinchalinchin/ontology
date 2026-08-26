@@ -27,7 +27,7 @@ A Menu is **not** an Asset. It is a distinct data structure—a logical containe
 Since Menus can overlap (e.g., a "Confirm Purchase" modal popping up *over* the "Trade" menu, or the permanent HUD underneath the "Pause" menu), the Board should maintain a **Menu Stack**.
 
 ```python
-# app/models/menu.py
+# app/models/menus.py
 @dataclass
 class MenuState:
     focus: str  # The ID of the currently focused widget
@@ -111,7 +111,7 @@ With the controllers handling the semantic meaning of button presses, `MenuMecha
 2. **Get Top Menu:** `active_menu = board.menus[-1]`
 3. **Poll Input:**
     * If `UP/DOWN/LEFT/RIGHT`: Look at `active_menu.state.focus`. Look up the key in `active_menu.state.graph`. If a neighbor exists, change `focus` and update the `TraversalAnimation` status of the respective Button Assets.
-    * If `SELECT`: Call `active_menu.controller.on_select(active_menu.state.focus, active_menu, board)`.
+    * If `SELECT`: Call `active_menu.controller.select(active_menu.state.focus, active_menu, board)`.
     * If `CANCEL`: Pop the menu off the stack. (Unpause the board if the stack is now empty).
 4. **Tick:** Call `active_menu.controller.on_update()` so continuous menus (like the HUD) can update their meters.
 
@@ -141,8 +141,10 @@ With the controllers handling the semantic meaning of button presses, `MenuMecha
 **Task 1. Data Models & Application Hooks**
 
 * [ ] **Define Widget Properties:** Implement `WidgetProperties` in `app.models.properties`.
-* [ ] **Define Menu State:** Implement `TraversalState` (managing `status: Enum`), and `MenuState` (managing `focus: str`, `graph: Dict[str, Dict[str, str]]`, and `widgets: List[Asset]`) in `app.models.state`.
+* [ ] **Define WidgetState State:** Implement `TraversalState` ,  `MeterState`, etc. in `app.models.state`. 
+* [ ] **Define Controller States**: Implement `Menu` and `MenuState` dataclasses in `app.models.menus` (holding `focus`, `graph`, `context`, `widgets`, and `controller`).
 * [ ] **Extend Factory Hydration:** Update `Factory` schemas to parse the new models. Configure `Loader` to ingest `assets/widgets/main.yaml` and `data/menus/main.yaml`.
+* [ ] **Add Menu Stack** Update `Board` to include `menus: List[Menu]`
 
 **Task 2. Frame & Animation Implementation**
 
@@ -154,6 +156,14 @@ With the controllers handling the semantic meaning of button presses, `MenuMecha
 * [ ] **Fix Engine Deadlock:** Update `Engine.start()` to evaluate `self.board.paused` *per mechanic*, not as a global loop bypass. Add `runs_while_paused` flag to `Mechanic` interface.
 * [ ] **Implement Event Queue:** Add an `Event` data class and `bus: collections.deque` to `Board`.
 * [ ] **Trigger Events:** Update `Intentions` (like `barter`, `build`) to push `MenuEvent` to the queue.
+* [ ] Implement `MenuEvent(menu_id, context_args)`.
+* [ ] When `MenuMechanics` drains a `MenuEvent`, it passes `menu_id` and `context_args` to `Factory.menu()`.
+* [ ] `Factory.menu()` resolves bindings, runs the `LayoutEngine`, instantiates the mapped `MenuController`, and pushes the resulting `Menu` onto `board.menus`.
+* [ ] Implement `MenuEvent(menu_id, context_args)`.
+* [ ] When `MenuMechanics` drains a `MenuEvent`, it passes `menu_id` and `context_args` to `Factory.menu()`.
+* [ ] `Factory.menu()` resolves bindings, runs the `LayoutEngine`, instantiates the mapped `MenuController`, and pushes the resulting `Menu` onto `board.menus`.
+
+
 
 **Task 4. The Menu Factory & Data Binding**
 
@@ -168,57 +178,25 @@ With the controllers handling the semantic meaning of button presses, `MenuMecha
 * [ ] **Generate Traversal Graph:** During layout generation, build an adjacency dictionary linking traversable `Button` widgets based on their positional matrix.
 * [ ] **Return Tuple:** Layout Engine returns `(List[Asset], TraversalGraph)`. Factory injects this into the `MenuState`.
 
-**Task 6. Mechanics & Input Handling**
 
-* [ ] **Device Context Switching:** Update `Device` mappings to support a `MENU` context, translating raw SDL inputs into UI commands (Up, Down, Left, Right, Select, Cancel).
-* [ ] **Implement MenuMechanics:** Drain the `Board.bus`. If a `MenuEvent` exists, set `board.paused = True`, instantiate the Menu via `Factory`, and hold it in `Board.active_menu`.
-* [ ] **Focus Resolution:** In `MenuMechanics.update()`, apply directional input against the current `MenuState.graph` to update `MenuState.focus`. Emit `TerminalEvent` to unpause the board when the user exits.
-
-**Task 7. HUD / Screen Rendering Pipeline**
-
-* [ ] **Fix Camera Culling:** Update `Screen.draw()` to identify UI Assets.
-* [ ] **Absolute UI Rendering:** Bypass the `pov` camera subtraction and visibility culling for UI Assets, appending them to the Cython array with raw screen coordinates at the highest Z-index.
-
-
-
-
----
-
-
-
-**Task 1. Data Models & The UI Stack**
-
-* [ ] Implement `MenuState` and `Menu` dataclasses in `app.models.ui` (holding `focus`, `graph`, `context`, `widgets`, and `controller`).
-* [ ] Update `Board` to include `menus: List[Menu]` (the UI Stack).
-
-**Task 2. Menu Controllers (Strategy Pattern)**
+**Task 6. Menu Controllers (Strategy Pattern)**
 
 * [ ] Define `MenuController` abstract base class with `on_open`, `on_select`, `on_update`, and `on_close`.
 * [ ] Implement `app.game.menus.controllers.inventory.InventoryController`.
 * [ ] Implement `app.game.menus.controllers.main.MainMenuController`.
 * [ ] Map `Menu` IDs to their respective controllers in the `Factory`.
 
-**Task 3. The Layout Engine & Traversal Graph**
 
-* [ ] Implement `app.game.menus.layout`.
-* [ ] Calculate spatial anchors based on `ScreenPosition`, alignments, and gaps.
-* [ ] **Graph Generation:** During layout calculation, generate the `TraversalGraph` (adjacency list) mapping interactive `Button` IDs to their spatial neighbors.
-* [ ] Have the Layout Engine return `(List[Asset], TraversalGraph)` to populate the `Menu` container.
+**Task 7. Mechanics & Input Handling**
 
-**Task 4. Event Bus & Factory Instantiation**
+* [ ] **Device Context Switching:** Update `Device` mappings to support a `MENU` context, translating raw SDL inputs into UI commands (Up, Down, Left, Right, Select, Cancel).
+* [ ] **Implement MenuMechanics:** Drain the `Board.bus`. If a `MenuEvent` exists, set `board.paused = True`, instantiate the Menu via `Factory`, and hold it in `Board.active_menu`.
+* [ ] **Focus Resolution:** In `MenuMechanics.update()`, apply directional input against the current `MenuState.graph` to update `MenuState.focus`. Emit `TerminalEvent` to unpause the board when the user exits.
+    * [ ] If the stack has a menu, intercept `Device` polling.
+    * [ ] Route directional inputs to update `MenuState.focus` via the `TraversalGraph`.
+    * [ ] Route `SELECT` input to `active_menu.controller.select()`.
 
-* [ ] Implement `MenuEvent(menu_id, context_args)`.
-* [ ] When `MenuMechanics` drains a `MenuEvent`, it passes `menu_id` and `context_args` to `Factory.menu()`.
-* [ ] `Factory.menu()` resolves bindings, runs the `LayoutEngine`, instantiates the mapped `MenuController`, and pushes the resulting `Menu` onto `board.menus`.
+**Task 8. HUD / Screen Rendering Pipeline**
 
-**Task 5. MenuMechanics Routing**
-
-* [ ] Implement `MenuMechanics.update()`.
-* [ ] If the stack has a menu, intercept `Device` polling.
-* [ ] Route directional inputs to update `MenuState.focus` via the `TraversalGraph`.
-* [ ] Route `SELECT` input to `active_menu.controller.on_select()`.
-
-**Task 6. HUD / Absolute Rendering**
-
-* [ ] Update `Screen.draw()` to iterate over `board.menus`.
-* [ ] Extract `menu.widgets` and append them to the Cython render payload using absolute coordinates, completely bypassing the camera `pov` culling logic.
+* [ ] **Fix Camera Culling:** Update `Screen.draw()` to identify UI Assets and to iterate over `board.menus`
+* [ ] **Absolute UI Rendering:** Bypass the `pov` camera subtraction and visibility culling for UI Assets, appending them to the Cython array with raw screen coordinates at the highest Z-index.
