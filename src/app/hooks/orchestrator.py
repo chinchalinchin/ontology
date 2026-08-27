@@ -228,24 +228,26 @@ class Orchestrator:
         } 
 
         logger.info("Initializing Mechanics...")
-        order = getattr(self.configurations.mechanics, 'order', None)
-        if not order:
-            logger.warning("No Mechanics configured. Defaulting to basic set...")
-            order = [
-                Mechanics.PLAYER,
-                Mechanics.MOTION,
-                Mechanics.ANIMATION,
-                Mechanics.REMOVE
-            ]
-            
-        self.mechanics = [Factory.mechanics(m) for m in order]
+
+        core_cfg = getattr(self.configurations.mechanics, 'core', [
+            Mechanics.MENU, 
+            Mechanics.ANIMATION, 
+            Mechanics.REMOVE
+        ])
+        world_cfg = getattr(self.configurations.mechanics, 'world', [
+            Mechanics.PLAYER, 
+            Mechanics.MOTION
+        ])
         
-        return self.board, self.registry, self.screens, self.mechanics
+        self.core = [Factory.mechanics(m) for m in core_cfg]
+        self.world = [Factory.mechanics(m) for m in world_cfg]
+
+        return self.board, self.registry, self.screens, self.core, self.world
 
     def ignite(self, screensize: Dimensions, device: Devices) -> Engine:
         """
         Entry point to fire up the dependency-injected execution sequence.
         """
         self.init(screensize, device, headless=False)
-        self.engine = Engine(self.board, self.screens, self.mechanics)
+        self.engine = Engine(self.board, self.screens, self.core, self.world)
         return self.engine

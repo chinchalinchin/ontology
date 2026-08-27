@@ -11,10 +11,11 @@ from typing import List
 # Application Libraries
 from app.assets.base import Asset
 from app.config.enums import AssetInstances, AssetCategories
+from app.game.menus.core import Menu
 
 # Cython Libraries
 from libs.core.models import Position, Dimensions
-from libs.graphics.render import canvas, construct, render, save
+from libs.graphics.render import canvas, construct, render, save, superimpose
 from libs.graphics.registry import Registry, TexturePtr
 
 logger = logging.getLogger(__name__)
@@ -173,6 +174,35 @@ class Screen:
             self.screensize.w, 
             self.screensize.l
         )
+
+    def interface(self, menus: List[Menu], overlays: List[Menu]) -> None:
+        # TODO
+        # active_widgets = self._flatten_ui(menus, overlays)
+        active_widgets = {}
+        primitives = []
+        
+        for widget in active_widgets:
+            frame_keys = widget.frame.keys(widget.id, widget.state)
+            
+            for key in frame_keys:
+                if key == "__DYNAMIC__":
+                    # Bypass Registry: Pull TexturePtr directly from widget state
+                    tex = widget.state.canvas
+                    if tex is not None:
+                        # Append primitive tuple for Cython
+                        primitives.append((
+                            tex, 0, 0, tex.w, tex.l, 
+                            widget.state.position.x, widget.state.position.y, 
+                            widget.dimensions.w, widget.dimensions.l
+                        ))
+                else:
+                    # Standard Registry lookup for static UI elements (like Borders or Icons)
+                    tex_data = self.registry.image(key)
+                    if tex_data:
+                        primitives.append(...) 
+
+        # Pass the flat primitives across the Cython boundary
+        superimpose(primitives)
 
     def export_background(self, out_path: str) -> None:
         """

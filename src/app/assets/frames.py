@@ -34,7 +34,19 @@ class NoFrame(Frame):
         """
         """
         return {id: (0, 0, 0, 0)}
+
+class DynamicFrame(Frame):
+    """
+    Frame strategy for dynamically generated canvases (like Text) that bypass the static Registry.
+    """
+    def keys(self, id: str, state: AssetState) -> List[str]:
+        # Return a sentinel key so the renderer knows to intercept it
+        return ["__DYNAMIC__"]
         
+    def index(self, id: str, properties: dict) -> dict:
+        # Dynamic frames are not indexed in the Registry at boot
+        return {}
+    
 class SingleFrame(Frame):
     """
     ## SingleFrame

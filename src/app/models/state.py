@@ -223,7 +223,9 @@ class DisplayState:
     pages: int
     pageindex: int
     pagesize: int
-
+    # Holds the Cython TexturePtr natively
+    canvas: Any = None
+    
 @dataclass(slots=True)
 class MeterState:
     reading: int

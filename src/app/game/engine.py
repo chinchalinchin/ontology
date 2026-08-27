@@ -25,16 +25,19 @@ class Engine:
 
     board: Board
     screens: List[Screen]
-    mechanics: List[Mechanic]
+    core: List[Mechanic]
+    world: List[Mechanic]
 
     def __init__(self, 
         board: Board, 
         screens: List[Screen], 
-        mechanics: List[Mechanic]
+        core: List[Mechanic],
+        world: List[Mechanic]
     ):
         self.board = board
         self.screens = screens
-        self.mechanics = mechanics
+        self.core = core
+        self.world = world
 
     @staticmethod
     def time() -> float:
@@ -64,23 +67,32 @@ class Engine:
             last_time = current_time
             accumulator += frame_time
             
-            if not self.board.paused:
-                # 1. Fixed-timestep Logic Updates
-                while accumulator >= delta:
-                    for this in self.mechanics:
-                        this.update(self.board, delta)
-                    accumulator -= delta
-                    telemetry_updates += 1
+            # 1. Fixed-timestep Logic Updates
+            while accumulator >= delta:
+                for mechanic in self.core:
+                    mechanic.update(self.board, delta)
 
-                player = self.board.player()
+                if not self.board.paused:
+                    for mechanic in self.world:
+                        mechanic.update(self.board, delta)
 
-                # 2. Rendering
-                self.screens[player.state.layer].draw(
-                    self.board.renderables(player.state.layer), 
-                    player.state.position,
-                    player.dimensions
-                )
-                telemetry_frames += 1
+                accumulator -= delta
+                telemetry_updates += 1
+
+            player = self.board.player()
+
+            # 2. Rendering
+            screen = self.screens[player.state.layer]
+            # TODO: screen.clear()
+            screen.draw(
+                self.board.renderables(player.state.layer), 
+                player.state.position,
+                player.dimensions
+            )
+            # TODO: screen.interface(self.board.menus, self.board.overlays)
+            # TODO: screen.present()
+
+            telemetry_frames += 1
 
             # 3. Hybrid Pacing (Sleep + Spin)
             work_time = self.time() - current_time
