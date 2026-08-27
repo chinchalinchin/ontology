@@ -15,7 +15,6 @@ class AssetCategories(str, Enum):
     CRAFTS          = "crafts"
     CURSORS         = "cursors"
     EFFECTS         = "effects"
-    MENUS           = "menus"
     OBJECTS         = "objects"
     SHEETS          = "sheets"
     TILES           = "tiles"
@@ -177,6 +176,7 @@ class Mechanics(str, Enum):
     COMMERCE        = "commerce"
     INTERACTION     = "interaction"
     MOTION          = "motion"
+    MENU            = "menu"
     PLAYER          = "player"
     PROJECTILE      = "projectile"
     REMOVE          = "remove"
@@ -232,14 +232,27 @@ class Traversal(str, Enum):
     NORTH           = "north"
     SOUTH           = "south"
     EAST            = "east"
-    WEST            = "West"
+    WEST            = "west"
+
+class Interactions(str, Enum):
+    SELECT          = "select"
+
+class Menus(str, Enum):
+    DIALOGUE        = "dialogue"
+    INVENTORY       = "inventory"
+    MAIN            = "main"
+    PAUSE           = "pause"
+    TEXT            = "text"
+    TRADE           = "trade"
+    VIEW            = "view"
 
 class Selections(str, Enum):
-    UP              = "SCROLLUP"
-    DOWN            = "SCROLLDOWN"
+    SCROLLUP        = "scrollup"
+    SCROLLDOWN      = "scrolldown"
 
 class Selectors(str, Enum):
-    SCROLL          = "SCROLL"
+    SCROLL          = "scroll"
+    SLOT            = "slot"
 
 class Statuses(str, Enum):
     ACTIVE          = "active"

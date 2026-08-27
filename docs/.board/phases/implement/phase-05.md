@@ -112,7 +112,6 @@ screen.present()
         * `index()` must map `empty` to `(0, 0, w, l)` and calculate the `fill` crop by dynamically multiplying `w` by the resolution percentage: `(w, 0, int(w * (res/100)), l)`.
 * [ ] *Widget Animations:* Implement `TraversalAnimation` to handle status transitions based on `MenuState.focus`.
 
-
 **Task 3. The Menu Provider & Data Binding**
 
 * [~] *Implement Provider:* Create a service similar to `Decomposer` called the Provider in `app.game.provider`. It accepts a `MenuConfiguration` and an `EventContext`.
@@ -146,8 +145,10 @@ screen.present()
 
 **Task 7. Mechanics & Input Handling**
 
-* [ ] *Device Context Switching:* Update `Device` mappings to support a `MENU` context, translating raw SDL inputs into UI commands (Up, Down, Left, Right, Select, Cancel).
-    - [ ] Add nested attributes, `mappings.<device>.game` and `mappings.<device>.menu`, to the Devive mapping configuration in `data/config/mappings/main.yaml`.
+* [~] *Device Context Switching:* Update `Device` mappings to support a `MENU` context, translating raw SDL inputs into UI commands (Up, Down, Left, Right, Select, Cancel).
+    - [x] Add nested attributes, `mappings.<device>.world` and `mappings.<device>.menu`, to the Devive mapping configuration in `data/config/mappings/main.yaml`.
+    - [x] Update MappingConfiguration models in `app.models.config`.
+    - [ ] Updated the Device class to initialize and poll using the new mapping data structure.
 * [ ] *Implement MenuMechanics:* Drain the `Board.bus`.
     * If `bus` contains `MenuEvent`, push to `board.menus` and set `board.paused = True`.
     * If `bus` contains `UpdateEvent`, route to `board.overlays` controllers.

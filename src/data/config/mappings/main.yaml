@@ -1,18 +1,27 @@
 mappings:
   keyboard:
-    menus:
-      pause: 30         # SDL_SCANCODE_1
-      inventory: 31     # SDL_SCANCODE_2
-      build: 32         # SDL_SCANCODE_3
-      trade: 33         # SDL_SCANCODE_4
-    intentions:
-      interact: 8       # SDL_SCANCODE_E
-      sprint: 224       # SDL_SCANCODE_LCTRL
-      speak: 226        # SDL_SCANCODE_LALT
-      mine: 225         # SDL_SCANCODE_LSHIFT
-      attack: 44        # SDL_SCANCODE_SPACE
-    goals:
-      up: 26            # SDL_SCANCODE_W
-      down: 22          # SDL_SCANCODE_S
-      left: 4           # SDL_SCANCODE_A
-      right: 7          # SDL_SCANCODE_D
+    menu:
+      traversal:
+        north: 26         # SDL_SCANCODE_W
+        south: 22         # SDL_SCANCODE_S
+        west: 4           # SDL_SCANCODE_A
+        east: 7           # SDL_SCANCODE_D
+      interactions:
+        select: 44        # SDL_SCANCODE_SPACE
+    world:
+      menus:
+        pause: 30         # SDL_SCANCODE_1
+        inventory: 31     # SDL_SCANCODE_2
+        build: 32         # SDL_SCANCODE_3
+        trade: 33         # SDL_SCANCODE_4
+      intentions:
+        interact: 8       # SDL_SCANCODE_E
+        sprint: 224       # SDL_SCANCODE_LCTRL
+        speak: 226        # SDL_SCANCODE_LALT
+        mine: 225         # SDL_SCANCODE_LSHIFT
+        attack: 44        # SDL_SCANCODE_SPACE
+      goals:
+        up: 26            # SDL_SCANCODE_W
+        down: 22          # SDL_SCANCODE_S
+        left: 4           # SDL_SCANCODE_A
+        right: 7          # SDL_SCANCODE_D

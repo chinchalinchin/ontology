@@ -16,7 +16,10 @@ from app.config.enums import (
     PlayerGoals,
     Statuses,
     Layouts,
-    Alignments
+    Alignments,
+    Menus,
+    Interactions,
+    Traversal
 )
 from app.game.menus.core import Binding
 from app.models.state import (
@@ -105,14 +108,25 @@ class RecipeConfiguration(Configuration):
 # ----------------------------------------------------------------- MAPPING CONFIGURATION
 
 @dataclass(slots=True)
-class Mapping:
+class WorldMapping:
+    menus: Dict[Menus, int] = field(default_factory=dict)
     intentions: Dict[Intentions, int] = field(default_factory=dict)
     goals: Dict[PlayerGoals, int] = field(default_factory=dict)
 
 @dataclass(slots=True)
+class MenuMapping:
+    traversal: Dict[Traversal, int] = field(default_factory=dict)
+    interactions: Dict[Interactions, int] = field(default_factory=dict)
+
+@dataclass(slots=True)
+class DeviceMapping:
+    world: WorldMapping
+    menu: MenuMapping
+
+@dataclass(slots=True)
 class MappingConfiguration(Configuration):
-    keyboard: Mapping
-    controller: Mapping = None
+    keyboard: DeviceMapping
+    controller: DeviceMapping = None
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ ACTION CONFIGURATION
@@ -137,7 +151,8 @@ class IntentionConfiguration(Configuration):
 
 @dataclass(slots=True)
 class MechanicsConfiguration(Configuration):
-    order: List[str] = field(default_factory=list)
+    core: List[str] = field(default_factory=list)
+    world: List[str] = field(default_factory=list)
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------- COMPOSITION CONFIGURATION

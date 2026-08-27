@@ -15,18 +15,18 @@ menus:
             id: text
             name: text-display
             bind:
-              selector: SCROLL
+              selector: scroll
               state: context.content
           - instance: button
             id: arrow-up
             name: text-scroll-up
             bind: 
-              selection: SCROLLUP
+              selection: scrollup
           - instance: button
             id: arrow-down
             name: text-scroll-down
             bind: 
-              selection: SCROLLDOWN
+              selection: scrolldown
   dialogue:
     controller: scroll
     roots: 
@@ -48,18 +48,18 @@ menus:
             id: dialogue
             name: character-speech
             bind:
-              selector: SCROLL 
+              selector: scroll
               state: context.sprite.state.psyche.communication
           - instance: button
             id: arrow-up
             name: character-speech-scroll-up
             bind: 
-              selection: SCROLLUP
+              selection: scrollup
           - instance: button
             id: arrow-down
             name: character-speech-scroll-down
             bind: 
-              selection: SCROLLDOWN
+              selection: scrolldown
   view:
     controller: display
     roots: 
