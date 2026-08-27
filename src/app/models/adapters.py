@@ -4,7 +4,7 @@
 Pydantic adapters for instantiating Cython structs across the GIL during YAML parsing.
 """
 from typing import Annotated, Any, TYPE_CHECKING
-from pydantic import PlainValidator
+from pydantic import PlainValidator # type: ignore
 
 from libs.core.models import Position, Dimensions, Hitbox, Multiple, Velocity, ScreenPosition
 

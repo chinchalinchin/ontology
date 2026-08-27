@@ -147,14 +147,14 @@ Button Statuses are enumerated below,
 
 It assumed Button Asset files are arranged in horizontal rows ordered by their status in the sequence: `idle, active, selected, disabled`, where each frame is `properties.dimensions.w` wide.
 
-A Button may have `icons`. Each element of the `icon`  list is an Icon Widget. Each Icon Asset frame is concatenated horizontally across the Button frame.
+A Button may have `icons`. Each element of the `icon`  list is a frame key for an Icon Asset. Each Icon Asset frame is concatenated horizontally across the Button frame.
 
 !!! warning
     The Button Asset must have large enough dimensions to accomodate the Icon Asset embeddings, i.e. the sum of the Icon widths must not exceed the width of the Button.
 
 **State: TraversalState**
 
-* `icons: Optional[List[Icon]]`
+* `icons: Optional[List[str]]`
 * `status: Status`
 
 **Animation: TraversalAnimation**
@@ -206,18 +206,17 @@ When the Asset key for Meters is retrieved by the [Screen](./00-overview.md#scre
 
 ### Decal: Pages
 
-Pages render text or Icon Assets.
+Pages render text or Icon Assets. The amount of text or Icons a scroller Page is capable of rendering at once is calculated during Asset initialization. This is used to populate the `pages` and `pagesize` fields.
 
-If a Page is rendering text, it is a `scroller` (`typeof(content) == str`). The amount of text a scroller Page is capable of rendering at once is calculated during Asset initialization. This is used to populate the `pages` and `pagesize` fields.
+When `content: str`, the content will be text to render. When `content: List[str]`, the content will be frame keys for Icons.
 
 **State: DisplayState**
 
-- `content: Union[str, List[Icon]`
+- `content: Union[str, List[str]`
 - `current: str:`  = `content[0 : max(pagesize, len(content)]`
 - `pages`
 - `pageindex: int` = 0
 - `pagesize: int`
-- `scroller: bool`
 
 **Methods**
 
@@ -241,8 +240,6 @@ N/A
 * `instance: icons`
 
 Icons serves the purpose of labelling within the Widget family. Each Icon sheet can be thought of as a dictionary of frames, indexed by their frame keys. The frame keys for each image in a Icon sheet are defined by the `properties.frames` field; The order of frames in this attribute *must* match the order of horizontal frames in the actual Asset file. 
-
-TODO
 
 **State: IconState**
 

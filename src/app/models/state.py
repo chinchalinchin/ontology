@@ -1,5 +1,7 @@
 """
 # Ontology: app.models.state
+
+Python data models for typing Asset state attributes.
 """
 # Standard Libraries
 from typing import Dict, List, Optional, Union, Any
@@ -212,14 +214,20 @@ class PlayerState(AssetState):
 @dataclass(slots=True)
 class TraversalState:
     status: Statuses
+    icons: Optional[List[str]] = None
 
 @dataclass(slots=True)
 class DisplayState:
-    pass 
+    content: Union[str, List[str]]
+    current: str
+    pages: int
+    pageindex: int
+    pagesize: int
 
 @dataclass(slots=True)
-class GaugeState:
-    pass 
+class MeterState:
+    reading: int
+    unit: int
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- ROOT SCHEMAS

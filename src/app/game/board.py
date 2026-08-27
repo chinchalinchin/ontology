@@ -370,9 +370,6 @@ class Board:
         if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0:
             self._cached_weights[new_layer].append(asset)
 
-        if cat != AssetCategories.TILES:
-            self._cached_renderables[new_layer].append(asset)
-
 
     def add(self, additions: List[Asset]) -> None:
         """
@@ -397,7 +394,7 @@ class Board:
                 self._cached_renderables[layer].append(asset)
 
             if hasattr(asset.properties, 'mass'):
-                self._cached_weights[asset.layer].append(asset)
+                self._cached_weights[layer].append(asset)
 
 
     def remove(self, removals: List[Asset]) -> None:
