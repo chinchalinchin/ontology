@@ -83,7 +83,7 @@ To ensure the Pylance linter correctly resolves the compiled Cython libraries fr
 ```json
 {
   "python.analysis.extraPaths": [
-    "./src"
+    "./src/lib"
   ]
 }
 ```

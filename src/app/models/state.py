@@ -27,6 +27,7 @@ class NoState:
     pass
 
 # ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------------- CORE ASSET STATES
 
 @dataclass(slots=True)
 class AssetState:
@@ -42,63 +43,59 @@ class AnimationState:
     direction: str = Directions.DOWN
     frame: int = 0
 
-@dataclass(slots=True)
-class MenuState:
-    focus: str  # The ID of the currently focused widget
-    graph: Dict[str, Dict[str, str]]  # The traversal adjacency list
-    context: Dict[str, Any]  # The injected state (e.g., player, npc)
-
 # ---------------------------------------------------------------------------------------
+# ---------------------------------------------------------------- INSTANCE ASSET STATES
 
 @dataclass(slots=True)
 class MultiplierState(AssetState):
-    position: Optional[Position] = None
-    multiple: Optional[Multiple] = None 
+    position: Optional[Position] = None # type: ignore
+    multiple: Optional[Multiple] = None # type: ignore
 
 @dataclass(slots=True)
 class PositionalState(AssetState):
-    position: Optional[Position] = None
-    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0))
+    position: Optional[Position] = None # type: ignore
+    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
 
 @dataclass(slots=True)
 class PropertyState(AssetState):
     owner: Optional[str] = None
-    position: Optional[Position] = None
+    position: Optional[Position] = None # type: ignore
 
 @dataclass(slots=True)
 class MotorState(AssetState):
-    position: Optional[Position] = None
-    initial: Optional[Position] = None
+    position: Optional[Position] = None # type: ignore
+    initial: Optional[Position] = None # type: ignore
     direction: str = "down"
     speed: int = 10
-    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0))
+    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
 
 @dataclass(slots=True)
 class AnimatorState(AssetState):
-    position: Optional[Position] = None
+    position: Optional[Position] = None # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class ContainerState(AssetState):
     content: Optional[List[str]] = field(default_factory=list)
-    position: Optional[Position] = None
+    position: Optional[Position] = None # type: ignore
     switch: Optional[bool] = False
     animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class DoorState(AssetState):
-    position: Optional[Position] = None
-    out: Optional[Position] = None
+    position: Optional[Position] = None # type: ignore
+    out: Optional[Position] = None # type: ignore
     outlayer: Optional[str] = None
 
 @dataclass(slots=True)
 class SwitchState(AssetState):
     link: Optional[str] = None
-    position: Optional[Position] = None
+    position: Optional[Position] = None # type: ignore
     switch: Optional[bool] = False
     animation: AnimationState = field(default_factory=AnimationState)
 
 # ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------- SPRITE STATE FIELDS
 
 @dataclass(slots=True)
 class Character:
@@ -135,7 +132,7 @@ class Psyche:
 class Goal:
     name: str
     category: str
-    position: Position
+    position: Position # type: ignore
 
 @dataclass(slots=True)
 class Inventory:
@@ -181,31 +178,47 @@ class Mutators:
     parameters: Optional[MutatorParameters] = None
 
 # ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------- SPRITE STATES
 
 @dataclass(slots=True)
 class SpriteState(AssetState):
     intention: Optional[Intentions] = None
     goal: Optional[Goal] = None
-    position: Optional[Position] = None
+    position: Optional[Position] = None # type: ignore
     character: Optional[Character] = None
     inventory: Optional[Inventory] = None
     meters: Optional[Meters] = None
     mutators: Optional[Mutators] = None
     memory: Optional[Memory] = None
-    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0))
+    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class PlayerState(AssetState):
-    position: Optional[Position] = None
+    position: Optional[Position] = None # type: ignore
     character: Optional[Character] = None
     inventory: Optional[Inventory] = None
     meters: Optional[Meters] = None
     mutators: Mutators = field(default_factory=Mutators)   
     goal: Optional[Goal] = None
     intention: Optional[Intentions] = None
-    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0))
+    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
+
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------- WIDGET STATES
+
+@dataclass(slots=True)
+class TraversalState:
+    status
+
+@dataclass(slots=True)
+class DisplayState:
+    pass 
+
+@dataclass(slots=True)
+class GaugeState:
+    pass 
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- ROOT SCHEMAS
@@ -242,6 +255,10 @@ class SheetStateInstances:
     pixies: List[AnimatorState] = field(default_factory=list)
     sprites: List[SpriteState] = field(default_factory=list)
     players: List[PlayerState] = field(default_factory=list)
+
+@dataclass(slots=True)
+class WidgetStateInstances:
+    pass
 
 @dataclass(slots=True)
 class StateSchema:

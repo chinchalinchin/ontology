@@ -315,3 +315,7 @@ The [Board](./00-overview.md#board) contains a Device, which polls for user inpu
 **Keyboard**
 
 The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See [SDL documentation](https://wiki.libsdl.org/SDL2/SDL_Scancode) for more information.
+
+### Contexts
+
+The Device class implements a stateful context flag (`Context.WORLD` vs `Context.MENU`). Each Device mapping includes a `menu: Dict[MenuCommands, int]` mapping. When the Board Menus (`board.menus`) are populated, MenuMechanics toggles the device context, causing `poll()` to return Menu commands instead of [Intentions](./04-intentions.md).

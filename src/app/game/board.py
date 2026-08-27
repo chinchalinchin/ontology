@@ -36,17 +36,19 @@ class Board:
 
     Central database for the game Engine. Holds all Asset state and configuration, and provides queryable interfaces for Mechanics to retrieve pertinent game data.
     """
+    # ------- Public Fields
     # Flags
     loaded: bool
     paused: bool
-    # Public Fields
+    # Game Objects
     configurations: ConfigurationGroup
     equipment: EquipmentGroup
     cradle: Cradle
-    # Hidden Fields
+    menus: List[Menu]
+    overlays: List[Menu]
+    # ------- Private Fields
+    # Game Objects
     _assets: List[Asset]
-    _mechanics: List[Mechanic]
-    _menus: List[Menu]
     _device: Device
     # Caches
     _cached_categories: Dict[str, Dict[str, List[Asset]]]
@@ -178,17 +180,22 @@ class Board:
 
     # ------------------------------------------------ SETTERS 
 
-    def set_device(self, device: Device):
+    def set_device(self, device: Device) -> None:
         """
         Sets the Device on the board for polling.
         """
         self._device = device
 
 
-    def set_cradle(self, cradle: Cradle):
+    def set_cradle(self, cradle: Cradle) -> None:
         """
         """
         self.cradle = cradle
+
+    def set_overlays(self, overlays: List[Menu]) -> None:
+        """
+        """
+        self.overlays = overlays
 
     # ------------------------------------------------ GETTERS
 

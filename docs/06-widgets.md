@@ -206,13 +206,13 @@ When the Asset key for Meters is retrieved by the [Screen](./00-overview.md#scre
 
 ### Decal: Pages
 
-Pages render text or Language Assets.
+Pages render text or Icon Assets.
 
 If a Page is rendering text, it is a `scroller` (`typeof(content) == str`). The amount of text a scroller Page is capable of rendering at once is calculated during Asset initialization. This is used to populate the `pages` and `pagesize` fields.
 
-**State: PageState**
+**State: DisplayState**
 
-- `content: Union[str, List[Language]`
+- `content: Union[str, List[Icon]`
 - `current: str:`  = `content[0 : max(pagesize, len(content)]`
 - `pages`
 - `pageindex: int` = 0
@@ -221,7 +221,7 @@ If a Page is rendering text, it is a `scroller` (`typeof(content) == str`). The 
 
 **Methods**
 
-- `more(): return content[-len(current) : ] != current`
+- `more(): return pageindex < len(content)/pagesize`
 - `scroll(): current = content[pageindex*pagesize : max(pageindex*(pagesize+1), len(content))]`
 
 **Animation: None**
@@ -260,9 +260,23 @@ TODO
 
 * Location: `/src/data/menus/main.yaml`
 
-Menus are pre-defined arrangements of Widgets. Every Menu contains atleast one Pane. As a simple example, text Menu can be instantiated using the following schema,
+Menus are pre-defined arrangements of Widgets. Every Menu contains atleast one Pane. 
+
+**Fields**
+
+- `id: str`: Unique Menu Identifier 
+- `focus: str`: Widget that is currently being focused on for traversal.
+- `graph: Dict[str, Dict[str, str]]`: Traversal adjacent graph.
+- `context: Dict[str, Any]`: Injected state.
+- `widgets: List[Asset]`: List of Menu Assets.
+- `controller: MenuController`: MenuController object.
+
+**Example**
+
+The following example demonstrates how to schematize a simple text display Menu which allows the focus to scroll up and down the content by selecting one of the scroll Buttons,
 
 ```yaml
+menus:
   text:
     controller: scroll
     roots: 
@@ -293,32 +307,54 @@ Menus are pre-defined arrangements of Widgets. Every Menu contains atleast one P
               selection: SCROLLDOWN
 ```
 
-**MenuState**
+This example will be referenced throughout the section.
 
-- `focus: str`: Widget that is currently being focused on for traversal.
-- `graph: Dict[str, Dict[str, str]]`: Traversal adjacent graph.
-- `context: Dict[str, Any]`: Injected state.
+### Provider
+
+The Provider, similiar to the [Decomposer](./03-compositions.md#decomposer), is responsible for unpacking Menu configurations into flat lists of Assets for the Engine. However, unlike the Decomposer, the Provider must also generate a traversal graph, inject bindings into Widgets and pass the result to a Menu.
+
+To start, `ScreenPosition` is a *configuration-time* concept, not a *runtime* concept. When the `Provider` and `Layout` engine instantiate a Menu, they must calculate the absolute pixel values `(px * screensize.w, py * screensize.l)` and inject a standard `Position(x, y)` into the `WidgetState`. By flattening the UI tree and translating all percentages to absolute `Position`s, `Screen.draw()` can consume Widgets exactly like world Assets, satisfying the zero-allocation prior.
+
+TODO
 
 ### Controllers
 
-Every Menu has a Controller that handles Menu-specific logic. Widgets that are embedded into Menus have their states altered through action-reaction bindings which specify how traversal and selection propagates through the Menu. This logic is handled by the Controller.
+Every Menu has a Controller that handles Menu-specific logic. Widgets that are embedded into Menus have their states altered through action-reaction bindings which specify how a SelectionEvent propagates through the Menu. This logic is handled by the Controller.
 
-Every child Widget of a Pane in a Menu configuration may bind to a `selection`, `state` or `selector`.
+However, since Menus are unpacked by the Provider into Assets, otherwise indistinguishable from other Assets to the rendering engine, to faciliate these relationships, every child Widget of a Menu Pane may bind to a `selection`, `selector` or a `state`.
 
-The `selection` binding is a reference to an action to be consumed by Menu Controller when the `focus` selected a Widget. The `selector` binding is a reference to a reaction to be propagated by the Menu controller when an action is initiated. The `state` binding is a reference to the Event Context and may be updated in response to an action or reaction.
+**Bindings**
 
-In the provided `text` Menu example, the `text-scroll-up` and `text-scroll-down` Buttons are bounded to the `selection` actions `SCROLLUP` and `SCROLLDOWN`, respectively. Buttons are traversible, so when a Button is seleted, the `selection` binding ensures the Event propagates and is handled by the appropriate controller, in this case the `scroll` controller.  
+The `selection` binding is a reference to an action to be consumed by Menu Controller when the `focus` has selected a Widget. 
 
-In addition, the `text` Menu binds the `text-display` as the recipient of the `selection` actions, via `SCROLL`.
+The `selector` binding is a reference to a reaction to be propagated by the Menu controller when an action is initiated. 
+
+The `state` binding is a reference to the Event Context and may be updated in response to an action or reaction.
+
+In the provided `text` Menu example, the `text-scroll-up` and `text-scroll-down` Buttons are bound to the `selection` actions `SCROLLUP` and `SCROLLDOWN`, respectively. Buttons are traversible, so when a Button is selected, the `selection` binding ensures the Event propagates and is handled appropriately by the controller, in this case the `scroll` controller. The Controller implements an abstract `select()` method to delegate and route Events,
+
+```python
+class ScrollController(COntroller):
+
+    def select(self, widget_id: str, menu: Menu, board: Board):
+        selection = menu.widgets[widget_id].binding.get('selection', None)        
+        # do something with select
+```
+
+The implementation can then query the Menu Widget to find the appropriate `selector` and translate the Event into a Menu change.
+
+In addition, the example also shows the `text` Menu binding to the `text-display` as the recipient of the `selection` actions, via the `SCROLL` `selector`.
+
+Bindings are enumerated and summarized below,
 
 - `selections`:  Widget action binding.
     - `SCROLLUP`
     - `SCROLLDOWN`
     - `SELECT`
-- `state`: Reference to Event Context.
 - `selector`: Widget reaction binding
     - `SCROLL`
     - `SLOT`
+- `state`: Reference to Event Context.
 
 ### Layouts
 
@@ -357,9 +393,10 @@ To generate the Render List, when a Menu is triggered, a `Layout` class executes
 
 The [Board](./00-overview.md#board) maintains an `overlay` and `menus` field to separate the responsiblities of different Menus. 
 
-The HUD is always painted on top of all dynamic Assets; as such, it is stored in `overlays` and treated separately by the rendering loop.
+The HUD is always painted on top of all dynamic Assets; as such, it is stored in `overlays` and treated separately by the rendering loop. The `menus` field on the Board holds a mutable stack of Menus that are instantiated on the fly during the game loop. When a MenuEvent is emitted by game loop, it will cause the game to pause as a precondition for these Menus to be displayed. These differences are summarized below,
 
-The `menus` field on the Board holds a mutable stack of Menus that are instantiated on the fly during the game loop.
+* `board.menus: List[Menu]`: A LIFO stack for *Modal* interfaces (Inventory, Dialogue, Trade). When `len(board.menus) > 0`, world mechanics are paused, and `MenuMechanics` intercepts device polling for traversal.
+* `board.overlays: List[Menu]`: A flat list for *Non-blocking* interfaces (HUD, Floating Damage Numbers, Action Prompts). These do not pause the board and do not receive input focus. They passively observe `UpdateEvent` emissions from the Event Bus.
 
 ### Configurations
 

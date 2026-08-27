@@ -41,7 +41,7 @@ class AssetInstances(str, Enum):
     BUTTONS         = "buttons"
     PAGES           = "pages"
     METERS          = "meters"
-    LANGUAGE        = "language"
+    ICONS           = "icons"
     WEAPONS         = "weapons"
     ARMOR           = "armor"
     UTILITIES       = "utilities"
@@ -73,6 +73,7 @@ class AnimationRecipe(str, Enum):
 
 class StateRecipe(str, Enum):
     NONE            = "none"
+    # ASSET STATES
     SPRITE          = "sprite"
     SWITCH          = "switch"
     DOOR            = "door"
@@ -83,7 +84,10 @@ class StateRecipe(str, Enum):
     METRIC          = "metric"
     MULTIPLIER      = "multiplier"
     PLAYER          = "player"
-
+    # WIDGET STATES
+    TRAVERSAL       = "traversal"
+    GAUGE           = "gauge"
+    DISPLAY         = "display"
 # -------------------------------- SPRITE STATE ENUMERATIONS
 
 class Directions(str, Enum):
@@ -213,16 +217,9 @@ class InertAssets(str, Enum):
     
 # -------------------------------- WIDGET ENUMERATIONS
 
-class Controls(str, Enum):
-    button          = "button"
-    meter           = "meter"
-    page            = "page"
-
 class Layouts(str, Enum):
-    # Widget Layouts
     DOCK            = "dock"
     STACK           = "stack"
-    # Pane Layouts
     TAB             = "tab"
     NEST            = "nest"
 
@@ -237,7 +234,15 @@ class Traversal(str, Enum):
     EAST            = "east"
     WEST            = "West"
 
-class WidgetActionBindings(str, Enum):
-    SCROLLER        = "SCROLLER"
+class Selections(str, Enum):
     UP              = "SCROLLUP"
     DOWN            = "SCROLLDOWN"
+
+class Selectors(str, Enum):
+    SCROLL          = "SCROLL"
+
+class Statuses(str, Enum):
+    ACTIVE          = "active"
+    IDLE            = "idle"
+    SELECTED        = "selected"
+    DISABLED        = "disabled"
