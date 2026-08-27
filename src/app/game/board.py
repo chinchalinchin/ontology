@@ -15,7 +15,7 @@ from app.config.enums import (
     AssetCategories,
     AssetInstances
 )
-from app.game.cradle import Cradle
+from app.hooks.cradle import Cradle
 from app.game.devices import Device
 from app.game.menus.core import Menu
 from app.game.logic.mechanics import Mechanic

@@ -353,6 +353,14 @@ To generate the Render List, when a Menu is triggered, a `Layout` class executes
     * If `pane.layout == tab`: Alignments do not apply. Pane children are Panes. Each receives the same ScreenPosition. Algorithm recurses to find the coordinates of the grandchildren.    
 4. **Flatten**: Return a list of standard Asset objects. The engine now treats them exactly like Game Board assets, completely ignoring the UI hierarchy.
 
+### Overlays
+
+The [Board](./00-overview.md#board) maintains an `overlay` and `menus` field to separate the responsiblities of different Menus. 
+
+The HUD is always painted on top of all dynamic Assets; as such, it is stored in `overlays` and treated separately by the rendering loop.
+
+The `menus` field on the Board holds a mutable stack of Menus that are instantiated on the fly during the game loop.
+
 ### Configurations
 
 1. Dialogue: TODO
