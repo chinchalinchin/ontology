@@ -54,11 +54,15 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
     - `parameters: Dict[str, Dict[str, Union[int, double]]]`
 - `memory:` 
     - `goal: Goal`
-    - `communication: List[str]` 
+    - `lexicon: List[str]`: (Lexicon keys for Library Communication retrieval)
     - `prices: Dict[str, double]`
     - `relationships: Dict[str, str]`
     - `property: List[str]`
-- `goal:` 
+- `psyche`:
+    - `expression: str`
+    - `motivation: str`
+    - `persona: str`: (Person ley for Library Communication retrieval)
+- `goal:`
     - `name: str`
     - `category: Enum[sprite, loot, wealth, property, position]`
     - `position: Position`
@@ -138,11 +142,15 @@ Animations are tuples of (Action, Direction, Frame). Action and Direction were p
 
 The *Psyche* is an internal State data structure that governs a Sprite's ancillary Animation and Intention logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations and modulations of the Sprite state. The complete Psyche state for a Sprite is given by the tuple,
 
-    (Communcation, Expression, Motivation)
+    (Persona, Dialogue, Expression, Motivation)
 
-**Communication**
+**Persona**
 
-The Communication dimension of a Psyche can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the `speak` Intention.
+A Sprite persona is a data structure used to index Dialogue to a Sprite through the [Library](./08-plots.md#library). It can be thought of as the "personality" of the Sprite.
+
+**Dialgoue**
+
+The Dialogue dimension of a Sprite's Psyche can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the lexicon key that will be retrieved from the [Library](./08-plots.md#library) and rendered in a [Dialogue Menu](./06-widgets.md#menus) if the Player enters into the `speak` Intention. In addition, Sprites may enter into `speak` Intentions with other Sprites, but these events are not routed to [Menus](./06-widgets.md#menus). Instead, Sprite-to-Sprite Dialogue is used by the [RumorMechanics](./05-mechanics.md).
 
 **Expression**
 
@@ -174,21 +182,10 @@ Motivations are long-term state variables that are used to modulate the [Intenti
 *Memory* is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. 
 
 - `memory.goal`: Remember Goal. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.
-- `memory.communications`: List of saved dialogue.
+- `memory.rumors`: List of Lexicon keys the Sprite has heard through entering into the `speak` Intention.
 - `memory.prices`:
 - `memory.relationship`:
 - `memory.property`:
-
-**Communications**
-
-Under certain conditions based on the Sprite's Intention, the Sprite may emit a Communication through the `speak` Intention. For example, a Sprite in the `mock` Intention might receive a Communication key `insult`. This key gets stored at the *beginning* (0 index) of the `memory.communications` list. 
-
-When a Sprite with a non-empty `memory.communications` enters the `speak` Intention, the gameplay loop will then take the first entry out of this Sprites `memory.communications` list, delete it from this list and place it in the `psyche.communication` cell. 
-
-!!! important
-    The last entry in `memory.communications` is *never* deleted. The entry is termed *unforgettable*.
-
-When a Sprite with a non-null `psyche.communication` (re-)enters the `speak` Intention, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the `intention.communication` cell.
 
 **Prices**
 
@@ -199,11 +196,15 @@ When two Sprites enter the `speak` Intention within a certain radius of each oth
 1. It averages the intersection of Prices. For example, if one Sprite has a price of 1 for Loot A and another has a price of 5 for Loot A, then the new price of Loot A for both Sprites will be (1 + 5)/2 = 3. It performs this calculation for every such Loot Key the Sprites have in common.
 2. For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the `SpeechMechanic` will populate the Sprite's Prices.
 
+**Property**
+
+TODO
+
 **Relationships**
 
 TODO
 
-**Property**
+**Rumors**
 
 TODO
 

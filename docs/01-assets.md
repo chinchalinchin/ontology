@@ -399,6 +399,27 @@ Plates are Binary Objects whose state can be changed by intersection, e.g. when 
 * `position: Position`
 * `switch: bool`
 
+### Signs
+
+Signs are immutable, inanimate Objects whose `content` is transmitted into a [Text Menu](./06-widgets.md#menus) when a Player enters into the `interact` [Intention](./04-intentions.md).
+
+Signs utilize `persona` and `lexicon` keys to grab the appropriate content from the [Library](./08-plots.md#library)
+
+**Animation: None**
+
+N/A
+
+**Frame: SingleFrame**
+
+* `keys(id, animation): returns [ id ]`
+* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+
+**State: DialogueState**
+
+* `position: Position`
+* `persona: str`
+* `lexicon: str`
+
 ## Cursors
 
 * Property File: `/src/assets/cursors/main.yaml`

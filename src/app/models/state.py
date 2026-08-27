@@ -47,7 +47,7 @@ class AnimationState:
     frame: int = 0
 
 # ---------------------------------------------------------------------------------------
-# ---------------------------------------------------------------- INSTANCE ASSET STATES
+# --------------------------------------------------------------------- GAME ASSET STATES
 
 @dataclass(slots=True)
 class MultiplierState(AssetState):
@@ -63,6 +63,12 @@ class PositionalState(AssetState):
 class PropertyState(AssetState):
     owner: Optional[str] = None
     position: Optional[Position] = None # type: ignore
+
+@dataclass(slots=True)
+class DialogueState:
+    position: Optional[Position] = None # type: ignore
+    persona: str
+    lexicon: str
 
 @dataclass(slots=True)
 class MotorState(AssetState):
@@ -129,7 +135,8 @@ class Meters:
 class Psyche:
     motivation: str
     expression: str
-    communication: str
+    dialogue: str
+    persona: str
 
 @dataclass(slots=True)
 class Goal:
@@ -146,7 +153,7 @@ class Inventory:
 @dataclass(slots=True)
 class Memory:
     goal: Optional[Goal] = None
-    communications: List[str] = field(default_factory=list)
+    rumors: List[str] = field(default_factory=list)
     prices: Dict[str, float] = field(default_factory=dict)
     relationships: Dict[str, Relationships] = field(default_factory=dict)
     property: List[str] = field(default_factory=list)
@@ -225,7 +232,7 @@ class DisplayState:
     pagesize: int
     # Holds the Cython TexturePtr natively
     canvas: Any = None
-    
+
 @dataclass(slots=True)
 class MeterState:
     reading: int
