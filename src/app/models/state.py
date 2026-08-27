@@ -10,7 +10,8 @@ from app.config.enums import (
     Actions, 
     Directions, 
     Intentions, 
-    Relationships
+    Relationships,
+    Statuses
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
@@ -210,7 +211,7 @@ class PlayerState(AssetState):
 
 @dataclass(slots=True)
 class TraversalState:
-    status
+    status: Statuses
 
 @dataclass(slots=True)
 class DisplayState:

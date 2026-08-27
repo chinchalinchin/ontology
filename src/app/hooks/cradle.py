@@ -49,7 +49,7 @@ class Cradle:
     
     def spawn_expression(self, 
         id: str, 
-        position: Position, 
+        position: Position,  # type: ignore
         layer: str
     ):
         recipe = self.recipes.cursors.expressions
@@ -77,9 +77,9 @@ class Cradle:
 
     def spawn_projectile(self, 
         id: str, 
-        position: Position, 
+        position: Position,  # type: ignore
         layer: str, 
-        velocity: Velocity
+        velocity: Velocity # type: ignore
     ):
         recipe = self.recipes.cursors.projectiles
         properties = self.spawnables.projectiles.get(id)
@@ -116,7 +116,7 @@ class Cradle:
     def spawn_temporary(self, 
         id: str, 
         layer: str, 
-        position: Position
+        position: Position # type: ignore
     ):
         recipe = self.recipes.effects.temporary
         properties = self.spawnables.temporary.get(id)
@@ -143,7 +143,7 @@ class Cradle:
 
     def spawn_strut(self, 
         id: str, 
-        position: Position, 
+        position: Position,  # type: ignore
         layer: str, 
         owner: str
     ):
@@ -173,7 +173,7 @@ class Cradle:
 
     def spawn_composition(self, 
         id: str, 
-        position: Position, 
+        position: Position,  # type: ignore
         layer: str, 
         owner: str
     ) -> List[Asset]:

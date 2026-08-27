@@ -53,43 +53,43 @@ class FontProperties:
 
 @dataclass(slots=True)
 class CursorProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
 
 @dataclass(slots=True)
 class EffectProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
     count: int 
 
 @dataclass(slots=True)
 class ObjectProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
     mass: int = 0
     count: int = 1
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
 
 @dataclass(slots=True)
 class TileProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
     friction: float = 0.0
 
 @dataclass(slots=True)
 class CraftProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
     cost: List[Cost]
     mass: int = 0
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
 
 @dataclass(slots=True)
 class SheetProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
     stack: List[str] = field(default_factory=list)
     mass: int = 0
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
     actions: Union[str, Dict[str, Action]] = field(default_factory=dict)
 
 @dataclass(slots=True)
 class WidgetProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
     frames: Optional[List[str]] = field(default_factory=list)
 
 # ---------------------------------------------------------------------------------------
