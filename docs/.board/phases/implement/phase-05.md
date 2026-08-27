@@ -128,7 +128,7 @@ screen.present()
 
 * [~] *Implement Provider:* Create a service similar to `Decomposer` called the Provider in `app.game.provider`. It accepts a `MenuConfiguration` and an `EventContext`.
 * [ ] *Context Binding:* Implement `getattr` resolution to parse YAML bindings (e.g., `context.sprite.state.meters.health`) into direct memory references pointing to the runtime objects.
-        * **Optimization:** Because Python passes objects by reference, the `Provider` does not need to set up a continuous string-polling loop for the HUD. When parsing `bind: state: context.sprite.state.meters.health` during `Provider` instantiation, use `reduce()` and `getattr()` to resolve the string down to the actual `Meter` dataclass instance in memory. Assign this exact object reference to the `MeterState` of the widget. As the game mutates the Player's health, the UI widget inherently reads the mutated values instantly.
+    * **Optimization:** Because Python passes objects by reference, the `Provider` does not need to set up a continuous string-polling loop for the HUD. When parsing `bind: state: context.sprite.state.meters.health` during `Provider` instantiation, use `reduce()` and `getattr()` to resolve the string down to the actual `Meter` dataclass instance in memory. Assign this exact object reference to the `MeterState` of the widget. As the game mutates the Player's health, the UI widget inherently reads the mutated values instantly.
 * [~] *Text Canvas Allocation:* Ensure the Provider calls `render.canvas(w, l)` for `Page` widgets containing text, stores the resulting `TexturePtr` in `DisplayState.canvas`, and passes it to `render.write()`.
 * [ ] Provider must resolve bindings, run the `Layout` and instantiate the mapped `MenuController`
 * [ ] Orchestrator uses the Provider to create View (HUD) and Main Menu. Orchestrator then pushes the resulting Menus onto `board.overlays`.
@@ -180,17 +180,17 @@ Currently, `AnimationMechanics.update()` iterates over world assets (`EFFECTS`, 
 
 * [ ] *Cython Refactor:* Break `libs/graphics/render.pyx:render()` into `clear()`, `render()`, `superimpose()`, and `present()`. Remove `SDL_RenderClear` and `SDL_RenderPresent` from the core rendering loops.
 * [~] *Screen Refactor:* Split `app.game.screen.Screen.draw()` into `draw()` and `interface()`. 
-    * [ ]: `draw()` retains the current camera culling. 
-    * [ ]: `interface()` takes Menus and Overlays, extracts their `Widgets`, and passes them to Cython with absolute coordinates. It must check for `DynamicFrame` flags to extract raw pointers, bypassing the `Registry` logic used in `draw()`.
+    * [x]: `draw()` retains the current camera culling. 
+    * [~]: `interface()` takes Menus and Overlays, extracts their `Widgets`, and passes them to Cython with absolute coordinates. It must check for `DynamicFrame` flags to extract raw pointers, bypassing the `Registry` logic used in `draw()`.
     * [ ] Implement `_flatten_ui(menus, overlays)`.
-* [ ] *Engine Refactor:* Update `Engine.start()` to explicitly call `screen.clear()`, `screen.draw()`, `screen.interface()`, and `screen.present()` in sequence.
+* [~] *Engine Refactor:* Update `Engine.start()` to explicitly call `screen.clear()`, `screen.draw()`, `screen.interface()`, and `screen.present()` in sequence.
 * [ ] *Fix Destination Stretching:* In `Screen.draw()`, update the dimension assignment to respect dynamic source cropping from the Registry: `dw, dl = sw, sl`
 
 **Task 10. In Game Test**
 
 !!! note
     Needs further specification and definition before implementation.
-    
+
 * [!] Create a Sign Object that triggers Text menus.
     * [!] Define Sign State to include `persona` and `lexicon`.
 * [!] Create Library for parsing `src/data/config/library/main.yaml`. 
