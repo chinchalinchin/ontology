@@ -72,7 +72,7 @@ class LayoutEngine:
         # 4. Generate Traversal Graph
         buttons = [
             w for w in flattened 
-            if w.instance == AssetInstances.BUTTONS and hasattr(w.state, 'status') and w.state.status.value != 'disabled'
+            if w.instance == AssetInstances.BUTTONS and w.state.status.value != 'disabled'
         ]
         graph = self._build_graph(buttons)
 

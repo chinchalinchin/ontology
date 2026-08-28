@@ -17,6 +17,10 @@ Analyze the application and determine if an annotation-based registration would 
 
 While considering annotations, consider if annotations should be added to Factory objects rather than hardcoding them (via Enums) into the Factory maps.
 
+**Package Organization**
+
+The Package structure was "grown organically" as the application developed up to this point. Examine the package structure and determine if it is optimally organized. If there is a better logical grouping, suggest one.
+
 ##### Tasks
 
 **1. Task: TODO**

@@ -146,8 +146,7 @@ class TraversalFrame(Frame):
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
-        st = state.status.value if hasattr(state.status, 'value') else state.status
-        res = [f"{id}-{st}"]
+        res = [f"{id}-{state.animation.action}"]
         if getattr(state, 'icons', None):
             res.extend(state.icons)
         return res

@@ -5,10 +5,14 @@ Package for ingame Menu instantiation.
 """
 import logging
 import functools
-from typing import Dict
+from typing import Dict, Any, List
 
 from app.assets.base import Asset
-from app.config.enums import AssetCategories, AssetInstances, Statuses
+from app.config.enums import (
+    AssetCategories, 
+    AssetInstances, 
+    Statuses
+)
 from app.hooks.factory import Factory
 from app.models.properties import WidgetProperties
 from app.models.state import (
@@ -17,16 +21,25 @@ from app.models.state import (
     MeterState, 
     TraversalState
 )
-from app.models.adapters import PydanticPosition as Position
-from app.models.config import WidgetRecipe, MenuConfiguration, MenuPane, MenuWidget
-
-from app.game.menus.core import Menu, Widget, Binding
-from app.game.menus.controllers.scroll import ScrollController
-from app.game.menus.controllers.display import DisplayController
+from app.models.adapters import (
+    PydanticPosition as Position
+)
+from app.models.config import (
+    WidgetRecipe, 
+    MenuConfiguration, 
+    MenuPane, 
+    MenuWidget
+)
+from app.game.menus.core import (
+    Menu, 
+    Widget, 
+    Binding
+)
 from app.game.menus.layout import LayoutEngine
 
 import libs.graphics.render as render
 from libs.core.models import Dimensions
+from libs.graphics.registry import Registry
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +49,64 @@ class Provider:
 
     def __init__(self, 
         recipes: WidgetRecipe, 
-        properties: WidgetProperties
+        properties: WidgetProperties,
+        registry: Registry = None
     ):
         self.recipes = recipes
         self.properties = properties
+        self.registry = registry
 
+    def _paginate(self, text: str, font: Any, w: int, l: int) -> List[str]:
+        """
+        Calculates line-breaks and returns a list of perfectly fitted strings, 
+        where each string represents a single page with explicit '\n' breaks.
+        """
+        if not text or not font:
+            return [text]
+            
+        margin_w = int(w * font.margins)
+        margin_l = int(l * font.margins)
+        
+        wrap_width = w - (2 * margin_w)
+        wrap_height = l - (2 * margin_l)
+        
+        if wrap_width <= 0 or wrap_height <= 0:
+            return [text]
+            
+        words = text.split(' ')
+        lines = []
+        current_line = ""
+        
+        # 1. Word wrap into distinct lines
+        for word in words:
+            test_line = f"{current_line} {word}".strip()
+            tw, th = render.measure(test_line, font)
+            
+            if tw > wrap_width and current_line:
+                lines.append(current_line)
+                current_line = word
+            else:
+                current_line = test_line
+        if current_line:
+            lines.append(current_line)
+            
+        if not lines:
+            return [""]
+            
+        # 2. Divide lines into pages based on vertical canvas constraints
+        _, line_height = render.measure(lines[0], font)
+        if line_height <= 0:
+            line_height = 10 # Fallback failsafe
+            
+        max_lines_per_page = max(1, wrap_height // line_height)
+        
+        pages = []
+        for i in range(0, len(lines), max_lines_per_page):
+            page_lines = lines[i : i + max_lines_per_page]
+            pages.append("\n".join(page_lines))
+            
+        return pages
+    
     def _resolve(self, 
         bind_path: str, context: dict):
         """
@@ -61,36 +127,6 @@ class Provider:
             )
         except AttributeError:
             return None
-
-    def unpack(self, id: str, config: MenuConfiguration, context: dict, screensize: Dimensions) -> Menu:
-        """
-        Unpacks a MenuConfiguration into a live Menu object containing a flattened, sorted widget dictionary.
-        """
-        widgets = {}
-        
-        for pane in config.roots:
-            self._unpack_pane(pane, context, widgets)
-            
-        layout = LayoutEngine(screensize)
-        flattened_list, graph = layout.compute(config.roots, widgets)
-        
-        # Rebuild dictionary honoring flattened list's Painter's Algorithm ordering 
-        #   (Python 3.7+ preserves insertion order)
-        ordered_widgets = { w.id: w for w in flattened_list}
-        
-        ctrl = Factory.controller(config.controller)
-
-        # Default focus to the first traversible button if graph is present
-        focus = next(iter(graph.keys())) if graph else ""
-            
-        return Menu(
-            id          = id,
-            focus       = focus,
-            graph       = graph,
-            context     = context,
-            widgets     = ordered_widgets,
-            controller  = ctrl
-        )
 
     def _unpack_pane(self, pane: MenuPane, context: dict, widgets: Dict[str, Asset]) -> None:
         props = self.properties.panes.get(pane.id)
@@ -130,16 +166,23 @@ class Provider:
         if cfg.instance == AssetInstances.PAGES:
             resolved = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else ""
             content = resolved if resolved else ""
-            w = props.dimensions.w if props and props.dimensions else 0
-            l = props.dimensions.l if props and props.dimensions else 0
+            w = props.dimensions.w
+            l = props.dimensions.l
             canvas_ptr = render.canvas(w, l)
+            is_text = isinstance(content, str)
+            
+            # Execute physical measurements only if we possess the text and the Font Registry
+            if is_text and content:
+                font = self.registry.font("dialogue") 
+                content = self._paginate(content, font, w, l)
+                
             state = DisplayState(
                 position=Position(x=0, y=0),
                 content=content,
                 pageindex=0,
-                pagesize=1, # TODO: Create task ticket to calculate true pagesize based on TTF font metrics bounds
+                pagesize=1, # One aggregated string page or one icon per page
                 canvas=canvas_ptr,
-                dirty=True
+                is_text=is_text
             )
         elif cfg.instance == AssetInstances.METERS:
             resolved = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else None
@@ -172,4 +215,34 @@ class Provider:
             frame=Factory.frame(recipe.frame) if recipe else Factory.frame(None),
             animation=Factory.animation(recipe.animation) if recipe else Factory.animation(None),
             binding=binding
+        )
+
+    def unpack(self, id: str, config: MenuConfiguration, context: dict, screensize: Dimensions) -> Menu:
+        """
+        Unpacks a MenuConfiguration into a live Menu object containing a flattened, sorted widget dictionary.
+        """
+        widgets = {}
+        
+        for pane in config.roots:
+            self._unpack_pane(pane, context, widgets)
+            
+        layout = LayoutEngine(screensize)
+        flattened_list, graph = layout.compute(config.roots, widgets)
+        
+        # Rebuild dictionary honoring flattened list's Painter's Algorithm ordering 
+        #   (Python 3.7+ preserves insertion order)
+        ordered_widgets = { w.id: w for w in flattened_list}
+        
+        ctrl = Factory.controller(config.controller)
+
+        # Default focus to the first traversible button if graph is present
+        focus = next(iter(graph.keys())) if graph else ""
+            
+        return Menu(
+            id          = id,
+            focus       = focus,
+            graph       = graph,
+            context     = context,
+            widgets     = ordered_widgets,
+            controller  = ctrl
         )

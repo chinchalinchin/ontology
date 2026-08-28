@@ -257,18 +257,27 @@ class DisplayState:
     pageindex: int
     pagesize: int
     canvas: Any = None
-    dirty: bool = False
+    is_text: bool = True
 
     @property
     def _pagecount(self) -> int:
-        if not self.content or self.pagesize <= 0:
+        if not self.content:
             return 0
-        # Supports string length (chars) or list length (icons)
+        if self.is_text and isinstance(self.content, list):
+            return len(self.content)
+        if isinstance(self.content, str):
+            return 1
         return max(1, (len(self.content) + self.pagesize - 1) // self.pagesize)
 
     def current(self) -> Union[str, List[str]]:
         if not self.content:
-            return "" if isinstance(self.content, str) else []
+            return "" if self.is_text else []
+            
+        if self.is_text:
+            if isinstance(self.content, list):
+                return self.content[self.pageindex]
+            return self.content
+            
         start = self.pageindex * self.pagesize
         end = start + self.pagesize
         return self.content[start:end]
@@ -282,12 +291,10 @@ class DisplayState:
     def scrollup(self) -> None: 
         if self.less():
             self.pageindex -= 1
-            self.dirty = True
 
     def scrolldown(self) -> None:
         if self.more():
             self.pageindex += 1
-            self.dirty = True
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- ROOT SCHEMAS

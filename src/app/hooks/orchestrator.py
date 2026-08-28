@@ -244,12 +244,17 @@ class Orchestrator:
         self.world = [Factory.mechanics(m) for m in world_cfg]
 
         logger.info("Initializing Menus...")
-        provider = Provider(self.configurations.recipes, self.properties)
+        provider = Provider(self.configurations.recipes, self.properties, self.registry)
         view = self.configurations.menus.get('view')
         
         if view:
             player = self.board.player()
-            hud_menu = provider.unpack('view', view, {'sprite': {'state': player.state}}, screensize)
+            hud_menu = provider.unpack(
+                'view', 
+                view, 
+                {'sprite': {'state': player.state}}, 
+                screensize
+            )
             self.board.set_overlays([hud_menu])
 
         return self.board, self.registry, self.screens, self.core, self.world

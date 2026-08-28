@@ -14,6 +14,16 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 !!! note "CLOSED"
     Not worth fixing yet.
 
+**2. Z-Sorting Disconnect (`Screen.interface` vs `LayoutEngine`)**
+
+The `LayoutEngine.compute()` method explicitly assigns `state.height = 9999`, `state.depth = 10` for Panes and `depth = 11` for child components to ensure strict Painter's Algorithm compliance.
+However, `Screen.interface()` completely ignores `height` and `depth`. It iterates over the flattened list and appends primitives directly to Cython.
+
+* **Resolution:** This is functionally fine because `LayoutEngine` guarantees topological sorting by appending the Pane to the list *before* its children. The `height` and `depth` assignments in `LayoutEngine` are dead code and should be removed to prevent future confusion, or `Screen.interface()` must be updated to sort the UI assets similarly to `Screen.draw()`.
+
+!!! action
+    Updated `Screen.interface` to respect `height` and `depth`, just in case it is ever needed in Widget rendering in the future.\
+
 ##### Tasks
 
 **Task 0. Engine Deadlock Bug**
@@ -112,6 +122,11 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 * [x] *Engine Refactor:* Update `Engine.start()` to explicitly call `screen.clear()`, `screen.draw()`, `screen.interface()`, and `screen.present()` in sequence.
 * [x] *Fix Destination Stretching:* In `Screen.draw()`, update the dimension assignment to respect dynamic source cropping from the Registry: `dw, dl = sw, sl`
 
+**Task 9. Layout Engine Completion**
+
+* [ ] Implement `Layouts.TAB` recursion in `LayoutEngine.compute()`.
+* [ ] Implement `Layouts.NEST` recursion in `LayoutEngine.compute()`.
+
 **Task 10. In Game Test**
 
 !!! note
@@ -121,10 +136,19 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
     * [!] Define Sign State to include `persona` and `lexicon`.
 * [!] Create Library for parsing `src/data/config/library/main.yaml`. 
 
-**Task 11. Unit Test & Documnetation Updates**
+**Task 11. Unit Test & Documentation Updates**
 
 * [!] *Existing*: Ensure all unit tests are passing after prior Task updates.
 * [!] *New*: `tests/unit/test_lib_graphics_registry.py`: Ensure new Widget frame indexing is adequately covered.
 * [!] *New*: `tests/unit/test_hooks_factory.py`: Ensure new Widget instantiation is adequately covered.
 * [!] *New*: `tests/unit/test_hooks_provider.py`: Ensure Menu generation is adequately covered.
 * [!] Update documentation to reflect the latest state of the application.
+
+**Task 12. Reconcile UI Z-Sorting**
+
+* [!] Decide on the source of truth for UI sorting. Either implement `height/depth` sorting in `Screen.interface()`, or remove the assignments from `LayoutEngine.compute()` and document insertion-order as the standard.
+
+**Task 13. Controller Refactor**
+
+* [!] Remove `MenuMechanics.equip()`. 
+* [!] Create `InventoryController` in `app.game.menus.controllers.inventory` to handle equipment logic via `SelectionEvent` bindings.

@@ -179,6 +179,7 @@ def get_system_info() -> dict:
             
     return sys_info
 
+
 def init(int w, int l, bint headless=True):
     """
     Initializes SDL subsystems.
@@ -217,6 +218,7 @@ def init(int w, int l, bint headless=True):
             if _renderer == NULL:
                 raise RuntimeError(f"Failed to initialize SDL_Renderer: {SDL_GetError().decode('utf-8')}")
 
+
 def show():
     """
     Reveals the hidden SDL window and paints a clean black loading screen.
@@ -228,17 +230,20 @@ def show():
         SDL_RenderPresent(_renderer)
         SDL_PumpEvents()
 
+
 def clear():
     """
     """
     SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255)
     SDL_RenderClear(_renderer)
 
+
 def present():
     """
     """
     SDL_RenderPresent(_renderer)
     SDL_PumpEvents()
+
 
 def superimpose(list assets):
     """
@@ -308,6 +313,7 @@ def compose(TexturePtr base_ptr, list feature_ptrs) -> TexturePtr:
     SDL_SetRenderTarget(_renderer, NULL)
     return target
 
+
 def construct(TexturePtr target, list tiles):
     """
     Constructs the static background entirely in C using zero-allocation primitives.
@@ -339,19 +345,22 @@ def construct(TexturePtr target, list tiles):
                 
     SDL_SetRenderTarget(_renderer, NULL)
 
+
 def measure(
     str content, 
     TTFFont font
-) -> int:
-    """Determines how many pixels wide a given string is in a given font."""
+) -> tuple:
+    """
+    Determines how many pixels wide and high a given string is in a given font.
+    """
     if font is None or font.ptr == NULL:
-        return 0
+        return (0, 0)
         
     cdef int w = 0, h = 0
     cdef bytes b_content = content.encode('utf-8')
     TTF_SizeUTF8(font.ptr, b_content, &w, &h)
     
-    return w
+    return (w, h)
 
 def write(
     tuple asset, 
