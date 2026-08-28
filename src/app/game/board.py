@@ -18,12 +18,11 @@ from app.config.enums import (
 from app.hooks.cradle import Cradle
 from app.game.devices import Device
 from app.game.menus.core import Menu
-from app.game.logic.mechanics import Mechanic
 from app.models.groups import (
     ConfigurationGroup,
     EquipmentGroup
 )
-from app.models.config import Mapping
+from app.models.config import DeviceMapping
 
 # Cython Libraries
 from libs.core.models import Dimensions, Position
@@ -210,13 +209,13 @@ class Board:
         return self._all_instances[AssetInstances.PLAYERS][0]
 
 
-    def poll(self) -> Mapping:
+    def poll(self) -> DeviceMapping:
         """
         Polls the Board device.
         """
         if self._device:
             return self._device.poll()
-        return Mapping()
+        return DeviceMapping()
 
 
     def tile(self, layer: str, position: Position) -> Asset:

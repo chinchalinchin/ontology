@@ -1,15 +1,23 @@
+# /home/grant/Projects/ontology/src/app/game/menus/events.py
+
 """
 # Ontology: app.game.menus.events
 """
+from dataclasses import dataclass
+from typing import Any, Union, List
 
 class Event:
     pass
 
+@dataclass(slots=True)
 class MenuEvent(Event):
-    pass
+    id: str
+    context: dict
 
+@dataclass(slots=True)
 class UpdateEvent(Event):
-    pass
+    widget: Any
+    content: Union[str, List[str]]
 
 class StateEvent(Event):
     pass

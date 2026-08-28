@@ -1,63 +1,9 @@
 #### Implement: Phase 05 - Widgets
 
-- **CURRENT FOCUS**: The Phase is in progress. Do a review of the codebase and ensure tasking still aligns with architecture. Identify any areas where logical errors or contradictions exist. Open issues and tasks accordingly.
-
+- **CURRENT FOCUS**: The Phase is "complete" (except for a few stragglers). Nothing has been tested yet. Do an exhaustive analysis of the codebase and decide if Widgets and Menus have been correctly implemented. Open *new* Bugs and Tasks to address them if you determine errors exist.
+- **SECONDARY FOCUS**: Identify areas where the documentation and codebase have diverged during the course of implementation.
 
 ##### Current Goal: Event Bus Architecture
-
-**Update Interface**
-
-
-The `Mechanic` abstract base class and all of its implementations must be updated to accept the `Engine`'s event bus.
-
-* **Change:** `def update(self, board: Board, delta: float, bus: deque) -> None:`
-* **Impact:** `MenuMechanics` can now push `UpdateEvent` and `TerminalEvent` directly to the `Engine`. `InteractionMechanics` can push `MenuEvent` when the player interacts with a Chest or Sign.
-
-**Decouple Screen Rendering from Baking**
-
-`Screen.interface()` must be stripped of its text-baking logic to ensure it operates at $O(N)$ speed during the hot loop, acting only as a passthrough to Cython's `superimpose`.
-
-* **Refactor `interface()`:** Remove `construct()` and `write()`. It should only iterate through `menus` and `overlays`, extract the `primitives` (including the `canvas` pointer if it exists), and call `superimpose(primitives)`.
-* **Add `stamp()`:** Create a new method on `Screen`: `def stamp(self, widget: Widget, content: str) -> None:`. This method will handle fetching the clean background from the Registry, calling `construct()` to clear the old text, and calling `write()` to stamp the new `content` into the `widget.state.canvas`.
-
-**The Engine Drain Phase**
-
-The `Engine` receives the `bus: collections.deque` field. In `Engine.start()`, a dedicated bus-draining phase is inserted exactly between the Mechanics logic updates and the Screen rendering phase.
-
-* **The Flow:**
-```python
-# 1. Mechanics Update
-for mechanic in mechanics:
-    mechanic.update(self.board, delta, self.bus)
-
-# 2. Drain Bus
-while self.bus:
-    event = self.bus.popleft()
-    if isinstance(event, MenuEvent):
-        self.board.paused = True
-        # Call Provider, push to board.menus
-    elif isinstance(event, TerminalEvent):
-        self.board.menus.pop()
-        if not self.board.menus:
-            self.board.paused = False
-    elif isinstance(event, UpdateEvent):
-        # Route VRAM update directly to the Screen
-        screen = self.screens[self.board.player().state.layer]
-        screen.stamp(event.widget, event.content)
-
-# 3. Render Pipeline
-screen.clear()
-screen.draw(...)
-screen.interface(...)
-screen.present()
-
-```
-
-**Menu Controller Refactor**
-
-Because the `Engine` handles the VRAM updates, the `MenuController` logic becomes purely stateful.
-
-* **Flow:** When `ScrollController.select()` fires (e.g., the user clicks "Arrow Down"), it increments `DisplayState.pageindex`, grabs the sliced text via `DisplayState.current()`, and pushes an `UpdateEvent(widget=page_widget, content=sliced_text)` to the bus.
 
 ##### Bugs
 
@@ -124,10 +70,10 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 
 **Task 5. Engine Loop & Event Bus Architecture**
 
-* [ ] *Implement Event Queue:* Add an `Event` data class and `bus: collections.deque` to `Engine`.
-* [ ] *Define Events:* Implement `MenuEvent` (pauses, pushes to `menus`), `UpdateEvent` (updates Menu states), and `TerminalEvent` (pops from `menus`).
-* [ ] *Trigger Events:* Update `Intentions` (like `barter`, `build`) to push `MenuEvent` to the queue.
-[ ] *Implement Bus Draining*: In Engine.start(), drain the bus after Mechanics update but before the Render phase.
+* [x] *Implement Event Queue:* Add an `Event` data class and `bus: collections.deque` to `Engine`.
+* [x] *Define Events:* Implement `MenuEvent` (pauses, pushes to `menus`), `UpdateEvent` (updates Menu states), and `TerminalEvent` (pops from `menus`).
+* [x] *Trigger Events:* Update `Intentions` (like `barter`, `build`) to push `MenuEvent` to the queue.
+* [x] *Implement Bus Draining*: In Engine.start(), drain the bus after Mechanics update but before the Render phase.
     - Route MenuEvent to pause the Board and push to board.menus.
     - Route TerminalEvent to unpause the Board and pop from board.menus.
     - Route UpdateEvent to execute Cython texture clearing and text baking.
@@ -141,19 +87,19 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 
 **Task 7. Mechanics & Input Handling**
 
-* [ ] *Menu Time vs World Time*: Update `MenuMechanics.update()` to call `animate()` on all Widgets inside `board.overlays` and the top of `board.menus`, ensuring UI animations run independently of the world state.
-* [~] *Device Context Switching:* Update `Device` mappings to support a `MENU` context, translating raw SDL inputs into UI commands (Up, Down, Left, Right, Select, Cancel).
+* [x] *Menu Time vs World Time*: Update `MenuMechanics.update()` to call `animate()` on all Widgets inside `board.overlays` and the top of `board.menus`, ensuring UI animations run independently of the world state.
+* [x] *Device Context Switching:* Update `Device` mappings to support a `MENU` context, translating raw SDL inputs into UI commands (Up, Down, Left, Right, Select, Cancel).
     - [x] Add nested attributes, `mappings.<device>.world` and `mappings.<device>.menu`, to the Devive mapping configuration in `data/config/mappings/main.yaml`.
     - [x] Update MappingConfiguration models in `app.models.config`.
-    - [ ] Updated the Device class to initialize and poll using the new mapping data structure.
+    - [x] Updated the Device class to initialize and poll using the new mapping data structure.
     - Implement `Keyboard.context(context: str)`. When `context == 'world'`, map `_scancodes` to Intentions/Goals. When `context == 'menu'`, map to Traversal/Interactions. Update `_last_state` accordingly.
-* [ ] *Interface*: Update the Mechanic interface to accept the Bus. 
-    * [!] Propagate updated interface through previous Mechanics.
-* [ ] *Focus Resolution & Input Interception:* In `MenuMechanics.update()`:
-    * [ ] If `len(board.menus) > 0`, intercept `device.poll()` mapped commands.
-    * [ ] Route directional inputs to update `MenuState.focus` via the `TraversalGraph`.
-    * [ ] Route `SELECT` input to `active_menu.controller.select()`.
-    * [ ] Emit `TerminalEvent` to unpause the board when the user exits.
+* [x] *Interface*: Update the Mechanic interface to accept the Bus. 
+    * [x] Propagate updated interface through previous Mechanics.
+* [x] *Focus Resolution & Input Interception:* In `MenuMechanics.update()`:
+    * [x] If `len(board.menus) > 0`, intercept `device.poll()` mapped commands.
+    * [x] Route directional inputs to update `MenuState.focus` via the `TraversalGraph`.
+    * [x] Route `SELECT` input to `active_menu.controller.select()`.
+    * [x] Emit `TerminalEvent` to unpause the board when the user exits.
     
 **Task 8. Rendering Pipeline**
 
@@ -162,7 +108,7 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
     * [x]: `draw()` retains the current camera culling. 
     * [x]: `interface()` takes Menus and Overlays, extracts their `Widgets`, and passes them to Cython with absolute coordinates. Implement the duck-typing check for `widget.state.canvas`. The Screen must retrieve the base background from the Registry, use `render.construct` to overwrite the existing canvas (clearing old text), and call `render.write `to bake the updated `DisplayState.current()` text`.
     * [x] Implement `_flatten(menus, overlays)`.
-    * [ ] `stamp()`: Implement this method for re-rendering text and stamping it onto a Page asset.
+    * [x] `stamp()`: Implement this method for re-rendering text and stamping it onto a Page asset.
 * [x] *Engine Refactor:* Update `Engine.start()` to explicitly call `screen.clear()`, `screen.draw()`, `screen.interface()`, and `screen.present()` in sequence.
 * [x] *Fix Destination Stretching:* In `Screen.draw()`, update the dimension assignment to respect dynamic source cropping from the Registry: `dw, dl = sw, sl`
 

@@ -6,6 +6,7 @@ Package for CombatMechanics
 # Standard Libraries
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import collections
 
 # Application Libraries
 if TYPE_CHECKING:

@@ -81,11 +81,7 @@ class TraversalAnimation(Animation):
     def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
         """
         """
-        if hasattr(state, 'status') and state.status not in [Statuses.DISABLED, Statuses.SELECTED]:
-            if state.animation.action == Statuses.ACTIVE.value:
-                state.animation.action = Statuses.IDLE.value
-            else:
-                state.animation.action = Statuses.ACTIVE.value
+        state.animation.action = state.status.value if hasattr(state.status, 'value') else state.status
         return state
 
 class MeterAnimation(Animation):

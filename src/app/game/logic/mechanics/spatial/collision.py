@@ -6,6 +6,7 @@ Package for CollisionMechanics
 # Standard Libraries
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import collections
 
 # Application Libraries
 if TYPE_CHECKING:
@@ -55,7 +56,7 @@ class CollisionMechanics(SpatialMechanic):
             asset_b.state.position, hb_b, vel2, m2, is_kinematic2
         )
 
-    def update(self, board: Board, delta: float) -> None:
+    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
         """
         ### update(board, delta)
 

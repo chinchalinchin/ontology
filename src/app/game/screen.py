@@ -6,15 +6,21 @@ Package for the Screen, an abstraction over the Cython SDL rendering interface a
 
 # Standard Libraries
 import logging
-from typing import List
+from typing import List, Union
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.enums import AssetInstances, AssetCategories
+from app.config.enums import (
+    AssetInstances, 
+    AssetCategories
+)
 from app.game.menus.core import Menu
 
 # Cython Libraries
-from libs.core.models import Position, Dimensions
+from libs.core.models import (
+    Position, 
+    Dimensions
+)
 from libs.graphics.render import (
     canvas, 
     construct, 
@@ -55,7 +61,10 @@ class Screen:
             l=max(boardsize.l, screensize.l)
         )
         
-        logger.info(f"Initializing Screen overlay (Viewport: {self.screensize.w}x{self.screensize.l} | Board: {self.boardsize.w}x{self.boardsize.l})")
+        logger.info(
+            f"Initializing Screen (Viewport: {self.screensize.w}x{self.screensize.l} |" 
+            f"Board: {self.boardsize.w}x{self.boardsize.l})"
+        )
         
         self.registry = registry
 
@@ -66,10 +75,19 @@ class Screen:
         self.bg_canvas = canvas(self.boardsize.w, self.boardsize.l, opaque=is_opaque)
         self.fg_canvas = canvas(self.boardsize.w, self.boardsize.l) # Foreground stays transparent
         
-        cython_bg_tiles = []
-        cython_fg_tiles = []
+        back_tiles, fore_tiles = self._prerender(tiles)
         
-        logger.debug(f"Offloading primitive coordinates to Cython background construct for {len(tiles)} total tiles.")
+        construct(self.bg_canvas, back_tiles)
+        construct(self.fg_canvas, fore_tiles)
+
+
+    def _prerender(self, tiles: List[Asset]) -> tuple[list, list]:
+        """
+        Prerender Tile Assets.
+        """
+        back_tiles, fore_tiles = [], []
+        
+        logger.debug(f"Constructing {len(tiles)} total tiles...")
 
         for tile in tiles:
             # Query Registry using the computed tile keys
@@ -80,12 +98,8 @@ class Screen:
                     tex, sx, sy, sw, sl = tex_data
                     
                     # Append flat primitives directly for the C-loop
-                    tile_tuple = ( 
-                        tex,
-                        sx, 
-                        sy, 
-                        sw, 
-                        sl,
+                    tile_tuple = (
+                        tex, sx, sy, sw, sl,
                         tile.state.position.x, 
                         tile.state.position.y,
                         tile.dimensions.w, 
@@ -96,13 +110,10 @@ class Screen:
 
                     # Route properties
                     if tile.taxonomy.instance == AssetInstances.BACK:
-                        cython_bg_tiles.append(tile_tuple)
+                        back_tiles.append(tile_tuple)
                     elif tile.taxonomy.instance == AssetInstances.FORE:
-                        cython_fg_tiles.append(tile_tuple)
-        
-        construct(self.bg_canvas, cython_bg_tiles)
-        construct(self.fg_canvas, cython_fg_tiles)
-
+                        fore_tiles.append(tile_tuple)
+        return back_tiles, fore_tiles
 
     def _flatten(self, menus: List[Menu], overlays: List[Menu]) -> List[Asset]:
         """
@@ -193,7 +204,7 @@ class Screen:
                     
                     active_assets.append((tex, sx, sy, sw, sl, dx, dy, dw, dl))
 
-        logger.debug(f"Render Payload: Camera({pov.x}, {pov.y}) | Passing {len(active_assets)} dynamic primitive matrices to Cython.")
+        logger.debug(f"Render Payload: Camera({pov.x}, {pov.y}) | Total Assets: {len(active_assets)}")
 
         # Pass purely native integers to bypass heavy object allocation
         render(
@@ -207,52 +218,55 @@ class Screen:
         )
 
 
+    def stamp(self, widget: Asset, content: Union[str, List[str]]) -> None:
+        """
+        Dynamically restamps background and bakes updated text for O(N) runtime rendering. 
+        """
+        if not hasattr(widget.state, 'canvas') or widget.state.canvas is None:
+            return
+            
+        tex = widget.state.canvas
+        base_keys = widget.frame.keys(widget.id, widget.state)
+        base_ptr, sx, sy, sw, sl = self.registry.image(base_keys[0])
+        
+        # 1. Fetch and stamp clean background
+        construct(tex, [(base_ptr, sx, sy, sw, sl, 0, 0, sw, sl, 1, 1)])
+        
+        # 2. Re-write the font over the cleared canvas
+        if isinstance(content, str) and content:
+            # TODO: determine how font key should be set
+            font = self.registry.font("dialogue")
+            if font:
+                write((tex, 0, 0, sw, sl, 0, 0, sw, sl), content, font)
+
+
     def interface(self, menus: List[Menu], overlays: List[Menu]) -> None:
+        """
+        Bypasses baking to process the widget dictionaries in O(N) linear time directly.
+        """
         widgets = self._flatten(menus, overlays)
         primitives = []
         
         for widget in widgets:
-            for widget in widgets:
-                # Check if this widget manages a custom canvas (Duck-Typing)
-                if hasattr(widget.state, 'canvas') and widget.state.canvas is not None:
-                    tex = widget.state.canvas
-                    
-                    # 1. Fetch the clean background from Registry
-                    base_keys = widget.frame.keys(widget.id, widget.state)
-                    base_ptr, sx, sy, sw, sl = self.registry.image(base_keys[0])
-                    
-                    # 2. Stamp the clean background over the old canvas to clear the old text
-                    construct(tex, [(base_ptr, sx, sy, sw, sl, 0, 0, sw, sl, 1, 1)])
-                    
-                    # 3. Bake the new text directly onto the freshly cleared canvas
-                    # TODO: determine how font should be loaded
-                    font = self.registry.font("dialogue")
-                    current_content = widget.state.current()
-                    if isinstance(current_content, str):
-                        write((tex, 0, 0, sw, sl, 0, 0, sw, sl), current_content, font)
-                            
-                    # Draw the canvas (whether freshly rebaked or statically cached)
-                    tex = widget.state.canvas
-                    primitives.append((
-                        tex, 0, 0, tex.w, tex.l, 
-                        widget.state.position.x, widget.state.position.y, 
-                        widget.dimensions.w, widget.dimensions.l
-                    ))
-                continue
-                
-            # STANDARD FALLBACK: If no custom canvas, query the Registry normally
-            frame_keys = widget.frame.keys(widget.id, widget.state)
-            for key in frame_keys:
-                tex_data = self.registry.image(key)
-                if tex_data:
-                    tex, sx, sy, sw, sl = tex_data
-                    primitives.append((
-                        tex, sx, sy, sw, sl, 
-                        widget.state.position.x, widget.state.position.y, 
-                        widget.dimensions.w, widget.dimensions.l
-                    ))
+            if hasattr(widget.state, 'canvas') and widget.state.canvas is not None:
+                tex = widget.state.canvas
+                primitives.append((
+                    tex, 0, 0, tex.w, tex.l, 
+                    widget.state.position.x, widget.state.position.y, 
+                    widget.dimensions.w, widget.dimensions.l
+                ))
+            else:
+                frame_keys = widget.frame.keys(widget.id, widget.state)
+                for key in frame_keys:
+                    tex_data = self.registry.image(key)
+                    if tex_data:
+                        tex, sx, sy, sw, sl = tex_data
+                        primitives.append((
+                            tex, sx, sy, sw, sl, 
+                            widget.state.position.x, widget.state.position.y, 
+                            widget.dimensions.w, widget.dimensions.l
+                        ))
 
-        # Send directly to the Cython rendering function
         superimpose(primitives)
 
 

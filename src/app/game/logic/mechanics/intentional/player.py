@@ -5,6 +5,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import logging
+import collections
+
 # Application Libraries
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -27,7 +29,7 @@ class PlayerMechanics(Mechanic):
     """
     """
 
-    def update(self, board: Board, delta: float) -> None:
+    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
         """
         """
         player = board.player()

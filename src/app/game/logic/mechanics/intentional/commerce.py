@@ -4,6 +4,7 @@
 # Standard Libraries
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import collections
 
 # Application Libraries
 if TYPE_CHECKING:
@@ -18,7 +19,7 @@ class CommerceMechanics(Mechanic):
     """
     """
 
-    def update(self, board: Board, delta: float) -> None:
+    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
         """
         """
         pass
@@ -29,7 +30,7 @@ class SpeechMechanics(Mechanic):
     """
     """
 
-    def update(self, board: Board, delta: float) -> None:
+    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
         """
         """
         pass
