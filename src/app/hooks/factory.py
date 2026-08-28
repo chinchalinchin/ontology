@@ -119,6 +119,10 @@ class Factory:
         return Taxonomy(id, name, category, instance)
 
     @staticmethod
+    def controller(kind: str):
+        return Factory.CONTROLLER_MAP.get(kind, ScrollController)()
+    
+    @staticmethod
     def device(dev: str, mapping: dict):
         target_cls = Factory.DEVICE_MAP.get(dev, Keyboard)
         return target_cls(mapping)

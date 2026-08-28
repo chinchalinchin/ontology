@@ -19,6 +19,7 @@ from app.config.enums import (
 from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
+from app.hooks.provider import Provider
 from app.hooks.factory import Factory
 from app.hooks.decomposer import Decomposer
 from app.models.groups import (
@@ -241,6 +242,15 @@ class Orchestrator:
         
         self.core = [Factory.mechanics(m) for m in core_cfg]
         self.world = [Factory.mechanics(m) for m in world_cfg]
+
+        logger.info("Initializing Menus...")
+        provider = Provider(self.configurations.recipes, self.properties)
+        view = self.configurations.menus.get('view')
+        
+        if view:
+            player = self.board.player()
+            hud_menu = provider.unpack('view', view, {'sprite': {'state': player.state}}, screensize)
+            self.board.set_overlays([hud_menu])
 
         return self.board, self.registry, self.screens, self.core, self.world
 

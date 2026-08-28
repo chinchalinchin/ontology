@@ -62,37 +62,34 @@ class Provider:
         except AttributeError:
             return None
 
-    def unpack(self, menu_id: str, config: MenuConfiguration, context: dict, screensize: Dimensions) -> Menu:
+    def unpack(self, id: str, config: MenuConfiguration, context: dict, screensize: Dimensions) -> Menu:
         """
         Unpacks a MenuConfiguration into a live Menu object containing a flattened, sorted widget dictionary.
         """
         widgets = {}
         
-        for pane_cfg in config.roots:
-            self._unpack_pane(pane_cfg, context, widgets)
+        for pane in config.roots:
+            self._unpack_pane(pane, context, widgets)
             
         layout = LayoutEngine(screensize)
         flattened_list, graph = layout.compute(config.roots, widgets)
         
-        # Rebuild dictionary honoring flattened list's Painter's Algorithm ordering (Python 3.7+ preserves insertion order)
-        ordered_widgets = {w.id: w for w in flattened_list}
+        # Rebuild dictionary honoring flattened list's Painter's Algorithm ordering 
+        #   (Python 3.7+ preserves insertion order)
+        ordered_widgets = { w.id: w for w in flattened_list}
         
-        ctrl = None
-        if config.controller == 'scroll':
-            ctrl = ScrollController()
-        elif config.controller == 'display':
-            ctrl = DisplayController()
-            
+        ctrl = Factory.controller(config.controller)
+
         # Default focus to the first traversible button if graph is present
         focus = next(iter(graph.keys())) if graph else ""
             
         return Menu(
-            id=menu_id,
-            focus=focus,
-            graph=graph,
-            context=context,
-            widgets=ordered_widgets,
-            controller=ctrl
+            id          = id,
+            focus       = focus,
+            graph       = graph,
+            context     = context,
+            widgets     = ordered_widgets,
+            controller  = ctrl
         )
 
     def _unpack_pane(self, pane: MenuPane, context: dict, widgets: Dict[str, Asset]) -> None:

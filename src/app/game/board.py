@@ -69,6 +69,8 @@ class Board:
         logger.info(f"Initializing Board with {len(assets)} incoming assets.")
         self.loaded = False
         self.paused = False
+        self.menus = []
+        self.overlays = []
         self.configurations = configurations
         self.equipment = equipment
         self._assets = assets
