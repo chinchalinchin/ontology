@@ -12,13 +12,17 @@ from app.assets.base import Frame
 from app.models.state import AssetState
 
 def _safe_dim(properties: dict) -> tuple[int, int]:
-    """Extract dimensions safely whether it's a raw dict or a Cython object bypassing asdict()"""
+    """
+    Extract dimensions safely whether it's a raw dict or a Cython object bypassing asdict().
+    """
     dim = properties.get("dimensions")
     if hasattr(dim, 'w'):
         return dim.w, dim.l
     elif isinstance(dim, dict):
         return dim.get("w", 0), dim.get("l", 0)
     return 0, 0
+
+# -------------------------------------------------------------------------------------
 
 class NoFrame(Frame):
     """
@@ -35,18 +39,8 @@ class NoFrame(Frame):
         """
         return {id: (0, 0, 0, 0)}
 
-class DynamicFrame(Frame):
-    """
-    Frame strategy for dynamically generated canvases (like Text) that bypass the static Registry.
-    """
-    def keys(self, id: str, state: AssetState) -> List[str]:
-        # Return a sentinel key so the renderer knows to intercept it
-        return ["__DYNAMIC__"]
-        
-    def index(self, id: str, properties: dict) -> dict:
-        # Dynamic frames are not indexed in the Registry at boot
-        return {}
-    
+# -------------------------------------------------------------------------------------
+
 class SingleFrame(Frame):
     """
     ## SingleFrame
@@ -84,7 +78,7 @@ class IterableFrame(Frame):
         for f in range(count):
             crops[f"{id}-{f}"] = (f * w, 0, w, l)
         return crops
-    
+
 class StateFrame(Frame):
     """
     ## StateFrame
@@ -140,3 +134,50 @@ class SpriteFrame(StateFrame):
                     ]))
         
         return frame_keys
+    
+# -------------------------------------------------------------------------------------
+
+
+class TraversalFrame(Frame):
+    """
+    ## TraversalFrame
+    """
+
+    def keys(self, id: str, state: AssetState) -> List[str]:
+        """
+        """
+        st = state.status.value if hasattr(state.status, 'value') else state.status
+        res = [f"{id}-{st}"]
+        if getattr(state, 'icons', None):
+            res.extend(state.icons)
+        return res
+
+    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+        """
+        """
+        w, l = _safe_dim(properties)
+        return {
+            f"{id}-idle": (0, 0, w, l),
+            f"{id}-active": (w, 0, w, l),
+            f"{id}-selected": (2*w, 0, w, l),
+            f"{id}-disabled": (3*w, 0, w, l)
+        }
+
+class MeterFrame(Frame):
+    """
+    ## MeterFrame
+    """
+
+    def keys(self, id: str, state: AssetState) -> List[str]:
+        """
+        """
+        return [f"{id}-0", f"{id}-{state.animation.frame}"]
+
+    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+        """
+        """
+        w, l = _safe_dim(properties)
+        crops = {f"{id}-0": (0, 0, w, l)}
+        for res in range(1, 101):
+            crops[f"{id}-{res}"] = (w, 0, int(w * (res / 100.0)), l)
+        return crops

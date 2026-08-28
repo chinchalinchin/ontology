@@ -83,14 +83,17 @@ class Engine:
 
             # 2. Rendering
             screen = self.screens[player.state.layer]
-            # TODO: screen.clear()
+            screen.clear()
             screen.draw(
                 self.board.renderables(player.state.layer), 
                 player.state.position,
                 player.dimensions
             )
-            # TODO: screen.interface(self.board.menus, self.board.overlays)
-            # TODO: screen.present()
+            screen.interface(
+                self.board.menus, 
+                self.board.overlay
+            )
+            screen.present()
 
             telemetry_frames += 1
 

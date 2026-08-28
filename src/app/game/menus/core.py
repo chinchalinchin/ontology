@@ -25,5 +25,5 @@ class Menu:
     focus: str
     graph: Dict[str, Dict[str, str]]
     context: Dict[str, Any]
-    widgets: List[Widget]
+    widgets: Dict[str, Widget]    
     controller: MenuController

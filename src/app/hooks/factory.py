@@ -11,6 +11,8 @@ from app.assets.animations import (
     PersistentAnimation, 
     TemporaryAnimation, 
     StateAnimation,
+    TraversalAnimation,
+    MeterAnimation,
     NoAnimation
 )
 from app.assets.base import Taxonomy
@@ -19,6 +21,8 @@ from app.assets.frames import (
     IterableFrame, 
     StateFrame,
     SpriteFrame,
+    TraversalFrame,
+    MeterFrame,
     NoFrame
 )
 from app.config.enums import (
@@ -57,6 +61,8 @@ class Factory:
         FrameRecipe.SINGLE: SingleFrame,
         FrameRecipe.ITERABLE: IterableFrame,
         FrameRecipe.STATE: StateFrame,
+        FrameRecipe.TRAVERSAL: TraversalFrame,
+        FrameRecipe.METER: MeterFrame,
         FrameRecipe.NONE: NoFrame
     }
 
@@ -65,6 +71,8 @@ class Factory:
         AnimationRecipe.PERSISTENT: PersistentAnimation,
         AnimationRecipe.TEMPORARY: TemporaryAnimation,
         AnimationRecipe.STATE: StateAnimation,
+        AnimationRecipe.TRAVERSAL: TraversalAnimation,
+        AnimationRecipe.METER: MeterAnimation,
         AnimationRecipe.NONE: NoAnimation,
     }
 

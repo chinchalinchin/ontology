@@ -62,6 +62,8 @@ class FrameRecipe(str, Enum):
     ITERABLE        = "iterable"
     STATE           = "state"
     SPRITE          = "sprite"
+    METER           = "meter"
+    TRAVERSAL       = "traversal"
 
 class AnimationRecipe(str, Enum):
     NONE            = "none"
@@ -69,6 +71,8 @@ class AnimationRecipe(str, Enum):
     PERSISTENT      = "persistent"
     BINARY          = "binary"
     STATE           = "state"
+    METER           = "meter"
+    TRAVERSAL       = "traversal"
 
 class StateRecipe(str, Enum):
     NONE            = "none"
@@ -85,8 +89,9 @@ class StateRecipe(str, Enum):
     PLAYER          = "player"
     # WIDGET STATES
     TRAVERSAL       = "traversal"
-    GAUGE           = "gauge"
+    METER           = "meter"
     DISPLAY         = "display"
+    PANE            = "pane"
 # -------------------------------- SPRITE STATE ENUMERATIONS
 
 class Directions(str, Enum):
@@ -236,6 +241,7 @@ class Traversal(str, Enum):
 
 class Interactions(str, Enum):
     SELECT          = "select"
+    CANCEL          = "cancel"
 
 class Menus(str, Enum):
     DIALOGUE        = "dialogue"

@@ -180,7 +180,9 @@ def get_system_info() -> dict:
     return sys_info
 
 def init(int w, int l, bint headless=True):
-    """Initializes SDL subsystems."""
+    """
+    Initializes SDL subsystems.
+    """
     global _window, _canvas_surface, _renderer
     
     if SDL_Init(SDL_INIT_VIDEO) != 0:
@@ -194,11 +196,11 @@ def init(int w, int l, bint headless=True):
     if headless:
         _canvas_surface = SDL_CreateRGBSurfaceWithFormat(0, w, l, 32, SDL_PIXELFORMAT_RGBA32)
         if _canvas_surface == NULL:
-            raise RuntimeError(f"Failed to create main canvas surface: {SDL_GetError().decode('utf-8')}")
+            raise RuntimeError(f"Failed to create canvas: {SDL_GetError().decode('utf-8')}")
             
         _renderer = SDL_CreateSoftwareRenderer(_canvas_surface)
         if _renderer == NULL:
-            raise RuntimeError(f"Failed to create software renderer: {SDL_GetError().decode('utf-8')}")
+            raise RuntimeError(f"Failed to create renderer: {SDL_GetError().decode('utf-8')}")
             
     else:
         _window = SDL_CreateWindow(b"Game", 100, 100, w, l, SDL_WINDOW_HIDDEN)
@@ -213,10 +215,12 @@ def init(int w, int l, bint headless=True):
             _renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_SOFTWARE)
             
             if _renderer == NULL:
-                raise RuntimeError(f"Failed to initialize SDL_Renderer fallback: {SDL_GetError().decode('utf-8')}")
+                raise RuntimeError(f"Failed to initialize SDL_Renderer: {SDL_GetError().decode('utf-8')}")
 
 def show():
-    """Reveals the hidden SDL window and paints a clean black loading screen."""
+    """
+    Reveals the hidden SDL window and paints a clean black loading screen.
+    """
     if _window != NULL:
         SDL_ShowWindow(_window)
         SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255)
@@ -224,8 +228,38 @@ def show():
         SDL_RenderPresent(_renderer)
         SDL_PumpEvents()
 
+def clear():
+    """
+    """
+    SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255)
+    SDL_RenderClear(_renderer)
+
+def present():
+    """
+    """
+    SDL_RenderPresent(_renderer)
+    SDL_PumpEvents()
+
+def superimpose(list assets):
+    """
+    """
+    cdef SDL_Rect c_src, c_dst
+    cdef TexturePtr tex_wrapper
+    cdef int sx, sy, sw, sl, dx, dy, dw, dl
+
+    for asset in assets:
+        tex_wrapper, sx, sy, sw, sl, dx, dy, dw, dl = asset
+        c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sl
+        c_dst.x = dx
+        c_dst.y = dy
+        c_dst.w, c_dst.h = dw, dl
+        SDL_RenderCopy(_renderer, tex_wrapper.ptr, &c_src, &c_dst)
+
+
 def canvas(int w, int l, bint opaque=False) -> TexturePtr:
-    """Instantiates a blank texture assigned as a rendering target using primitive integers."""
+    """
+    Instantiates a blank texture assigned as a rendering target using primitive integers.
+    """
     logger.debug(f"Generating blank VRAM render target canvas size: {w}x{l} | Opaque: {opaque}")
     cdef SDL_Texture* tex = SDL_CreateTexture(
         _renderer, 
@@ -255,6 +289,7 @@ def canvas(int w, int l, bint opaque=False) -> TexturePtr:
     wrapper.w = w
     wrapper.l = l
     return wrapper
+
 
 def compose(TexturePtr base_ptr, list feature_ptrs) -> TexturePtr:
     """
@@ -352,7 +387,7 @@ def write(
     cdef SDL_Texture* text_tex = SDL_CreateTextureFromSurface(_renderer, text_surface)
     
     cdef SDL_Rect dst_rect
-    dst_rect.y = sy + margin_px_h
+    dst_rect.y = margin_px_h    
     dst_rect.w = text_surface.w
     dst_rect.h = text_surface.h
     
@@ -385,8 +420,8 @@ def render(
     Executes the active frame render passing flat coordinates to bypass Python object allocations.
     assets format: (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l)
     """
-    SDL_RenderClear(_renderer)
     cdef SDL_Rect c_src, c_dst, bg_src, bg_dst
+
     cdef TexturePtr tex_wrapper
     cdef int sx, sy, sw, sl, dx, dy, dw, dl
 
@@ -431,9 +466,6 @@ def render(
                     
         SDL_RenderCopy(_renderer, foreground.ptr, &bg_src, &bg_dst)
                     
-    SDL_RenderPresent(_renderer)
-    SDL_PumpEvents()
-
 def save(str filename, int w, int l, TexturePtr target=None):
     """Extracts pixel data from the active hardware renderer or a specific texture to disk."""
     cdef bytes b_filename = filename.encode('utf-8')

@@ -4,7 +4,14 @@
 Python data models for typing Asset state attributes.
 """
 # Standard Libraries
-from typing import Dict, List, Optional, Union, Any
+from typing import (
+    Dict, 
+    List,
+    Optional, 
+    Union, 
+    Any, 
+    Tuple
+)
 from dataclasses import dataclass, field
 
 # Application Libraries
@@ -13,12 +20,15 @@ from app.config.enums import (
     Directions, 
     Intentions, 
     Relationships,
-    Statuses
+    Statuses,
+    Layouts,
+    Alignments
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
     PydanticMultiple as Multiple, 
-    PydanticVelocity as Velocity
+    PydanticVelocity as Velocity,
+    PydanticScreenPosition as ScreenPosition
 )
 
 # Cython Libraries
@@ -220,24 +230,54 @@ class PlayerState(AssetState):
 
 @dataclass(slots=True)
 class TraversalState:
+    position: Position # type: ignore
     status: Statuses
     icons: Optional[List[str]] = None
-
-@dataclass(slots=True)
-class DisplayState:
-    content: Union[str, List[str]]
-    current: str
-    pages: int
-    pageindex: int
-    pagesize: int
-    # Holds the Cython TexturePtr natively
-    canvas: Any = None
+    animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class MeterState:
+    position: Position # type: ignore
     reading: int
     unit: int
+    animation: AnimationState = field(default_factory=AnimationState)
 
+@dataclass(slots=True)
+class PaneState(slots=True):
+    position: Position # type: ignore
+    layout: Layouts
+    alignment: Alignments
+    gap: int
+    margins: Tuple[int, int, int, int]
+
+@dataclass(slots=True)
+class DisplayState:
+    position: Position # type: ignore
+    content: Union[str, List[str]]
+    pageindex: int
+    pagesize: int
+    canvas: Any = None
+    dirty: bool = False
+
+    _pagecount: int
+
+    def current(self) -> Union[str, List[str]]:
+        pass # TODO
+
+    def more(self) -> bool: 
+        pass # TODO
+
+    def less(self) -> bool:
+        pass # TODO
+
+    def scrollup(self) -> None: 
+        self.pageindex += 1
+        # TODO: check against _pagecount
+
+    def scrolldown(self) -> None:
+        self.pageindex -= 1
+        # TODO check against _pagecount
+        
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- ROOT SCHEMAS
 

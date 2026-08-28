@@ -87,22 +87,22 @@ recipes:
       state: none
   widgets:
     buttons:
-      frame:
-      animation: 
-      state:
+      frame: traversal
+      animation: traversal
+      state: traversal
     icons:
-      frame:
-      animation:
+      frame: indexed
+      animation: none
       state:
     meters:
-      frame:
-      animation:
-      state:
+      frame: meter
+      animation: meter
+      state: meter
     pages:
-      frame:
+      frame: single
       animation:
-      state:
+      state: display
     panes:
-      frame:
-      animation:
-      state:
+      frame: single
+      animation: none
+      state: pane

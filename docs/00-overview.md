@@ -96,7 +96,11 @@ The Registry loads in all of the Asset files when the application bootstraps. Th
 
 - Package: `app.game.engine`
 
-The Engine handles the core gameplay loop and framerate calculations.
+The Engine handles the core gameplay loop and framerate calculations. 
+
+**Bus**
+
+The Engine contains a field for processing Menu Events.
 
 ### Board
 

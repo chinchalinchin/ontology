@@ -15,8 +15,18 @@ from app.game.menus.core import Menu
 
 # Cython Libraries
 from libs.core.models import Position, Dimensions
-from libs.graphics.render import canvas, construct, render, save, superimpose
-from libs.graphics.registry import Registry, TexturePtr
+from libs.graphics.render import (
+    canvas, 
+    construct, 
+    render, 
+    save, 
+    superimpose, 
+    write 
+)
+from libs.graphics.registry import (
+    Registry, 
+    TexturePtr
+)
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +39,7 @@ class Screen:
     bg_canvas: TexturePtr
     fg_canvas: TexturePtr
     registry: Registry
+
 
     def __init__(self, 
         screensize: Dimensions,
@@ -92,6 +103,19 @@ class Screen:
         construct(self.bg_canvas, cython_bg_tiles)
         construct(self.fg_canvas, cython_fg_tiles)
 
+
+    def _flatten(self, menus: List[Menu], overlays: List[Menu]) -> List[Asset]:
+        """
+        """
+        widgets = []
+        for menu in overlays:
+            if hasattr(menu, 'widgets') and menu.widgets:
+                widgets.extend(menu.widgets.values())
+        for menu in menus:
+            if hasattr(menu, 'widgets') and menu.widgets:
+                widgets.extend(menu.widgets.values())
+        return widgets
+    
     def camera(self, 
         focus: Position, 
         dim: Dimensions
@@ -112,6 +136,12 @@ class Screen:
         cam_y = max(0, min(cam_y, max_y))
 
         return Position(x=cam_x, y=cam_y)
+
+    def clear(self) -> None:
+        render.clear()
+
+    def present(self) -> None:
+        render.present()
 
     def draw(self, 
         assets: List[Asset], 
@@ -154,7 +184,8 @@ class Screen:
                 
                 # 4. Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
                 dx, dy = asset.state.position.x, asset.state.position.y
-                dw, dl = asset.dimensions.w, asset.dimensions.l
+                dw, dl = sw, sl
+                # dw, dl = asset.dimensions.w, asset.dimensions.l
                 
                 # 5. Strict Camera Culling: Only pass geometry if intersecting the camera frame 
                 if (dx + dw >= pov.x and dx <= pov.x + self.screensize.w and
@@ -175,34 +206,55 @@ class Screen:
             self.screensize.l
         )
 
+
     def interface(self, menus: List[Menu], overlays: List[Menu]) -> None:
-        # TODO
-        # active_widgets = self._flatten_ui(menus, overlays)
-        active_widgets = {}
+        widgets = self._flatten(menus, overlays)
         primitives = []
         
-        for widget in active_widgets:
-            frame_keys = widget.frame.keys(widget.id, widget.state)
-            
-            for key in frame_keys:
-                if key == "__DYNAMIC__":
-                    # Bypass Registry: Pull TexturePtr directly from widget state
+        for widget in widgets:
+            for widget in widgets:
+                # Check if this widget manages a custom canvas (Duck-Typing)
+                if hasattr(widget.state, 'canvas') and widget.state.canvas is not None:
                     tex = widget.state.canvas
-                    if tex is not None:
-                        # Append primitive tuple for Cython
-                        primitives.append((
-                            tex, 0, 0, tex.w, tex.l, 
-                            widget.state.position.x, widget.state.position.y, 
-                            widget.dimensions.w, widget.dimensions.l
-                        ))
-                else:
-                    # Standard Registry lookup for static UI elements (like Borders or Icons)
-                    tex_data = self.registry.image(key)
-                    if tex_data:
-                        primitives.append(...) 
+                    
+                    # 1. Fetch the clean background from Registry
+                    base_keys = widget.frame.keys(widget.id, widget.state)
+                    base_ptr, sx, sy, sw, sl = self.registry.image(base_keys[0])
+                    
+                    # 2. Stamp the clean background over the old canvas to clear the old text
+                    construct(tex, [(base_ptr, sx, sy, sw, sl, 0, 0, sw, sl, 1, 1)])
+                    
+                    # 3. Bake the new text directly onto the freshly cleared canvas
+                    # TODO: determine how font should be loaded
+                    font = self.registry.font("dialogue")
+                    current_content = widget.state.current()
+                    if isinstance(current_content, str):
+                        write((tex, 0, 0, sw, sl, 0, 0, sw, sl), current_content, font)
+                            
+                    # Draw the canvas (whether freshly rebaked or statically cached)
+                    tex = widget.state.canvas
+                    primitives.append((
+                        tex, 0, 0, tex.w, tex.l, 
+                        widget.state.position.x, widget.state.position.y, 
+                        widget.dimensions.w, widget.dimensions.l
+                    ))
+                continue
+                
+            # STANDARD FALLBACK: If no custom canvas, query the Registry normally
+            frame_keys = widget.frame.keys(widget.id, widget.state)
+            for key in frame_keys:
+                tex_data = self.registry.image(key)
+                if tex_data:
+                    tex, sx, sy, sw, sl = tex_data
+                    primitives.append((
+                        tex, sx, sy, sw, sl, 
+                        widget.state.position.x, widget.state.position.y, 
+                        widget.dimensions.w, widget.dimensions.l
+                    ))
 
-        # Pass the flat primitives across the Cython boundary
+        # Send directly to the Cython rendering function
         superimpose(primitives)
+
 
     def export_background(self, out_path: str) -> None:
         """
@@ -210,6 +262,7 @@ class Screen:
         """
         logger.info(f"Dumping pre-constructed map textures (bg_canvas) to file system -> {out_path}")
         save(out_path, self.boardsize.w, self.boardsize.l, target=self.bg_canvas)
+
 
     def export_render(self, 
         out_path: str, 

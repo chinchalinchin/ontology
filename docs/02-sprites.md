@@ -142,15 +142,11 @@ Animations are tuples of (Action, Direction, Frame). Action and Direction were p
 
 The *Psyche* is an internal State data structure that governs a Sprite's ancillary Animation and Intention logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations and modulations of the Sprite state. The complete Psyche state for a Sprite is given by the tuple,
 
-    (Persona, Dialogue, Expression, Motivation)
+    (Persona, Expression, Motivation)
 
 **Persona**
 
 A Sprite persona is a data structure used to index Dialogue to a Sprite through the [Library](./08-plots.md#library). It can be thought of as the "personality" of the Sprite.
-
-**Dialgoue**
-
-The Dialogue dimension of a Sprite's Psyche can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the lexicon key that will be retrieved from the [Library](./08-plots.md#library) and rendered in a [Dialogue Menu](./06-widgets.md#menus) if the Player enters into the `speak` Intention. In addition, Sprites may enter into `speak` Intentions with other Sprites, but these events are not routed to [Menus](./06-widgets.md#menus). Instead, Sprite-to-Sprite Dialogue is used by the [RumorMechanics](./05-mechanics.md).
 
 **Expression**
 
@@ -164,6 +160,8 @@ The Expression dimension alter the Sprite's appearnce by appending a Cursor Expr
 - `loquacity`
 - `surprise`
 - `tired`
+
+Over and above this modification to the Asset frame, the Expression dimension of a Sprite's Psyche can be thought of as the short-term memory or a buffer for dialogue the Sprite is about to transmit. This field holds the lexicon key that will be exchanged at the [Library](./08-plots.md#library) for content and rendered in a [Dialogue Menu](./06-widgets.md#menus) if the Player enters into the `speak` Intention. In addition, Sprites may enter into `speak` Intentions with other Sprites, but these events are not routed to [Menus](./06-widgets.md#menus). Instead, Sprite-to-Sprite Dialogue is used by the [RumorMechanics](./05-mechanics.md).
 
 **Motivation**
 

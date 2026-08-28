@@ -1,8 +1,8 @@
 # Ontology: Plots
 
-Due to the nature of the Ontology game engine, a Plot is not scripted, in the sense that Sprite Actions are hardcoded and pre-determined down to the pixels. Conditions are reached to change the World state, which causes a Player's `plot-key` attribute to update. This in turn affects what states can be reached by the gameplay loop. 
+Due to the nature of the Ontology game engine, a Plot is not scripted, in the sense that Sprite Actions are hardcoded and pre-determined down to the pixel. Conditions are reached to change the World state, which causes the [Board's](./00-overview.md#board) `plot` attribute to update. This in turn affects what dialogue keys can be reached by the gameplay loop. 
 
-[Sprites](./02-sprites.md) retain Communications in their [Memory](./02-sprites.md#memory). These Communications are Lexicon keys to access content in the [Library](#library). They are used in conjunction with the Sprite's `persona` and the [Board's](./00-overview.md#board) plot key to unlock the appropriate content.
+[Sprites](./02-sprites.md) retain a Expression in their [Psyche](./02-sprites.md#psyche). This Expression is a Lexicon key to access content in the [Library](#library). It is used in conjunction with the Sprite's `persona` and the [Board's](./00-overview.md#board) `plot` key to unlock the appropriate content.
 
 As a simple example, a Plot state might be defined to change conditional on the existence of Sprite (perhaps whether a character is alive or dead), call it `<plot>`.
 
@@ -18,7 +18,7 @@ TODO
 
 ```yaml
 library:
-    <plot-key>
+    <plot-key>:
         <persona-key>:
             <lexicon-key>: <content>
 ```
@@ -29,4 +29,8 @@ library:
 
 ### Plot States
 
+TODO
 
+### Plot Mechanics
+
+TODO
