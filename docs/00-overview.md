@@ -100,7 +100,11 @@ The Engine handles the core gameplay loop and framerate calculations.
 
 **Bus**
 
-The Engine contains a field for processing Menu Events.
+The Engine contains a Bus for processing Menu Events.
+
+**Provider**
+
+The Engine contains a Provider for instantiating Menus.
 
 ### Board
 

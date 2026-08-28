@@ -76,6 +76,22 @@ class Engine:
                     for mechanic in self.world:
                         mechanic.update(self.board, delta)
 
+                # TODO: add private _drain method for handling events
+                # # 2. Drain Bus
+                # while self.bus:
+                #     event = self.bus.popleft()
+                #     if isinstance(event, MenuEvent):
+                #         self.board.paused = True
+                #         # Call Provider, push to board.menus
+                #     elif isinstance(event, TerminalEvent):
+                #         self.board.menus.pop()
+                #         if not self.board.menus:
+                #             self.board.paused = False
+                #     elif isinstance(event, UpdateEvent):
+                #         # Route VRAM update directly to the Screen
+                #         screen = self.screens[self.board.player().state.layer]
+                #         screen.stamp(event.widget, event.content)
+
                 accumulator -= delta
                 telemetry_updates += 1
 

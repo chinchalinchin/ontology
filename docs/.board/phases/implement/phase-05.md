@@ -127,7 +127,7 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 * [ ] *Implement Event Queue:* Add an `Event` data class and `bus: collections.deque` to `Engine`.
 * [ ] *Define Events:* Implement `MenuEvent` (pauses, pushes to `menus`), `UpdateEvent` (updates Menu states), and `TerminalEvent` (pops from `menus`).
 * [ ] *Trigger Events:* Update `Intentions` (like `barter`, `build`) to push `MenuEvent` to the queue.
-[ ] Implement Bus Draining: In Engine.start(), drain the bus after Mechanics update but before the Render phase.
+[ ] *Implement Bus Draining*: In Engine.start(), drain the bus after Mechanics update but before the Render phase.
     - Route MenuEvent to pause the Board and push to board.menus.
     - Route TerminalEvent to unpause the Board and pop from board.menus.
     - Route UpdateEvent to execute Cython texture clearing and text baking.
@@ -137,7 +137,7 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 * [x] *Define Interface*: Define `MenuController` abstract base class with `open`, `select`, `update`, and `close`.
 * [x] *Implement Scrolling*: Implement `app.game.menus.controllers.scroll.ScrollController` (Calls `DisplayState.scroll()` methods).
     * [x] Implement `ScrollController.select()`. It must parse the selection binding (e.g., `SCROLLUP`), locate the target widget via the selector binding and call `scroll()`
-* [ ] *Implement Heads Up Display*: Implement `app.game.menus.controllers.display.DisplayController` (Parses `UpdateEvent` to mutate `MeterState` (health meters) amd `TraversalState` (disabled Button slots showing equipped items)).
+* [ ] *Implement Heads Up Display*: Implement `app.game.menus.controllers.display.DisplayController` (Mutates `MeterState` (health meters) amd `TraversalState` (disabled Button slots showing equipped items)).
 
 **Task 7. Mechanics & Input Handling**
 
@@ -147,9 +147,8 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
     - [x] Update MappingConfiguration models in `app.models.config`.
     - [ ] Updated the Device class to initialize and poll using the new mapping data structure.
     - Implement `Keyboard.context(context: str)`. When `context == 'world'`, map `_scancodes` to Intentions/Goals. When `context == 'menu'`, map to Traversal/Interactions. Update `_last_state` accordingly.
-* [ ] *Implement MenuMechanics:* Drain the `Board.bus`.
-    * If `bus` contains `MenuEvent`, push to `board.menus` and set `board.paused = True`.
-    * If `bus` contains `UpdateEvent`, route to `board.overlays` controllers.
+* [ ] *Interface*: Update the Mechanic interface to accept the Bus. 
+    * [!] Propagate updated interface through previous Mechanics.
 * [ ] *Focus Resolution & Input Interception:* In `MenuMechanics.update()`:
     * [ ] If `len(board.menus) > 0`, intercept `device.poll()` mapped commands.
     * [ ] Route directional inputs to update `MenuState.focus` via the `TraversalGraph`.
@@ -163,6 +162,7 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
     * [x]: `draw()` retains the current camera culling. 
     * [x]: `interface()` takes Menus and Overlays, extracts their `Widgets`, and passes them to Cython with absolute coordinates. Implement the duck-typing check for `widget.state.canvas`. The Screen must retrieve the base background from the Registry, use `render.construct` to overwrite the existing canvas (clearing old text), and call `render.write `to bake the updated `DisplayState.current()` text`.
     * [x] Implement `_flatten(menus, overlays)`.
+    * [ ] `stamp()`: Implement this method for re-rendering text and stamping it onto a Page asset.
 * [x] *Engine Refactor:* Update `Engine.start()` to explicitly call `screen.clear()`, `screen.draw()`, `screen.interface()`, and `screen.present()` in sequence.
 * [x] *Fix Destination Stretching:* In `Screen.draw()`, update the dimension assignment to respect dynamic source cropping from the Registry: `dw, dl = sw, sl`
 
