@@ -150,3 +150,4 @@ class PropertiesSchema:
     cursors: CursorPropertyInstances = field(default_factory=CursorPropertyInstances)
     sheets: SheetPropertyInstances = field(default_factory=SheetPropertyInstances)
     fonts: Dict[str, FontProperties] = field(default_factory=dict)
+    widgets: WidgetPropertyInstances = field(default_factory=WidgetPropertyInstances)

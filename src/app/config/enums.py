@@ -222,6 +222,10 @@ class InertAssets(str, Enum):
     
 # -------------------------------- WIDGET ENUMERATIONS
 
+class Controllers(str, Enum):
+    SCROLL          = "scroll"
+    DISPLAY         = "display"
+    
 class Layouts(str, Enum):
     DOCK            = "dock"
     STACK           = "stack"

@@ -217,7 +217,7 @@ Pages render text or Icon Assets. The amount of text or Icons a scroller Page is
 
 When `content: str`, the content will be text to render. When `content: List[str]`, the content will be frame keys for Icons.
 
-Pages contain a `canvas` over and above the Asset file loaded into the Registry. The `canvas` is created at runtime as a blank texture to serve as a space for rendering text without altering the underlying Asset loaded into the Registry. The `dirty` flag indicates the `canvas` needs redrawn.
+Pages contain a `canvas` over and above the Asset file loaded into the Registry. The `canvas` is created at runtime as a blank texture to serve as a space for rendering text without altering the underlying Asset loaded into the Registry.
 
 **State: DisplayState**
 
@@ -225,7 +225,6 @@ Pages contain a `canvas` over and above the Asset file loaded into the Registry.
 - `pageindex: int` = 0
 - `pagesize: int`
 - `canvas: Texture`
-- `dirty: bool`
 
 **Methods**
 

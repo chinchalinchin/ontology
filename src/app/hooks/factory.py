@@ -29,7 +29,8 @@ from app.config.enums import (
     AnimationRecipe, 
     FrameRecipe, 
     Devices,
-    Mechanics
+    Mechanics,
+    Controllers
 )
 from app.hooks.cradle import Cradle
 from app.game.logic.mechanics import (
@@ -45,6 +46,10 @@ from app.game.logic.mechanics import (
     RemoveMechanics,
     SpeechMechanics,
     InteractionMechanics
+)
+from app.game.menus.controllers import (
+    DisplayController,
+    ScrollController
 )
 from app.models.config import (
     RecipeConfiguration,
@@ -94,6 +99,11 @@ class Factory:
         Mechanics.COMBAT: CombatMechanics,
         Mechanics.MOTION: MotionMechanics,
         Mechanics.SPEECH: SpeechMechanics
+    }
+
+    CONTROLLER_MAP  = {
+        Controllers.DISPLAY: DisplayController,
+        Controllers.SCROLL: ScrollController
     }
 
     @staticmethod

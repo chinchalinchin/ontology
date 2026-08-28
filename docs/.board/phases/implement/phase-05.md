@@ -48,7 +48,7 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 * [~] *Implement Provider:* Create a service similar to `Decomposer` called the Provider in `app.game.provider`. It accepts a `MenuConfiguration` and an `EventContext`.
 * [~] *Context Binding:* Implement `getattr` resolution to parse YAML bindings (e.g., `context.sprite.state.meters.health`) into direct memory references pointing to the runtime objects.
     * **Optimization:** Because Python passes objects by reference, the `Provider` does not need to set up a continuous string-polling loop for the HUD. When parsing `bind: state: context.sprite.state.meters.health` during `Provider` instantiation, use `reduce()` and `getattr()` to resolve the string down to the actual `Meter` dataclass instance in memory. Assign this exact object reference to the `MeterState` of the widget. As the game mutates the Player's health, the Widget inherently reads the mutated values instantly.
-* [x] *Text Canvas Allocation*: The Provider must call `render.canvas(w, l)` to allocate a blank TexturePtr when instantiating Page Widgets. It must bind this pointer to DisplayState.canvas and initialize `DisplayState.dirty = True`. It should not attempt to write text.
+* [x] *Text Canvas Allocation*: The Provider must call `render.canvas(w, l)` to allocate a blank TexturePtr when instantiating Page Widgets. It must bind this pointer to DisplayState.canvas`. It should not attempt to write text.
 * [~] Provider must resolve bindings, run the `Layout` and instantiate the mapped `MenuController`
 * [ ] Orchestrator uses the Provider to create View (HUD) and Main Menu. Orchestrator then pushes the resulting Menus onto `board.overlays`.
 
