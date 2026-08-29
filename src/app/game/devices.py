@@ -33,21 +33,22 @@ class Keyboard(Device):
     """
     def __init__(self, mapping: DeviceMapping):
         super().__init__(mapping)   
+        self._context = None
         self.context(DeviceContexts.WORLD)
 
     def context(self, map: str) -> None:
-        self._context = map 
-        if map == DeviceContexts.WORLD:
+        if map == DeviceContexts.WORLD and self._context != DeviceContexts.WORLD:
             i_codes = [v for v in self.mapping.world.intentions.values() if v is not None]
             g_codes = [v for v in self.mapping.world.goals.values() if v is not None]
             m_codes = [v for v in self.mapping.world.menus.values() if v is not None]
             self._scancodes = tuple(set(i_codes + g_codes + m_codes))
 
-        elif map == DeviceContexts.MENU:
+        elif map == DeviceContexts.MENU and self._context != DeviceContexts.WORLD:
             t_codes = [v for v in self.mapping.menu.traversal.values() if v is not None]
             i_codes = [v for v in self.mapping.menu.interactions.values() if v is not None]
             self._scancodes = tuple(set(t_codes + i_codes))
 
+        self._context = map 
         self._last_state = {code: 0 for code in self._scancodes}
 
         logger.debug(f": {self._scancodes}")
