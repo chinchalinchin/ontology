@@ -6,19 +6,37 @@ Package for decomposing Compositions into their constituent Assets.
 # Standard Libraries
 import re
 import dataclasses
-from typing import Dict, List, Any
+import logging
+from typing import (
+    Dict, 
+    List, 
+    Any
+)
 
 # Application Libraries
 from app.assets.base import Asset
-from app.models.config import CompositionConfiguration, RecipeConfiguration
-from app.models.properties import PropertiesSchema, Cost
-from app.models.state import PropertyState, AssetState
+from app.config.enums import (
+    AssetCategories, 
+    AssetInstances
+)
 from app.hooks.factory import Factory
-from app.config.enums import AssetCategories, AssetInstances
+from app.models.config import (
+    CompositionConfiguration, 
+    RecipeConfiguration
+)
+from app.models.properties import (
+    PropertiesSchema, 
+    Cost
+)
+from app.models.state import (
+    PropertyState, 
+    AssetState
+)
 
 # Cython Libraries
 from libs.core.models import Position
 
+logger = logging.getLogger(__name__)
 
 class Decomposer:
     compositions: Dict[str, CompositionConfiguration]

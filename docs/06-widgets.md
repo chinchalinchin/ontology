@@ -359,8 +359,8 @@ When a Button is selected, the MenuMechanics route the input to the appropriate 
 ```python
 class ScrollController(Controller):
 
-    def select(self, widget_id: str, menu: Menu, board: Board, bus: collections.deque):
-        widget = menu.widgets[widget_id]
+    def select(self, name: str, menu: Menu, board: Board, bus: collections.deque):
+        widget = menu.widgets[name]
         
         selection = widget.binding.selection
         target_key = widget.binding.selector
