@@ -13,10 +13,10 @@ def update(players, mapping, delta):
     """
     for player in players:
         ix, iy = 0.0, 0.0
-        if PlayerGoals.UP in mapping.goals: iy -= 1.0
-        if PlayerGoals.DOWN in mapping.goals: iy += 1.0
-        if PlayerGoals.LEFT in mapping.goals: ix -= 1.0
-        if PlayerGoals.RIGHT in mapping.goals: ix += 1.0
+        if PlayerGoals.UP in mapping.world.goals: iy -= 1.0
+        if PlayerGoals.DOWN in mapping.world.goals: iy += 1.0
+        if PlayerGoals.LEFT in mapping.world.goals: ix -= 1.0
+        if PlayerGoals.RIGHT in mapping.world.goals: ix += 1.0
 
         # Axis-Snapping logic: nullify orthogonal axes for cardinal movement precedence
         if ix != 0.0 and iy == 0.0:

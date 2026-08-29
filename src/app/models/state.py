@@ -248,6 +248,7 @@ class PaneState:
     gap: int
     margins: Tuple[int, int, int, int]
 
+@dataclass(slots=True)
 class MeterState:
     position: Position # type: ignore
     reading_function: Callable[[], Union[int, float]]

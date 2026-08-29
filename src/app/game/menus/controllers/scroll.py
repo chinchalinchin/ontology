@@ -22,19 +22,21 @@ class ScrollController(MenuController):
     def open(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         pass
 
-    def select(self, id: str, menu: Menu, board: Board, bus: collections.deque) -> None:
+    def select(self, name: str, menu: Menu, board: Board, bus: collections.deque) -> None:
         """Fires when the user presses SELECT on a focused widget."""
-        widget = menu.widgets[id]
-        selection = widget.binding.selection
+        widget = menu.widgets[name]
         
-        # Find the targeted Page widget via the selector binding
-        target = widget.binding.selector 
-        if not target or target not in menu.widgets:
+        # 1. Get the action and the target key
+        selection = widget.binding.selection
+        target_key = widget.binding.selector 
+        
+        # 2. O(1) Dictionary Lookup
+        if not target_key or target_key not in menu.widgets:
             return
             
-        page = menu.widgets[target]
+        page = menu.widgets[target_key]
         
-        
+        # 3. Execute logic
         if selection == Selections.SCROLLDOWN:
             page.state.scrolldown()
             from app.game.menus.events import UpdateEvent

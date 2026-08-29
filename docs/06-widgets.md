@@ -301,18 +301,19 @@ menus:
             id: text
             name: text-display
             bind: 
-              selector: SCROLL
               state: context.content
           - instance: button
             id: arrow-up
             name: text-scroll-up
             bind: 
-              selection: SCROLLUP
+              selection: scrollup
+              selector: text-display
           - instance: button
             id: arrow-down
             name: text-scroll-down
             bind: 
-              selection: SCROLLDOWN
+              selection: scrooldown
+              selector: text-display
 ```
 
 This example will be referenced throughout the section.
@@ -337,8 +338,6 @@ The Provider, similiar to the [Decomposer](./03-compositions.md#decomposer), is 
 
 To start, ScreenPosition is a *configuration-time* concept, not a *runtime* concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values `(px * screensize.w, py * screensize.l)` and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute `Positions`, `Screen.draw()` can consume Widgets exactly like world Assets, satisfying the zero-allocation prior.
 
-TODO
-
 ### Controllers
 
 Every Menu has a Controller that handles Menu-specific logic. Widgets that are embedded into Menus have their states altered through action-reaction bindings which specify how a SelectionEvent propagates through the Menu. This logic is handled by the Controller.
@@ -347,36 +346,44 @@ However, since Menus are unpacked by the Provider into Assets, otherwise indisti
 
 **Bindings**
 
-The `selection` binding is a reference to an action to be consumed by Menu Controller when the `focus` has selected a Widget. 
+Bindings define how Widgets interact with user input and game state. They are divided into three distinct roles:
 
-The `selector` binding is a reference to a reaction to be propagated by the Menu controller when an action is initiated. 
+- `selection`: The specific action or command a Control Widget emits when selected by the user (e.g., `scrollup`).
+- `selector`: A direct pointer to the unique `name` of another Widget in the Menu. Used when a Control Widget needs to mutate or read another Widget's state.
+- `state`: A string path referencing a specific variable in the Event Context. The Provider resolves this string into a live state reference during Menu instantiation.
 
-The `state` binding is a reference to the Event Context and may be updated in response to an action or reaction.
+In the provided `text` Menu example, the `text-scroll-up` and `text-scroll-down` Buttons are bound to the `selection` actions `scrollup` and `scrolldown`. Because these buttons control the Page widget, their `selector` bindings are set to `text-display`—the unique name of the target Page. 
 
-In the provided `text` Menu example, the `text-scroll-up` and `text-scroll-down` Buttons are bound to the `selection` actions `SCROLLUP` and `SCROLLDOWN`, respectively. Buttons are traversible, so when a Button is selected, the `selection` binding ensures the Event propagates and is handled appropriately by the controller, in this case the `scroll` controller. The Controller implements an abstract `select()` method to delegate and route Events,
+When a Button is selected, the MenuMechanics route the input to the appropriate Controller (in this case, the `ScrollController`). The Controller uses the `selector` binding to perform an $O(1)$ dictionary lookup for the target widget and applies the `selection` action:
 
 ```python
 class ScrollController(Controller):
 
-    def select(self, widget_id: str, menu: Menu, board: Board):
-        selection = menu.widgets[widget_id].binding.get('selection', None)        
-        # do something with select
+    def select(self, widget_id: str, menu: Menu, board: Board, bus: collections.deque):
+        widget = menu.widgets[widget_id]
+        
+        selection = widget.binding.selection
+        target_key = widget.binding.selector
+        
+        if not target_key or target_key not in menu.widgets:
+            return
+            
+        target_widget = menu.widgets[target_key]
+        
+        # apply selection logic to target_widget...
+
 ```
 
-The implementation can then query the Menu Widget to find the appropriate `selector` and translate the Event into a Menu change.
+By decoupling the layout from the logic, Pages and Meters do not need to know what is controlling them; they only require a `state` binding to know what data they are displaying.
 
-In addition, the example also shows the `text` Menu binding to the `text-display` as the recipient of the `selection` actions, via the `SCROLL` `selector`.
+Bindings are enumerated and summarized below:
 
-Bindings are enumerated and summarized below,
-
-- `selections`:  Widget action binding.
-    - `SCROLLUP`
-    - `SCROLLDOWN`
-    - `SELECT`
-- `selector`: Widget reaction binding
-    - `SCROLL`
-    - `SLOT`
-- `state`: Reference to Event Context.
+* `selections`:  Widget action commands.
+    * `SCROLLUP`
+    * `SCROLLDOWN`
+    * `SELECT`
+* `selector`: The dictionary key (`name`) of a target Widget in `menu.widgets`.
+* `state`: String path to the Event Context (e.g., `context.sprite.state.psyche.communication`).
 
 ### Layouts
 

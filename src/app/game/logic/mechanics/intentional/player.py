@@ -35,8 +35,8 @@ class PlayerMechanics(Mechanic):
         player = board.player()
         poll = board.device.poll()
         
-        if poll.world.intentions:
-            player.state.intention = poll.world.intentions
+        if poll.world.intention:
+            player.state.intention = poll.world.intention
         else:
             player.state.intention = Intentions.IDLE
         

@@ -68,8 +68,8 @@ class Provider:
         if not text or not font:
             return [text]
             
-        margin_w = int(w * font.margins)
-        margin_l = int(l * font.margins)
+        margin_w = int(w * font.margin)
+        margin_l = int(l * font.margin)
         
         wrap_width = w - (2 * margin_w)
         wrap_height = l - (2 * margin_l)
@@ -143,7 +143,7 @@ class Provider:
         if isinstance(cfg, MenuPane):
             self._unpack_pane(cfg, context, widgets)
         else:
-            widgets[cfg.id] = self._unpack_widget(cfg, context)
+            widgets[cfg.name] = self._unpack_widget(cfg, context)
             
     def _unpack_pane(self, pane: MenuPane, context: dict, widgets: Dict[str, Asset]) -> None:
         props = self.properties.panes.get(pane.id)
@@ -169,7 +169,7 @@ class Provider:
             animation       = Factory.animation(recipe.animation) if recipe \
                                 else Factory.animation(None)
         )
-        widgets[pane.id] = pane_asset
+        widgets[pane.name] = pane_asset
     
         # 2. Recurse into children
         for child in pane.children:
@@ -204,23 +204,23 @@ class Provider:
         elif cfg.instance == AssetInstances.METERS:
             resolved = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else None
             # Inject dynamic getter closures to continuously evaluate the bound memory reference
-            reading_cb = lambda r=resolved: (
+            reading_function = lambda r=resolved: (
                 r.current if hasattr(r, 'current') 
                     else (r if isinstance(r, (int, float)) else 0)
             )
-            unit_cb = lambda r=resolved: (
+            unit_function = lambda r=resolved: (
                 r.maximum if hasattr(r, 'maximum') 
                     else (1 if isinstance(r, (int, float)) else 1)
             )
             state = MeterState(
                 position=Position(x=0, y=0),
-                reading_cb=reading_cb,
-                unit_cb=unit_cb
+                reading_function = reading_function,
+                unit_function = unit_function
             )
         elif cfg.instance == AssetInstances.BUTTONS:
             state = TraversalState(
                 position=Position(x=0, y=0),
-                status=cfg.status or Statuses.IDLE,
+                status=cfg.status.value or Statuses.IDLE.value,
                 icons=[]
             )
         else:

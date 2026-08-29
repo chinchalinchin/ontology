@@ -22,6 +22,8 @@ from libs.core.models import (
     Dimensions
 )
 from libs.graphics.render import (
+    clear, 
+    present,
     canvas, 
     construct, 
     render, 
@@ -148,11 +150,9 @@ class Screen:
 
         return Position(x=cam_x, y=cam_y)
 
-    def clear(self) -> None:
-        render.clear()
+    def clear(self) -> None: clear()
 
-    def present(self) -> None:
-        render.present()
+    def present(self) -> None: present()
 
     def draw(self, 
         assets: List[Asset], 

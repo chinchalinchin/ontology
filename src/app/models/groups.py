@@ -21,7 +21,8 @@ from app.models.config import (
     RecipeConfiguration,
     MappingConfiguration,
     IntentionConfiguration,
-    ActionConfiguration
+    ActionConfiguration,
+    MenuConfiguration
 )
 
 # ---------------------------------------------------------------------------------------
@@ -46,6 +47,7 @@ class ConfigurationGroup:
     mappings: MappingConfiguration
     intentions: Dict[Intentions, List[IntentionConfiguration]]
     actions: List[ActionConfiguration]
+    menus: Dict[str, MenuConfiguration]
 
 @dataclass(slots=True)
 class SpawnableGroup:

@@ -21,7 +21,7 @@ class MenuController(ABC):
         pass
 
     @abstractmethod
-    def select(self, id: str, menu: Menu, board: Board, bus: collections.deque) -> None:
+    def select(self, name: str, menu: Menu, board: Board, bus: collections.deque) -> None:
         pass
         
     @abstractmethod

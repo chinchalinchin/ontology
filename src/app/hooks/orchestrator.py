@@ -82,7 +82,8 @@ class Orchestrator:
             recipes=self.configurations.recipes,
             mappings=self.configurations.mappings,
             intentions=self.configurations.intentions,
-            actions=self.configurations.actions
+            actions=self.configurations.actions,
+            menus=self.configurations.menus
         )
 
         # 2. Globally pre-hydrate Actions in Properties.

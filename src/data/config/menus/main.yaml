@@ -11,22 +11,23 @@ menus:
         alignment: start
         gap: 10
         children: 
-          - instance: page
+          - instance: pages
             id: text
             name: text-display
             bind:
-              selector: scroll
               state: context.content
-          - instance: button
+          - instance: buttons
             id: arrow-up
             name: text-scroll-up
             bind: 
               selection: scrollup
-          - instance: button
+              selector: text-display
+          - instance: buttons
             id: arrow-down
             name: text-scroll-down
             bind: 
               selection: scrolldown
+              selector: text-display
   dialogue:
     controller: scroll
     roots: 
@@ -39,27 +40,28 @@ menus:
         alignment: start
         gap: 10
         children: 
-          - instance: page
+          - instance: pages
             id: portrait
             name: character-portrait
             bind: 
               state: context.sprite.state.character.portrait
-          - instance: page
+          - instance: pages
             id: dialogue
             name: character-speech
             bind:
-              selector: scroll
               state: context.sprite.state.psyche.communication
-          - instance: button
+          - instance: buttons
             id: arrow-up
             name: character-speech-scroll-up
             bind: 
               selection: scrollup
-          - instance: button
+              selector: character-speech
+          - instance: buttons
             id: arrow-down
             name: character-speech-scroll-down
             bind: 
               selection: scrolldown
+              selector: character-speech
   view:
     controller: display
     roots: 
@@ -72,18 +74,18 @@ menus:
         alignment: start
         gap: 10
         children: 
-          - instance: meter
+          - instance: meters
             id: health
             name: health-meter
             bind: 
               state: context.sprite.state.meters.health
-          - instance: button
+          - instance: buttons
             id: slot
             name: weapon-slot
             status: disabled
             bind:
               state: context.sprite.state.inventory.equipment.weapon
-          - instance: button 
+          - instance: buttons
             id: slot
             name: shield-slot
             status: disabled

@@ -18,7 +18,7 @@ class DisplayController(MenuController):
     def open(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         pass
 
-    def select(self, id: str, menu: Menu, board: Board, bus: collections.deque) -> None:
+    def select(self, name: str, menu: Menu, board: Board, bus: collections.deque) -> None:
         """Fires when the user presses SELECT on a focused widget."""
         pass
         

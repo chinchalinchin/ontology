@@ -4,13 +4,25 @@
 Package for Menu spatial layouts and traversal graph generation.
 """
 # Standard Libraries
-from typing import List, Dict, Tuple, Union
+from typing import (
+    List, 
+    Dict, 
+    Tuple, 
+    Union
+)
 import logging
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.enums import Layouts, Alignments
-from app.models.config import MenuPane, MenuWidget
+from app.config.enums import (
+    Layouts, 
+    Alignments,
+    Traversal
+)
+from app.models.config import (
+    MenuPane, 
+    MenuWidget
+)
 
 # Cython Libraries
 from libs.core.models import Position, Dimensions
@@ -28,7 +40,7 @@ class LayoutEngine:
         
         for root_cfg in root_cfgs:
             # 1. Calculate the initial Root Anchor from percentages
-            root_asset = widgets[root_cfg.id]
+            root_asset = widgets[root_cfg.name]
             if root_cfg.position:
                 root_asset.state.position = Position(
                     x=int(root_cfg.position.px * self.screensize.w),
@@ -41,7 +53,7 @@ class LayoutEngine:
         return flattened, graph
 
     def _compute_recursive(self, cfg: Union[MenuPane, MenuWidget], widgets: Dict, flattened: List) -> None:
-        asset = widgets.get(cfg.id)
+        asset = widgets.get(cfg.name)
         if not asset: return
 
         # Add to rendering list in exact DFS topological order
@@ -52,7 +64,7 @@ class LayoutEngine:
             return
 
         # Recursive Step: Parent computes absolute positions for immediate children
-        children_assets = [widgets[c.id] for c in cfg.children if c.id in widgets]
+        children_assets = [widgets[c.name] for c in cfg.children if c.name in widgets]
         
         if cfg.layout == Layouts.DOCK:
             self._layout_dock(asset, children_assets, cfg.alignment, cfg.gap)
@@ -153,8 +165,8 @@ class LayoutEngine:
         """
         graph = {}
         for b1 in buttons:
-            b1_id = b1.id
-            graph[b1_id] = {}
+            b1_name = b1.name
+            graph[b1_name] = {}
             b1_pos = b1.state.position
             b1_dim = b1.dimensions
             
@@ -187,15 +199,15 @@ class LayoutEngine:
             # Assign adjacent boundaries based on min/max distances
             if south_candidates:
                 closest = min(south_candidates, key=lambda b: b.state.position.y)
-                graph[b1_id]['south'] = closest.id
+                graph[b1_name][Traversal.SOUTH] = closest.id
             if north_candidates:
                 closest = max(north_candidates, key=lambda b: b.state.position.y)
-                graph[b1_id]['north'] = closest.id
+                graph[b1_name][Traversal.NORTH] = closest.id
             if east_candidates:
                 closest = min(east_candidates, key=lambda b: b.state.position.x)
-                graph[b1_id]['east'] = closest.id
+                graph[b1_name][Traversal.EAST] = closest.id
             if west_candidates:
                 closest = max(west_candidates, key=lambda b: b.state.position.x)
-                graph[b1_id]['west'] = closest.id
+                graph[b1_name][Traversal.WEST] = closest.id
 
         return graph
