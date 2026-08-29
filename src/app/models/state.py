@@ -346,10 +346,6 @@ class SheetStateInstances:
     players: List[PlayerState] = field(default_factory=list)
 
 @dataclass(slots=True)
-class WidgetStateInstances:
-    pass
-
-@dataclass(slots=True)
 class StateSchema:
     tiles: TileStateInstances = field(default_factory=TileStateInstances)
     objects: ObjectStateInstances = field(default_factory=ObjectStateInstances)

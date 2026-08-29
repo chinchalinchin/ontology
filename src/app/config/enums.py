@@ -57,7 +57,9 @@ class Equipment(str, Enum):
     UTILITIES       = "utilities"
     TOOLS           = "tools"
     SHIELDS         = "shields"
-    
+
+class Shortcuts(str, Enum):
+    COMPOSITIONS    = "compositions"
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 
 class FrameRecipe(str, Enum):

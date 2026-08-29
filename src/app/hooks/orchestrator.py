@@ -14,7 +14,8 @@ from app.config.enums import (
     AssetCategories, 
     AssetInstances,
     Devices,
-    Mechanics
+    Mechanics,
+    Shortcuts
 )
 from app.game.board import Board
 from app.game.engine import Engine
@@ -25,7 +26,6 @@ from app.hooks.factory import Factory
 from app.hooks.decomposer import Decomposer
 from app.models.groups import (
     SpawnableGroup, 
-    ConfigurationGroup, 
     EquipmentGroup
 )
 from app.models.state import StateSchema
@@ -76,17 +76,8 @@ class Orchestrator:
     
     def migrate(self) -> Board:
         logger.info("Migrating validated data to engine models...")
-        
-        # 1. Migrate Configuration
-        configurations = ConfigurationGroup(
-            recipes=self.configurations.recipes,
-            mappings=self.configurations.mappings,
-            intentions=self.configurations.intentions,
-            actions=self.configurations.actions,
-            menus=self.configurations.menus
-        )
 
-        # 2. Globally pre-hydrate Actions in Properties.
+        # 1. Globally pre-hydrate Actions in Properties.
         resolved_sheets = {}
         for sheet_field in dataclasses.fields(self.properties.sheets):
             sheet_type = sheet_field.name
@@ -94,15 +85,24 @@ class Orchestrator:
             resolved_dict = {}
             for e_id, e_props in sheet_dict.items():
                 if isinstance(e_props.actions, str):
-                    action_data = next((a.data for a in configurations.actions if a.id == e_props.actions), {})
-                    resolved_dict[e_id] = dataclasses.replace(e_props, actions=action_data)
+                    action_data = next((a.data 
+                        for a in self.configurations.actions 
+                        if a.id == e_props.actions
+                    ), {})
+                    resolved_dict[e_id] = dataclasses.replace(
+                        e_props, 
+                        actions=action_data
+                    )
                 else:
                     resolved_dict[e_id] = e_props
             resolved_sheets[sheet_type] = resolved_dict
             
-        self.properties.sheets = dataclasses.replace(self.properties.sheets, **resolved_sheets)
+        self.properties.sheets = dataclasses.replace(
+            self.properties.sheets, 
+            **resolved_sheets
+        )
 
-        # 3. Migrate Assets without State (Equipment)
+        # 2. Migrate Assets without State (Equipment)
         equipment = EquipmentGroup(
             armor=self.properties.sheets.armor,
             weapons=self.properties.sheets.weapons,
@@ -113,53 +113,88 @@ class Orchestrator:
        
         assets = []
         
-        # 4. Intercept and Migrate Compositions
-        if hasattr(self.state, 'compositions') and self.state.compositions:
+        # 3. Intercept and Migrate Compositions
+        if hasattr(self.state, Shortcuts.COMPOSITIONS.value) and \
+            self.state.compositions:
             for comp_deployed_state in self.state.compositions:
                 expanded_assets = self.decomposer.unpack(comp_deployed_state)
                 assets.extend(expanded_assets)
 
-        # 5. Migrate Assets With State        
+        # 4. Migrate Assets With State        
         for cat_field in dataclasses.fields(self.state):
             category_key = cat_field.name
-            if category_key == 'compositions': continue  # Pre-handled above
-            category_data = getattr(self.state, category_key)
+            # Pre-handled above
+            if category_key == Shortcuts.COMPOSITIONS.value: continue 
+            category_data = getattr(
+                self.state, 
+                category_key
+            )
             if not category_data: continue
             
             for inst_field in dataclasses.fields(category_data):
                 instance_key = inst_field.name
-                instance_list = getattr(category_data, instance_key)
+                instance_list = getattr(
+                    category_data, 
+                    instance_key
+                )
                 if not instance_list: continue
                 
                 for state_obj in instance_list:
                     asset_id = state_obj.id
                     asset_name = state_obj.name
                     
-                    cat_recipes = getattr(self.configurations.recipes, category_key, None)
-                    recipe = getattr(cat_recipes, instance_key, None) if cat_recipes else None
+                    cat_recipes = getattr(
+                        self.configurations.recipes, 
+                        category_key, 
+                        None
+                    )
+                    recipe = getattr(
+                        cat_recipes, 
+                        instance_key, 
+                        None
+                    ) if cat_recipes else None
                     
                     # --- PLAYER PROPERTY MAPPING ---
-                    # Players are state instances, but their physical properties map to the Sprites schema
+                    # **NOTE**: Players are state instances, but their 
+                    # physical properties map to the Sprites schema
                     prop_instance_key = instance_key
-                    if category_key == AssetCategories.SHEETS and instance_key == AssetInstances.PLAYERS:
+                    if category_key == AssetCategories.SHEETS and \
+                        instance_key == AssetInstances.PLAYERS:
                         prop_instance_key = AssetInstances.SPRITES
-                        
-                    cat_props = getattr(self.properties, category_key, None)
-                    inst_props = getattr(cat_props, prop_instance_key, {}) if cat_props else {}
-                    props = inst_props.get(asset_id)
                     # ---------------------------------
+                        
+                    cat_props = getattr(
+                        self.properties, 
+                        category_key, 
+                        None
+                    )
+                    inst_props = getattr(
+                        cat_props, 
+                        prop_instance_key, 
+                        {}
+                    ) if cat_props else {}
+                    props = inst_props.get(asset_id)
                     
                     assets.append(Asset(
-                        taxonomy   = Factory.taxonomy(asset_id, asset_name, category_key, instance_key),
+                        taxonomy   = Factory.taxonomy(
+                            asset_id, 
+                            asset_name, 
+                            category_key, 
+                            instance_key
+                        ),
                         properties = props,
                         state      = state_obj,
-                        frame      = Factory.frame(recipe.frame) if recipe and recipe.frame else Factory.frame(None),
-                        animation  = Factory.animation(recipe.animation) if recipe and recipe.animation else Factory.animation(None)
+                        frame      = Factory.frame(recipe.frame) \
+                                        if recipe and recipe.frame \
+                                            else Factory.frame(None),
+                        animation  = Factory.animation(recipe.animation) \
+                                        if recipe and recipe.animation \
+                                            else Factory.animation(None)
                     ))
                     
         logger.info(f"Successfully migrated {len(assets)} assets.")
 
-        self.board = Board(assets, configurations, equipment)
+        self.board = Board(assets, self.configurations, equipment)
         return self.board
 
     def inject(self, device: Devices) -> Board:

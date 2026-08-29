@@ -1,28 +1,28 @@
 """
 # Ontology: app.game.board
 
-Package for game Board. The Board holds and mutates the state of the game for the engine loop.
+Package for game Board.
 """
-
 # Standard Libraries 
 import logging
-from typing import List, Dict, Tuple
+from typing import (
+    List, 
+    Dict, 
+    Tuple
+)
 
 # Application Libraries
-import app.config.settings as settings
 from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories,
     AssetInstances
 )
-from app.hooks.cradle import Cradle
+import app.config.settings as settings
 from app.game.devices import Device
 from app.game.menus.core import Menu
-from app.models.groups import (
-    ConfigurationGroup,
-    EquipmentGroup
-)
-from app.models.config import DeviceMapping
+from app.hooks.cradle import Cradle
+from app.models.config import ConfigurationSchema
+from app.models.groups import EquipmentGroup
 
 # Cython Libraries
 from libs.core.models import Dimensions, Position
@@ -40,7 +40,7 @@ class Board:
     loaded: bool
     paused: bool
     # Configurations
-    configurations: ConfigurationGroup
+    configurations: ConfigurationSchema
     equipment: EquipmentGroup
     # Game Components
     device: Device
@@ -63,7 +63,7 @@ class Board:
 
     def __init__(self, 
         assets: List[Asset], 
-        configurations: ConfigurationGroup,
+        configurations: ConfigurationSchema,
         equipment: EquipmentGroup
     ):
         logger.info(f"Initializing Board with {len(assets)} incoming assets.")
@@ -203,11 +203,12 @@ class Board:
 
     def player(self, slot = 0) -> Asset:
         """
-        Returns the player at the indicated slot. Defaults 0.
+        Returns the player at the indicated slot. Defaults to 0.
         """
         if slot < len(self._all_instances[AssetInstances.PLAYERS]):
             return self._all_instances[AssetInstances.PLAYERS][slot]
         return self._all_instances[AssetInstances.PLAYERS][0]
+
 
     def tile(self, layer: str, position: Position) -> Asset:
         """
@@ -276,6 +277,7 @@ class Board:
                 if asset.category != AssetCategories.TILES
             ]
         return self._cached_renderables.get(layer, [])
+
 
     def size(self, layer=None) -> List[Dimensions]:
         """
