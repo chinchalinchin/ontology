@@ -1,0 +1,40 @@
+compositions:
+  brick-house:
+    root:
+      strut: 
+        id: frame-brick
+        name: house-exterior
+      components:
+        objects:
+          doors:
+            - id: mansion
+              name: house-door
+              outlayer: 'compose-layer'
+              position:
+                x: 20
+                y: 20
+              out:
+                x: 10
+                y: 10
+    branches:
+      - strut: 
+          id: wall-blue
+          name: house-interior
+          owner: bind(root.owner)
+          layer: 'compose-layer'
+          position:
+            x: 10
+            y: 10
+        components:
+          objects:
+            doors:
+              - id: door-shadow
+                name: door-frame
+                layer: 'compose-layer'
+                outlayer: bind(root.layer)
+                position:
+                  x: 20
+                  y: 20
+                out:
+                  x: 10
+                  y: 10

@@ -7,4 +7,7 @@ build/**
 **/**.pyc
 **/*.*-dump.md
 **/prompt.md
+**/.pytest_cache/**
+**/.vscode/**
+
 !**/.gitkeep

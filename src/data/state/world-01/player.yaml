@@ -3,6 +3,7 @@ sheets:
     - id: player
       name: player
       layer: '0'
+      depth: 0
       position:
         x: 10
         y: 10
@@ -21,7 +22,7 @@ sheets:
       inventory: 
         loot: null
         equipment:
-          armor: leather
+          armor: null
           tool: null
           utility: null
           weapon: null

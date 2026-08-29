@@ -9,20 +9,20 @@ import logging
 from typing import List, Dict, Tuple
 
 # Application Libraries
+import app.config.settings as settings
 from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories,
     AssetInstances
 )
-import app.config.settings as settings
-from app.game.cradle import Cradle
+from app.hooks.cradle import Cradle
 from app.game.devices import Device
-from app.game.logic.mechanics import Mechanic
+from app.game.menus.core import Menu
 from app.models.groups import (
     ConfigurationGroup,
     EquipmentGroup
 )
-from app.models.config import Mapping
+from app.models.config import DeviceMapping
 
 # Cython Libraries
 from libs.core.models import Dimensions, Position
@@ -35,17 +35,20 @@ class Board:
 
     Central database for the game Engine. Holds all Asset state and configuration, and provides queryable interfaces for Mechanics to retrieve pertinent game data.
     """
+    # ------- Public Fields
     # Flags
     loaded: bool
     paused: bool
-    # Public Fields
+    # Game Objects
     configurations: ConfigurationGroup
     equipment: EquipmentGroup
+    device: Device
     cradle: Cradle
-    # Hidden Fields
+    menus: List[Menu]
+    overlays: List[Menu]
+    # ------- Private Fields
+    # Game Objects
     _assets: List[Asset]
-    _mechanics: List[Mechanic]
-    _device: Device
     # Caches
     _cached_categories: Dict[str, Dict[str, List[Asset]]]
     _cached_instances: Dict[str, Dict[str, List[Asset]]]
@@ -65,6 +68,8 @@ class Board:
         logger.info(f"Initializing Board with {len(assets)} incoming assets.")
         self.loaded = False
         self.paused = False
+        self.menus = []
+        self.overlays = []
         self.configurations = configurations
         self.equipment = equipment
         self._assets = assets
@@ -176,17 +181,22 @@ class Board:
 
     # ------------------------------------------------ SETTERS 
 
-    def set_device(self, device: Device):
+    def set_device(self, device: Device) -> None:
         """
         Sets the Device on the board for polling.
         """
-        self._device = device
+        self.device = device
 
 
-    def set_cradle(self, cradle: Cradle):
+    def set_cradle(self, cradle: Cradle) -> None:
         """
         """
         self.cradle = cradle
+
+    def set_overlays(self, overlays: List[Menu]) -> None:
+        """
+        """
+        self.overlays = overlays
 
     # ------------------------------------------------ GETTERS
 
@@ -197,16 +207,6 @@ class Board:
         if slot < len(self._all_instances[AssetInstances.PLAYERS]):
             return self._all_instances[AssetInstances.PLAYERS][slot]
         return self._all_instances[AssetInstances.PLAYERS][0]
-
-
-    def poll(self) -> Mapping:
-        """
-        Polls the Board device.
-        """
-        if self._device:
-            return self._device.poll()
-        return Mapping()
-
 
     def tile(self, layer: str, position: Position) -> Asset:
         """
@@ -276,6 +276,24 @@ class Board:
             ]
         return self._cached_renderables.get(layer, [])
 
+    def size(self, layer=None) -> List[Dimensions]:
+        """
+        Calculates the size of Board by layer. If no layer is specified, method will return a list of all layer sizes as a List.
+        """
+
+        layers = [ layer ] if layer is not None else self.layers()
+        layer_sizes = []
+
+        for layer in layers:
+            tiles = self.categories(AssetCategories.TILES, layer)
+            w = max([ tile.state.position.x + tile.state.multiple.nx * tile.properties.dimensions.w 
+                    for tile in tiles ], default = 0)
+            l = max([tile.state.position.y + tile.state.multiple.ny * tile.properties.dimensions.l
+                    for tile in tiles], default = 0)
+            layer_sizes.append(Dimensions(w=w, l=l))
+        return layer_sizes
+
+    # ------------------------------------------------ MUTATORS
 
     def relayer(self, asset: Asset, new_layer: str) -> None:
         """
@@ -343,9 +361,6 @@ class Board:
         if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0:
             self._cached_weights[new_layer].append(asset)
 
-        if cat != AssetCategories.TILES:
-            self._cached_renderables[new_layer].append(asset)
-
 
     def add(self, additions: List[Asset]) -> None:
         """
@@ -370,7 +385,7 @@ class Board:
                 self._cached_renderables[layer].append(asset)
 
             if hasattr(asset.properties, 'mass'):
-                self._cached_weights[asset.layer].append(asset)
+                self._cached_weights[layer].append(asset)
 
 
     def remove(self, removals: List[Asset]) -> None:
@@ -407,21 +422,3 @@ class Board:
                 
             if inst in self._all_instances and asset in self._all_instances[inst]:
                 self._all_instances[inst].remove(asset)
-
-
-    def size(self, layer=None) -> List[Dimensions]:
-        """
-        Calculates the size of Board by layer. If no layer is specified, method will return a list of all layer sizes as a List.
-        """
-
-        layers = [ layer ] if layer is not None else self.layers()
-        layer_sizes = []
-
-        for layer in layers:
-            tiles = self.categories(AssetCategories.TILES, layer)
-            w = max([ tile.state.position.x + tile.state.multiple.nx * tile.properties.dimensions.w 
-                    for tile in tiles ], default = 0)
-            l = max([tile.state.position.y + tile.state.multiple.ny * tile.properties.dimensions.l
-                    for tile in tiles], default = 0)
-            layer_sizes.append(Dimensions(w=w, l=l))
-        return layer_sizes

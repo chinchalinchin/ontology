@@ -54,11 +54,15 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
     - `parameters: Dict[str, Dict[str, Union[int, double]]]`
 - `memory:` 
     - `goal: Goal`
-    - `communication: List[str]` 
+    - `lexicon: List[str]`: (Lexicon keys for Library Communication retrieval)
     - `prices: Dict[str, double]`
     - `relationships: Dict[str, str]`
     - `property: List[str]`
-- `goal:` 
+- `psyche`:
+    - `expression: str`
+    - `motivation: str`
+    - `persona: str`: (Person ley for Library Communication retrieval)
+- `goal:`
     - `name: str`
     - `category: Enum[sprite, loot, wealth, property, position]`
     - `position: Position`
@@ -83,7 +87,7 @@ See [Intentions documentation](./04-intentions.md) for more information.
 
 Goals are the current focus of the Sprite's path-finding and Direction resolution.
 
-See [Goals documentation](04-intentions.md) for more information.
+See [Goals documentation](./04-intentions.md) for more information.
 
 ### Meters
 
@@ -99,23 +103,16 @@ TODO
 
 ### Character
 
-**Strength**
-
-TODO
-
-**Defense**
-
-TODO
-
-**Speed**
-
-TODO
+- **Strength**: TODO
+- **Defense**: TODO
+- **Speed**: Speed determines the maximum magnitude of a Sprite's Velocity vector.
+- **Impulse**: Impulse determines the rate of change of a Sprite's Velocity vector.
 
 ### Mutators
 
 Mutators are attributes that alter Sprite behavior. They are functions of the Sprite's state, i.e. they are calculated from state attributes, not *primitive* state attributes themselves.
 
-Mutators are *condition-driven*. They may also be *parameterized*; In other words, all Mutators are *conditional* but not all Mutators are parameterized. Parameters modulate the conditions underlying the Mutator calculation. Both Sprites and the [Player](./03-player.md) have Mutator fields, but only Sprites have parameterized Mutators; the Player Mutators are all purely driven by game logic. In other words, the Player Mutator triggers serve to flag the game-loop to apply trigger-specific procedures to the Player Asset, whereas Sprite Mutator triggers depend on the specific parameters unique to the Sprite's deployment. 
+Mutators are *condition-driven*. They may also be *parameterized*; In other words, all Mutators are *conditional* but not all Mutators are parameterized. Parameters modulate the conditions underlying the Mutator calculation. Both Sprites and the [Player](#player) have Mutator fields, but only Sprites have parameterized Mutators; the Player Mutators are all purely driven by game logic. In other words, the Player Mutator triggers serve to flag the game-loop to apply trigger-specific procedures to the Player Asset, whereas Sprite Mutator triggers depend on the specific parameters unique to the Sprite's deployment. 
 
 - Parameterized Mutators: `fear`, `vision`
 - Conditional Mutators: `animated`, `dead`, `struck`
@@ -145,11 +142,11 @@ Animations are tuples of (Action, Direction, Frame). Action and Direction were p
 
 The *Psyche* is an internal State data structure that governs a Sprite's ancillary Animation and Intention logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations and modulations of the Sprite state. The complete Psyche state for a Sprite is given by the tuple,
 
-    (Communcation, Expression, Motivation)
+    (Persona, Expression, Motivation)
 
-**Communication**
+**Persona**
 
-The Communication dimension of a Psyche can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the `speak` Intention.
+A Sprite persona is a data structure used to index Dialogue to a Sprite through the [Library](./08-plots.md#library). It can be thought of as the "personality" of the Sprite.
 
 **Expression**
 
@@ -163,6 +160,8 @@ The Expression dimension alter the Sprite's appearnce by appending a Cursor Expr
 - `loquacity`
 - `surprise`
 - `tired`
+
+Over and above this modification to the Asset frame, the Expression dimension of a Sprite's Psyche can be thought of as the short-term memory or a buffer for dialogue the Sprite is about to transmit. This field holds the lexicon key that will be exchanged at the [Library](./08-plots.md#library) for content and rendered in a [Dialogue Menu](./06-widgets.md#menus) if the Player enters into the `speak` Intention. In addition, Sprites may enter into `speak` Intentions with other Sprites, but these events are not routed to [Menus](./06-widgets.md#menus). Instead, Sprite-to-Sprite Dialogue is used by the [RumorMechanics](./05-mechanics.md).
 
 **Motivation**
 
@@ -181,21 +180,10 @@ Motivations are long-term state variables that are used to modulate the [Intenti
 *Memory* is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. 
 
 - `memory.goal`: Remember Goal. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.
-- `memory.communications`: List of saved dialogue.
+- `memory.rumors`: List of Lexicon keys the Sprite has heard through entering into the `speak` Intention.
 - `memory.prices`:
 - `memory.relationship`:
 - `memory.property`:
-
-**Communications**
-
-Under certain conditions based on the Sprite's Intention, the Sprite may emit a Communication through the `speak` Intention. For example, a Sprite in the `mock` Intention might receive a Communication key `insult`. This key gets stored at the *beginning* (0 index) of the `memory.communications` list. 
-
-When a Sprite with a non-empty `memory.communications` enters the `speak` Intention, the gameplay loop will then take the first entry out of this Sprites `memory.communications` list, delete it from this list and place it in the `psyche.communication` cell. 
-
-!!! important
-    The last entry in `memory.communications` is *never* deleted. The entry is termed *unforgettable*.
-
-When a Sprite with a non-null `psyche.communication` (re-)enters the `speak` Intention, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the `intention.communication` cell.
 
 **Prices**
 
@@ -206,11 +194,15 @@ When two Sprites enter the `speak` Intention within a certain radius of each oth
 1. It averages the intersection of Prices. For example, if one Sprite has a price of 1 for Loot A and another has a price of 5 for Loot A, then the new price of Loot A for both Sprites will be (1 + 5)/2 = 3. It performs this calculation for every such Loot Key the Sprites have in common.
 2. For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the `SpeechMechanic` will populate the Sprite's Prices.
 
+**Property**
+
+TODO
+
 **Relationships**
 
 TODO
 
-**Property**
+**Rumors**
 
 TODO
 
@@ -235,7 +227,7 @@ Equipment is a grouping of several Sheet Asset Instances that share the common f
 - Equipment: Armor, Tools, Utilities, Weapons
 
 !!! important
-    It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the [Sprite Sheets](#action-direction) equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This means Equipment frames may not be present in every frame. For example, the `longbow` only occupies the `(shoot, *)` rows of a Sheet, while all other rows of the `longbow` Asset file are blank.
+    It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the [Sprite Sheets](./01-assets.md#sheets) equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This means Equipment frames may not be present in every frame. For example, the `longbow` only occupies the `(shoot, *)` rows of a Sheet, while all other rows of the `longbow` Asset file are blank.
 
 ### Equipment Frames
 
@@ -270,3 +262,59 @@ sprite.state.animation.action = AnimationMap.action(
 
 !!! note
     Equipment properties are stored in the [Board](./00-overview.md#board) database.
+
+## Player
+
+A Player is a special type of Sprite Sheet Asset Instance. It may be thought of as a "*pseudo*"-Asset. It has no properties that differentiate it in the Hierarchy; Instead, it utilizes Sprite Sheet properties. It has own state and Intention management Mechanics. 
+
+The Player Sprite Sheet is configured through the `player` Sprite Sheet. 
+
+!!! important
+    The `player` Sprite *must* be defined in `/src/assets/sheets/main.yml#sprites`.
+
+**Taxonomy**
+
+* `category: sheets`
+* `instance: players`
+
+**State: PlayerState**
+
+* `position: Position`
+* `layer: str`
+* `meters:`
+    * `health:` 
+        * `current: int`
+        * `maximum: int`
+    * `magic: int`
+        * `current: int`
+        * `maximum: int`
+* `character:`
+    * `strength: int`
+    * `defense: int`
+    * `speed: int`
+* `animation:`
+    * `action: str`
+    * `direction: str`
+    * `frame: int`
+* `goal: Goal`
+* `intention: str` 
+* `inventory:`
+    * `loot: Dict[str, int]`
+    * `equipment:`
+        * `armor: str`
+        * `weapon: str`
+        * `tool: str`
+        * `utility: str`
+    * `wallet: int`
+
+### Devices
+
+The [Board](./00-overview.md#board) contains a Device, which polls for user input. The PlayerMechanic uses a Mapping to translate the polling data into a [(Intention, Goal)](./04-intentions.md)-tuple. The [Mapping Configuration](./appendices/01-schemas.md#mapping-configuration) file provides a translation key between input state and game state.
+
+**Keyboard**
+
+The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See [SDL documentation](https://wiki.libsdl.org/SDL2/SDL_Scancode) for more information.
+
+### Contexts
+
+The Device class implements a stateful context flag (`Context.WORLD` vs `Context.MENU`). Each Device mapping includes a `menu: Dict[MenuCommands, int]` mapping. When the Board Menus (`board.menus`) are populated, MenuMechanics toggles the device context, causing `poll()` to return Menu commands instead of [Intentions](./04-intentions.md).

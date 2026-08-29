@@ -1,0 +1,21 @@
+fonts:
+    dialogue:
+      alignment: start
+      bold: false
+      italics: false
+      margin: 5
+      color:
+        r: 200
+        g: 147
+        b: 216
+        a: 1.0
+    title:
+      alignment: center
+      bold: false
+      italics: false
+      margin: 0
+      color: 
+        r: 186
+        g: 104
+        b: 200
+        a: 1.0

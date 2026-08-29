@@ -1,10 +1,11 @@
 effects:
-  persistent:
+  collectables:
     coin:
       count: 8
       dimensions:
         w: 32
         l: 32
+  persistent:
     spike:
       count: 7
       dimensions:

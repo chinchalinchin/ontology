@@ -169,8 +169,12 @@ sheets:
             l: 15
       stack:
         - human-male-ivory
-        - hair-bangs-black
-        - boots-brown
-        - pants-green
-        - shirt-male-green
+        - feet-boots-black
+        - legs-robe-black
+        - torso-shirt-male-black
+        - toros-cape-black
+        - head-glasses
+        - head-beard-white
+        - hair-curls-white
+        - head-wizard-hat-moon
       actions: lpc-full

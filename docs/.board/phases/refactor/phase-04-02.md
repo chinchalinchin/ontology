@@ -4,7 +4,7 @@
 
 - Eliminate the parallel Pydantic DTO pipeline.
 - Fix critical bugs in spatial resolution and engine initialization.
-- Bridge the gap between documentation and codebase for the Event Bus to unblock Phase 05.
+- Ensure stability of core application components as development proceeds.
 
 ##### Tasks
 
@@ -21,20 +21,36 @@
 
 *Objective*: Ensure top-down physics fidelity.
 
-- [ ] Subtask: Refactor `CollisionMechanics._resolve` to calculate `overlap_x` and `overlap_y` using `Hitbox` coordinates rather than `Dimensions`.
-- [ ] Subtask: Update `Geometry.intersects` to return the specific intersecting `Hitbox` pair, rather than a simple boolean, so the narrow-phase solver knows exactly which boundaries to push apart.
+- [x] Subtask: Refactor `CollisionMechanics._resolve` to calculate `overlap_x` and `overlap_y` using `Hitbox` coordinates rather than `Dimensions`.
+- [x] Subtask: Update `Geometry.intersects` to return the specific intersecting `Hitbox` pair, rather than a simple boolean, so the narrow-phase solver knows exactly which boundaries to push apart.
 
 **3. Task: Engine & Orchestrator Patches**
 
 *Objective*: Resolve fatal typos and logic drift.
 
-- [ ] Subtask: Fix `self.mechaniccs` typo in `Orchestrator.init()`.
+- [x] Subtask: Fix `self.mechaniccs` typo in `Orchestrator.init()`.
 - [x] Subtask: Refactor `Action` mapping in `Orchestrator.migrate()` to prevent mutating `self.properties`.
-- [ ] Subtask: Add an `action_executed` boolean flag to `SpriteState` to prevent `CombatMechanics` from spawning multiple projectiles on `frame == 0`.
+- [x] Subtask: Add an `executed` boolean flag to `SpriteState.mutators.triggers` to prevent `CombatMechanics` from spawning multiple projectiles on `frame == 0`.
 
-**4. Task: Event Bus Bootstrapping**
+**4. Task: Unit Test Coverage**
 
-*Objective*: Prepare the engine for Phase 05: Widgets.
-- [ ] Subtask: Define `MenuEvent`, `SelectionEvent`, and `StateEvent` dataclasses in `app.models.state`.
-- [ ] Subtask: Add `bus: collections.deque` to `app.game.board.Board` to handle FIFO event queueing.
-- [ ] Subtask: Implement the `MenuMechanics` shell to drain and parse the `Board.bus` queue per tick.
+*Objective*: Lock in application functionality with unit-test coverage for core components.
+
+- [x] Subtask: Setup test fixtures for properties, state and configuration. 
+- [x] Subtask: Write unit tests for the Factory.
+- [x] Subtask: Write unit tests for the Cradle. 
+- [x] Subtask: Write unit tests for the Orchestrator
+- [x] Subtask: Write unit tests for the Board.
+- [x] Subtask: Write unit tests for the Decomposer.
+- [x] Subtask: Write unit tests for the Registry. 
+    - The primary goal is to get coverage on the `index()` Frame methods and ensure they are being calculated correctly for all possible Frame implementations.
+    - Ensure the rest of the code has good coverage and SDL methods are mocked.
+- [x] Subtask: Write unit tests for the Screen.
+    - The primary goal is to get coverage on the `keys()` Frame methods and ensure they are being calculated correctly for all possible Frame implementations.
+    - Ensure the rest of the code has good coverage and SDL methods are mocked.
+- [x] Subtask: Write unit tests for Keyboard.
+    - Mock SDL input. 
+    - Ensure Mapping return type and mappings have been applied correctly.
+    - Ensure Edge-Triggered polling behaves appropriately.  
+- [x] Subtask: Write unit tests for the Engine and AnimationMechanics
+    - The goal is to ensure the `animate()` is being called correctly for each Animation implementation. 

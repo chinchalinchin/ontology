@@ -2,7 +2,8 @@
 # ----------------------------------------------------------- CRAFTS
 crafts:
   struts:
-    adobe-house:
+    # ----------------------------------------------------- FRAMES
+    frame-adobe:
       dimensions:
         w: 96
         l: 160
@@ -17,7 +18,7 @@ crafts:
       cost:
         - item: clay
           quantity: 10
-    brick-house:
+    frame-brick:
       dimensions:
         w: 96
         l: 190
@@ -32,7 +33,8 @@ crafts:
       cost:
         - item: stone
           quantity: 10
-    wooden-fence-horizontal:
+    # ----------------------------------------------------- FENCES
+    fence-horizontal:
       dimensions:
         w: 72
         l: 73
@@ -47,7 +49,7 @@ crafts:
       cost:
         - item: wood
           quantity: 10
-    wooden-fence-vertical:
+    fence-vertical:
       dimensions:
         w: 8 
         l: 87
@@ -62,3 +64,55 @@ crafts:
       cost:
         - item: wood
           quantity: 10
+    # ----------------------------------------------------- FLOORS
+    floor-wood:
+      dimensions:
+        w: 128
+        l: 96
+      mass: -1
+      cost: 
+        - item: wood
+          quantity: 10
+    # ----------------------------------------------------- WALLS
+    wall-blue:
+      dimensions:
+        w: 128
+        l: 96
+      mass: 0
+      cost: 
+        - item: wood
+          quantity: 10
+      hitboxes:
+        - position:
+            x: 6
+            y: 17
+          dimensions:
+            w: 116
+            l: 54
+    wall-castle:
+      dimensions:
+        w: 222
+        l: 133
+      mass: 0
+      cost: 
+        - item: stone
+          quantity: 100
+      hitboxes:
+        - position:
+            x: 178
+            y: 102
+          dimensions:
+            w: 25
+            l: 12
+        - position: 
+            x: 17
+            y: 102
+          dimensions:
+            w: 25
+            l: 12
+        - position:
+            x: 5
+            y: 39
+          dimensions:
+            w: 203
+            l: 63

@@ -1,13 +1,15 @@
 mechanics:
-  order:
+  core:
+    - menu
+    - animation
+    - remove
+  world:
     - player
     - transition
+    - commerce
     - motion
     - collision
+    - combat
+    - interaction
     - switch
     - projectile
-    - combat
-    - commerce
-    - speech
-    - animation 
-    - remove

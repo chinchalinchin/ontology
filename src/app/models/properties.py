@@ -4,7 +4,13 @@
 from typing import Dict, List, Union, Optional
 from dataclasses import dataclass, field
 
-from app.models.adapters import PydanticDimensions as Dimensions, PydanticHitbox as Hitbox
+from app.config.enums import Alignments
+from app.models.adapters import (
+    PydanticDimensions as Dimensions, 
+    PydanticHitbox as Hitbox
+)
+
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class Direction:
@@ -20,45 +26,71 @@ class Cost:
     item: str
     quantity: int
 
+# ---------------------------------------------------------------------------------------
+
 @dataclass(slots=True)
 class AssetProperties:
     pass 
 
+# ---------------------------------------------------------------------------------------
+
+@dataclass(slots=True)
+class RGBA:
+    r: int
+    g: int
+    b: int
+    a: float
+
+@dataclass(slots=True)
+class FontProperties:
+    alignment: Alignments
+    bold: bool
+    italics: bool
+    margin: int
+    color: RGBA
+
+# ---------------------------------------------------------------------------------------
+
 @dataclass(slots=True)
 class CursorProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
 
 @dataclass(slots=True)
 class EffectProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
     count: int 
 
 @dataclass(slots=True)
 class ObjectProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
     mass: int = 0
     count: int = 1
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
 
 @dataclass(slots=True)
 class TileProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
     friction: float = 0.0
 
 @dataclass(slots=True)
 class CraftProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
     cost: List[Cost]
     mass: int = 0
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
 
 @dataclass(slots=True)
 class SheetProperties(AssetProperties):
-    dimensions: Dimensions
+    dimensions: Dimensions # type: ignore
     stack: List[str] = field(default_factory=list)
     mass: int = 0
-    hitboxes: Optional[List[Hitbox]] = field(default_factory=list)
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
     actions: Union[str, Dict[str, Action]] = field(default_factory=dict)
+
+@dataclass(slots=True)
+class WidgetProperties(AssetProperties):
+    dimensions: Dimensions # type: ignore
+    frames: Optional[List[str]] = field(default_factory=list)
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- ROOT SCHEMAS
@@ -102,6 +134,14 @@ class SheetPropertyInstances:
     players: Dict[str, SheetProperties] = field(default_factory=dict)
 
 @dataclass(slots=True)
+class WidgetPropertyInstances:
+    buttons: Dict[str, WidgetProperties] = field(default_factory=dict)
+    icons: Dict[str, WidgetProperties] = field(default_factory=dict)
+    meters: Dict[str, WidgetProperties] = field(default_factory=dict)
+    pages: Dict[str, WidgetProperties] = field(default_factory=dict)
+    panes: Dict[str, WidgetProperties] = field(default_factory=dict)
+
+@dataclass(slots=True)
 class PropertiesSchema:
     tiles: TilePropertyInstances = field(default_factory=TilePropertyInstances)
     effects: EffectPropertyInstances = field(default_factory=EffectPropertyInstances)
@@ -109,3 +149,5 @@ class PropertiesSchema:
     crafts: CraftPropertyInstances = field(default_factory=CraftPropertyInstances)
     cursors: CursorPropertyInstances = field(default_factory=CursorPropertyInstances)
     sheets: SheetPropertyInstances = field(default_factory=SheetPropertyInstances)
+    fonts: Dict[str, FontProperties] = field(default_factory=dict)
+    widgets: WidgetPropertyInstances = field(default_factory=WidgetPropertyInstances)

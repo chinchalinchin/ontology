@@ -6,6 +6,7 @@ Package for CombatMechanics
 # Standard Libraries
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import collections
 
 # Application Libraries
 if TYPE_CHECKING:
@@ -67,7 +68,7 @@ class CombatMechanics(SpatialMechanic):
                 if action in ['shoot', 'cast']:
                     # Trigger projectile spawn on critical frame (frame 0) to guarantee it's fired exactly once per action loop.
                     # TODO: update frame calculation with configuration
-                    if attacker.state.animation.frame == 0:
+                    if attacker.state.animation.frame == 0 and not attacker.state.mutators.triggers.executed:
                         proj_id = "TODO"
                         
                         proj = board.cradle.spawn_projectile(
@@ -78,6 +79,9 @@ class CombatMechanics(SpatialMechanic):
                         )
 
                         board.add([proj])
+                        attacker.state.mutators.triggers.executed = True
+                    elif attacker.state.animation.frame != 0:
+                        attacker.state.mutators.triggers.executed = False
                 else:
                     melee_attackers.append((attacker, active_hitboxes))
 
@@ -122,7 +126,7 @@ class CombatMechanics(SpatialMechanic):
                     target.state.position, 
                     target.dimensions, 
                     target.hitboxes
-                ):
+                ) is not None:
                     # Calculate and apply damage
                     damage = attacker.state.character.strength - target.state.character.defense
                     damage = max(1, damage)  # Minimum 1 damage on hit

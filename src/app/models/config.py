@@ -4,7 +4,12 @@
 Models for typing the configuration attributes of Mechanics and other game components. See documentation for a more in-depth explanation of each field and its purpose. 
 """
 # Standard Libraries
-from typing import Dict, List
+from typing import (
+    Dict, 
+    List, 
+    Optional, 
+    Union
+)
 from dataclasses import dataclass, field
 
 # Application Libraries
@@ -14,15 +19,29 @@ from app.config.enums import (
     StateRecipe,
     Intentions,
     PlayerGoals,
+    Statuses,
+    Layouts,
+    Alignments,
+    Menus,
+    Interactions,
+    Traversal
+)
+from app.game.menus.core import Binding
+from app.models.state import (
+    PropertyState, 
+    StateSchema
 )
 from app.models.properties import Action
-
-class Configuration:
-    pass
+from app.models.adapters import (
+    PydanticScreenPosition as ScreenPosition
+)
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ CONFIGURATION MODELS
 # ---------------------------------------------------------------------------------------
+
+class Configuration:
+    pass
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ RECIPE CONFIGURATION
@@ -71,6 +90,14 @@ class SheetRecipe:
     tools: Recipe = None
     shields: Recipe = None
 
+@dataclass(slots=True)
+class WidgetRecipe:
+    buttons: Recipe = None
+    icons: Recipe = None
+    meters: Recipe = None
+    pages: Recipe = None
+    panes: Recipe = None
+    
 @dataclass(slots=True) 
 class RecipeConfiguration(Configuration):
     """
@@ -81,19 +108,31 @@ class RecipeConfiguration(Configuration):
     effects: EffectRecipe = None
     objects: ObjectRecipe = None
     sheets: SheetRecipe = None
+    widgets: WidgetRecipe = None
 
 # ---------------------------------------------------------------------------------------
 # ----------------------------------------------------------------- MAPPING CONFIGURATION
 
 @dataclass(slots=True)
-class Mapping:
+class WorldMapping:
+    menus: Dict[Menus, int] = field(default_factory=dict)
     intentions: Dict[Intentions, int] = field(default_factory=dict)
     goals: Dict[PlayerGoals, int] = field(default_factory=dict)
 
 @dataclass(slots=True)
+class MenuMapping:
+    traversal: Dict[Traversal, int] = field(default_factory=dict)
+    interactions: Dict[Interactions, int] = field(default_factory=dict)
+
+@dataclass(slots=True)
+class DeviceMapping:
+    world: WorldMapping
+    menu: MenuMapping
+
+@dataclass(slots=True)
 class MappingConfiguration(Configuration):
-    keyboard: Mapping
-    controller: Mapping = None
+    keyboard: DeviceMapping
+    controller: DeviceMapping = None
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ ACTION CONFIGURATION
@@ -118,7 +157,47 @@ class IntentionConfiguration(Configuration):
 
 @dataclass(slots=True)
 class MechanicsConfiguration(Configuration):
-    order: List[str] = field(default_factory=list)
+    core: List[str] = field(default_factory=list)
+    world: List[str] = field(default_factory=list)
+
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------- COMPOSITION CONFIGURATION
+
+@dataclass(slots=True)
+class CompositionPseudoState:
+    strut: PropertyState
+    components: StateSchema
+
+@dataclass(slots=True)
+class CompositionConfiguration(Configuration):
+    root: CompositionPseudoState
+    branches: Optional[List[CompositionPseudoState]] = field(default_factory=list)
+
+# ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------------- MENU CONFIGURATION
+
+@dataclass(slots=True)
+class MenuWidget:
+    instance: str
+    id: str
+    name: str
+    bind: Binding
+    status: Statuses
+
+@dataclass(slots=True)
+class MenuPane:
+    id: str 
+    name: str
+    position: ScreenPosition # type: ignore
+    layout: Layouts
+    alignment: Alignments
+    gap: int
+    children: List[Union['MenuPane', MenuWidget]]
+
+@dataclass(slots=True)
+class MenuConfiguration(Configuration):
+    controller: str
+    roots: List[MenuPane]
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------- ROOT SCHEMA
@@ -130,3 +209,5 @@ class ConfigurationSchema:
     intentions: Dict[Intentions, List[IntentionConfiguration]] = field(default_factory=dict)
     actions: List[ActionConfiguration] = field(default_factory=list)
     mechanics: MechanicsConfiguration = field(default_factory=MechanicsConfiguration)
+    compositions: Dict[str, CompositionConfiguration] = field(default_factory=dict)
+    menus: Dict[str, MenuConfiguration] = field(default_factory=dict)

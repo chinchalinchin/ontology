@@ -10,7 +10,8 @@ from app.game.logic.mechanics.spatial import (
     ProjectileMechanics,
     CollisionMechanics,
     CombatMechanics,
-    SpatialMechanic
+    SpatialMechanic,
+    InteractionMechanics
 )
 from app.game.logic.mechanics.intentional import (
     TransitionMechanics,

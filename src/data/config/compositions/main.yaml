@@ -1,0 +1,92 @@
+compositions:
+  # --------------------------------------------------------------------------- 
+  brick-house:
+    root:
+      strut: 
+        id: frame-brick
+        name: house
+      components:
+        objects:
+          doors:
+            - id: door-house
+              name: entrance
+              outlayer: brick-house-compose-layer
+              depth: 1
+              height: bind(parent.height) # CORRECT: Decal on the exterior wall
+              position:
+                x: 32
+                y: 118
+              out:
+                x: 36
+                y: 148
+    branches:
+      - strut: 
+          id: wall-blue
+          name: house-interior
+          owner: bind(root.owner)
+          layer: brick-house-compose-layer
+          depth: 0 # Normal depth
+          # height: bind(parent.height) <--- REMOVED
+          position:
+            x: 0
+            y: 0
+        components:
+          objects:
+            doors:
+              - id: door-shadow
+                name: house-doorframe
+                layer: brick-house-compose-layer
+                outlayer: bind(root.layer)
+                depth: 0 # Normal depth
+                position:
+                  x: 47
+                  y: 142
+                out:
+                  x: 43
+                  y: 163
+          crafts: 
+            struts:
+              - id: floor-wood
+                name: house-floor
+                layer: brick-house-compose-layer
+                owner: bind(root.owner)
+                depth: 0
+                height: -100 # FORCE TO BOTTOM: Always render behind the player
+                position:
+                  x: 0
+                  y: 96
+  # --------------------------------------------------------------------------- 
+  postern-gate:
+    root:
+      strut: 
+        id: wall-castle
+        name: castle-wall
+      components:
+        objects:
+          gates:
+            - id: gate-castle
+              name: castle-entrance
+              link: castle-gate-link
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: 81
+                y: 49
+          plates:
+            - id: plate-stone
+              name: castle-entrance-switch
+              link: castle-gate-link
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: 24
+                y: 145
+          doors: 
+            - id: door-castle-open
+              name: castle-entrance-open
+              height: bind(root.height)
+              depth: 0
+              position:
+                x: 81
+                y: 49
+              outlayer: castle-compose-layer

@@ -15,7 +15,6 @@ class AssetCategories(str, Enum):
     CRAFTS          = "crafts"
     CURSORS         = "cursors"
     EFFECTS         = "effects"
-    MENUS           = "menus"
     OBJECTS         = "objects"
     SHEETS          = "sheets"
     TILES           = "tiles"
@@ -41,7 +40,7 @@ class AssetInstances(str, Enum):
     BUTTONS         = "buttons"
     PAGES           = "pages"
     METERS          = "meters"
-    LANGUAGE        = "language"
+    ICONS           = "icons"
     WEAPONS         = "weapons"
     ARMOR           = "armor"
     UTILITIES       = "utilities"
@@ -63,6 +62,8 @@ class FrameRecipe(str, Enum):
     ITERABLE        = "iterable"
     STATE           = "state"
     SPRITE          = "sprite"
+    METER           = "meter"
+    TRAVERSAL       = "traversal"
 
 class AnimationRecipe(str, Enum):
     NONE            = "none"
@@ -70,9 +71,12 @@ class AnimationRecipe(str, Enum):
     PERSISTENT      = "persistent"
     BINARY          = "binary"
     STATE           = "state"
+    METER           = "meter"
+    TRAVERSAL       = "traversal"
 
 class StateRecipe(str, Enum):
     NONE            = "none"
+    # ASSET STATES
     SPRITE          = "sprite"
     SWITCH          = "switch"
     DOOR            = "door"
@@ -83,7 +87,11 @@ class StateRecipe(str, Enum):
     METRIC          = "metric"
     MULTIPLIER      = "multiplier"
     PLAYER          = "player"
-
+    # WIDGET STATES
+    TRAVERSAL       = "traversal"
+    METER           = "meter"
+    DISPLAY         = "display"
+    PANE            = "pane"
 # -------------------------------- SPRITE STATE ENUMERATIONS
 
 class Directions(str, Enum):
@@ -171,7 +179,9 @@ class Mechanics(str, Enum):
     COLLISION       = "collision"
     COMBAT          = "combat"
     COMMERCE        = "commerce"
+    INTERACTION     = "interaction"
     MOTION          = "motion"
+    MENU            = "menu"
     PLAYER          = "player"
     PROJECTILE      = "projectile"
     REMOVE          = "remove"
@@ -187,11 +197,13 @@ class Configurations(str, Enum):
     MENUS           = "menus"
     RECIPES         = "recipes"
     SCRIPTS         = "scripts"
+    COMPOSITIONS    = "compositions"
 
 class Spawnables(str, Enum):
     TEMPORARY       = "temporary"
     PROJECTILES     = "projectiles"
     STRUTS          = "struts"
+    COMPOSITIONS    = "compositions"
 
 class Groups(str, Enum):
     CONFIGURATIONS  = "configurations"
@@ -207,12 +219,18 @@ class FrictiveAssets(str, Enum):
 
 class InertAssets(str, Enum):
     PROJECTILES     = "projectiles"
+    
 # -------------------------------- WIDGET ENUMERATIONS
 
+class Controllers(str, Enum):
+    SCROLL          = "scroll"
+    DISPLAY         = "display"
+    
 class Layouts(str, Enum):
     DOCK            = "dock"
     STACK           = "stack"
     TAB             = "tab"
+    NEST            = "nest"
 
 class Alignments(str, Enum):
     START           = "start"
@@ -220,5 +238,34 @@ class Alignments(str, Enum):
     CENTER          = "center"
 
 class Traversal(str, Enum):
-    FORE            = "fore"
-    AFT             = "aft"
+    NORTH           = "north"
+    SOUTH           = "south"
+    EAST            = "east"
+    WEST            = "west"
+
+class Interactions(str, Enum):
+    SELECT          = "select"
+    CANCEL          = "cancel"
+
+class Menus(str, Enum):
+    DIALOGUE        = "dialogue"
+    INVENTORY       = "inventory"
+    MAIN            = "main"
+    PAUSE           = "pause"
+    TEXT            = "text"
+    TRADE           = "trade"
+    VIEW            = "view"
+
+class Selections(str, Enum):
+    SCROLLUP        = "scrollup"
+    SCROLLDOWN      = "scrolldown"
+
+class Selectors(str, Enum):
+    SCROLL          = "scroll"
+    SLOT            = "slot"
+
+class Statuses(str, Enum):
+    ACTIVE          = "active"
+    IDLE            = "idle"
+    SELECTED        = "selected"
+    DISABLED        = "disabled"

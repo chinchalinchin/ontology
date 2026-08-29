@@ -1,0 +1,11 @@
+library:
+  plot-a:
+    sprite-a:
+      busy: Away with you! I am engaged in endeavors!
+      greeting: Good morrow, neighbor!
+      insult: Thou art a brutish knave!
+  plot-b:
+    sprite-a:
+      busy: Go away!
+      greeting: Wonderful day!
+      insult:  What a simpleton!

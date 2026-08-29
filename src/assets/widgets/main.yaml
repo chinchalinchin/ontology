@@ -28,7 +28,7 @@ widgets:
       dimensions:
         w:
         l:
-  language:
+  icons:
     digits:
       dimensions:
         w: 12
@@ -44,7 +44,7 @@ widgets:
         - seven
         - eight
         - nine
-    icons:
+    equipment:
       dimensions:
         w:
         l:

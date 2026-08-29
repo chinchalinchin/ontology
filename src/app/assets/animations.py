@@ -5,18 +5,23 @@ Package for Asset Animation implementations.
 """
 # Application Libraries
 import app.config.settings as settings
+from app.config.enums import Statuses
 from app.assets.base import Animation
 from app.models.properties import AssetProperties
 from app.models.state import AssetState
 
 class NoAnimation(Animation):
-    
+    """
+    """
+
     def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
         """
         """
         return state
 
 class BinaryAnimation(Animation):
+    """
+    """
 
     def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
         """
@@ -25,6 +30,8 @@ class BinaryAnimation(Animation):
         return state
         
 class PersistentAnimation(Animation):
+    """
+    """
 
     def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
         """
@@ -37,6 +44,8 @@ class PersistentAnimation(Animation):
         return state
     
 class TemporaryAnimation(Animation):
+    """
+    """
 
     def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
         """
@@ -63,4 +72,29 @@ class StateAnimation(Animation):
         if state.animation.frame >= properties.actions[state.animation.action].count:
             state.animation.frame = 0
 
+        return state
+
+class TraversalAnimation(Animation):
+    """
+    """
+
+    def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
+        """
+        """
+        state.animation.action = state.status.value if hasattr(state.status, 'value') else state.status
+        return state
+
+class MeterAnimation(Animation):
+    """
+    """
+
+    def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
+        """
+        """
+        if getattr(state, 'unit', 0) > 0:
+            pct = state.reading / state.unit
+        else:
+            pct = 0.0
+        res = int(round(pct * 100))
+        state.animation.frame = max(0, min(100, res))
         return state

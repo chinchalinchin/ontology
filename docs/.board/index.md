@@ -3,6 +3,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 !!! "Task Progress Key"
   `[ ]`: Open
   `[~]`: In Progress
+  `[?]`: Needs Further Analysis
   `[x]`: Closed/Implemented
   `[!]`: DO NOT COMPLETE
 
@@ -17,16 +18,20 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [~]: [Phase 05: Widgets](./phases/implement/phase-05.md)
     - [~]: [Phase 06: Editor](./phases/implement/phase-06.md)
     - [~]: [Phase 07: Intentions](./phases/implement/phase-07.md)
-    - [ ]: [Phase 08: Commerce](./phases/implement/phase-08.md)
-    - [ ]: [Phase 09: Pathfinding](./phase/implement/phase-09.md)
+    - [x]: [Phase 08: Compositions](./phases/implement/phase-08.md)
+    - [ ]: [Phase 09: Commerce](./phases/implement/phase-09.md)
+    - [ ]: [Phase 10: Pathfinding](./phase/implement/phase-10.md)
   - Refactor
     - [x]: [Phase 01.01: Orchestration](./phases/refactor/phase-01-01.md)
     - [x]: [Phase 02.01: Frames](./phases/refactor/phase-02-01.md)
     - [x]: [Phase 02.02: Registry Indexing](./phases/refactor/phase-02-02.md)
-    - [x]: [Phase 02-03: Equipment Animations](./phases/refactor/phase-02-03.md)
-    - [x]: [Phase 02-04: Engine](./phases/refactor/phase-02-04.md)
-    - [x]: [Phase 04-01: Mechanics](./phases/refactor/phase-04-01.md)
-    - [~]: [Phase 04-02: Consolidation](./phases/refactor/phase-04-02.md)
-    - [x]: [Phase 04-03: Motion](./phases/refactor/phase-04-03.md)
+    - [x]: [Phase 02.03: Equipment Animations](./phases/refactor/phase-02-03.md)
+    - [x]: [Phase 02.04: Engine](./phases/refactor/phase-02-04.md)
+    - [x]: [Phase 04.01: Mechanics](./phases/refactor/phase-04-01.md)
+    - [x]: [Phase 04.02: Consolidation](./phases/refactor/phase-04-02.md)
+    - [x]: [Phase 04.03: Motion](./phases/refactor/phase-04-03.md)
+    - [x]: [Phase 05.01: Typography](./phases/refactor/phase-05-01.md)
+    - [ ]: [Phase 05.02: Simplification](./phases/refactor/phase-05-02.md)
+    - [ ]: [Phase 05.03: Library](./phases/refactor/phase-05-03.md)
   - Report:
     - [x]: [2026-08-09: SDL Rendering Pipeline Failure](./phases/report/2026-08-16.md)

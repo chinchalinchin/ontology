@@ -1,11 +1,10 @@
 """
-# Ontology: app.game.logic.mechanics.intentional
-
-Package for intentional Mechanic implementations, i.e. Sprite and Player logic.
+# Ontology: app.game.logic.mechanics.intentional.speech
 """
 # Standard Libraries
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import collections
 
 # Application Libraries
 if TYPE_CHECKING:
@@ -18,7 +17,7 @@ class SpeechMechanics(Mechanic):
     """
     """
 
-    def update(self, board: Board, delta: float) -> None:
+    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
         """
         """
         pass

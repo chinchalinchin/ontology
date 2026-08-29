@@ -1,6 +1,6 @@
 objects:
   crates: 
-    - id: wooden-barrel
+    - id: crate-barrel
       name: the-barrel
       layer: '0'
       position:

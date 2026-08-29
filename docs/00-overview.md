@@ -32,7 +32,7 @@ Assets are placed in the `/src/assets/<category>/` directory and then registered
 
 The `/src/assets` directory is known as the *asset directory*.
 
-See [Asset Schema](./01-assets.md#schemas) for more information on the Asset property index.
+See [Asset Schema](./appendices/01-schemas.md#property-indices) for more information on the Asset property index.
 
 ## Data
 
@@ -54,9 +54,9 @@ An Asset Category has a single schema for properties that each Instance utilizes
 
 Mechanics and other components of the game Engine (e.g. Menus, Actions, etc.) utilize configuration stored in the configuration directory. The following Engine components are configured by the files in this directory.
 
-- [Actions](./01-assets.md#action-configuration)
+- [Actions](./01-assets.md#sheets)
 - [Intentions](./04-intentions.md)
-- [Mappings](./03-player.md#mapping)
+- [Mappings](./02-sprites.md#devices)
 - [Mechanics](./05-mechanics.md)
 - [Menus](./06-widgets.md#menus)
 - [Recipes](./01-assets.md#recipes)
@@ -72,7 +72,7 @@ See [Architecture documentation](./09-architecture.md) for more information.
 
 - Package: `app.config.loader`
 
-The Loader is responsible for reading in the configuration files for properties and state, converting them into Python data structure.
+The Loader is responsible for reading in the configuration files for properties and state, converting them into Python data structures.
 
 ### Factory
 
@@ -84,7 +84,7 @@ The Factory builds Assets and other game components based on Recipes.
 
 - Package: `app.hooks.orchestrator`
 
-The Orchestrator is the dependency injection system. It is responsible for converting data structures into application data models and supplying them to application classes.
+The Orchestrator is the dependency injection system. It is responsible for converting validated data structures into application data models and supplying them to application classes.
 
 ### Registry
 
@@ -96,13 +96,21 @@ The Registry loads in all of the Asset files when the application bootstraps. Th
 
 - Package: `app.game.engine`
 
-The Engine handles the core gameplay loop and framerate calculations.
+The Engine handles the core gameplay loop and framerate calculations. 
+
+**Bus**
+
+The Engine contains a Bus for processing Menu Events.
+
+**Provider**
+
+The Engine contains a Provider for instantiating Menus.
 
 ### Board
 
 - Package: `app.game.board`
 
-The Board is the Game's "database". It holds all ingame Assets and Configurations during the course of the game loop and exposes them to the engine through queryable interfaces.
+The Board is the Game's "*database*". It holds all ingame Assets and Configurations during the course of the game loop and exposes them to the engine through queryable interfaces.
 
 The state files for each Board are maintained in `/src/data/state/<board-key>/**`.
 

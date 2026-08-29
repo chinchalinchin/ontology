@@ -1,18 +1,21 @@
+# /home/grant/Projects/ontology/src/app/game/engine.py
+
 """
 # Ontology: app.game.engine
 
 Package for core game loop.
 """
-# Standard Library
 import time
+import collections
 from typing import List
 import logging
 
-# Application Libraries
 import app.config.settings as settings
 from app.game.board import Board
-from app.game.logic.mechanics import Mechanic
+from app.game.logic.mechanics.core import Mechanic
 from app.game.screen import Screen
+from app.hooks.provider import Provider
+from app.game.menus.events import MenuEvent, TerminalEvent, UpdateEvent
 
 logger = logging.getLogger(__name__)
 
@@ -22,38 +25,103 @@ class Engine:
 
     Class for running the game loop and performing framerate calculations.
     """
-
     board: Board
     screens: List[Screen]
-    mechanics: List[Mechanic]
+    core: List[Mechanic]
+    world: List[Mechanic]
+    bus: collections.deque
+    provider: Provider
 
     def __init__(self, 
         board: Board, 
         screens: List[Screen], 
-        mechanics: List[Mechanic]
+        core: List[Mechanic],
+        world: List[Mechanic],
+        provider: Provider
     ):
         self.board = board
         self.screens = screens
-        self.mechanics = mechanics
+        self.core = core
+        self.world = world
+        self.provider = provider
+        self.bus = collections.deque()
 
     @staticmethod
     def time() -> float:
-        """
-        """
         return time.perf_counter()
-    
+
+    def _drain(self) -> None:
+        """
+        Process Events.
+        """
+        while self.bus:
+            event = self.bus.popleft()
+
+            if isinstance(event, MenuEvent):
+                self.board.paused = True
+                menu_cfg = self.board.configurations.menus.get(event.menu_id)
+                if menu_cfg:
+                    player = self.board.player()
+                    screen = self.screens[player.state.layer]
+                    menu = self.provider.unpack(
+                        event.menu_id, 
+                        menu_cfg, 
+                        event.context, 
+                        screen.screensize
+                    )
+                    self.board.menus.append(menu)
+
+            elif isinstance(event, TerminalEvent):
+                if self.board.menus:
+                    self.board.menus.pop()
+                if not self.board.menus:
+                    self.board.paused = False
+                    
+            elif isinstance(event, UpdateEvent):
+                player = self.board.player()
+                screen = self.screens[player.state.layer]
+                screen.stamp(event.widget, event.content)
+
+    def _play(self, delta) -> None:
+        """
+        Apply Mechanics.
+        """
+        for mechanic in self.core:
+            mechanic.update(self.board, delta, self.bus)
+
+        if not self.board.paused:
+            for mechanic in self.world:
+                mechanic.update(self.board, delta, self.bus)
+
+    def _render(self) -> None:
+        """
+        Render Assets.
+        """
+        player = self.board.player()
+        
+        screen = self.screens[player.state.layer]
+        screen.clear()
+        screen.draw(
+            self.board.renderables(player.state.layer), 
+            player.state.position,
+            player.dimensions
+        )
+        screen.interface(
+            self.board.menus, 
+            self.board.overlays
+        )
+        screen.present()
+
     def start(self) -> None:        
         logger.info("Entering Game Loop...")
 
         delta = 1.0 / settings.TARGET_FPS
         accumulator = 0.0
         
-        # 2ms buffer to account for OS thread-wake scheduling inaccuracy
         spin_threshold = 0.002 
         
         last_time = self.time()
 
-        # Telemetry Trackers
         telemetry_frames = 0
         telemetry_updates = 0
         telemetry_start_time = last_time
@@ -64,47 +132,35 @@ class Engine:
             last_time = current_time
             accumulator += frame_time
             
-            if not self.board.paused:
-                # 1. Fixed-timestep Logic Updates
-                while accumulator >= delta:
-                    for this in self.mechanics:
-                        this.update(self.board, delta)
-                    accumulator -= delta
-                    telemetry_updates += 1
+            # Fixed-timestep Logic Updates
+            while accumulator >= delta:
+                self._play(delta)
+                self._drain()
 
-                player = self.board.player()
+                accumulator -= delta
+                telemetry_updates += 1
 
-                # 2. Rendering
-                self.screens[player.state.layer].draw(
-                    self.board.renderables(player.state.layer), 
-                    player.state.position,
-                    player.dimensions
-                )
-                telemetry_frames += 1
+            self._render()
 
-            # 3. Hybrid Pacing (Sleep + Spin)
+            telemetry_frames += 1
+
+            #  Hybrid Pacing (Sleep + Spin)
             work_time = self.time() - current_time
             sleep_time = delta - work_time
             
             if sleep_time > 0:
-                # Yield to the OS scheduler if we have substantial time remaining
                 if sleep_time > spin_threshold:
                     time.sleep(sleep_time - spin_threshold)
                 
-                # Spin-lock the final fraction of a millisecond for precise timing
                 while (self.time() - current_time) < delta:
                     pass
 
-            # Output Diagnostics every ~10 seconds
             if telemetry_frames % 600 == 0:
                 elapsed = self.time() - telemetry_start_time
                 avg_fps = telemetry_frames / elapsed
                 avg_ups = telemetry_updates / elapsed
                 
-                logger.info(
-                    f"[TELEMETRY] Avg FPS: {avg_fps:.1f} | Avg UPS (Ticks): {avg_ups:.1f} | "
-                    f"Frame Time: {frame_time * 1000:.2f}ms | Render Queue: {len(self.board.renderables(player.state.layer))}"
-                )
+                logger.info(f"[TELEMETRY] Avg FPS: {avg_fps:.1f} | Avg UPS (Ticks): {avg_ups:.1f}")
                 
                 telemetry_frames = 0
                 telemetry_updates = 0

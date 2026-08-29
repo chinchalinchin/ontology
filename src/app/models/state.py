@@ -1,21 +1,54 @@
 """
 # Ontology: app.models.state
+
+Python data models for typing Asset state attributes.
 """
-from typing import Dict, List, Union, Optional
+# Standard Libraries
+from typing import (
+    Dict, 
+    List,
+    Optional, 
+    Union, 
+    Any, 
+    Tuple
+)
 from dataclasses import dataclass, field
 
-from app.config.enums import Actions, Directions, Intentions, Relationships
-from app.models.adapters import PydanticPosition as Position, PydanticMultiple as Multiple, PydanticVelocity as Velocity
+# Application Libraries
+from app.config.enums import (
+    Actions, 
+    Directions, 
+    Intentions, 
+    Relationships,
+    Statuses,
+    Layouts,
+    Alignments
+)
+from app.models.adapters import (
+    PydanticPosition as Position, 
+    PydanticMultiple as Multiple, 
+    PydanticVelocity as Velocity,
+    PydanticScreenPosition as ScreenPosition
+)
+
+# Cython Libraries
 from libs.core.models import Velocity as CoreVelocity
+
+# ---------------------------------------------------------------------------------------
 
 class NoState:
     pass
 
+# ---------------------------------------------------------------------------------------
+# -------------------------------------------------------------------- CORE ASSET STATES
+
 @dataclass(slots=True)
 class AssetState:
     id: str
-    name: str
-    layer: str
+    name: Optional[str] = None
+    layer: Optional[str] = None
+    depth: int = 0
+    height: Optional[Union[int, str]] = None
 
 @dataclass(slots=True)
 class AnimationState:
@@ -23,53 +56,65 @@ class AnimationState:
     direction: str = Directions.DOWN
     frame: int = 0
 
+# ---------------------------------------------------------------------------------------
+# --------------------------------------------------------------------- GAME ASSET STATES
+
 @dataclass(slots=True)
 class MultiplierState(AssetState):
-    position: Position
-    multiple: Multiple 
+    position: Optional[Position] = None # type: ignore
+    multiple: Optional[Multiple] = None # type: ignore
 
 @dataclass(slots=True)
 class PositionalState(AssetState):
-    position: Position
-    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0))
+    position: Optional[Position] = None # type: ignore
+    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
 
 @dataclass(slots=True)
 class PropertyState(AssetState):
-    owner: str
-    position: Position
+    owner: Optional[str] = None
+    position: Optional[Position] = None # type: ignore
+
+@dataclass(slots=True)
+class DialogueState:
+    persona: str
+    lexicon: str
+    position: Optional[Position] = None # type: ignore
 
 @dataclass(slots=True)
 class MotorState(AssetState):
-    position: Position
-    initial: Position
+    position: Optional[Position] = None # type: ignore
+    initial: Optional[Position] = None # type: ignore
     direction: str = "down"
     speed: int = 10
-    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0))
+    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
 
 @dataclass(slots=True)
 class AnimatorState(AssetState):
-    position: Position
+    position: Optional[Position] = None # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class ContainerState(AssetState):
-    content: List[str]
-    position: Position
-    switch: bool
+    content: Optional[List[str]] = field(default_factory=list)
+    position: Optional[Position] = None # type: ignore
+    switch: Optional[bool] = False
     animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class DoorState(AssetState):
-    position: Position
-    out: Position
-    outlayer: str
+    position: Optional[Position] = None # type: ignore
+    out: Optional[Position] = None # type: ignore
+    outlayer: Optional[str] = None
 
 @dataclass(slots=True)
 class SwitchState(AssetState):
-    link: str
-    position: Position
-    switch: bool
+    link: Optional[str] = None
+    position: Optional[Position] = None # type: ignore
+    switch: Optional[bool] = False
     animation: AnimationState = field(default_factory=AnimationState)
+
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------- SPRITE STATE FIELDS
 
 @dataclass(slots=True)
 class Character:
@@ -100,13 +145,14 @@ class Meters:
 class Psyche:
     motivation: str
     expression: str
-    communication: str
+    dialogue: str
+    persona: str
 
 @dataclass(slots=True)
 class Goal:
     name: str
     category: str
-    position: Position
+    position: Position # type: ignore
 
 @dataclass(slots=True)
 class Inventory:
@@ -117,7 +163,7 @@ class Inventory:
 @dataclass(slots=True)
 class Memory:
     goal: Optional[Goal] = None
-    communications: List[str] = field(default_factory=list)
+    rumors: List[str] = field(default_factory=list)
     prices: Dict[str, float] = field(default_factory=dict)
     relationships: Dict[str, Relationships] = field(default_factory=dict)
     property: List[str] = field(default_factory=list)
@@ -139,6 +185,7 @@ class MutatorTriggers:
     frightened: bool = False
     dead: bool = False
     vision: bool = False
+    executed: bool = False
 
 @dataclass(slots=True)
 class MutatorParameters:
@@ -150,30 +197,104 @@ class Mutators:
     triggers: MutatorTriggers = field(default_factory=MutatorTriggers)
     parameters: Optional[MutatorParameters] = None
 
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------- SPRITE STATES
+
 @dataclass(slots=True)
 class SpriteState(AssetState):
-    intention: Intentions
-    goal: Goal
-    position: Position
-    character: Character
-    inventory: Inventory
-    meters: Meters
-    mutators: Mutators
-    memory: Memory
-    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0))
+    intention: Optional[Intentions] = None
+    goal: Optional[Goal] = None
+    position: Optional[Position] = None # type: ignore
+    character: Optional[Character] = None
+    inventory: Optional[Inventory] = None
+    meters: Optional[Meters] = None
+    mutators: Optional[Mutators] = None
+    memory: Optional[Memory] = None
+    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class PlayerState(AssetState):
-    position: Position
-    character: Character
-    inventory: Inventory
-    meters: Meters
-    mutators: Mutators = field(default_factory=Mutators)    
+    position: Optional[Position] = None # type: ignore
+    character: Optional[Character] = None
+    inventory: Optional[Inventory] = None
+    meters: Optional[Meters] = None
+    mutators: Mutators = field(default_factory=Mutators)   
     goal: Optional[Goal] = None
     intention: Optional[Intentions] = None
-    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0))
+    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
+
+# ---------------------------------------------------------------------------------------
+# ------------------------------------------------------------------------- WIDGET STATES
+
+@dataclass(slots=True)
+class TraversalState:
+    position: Position # type: ignore
+    status: Statuses
+    icons: Optional[List[str]] = None
+    animation: AnimationState = field(default_factory=AnimationState)
+
+@dataclass(slots=True)
+class MeterState:
+    position: Position # type: ignore
+    reading: int
+    unit: int
+    animation: AnimationState = field(default_factory=AnimationState)
+
+@dataclass(slots=True)
+class PaneState:
+    position: Position # type: ignore
+    layout: Layouts
+    alignment: Alignments
+    gap: int
+    margins: Tuple[int, int, int, int]
+
+@dataclass(slots=True)
+class DisplayState:
+    position: Position # type: ignore
+    content: Union[str, List[str]]
+    pageindex: int
+    pagesize: int
+    canvas: Any = None
+    is_text: bool = True
+
+    @property
+    def _pagecount(self) -> int:
+        if not self.content:
+            return 0
+        if self.is_text and isinstance(self.content, list):
+            return len(self.content)
+        if isinstance(self.content, str):
+            return 1
+        return max(1, (len(self.content) + self.pagesize - 1) // self.pagesize)
+
+    def current(self) -> Union[str, List[str]]:
+        if not self.content:
+            return "" if self.is_text else []
+            
+        if self.is_text:
+            if isinstance(self.content, list):
+                return self.content[self.pageindex]
+            return self.content
+            
+        start = self.pageindex * self.pagesize
+        end = start + self.pagesize
+        return self.content[start:end]
+
+    def more(self) -> bool: 
+        return self.pageindex < (self._pagecount - 1)
+
+    def less(self) -> bool:
+        return self.pageindex > 0
+
+    def scrollup(self) -> None: 
+        if self.less():
+            self.pageindex -= 1
+
+    def scrolldown(self) -> None:
+        if self.more():
+            self.pageindex += 1
 
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- ROOT SCHEMAS
@@ -212,6 +333,10 @@ class SheetStateInstances:
     players: List[PlayerState] = field(default_factory=list)
 
 @dataclass(slots=True)
+class WidgetStateInstances:
+    pass
+
+@dataclass(slots=True)
 class StateSchema:
     tiles: TileStateInstances = field(default_factory=TileStateInstances)
     objects: ObjectStateInstances = field(default_factory=ObjectStateInstances)
@@ -219,3 +344,4 @@ class StateSchema:
     cursors: CursorStateInstances = field(default_factory=CursorStateInstances)
     effects: EffectStateInstances = field(default_factory=EffectStateInstances)
     sheets: SheetStateInstances = field(default_factory=SheetStateInstances)
+    compositions: List[PropertyState] = field(default_factory=list)

@@ -6,6 +6,7 @@ Package for SwitchMechanics
 # Standard Libraries
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import collections
 
 # Application Libraries
 if TYPE_CHECKING:
@@ -29,7 +30,7 @@ class SwitchMechanics(SpatialMechanic):
         super().__init__(max_entities=1000)
 
 
-    def update(self, board: Board, delta_time: float) -> None:
+    def update(self, board: Board, delta_time: float, bus: collections.deque) -> None:
         """
         """
         for layer in board.layers():

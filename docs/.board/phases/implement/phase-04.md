@@ -67,5 +67,5 @@ Then, at the start of every frame's `update(self, board, delta)` loop, we simply
 
 *Objective*: Ensure the architectural principles behind the new physics pipeline are immortalized for future development phases.
 
-* [x] Subtask: Update `docs/09-architecture.md` under the **Cython** and **Mechanics** sections to explain the Broad-Phase / Narrow-Phase split and the integer-serialization requirement for physics calculations.
+* [x] Subtask: Update `docs/10-architecture.md` under the **Cython** and **Mechanics** sections to explain the Broad-Phase / Narrow-Phase split and the integer-serialization requirement for physics calculations.
 * [x] Subtask: Clean up any obsolete collision stubs left in `ProjectileMechanics` or `SwitchMechanics` if they can be unified under the new broad-phase grid.

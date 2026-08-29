@@ -15,19 +15,23 @@ theme:
     - navigation.indexes
 
 nav:
-  - Home: index.md
+  - Index: index.md
   - Overview: 00-overview.md
   - Assets: 01-assets.md
   - Sprites: 02-sprites.md
-  - Player: 03-player.md
+  - Compositions: 03-compositions.md
   - Intentions: 04-intentions.md
   - Mechanics: 05-mechanics.md
   - Widgets: 06-widgets.md
   - Sounds: 07-sounds.md
   - Plots: 08-plots.md
   - Architecture: 09-architecture.md
-  - Appendix: a0-appendix.md
-
+  - Appendix: 
+    - Index: appendices/index.md
+    - References: appendices/00-references.md
+    - Schemas: appendices/01-schemas.md
+  - Reports:
+    - Unit Test Coverage: coverage/index
 markdown_extensions:
   - admonition
   - pymdownx.blocks.caption

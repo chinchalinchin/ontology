@@ -1,5 +1,34 @@
 menus:
+  text:
+    controller: scroll
+    roots: 
+      - id: neutral
+        name: text-menu
+        position:
+          px: 0.1
+          py: 0.75
+        layout: dock
+        alignment: left
+        gap: 10
+        children: 
+          - instance: page
+            id: text
+            name: text-display
+            bind:
+              selector: scroll
+              state: context.content
+          - instance: button
+            id: arrow-up
+            name: text-scroll-up
+            bind: 
+              selection: scrollup
+          - instance: button
+            id: arrow-down
+            name: text-scroll-down
+            bind: 
+              selection: scrolldown
   dialogue:
+    controller: scroll
     roots: 
       - id: neutral
         name: dialogue-menu
@@ -14,81 +43,49 @@ menus:
             id: portrait
             name: character-portrait
             bind: 
-              ref: state
-              data: sprite.state.character.portrait
+              state: context.sprite.state.character.portrait
           - instance: page
             id: dialogue
             name: character-speech
-            bind: 
-              ref: state
-              data: sprite.state.psyche.communication
+            bind:
+              selector: scroll
+              state: context.sprite.state.psyche.communication
           - instance: button
             id: arrow-up
             name: character-speech-scroll-up
             bind: 
-              ref: traversal
-              data: self.children[1] # Bind to scroller Page
+              selection: scrollup
           - instance: button
             id: arrow-down
             name: character-speech-scroll-down
             bind: 
-              ref: traversal
-              data: self.children[1] # Bind to scroller Page
-  inventory:
-    roots:
-      - id: dark
-        name: equipment-menu
-        position: 
+              selection: scrolldown
+  view:
+    controller: display
+    roots: 
+      - id: transparent
+        name: hud-menu
+        position:
           px: 0.1
-          py: 0.1
-        layout: tab
-        headers:
-          - id: icon
-            name: armor-header
-            symbols:
-              - icon-armor
-          - id: icon
-            name: weapon-header
-            symbols:
-              - icon-weapon
-        children:
-          - instance: pane
-            id: dark
-            name: armor-pane
-            layout: dock
-            gap: 10
-            children: 
-              - instance: button
-                id: slot
-                name: equipped-armor
-                bind:
-                  ref: state
-                  data: sprite.state.inventory.equipment.armor
-              # TODO: need some sort of listing widget
-              - instance: button
-                id: slot
-                name: available-armor
-                bind:
-                  ref: traversal
-                  # TODO: need field in sprite for available armor
-                  data: sprite.state.inventory.store.equipment.armor
-          - instance: pane
-            id: dark
-            name: weapon-pane
-            layout: dock
-            gap: 10
-            children: 
-              - instance: button
-                id: slot
-                name: equipped-weapon
-                bind:
-                  ref: state
-                  data: sprite.state.inventory.equipment
-              # TODO: need some sort of listing widget
-              - instance: button
-                id: slot
-                name: available-weapon
-                bind:
-                  ref: traversal
-                  # TODO: need field in sprite for availanle weapon
-                  data: sprite.state.inventory.store.equipment.weapon
+          py: 0.85
+        layout: dock
+        alignment: left
+        gap: 10
+        children: 
+          - instance: meter
+            id: health
+            name: health-meter
+            bind: 
+              state: context.sprite.state.meters.health
+          - instance: button
+            id: slot
+            name: weapon-slot
+            status: disabled
+            bind:
+              state: context.sprite.state.inventory.equipment.weapon
+          - instance: button 
+            id: slot
+            name: shield-slot
+            status: disable
+            bind:
+              state: context.sprite.state.inventory.equipment.shield

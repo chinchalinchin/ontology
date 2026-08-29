@@ -3,6 +3,7 @@
 
 Package for instantiating Asset classes and their components.
 """
+from typing import Any
 
 # Application Libraries
 from app.assets.animations import (
@@ -10,6 +11,8 @@ from app.assets.animations import (
     PersistentAnimation, 
     TemporaryAnimation, 
     StateAnimation,
+    TraversalAnimation,
+    MeterAnimation,
     NoAnimation
 )
 from app.assets.base import Taxonomy
@@ -18,15 +21,17 @@ from app.assets.frames import (
     IterableFrame, 
     StateFrame,
     SpriteFrame,
+    TraversalFrame,
+    MeterFrame,
     NoFrame
 )
 from app.config.enums import (
     AnimationRecipe, 
     FrameRecipe, 
     Devices,
-    Mechanics
+    Mechanics,
+    Controllers
 )
-from app.game.cradle import Cradle
 from app.game.logic.mechanics import (
     AnimationMechanics,
     CollisionMechanics, 
@@ -38,7 +43,12 @@ from app.game.logic.mechanics import (
     TransitionMechanics,
     PlayerMechanics,
     RemoveMechanics,
-    SpeechMechanics
+    SpeechMechanics,
+    InteractionMechanics
+)
+from app.game.menus.controllers import (
+    DisplayController,
+    ScrollController
 )
 from app.models.config import (
     RecipeConfiguration,
@@ -55,6 +65,8 @@ class Factory:
         FrameRecipe.SINGLE: SingleFrame,
         FrameRecipe.ITERABLE: IterableFrame,
         FrameRecipe.STATE: StateFrame,
+        FrameRecipe.TRAVERSAL: TraversalFrame,
+        FrameRecipe.METER: MeterFrame,
         FrameRecipe.NONE: NoFrame
     }
 
@@ -63,6 +75,8 @@ class Factory:
         AnimationRecipe.PERSISTENT: PersistentAnimation,
         AnimationRecipe.TEMPORARY: TemporaryAnimation,
         AnimationRecipe.STATE: StateAnimation,
+        AnimationRecipe.TRAVERSAL: TraversalAnimation,
+        AnimationRecipe.METER: MeterAnimation,
         AnimationRecipe.NONE: NoAnimation,
     }
 
@@ -78,11 +92,17 @@ class Factory:
         Mechanics.SWITCH: SwitchMechanics,
         Mechanics.COMMERCE: CommerceMechanics,
         Mechanics.TRANSITION: TransitionMechanics,
+        Mechanics.INTERACTION: InteractionMechanics,
         Mechanics.PLAYER: PlayerMechanics,
         Mechanics.REMOVE: RemoveMechanics,
         Mechanics.COMBAT: CombatMechanics,
         Mechanics.MOTION: MotionMechanics,
         Mechanics.SPEECH: SpeechMechanics
+    }
+
+    CONTROLLER_MAP  = {
+        Controllers.DISPLAY: DisplayController,
+        Controllers.SCROLL: ScrollController
     }
 
     @staticmethod
@@ -98,6 +118,10 @@ class Factory:
         return Taxonomy(id, name, category, instance)
 
     @staticmethod
+    def controller(kind: str):
+        return Factory.CONTROLLER_MAP.get(kind, ScrollController)()
+    
+    @staticmethod
     def device(dev: str, mapping: dict):
         target_cls = Factory.DEVICE_MAP.get(dev, Keyboard)
         return target_cls(mapping)
@@ -107,5 +131,6 @@ class Factory:
         return Factory.MECHANICS_MAP.get(kind, AnimationMechanics)()
 
     @staticmethod
-    def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration):
-        return Cradle(spawnables, recipes)
+    def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration, decomposer: Any):
+        from app.hooks.cradle import Cradle
+        return Cradle(spawnables, recipes, decomposer)

@@ -1,6 +1,6 @@
 # Ontology: Mechanics
 
-A Mechanic is an implementation of an abstract interface that defines what information the engine will inject into the Mechanic's signature; All Mechanics must implement an `update(board: Board, delta: float)` method. The arguments of this interface are the [Board](./00-overview.md#board) and a game loop time delta.
+A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an `update(board: Board, delta: float)` method. The arguments of this interface are the [Board](./00-overview.md#board) and a game loop time delta. These arguments are injected from above by the [Enegine](./00-overview.md#engine)
 
 ## Overview
 
@@ -54,6 +54,24 @@ $$v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)$$
 * **Low Friction (e.g., $0.01$):** The deceleration scalar is minute. The asset bleeds momentum extremely slowly, simulating a frictionless surface like ice.
 * **High Friction (e.g., $100.0$):** The asset sheds velocity rapidly and comes to rest in a short distance, simulating dense surfaces like mud or deep grass.
 
+**MenuMechanics**
+
+To keep MenuMechanics clean, the Engine uses the **Strategy Pattern** and delegates to MenuController classes. 
+
+MenuMechanics is responsible for *Universal Menu Physics* (e.g. traversal, opening, closing). The MenuController is responsible for *Bespoke Menu Logic* (e.g. equipping, buying, selling).`MenuMechanics only ever interacts with `board.menus[-1]` (the top of the stack).
+
+With the controllers handling the semantic meaning of button presses, MenuMechanics becomes a simple router. Its `update()` loop looks like this:
+
+1. **Check Stack:** If `len(board.menus) == 0`, exit early.
+2. **Get Top Menu:** `active_menu = board.menus[-1]`
+3. **Poll Input:**
+    * If `NORTH/SOUTH/WEST/EAST`: Look at `menu.state.focus`. Look up the key in `active_menu.state.graph`. If a neighbor exists, change `focus` and update the `TraversalAnimation` status of the respective Button Assets.
+    * If `SELECT`: Call `active_menu.controller.select(menu.state.focus, menu, board)`.
+    * If `CANCEL`: Pop the menu off the stack. (Unpause the board if the stack is now empty).
+4. **Tick:** Call `active_menu.controller.update()` so continuous menus (like the HUD) can update their meters.
+
+AnimationMechanics strictly governs "World Time". MenuMechanics governs "Menu Time". The `animate()` interface for Widgets is called inside `MenuMechanics.update()`, iterating over `board.overlays` (always) and `board.menus[-1]` (if active).
+
 ### Spatial
 
 These Mechanics handle spatial interactions and collisions between Assets.
@@ -90,10 +108,10 @@ $$
 The [Player](./03-player.md) does not observe momentum transfers. Instead, the Player follows the procedures outlined below,
 
 * **Property Level:** The Player retains a normal, dynamic mass (e.g., $m = 10$).
-* **Phase 1 - Spatial Resolution (Unchanged):**
+* **Phase 1 - Spatial Resolution:**
     * **Player vs. Wall ($m=0$):** `inv_total` is $> 0$. The Wall absorbs 0% of the overlap shift, and the Player absorbs 100%. The Player correctly halts at the wall boundary.
     * **Player vs. Crate ($m=5$):** Both absorb the spatial shift proportional to their inverse mass. The Player effectively pushes the Crate out of the way.
-* **Phase 2 - Momentum Transfer (The Fix):** Bypass the 1D elastic collision calculation *only* for the Player.
+* **Phase 2 - Momentum Transfer:** Bypass the 1D elastic collision calculation *only* for the Player.
 
 
 ### Intentional

@@ -1,11 +1,11 @@
 """
-# Ontology: app.game.logic.mechanics.intentional
-
-Package for intentional Mechanic implementations, i.e. Sprite and Player logic.
+# Ontology: app.game.logic.mechanics.intentional.player
 """
 # Standard Libraries
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import logging
+import collections
 
 # Application Libraries
 if TYPE_CHECKING:
@@ -23,15 +23,17 @@ from app.models.state import Goal
 # Cython Libraries
 from libs.core.models import Position
 
+logger = logging.getLogger(__name__)
+
 class PlayerMechanics(Mechanic):
     """
     """
 
-    def update(self, board: Board, delta: float) -> None:
+    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
         """
         """
         player = board.player()
-        poll = board.poll()
+        poll = board.device.poll()
         
         if poll.intentions:
             player.state.intention = poll.intentions[0]

@@ -6,7 +6,7 @@
 import logging 
 
 # Application Libraries
-from app.models.config import Mapping
+from app.models.config import DeviceMapping, WorldMapping, MenuMapping
 
 # Cython Libraries
 import libs.core.input as sdl
@@ -17,52 +17,73 @@ class Device:
     """
     """
 
-    mapping: Mapping
+    mapping: DeviceMapping
 
-    def __init__(self, mapping: Mapping):
+    def __init__(self, mapping: DeviceMapping):
         self.mapping = mapping
 
 class Keyboard(Device):
-    """
-    """
+    def __init__(self, mapping: DeviceMapping):
+        super().__init__(mapping)   
+        self.context('world')
 
-    def __init__(self, mapping: Mapping):
-        super().__init__(mapping)
-        
-        # Pre-calculate the tuple of scancodes to query every frame, stripping Nones
-        i_codes = [v for v in mapping.intentions.values() if v is not None]
-        g_codes = [v for v in mapping.goals.values() if v is not None]
-        self._scancodes = tuple(set(i_codes + g_codes))
-        
+    def context(self, map: str) -> None:
+        self._context = map 
+        if map == 'world':
+            i_codes = [v for v in self.mapping.world.intentions.values() if v is not None]
+            g_codes = [v for v in self.mapping.world.goals.values() if v is not None]
+            m_codes = [v for v in self.mapping.world.menus.values() if v is not None]
+            self._scancodes = tuple(set(i_codes + g_codes + m_codes))
+
+        elif map == 'menu':
+            t_codes = [v for v in self.mapping.menu.traversal.values() if v is not None]
+            i_codes = [v for v in self.mapping.menu.interactions.values() if v is not None]
+            self._scancodes = tuple(set(t_codes + i_codes))
+
+        self._last_state = {code: 0 for code in self._scancodes}
+
         logger.debug(f"Keyboard initialized mapping to SDL scancodes: {self._scancodes}")
 
-    def poll(self) -> Mapping:
-        """
-        """
-        # 1. Update SDL's internal array
+    def poll(self) -> DeviceMapping:
         sdl.pump()
+        current_state = sdl.poll(self._scancodes)
+        current_dict = dict(zip(self._scancodes, current_state))
         
-        # 2. Retrieve C-level array values
-        state = sdl.poll(self._scancodes)
-        state_dict = dict(zip(self._scancodes, state))
+        # Initialize all lists so Mapping constructor doesn't fail
+        world_res = {
+            "intentions": [], 
+            "goals": [], 
+            "menus": []
+        }
+        menu_res = {
+            "traversal": [], 
+            "interactions": []
+        }
         
-        # 3. Translate raw array values into game semantics
-        res = {"intentions": [], "goals": []}
-        for k, v in self.mapping.intentions.items():
-            if v is not None and state_dict.get(v):
-                # Ensure we capture the string value since Factory dict keys are natively strings
-                key_val = k.value if hasattr(k, 'value') else k
-                res["intentions"].append(key_val)
+        if self._context == 'world':
+            for k, v in self.mapping.world.intentions.items():
+                if v is not None and current_dict.get(v) and not self._last_state.get(v):
+                    world_res["intentions"].append(k.value if hasattr(k, 'value') else k)
+            for k, v in self.mapping.world.menus.items():
+                if v is not None and current_dict.get(v) and not self._last_state.get(v):
+                    world_res["menus"].append(k.value if hasattr(k, 'value') else k)
+            for k, v in self.mapping.world.goals.items():
+                if v is not None and current_dict.get(v):
+                    world_res["goals"].append(k.value if hasattr(k, 'value') else k)
+                    
+        elif self._context == 'menu':
+            for k, v in self.mapping.menu.traversal.items():
+                if v is not None and current_dict.get(v) and not self._last_state.get(v):
+                    menu_res["traversal"].append(k.value if hasattr(k, 'value') else k)
+            for k, v in self.mapping.menu.interactions.items():
+                if v is not None and current_dict.get(v) and not self._last_state.get(v):
+                    menu_res["interactions"].append(k.value if hasattr(k, 'value') else k)
         
-        for k, v in self.mapping.goals.items():
-            if v is not None and state_dict.get(v):
-                key_val = k.value if hasattr(k, 'value') else k
-                res["goals"].append(key_val)
-        
-        if res["intentions"] or res["goals"]:
-            logger.debug(f"Keyboard Poll Detected - Intentions: {res['intentions']} | Goals: {res['goals']}")
-        
-        return Mapping(**res)
+        self._last_state = current_dict
+        return DeviceMapping(
+            world=WorldMapping(**world_res),
+            menu=MenuMapping(**menu_res)
+        )
 
 class Controller(Device):
     pass

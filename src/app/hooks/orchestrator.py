@@ -1,25 +1,33 @@
 """
 # Ontology: app.hooks.orchestrator
 """
+# Standard Libraries
 import logging
 import dataclasses
 from typing import Dict, List, Tuple
+from enum import Enum
 
+# Application Libraries
 from app.assets.base import Asset
 from app.config.loader import Loader
 from app.config.enums import (
     AssetCategories, 
     AssetInstances,
     Devices,
-    Equipment,
-    Groups,
     Mechanics
 )
 from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
+from app.game.logic.mechanics.core import Mechanic
+from app.hooks.provider import Provider
 from app.hooks.factory import Factory
-from app.models.groups import SpawnableGroup, ConfigurationGroup, EquipmentGroup
+from app.hooks.decomposer import Decomposer
+from app.models.groups import (
+    SpawnableGroup, 
+    ConfigurationGroup, 
+    EquipmentGroup
+)
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
@@ -35,10 +43,12 @@ class Orchestrator:
     state: StateSchema
     configurations: ConfigurationSchema
     
+    decomposer: Decomposer
     registry: Registry
     board: Board
     screens: Dict[str, Screen]
     engine: Engine
+    provider: Provider
 
     def __init__(self, state: str):
         logger.info(f"Initializing Orchestrator for target state: {state} ...")
@@ -46,6 +56,24 @@ class Orchestrator:
         self.configurations = Loader.load_configurations()
         self.state = Loader.load_state(state)
 
+        # Instantiate Decomposer ahead of standard Asset migrations
+        self.decomposer = Decomposer(
+            compositions=self.configurations.compositions,
+            properties=self.properties,
+            recipes=self.configurations.recipes
+        )
+
+    @staticmethod
+    def _unbox_enums(data):
+        """Recursively resolves Enum instances to their primitive values."""
+        if isinstance(data, dict):
+            return {k: Orchestrator._unbox_enums(v) for k, v in data.items()}
+        elif isinstance(data, list):
+            return [Orchestrator._unbox_enums(v) for v in data]
+        elif isinstance(data, Enum):
+            return data.value
+        return data
+    
     def migrate(self) -> Board:
         logger.info("Migrating validated data to engine models...")
         
@@ -81,12 +109,19 @@ class Orchestrator:
             utilities=self.properties.sheets.utilities,
             shields=self.properties.sheets.shields
         )
-
-        # 4. Migrate Assets with State        
+       
         assets = []
         
+        # 4. Intercept and Migrate Compositions
+        if hasattr(self.state, 'compositions') and self.state.compositions:
+            for comp_deployed_state in self.state.compositions:
+                expanded_assets = self.decomposer.unpack(comp_deployed_state)
+                assets.extend(expanded_assets)
+
+        # 5. Migrate Assets With State        
         for cat_field in dataclasses.fields(self.state):
             category_key = cat_field.name
+            if category_key == 'compositions': continue  # Pre-handled above
             category_data = getattr(self.state, category_key)
             if not category_data: continue
             
@@ -102,7 +137,7 @@ class Orchestrator:
                     cat_recipes = getattr(self.configurations.recipes, category_key, None)
                     recipe = getattr(cat_recipes, instance_key, None) if cat_recipes else None
                     
-                    # --- RESTORED PROPERTY MAPPING ---
+                    # --- PLAYER PROPERTY MAPPING ---
                     # Players are state instances, but their physical properties map to the Sprites schema
                     prop_instance_key = instance_key
                     if category_key == AssetCategories.SHEETS and instance_key == AssetInstances.PLAYERS:
@@ -144,7 +179,7 @@ class Orchestrator:
             temporary=self.properties.effects.temporary,
             struts=self.properties.crafts.struts
         )
-        cradle = Factory.cradle(spawnable_groups, self.configurations.recipes)
+        cradle = Factory.cradle(spawnable_groups, self.configurations.recipes, self.decomposer)
         self.board.set_cradle(cradle)
 
         return self.board
@@ -153,7 +188,7 @@ class Orchestrator:
         screensize: Dimensions, 
         device: Devices, 
         headless: bool=True
-    ) -> Tuple[Board, Registry, Dict[str, Screen], List]:
+    ) -> Tuple[Board, Registry, Dict[str, Screen], Provider, List[Mechanic], List[Mechanic]]:
         """
         # Ontology: Orchestrate
         Initialize and return game components.
@@ -169,16 +204,26 @@ class Orchestrator:
             render.show()
 
         logger.info("Initializing Registry..")
+        # 1. Unpack root dataclasses and resolve Enums to primitives
+        properties_dict = self._unbox_enums(dataclasses.asdict(self.properties))
+        recipes_dict = self._unbox_enums(dataclasses.asdict(self.configurations.recipes))
+        # 2. Extract fonts
+        fonts_dict = properties_dict.pop("fonts")
+        # 3. Pass clean, primitive-only dictionaries to Cython
         self.registry = Registry(
-            dataclasses.asdict(self.properties), 
-            dataclasses.asdict(self.configurations.recipes)
+            properties_dict, 
+            recipes_dict,
+            fonts_dict
         )
 
         logger.info("Initializing Screens...")
+        max_width = max(self.board.size(layer)[0].w for layer in self.board.layers())
+        max_length = max(self.board.size(layer)[0].l for layer in self.board.layers())
         self.screens = {
             layer: Screen(
                 screensize, 
-                self.board.size(layer)[0] if self.board.size(layer) else Dimensions(0, 0),
+                Dimensions(max_width, max_length),
+                # self.board.size(layer)[0] if self.board.size(layer) else Dimensions(0, 0),
                 self.board.categories(AssetCategories.TILES, layer),
                 self.registry
             )
@@ -186,23 +231,40 @@ class Orchestrator:
         } 
 
         logger.info("Initializing Mechanics...")
-        order = getattr(self.configurations.mechanics, 'order', None)
-        if not order:
-            order = [
-                Mechanics.PLAYER,
-                Mechanics.MOTION,
-                Mechanics.ANIMATION,
-                Mechanics.REMOVE
-            ]
-            
-        self.mechanics = [Factory.mechanics(m) for m in order]
+
+        core_cfg = getattr(self.configurations.mechanics, 'core', None) or [
+            Mechanics.MENU, 
+            Mechanics.ANIMATION, 
+            Mechanics.REMOVE
+        ]
+        world_cfg = getattr(self.configurations.mechanics, 'world', None) or [
+            Mechanics.PLAYER, 
+            Mechanics.MOTION
+        ]
         
-        return self.board, self.registry, self.screens, self.mechanics
+        self.core = [Factory.mechanics(m) for m in core_cfg]
+        self.world = [Factory.mechanics(m) for m in world_cfg]
+
+        logger.info("Initializing Menus...")
+        self.provider = Provider(self.configurations.recipes, self.properties, self.registry)
+        view = self.configurations.menus.get('view')
+        
+        if view:
+            player = self.board.player()
+            hud_menu = self.provider.unpack(
+                'view', 
+                view, 
+                {'sprite': {'state': player.state}}, 
+                screensize
+            )
+            self.board.set_overlays([hud_menu])
+
+        return self.board, self.registry, self.screens, self.provider, self.core, self.world
 
     def ignite(self, screensize: Dimensions, device: Devices) -> Engine:
         """
         Entry point to fire up the dependency-injected execution sequence.
         """
         self.init(screensize, device, headless=False)
-        self.engine = Engine(self.board, self.screens, self.mechanics)
+        self.engine = Engine(self.board, self.screens, self.core, self.world, self.provider)
         return self.engine

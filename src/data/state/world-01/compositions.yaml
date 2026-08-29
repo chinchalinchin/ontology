@@ -1,0 +1,14 @@
+compositions:
+  - id: brick-house
+    name: door-test
+    layer: '0'
+    owner: player
+    position:
+      x: 150
+      y: 150
+  - id: postern-gate
+    name: gate-test
+    layer: '0'
+    position:
+      x: 250
+      y: 250

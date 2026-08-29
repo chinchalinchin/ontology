@@ -6,6 +6,7 @@ Package for InteractionMechanics
 # Standard Libraries
 from __future__ import annotations
 from typing import TYPE_CHECKING
+import collections
 
 # Application Libraries
 if TYPE_CHECKING:
@@ -16,7 +17,7 @@ from app.config.enums import (
     Intentions,
 )
 from app.game.logic.mechanics.spatial.base import SpatialMechanic
-
+from app.game.menus.events import MenuEvent
 
 class InteractionMechanics(SpatialMechanic):
     """
@@ -27,10 +28,14 @@ class InteractionMechanics(SpatialMechanic):
     def __init__(self):
         super().__init__(max_entities=2000)
 
-    def update(self, board: Board, delta: float) -> None:
+    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
         """
         Resolves interactions between Sprites/Players and Objects (e.g., Doors, Chests).
         """
+        # Ensures an entity can only interact ONCE per frame, 
+        # preventing same-frame teleport bounces across layers.
+        processed_sources = set()
+
         for layer in board.layers():
             sprites = board.instances(AssetInstances.SPRITES, layer)
             players = board.instances(AssetInstances.PLAYERS, layer)
@@ -38,7 +43,9 @@ class InteractionMechanics(SpatialMechanic):
             # Filter sources with 'interact' intention
             sources = [
                 asset for asset in sprites + players
-                if getattr(asset.state, 'intention', None) == Intentions.INTERACT.value
+                if asset.state.intention == Intentions.INTERACT.value
+                and asset.name not in processed_sources 
+                # Filter out already processed sources instantly
             ]
             
             if not sources:
@@ -52,7 +59,6 @@ class InteractionMechanics(SpatialMechanic):
                 continue
 
             colliding_pairs = self.collisions(sources + targets)
-            processed_sources = set()
 
             for asset_a, asset_b in colliding_pairs:
                 is_a_source = asset_a in sources
@@ -94,5 +100,13 @@ class InteractionMechanics(SpatialMechanic):
                             target.state.content = []
                         processed_sources.add(source.name)
                     elif source.taxonomy.instance == AssetInstances.PLAYERS:
-                        # TODO: Create conditional-stub for instantiating MenuEvents in the InteractionMechanics
-                        pass
+                        bus.append(MenuEvent(
+                            # TODO: fix this bullshit
+                            id='inventory', context={'sprite': source, 'chest': target}
+                        ))
+                elif target.taxonomy.instance == AssetInstances.SIGNS:
+                    if source.taxonomy.instance == AssetInstances.PLAYERS:
+                        bus.append(MenuEvent(
+                            # TODO: fix this bullshit
+                            id='dialogue', context={'sprite': source, 'sign': target }
+                        ))
