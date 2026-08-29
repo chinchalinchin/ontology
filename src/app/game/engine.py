@@ -59,12 +59,12 @@ class Engine:
 
             if isinstance(event, MenuEvent):
                 self.board.paused = True
-                menu_cfg = self.board.configurations.menus.get(event.menu_id)
+                menu_cfg = self.board.configurations.menus.get(event.id)
                 if menu_cfg:
                     player = self.board.player()
                     screen = self.screens[player.state.layer]
                     menu = self.provider.unpack(
-                        event.menu_id, 
+                        event.id, 
                         menu_cfg, 
                         event.context, 
                         screen.screensize

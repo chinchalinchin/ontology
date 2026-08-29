@@ -280,6 +280,7 @@ The Player Sprite Sheet is configured through the `player` Sprite Sheet.
 **State: PlayerState**
 
 * `position: Position`
+* `velocity: Velocity`
 * `layer: str`
 * `meters:`
     * `health:` 
@@ -307,9 +308,15 @@ The Player Sprite Sheet is configured through the `player` Sprite Sheet.
         * `utility: str`
     * `wallet: int`
 
+### Goals & Intentions
+
+Players utilize the same information channel (e.g. Goals and Intentions) as Sprites for communicating state changes. 
+
+- Goal: Players use a "pseudo" Goal to project their input into their intended direction of motion. For example, if a user pressed the right arrow, the Player Goal's shifted is shifted to the right. This in turn determines the direction of the Player's Velocity in their [kinematic sliding](./05-mechanics.md#core), i.e. $\text{player.velocity} \parallel \text{player.state.goal.position} - \text{player.state.position}$. 
+
 ### Devices
 
-The [Board](./00-overview.md#board) contains a Device, which polls for user input. The PlayerMechanic uses a Mapping to translate the polling data into a [(Intention, Goal)](./04-intentions.md)-tuple. The [Mapping Configuration](./appendices/01-schemas.md#configuration-mapping) file provides a translation key between input state and game state.
+The [Board](./00-overview.md#board) contains a Device, which polls for user input. The PlayerMechanic uses a Mapping to translate the polling data into a [(Intention, Goal, Menu)](./04-intentions.md)-tuple. The [Mapping Configuration](./appendices/01-schemas.md#configuration-mapping) file provides a translation key between input state and game state.
 
 **Keyboard**
 
@@ -317,4 +324,6 @@ The input state of the Keyboard is polled through SDL. Keyboard mappings corresp
 
 ### Contexts
 
-The Device class implements a stateful context flag (`Context.WORLD` vs `Context.MENU`). Each Device mapping includes a `menu: Dict[MenuCommands, int]` mapping. When the Board Menus (`board.menus`) are populated, MenuMechanics toggles the device context, causing `poll()` to return Menu commands instead of [Intentions](./04-intentions.md).
+The Device class implements a stateful context flag (`world`, `menu`). Each Device mapping includes a nested mapping for each separate context. 
+
+When the Board Menus (`board.menus`) are populated, Menu Mechanics toggles the device context, causing `poll()` to return Menu commands instead of [Intentions](./04-intentions.md).
