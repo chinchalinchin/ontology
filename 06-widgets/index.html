@@ -1405,7 +1405,7 @@
 <li>The Layout engine recursively walks the MenuConfiguration tree, calculating absolute <span class="arithmatex">\(X/Y\)</span> coordinates.</li>
 <li>The Layout engine flattens the tree into a 1D sequence, builds the graph, and returns the populated Menu object.</li>
 <li>
-<p>The Screen loops over menu.widgets.values() and pushes primitive tuples across the Cython boundary.</p>
+<p>The Screen loops over <code>menu.widgets</code> and pushes primitive tuples across the Cython boundary.</p>
 </li>
 <li>
 <p>Rendering is <span class="arithmatex">\(O(N)\)</span>: <code>Screen.interface()</code> simply iterates over <code>menu.widgets</code>. Because Python 3.7+ dictionaries maintain insertion order, the Provider can guarantee the Painter's Algorithm is respected by inserting Panes into the dictionary first, followed by their children.</p>
