@@ -199,7 +199,7 @@ class Provider:
                 pageindex=0,
                 pagesize=1, # One aggregated string page or one icon per page
                 canvas=canvas_ptr,
-                is_text=is_text
+                text=is_text
             )
         elif cfg.instance == AssetInstances.METERS:
             resolved = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else None

@@ -257,13 +257,13 @@ class DisplayState:
     pageindex: int
     pagesize: int
     canvas: Any = None
-    is_text: bool = True
+    text: bool = True
 
     @property
     def _pagecount(self) -> int:
         if not self.content:
             return 0
-        if self.is_text and isinstance(self.content, list):
+        if self.text and isinstance(self.content, list):
             return len(self.content)
         if isinstance(self.content, str):
             return 1
@@ -271,9 +271,9 @@ class DisplayState:
 
     def current(self) -> Union[str, List[str]]:
         if not self.content:
-            return "" if self.is_text else []
+            return "" if self.text else []
             
-        if self.is_text:
+        if self.text:
             if isinstance(self.content, list):
                 return self.content[self.pageindex]
             return self.content

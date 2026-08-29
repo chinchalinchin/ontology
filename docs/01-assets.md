@@ -74,7 +74,7 @@ IDs are used to map Assets to images loaded into the [Registry](./00-overview.md
 
 Names are used to uniquely identify an ingame entity. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. 
 
-In short, a Name identifies an Asset's deployment. A ID is what binds an Asset deployed state to its deployed properties.
+In short, a Name identifies an Asset's deployment. A ID is what binds a deployed state to Asset file.
 
 **Mutability & Animability**
 
@@ -95,9 +95,9 @@ The frame rows of Sheet Assets are categorized by the axes of *Direction* and *A
 
 **Properties & State**
 
-*Properties* are static and never changed by game Mechanics. Properties determine the immutable characteristics of an ingame Asset, e.g. dimensions and hitboxes. They are loaded side-by-side with the asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length. Dimensions are Cartesian coordinate tuples.
+*Properties* are static and never changed by game Mechanics. Properties determine the immutable characteristics of an ingame Asset, e.g. dimensions and hitboxes. They are loaded side-by-side with the Asset files in the `/src/assets/**` directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length. Dimensions are Cartesian coordinate tuples.
 
-*State* is dynamic and can be changed by game Mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current position of an ingame Asset, the current animation, etc.. All Assets have a *position* mutable state; most (except for Widgets) have a *LAYER*. Position is given as a Cartesian coordinate (tuple), whereas Layer is a categorical variable.
+*State* is dynamic and can be changed by game Mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current Position of an ingame Asset, the current Animation, etc.. All Assets have a *Position* mutable state; most (except for Widgets) have a *Layer*. Position is given as a Cartesian coordinate (tuple), whereas Layer is a categorical variable.
 
 !!! note "Layers"
     The concept of a Layer is defined more explicitly in [Overview documentation](./00-overview.md#layers). It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.
@@ -109,10 +109,10 @@ State files are maintained in `/src/data/state/<board-key>/**` directory, where 
 Some Asset Categories have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.
  
 - $m > 0$: **Dynamic Body**. Participates in momentum calculations.
-- $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physics equations. Its velocity is unaffected by collisions, but it forces dynamic bodies to resolve overlap.
-- $m = -1$: **Sensor**. The engine detects the spatial intersection for game logic (like `SwitchMechanics` or `DoorMechanics`), but `CollisionMechanics` bypasses it completely during the overlap resolution phase.
+- $m = 0$: **Static Body**. Treated as having infinite mass ($m \to \infty$) in physics equations. Its Velocity is unaffected by collisions, but it forces dynamic bodies to resolve overlap.
+- $m = -1$: **Sensor**. The engine detects the spatial intersection for game logic (like SwitchMechanics or DoorMechanics), but CollisionMechanics bypasses it completely during the overlap resolution phase.
 
-See [MotionMechanics](./05-mechanics.md#spatial) for more information.
+See [Mechanics](./05-mechanics.md#spatial) for more information.
 
 **Depth & Height**
 
@@ -124,14 +124,14 @@ See [Rendering documentation](./09-architecture.md#rendering) for a complete ove
 
 ### Asset Hierarchy
 
-While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state [schemas](./appendices/01-schemas.md) encode Asset Categories and Instances into the top-level keys.
+While Assets are instantiated by injecting a common root class with component behaviors (see [next section](#asset-architecture)), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The property and state [schemas](./appendices/01-schemas.md) encode Asset Categories and Instances into the top-level keys.
 
 ```mermaid
 --8<-- "static/mmd/asset-hierarchy.mmd"
 ```
 
 !!! note
-    The Asset Hierarchy can be thought of as a data abstraction governing the schemas which drive the ECS instantiation. 
+    The Asset Hierarchy can be thought of as a data abstraction governing the schemas, which in turn drive the ECS instantiation. 
 
 **Categories**
 
@@ -158,21 +158,21 @@ Each Category has Instances. Asset *Instances* form the bottom layer of the hier
 | Object | Crate | Position, Layer, Depth, Height |
 | Object | Door | Position, Layer, Depth, Height, OutLayer |
 | Object | Chest | Position, Layer, Depth, Height, Switch, Content |
-| Object | Gate | Position, Layer, Depth, Height, Switch, Link |
-| Object | Plate | Position, Layer, Depth, Height, Switch, Link |
+| Object | Gate | Position, Layer, Depth, Height, Aniamtion, Switch, Link |
+| Object | Plate | Position, Layer, Depth, Height, Animation, Switch, Link |
 | Craft | Strut | Position, Layer, Depth, Height, Owner |
 | Craft | Plot | Position, Layer, Depth, Height, Owner, Season |
 | Cursor | Expression | Position, Layer, Depth, Height |
 | Cursor | Projectile | Position, Layer, Depth, Height, Initial |
-| Effect | Temporary | Position, Layer, Depth, Height |
-| Effect | Persistent | Position, Layer, Depth, Height |
-| Sheet | Pixie | Position, Layer. Depth, Height |
-| Sheet | Sprite | Position, Layer, Depth, Height, Intention, Inventory, Meters, Memory, Mutators, Goal |
-| Widget | Pane | TODO |
-| Widget | Button | TODO |
-| Widget | Language | TODO |
-| Widget | Meters | TODO |
-| Widget | Pages | TODO |
+| Effect | Temporary | Position, Layer, Depth, Height, Animation |
+| Effect | Persistent | Position, Layer, Depth, Height, Animation |
+| Sheet | Pixie | Position, Layer. Depth, Height, Animation |
+| Sheet | Sprite | Position, Layer, Depth, Height, Animation, Intention, Inventory, Meters, Memory, Mutators, Goal |
+| Widget | Pane | Position, Layout, Alignment, Gap, Margins |
+| Widget | Button  | Position, Status, Icons, Animation |
+| Widget | Icon | TODO |
+| Widget | Meter | Position, Reading, Unit |
+| Widget | Page | TODO |
 
 !!! note
     [Equipment](./02-sprites.md#equipment) and [Player](./02-sprites.md#player) Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is stateless, whereas the Player is a special type of [Sprite](./02-sprites.md).

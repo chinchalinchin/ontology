@@ -49,15 +49,15 @@ graph LR
     %% Widget Instances
     Widgets --> Panes[Panes]
     Widgets --> Buttons[Buttons]
-    Widgets --> Languages[Language]
+    Widgets --> Icons[Icons]
     Widgets --> Meters[Meters]
     Widgets --> Pages[Pages]
 
-    %% Styling
-    classDef base fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef category fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
-    classDef instance fill:#e8f5e9,stroke:#388e3c,stroke-width:1px;
-    classDef virtual fill:#f3e5f5,stroke:#8e24aa,stroke-width:1px,stroke-dasharray: 5 5;
+    %% Styling (Material Design Slate/Dark Surface with WCAG AAA High-Contrast Text)
+    classDef base fill:#512da8,stroke:#d1c4e9,stroke-width:2px,color:#ffffff;
+    classDef category fill:#00838f,stroke:#80deea,stroke-width:2px,color:#ffffff;
+    classDef instance fill:#2e7d32,stroke:#a5d6a7,stroke-width:1.5px,color:#ffffff;
+    classDef virtual fill:#424242,stroke:#b0bec5,stroke-width:1.5px,stroke-dasharray: 5 5,color:#eceff1;
 
     class Asset base;
     class Tiles,Cursors,Objects,Crafts,Effects,Sheets,Widgets category;

@@ -64,7 +64,7 @@ def test_provider_unpack_widget(mock_render, mock_provider):
     assert widget.name == "page-1"
     assert widget.state.content == ["Hello World"] 
     assert widget.state.canvas == "mock_canvas_ptr"
-    assert widget.state.is_text is True
+    assert widget.state.text is True
 
 @patch("app.hooks.provider.LayoutEngine")
 def test_provider_unpack_menu(mock_layout_class, mock_provider):
