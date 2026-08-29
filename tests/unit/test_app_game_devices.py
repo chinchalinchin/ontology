@@ -8,6 +8,7 @@ import pytest
 from unittest.mock import patch
 from app.game.devices import Keyboard
 from app.models.config import DeviceMapping, WorldMapping, MenuMapping
+from app.models.state import DevicePayload
 
 
 def test_keyboard_initialization(mock_mapping: DeviceMapping):
@@ -40,13 +41,12 @@ def test_keyboard_polling_return_type_and_mappings(mock_poll, mock_pump, mock_ma
     
     assert mock_pump.called
     assert mock_poll.called
-    assert isinstance(result, DeviceMapping)
+    assert isinstance(result, DevicePayload)
     
     assert 'up' in result.world.goals
     assert len(result.world.goals) == 1
     
-    assert 'interact' in result.world.intentions
-    assert len(result.world.intentions) == 1
+    assert result.world.intention == 'interact'
 
 
 @patch('app.game.devices.sdl.pump')
@@ -60,22 +60,22 @@ def test_keyboard_edge_triggered_intentions(mock_poll, mock_pump, mock_mapping: 
     # Frame 1: Press 'attack' (44)
     mock_poll.return_value = tuple(1 if code == 44 else 0 for code in keyboard._scancodes)
     result_frame_1 = keyboard.poll()
-    assert 'attack' in result_frame_1.world.intentions
+    assert result_frame_1.world.intention == 'attack'
     
     # Frame 2: Hold 'attack' (44)
     mock_poll.return_value = tuple(1 if code == 44 else 0 for code in keyboard._scancodes)
     result_frame_2 = keyboard.poll()
-    assert 'attack' not in result_frame_2.world.intentions
+    assert result_frame_2.world.intention != 'attack'
     
     # Frame 3: Release 'attack' (44)
     mock_poll.return_value = tuple(0 for _ in keyboard._scancodes)
     result_frame_3 = keyboard.poll()
-    assert 'attack' not in result_frame_3.world.intentions
+    assert result_frame_3.world.intention != 'attack'
     
     # Frame 4: Press 'attack' (44) again
     mock_poll.return_value = tuple(1 if code == 44 else 0 for code in keyboard._scancodes)
     result_frame_4 = keyboard.poll()
-    assert 'attack' in result_frame_4.world.intentions
+    assert result_frame_4.world.intention == 'attack'
 
 
 @patch('app.game.devices.sdl.pump')
