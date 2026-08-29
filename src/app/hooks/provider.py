@@ -3,10 +3,16 @@
 
 Package for ingame Menu instantiation.
 """
+# Standard Libraries
 import logging
 import functools
-from typing import Dict, Any, List
+from typing import (
+    Dict, 
+    Any, 
+    List
+)
 
+# Application Libraries
 from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories, 
@@ -37,6 +43,7 @@ from app.game.menus.core import (
 )
 from app.game.menus.layout import LayoutEngine
 
+# Cython Libraries
 import libs.graphics.render as render
 from libs.core.models import Dimensions
 from libs.graphics.registry import Registry
@@ -128,6 +135,19 @@ class Provider:
         except AttributeError:
             return None
 
+    def _unpack_node(self, 
+        cfg: Union[MenuPane, MenuWidget], 
+        context: dict, 
+        widgets: Dict[str, Asset]
+    ) -> None:
+        """
+        Recursive router for unpacking the Menu Tree.
+        """
+        if isinstance(cfg, MenuPane):
+            self._unpack_pane(cfg, context, widgets)
+        else:
+            widgets[cfg.id] = self._unpack_widget(cfg, context)
+            
     def _unpack_pane(self, pane: MenuPane, context: dict, widgets: Dict[str, Asset]) -> None:
         props = self.properties.panes.get(pane.id)
         recipe = self.recipes.panes
@@ -153,10 +173,10 @@ class Provider:
                                 else Factory.animation(None)
         )
         widgets[pane.id] = pane_asset
-
+    
+        # 2. Recurse into children
         for child in pane.children:
-            child_asset = self._unpack_widget(child, context)
-            widgets[child.id] = child_asset
+            self._unpack_node(child, context, widgets)
 
     def _unpack_widget(self, cfg: MenuWidget, context: dict) -> Widget:
         props_dict = getattr(self.properties, cfg.instance, {})

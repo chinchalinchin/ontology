@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING, List
 
 # Application Libraries
 if TYPE_CHECKING:
-    from app.hooks.factory import Factory
     from app.hooks.decomposer import Decomposer
     from app.models.properties import Cost
     
+from app.hooks.factory import Factory
 from app.assets.base import Asset
 from app.config.enums import AssetInstances, AssetCategories
 from app.models.config import RecipeConfiguration

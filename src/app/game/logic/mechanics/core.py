@@ -57,7 +57,7 @@ class MotionMechanics(Mechanic):
         sprites = board.instances(AssetInstances.SPRITES)
         crates = board.instances(AssetInstances.CRATES)
         projectiles = board.instances(AssetInstances.PROJECTILES)
-        mapping = board.poll()
+        mapping = board.device.poll()
 
         kinematic.update(players, mapping, delta)
         motive.update(sprites, delta)
@@ -89,12 +89,10 @@ class MenuMechanics(Mechanic):
 
         # Context Control
         if not board.menus:
-            if hasattr(board._device, 'context'):
-                board._device.context('world')
+            board.device.context('world')
             return
 
-        if hasattr(board._device, 'context'):
-            board._device.context('menu')
+        board.device.context('menu')
             
         active_menu = board.menus[-1]
         
@@ -105,9 +103,9 @@ class MenuMechanics(Mechanic):
         active_menu.controller.update(active_menu, board, bus)
 
         # Input Interception
-        mapping = board.poll()
-        traversal = mapping.get("traversal", [])
-        interactions = mapping.get("interactions", [])
+        mapping = board.device.poll()
+        traversal = mapping.menu.traversal
+        interactions = mapping.menu.interactions
 
         if "cancel" in interactions or "pause" in interactions:
             bus.append(TerminalEvent())

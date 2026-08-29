@@ -4,13 +4,13 @@
 Package for Menu spatial layouts and traversal graph generation.
 """
 # Standard Libraries
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Union
 import logging
 
 # Application Libraries
 from app.assets.base import Asset
-from app.config.enums import Layouts, Alignments, AssetInstances
-from app.models.config import MenuPane
+from app.config.enums import Layouts, Alignments
+from app.models.config import MenuPane, MenuWidget
 
 
 # Cython Libraries
@@ -24,90 +24,47 @@ class LayoutEngine:
     def __init__(self, screensize: Dimensions):
         self.screensize = screensize
 
-    def compute(self, 
-        root_cfgs: List[MenuPane], 
-        widgets: Dict[str, Asset]
-    ) -> Tuple[List[Asset], Dict[str, Dict[str, str]]]:
+    def compute(self, root_cfgs: List[MenuPane], widgets: Dict[str, Asset]) -> Tuple[List[Asset], Dict]:
         flattened = []
+        
+        for root_cfg in root_cfgs:
+            # 1. Calculate the initial Root Anchor from percentages
+            root_asset = widgets[root_cfg.id]
+            if root_cfg.position:
+                root_asset.state.position = Position(
+                    x=int(root_cfg.position.px * self.screensize.w),
+                    y=int(root_cfg.position.py * self.screensize.l)
+                )
+            # 2. Kick off the recursion
+            self._compute_recursive(root_cfg, widgets, flattened)
 
-        for pane_cfg in root_cfgs:
-            pane_asset = widgets.get(pane_cfg.id)
-            if not pane_asset:
-                continue
-
-            # 1. Resolve Anchor
-            sp = pane_cfg.position
-            anchor_x = int(sp.px * self.screensize.w)
-            anchor_y = int(sp.py * self.screensize.l)
-            pane_asset.state.position = Position(x=anchor_x, y=anchor_y)
-
-            # 2. Z-Sorting Base (Height and Depth)
-            # Ensure the pane renders strictly above standard world assets
-            pane_asset.state.height = 9999 
-            pane_asset.state.depth = 10
-            
-            flattened.append(pane_asset)
-
-            children = []
-            for c_cfg in pane_cfg.children:
-                child = widgets.get(c_cfg.id)
-                if child:
-                    children.append(child)
-
-            # 3. Apply Spatial Algorithm
-            if pane_cfg.layout == Layouts.DOCK:
-                self._layout_dock(pane_asset, children, pane_cfg.alignment, pane_cfg.gap)
-            elif pane_cfg.layout == Layouts.STACK:
-                self._layout_stack(pane_asset, children, pane_cfg.alignment, pane_cfg.gap)
-            else:
-                # TODO: Create Task Board issue to implement TAB and NEST recursive rendering logic
-                logger.warning(f"Layout algorithm '{pane_cfg.layout}' not fully implemented.")
-
-            for c in children:
-                # Ensure children render directly on top of the parent pane
-                c.state.height = 9999
-                c.state.depth = 11 
-                flattened.append(c)
-
-        # 4. Generate Traversal Graph
-        buttons = [
-            w for w in flattened 
-            if w.instance == AssetInstances.BUTTONS and w.state.status.value != 'disabled'
-        ]
-        graph = self._build_graph(buttons)
-
+        graph = self._build_graph([w for w in flattened if w.instance == 'buttons'])
         return flattened, graph
 
-    def _layout_dock(self, 
-        pane: Asset, 
-        children: List[Asset], 
-        alignment: Alignments, 
-        gap: int
-    ):
-        current_x = pane.state.position.x
-        current_y = pane.state.position.y
-        
-        # Simple Left (Start) alignment 
-        # TODO: Adjust for Alignments.CENTER / Alignments.END based on Max Width offsets
-        for child in children:
-            child.state.position = Position(x=current_x, y=current_y)
-            w = child.dimensions.w if child.dimensions else 0
-            current_x += w + gap
+    def _compute_recursive(self, cfg: Union[MenuPane, MenuWidget], widgets: Dict, flattened: List) -> None:
+        asset = widgets.get(cfg.id)
+        if not asset: return
 
-    def _layout_stack(self,
-        pane: Asset, 
-        children: List[Asset], 
-        alignment: Alignments,
-        gap: int
-    ):
-        current_x = pane.state.position.x
-        current_y = pane.state.position.y
+        # Add to rendering list in exact DFS topological order
+        flattened.append(asset)
+
+        # Base Case: Controls/Widgets have no children to layout
+        if not isinstance(cfg, MenuPane):
+            return
+
+        # Recursive Step: Parent computes absolute positions for immediate children
+        children_assets = [widgets[c.id] for c in cfg.children if c.id in widgets]
         
-        # Simple Top (Start) alignment
-        for child in children:
-            child.state.position = Position(x=current_x, y=current_y)
-            l = child.dimensions.l if child.dimensions else 0
-            current_y += l + gap
+        if cfg.layout == Layouts.DOCK:
+            self._layout_dock(asset, children_assets, cfg.alignment, cfg.gap)
+        elif cfg.layout in (Layouts.STACK, Layouts.NEST):
+            self._layout_stack(asset, children_assets, cfg.alignment, cfg.gap)
+        elif cfg.layout == Layouts.TAB:
+            self._layout_tab(asset, children_assets) # Just assigns parent's (x,y) to all children
+
+        # Now that children have absolute physical coordinates, tell them to layout THEIR children
+        for child_cfg in cfg.children:
+            self._compute_recursive(child_cfg, widgets, flattened)
 
     def _build_graph(self, 
         buttons: List[Asset]

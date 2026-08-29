@@ -2,12 +2,33 @@
 # Ontology: tests.unit.test_app_hooks_factory
 """
 from app.hooks.factory import Factory
-from app.config.enums import FrameRecipe, AnimationRecipe, Devices, Mechanics
-from app.assets.frames import SpriteFrame, SingleFrame, IterableFrame, NoFrame
-from app.assets.animations import PersistentAnimation, BinaryAnimation, NoAnimation
+from app.config.enums import (
+    FrameRecipe, 
+    AnimationRecipe, 
+    Devices, 
+    Mechanics
+)
+from app.assets.frames import (
+    SpriteFrame, 
+    SingleFrame, 
+    IterableFrame, 
+    NoFrame
+)
+from app.assets.animations import (
+    PersistentAnimation, 
+    BinaryAnimation, 
+    NoAnimation
+)
 from app.game.devices import Keyboard
-from app.game.logic.mechanics import AnimationMechanics, PlayerMechanics
-from app.models.config import Mapping
+from app.game.logic.mechanics import (
+    AnimationMechanics, 
+    PlayerMechanics
+)
+from app.models.config import (
+    DeviceMapping,
+    WorldMapping, 
+    MenuMapping
+)
 
 def test_factory_frame():
     assert isinstance(Factory.frame(FrameRecipe.SPRITE), SpriteFrame)
@@ -33,7 +54,8 @@ def test_factory_taxonomy():
     assert tax.instance == "struts"
 
 def test_factory_device():
-    device = Factory.device(Devices.KEYBOARD, Mapping())
+    mapping = DeviceMapping(world=WorldMapping(), menu=MenuMapping())
+    device = Factory.device(Devices.KEYBOARD, mapping)
     assert isinstance(device, Keyboard)
 
 def test_factory_mechanics():

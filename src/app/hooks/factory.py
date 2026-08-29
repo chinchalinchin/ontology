@@ -32,7 +32,6 @@ from app.config.enums import (
     Mechanics,
     Controllers
 )
-from app.hooks.cradle import Cradle
 from app.game.logic.mechanics import (
     AnimationMechanics,
     CollisionMechanics, 
@@ -133,4 +132,5 @@ class Factory:
 
     @staticmethod
     def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration, decomposer: Any):
+        from app.hooks.cradle import Cradle
         return Cradle(spawnables, recipes, decomposer)

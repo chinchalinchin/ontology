@@ -6,6 +6,7 @@
 Unit tests for core engine mechanics including Animation and Garbage Collection.
 """
 from unittest.mock import Mock
+import collections
 from app.game.logic.mechanics.core import AnimationMechanics, RemoveMechanics
 from app.config.enums import AssetCategories, AssetInstances
 
@@ -43,7 +44,7 @@ def test_animation_mechanics_update():
     board.categories.side_effect = mock_categories
     board.instances.side_effect = mock_instances
 
-    mechanic.update(board, 0.016)
+    mechanic.update(board, 0.016, collections.deque())
 
     # Verify animate() is called on the targeted assets with their respective state and properties
     effect_asset.animation.animate.assert_called_once_with(effect_asset.state, effect_asset.properties)
@@ -85,7 +86,7 @@ def test_remove_mechanics_update():
 
     board.instances.side_effect = mock_instances
 
-    mechanic.update(board, 0.016)
+    mechanic.update(board, 0.016, collections.deque())
 
     # Verify that only the completed effect and the dead sprite were flagged for removal
     board.remove.assert_called_once_with([temp_effect_remove, dead_sprite])

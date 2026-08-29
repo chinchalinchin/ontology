@@ -33,7 +33,7 @@ class PlayerMechanics(Mechanic):
         """
         """
         player = board.player()
-        poll = board.poll()
+        poll = board.device.poll()
         
         if poll.intentions:
             player.state.intention = poll.intentions[0]

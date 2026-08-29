@@ -19,6 +19,7 @@ from app.config.enums import (
 from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
+from app.game.logic.mechanics.core import Mechanic
 from app.hooks.provider import Provider
 from app.hooks.factory import Factory
 from app.hooks.decomposer import Decomposer
@@ -47,6 +48,7 @@ class Orchestrator:
     board: Board
     screens: Dict[str, Screen]
     engine: Engine
+    provider: Provider
 
     def __init__(self, state: str):
         logger.info(f"Initializing Orchestrator for target state: {state} ...")
@@ -107,7 +109,7 @@ class Orchestrator:
             utilities=self.properties.sheets.utilities,
             shields=self.properties.sheets.shields
         )
-      
+       
         assets = []
         
         # 4. Intercept and Migrate Compositions
@@ -186,7 +188,7 @@ class Orchestrator:
         screensize: Dimensions, 
         device: Devices, 
         headless: bool=True
-    ) -> Tuple[Board, Registry, Dict[str, Screen], List]:
+    ) -> Tuple[Board, Registry, Dict[str, Screen], Provider, List[Mechanic], List[Mechanic]]:
         """
         # Ontology: Orchestrate
         Initialize and return game components.
@@ -230,26 +232,26 @@ class Orchestrator:
 
         logger.info("Initializing Mechanics...")
 
-        core_cfg = getattr(self.configurations.mechanics, 'core', [
+        core_cfg = getattr(self.configurations.mechanics, 'core', None) or [
             Mechanics.MENU, 
             Mechanics.ANIMATION, 
             Mechanics.REMOVE
-        ])
-        world_cfg = getattr(self.configurations.mechanics, 'world', [
+        ]
+        world_cfg = getattr(self.configurations.mechanics, 'world', None) or [
             Mechanics.PLAYER, 
             Mechanics.MOTION
-        ])
+        ]
         
         self.core = [Factory.mechanics(m) for m in core_cfg]
         self.world = [Factory.mechanics(m) for m in world_cfg]
 
         logger.info("Initializing Menus...")
-        provider = Provider(self.configurations.recipes, self.properties, self.registry)
+        self.provider = Provider(self.configurations.recipes, self.properties, self.registry)
         view = self.configurations.menus.get('view')
         
         if view:
             player = self.board.player()
-            hud_menu = provider.unpack(
+            hud_menu = self.provider.unpack(
                 'view', 
                 view, 
                 {'sprite': {'state': player.state}}, 
@@ -257,12 +259,12 @@ class Orchestrator:
             )
             self.board.set_overlays([hud_menu])
 
-        return self.board, self.registry, self.screens, self.core, self.world
+        return self.board, self.registry, self.screens, self.provider, self.core, self.world
 
     def ignite(self, screensize: Dimensions, device: Devices) -> Engine:
         """
         Entry point to fire up the dependency-injected execution sequence.
         """
         self.init(screensize, device, headless=False)
-        self.engine = Engine(self.board, self.screens, self.core, self.world)
+        self.engine = Engine(self.board, self.screens, self.core, self.world, self.provider)
         return self.engine

@@ -76,9 +76,9 @@ class PropertyState(AssetState):
 
 @dataclass(slots=True)
 class DialogueState:
-    position: Optional[Position] = None # type: ignore
     persona: str
     lexicon: str
+    position: Optional[Position] = None # type: ignore
 
 @dataclass(slots=True)
 class MotorState(AssetState):
@@ -243,7 +243,7 @@ class MeterState:
     animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
-class PaneState(slots=True):
+class PaneState:
     position: Position # type: ignore
     layout: Layouts
     alignment: Alignments

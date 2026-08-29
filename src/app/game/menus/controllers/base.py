@@ -1,13 +1,19 @@
 """
 # Ontology: app.game.menus.controllers.base
 """
+from __future__ import annotations
+
 # Standard Libraries
 from abc import ABC, abstractmethod
 import collections
+from typing import TYPE_CHECKING
 
+# FIX: Defer the Board import
+if TYPE_CHECKING:
+    from app.game.board import Board
+    
 # Application Libraries
 from app.game.menus.core import Menu
-from app.game.board import Board
 
 class MenuController(ABC):
     @abstractmethod
@@ -15,7 +21,7 @@ class MenuController(ABC):
         pass
 
     @abstractmethod
-    def select(self, widget_id: str, menu: Menu, board: Board, bus: collections.deque) -> None:
+    def select(self, id: str, menu: Menu, board: Board, bus: collections.deque) -> None:
         pass
         
     @abstractmethod

@@ -4,7 +4,12 @@
 Models for typing the configuration attributes of Mechanics and other game components. See documentation for a more in-depth explanation of each field and its purpose. 
 """
 # Standard Libraries
-from typing import Dict, List, Optional
+from typing import (
+    Dict, 
+    List, 
+    Optional, 
+    Union
+)
 from dataclasses import dataclass, field
 
 # Application Libraries
@@ -27,15 +32,16 @@ from app.models.state import (
     StateSchema
 )
 from app.models.properties import Action
-from app.models.adapters import PydanticScreenPosition as ScreenPosition
-
-
-class Configuration:
-    pass
+from app.models.adapters import (
+    PydanticScreenPosition as ScreenPosition
+)
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ CONFIGURATION MODELS
 # ---------------------------------------------------------------------------------------
+
+class Configuration:
+    pass
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ RECIPE CONFIGURATION
@@ -186,7 +192,7 @@ class MenuPane:
     layout: Layouts
     alignment: Alignments
     gap: int
-    children: List[MenuWidget]
+    children: List[Union['MenuPane', MenuWidget]]
 
 @dataclass(slots=True)
 class MenuConfiguration(Configuration):

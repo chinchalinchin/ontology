@@ -50,8 +50,14 @@ def test_engine_start():
 
     mechanic.update.side_effect = mock_update
 
-    engine = Engine(board=board, screens={"0": screen}, mechanics=[mechanic])
-
+    engine = Engine(
+        board=board, 
+        screens={"0": screen}, 
+        core=[mechanic], 
+        world=[], 
+        provider=Mock()
+    )
+    
     # Patch Engine.time to advance consistently, and mock time.sleep to avoid halting the test
     with patch.object(Engine, 'time', side_effect=IncrementalTime(step=0.017)):
         with patch('time.sleep') as mock_sleep:

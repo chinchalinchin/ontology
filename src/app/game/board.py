@@ -42,13 +42,13 @@ class Board:
     # Game Objects
     configurations: ConfigurationGroup
     equipment: EquipmentGroup
+    device: Device
     cradle: Cradle
     menus: List[Menu]
     overlays: List[Menu]
     # ------- Private Fields
     # Game Objects
     _assets: List[Asset]
-    _device: Device
     # Caches
     _cached_categories: Dict[str, Dict[str, List[Asset]]]
     _cached_instances: Dict[str, Dict[str, List[Asset]]]
@@ -185,7 +185,7 @@ class Board:
         """
         Sets the Device on the board for polling.
         """
-        self._device = device
+        self.device = device
 
 
     def set_cradle(self, cradle: Cradle) -> None:
@@ -207,16 +207,6 @@ class Board:
         if slot < len(self._all_instances[AssetInstances.PLAYERS]):
             return self._all_instances[AssetInstances.PLAYERS][slot]
         return self._all_instances[AssetInstances.PLAYERS][0]
-
-
-    def poll(self) -> DeviceMapping:
-        """
-        Polls the Board device.
-        """
-        if self._device:
-            return self._device.poll()
-        return DeviceMapping()
-
 
     def tile(self, layer: str, position: Position) -> Asset:
         """

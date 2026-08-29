@@ -1,7 +1,6 @@
 #### Implement: Phase 05 - Widgets
 
-- **CURRENT FOCUS**: The Phase is "complete" (except for a few stragglers). Nothing has been tested yet. Do an exhaustive analysis of the codebase and decide if Widgets and Menus have been correctly implemented. Open *new* Bugs and Tasks to address them if you determine errors exist.
-- **SECONDARY FOCUS**: Identify areas where the documentation and codebase have diverged during the course of implementation.
+The Implementation phase is "complete". Move onto debugging unit tests.
 
 ##### Current Goal: Event Bus Architecture
 
@@ -13,16 +12,6 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 
 !!! note "CLOSED"
     Not worth fixing yet.
-
-**2. Z-Sorting Disconnect (`Screen.interface` vs `LayoutEngine`)**
-
-The `LayoutEngine.compute()` method explicitly assigns `state.height = 9999`, `state.depth = 10` for Panes and `depth = 11` for child components to ensure strict Painter's Algorithm compliance.
-However, `Screen.interface()` completely ignores `height` and `depth`. It iterates over the flattened list and appends primitives directly to Cython.
-
-* **Resolution:** This is functionally fine because `LayoutEngine` guarantees topological sorting by appending the Pane to the list *before* its children. The `height` and `depth` assignments in `LayoutEngine` are dead code and should be removed to prevent future confusion, or `Screen.interface()` must be updated to sort the UI assets similarly to `Screen.draw()`.
-
-!!! action
-    Updated `Screen.interface` to respect `height` and `depth`, just in case it is ever needed in Widget rendering in the future.\
 
 ##### Tasks
 
@@ -124,10 +113,21 @@ However, `Screen.interface()` completely ignores `height` and `depth`. It iterat
 
 **Task 9. Layout Engine Completion**
 
-* [ ] Implement `Layouts.TAB` recursion in `LayoutEngine.compute()`.
-* [ ] Implement `Layouts.NEST` recursion in `LayoutEngine.compute()`.
+* [x] Implement `Layouts.TAB` recursion in `LayoutEngine.compute()`.
+* [x] Implement `Layouts.NEST` recursion in `LayoutEngine.compute()`.
+* [x] **Schema:** Update `MenuPane.children` in `app.models.config` to `List[Union['MenuPane', MenuWidget]]`.
+* [x] **Provider:** Replace linear iteration in `Provider._unpack_pane` with a recursive `_unpack_node` router capable of handling nested Panes.
+* [x] **Layout:** Refactor `LayoutEngine.compute` to use a top-down spatial recursion algorithm (`_compute_recursive`), removing dead Z-sorting code.
 
-**Task 10. In Game Test**
+**Task 10. Unit Test & Documentation Updates**
+
+* [x] *Existing*: Ensure all unit tests are passing after prior Task updates.
+* [ ] *New*: `tests/unit/test_lib_graphics_registry.py`: Ensure new Widget frame indexing is adequately covered.
+* [ ] *New*: `tests/unit/test_app_hooks_factory.py`: Ensure new Widget instantiation is adequately covered.
+* [ ] *New*: `tests/unit/test_app_hooks_provider.py`: Ensure Menu generation is adequately covered.
+* [!] Update documentation to reflect the latest state of the application.
+
+**Task 11. In Game Test**
 
 !!! note
     Needs further specification and definition before implementation.
@@ -136,19 +136,7 @@ However, `Screen.interface()` completely ignores `height` and `depth`. It iterat
     * [!] Define Sign State to include `persona` and `lexicon`.
 * [!] Create Library for parsing `src/data/config/library/main.yaml`. 
 
-**Task 11. Unit Test & Documentation Updates**
-
-* [!] *Existing*: Ensure all unit tests are passing after prior Task updates.
-* [!] *New*: `tests/unit/test_lib_graphics_registry.py`: Ensure new Widget frame indexing is adequately covered.
-* [!] *New*: `tests/unit/test_hooks_factory.py`: Ensure new Widget instantiation is adequately covered.
-* [!] *New*: `tests/unit/test_hooks_provider.py`: Ensure Menu generation is adequately covered.
-* [!] Update documentation to reflect the latest state of the application.
-
-**Task 12. Reconcile UI Z-Sorting**
-
-* [!] Decide on the source of truth for UI sorting. Either implement `height/depth` sorting in `Screen.interface()`, or remove the assignments from `LayoutEngine.compute()` and document insertion-order as the standard.
-
-**Task 13. Controller Refactor**
+**Task 12. Controller Refactor**
 
 * [!] Remove `MenuMechanics.equip()`. 
 * [!] Create `InventoryController` in `app.game.menus.controllers.inventory` to handle equipment logic via `SelectionEvent` bindings.
