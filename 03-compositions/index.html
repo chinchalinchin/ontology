@@ -1107,7 +1107,7 @@
 </ul>
 <h3 id="application-flow">Application Flow</h3>
 <p>The Decomposer is a standalone service instantiated <em>before</em> the Board and Cradle; it is used during the initial Asset hydration phase of the bootstrapping <strong>and</strong> it is employed ingame by <a href="../05-mechanics/">Mechanics</a> through the Board interface of the Cradle to instantiate Compositions through the <a href="../04-intentions/"><code>build</code> Intention</a>.</p>
-<p>Because the Decomposer inherently generates <code>Asset</code> instances, it acts as a higher-level orchestrator of the <code>Factory</code>. To do this, it needs access to the global <a href="../00-overview/#assets">Asset properties</a>, <a href="../appendices/01-schemas/#recipe-configuration">Recipes</a> and Composition configuraiton.</p>
+<p>Because the Decomposer inherently generates <code>Asset</code> instances, it acts as a higher-level orchestrator of the <code>Factory</code>. To do this, it needs access to the global <a href="../00-overview/#assets">Asset properties</a>, <a href="../appendices/01-schemas/#configuration-recipes">Recipes</a> and Composition configuraiton.</p>
 <p><strong>1. Initialization (The Setup)</strong></p>
 <p>The Decomposer must be instantiated inside the <code>Orchestrator</code>, immediately after the YAML files are loaded and validated, but <em>before</em> <code>migrate()</code> is called.</p>
 <ul>

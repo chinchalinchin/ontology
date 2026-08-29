@@ -1020,49 +1020,68 @@
 <p>This section contains an in-depth presentation of the game engine's programmatic architecture.</p>
 <h2 id="initialization">Initialization</h2>
 <ol>
-<li>Entrypoint: <code>Orchestrate</code><ul>
-<li>Load data into memory<ul>
-<li>Load (Image) Asset Recipes YAML File from <code>/src/assets/main.yaml</code></li>
-<li>Load (Image and Font) Asset Category properties YAML files from <code>/src/assets/&lt;category&gt;/main.yaml</code></li>
-<li>Load (Image) Asset Instance state YAML files from the <code>/src/data/state/&lt;board-key&gt;</code> directory, where <code>&lt;board-key&gt;</code> is the selected board. There may be an arbitrary number of state files, with any filename, in the <code>&lt;board-key&gt;</code> directory.</li>
-<li>Validate all data models against Pydantic TypeAdapters and convert into Plain-Old-Python-Objects (POPOs) and Cython <code>cdef classes</code> for runtime use.</li>
-<li>Initialize list of (Image) Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).</li>
-<li>Initialize Font Assets with configured Styles. </li>
+<li><strong>Bootstrapping &amp; Loading (<code>Orchestrator.__init__</code>)</strong><ul>
+<li>Loads YAML files from the <code>assets/</code>, <code>data/config/</code>, and <code>data/state/</code> directories using Pydantic <code>TypeAdapters</code>.</li>
+<li>Instantiates the <a href="../03-compositions/#decomposer">Decomposer</a> early as a singleton to track unique name increments for macro-generated assets.</li>
 </ul>
 </li>
-<li>Construct application components and manage dependency-injections (Cradle, Decomposer, etc.)</li>
+<li><strong>Cython Context Initialization (<code>render.init</code>)</strong><ul>
+<li>Initializes the underlying C-level SDL2 video, image, and typography subsystems before any textures are processed.</li>
 </ul>
 </li>
-<li>Init: <code>Registry</code><ul>
-<li>Load Assets into memory<ul>
-<li>Recursively load <code>/src/assets/**/*.png</code>, <code>/src/assets/**/*.tff</code><ul>
-<li>For image Assets, create a map using the key-values <code>&lt;registry-key&gt;: &lt;frame&gt;</code>, where <code>&lt;registry-key&gt;</code> is calculated according to the Frame schema.</li>
-<li>For font Assets, create a map using the key-value <code>&lt;registry-key&gt;: &lt;font&gt;</code>, where <code>&lt;registry-key&gt;</code> is the font name.</li>
+<li><strong>Board Migration (<code>Orchestrator.migrate</code>)</strong><ul>
+<li>Resolves <a href="../01-assets/#asset-concepts">Actions</a> globally within <a href="../01-assets/#asset-hierarchy">Properties</a> to prevent redundant dictionary lookups during runtime.</li>
+<li>Intercepts <a href="../03-compositions/">Compositions</a> defined in the state YAML, passing them to the <a href="../03-compositions/#decomposer">Decomposer</a> to unpack into a flat list of absolute-positioned Assets.</li>
+<li>Iterates over all remaining state fields, applying the Entity-Component-System (ECS) pattern. Assets are injected with Frame, Animation, Properties, and State components via Factory <a href="../appendices/01-schemas/#configuration-recipes">recipes</a>, and mapped accurately (e.g., Players inherit <a href="../02-sprites/">Sprite</a> properties).</li>
+<li>Instantiates the <a href="../00-overview/#board">Board</a> database.</li>
 </ul>
 </li>
+<li><strong>Board Injection (<code>Orchestrator.inject</code>)</strong><ul>
+<li>Hydrates the input mappings and injects the <a href="../02-sprites/#devices">Device</a> (e.g., Keyboard) into the <a href="../00-overview/#board">Board</a>.</li>
+<li>Creates the SpawnableGroup and instantiates the Cradle, injecting both into the <a href="../00-overview/#board">Board</a> to allow Mechanics to generate temporary effects, projectiles, and struts at runtime.</li>
 </ul>
 </li>
+<li><strong>Registry Initialization (<code>Registry</code>)</strong><ul>
+<li>Recursively unboxes all Python <code>Enum</code> values into primitive strings/integers (<code>Orchestrator._unbox_enums</code>). Cython cannot natively parse Pydantic/Python Enums without significant GIL overhead.</li>
+<li>Caches <code>.png</code> and <code>.ttf</code> files into GPU memory (<code>TexturePtr</code> and <code>TTFFont</code>).</li>
+<li>Resolves Asset Stacks and generates strict index crop-maps for <span class="arithmatex">\(O(1)\)</span> frame lookups.</li>
 </ul>
 </li>
-<li>Init: <code>Board</code><ul>
-<li>Initialize and register the Mechanics (e.g., <code>CollisionMechanics</code>, <code>AnimationMechanics</code>, etc.).</li>
-<li>Initialize and register Device (e.g. <code>Keyboard</code>, <code>Controller</code>)</li>
+<li><strong>Screen Allocation (<code>Screen</code>)</strong><ul>
+<li>Dynamically calculates the maximum width and length across all Board layers.</li>
+<li>Instantiates a distinct <a href="../00-overview/#screen">Screen</a> object for <em>each</em> layer, generating independent background and foreground Cython canvases for the Painter's Algorithm.</li>
 </ul>
 </li>
-<li>Init: <code>Screen</code><ul>
-<li>Initialize background and foreground tile canvases. </li>
+<li><strong>Mechanics &amp; Menus (<code>Provider</code>)</strong><ul>
+<li>Instantiates <a href="../05-mechanics/">Mechanics</a> into two distinct lists: <code>core</code> and <code>world</code>.</li>
+<li>Instantiates the <a href="../06-widgets/#provider">Provider</a> to handle runtime Widget unpacking.</li>
+<li>Automatically generates the non-blocking Heads-Up Display (HUD) via the <code>view</code> Menu Configuration and mounts it to <code>board.overlays</code>.</li>
+</ul>
+</li>
+<li><strong>Ignition (<code>Engine.start</code>)</strong><ul>
+<li>Injects the fully hydrated Board, Screens, Mechanics, and Provider into the <a href="../00-overview/#engine">Engine</a> and initiates the fixed-timestep loop.</li>
 </ul>
 </li>
 </ol>
 <h2 id="mechanics">Mechanics</h2>
-<p>The <code>Engine.start()</code> method never changes when new game features are added. It simply iterates through the registered Mechanics:</p>
-<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="c1"># ... </span>
-    <span class="k">for</span> <span class="n">mechanic</span> <span class="ow">in</span> <span class="n">mechanics</span><span class="p">:</span>
-        <span class="n">mechanic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">delta_time</span><span class="p">)</span>
+<p>The Engine delegates behavior to <a href="../05-mechanics/">Mechanics</a>. Rather than the Engine passing arguments to a system, a Mechanic is responsible for querying the <a href="../00-overview/#board">Board</a> for the exact data it requires, processing the state, and optionally pushing Events to the Engine's <code>bus</code>.</p>
+<p>Mechanics are strictly segregated into <code>core</code> pipelines and <code>world</code> pipelines. The <code>Engine._play()</code> method processes these lists conditionally:</p>
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">_play</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply Mechanics.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">mechanic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">core</span><span class="p">:</span>
+        <span class="n">mechanic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">mechanic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">world</span><span class="p">:</span>
+            <span class="n">mechanic</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bus</span><span class="p">)</span>
 </code></pre></div>
-<p>Mechanics act as filters. Rather than the Engine passing arguments to a system, a Mechanic is responsible for querying the Board for the exact data it cares about.</p>
-<p>For example, the <code>SwitchMechanics</code> system strictly queries <code>board.plates</code>, <code>board.gates</code>, and any heavy entities (like <code>crates</code> and <code>sprites</code>) to resolve trigger logic, leaving the rest of the Board untouched. This keeps execution tight and game loops strictly separated by behavior.</p>
+<ul>
+<li><strong>Core Mechanics:</strong> Systems that must execute every frame regardless of game state. This includes <a href="../05-mechanics/#core">MenuMechanics</a> (to process input and layout traversals), <a href="../05-mechanics/#core">AnimationMechanics</a> (to keep Assets animating), and RemoveMechanics (garbage collection).</li>
+<li><strong>World Mechanics:</strong> Systems that govern gameplay logic, physics, and NPC behavior. This includes <a href="../05-mechanics/">MotionMechanics, CombatMechanics, and PlayerMechanics</a>.</li>
+</ul>
+<p>When a <a href="../06-widgets/#events">MenuEvent</a> fires and a modal Menu is pushed to the screen, <code>board.paused</code> evaluates to <code>True</code>. The Engine skips the <code>world</code> mechanics loop entirely. The world freezes, but <code>core</code> mechanics continue ticking, allowing the Player to navigate the menu while background torches remain animated without the risk of enemies moving or attacking.</p>
 <h2 id="maps">Maps</h2>
 <p>Maps associate ancillary Asset states to their final Animation state.</p>
 <p>See <a href="../04-intentions/#animationmap">AnimationMap</a> and <a href="../04-intentions/#dialoguemap">DialogueMap</a> for more information.</p>

@@ -1578,7 +1578,7 @@
 │<span class="w">   </span>├──<span class="w"> </span>pages
 │<span class="w">   </span>├──<span class="w"> </span>panes
 </code></pre></div>
-<p>The <code>main.yaml</code> files in each subdirectory conform to the <a href="../appendices/01-schemas/#property-indices">Asset property schema</a> of their respective Asset Category. </p>
+<p>The <code>main.yaml</code> files in each subdirectory conform to the <a href="../appendices/01-schemas/#model-properties">Asset property schema</a> of their respective Asset Category. </p>
 <h3 id="asset-concepts">Asset Concepts</h3>
 <p><strong>IDs &amp; Names</strong></p>
 <p>IDs are used to map Assets to images loaded into the <a href="../00-overview/#registry">Registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset, but not in-game entities.</p>
@@ -1856,7 +1856,7 @@
 </div>
 <h3 id="asset-architecture">Asset Architecture</h3>
 <p>Every physical entity in the game is an instance of the unified Asset class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by <em>Mechanic</em> classes that iterate over the Board Assets. See <a href="../05-mechanics/">Mechanics documentation</a> for more information.</p>
-<p>The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the <a href="#recipes">Recipe</a> configuration file. The components of each Assets are enumerated below,</p>
+<p>The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the <a href="../appendices/01-schemas/#configuration-recipes">Recipe</a> configuration file. The components of each Assets are enumerated below,</p>
 <ol>
 <li><strong>Model: Properties:</strong> A model defining immutable data (e.g., <code>TileProperties</code>, <code>ObjectProperties</code>, etc.).</li>
 <li><strong>Model: State:</strong> A model defining mutable data (e.g., <code>ContainerState</code>, <code>PositionalState</code>, etc.).</li>
@@ -2240,7 +2240,7 @@
 </div>
 <p><strong>Action</strong></p>
 <p>Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without accompanying Direction(s). The "space" of the (Action, Direction) space is configured by Sheet Properties. </p>
-<p>This snippet from the <a href="../appendices/01-schemas/#action-configuration">Schemas</a> shows the general structure of an Action,</p>
+<p>This snippet from the <a href="../appendices/01-schemas/#configuration-actions">Schemas</a> shows the general structure of an Action,</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;action-key&gt;</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">count</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">directions</span><span class="p">:</span>
