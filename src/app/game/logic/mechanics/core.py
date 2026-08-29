@@ -9,6 +9,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 import collections
+import logging
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -35,6 +36,8 @@ from app.models.state import (
 
 # Cython Libraries
 from libs.core.math import Physics
+
+logger = logging.getLogger(__name__)
 
 class Mechanic(ABC):
     @abstractmethod 
@@ -102,6 +105,7 @@ class MenuMechanics(Mechanic):
         for overlay in board.overlays:
             for widget in overlay.widgets.values():
                 widget.animation.animate(widget.state, widget.properties)
+
             if overlay.controller:
                 overlay.controller.update(overlay, board, bus)
 

@@ -257,7 +257,6 @@ class Screen:
                 ))
             else:
                 frame_keys = widget.frame.keys(widget.id, widget.state)
-                logger.debug(f"Widget '{widget.name}' requested keys: {frame_keys}")
 
                 for key in frame_keys:
                     tex_data = self.registry.image(key)

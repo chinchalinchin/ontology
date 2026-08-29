@@ -50,7 +50,7 @@ class Keyboard(Device):
 
         self._last_state = {code: 0 for code in self._scancodes}
 
-        logger.debug(f": {self._scancodes}")
+        logger.debug(f"SDL Scancodes: {self._scancodes}")
 
     def poll(self) -> DevicePayload:
         sdl.pump()

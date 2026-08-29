@@ -104,6 +104,8 @@ class Registry:
                     if font_obj is not None:
                         self._fonts[asset_key] = font_obj
 
+        logger.info(f"[REGISTRY TELEMETRY] Loaded {len(self._textures)} textures. Keys: {list(self._textures.keys())}")
+
     def _load_image(self, image_key, filepath: str) -> TexturePtr:
         """Loads a physical .png file directly into GPU memory via SDL2 extensions."""
         cdef bytes b_filepath = filepath.encode('utf-8')
@@ -207,16 +209,31 @@ class Registry:
                 inst_props = cat_props.get(inst_name)
                 if not inst_props: continue
 
+                # --- TELEMETRY HOOK ---
+                raw_recipe_frame = recipe.get("frame")
                 frame_worker = Factory.frame(recipe["frame"])
+                
+                if cat_name == "widgets":
+                    logger.info(f"[REGISTRY TELEMETRY] Category: {cat_name} | Instance: {inst_name} | Raw Recipe: '{raw_recipe_frame}' -> Resolved Worker: {type(frame_worker).__name__}")
+   
                 for item_id, item_props in self._extract(inst_props):
                     
-                    if item_id not in self._textures: continue
+                    # --- TELEMETRY HOOK ---
+                    if cat_name == "widgets":
+                        if item_id not in self._textures:
+                            logger.warning(f"[REGISTRY TELEMETRY] SKIPPING '{item_id}': Not found in _textures cache.")
+                            continue
+                    else:
+                        if item_id not in self._textures: continue
                     
                     crop_map = frame_worker.index(item_id, item_props)
+
+                    # --- TELEMETRY HOOK ---
+                    if cat_name == "widgets":
+                        logger.info(f"[REGISTRY TELEMETRY] Successfully indexed '{item_id}' -> Generated {len(crop_map)} frames: {list(crop_map.keys())}")
+                        
                     if not crop_map:
-                        logger.warning(
-                            f"Frame indexer {type(frame_worker).__name__} returned empty crop_map for '{item_id}'"
-                        )
+                        logger.warning(f"[REGISTRY] Frame indexer {type(frame_worker).__name__} returned empty crop_map for '{item_id}'")
                     for frame_key, crop in crop_map.items():
                         logger.debug(f"Indexed frame: '{frame_key}'")
                         self._frames[frame_key] = (

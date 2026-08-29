@@ -111,7 +111,6 @@ class Factory:
 
     @staticmethod
     def frame(recipe: Any):
-        # Gracefully handle string primitives passed by unboxed Cython registries
         if isinstance(recipe, str):
             for enum_key, frame_cls in Factory.FRAME_MAP.items():
                 if enum_key.value == recipe:
@@ -120,7 +119,6 @@ class Factory:
 
     @staticmethod
     def animation(recipe: Any):
-        # Gracefully handle string primitives passed by unboxed Cython registries
         if isinstance(recipe, str):
             for enum_key, anim_cls in Factory.ANIMATION_MAP.items():
                 if enum_key.value == recipe:
