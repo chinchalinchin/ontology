@@ -64,15 +64,23 @@ See [AnimationMap](./04-intentions.md#animationmap) and [DialogueMap](./04-inten
 
 The `AnimationMap` plays a crucial role in enforcing logical constraints. For example, `TransitionMechanics` and `PlayerMechanics` utilize `AnimationMap.action(state, equipment)` to resolve whether an intended action is possible. This guarantees that an `attack` intention will not translate into a `thrust` animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.
 
+## Board
+
+### Spatial Grid Caching
+
+To optimize environmental queries during the high-frequency game loop, the Board implements an $O(1)$ spatial hashing grid (`_cached_tilemap`). The Board chunks static Assets into a dictionary grid during initialization, keyed by a fixed `TILE_HASH_SIZE` (defaulting to 32x32 pixels).
+
+When systems like MotionMechanics need to compute the environmental friction acting on a moving Crate or Sprite, the Board divides the Asset's absolute `(x, y)` coordinates by the hash size to retrieve the exact Tile beneath it. 
+
 ## Rendering
 
 ### Depth & Height
 
-To accurately render perspective, the Screen `draw()` loop relies on a tuple-based sorting mechanism applied to all active Assets before they are passed across the Cython boundary. This system resolves the classic "Painter's Algorithm" dilemma where architectural decals (like Doors) need to render *on top of* their parent structures (like Strut), but *behind* dynamic entities (like Players) that walk in front of the building.
+To accurately render perspective, the Screen `draw()` loop relies on a tuple-based sorting mechanism applied to all active Assets before they are passed across the Cython boundary. This system resolves the "Painter's Algorithm" dilemma where architectural decals (like Doors) need to render *on top of* their parent structures (like Strut), but *behind* dynamic Asset (like Players) that walk in front of the building.
 
 The rendering pipeline sorts Assets using a two-part tuple: `(Primary Key, Secondary Key)`
 
-* **Primary Key: Height**: By default, an Asset's height is calculated dynamically using its Y-coordinate plus its physical length (`state.position.y + dimensions.l`). This ensures entities closer to the bottom of the screen are drawn last, appearing "in front" of objects higher up. 
+* **Primary Key: Height**: By default, an Asset's height is calculated dynamically using its Y-coordinate plus its physical length (`state.position.y + dimensions.l`). This ensures Assets closer to the bottom of the screen are drawn last, appearing "in front" of objects higher up. 
     * **The Height Override:** Assets can optionally declare an explicit `state.height`. When present, this value bypasses the geometric calculation entirely. This is heavily utilized by Compositions via late-binding (e.g., `bind(parent.depth)`), forcing Component assets like Doors or Chests to occupy the exact same spatial "slice" as the wall to which they are attached.
 * **Secondary Key: Depth** If two Assets share the exact same height (either by coincidence or by explicit binding), the engine falls back to `state.depth` as a tie-breaker. All standard Assets default to `depth: 0`.
     *   **Decal Rendering:** By assigning a component (like a Door) an explicit depth matching its parent Strut, and elevating its `z` index (e.g., `z: 1`), the engine guarantees the Door will always paint directly on top of the Strut, while both objects will collectively sort correctly against a Player walking in front of or behind them.
@@ -133,7 +141,9 @@ The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate t
 * **Asset & Font Allocation (`_load_image`, `_load_font`):** Loads physical image (`.png`) and font (`.ttf`) assets from disk directly into system memory, returning safe, reference-counted Cython wrappers (`TexturePtr` and `TTFFont`). To prevent styling overhead in the inner loop, fonts are pre-styled (bold, italics, RGBA color, margins) natively via SDL during ingestion using the YAML configuration properties.
 * **Typography (`measure`, `write`):** The `measure` function queries the exact pixel dimensions of a string without allocating a rendering surface. The `write` function calculates wrapping bounds and alignment, rendering UTF-8 characters as a blended surface that is permanently stamped (baked) directly onto a target `TexturePtr`. This zero-allocation technique ensures typography does not generate memory garbage during the main game loop.
 * **Background Compilation (`canvas` & `construct`):** A blank texture (`SDL_TEXTUREACCESS_TARGET`) is created in memory to match the full size of the Board. Python passes a single list of flattened integer tuples representing the source/destination coordinates and grid multipliers. Cython unpacks these primitives and executes thousands of `SDL_RenderCopy` calls natively via the C-level software rasterizer. This caches a unified map texture, eliminating the need to instantiate and re-render thousands of background tiles every frame.
-* **Frame Rendering (`render`):** During the main game loop, `Screen.draw()` performs lightweight integer-based AABB camera culling natively in Python. This intentionally avoids paying the micro-transaction overhead of calling a Cython function repeatedly inside a massive Python loop. The visible assets are flattened into primitive integer tuples and passed across the C-boundary in a single list. `render()` clears the canvas buffer, copies the cropped background texture, stamps the active primitives, and finalizes the buffer in memory (`SDL_RenderPresent`), ready for extraction to disk.
+* **Buffer Management (`clear` & `present`):** Extracted from the core drawing loop to support multi-phase rendering. `clear()` wipes the current VRAM buffer at the start of the frame, and `present()` finalizes the buffer (`SDL_RenderPresent`) while pumping SDL events at the end of the frame.
+* **World Rendering (`render`):** During the main game loop, `Screen.draw()` performs lightweight integer-based AABB camera culling natively in Python. The visible world assets are flattened into primitive integer tuples and passed across the C-boundary in a single list. `render()` copies the cropped background texture and then maps world-coordinates to camera-relative coordinates on the fly, stamping the active primitives onto the back buffer.
+* **UI Overlays (`superimpose`):** After the world is rendered, `Screen.interface()` passes a flattened list of active Menu and Widget primitives. `superimpose()` bypasses the camera offset logic entirely, rendering these textures via strict absolute screen coordinates (`SDL_RenderCopy`) directly on top of the world view, ensuring the HUD and Menus remain statically positioned on the glass.
 
 **Memory Management**
 
