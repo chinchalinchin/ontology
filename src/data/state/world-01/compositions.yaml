@@ -8,6 +8,7 @@ compositions:
       y: 150
   - id: postern-gate
     name: gate-test
+    owner: the-government
     layer: '0'
     position:
       x: 250

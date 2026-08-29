@@ -10,7 +10,8 @@ from typing import (
     Optional, 
     Union, 
     Any, 
-    Tuple
+    Tuple,
+    Callable
 )
 from dataclasses import dataclass, field
 
@@ -240,13 +241,6 @@ class TraversalState:
     animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
-class MeterState:
-    position: Position # type: ignore
-    reading: int
-    unit: int
-    animation: AnimationState = field(default_factory=AnimationState)
-
-@dataclass(slots=True)
 class PaneState:
     position: Position # type: ignore
     layout: Layouts
@@ -254,6 +248,20 @@ class PaneState:
     gap: int
     margins: Tuple[int, int, int, int]
 
+class MeterState:
+    position: Position # type: ignore
+    reading_function: Callable[[], Union[int, float]]
+    unit_function: Callable[[], Union[int, float]]
+    animation: AnimationState = field(default_factory=AnimationState)
+
+    @property
+    def reading(self) -> Union[int, float]:
+        return self.reading_function()
+
+    @property
+    def unit(self) -> Union[int, float]:
+        return self.unit_function()
+    
 @dataclass(slots=True)
 class DisplayState:
     position: Position # type: ignore

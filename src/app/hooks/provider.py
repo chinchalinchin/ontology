@@ -203,12 +203,19 @@ class Provider:
             )
         elif cfg.instance == AssetInstances.METERS:
             resolved = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else None
-            reading = resolved.current if resolved else 0
-            unit = resolved.maximum if resolved else 1
+            # Inject dynamic getter closures to continuously evaluate the bound memory reference
+            reading_cb = lambda r=resolved: (
+                r.current if hasattr(r, 'current') 
+                    else (r if isinstance(r, (int, float)) else 0)
+            )
+            unit_cb = lambda r=resolved: (
+                r.maximum if hasattr(r, 'maximum') 
+                    else (1 if isinstance(r, (int, float)) else 1)
+            )
             state = MeterState(
                 position=Position(x=0, y=0),
-                reading=reading,
-                unit=unit
+                reading_cb=reading_cb,
+                unit_cb=unit_cb
             )
         elif cfg.instance == AssetInstances.BUTTONS:
             state = TraversalState(

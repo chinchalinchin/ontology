@@ -26,4 +26,5 @@ sheets:
           tool: null
           utility: null
           weapon: null
+          shield: null
         wallet: 0

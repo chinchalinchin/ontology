@@ -181,18 +181,18 @@ class MenuWidget:
     instance: str
     id: str
     name: str
-    bind: Binding
-    status: Statuses
+    bind: Optional[Binding] = None
+    status: Optional[Statuses] = Statuses.IDLE
 
 @dataclass(slots=True)
 class MenuPane:
     id: str 
     name: str
-    position: ScreenPosition # type: ignore
     layout: Layouts
     alignment: Alignments
     gap: int
     children: List[Union['MenuPane', MenuWidget]]
+    position: Optional[ScreenPosition] = None # type: ignore
 
 @dataclass(slots=True)
 class MenuConfiguration(Configuration):

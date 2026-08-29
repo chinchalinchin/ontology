@@ -2,32 +2,32 @@ widgets:
   buttons:
     slot: 
       dimensions:
-        w: 
-        l:
+        w: 40
+        l: 40
     icon:
       dimensions:
-        w:
-        l:
-    text:
+        w: 71
+        l: 28
+    label: 
       dimensions:
-        w:
-        l:
+        w: 142
+        l: 28
     arrow-down:
       dimensions:
-        w:
-        l:
+        w: 24
+        l: 24
     arrow-left:
       dimensions:
-        w:
-        l:
+        w: 24
+        l: 24
     arrow-right:
       dimensions:
-        w:
-        l:
+        w: 24
+        l: 24
     arrow-up:
       dimensions:
-        w:
-        l:
+        w: 24
+        l: 24
   icons:
     digits:
       dimensions:
@@ -44,56 +44,40 @@ widgets:
         - seven
         - eight
         - nine
-    equipment:
-      dimensions:
-        w:
-        l:
-      frames:
-        - armor-bronze
-        - armor-gold
-        - arrow-fire
-        - arrow-magic
-        - arrow
-        - bolt-poison
-        - bolt-precision
-        - cane
-        - coin
-    portraits:
-      dimensions:
-        w:
-        l:
-      frames:
-        - 
   meters:
-    meter:
+    health:
       dimensions:
-        w:
-        l:
+        w: 72
+        l: 20
+    magic:
+      dimensions:
+        w: 72
+        l: 70
   pages:
     dialogue:
       dimensions:
-        w:
-        l:
+        w: 640
+        l: 96
     header:
       dimensions:
-        w:
-        l:
-    label:
+        w: 426
+        l: 163 
+    scroll:
       dimensions:
-        w:
-        l:
+        w: 330
+        l: 54
     notification:
       dimensions:
-        w:
-        l:
+        w: 192
+        l: 64
     parchment:
       dimensions:
-        w:
-        l:
+        w: 465
+        l: 273
     portrait:
       dimensions:
-        w:
-        l:
+        w: 96
+        l: 95
   panes:
     dark:
       dimensions:

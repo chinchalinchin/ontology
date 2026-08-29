@@ -8,7 +8,8 @@
 
 ### Install
 
-Cython needs the actual C development headers to compile against,
+- The application targets Python 3.14, although it should run in any Python 3.7+ environment.
+- Cython needs the actual C development headers to compile against,
 
 ```bash
 # 0. (*Optional*) Install UV

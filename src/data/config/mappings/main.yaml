@@ -12,7 +12,6 @@ mappings:
       menus:
         pause: 30         # SDL_SCANCODE_1
         inventory: 31     # SDL_SCANCODE_2
-        build: 32         # SDL_SCANCODE_3
         trade: 33         # SDL_SCANCODE_4
       intentions:
         interact: 8       # SDL_SCANCODE_E
@@ -20,6 +19,7 @@ mappings:
         speak: 226        # SDL_SCANCODE_LALT
         mine: 225         # SDL_SCANCODE_LSHIFT
         attack: 44        # SDL_SCANCODE_SPACE
+        build: 32         # SDL_SCANCODE_3
       goals:
         up: 26            # SDL_SCANCODE_W
         down: 22          # SDL_SCANCODE_S

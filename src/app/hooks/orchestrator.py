@@ -166,10 +166,6 @@ class Orchestrator:
         Inject the board with ancillary game components.
         """
         device_mapping = getattr(self.configurations.mappings, device, None)
-        if not device_mapping:
-            from app.models.config import Mapping
-            device_mapping = Mapping()
-            
         device_instance = Factory.device(device, device_mapping)
         self.board.set_device(device_instance)
 
@@ -246,7 +242,7 @@ class Orchestrator:
         self.world = [Factory.mechanics(m) for m in world_cfg]
 
         logger.info("Initializing Menus...")
-        self.provider = Provider(self.configurations.recipes, self.properties, self.registry)
+        self.provider = Provider(self.configurations.recipes.widgets, self.properties.widgets, self.registry)
         view = self.configurations.menus.get('view')
         
         if view:

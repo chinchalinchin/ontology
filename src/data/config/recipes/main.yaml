@@ -91,16 +91,16 @@ recipes:
       animation: traversal
       state: traversal
     icons:
-      frame: indexed
+      frame: index
       animation: none
-      state:
+      state: none
     meters:
       frame: meter
       animation: meter
       state: meter
     pages:
       frame: single
-      animation:
+      animation: none
       state: display
     panes:
       frame: single

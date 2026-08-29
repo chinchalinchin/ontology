@@ -23,6 +23,7 @@ from app.assets.frames import (
     SpriteFrame,
     TraversalFrame,
     MeterFrame,
+    IndexFrame,
     NoFrame
 )
 from app.config.enums import (
@@ -67,6 +68,7 @@ class Factory:
         FrameRecipe.STATE: StateFrame,
         FrameRecipe.TRAVERSAL: TraversalFrame,
         FrameRecipe.METER: MeterFrame,
+        FrameRecipe.INDEX: IndexFrame,
         FrameRecipe.NONE: NoFrame
     }
 
@@ -77,7 +79,7 @@ class Factory:
         AnimationRecipe.STATE: StateAnimation,
         AnimationRecipe.TRAVERSAL: TraversalAnimation,
         AnimationRecipe.METER: MeterAnimation,
-        AnimationRecipe.NONE: NoAnimation,
+        AnimationRecipe.NONE: NoAnimation
     }
 
     DEVICE_MAP = {

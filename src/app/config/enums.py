@@ -68,6 +68,7 @@ class FrameRecipe(str, Enum):
     SPRITE          = "sprite"
     METER           = "meter"
     TRAVERSAL       = "traversal"
+    INDEX           = "index"
 
 class AnimationRecipe(str, Enum):
     NONE            = "none"

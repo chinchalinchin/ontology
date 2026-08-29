@@ -180,3 +180,27 @@ class MeterFrame(Frame):
         for res in range(1, 101):
             crops[f"{id}-{res}"] = (w, 0, int(w * (res / 100.0)), l)
         return crops
+
+
+class IndexFrame(Frame):
+    """
+    ## IndexedFrame
+    Parses horizontal spritesheets where each frame corresponds to a specific string key.
+    """
+    def keys(self, id: str, state: AssetState) -> List[str]:
+        # Retrieve the specific icon key from the state, defaulting to the asset ID
+        return [getattr(state, 'icon', id)]
+
+    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+        w, l = _safe_dim(properties)
+        crops = {}
+        frames = properties.get("frames", [])
+        
+        # Failsafe: if no frames are defined, index the whole image
+        if not frames:
+            return {id: (0, 0, w, l)}
+            
+        for i, frame_name in enumerate(frames):
+            crops[frame_name] = (i * w, 0, w, l)
+            
+        return crops
