@@ -25,7 +25,8 @@ from app.models.state import (
     DisplayState, 
     PaneState, 
     MeterState, 
-    TraversalState
+    TraversalState,
+    AnimationState
 )
 from app.models.config import (
     WidgetRecipe, 
@@ -68,8 +69,8 @@ class Provider:
         if not text or not font:
             return [text]
             
-        margin_w = int(w * font.margin)
-        margin_l = int(l * font.margin)
+        margin_w = int(w * font.margins)
+        margin_l = int(l * font.margins)
         
         wrap_width = w - (2 * margin_w)
         wrap_height = l - (2 * margin_l)
@@ -217,11 +218,16 @@ class Provider:
                 reading_function = reading_function,
                 unit_function = unit_function
             )
+            if state.unit > 0:
+                state.animation.frame = max(0, min(100, int(round((state.reading / state.unit) * 100))))
+
         elif cfg.instance == AssetInstances.BUTTONS:
+            initial_status = cfg.status.value if cfg.status else Statuses.IDLE.value
             state = TraversalState(
                 position=Position(x=0, y=0),
                 status=cfg.status.value or Statuses.IDLE.value,
-                icons=[]
+                icons=[],
+                animation=AnimationState(action=initial_status) 
             )
         else:
             state = None
@@ -231,13 +237,26 @@ class Provider:
             selector=cfg.bind.selector if cfg.bind else None,
             state=cfg.bind.state if cfg.bind else None
         )
+        frame = Factory.frame(recipe.frame) \
+                    if recipe else Factory.frame(None)
+        animation = Factory.animation(recipe.animation) \
+                        if recipe else Factory.animation(None)
+        taxonomy = Factory.taxonomy(cfg.id, cfg.name, AssetCategories.WIDGETS, cfg.instance)
+
+        logger.info(
+            f"Unpacked Widget: {cfg.name} | "
+            f"Recipe Frame: {recipe.frame} | "
+            f"Resolved Frame: {type(frame).__name__}"
+            f"Recipe Animation: {recipe.animation} | "
+            f"Resolved Animation: {type(animation).__name__}"
+        )
 
         return Widget(
-            taxonomy=Factory.taxonomy(cfg.id, cfg.name, AssetCategories.WIDGETS, cfg.instance),
+            taxonomy=taxonomy,
             properties=props,
             state=state,
-            frame=Factory.frame(recipe.frame) if recipe else Factory.frame(None),
-            animation=Factory.animation(recipe.animation) if recipe else Factory.animation(None),
+            frame=frame,
+            animation=animation,
             binding=binding
         )
 

@@ -290,7 +290,7 @@ def test_registry_font_loading_and_retrieval(mock_properties, mock_configuration
         alignment="left",
         bold=True,
         italics=False,
-        margin=0.05,
+        margins=0.05,
         color=RGBA(255, 255, 255, 255)
     )
     

@@ -53,8 +53,8 @@ class AssetState:
 
 @dataclass(slots=True)
 class AnimationState:
-    action: str = Actions.WALK
-    direction: str = Directions.DOWN
+    action: str = Actions.WALK.value
+    direction: str = Directions.DOWN.value
     frame: int = 0
 
 # ---------------------------------------------------------------------------------------

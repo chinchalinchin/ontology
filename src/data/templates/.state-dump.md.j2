@@ -83,6 +83,14 @@
 {% for w_key, widget in menu.widgets.items() %}
 #### {{ widget.name }} (`{{ widget.id }}`)
 **Taxonomy:** `{{ widget.category }}` / `{{ widget.instance }}`
+**Component Classes:**
+- Frame: `{{ widget.frame.__class__.__name__ }}`
+- Animation: `{{ widget.animation.__class__.__name__ }}`
+
+**Calculated Values:**
+- Computed Keys: `{{ widget.frame.keys(widget.id, widget.state) }}`
+- Dimensions: w: {{ widget.dimensions.w }}, l: {{ widget.dimensions.l }}
+
 {% if widget.binding -%}
 **Binding:**
 - Selection: `{{ widget.binding.selection }}`
@@ -97,20 +105,11 @@
 {% if widget.state.status is defined -%}
 - **Status:** `{{ widget.state.status }}`
 {% endif -%}
-{% if widget.state.frame is defined -%}
-- **Frame:** `{{ widget.state.frame }}`
-{% endif -%}
 {% if widget.state.icons is defined and widget.state.icons -%}
 - **Icons:** {{ widget.state.icons }}
 {% endif -%}
 {% if widget.state.content is defined -%}
 - **Content:** {{ widget.state.content }}
-{% endif -%}
-{% if widget.state.pageindex is defined -%}
-- **Pagination:** Page {{ widget.state.pageindex }} (Size: {{ widget.state.pagesize }})
-{% endif -%}
-{% if widget.state.layout is defined -%}
-- **Layout:** `{{ widget.state.layout }}` (Alignment: `{{ widget.state.alignment }}`, Gap: {{ widget.state.gap }})
 {% endif -%}
 {% if widget.state.reading is defined -%}
 - **Meter:** {{ widget.state.reading }} / {{ widget.state.unit }}

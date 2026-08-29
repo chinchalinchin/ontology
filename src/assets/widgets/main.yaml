@@ -83,11 +83,27 @@ widgets:
       dimensions:
         w: 318
         l: 180
+    dark-small:
+      dimensions:
+        w: 318
+        l: 78
     neutral:
       dimensions:
         w: 318
         l: 180
+    neutral-small:
+      dimensions:
+        w: 318
+        l: 78
     light:
       dimensions:
         w: 318 
+        l: 180
+    light-small:
+      dimensions:
+        w: 318
+        l: 78
+    transparent:
+      dimensions:
+        w: 318
         l: 180

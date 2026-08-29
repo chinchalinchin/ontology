@@ -46,7 +46,7 @@ class FontProperties:
     alignment: Alignments
     bold: bool
     italics: bool
-    margin: int
+    margins: int
     color: RGBA
 
 # ---------------------------------------------------------------------------------------

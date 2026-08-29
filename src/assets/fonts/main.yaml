@@ -3,7 +3,7 @@ fonts:
       alignment: start
       bold: false
       italics: false
-      margin: 5
+      margins: 5
       color:
         r: 200
         g: 147

@@ -53,7 +53,6 @@ from app.models.state import (
 )
 from app.models.groups import (
     SpawnableGroup,
-    ConfigurationGroup, 
     EquipmentGroup
 )
 
@@ -191,14 +190,9 @@ def mock_board_assets():
 @pytest.fixture
 def mock_board(mock_board_assets, mock_configurations):
     # Assemble required injection groups from conftest.py's ConfigurationSchema
-    configs = ConfigurationGroup(
-        recipes=mock_configurations.recipes,
-        mappings=mock_configurations.mappings,
-        intentions={},
-        actions=[]
-    )
+
     equipment = EquipmentGroup(armor={}, tools={}, utilities={}, weapons={})
     
     # Patch the global settings to ensure stable spatial math regardless of environment
     with patch('app.game.board.settings.TILE_HASH_SIZE', 32):
-        return Board(assets=mock_board_assets, configurations=configs, equipment=equipment)
+        return Board(assets=mock_board_assets, configurations=mock_configurations, equipment=equipment)

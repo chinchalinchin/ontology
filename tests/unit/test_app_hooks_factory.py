@@ -90,3 +90,27 @@ def test_factory_controller():
     
     assert isinstance(ctrl_display, DisplayController)
     assert isinstance(ctrl_scroll, ScrollController)
+
+def test_factory_string_resolution():
+    """Verify Factory unboxes Cython strings correctly to their Enum equivalents."""
+    from app.hooks.factory import Factory
+    from app.assets.frames import TraversalFrame
+    from app.assets.animations import MeterAnimation
+    from app.game.logic.mechanics.core import MenuMechanics
+    from app.game.menus.controllers.display import DisplayController
+
+    # Test frame fallback
+    frame = Factory.frame("traversal")
+    assert isinstance(frame, TraversalFrame)
+    
+    # Test animation fallback
+    anim = Factory.animation("meter")
+    assert isinstance(anim, MeterAnimation)
+    
+    # Test mechanics fallback
+    mech = Factory.mechanics("menu")
+    assert isinstance(mech, MenuMechanics)
+    
+    # Test controller fallback
+    ctrl = Factory.controller("display")
+    assert isinstance(ctrl, DisplayController)

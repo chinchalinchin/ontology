@@ -66,14 +66,47 @@ def test_provider_unpack_widget(mock_render, mock_provider):
     assert widget.state.canvas == "mock_canvas_ptr"
     assert widget.state.text is True
 
+def test_provider_unpack_widget_traversal(mock_provider):
+    """Verify Traversal widget unpacks with synced starting action."""
+    cfg = MenuWidget(
+        instance=AssetInstances.BUTTONS,
+        id="test-btn",
+        name="btn-1",
+        bind=Binding(),
+        status=Statuses.DISABLED
+    )
+    widget = mock_provider._unpack_widget(cfg, {})
+    assert widget.state.status == Statuses.DISABLED.value
+    assert widget.state.animation.action == Statuses.DISABLED.value
+
+def test_provider_unpack_widget_meter(mock_provider):
+    """Verify Meter widget calculates its initial frame instantly to prevent 1-frame flicker."""
+    cfg = MenuWidget(
+        instance=AssetInstances.METERS,
+        id="test-meter",
+        name="meter-1",
+        bind=Binding(state="context.hp"),
+        status=Statuses.IDLE
+    )
+    
+    class MockHP:
+        current = 75
+        maximum = 100
+    
+    widget = mock_provider._unpack_widget(cfg, {"hp": MockHP()})
+    assert widget.state.reading == 75
+    assert widget.state.unit == 100
+    assert widget.state.animation.frame == 75
+
 @patch("app.hooks.provider.LayoutEngine")
 def test_provider_unpack_menu(mock_layout_class, mock_provider):
     mock_layout = MagicMock()
     mock_btn_asset = MagicMock()
     mock_btn_asset.id = "test-btn"
+    mock_btn_asset.name = "btn-1" # Fix: Assign name so unpacking loop registers properly
     
     # Simulate flattening process output from layout engine
-    mock_layout.compute.return_value = ([mock_btn_asset], {"test-btn": {}})
+    mock_layout.compute.return_value = ([mock_btn_asset], {"btn-1": {}})
     mock_layout_class.return_value = mock_layout
     
     cfg = MenuConfiguration(
@@ -103,6 +136,6 @@ def test_provider_unpack_menu(mock_layout_class, mock_provider):
     
     assert menu.id == "menu-id"
     assert menu.controller is not None
-    assert "test-btn" in menu.widgets
-    assert menu.widgets["test-btn"] == mock_btn_asset
-    assert menu.focus == "test-btn"
+    assert "btn-1" in menu.widgets
+    assert menu.widgets["btn-1"] == mock_btn_asset
+    assert menu.focus == "btn-1"

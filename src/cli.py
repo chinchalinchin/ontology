@@ -174,9 +174,14 @@ def main():
     if args.dump_state:
         dump(args.board_key, board, 'state')
     
-    # Cleanly release memory bounds
+   # Cleanly release memory bounds
     del board
     del orchestrator
+    if 'engine' in locals():
+        del engine
+        
+    import gc
+    gc.collect()
 
     quit_sdl()
     logger.info("CLI processes completed.")

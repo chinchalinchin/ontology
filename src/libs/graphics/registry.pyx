@@ -213,6 +213,10 @@ class Registry:
                     if item_id not in self._textures: continue
                     
                     crop_map = frame_worker.index(item_id, item_props)
+                    if not crop_map:
+                        logger.warning(
+                            f"Frame indexer {type(frame_worker).__name__} returned empty crop_map for '{item_id}'"
+                        )
                     for frame_key, crop in crop_map.items():
                         logger.debug(f"Indexed frame: '{frame_key}'")
                         self._frames[frame_key] = (

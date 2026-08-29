@@ -45,7 +45,8 @@ from app.game.logic.mechanics import (
     PlayerMechanics,
     RemoveMechanics,
     SpeechMechanics,
-    InteractionMechanics
+    InteractionMechanics,
+    MenuMechanics
 )
 from app.game.menus.controllers import (
     DisplayController,
@@ -99,7 +100,8 @@ class Factory:
         Mechanics.REMOVE: RemoveMechanics,
         Mechanics.COMBAT: CombatMechanics,
         Mechanics.MOTION: MotionMechanics,
-        Mechanics.SPEECH: SpeechMechanics
+        Mechanics.SPEECH: SpeechMechanics,
+        Mechanics.MENU: MenuMechanics
     }
 
     CONTROLLER_MAP  = {
@@ -130,19 +132,27 @@ class Factory:
         return Taxonomy(id, name, category, instance)
 
     @staticmethod
-    def controller(kind: str):
-        return Factory.CONTROLLER_MAP.get(kind, ScrollController)()
-    
-    @staticmethod
     def device(dev: str, mapping: dict):
         target_cls = Factory.DEVICE_MAP.get(dev, Keyboard)
         return target_cls(mapping)
-
-    @staticmethod 
-    def mechanics(kind: str):
-        return Factory.MECHANICS_MAP.get(kind, AnimationMechanics)()
 
     @staticmethod
     def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration, decomposer: Any):
         from app.hooks.cradle import Cradle
         return Cradle(spawnables, recipes, decomposer)
+
+    @staticmethod 
+    def mechanics(kind: Any):
+        if isinstance(kind, str):
+            for enum_key, cls in Factory.MECHANICS_MAP.items():
+                if enum_key.value == kind:
+                    return cls()
+        return Factory.MECHANICS_MAP.get(kind, AnimationMechanics)()
+
+    @staticmethod
+    def controller(kind: Any):
+        if isinstance(kind, str):
+            for enum_key, cls in Factory.CONTROLLER_MAP.items():
+                if enum_key.value == kind:
+                    return cls()
+        return Factory.CONTROLLER_MAP.get(kind, ScrollController)()
