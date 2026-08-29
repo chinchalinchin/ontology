@@ -555,6 +555,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#board" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Board
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Board">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spatial-grid-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spatial Grid Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rendering" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -919,6 +947,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#board" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Board
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Board">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spatial-grid-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spatial Grid Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rendering" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1086,12 +1142,16 @@
 <p>Maps associate ancillary Asset states to their final Animation state.</p>
 <p>See <a href="../04-intentions/#animationmap">AnimationMap</a> and <a href="../04-intentions/#dialoguemap">DialogueMap</a> for more information.</p>
 <p>The <code>AnimationMap</code> plays a crucial role in enforcing logical constraints. For example, <code>TransitionMechanics</code> and <code>PlayerMechanics</code> utilize <code>AnimationMap.action(state, equipment)</code> to resolve whether an intended action is possible. This guarantees that an <code>attack</code> intention will not translate into a <code>thrust</code> animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.</p>
+<h2 id="board">Board</h2>
+<h3 id="spatial-grid-caching">Spatial Grid Caching</h3>
+<p>To optimize environmental queries during the high-frequency game loop, the Board implements an <span class="arithmatex">\(O(1)\)</span> spatial hashing grid (<code>_cached_tilemap</code>). The Board chunks static Assets into a dictionary grid during initialization, keyed by a fixed <code>TILE_HASH_SIZE</code> (defaulting to 32x32 pixels).</p>
+<p>When systems like MotionMechanics need to compute the environmental friction acting on a moving Crate or Sprite, the Board divides the Asset's absolute <code>(x, y)</code> coordinates by the hash size to retrieve the exact Tile beneath it. </p>
 <h2 id="rendering">Rendering</h2>
 <h3 id="depth-height">Depth &amp; Height</h3>
-<p>To accurately render perspective, the Screen <code>draw()</code> loop relies on a tuple-based sorting mechanism applied to all active Assets before they are passed across the Cython boundary. This system resolves the classic "Painter's Algorithm" dilemma where architectural decals (like Doors) need to render <em>on top of</em> their parent structures (like Strut), but <em>behind</em> dynamic entities (like Players) that walk in front of the building.</p>
+<p>To accurately render perspective, the Screen <code>draw()</code> loop relies on a tuple-based sorting mechanism applied to all active Assets before they are passed across the Cython boundary. This system resolves the "Painter's Algorithm" dilemma where architectural decals (like Doors) need to render <em>on top of</em> their parent structures (like Strut), but <em>behind</em> dynamic Asset (like Players) that walk in front of the building.</p>
 <p>The rendering pipeline sorts Assets using a two-part tuple: <code>(Primary Key, Secondary Key)</code></p>
 <ul>
-<li><strong>Primary Key: Height</strong>: By default, an Asset's height is calculated dynamically using its Y-coordinate plus its physical length (<code>state.position.y + dimensions.l</code>). This ensures entities closer to the bottom of the screen are drawn last, appearing "in front" of objects higher up. <ul>
+<li><strong>Primary Key: Height</strong>: By default, an Asset's height is calculated dynamically using its Y-coordinate plus its physical length (<code>state.position.y + dimensions.l</code>). This ensures Assets closer to the bottom of the screen are drawn last, appearing "in front" of objects higher up. <ul>
 <li><strong>The Height Override:</strong> Assets can optionally declare an explicit <code>state.height</code>. When present, this value bypasses the geometric calculation entirely. This is heavily utilized by Compositions via late-binding (e.g., <code>bind(parent.depth)</code>), forcing Component assets like Doors or Chests to occupy the exact same spatial "slice" as the wall to which they are attached.</li>
 </ul>
 </li>
@@ -1165,7 +1225,9 @@
 <li><strong>Asset &amp; Font Allocation (<code>_load_image</code>, <code>_load_font</code>):</strong> Loads physical image (<code>.png</code>) and font (<code>.ttf</code>) assets from disk directly into system memory, returning safe, reference-counted Cython wrappers (<code>TexturePtr</code> and <code>TTFFont</code>). To prevent styling overhead in the inner loop, fonts are pre-styled (bold, italics, RGBA color, margins) natively via SDL during ingestion using the YAML configuration properties.</li>
 <li><strong>Typography (<code>measure</code>, <code>write</code>):</strong> The <code>measure</code> function queries the exact pixel dimensions of a string without allocating a rendering surface. The <code>write</code> function calculates wrapping bounds and alignment, rendering UTF-8 characters as a blended surface that is permanently stamped (baked) directly onto a target <code>TexturePtr</code>. This zero-allocation technique ensures typography does not generate memory garbage during the main game loop.</li>
 <li><strong>Background Compilation (<code>canvas</code> &amp; <code>construct</code>):</strong> A blank texture (<code>SDL_TEXTUREACCESS_TARGET</code>) is created in memory to match the full size of the Board. Python passes a single list of flattened integer tuples representing the source/destination coordinates and grid multipliers. Cython unpacks these primitives and executes thousands of <code>SDL_RenderCopy</code> calls natively via the C-level software rasterizer. This caches a unified map texture, eliminating the need to instantiate and re-render thousands of background tiles every frame.</li>
-<li><strong>Frame Rendering (<code>render</code>):</strong> During the main game loop, <code>Screen.draw()</code> performs lightweight integer-based AABB camera culling natively in Python. This intentionally avoids paying the micro-transaction overhead of calling a Cython function repeatedly inside a massive Python loop. The visible assets are flattened into primitive integer tuples and passed across the C-boundary in a single list. <code>render()</code> clears the canvas buffer, copies the cropped background texture, stamps the active primitives, and finalizes the buffer in memory (<code>SDL_RenderPresent</code>), ready for extraction to disk.</li>
+<li><strong>Buffer Management (<code>clear</code> &amp; <code>present</code>):</strong> Extracted from the core drawing loop to support multi-phase rendering. <code>clear()</code> wipes the current VRAM buffer at the start of the frame, and <code>present()</code> finalizes the buffer (<code>SDL_RenderPresent</code>) while pumping SDL events at the end of the frame.</li>
+<li><strong>World Rendering (<code>render</code>):</strong> During the main game loop, <code>Screen.draw()</code> performs lightweight integer-based AABB camera culling natively in Python. The visible world assets are flattened into primitive integer tuples and passed across the C-boundary in a single list. <code>render()</code> copies the cropped background texture and then maps world-coordinates to camera-relative coordinates on the fly, stamping the active primitives onto the back buffer.</li>
+<li><strong>UI Overlays (<code>superimpose</code>):</strong> After the world is rendered, <code>Screen.interface()</code> passes a flattened list of active Menu and Widget primitives. <code>superimpose()</code> bypasses the camera offset logic entirely, rendering these textures via strict absolute screen coordinates (<code>SDL_RenderCopy</code>) directly on top of the world view, ensuring the HUD and Menus remain statically positioned on the glass.</li>
 </ul>
 <p><strong>Memory Management</strong></p>
 <p>The engine uses Cython extension types (<code>cdef class</code>) to bridge Python's garbage collector with SDL's manual memory management.</p>
