@@ -1505,17 +1505,22 @@
 </li>
 </ul>
 <h3 id="goals-intentions">Goals &amp; Intentions</h3>
-<p>Players utilize the same information channel (e.g. Goals and Intentions) as Sprites for communicating state changes. </p>
+<p>Players utilize the same information channel (e.g. Goals and Intentions) as Sprites for communicating state changes.</p>
 <ul>
-<li>Goal: Players use a "pseudo" Goal to project their input into their intended direction of motion. For example, if a user pressed the right arrow, the Player Goal's shifted is shifted to the right. This in turn determines the direction of the Player's Velocity in their <a href="../05-mechanics/#core">kinematic sliding</a>, i.e. <span class="arithmatex">\(\text{player.velocity} \parallel \text{player.state.goal.position} - \text{player.state.position}\)</span>. </li>
+<li><strong>Goals (Level-Triggered &amp; Polymorphic):</strong> Players use a "pseudo" Goal to project their input into their intended direction of motion. Multiple directional inputs can overlap simultaneously (e.g., <code>UP</code> and <code>RIGHT</code>) and are accumulated as a list to allow for diagonal vector movement. This determines the direction of the Player's Velocity in their <a href="/05-mechanics.md#core">kinematic sliding</a>, i.e. <span class="arithmatex">\(\text{player.velocity} \parallel \text{player.state.goal.position} - \text{player.state.position}\)</span>.</li>
+<li><strong>Intentions (Edge-Triggered &amp; Singular):</strong> Unlike Goals, Intentions represent discrete state transitions. The hardware polling layer enforces a strict singularity rule: overlapping Intention inputs are collapsed into a single scalar value based on configuration order. This acts as a blocking mechanism, preventing impossible state superpositions (e.g., trying to <code>build</code> and <code>attack</code> simultaneously).</li>
 </ul>
 <h3 id="devices">Devices</h3>
-<p>The <a href="../00-overview/#board">Board</a> contains a Device, which polls for user input. The PlayerMechanic uses a Mapping to translate the polling data into a <a href="../04-intentions/">(Intention, Goal, Menu)</a>-tuple. The <a href="../appendices/01-schemas/#configuration-mapping">Mapping Configuration</a> file provides a translation key between input state and game state.</p>
+<p>The <a href="../00-overview/#board">Board</a> contains a Device, which polls for user input. The Device uses a Mapping to translate the polling data into a structured <code>DevicePayload</code>, resolving hardware inputs based on their discrete or continuous nature. The <a href="../appendices/01-schemas/#configuration-mapping">Mapping Configuration</a> file provides a translation key between input state and game state.</p>
 <p><strong>Keyboard</strong></p>
 <p>The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See <a href="https://wiki.libsdl.org/SDL2/SDL_Scancode">SDL documentation</a> for more information.</p>
 <h3 id="contexts">Contexts</h3>
-<p>The Device class implements a stateful context flag (<code>world</code>, <code>menu</code>). Each Device mapping includes a nested mapping for each separate context. </p>
-<p>When the Board Menus (<code>board.menus</code>) are populated, Menu Mechanics toggles the device context, causing <code>poll()</code> to return Menu commands instead of <a href="../04-intentions/">Intentions</a>.</p>
+<p>The Device class implements a stateful context flag (<code>world</code>, <code>menu</code>). Each Device mapping includes a nested mapping for each separate context, which strictly segregates the resulting <code>DevicePayload</code>:</p>
+<ul>
+<li><code>world</code>: Resolves a <code>WorldPayload</code> containing a singular Intention, a singular Menu trigger, and a polymorphic list of Goals.</li>
+<li><code>menu</code>: Resolves a <code>MenuPayload</code> containing a singular Traversal direction and a singular Interaction.</li>
+</ul>
+<p>When the Board Menus (<code>board.menus</code>) are populated, MenuMechanics toggles the device context to <code>menu</code>, ensuring <code>poll()</code> only evaluates and returns UI commands.</p>
 
 
 
