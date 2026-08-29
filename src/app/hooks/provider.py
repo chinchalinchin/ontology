@@ -255,7 +255,7 @@ class Provider:
         
         # Rebuild dictionary honoring flattened list's Painter's Algorithm ordering 
         #   (Python 3.7+ preserves insertion order)
-        ordered_widgets = { w.id: w for w in flattened_list}
+        ordered_widgets = { w.name: w for w in flattened_list}
         
         ctrl = Factory.controller(config.controller)
 

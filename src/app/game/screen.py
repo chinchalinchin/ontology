@@ -264,7 +264,7 @@ class Screen:
                         primitives.append((
                             tex, sx, sy, sw, sl, 
                             widget.state.position.x, widget.state.position.y, 
-                            widget.dimensions.w, widget.dimensions.l
+                            sw, sl
                         ))
 
         superimpose(primitives)
