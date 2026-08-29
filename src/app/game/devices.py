@@ -33,9 +33,14 @@ class Keyboard(Device):
     """
     def __init__(self, mapping: DeviceMapping):
         super().__init__(mapping)   
+        self._context = None
         self.context(DeviceContexts.WORLD)
 
     def context(self, map: str) -> None:
+        # Guard clause: Do not wipe the input buffer if the context isn't changing
+        if getattr(self, '_context', None) == map:
+            return
+            
         self._context = map 
         if map == DeviceContexts.WORLD:
             i_codes = [v for v in self.mapping.world.intentions.values() if v is not None]

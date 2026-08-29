@@ -88,15 +88,15 @@ def arguments():
         p.add_argument("board_key", type=str, help="The configuration key for the target board")
         p.add_argument("--out", type=str, required=True, help="Output directory path")
         p.add_argument("--layer", type=str, required=True, help="Target layer to construct/render")
-        p.add_argument("--width", type=int, default=300, help="Simulated screen width")
-        p.add_argument("--height", type=int, default=300, help="Simulated screen height")
+        p.add_argument("--width", type=int, default=360, help="Simulated screen width")
+        p.add_argument("--height", type=int, default=360, help="Simulated screen height")
         p.add_argument("--device", type=str, default=Devices.KEYBOARD.value, help="Player device")
 
     # Register live game loop subparser
     p_start = subparsers.add_parser("start")
     p_start.add_argument("board_key", type=str, help="The configuration key for the target board")
-    p_start.add_argument("--width", type=int, default=300, help="Window screen width")
-    p_start.add_argument("--height", type=int, default=300, help="Window screen height")
+    p_start.add_argument("--width", type=int, default=360, help="Window screen width")
+    p_start.add_argument("--height", type=int, default=360, help="Window screen height")
     p_start.add_argument("--device", type=str, default=Devices.KEYBOARD.value, help="Player device")
 
     return parser.parse_args()
