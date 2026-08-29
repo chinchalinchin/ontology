@@ -510,6 +510,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#contexts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contexts
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1135,6 +1146,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#contexts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contexts
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1231,13 +1253,19 @@
 </li>
 <li><code>memory:</code> <ul>
 <li><code>goal: Goal</code></li>
-<li><code>communication: List[str]</code> </li>
+<li><code>lexicon: List[str]</code>: (Lexicon keys for Library Communication retrieval)</li>
 <li><code>prices: Dict[str, double]</code></li>
 <li><code>relationships: Dict[str, str]</code></li>
 <li><code>property: List[str]</code></li>
 </ul>
 </li>
-<li><code>goal:</code> <ul>
+<li><code>psyche</code>:<ul>
+<li><code>expression: str</code></li>
+<li><code>motivation: str</code></li>
+<li><code>persona: str</code>: (Person ley for Library Communication retrieval)</li>
+</ul>
+</li>
+<li><code>goal:</code><ul>
 <li><code>name: str</code></li>
 <li><code>category: Enum[sprite, loot, wealth, property, position]</code></li>
 <li><code>position: Position</code></li>
@@ -1303,10 +1331,10 @@
 <p>Animations are tuples of (Action, Direction, Frame). Action and Direction were previously defined in the <a href="../01-assets/">Assets documentation</a>.</p>
 <h3 id="psyche">Psyche</h3>
 <p>The <em>Psyche</em> is an internal State data structure that governs a Sprite's ancillary Animation and Intention logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations and modulations of the Sprite state. The complete Psyche state for a Sprite is given by the tuple,</p>
-<pre><code>(Communcation, Expression, Motivation)
+<pre><code>(Persona, Expression, Motivation)
 </code></pre>
-<p><strong>Communication</strong></p>
-<p>The Communication dimension of a Psyche can be thought of as the short-term memory or a buffer for Dialogue the Sprite is about to display. It holds the Communication key for the current Plot state that will be rendered if the Sprite enters into the <code>speak</code> Intention.</p>
+<p><strong>Persona</strong></p>
+<p>A Sprite persona is a data structure used to index Dialogue to a Sprite through the <a href="../08-plots/#library">Library</a>. It can be thought of as the "personality" of the Sprite.</p>
 <p><strong>Expression</strong></p>
 <p>The Expression dimension alter the Sprite's appearnce by appending a Cursor Expression to the upper right corner of the Sprite's boundaries. Expressions can be visualized as speech bubbles containing icons that express the Sprite's internal state. Expressions are enumerated below,</p>
 <ul>
@@ -1319,6 +1347,7 @@
 <li><code>surprise</code></li>
 <li><code>tired</code></li>
 </ul>
+<p>Over and above this modification to the Asset frame, the Expression dimension of a Sprite's Psyche can be thought of as the short-term memory or a buffer for dialogue the Sprite is about to transmit. This field holds the lexicon key that will be exchanged at the <a href="../08-plots/#library">Library</a> for content and rendered in a <a href="../06-widgets/#menus">Dialogue Menu</a> if the Player enters into the <code>speak</code> Intention. In addition, Sprites may enter into <code>speak</code> Intentions with other Sprites, but these events are not routed to <a href="../06-widgets/#menus">Menus</a>. Instead, Sprite-to-Sprite Dialogue is used by the <a href="../05-mechanics/">RumorMechanics</a>.</p>
 <p><strong>Motivation</strong></p>
 <p>Motivations are long-term state variables that are used to modulate the <a href="../04-intentions/">Intention Transition matrix</a>. Motivations are enumerated below,</p>
 <ul>
@@ -1334,19 +1363,11 @@
 <p><em>Memory</em> is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. </p>
 <ul>
 <li><code>memory.goal</code>: Remember Goal. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.</li>
-<li><code>memory.communications</code>: List of saved dialogue.</li>
+<li><code>memory.rumors</code>: List of Lexicon keys the Sprite has heard through entering into the <code>speak</code> Intention.</li>
 <li><code>memory.prices</code>:</li>
 <li><code>memory.relationship</code>:</li>
 <li><code>memory.property</code>:</li>
 </ul>
-<p><strong>Communications</strong></p>
-<p>Under certain conditions based on the Sprite's Intention, the Sprite may emit a Communication through the <code>speak</code> Intention. For example, a Sprite in the <code>mock</code> Intention might receive a Communication key <code>insult</code>. This key gets stored at the <em>beginning</em> (0 index) of the <code>memory.communications</code> list. </p>
-<p>When a Sprite with a non-empty <code>memory.communications</code> enters the <code>speak</code> Intention, the gameplay loop will then take the first entry out of this Sprites <code>memory.communications</code> list, delete it from this list and place it in the <code>psyche.communication</code> cell. </p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>The last entry in <code>memory.communications</code> is <em>never</em> deleted. The entry is termed <em>unforgettable</em>.</p>
-</div>
-<p>When a Sprite with a non-null <code>psyche.communication</code> (re-)enters the <code>speak</code> Intention, the gameplay loop will then take this entry and submit it to a Dialogue widget to be displayed. The entry thus displayed will be deleted from the <code>intention.communication</code> cell.</p>
 <p><strong>Prices</strong></p>
 <p>Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the <code>barter</code> Intention. This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.</p>
 <p>When two Sprites enter the <code>speak</code> Intention within a certain radius of each other, the <code>SpeechMechanic</code> does the following:</p>
@@ -1354,9 +1375,11 @@
 <li>It averages the intersection of Prices. For example, if one Sprite has a price of 1 for Loot A and another has a price of 5 for Loot A, then the new price of Loot A for both Sprites will be (1 + 5)/2 = 3. It performs this calculation for every such Loot Key the Sprites have in common.</li>
 <li>For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the <code>SpeechMechanic</code> will populate the Sprite's Prices.</li>
 </ol>
+<p><strong>Property</strong></p>
+<p>TODO</p>
 <p><strong>Relationships</strong></p>
 <p>TODO</p>
-<p><strong>Property</strong></p>
+<p><strong>Rumors</strong></p>
 <p>TODO</p>
 <h3 id="inventory">Inventory</h3>
 <p>TODO</p>
@@ -1460,6 +1483,8 @@
 <p>The <a href="../00-overview/#board">Board</a> contains a Device, which polls for user input. The PlayerMechanic uses a Mapping to translate the polling data into a <a href="../04-intentions/">(Intention, Goal)</a>-tuple. The <a href="../appendices/01-schemas/#mapping-configuration">Mapping Configuration</a> file provides a translation key between input state and game state.</p>
 <p><strong>Keyboard</strong></p>
 <p>The input state of the Keyboard is polled through SDL. Keyboard mappings correspond to SDL scancodes. See <a href="https://wiki.libsdl.org/SDL2/SDL_Scancode">SDL documentation</a> for more information.</p>
+<h3 id="contexts">Contexts</h3>
+<p>The Device class implements a stateful context flag (<code>Context.WORLD</code> vs <code>Context.MENU</code>). Each Device mapping includes a <code>menu: Dict[MenuCommands, int]</code> mapping. When the Board Menus (<code>board.menus</code>) are populated, MenuMechanics toggles the device context, causing <code>poll()</code> to return Menu commands instead of <a href="../04-intentions/">Intentions</a>.</p>
 
 
 

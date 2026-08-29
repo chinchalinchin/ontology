@@ -472,6 +472,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#signs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signs
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1291,6 +1302,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#signs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Signs
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2011,6 +2033,22 @@
 <li><code>link: str</code></li>
 <li><code>position: Position</code></li>
 <li><code>switch: bool</code></li>
+</ul>
+<h3 id="signs">Signs</h3>
+<p>Signs are immutable, inanimate Objects whose <code>content</code> is transmitted into a <a href="../06-widgets/#menus">Text Menu</a> when a Player enters into the <code>interact</code> <a href="../04-intentions/">Intention</a>.</p>
+<p>Signs utilize <code>persona</code> and <code>lexicon</code> keys to grab the appropriate content from the <a href="../08-plots/#library">Library</a></p>
+<p><strong>Animation: None</strong></p>
+<p>N/A</p>
+<p><strong>Frame: SingleFrame</strong></p>
+<ul>
+<li><code>keys(id, animation): returns [ id ]</code></li>
+<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+</ul>
+<p><strong>State: DialogueState</strong></p>
+<ul>
+<li><code>position: Position</code></li>
+<li><code>persona: str</code></li>
+<li><code>lexicon: str</code></li>
 </ul>
 <h2 id="cursors">Cursors</h2>
 <ul>

@@ -179,9 +179,10 @@ sheets:
           radius: Pixel Length
       intention: Intention Key
       psyche:
-        communication: Communication Key
+        dialogue: Communication Key
         expression: Expression Key
         motivation: Motivation Key
+        persona: Persona key
       goal:
         name: Goal Identifier
         category: Goal Category Identifier
@@ -195,10 +196,10 @@ sheets:
           position:
             x: Saved X Coordinate Goal
             y: Saved Y Coordinate Goal
-        communications: 
-          - Communication Key
+        rumors: 
+          - Lexicon Key
           # unforgettable
-          - Communication Key
+          - Lexicon Key
         prices: 
           <loot-key>: Loot Price
         relationships:

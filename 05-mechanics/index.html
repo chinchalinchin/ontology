@@ -963,20 +963,21 @@
 <li><strong>High Friction (e.g., <span class="arithmatex">\(100.0\)</span>):</strong> The asset sheds velocity rapidly and comes to rest in a short distance, simulating dense surfaces like mud or deep grass.</li>
 </ul>
 <p><strong>MenuMechanics</strong></p>
-<p>To keep <code>MenuMechanics</code> clean, the Engine uses the <strong>Strategy Pattern</strong> and delegates to <code>MenuController</code> classes. </p>
-<p><code>MenuMechanics</code> is responsible for <em>Universal Menu Physics</em> (traversal, opening, closing). The <code>MenuController</code> is responsible for <em>Bespoke UI Logic</em> (equipping, buying, selling). <code>MenuMechanics</code> only ever interacts with <code>board.menus[-1]</code> (the top of the stack).</p>
-<p>With the controllers handling the semantic meaning of button presses, <code>MenuMechanics</code> becomes a very simple router. Its <code>update()</code> loop looks like this:</p>
+<p>To keep MenuMechanics clean, the Engine uses the <strong>Strategy Pattern</strong> and delegates to MenuController classes. </p>
+<p>MenuMechanics is responsible for <em>Universal Menu Physics</em> (e.g. traversal, opening, closing). The MenuController is responsible for <em>Bespoke Menu Logic</em> (e.g. equipping, buying, selling).<code>MenuMechanics only ever interacts with</code>board.menus[-1]` (the top of the stack).</p>
+<p>With the controllers handling the semantic meaning of button presses, MenuMechanics becomes a simple router. Its <code>update()</code> loop looks like this:</p>
 <ol>
 <li><strong>Check Stack:</strong> If <code>len(board.menus) == 0</code>, exit early.</li>
 <li><strong>Get Top Menu:</strong> <code>active_menu = board.menus[-1]</code></li>
 <li><strong>Poll Input:</strong><ul>
-<li>If <code>UP/DOWN/LEFT/RIGHT</code>: Look at <code>active_menu.state.focus</code>. Look up the key in <code>active_menu.state.graph</code>. If a neighbor exists, change <code>focus</code> and update the <code>TraversalAnimation</code> status of the respective Button Assets.</li>
-<li>If <code>SELECT</code>: Call <code>active_menu.controller.select(active_menu.state.focus, active_menu, board)</code>.</li>
+<li>If <code>NORTH/SOUTH/WEST/EAST</code>: Look at <code>menu.state.focus</code>. Look up the key in <code>active_menu.state.graph</code>. If a neighbor exists, change <code>focus</code> and update the <code>TraversalAnimation</code> status of the respective Button Assets.</li>
+<li>If <code>SELECT</code>: Call <code>active_menu.controller.select(menu.state.focus, menu, board)</code>.</li>
 <li>If <code>CANCEL</code>: Pop the menu off the stack. (Unpause the board if the stack is now empty).</li>
 </ul>
 </li>
-<li><strong>Tick:</strong> Call <code>active_menu.controller.on_update()</code> so continuous menus (like the HUD) can update their meters.</li>
+<li><strong>Tick:</strong> Call <code>active_menu.controller.update()</code> so continuous menus (like the HUD) can update their meters.</li>
 </ol>
+<p>AnimationMechanics strictly governs "World Time". MenuMechanics governs "Menu Time". The <code>animate()</code> interface for Widgets is called inside <code>MenuMechanics.update()</code>, iterating over <code>board.overlays</code> (always) and <code>board.menus[-1]</code> (if active).</p>
 <h3 id="spatial">Spatial</h3>
 <p>These Mechanics handle spatial interactions and collisions between Assets.</p>
 <ul>
@@ -1016,12 +1017,12 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <p>The <a href="./03-player.md">Player</a> does not observe momentum transfers. Instead, the Player follows the procedures outlined below,</p>
 <ul>
 <li><strong>Property Level:</strong> The Player retains a normal, dynamic mass (e.g., <span class="arithmatex">\(m = 10\)</span>).</li>
-<li><strong>Phase 1 - Spatial Resolution (Unchanged):</strong><ul>
+<li><strong>Phase 1 - Spatial Resolution:</strong><ul>
 <li><strong>Player vs. Wall (<span class="arithmatex">\(m=0\)</span>):</strong> <code>inv_total</code> is <span class="arithmatex">\(&gt; 0\)</span>. The Wall absorbs 0% of the overlap shift, and the Player absorbs 100%. The Player correctly halts at the wall boundary.</li>
 <li><strong>Player vs. Crate (<span class="arithmatex">\(m=5\)</span>):</strong> Both absorb the spatial shift proportional to their inverse mass. The Player effectively pushes the Crate out of the way.</li>
 </ul>
 </li>
-<li><strong>Phase 2 - Momentum Transfer (The Fix):</strong> Bypass the 1D elastic collision calculation <em>only</em> for the Player.</li>
+<li><strong>Phase 2 - Momentum Transfer:</strong> Bypass the 1D elastic collision calculation <em>only</em> for the Player.</li>
 </ul>
 <h3 id="intentional">Intentional</h3>
 <p>These Mechanics handle the Sprite Intention logic.</p>

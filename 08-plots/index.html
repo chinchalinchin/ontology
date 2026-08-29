@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ontology-plotting" class="md-skip">
+        <a href="#ontology-plots" class="md-skip">
           Skip to content
         </a>
       
@@ -444,6 +444,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -460,6 +478,64 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Library
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Library">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plot-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plot States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plot-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plot Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -731,6 +807,53 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Library
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Library">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plot-states" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plot States
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plot-mechanics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plot Mechanics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -749,9 +872,30 @@
   
 
 
-<h1 id="ontology-plotting">Ontology: Plotting</h1>
-<p>Due to the nature of the Ontology game engine, a Plot is not scripted, in the sense that Sprite Actions are hardcoded and pre-determined down to the pixels. Conditions are reached to change the World state, which causes a Player's <code>plot-key</code> attribute to update. This in turn is affects what states can be reached by the gameplay loop. </p>
-<p>As a simple example, a Plot state might be defined to change conditional on the existence of Sprite (i.e. whether a character is alive or dead). In the first state, a Sprite might have access to a certain Communication in its Memory (See <a href="../02-sprites/">Sprite documentation</a> for more details on the internal mechanics of Sprites), while in the other a different Communication is present.</p>
+<h1 id="ontology-plots">Ontology: Plots</h1>
+<p>Due to the nature of the Ontology game engine, a Plot is not scripted, in the sense that Sprite Actions are hardcoded and pre-determined down to the pixel. Conditions are reached to change the World state, which causes the <a href="../00-overview/#board">Board's</a> <code>plot</code> attribute to update. This in turn affects what dialogue keys can be reached by the gameplay loop. </p>
+<p><a href="../02-sprites/">Sprites</a> retain a Expression in their <a href="../02-sprites/#psyche">Psyche</a>. This Expression is a Lexicon key to access content in the <a href="#library">Library</a>. It is used in conjunction with the Sprite's <code>persona</code> and the <a href="../00-overview/#board">Board's</a> <code>plot</code> key to unlock the appropriate content.</p>
+<p>As a simple example, a Plot state might be defined to change conditional on the existence of Sprite (perhaps whether a character is alive or dead), call it <code>&lt;plot&gt;</code>.</p>
+<p>A Sprite, whose <code>psyche.persona = &lt;persona&gt;</code> is defined through state files, when entering into a <code>speak</code> Intention with <code>psyche.expression = &lt;lexicon&gt;</code> (arrived at through <a href="../04-intentions/">Intention transitions</a> and <a href="../05-mechanics/">World Mechanics</a>), would then retrieve the <code>&lt;plot&gt;.&lt;persona&gt;.&lt;lexicon&gt;</code> Dialogue from the Library. </p>
+<h2 id="library">Library</h2>
+<ul>
+<li>Location: <code>src/data/config/library/main.yaml</code></li>
+</ul>
+<p>The Library reads in the scripts stored in <code>src/data/config/library/main.yaml</code>, otherwise known as the <em>library directory</em>.</p>
+<p>TODO</p>
+<div class="highlight"><pre><span></span><code><span class="nt">library</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">&lt;plot-key&gt;</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">&lt;persona-key&gt;</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">&lt;lexicon-key&gt;</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;content&gt;</span>
+</code></pre></div>
+<ul>
+<li><code>plot-key</code>: Current state of the Plot. Determined by the Board.</li>
+<li><code>persona-key</code>: Persona binding for Sprite or Signs. Determined by the Asset.</li>
+<li><code>lexicon-key</code>: Dynamic key for ingame modulation. </li>
+</ul>
+<h3 id="plot-states">Plot States</h3>
+<p>TODO</p>
+<h3 id="plot-mechanics">Plot Mechanics</h3>
 <p>TODO</p>
 
 

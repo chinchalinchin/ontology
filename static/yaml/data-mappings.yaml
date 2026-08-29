@@ -1,6 +1,14 @@
 mappings:
   keyboard:
-    intentions:
-      <intention-key>: <scancode>
-    goals:
-      <goal-key>: <scancode>
+    menu:
+      traversal:
+        <traversal-key>: <scancode>
+      interactions:
+        <interaction-key>: <scancode>
+    world:
+      menus:
+        <menu-key>: <scancode>
+      intentions:
+        <intention-key>: <scancode>
+      goals:
+        <goal-key>: <scancode>
