@@ -25,7 +25,8 @@ from app.models.state import (
     DisplayState, 
     PaneState, 
     MeterState, 
-    TraversalState
+    TraversalState,
+    AnimationState
 )
 from app.models.config import (
     WidgetRecipe, 
@@ -201,9 +202,16 @@ class Provider:
                 canvas=canvas_ptr,
                 text=is_text
             )
+        elif cfg.instance == AssetInstances.BUTTONS:
+            initial_status = cfg.status.value if cfg.status else Statuses.IDLE.value
+            state = TraversalState(
+                position=Position(x=0, y=0),
+                status=initial_status,
+                icons=[],
+                animation=AnimationState(action=initial_status) # Sync action immediately
+            )
         elif cfg.instance == AssetInstances.METERS:
             resolved = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else None
-            # Inject dynamic getter closures to continuously evaluate the bound memory reference
             reading_function = lambda r=resolved: (
                 r.current if hasattr(r, 'current') 
                     else (r if isinstance(r, (int, float)) else 0)
@@ -217,12 +225,9 @@ class Provider:
                 reading_function = reading_function,
                 unit_function = unit_function
             )
-        elif cfg.instance == AssetInstances.BUTTONS:
-            state = TraversalState(
-                position=Position(x=0, y=0),
-                status=cfg.status.value or Statuses.IDLE.value,
-                icons=[]
-            )
+            # Evaluate immediately to prevent 1-frame empty gauge flicker
+            if state.unit > 0:
+                state.animation.frame = max(0, min(100, int(round((state.reading / state.unit) * 100))))
         else:
             state = None
 
