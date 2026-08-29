@@ -38,7 +38,7 @@ class PlayerMechanics(Mechanic):
         if poll.intentions:
             player.state.intention = poll.intentions[0]
         else:
-            player.state.intention = Intentions.IDLE.value
+            player.state.intention = Intentions.IDLE
         
         speed = player.state.character.speed
         goal_x = player.state.position.x
@@ -47,16 +47,16 @@ class PlayerMechanics(Mechanic):
         # Track movement so the player doesn't instantly snap back to 'UP' when inputs are released.
         has_movement = False
 
-        if PlayerGoals.UP.value in poll.goals:
+        if PlayerGoals.UP in poll.goals:
             goal_y -= speed
             has_movement = True
-        if PlayerGoals.DOWN.value in poll.goals:
+        if PlayerGoals.DOWN in poll.goals:
             goal_y += speed
             has_movement = True
-        if PlayerGoals.LEFT.value in poll.goals:
+        if PlayerGoals.LEFT in poll.goals:
             goal_x -= speed
             has_movement = True
-        if PlayerGoals.RIGHT.value in poll.goals:
+        if PlayerGoals.RIGHT in poll.goals:
             goal_x += speed
             has_movement = True
 
@@ -64,14 +64,14 @@ class PlayerMechanics(Mechanic):
         if has_movement and not player.state.goal:
             player.state.goal = Goal(
                 name=player.name, 
-                category=GoalCategories.POSITION.value, 
+                category=GoalCategories.POSITION, 
                 position=Position(goal_x, goal_y)
             )
         elif player.state.goal:
             player.state.goal.position.x = goal_x
             player.state.goal.position.y = goal_y
 
-        if player.state.intention == Intentions.ATTACK.value:
+        if player.state.intention == Intentions.ATTACK:
             player.state.mutators.triggers.animated = True
         else:
             player.state.mutators.triggers.animated = has_movement

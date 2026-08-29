@@ -22,7 +22,7 @@ def main():
     logger.info("Starting Ontology Application...")
 
     maestro = Orchestrator("world-00")
-    maestro.ignite(Dimensions(w=800, l=600), Devices.KEYBOARD.value)
+    maestro.ignite(Dimensions(w=800, l=600), Devices.KEYBOARD)
     
 if __name__ == "__main__":
     main()

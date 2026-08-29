@@ -325,7 +325,7 @@ To summarize the lifecycle:
 * An event triggers the Provider to instantiate a Menu.
 * The Layout engine recursively walks the MenuConfiguration tree, calculating absolute $X/Y$ coordinates.
 * The Layout engine flattens the tree into a 1D sequence, builds the graph, and returns the populated Menu object.
-* The Screen loops over menu.widgets.values() and pushes primitive tuples across the Cython boundary.
+* The Screen loops over `menu.widgets` and pushes primitive tuples across the Cython boundary.
 
 - Rendering is $O(N)$: `Screen.interface()` simply iterates over `menu.widgets`. Because Python 3.7+ dictionaries maintain insertion order, the Provider can guarantee the Painter's Algorithm is respected by inserting Panes into the dictionary first, followed by their children.
 - Controller Logic is $O(1)$: When a SelectionEvent fires, the MenuController must update states. If widgets are stored in a List, the Controller must loop through the list to find `health-meter` every time a player takes damage. With a Dictionary, the Controller executes `menu.widgets["health-meter"].state.reading = new_health` instantly.

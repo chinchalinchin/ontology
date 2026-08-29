@@ -43,7 +43,7 @@ class InteractionMechanics(SpatialMechanic):
             # Filter sources with 'interact' intention
             sources = [
                 asset for asset in sprites + players
-                if asset.state.intention == Intentions.INTERACT.value
+                if asset.state.intention == Intentions.INTERACT
                 and asset.name not in processed_sources 
                 # Filter out already processed sources instantly
             ]

@@ -25,24 +25,24 @@ class AnimationMap:
 
         intention = state.intention
 
-        if intention == Intentions.IDLE.value:
-            return Actions.WALK.value
+        if intention == Intentions.IDLE:
+            return Actions.WALK
 
-        if intention == Intentions.ATTACK.value:
+        if intention == Intentions.ATTACK:
             if not weapon:
-                return Actions.CAST.value  # Default fallback for unarmed/magic attacks
+                return Actions.CAST # Default
             
             weapon_property = equipment.weapons.get(weapon)
 
             if weapon_property and weapon_property.actions:
                 return next(iter(weapon_property.actions))
             
-            return Actions.CAST.value
+            return Actions.CAST
     
-        elif intention in (Intentions.WANDER.value, Intentions.FIND.value):
-            return Actions.WALK.value
+        elif intention in (Intentions.WANDER, Intentions.FIND):
+            return Actions.WALK
 
-        return Actions.WALK.value
+        return Actions.WALK
     
 
     @staticmethod
@@ -53,10 +53,10 @@ class AnimationMap:
         # In graphics coordinates, larger y is physically lower.
         if dy > dx:
             # Lower than both diagonals means it is physically DOWN
-            return Directions.DOWN.value if dy > -dx else Directions.LEFT.value
+            return Directions.DOWN if dy > -dx else Directions.LEFT
         
         # Higher than both diagonals means it is physically UP
-        return Directions.RIGHT.value if dy > -dx else Directions.UP.value
+        return Directions.RIGHT if dy > -dx else Directions.UP
 
 class DialogueMap:
     """

@@ -63,26 +63,26 @@ class Keyboard(Device):
         if self._context == 'world':
             for k, v in self.mapping.world.intentions.items():
                 if v is not None and current_dict.get(v) and not self._last_state.get(v):
-                    world_res["intentions"].append(k.value if hasattr(k, 'value') else k)
+                    world_res["intentions"].append(k)
             for k, v in self.mapping.world.menus.items():
                 if v is not None and current_dict.get(v) and not self._last_state.get(v):
-                    world_res["menus"].append(k.value if hasattr(k, 'value') else k)
+                    world_res["menus"].append(k)
             for k, v in self.mapping.world.goals.items():
                 if v is not None and current_dict.get(v):
-                    world_res["goals"].append(k.value if hasattr(k, 'value') else k)
+                    world_res["goals"].append(k)
                     
         elif self._context == 'menu':
             for k, v in self.mapping.menu.traversal.items():
                 if v is not None and current_dict.get(v) and not self._last_state.get(v):
-                    menu_res["traversal"].append(k.value if hasattr(k, 'value') else k)
+                    menu_res["traversal"].append(k)
             for k, v in self.mapping.menu.interactions.items():
                 if v is not None and current_dict.get(v) and not self._last_state.get(v):
-                    menu_res["interactions"].append(k.value if hasattr(k, 'value') else k)
+                    menu_res["interactions"].append(k)
         
         self._last_state = current_dict
         return DeviceMapping(
-            world=WorldMapping(**world_res),
-            menu=MenuMapping(**menu_res)
+            world   = WorldMapping(**world_res),
+            menu    = MenuMapping(**menu_res)
         )
 
 class Controller(Device):

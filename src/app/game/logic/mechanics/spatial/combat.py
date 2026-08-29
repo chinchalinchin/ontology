@@ -38,10 +38,9 @@ class CombatMechanics(SpatialMechanic):
             # Gather all attacking entities
             attackers = [
                 asset 
-                for asset 
-                in board.instances(AssetInstances.PLAYERS, layer) + \
-                    board.instances(AssetInstances.SPRITES, layer)
-                if getattr(asset.state, 'intention', None) == Intentions.ATTACK.value
+                for asset  in board.instances(AssetInstances.PLAYERS, layer) + \
+                                board.instances(AssetInstances.SPRITES, layer)
+                if asset.state.intention == Intentions.ATTACK
             ]
             
             if not attackers:
