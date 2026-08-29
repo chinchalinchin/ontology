@@ -27,9 +27,6 @@ from app.models.state import (
     MeterState, 
     TraversalState
 )
-from app.models.adapters import (
-    PydanticPosition as Position
-)
 from app.models.config import (
     WidgetRecipe, 
     MenuConfiguration, 
@@ -45,7 +42,7 @@ from app.game.menus.layout import LayoutEngine
 
 # Cython Libraries
 import libs.graphics.render as render
-from libs.core.models import Dimensions
+from libs.core.models import Dimensions, Position
 from libs.graphics.registry import Registry
 
 logger = logging.getLogger(__name__)

@@ -15,7 +15,8 @@ import pytest
 # Applicaiton Libraries
 from app.models.properties import (
     PropertiesSchema, 
-    SheetProperties
+    SheetProperties,
+    WidgetProperties
 )
 from app.models.config import (
     ConfigurationSchema, 
@@ -25,14 +26,23 @@ from app.models.config import (
     MenuMapping,
     RecipeConfiguration,
     CursorRecipe,
-    CraftRecipe
+    CraftRecipe,
+    WidgetRecipe,
+    Recipe
+)
+from app.config.enums import ( 
+    FrameRecipe,
+    AnimationRecipe
 )
 from app.models.state import (
     StateSchema, 
     SpriteState
 )
 from app.hooks.orchestrator import Orchestrator
+from app.hooks.provider import Provider
 from app.models.groups import SpawnableGroup
+
+from unittest.mock import MagicMock, patch
 
 # Cython Libraries
 from libs.core.models import (
@@ -107,3 +117,20 @@ def mock_orchestrator(mock_properties, mock_configurations, mock_state):
         mock_loader.load_state.return_value = mock_state
         
         yield Orchestrator(state="world-01")
+
+@pytest.fixture
+def mock_provider():
+    recipes = WidgetRecipe(
+        pages=Recipe(frame=FrameRecipe.SINGLE),
+        buttons=Recipe(frame=FrameRecipe.TRAVERSAL, animation=AnimationRecipe.TRAVERSAL),
+        meters=Recipe(frame=FrameRecipe.METER, animation=AnimationRecipe.METER),
+        panes=Recipe(frame=FrameRecipe.NONE)
+    )
+    properties = MagicMock()
+    properties.pages = {"test-page": WidgetProperties(dimensions=Dimensions(w=100, l=100))}
+    properties.buttons = {"test-btn": WidgetProperties(dimensions=Dimensions(w=32, l=32))}
+    properties.meters = {"test-meter": WidgetProperties(dimensions=Dimensions(w=50, l=10))}
+    properties.panes = {"test-pane": WidgetProperties(dimensions=Dimensions(w=200, l=200))}
+    registry = MagicMock()
+    
+    return Provider(recipes=recipes, properties=properties, registry=registry)

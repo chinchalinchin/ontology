@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.menus
+# Ontology: app.game.menus.core
 """
 from __future__ import annotations
 
@@ -19,9 +19,12 @@ class Binding:
     selector: Optional[str] = None
     state: Optional[str] = None
 
-@dataclass(slots=True)
 class Widget(Asset):
     binding: Binding
+    
+    def __init__(self, taxonomy, properties, state, frame, animation, binding: Binding):
+        super().__init__(taxonomy, properties, state, frame, animation)
+        self.binding = binding
 
 @dataclass(slots=True)
 class Menu:

@@ -334,3 +334,87 @@ def test_registry_missing_font(mock_properties, mock_configurations):
         )
     
     assert registry.font("missing_font") is None
+
+def test_registry_traversal_frame_indexing(mock_properties, mock_configurations):
+    """Test TraversalFrame indexing for UI buttons."""
+    from app.models.properties import WidgetProperties
+    from app.models.config import WidgetRecipe
+    
+    mock_properties.widgets.buttons["ui_btn"] = WidgetProperties(
+        dimensions=Dimensions(w=32, l=32)
+    )
+    mock_configurations.recipes.widgets = WidgetRecipe(
+        buttons=Recipe(frame=FrameRecipe.TRAVERSAL)
+    )
+    
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+
+    with patch('libs.graphics.registry.os.walk') as mock_walk, \
+         patch('libs.graphics.registry.Registry._load_image') as mock_load:
+         
+        mock_walk.return_value = [
+            ('/mock/assets', [], ['ui_btn.png'])
+        ]
+        
+        mock_tex = MagicMock()
+        mock_load.return_value = mock_tex
+        
+        registry = Registry(
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
+        )
+        
+        expected_keys = ["ui_btn-idle", "ui_btn-active", "ui_btn-selected", "ui_btn-disabled"]
+        for key in expected_keys:
+            assert key in registry._frames
+            
+        data = registry.image("ui_btn-active")
+        assert data is not None
+        assert data[1] == 32  # w(32) * 1
+        assert data[2] == 0
+        assert data[3] == 32
+        assert data[4] == 32
+
+def test_registry_meter_frame_indexing(mock_properties, mock_configurations):
+    """Test MeterFrame indexing for HUD gauges."""
+    from app.models.properties import WidgetProperties
+    from app.models.config import WidgetRecipe
+    
+    mock_properties.widgets.meters["health_bar"] = WidgetProperties(
+        dimensions=Dimensions(w=100, l=10)
+    )
+    mock_configurations.recipes.widgets = WidgetRecipe(
+        meters=Recipe(frame=FrameRecipe.METER)
+    )
+    
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+
+    with patch('libs.graphics.registry.os.walk') as mock_walk, \
+         patch('libs.graphics.registry.Registry._load_image') as mock_load:
+         
+        mock_walk.return_value = [
+            ('/mock/assets', [], ['health_bar.png'])
+        ]
+        
+        mock_tex = MagicMock()
+        mock_load.return_value = mock_tex
+        
+        registry = Registry(
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
+        )
+        
+        assert "health_bar-0" in registry._frames
+        assert "health_bar-50" in registry._frames
+        assert "health_bar-100" in registry._frames
+        
+        data_50 = registry.image("health_bar-50")
+        assert data_50 is not None
+        assert data_50[1] == 100 # sx offset by 1 full width for 'filled' crop
+        assert data_50[2] == 0
+        assert data_50[3] == 50  # int(100 * 50 / 100)
+        assert data_50[4] == 10
