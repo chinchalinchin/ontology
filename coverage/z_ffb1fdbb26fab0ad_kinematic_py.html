@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_ffb1fdbb26fab0ad_motive_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.0">coverage.py v7.16.0</a>,
-            created at 2026-08-29 14:43 +0000
+            created at 2026-08-29 20:41 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -95,10 +95,10 @@
     <p class="pln"><span class="n"><a id="t13" href="#t13">13</a></span><span class="t"><span class="str">    &quot;&quot;&quot;</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t14" href="#t14">14</a></span><span class="t">    <span class="key">for</span> <span class="nam">player</span> <span class="key">in</span> <span class="nam">players</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t15" href="#t15">15</a></span><span class="t">        <span class="nam">ix</span><span class="op">,</span> <span class="nam">iy</span> <span class="op">=</span> <span class="num">0.0</span><span class="op">,</span> <span class="num">0.0</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t">        <span class="key">if</span> <span class="nam">PlayerGoals</span><span class="op">.</span><span class="nam">UP</span> <span class="key">in</span> <span class="nam">mapping</span><span class="op">.</span><span class="nam">goals</span><span class="op">:</span> <span class="nam">iy</span> <span class="op">-=</span> <span class="num">1.0</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t">        <span class="key">if</span> <span class="nam">PlayerGoals</span><span class="op">.</span><span class="nam">DOWN</span> <span class="key">in</span> <span class="nam">mapping</span><span class="op">.</span><span class="nam">goals</span><span class="op">:</span> <span class="nam">iy</span> <span class="op">+=</span> <span class="num">1.0</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t">        <span class="key">if</span> <span class="nam">PlayerGoals</span><span class="op">.</span><span class="nam">LEFT</span> <span class="key">in</span> <span class="nam">mapping</span><span class="op">.</span><span class="nam">goals</span><span class="op">:</span> <span class="nam">ix</span> <span class="op">-=</span> <span class="num">1.0</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t">        <span class="key">if</span> <span class="nam">PlayerGoals</span><span class="op">.</span><span class="nam">RIGHT</span> <span class="key">in</span> <span class="nam">mapping</span><span class="op">.</span><span class="nam">goals</span><span class="op">:</span> <span class="nam">ix</span> <span class="op">+=</span> <span class="num">1.0</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t16" href="#t16">16</a></span><span class="t">        <span class="key">if</span> <span class="nam">PlayerGoals</span><span class="op">.</span><span class="nam">UP</span> <span class="key">in</span> <span class="nam">mapping</span><span class="op">.</span><span class="nam">world</span><span class="op">.</span><span class="nam">goals</span><span class="op">:</span> <span class="nam">iy</span> <span class="op">-=</span> <span class="num">1.0</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t">        <span class="key">if</span> <span class="nam">PlayerGoals</span><span class="op">.</span><span class="nam">DOWN</span> <span class="key">in</span> <span class="nam">mapping</span><span class="op">.</span><span class="nam">world</span><span class="op">.</span><span class="nam">goals</span><span class="op">:</span> <span class="nam">iy</span> <span class="op">+=</span> <span class="num">1.0</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t">        <span class="key">if</span> <span class="nam">PlayerGoals</span><span class="op">.</span><span class="nam">LEFT</span> <span class="key">in</span> <span class="nam">mapping</span><span class="op">.</span><span class="nam">world</span><span class="op">.</span><span class="nam">goals</span><span class="op">:</span> <span class="nam">ix</span> <span class="op">-=</span> <span class="num">1.0</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t">        <span class="key">if</span> <span class="nam">PlayerGoals</span><span class="op">.</span><span class="nam">RIGHT</span> <span class="key">in</span> <span class="nam">mapping</span><span class="op">.</span><span class="nam">world</span><span class="op">.</span><span class="nam">goals</span><span class="op">:</span> <span class="nam">ix</span> <span class="op">+=</span> <span class="num">1.0</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t">        <span class="com"># Axis-Snapping logic: nullify orthogonal axes for cardinal movement precedence</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t">        <span class="key">if</span> <span class="nam">ix</span> <span class="op">!=</span> <span class="num">0.0</span> <span class="key">and</span> <span class="nam">iy</span> <span class="op">==</span> <span class="num">0.0</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
@@ -127,7 +127,7 @@
             <a class="nav" href="z_ffb1fdbb26fab0ad_motive_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.0">coverage.py v7.16.0</a>,
-            created at 2026-08-29 14:43 +0000
+            created at 2026-08-29 20:41 +0000
         </p>
     </div>
 </footer>

@@ -1383,18 +1383,19 @@
 <span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
 <span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-display</span>
 <span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
-<span class="w">              </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SCROLL</span>
 <span class="w">              </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.content</span>
 <span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">button</span>
 <span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-up</span>
 <span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-scroll-up</span>
 <span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
-<span class="w">              </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SCROLLUP</span>
+<span class="w">              </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scrollup</span>
+<span class="w">              </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-display</span>
 <span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">button</span>
 <span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-down</span>
 <span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-scroll-down</span>
 <span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
-<span class="w">              </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SCROLLDOWN</span>
+<span class="w">              </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scrooldown</span>
+<span class="w">              </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-display</span>
 </code></pre></div>
 <p>This example will be referenced throughout the section.</p>
 <p><strong>Lifecycle</strong></p>
@@ -1416,37 +1417,44 @@
 <h3 id="provider">Provider</h3>
 <p>The Provider, similiar to the <a href="../03-compositions/#decomposer">Decomposer</a>, is responsible for unpacking Menu configurations into flat lists of Assets for the Engine. However, unlike the Decomposer, the Provider must also generate a traversal graph, inject bindings into Widgets and pass the result to a Menu.</p>
 <p>To start, ScreenPosition is a <em>configuration-time</em> concept, not a <em>runtime</em> concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values <code>(px * screensize.w, py * screensize.l)</code> and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute <code>Positions</code>, <code>Screen.draw()</code> can consume Widgets exactly like world Assets, satisfying the zero-allocation prior.</p>
-<p>TODO</p>
 <h3 id="controllers">Controllers</h3>
 <p>Every Menu has a Controller that handles Menu-specific logic. Widgets that are embedded into Menus have their states altered through action-reaction bindings which specify how a SelectionEvent propagates through the Menu. This logic is handled by the Controller.</p>
 <p>However, since Menus are unpacked by the Provider into Assets, otherwise indistinguishable from other Assets to the rendering engine, to faciliate these relationships, every child Widget of a Menu Pane may bind to a <code>selection</code>, <code>selector</code> or a <code>state</code>.</p>
 <p><strong>Bindings</strong></p>
-<p>The <code>selection</code> binding is a reference to an action to be consumed by Menu Controller when the <code>focus</code> has selected a Widget. </p>
-<p>The <code>selector</code> binding is a reference to a reaction to be propagated by the Menu controller when an action is initiated. </p>
-<p>The <code>state</code> binding is a reference to the Event Context and may be updated in response to an action or reaction.</p>
-<p>In the provided <code>text</code> Menu example, the <code>text-scroll-up</code> and <code>text-scroll-down</code> Buttons are bound to the <code>selection</code> actions <code>SCROLLUP</code> and <code>SCROLLDOWN</code>, respectively. Buttons are traversible, so when a Button is selected, the <code>selection</code> binding ensures the Event propagates and is handled appropriately by the controller, in this case the <code>scroll</code> controller. The Controller implements an abstract <code>select()</code> method to delegate and route Events,</p>
+<p>Bindings define how Widgets interact with user input and game state. They are divided into three distinct roles:</p>
+<ul>
+<li><code>selection</code>: The specific action or command a Control Widget emits when selected by the user (e.g., <code>scrollup</code>).</li>
+<li><code>selector</code>: A direct pointer to the unique <code>name</code> of another Widget in the Menu. Used when a Control Widget needs to mutate or read another Widget's state.</li>
+<li><code>state</code>: A string path referencing a specific variable in the Event Context. The Provider resolves this string into a live state reference during Menu instantiation.</li>
+</ul>
+<p>In the provided <code>text</code> Menu example, the <code>text-scroll-up</code> and <code>text-scroll-down</code> Buttons are bound to the <code>selection</code> actions <code>scrollup</code> and <code>scrolldown</code>. Because these buttons control the Page widget, their <code>selector</code> bindings are set to <code>text-display</code>—the unique name of the target Page. </p>
+<p>When a Button is selected, the MenuMechanics route the input to the appropriate Controller (in this case, the <code>ScrollController</code>). The Controller uses the <code>selector</code> binding to perform an <span class="arithmatex">\(O(1)\)</span> dictionary lookup for the target widget and applies the <code>selection</code> action:</p>
 <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ScrollController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
 
-    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">widget_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">menu</span><span class="p">:</span> <span class="n">Menu</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">):</span>
-        <span class="n">selection</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="n">widget_id</span><span class="p">]</span><span class="o">.</span><span class="n">binding</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;selection&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>        
-        <span class="c1"># do something with select</span>
+    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">menu</span><span class="p">:</span> <span class="n">Menu</span><span class="p">,</span> <span class="n">board</span><span class="p">:</span> <span class="n">Board</span><span class="p">,</span> <span class="n">bus</span><span class="p">:</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">):</span>
+        <span class="n">widget</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+
+        <span class="n">selection</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">binding</span><span class="o">.</span><span class="n">selection</span>
+        <span class="n">target_key</span> <span class="o">=</span> <span class="n">widget</span><span class="o">.</span><span class="n">binding</span><span class="o">.</span><span class="n">selector</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">target_key</span> <span class="ow">or</span> <span class="n">target_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">menu</span><span class="o">.</span><span class="n">widgets</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">target_widget</span> <span class="o">=</span> <span class="n">menu</span><span class="o">.</span><span class="n">widgets</span><span class="p">[</span><span class="n">target_key</span><span class="p">]</span>
+
+        <span class="c1"># apply selection logic to target_widget...</span>
 </code></pre></div>
-<p>The implementation can then query the Menu Widget to find the appropriate <code>selector</code> and translate the Event into a Menu change.</p>
-<p>In addition, the example also shows the <code>text</code> Menu binding to the <code>text-display</code> as the recipient of the <code>selection</code> actions, via the <code>SCROLL</code> <code>selector</code>.</p>
-<p>Bindings are enumerated and summarized below,</p>
+<p>By decoupling the layout from the logic, Pages and Meters do not need to know what is controlling them; they only require a <code>state</code> binding to know what data they are displaying.</p>
+<p>Bindings are enumerated and summarized below:</p>
 <ul>
-<li><code>selections</code>:  Widget action binding.<ul>
+<li><code>selections</code>:  Widget action commands.<ul>
 <li><code>SCROLLUP</code></li>
 <li><code>SCROLLDOWN</code></li>
 <li><code>SELECT</code></li>
 </ul>
 </li>
-<li><code>selector</code>: Widget reaction binding<ul>
-<li><code>SCROLL</code></li>
-<li><code>SLOT</code></li>
-</ul>
-</li>
-<li><code>state</code>: Reference to Event Context.</li>
+<li><code>selector</code>: The dictionary key (<code>name</code>) of a target Widget in <code>menu.widgets</code>.</li>
+<li><code>state</code>: String path to the Event Context (e.g., <code>context.sprite.state.psyche.communication</code>).</li>
 </ul>
 <h3 id="layouts">Layouts</h3>
 <p>Consider a <code>nest</code> Pane with two children <code>dock</code> Panes, each with three buttons, represented by the matrix, <code>[[a,b,c], [d, e, f]]</code>. Consider the problem of the Menu focus residing on the <code>b</code> Button element when the user presses <code>SOUTH</code>. In this case, the Menu must shift focus to the <code>e</code> element. The <code>graph</code> attribute of the Menu holds this relational struture. </p>
