@@ -108,13 +108,23 @@ class Factory:
     }
 
     @staticmethod
-    def frame(recipe: FrameRecipe):
+    def frame(recipe: Any):
+        # Gracefully handle string primitives passed by unboxed Cython registries
+        if isinstance(recipe, str):
+            for enum_key, frame_cls in Factory.FRAME_MAP.items():
+                if enum_key.value == recipe:
+                    return frame_cls()
         return Factory.FRAME_MAP.get(recipe, SingleFrame)()
 
     @staticmethod
-    def animation(recipe: AnimationRecipe):
+    def animation(recipe: Any):
+        # Gracefully handle string primitives passed by unboxed Cython registries
+        if isinstance(recipe, str):
+            for enum_key, anim_cls in Factory.ANIMATION_MAP.items():
+                if enum_key.value == recipe:
+                    return anim_cls()
         return Factory.ANIMATION_MAP.get(recipe, PersistentAnimation)()
-
+    
     @staticmethod
     def taxonomy(id: str, name: str, category: str, instance: str):
         return Taxonomy(id, name, category, instance)

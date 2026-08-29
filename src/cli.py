@@ -54,6 +54,8 @@ def dump(board_key, board, temp = 'state'):
 
     if temp == 'state':
         args['assets'] = board.assets()
+        args['menus'] = board.menus
+        args['overlays'] = board.overlays
     elif temp == 'sdl':
         args['sys_info'] = get_system_info()
 
