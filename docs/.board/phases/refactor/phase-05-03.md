@@ -1,4 +1,4 @@
-#### Refactor: Phase 05.03 - Library
+#### Refactor: Phase 05.03 - Menu Controllers
 
 **Overview** 
 
@@ -6,11 +6,12 @@ TODO
 
 ##### Tasks
 
-**1. Task: TODO**
+**1. Task: Delegate Equipment Handling to Controller**
 
-*Objective*: TODO
+*Objective*: Ensure controller specific logic is migrated into the new Menu-Widget paradigm.
 
-- [] Subtask: TODO
+* [!] Remove `MenuMechanics.equip()`. 
+* [!] Create `InventoryController` in `app.game.menus.controllers.inventory` to handle equipment logic via `SelectionEvent` bindings.
 
 **2. Task: TODO**
 

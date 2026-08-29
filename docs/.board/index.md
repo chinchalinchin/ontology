@@ -15,7 +15,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 02: Player](./phases/implement/phase-02.md)
     - [x]: [Phase 03: Finetuning](./phases/implement/phase-03.md)
     - [x]: [Phase 04: Physics](./phases/implement/phase-04.md)
-    - [~]: [Phase 05: Widgets](./phases/implement/phase-05.md)
+    - [x]: [Phase 05: Widgets](./phases/implement/phase-05.md)
     - [~]: [Phase 06: Editor](./phases/implement/phase-06.md)
     - [~]: [Phase 07: Intentions](./phases/implement/phase-07.md)
     - [x]: [Phase 08: Compositions](./phases/implement/phase-08.md)
@@ -32,6 +32,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 04.03: Motion](./phases/refactor/phase-04-03.md)
     - [x]: [Phase 05.01: Typography](./phases/refactor/phase-05-01.md)
     - [ ]: [Phase 05.02: Simplification](./phases/refactor/phase-05-02.md)
-    - [ ]: [Phase 05.03: Library](./phases/refactor/phase-05-03.md)
+    - [ ]: [Phase 05.03: Menu Controllers](./phases/refactor/phase-05-03.md)
+    - [ ]: [Phase 05.04: Library](./phases/refactor/phase-05-04.md)
   - Report:
     - [x]: [2026-08-09: SDL Rendering Pipeline Failure](./phases/report/2026-08-16.md)

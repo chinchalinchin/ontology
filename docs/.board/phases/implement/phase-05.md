@@ -133,8 +133,3 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 * [!] Create a Sign Object that triggers Text menus.
     * [!] Define Sign State to include `persona` and `lexicon`.
 * [!] Create Library for parsing `src/data/config/library/main.yaml`. 
-
-**Task 12. Controller Refactor**
-
-* [!] Remove `MenuMechanics.equip()`. 
-* [!] Create `InventoryController` in `app.game.menus.controllers.inventory` to handle equipment logic via `SelectionEvent` bindings.
