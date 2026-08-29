@@ -36,14 +36,12 @@ class ScrollController(MenuController):
         page = menu.widgets[target]
         
         sel_val = selection.value if hasattr(selection, 'value') else selection
-        sd_val = Selections.SCROLLDOWN.value if hasattr(Selections.SCROLLDOWN, 'value') else Selections.SCROLLDOWN
-        su_val = Selections.SCROLLUP.value if hasattr(Selections.SCROLLUP, 'value') else Selections.SCROLLUP
         
-        if sel_val == sd_val and page.state.more():
+        if sel_val == Selections.SCROLLDOWN:
             page.state.scrolldown()
             from app.game.menus.events import UpdateEvent
             bus.append(UpdateEvent(widget=page, content=page.state.current()))
-        elif sel_val == su_val and page.state.less():
+        elif sel_val == Selections.SCROLLUP:
             page.state.scrollup()
             from app.game.menus.events import UpdateEvent
             bus.append(UpdateEvent(widget=page, content=page.state.current()))

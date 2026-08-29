@@ -229,6 +229,10 @@ class PlayerState(AssetState):
 # ------------------------------------------------------------------------- WIDGET STATES
 
 @dataclass(slots=True)
+class IconState:
+    frame: str
+
+@dataclass(slots=True)
 class TraversalState:
     position: Position # type: ignore
     status: Statuses

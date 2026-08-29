@@ -1,6 +1,6 @@
 # Ontology: Mechanics
 
-A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an `update(board: Board, delta: float)` method. The arguments of this interface are the [Board](./00-overview.md#board) and a game loop time delta. These arguments are injected from above by the [Enegine](./00-overview.md#engine)
+A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an `update(board: Board, delta: float, bus: collections.deque)` method. The arguments of this interface are the [Board](./00-overview.md#board), a game loop time delta and an [Event Bus](./06-widgets.md#events) for storing Menu Events. These arguments are injected from above by the [Engine](./00-overview.md#engine)
 
 ## Overview
 
@@ -13,7 +13,7 @@ These Mechanics handle the core engine logic.
 
 - `animation AnimationMechanics`: Translates current states into FrameKeys for the renderer.
 - `remove: RemoveMechanics`: General garbage collection for Assets whose lifespan has expired.
-- `motion: MotionMechanics`: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.
+- `motion: MotionMechanics`: Applies acceleration and velocity integrations to Assets to arrive at their next position.
 - `menu: MenuMechanics`: Handles Menu and Widget interactions.
 
 **MotionMechanics**
@@ -23,19 +23,19 @@ These Mechanics handle the core engine logic.
 - Inert Assets: Projectiles
 - Frictive Assets: Crates
 
-Assets with Mass are divided into Kinenamtic, Motive, Inert and Frictive Assets. Kinematic and Motive Assets have Velocity states with (Speed, Impulse) properties that control their rate of change of Velocity; Frictive and Inert Assets have a Velocity state, but have their Velocities controlled through external forces, i.e. Friction and garbage collection. 
+Assets with Mass are divided into Kinenamtic, Motive, Inert and Frictive Assets. Kinematic and Motive Assets have Velocity states with (Speed, Impulse) properties that control the rate of change of their Velocity; Frictive and Inert Assets have a Velocity state, but have their Velocities controlled through external forces, i.e. Friction and garbage collection. 
 
-Kinematic Assets snap to velocity vectors and do not change vectorally. This is used for the Player. When the Player presses right, the Player Sprite immediately changes *Velocity* (not Position) to right, snapping to the inputted direction without getting sent into circular motion. In other words, velocities orthogonal to the Player's inputted direction are nulled out by the game loop; Velocity is used to control Player position updates through Symplectic Euler updates, but only applies changes in one direction at once.
+Kinematic Assets snap to Velocity vectors and do not change vectorally. This is used for the Player. When the Player presses right, the Player Sprite immediately changes *Velocity* (not Position) to right, snapping to the inputted direction without getting sent into circular motion. In other words, velocities orthogonal to the Player's inputted direction are nulled out by the game loop; Velocity is used to control Player position, but only applies changes in one direction at once.
 
-Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to Speed. Motive Assets experience friction to prevent the conservation of momentum sending them into "orbit" around their Goal.
+Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to Speed. Motive Assets experience friction to prevent the conservation of momentum from sending them into "orbit" around their Goal.
 
-Frictive Assets have motion imparted to them via collisions. Afterwards, the force of friction is applied to the resultant Velocity every game tick until that Velocity has been brought to zero. The force of friction is proportional to the currently occupied Tile's  `properties.friction`.
+Frictive Assets have motion imparted to them via collisions. Afterwards, the force of friction (technically an impulse) is applied to the resultant Velocity every game tick until that Velocity has been brought to zero. The force of friction is proportional to the currently occupied Tile's  `properties.friction`.
 
 Inert Assets are exluded from these considerations. They are spawned with a Velocity vector and an initial position; They follow the trajectory determined by these parameters until the distance between their initial and current position exceeds the garbage collection limit.
 
 The general flow of MotionMechanics is given by,
 
-* **Kinematic Motion** Check `device.poll()`. If directional input is present, calculate accelerate velocity to direction and null out orthogonal velocity. If no input is present, hardcode `velocity = (0,0)`.
+* **Kinematic Motion** Check `device.poll()`. If directional input is present, accelerate velocity to direction and null out orthogonal velocity. If no input is present, hardcode `velocity = (0,0)`.
 * **Motive Motion** Calculate the unit vector pointing from `current_position` to `goal_position`. Multiply by `character.impulse` and $\Delta t$. Add to `velocity`. Clamp magnitude to `character.speed`.
 * **Frictive Motion** Query `Board.tile()` at asset's center. Calculate $\Delta v = \text{friction} \cdot \Delta t$. Apply $\Delta v$ in the direction opposite to the current `velocity`. If $\Delta v > \vert{}\text{velocity}\vert{}$, set `velocity = (0,0)`.
 * **Inert Motion** Exclude Inert from the above steps. For all assets, apply $v \cdot \Delta t$ to the sub-pixel accumulators `rx/ry`. When `rx/ry` exceed $1.0$ or $-1.0$, cast to `int`, shift the physical `Position`, and decrement the accumulator.
@@ -113,7 +113,6 @@ The [Player](./03-player.md) does not observe momentum transfers. Instead, the P
     * **Player vs. Crate ($m=5$):** Both absorb the spatial shift proportional to their inverse mass. The Player effectively pushes the Crate out of the way.
 * **Phase 2 - Momentum Transfer:** Bypass the 1D elastic collision calculation *only* for the Player.
 
-
 ### Intentional
 
 These Mechanics handle the Sprite Intention logic.
@@ -123,6 +122,8 @@ These Mechanics handle the Sprite Intention logic.
 - `commerce: CommerceMechanics`: Translate Intentions (barter, attract, etc.) into trades and price movements.
 - `speech: SpeechMechanics`: TODO
 
+TODO
+
 ## Configuration
 
 * Location: `/src/data/config/mechanics/main.yaml`
@@ -131,6 +132,10 @@ Mechanics Configuration defines what Mechanic classes are instantiated by the ga
 
 ```yaml
 mechanics:
-    order:
+    core:
+        - <mechanic-key>
+    world:
         - <mechanic-key>
 ```
+
+Mechanics are divided into `world` Mechanics and `core` Mechanics. `core` Mechanics execute every single game loop, regardless of whether or not the [Board](./00-overview.md#board) is paused; These include AnimationMechanics and MenuMechanics. `world` Mechanics only execute when the Board is unpaused.

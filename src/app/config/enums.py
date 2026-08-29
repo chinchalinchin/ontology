@@ -9,6 +9,10 @@ class Devices(str, Enum):
     CONTROLLER      = "controller"
     KEYBOARD        = "keyboard"
 
+class DeviceContexts(str, Enum):
+    WORLD           = "world"
+    MENU            = "menu"
+    
 # -------------------------------- ASSET ENUMERATIONS
 
 class AssetCategories(str, Enum):
@@ -246,6 +250,7 @@ class Traversal(str, Enum):
 class Interactions(str, Enum):
     SELECT          = "select"
     CANCEL          = "cancel"
+    PAUSE           = "pause"
 
 class Menus(str, Enum):
     DIALOGUE        = "dialogue"

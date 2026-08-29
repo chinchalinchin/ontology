@@ -38,6 +38,7 @@ def start(self) -> None:
 Mechanics act as filters. Rather than the Engine passing arguments to a system, a Mechanic is responsible for querying the Board for the exact data it cares about.
 
 For example, the `SwitchMechanics` system strictly queries `board.plates`, `board.gates`, and any heavy entities (like `crates` and `sprites`) to resolve trigger logic, leaving the rest of the Board untouched. This keeps execution tight and game loops strictly separated by behavior.
+
 ## Maps
 
 Maps associate ancillary Asset states to their final Animation state.

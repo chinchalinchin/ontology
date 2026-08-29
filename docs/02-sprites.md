@@ -24,48 +24,48 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
 * `position: Position`
 * `velocity: Velocity`
 * `layer: str`
+* `intention: str` 
+* `character: Character`
+    * `strength: int`
+    * `defense: int`
+    * `speed: int` (Maximum magnitude of Velocity vector)
+    * `impulse: int`: (Amount of acceleration applied to Velocity per game-tick)
+* `animation: AnimationState`
+    * `action: str`
+    * `direction: str`
+    * `frame: int`
+* `inventory:`
+    * `loot: Dict[str, int]`
+    * `equipment:`
+        * `armor: str`
+        * `weapon: str`
+        * `tool: str`
+        * `utility: str`
+        * `shield: str`
+    * `wallet: int`
 * `meters: List[Meter]`
     * `health: Meter` 
         * `current: int`
-        - `maximum: int`
-    - `magic: Meter`
-        - `current: int`
-        - `maximum: int`
-- `character: Character`
-    - `strength: int`
-    - `defense: int`
-    - `speed: int` (Maximum magnitude of Velocity vector)
-    - `impulse: int`: (Amount of acceleration applied to Velocity per game-tick)
-- `animation: AnimationState`
-    - `action: str`
-    - `direction: str`
-    - `frame: int`
-- `intention: str` 
-- `inventory:`
-    - `loot: Dict[str, int]`
-    - `equipment:`
-        `armor: str`
-        `weapon: str`
-        `tool: str`
-        `utility: str`
-    - `wallet: int`
-- `mutators:`
-    - `triggers: Dict[str, bool]`
-    - `parameters: Dict[str, Dict[str, Union[int, double]]]`
-- `memory:` 
-    - `goal: Goal`
-    - `lexicon: List[str]`: (Lexicon keys for Library Communication retrieval)
-    - `prices: Dict[str, double]`
-    - `relationships: Dict[str, str]`
-    - `property: List[str]`
-- `psyche`:
-    - `expression: str`
-    - `motivation: str`
-    - `persona: str`: (Person ley for Library Communication retrieval)
-- `goal:`
-    - `name: str`
-    - `category: Enum[sprite, loot, wealth, property, position]`
-    - `position: Position`
+        * `maximum: int`
+    * `magic: Meter`
+        * `current: int`
+        * `maximum: int`
+* `mutators:`
+    * `triggers: Dict[str, bool]`
+    * `parameters: Dict[str, Dict[str, Union[int, double]]]`
+* `memory:` 
+    * `goal: Goal`
+    * `prices: Dict[str, double]`
+    * `relationships: Dict[str, str]`
+    * `property: List[str]`
+* `psyche`:
+    * `expression: str`
+    * `motivation: str`
+    * `persona: str`: (Persona ley for Library Communication retrieval)
+* `goal:`
+    * `name: str`
+    * `category: Enum[sprite, loot, wealth, property, position]`
+    * `position: Position`
 
 **Animation: StateAnimation**
 
@@ -91,7 +91,7 @@ See [Goals documentation](./04-intentions.md) for more information.
 
 ### Meters
 
-TODO
+A Meter has a `current` value and a `maximum` value.
 
 **Health**
 
@@ -123,15 +123,15 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
 - `triggers.dead`: Triggered if a Sprite dies. This can only occur if the Sprite's `character.health.current = 0`
 - `triggers.struck`: Triggered if a Sprite collides with a hitbox.
 - `triggers.fear`: Triggered for the logical disjunction of the following conditions:
-    - Triggered if Sprite's health dips below `frightened.limit`
-    - Triggered if Sprite is surrounded by more than `frightened.enemy` enemies with the pixel distance of `frightened.radius`.
+    - Triggered if Sprite's health dips below `fear.limit`
+    - Triggered if Sprite is surrounded by more than `fear.enemy` enemies with the pixel distance of `fear.radius`.
 - `triggers.vision`: Trigger if a Sprite is within visible distance of its Goal.
 
 **Parameters**
 
-- `parameters.fear.radius`: Radius of separation within which the Sprite triggers the `triggers.frightened` mutator. Measured in pixels.
-- `parameters.fear.limit`: Percentage of health below which Sprite triggers the `triggers.frightened` mutator.
-- `parameters.fear.enemy`: Number of enemies within the `parameters.frightened.radius` that must be present to trigger the `triggers.frightened` mutator.
+- `parameters.fear.radius`: Radius of separation within which the Sprite triggers the `triggers.fear` mutator. Measured in pixels.
+- `parameters.fear.limit`: Percentage of health below which Sprite triggers the `triggers.fear` mutator.
+- `parameters.fear.enemy`: Number of enemies within the `parameters.fear.radius` that must be present to trigger the `triggers.fear` mutator.
 - `parameters.vision.radius`: Radius of separation within which the Sprite triggers the `triggers.vision` mutator. Measured in pixels.
 
 ### Animation

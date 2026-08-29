@@ -1,11 +1,11 @@
-# /home/grant/Projects/ontology/src/app/game/logic/mechanics/core.py
-
 """
 # Ontology: app.game.logic.mechanics.core
 
 Package for core game Mechanic implementations.
 """
 from __future__ import annotations
+
+# Standard Libraries
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 import collections
@@ -13,12 +13,28 @@ import collections
 if TYPE_CHECKING:
     from app.game.board import Board
 
-from app.config.enums import AssetCategories, AssetInstances, Statuses, Intentions
-from app.models.state import SpriteState
-from app.game.menus.events import MenuEvent, TerminalEvent
+# Application Libraries
+from app.config.enums import (
+    AssetCategories, 
+    AssetInstances, 
+    Statuses, 
+    Interactions,
+    DeviceContexts
+)
+from app.game.logic.mechanics.motion import (
+    kinematic, 
+    motive, 
+    frictive
+)
+from app.game.menus.events import (
+    TerminalEvent
+)
+from app.models.state import (
+    SpriteState
+)
 
+# Cython Libraries
 from libs.core.math import Physics
-from app.game.logic.mechanics.motion import kinematic, motive, frictive
 
 class Mechanic(ABC):
     @abstractmethod 
@@ -67,6 +83,8 @@ class MotionMechanics(Mechanic):
         Physics.integrate_kinematics(all_mutable, delta)
 
 class MenuMechanics(Mechanic):
+
+    # TODO: should be handled by an inventory controller, not mechanic
     def equip(self, item: str, state: SpriteState, board: Board) -> None:
         if item in board.equipment.weapons.keys():
             state.inventory.equipment.weapon = item
@@ -89,10 +107,10 @@ class MenuMechanics(Mechanic):
 
         # Context Control
         if not board.menus:
-            board.device.context('world')
+            board.device.context(DeviceContexts.WORLD)
             return
 
-        board.device.context('menu')
+        board.device.context(DeviceContexts.MENU)
             
         active_menu = board.menus[-1]
         
@@ -107,7 +125,7 @@ class MenuMechanics(Mechanic):
         traversal = mapping.menu.traversal
         interactions = mapping.menu.interactions
 
-        if "cancel" in interactions or "pause" in interactions:
+        if Interactions.CANCEL in interactions or Interactions.PAUSE in interactions:
             bus.append(TerminalEvent())
             return
 

@@ -156,30 +156,32 @@ Each Category has Instances. Asset *Instances* form the bottom layer of the hier
 | Tile | Back | Position, Layer, Depth, Height |
 | Tile | Fore | Position, Layer, Depth, Height |
 | Object | Crate | Position, Layer, Depth, Height |
+| Object | Sign | TODO |
 | Object | Door | Position, Layer, Depth, Height, OutLayer |
-| Object | Chest | Position, Layer, Depth, Height, Switch, Content |
+| Object | Chest | Position, Layer, Depth, Height, Animation, Switch, Content |
 | Object | Gate | Position, Layer, Depth, Height, Aniamtion, Switch, Link |
 | Object | Plate | Position, Layer, Depth, Height, Animation, Switch, Link |
 | Craft | Strut | Position, Layer, Depth, Height, Owner |
-| Craft | Plot | Position, Layer, Depth, Height, Owner, Season |
+| Craft | Crop | Position, Layer, Depth, Height, Season |
+| Craft | Ore | Position, Layer, Depth, Height, Vein |
 | Cursor | Expression | Position, Layer, Depth, Height |
 | Cursor | Projectile | Position, Layer, Depth, Height, Initial |
 | Effect | Temporary | Position, Layer, Depth, Height, Animation |
 | Effect | Persistent | Position, Layer, Depth, Height, Animation |
 | Sheet | Pixie | Position, Layer. Depth, Height, Animation |
 | Sheet | Sprite | Position, Layer, Depth, Height, Animation, Intention, Inventory, Meters, Memory, Mutators, Goal |
+| Widget | Icon | Position, Frame |
 | Widget | Pane | Position, Layout, Alignment, Gap, Margins |
 | Widget | Button  | Position, Status, Icons, Animation |
-| Widget | Icon | TODO |
 | Widget | Meter | Position, Reading, Unit |
-| Widget | Page | TODO |
+| Widget | Page | Position, Content, Page Index, Page Size, Canvas |
 
 !!! note
-    [Equipment](./02-sprites.md#equipment) and [Player](./02-sprites.md#player) Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is stateless, whereas the Player is a special type of [Sprite](./02-sprites.md).
+    [Equipment](./02-sprites.md#equipment) and [Player](./02-sprites.md#player) Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is a stateless Sheet, whereas the Player is a special type of [Sprite](./02-sprites.md).
 
 ### Asset Architecture
 
-Every physical entity in the game is an instance of the unified `Asset` class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. *Behaviors* are decoupled from Assets and managed entirely by *Mechanics* classes that iterate over the Board Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
+Every physical entity in the game is an instance of the unified Asset class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by *Mechanic* classes that iterate over the Board Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
 
 The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the [Recipe](#recipes) configuration file. The components of each Assets are enumerated below,
 
@@ -187,7 +189,7 @@ The Recipe for an Asset, i.e. the list of components which go into a particular 
 2. **Model: State:** A model defining mutable data (e.g., `ContainerState`, `PositionalState`, etc.).
 3. **Behavior: Animation** Stateless strategies (e.g. `BinaryAnimation`, `StateAnimation`, etc.) injected into the Asset. These contain the specific logic for updating Animation frames.
     - `animate(state, properties)`: Interface for applying animation logic to Asset state.
-4. **Behavior: Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. A `Frame` component returns a `List[str]` rather than a single `str`. An `Asset` can be a single logical entity composed of multiple superimposed rendered textures. In addition, Frames provide the texture indexing schema used by the [Registry](./00-overview.md#registry) to store Assets in memory.
+4. **Behavior: Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a `List[str]` rather than a single `str`. In addition, Frames provide the indexing schema for textures used by the [Registry](./00-overview.md#registry) to store Assets in memory.
     - `keys(id, state)`: Interface for retrieving Asset's current Frame key.
     - `index(id, properties)`: Interface for indexing Asset frames in Registry.
 
@@ -214,7 +216,7 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These a
 
 * Property File: `/src/assets/tiles/main.yaml`
 
-Tiles are inanimate, immutable Assets. Tiles are the most basic type of Asset. They have a single frame, have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds and foregrounds by breaking each rendered image into a grid of tiles. 
+Tiles are inanimate, immutable Assets. Tiles are the most basic type of Asset. They have a single frame, have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds and foregrounds by breaking each rendered image into a grid of Tiles. 
 
 Tiles Instances have their dimensions fixed by their properties. These dimensions are configurable in the property file, but they apply to all Tiles of a particular instance universally. When a Tile is drawn, it is rendered as a `multiple` of the unit Tile configured in the Asset directory.
 
@@ -248,7 +250,7 @@ N/A
 
 ### Fore
 
-A Fore Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Fore Tiles will always be render on top of all of other Assets.
+A Fore Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Fore Tiles will always be rendered on top of all of other Assets, regardless of their `depth` or `height`. The *one* exception to this rule is Widgets. Fore Tiles are an "in-world" Asset, and thus their Z-ordering is superseded by Widgets.
 
 **Animation: None**
 
@@ -271,7 +273,7 @@ N/A
 
 * Property File: `/src/assets/objects/main.yaml`
 
-*Objects* are mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.
+Objects are mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.
 
 **Binary Frames**
 
@@ -729,7 +731,7 @@ Widgets are covered in their own section, [Widgets](./06-widgets.md).
 
 Fonts are stateless Assets initialized at [runtime](./09-architecture.md#initialization), i.e. they are not deployed onto the Board; instead Fonts are utilized by the [Screen](./00-overview.md#screen) to render text whenever the game loop calls for text. 
 
-A Font is a wrapper `.ttf` file and a data structure used to configure the Font styling. Each styled Font is stored in the [Registy](./00-overview.md#registry) using its file name. The [Screen](./00-overview.md#screen)retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.
+A Font is a wrapper `.ttf` file and a data structure used to configure the Font styling. Each styled Font is stored in the [Registy](./00-overview.md#registry) using its file name. The [Screen](./00-overview.md#screen) retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.
 
 In other words, a Font Asset encapsulates both the script and the styling applied to the script. 
 
