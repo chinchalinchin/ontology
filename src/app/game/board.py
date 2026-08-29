@@ -39,15 +39,16 @@ class Board:
     # Flags
     loaded: bool
     paused: bool
-    # Game Objects
+    # Configurations
     configurations: ConfigurationGroup
     equipment: EquipmentGroup
+    # Game Components
     device: Device
     cradle: Cradle
     menus: List[Menu]
     overlays: List[Menu]
     # ------- Private Fields
-    # Game Objects
+    # Assets
     _assets: List[Asset]
     # Caches
     _cached_categories: Dict[str, Dict[str, List[Asset]]]

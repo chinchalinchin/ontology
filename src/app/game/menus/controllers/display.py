@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING
 from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
 
-# FIX: Defer the Board import
 if TYPE_CHECKING:
     from app.game.board import Board
 
