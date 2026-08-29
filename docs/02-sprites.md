@@ -310,13 +310,14 @@ The Player Sprite Sheet is configured through the `player` Sprite Sheet.
 
 ### Goals & Intentions
 
-Players utilize the same information channel (e.g. Goals and Intentions) as Sprites for communicating state changes. 
+Players utilize the same information channel (e.g. Goals and Intentions) as Sprites for communicating state changes.
 
-- Goal: Players use a "pseudo" Goal to project their input into their intended direction of motion. For example, if a user pressed the right arrow, the Player Goal's shifted is shifted to the right. This in turn determines the direction of the Player's Velocity in their [kinematic sliding](./05-mechanics.md#core), i.e. $\text{player.velocity} \parallel \text{player.state.goal.position} - \text{player.state.position}$. 
+* **Goals (Level-Triggered & Polymorphic):** Players use a "pseudo" Goal to project their input into their intended direction of motion. Multiple directional inputs can overlap simultaneously (e.g., `UP` and `RIGHT`) and are accumulated as a list to allow for diagonal vector movement. This determines the direction of the Player's Velocity in their [kinematic sliding](/05-mechanics.md#core), i.e. $\text{player.velocity} \parallel \text{player.state.goal.position} - \text{player.state.position}$.
+* **Intentions (Edge-Triggered & Singular):** Unlike Goals, Intentions represent discrete state transitions. The hardware polling layer enforces a strict singularity rule: overlapping Intention inputs are collapsed into a single scalar value based on configuration order. This acts as a blocking mechanism, preventing impossible state superpositions (e.g., trying to `build` and `attack` simultaneously).
 
 ### Devices
 
-The [Board](./00-overview.md#board) contains a Device, which polls for user input. The PlayerMechanic uses a Mapping to translate the polling data into a [(Intention, Goal, Menu)](./04-intentions.md)-tuple. The [Mapping Configuration](./appendices/01-schemas.md#configuration-mapping) file provides a translation key between input state and game state.
+The [Board](./00-overview.md#board) contains a Device, which polls for user input. The Device uses a Mapping to translate the polling data into a structured `DevicePayload`, resolving hardware inputs based on their discrete or continuous nature. The [Mapping Configuration](./appendices/01-schemas.md#configuration-mapping) file provides a translation key between input state and game state.
 
 **Keyboard**
 
@@ -324,6 +325,9 @@ The input state of the Keyboard is polled through SDL. Keyboard mappings corresp
 
 ### Contexts
 
-The Device class implements a stateful context flag (`world`, `menu`). Each Device mapping includes a nested mapping for each separate context. 
+The Device class implements a stateful context flag (`world`, `menu`). Each Device mapping includes a nested mapping for each separate context, which strictly segregates the resulting `DevicePayload`:
 
-When the Board Menus (`board.menus`) are populated, Menu Mechanics toggles the device context, causing `poll()` to return Menu commands instead of [Intentions](./04-intentions.md).
+* `world`: Resolves a `WorldPayload` containing a singular Intention, a singular Menu trigger, and a polymorphic list of Goals.
+* `menu`: Resolves a `MenuPayload` containing a singular Traversal direction and a singular Interaction.
+
+When the Board Menus (`board.menus`) are populated, MenuMechanics toggles the device context to `menu`, ensuring `poll()` only evaluates and returns UI commands.

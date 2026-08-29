@@ -35,8 +35,8 @@ class PlayerMechanics(Mechanic):
         player = board.player()
         poll = board.device.poll()
         
-        if poll.intentions:
-            player.state.intention = poll.intentions[0]
+        if poll.world.intentions:
+            player.state.intention = poll.world.intentions
         else:
             player.state.intention = Intentions.IDLE
         
@@ -47,16 +47,16 @@ class PlayerMechanics(Mechanic):
         # Track movement so the player doesn't instantly snap back to 'UP' when inputs are released.
         has_movement = False
 
-        if PlayerGoals.UP in poll.goals:
+        if PlayerGoals.UP in poll.world.goals:
             goal_y -= speed
             has_movement = True
-        if PlayerGoals.DOWN in poll.goals:
+        if PlayerGoals.DOWN in poll.world.goals:
             goal_y += speed
             has_movement = True
-        if PlayerGoals.LEFT in poll.goals:
+        if PlayerGoals.LEFT in poll.world.goals:
             goal_x -= speed
             has_movement = True
-        if PlayerGoals.RIGHT in poll.goals:
+        if PlayerGoals.RIGHT in poll.world.goals:
             goal_x += speed
             has_movement = True
 
@@ -71,7 +71,10 @@ class PlayerMechanics(Mechanic):
             player.state.goal.position.x = goal_x
             player.state.goal.position.y = goal_y
 
-        if player.state.intention == Intentions.ATTACK:
+        if player.state.intention in [
+            Intentions.ATTACK,
+            # TODO: add animated Intentions here
+        ]:
             player.state.mutators.triggers.animated = True
         else:
             player.state.mutators.triggers.animated = has_movement

@@ -121,16 +121,16 @@ class MenuMechanics(Mechanic):
         active_menu.controller.update(active_menu, board, bus)
 
         # Input Interception
-        mapping = board.device.poll()
-        traversal = mapping.menu.traversal
-        interactions = mapping.menu.interactions
+        poll = board.device.poll()
+        traversal = poll.menu.traversal
+        interaction = poll.menu.interactions
 
-        if Interactions.CANCEL in interactions or Interactions.PAUSE in interactions:
+        if interaction in [Interactions.CANCEL, Interactions.PAUSE]:
             bus.append(TerminalEvent())
             return
 
         if traversal and active_menu.focus:
-            direction = traversal[0]
+            direction = traversal
             neighbors = active_menu.graph.get(active_menu.focus, {})
             if direction in neighbors:
                 new_focus = neighbors[direction]
@@ -138,5 +138,5 @@ class MenuMechanics(Mechanic):
                 active_menu.widgets[new_focus].state.status = Statuses.ACTIVE
                 active_menu.focus = new_focus
 
-        if "select" in interactions and active_menu.focus:
+        if Interactions.SELECT == interaction and active_menu.focus:
             active_menu.controller.select(active_menu.focus, active_menu, board, bus)

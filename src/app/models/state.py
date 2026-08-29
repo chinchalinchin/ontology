@@ -349,3 +349,19 @@ class StateSchema:
     effects: EffectStateInstances = field(default_factory=EffectStateInstances)
     sheets: SheetStateInstances = field(default_factory=SheetStateInstances)
     compositions: List[PropertyState] = field(default_factory=list)
+
+@dataclass(slots=True)
+class WorldPayload:
+    intention: Optional[str] = None
+    menu: Optional[str] = None
+    goals: List[str] = field(default_factory=list)
+
+@dataclass(slots=True)
+class MenuPayload:
+    traversal: Optional[str] = None
+    interaction: Optional[str] = None
+
+@dataclass(slots=True)
+class DevicePayload:
+    world: WorldPayload
+    menu: MenuPayload
