@@ -45,7 +45,8 @@ from app.game.logic.mechanics import (
     PlayerMechanics,
     RemoveMechanics,
     SpeechMechanics,
-    InteractionMechanics
+    InteractionMechanics,
+    MenuMechanics
 )
 from app.game.menus.controllers import (
     DisplayController,
@@ -99,7 +100,8 @@ class Factory:
         Mechanics.REMOVE: RemoveMechanics,
         Mechanics.COMBAT: CombatMechanics,
         Mechanics.MOTION: MotionMechanics,
-        Mechanics.SPEECH: SpeechMechanics
+        Mechanics.SPEECH: SpeechMechanics,
+        Mechanics.MENU: MenuMechanics
     }
 
     CONTROLLER_MAP  = {
