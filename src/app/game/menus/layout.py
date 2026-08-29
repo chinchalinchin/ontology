@@ -12,7 +12,6 @@ from app.assets.base import Asset
 from app.config.enums import Layouts, Alignments
 from app.models.config import MenuPane, MenuWidget
 
-
 # Cython Libraries
 from libs.core.models import Position, Dimensions
 
@@ -60,11 +59,90 @@ class LayoutEngine:
         elif cfg.layout in (Layouts.STACK, Layouts.NEST):
             self._layout_stack(asset, children_assets, cfg.alignment, cfg.gap)
         elif cfg.layout == Layouts.TAB:
-            self._layout_tab(asset, children_assets) # Just assigns parent's (x,y) to all children
+            self._layout_tab(asset, children_assets)
 
         # Now that children have absolute physical coordinates, tell them to layout THEIR children
         for child_cfg in cfg.children:
             self._compute_recursive(child_cfg, widgets, flattened)
+
+    def _layout_dock(self, 
+        pane: Asset, 
+        children: List[Asset], 
+        alignment: Alignments, 
+        gap: int
+    ):
+        if not children:
+            return
+
+        current_x = pane.state.position.x
+        current_y = pane.state.position.y
+        
+        # Main-axis (X) alignment
+        total_w = sum((c.dimensions.w if c.dimensions else 0) for c in children) + gap * (len(children) - 1)
+        pane_w = pane.dimensions.w if pane.dimensions else total_w
+        
+        if alignment == Alignments.CENTER:
+            current_x += (pane_w - total_w) // 2
+        elif alignment == Alignments.END:
+            current_x += (pane_w - total_w)
+
+        # Cross-axis (Y) alignment: Center vertically within the Pane
+        pane_h = pane.dimensions.l if pane.dimensions else max((c.dimensions.l if c.dimensions else 0) for c in children)
+
+        for child in children:
+            w = child.dimensions.w if child.dimensions else 0
+            h = child.dimensions.l if child.dimensions else 0
+            
+            y_offset = (pane_h - h) // 2
+            
+            child.state.position = Position(x=current_x, y=current_y + y_offset)
+            current_x += w + gap
+
+    def _layout_stack(self,
+        pane: Asset, 
+        children: List[Asset], 
+        alignment: Alignments,
+        gap: int
+    ):
+        if not children:
+            return
+
+        current_x = pane.state.position.x
+        current_y = pane.state.position.y
+        
+        # Main-axis (Y) alignment
+        total_l = sum((c.dimensions.l if c.dimensions else 0) for c in children) + gap * (len(children) - 1)
+        pane_l = pane.dimensions.l if pane.dimensions else total_l
+
+        if alignment == Alignments.CENTER:
+            current_y += (pane_l - total_l) // 2
+        elif alignment == Alignments.END:
+            current_y += (pane_l - total_l)
+
+        # Cross-axis (X) alignment: Center horizontally within the Pane
+        pane_w = pane.dimensions.w if pane.dimensions else max((c.dimensions.w if c.dimensions else 0) for c in children)
+
+        for child in children:
+            w = child.dimensions.w if child.dimensions else 0
+            l = child.dimensions.l if child.dimensions else 0
+            
+            x_offset = (pane_w - w) // 2
+            
+            child.state.position = Position(x=current_x + x_offset, y=current_y)
+            current_y += l + gap
+
+    def _layout_tab(self,
+        pane: Asset,
+        children: List[Asset]
+    ):
+        """
+        Tabs superimpose children natively at the exact same anchor as the parent.
+        """
+        for child in children:
+            child.state.position = Position(
+                x=pane.state.position.x, 
+                y=pane.state.position.y
+            )
 
     def _build_graph(self, 
         buttons: List[Asset]

@@ -309,7 +309,7 @@ The Player Sprite Sheet is configured through the `player` Sprite Sheet.
 
 ### Devices
 
-The [Board](./00-overview.md#board) contains a Device, which polls for user input. The PlayerMechanic uses a Mapping to translate the polling data into a [(Intention, Goal)](./04-intentions.md)-tuple. The [Mapping Configuration](./appendices/01-schemas.md#mapping-configuration) file provides a translation key between input state and game state.
+The [Board](./00-overview.md#board) contains a Device, which polls for user input. The PlayerMechanic uses a Mapping to translate the polling data into a [(Intention, Goal)](./04-intentions.md)-tuple. The [Mapping Configuration](./appendices/01-schemas.md#configuration-mapping) file provides a translation key between input state and game state.
 
 **Keyboard**
 

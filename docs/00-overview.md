@@ -32,7 +32,7 @@ Assets are placed in the `/src/assets/<category>/` directory and then registered
 
 The `/src/assets` directory is known as the *asset directory*.
 
-See [Asset Schema](./appendices/01-schemas.md#property-indices) for more information on the Asset property index.
+See [Asset Schema](./appendices/01-schemas.md#model-properties) for more information on the Asset property index.
 
 ## Data
 

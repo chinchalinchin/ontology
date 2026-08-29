@@ -64,7 +64,7 @@ assets % tree -L 2
 │   ├── panes
 ```
 
-The `main.yaml` files in each subdirectory conform to the [Asset property schema](./appendices/01-schemas.md#property-indices) of their respective Asset Category. 
+The `main.yaml` files in each subdirectory conform to the [Asset property schema](./appendices/01-schemas.md#model-properties) of their respective Asset Category. 
 
 ### Asset Concepts
 
@@ -183,7 +183,7 @@ Each Category has Instances. Asset *Instances* form the bottom layer of the hier
 
 Every physical entity in the game is an instance of the unified Asset class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by *Mechanic* classes that iterate over the Board Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
 
-The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the [Recipe](#recipes) configuration file. The components of each Assets are enumerated below,
+The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the [Recipe](./appendices/01-schemas.md#configuration-recipes) configuration file. The components of each Assets are enumerated below,
 
 1. **Model: Properties:** A model defining immutable data (e.g., `TileProperties`, `ObjectProperties`, etc.).
 2. **Model: State:** A model defining mutable data (e.g., `ContainerState`, `PositionalState`, etc.).
@@ -626,7 +626,7 @@ Where `n(Action)` is the number of frames per Action. The frames per Action for 
 
 Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without accompanying Direction(s). The "space" of the (Action, Direction) space is configured by Sheet Properties. 
 
-This snippet from the [Schemas](./appendices/01-schemas.md#action-configuration) shows the general structure of an Action,
+This snippet from the [Schemas](./appendices/01-schemas.md#configuration-actions) shows the general structure of an Action,
 
 ```yaml
 <action-key>:

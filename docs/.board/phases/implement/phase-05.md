@@ -59,6 +59,8 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 * [x] *Calculate Anchors:* Convert `ScreenPosition` percentages into absolute `Position(x, y)` pixels for all child Widgets.
 * [x] *Z-Sorting Enforcement:* Assign `state.height` and `state.depth` modifiers to embedded Icons and Decals to ensure strict Painter's Algorithm compliance during flattening.
 * [x] *Stack/Dock/Tab/Nest Algorithms:* Implement the spatial layout algorithms, incorporating `gap` and `alignment` offsets.
+    * [x] Calculate offset mathematics for `CENTER` and `END` alignments.
+    * [x] Update `_layout_tab()` to physically assign the parent Pane's absolute `Position(x, y)` to its children instead of passing.
 * [x] *Z-Sorting Enforcement:* Assign `state.height` and `state.depth` modifiers to embedded Icons and Decals o ensure strict Painter's Algorithm compliance during flattening.
 * [x] **Spatial Traversal Graph*: Implement an AABB spatial projection algorithm to link traversable `Button` widgets based on their absolute coordinates, outputting a directed adjacency dictionary.
 * [x] *Return Tuple:* Layout Engine returns `(List[Asset], TraversalGraph)`.
@@ -121,7 +123,7 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 * [x] *New*: `tests/unit/test_lib_graphics_registry.py`: Ensure new Widget frame indexing is adequately covered.
 * [x] *New*: `tests/unit/test_app_hooks_factory.py`: Ensure new Widget instantiation is adequately covered.
 * [x] *New*: `tests/unit/test_app_hooks_provider.py`: Ensure Menu generation is adequately covered.
-* [ ] Update documentation to reflect the latest state of the application.
+* [x] Update documentation to reflect the latest state of the application.
 
 **Task 11. In Game Test**
 

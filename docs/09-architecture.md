@@ -4,40 +4,57 @@ This section contains an in-depth presentation of the game engine's programmatic
 
 ## Initialization
 
-1. Entrypoint: `Orchestrate`
-    * Load data into memory
-        - Load (Image) Asset Recipes YAML File from `/src/assets/main.yaml`
-        - Load (Image and Font) Asset Category properties YAML files from `/src/assets/<category>/main.yaml`
-        - Load (Image) Asset Instance state YAML files from the `/src/data/state/<board-key>` directory, where `<board-key>` is the selected board. There may be an arbitrary number of state files, with any filename, in the `<board-key>` directory.
-        - Validate all data models against Pydantic TypeAdapters and convert into Plain-Old-Python-Objects (POPOs) and Cython `cdef classes` for runtime use.
-        - Initialize list of (Image) Asset, injecting (Frame, Animation, Properties, State) components using Asset Recipes in concert with Asset Taxonomy (Category, Instance, ID).
-        - Initialize Font Assets with configured Styles. 
-    * Construct application components and manage dependency-injections (Cradle, Decomposer, etc.)
-2. Init: `Registry`
-    * Load Assets into memory
-        - Recursively load `/src/assets/**/*.png`, `/src/assets/**/*.tff`
-            - For image Assets, create a map using the key-values `<registry-key>: <frame>`, where `<registry-key>` is calculated according to the Frame schema.
-            - For font Assets, create a map using the key-value `<registry-key>: <font>`, where `<registry-key>` is the font name.
-3. Init: `Board`
-    * Initialize and register the Mechanics (e.g., `CollisionMechanics`, `AnimationMechanics`, etc.).
-    * Initialize and register Device (e.g. `Keyboard`, `Controller`)
-4. Init: `Screen`
-    * Initialize background and foreground tile canvases. 
-    
+1. **Bootstrapping & Loading (`Orchestrator.__init__`)**
+    * Loads YAML files from the `assets/`, `data/config/`, and `data/state/` directories using Pydantic `TypeAdapters`.
+    * Instantiates the [Decomposer](./03-compositions.md#decomposer) early as a singleton to track unique name increments for macro-generated assets.
+2. **Cython Context Initialization (`render.init`)**
+    * Initializes the underlying C-level SDL2 video, image, and typography subsystems before any textures are processed.
+3. **Board Migration (`Orchestrator.migrate`)**
+    * Resolves [Actions](./01-assets.md#asset-concepts) globally within [Properties](./01-assets.md#asset-hierarchy) to prevent redundant dictionary lookups during runtime.
+    * Intercepts [Compositions](./03-compositions.md) defined in the state YAML, passing them to the [Decomposer](./03-compositions.md#decomposer) to unpack into a flat list of absolute-positioned Assets.
+    * Iterates over all remaining state fields, applying the Entity-Component-System (ECS) pattern. Assets are injected with Frame, Animation, Properties, and State components via Factory [recipes](./appendices/01-schemas.md#configuration-recipes), and mapped accurately (e.g., Players inherit [Sprite](./02-sprites.md) properties).
+    * Instantiates the [Board](./00-overview.md#board) database.
+4. **Board Injection (`Orchestrator.inject`)**
+    * Hydrates the input mappings and injects the [Device](./02-sprites.md#devices) (e.g., Keyboard) into the [Board](./00-overview.md#board).
+    * Creates the SpawnableGroup and instantiates the Cradle, injecting both into the [Board](./00-overview.md#board) to allow Mechanics to generate temporary effects, projectiles, and struts at runtime.
+5. **Registry Initialization (`Registry`)**
+    * Recursively unboxes all Python `Enum` values into primitive strings/integers (`Orchestrator._unbox_enums`). Cython cannot natively parse Pydantic/Python Enums without significant GIL overhead.
+    * Caches `.png` and `.ttf` files into GPU memory (`TexturePtr` and `TTFFont`).
+    * Resolves Asset Stacks and generates strict index crop-maps for $O(1)$ frame lookups.
+6. **Screen Allocation (`Screen`)**
+    * Dynamically calculates the maximum width and length across all Board layers.
+    * Instantiates a distinct [Screen](./00-overview.md#screen) object for *each* layer, generating independent background and foreground Cython canvases for the Painter's Algorithm.
+7. **Mechanics & Menus (`Provider`)**
+    * Instantiates [Mechanics](./05-mechanics.md) into two distinct lists: `core` and `world`.
+    * Instantiates the [Provider](./06-widgets.md#provider) to handle runtime Widget unpacking.
+    * Automatically generates the non-blocking Heads-Up Display (HUD) via the `view` Menu Configuration and mounts it to `board.overlays`.
+8. **Ignition (`Engine.start`)**
+    * Injects the fully hydrated Board, Screens, Mechanics, and Provider into the [Engine](./00-overview.md#engine) and initiates the fixed-timestep loop.
+
 ## Mechanics
 
-The `Engine.start()` method never changes when new game features are added. It simply iterates through the registered Mechanics:
+The Engine delegates behavior to [Mechanics](./05-mechanics.md). Rather than the Engine passing arguments to a system, a Mechanic is responsible for querying the [Board](./00-overview.md#board) for the exact data it requires, processing the state, and optionally pushing Events to the Engine's `bus`.
+
+Mechanics are strictly segregated into `core` pipelines and `world` pipelines. The `Engine._play()` method processes these lists conditionally:
 
 ```python
-def start(self) -> None:
-    # ... 
-    for mechanic in mechanics:
-        mechanic.update(self.board, delta_time)
+def _play(self, delta) -> None:
+    """
+    Apply Mechanics.
+    """
+    for mechanic in self.core:
+        mechanic.update(self.board, delta, self.bus)
+
+    if not self.board.paused:
+        for mechanic in self.world:
+            mechanic.update(self.board, delta, self.bus)
+
 ```
 
-Mechanics act as filters. Rather than the Engine passing arguments to a system, a Mechanic is responsible for querying the Board for the exact data it cares about.
+* **Core Mechanics:** Systems that must execute every frame regardless of game state. This includes [MenuMechanics](./05-mechanics.md#core) (to process input and layout traversals), [AnimationMechanics](./05-mechanics.md#core) (to keep Assets animating), and RemoveMechanics (garbage collection).
+* **World Mechanics:** Systems that govern gameplay logic, physics, and NPC behavior. This includes [MotionMechanics, CombatMechanics, and PlayerMechanics](./05-mechanics.md).
 
-For example, the `SwitchMechanics` system strictly queries `board.plates`, `board.gates`, and any heavy entities (like `crates` and `sprites`) to resolve trigger logic, leaving the rest of the Board untouched. This keeps execution tight and game loops strictly separated by behavior.
+When a [MenuEvent](./06-widgets.md#events) fires and a modal Menu is pushed to the screen, `board.paused` evaluates to `True`. The Engine skips the `world` mechanics loop entirely. The world freezes, but `core` mechanics continue ticking, allowing the Player to navigate the menu while background torches remain animated without the risk of enemies moving or attacking.
 
 ## Maps
 

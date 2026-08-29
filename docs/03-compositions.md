@@ -176,7 +176,7 @@ For every child node (whether it is a component of the root, or a branching Stru
 
 The Decomposer is a standalone service instantiated *before* the Board and Cradle; it is used during the initial Asset hydration phase of the bootstrapping **and** it is employed ingame by [Mechanics](./05-mechanics.md) through the Board interface of the Cradle to instantiate Compositions through the [`build` Intention](./04-intentions.md).
 
-Because the Decomposer inherently generates `Asset` instances, it acts as a higher-level orchestrator of the `Factory`. To do this, it needs access to the global [Asset properties](./00-overview.md#assets), [Recipes](./appendices/01-schemas.md#recipe-configuration) and Composition configuraiton.
+Because the Decomposer inherently generates `Asset` instances, it acts as a higher-level orchestrator of the `Factory`. To do this, it needs access to the global [Asset properties](./00-overview.md#assets), [Recipes](./appendices/01-schemas.md#configuration-recipes) and Composition configuraiton.
 
 **1. Initialization (The Setup)**
 
