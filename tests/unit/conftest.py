@@ -4,7 +4,7 @@
 # Standard Libraries
 import sys
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 # NOTE: Inject the src/ directory into the Python path prior to any local imports
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "src"))
@@ -13,10 +13,26 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / "src"))
 import pytest
 
 # Applicaiton Libraries
+from app.assets.base import (
+    Asset, 
+    Taxonomy,
+    Frame,
+    Animation
+)
+from app.config.enums import ( 
+    FrameRecipe,
+    AnimationRecipe,
+    AssetCategories, 
+    AssetInstances
+)
+from app.game.board import Board
+from app.hooks.orchestrator import Orchestrator
+from app.hooks.provider import Provider
 from app.models.properties import (
     PropertiesSchema, 
     SheetProperties,
-    WidgetProperties
+    WidgetProperties,
+    TileProperties
 )
 from app.models.config import (
     ConfigurationSchema, 
@@ -30,25 +46,36 @@ from app.models.config import (
     WidgetRecipe,
     Recipe
 )
-from app.config.enums import ( 
-    FrameRecipe,
-    AnimationRecipe
-)
 from app.models.state import (
     StateSchema, 
-    SpriteState
+    SpriteState,
+    MultiplierState
 )
-from app.hooks.orchestrator import Orchestrator
-from app.hooks.provider import Provider
-from app.models.groups import SpawnableGroup
-
-from unittest.mock import MagicMock, patch
+from app.models.groups import (
+    SpawnableGroup,
+    ConfigurationGroup, 
+    EquipmentGroup
+)
 
 # Cython Libraries
 from libs.core.models import (
     Dimensions, 
-    Position
+    Position,
+    Multiple
 )
+
+# ---------------------------------------------------------------------------
+# -------------------------------------------------------------- MOCK CLASSES
+
+class DummyFrame(Frame):
+    def keys(self, id, state): return [id]
+    def index(self, id, properties): return {}
+
+class DummyAnimation(Animation):
+    def animate(self, state, properties): return state
+
+# ---------------------------------------------------------------------------
+# ------------------------------------------------------------------ FIXTURES
 
 @pytest.fixture
 def mock_properties():
@@ -134,3 +161,36 @@ def mock_provider():
     registry = MagicMock()
     
     return Provider(recipes=recipes, properties=properties, registry=registry)
+
+@pytest.fixture
+def mock_board_assets():
+    # 1. Dynamic Asset (Sprite) - Should be placed in renderables and weights
+    sprite_tax = Taxonomy("sprite-1", "player", AssetCategories.SHEETS, AssetInstances.SPRITES)
+    sprite_props = SheetProperties(dimensions=Dimensions(w=32, l=32), mass=10)
+    sprite_state = SpriteState(id="sprite-1", name="player", layer="0", position=Position(x=10, y=10))
+    sprite = Asset(sprite_tax, sprite_props, sprite_state, DummyFrame(), DummyAnimation())
+
+    # 2. Static Asset (Tile) - Spans 2x2 grid, should NOT be in renderables or weights
+    tile_tax = Taxonomy("tile-1", "grass", AssetCategories.TILES, AssetInstances.BACK)
+    tile_props = TileProperties(dimensions=Dimensions(w=32, l=32))
+    tile_state = MultiplierState(
+        id="tile-1", name="grass", layer="0", position=Position(x=0, y=0), multiple=Multiple(nx=2, ny=2)
+    )
+    tile = Asset(tile_tax, tile_props, tile_state, DummyFrame(), DummyAnimation())
+    
+    return [sprite, tile]
+
+@pytest.fixture
+def mock_board(mock_board_assets, mock_configurations):
+    # Assemble required injection groups from conftest.py's ConfigurationSchema
+    configs = ConfigurationGroup(
+        recipes=mock_configurations.recipes,
+        mappings=mock_configurations.mappings,
+        intentions={},
+        actions=[]
+    )
+    equipment = EquipmentGroup(armor={}, tools={}, utilities={}, weapons={})
+    
+    # Patch the global settings to ensure stable spatial math regardless of environment
+    with patch('app.game.board.settings.TILE_HASH_SIZE', 32):
+        return Board(assets=mock_board_assets, configurations=configs, equipment=equipment)

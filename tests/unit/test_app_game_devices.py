@@ -4,10 +4,9 @@
 Unit tests for input polling devices.
 """
 
-import pytest
 from unittest.mock import patch
 from app.game.devices import Keyboard
-from app.models.config import DeviceMapping, WorldMapping, MenuMapping
+from app.models.config import DeviceMapping
 from app.models.state import DevicePayload
 
 
