@@ -1583,7 +1583,7 @@
 <p><strong>IDs &amp; Names</strong></p>
 <p>IDs are used to map Assets to images loaded into the <a href="../00-overview/#registry">Registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset, but not in-game entities.</p>
 <p>Names are used to uniquely identify an ingame entity. A single Asset ID may have multiple Names. A Name corresponds to a particular deployment of an Asset onto a Board. </p>
-<p>In short, a Name identifies an Asset's deployment. A ID is what binds an Asset deployed state to its deployed properties.</p>
+<p>In short, a Name identifies an Asset's deployment. A ID is what binds a deployed state to Asset file.</p>
 <p><strong>Mutability &amp; Animability</strong></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1596,8 +1596,8 @@
 <p><strong>Direction &amp; Action</strong></p>
 <p>The frame rows of Sheet Assets are categorized by the axes of <em>Direction</em> and <em>Action</em>. See <a href="#sheets">Sheets section</a> below for more information on the division of <em>Direction</em> and <em>Action</em>.</p>
 <p><strong>Properties &amp; State</strong></p>
-<p><em>Properties</em> are static and never changed by game Mechanics. Properties determine the immutable characteristics of an ingame Asset, e.g. dimensions and hitboxes. They are loaded side-by-side with the asset files in the <code>/src/assets/**</code> directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length. Dimensions are Cartesian coordinate tuples.</p>
-<p><em>State</em> is dynamic and can be changed by game Mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current position of an ingame Asset, the current animation, etc.. All Assets have a <em>position</em> mutable state; most (except for Widgets) have a <em>LAYER</em>. Position is given as a Cartesian coordinate (tuple), whereas Layer is a categorical variable.</p>
+<p><em>Properties</em> are static and never changed by game Mechanics. Properties determine the immutable characteristics of an ingame Asset, e.g. dimensions and hitboxes. They are loaded side-by-side with the Asset files in the <code>/src/assets/**</code> directory. All Assets have, at bare minumum, a Dimension property, specifying their respective width and length. Dimensions are Cartesian coordinate tuples.</p>
+<p><em>State</em> is dynamic and can be changed by game Mechanics. State determines the mutable characteristics of an ingame Asset, e.g. the current Position of an ingame Asset, the current Animation, etc.. All Assets have a <em>Position</em> mutable state; most (except for Widgets) have a <em>Layer</em>. Position is given as a Cartesian coordinate (tuple), whereas Layer is a categorical variable.</p>
 <div class="admonition note">
 <p class="admonition-title">Layers</p>
 <p>The concept of a Layer is defined more explicitly in <a href="../00-overview/#layers">Overview documentation</a>. It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.</p>
@@ -1607,16 +1607,16 @@
 <p>Some Asset Categories have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.</p>
 <ul>
 <li><span class="arithmatex">\(m &gt; 0\)</span>: <strong>Dynamic Body</strong>. Participates in momentum calculations.</li>
-<li><span class="arithmatex">\(m = 0\)</span>: <strong>Static Body</strong>. Treated as having infinite mass (<span class="arithmatex">\(m \to \infty\)</span>) in physics equations. Its velocity is unaffected by collisions, but it forces dynamic bodies to resolve overlap.</li>
-<li><span class="arithmatex">\(m = -1\)</span>: <strong>Sensor</strong>. The engine detects the spatial intersection for game logic (like <code>SwitchMechanics</code> or <code>DoorMechanics</code>), but <code>CollisionMechanics</code> bypasses it completely during the overlap resolution phase.</li>
+<li><span class="arithmatex">\(m = 0\)</span>: <strong>Static Body</strong>. Treated as having infinite mass (<span class="arithmatex">\(m \to \infty\)</span>) in physics equations. Its Velocity is unaffected by collisions, but it forces dynamic bodies to resolve overlap.</li>
+<li><span class="arithmatex">\(m = -1\)</span>: <strong>Sensor</strong>. The engine detects the spatial intersection for game logic (like SwitchMechanics or DoorMechanics), but CollisionMechanics bypasses it completely during the overlap resolution phase.</li>
 </ul>
-<p>See <a href="../05-mechanics/#spatial">MotionMechanics</a> for more information.</p>
+<p>See <a href="../05-mechanics/#spatial">Mechanics</a> for more information.</p>
 <p><strong>Depth &amp; Height</strong></p>
 <p>All Assets have a <code>depth</code> state attribute. This attribute controls the Z-ordering of the Asset being rendered. Most of the time, it can be ignored, since it defaults to <code>0</code>. <code>depth</code> is important in the context of <a href="../03-compositions/">Compositions</a>, where multiple Assets need to be superimposed and rendered on top of one another.</p>
 <p>All Assets have an optional <code>height</code> state attribute. This attribute also modulates the Z-ordering, but the relationship is more complex than <code>depth</code>, relating to the application of the Painter's Algorithm. <code>height</code> is only a factor when dealing with <a href="../03-compositions/">Compositions</a>. </p>
 <p>See <a href="../09-architecture/#rendering">Rendering documentation</a> for a complete overview of <code>depth</code> and <code>height</code>.</p>
 <h3 id="asset-hierarchy">Asset Hierarchy</h3>
-<p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to  a strict hierarchy of Categories and Instances. The property and state <a href="../appendices/01-schemas/">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
+<p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The property and state <a href="../appendices/01-schemas/">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
 <pre class="mermaid"><code>graph LR
     %% Base
     Asset[Asset]
@@ -1668,15 +1668,15 @@
     %% Widget Instances
     Widgets --&gt; Panes[Panes]
     Widgets --&gt; Buttons[Buttons]
-    Widgets --&gt; Languages[Language]
+    Widgets --&gt; Icons[Icons]
     Widgets --&gt; Meters[Meters]
     Widgets --&gt; Pages[Pages]
 
-    %% Styling
-    classDef base fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef category fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
-    classDef instance fill:#e8f5e9,stroke:#388e3c,stroke-width:1px;
-    classDef virtual fill:#f3e5f5,stroke:#8e24aa,stroke-width:1px,stroke-dasharray: 5 5;
+    %% Styling (Material Design Slate/Dark Surface with WCAG AAA High-Contrast Text)
+    classDef base fill:#512da8,stroke:#d1c4e9,stroke-width:2px,color:#ffffff;
+    classDef category fill:#00838f,stroke:#80deea,stroke-width:2px,color:#ffffff;
+    classDef instance fill:#2e7d32,stroke:#a5d6a7,stroke-width:1.5px,color:#ffffff;
+    classDef virtual fill:#424242,stroke:#b0bec5,stroke-width:1.5px,stroke-dasharray: 5 5,color:#eceff1;
 
     class Asset base;
     class Tiles,Cursors,Objects,Crafts,Effects,Sheets,Widgets category;
@@ -1684,7 +1684,7 @@
     class Equipment,Armor,Tools,Utilities,Weapons,Shields virtual;</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The Asset Hierarchy can be thought of as a data abstraction governing the schemas which drive the ECS instantiation. </p>
+<p>The Asset Hierarchy can be thought of as a data abstraction governing the schemas, which in turn drive the ECS instantiation. </p>
 </div>
 <p><strong>Categories</strong></p>
 <p>Asset <em>Categories</em> form the top layer of the hierarchy. Each Asset Category is defined by its static properties; an Asset's Category determines what type of properties it will parse from the property files and inject into its deployment. </p>
@@ -1765,12 +1765,12 @@
 <tr>
 <td>Object</td>
 <td>Gate</td>
-<td>Position, Layer, Depth, Height, Switch, Link</td>
+<td>Position, Layer, Depth, Height, Aniamtion, Switch, Link</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Plate</td>
-<td>Position, Layer, Depth, Height, Switch, Link</td>
+<td>Position, Layer, Depth, Height, Animation, Switch, Link</td>
 </tr>
 <tr>
 <td>Craft</td>
@@ -1795,46 +1795,46 @@
 <tr>
 <td>Effect</td>
 <td>Temporary</td>
-<td>Position, Layer, Depth, Height</td>
+<td>Position, Layer, Depth, Height, Animation</td>
 </tr>
 <tr>
 <td>Effect</td>
 <td>Persistent</td>
-<td>Position, Layer, Depth, Height</td>
+<td>Position, Layer, Depth, Height, Animation</td>
 </tr>
 <tr>
 <td>Sheet</td>
 <td>Pixie</td>
-<td>Position, Layer. Depth, Height</td>
+<td>Position, Layer. Depth, Height, Animation</td>
 </tr>
 <tr>
 <td>Sheet</td>
 <td>Sprite</td>
-<td>Position, Layer, Depth, Height, Intention, Inventory, Meters, Memory, Mutators, Goal</td>
+<td>Position, Layer, Depth, Height, Animation, Intention, Inventory, Meters, Memory, Mutators, Goal</td>
 </tr>
 <tr>
 <td>Widget</td>
 <td>Pane</td>
-<td>TODO</td>
+<td>Position, Layout, Alignment, Gap, Margins</td>
 </tr>
 <tr>
 <td>Widget</td>
 <td>Button</td>
+<td>Position, Status, Icons, Animation</td>
+</tr>
+<tr>
+<td>Widget</td>
+<td>Icon</td>
 <td>TODO</td>
 </tr>
 <tr>
 <td>Widget</td>
-<td>Language</td>
-<td>TODO</td>
+<td>Meter</td>
+<td>Position, Reading, Unit</td>
 </tr>
 <tr>
 <td>Widget</td>
-<td>Meters</td>
-<td>TODO</td>
-</tr>
-<tr>
-<td>Widget</td>
-<td>Pages</td>
+<td>Page</td>
 <td>TODO</td>
 </tr>
 </tbody>
