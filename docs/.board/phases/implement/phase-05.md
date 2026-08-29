@@ -1,9 +1,5 @@
 #### Implement: Phase 05 - Widgets
 
-The Implementation phase is "complete". Move onto debugging unit tests.
-
-##### Current Goal: Event Bus Architecture
-
 ##### Bugs
 
 **1. Unsafe Board Sizing (`app.game.board.py`):**
@@ -45,7 +41,7 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
     * [x] Implement `MeterFrame`:
         * `keys()` must return a list of two keys: `[f"{id}-0", f"{id}-{resolution}"]`.
         * `index()` must map `empty` to `(0, 0, w, l)` and calculate the `fill` crop by dynamically multiplying `w` by the resolution percentage: `(w, 0, int(w * (res/100)), l)`.
-    * [?] Modify MeterState to accept an Any reference. Add @property methods for reading and unit that dynamically return `self.reference.current` and `self.reference.maximum`
+    * [x] Modify MeterState to accept an Any reference. Add @property methods for reading and unit that dynamically return `self.reference.current` and `self.reference.maximum`
 * [x] *Widget Animations*: Implement `TraversalAnimation` to handle status transitions and `MeterAnimation` for gauge updates.
 
 **Task 3. The Menu Provider & Data Binding**
@@ -60,9 +56,9 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 **Task 4. The Layout Engine**
 
 * [x] *Create Layout Module:* Implement `app.game.menus.layout`.
-* [~] *Calculate Anchors:* Convert `ScreenPosition` percentages into absolute `Position(x, y)` pixels for all child Widgets.
+* [x] *Calculate Anchors:* Convert `ScreenPosition` percentages into absolute `Position(x, y)` pixels for all child Widgets.
 * [x] *Z-Sorting Enforcement:* Assign `state.height` and `state.depth` modifiers to embedded Icons and Decals to ensure strict Painter's Algorithm compliance during flattening.
-* [~] *Stack/Dock/Tab/Nest Algorithms:* Implement the spatial layout algorithms, incorporating `gap` and `alignment` offsets.
+* [x] *Stack/Dock/Tab/Nest Algorithms:* Implement the spatial layout algorithms, incorporating `gap` and `alignment` offsets.
 * [x] *Z-Sorting Enforcement:* Assign `state.height` and `state.depth` modifiers to embedded Icons and Decals o ensure strict Painter's Algorithm compliance during flattening.
 * [x] **Spatial Traversal Graph*: Implement an AABB spatial projection algorithm to link traversable `Button` widgets based on their absolute coordinates, outputting a directed adjacency dictionary.
 * [x] *Return Tuple:* Layout Engine returns `(List[Asset], TraversalGraph)`.
@@ -82,7 +78,7 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 * [x] *Define Interface*: Define `MenuController` abstract base class with `open`, `select`, `update`, and `close`.
 * [x] *Implement Scrolling*: Implement `app.game.menus.controllers.scroll.ScrollController` (Calls `DisplayState.scroll()` methods).
     * [x] Implement `ScrollController.select()`. It must parse the selection binding (e.g., `SCROLLUP`), locate the target widget via the selector binding and call `scroll()`
-* [ ] *Implement Heads Up Display*: Implement `app.game.menus.controllers.display.DisplayController` (Mutates `MeterState` (health meters) amd `TraversalState` (disabled Button slots showing equipped items)).
+* [x] *Implement Heads Up Display*: Implement `app.game.menus.controllers.display.DisplayController` (Mutates `MeterState` (health meters) amd `TraversalState` (disabled Button slots showing equipped items)).
 
 **Task 7. Mechanics & Input Handling**
 
@@ -122,10 +118,10 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 **Task 10. Unit Test & Documentation Updates**
 
 * [x] *Existing*: Ensure all unit tests are passing after prior Task updates.
-* [ ] *New*: `tests/unit/test_lib_graphics_registry.py`: Ensure new Widget frame indexing is adequately covered.
-* [ ] *New*: `tests/unit/test_app_hooks_factory.py`: Ensure new Widget instantiation is adequately covered.
-* [ ] *New*: `tests/unit/test_app_hooks_provider.py`: Ensure Menu generation is adequately covered.
-* [!] Update documentation to reflect the latest state of the application.
+* [x] *New*: `tests/unit/test_lib_graphics_registry.py`: Ensure new Widget frame indexing is adequately covered.
+* [x] *New*: `tests/unit/test_app_hooks_factory.py`: Ensure new Widget instantiation is adequately covered.
+* [x] *New*: `tests/unit/test_app_hooks_provider.py`: Ensure Menu generation is adequately covered.
+* [ ] Update documentation to reflect the latest state of the application.
 
 **Task 11. In Game Test**
 
