@@ -1209,19 +1209,7 @@
 <li><code>position: Position</code></li>
 <li><code>velocity: Velocity</code></li>
 <li><code>layer: str</code></li>
-<li><code>meters: List[Meter]</code><ul>
-<li><code>health: Meter</code> <ul>
-<li><code>current: int</code></li>
-<li><code>maximum: int</code></li>
-</ul>
-</li>
-<li><code>magic: Meter</code><ul>
-<li><code>current: int</code></li>
-<li><code>maximum: int</code></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><code>intention: str</code> </li>
 <li><code>character: Character</code><ul>
 <li><code>strength: int</code></li>
 <li><code>defense: int</code></li>
@@ -1235,15 +1223,30 @@
 <li><code>frame: int</code></li>
 </ul>
 </li>
-<li><code>intention: str</code> </li>
 <li><code>inventory:</code><ul>
 <li><code>loot: Dict[str, int]</code></li>
-<li><code>equipment:</code>
-    <code>armor: str</code>
-    <code>weapon: str</code>
-    <code>tool: str</code>
-    <code>utility: str</code></li>
+<li><code>equipment:</code><ul>
+<li><code>armor: str</code></li>
+<li><code>weapon: str</code></li>
+<li><code>tool: str</code></li>
+<li><code>utility: str</code></li>
+<li><code>shield: str</code></li>
+</ul>
+</li>
 <li><code>wallet: int</code></li>
+</ul>
+</li>
+<li><code>meters: List[Meter]</code><ul>
+<li><code>health: Meter</code> <ul>
+<li><code>current: int</code></li>
+<li><code>maximum: int</code></li>
+</ul>
+</li>
+<li><code>magic: Meter</code><ul>
+<li><code>current: int</code></li>
+<li><code>maximum: int</code></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><code>mutators:</code><ul>
@@ -1253,7 +1256,6 @@
 </li>
 <li><code>memory:</code> <ul>
 <li><code>goal: Goal</code></li>
-<li><code>lexicon: List[str]</code>: (Lexicon keys for Library Communication retrieval)</li>
 <li><code>prices: Dict[str, double]</code></li>
 <li><code>relationships: Dict[str, str]</code></li>
 <li><code>property: List[str]</code></li>
@@ -1262,7 +1264,7 @@
 <li><code>psyche</code>:<ul>
 <li><code>expression: str</code></li>
 <li><code>motivation: str</code></li>
-<li><code>persona: str</code>: (Person ley for Library Communication retrieval)</li>
+<li><code>persona: str</code>: (Persona ley for Library Communication retrieval)</li>
 </ul>
 </li>
 <li><code>goal:</code><ul>
@@ -1289,7 +1291,7 @@
 <p>Goals are the current focus of the Sprite's path-finding and Direction resolution.</p>
 <p>See <a href="../04-intentions/">Goals documentation</a> for more information.</p>
 <h3 id="meters">Meters</h3>
-<p>TODO</p>
+<p>A Meter has a <code>current</code> value and a <code>maximum</code> value.</p>
 <p><strong>Health</strong></p>
 <p>TODO</p>
 <p><strong>Magic</strong></p>
@@ -1314,17 +1316,17 @@
 <li><code>triggers.dead</code>: Triggered if a Sprite dies. This can only occur if the Sprite's <code>character.health.current = 0</code></li>
 <li><code>triggers.struck</code>: Triggered if a Sprite collides with a hitbox.</li>
 <li><code>triggers.fear</code>: Triggered for the logical disjunction of the following conditions:<ul>
-<li>Triggered if Sprite's health dips below <code>frightened.limit</code></li>
-<li>Triggered if Sprite is surrounded by more than <code>frightened.enemy</code> enemies with the pixel distance of <code>frightened.radius</code>.</li>
+<li>Triggered if Sprite's health dips below <code>fear.limit</code></li>
+<li>Triggered if Sprite is surrounded by more than <code>fear.enemy</code> enemies with the pixel distance of <code>fear.radius</code>.</li>
 </ul>
 </li>
 <li><code>triggers.vision</code>: Trigger if a Sprite is within visible distance of its Goal.</li>
 </ul>
 <p><strong>Parameters</strong></p>
 <ul>
-<li><code>parameters.fear.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.frightened</code> mutator. Measured in pixels.</li>
-<li><code>parameters.fear.limit</code>: Percentage of health below which Sprite triggers the <code>triggers.frightened</code> mutator.</li>
-<li><code>parameters.fear.enemy</code>: Number of enemies within the <code>parameters.frightened.radius</code> that must be present to trigger the <code>triggers.frightened</code> mutator.</li>
+<li><code>parameters.fear.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.fear</code> mutator. Measured in pixels.</li>
+<li><code>parameters.fear.limit</code>: Percentage of health below which Sprite triggers the <code>triggers.fear</code> mutator.</li>
+<li><code>parameters.fear.enemy</code>: Number of enemies within the <code>parameters.fear.radius</code> that must be present to trigger the <code>triggers.fear</code> mutator.</li>
 <li><code>parameters.vision.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.vision</code> mutator. Measured in pixels.</li>
 </ul>
 <h3 id="animation">Animation</h3>

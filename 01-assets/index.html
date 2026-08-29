@@ -1647,7 +1647,8 @@
 
     %% Craft Instances
     Crafts --&gt; Struts[Struts]
-    Crafts --&gt; Plots[Plot]
+    Crafts --&gt; Ore[Ore]
+    Crafts --&gt; Crops[Crops]
 
     %% Effect Instances
     Effects --&gt; Temporary[Temporary]
@@ -1754,13 +1755,18 @@
 </tr>
 <tr>
 <td>Object</td>
+<td>Sign</td>
+<td>TODO</td>
+</tr>
+<tr>
+<td>Object</td>
 <td>Door</td>
 <td>Position, Layer, Depth, Height, OutLayer</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Chest</td>
-<td>Position, Layer, Depth, Height, Switch, Content</td>
+<td>Position, Layer, Depth, Height, Animation, Switch, Content</td>
 </tr>
 <tr>
 <td>Object</td>
@@ -1779,8 +1785,13 @@
 </tr>
 <tr>
 <td>Craft</td>
-<td>Plot</td>
-<td>Position, Layer, Depth, Height, Owner, Season</td>
+<td>Crop</td>
+<td>Position, Layer, Depth, Height, Season</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td>Ore</td>
+<td>Position, Layer, Depth, Height, Vein</td>
 </tr>
 <tr>
 <td>Cursor</td>
@@ -1814,6 +1825,11 @@
 </tr>
 <tr>
 <td>Widget</td>
+<td>Icon</td>
+<td>Position, Frame</td>
+</tr>
+<tr>
+<td>Widget</td>
 <td>Pane</td>
 <td>Position, Layout, Alignment, Gap, Margins</td>
 </tr>
@@ -1824,27 +1840,22 @@
 </tr>
 <tr>
 <td>Widget</td>
-<td>Icon</td>
-<td>TODO</td>
-</tr>
-<tr>
-<td>Widget</td>
 <td>Meter</td>
 <td>Position, Reading, Unit</td>
 </tr>
 <tr>
 <td>Widget</td>
 <td>Page</td>
-<td>TODO</td>
+<td>Position, Content, Page Index, Page Size, Canvas</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><a href="../02-sprites/#equipment">Equipment</a> and <a href="../02-sprites/#player">Player</a> Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is stateless, whereas the Player is a special type of <a href="../02-sprites/">Sprite</a>.</p>
+<p><a href="../02-sprites/#equipment">Equipment</a> and <a href="../02-sprites/#player">Player</a> Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is a stateless Sheet, whereas the Player is a special type of <a href="../02-sprites/">Sprite</a>.</p>
 </div>
 <h3 id="asset-architecture">Asset Architecture</h3>
-<p>Every physical entity in the game is an instance of the unified <code>Asset</code> class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. <em>Behaviors</em> are decoupled from Assets and managed entirely by <em>Mechanics</em> classes that iterate over the Board Assets. See <a href="../05-mechanics/">Mechanics documentation</a> for more information.</p>
+<p>Every physical entity in the game is an instance of the unified Asset class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by <em>Mechanic</em> classes that iterate over the Board Assets. See <a href="../05-mechanics/">Mechanics documentation</a> for more information.</p>
 <p>The Recipe for an Asset, i.e. the list of components which go into a particular Asset Instance, is specified in the <a href="#recipes">Recipe</a> configuration file. The components of each Assets are enumerated below,</p>
 <ol>
 <li><strong>Model: Properties:</strong> A model defining immutable data (e.g., <code>TileProperties</code>, <code>ObjectProperties</code>, etc.).</li>
@@ -1853,7 +1864,7 @@
 <li><code>animate(state, properties)</code>: Interface for applying animation logic to Asset state.</li>
 </ul>
 </li>
-<li><strong>Behavior: Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string keys. A <code>Frame</code> component returns a <code>List[str]</code> rather than a single <code>str</code>. An <code>Asset</code> can be a single logical entity composed of multiple superimposed rendered textures. In addition, Frames provide the texture indexing schema used by the <a href="../00-overview/#registry">Registry</a> to store Assets in memory.<ul>
+<li><strong>Behavior: Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string keys. An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a <code>List[str]</code> rather than a single <code>str</code>. In addition, Frames provide the indexing schema for textures used by the <a href="../00-overview/#registry">Registry</a> to store Assets in memory.<ul>
 <li><code>keys(id, state)</code>: Interface for retrieving Asset's current Frame key.</li>
 <li><code>index(id, properties)</code>: Interface for indexing Asset frames in Registry.</li>
 </ul>
@@ -1876,7 +1887,7 @@
 <ul>
 <li>Property File: <code>/src/assets/tiles/main.yaml</code></li>
 </ul>
-<p>Tiles are inanimate, immutable Assets. Tiles are the most basic type of Asset. They have a single frame, have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds and foregrounds by breaking each rendered image into a grid of tiles. </p>
+<p>Tiles are inanimate, immutable Assets. Tiles are the most basic type of Asset. They have a single frame, have no hitboxes and are simply rendered, without affecting the game otherwise. Tiles are meant to encapsulate backgrounds and foregrounds by breaking each rendered image into a grid of Tiles. </p>
 <p>Tiles Instances have their dimensions fixed by their properties. These dimensions are configurable in the property file, but they apply to all Tiles of a particular instance universally. When a Tile is drawn, it is rendered as a <code>multiple</code> of the unit Tile configured in the Asset directory.</p>
 <p>Tiles have coefficients of friction. These coefficient are used by <a href="../05-mechanics/#spatial">MotionMechanics</a> to determine the rate of velocity decay for Frictive Assets traversing their area.</p>
 <p><strong>Properties: TileProperties</strong></p>
@@ -1902,7 +1913,7 @@
 <li><code>multiple: Multiple</code></li>
 </ul>
 <h3 id="fore">Fore</h3>
-<p>A Fore Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Fore Tiles will always be render on top of all of other Assets.</p>
+<p>A Fore Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Fore Tiles will always be rendered on top of all of other Assets, regardless of their <code>depth</code> or <code>height</code>. The <em>one</em> exception to this rule is Widgets. Fore Tiles are an "in-world" Asset, and thus their Z-ordering is superseded by Widgets.</p>
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
@@ -1922,7 +1933,7 @@
 <ul>
 <li>Property File: <code>/src/assets/objects/main.yaml</code></li>
 </ul>
-<p><em>Objects</em> are mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.</p>
+<p>Objects are mutable Assets made of a single frame or pair of frames. They are meant to encapsulate interactions and objects.</p>
 <p><strong>Binary Frames</strong></p>
 <p>An Object with two frames is considered to have an <em>on</em> and <em>off</em> state, i.e. a binary trigger. <em>Binary Objects</em> are Objects whose frame is dependent on their internal state switch.</p>
 <p>Binary Objects frames are always organized in horizontal rows. The off frame will always start at <code>(0,0)</code> and the on frame will always start at <code>(w,0)</code>. Because of this relation, the dimensions of a Chest image file will always be <code>(2w, h)</code>. </p>
@@ -2315,7 +2326,7 @@
 <p>Widgets are covered in their own section, <a href="../06-widgets/">Widgets</a>.</p>
 <h2 id="fonts">Fonts</h2>
 <p>Fonts are stateless Assets initialized at <a href="../09-architecture/#initialization">runtime</a>, i.e. they are not deployed onto the Board; instead Fonts are utilized by the <a href="../00-overview/#screen">Screen</a> to render text whenever the game loop calls for text. </p>
-<p>A Font is a wrapper <code>.ttf</code> file and a data structure used to configure the Font styling. Each styled Font is stored in the <a href="../00-overview/#registry">Registy</a> using its file name. The <a href="../00-overview/#screen">Screen</a>retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.</p>
+<p>A Font is a wrapper <code>.ttf</code> file and a data structure used to configure the Font styling. Each styled Font is stored in the <a href="../00-overview/#registry">Registy</a> using its file name. The <a href="../00-overview/#screen">Screen</a> retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.</p>
 <p>In other words, a Font Asset encapsulates both the script and the styling applied to the script. </p>
 <p>See <a href="../09-architecture/#sdl">SDL Architecture documentation</a> for more information on Fonts.</p>
 <p><strong>Properties: FontProperties</strong></p>

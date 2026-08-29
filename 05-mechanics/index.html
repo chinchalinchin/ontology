@@ -917,7 +917,7 @@
 
 
 <h1 id="ontology-mechanics">Ontology: Mechanics</h1>
-<p>A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an <code>update(board: Board, delta: float)</code> method. The arguments of this interface are the <a href="../00-overview/#board">Board</a> and a game loop time delta. These arguments are injected from above by the <a href="../00-overview/#engine">Enegine</a></p>
+<p>A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an <code>update(board: Board, delta: float, bus: collections.deque)</code> method. The arguments of this interface are the <a href="../00-overview/#board">Board</a>, a game loop time delta and an <a href="../06-widgets/#events">Event Bus</a> for storing Menu Events. These arguments are injected from above by the <a href="../00-overview/#engine">Engine</a></p>
 <h2 id="overview">Overview</h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -928,7 +928,7 @@
 <ul>
 <li><code>animation AnimationMechanics</code>: Translates current states into FrameKeys for the renderer.</li>
 <li><code>remove: RemoveMechanics</code>: General garbage collection for Assets whose lifespan has expired.</li>
-<li><code>motion: MotionMechanics</code>: Translates Intentions (hunt, escape, etc.) into physical X/Y velocity vectors, etc.</li>
+<li><code>motion: MotionMechanics</code>: Applies acceleration and velocity integrations to Assets to arrive at their next position.</li>
 <li><code>menu: MenuMechanics</code>: Handles Menu and Widget interactions.</li>
 </ul>
 <p><strong>MotionMechanics</strong></p>
@@ -938,14 +938,14 @@
 <li>Inert Assets: Projectiles</li>
 <li>Frictive Assets: Crates</li>
 </ul>
-<p>Assets with Mass are divided into Kinenamtic, Motive, Inert and Frictive Assets. Kinematic and Motive Assets have Velocity states with (Speed, Impulse) properties that control their rate of change of Velocity; Frictive and Inert Assets have a Velocity state, but have their Velocities controlled through external forces, i.e. Friction and garbage collection. </p>
-<p>Kinematic Assets snap to velocity vectors and do not change vectorally. This is used for the Player. When the Player presses right, the Player Sprite immediately changes <em>Velocity</em> (not Position) to right, snapping to the inputted direction without getting sent into circular motion. In other words, velocities orthogonal to the Player's inputted direction are nulled out by the game loop; Velocity is used to control Player position updates through Symplectic Euler updates, but only applies changes in one direction at once.</p>
-<p>Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to Speed. Motive Assets experience friction to prevent the conservation of momentum sending them into "orbit" around their Goal.</p>
-<p>Frictive Assets have motion imparted to them via collisions. Afterwards, the force of friction is applied to the resultant Velocity every game tick until that Velocity has been brought to zero. The force of friction is proportional to the currently occupied Tile's  <code>properties.friction</code>.</p>
+<p>Assets with Mass are divided into Kinenamtic, Motive, Inert and Frictive Assets. Kinematic and Motive Assets have Velocity states with (Speed, Impulse) properties that control the rate of change of their Velocity; Frictive and Inert Assets have a Velocity state, but have their Velocities controlled through external forces, i.e. Friction and garbage collection. </p>
+<p>Kinematic Assets snap to Velocity vectors and do not change vectorally. This is used for the Player. When the Player presses right, the Player Sprite immediately changes <em>Velocity</em> (not Position) to right, snapping to the inputted direction without getting sent into circular motion. In other words, velocities orthogonal to the Player's inputted direction are nulled out by the game loop; Velocity is used to control Player position, but only applies changes in one direction at once.</p>
+<p>Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to Speed. Motive Assets experience friction to prevent the conservation of momentum from sending them into "orbit" around their Goal.</p>
+<p>Frictive Assets have motion imparted to them via collisions. Afterwards, the force of friction (technically an impulse) is applied to the resultant Velocity every game tick until that Velocity has been brought to zero. The force of friction is proportional to the currently occupied Tile's  <code>properties.friction</code>.</p>
 <p>Inert Assets are exluded from these considerations. They are spawned with a Velocity vector and an initial position; They follow the trajectory determined by these parameters until the distance between their initial and current position exceeds the garbage collection limit.</p>
 <p>The general flow of MotionMechanics is given by,</p>
 <ul>
-<li><strong>Kinematic Motion</strong> Check <code>device.poll()</code>. If directional input is present, calculate accelerate velocity to direction and null out orthogonal velocity. If no input is present, hardcode <code>velocity = (0,0)</code>.</li>
+<li><strong>Kinematic Motion</strong> Check <code>device.poll()</code>. If directional input is present, accelerate velocity to direction and null out orthogonal velocity. If no input is present, hardcode <code>velocity = (0,0)</code>.</li>
 <li><strong>Motive Motion</strong> Calculate the unit vector pointing from <code>current_position</code> to <code>goal_position</code>. Multiply by <code>character.impulse</code> and <span class="arithmatex">\(\Delta t\)</span>. Add to <code>velocity</code>. Clamp magnitude to <code>character.speed</code>.</li>
 <li><strong>Frictive Motion</strong> Query <code>Board.tile()</code> at asset's center. Calculate <span class="arithmatex">\(\Delta v = \text{friction} \cdot \Delta t\)</span>. Apply <span class="arithmatex">\(\Delta v\)</span> in the direction opposite to the current <code>velocity</code>. If <span class="arithmatex">\(\Delta v &gt; \vert{}\text{velocity}\vert{}\)</span>, set <code>velocity = (0,0)</code>.</li>
 <li><strong>Inert Motion</strong> Exclude Inert from the above steps. For all assets, apply <span class="arithmatex">\(v \cdot \Delta t\)</span> to the sub-pixel accumulators <code>rx/ry</code>. When <code>rx/ry</code> exceed <span class="arithmatex">\(1.0\)</span> or <span class="arithmatex">\(-1.0\)</span>, cast to <code>int</code>, shift the physical <code>Position</code>, and decrement the accumulator.</li>
@@ -1032,15 +1032,19 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <li><code>commerce: CommerceMechanics</code>: Translate Intentions (barter, attract, etc.) into trades and price movements.</li>
 <li><code>speech: SpeechMechanics</code>: TODO</li>
 </ul>
+<p>TODO</p>
 <h2 id="configuration">Configuration</h2>
 <ul>
 <li>Location: <code>/src/data/config/mechanics/main.yaml</code></li>
 </ul>
 <p>Mechanics Configuration defines what Mechanic classes are instantiated by the game engine. The order in which they are specified in the schema becomes the order of execution in the game engine.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">mechanics</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">order</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">core</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;mechanic-key&gt;</span>
+<span class="w">    </span><span class="nt">world</span><span class="p">:</span>
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;mechanic-key&gt;</span>
 </code></pre></div>
+<p>Mechanics are divided into <code>world</code> Mechanics and <code>core</code> Mechanics. <code>core</code> Mechanics execute every single game loop, regardless of whether or not the <a href="../00-overview/#board">Board</a> is paused; These include AnimationMechanics and MenuMechanics. <code>world</code> Mechanics only execute when the Board is unpaused.</p>
 
 
 
