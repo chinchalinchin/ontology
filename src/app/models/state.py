@@ -282,7 +282,7 @@ class DisplayState:
             return 1
         return max(1, (len(self.content) + self.pagesize - 1) // self.pagesize)
 
-    def current(self) -> Union[str, List[str]]:
+    def current(self) -> str:
         if not self.content:
             return "" if self.text else []
             

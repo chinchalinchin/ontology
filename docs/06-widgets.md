@@ -214,9 +214,7 @@ When the Asset key for Meters is retrieved by the [Screen](./00-overview.md#scre
 
 ### Pages
 
-Pages render text or Icon Assets. The amount of text or Icons a scroller Page is capable of rendering at once is calculated during Asset initialization. This is used to populate the `pages` and `pagesize` fields.
-
-When `content: str`, the content will be text to render. When `content: List[str]`, the content will be frame keys for Icons.
+Pages render text. The amount of text is capable of rendering at once is calculated during Asset initialization. This is used to populate the `pages` and `pagesize` fields.
 
 Pages contain a `canvas` over and above the Asset file loaded into the Registry. The `canvas` is created at runtime as a blank texture to serve as a space for rendering text without altering the underlying Asset loaded into the Registry.
 

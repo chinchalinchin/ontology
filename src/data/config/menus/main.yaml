@@ -49,7 +49,7 @@ menus:
             id: dialogue
             name: character-speech
             bind:
-              state: context.sprite.state.psyche.communication
+              state: context.sprite.state.psyche.dialogue
           - instance: buttons
             id: arrow-up
             name: character-speech-scroll-up

@@ -72,30 +72,18 @@ In addition, look for redundancies in data structures or logical flows that have
 * [ ] *Math:* `dx = widget.state.position.x + (widget.dimensions.w - sw) // 2`
 
 
-**Task #2: Provider Unpacking for Standalone Icons**
+**Task #7: Provider Unpacking for Standalone Icons**
 
 * [ ] In `Provider._unpack_widget()`, implement the block for `cfg.instance == AssetInstances.ICONS`.
 * [ ] Instantiate an `IconState` with a default `frame` (either hardcoded to the first string in `properties.frames` or derived from `cfg.bind`).
 * [ ] Ensure `IndexFrame` is correctly assigned via the `WidgetRecipe`.
 
 
-**Task #3: Bindings for Embedded Button Icons**
+**Task #8: Bindings for Embedded Button Icons**
 
 * [ ] Update `Provider._unpack_widget()` for `BUTTONS`.
 * [ ] If the `MenuWidget` configuration specifies a binding, set up a dynamic lambda or initialization for `TraversalState.icons`.
 * [ ] *(Note: Unlike text which is static, the Controller will handle mutating this list when inventory changes, but it needs an initial state on boot).*
-
-
-* [ ] **Task #4: Registry Indexing Validation**
-* Verify `IndexFrame.index()` correctly maps string keys (e.g., `zero`, `one`) to `(sx, sy, w, l)` crop coordinates based on the `properties.frames` array. (Currently implemented, just requires unit testing).
-
-
-
-### Summary
-
-By keeping Pages strictly for Text, and using continuous $O(1)$ Cython `RenderCopy` calls for Icons, you maintain the "Zero Heap Allocation" inner loop while allowing your Menu Controllers to effortlessly mutate UI state just by swapping strings in a list.
-
-
 
 
 

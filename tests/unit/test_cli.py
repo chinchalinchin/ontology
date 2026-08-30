@@ -1,5 +1,5 @@
 """
-# tests/test_cli.py
+# Ontology: tests.test_cli.py
 
 Unit tests for the ontology CLI tools.
 """
@@ -10,7 +10,6 @@ import pytest
 from pathlib import Path
 from unittest.mock import patch, MagicMock, mock_open
 
-# Assume the module is named cli.py and is accessible in the python path
 import cli
 
 # ---------------------------------------------------------
