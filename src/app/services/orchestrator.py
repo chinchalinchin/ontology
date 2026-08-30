@@ -76,7 +76,6 @@ class Orchestrator:
     
     def migrate(self) -> Board:
         logger.info("Migrating validated data to engine models...")
-
         # 1. Globally pre-hydrate Actions in Properties.
         resolved_sheets = {}
         for sheet_field in dataclasses.fields(self.properties.sheets):
