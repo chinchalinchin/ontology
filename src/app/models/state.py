@@ -231,15 +231,15 @@ class PlayerState(AssetState):
 
 @dataclass(slots=True)
 class IconState:
-    frame: str
+    position: Position # type: ignore
+    icon: str
 
 @dataclass(slots=True)
 class TraversalState:
     position: Position # type: ignore
     status: Statuses
-    icons: Optional[List[str]] = None
     animation: AnimationState = field(default_factory=AnimationState)
-
+    
 @dataclass(slots=True)
 class PaneState:
     position: Position # type: ignore
@@ -268,32 +268,25 @@ class DisplayState:
     position: Position # type: ignore
     content: Union[str, List[str]]
     pageindex: int
-    pagesize: int
+    pagesize: int = 1
     canvas: Any = None
-    text: bool = True
 
     @property
     def _pagecount(self) -> int:
         if not self.content:
             return 0
-        if self.text and isinstance(self.content, list):
+        if isinstance(self.content, list):
             return len(self.content)
-        if isinstance(self.content, str):
-            return 1
-        return max(1, (len(self.content) + self.pagesize - 1) // self.pagesize)
+        return 1
 
     def current(self) -> str:
         if not self.content:
-            return "" if self.text else []
-            
-        if self.text:
-            if isinstance(self.content, list):
+            return ""
+        if isinstance(self.content, list):
+            if self.pageindex < len(self.content):
                 return self.content[self.pageindex]
-            return self.content
-            
-        start = self.pageindex * self.pagesize
-        end = start + self.pagesize
-        return self.content[start:end]
+            return ""
+        return self.content
 
     def more(self) -> bool: 
         return self.pageindex < (self._pagecount - 1)

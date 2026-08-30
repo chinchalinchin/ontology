@@ -418,3 +418,51 @@ def test_registry_meter_frame_indexing(mock_properties, mock_configurations):
         assert data_50[2] == 0
         assert data_50[3] == 50  # int(100 * 50 / 100)
         assert data_50[4] == 10
+
+def test_registry_index_frame_indexing(mock_properties, mock_configurations):
+    """Test IndexFrame correctly maps a list of keys to horizontal sprite crops."""
+    from app.models.properties import WidgetProperties
+    from app.models.config import WidgetRecipe
+    from app.config.enums import FrameRecipe
+    from libs.core.models import Dimensions
+    import dataclasses
+    from unittest.mock import patch, MagicMock
+    from libs.graphics.registry import Registry
+
+    mock_properties.widgets.icons["items_sheet"] = WidgetProperties(
+        dimensions=Dimensions(w=16, l=16),
+        frames=["sword", "shield", "potion"]
+    )
+    mock_configurations.recipes.widgets = WidgetRecipe(
+        icons=Recipe(frame=FrameRecipe.INDEX)
+    )
+    
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+
+    with patch('libs.graphics.registry.os.walk') as mock_walk, \
+         patch('libs.graphics.registry.Registry._load_image') as mock_load:
+         
+        mock_walk.return_value = [
+            ('/mock/assets', [], ['items_sheet.png'])
+        ]
+        
+        mock_tex = MagicMock()
+        mock_load.return_value = mock_tex
+        
+        registry = Registry(
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
+        )
+        
+        assert "sword" in registry._frames
+        assert "shield" in registry._frames
+        assert "potion" in registry._frames
+        
+        data_shield = registry.image("shield")
+        assert data_shield is not None
+        assert data_shield[1] == 16  # src_x = index(1) * 16 (where w=16)
+        assert data_shield[2] == 0
+        assert data_shield[3] == 16
+        assert data_shield[4] == 16

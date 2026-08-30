@@ -115,7 +115,10 @@ class Board:
         self._cached_layers[layer] = []
         self._cached_renderables[layer] = []
         self._cached_weights[layer] = []
-        self._cached_tilemap[layer] = {}
+        self._cached_tilemap[layer] = {
+            AssetInstances.BACK: {},
+            AssetInstances.FORE: {}
+        }
         return
 
 
@@ -175,7 +178,9 @@ class Board:
                         start_y // settings.TILE_HASH_SIZE, 
                         (end_y - 1) // settings.TILE_HASH_SIZE + 1
                     ):
-                        self._cached_tilemap[layer][(cx, cy)] = asset
+                        if inst not in self._cached_tilemap[layer]:
+                            self._cached_tilemap[layer][inst] = {}
+                        self._cached_tilemap[layer][inst][(cx, cy)] = asset
 
     # ---------------------------------------------------------
     # ------------------------------------------ PUBLIC METHODS
@@ -210,14 +215,13 @@ class Board:
         return self._all_instances[AssetInstances.PLAYERS][0]
 
 
-    def tile(self, layer: str, position: Position) -> Asset:
+    def tile(self, layer: str, position: Position, instance: str = AssetInstances.BACK) -> Asset:
         """
         Returns the Tile at the specified coordinate using O(1) grid-index lookup.
         """
         cx = int(position.x) // settings.TILE_HASH_SIZE
         cy = int(position.y) // settings.TILE_HASH_SIZE
-        return self._cached_tilemap.get(layer, {}).get((cx, cy))
-
+        return self._cached_tilemap.get(layer, {}).get(instance, {}).get((cx, cy))
 
     def assets(self, layer=None) -> List[Asset]:
         """

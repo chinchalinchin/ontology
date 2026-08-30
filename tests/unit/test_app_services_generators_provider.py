@@ -64,7 +64,6 @@ def test_provider_unpack_widget(mock_render, mock_provider):
     assert widget.name == "page-1"
     assert widget.state.content == ["Hello World"] 
     assert widget.state.canvas == "mock_canvas_ptr"
-    assert widget.state.text is True
 
 def test_provider_unpack_widget_traversal(mock_provider):
     """Verify Traversal widget unpacks with synced starting action."""
@@ -98,7 +97,7 @@ def test_provider_unpack_widget_meter(mock_provider):
     assert widget.state.unit == 100
     assert widget.state.animation.frame == 75
 
-@patch("app.services.generators.provider.LayoutEngine")
+@patch("app.services.generators.provider.Layout")
 def test_provider_unpack_menu(mock_layout_class, mock_provider):
     mock_layout = MagicMock()
     mock_btn_asset = MagicMock()
@@ -139,3 +138,23 @@ def test_provider_unpack_menu(mock_layout_class, mock_provider):
     assert "btn-1" in menu.widgets
     assert menu.widgets["btn-1"] == mock_btn_asset
     assert menu.focus == "btn-1"
+
+def test_provider_unpack_widget_icon(mock_provider):
+    """Verify Icon widget unpacks with correct bound string state and defaults."""
+    from app.models.config import MenuWidget
+    from app.game.menus.core import Binding
+    from app.config.enums import AssetInstances, Statuses
+    
+    cfg = MenuWidget(
+        instance=AssetInstances.ICONS,
+        id="test-icon",
+        name="icon-1",
+        bind=Binding(state="context.equipped_item"),
+        status=Statuses.IDLE
+    )
+    
+    # Bound dynamic icon mapping
+    widget = mock_provider._unpack_widget(cfg, {"equipped_item": "sword_icon"})
+    assert widget.state.icon == "sword_icon"
+    assert widget.state.position.x == 0
+    assert widget.state.position.y == 0

@@ -1,5 +1,5 @@
 """
-# Ontology: tests.unit.conftest.py
+# Ontology: tests.unit.conftest
 """
 # Standard Libraries
 import sys
@@ -158,17 +158,20 @@ def mock_orchestrator(mock_builder):
 
 @pytest.fixture
 def mock_provider():
+    # Include FrameRecipe.INDEX for isolated Icons
     recipes = WidgetRecipe(
         pages=Recipe(frame=FrameRecipe.SINGLE),
         buttons=Recipe(frame=FrameRecipe.TRAVERSAL, animation=AnimationRecipe.TRAVERSAL),
         meters=Recipe(frame=FrameRecipe.METER, animation=AnimationRecipe.METER),
-        panes=Recipe(frame=FrameRecipe.NONE)
+        panes=Recipe(frame=FrameRecipe.NONE),
+        icons=Recipe(frame=FrameRecipe.INDEX)
     )
     properties = MagicMock()
     properties.pages = {"test-page": WidgetProperties(dimensions=Dimensions(w=100, l=100))}
     properties.buttons = {"test-btn": WidgetProperties(dimensions=Dimensions(w=32, l=32))}
     properties.meters = {"test-meter": WidgetProperties(dimensions=Dimensions(w=50, l=10))}
     properties.panes = {"test-pane": WidgetProperties(dimensions=Dimensions(w=200, l=200))}
+    properties.icons = {"test-icon": WidgetProperties(dimensions=Dimensions(w=16, l=16), frames=["sword"])}
     registry = MagicMock()
     
     return Provider(recipes=recipes, properties=properties, registry=registry)

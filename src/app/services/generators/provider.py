@@ -9,7 +9,8 @@ import functools
 from typing import (
     Dict, 
     Any, 
-    List
+    List,
+    Union
 )
 
 # Application Libraries
@@ -26,7 +27,8 @@ from app.models.state import (
     PaneState, 
     MeterState, 
     TraversalState,
-    AnimationState
+    AnimationState,
+    IconState
 )
 from app.models.config import (
     WidgetRecipe, 
@@ -39,7 +41,7 @@ from app.game.menus.core import (
     Widget, 
     Binding
 )
-from app.game.menus.layout import LayoutEngine
+from app.game.menus.layout import Layout
 
 # Cython Libraries
 import libs.graphics.render as render
@@ -133,6 +135,71 @@ class Provider:
         except AttributeError:
             return None
 
+    def _unpack_page(self, cfg: MenuWidget, context: dict) -> DisplayState:
+        props_dict = getattr(self.properties, cfg.instance, {})
+        props = props_dict.get(cfg.id)
+        resolved = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else ""
+        content = resolved if resolved else ""
+        w = props.dimensions.w
+        l = props.dimensions.l
+        canvas_ptr = render.canvas(w, l)
+        
+        # Execute physical measurements only if we possess the text and the Font Registry
+        if content:
+            font = self.registry.font("dialogue") 
+            content = self._paginate(content, font, w, l)
+            
+        return DisplayState(
+            position=Position(x=0, y=0),
+            content=content,
+            pageindex=0,
+            pagesize=1, # One aggregated string page per pageindex
+            canvas=canvas_ptr
+        )
+                    
+    def _unpack_meter(self, cfg: MenuWidget, context: dict) -> MeterState:
+        resolved = self._resolve(cfg.bind.state, context) \
+                        if cfg.bind and cfg.bind.state else None
+        reading_function = lambda r=resolved: (
+            r.current if hasattr(r, 'current') 
+                else (r if isinstance(r, (int, float)) else 0)
+        )
+        unit_function = lambda r=resolved: (
+            r.maximum if hasattr(r, 'maximum') 
+                else (1 if isinstance(r, (int, float)) else 1)
+        )
+        state = MeterState(
+            position=Position(x=0, y=0),
+            reading_function = reading_function,
+            unit_function = unit_function
+        )
+        # Evaluate immediately to prevent 1-frame empty gauge flicker
+        if state.unit > 0:
+            state.animation.frame = max(0, min(100, int(round((state.reading / state.unit) * 100))))
+        return state
+
+    def _unpack_button(self, cfg: MenuWidget, context: dict) -> TraversalState:
+        initial_status = cfg.status.value \
+                            if cfg.status else Statuses.IDLE.value
+        
+        return TraversalState(
+            position=Position(x=0, y=0),
+            status=initial_status,
+            animation=AnimationState(action=initial_status) # Sync action immediately
+        )
+
+    def _unpack_icon(self, cfg: MenuWidget, context: dict) -> IconState:
+        props_dict = getattr(self.properties, cfg.instance, {})
+        props = props_dict.get(cfg.id)
+        resolved = self._resolve(cfg.bind.state, context) \
+                            if cfg.bind and cfg.bind.state else None
+        initial_icon = resolved if resolved \
+                            else (props.frames[0] if getattr(props, 'frames', None) else cfg.id)
+        return IconState(
+            position=Position(x=0, y=0),
+            icon=initial_icon
+        )
+
     def _unpack_node(self, 
         cfg: Union[MenuPane, MenuWidget], 
         context: dict, 
@@ -181,55 +248,15 @@ class Provider:
         props = props_dict.get(cfg.id)
         recipe = getattr(self.recipes, cfg.instance, None)
 
-        if cfg.instance == AssetInstances.PAGES:
-            resolved = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else ""
-            content = resolved if resolved else ""
-            w = props.dimensions.w
-            l = props.dimensions.l
-            canvas_ptr = render.canvas(w, l)
-            is_text = isinstance(content, str)
-            
-            # Execute physical measurements only if we possess the text and the Font Registry
-            if is_text and content:
-                font = self.registry.font("dialogue") 
-                content = self._paginate(content, font, w, l)
-                
-            state = DisplayState(
-                position=Position(x=0, y=0),
-                content=content,
-                pageindex=0,
-                pagesize=1, # One aggregated string page or one icon per page
-                canvas=canvas_ptr,
-                text=is_text
-            )
-        elif cfg.instance == AssetInstances.BUTTONS:
-            initial_status = cfg.status.value if cfg.status else Statuses.IDLE.value
-            state = TraversalState(
-                position=Position(x=0, y=0),
-                status=initial_status,
-                icons=[],
-                animation=AnimationState(action=initial_status) # Sync action immediately
-            )
-        elif cfg.instance == AssetInstances.METERS:
-            resolved = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else None
-            reading_function = lambda r=resolved: (
-                r.current if hasattr(r, 'current') 
-                    else (r if isinstance(r, (int, float)) else 0)
-            )
-            unit_function = lambda r=resolved: (
-                r.maximum if hasattr(r, 'maximum') 
-                    else (1 if isinstance(r, (int, float)) else 1)
-            )
-            state = MeterState(
-                position=Position(x=0, y=0),
-                reading_function = reading_function,
-                unit_function = unit_function
-            )
-            # Evaluate immediately to prevent 1-frame empty gauge flicker
-            if state.unit > 0:
-                state.animation.frame = max(0, min(100, int(round((state.reading / state.unit) * 100))))
-        else:
-            state = None
+        delegator = {
+            AssetInstances.PAGES: self._unpack_page,
+            AssetInstances.METERS: self._unpack_meter,
+            AssetInstances.BUTTONS: self._unpack_button,
+            AssetInstances.ICONS: self._unpack_icon
+        }
+
+        logger.info('delegating')
+        state = delegator[cfg.instance](cfg, context)
 
         binding = Binding(
             selection=cfg.bind.selection if cfg.bind else None,
@@ -240,7 +267,12 @@ class Provider:
                     if recipe else Factory.frame(None)
         animation = Factory.animation(recipe.animation) \
                         if recipe else Factory.animation(None)
-        taxonomy = Factory.taxonomy(cfg.id, cfg.name, AssetCategories.WIDGETS, cfg.instance)
+        taxonomy = Factory.taxonomy(
+            cfg.id, 
+            cfg.name, 
+            AssetCategories.WIDGETS, 
+            cfg.instance
+        )
 
         logger.info(
             f"Unpacked Widget: {cfg.name} | "
@@ -268,7 +300,7 @@ class Provider:
         for pane in config.roots:
             self._unpack_pane(pane, context, widgets)
             
-        layout = LayoutEngine(screensize)
+        layout = Layout(screensize)
         flattened_list, graph = layout.compute(config.roots, widgets)
         
         # Rebuild dictionary honoring flattened list's Painter's Algorithm ordering 

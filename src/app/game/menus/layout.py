@@ -29,7 +29,7 @@ from libs.core.models import Position, Dimensions
 
 logger = logging.getLogger(__name__)
 
-class LayoutEngine:
+class Layout:
     screensize: Dimensions
 
     def __init__(self, screensize: Dimensions):
@@ -66,16 +66,17 @@ class LayoutEngine:
         # Recursive Step: Parent computes absolute positions for immediate children
         children_assets = [widgets[c.name] for c in cfg.children if c.name in widgets]
         
-        if cfg.layout in (Layouts.DOCK, Layouts.ROW):
+        if cfg.layout == Layouts.DOCK:
             self._layout_dock(asset, children_assets, cfg.alignment, cfg.gap)
-        elif cfg.layout in (Layouts.STACK, Layouts.COLUMN):
+        elif cfg.layout == Layouts.STACK:
             self._layout_stack(asset, children_assets, cfg.alignment, cfg.gap)
-        elif cfg.layout == Layouts.TAB:
-            self._layout_tab(asset, children_assets)
+        elif cfg.layout == Layouts.OVERLAY:
+            self._layout_overlay(asset, children_assets)
 
         # Now that children have absolute physical coordinates, tell them to layout THEIR children
         for child_cfg in cfg.children:
             self._compute_recursive(child_cfg, widgets, flattened)
+
 
     def _layout_dock(self, 
         pane: Asset, 
@@ -149,20 +150,29 @@ class LayoutEngine:
             child.state.position = Position(x=current_x + x_offset, y=current_y)
             current_y += l + gap
 
-    def _layout_tab(self,
-        pane: Asset,
-        children: List[Asset]
-    ):
+    def _layout_overlay(self, pane: Asset, children: List[Asset]):
         """
-        Tabs superimpose children natively at the exact same anchor as the parent, offset by the margin.
+        Overlays superimpose children centered natively at the exact anchor of the parent.
         """
         margin = getattr(pane.state, 'margins', 0)
-        for child in children:
-            child.state.position = Position(
-                x=pane.state.position.x + margin, 
-                y=pane.state.position.y + margin
-            )
+        pane_x = pane.state.position.x + margin
+        pane_y = pane.state.position.y + margin
+        
+        pane_w = (pane.dimensions.w - 2 * margin) if pane.dimensions else 0
+        pane_l = (pane.dimensions.l - 2 * margin) if pane.dimensions else 0
 
+        for child in children:
+            child_w = child.dimensions.w if child.dimensions else 0
+            child_l = child.dimensions.l if child.dimensions else 0
+            
+            x_offset = (pane_w - child_w) // 2
+            y_offset = (pane_l - child_l) // 2
+            
+            child.state.position = Position(
+                x=pane_x + x_offset, 
+                y=pane_y + y_offset
+            )
+            
     def _build_graph(self, 
         buttons: List[Asset]
     ) -> Dict[str, Dict[str, str]]:

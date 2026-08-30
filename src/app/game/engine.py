@@ -58,9 +58,9 @@ class Engine:
             event = self.bus.popleft()
 
             if isinstance(event, MenuEvent):
-                self.board.paused = True
                 menu_cfg = self.board.configurations.menus.get(event.id)
                 if menu_cfg:
+                    self.board.paused = True
                     player = self.board.player()
                     screen = self.screens[player.state.layer]
                     menu = self.provider.unpack(

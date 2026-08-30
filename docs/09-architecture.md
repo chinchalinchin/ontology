@@ -77,6 +77,9 @@ To optimize environmental queries during the high-frequency game loop, the Board
 
 When systems like MotionMechanics need to compute the environmental friction acting on a moving Crate or Sprite, the Board divides the Asset's absolute `(x, y)` coordinates by the hash size to retrieve the exact Tile beneath it. 
 
+!!! important
+    The `_cached_tilemap` dictionary nests by `[layer][instance][(cx, cy)]` to prevent foreground architectural tiles from overwriting the background terrain tiles necessary for [MotionMechanics](./05-mechanics.md#spatial) friction lookups.
+    
 ## Rendering
 
 ### Depth & Height

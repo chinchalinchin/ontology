@@ -153,10 +153,7 @@ class TraversalFrame(Frame):
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
-        res = [f"{id}-{state.animation.action}"]
-        if getattr(state, 'icons', None):
-            res.extend(state.icons)
-        return res
+        return [f"{id}-{state.animation.action}"]
 
 
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:

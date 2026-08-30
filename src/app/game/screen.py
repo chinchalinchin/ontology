@@ -6,7 +6,10 @@ Package for the Screen, an abstraction over the Cython SDL rendering interface a
 
 # Standard Libraries
 import logging
-from typing import List, Union
+from typing import (
+    List, 
+    Union
+)
 
 # Application Libraries
 from app.assets.base import Asset
@@ -83,7 +86,9 @@ class Screen:
         construct(self.fg_canvas, fore_tiles)
 
 
-    def _prerender(self, tiles: List[Asset]) -> tuple[list, list]:
+    def _prerender(self, 
+        tiles: List[Asset]
+    ) -> tuple[list, list]:
         """
         Prerender Tile Assets.
         """
@@ -267,7 +272,8 @@ class Screen:
                             widget.state.position.x, widget.state.position.y, 
                             sw, sl
                         ))
-                    else:
+                    elif widget.taxonomy.instance != AssetInstances.PANES:
+                        # Ignore transparent layout panes
                         logger.warning(f"Registry MISS for key: '{key}' on widget '{widget.name}'")
 
         superimpose(primitives)

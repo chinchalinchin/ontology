@@ -263,6 +263,7 @@ class Builder:
         )
         
         view = self.context.configurations.menus.get('view')
+        logger.info(view)
         if view:
             player = self.board.player()
             hud_menu = self.provider.unpack(
@@ -272,6 +273,7 @@ class Builder:
                 self.context.screensize
             )
             self.board.set_overlays([hud_menu])
+
 
     def get_engine(self) -> Engine:
         logger.info("Engine successfully assembled.")

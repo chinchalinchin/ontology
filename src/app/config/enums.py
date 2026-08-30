@@ -236,9 +236,7 @@ class Controllers(str, Enum):
 class Layouts(str, Enum):
     DOCK            = "dock"
     STACK           = "stack"
-    TAB             = "tab"
-    COLUMN          = "column"
-    ROW             = "row"
+    OVERLAY         = "overlay"
 
 class Alignments(str, Enum):
     START           = "start"

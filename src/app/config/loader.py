@@ -45,10 +45,11 @@ class Loader:
 
     @staticmethod
     def load_properties() -> PropertiesSchema:
+        target_dir = settings.ASSET_DIR.expanduser()
         merged_data: dict[str, Any] = {}
         logger.info("Loading YAML property schemas...")
         
-        for file_path in settings.ASSET_DIR.rglob(settings.APP_EXT):
+        for file_path in target_dir.rglob("*.yaml"):
             with file_path.open("r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
                 if isinstance(data, dict):
@@ -58,10 +59,11 @@ class Loader:
 
     @staticmethod
     def load_configurations() -> ConfigurationSchema:
+        target_dir = settings.CONFIG_DIR.expanduser()
         merged_data: dict[str, Any] = {}
         logger.info("Loading YAML configurations...")
         
-        for file_path in settings.CONFIG_DIR.rglob(settings.APP_EXT):
+        for file_path in target_dir.rglob("*.yaml"):
             with file_path.open("r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
                 if isinstance(data, dict):
