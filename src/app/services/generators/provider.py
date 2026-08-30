@@ -19,7 +19,7 @@ from app.config.enums import (
     AssetInstances, 
     Statuses
 )
-from app.hooks.factory import Factory
+from app.services.factory import Factory
 from app.models.properties import WidgetProperties
 from app.models.state import (
     DisplayState, 

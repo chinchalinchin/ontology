@@ -30,7 +30,12 @@ class CombatMechanics(SpatialMechanic):
     def __init__(self):
         super().__init__(max_entities=2000)
 
-    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
+    def update(self, 
+        board: Board, 
+        delta: float, 
+        bus: collections.deque,
+        payload: DevicePayload
+    ) -> None:
         """
         Resolves attack overlaps, decrements health, and triggers mutators.
         """

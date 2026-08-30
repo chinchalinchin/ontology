@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 from app.assets.base import Asset
 from app.config.enums import AssetInstances
 from app.game.logic.mechanics.spatial.base import SpatialMechanic
+from app.models.state import DevicePayload
 
 # Cython Libraries
 from libs.core.math import Physics, Geometry
@@ -56,7 +57,12 @@ class CollisionMechanics(SpatialMechanic):
             asset_b.state.position, hb_b, vel2, m2, is_kinematic2
         )
 
-    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
+    def update(self, 
+        board: Board, 
+        delta: float, 
+        bus: collections.deque,
+        payload: DevicePayload
+    ) -> None:
         """
         ### update(board, delta)
 

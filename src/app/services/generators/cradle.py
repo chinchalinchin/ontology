@@ -15,7 +15,7 @@ from app.config.enums import (
     AssetInstances, 
     AssetCategories
 )
-from app.hooks.factory import Factory
+from app.services.factory import Factory
 from app.models.adapters import (
     PydanticVelocity as Velocity, 
     PydanticPosition as Position
@@ -29,7 +29,7 @@ from app.models.state import (
 )
 
 if TYPE_CHECKING:
-    from app.hooks.decomposer import Decomposer
+    from app.services.generators.decomposer import Decomposer
     from app.models.properties import Cost
 
 logger = logging.getLogger(__name__)

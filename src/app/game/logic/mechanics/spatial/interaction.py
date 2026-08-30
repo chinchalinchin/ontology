@@ -18,6 +18,7 @@ from app.config.enums import (
 )
 from app.game.logic.mechanics.spatial.base import SpatialMechanic
 from app.game.menus.events import MenuEvent
+from app.models.state import DevicePayload
 
 class InteractionMechanics(SpatialMechanic):
     """
@@ -28,7 +29,12 @@ class InteractionMechanics(SpatialMechanic):
     def __init__(self):
         super().__init__(max_entities=2000)
 
-    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
+    def update(self, 
+        board: Board, 
+        delta: float, 
+        bus: collections.deque,
+        payload: DevicePayload
+    ) -> None:
         """
         Resolves interactions between Sprites/Players and Objects (e.g., Doors, Chests).
         """

@@ -14,7 +14,7 @@ import app.config.settings as settings
 from app.game.board import Board
 from app.game.logic.mechanics.core import Mechanic
 from app.game.screen import Screen
-from app.hooks.provider import Provider
+from app.services.generators.provider import Provider
 from app.game.menus.events import MenuEvent, TerminalEvent, UpdateEvent
 
 logger = logging.getLogger(__name__)
@@ -86,12 +86,13 @@ class Engine:
         """
         Apply Mechanics.
         """
+        payload = self.board.device.poll()
         for mechanic in self.core:
-            mechanic.update(self.board, delta, self.bus)
+            mechanic.update(self.board, delta, self.bus, payload)
 
         if not self.board.paused:
             for mechanic in self.world:
-                mechanic.update(self.board, delta, self.bus)
+                mechanic.update(self.board, delta, self.bus, payload)
 
     def _render(self) -> None:
         """

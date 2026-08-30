@@ -31,7 +31,8 @@ from app.game.menus.events import (
     TerminalEvent
 )
 from app.models.state import (
-    SpriteState
+    SpriteState,
+    DevicePayload
 )
 
 # Cython Libraries
@@ -40,12 +41,28 @@ from libs.core.math import Physics
 logger = logging.getLogger(__name__)
 
 class Mechanic(ABC):
+    """
+    """
+
     @abstractmethod 
-    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
+    def update(self, 
+        board: Board, 
+        delta: float,
+        bus: collections.deque, 
+        payload: DevicePayload
+    ) -> None:
         pass
 
 class AnimationMechanics(Mechanic):
-    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
+    """
+    """
+
+    def update(self, 
+        board: Board, 
+        delta: float, 
+        bus: collections.deque,
+        payload: DevicePayload
+    ) -> None:
         for asset in board.categories(AssetCategories.EFFECTS):
             asset.animation.animate(asset.state, asset.properties)
         for asset in board.categories(AssetCategories.SHEETS):
@@ -58,7 +75,15 @@ class AnimationMechanics(Mechanic):
             asset.animation.animate(asset.state, asset.properties)
 
 class RemoveMechanics(Mechanic):
-    def update(self, board: Board, delta_time: float, bus: collections.deque) -> None:          
+    """
+    """
+
+    def update(self, 
+        board: Board, 
+        delta: float, 
+        bus: collections.deque,
+        payload: DevicePayload
+    ) -> None:          
         removals = []
         for effect in board.instances(AssetInstances.TEMPORARY):
             if effect.state.animation.frame >= effect.properties.count:
@@ -71,14 +96,21 @@ class RemoveMechanics(Mechanic):
         board.remove(removals)
 
 class MotionMechanics(Mechanic):
-    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
+    """
+    """
+
+    def update(self, 
+        board: Board, 
+        delta: float, 
+        bus: collections.deque,
+        payload: DevicePayload
+    ) -> None:
         players = board.instances(AssetInstances.PLAYERS)
         sprites = board.instances(AssetInstances.SPRITES)
         crates = board.instances(AssetInstances.CRATES)
         projectiles = board.instances(AssetInstances.PROJECTILES)
-        mapping = board.device.poll()
 
-        kinematic.update(players, mapping, delta)
+        kinematic.update(players, payload, delta)
         motive.update(sprites, delta)
         frictive.update(crates, board, delta)
         
@@ -100,7 +132,12 @@ class MenuMechanics(Mechanic):
         elif item in board.equipment.shields.keys():
             state.inventory.equipment.shield = item
 
-    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
+    def update(self, 
+        board: Board, 
+        delta: float, 
+        bus: collections.deque,
+        payload: DevicePayload
+    ) -> None:
         # Animate Overlays (World-time)
         for overlay in board.overlays:
             for widget in overlay.widgets.values():
@@ -125,9 +162,8 @@ class MenuMechanics(Mechanic):
         active_menu.controller.update(active_menu, board, bus)
 
         # Input Interception
-        poll = board.device.poll()
-        traversal = poll.menu.traversal
-        interaction = poll.menu.interactions
+        traversal = payload.menu.traversal
+        interaction = payload.menu.interactions
 
         if interaction in [Interactions.CANCEL, Interactions.PAUSE]:
             bus.append(TerminalEvent())

@@ -5,7 +5,7 @@
 import logging
 
 # Application Libraries
-from app.hooks.orchestrator import Orchestrator
+from app.services.orchestrator import Orchestrator
 from app.config.enums import Devices
 
 # Cython Libraries

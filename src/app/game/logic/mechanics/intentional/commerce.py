@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from app.game.board import Board
 
 from app.game.logic.mechanics import Mechanic
-
+from app.models.state import DevicePayload
 
 # ----------------------------------------------------------------------------------------
 
@@ -19,7 +19,12 @@ class CommerceMechanics(Mechanic):
     """
     """
 
-    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
+    def update(self, 
+        board: Board, 
+        delta: float, 
+        bus: collections.deque,
+        payload: DevicePayload
+    ) -> None:
         """
         """
         pass
@@ -30,7 +35,12 @@ class SpeechMechanics(Mechanic):
     """
     """
 
-    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
+    def update(self, 
+        board: Board, 
+        delta: float, 
+        bus: collections.deque,
+        payload: DevicePayload
+    ) -> None:
         """
         """
         pass

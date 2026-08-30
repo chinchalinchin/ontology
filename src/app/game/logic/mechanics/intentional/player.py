@@ -29,14 +29,18 @@ class PlayerMechanics(Mechanic):
     """
     """
 
-    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
+    def update(self, 
+        board: Board, 
+        delta: float, 
+        bus: collections.deque,
+        payload: DevicePayload
+    ) -> None:
         """
         """
         player = board.player()
-        poll = board.device.poll()
         
-        if poll.world.intention:
-            player.state.intention = poll.world.intention
+        if payload.world.intention:
+            player.state.intention = payload.world.intention
         else:
             player.state.intention = Intentions.IDLE
         
@@ -47,16 +51,16 @@ class PlayerMechanics(Mechanic):
         # Track movement so the player doesn't instantly snap back to 'UP' when inputs are released.
         has_movement = False
 
-        if PlayerGoals.UP in poll.world.goals:
+        if PlayerGoals.UP in payload.world.goals:
             goal_y -= speed
             has_movement = True
-        if PlayerGoals.DOWN in poll.world.goals:
+        if PlayerGoals.DOWN in payload.world.goals:
             goal_y += speed
             has_movement = True
-        if PlayerGoals.LEFT in poll.world.goals:
+        if PlayerGoals.LEFT in payload.world.goals:
             goal_x -= speed
             has_movement = True
-        if PlayerGoals.RIGHT in poll.world.goals:
+        if PlayerGoals.RIGHT in payload.world.goals:
             goal_x += speed
             has_movement = True
 

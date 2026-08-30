@@ -9,7 +9,7 @@ With the introduction of Widgets and Mechanics, the application architecture nee
 
 **Service Dependency Injection**
 
-It has been clear the Orchestrator is acting as the dependency injection system. It passes many different services down to the core game components, e.g. Cradle and Device get injected into the Board, Provider and Mechanics get injected into the Engine, etc. 
+It has become clear the Orchestrator is acting as the dependency injection system. It passes many different services down to the core game components, e.g. Cradle and Device get injected into the Board, Provider and Mechanics get injected into the Engine, etc. 
 
 Analyze the application and determine if an annotation-based registration would be better for these services.
 
@@ -23,14 +23,17 @@ The Package structure was "grown organically" as the application developed up to
 
 ##### Tasks
 
-**1. Task: TODO**
+1. **Task: Centralize Input Polling (High Priority)**
 
-*Objective*: TODO
+*Objective*: Prevent `_last_state` mutation bugs during the game loop.
 
-- [] Subtask: TODO
+- [ ] Remove `board.device.poll()` from all individual `Mechanic` implementations. 
+- [ ] Update `Engine._play()` to call `poll()` once per tick and pass the `DevicePayload` alongside the `bus` to the Mechanics interface.
 
-**2. Task: TODO**
+2. **Task: Implement Annotation-Based Registration**
 
-*Objective*: TODO
+*Objective*: Decouple class bindings from the Factory to reduce boilerplate.
 
-- [] Subtask: TODO
+- [] Create a `@register(Enum)` decorator in the `Factory`. 
+- [] Refactor `Mechanic`, `Animation`, `Frame`, and `Controller` classes to self-register on module initialization. 
+- [] Remove all hardcoded mapping dictionaries from `app.services.factory`.

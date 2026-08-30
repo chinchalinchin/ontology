@@ -13,19 +13,25 @@ if TYPE_CHECKING:
 from app.config.enums import AssetInstances
 from app.game.logic.maps import AnimationMap
 from app.game.logic.mechanics import Mechanic
+from app.models.state import DevicePayload
 
 class TransitionMechanics(Mechanic):
     """
     """
     
-    def update(self, board: Board, delta: float, bus: collections.deque) -> None:
+    def update(self, 
+        board: Board, 
+        delta: float, 
+        bus: collections.deque,
+        payload: DevicePayload
+    ) -> None:
         """
         Evaluates Intention condition lambdas for state transitions.
         """
         sprites = board.instances(AssetInstances.SPRITES)
 
         for sprite in sprites:
-            # TODO (Phase V): Intention logic and DSL matrix compilation is pending.
+            # TODO (Phase 7): Intention logic and DSL matrix compilation is pending.
 
             sprite.state.animation.action = AnimationMap.action(
                 sprite.state,

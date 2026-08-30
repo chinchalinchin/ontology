@@ -17,6 +17,7 @@ from app.config.enums import (
     AssetInstances
 )
 from app.game.logic.mechanics.spatial.base import SpatialMechanic
+from app.models.state import DevicePayload
 
 class ProjectileMechanics(SpatialMechanic):
     """
@@ -29,7 +30,12 @@ class ProjectileMechanics(SpatialMechanic):
         super().__init__(max_entities=1000)
 
 
-    def update(self, board: Board, delta_time: float, bus: collections.deque) -> None:
+    def update(self, 
+        board: Board, 
+        delta: float, 
+        bus: collections.deque,
+        payload: DevicePayload
+    ) -> None:
         """
         """
         for layer in board.layers():

@@ -21,9 +21,9 @@ from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
 from app.game.logic.mechanics.core import Mechanic
-from app.hooks.provider import Provider
-from app.hooks.factory import Factory
-from app.hooks.decomposer import Decomposer
+from app.services.generators.provider import Provider
+from app.services.factory import Factory
+from app.services.generators.decomposer import Decomposer
 from app.models.groups import (
     SpawnableGroup, 
     EquipmentGroup

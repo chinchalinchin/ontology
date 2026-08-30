@@ -20,7 +20,7 @@ from app.config.enums import (
 import app.config.settings as settings
 from app.game.devices import Device
 from app.game.menus.core import Menu
-from app.hooks.cradle import Cradle
+from app.services.generators.cradle import Cradle
 from app.models.config import ConfigurationSchema
 from app.models.groups import EquipmentGroup
 

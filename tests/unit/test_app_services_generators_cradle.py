@@ -3,7 +3,7 @@
 """
 import pytest
 from unittest.mock import MagicMock
-from app.hooks.cradle import Cradle
+from app.services.generators.cradle import Cradle
 from app.config.enums import AssetCategories, AssetInstances
 from libs.core.models import Velocity, Position
 

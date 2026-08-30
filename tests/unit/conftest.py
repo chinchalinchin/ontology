@@ -26,8 +26,8 @@ from app.config.enums import (
     AssetInstances
 )
 from app.game.board import Board
-from app.hooks.orchestrator import Orchestrator
-from app.hooks.provider import Provider
+from app.services.orchestrator import Orchestrator
+from app.services.generators.provider import Provider
 from app.models.properties import (
     PropertiesSchema, 
     SheetProperties,
