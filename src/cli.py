@@ -7,9 +7,10 @@ Package for command line interface. Contains useful commands for debugging.
 import sys
 import argparse
 import logging
-from pathlib import Path
-import datetime
+import gc
 import os
+import datetime
+from pathlib import Path
 
 # External Libraries
 import jinja2
@@ -33,7 +34,7 @@ from libs.graphics.render import quit_sdl, get_system_info
 
 logger = logging.getLogger(__name__)
 
-def dump(board_key, board, temp = 'state'):
+def dump(board_key, board, temp='state'):
     logger.info(f"Generating {temp} dump...")
     template_path = settings.TEMPLATE_DIR / settings.DUMP_TEMPLATES[temp]
     
@@ -102,6 +103,95 @@ def arguments():
     return parser.parse_args()
 
 
+# ---------------------------------------------------------
+# COMMAND HANDLERS
+# ---------------------------------------------------------
+
+def handle_prerender(args, orchestrator, screensize):
+    logger.info("Orchestrating engine components for headless execution (prerender)...")
+    engine = orchestrator.orchestrate(
+        state_key=args.board_key, 
+        screensize=screensize, 
+        device=args.device,
+        headless=True
+    )
+    
+    if args.layer not in engine.screens:
+        logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
+        return engine.board
+
+    screen = engine.screens[args.layer]
+    out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    out_path = out_dir / f"{args.board_key}-{args.layer}-background.png"
+    logger.info(f"Constructing background map image for layer '{args.layer}'...")
+    screen.export_background(str(out_path))
+    logger.info(f"Background successfully exported to: {out_path}")
+
+    return engine.board
+
+
+def handle_render(args, orchestrator, screensize):
+    logger.info("Orchestrating engine components for headless execution (render)...")
+    engine = orchestrator.orchestrate(
+        state_key=args.board_key, 
+        screensize=screensize, 
+        device=args.device,
+        headless=True
+    )
+    
+    if args.layer not in engine.screens:
+        logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
+        return engine.board
+
+    screen = engine.screens[args.layer]
+    out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    out_path = out_dir / f"{args.board_key}-{args.layer}.png"
+    logger.info(f"Rendering composite frame for layer '{args.layer}'...")
+    
+    assets = engine.board.renderables(args.layer)        
+    player = engine.board.player()
+
+    screen.export_render(str(out_path), assets, player.state.position, player.dimensions)
+    logger.info(f"Composite frame successfully rendered and exported to: {out_path}")
+
+    return engine.board
+
+
+def handle_start(args, orchestrator, screensize):
+    logger.info("Igniting engine for live execution...")
+    engine = orchestrator.orchestrate(
+        state_key=args.board_key, 
+        screensize=screensize, 
+        device=args.device,
+        headless=False
+    )
+    
+    if args.dump_sdl:
+        dump(args.board_key, engine.board, 'sdl')
+
+    try:
+        engine.start()
+    except KeyboardInterrupt:
+        logger.info("Game engine loop interrupted by user.")
+        
+    return engine.board
+
+
+# Dispatcher Registry
+COMMAND_REGISTRY = {
+    "prerender": handle_prerender,
+    "render": handle_render,
+    "start": handle_start
+}
+
+# ---------------------------------------------------------
+# MAIN
+# ---------------------------------------------------------
+
 def main():
     """
     ## main
@@ -126,78 +216,25 @@ def main():
         logger.info("Forcing SDL to use CPU-bound software renderer via environment variable.")
 
     # Initialize Builder Pattern
-    director = Orchestrator()
+    orchestrator = Orchestrator()
     
-    if args.command in ["prerender", "render"]:
-        # Headless static execution
-        logger.info("Orchestrating engine components for headless execution...")
-        engine = director.construct(
-            state_key=args.board_key, 
-            screensize=screensize, 
-            device=args.device,
-            headless=True
-        )
-        
-        board = engine.board
-        screens = engine.screens
+    # Dispatch execution based on parsed command
+    handler = COMMAND_REGISTRY.get(args.command)
+    if not handler:
+        logger.error(f"Unknown command received: {args.command}")
+        sys.exit(1)
 
-        if args.layer not in screens:
-            logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
-            quit_sdl()
-            return
+    # Execute designated function and capture the board state for potential dumping
+    board = handler(args, orchestrator, screensize)
 
-        screen = screens[args.layer]
-        out_dir = Path(args.out)
-        out_dir.mkdir(parents=True, exist_ok=True)
-
-        # Route to encapsulated screen export methods
-        if args.command == "prerender":
-            out_path = out_dir / f"{args.board_key}-{args.layer}-background.png"
-            logger.info(f"Constructing background map image for layer '{args.layer}'...")
-            screen.export_background(str(out_path))
-            logger.info(f"Background successfully exported to: {out_path}")
-
-        elif args.command == "render":
-            out_path = out_dir / f"{args.board_key}-{args.layer}.png"
-            logger.info(f"Rendering composite frame for layer '{args.layer}'...")
-            assets = board.renderables(args.layer)        
-            player = board.player()
-
-            screen.export_render(str(out_path), assets, player.state.position, player.dimensions)
-            logger.info(f"Composite frame successfully rendered and exported to: {out_path}")
-            
-    elif args.command == "start":
-        logger.info("Igniting engine for live execution...")
-        engine = director.construct(
-            state_key=args.board_key, 
-            screensize=screensize, 
-            device=args.device,
-            headless=False
-        )
-        board = engine.board
-        
-        if args.dump_sdl:
-            dump(args.board_key, board, 'sdl')
-
-        try:
-            engine.start()
-        except KeyboardInterrupt:
-            logger.info("Game engine loop interrupted by user.")
-
-    if args.dump_state:
+    if args.dump_state and board:
         dump(args.board_key, board, 'state')
     
     # Cleanly release memory bounds
     if 'board' in locals():
         del board
-    del builder
-    del director
-    if 'engine' in locals():
-        del engine
         
-    import gc
     gc.collect()
-
     quit_sdl()
     logger.info("CLI processes completed.")
 
