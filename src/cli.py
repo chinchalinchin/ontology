@@ -1,7 +1,7 @@
 """
 # Ontology: cli
 
-Package for command line interface. Contains useful commands for debugging.
+Package for command line interface.
 """
 # Standard Libraries
 import sys

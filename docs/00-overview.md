@@ -76,13 +76,13 @@ The Loader is responsible for reading in the configuration files for properties 
 
 ### Factory
 
-- Package: `app.hooks.factory`
+- Package: `app.services.factory`
 
 The Factory builds Assets and other game components based on Recipes. 
 
 ### Orchestrator
 
-- Package: `app.hooks.orchestrator`
+- Package: `app.services.orchestrator`
 
 The Orchestrator is the dependency injection system. It is responsible for converting validated data structures into application data models and supplying them to application classes.
 

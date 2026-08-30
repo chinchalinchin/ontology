@@ -1,6 +1,6 @@
 # cython: language_level=3
 """
-# Ontology: Asset Registry
+# Ontology: libs.graphics.registry
 
 Cythonized extension for ingesting physical image files, tracking their GPU memory pointers and flat-mapping Frame keys directly to GPU texture croppings. 
 """

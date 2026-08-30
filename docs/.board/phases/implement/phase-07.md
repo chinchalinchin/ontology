@@ -11,7 +11,7 @@ To maintain performance, the custom ISL defined in `/src/data/intentions/main.ya
     - [ ] Update Board.__init__ to accept and store a properties: Dict field.
     - [ ] Update Orchestrator.orchestrate() to inject self.properties into the Board upon instantiation.
 2. ISL Compilation Engine (The Pythonic Way)
-    - [ ] Create a parsing utility (e.g., inside app.hooks.factory or a new app.config.compiler module) to load /src/data/intentions/main.yaml.
+    - [ ] Create a parsing utility (e.g., inside app.services.factory or a new app.config.compiler module) to load /src/data/intentions/main.yaml.
     - [ ] Iterate over the transitions and convert the YAML condition strings into executable lambdas using eval(f"lambda sprite, sprites: {condition}").
     - [ ] Hydrate the IntentionProperties and Transition POPOs with these Callables and store the result in the Orchestrator's properties dictionary under the "intentions" key.
 3. Refactor IntentionMechanics

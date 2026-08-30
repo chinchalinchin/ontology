@@ -33,6 +33,7 @@ class NoFrame(Frame):
         """
         """
         return [id]
+
             
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
@@ -50,12 +51,14 @@ class SingleFrame(Frame):
         """
         """
         return [id]
+
         
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
         """
         w, l = _safe_dim(properties)
         return {id: (0, 0, w, l)}
+
         
 class IterableFrame(Frame):
     """
@@ -68,6 +71,7 @@ class IterableFrame(Frame):
             id, 
             str(state.animation.frame)
         ])]
+
         
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
@@ -78,6 +82,7 @@ class IterableFrame(Frame):
         for f in range(count):
             crops[f"{id}-{f}"] = (f * w, 0, w, l)
         return crops
+
 
 class StateFrame(Frame):
     """
@@ -94,6 +99,7 @@ class StateFrame(Frame):
             str(state.animation.frame)
         ])]
 
+
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
         """
@@ -109,6 +115,7 @@ class StateFrame(Frame):
                     frame_key = f"{id}-{action}-{direction}-{f}"
                     crops[frame_key] = (f * w, row * l, w, l)
         return crops
+
 
 class SpriteFrame(StateFrame):
     """
@@ -151,6 +158,7 @@ class TraversalFrame(Frame):
             res.extend(state.icons)
         return res
 
+
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
         """
@@ -172,6 +180,7 @@ class MeterFrame(Frame):
         """
         return [f"{id}-0", f"{id}-{state.animation.frame}"]
 
+
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
         """
@@ -190,6 +199,7 @@ class IndexFrame(Frame):
     def keys(self, id: str, state: AssetState) -> List[str]:
         # Retrieve the specific icon key from the state, defaulting to the asset ID
         return [getattr(state, 'icon', id)]
+
 
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         w, l = _safe_dim(properties)

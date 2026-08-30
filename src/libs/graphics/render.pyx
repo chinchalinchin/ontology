@@ -1,6 +1,6 @@
 # cython: language_level=3
 """
-# Ontology: Render
+# Ontology: libs.graphics.render
 
 Directly interfaces with SDL2 C-Headers to execute headless rendering, bypassing the Python Global Interpreter Lock (GIL) and ctypes overhead.
 """

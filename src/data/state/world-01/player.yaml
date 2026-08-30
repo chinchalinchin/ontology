@@ -9,7 +9,7 @@ sheets:
         y: 10
       meters:
         health: 
-          current: 100
+          current: 75
           maximum: 100
         magic: 
           current: 100
