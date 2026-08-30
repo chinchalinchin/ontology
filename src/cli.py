@@ -25,7 +25,7 @@ if str(PROJECT_ROOT) not in sys.path:
 # Application Libraries
 import app.config.settings as settings
 from app.config.enums import Devices
-from app.services.builder import Builder, Director
+from app.services.constructors import Orchestrator
 
 # Cython Libraries
 from libs.core.models import Dimensions
@@ -126,8 +126,7 @@ def main():
         logger.info("Forcing SDL to use CPU-bound software renderer via environment variable.")
 
     # Initialize Builder Pattern
-    builder = Builder()
-    director = Director(builder)
+    director = Orchestrator()
     
     if args.command in ["prerender", "render"]:
         # Headless static execution

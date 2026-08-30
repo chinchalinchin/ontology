@@ -1,13 +1,15 @@
 """
-# Ontology: app.services.builder
+# Ontology: app.services.constructors
 
-Implementation of the Builder pattern for constructing the Engine.
+Classes for constructing game objects.
 """
+# Standard Libraries
 import logging
 import dataclasses
 from typing import Dict, List
 from enum import Enum
 
+# Application Libraries
 from app.assets.base import Asset
 from app.config.loader import Loader
 from app.config.enums import AssetCategories, AssetInstances, Devices, Mechanics, Shortcuts
@@ -31,7 +33,9 @@ logger = logging.getLogger(__name__)
 
 @dataclasses.dataclass
 class Context:
-    """Isolates raw data configurations before they are hydrated into Engine components."""
+    """
+    Isolates raw data configurations before they are hydrated into Engine components.
+    """
     properties: PropertiesSchema = None
     state: StateSchema = None
     configurations: ConfigurationSchema = None
@@ -53,9 +57,12 @@ class Builder:
         self.core: List[Mechanic] = []
         self.world: List[Mechanic] = []
 
+
     @staticmethod
     def _unbox_enums(data):
-        """Recursively resolves Enum instances to their primitive values."""
+        """
+        Recursively resolves Enum instances to their primitive values.
+        """
         if isinstance(data, dict):
             return {k: Builder._unbox_enums(v) for k, v in data.items()}
         elif isinstance(data, list):
@@ -63,9 +70,12 @@ class Builder:
         elif isinstance(data, Enum):
             return data.value
         return data
+
     
     def _resolve_actions(self) -> None:
-        """Globally pre-hydrates Actions in Properties."""
+        """
+        Globally pre-hydrates Actions in Properties.
+        """
         resolved_sheets = {}
         for sheet_field in dataclasses.fields(self.context.properties.sheets):
             sheet_type = sheet_field.name
@@ -84,22 +94,32 @@ class Builder:
             **resolved_sheets
         )
 
+
     def load_data(self, state_key: str) -> None:
+        """
+        """
         logger.info(f"Loading YAML data for target state: {state_key} ...")
         self.context.properties = Loader.load_properties()
         self.context.configurations = Loader.load_configurations()
         self.context.state = Loader.load_state(state_key)
 
+
     def init_subsystems(self, screensize: Dimensions, headless: bool = True) -> None:
+        """
+        """
         logger.info("Initializing SDL and Cython rendering subsystems...")
         self.context.screensize = screensize
         self.context.headless = headless
         render.init(screensize.w, screensize.l, headless)
-        
+
+        # IMPORTANT: This MUST be called before the Registry inits.
         if not headless:
             render.show()
 
+
     def build_board(self) -> None:
+        """
+        """
         logger.info("Migrating properties and constructing Board...")
         self._resolve_actions()
 
@@ -181,21 +201,23 @@ class Builder:
         self.board = Board(assets, self.context.configurations, equipment)
 
     def build_registry(self) -> None:
+        """
+        """
         logger.info("Initializing Registry...")
         # Unpack root dataclasses and resolve Enums to primitives
         properties_dict = self._unbox_enums(dataclasses.asdict(self.context.properties))
         recipes_dict = self._unbox_enums(dataclasses.asdict(self.context.configurations.recipes))
         fonts_dict = properties_dict.pop("fonts", {})
-        
         self.registry = Registry(properties_dict, recipes_dict, fonts_dict)
 
+
     def build_services(self, device: Devices) -> None:
+        """
+        """
         logger.info("Injecting Generators and Devices into Board...")
-        
         device_mapping = getattr(self.context.configurations.mappings, device, None)
         device_instance = Factory.device(device, device_mapping)
         self.board.set_device(device_instance)
-
         spawnable_groups = SpawnableGroup(
             projectiles=self.context.properties.cursors.projectiles,
             expressions=self.context.properties.cursors.expressions,
@@ -204,6 +226,7 @@ class Builder:
         )
         cradle = Factory.cradle(spawnable_groups, self.context.configurations.recipes, self.decomposer)
         self.board.set_cradle(cradle)
+
 
     def build_pipeline(self) -> None:
         logger.info("Building rendering pipelines, mechanics, and UI...")
@@ -261,14 +284,21 @@ class Builder:
         )
 
 
-class Director:
+class Orchestrator:
     """
     Enforces the correct sequence of instantiation for the Engine lifecycle.
     """
-    def __init__(self, builder: Builder):
+    def __init__(self, builder: Builder = None):
+        if builder is None:
+            builder = Builder()
         self.builder = builder
 
-    def construct(self, state_key: str, screensize: Dimensions, device: str, headless: bool = False) -> Engine:
+    def orchestrate(self, 
+        state_key: str, 
+        screensize: Dimensions, 
+        device: str, 
+        headless: bool = False
+    ) -> Engine:
         self.builder.load_data(state_key)
         self.builder.init_subsystems(screensize, headless)
         

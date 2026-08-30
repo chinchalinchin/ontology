@@ -5,7 +5,7 @@
 import logging
 
 # Application Libraries
-from app.services.orchestrator import Orchestrator
+from app.services.constructors import Orchestrator
 from app.config.enums import Devices
 
 # Cython Libraries
@@ -21,8 +21,7 @@ def main():
     logger = logging.getLogger(__name__)
     logger.info("Starting Ontology Application...")
 
-    maestro = Orchestrator("world-00")
-    maestro.ignite(Dimensions(w=800, l=600), Devices.KEYBOARD)
+    Orchestrator().orchestrate('world-01', Dimensions(w=800, l=600), Devices.KEYBOARD)
     
 if __name__ == "__main__":
     main()

@@ -13,7 +13,7 @@ def test_builder_load_data(mock_builder):
     assert mock_builder.context.configurations is not None
     assert mock_builder.context.state is not None
 
-@patch('app.services.builder.render')
+@patch('app.services.constructors.render')
 def test_builder_init_subsystems(mock_render, mock_builder):
     dims = Dimensions(w=1280, l=720)
     mock_builder.init_subsystems(dims, headless=False)
@@ -45,14 +45,14 @@ def test_builder_build_services(mock_builder):
     # Ensure the keyboard mapping from configuration was applied
     assert mock_builder.board.device.poll() is not None
 
-@patch('app.services.builder.Screen')
-@patch('app.services.builder.Registry')
-@patch('app.services.builder.render')
-def test_director_construct(mock_render, mock_registry, mock_screen, mock_director):
+@patch('app.services.constructors.Screen')
+@patch('app.services.constructors.Registry')
+@patch('app.services.constructors.render')
+def test_orchestrator_construct(mock_render, mock_registry, mock_screen, mock_orchestrator):
     dims = Dimensions(w=1280, l=720)
     
     # The director should enforce the execution of all builder steps
-    engine = mock_director.construct(
+    engine = mock_orchestrator.orchestrate(
         state_key="world-01", 
         screensize=dims, 
         device=Devices.KEYBOARD, 
