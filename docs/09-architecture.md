@@ -31,6 +31,11 @@ This section contains an in-depth presentation of the game engine's programmatic
 8. **Ignition (`Engine.start`)**
     * Injects the fully hydrated Board, Screens, Mechanics, and Provider into the [Engine](./00-overview.md#engine) and initiates the fixed-timestep loop.
 
+!!! important "Hardware Rendering Context Pre-requisites"
+    When running in live (non-headless) mode, the hardware window context (`render.show()`) **must** be instantiated strictly *after* `render.init()` but *before* `Registry` initialization. 
+    
+    The `Registry` caches textures directly into GPU memory via Cython (`TexturePtr`). If the window context does not exist when the Registry attempts to index and load `.png` files, the textures will silently resolve as empty `0x0` null pointers. This results in a "ghost state" where the entire game board is invisible, but the `Board` database, spatial physics, and collision systems continue to operate normally.
+    
 ## Mechanics
 
 The Engine delegates behavior to [Mechanics](./05-mechanics.md). Rather than the Engine passing arguments to a system, a Mechanic is responsible for querying the [Board](./00-overview.md#board) for the exact data it requires, processing the state, and optionally pushing Events to the Engine's `bus`.

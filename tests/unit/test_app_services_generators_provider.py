@@ -27,7 +27,7 @@ def test_provider_resolve(mock_provider):
     res_invalid = mock_provider._resolve("context.sprite.state.invalid", context)
     assert res_invalid is None
 
-@patch("app.hooks.provider.render")
+@patch("app.services.generators.provider.render")
 def test_provider_paginate(mock_render, mock_provider):
     def measure_side_effect(text, font):
         return (len(text) * 10, 10)
@@ -44,7 +44,7 @@ def test_provider_paginate(mock_render, mock_provider):
     assert pages[1] == "three\nfour"
     assert pages[2] == "five\nsix"
 
-@patch("app.hooks.provider.render")
+@patch("app.services.generators.provider.render")
 def test_provider_unpack_widget(mock_render, mock_provider):
     mock_render.canvas.return_value = "mock_canvas_ptr"
     mock_render.measure.return_value = (10, 10)
@@ -98,7 +98,7 @@ def test_provider_unpack_widget_meter(mock_provider):
     assert widget.state.unit == 100
     assert widget.state.animation.frame == 75
 
-@patch("app.hooks.provider.LayoutEngine")
+@patch("app.services.generators.provider.LayoutEngine")
 def test_provider_unpack_menu(mock_layout_class, mock_provider):
     mock_layout = MagicMock()
     mock_btn_asset = MagicMock()

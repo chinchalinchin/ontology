@@ -9,6 +9,7 @@ from unittest.mock import Mock
 import collections
 from app.game.logic.mechanics.core import AnimationMechanics, RemoveMechanics
 from app.config.enums import AssetCategories, AssetInstances
+from app.models.state import DevicePayload, MenuPayload, WorldPayload
 
 def test_animation_mechanics_update():
     """
@@ -17,6 +18,10 @@ def test_animation_mechanics_update():
     """
     board = Mock()
     mechanic = AnimationMechanics()
+    payload = DevicePayload(
+        menu = MenuPayload(),
+        world = WorldPayload()
+    )
 
     # Create mock assets for each category/instance
     effect_asset = Mock()
@@ -44,7 +49,7 @@ def test_animation_mechanics_update():
     board.categories.side_effect = mock_categories
     board.instances.side_effect = mock_instances
 
-    mechanic.update(board, 0.016, collections.deque())
+    mechanic.update(board, 0.016, collections.deque(), payload)
 
     # Verify animate() is called on the targeted assets with their respective state and properties
     effect_asset.animation.animate.assert_called_once_with(effect_asset.state, effect_asset.properties)
@@ -60,6 +65,10 @@ def test_remove_mechanics_update():
     """
     board = Mock()
     mechanic = RemoveMechanics()
+    payload = DevicePayload(
+        menu = MenuPayload(),
+        world = WorldPayload()
+    )
 
     # Temporary Effects
     temp_effect_remove = Mock()
@@ -86,7 +95,7 @@ def test_remove_mechanics_update():
 
     board.instances.side_effect = mock_instances
 
-    mechanic.update(board, 0.016, collections.deque())
+    mechanic.update(board, 0.016, collections.deque(), payload)
 
     # Verify that only the completed effect and the dead sprite were flagged for removal
     board.remove.assert_called_once_with([temp_effect_remove, dead_sprite])

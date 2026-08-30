@@ -25,7 +25,7 @@ if str(PROJECT_ROOT) not in sys.path:
 # Application Libraries
 import app.config.settings as settings
 from app.config.enums import Devices
-from app.services.orchestrator import Orchestrator
+from app.services.builder import Builder, Director
 
 # Cython Libraries
 from libs.core.models import Dimensions
@@ -118,7 +118,6 @@ def main():
 
     logger.info(f"Starting CLI with command: '{args.command}' for board: '{args.board_key}'")
 
-    # Step 1: Initialize Orchestrator and abstract components
     screensize = Dimensions(w=args.width, l=args.height)
 
     # Force the CPU renderer if requested prior to SDL Initialization
@@ -126,12 +125,22 @@ def main():
         os.environ["SDL_RENDER_DRIVER"] = "software"
         logger.info("Forcing SDL to use CPU-bound software renderer via environment variable.")
 
-    orchestrator = Orchestrator(args.board_key)
+    # Initialize Builder Pattern
+    builder = Builder()
+    director = Director(builder)
     
     if args.command in ["prerender", "render"]:
         # Headless static execution
         logger.info("Orchestrating engine components for headless execution...")
-        board, _, screens, _ = orchestrator.init(screensize, device=args.device)
+        engine = director.construct(
+            state_key=args.board_key, 
+            screensize=screensize, 
+            device=args.device,
+            headless=True
+        )
+        
+        board = engine.board
+        screens = engine.screens
 
         if args.layer not in screens:
             logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
@@ -142,7 +151,7 @@ def main():
         out_dir = Path(args.out)
         out_dir.mkdir(parents=True, exist_ok=True)
 
-        # Step 2: Route to encapsulated screen export methods
+        # Route to encapsulated screen export methods
         if args.command == "prerender":
             out_path = out_dir / f"{args.board_key}-{args.layer}-background.png"
             logger.info(f"Constructing background map image for layer '{args.layer}'...")
@@ -160,8 +169,13 @@ def main():
             
     elif args.command == "start":
         logger.info("Igniting engine for live execution...")
-        engine = orchestrator.ignite(screensize, device=args.device)
-        board = orchestrator.board
+        engine = director.construct(
+            state_key=args.board_key, 
+            screensize=screensize, 
+            device=args.device,
+            headless=False
+        )
+        board = engine.board
         
         if args.dump_sdl:
             dump(args.board_key, board, 'sdl')
@@ -174,9 +188,11 @@ def main():
     if args.dump_state:
         dump(args.board_key, board, 'state')
     
-   # Cleanly release memory bounds
-    del board
-    del orchestrator
+    # Cleanly release memory bounds
+    if 'board' in locals():
+        del board
+    del builder
+    del director
     if 'engine' in locals():
         del engine
         
