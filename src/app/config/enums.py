@@ -237,7 +237,7 @@ class Layouts(str, Enum):
     DOCK            = "dock"
     STACK           = "stack"
     TAB             = "tab"
-    NEST            = "nest"
+    COLUMN          = "column"
     ROW             = "row"
 
 class Alignments(str, Enum):

@@ -52,7 +52,7 @@ widgets:
     magic:
       dimensions:
         w: 72
-        l: 70
+        l: 20
   pages:
     dialogue:
       dimensions:

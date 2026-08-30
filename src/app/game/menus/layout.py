@@ -68,7 +68,7 @@ class LayoutEngine:
         
         if cfg.layout in (Layouts.DOCK, Layouts.ROW):
             self._layout_dock(asset, children_assets, cfg.alignment, cfg.gap)
-        elif cfg.layout in (Layouts.STACK, Layouts.NEST):
+        elif cfg.layout in (Layouts.STACK, Layouts.COLUMN):
             self._layout_stack(asset, children_assets, cfg.alignment, cfg.gap)
         elif cfg.layout == Layouts.TAB:
             self._layout_tab(asset, children_assets)

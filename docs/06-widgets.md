@@ -99,11 +99,12 @@ Layouts are enumerated below,
 - Dock (Widget): A horizontal row of Widgets.
 - Stack (Widget): A vertical column of Widgets
 - Tab (Pane): A sagittal axis (out-of-the-screen) of Panes.
-- Nest (Pane): A vertical column of Panes.
+- Column (Pane): A vertical column of Panes.
+- Row (Pane): A horizontal column of Panes.
 
 The `dock` and `stack` Layouts only apply to "endpoints" in the Menu tree. These two types of Layouts are ultimately where all Controls displayed in a Menu must be organized. These two Layouts can *only* contains Control Widgets.
 
-The `tab` and `nest` Layouts are specifically for laying out configurations of Panes. These two types of Layouts *cannot* contain Controls. These types of Panes *must* contain children Panes. Furthermore, to avoid deeply nested Widget trees, the children of these nested Pane types *must* be `dock` or `stack` Layouts, i.e. only one layer of nesting is allowed in Menu trees.
+The `tab`, `row` and `column` Layouts are specifically for laying out configurations of Panes. These two types of Layouts *cannot* contain Controls. These types of Panes *must* contain children Panes. Furthermore, to avoid deeply nested Widget trees, the children of these nested Pane types *must* be `dock` or `stack` Layouts, i.e. only one layer of nesting is allowed in Menu trees.
 
 **Alignment**
 
@@ -401,11 +402,11 @@ To generate the Render List, when a Menu is triggered, a `Layout` class executes
 1. **Resolve Pane Anchors**: Convert `ScreenPosition` (e.g., `px: 0.3`) to absolute pixels using `screensize.w * px`. This becomes the Pane's anchor `(x, y)`.
 2. **Measure Children**: Retrieve the `properties` for the dimensions `(w, l)` of each child Widget.
 3. **Apply Algorithm**:
-    * If `pane.layout == dock`
+    * If `pane.layout in [dock, row]`
         * If `alignment == start`: TODO
         * If `alignment == end`: TODO
         * If `alignment == center`: Calculate the maximum width of all children. Offset each child's X coordinate by (Max Width - Child Width) // 2.
-    * If `pane.layout in [stack, nest]`:
+    * If `pane.layout in [stack, column]`:
         * If `alignment == start`: TODO
         * If `alignment == end`: TODO
         * If `alignment == center`: Calculate the maximum height of all children. Offset each child's Y coordinate by (Max Height - Child Height) // 2.
