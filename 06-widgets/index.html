@@ -1311,8 +1311,7 @@
 <li><code>index(self, id, properties, recipe): returns { "{id}-{resolution}" : (0, 0, properties.dimensions.w * meter, properties.dimensions.l) }</code> </li>
 </ul>
 <h3 id="pages">Pages</h3>
-<p>Pages render text or Icon Assets. The amount of text or Icons a scroller Page is capable of rendering at once is calculated during Asset initialization. This is used to populate the <code>pages</code> and <code>pagesize</code> fields.</p>
-<p>When <code>content: str</code>, the content will be text to render. When <code>content: List[str]</code>, the content will be frame keys for Icons.</p>
+<p>Pages render text. The amount of text is capable of rendering at once is calculated during Asset initialization. This is used to populate the <code>pages</code> and <code>pagesize</code> fields.</p>
 <p>Pages contain a <code>canvas</code> over and above the Asset file loaded into the Registry. The <code>canvas</code> is created at runtime as a blank texture to serve as a space for rendering text without altering the underlying Asset loaded into the Registry.</p>
 <p><strong>State: DisplayState</strong></p>
 <ul>
