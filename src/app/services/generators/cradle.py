@@ -1,5 +1,5 @@
 """
-# Ontology: app.hooks.cradle
+# Ontology: app.services.generators.cradle
 
 Package for ingame Asset instantiation.
 """

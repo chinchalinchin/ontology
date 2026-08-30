@@ -246,7 +246,7 @@ class PaneState:
     layout: Layouts
     alignment: Alignments
     gap: int
-    margins: Tuple[int, int, int, int]
+    margins: Optional[int] = 0
 
 @dataclass(slots=True)
 class MeterState:

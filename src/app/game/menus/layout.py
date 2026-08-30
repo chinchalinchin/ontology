@@ -66,7 +66,7 @@ class LayoutEngine:
         # Recursive Step: Parent computes absolute positions for immediate children
         children_assets = [widgets[c.name] for c in cfg.children if c.name in widgets]
         
-        if cfg.layout == Layouts.DOCK:
+        if cfg.layout in (Layouts.DOCK, Layouts.ROW):
             self._layout_dock(asset, children_assets, cfg.alignment, cfg.gap)
         elif cfg.layout in (Layouts.STACK, Layouts.NEST):
             self._layout_stack(asset, children_assets, cfg.alignment, cfg.gap)
@@ -86,20 +86,23 @@ class LayoutEngine:
         if not children:
             return
 
-        current_x = pane.state.position.x
-        current_y = pane.state.position.y
+        margin = getattr(pane.state, 'margins', 0)
+        current_x = pane.state.position.x + margin
+        current_y = pane.state.position.y + margin
         
-        # Main-axis (X) alignment
+        # Main-axis (X) alignment calculation
         total_w = sum((c.dimensions.w if c.dimensions else 0) for c in children) + gap * (len(children) - 1)
-        pane_w = pane.dimensions.w if pane.dimensions else total_w
+        
+        # Usable width subtracts both left and right margins
+        pane_w = (pane.dimensions.w - 2 * margin) if pane.dimensions else total_w
         
         if alignment == Alignments.CENTER:
             current_x += (pane_w - total_w) // 2
         elif alignment == Alignments.END:
             current_x += (pane_w - total_w)
 
-        # Cross-axis (Y) alignment: Center vertically within the Pane
-        pane_h = pane.dimensions.l if pane.dimensions else max((c.dimensions.l if c.dimensions else 0) for c in children)
+        # Cross-axis (Y) alignment: Center vertically within the usable Pane space
+        pane_h = (pane.dimensions.l - 2 * margin) if pane.dimensions else max((c.dimensions.l if c.dimensions else 0) for c in children)
 
         for child in children:
             w = child.dimensions.w if child.dimensions else 0
@@ -119,20 +122,23 @@ class LayoutEngine:
         if not children:
             return
 
-        current_x = pane.state.position.x
-        current_y = pane.state.position.y
+        margin = getattr(pane.state, 'margins', 0)
+        current_x = pane.state.position.x + margin
+        current_y = pane.state.position.y + margin
         
-        # Main-axis (Y) alignment
+        # Main-axis (Y) alignment calculation
         total_l = sum((c.dimensions.l if c.dimensions else 0) for c in children) + gap * (len(children) - 1)
-        pane_l = pane.dimensions.l if pane.dimensions else total_l
+        
+        # Usable length (height) subtracts top and bottom margins
+        pane_l = (pane.dimensions.l - 2 * margin) if pane.dimensions else total_l
 
         if alignment == Alignments.CENTER:
             current_y += (pane_l - total_l) // 2
         elif alignment == Alignments.END:
             current_y += (pane_l - total_l)
 
-        # Cross-axis (X) alignment: Center horizontally within the Pane
-        pane_w = pane.dimensions.w if pane.dimensions else max((c.dimensions.w if c.dimensions else 0) for c in children)
+        # Cross-axis (X) alignment: Center horizontally within the usable Pane space
+        pane_w = (pane.dimensions.w - 2 * margin) if pane.dimensions else max((c.dimensions.w if c.dimensions else 0) for c in children)
 
         for child in children:
             w = child.dimensions.w if child.dimensions else 0
@@ -148,12 +154,13 @@ class LayoutEngine:
         children: List[Asset]
     ):
         """
-        Tabs superimpose children natively at the exact same anchor as the parent.
+        Tabs superimpose children natively at the exact same anchor as the parent, offset by the margin.
         """
+        margin = getattr(pane.state, 'margins', 0)
         for child in children:
             child.state.position = Position(
-                x=pane.state.position.x, 
-                y=pane.state.position.y
+                x=pane.state.position.x + margin, 
+                y=pane.state.position.y + margin
             )
 
     def _build_graph(self, 
@@ -199,15 +206,15 @@ class LayoutEngine:
             # Assign adjacent boundaries based on min/max distances
             if south_candidates:
                 closest = min(south_candidates, key=lambda b: b.state.position.y)
-                graph[b1_name][Traversal.SOUTH] = closest.id
+                graph[b1_name][Traversal.SOUTH] = closest.name
             if north_candidates:
                 closest = max(north_candidates, key=lambda b: b.state.position.y)
-                graph[b1_name][Traversal.NORTH] = closest.id
+                graph[b1_name][Traversal.NORTH] = closest.name
             if east_candidates:
                 closest = min(east_candidates, key=lambda b: b.state.position.x)
-                graph[b1_name][Traversal.EAST] = closest.id
+                graph[b1_name][Traversal.EAST] = closest.name
             if west_candidates:
                 closest = max(west_candidates, key=lambda b: b.state.position.x)
-                graph[b1_name][Traversal.WEST] = closest.id
+                graph[b1_name][Traversal.WEST] = closest.name
 
         return graph

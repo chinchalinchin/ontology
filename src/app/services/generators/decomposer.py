@@ -1,5 +1,5 @@
 """
-# Ontology: app.hooks.decomposer
+# Ontology: app.services.generators.decomposer
 
 Package for decomposing Compositions into their constituent Assets. 
 """

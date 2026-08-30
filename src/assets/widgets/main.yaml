@@ -107,3 +107,8 @@ widgets:
       dimensions:
         w: 318
         l: 180
+    transparent-block:
+      dimensions:
+        w: 159
+        l: 78
+    

@@ -1,5 +1,5 @@
 """
-# Ontology: app.hooks.provider
+# Ontology: app.services.generators.provider
 
 Package for ingame Menu instantiation.
 """
@@ -163,7 +163,7 @@ class Provider:
                 layout      = pane.layout,
                 alignment   = pane.alignment,
                 gap         = pane.gap,
-                margins     = (0, 0, 0, 0) # TODO
+                margins     = pane.margins
             ),
             frame            = Factory.frame(recipe.frame) if recipe \
                                 else Factory.frame(None),

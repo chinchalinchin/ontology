@@ -192,6 +192,7 @@ class MenuPane:
     alignment: Alignments
     gap: int
     children: List[Union['MenuPane', MenuWidget]]
+    margins: Optional[int] = 0
     position: Optional[ScreenPosition] = None # type: ignore
 
 @dataclass(slots=True)
