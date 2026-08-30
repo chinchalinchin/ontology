@@ -112,7 +112,7 @@ In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `n
 **Task 9. Layout Engine Completion**
 
 * [x] Implement `Layouts.TAB` recursion in `LayoutEngine.compute()`.
-* [x] Implement `Layouts.NEST` recursion in `LayoutEngine.compute()`.
+* [x] Implement `Layouts.COLUMN` recursion in `LayoutEngine.compute()`.
 * [x] **Schema:** Update `MenuPane.children` in `app.models.config` to `List[Union['MenuPane', MenuWidget]]`.
 * [x] **Provider:** Replace linear iteration in `Provider._unpack_pane` with a recursive `_unpack_node` router capable of handling nested Panes.
 * [x] **Layout:** Refactor `LayoutEngine.compute` to use a top-down spatial recursion algorithm (`_compute_recursive`), removing dead Z-sorting code.
