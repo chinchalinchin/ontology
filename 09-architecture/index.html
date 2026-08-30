@@ -1119,6 +1119,11 @@
 </ul>
 </li>
 </ol>
+<div class="admonition important">
+<p class="admonition-title">Hardware Rendering Context Pre-requisites</p>
+<p>When running in live (non-headless) mode, the hardware window context (<code>render.show()</code>) <strong>must</strong> be instantiated strictly <em>after</em> <code>render.init()</code> but <em>before</em> <code>Registry</code> initialization. </p>
+<p>The <code>Registry</code> caches textures directly into GPU memory via Cython (<code>TexturePtr</code>). If the window context does not exist when the Registry attempts to index and load <code>.png</code> files, the textures will silently resolve as empty <code>0x0</code> null pointers. This results in a "ghost state" where the entire game board is invisible, but the <code>Board</code> database, spatial physics, and collision systems continue to operate normally.</p>
+</div>
 <h2 id="mechanics">Mechanics</h2>
 <p>The Engine delegates behavior to <a href="../05-mechanics/">Mechanics</a>. Rather than the Engine passing arguments to a system, a Mechanic is responsible for querying the <a href="../00-overview/#board">Board</a> for the exact data it requires, processing the state, and optionally pushing Events to the Engine's <code>bus</code>.</p>
 <p>Mechanics are strictly segregated into <code>core</code> pipelines and <code>world</code> pipelines. The <code>Engine._play()</code> method processes these lists conditionally:</p>
