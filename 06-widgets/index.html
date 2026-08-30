@@ -1206,10 +1206,11 @@
 <li>Dock (Widget): A horizontal row of Widgets.</li>
 <li>Stack (Widget): A vertical column of Widgets</li>
 <li>Tab (Pane): A sagittal axis (out-of-the-screen) of Panes.</li>
-<li>Nest (Pane): A vertical column of Panes.</li>
+<li>Column (Pane): A vertical column of Panes.</li>
+<li>Row (Pane): A horizontal column of Panes.</li>
 </ul>
 <p>The <code>dock</code> and <code>stack</code> Layouts only apply to "endpoints" in the Menu tree. These two types of Layouts are ultimately where all Controls displayed in a Menu must be organized. These two Layouts can <em>only</em> contains Control Widgets.</p>
-<p>The <code>tab</code> and <code>nest</code> Layouts are specifically for laying out configurations of Panes. These two types of Layouts <em>cannot</em> contain Controls. These types of Panes <em>must</em> contain children Panes. Furthermore, to avoid deeply nested Widget trees, the children of these nested Pane types <em>must</em> be <code>dock</code> or <code>stack</code> Layouts, i.e. only one layer of nesting is allowed in Menu trees.</p>
+<p>The <code>tab</code>, <code>row</code> and <code>column</code> Layouts are specifically for laying out configurations of Panes. These two types of Layouts <em>cannot</em> contain Controls. These types of Panes <em>must</em> contain children Panes. Furthermore, to avoid deeply nested Widget trees, the children of these nested Pane types <em>must</em> be <code>dock</code> or <code>stack</code> Layouts, i.e. only one layer of nesting is allowed in Menu trees.</p>
 <p><strong>Alignment</strong></p>
 <p>Alignments are enumerated below,</p>
 <ul>
@@ -1469,13 +1470,13 @@
 <li><strong>Resolve Pane Anchors</strong>: Convert <code>ScreenPosition</code> (e.g., <code>px: 0.3</code>) to absolute pixels using <code>screensize.w * px</code>. This becomes the Pane's anchor <code>(x, y)</code>.</li>
 <li><strong>Measure Children</strong>: Retrieve the <code>properties</code> for the dimensions <code>(w, l)</code> of each child Widget.</li>
 <li><strong>Apply Algorithm</strong>:<ul>
-<li>If <code>pane.layout == dock</code><ul>
+<li>If <code>pane.layout in [dock, row]</code><ul>
 <li>If <code>alignment == start</code>: TODO</li>
 <li>If <code>alignment == end</code>: TODO</li>
 <li>If <code>alignment == center</code>: Calculate the maximum width of all children. Offset each child's X coordinate by (Max Width - Child Width) // 2.</li>
 </ul>
 </li>
-<li>If <code>pane.layout in [stack, nest]</code>:<ul>
+<li>If <code>pane.layout in [stack, column]</code>:<ul>
 <li>If <code>alignment == start</code>: TODO</li>
 <li>If <code>alignment == end</code>: TODO</li>
 <li>If <code>alignment == center</code>: Calculate the maximum height of all children. Offset each child's Y coordinate by (Max Height - Child Height) // 2.</li>
