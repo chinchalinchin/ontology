@@ -1151,6 +1151,10 @@
 <h3 id="spatial-grid-caching">Spatial Grid Caching</h3>
 <p>To optimize environmental queries during the high-frequency game loop, the Board implements an <span class="arithmatex">\(O(1)\)</span> spatial hashing grid (<code>_cached_tilemap</code>). The Board chunks static Assets into a dictionary grid during initialization, keyed by a fixed <code>TILE_HASH_SIZE</code> (defaulting to 32x32 pixels).</p>
 <p>When systems like MotionMechanics need to compute the environmental friction acting on a moving Crate or Sprite, the Board divides the Asset's absolute <code>(x, y)</code> coordinates by the hash size to retrieve the exact Tile beneath it. </p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The <code>_cached_tilemap</code> dictionary nests by <code>[layer][instance][(cx, cy)]</code> to prevent foreground architectural tiles from overwriting the background terrain tiles necessary for <a href="../05-mechanics/#spatial">MotionMechanics</a> friction lookups.</p>
+</div>
 <h2 id="rendering">Rendering</h2>
 <h3 id="depth-height">Depth &amp; Height</h3>
 <p>To accurately render perspective, the Screen <code>draw()</code> loop relies on a tuple-based sorting mechanism applied to all active Assets before they are passed across the Cython boundary. This system resolves the "Painter's Algorithm" dilemma where architectural decals (like Doors) need to render <em>on top of</em> their parent structures (like Strut), but <em>behind</em> dynamic Asset (like Players) that walk in front of the building.</p>
