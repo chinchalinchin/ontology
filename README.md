@@ -12,26 +12,26 @@
 - Cython needs the actual C development headers to compile against,
 
 ```bash
-# 0. (*Optional*) Install UV
-## a.
+# 1. (*Optional*) Install UV
+## a. MacOS
 brew install uv
 ## b. Debian
 curl -LsSf https://astral.sh/uv/install.sh | sh
 source $HOME/.local/bin/env
 
-# 1. Install SDL libraries
-## a. MacOS
-brew install sdl2 sdl2_image
-### B. Debian
-sudo apt install libsdl2-dev libsdl2-image-dev
-
-# 2. Setup Virtual Environment
+# 2. (*Optional*) Setup Virtual Environment
 uv venv --python 3.14 .venv
 source .venv/bin/activate
 uv pip install pip
 
 # 3. Install Python Dependencies
 pip install -r requirements.txt
+
+# 4. Install SDL libraries
+## a. MacOS
+brew install sdl2 sdl2_image sdl2_ttf
+### b. Debian
+sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev
 ```
 
 ### Build
