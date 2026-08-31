@@ -36,3 +36,5 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [ ]: [Phase 05.04: InventoryController & Loot](./phases/refactor/phase-05-04.md)
   - Patch 
     - [x]: [Bug B000: Attacking](./phases/patch/bug-b000.md)
+  - Report:
+    - [x]: [2026-08-10: SDL Pipeline Failure](./phases/report/2026-08-16.md)

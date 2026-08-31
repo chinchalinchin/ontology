@@ -15,6 +15,7 @@ from app.config.enums import (
     Intentions,
     PlayerGoals,
     GoalCategories,
+    AnimatedIntentions,
     BlockingIntentions
 )
 from app.game.logic.maps import AnimationMap
@@ -43,14 +44,6 @@ class PlayerMechanics(Mechanic):
         """
         player = board.player()
         
-        # Define intentions that lock the player until their animation completes
-        blocking_intentions = {
-            Intentions.ATTACK, 
-            Intentions.MINE, 
-            Intentions.BUILD, 
-            Intentions.SPEAK
-        }
-        
         if payload.world.intention:
             # Only assign and reset the frame/tick if the intention is new
             if player.state.intention != payload.world.intention:
@@ -58,11 +51,12 @@ class PlayerMechanics(Mechanic):
                 player.state.animation.frame = 0
                 player.state.animation.tick = 0
         else:
-            # Fallback to IDLE only if the player is not currently trapped in a blocking cycle
-            is_blocking = player.state.intention in blocking_intentions
+            # Fallback Only if the player is not currently trapped in a blocking cycle
+            is_blocking = player.state.intention in BlockingIntentions
             
             # An animation is active if either the frame or the tick has advanced
-            is_animating = player.state.animation.frame > 0 or player.state.animation.tick > 0
+            is_animating = player.state.animation.frame > 0 \
+                            or player.state.animation.tick > 0
             
             if not (is_blocking and is_animating):
                 player.state.intention = Intentions.IDLE
@@ -71,7 +65,8 @@ class PlayerMechanics(Mechanic):
         goal_x = player.state.position.x
         goal_y = player.state.position.y
         
-        # Track movement so the player doesn't instantly snap back to 'UP' when inputs are released.
+        # Track movement so the player doesn't instantly snap back 
+        # to 'UP' when inputs are released.
         has_movement = False
 
         if PlayerGoals.UP in payload.world.goals:
@@ -98,10 +93,7 @@ class PlayerMechanics(Mechanic):
             player.state.goal.position.x = goal_x
             player.state.goal.position.y = goal_y
 
-        if player.state.intention in [
-            Intentions.ATTACK,
-            # TODO: add animated Intentions here
-        ]:
+        if player.state.intention in AnimatedIntentions:
             player.state.mutators.triggers.animated = True
         else:
             player.state.mutators.triggers.animated = has_movement
@@ -120,11 +112,10 @@ class PlayerMechanics(Mechanic):
         if player.state.intention == Intentions.ATTACK:
             logger.info(f"[TELEMETRY] Intention: ATTACK | "
                         f"Resolved Action: {player.state.animation.action}")
-            if getattr(player.state.inventory, 'equipment', None):
-                eq = player.state.inventory.equipment
-                logger.info(f"[TELEMETRY] Equipment State: "
-                             f"Weapon: {eq.weapon} | "
-                             f"Armor: {eq.armor} | "
-                             f"Shield: {eq.shield} | "
-                             f"Tool: {eq.tool}"
-                )
+            eq = player.state.inventory.equipment
+            logger.info(f"[TELEMETRY] Equipment State: "
+                            f"Weapon: {eq.weapon} | "
+                            f"Armor: {eq.armor} | "
+                            f"Shield: {eq.shield} | "
+                            f"Tool: {eq.tool}"
+            )

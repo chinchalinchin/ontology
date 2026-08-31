@@ -30,6 +30,7 @@ def test_arguments_start_defaults():
         assert args.log_level == "INFO"
         assert args.dump_state is False
         assert args.dump_sdl is False
+        assert args.dump_registry is False
         assert args.software is False
 
 def test_arguments_prerender_flags():
@@ -145,7 +146,8 @@ def test_handle_start_keyboard_interrupt(caplog):
     # Tell pytest to capture INFO level logs for this specific test
     caplog.set_level(logging.INFO)
     
-    args = MagicMock(board_key="level_01", device="keyboard", dump_sdl=False)
+    # PATCH: Added dump_registry=False to correctly short-circuit the execution
+    args = MagicMock(board_key="level_01", device="keyboard", dump_sdl=False, dump_registry=False)
     screensize = MagicMock()
     
     mock_orchestrator = MagicMock()
@@ -159,6 +161,7 @@ def test_handle_start_keyboard_interrupt(caplog):
     
     assert "Game engine loop interrupted by user." in caplog.text
     assert board == mock_engine.board
+
 # ---------------------------------------------------------
 # MAIN EXECUTION TESTS
 # ---------------------------------------------------------

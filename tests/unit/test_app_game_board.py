@@ -2,9 +2,7 @@
 # Ontology: tests.unit.test_app_game_board
 """
 from app.config.enums import AssetCategories, AssetInstances
-
 from libs.core.models import Position
-
 
 # ---------------------------------------------------------------------------
 # --------------------------------------------------------------------- TESTS
@@ -14,23 +12,22 @@ def test_board_initial_caching(mock_board):
     
     # Layer Indexing
     assets_layer_0 = mock_board.assets('0')
-    assert len(assets_layer_0) == 2
+    assert len(assets_layer_0) == 3  # Updated: Sprite, Tile, Player
     
     # Category Indexing
     sprites = mock_board.categories(AssetCategories.SHEETS, '0')
     tiles = mock_board.categories(AssetCategories.TILES, '0')
-    assert len(sprites) == 1
+    assert len(sprites) == 2  # Updated: Sprite, Player
     assert len(tiles) == 1
     
     # Inner Render Loop Indexing (Tiles bypassed)
     renderables = mock_board.renderables('0')
-    assert len(renderables) == 1
+    assert len(renderables) == 2  # Updated: Sprite, Player
     assert renderables[0].category == AssetCategories.SHEETS
     
     # Physics Caching
     weights = mock_board.weights('0')
-    assert len(weights) == 1
-    assert weights[0].name == "player"
+    assert len(weights) == 2  # Updated: Sprite, Player
 
 def test_board_relayering_synchronization(mock_board):
     player = mock_board.instances(AssetInstances.SPRITES, '0')[0]

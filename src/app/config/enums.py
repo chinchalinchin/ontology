@@ -233,6 +233,10 @@ class BlockingIntentions(str, Enum):
     ATTACK          = "attack"
     MINE            = "mine"
 
+class AnimatedIntentions(str, Enum):
+    # TODO: possibly redundant with respect to BlockingIntentions
+    ATTACK          = "attack"
+    MINE            = "mine"
 # -------------------------------- WIDGET ENUMERATIONS
 
 class Controllers(str, Enum):

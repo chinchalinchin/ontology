@@ -215,7 +215,11 @@ class Board:
         return self._all_instances[AssetInstances.PLAYERS][0]
 
 
-    def tile(self, layer: str, position: Position, instance: str = AssetInstances.BACK) -> Asset:
+    def tile(self, 
+        layer: str, 
+        position: Position, 
+        instance: str = AssetInstances.BACK
+    ) -> Asset:
         """
         Returns the Tile at the specified coordinate using O(1) grid-index lookup.
         """
