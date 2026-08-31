@@ -12,19 +12,12 @@ For Sprites, Intention is an attribute that controls state transitions and actio
 
 It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the `sprint` state increases the velocity of the `(walk, *)` states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the `interact` state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.
 
-### Transition Matrix
-    
-* Location: `/src/data/config/intentions/main.yaml`
+A brief explanation of each Intention state value is given below,
 
-!!! important
-    The Player state does not observe the Intention Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See [Player documentation](./02-sprites.md#player) for more information on the Player.
-
-The Intention Transition Matrix determines which Intention states are currently reachable for a Sprite from its current Intention. A brief explanation of each Intention state value is given below,
-
-- `attack`: Attack an Asset.
+- `attack`: Initiate an Attack Animation..
     - *Sprite*: Apply CombatMechanics, conditional on Equipment constraint.
     - *Player*: Apply CombatMechanics, conditional on Equipment constraint.
-- `attract`: Attract a Sprite.
+- `attract`: Attract a Sprite for interaction.
     - *Sprite*:
     - *Player*: N/A
 - `barter`: Exhcange Inventories.
@@ -52,23 +45,46 @@ The Intention Transition Matrix determines which Intention states are currently 
     - *Sprite*: 
     - *Player*: 
 - `mine`: Convert Resources into Inventory. 
+    - *Sprite*: Apply MineMechanics, conditional on Equpiment constraints.
+    - *Player*: Apply MineMechanics, conditional on Equipment constraints.
 - `return`: Return to remembered locations.
-- `scavenge`: Collect lot.
-- `speak`: 
-    - *Player*: Draw the target Sprite's `state.psyche.dialogue` on a Dialogue window.
-    - *Sprite*: Apply CommerceMechanics (exchanges `prices`). Apply RumorMechanics (exchange `rumors`) 
-- `sprint`: Increase movement speed.
-    - *Player*:
-    - *Sprite*:
-- `threaten`: 
+    - *Sprite*: Move `sprite.state.memory.goal` to `sprite.state.goal`
+    - *Player*: N/A
+- `scavenge`: Collect loot.
+    - *Sprite*: 
     - *Player*: 
+- `speak`: Initiate dialogue.
+    - *Sprite*: Apply CommerceMechanics (exchanges `prices`). Apply RumorMechanics (exchange `rumors`) 
+    - *Player*: Draw the target Sprite's `state.psyche.dialogue` on a Dialogue window.
+- `sprint`: Increase movement speed.
     - *Sprite*:
+    - *Player*: 
+- `threaten`: Pre-cursor to Attack (wiggle-room).
+    - *Sprite*:
+    - *Player*: N/A
 - `wander`: 
-    - *Player*:
     - *Sprite*:
+    - *Player*: N/A
 
 !!! note
-    `mine` is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by [Action Sets](./appendices/01-schemas.md#configuration-actions) and [AnimationMaps](./09-architecture.md#maps)
+    `mine` is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by [Action Sets](./appendices/01-schemas.md#configuration-actions) and [AnimationMaps](./09-architecture.md#maps).
+
+### Transition Matrix
+    
+* Location: `/src/data/config/intentions/main.yaml`
+
+!!! important
+    The Player state does not observe the Intention Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See [Player documentation](./02-sprites.md#player) for more information on the Player.
+
+The Intention Transition Matrix determines which Intention states are currently reachable for a Sprite from its current Intention. The general schema for the Intention Transition Matrix is given below,
+
+```yaml
+intentions:
+    <intention-key>:
+        - next: <intention-key>
+          conditions: 
+            - <condition>
+```
 
 **Default Intention Transition Matrix**
 
@@ -163,14 +179,14 @@ Intention transition conditions are converted into lambda functions by the appli
 When a Sprite has Goal, it will seek out (path-find) its way to `name`. The `category` of a Goal affects the type of identifier given in `name`. 
 
 - `category == position`: The Goal is a Position, i.e. the Sprite is trying to find a location on the Board. The `name` will be the Sprite's name.
-- `category == asset`: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The `name` will be the Asset `name`.
+- `category == asset`: The Goal is a Sprite Asset, i.e. the Sprite is trying to find an Asset. The `name` will be the Asset `name`.
 - `category == loot`: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The `name` will be an Inventory key. 
-- `category == wealth`: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The `name` will be an Inventory key. The key will be of the value with the maximum value in the Sprite's Prices, e.g. the loot with the highest Price.
+- `category == wealth`: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The `name` will be an Inventory key. The key will be of the loot with the maximum value in the Sprite's Prices, e.g. the highest priced loot.
 - `category == property`: The goal is Property, i.e. the Sprite is seeking the location of Property. The `name` will be an Asset name of an Asset that implements a `PropertyState`.
 
 ## AnimationMap
 
-A Sprite's State is mapped onto an (Action, Direction) through an AnimationMap. This component of the Application statically ingests a Sprite State, applies formulas and returns the mapped tupel.
+A Sprite's State is mapped onto an (Action, Direction) through an AnimationMap. This component of the Application statically ingests a Sprite State, applies formulas and returns the mapped tuple.
 
 **Player Device**
 
@@ -184,7 +200,7 @@ Sprite Animation Actions is as a function of Sprite Intention state and Equipmen
 
 **Formulae**
 
-- `if state.intention == attack: state.animation.action = board.equipment[weapons][state.inventory.weapon].action`
+- `if state.intention == attack: state.animation.action = board.equipment.weapons[state.inventory.weapon].action`
 
 ### Directions
 

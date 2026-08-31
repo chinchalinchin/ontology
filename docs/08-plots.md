@@ -37,7 +37,7 @@ TODO
 
 PlotMechanics are a [World Mechanic](./05-mechanics.md) that manages the Plot State. It does so through the medium of the *Plot Transition Matrix*.
 
-### Plot Transition Matrix
+### Transition Matrix
 
 Similar to [Intentions](./04-intentions.md), the Plot utilizes a Transition Matrix to determine where the current node of the Plot State resides, and whether or not conditions have been met to transition to the next node.
 
