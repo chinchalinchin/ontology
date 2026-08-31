@@ -93,7 +93,7 @@ recipes:
     icons:
       frame: index
       animation: none
-      state: none
+      state: icon
     meters:
       frame: meter
       animation: meter

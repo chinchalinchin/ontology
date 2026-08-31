@@ -44,6 +44,15 @@ widgets:
         - seven
         - eight
         - nine
+    weapons:
+      dimensions:
+        w: 32
+        l: 32
+      frames:
+        - shortsword
+        - dagger
+        - knife
+        - spear
   meters:
     health:
       dimensions:

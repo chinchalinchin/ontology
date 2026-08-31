@@ -263,7 +263,6 @@ class Builder:
         )
         
         view = self.context.configurations.menus.get('view')
-        logger.info(view)
         if view:
             player = self.board.player()
             hud_menu = self.provider.unpack(

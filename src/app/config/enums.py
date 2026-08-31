@@ -99,6 +99,8 @@ class StateRecipe(str, Enum):
     METER           = "meter"
     DISPLAY         = "display"
     PANE            = "pane"
+    ICON            = "icon"
+    
 # -------------------------------- SPRITE STATE ENUMERATIONS
 
 class Directions(str, Enum):

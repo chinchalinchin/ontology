@@ -191,10 +191,17 @@ class Provider:
     def _unpack_icon(self, cfg: MenuWidget, context: dict) -> IconState:
         props_dict = getattr(self.properties, cfg.instance, {})
         props = props_dict.get(cfg.id)
+        logger.info(f"id: {cfg.id}")
+        logger.info(f"context: {context}")
+        logger.info(f"properties: {props}")
         resolved = self._resolve(cfg.bind.state, context) \
                             if cfg.bind and cfg.bind.state else None
         initial_icon = resolved if resolved \
                             else (props.frames[0] if getattr(props, 'frames', None) else cfg.id)
+
+        logger.info(f"resolved: {resolved}")
+        logger.info(f"initial_icon: {initial_icon}")
+
         return IconState(
             position=Position(x=0, y=0),
             icon=initial_icon
@@ -255,7 +262,6 @@ class Provider:
             AssetInstances.ICONS: self._unpack_icon
         }
 
-        logger.info('delegating')
         state = delegator[cfg.instance](cfg, context)
 
         binding = Binding(
@@ -277,7 +283,7 @@ class Provider:
         logger.info(
             f"Unpacked Widget: {cfg.name} | "
             f"Recipe Frame: {recipe.frame} | "
-            f"Resolved Frame: {type(frame).__name__}"
+            f"Resolved Frame: {type(frame).__name__} | "
             f"Recipe Animation: {recipe.animation} | "
             f"Resolved Animation: {type(animation).__name__}"
         )

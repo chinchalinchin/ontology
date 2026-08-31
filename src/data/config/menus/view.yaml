@@ -48,7 +48,7 @@ menus:
                     status: disabled
                   # 2. The Foreground Decal
                   - instance: icons
-                    id: items-sheet 
+                    id: weapons
                     name: weapon-icon
                     bind:
                       state: context.sprite.state.inventory.equipment.weapon
@@ -64,7 +64,7 @@ menus:
                     name: shield-slot
                     status: disabled
                   - instance: icons
-                    id: items-sheet
+                    id: shields
                     name: shield-icon
                     bind:
                       state: context.sprite.state.inventory.equipment.shield

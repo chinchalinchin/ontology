@@ -5,10 +5,13 @@
 
 ---
 
-{% for asset in assets -%}
-## {{ asset.name }} (`{{ asset.id }}`)
+{% for asset in assets %}
+## {{ asset.name }} 
 
-**Taxonomy:** `{{ asset.category }}` / `{{ asset.instance }}`
+**Taxonomy:** 
+  - Category: `{{ asset.category }}` 
+  - Instance: `{{ asset.instance }}`
+  - ID: `{{ asset.id }}`
 **Layer:** {{ asset.state.layer }}
 
 ### State
@@ -66,53 +69,53 @@
 {% endif -%}
 {% if asset.state.intention -%}
 - **Intention:** `{{ asset.state.intention }}`
-{% endif %}
-{% endfor %}
-
-{% for section_name, menu_list in [('Menus', menus), ('Overlays', overlays)] %}
-{% if menu_list %}
+{% endif -%}
+{%- endfor -%}
+{%- for section_name, menu_list in [('Menus', menus), ('Overlays', overlays)] %}
+{%- if menu_list -%}
 ---
+
 # {{ section_name }}
 
 {% for menu in menu_list %}
 ## {{ section_name[:-1] }}: {{ menu.id }}
+
 **Focus:** `{{ menu.focus }}`
 **Context:** {{ menu.context }}
 
 ### Widgets
 {% for w_key, widget in menu.widgets.items() %}
 #### {{ widget.name }} (`{{ widget.id }}`)
-**Taxonomy:** `{{ widget.category }}` / `{{ widget.instance }}`
+
+**Taxonomy:** 
+  - Category: `{{ widget.category }}` 
+  - Instance: `{{ widget.instance }}`
+  - ID: `{{ widget.id }}`
 **Component Classes:**
-- Frame: `{{ widget.frame.__class__.__name__ }}`
-- Animation: `{{ widget.animation.__class__.__name__ }}`
-
+  - Frame: `{{ widget.frame.__class__.__name__ }}`
+  - Animation: `{{ widget.animation.__class__.__name__ }}`
 **Calculated Values:**
-- Computed Keys: `{{ widget.frame.keys(widget.id, widget.state) }}`
-- Dimensions: w: {{ widget.dimensions.w }}, l: {{ widget.dimensions.l }}
-
+  - Computed Keys: `{{ widget.frame.keys(widget.id, widget.state) }}`
+**Properties**:
+  - Dimensions: w: {{ widget.dimensions.w }}, l: {{ widget.dimensions.l }}
 {% if widget.binding -%}
 **Binding:**
-- Selection: `{{ widget.binding.selection }}`
-- Selector: `{{ widget.binding.selector }}`
-- State: `{{ widget.binding.state }}`
+  - Selection: `{{ widget.binding.selection }}`
+  - Selector: `{{ widget.binding.selector }}`
+  - State: `{{ widget.binding.state }}`
 {% endif -%}
-
 **State:**
 {% if widget.state.position -%}
-- **Position:** ({{ widget.state.position.x }}, {{ widget.state.position.y }})
+  - Position: ({{ widget.state.position.x }}, {{ widget.state.position.y }})
 {% endif -%}
 {% if widget.state.status is defined -%}
-- **Status:** `{{ widget.state.status }}`
-{% endif -%}
-{% if widget.state.icons is defined and widget.state.icons -%}
-- **Icons:** {{ widget.state.icons }}
+  - Status: `{{ widget.state.status }}`
 {% endif -%}
 {% if widget.state.content is defined -%}
-- **Content:** {{ widget.state.content }}
+  - Content: {{ widget.state.content }}
 {% endif -%}
 {% if widget.state.reading is defined -%}
-- **Meter:** {{ widget.state.reading }} / {{ widget.state.unit }}
+  - Reading: {{ widget.state.reading }} / {{ widget.state.unit }}
 {% endif -%}
 {% endfor %}
 {% endfor %}
