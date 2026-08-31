@@ -53,6 +53,12 @@ widgets:
         - dagger
         - knife
         - spear
+    shields:
+      dimensions:
+        w: 32
+        l: 32
+      frames:
+        - buckler
   meters:
     health:
       dimensions:

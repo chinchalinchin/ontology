@@ -196,9 +196,7 @@ class Provider:
         logger.info(f"properties: {props}")
         resolved = self._resolve(cfg.bind.state, context) \
                             if cfg.bind and cfg.bind.state else None
-        initial_icon = resolved if resolved \
-                            else (props.frames[0] if getattr(props, 'frames', None) else cfg.id)
-
+        initial_icon = resolved 
         logger.info(f"resolved: {resolved}")
         logger.info(f"initial_icon: {initial_icon}")
 

@@ -22,9 +22,9 @@ sheets:
       inventory: 
         loot: null
         equipment:
-          armor: null
+          armor: 
           tool: null
           utility: null
-          weapon: null
-          shield: null
+          weapon: shortsword
+          shield: buckler
         wallet: 0

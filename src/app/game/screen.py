@@ -264,17 +264,18 @@ class Screen:
                 frame_keys = widget.frame.keys(widget.id, widget.state)
 
                 for key in frame_keys:
-                    tex_data = self.registry.image(key)
-                    if tex_data:
-                        tex, sx, sy, sw, sl = tex_data
-                        primitives.append((
-                            tex, sx, sy, sw, sl, 
-                            widget.state.position.x, widget.state.position.y, 
-                            sw, sl
-                        ))
-                    elif widget.taxonomy.instance != AssetInstances.PANES:
-                        # Ignore transparent layout panes
-                        logger.warning(f"Registry MISS for key: '{key}' on widget '{widget.name}'")
+                    if key:
+                        tex_data = self.registry.image(key)
+                        if tex_data:
+                            tex, sx, sy, sw, sl = tex_data
+                            primitives.append((
+                                tex, sx, sy, sw, sl, 
+                                widget.state.position.x, widget.state.position.y, 
+                                sw, sl
+                            ))
+                        elif widget.taxonomy.instance != AssetInstances.PANES:
+                            # Ignore transparent layout panes
+                            logger.warning(f"Registry MISS for key: '{key}' on widget '{widget.name}'")
 
         superimpose(primitives)
 
