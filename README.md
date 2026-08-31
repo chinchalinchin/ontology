@@ -89,10 +89,8 @@ python src/cli.py  \
 The Cython extensions are located in `src/libs/`. Once compiled, you can import each binary natively into your Python scripts:
 
 ```python
-import libs.core.models
 import libs.core.math
-from libs.graphics import render
-from libs.graphics import registry
+from libs.graphics.registry import Registry
 ```
 
 **VSCode**
@@ -147,16 +145,16 @@ Application source code.
 * `main.py`: Application entrypoint.
 * `cli.py`: Application command line interface.
 * `/src/libs`: Cython packages.
-* `/src/app/`: Application packages.
-* `/src/assets/`: Application assets.
-* `/src/data/`: Application data.
+* `/src/app`: Application packages.
+* `/src/assets`: Application assets.
+* `/src/data`: Application data.
 
 ### /tests
 
 Various test
 
-* `/tests/sdl/graphics`: Exploratory Cythonized SDL rendering test.
-* `/tests/sdl/sound`: Exploratory Cythonized SDL mixing test.
+* `/tests/exploratory/sdl`: Exploratory Cythonized SDL tests.
+* `/tests/unit`: Application unit tests.
 
 ## References
 
