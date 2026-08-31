@@ -49,7 +49,7 @@ At the end of the tick, before the rendering phase, the Engine drains its bus:
 
 - If MenuEvent: The Engine pauses the Board, calls the Provider to instantiate the Menu, and pushes it to board.menus.
 - If TerminalEvent: The Engine pops the Menu off the stack and unpauses the Board.
-- If UpdateEvent: The Engine pulls the clean background and the font (e.g., `render.construct()` and `render.write()` [Cython interfaces](./09-architecture.md#cython)), and overwrites the Widget's TexturePtr in VRAM.
+- If UpdateEvent: The Engine pulls the clean background and the font (e.g., `render.construct()` and `render.write()` [Cython interfaces](./10-architecture.md#cython)), and overwrites the Widget's TexturePtr in VRAM.
 
 The [Screen](./00-overview.md#screen) iterates over the Widgets and passes it to Cython. 
 
@@ -243,6 +243,17 @@ N/A
 * `instance: icons`
 
 Icons serves the purpose of labelling within the Widget family. Each Icon sheet can be thought of as a dictionary of frames, indexed by their frame keys. The frame keys for each image in a Icon sheet are defined by the `properties.frames` field; The order of frames in this attribute *must* match the order of horizontal frames in the actual Asset file. 
+
+Due to the nature of Icons as representations of other ingame Assets, Icons have unique constraints. The following Icon sheets *must* exist for the game to function properly,
+
+- `digits`: A sheet of numeric digits 0 - 9, keyed as `zero` - `nine`.
+- `weapons`: A sheet of Weapon icons. Keys *must* match Weapon keys specified in the property index `src/assets/sheets/*.yaml#weapons`.
+- `armor`: A sheet of Armor icons. Keys *must* match Armor keys specified in the property index `src/assets/sheets/*.yaml#armor`.
+- `shields`: A sheet of Shield icons. Keys *must* match Shield keys specified in the property index `src/assets/sheets/*.yaml#shields`
+- `utilities`: A sheet of Utility icons. Keys *must*  match Utility keys specified in the property index `/src/assets/sheets/*.yaml#utilities`
+- `tools`: A sheet of Tool icons. Kes *must* match Tool keys specified in the property index `src/assets/sheets/*.yaml#tools`
+- `portraits`: TODO
+- `loot`: TODO
 
 **State: IconState**
 

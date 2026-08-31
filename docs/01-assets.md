@@ -120,7 +120,7 @@ All Assets have a `depth` state attribute. This attribute controls the Z-orderin
 
 All Assets have an optional `height` state attribute. This attribute also modulates the Z-ordering, but the relationship is more complex than `depth`, relating to the application of the Painter's Algorithm. `height` is only a factor when dealing with [Compositions](./03-compositions.md). 
 
-See [Rendering documentation](./09-architecture.md#rendering) for a complete overview of `depth` and `height`.
+See [Rendering documentation](./10-architecture.md#rendering) for a complete overview of `depth` and `height`.
 
 ### Asset Hierarchy
 
@@ -210,7 +210,7 @@ An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These a
 
 `name` is the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique `name`.
 
-`(category, instance)` collectively determine the components `(frame, animation, properties, state)` injected into an Asset class during the [Initialization](./09-architecture.md#initialization). More specifically, category determines properties (`category -> properties`), and instance determines everything else (`instance -> (frame, animation, state)`).
+`(category, instance)` collectively determine the components `(frame, animation, properties, state)` injected into an Asset class during the [Initialization](./10-architecture.md#initialization). More specifically, category determines properties (`category -> properties`), and instance determines everything else (`instance -> (frame, animation, state)`).
 
 ## Tiles
 
@@ -655,7 +655,7 @@ Many Sheet Assets reuse the same Action specification. Common Asset Action speci
 
 A Stack is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.
 
-For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#registry) using the `stack` property during the [application bootstrap](./09-architecture.md#initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
+For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.png` might be stacked on top of `src/assets/sheets/<sheet-category>/skins/male-dark-human.png` to create a new Sheet asset used in the game. This Sprite stack is assembled in the [Registry](./00-overview.md#registry) using the `stack` property during the [application bootstrap](./10-architecture.md#initialization). The assembled `stack` is saved as a Sheet Asset, using the `<sheet-id>` as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.
 
 !!! note
     It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.
@@ -736,13 +736,13 @@ Widgets are covered in their own section, [Widgets](./06-widgets.md).
 
 ## Fonts
 
-Fonts are stateless Assets initialized at [runtime](./09-architecture.md#initialization), i.e. they are not deployed onto the Board; instead Fonts are utilized by the [Screen](./00-overview.md#screen) to render text whenever the game loop calls for text. 
+Fonts are stateless Assets initialized at [runtime](./10-architecture.md#initialization), i.e. they are not deployed onto the Board; instead Fonts are utilized by the [Screen](./00-overview.md#screen) to render text whenever the game loop calls for text. 
 
 A Font is a wrapper `.ttf` file and a data structure used to configure the Font styling. Each styled Font is stored in the [Registy](./00-overview.md#registry) using its file name. The [Screen](./00-overview.md#screen) retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.
 
 In other words, a Font Asset encapsulates both the script and the styling applied to the script. 
 
-See [SDL Architecture documentation](./09-architecture.md#sdl) for more information on Fonts.
+See [SDL Architecture documentation](./10-architecture.md#sdl) for more information on Fonts.
 
 **Properties: FontProperties**
 

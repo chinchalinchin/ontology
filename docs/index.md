@@ -16,8 +16,9 @@
 - [Widgets](./06-widgets.md)
 - [Sounds](./07-sounds.md)
 - [Plots](./08-plots.md)
-- [Architecture](./09-architecture.md)
-- Appendices
+- [Emergence](./09-emergence.md)
+- [Architecture](./10-architecture.md)
+- [Appendices](./appendices/index.md)
     - [Appendix I: References](./appendices/00-references.md)
     - [Appendix II: Schemas](./appendices/01-schemas.md)
     
