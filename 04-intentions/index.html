@@ -1013,22 +1013,14 @@
 <p>A Intention is a <a href="../02-sprites/">Sprite</a> field that factors into the Asset Animation calculations indirectly; It may be thought of as a "hidden" state. An Animation is a "projection" of a Sprite's Intention into the (Action, Direction)-space. </p>
 <p>For Sprites, Intention is an attribute that controls state transitions and action mappings. For the Player, it controls action mappings.</p>
 <p>It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the <code>sprint</code> state increases the velocity of the <code>(walk, *)</code> states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the <code>interact</code> state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.</p>
-<h3 id="transition-matrix">Transition Matrix</h3>
+<p>A brief explanation of each Intention state value is given below,</p>
 <ul>
-<li>Location: <code>/src/data/config/intentions/main.yaml</code></li>
-</ul>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>The Player state does not observe the Intention Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See <a href="../02-sprites/#player">Player documentation</a> for more information on the Player.</p>
-</div>
-<p>The Intention Transition Matrix determines which Intention states are currently reachable for a Sprite from its current Intention. A brief explanation of each Intention state value is given below,</p>
-<ul>
-<li><code>attack</code>: Attack an Asset.<ul>
+<li><code>attack</code>: Initiate an Attack Animation..<ul>
 <li><em>Sprite</em>: Apply CombatMechanics, conditional on Equipment constraint.</li>
 <li><em>Player</em>: Apply CombatMechanics, conditional on Equipment constraint.</li>
 </ul>
 </li>
-<li><code>attract</code>: Attract a Sprite.<ul>
+<li><code>attract</code>: Attract a Sprite for interaction.<ul>
 <li><em>Sprite</em>:</li>
 <li><em>Player</em>: N/A</li>
 </ul>
@@ -1073,34 +1065,61 @@
 <li><em>Player</em>: </li>
 </ul>
 </li>
-<li><code>mine</code>: Convert Resources into Inventory. </li>
-<li><code>return</code>: Return to remembered locations.</li>
-<li><code>scavenge</code>: Collect lot.</li>
-<li><code>speak</code>: <ul>
-<li><em>Player</em>: Draw the target Sprite's <code>state.psyche.dialogue</code> on a Dialogue window.</li>
+<li><code>mine</code>: Convert Resources into Inventory. <ul>
+<li><em>Sprite</em>: Apply MineMechanics, conditional on Equpiment constraints.</li>
+<li><em>Player</em>: Apply MineMechanics, conditional on Equipment constraints.</li>
+</ul>
+</li>
+<li><code>return</code>: Return to remembered locations.<ul>
+<li><em>Sprite</em>: Move <code>sprite.state.memory.goal</code> to <code>sprite.state.goal</code></li>
+<li><em>Player</em>: N/A</li>
+</ul>
+</li>
+<li><code>scavenge</code>: Collect loot.<ul>
+<li><em>Sprite</em>: </li>
+<li><em>Player</em>: </li>
+</ul>
+</li>
+<li><code>speak</code>: Initiate dialogue.<ul>
 <li><em>Sprite</em>: Apply CommerceMechanics (exchanges <code>prices</code>). Apply RumorMechanics (exchange <code>rumors</code>) </li>
+<li><em>Player</em>: Draw the target Sprite's <code>state.psyche.dialogue</code> on a Dialogue window.</li>
 </ul>
 </li>
 <li><code>sprint</code>: Increase movement speed.<ul>
-<li><em>Player</em>:</li>
 <li><em>Sprite</em>:</li>
+<li><em>Player</em>: </li>
 </ul>
 </li>
-<li><code>threaten</code>: <ul>
-<li><em>Player</em>: </li>
+<li><code>threaten</code>: Pre-cursor to Attack (wiggle-room).<ul>
 <li><em>Sprite</em>:</li>
+<li><em>Player</em>: N/A</li>
 </ul>
 </li>
 <li><code>wander</code>: <ul>
-<li><em>Player</em>:</li>
 <li><em>Sprite</em>:</li>
+<li><em>Player</em>: N/A</li>
 </ul>
 </li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code>mine</code> is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by <a href="../appendices/01-schemas/#configuration-actions">Action Sets</a> and <a href="../09-architecture/#maps">AnimationMaps</a></p>
+<p><code>mine</code> is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by <a href="../appendices/01-schemas/#configuration-actions">Action Sets</a> and <a href="../09-architecture/#maps">AnimationMaps</a>.</p>
 </div>
+<h3 id="transition-matrix">Transition Matrix</h3>
+<ul>
+<li>Location: <code>/src/data/config/intentions/main.yaml</code></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The Player state does not observe the Intention Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See <a href="../02-sprites/#player">Player documentation</a> for more information on the Player.</p>
+</div>
+<p>The Intention Transition Matrix determines which Intention states are currently reachable for a Sprite from its current Intention. The general schema for the Intention Transition Matrix is given below,</p>
+<div class="highlight"><pre><span></span><code><span class="nt">intentions</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">&lt;intention-key&gt;</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;intention-key&gt;</span>
+<span class="w">          </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;condition&gt;</span>
+</code></pre></div>
 <p><strong>Default Intention Transition Matrix</strong></p>
 <p>Provided below is the Intention Transition Matrix bundled with the application by default,</p>
 <pre class="mermaid"><code>stateDiagram-v2
@@ -1315,13 +1334,13 @@
 <p>When a Sprite has Goal, it will seek out (path-find) its way to <code>name</code>. The <code>category</code> of a Goal affects the type of identifier given in <code>name</code>. </p>
 <ul>
 <li><code>category == position</code>: The Goal is a Position, i.e. the Sprite is trying to find a location on the Board. The <code>name</code> will be the Sprite's name.</li>
-<li><code>category == asset</code>: The Goal is a Sprite Asset, i.e. the Sprite is trying to find another Sprite. The <code>name</code> will be the Asset <code>name</code>.</li>
+<li><code>category == asset</code>: The Goal is a Sprite Asset, i.e. the Sprite is trying to find an Asset. The <code>name</code> will be the Asset <code>name</code>.</li>
 <li><code>category == loot</code>: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The <code>name</code> will be an Inventory key. </li>
-<li><code>category == wealth</code>: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The <code>name</code> will be an Inventory key. The key will be of the value with the maximum value in the Sprite's Prices, e.g. the loot with the highest Price.</li>
+<li><code>category == wealth</code>: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The <code>name</code> will be an Inventory key. The key will be of the loot with the maximum value in the Sprite's Prices, e.g. the highest priced loot.</li>
 <li><code>category == property</code>: The goal is Property, i.e. the Sprite is seeking the location of Property. The <code>name</code> will be an Asset name of an Asset that implements a <code>PropertyState</code>.</li>
 </ul>
 <h2 id="animationmap">AnimationMap</h2>
-<p>A Sprite's State is mapped onto an (Action, Direction) through an AnimationMap. This component of the Application statically ingests a Sprite State, applies formulas and returns the mapped tupel.</p>
+<p>A Sprite's State is mapped onto an (Action, Direction) through an AnimationMap. This component of the Application statically ingests a Sprite State, applies formulas and returns the mapped tuple.</p>
 <p><strong>Player Device</strong></p>
 <p>Player Device mappings are applied to convert Device input to Intention and Goals, prior to the mapping of an Intention onto Animation (Action, Direction)-tuple. </p>
 <h3 id="actions">Actions</h3>
@@ -1330,7 +1349,7 @@
 </code></pre>
 <p><strong>Formulae</strong></p>
 <ul>
-<li><code>if state.intention == attack: state.animation.action = board.equipment[weapons][state.inventory.weapon].action</code></li>
+<li><code>if state.intention == attack: state.animation.action = board.equipment.weapons[state.inventory.weapon].action</code></li>
 </ul>
 <h3 id="directions">Directions</h3>
 <p>Sprite Animation Direction is a function of Sprite Position state and Goal state,</p>
