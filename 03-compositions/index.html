@@ -587,7 +587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../09-architecture/" class="md-nav__link">
+      <a href="../10-architecture/" class="md-nav__link">
         
   
   
@@ -982,8 +982,8 @@
 <p>A Composition contains other Assets in predefined configurations, known as the Composition components. Each Strut in a Composition has components.</p>
 <p>For example, a <code>brick-house</code> Composition might contain a <code>frame-brick</code> Strut as its root Strut and then a <code>mansion</code> Door as a component Asset. The Composition specifies the relative position of the <code>mansion</code> Door with respect to the origin of the <code>frame-brick</code> Strut, i.e. all component Assets in a Composition have their positions unpacked relative to the root Strut's deployed position. </p>
 <h3 id="pseudo-state">Pseudo State</h3>
-<p>The state files specify Compositions to deploy. The game converts these Compositions into ingame Assets that belong to the <a href="../01-assets/#asset-hierarchy">Asset Hierarchy</a>. When Compositions are unpacked by the <a href="../00-overview/#orchestrator">Orchestrator</a> during the <a href="../09-architecture/#initialization">bootstrapping</a>, each Asset in a Composition is appended to the <a href="../00-overview/#board">Board</a> state dynamically. In other words, the Assets in Compositions, once unpacked, are treated separately by the Engine, as if they had been specified in the state directory individually.</p>
-<p>Components of Compositions have a Pseud State. During the <a href="../09-architecture/#initialization">application bootstrap</a>, each component's Pseud State is hydrated into an actual Asset State and injected into the Board.</p>
+<p>The state files specify Compositions to deploy. The game converts these Compositions into ingame Assets that belong to the <a href="../01-assets/#asset-hierarchy">Asset Hierarchy</a>. When Compositions are unpacked by the <a href="../00-overview/#orchestrator">Orchestrator</a> during the <a href="../10-architecture/#initialization">bootstrapping</a>, each Asset in a Composition is appended to the <a href="../00-overview/#board">Board</a> state dynamically. In other words, the Assets in Compositions, once unpacked, are treated separately by the Engine, as if they had been specified in the state directory individually.</p>
+<p>Components of Compositions have a Pseud State. During the <a href="../10-architecture/#initialization">application bootstrap</a>, each component's Pseud State is hydrated into an actual Asset State and injected into the Board.</p>
 <p>For example, consider the following Composition configuration,</p>
 <div class="highlight"><pre><span></span><code><span class="nt">compositions</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">brick-house</span><span class="p">:</span>

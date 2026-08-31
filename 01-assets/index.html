@@ -881,7 +881,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../09-architecture/" class="md-nav__link">
+      <a href="../10-architecture/" class="md-nav__link">
         
   
   
@@ -1636,7 +1636,7 @@
 <p><strong>Depth &amp; Height</strong></p>
 <p>All Assets have a <code>depth</code> state attribute. This attribute controls the Z-ordering of the Asset being rendered. Most of the time, it can be ignored, since it defaults to <code>0</code>. <code>depth</code> is important in the context of <a href="../03-compositions/">Compositions</a>, where multiple Assets need to be superimposed and rendered on top of one another.</p>
 <p>All Assets have an optional <code>height</code> state attribute. This attribute also modulates the Z-ordering, but the relationship is more complex than <code>depth</code>, relating to the application of the Painter's Algorithm. <code>height</code> is only a factor when dealing with <a href="../03-compositions/">Compositions</a>. </p>
-<p>See <a href="../09-architecture/#rendering">Rendering documentation</a> for a complete overview of <code>depth</code> and <code>height</code>.</p>
+<p>See <a href="../10-architecture/#rendering">Rendering documentation</a> for a complete overview of <code>depth</code> and <code>height</code>.</p>
 <h3 id="asset-hierarchy">Asset Hierarchy</h3>
 <p>While Assets are instantiated by injecting a common root class with component behaviors (see <a href="#asset-architecture">next section</a>), the Assets which result from the Entity-Component-System (ECS) injection still conform to a strict hierarchy of Categories and Instances. The property and state <a href="../appendices/01-schemas/">schemas</a> encode Asset Categories and Instances into the top-level keys.</p>
 <pre class="mermaid"><code>graph LR
@@ -1904,7 +1904,7 @@
 <p><code>category</code> determines what property model is employed by the Asset. The category must be configured by a <code>src/assets/&lt;category&gt;/main.yaml</code> property index file.</p>
 <p><code>instance</code> determines what state model is employed by the Asset. An Asset's state is hydrated from the <code>data/state/&lt;board&gt;/*</code> directory.</p>
 <p><code>name</code> is the physical deployment of the Asset. Every Asset Instance deployed onto a Board has a unique <code>name</code>.</p>
-<p><code>(category, instance)</code> collectively determine the components <code>(frame, animation, properties, state)</code> injected into an Asset class during the <a href="../09-architecture/#initialization">Initialization</a>. More specifically, category determines properties (<code>category -&gt; properties</code>), and instance determines everything else (<code>instance -&gt; (frame, animation, state)</code>).</p>
+<p><code>(category, instance)</code> collectively determine the components <code>(frame, animation, properties, state)</code> injected into an Asset class during the <a href="../10-architecture/#initialization">Initialization</a>. More specifically, category determines properties (<code>category -&gt; properties</code>), and instance determines everything else (<code>instance -&gt; (frame, animation, state)</code>).</p>
 <h2 id="tiles">Tiles</h2>
 <ul>
 <li>Property File: <code>/src/assets/tiles/main.yaml</code></li>
@@ -2284,7 +2284,7 @@
 <p>Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See <a href="#action-configuration">Action Configuration Schema</a> below for more details. </p>
 <p><strong>Stacks</strong></p>
 <p>A Stack is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.</p>
-<p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. This Sprite stack is assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>stack</code> property during the <a href="../09-architecture/#initialization">application bootstrap</a>. The assembled <code>stack</code> is saved as a Sheet Asset, using the <code>&lt;sheet-id&gt;</code> as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.</p>
+<p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. This Sprite stack is assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>stack</code> property during the <a href="../10-architecture/#initialization">application bootstrap</a>. The assembled <code>stack</code> is saved as a Sheet Asset, using the <code>&lt;sheet-id&gt;</code> as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It is assumed all Sheets in a Stack conform to the same (Action, Direction) row mapping.</p>
@@ -2353,10 +2353,10 @@
 <p>Widgets are used to constructs Menus. They are not a part of the core gameplay loop and have special Mechanics for their interaction. </p>
 <p>Widgets are covered in their own section, <a href="../06-widgets/">Widgets</a>.</p>
 <h2 id="fonts">Fonts</h2>
-<p>Fonts are stateless Assets initialized at <a href="../09-architecture/#initialization">runtime</a>, i.e. they are not deployed onto the Board; instead Fonts are utilized by the <a href="../00-overview/#screen">Screen</a> to render text whenever the game loop calls for text. </p>
+<p>Fonts are stateless Assets initialized at <a href="../10-architecture/#initialization">runtime</a>, i.e. they are not deployed onto the Board; instead Fonts are utilized by the <a href="../00-overview/#screen">Screen</a> to render text whenever the game loop calls for text. </p>
 <p>A Font is a wrapper <code>.ttf</code> file and a data structure used to configure the Font styling. Each styled Font is stored in the <a href="../00-overview/#registry">Registy</a> using its file name. The <a href="../00-overview/#screen">Screen</a> retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.</p>
 <p>In other words, a Font Asset encapsulates both the script and the styling applied to the script. </p>
-<p>See <a href="../09-architecture/#sdl">SDL Architecture documentation</a> for more information on Fonts.</p>
+<p>See <a href="../10-architecture/#sdl">SDL Architecture documentation</a> for more information on Fonts.</p>
 <p><strong>Properties: FontProperties</strong></p>
 <ul>
 <li><code>alignment: str</code></li>

@@ -681,7 +681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../09-architecture/" class="md-nav__link">
+      <a href="../10-architecture/" class="md-nav__link">
         
   
   
@@ -1169,7 +1169,7 @@
 <ul>
 <li>If MenuEvent: The Engine pauses the Board, calls the Provider to instantiate the Menu, and pushes it to board.menus.</li>
 <li>If TerminalEvent: The Engine pops the Menu off the stack and unpauses the Board.</li>
-<li>If UpdateEvent: The Engine pulls the clean background and the font (e.g., <code>render.construct()</code> and <code>render.write()</code> <a href="../09-architecture/#cython">Cython interfaces</a>), and overwrites the Widget's TexturePtr in VRAM.</li>
+<li>If UpdateEvent: The Engine pulls the clean background and the font (e.g., <code>render.construct()</code> and <code>render.write()</code> <a href="../10-architecture/#cython">Cython interfaces</a>), and overwrites the Widget's TexturePtr in VRAM.</li>
 </ul>
 <p>The <a href="../00-overview/#screen">Screen</a> iterates over the Widgets and passes it to Cython. </p>
 <p><strong>MenuMechanics</strong></p>
@@ -1337,6 +1337,17 @@
 <li><code>instance: icons</code></li>
 </ul>
 <p>Icons serves the purpose of labelling within the Widget family. Each Icon sheet can be thought of as a dictionary of frames, indexed by their frame keys. The frame keys for each image in a Icon sheet are defined by the <code>properties.frames</code> field; The order of frames in this attribute <em>must</em> match the order of horizontal frames in the actual Asset file. </p>
+<p>Due to the nature of Icons as representations of other ingame Assets, Icons have unique constraints. The following Icon sheets <em>must</em> exist for the game to function properly,</p>
+<ul>
+<li><code>digits</code>: A sheet of numeric digits 0 - 9, keyed as <code>zero</code> - <code>nine</code>.</li>
+<li><code>weapons</code>: A sheet of Weapon icons. Keys <em>must</em> match Weapon keys specified in the property index <code>src/assets/sheets/*.yaml#weapons</code>.</li>
+<li><code>armor</code>: A sheet of Armor icons. Keys <em>must</em> match Armor keys specified in the property index <code>src/assets/sheets/*.yaml#armor</code>.</li>
+<li><code>shields</code>: A sheet of Shield icons. Keys <em>must</em> match Shield keys specified in the property index <code>src/assets/sheets/*.yaml#shields</code></li>
+<li><code>utilities</code>: A sheet of Utility icons. Keys <em>must</em>  match Utility keys specified in the property index <code>/src/assets/sheets/*.yaml#utilities</code></li>
+<li><code>tools</code>: A sheet of Tool icons. Kes <em>must</em> match Tool keys specified in the property index <code>src/assets/sheets/*.yaml#tools</code></li>
+<li><code>portraits</code>: TODO</li>
+<li><code>loot</code>: TODO</li>
+</ul>
 <p><strong>State: IconState</strong></p>
 <ul>
 <li><code>icon: str</code>: Frame key (from <code>properties.frames</code>) determining which frame from Icon sheet is displayed. </li>
