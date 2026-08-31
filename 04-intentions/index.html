@@ -1007,10 +1007,10 @@
 
 
 <h1 id="ontology-intentions-goals">Ontology: Intentions &amp; Goals</h1>
-<p>Intentions and Goals are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite "finite automaton", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.</p>
+<p>Intentions and Goals are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite's "<em>finite automaton</em>", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.</p>
 <p>Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the <a href="#transition-matrix">Intention Transition Matrix</a>.</p>
 <h2 id="intention">Intention</h2>
-<p>A Intention is a "pseudo-state" that factors into the Asset Animation calculations indirectly; It may be thought of as a "hidden" state. An Animation is a "projection" of a Sprite's Intention into the (Action, Direction)-space. </p>
+<p>A Intention is a <a href="../02-sprites/">Sprite</a> field that factors into the Asset Animation calculations indirectly; It may be thought of as a "hidden" state. An Animation is a "projection" of a Sprite's Intention into the (Action, Direction)-space. </p>
 <p>For Sprites, Intention is an attribute that controls state transitions and action mappings. For the Player, it controls action mappings.</p>
 <p>It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the <code>sprint</code> state increases the velocity of the <code>(walk, *)</code> states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the <code>interact</code> state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.</p>
 <h3 id="transition-matrix">Transition Matrix</h3>
@@ -1023,27 +1023,83 @@
 </div>
 <p>The Intention Transition Matrix determines which Intention states are currently reachable for a Sprite from its current Intention. A brief explanation of each Intention state value is given below,</p>
 <ul>
-<li><code>attack</code>: Apply CombatMechanics, conditional on Equipment constraint.</li>
-<li><code>attract</code>: </li>
-<li><code>barter</code>: Apply CommerceMechanics for Sprites; Open a TradeWindow for Player.</li>
-<li><code>build</code>: Apply IndustryMechanics for Sprites; Open a BuildWindow for Player. </li>
-<li><code>escape</code>: </li>
-<li><code>find</code>: </li>
-<li><code>follow</code>: </li>
-<li><code>hunt</code>: </li>
-<li><code>idle</code>: </li>
-<li><code>interact</code>: Used to interact with Objects.</li>
+<li><code>attack</code>: Attack an Asset.<ul>
+<li><em>Sprite</em>: Apply CombatMechanics, conditional on Equipment constraint.</li>
+<li><em>Player</em>: Apply CombatMechanics, conditional on Equipment constraint.</li>
+</ul>
+</li>
+<li><code>attract</code>: Attract a Sprite.<ul>
+<li><em>Sprite</em>:</li>
+<li><em>Player</em>: N/A</li>
+</ul>
+</li>
+<li><code>barter</code>: Exhcange Inventories.<ul>
+<li><em>Sprite</em>: Apply CommerceMechanics.</li>
+<li><em>Player</em>: Open a TradeWindow with Target.</li>
+</ul>
+</li>
+<li><code>build</code>: Instantiate a Strut<ul>
+<li><em>Sprite</em>: Apply IndustryMechanics for Sprites</li>
+<li><em>Player</em>: Open a BuildWindow. </li>
+</ul>
+</li>
+<li><code>escape</code>: Move away from target.<ul>
+<li><em>Sprite</em>:</li>
+<li><em>Player</em>: N/A</li>
+</ul>
+</li>
+<li><code>find</code>: Move towards target.<ul>
+<li><em>Sprite</em>:</li>
+<li><em>Player</em>: N/A</li>
+</ul>
+</li>
+<li><code>follow</code>: Move towards target. (Redundant? Functionally, but separate node in tree leading to different outcomes)<ul>
+<li><em>Sprite</em>: </li>
+<li><em>Player</em>: N/A</li>
+</ul>
+</li>
+<li><code>hunt</code>: Move towards target (Redundant? Functionally, but separate node in tree leading to different outcomes and interactions.)<ul>
+<li><em>Sprite</em>: </li>
+<li><em>Player</em>: N/A</li>
+</ul>
+</li>
+<li><code>idle</code>: Do nothing.<ul>
+<li><em>Sprite</em>:</li>
+<li><em>Player</em>: N/A</li>
+</ul>
+</li>
+<li><code>interact</code>: Interact with Objects.<ul>
+<li><em>Sprite</em>: </li>
+<li><em>Player</em>: </li>
+</ul>
+</li>
 <li><code>mine</code>: Convert Resources into Inventory. </li>
-<li><code>return</code>:</li>
-<li><code>scavenge</code>: </li>
-<li><code>speak</code>: Draw their Communication on a Dialogue window.</li>
-<li><code>sprint</code>: Increase movement speed.</li>
-<li><code>threaten</code>: </li>
-<li><code>wander</code>: </li>
+<li><code>return</code>: Return to remembered locations.</li>
+<li><code>scavenge</code>: Collect lot.</li>
+<li><code>speak</code>: <ul>
+<li><em>Player</em>: Draw the target Sprite's <code>state.psyche.dialogue</code> on a Dialogue window.</li>
+<li><em>Sprite</em>: Apply CommerceMechanics (exchanges <code>prices</code>). Apply RumorMechanics (exchange <code>rumors</code>) </li>
+</ul>
+</li>
+<li><code>sprint</code>: Increase movement speed.<ul>
+<li><em>Player</em>:</li>
+<li><em>Sprite</em>:</li>
+</ul>
+</li>
+<li><code>threaten</code>: <ul>
+<li><em>Player</em>: </li>
+<li><em>Sprite</em>:</li>
+</ul>
+</li>
+<li><code>wander</code>: <ul>
+<li><em>Player</em>:</li>
+<li><em>Sprite</em>:</li>
+</ul>
+</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code>mine</code> is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows.</p>
+<p><code>mine</code> is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by <a href="../appendices/01-schemas/#configuration-actions">Action Sets</a> and <a href="../09-architecture/#maps">AnimationMaps</a></p>
 </div>
 <p><strong>Default Intention Transition Matrix</strong></p>
 <p>Provided below is the Intention Transition Matrix bundled with the application by default,</p>

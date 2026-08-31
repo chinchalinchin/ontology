@@ -503,10 +503,9 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Library">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#plot-states" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -516,12 +515,24 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#plot-mechanics" class="md-nav__link">
     <span class="md-ellipsis">
       
         Plot Mechanics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plot Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plot-transition-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plot Transition Matrix
       
     </span>
   </a>
@@ -822,10 +833,9 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Library">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#plot-states" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -835,12 +845,24 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#plot-mechanics" class="md-nav__link">
     <span class="md-ellipsis">
       
         Plot Mechanics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Plot Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plot-transition-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plot Transition Matrix
       
     </span>
   </a>
@@ -876,12 +898,12 @@
 <p>Due to the nature of the Ontology game engine, a Plot is not scripted, in the sense that Sprite Actions are hardcoded and pre-determined down to the pixel. Conditions are reached to change the World state, which causes the <a href="../00-overview/#board">Board's</a> <code>plot</code> attribute to update. This in turn affects what dialogue keys can be reached by the gameplay loop. </p>
 <p><a href="../02-sprites/">Sprites</a> retain a Expression in their <a href="../02-sprites/#psyche">Psyche</a>. This Expression is a Lexicon key to access content in the <a href="#library">Library</a>. It is used in conjunction with the Sprite's <code>persona</code> and the <a href="../00-overview/#board">Board's</a> <code>plot</code> key to unlock the appropriate content.</p>
 <p>As a simple example, a Plot state might be defined to change conditional on the existence of Sprite (perhaps whether a character is alive or dead), call it <code>&lt;plot&gt;</code>.</p>
-<p>A Sprite, whose <code>psyche.persona = &lt;persona&gt;</code> is defined through state files, when entering into a <code>speak</code> Intention with <code>psyche.expression = &lt;lexicon&gt;</code> (arrived at through <a href="../04-intentions/">Intention transitions</a> and <a href="../05-mechanics/">World Mechanics</a>), would then retrieve the <code>&lt;plot&gt;.&lt;persona&gt;.&lt;lexicon&gt;</code> Dialogue from the Library. </p>
+<p>A Sprite, whose <code>psyche.persona = &lt;persona&gt;</code> is defined through state files, when entering into a <code>speak</code> Intention with <code>psyche.expression = &lt;lexicon&gt;</code> (arrived at through <a href="../04-intentions/">Intention transitions</a> and <a href="../05-mechanics/">World Mechanics</a>), would then retrieve the <code>&lt;plot&gt;.&lt;persona&gt;.&lt;lexicon&gt;</code> dialogue from the Library. </p>
 <h2 id="library">Library</h2>
 <ul>
 <li>Location: <code>src/data/config/library/main.yaml</code></li>
 </ul>
-<p>The Library reads in the scripts stored in <code>src/data/config/library/main.yaml</code>, otherwise known as the <em>library directory</em>.</p>
+<p>The Library reads in the dialogue scripts stored in <code>src/data/config/library/main.yaml</code>, otherwise known as the <em>library directory</em>.</p>
 <p>TODO</p>
 <div class="highlight"><pre><span></span><code><span class="nt">library</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">&lt;plot-key&gt;</span><span class="p">:</span>
@@ -893,9 +915,41 @@
 <li><code>persona-key</code>: Persona binding for Sprite or Signs. Determined by the Asset.</li>
 <li><code>lexicon-key</code>: Dynamic key for ingame modulation. </li>
 </ul>
-<h3 id="plot-states">Plot States</h3>
+<h2 id="plot-states">Plot States</h2>
+<p>The Plot is an Asset-less State. It is instantiated during <a href="../09-architecture/#initialization">initialization</a> and injected into the Board. </p>
 <p>TODO</p>
-<h3 id="plot-mechanics">Plot Mechanics</h3>
+<h2 id="plot-mechanics">Plot Mechanics</h2>
+<p>PlotMechanics are a <a href="../05-mechanics/">World Mechanic</a> that manages the Plot State. It does so through the medium of the <em>Plot Transition Matrix</em>.</p>
+<h3 id="plot-transition-matrix">Plot Transition Matrix</h3>
+<p>Similar to <a href="../04-intentions/">Intentions</a>, the Plot utilizes a Transition Matrix to determine where the current node of the Plot State resides, and whether or not conditions have been met to transition to the next node.</p>
+<p>The general schema for a row of Plot Transitions is given directly below,</p>
+<div class="highlight"><pre><span></span><code><span class="nt">plots</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">&lt;plot-state&gt;</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;plot-state&gt;</span>
+<span class="w">          </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;condition&gt;</span>
+</code></pre></div>
+<p>For example, the following Plot Transition Matrix demonstrates how a Plot tree can be embedded into the game by specifying nodes and the conditions that must be met to transition out of a given node, </p>
+<div class="highlight"><pre><span></span><code><span class="nt">plots</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">town-locked</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">town-unlocked</span>
+<span class="w">          </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">player.state.inventory.loot[&#39;town-key&#39;] &gt;= 1</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">town-unlocked</span>
+<span class="w">          </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[&#39;town-guard&#39;].mutators.triggers.dead</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">town-unlocked</span>
+<span class="w">          </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[&#39;mayor&#39;].state.memory.relationships[&#39;player&#39;] == Relationships.FRIEND</span>
+<span class="w">    </span><span class="nt">town-unlocked</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">town-hostile</span>
+<span class="w">          </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[&#39;mayor&#39;].state.memory.relationships[&#39;player&#39;] == Relationships.FOE</span>
+<span class="w">    </span><span class="nt">town-hostile</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">town-unlocked</span>
+<span class="w">          </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[&#39;mayor&#39;].state.memory.relationships[&#39;player&#39;] != Relationships.FOE</span>
+</code></pre></div>
 <p>TODO</p>
 
 
