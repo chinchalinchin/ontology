@@ -1625,6 +1625,16 @@
 <p>The concept of a Layer is defined more explicitly in <a href="../00-overview/#layers">Overview documentation</a>. It suffices to think of Layers as floors in a house, i.e. where each floor has the same area and similar topology, but occupies a different height. In-game, Layers are traversed by the Player interacting with Doors.</p>
 </div>
 <p>State files are maintained in <code>/src/data/state/&lt;board-key&gt;/**</code> directory, where <code>&lt;board-key&gt;</code> is a unique identifer for a <a href="../00-overview/#board">Board</a>.</p>
+<p>Of particular importance is the <em>AnimationState</em>, described directly below,</p>
+<ul>
+<li>AnimationState<ul>
+<li>action: Action key of Animation.</li>
+<li>direction: Directiony key of Animation.</li>
+<li>frame: Frame index of Animation.</li>
+<li>tick: Engine tick accumulator. Used in conjunction with Action <code>delay</code> to control the speed of the Animation.</li>
+</ul>
+</li>
+</ul>
 <p><strong>Mass</strong></p>
 <p>Some Asset Categories have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.</p>
 <ul>
@@ -2270,15 +2280,17 @@
 <p>Actions are part of the Animation state. An Action implicitly contains Directions, i.e. an Action cannot be specified without accompanying Direction(s). The "space" of the (Action, Direction) space is configured by Sheet Properties. </p>
 <p>This snippet from the <a href="../appendices/01-schemas/#configuration-actions">Schemas</a> shows the general structure of an Action,</p>
 <div class="highlight"><pre><span></span><code><span class="nt">&lt;action-key&gt;</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">count</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">count</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;count&gt;</span>
+<span class="w">    </span><span class="nt">delay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;delay&gt;</span>
 <span class="w">    </span><span class="nt">directions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">&lt;direction-key&gt;</span><span class="p">:</span>
-<span class="w">            </span><span class="nt">row</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">row</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;row&gt;</span>
 </code></pre></div>
 <ul>
 <li><code>&lt;action-key&gt;: str</code> - Ranges over <code>cast, thrust, walk, slash, shoot, die</code> (LPC)</li>
 <li><code>&lt;direction-key&gt; : str</code> -  Ranges over  <code>up, left, down, right</code> (LPC)</li>
 <li><code>count: int</code> - is the number of frames in the Action row grouping. </li>
+<li><code>delay</code>: (<em>Optional</em>) Number of Engine ticks to accumulate before a frame update. Used to control the speed of the animation. Defaults to 1. </li>
 </ul>
 <p><strong>Action Sets</strong></p>
 <p>Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See <a href="#action-configuration">Action Configuration Schema</a> below for more details. </p>
