@@ -422,6 +422,9 @@ N/A
 * `persona: str`
 * `lexicon: str`
 
+!!! todo "SeasonMechanics"
+    Add linkage between Sign lexicon key and Resource SeasonMechanics.
+
 ## Cursors
 
 * Property File: `/src/assets/cursors/main.yaml`
@@ -582,6 +585,10 @@ N/A
 * `height: int`
 * `position: Position`
 * `owner: str`
+
+## Resources
+
+TODO
 
 ## Sheets
 

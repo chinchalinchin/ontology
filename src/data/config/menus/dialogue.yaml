@@ -1,0 +1,45 @@
+menus:
+  dialogue:
+    controller: scroll
+    roots: 
+      - id: neutral
+        name: dialogue-menu
+        position:
+          px: 0.1
+          py: 0.55
+        layout: dock
+        alignment: start
+        gap: 10
+        children:
+          - id: transparent-slot 
+            name: portrait-slot-container
+            layout: overlay
+            alignment: center
+            gap: 0
+            children:
+              - instance: buttons
+                id: slot
+                name: portrait-slot
+                status: disabled
+              - instance: icons
+                id: portraits 
+                name: character-portrait-icon
+                bind:
+                  state: context.sprite.state.character.portrait
+          - instance: pages
+            id: dialogue
+            name: character-speech
+            bind:
+              state: context.sprite.state.psyche.dialogue
+          - instance: buttons
+            id: arrow-up
+            name: character-speech-scroll-up
+            bind: 
+              selection: scrollup
+              selector: character-speech
+          - instance: buttons
+            id: arrow-down
+            name: character-speech-scroll-down
+            bind: 
+              selection: scrolldown
+              selector: character-speech

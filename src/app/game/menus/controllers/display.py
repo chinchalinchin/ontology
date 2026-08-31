@@ -23,7 +23,7 @@ class DisplayController(MenuController):
         pass
         
     def update(self, menu: Menu, board: Board, bus: collections.deque) -> None:
-        """Fires every frame, used for dynamic HUDs or timers."""
+        """Fires every frames."""
         pass
 
     def close(self, menu: Menu, board: Board, bus: collections.deque) -> None:

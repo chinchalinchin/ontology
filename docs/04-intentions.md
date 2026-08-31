@@ -1,12 +1,12 @@
 # Ontology: Intentions & Goals
 
-Intentions and Goals are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite "finite automaton", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.
+Intentions and Goals are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite's "*finite automaton*", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.
 
 Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the [Intention Transition Matrix](#transition-matrix).
 
 ## Intention
 
-A Intention is a "pseudo-state" that factors into the Asset Animation calculations indirectly; It may be thought of as a "hidden" state. An Animation is a "projection" of a Sprite's Intention into the (Action, Direction)-space. 
+A Intention is a [Sprite](./02-sprites.md) field that factors into the Asset Animation calculations indirectly; It may be thought of as a "hidden" state. An Animation is a "projection" of a Sprite's Intention into the (Action, Direction)-space. 
 
 For Sprites, Intention is an attribute that controls state transitions and action mappings. For the Player, it controls action mappings.
 
@@ -21,26 +21,54 @@ It may indirectly alter the Sprite state changes or other properties of the Spri
 
 The Intention Transition Matrix determines which Intention states are currently reachable for a Sprite from its current Intention. A brief explanation of each Intention state value is given below,
 
-- `attack`: Apply CombatMechanics, conditional on Equipment constraint.
-- `attract`: 
-- `barter`: Apply CommerceMechanics for Sprites; Open a TradeWindow for Player.
-- `build`: Apply IndustryMechanics for Sprites; Open a BuildWindow for Player. 
-- `escape`: 
-- `find`: 
-- `follow`: 
-- `hunt`: 
-- `idle`: 
-- `interact`: Used to interact with Objects.
+- `attack`: Attack an Asset.
+    - *Sprite*: Apply CombatMechanics, conditional on Equipment constraint.
+    - *Player*: Apply CombatMechanics, conditional on Equipment constraint.
+- `attract`: Attract a Sprite.
+    - *Sprite*:
+    - *Player*: N/A
+- `barter`: Exhcange Inventories.
+    - *Sprite*: Apply CommerceMechanics.
+    - *Player*: Open a TradeWindow with Target.
+- `build`: Instantiate a Strut
+    - *Sprite*: Apply IndustryMechanics for Sprites
+    - *Player*: Open a BuildWindow. 
+- `escape`: Move away from target.
+    - *Sprite*:
+    - *Player*: N/A
+- `find`: Move towards target.
+    - *Sprite*:
+    - *Player*: N/A
+- `follow`: Move towards target. (Redundant? Functionally, but separate node in tree leading to different outcomes)
+    - *Sprite*: 
+    - *Player*: N/A
+- `hunt`: Move towards target (Redundant? Functionally, but separate node in tree leading to different outcomes and interactions.)
+    - *Sprite*: 
+    - *Player*: N/A
+- `idle`: Do nothing.
+    - *Sprite*:
+    - *Player*: N/A
+- `interact`: Interact with Objects.
+    - *Sprite*: 
+    - *Player*: 
 - `mine`: Convert Resources into Inventory. 
-- `return`:
-- `scavenge`: 
-- `speak`: Draw their Communication on a Dialogue window.
+- `return`: Return to remembered locations.
+- `scavenge`: Collect lot.
+- `speak`: 
+    - *Player*: Draw the target Sprite's `state.psyche.dialogue` on a Dialogue window.
+    - *Sprite*: Apply CommerceMechanics (exchanges `prices`). Apply RumorMechanics (exchange `rumors`) 
 - `sprint`: Increase movement speed.
+    - *Player*:
+    - *Sprite*:
 - `threaten`: 
+    - *Player*: 
+    - *Sprite*:
 - `wander`: 
+    - *Player*:
+    - *Sprite*:
 
 !!! note
-    `mine` is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows.
+    `mine` is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by [Action Sets](./appendices/01-schemas.md#configuration-actions) and [AnimationMaps](./09-architecture.md#maps)
 
 **Default Intention Transition Matrix**
 

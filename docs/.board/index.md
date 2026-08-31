@@ -31,8 +31,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 04.02: Consolidation](./phases/refactor/phase-04-02.md)
     - [x]: [Phase 04.03: Motion](./phases/refactor/phase-04-03.md)
     - [x]: [Phase 05.01: Typography](./phases/refactor/phase-05-01.md)
-    - [~]: [Phase 05.02: Simplification](./phases/refactor/phase-05-02.md)
-    - [ ]: [Phase 05.03: Menu Controllers](./phases/refactor/phase-05-03.md)
-    - [ ]: [Phase 05.04: Library](./phases/refactor/phase-05-04.md)
+    - [x]: [Phase 05.02: Simplification](./phases/refactor/phase-05-02.md)
+    - [~]: [Phase 05.03: ScrollController, Library & Plots](./phases/refactor/phase-05-03.md)
+    - [ ]: [Phase 05.04: InventoryController & Loot](./phases/refactor/phase-05-04.md)
   - Report:
     - [x]: [2026-08-09: SDL Rendering Pipeline Failure](./phases/report/2026-08-16.md)

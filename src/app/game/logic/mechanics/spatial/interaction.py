@@ -107,12 +107,12 @@ class InteractionMechanics(SpatialMechanic):
                         processed_sources.add(source.name)
                     elif source.taxonomy.instance == AssetInstances.PLAYERS:
                         bus.append(MenuEvent(
-                            # TODO: fix this bullshit
+                            # TODO:
                             id='inventory', context={'sprite': source, 'chest': target}
                         ))
                 elif target.taxonomy.instance == AssetInstances.SIGNS:
                     if source.taxonomy.instance == AssetInstances.PLAYERS:
                         bus.append(MenuEvent(
-                            # TODO: fix this bullshit
+                            # TODO: 
                             id='dialogue', context={'sprite': source, 'sign': target }
                         ))

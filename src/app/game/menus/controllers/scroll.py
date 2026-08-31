@@ -47,7 +47,7 @@ class ScrollController(MenuController):
             bus.append(UpdateEvent(widget=page, content=page.state.current()))
             
     def update(self, menu: Menu, board: Board, bus: collections.deque) -> None:
-        """Fires every frame, used for dynamic HUDs or timers."""
+        """Fires every frame."""
         pass
 
     def close(self, menu: Menu, board: Board, bus: collections.deque) -> None:

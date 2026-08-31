@@ -161,7 +161,8 @@ class Engine:
                 avg_fps = telemetry_frames / elapsed
                 avg_ups = telemetry_updates / elapsed
                 
-                logger.info(f"[TELEMETRY] Avg FPS: {avg_fps:.1f} | Avg UPS (Ticks): {avg_ups:.1f}")
+                logger.info(f"[TELEMETRY] Avg FPS: {avg_fps:.1f} |"
+                            f"Avg UPS (Ticks): {avg_ups:.1f}")
                 
                 telemetry_frames = 0
                 telemetry_updates = 0

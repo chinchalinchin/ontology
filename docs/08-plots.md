@@ -6,13 +6,13 @@ Due to the nature of the Ontology game engine, a Plot is not scripted, in the se
 
 As a simple example, a Plot state might be defined to change conditional on the existence of Sprite (perhaps whether a character is alive or dead), call it `<plot>`.
 
-A Sprite, whose `psyche.persona = <persona>` is defined through state files, when entering into a `speak` Intention with `psyche.expression = <lexicon>` (arrived at through [Intention transitions](./04-intentions.md) and [World Mechanics](./05-mechanics.md)), would then retrieve the `<plot>.<persona>.<lexicon>` Dialogue from the Library. 
+A Sprite, whose `psyche.persona = <persona>` is defined through state files, when entering into a `speak` Intention with `psyche.expression = <lexicon>` (arrived at through [Intention transitions](./04-intentions.md) and [World Mechanics](./05-mechanics.md)), would then retrieve the `<plot>.<persona>.<lexicon>` dialogue from the Library. 
 
 ## Library
 
 * Location: `src/data/config/library/main.yaml`
 
-The Library reads in the scripts stored in `src/data/config/library/main.yaml`, otherwise known as the *library directory*.
+The Library reads in the dialogue scripts stored in `src/data/config/library/main.yaml`, otherwise known as the *library directory*.
 
 TODO
 
@@ -27,10 +27,52 @@ library:
 - `persona-key`: Persona binding for Sprite or Signs. Determined by the Asset.
 - `lexicon-key`: Dynamic key for ingame modulation. 
 
-### Plot States
+## Plot States
+
+The Plot is an Asset-less State. It is instantiated during [initialization](./09-architecture.md#initialization) and injected into the Board. 
 
 TODO
 
-### Plot Mechanics
+## Plot Mechanics
+
+PlotMechanics are a [World Mechanic](./05-mechanics.md) that manages the Plot State. It does so through the medium of the *Plot Transition Matrix*.
+
+### Plot Transition Matrix
+
+Similar to [Intentions](./04-intentions.md), the Plot utilizes a Transition Matrix to determine where the current node of the Plot State resides, and whether or not conditions have been met to transition to the next node.
+
+The general schema for a row of Plot Transitions is given directly below,
+
+```yaml
+plots:
+    <plot-state>:
+        - next: <plot-state>
+          conditions:
+            - <condition>
+```
+
+For example, the following Plot Transition Matrix demonstrates how a Plot tree can be embedded into the game by specifying nodes and the conditions that must be met to transition out of a given node, 
+
+```yaml
+plots:
+    town-locked:
+        - next: town-unlocked
+          conditions:
+            - player.state.inventory.loot['town-key'] >= 1
+        - next: town-unlocked
+          conditions:
+            - sprites['town-guard'].mutators.triggers.dead
+        - next: town-unlocked
+          conditions:
+            - sprites['mayor'].state.memory.relationships['player'] == Relationships.FRIEND
+    town-unlocked:
+        - next: town-hostile
+          conditions:
+            - sprites['mayor'].state.memory.relationships['player'] == Relationships.FOE
+    town-hostile:
+        - next: town-unlocked
+          conditions:
+            - sprites['mayor'].state.memory.relationships['player'] != Relationships.FOE
+```
 
 TODO

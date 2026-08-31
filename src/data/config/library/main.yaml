@@ -4,8 +4,18 @@ library:
       busy: Away with you! I am engaged in endeavors!
       greeting: Good morrow, neighbor!
       insult: Thou art a brutish knave!
+    town-sign:
+      spring: Welcome to Town
+      summer: WANTED Player 
+      autumn: Harvest Festival Coming
+      winter: Road Blocked
   plot-b:
     sprite-a:
       busy: Go away!
-      greeting: Wonderful day!
-      insult:  What a simpleton!
+      greeting: What misery...
+      insult:  You're a right simpleton!
+    town-sign:
+      spring: BE GONE
+      summer: NO TRAVELLERS WANTED 
+      autumn: NO TRESPASSERS
+      winter: ALL INTRUDERS WILL BE EXECUTED

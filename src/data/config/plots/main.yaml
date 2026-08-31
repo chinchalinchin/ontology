@@ -1,0 +1,11 @@
+plots:
+  act-1-intro:
+    next: act-1-town-unlocked
+    conditions:
+      - "sprites['gatekeeper'].mutators.triggers.dead"
+      - "player.state.inventory.loot['kings-pass'] >= 1"
+  act-1-town:
+    next: act-2-invasion
+    conditions:
+      - "board.time > 10000"
+      - "sprites['mayor'].memory.relationships['player'] == 'hostile'"

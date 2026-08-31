@@ -71,9 +71,16 @@ intentions:
       conditions: 
         - sprite.intention
   mine:
+    - next: mine
+      conditions:
+        # TODO
+        - sprite.goal.category == 'loot'
+        - sprite.state.inventory.loot[sprite.state.goal.name] in Assets.MINEABLE
+        - sprite.state.inventory.loot[sprite.state.goal.name] < SOME_TARGET_QUANTITY
     - next: build
       conditions:
-        - sprite.intention
+        # TODO
+        - sprite.state.inventory.loot[sprite.state.goal] >= SOME_TARGET_QUANTITY 
   mock:
     - next: mock
       conditions:
