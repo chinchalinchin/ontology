@@ -29,6 +29,7 @@ actions:
     data:
       slash:
         count: 6
+        delay: 3
         directions:
           up:
             row: 12
@@ -101,6 +102,7 @@ actions:
             row: 11
       slash:
         count: 6
+        delay: 3
         directions:
           up:
             row: 12

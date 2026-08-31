@@ -57,20 +57,27 @@ class TemporaryAnimation(Animation):
 
 class StateAnimation(Animation):
     """
+    Advances frame based on configured action delay.
     """
-
     def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
-        """
-        """
         if hasattr(state, 'mutators') and state.mutators and hasattr(state.mutators, 'triggers'):
             if not state.mutators.triggers.animated:
                 state.animation.frame = 0
+                state.animation.tick = 0
                 return state
 
-        state.animation.frame += 1
+        action_props = properties.actions[state.animation.action]
+        delay = getattr(action_props, 'delay', 1)
 
-        if state.animation.frame >= properties.actions[state.animation.action].count:
-            state.animation.frame = 0
+        state.animation.tick += 1
+
+        # Only advance the frame if the tick accumulator reaches the delay threshold
+        if state.animation.tick >= delay:
+            state.animation.tick = 0
+            state.animation.frame += 1
+
+            if state.animation.frame >= action_props.count:
+                state.animation.frame = 0
 
         return state
 

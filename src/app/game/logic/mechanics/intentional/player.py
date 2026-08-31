@@ -52,14 +52,17 @@ class PlayerMechanics(Mechanic):
         }
         
         if payload.world.intention:
-            # Only assign and reset the frame if the intention is new
+            # Only assign and reset the frame/tick if the intention is new
             if player.state.intention != payload.world.intention:
                 player.state.intention = payload.world.intention
                 player.state.animation.frame = 0
+                player.state.animation.tick = 0
         else:
-            # Fallback to IDLE only if the player is not currently trapped in a blocking frame cycle
+            # Fallback to IDLE only if the player is not currently trapped in a blocking cycle
             is_blocking = player.state.intention in blocking_intentions
-            is_animating = player.state.animation.frame > 0
+            
+            # An animation is active if either the frame or the tick has advanced
+            is_animating = player.state.animation.frame > 0 or player.state.animation.tick > 0
             
             if not (is_blocking and is_animating):
                 player.state.intention = Intentions.IDLE

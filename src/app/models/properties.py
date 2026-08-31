@@ -20,6 +20,7 @@ class Direction:
 class Action:
     count: int
     directions: Dict[str, Direction]
+    delay: int = 1
 
 @dataclass(slots=True)
 class Cost:

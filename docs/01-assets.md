@@ -104,6 +104,14 @@ The frame rows of Sheet Assets are categorized by the axes of *Direction* and *A
 
 State files are maintained in `/src/data/state/<board-key>/**` directory, where `<board-key>` is a unique identifer for a [Board](./00-overview.md#board).
 
+Of particular importance is the *AnimationState*, described directly below,
+
+- AnimationState
+    - action: Action key of Animation.
+    - direction: Directiony key of Animation.
+    - frame: Frame index of Animation.
+    - tick: Engine tick accumulator. Used in conjunction with Action `delay` to control the speed of the Animation.
+
 **Mass**
 
 Some Asset Categories have a Mass property. Only Assets with Mass can participate in the physics engine. An Asset's mass determines how collisions behave.
@@ -637,15 +645,17 @@ This snippet from the [Schemas](./appendices/01-schemas.md#configuration-actions
 
 ```yaml
 <action-key>:
-    count:
+    count: <count>
+    delay: <delay>
     directions:
         <direction-key>:
-            row:
+            row: <row>
 ```
 
 * `<action-key>: str` - Ranges over `cast, thrust, walk, slash, shoot, die` (LPC)
 * `<direction-key> : str` -  Ranges over  `up, left, down, right` (LPC)
 * `count: int` - is the number of frames in the Action row grouping. 
+- `delay`: (*Optional*) Number of Engine ticks to accumulate before a frame update. Used to control the speed of the animation. Defaults to 1. 
 
 **Action Sets**
 
