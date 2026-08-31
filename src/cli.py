@@ -34,9 +34,12 @@ from libs.graphics.render import quit_sdl, get_system_info
 
 logger = logging.getLogger(__name__)
 
-def dump(board_key, board, temp='state'):
+def dump(board_key, context, temp='state'):
     logger.info(f"Generating {temp} dump...")
-    template_path = settings.TEMPLATE_DIR / settings.DUMP_TEMPLATES[temp]
+    
+    # Safely resolve template name, defaulting to <temp>.md if not registered in settings
+    template_filename = getattr(settings, 'DUMP_TEMPLATES', {}).get(temp, f"{temp}.md")
+    template_path = settings.TEMPLATE_DIR / template_filename
     
     if not template_path.exists():
         logger.error(f"State dump template not found at {template_path}")
@@ -54,11 +57,31 @@ def dump(board_key, board, temp='state'):
     }
 
     if temp == 'state':
-        args['assets'] = board.assets()
-        args['menus'] = board.menus
-        args['overlays'] = board.overlays
+        args['assets'] = context.assets()
+        args['menus'] = context.menus
+        args['overlays'] = context.overlays
+        
     elif temp == 'sdl':
         args['sys_info'] = get_system_info()
+        
+    elif temp == 'registry':
+        # Safely extract registry from the first available screen
+        screen = next(iter(context.screens.values()))
+        
+        frames = {}
+        for k, v in screen.registry._frames.items():
+            tex_ptr, cx, cy, cw, cl = v
+            frames[k] = {
+                "tex_w": tex_ptr.w,
+                "tex_l": tex_ptr.l,
+                "crop_x": cx,
+                "crop_y": cy,
+                "crop_w": cw,
+                "crop_l": cl
+            }
+            
+        args['textures'] = list(screen.registry._textures.keys())
+        args['frames'] = frames
 
     dump_str = template.render(**args)
     dump_out_path = Path.cwd() / f"{timestamp}.{temp}-dump.md"
@@ -78,6 +101,8 @@ def arguments():
                         help="Generate a state dump markdown file after execution.")
     parser.add_argument("--dump-sdl", action="store_true", default=False,
                         help="Generate an SDL configuration dump markdown file after execution.")
+    parser.add_argument("--dump-registry", action="store_true", default=False,
+                        help="Generate a Registry mapping dump markdown file after execution.")
     parser.add_argument("--software", action="store_true", default=False,
                         help="Force CPU software rendering (bypasses GPU).")
 
@@ -172,6 +197,9 @@ def handle_start(args, orchestrator, screensize):
     
     if args.dump_sdl:
         dump(args.board_key, engine.board, 'sdl')
+        
+    if args.dump_registry:
+        dump(args.board_key, engine, 'registry')
 
     try:
         engine.start()

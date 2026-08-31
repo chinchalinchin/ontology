@@ -27,7 +27,8 @@ APP_EXT = "main.yaml"
 ### DEBUG DUMP TEMPLATES
 DUMP_TEMPLATES = {
     'state': ".state-dump.md.j2",
-    'sdl': ".sdl-dump.md.j2"
+    'sdl': ".sdl-dump.md.j2",
+    'registry': '.registry-dump.md.j2'
 }
 ## ------- RENDERING SETTINGS
 FONT_DIR = ASSET_DIR / "fonts" 

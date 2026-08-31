@@ -100,7 +100,7 @@ class StateRecipe(str, Enum):
     DISPLAY         = "display"
     PANE            = "pane"
     ICON            = "icon"
-    
+
 # -------------------------------- SPRITE STATE ENUMERATIONS
 
 class Directions(str, Enum):
@@ -228,7 +228,11 @@ class FrictiveAssets(str, Enum):
 
 class InertAssets(str, Enum):
     PROJECTILES     = "projectiles"
-    
+
+class BlockingIntentions(str, Enum):
+    ATTACK          = "attack"
+    MINE            = "mine"
+
 # -------------------------------- WIDGET ENUMERATIONS
 
 class Controllers(str, Enum):

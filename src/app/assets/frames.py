@@ -5,11 +5,15 @@ Package for Asset Frame implementations.
 """
 # Stamdard Libraries
 from typing import List
+import logging
 
 # Application Libraries
 import app.config.settings as settings
+from app.config.enums import Intentions
 from app.assets.base import Frame
 from app.models.state import AssetState
+
+logger = logging.getLogger(__name__)
 
 def _safe_dim(properties: dict) -> tuple[int, int]:
     """
@@ -129,7 +133,7 @@ class SpriteFrame(StateFrame):
         frame_keys = super().keys(id, state)
         
         # Iterate over active equipment in strict Z-index order: Base -> Armor -> Utility -> Tool -> Weapon
-        if hasattr(state, 'inventory') and state.inventory and state.inventory.equipment:
+        if state.inventory and state.inventory.equipment:
             eq = state.inventory.equipment
             for eq_key in (eq.armor, eq.utility, eq.tool, eq.weapon, eq.shield):
                 if eq_key:
@@ -139,6 +143,9 @@ class SpriteFrame(StateFrame):
                         state.animation.direction,
                         str(state.animation.frame)
                     ]))
+
+        if state.intention is not None and state.intention == Intentions.ATTACK:
+            logger.info(f"[TELEMETRY] SpriteFrame generated keys: {frame_keys}")
         
         return frame_keys
     

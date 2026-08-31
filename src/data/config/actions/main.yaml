@@ -19,9 +19,9 @@ actions:
         directions:
           up:
             row: 4
-          down:
-            row: 5
           left:
+            row: 5
+          down:
             row: 6
           right:
             row: 7
@@ -32,9 +32,9 @@ actions:
         directions:
           up:
             row: 12
-          down:
-            row: 13
           left:
+            row: 13
+          down:
             row: 14
           right:
             row: 15
@@ -45,9 +45,9 @@ actions:
         directions:
           up:
             row: 16
-          down:
-            row: 17
           left:
+            row: 17
+          down:
             row: 18
           right:
             row: 19
@@ -58,9 +58,9 @@ actions:
         directions:
           up:
             row: 0
-          down:
-            row: 1
           left:
+            row: 1
+          down:
             row: 2
           right:
             row: 3
@@ -71,9 +71,9 @@ actions:
         directions:
           up:
             row: 0
-          down:
-            row: 1
           left:
+            row: 1
+          down:
             row: 2
           right:
             row: 3
@@ -82,9 +82,9 @@ actions:
         directions:
           up:
             row: 4
-          down:
-            row: 5
           left:
+            row: 5
+          dowm:
             row: 6
           right:
             row: 7
@@ -104,9 +104,9 @@ actions:
         directions:
           up:
             row: 12
-          down:
-            row: 13
           left:
+            row: 13
+          down:
             row: 14
           right:
             row: 15
@@ -115,9 +115,9 @@ actions:
         directions:
           up:
             row: 16
-          down:
-            row: 17
           left:
+            row: 17
+          down:
             row: 18
           right:
             row: 19

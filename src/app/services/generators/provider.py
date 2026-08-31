@@ -189,16 +189,9 @@ class Provider:
         )
 
     def _unpack_icon(self, cfg: MenuWidget, context: dict) -> IconState:
-        props_dict = getattr(self.properties, cfg.instance, {})
-        props = props_dict.get(cfg.id)
-        logger.info(f"id: {cfg.id}")
-        logger.info(f"context: {context}")
-        logger.info(f"properties: {props}")
         resolved = self._resolve(cfg.bind.state, context) \
                             if cfg.bind and cfg.bind.state else None
         initial_icon = resolved 
-        logger.info(f"resolved: {resolved}")
-        logger.info(f"initial_icon: {initial_icon}")
 
         return IconState(
             position=Position(x=0, y=0),

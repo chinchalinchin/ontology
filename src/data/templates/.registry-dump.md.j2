@@ -1,0 +1,26 @@
+# Registry Configuration Dump
+
+**Board:** `{{ board_key }}`
+**Timestamp:** {{ timestamp }}
+
+---
+
+## 1. Loaded GPU Textures
+
+*The following physical image assets were successfully cached in VRAM:*
+
+{% for tex in textures|sort %}
+* `{{ tex }}`
+{%- endfor %}
+
+---
+
+## 2. Mapped Frame Coordinates
+
+*Dynamic frame keys mapped to physical GPU texture crops:*
+
+| Frame Key | Crop X | Crop Y | Crop W | Crop L | Tex W | Tex L |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+{%- for key, data in frames|dictsort %}
+| `{{ key }}` | {{ data.crop_x }} | {{ data.crop_y }} | {{ data.crop_w }} | {{ data.crop_l }} | {{ data.tex_w }} | {{ data.tex_l }} |
+{%- endfor %}

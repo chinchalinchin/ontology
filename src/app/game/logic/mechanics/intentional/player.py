@@ -14,11 +14,15 @@ if TYPE_CHECKING:
 from app.config.enums import (
     Intentions,
     PlayerGoals,
-    GoalCategories
+    GoalCategories,
+    BlockingIntentions
 )
 from app.game.logic.maps import AnimationMap
 from app.game.logic.mechanics import Mechanic
-from app.models.state import Goal
+from app.models.state import (
+    Goal, 
+    DevicePayload
+)
 
 # Cython Libraries
 from libs.core.models import Position
@@ -39,10 +43,26 @@ class PlayerMechanics(Mechanic):
         """
         player = board.player()
         
+        # Define intentions that lock the player until their animation completes
+        blocking_intentions = {
+            Intentions.ATTACK, 
+            Intentions.MINE, 
+            Intentions.BUILD, 
+            Intentions.SPEAK
+        }
+        
         if payload.world.intention:
-            player.state.intention = payload.world.intention
+            # Only assign and reset the frame if the intention is new
+            if player.state.intention != payload.world.intention:
+                player.state.intention = payload.world.intention
+                player.state.animation.frame = 0
         else:
-            player.state.intention = Intentions.IDLE
+            # Fallback to IDLE only if the player is not currently trapped in a blocking frame cycle
+            is_blocking = player.state.intention in blocking_intentions
+            is_animating = player.state.animation.frame > 0
+            
+            if not (is_blocking and is_animating):
+                player.state.intention = Intentions.IDLE
         
         speed = player.state.character.speed
         goal_x = player.state.position.x
@@ -93,3 +113,15 @@ class PlayerMechanics(Mechanic):
                 player.state.position,
                 player.state.goal.position
             )
+
+        if player.state.intention == Intentions.ATTACK:
+            logger.info(f"[TELEMETRY] Intention: ATTACK | "
+                        f"Resolved Action: {player.state.animation.action}")
+            if getattr(player.state.inventory, 'equipment', None):
+                eq = player.state.inventory.equipment
+                logger.info(f"[TELEMETRY] Equipment State: "
+                             f"Weapon: {eq.weapon} | "
+                             f"Armor: {eq.armor} | "
+                             f"Shield: {eq.shield} | "
+                             f"Tool: {eq.tool}"
+                )

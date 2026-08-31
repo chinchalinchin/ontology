@@ -67,40 +67,40 @@ sheets:
   weapons:
     dagger:
       dimensions:
-        w: 32
-        l: 32
+        w: 64
+        l: 64
       hitboxes: null
       actions: lpc-slash
       stack:
         - dagger
     shortsword:
       dimensions:
-        w: 32
-        l: 32
+        w: 64
+        l: 64
       hitboxes: null
       actions: lpc-slash
       stack:
         - shortsword
     warhammer:
       dimensions:
-        w: 32
-        l: 32
+        w: 64
+        l: 64
       hitboxes: null
       actions: lpc-slash
       stack:
         - warhammer
     longbow:
       dimensions:
-        w: 32
-        l: 32
+        w: 64
+        l: 64
       hitboxes: null
       actions: lpc-shoot
       stack:
         - longbow
     crossbow:
       dimensions:
-        w: 32
-        l: 32
+        w: 64
+        l: 64
       hitboxes: null
       actions: lpc-cast
       stack:
