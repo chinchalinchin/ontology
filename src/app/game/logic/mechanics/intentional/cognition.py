@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 from app.config.enums import (
     Intentions, 
     AssetInstances, 
-    GoalCategories, 
+    Goals, 
     Motivations
 )
 from app.game.logic.mechanics.core import Mechanic
@@ -89,7 +89,7 @@ class CognitionMechanics(Mechanic):
             return
 
         # Retrieve the physical asset from the Board based on goal category
-        if goal.category == GoalCategories.ASSET:
+        if goal.category == Goals.ASSET:
             # Fast dictionary lookup via cached generator or Board map
             target_asset = next((s for s in board.renderables(sprite.state.layer) if s.name == goal.name), None)
             
@@ -134,7 +134,7 @@ class CognitionMechanics(Mechanic):
                 offset_y = random.randint(-50, 50)
                 sprite.state.goal = Goal(
                     name="wander_point",
-                    category=GoalCategories.POSITION,
+                    category=Goals.POSITION,
                     position=Position(sprite.state.position.x + offset_x, sprite.state.position.y + offset_y)
                 )
 

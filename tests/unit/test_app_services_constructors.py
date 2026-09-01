@@ -65,7 +65,7 @@ def test_orchestrator_construct(mock_render, mock_registry, mock_screen, mock_or
     
     # Mechanics lists should fall back to defaults when not explicitly configured
     assert len(engine.core) == 3
-    assert len(engine.world) == 2
+    assert len(engine.world) == 4
     
     # Verify Cython SDL boundary layer was initialized correctly
     mock_render.init.assert_called_once_with(1280, 720, True)

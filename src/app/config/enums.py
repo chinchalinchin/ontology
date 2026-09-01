@@ -164,7 +164,7 @@ class Relationships(str, Enum):
 
 # -------------------------------- GOAL ENUMERATIONS
 
-class GoalCategories(str, Enum):
+class Goals(str, Enum):
     ASSET           = "asset"
     LOOT            = "loot"
     WEALTH          = "wealth"

@@ -1,14 +1,26 @@
 """
 # Ontology: app.services.translators.lamb
 """
+# Standard Libraries
 import logging
-from typing import Dict, List, Optional, Any, Callable
+from typing import (
+    Dict, 
+    List,
+    Optional, 
+    Any, 
+    Callable
+)
 
-from app.config.settings import ISL_ENVIRONMENT
+# Application Libraries
 from app.config.enums import Intentions
 from app.models.state import SpriteState
 from app.models.config import IntentionConfiguration
-from app.services.translators.base import Translator, Executor, IntentionTransition
+from app.services.translators.base import (
+    Translator, 
+    Executor, 
+    IntentionTransition
+)
+from app.services.translators.environ import ISL_ENVIRONMENT
 
 logger = logging.getLogger(__name__)
 

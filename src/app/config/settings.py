@@ -49,24 +49,3 @@ TITLE_FONT = FONT_DIR / "title.ttf"
 ## ------------------------------------- ISL SETTINGS
 # ISL_TRANSLATOR: Options: "lambda", "compiler"
 ISL_TRANSLATOR: str = "lambda"
-from app.config.enums import (
-    GoalCategories, 
-    Intentions, 
-    AssetInstances, 
-    AssetCategories,
-    Motivations,
-    MineableAssets
-)
-### ISL_ENVIRONMENT: Runtime environment dictionary for
-###                   Intention Transitions.
-ISL_ENVIRONMENT = {
-    #### Asset Space Enumerations
-    'AssetInstances': AssetInstances,
-    'AssetCategories': AssetCategories,
-    #### Intention Space Enumerations
-    'GoalCategories': GoalCategories,
-    'Intentions': Intentions,
-    'Motivations': Motivations,
-    #### Interaction Space Enumerations
-    'MineableAssets': MineableAssets
-}

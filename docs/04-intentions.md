@@ -141,7 +141,7 @@ For example, in the default Intention Transition matrix given above, the transit
 
 ```yaml
 - not sprite.goal
-- sprite.memory.goal.category == GoalCategories.SPRITE.value
+- sprite.memory.goal.category == Goals.SPRITE.value
 ```
 
 `sprite` is a reference to the Sprite's state which is currently having its Intention processed by the game engine. Thus, the Sprite's Intention state will transition to `hunt` if the Sprite currently does not have a Goal, but remembers having a Goal of Category `sprite`.
@@ -161,11 +161,11 @@ In another example, the transition from `attack` to `scavenge` in the default In
 Notice in the example there is a self-entrant transition. A Sprite with an `attack` Intention can re-enter the `attack` Intention conditional on the Sprite still having a target,
 
 ```yaml
-- sprite.goal.category == GoalCategories.SPRITE.value
+- sprite.goal.category == Goals.SPRITE.value
 ```
 
 !!! important
-    The conditions for an Intention transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == GoalCategories.SPRITE.value`, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into `attack`.
+    The conditions for an Intention transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == Goals.SPRITE.value`, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into `attack`.
 
 Intention transition conditions are compiled by the application during initialization and evaluated at runtime. The engine supports two execution strategies, configured via `ISL_TRANSLATOR` in `settings.py`: `lambda` (which generates inline Python functions) and `compiler` (which generates native Abstract Syntax Trees). The application evaluates ISL conditions sequentially utilizing Python's native short-circuit logic.
 
@@ -174,14 +174,14 @@ To avoid AttributeError exceptions during runtime, existential checks must stric
 ```yaml
 # CORRECT CONFIGURATION
 - sprite.goal
-- sprite.goal.category == GoalCategories.SPRITE.value
+- sprite.goal.category == Goals.SPRITE.value
 ```
 
 versus,
 
 ```yaml
 # INCORRECT CONFIGURATION
-- sprite.goal.category == GoalCategories.SPRITE.value
+- sprite.goal.category == Goals.SPRITE.value
 - sprite.goal
 ```
 
@@ -191,7 +191,9 @@ The ISL environment is injected with variables during execution:
 
 * `sprite`: The SpriteState of the entity currently evaluating its transitions.
 * `sprites`: The `_cached_characters` dictionary mapping `name: AssetState` for all mutable characters (Sprites and Players) currently on the board.
-* *Constants & Enums*: The evaluation environment is directly injected with `GoalCategories`, `Intentions`, `AssetInstances`, `Motivations`, etc.
+* `constants`: A dictionary of Enums. Keys are: `AssetInstances`, `AssetCategories`, `Goals`, `Intentions`, `Motivations`.
+* `functions`: A dictionary of boolean helper functions. All functions return a truth value.
+    - `is_near(p1: Position, p2: Position, radius: int)`
 
 !!! warning
     When referencing `sprites[...]` via a Goal name, authors must use `sprites.get(sprite.goal.name)` to protect the runtime against `KeyErrors` from garbage-collected entities.

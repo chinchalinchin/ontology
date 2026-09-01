@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 from app.config.enums import (
     Intentions,
     PlayerGoals,
-    GoalCategories,
+    Goals,
     AnimatedIntentions,
     BlockingIntentions
 )
@@ -84,7 +84,7 @@ class PlayerMechanics(Mechanic):
         if has_movement and not player.state.goal:
             player.state.goal = Goal(
                 name=player.name, 
-                category=GoalCategories.POSITION, 
+                category=Goals.POSITION, 
                 position=Position(goal_x, goal_y)
             )
         elif player.state.goal:
