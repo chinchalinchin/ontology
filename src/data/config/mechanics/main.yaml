@@ -5,6 +5,7 @@ mechanics:
     - remove
   world:
     - player
+    - cognition
     - transition
     - commerce
     - motion

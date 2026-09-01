@@ -185,6 +185,7 @@ class PlayerIntentions(str, Enum):
 
 class Mechanics(str, Enum):
     ANIMATION       = "animation"
+    COGNITION       = "cognition"
     COLLISION       = "collision"
     COMBAT          = "combat"
     COMMERCE        = "commerce"

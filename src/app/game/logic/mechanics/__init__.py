@@ -17,7 +17,8 @@ from app.game.logic.mechanics.intentional import (
     TransitionMechanics,
     SpeechMechanics,
     CommerceMechanics,
-    PlayerMechanics
+    PlayerMechanics,
+    CognitionMechanics
 )
 __all__ = [ 
     'AnimationMechanics',
@@ -36,5 +37,6 @@ __all__ = [
     'TransitionMechanics',
     'SpeechMechanics',
     'CommerceMechanics',
-    'PlayerMechanics'
+    'PlayerMechanics',
+    'CognitionMechanics'
 ]

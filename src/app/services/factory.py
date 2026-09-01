@@ -46,7 +46,8 @@ from app.game.logic.mechanics import (
     RemoveMechanics,
     SpeechMechanics,
     InteractionMechanics,
-    MenuMechanics
+    MenuMechanics,
+    CognitionMechanics
 )
 from app.game.menus.controllers import (
     DisplayController,
