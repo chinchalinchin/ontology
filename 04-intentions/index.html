@@ -1329,10 +1329,11 @@
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == &#39;sprite</span>
 </code></pre></div>
 <p>versus,</p>
-<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == &#39;sprite&#39;</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># INCORRECT CONFIGURATION</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == &#39;sprite&#39;</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
 </code></pre></div>
-<p>In the first case, <code>goal</code> is guaranteed to exist before the subsequent condition is applied to <code>goal.category</code>.</p>
+<p>In the first case, <code>goal</code> is guaranteed to exist before the subsequent condition is applied to <code>goal.category</code>, while the second will generate a runtime error.</p>
 <p>The ISL environment is injected with exactly two variables during execution:</p>
 <ul>
 <li><code>sprite</code>: The SpriteState of the entity currently evaluating its transitions.</li>
