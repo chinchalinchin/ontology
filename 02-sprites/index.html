@@ -864,7 +864,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../appendices/01-schemas/" class="md-nav__link">
+      <a href="../appendices/01-schema0s.md" class="md-nav__link">
         
   
   
@@ -1304,10 +1304,11 @@
 </ul>
 </li>
 <li><code>memory:</code> <ul>
-<li><code>goal: Goal</code></li>
+<li><code>goals: List[Goal]</code></li>
 <li><code>prices: Dict[str, double]</code></li>
 <li><code>relationships: Dict[str, str]</code></li>
 <li><code>property: List[str]</code></li>
+<li><code>rumors: List[str]</code></li>
 </ul>
 </li>
 <li><code>psyche</code>:<ul>
@@ -1414,7 +1415,7 @@
 <h3 id="memory">Memory</h3>
 <p><em>Memory</em> is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. </p>
 <ul>
-<li><code>memory.goal</code>: Remember Goal. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.</li>
+<li><code>memory.goals</code>: Remember Goal. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.</li>
 <li><code>memory.rumors</code>: List of Lexicon keys the Sprite has heard through entering into the <code>speak</code> Intention.</li>
 <li><code>memory.prices</code>:</li>
 <li><code>memory.relationship</code>:</li>
