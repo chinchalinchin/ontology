@@ -8,7 +8,8 @@ import logging
 from typing import (
     List, 
     Dict, 
-    Tuple
+    Tuple,
+    Any
 )
 
 # Application Libraries
@@ -57,6 +58,7 @@ class Board:
     _cached_renderables: Dict[str, List[Asset]]
     _cached_weights: Dict[str, List[Asset]]
     _cached_tilemap: Dict[str, Dict[Tuple[int, int], Asset]]
+    _cached_characters: Dict[str, Any] # Cross-layer lookup for O(1) ISL targeting
     # Catalogues
     _all_categories: Dict[str, List[Asset]]
     _all_instances: Dict[str, List[Asset]]
@@ -108,6 +110,7 @@ class Board:
             self._cached_renderables = {}
             self._cached_weights = {}
             self._cached_tilemap = {}
+            self._cached_characters = {}
             return
 
         self._cached_categories[layer] = {}
@@ -116,8 +119,8 @@ class Board:
         self._cached_renderables[layer] = []
         self._cached_weights[layer] = []
         self._cached_tilemap[layer] = {
-            AssetInstances.BACK: {},
-            AssetInstances.FORE: {}
+            AssetInstances.BACK.value: {},
+            AssetInstances.FORE.value: {}
         }
         return
 
@@ -152,15 +155,20 @@ class Board:
             self._cached_layers[layer].append(asset)
             
             # Cache exclusively dynamic assets for the inner draw loop
-            if cat != AssetCategories.TILES:
+            if cat != AssetCategories.TILES.value:
                 self._cached_renderables[layer].append(asset)
 
             # Cached Assets with Weight
             if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0:
                 self._cached_weights[layer].append(asset)
+                
+            # Cross-layer Character lookup for Intentional Scripting Language
+            if cat == AssetCategories.SHEETS.value and inst in (AssetInstances.SPRITES.value, AssetInstances.PLAYERS.value):
+                if asset.name:
+                    self._cached_characters[asset.name] = asset.state
 
             # Cache TileMap for O(1) friction/environment lookups
-            if cat == AssetCategories.TILES:
+            if cat == AssetCategories.TILES.value:
                 w = asset.properties.dimensions.w
                 l = asset.properties.dimensions.l
                 
@@ -210,15 +218,15 @@ class Board:
         """
         Returns the player at the indicated slot. Defaults to 0.
         """
-        if slot < len(self._all_instances[AssetInstances.PLAYERS]):
-            return self._all_instances[AssetInstances.PLAYERS][slot]
-        return self._all_instances[AssetInstances.PLAYERS][0]
+        if slot < len(self._all_instances[AssetInstances.PLAYERS.value]):
+            return self._all_instances[AssetInstances.PLAYERS.value][slot]
+        return self._all_instances[AssetInstances.PLAYERS.value][0]
 
 
     def tile(self, 
         layer: str, 
         position: Position, 
-        instance: str = AssetInstances.BACK
+        instance: str = AssetInstances.BACK.value
     ) -> Asset:
         """
         Returns the Tile at the specified coordinate using O(1) grid-index lookup.
@@ -282,7 +290,7 @@ class Board:
             return [
                 asset 
                 for asset in self._assets 
-                if asset.category != AssetCategories.TILES
+                if asset.category != AssetCategories.TILES.value
             ]
         return self._cached_renderables.get(layer, [])
 
@@ -296,7 +304,7 @@ class Board:
         layer_sizes = []
 
         for layer in layers:
-            tiles = self.categories(AssetCategories.TILES, layer)
+            tiles = self.categories(AssetCategories.TILES.value, layer)
             w = max([ tile.state.position.x + tile.state.multiple.nx * tile.properties.dimensions.w 
                     for tile in tiles ], default = 0)
             l = max([tile.state.position.y + tile.state.multiple.ny * tile.properties.dimensions.l
@@ -392,11 +400,15 @@ class Board:
             self._cached_instances[layer].setdefault(asset.instance, []).append(asset)
             self._cached_layers[layer].append(asset)
             
-            if asset.category != AssetCategories.TILES:
+            if asset.category != AssetCategories.TILES.value:
                 self._cached_renderables[layer].append(asset)
 
-            if hasattr(asset.properties, 'mass'):
+            if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0:
                 self._cached_weights[layer].append(asset)
+                
+            if asset.category == AssetCategories.SHEETS.value and asset.instance in (AssetInstances.SPRITES.value, AssetInstances.PLAYERS.value):
+                if asset.name:
+                    self._cached_characters[asset.name] = asset.state
 
 
     def remove(self, removals: List[Asset]) -> None:
@@ -433,3 +445,7 @@ class Board:
                 
             if inst in self._all_instances and asset in self._all_instances[inst]:
                 self._all_instances[inst].remove(asset)
+                
+            if cat == AssetCategories.SHEETS.value and inst in (AssetInstances.SPRITES.value, AssetInstances.PLAYERS.value):
+                if asset.name and asset.name in self._cached_characters:
+                    del self._cached_characters[asset.name]

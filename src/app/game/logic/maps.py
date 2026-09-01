@@ -20,8 +20,13 @@ class AnimationMap:
         - equipment: equipment properties
         """
         weapon = None
+        tool = None
+        utility = None
+        
         if getattr(state, 'inventory', None) and getattr(state.inventory, 'equipment', None):
             weapon = state.inventory.equipment.weapon
+            tool = state.inventory.equipment.tool
+            utility = state.inventory.equipment.utility
 
         intention = state.intention
 
@@ -39,7 +44,32 @@ class AnimationMap:
             
             return Actions.CAST
     
-        elif intention in (Intentions.WANDER, Intentions.FIND):
+        if intention == Intentions.MINE:
+            if not tool:
+                return Actions.THRUST # Default mining action fallback
+            
+            tool_property = equipment.tools.get(tool)
+            
+            if tool_property and tool_property.actions:
+                return next(iter(tool_property.actions))
+                
+            return Actions.THRUST
+
+        if intention == Intentions.BUILD:
+            if not utility:
+                return Actions.CAST # Default build action fallback
+            
+            utility_property = equipment.utilities.get(utility)
+            
+            if utility_property and utility_property.actions:
+                return next(iter(utility_property.actions))
+                
+            return Actions.CAST
+            
+        if intention == Intentions.INTERACT:
+            return Actions.WALK
+            
+        if intention in (Intentions.WANDER, Intentions.FIND, Intentions.FOLLOW, Intentions.HUNT, Intentions.ESCAPE, Intentions.RETURN):
             return Actions.WALK
 
         return Actions.WALK

@@ -12,12 +12,18 @@ if TYPE_CHECKING:
 
 from app.config.enums import AssetInstances
 from app.game.logic.maps import AnimationMap
-from app.game.logic.mechanics import Mechanic
+from app.game.logic.mechanics.core import Mechanic
 from app.models.state import DevicePayload
+from app.services.translators.base import Executor
 
 class TransitionMechanics(Mechanic):
     """
+    Evaluates Intention transition criteria and resolves the Sprite's intended
+    goals to animation Actions and spatial Directions.
     """
+    
+    # Injected dynamically during engine construction
+    executor: Executor = None 
     
     def update(self, 
         board: Board, 
@@ -25,39 +31,28 @@ class TransitionMechanics(Mechanic):
         bus: collections.deque,
         payload: DevicePayload
     ) -> None:
-        """
-        Evaluates Intention condition lambdas for state transitions.
-        """
-        sprites = board.instances(AssetInstances.SPRITES)
+        
+        sprites = board.instances(AssetInstances.SPRITES.value)
+        sprites_dict = getattr(board, '_cached_characters', {})
 
         for sprite in sprites:
-            # TODO (Phase 7): Intention logic and DSL matrix compilation is pending.
+            
+            # 1. Evaluate State ISL Conditions
+            if self.executor:
+                next_intent = self.executor.evaluate(sprite.state, sprites_dict)
+                if next_intent:
+                    # Condition satisfied; breaking behavior is handled safely by the Executor resolving immediately
+                    sprite.state.intention = next_intent
 
+            # 2. Resolve final intention into corresponding Action frame mapping
             sprite.state.animation.action = AnimationMap.action(
                 sprite.state,
                 board.equipment
             )
             
+            # 3. Orient Spatial Direction toward the tracked Goal
             if sprite.state.goal:
                 sprite.state.animation.direction = AnimationMap.direction(
                     sprite.state.position,
                     sprite.state.goal.position
                 )
-
-            # Query configuration Intentions using the Sprite's actual Intention State
-            if sprite.state.intention not in board.configurations.intentions:
-                continue
-
-            transits = board.configurations.intentions[sprite.state.intention]
-            
-            # 2. Evaluate conditions
-            for transit in transits:
-                if transit.conditions:
-                    for condition in transit.conditions:
-                        if condition(sprite, board):
-                            # 3. Transition the state
-                            sprite.state.intention = transit.next
-                            
-                            # Break immediately to avoid evaluating the NEW state's 
-                            # transitions in this same frame.
-                            break

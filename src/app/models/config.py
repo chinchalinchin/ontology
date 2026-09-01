@@ -8,7 +8,8 @@ from typing import (
     Dict, 
     List, 
     Optional, 
-    Union
+    Union,
+    Callable
 )
 from dataclasses import dataclass, field
 

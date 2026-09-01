@@ -131,8 +131,8 @@ Terms:
 
 - `None`: null value
 - `str`: constants
-- `sprite.<state>`: self State variable
-- `sprites[<sprite-name>].<state>`: other Sprites state variable
+- `sprite.<attribute>`: self State variable
+- `sprites[<sprite-name>].<attribute>`: other Sprites state variable
 
 For example, in the default Intention Transition matrix given above, the transition from `attack` to `hunt` is conditional on the following,
 
@@ -183,17 +183,21 @@ versus,
 
 In the first case, `goal` is guaranteed to exist before the subsequent condition is applied to `goal.category`, while the second will generate a runtime error.
 
-The ISL environment is injected with exactly two variables during execution:
+The ISL environment is injected with variables during execution:
 
 - `sprite`: The SpriteState of the entity currently evaluating its transitions.
 - `sprites`: A dictionary mapping `name: AssetState` for all mutable characters (Sprites and Players) currently on the board.
+- `constants`: A dictionary of enums for accessing categorical constants.
 
+!!! warning
+    When referencing `sprites[...]` via a Goal name, authors must use `sprites.get(sprite.goal.name)` to protect the runtime against `KeyErrors` from garbage-collected entities.
+    
 ## Goal
 
 *Goals* provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Intention is *in order* to achieve a Goal.
 
 - `name`: Unique Identifier of the Goal.
-- `category`: Category of the Goal. (`sprite`, `loot`, `wealth`, `property`, `position`)
+- `category`: Category of the Goal. (`asset`, `sprite`, `loot`, `wealth`, `property`, `position`)
 - `position`: Last-known position of the Goal. When the Goal is within the `mutators.vision.radius`, this position is updated every game loop. Once the Goal exits the Sprites `mutators.vision.radius`, it becomes a static value that freezes on the last known Position of its Goal.
 
 ### Goal Category
@@ -205,6 +209,7 @@ When a Sprite has Goal, it will seek out (path-find) its way to `name`. The `cat
 - `category == loot`: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The `name` will be an Inventory key. 
 - `category == wealth`: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The `name` will be an Inventory key. The key will be of the loot with the maximum value in the Sprite's Prices, e.g. the highest priced loot.
 - `category == property`: The goal is Property, i.e. the Sprite is seeking the location of Property. The `name` will be an Asset name of an Asset that implements a `PropertyState`.
+- `category == sprite`: The goal is a Sprite. The `name` will be a name of a Sprite.
 
 ## AnimationMap
 
@@ -220,9 +225,15 @@ Sprite Animation Actions is as a function of Sprite Intention state and Equipmen
 
     f(Intention, Equipment) = Action
 
+In order to pass from an `ATTACK` Intention to a phsyically animated Action, an Equipment constraint must be satisfied. Likewise for other animated Intentions.
+
+- `ATTACK`: Uses `equipment.weapon`
+- `MINE`: Uses `equipment.tool`
+
 **Formulae**
 
-- `if state.intention == attack: state.animation.action = board.equipment.weapons[state.inventory.weapon].action`
+- `if state.intention == Intentions.ATTACK: state.animation.action = board.equipment.weapons[state.equipment.weapon].action`
+- `if state.intention == Intentions.MINE: state.animation.action = board.equipment.tools[state.equipment.tools].action`
 
 ### Directions
 

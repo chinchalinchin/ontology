@@ -10,21 +10,37 @@ from typing import Dict, List
 from enum import Enum
 
 # Application Libraries
+import app.config.settings as settings
 from app.assets.base import Asset
 from app.config.loader import Loader
-from app.config.enums import AssetCategories, AssetInstances, Devices, Mechanics, Shortcuts
+from app.config.enums import (
+    AssetCategories, 
+    AssetInstances, 
+    Devices, 
+    Mechanics, 
+    Shortcuts
+)
 from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
 from app.game.logic.mechanics.core import Mechanic
-from app.services.factory import Factory
-from app.services.generators.decomposer import Decomposer
-from app.services.generators.provider import Provider
-from app.models.groups import SpawnableGroup, EquipmentGroup
+from app.game.logic.mechanics.intentional import TransitionMechanics
+from app.models.groups import (
+    SpawnableGroup, 
+    EquipmentGroup
+)
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
+from app.services.factory import Factory
+from app.services.generators.decomposer import Decomposer
+from app.services.generators.provider import Provider
+from app.services.translators import (
+    CompilerTranslator,
+    LambdaTranslator
+)
 
+# Cython Libraries
 from libs.core.models import Dimensions
 import libs.graphics.render as render
 from libs.graphics.registry import Registry
@@ -238,7 +254,7 @@ class Builder:
             layer: Screen(
                 self.context.screensize, 
                 Dimensions(max_width, max_length),
-                self.board.categories(AssetCategories.TILES, layer),
+                self.board.categories(AssetCategories.TILES.value, layer),
                 self.registry
             )
             for layer in self.board.layers()
@@ -246,14 +262,24 @@ class Builder:
 
         # Allocate Mechanics
         core_cfg = getattr(self.context.configurations.mechanics, 'core', None) or [
-            Mechanics.MENU, Mechanics.ANIMATION, Mechanics.REMOVE
+            Mechanics.MENU.value, Mechanics.ANIMATION.value, Mechanics.REMOVE.value
         ]
         world_cfg = getattr(self.context.configurations.mechanics, 'world', None) or [
-            Mechanics.PLAYER, Mechanics.MOTION
+            Mechanics.PLAYER.value, Mechanics.MOTION.value
         ]
         
         self.core = [Factory.mechanics(m) for m in core_cfg]
         self.world = [Factory.mechanics(m) for m in world_cfg]
+
+        # Post-Process Core: Inject the compiled ISL Executor into TransitionMechanics
+        if settings.ISL_TRANSLATOR == "compiler":
+            executor = CompilerTranslator().compile(self.context.configurations.intentions)
+        else:
+            executor = LambdaTranslator().compile(self.context.configurations.intentions)
+            
+        for m in self.world:
+            if isinstance(m, TransitionMechanics):
+                m.executor = executor
 
         # Allocate UI Provider & Views
         self.provider = Provider(

@@ -58,6 +58,9 @@ class CognitionMechanics(Mechanic):
         """
         Scans the environment for targets matching the Sprite's motivation.
         """
+        if sprite.state.mutators.parameters is None:
+            return
+            
         vision_radius_sq = sprite.state.mutators.parameters.vision.radius ** 2
         motivation = sprite.state.psyche.motivation
         
@@ -80,6 +83,10 @@ class CognitionMechanics(Mechanic):
         """
         goal = sprite.state.goal
         target_asset = None
+
+        if sprite.state.mutators.parameters is None:
+            sprite.state.mutators.triggers.vision = False
+            return
 
         # Retrieve the physical asset from the Board based on goal category
         if goal.category == GoalCategories.ASSET:

@@ -61,6 +61,9 @@ from app.game.devices import (
     Keyboard,
     Controller
 )
+from app.services.translators.lamb import LambdaTranslator
+from app.services.translators.compiler import CompilerTranslator
+
 
 class Factory:
     FRAME_MAP = {
@@ -110,6 +113,11 @@ class Factory:
         Controllers.DISPLAY: DisplayController,
         Controllers.SCROLL: ScrollController
     }
+    
+    TRANSLATOR_MAP = {
+        "lambda": LambdaTranslator,
+        "compiler": CompilerTranslator
+    }
 
     @staticmethod
     def frame(recipe: Any):
@@ -156,3 +164,8 @@ class Factory:
                 if enum_key.value == kind:
                     return cls()
         return Factory.CONTROLLER_MAP.get(kind, ScrollController)()
+
+    @staticmethod
+    def translator(translation: str):
+        target_cls = Factory.TRANSLATOR_MAP.get(translation, LambdaTranslator)
+        return target_cls()

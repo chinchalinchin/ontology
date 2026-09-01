@@ -26,101 +26,125 @@ intentions:
         - sprite.psyche.motivation == 'survival'
     - next: speak
       conditions: 
+        # TODO
         - sprite.intention
   build:
     - next: find
       conditions:
+        # TODO
         - sprite.intention 
   escape: 
     - next: escape
       conditions: 
-        - sprites[sprite.goal.name].intention == 'attack'
+        - sprites[sprite.goal.name].state.intention == 'attack'
     - next: return
       conditions: 
         - not sprite.goal
   find: 
     - next: scavenge
       conditions: 
+        # TODO
         - sprite.intention
     - next: return
       conditions:
+        # TODO
         - sprite.intention
   follow: 
     - next: follow
       conditions:
+        # TODO
         - sprite.intention
     - next: hunt
       conditions:
-        - sprite.intention  
+        # TODO
+        - sprite.intention
     - next: wander
       conditions:
+        # TODO
         - sprite.intention 
   hunt: 
     - next: attack
       conditions: 
-        - sprite.intention 
+        # TODO
+        - sprite.intentionn 
   idle: 
     - next: idle
       conditions:
+        # TODO
         - sprite.intention
     - next: wander
       conditions:
+        # TODO
         - sprite.intention
   interact:
     - next: find
       conditions: 
+        # TODO
         - sprite.intention
   mine:
     - next: mine
       conditions:
         # TODO
         - sprite.goal.category == 'loot'
-        - sprite.state.inventory.loot[sprite.state.goal.name] in Assets.MINEABLE
-        - sprite.state.inventory.loot[sprite.state.goal.name] < SOME_TARGET_QUANTITY
+        - sprite.inventory.loot[sprite.goal.name] in MineableAssets
+        # TODO: determine how boundary should be calculated
+        - sprite.inventory.loot[sprite.goal.name] < 10
     - next: build
       conditions:
         # TODO
-        - sprite.state.inventory.loot[sprite.state.goal] >= SOME_TARGET_QUANTITY 
+        - sprite.inventory.loot[sprite.goal] >= SOME_TARGET_QUANTITY 
   mock:
     - next: mock
       conditions:
+        # TODO
         - sprite.intention 
     - next: threaten
       conditions:
-        - sprite.intention 
+        # TODO
+        - sprite.intention
   return:
     - next: idle
       conditions: 
+        # TODO
         - sprite.intention
     - next: return
       conditions:
+        # TODO
         - sprite.intention
     - next: wander
       conditions: 
+        # TODO
         - sprite.intention
   scavenge:
     - next: return
       conditions:
+        # TODO
         - sprite.intention
   speak:
     - next: follow
       conditions: 
-        - sprite.intention
+        # TODO
+        - sprite.intentionn
   sprint:
     - next: return
       conditions: 
-        - sprite.intention
+        # TODO
+        - sprite.intentionn
   threaten:
     - next: attack
       conditions:
+        # TODO
         - sprite.intention
     - next: hunt
       conditions:
+        # TODO
         - sprite.intention   
     - next: threaten
       conditions:
+        # TODO
         - sprite.intention
   wander:
     - next: idle
       conditions:
+        # TODO
         - sprite.intention

@@ -239,6 +239,11 @@ class AnimatedIntentions(str, Enum):
     # TODO: possibly redundant with respect to BlockingIntentions
     ATTACK          = "attack"
     MINE            = "mine"
+
+# -------------------------------- ISL ENUMERATIONS
+
+class MineableAssets(str, Enum):
+    RESOURCES       = "resources"
 # -------------------------------- WIDGET ENUMERATIONS
 
 class Controllers(str, Enum):
