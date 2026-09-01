@@ -23,7 +23,9 @@ from app.config.enums import (
     FrameRecipe,
     AnimationRecipe,
     AssetCategories, 
-    AssetInstances
+    AssetInstances,
+    Intentions,
+    Motivations
 )
 from app.game.board import Board
 from app.services.constructors import Builder, Orchestrator
@@ -55,10 +57,15 @@ from app.models.state import (
     Equipment,
     Mutators,
     MutatorTriggers,
+    MutatorParameters,
+    VisionMutatorParameters,
+    FearMutatorParameters,
     Character,
     AnimationState,
     Meters,
-    Meter
+    Meter,
+    Psyche,
+    Goal
 )
 from app.models.groups import (
     SpawnableGroup,
@@ -181,14 +188,30 @@ def mock_provider():
 
 @pytest.fixture
 def mock_board_assets():
-    # 1. Dynamic Asset (Sprite)
-    sprite_tax = Taxonomy("sprite-1", "npc", AssetCategories.SHEETS, AssetInstances.SPRITES)
+    # 1. Dynamic Asset (Sprite) - Use primitive strings for taxonomy matching Orchestrator initialization
+    sprite_tax = Taxonomy("sprite-1", "npc", AssetCategories.SHEETS.value, AssetInstances.SPRITES.value)
     sprite_props = SheetProperties(dimensions=Dimensions(w=32, l=32), mass=10)
-    sprite_state = SpriteState(id="sprite-1", name="npc", layer="0", position=Position(x=10, y=10))
+    sprite_state = SpriteState(
+        id="sprite-1", 
+        name="npc", 
+        layer="0", 
+        position=Position(x=10, y=10),
+        intention=Intentions.IDLE,
+        psyche=Psyche(motivation=Motivations.CONQUEST.value, expression="none", dialogue="none", persona="test"),
+        mutators=Mutators(
+            triggers=MutatorTriggers(),
+            parameters=MutatorParameters(
+                fear=FearMutatorParameters(radius=50, limit=0.2, enemy=1),
+                vision=VisionMutatorParameters(radius=100)
+            )
+        ),
+        inventory=Inventory(equipment=Equipment()),
+        animation=AnimationState(frame=0, tick=0)
+    )
     sprite = Asset(sprite_tax, sprite_props, sprite_state, DummyFrame(), DummyAnimation())
 
     # 2. Static Asset (Tile)
-    tile_tax = Taxonomy("tile-1", "grass", AssetCategories.TILES, AssetInstances.BACK)
+    tile_tax = Taxonomy("tile-1", "grass", AssetCategories.TILES.value, AssetInstances.BACK.value)
     tile_props = TileProperties(dimensions=Dimensions(w=32, l=32))
     tile_state = MultiplierState(
         id="tile-1", name="grass", layer="0", position=Position(x=0, y=0), multiple=Multiple(nx=2, ny=2)
@@ -196,7 +219,7 @@ def mock_board_assets():
     tile = Asset(tile_tax, tile_props, tile_state, DummyFrame(), DummyAnimation())
     
     # 3. Dynamic Asset (Player)
-    player_tax = Taxonomy("player-1", "hero", AssetCategories.SHEETS, AssetInstances.PLAYERS)
+    player_tax = Taxonomy("player-1", "hero", AssetCategories.SHEETS.value, AssetInstances.PLAYERS.value)
     player_props = SheetProperties(dimensions=Dimensions(w=32, l=32), mass=10)
     player_state = PlayerState(
         id="player-1", 

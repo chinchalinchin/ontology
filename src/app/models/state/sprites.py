@@ -125,6 +125,7 @@ class SpriteState(AssetState):
     meters: Optional[Meters] = None
     mutators: Optional[Mutators] = None
     memory: Optional[Memory] = None
+    psyche: Optional[Psyche] = None
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
 
