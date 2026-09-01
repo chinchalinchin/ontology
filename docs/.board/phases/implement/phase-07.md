@@ -91,3 +91,102 @@ To empirically determine whether AST compilation's elegance is "worth the squeez
 **7. Complete the Finite Automaton**
 
 * [ ] Review `/src/data/config/intentions/main.yaml` and resolve all dead ends. Create new Tasks to achieve this, if necessary.
+
+
+
+
+
+
+
+
+
+
+
+This is the crux of the engine's AI architecture. You have correctly identified a critical missing link in the finite automaton: we have a robust state machine for *Intentions* (the ISL matrix), but we lack a lifecycle for *Goals*.
+
+If Intentions are the **"How"** (the verbs: `FIND`, `ATTACK`, `MINE`), then Goals are the **"What"** (the nouns: a specific Sprite, a piece of Loot, a coordinate). Currently, the "What" is generated once and never evaluated for completion.
+
+To maintain the engine's philosophy of "simulation and emergence without scripting," we must avoid hardcoding narrative sequences. Instead, goal-selection and goal-resolution must be systemic.
+
+Here is an architectural analysis and proposed solution for managing the Goal Lifecycle.
+
+### 1. The Core Paradigm: Separation of "Brain" and "Instinct"
+
+We should formally separate the responsibilities of the mechanics managing the Sprite's mind:
+
+* **`CognitionMechanics` (The Brain):** Manages the **Goal Lifecycle**. It evaluates the environment, consults `Motivations` and `Meters`, sets the `Goal`, determines if the `Goal` has been achieved (or invalidated), and manages the Memory stack.
+* **`TransitionMechanics` (The Instinct):** Manages the **Intention Transitions**. It looks at the current `Goal` set by Cognition and evaluates the ISL matrix to figure out *how* to achieve it (e.g., "I have a target Sprite, so I transition from `IDLE` to `FIND`").
+* **Spatial Mechanics (The Muscle):** `CombatMechanics`, `InteractionMechanics`, etc., alter the physical world state (e.g., killing the target, opening the chest). This physical change is what signals `CognitionMechanics` on the *next* frame that the goal is achieved.
+
+### 2. The Goal Lifecycle (Implementation in `CognitionMechanics`)
+
+I recommend *against* creating a separate `MemoryMechanics`. Memory is a passive storage medium; the act of remembering, prioritizing, and ideating is cognitive. Splitting goal-setting and goal-popping across two mechanics risks race conditions (e.g., `TransitionMechanics` evaluating an empty goal state before `MemoryMechanics` has a chance to pop the saved goal).
+
+Instead, `CognitionMechanics.update()` should execute the following four phases in strict order every game tick:
+
+#### Phase A: Resolution (Is the goal finished?)
+
+Before doing anything, the Sprite evaluates its current `goal`. Has the world state changed such that the goal is complete or no longer valid?
+
+* *If `goal.category == SPRITE`:* Is the target dead? If yes, `sprite.state.goal = None`.
+* *If `goal.category == LOOT`:* Does `sprite.inventory` now contain the item? If yes, `sprite.state.goal = None`.
+* *If `goal.category == POSITION`:* Is `sprite.position` within an epsilon radius of the target? If yes, `sprite.state.goal = None`.
+
+#### Phase B: Memory Management (The Stack)
+
+*Assuming we refactor `memory.goal` into a stack (LIFO list): `memory.goals: List[Goal]`.*
+If `sprite.state.goal` is `None` (either because it was just resolved or never existed), the Sprite checks its memory.
+
+* If `memory.goals` has items, pop the top item and set it as `sprite.state.goal`.
+
+#### Phase C: Ideation (Goal Selection)
+
+If `sprite.state.goal` is *still* `None` (memory is empty), the Sprite must ideate a new Goal based on internal needs and external stimuli. This operates on a hierarchy of priorities:
+
+1. **Immediate Needs (Meters):** If `health` is critically low, generate a `Goal(POSITION, nearest_safe_zone)` or `Goal(LOOT, health_potion)`.
+2. **Motivations (Psyche):**
+* `PROFIT`: Scan environment for `CHESTS` or `MINEABLE` resources. Generate `Goal(LOOT, ore)`.
+* `CONQUEST`: Scan for `PLAYERS` or rival faction `SPRITES`. Generate `Goal(SPRITE, player_name)`.
+* `SURVIVAL`: Scan for food or shelter.
+* *Fallback:* If no motivational targets are in the `vision.radius`, generate a generic `Wander` coordinate.
+
+
+
+#### Phase D: Interruptions & Tracking
+
+Even if a Sprite has a Goal, the environment can interrupt them.
+
+* If the Sprite is struck by an enemy (triggering `mutators.triggers.struck`), survival overrides profit. The Sprite pushes its current `Goal(LOOT, chest)` onto the `memory.goals` stack, and generates an immediate `Goal(SPRITE, attacker)`.
+* Finally, `CognitionMechanics` updates `goal.position` for moving targets (what the mechanic currently does).
+
+---
+
+### 3. Example Scenario Flow
+
+Let's look at how this architecture organically resolves the scenario you proposed (Sprite finds and opens a chest), completely unscripted:
+
+**Frame 1 (Ideation):**
+
+1. `CognitionMechanics`: Sprite has no Goal. Motivation is `PROFIT`. Scans environment, finds a Chest. Sets `Goal(category=ASSET, name="chest-01")`.
+2. `TransitionMechanics`: ISL rule triggers: `not sprite.intention and sprite.goal -> intention = FIND`.
+3. `MotionMechanics`: Accelerates Sprite toward `goal.position`.
+
+**Frame X (Arrival):**
+
+1. `MotionMechanics`: Sprite physically collides with the Chest.
+2. `TransitionMechanics`: ISL rule triggers: `intersects(sprite, goal) -> intention = INTERACT`.
+
+**Frame X+1 (Interaction):**
+
+1. `InteractionMechanics`: Sees Sprite is in `INTERACT`. Flips chest `switch` to `ON`. Puts chest contents into Sprite's `inventory`.
+
+**Frame X+2 (Resolution):**
+
+1. `CognitionMechanics`: Evaluates Phase A. Target was a Chest, and the Chest is now `ON` (empty). Goal achieved. Sets `goal = None`. Memory is empty. Phase C (Ideation) generates a new goal (e.g., `Wander`).
+2. `TransitionMechanics`: ISL rule triggers: `not sprite.goal -> intention = IDLE`.
+
+### Summary Recommendations
+
+1. **Do not create `MemoryMechanics`.** Centralize all Goal lifecycle management (Resolution, Popping, Ideation, Interruption, Tracking) within `CognitionMechanics`.
+2. **Refactor `memory.goal**` to be a `List[Goal]` stack to handle interruptions cleanly.
+3. **Keep `TransitionMechanics` ignorant of "Why".** It should only process the ISL matrix to map the current `Goal` to the correct physical `Intention`.

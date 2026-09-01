@@ -54,10 +54,11 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
     * `triggers: Dict[str, bool]`
     * `parameters: Dict[str, Dict[str, Union[int, double]]]`
 * `memory:` 
-    * `goal: Goal`
+    * `goals: List[Goal]`
     * `prices: Dict[str, double]`
     * `relationships: Dict[str, str]`
     * `property: List[str]`
+    * `rumors: List[str]`
 * `psyche`:
     * `expression: str`
     * `motivation: str`
@@ -180,7 +181,7 @@ Motivations are long-term state variables that are used to modulate the [Intenti
 
 *Memory* is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. 
 
-- `memory.goal`: Remember Goal. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.
+- `memory.goals`: Remember Goal. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.
 - `memory.rumors`: List of Lexicon keys the Sprite has heard through entering into the `speak` Intention.
 - `memory.prices`:
 - `memory.relationship`:

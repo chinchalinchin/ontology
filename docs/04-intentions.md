@@ -4,6 +4,8 @@ Intentions and Goals are an internal data structure that governs a Sprite's core
 
 Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the [Intention Transition Matrix](#transition-matrix).
 
+Broadly speaking, an Intention is a "verb", e.g. `attack`, `find`, `barter`, etc. A Goal is a "noun" (e.g. `sprite`, `position`, `loot`, etc.). While the exact mapping is more complex, in general terms: Intentions produce Actions, Goals produce Directions.
+
 ## Intention
 
 A Intention is a [Sprite](./02-sprites.md) field that factors into the Asset Animation calculations indirectly; It may be thought of as a "hidden" state. An Animation is a "projection" of a Sprite's Intention into the (Action, Direction)-space. 
@@ -70,7 +72,7 @@ A brief explanation of each Intention state value is given below,
     `mine` is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by [Action Sets](./appendices/01-schemas.md#configuration-actions) and [AnimationMaps](./10-architecture.md#maps).
 
 ### Transition Matrix
-    
+
 * Location: `/src/data/config/intentions/main.yaml`
 
 !!! important
@@ -84,6 +86,7 @@ intentions:
         - next: <intention-key>
           conditions: 
             - <condition>
+
 ```
 
 **Default Intention Transition Matrix**
@@ -95,17 +98,17 @@ Provided below is the Intention Transition Matrix bundled with the application b
 ```
 
 | # | Starting Intention | Reachable Intentions |
-| - | - | - |
+| --- | --- | --- |
 | 1 | `attack` | `attack`, `hunt`, `scavenge` |
 | 2 | `attract` | `attract`, `barter`, `speak` |
 | 3 | `barter` | `speak`, `find`, `threaten` |
-| 4 | `build` |  `barter`, `find`, `mine` |
-| 5 | `escape` | `return`, `find`, `sprint` | 
+| 4 | `build` | `barter`, `find`, `mine` |
+| 5 | `escape` | `return`, `find`, `sprint` |
 | 6 | `find` | `interact`, `speak`, `barter` |
 | 7 | `follow` | `find`, `sprint` |
-| 8 | `hunt` | `sprint` | 
-| 9 | `idle`| `return`, `wander` |
-| 10 | `interact` | `barter`, `speak`, `attract` | 
+| 8 | `hunt` | `sprint` |
+| 9 | `idle` | `return`, `wander` |
+| 10 | `interact` | `barter`, `speak`, `attract` |
 | 11 | `mine` | `barter`, `scavenge` |
 | 11 | `mock` | `threaten`, `escape` |
 | 12 | `return` | `find`, `wander` |
@@ -121,24 +124,24 @@ The `condition` for each Intention transition is given in a simple truth-valued 
 
 Operations:
 
-- `==`: equivalence
-- `!=`: non-equivalence
-- `not`: negation
-- `or`: disjunction
-- `and`: conjunction
+* `==`: equivalence
+* `!=`: non-equivalence
+* `not`: negation
+* `or`: disjunction
+* `and`: conjunction
 
 Terms:
 
-- `None`: null value
-- `str`: constants
-- `sprite.<attribute>`: self State variable
-- `sprites[<sprite-name>].<attribute>`: other Sprites state variable
+* `None`: null value
+* `str`: constants
+* `sprite.<attribute>`: self State variable
+* `sprites.get(<sprite-name>).<attribute>`: other Sprites state variable
 
 For example, in the default Intention Transition matrix given above, the transition from `attack` to `hunt` is conditional on the following,
 
 ```yaml
 - not sprite.goal
-- sprite.memory.goal.category == 'sprite'
+- sprite.memory.goal.category == GoalCategories.SPRITE.value
 ```
 
 `sprite` is a reference to the Sprite's state which is currently having its Intention processed by the game engine. Thus, the Sprite's Intention state will transition to `hunt` if the Sprite currently does not have a Goal, but remembers having a Goal of Category `sprite`.
@@ -149,35 +152,36 @@ For example, in the default Intention Transition matrix given above, the transit
 In another example, the transition from `attack` to `scavenge` in the default Intention Transition matrix is given by,
 
 ```yaml
-- sprites[sprite.name].mutators.triggers.dead
+- sprites.get(sprite.goal.name)
+- sprites.get(sprite.goal.name).mutators.triggers.dead
 ```
 
-`sprites` is a reference to a dictionary of all ingame Sprites states keyed by their identifying and unique `name`, which provides access to their state attributes.
+`sprites` is a reference to a cross-layer dictionary (`_cached_characters`) of all ingame Sprites states keyed by their identifying and unique `name`, which provides $O(1)$ access to their state attributes.
 
 Notice in the example there is a self-entrant transition. A Sprite with an `attack` Intention can re-enter the `attack` Intention conditional on the Sprite still having a target,
 
-```yaml 
-- sprite.goal.category == 'sprite'
+```yaml
+- sprite.goal.category == GoalCategories.SPRITE.value
 ```
 
 !!! important
-    The conditions for an Intention transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == 'sprite'`, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into `attack`.
+    The conditions for an Intention transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == GoalCategories.SPRITE.value`, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into `attack`.
 
-Intention transition conditions are converted into lambda functions by the application and then evaluated at runtime.The application evaluates ISL conditions sequentially utilizing Python's native short-circuit logic.
+Intention transition conditions are compiled by the application during initialization and evaluated at runtime. The engine supports two execution strategies, configured via `ISL_TRANSLATOR` in `settings.py`: `lambda` (which generates inline Python functions) and `compiler` (which generates native Abstract Syntax Trees). The application evaluates ISL conditions sequentially utilizing Python's native short-circuit logic.
 
 To avoid AttributeError exceptions during runtime, existential checks must strictly precede attribute accesses. Consider,
 
 ```yaml
 # CORRECT CONFIGURATION
 - sprite.goal
-- sprite.goal.category == 'sprite
+- sprite.goal.category == GoalCategories.SPRITE.value
 ```
 
 versus,
 
 ```yaml
 # INCORRECT CONFIGURATION
-- sprite.goal.category == 'sprite'
+- sprite.goal.category == GoalCategories.SPRITE.value
 - sprite.goal
 ```
 
@@ -185,13 +189,13 @@ In the first case, `goal` is guaranteed to exist before the subsequent condition
 
 The ISL environment is injected with variables during execution:
 
-- `sprite`: The SpriteState of the entity currently evaluating its transitions.
-- `sprites`: A dictionary mapping `name: AssetState` for all mutable characters (Sprites and Players) currently on the board.
-- `constants`: A dictionary of enums for accessing categorical constants.
+* `sprite`: The SpriteState of the entity currently evaluating its transitions.
+* `sprites`: The `_cached_characters` dictionary mapping `name: AssetState` for all mutable characters (Sprites and Players) currently on the board.
+* *Constants & Enums*: The evaluation environment is directly injected with `GoalCategories`, `Intentions`, `AssetInstances`, `Motivations`, etc.
 
 !!! warning
     When referencing `sprites[...]` via a Goal name, authors must use `sprites.get(sprite.goal.name)` to protect the runtime against `KeyErrors` from garbage-collected entities.
-    
+
 ## Goal
 
 *Goals* provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Intention is *in order* to achieve a Goal.
@@ -263,5 +267,13 @@ TODO
 
 **Formulae**
 
-- `if state.intention == speak and state.psyche.communication: dialogue = state.psyche.communcation`
+- `if state.intention == speak and state.psyche.dialogue: dialogue = state.psyche.dialogue`
+
+## Mechanics
+
+The (Intention, Goal) of a Sprite is managed across the application lifecycle by [Mechanics](./05-mechanics.md). 
+
+- CognitionMechanics ("*The Brain*"): Manages the Goal Lifecycle. It evaluates the environment, consults Motivations and Meters, sets the Goal, determines if the Goal has been achieved (or invalidated), and manages the Memory stack.
+- TransitionMechanics ("*The Instinct*"): Manages the Intention Transitions. It looks at the current Goal set by Cognition and evaluates the ISL matrix to figure out how to achieve it (e.g., `sprite.state.goal EXISTS`, so `transition: idle -> find`).
+- Spatial Mechanics (*The Muscle*): CombatMechanics, InteractionMechanics, etc., alter the physical world state (e.g., killing the target, opening the Chest). This physical change is what signals CognitionMechanics on the next tick that the goal is achieved.
 

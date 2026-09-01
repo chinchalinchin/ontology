@@ -265,17 +265,16 @@ class Builder:
             Mechanics.MENU.value, Mechanics.ANIMATION.value, Mechanics.REMOVE.value
         ]
         world_cfg = getattr(self.context.configurations.mechanics, 'world', None) or [
-            Mechanics.PLAYER.value, Mechanics.MOTION.value
+            Mechanics.PLAYER.value, Mechanics.COGNITION.value, 
+            Mechanics.TRANSITION.value, Mechanics.MOTION.value
         ]
         
         self.core = [Factory.mechanics(m) for m in core_cfg]
         self.world = [Factory.mechanics(m) for m in world_cfg]
 
         # Post-Process Core: Inject the compiled ISL Executor into TransitionMechanics
-        if settings.ISL_TRANSLATOR == "compiler":
-            executor = CompilerTranslator().compile(self.context.configurations.intentions)
-        else:
-            executor = LambdaTranslator().compile(self.context.configurations.intentions)
+        translator = Factory.translator(settings.ISL_TRANSLATOR)
+        executor = translator.compile(self.context.configurations.intentions)
             
         for m in self.world:
             if isinstance(m, TransitionMechanics):
