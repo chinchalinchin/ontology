@@ -102,7 +102,8 @@ class Factory:
         Mechanics.COMBAT: CombatMechanics,
         Mechanics.MOTION: MotionMechanics,
         Mechanics.SPEECH: SpeechMechanics,
-        Mechanics.MENU: MenuMechanics
+        Mechanics.MENU: MenuMechanics,
+        Mechanics.COGNITION: CognitionMechanics
     }
 
     CONTROLLER_MAP  = {

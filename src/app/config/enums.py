@@ -170,6 +170,7 @@ class GoalCategories(str, Enum):
     WEALTH          = "wealth"
     PROPERTY        = "property"
     POSITION        = "position"
+    SPRITE          = "sprite"
     
 class PlayerGoals(str, Enum):
     UP              = "up"
