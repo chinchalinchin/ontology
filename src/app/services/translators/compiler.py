@@ -75,7 +75,7 @@ class CompilerTranslator(Translator):
                         
                 compiled_transitions[intention_key].append(
                     IntentionTransition(
-                        next_intention=next_intention,
+                        next=next_intention,
                         conditions=code_objects
                     )
                 )
