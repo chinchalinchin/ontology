@@ -44,29 +44,27 @@ class PlayerMechanics(Mechanic):
         """
         player = board.player()
         
+        is_blocking = player.state.intention in BlockingIntentions
+        is_animating = player.state.animation.frame > 0 or player.state.animation.tick > 0
+        is_locked = is_blocking and is_animating
+
         if payload.world.intention:
-            # Only assign and reset the frame/tick if the intention is new
-            if player.state.intention != payload.world.intention:
+            # 2. Reject new intentions if the player is locked
+            if not is_locked and player.state.intention != payload.world.intention:
                 player.state.intention = payload.world.intention
                 player.state.animation.frame = 0
                 player.state.animation.tick = 0
         else:
-            # Fallback Only if the player is not currently trapped in a blocking cycle
-            is_blocking = player.state.intention in BlockingIntentions
-            
-            # An animation is active if either the frame or the tick has advanced
-            is_animating = player.state.animation.frame > 0 \
-                            or player.state.animation.tick > 0
-            
-            if not (is_blocking and is_animating):
+            # 3. Cleanly fallback to IDLE if no input is provided and we aren't locked
+            if not is_locked:
                 player.state.intention = Intentions.IDLE
         
         speed = player.state.character.speed
         goal_x = player.state.position.x
         goal_y = player.state.position.y
         
-        # Track movement so the player doesn't instantly snap back 
-        # to 'UP' when inputs are released.
+        # Track movement so the player doesn't instantly snap back to 'UP'
+        #   when inputs are released.
         has_movement = False
 
         if PlayerGoals.UP in payload.world.goals:

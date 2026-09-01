@@ -115,7 +115,6 @@ Provided below is the Intention Transition Matrix bundled with the application b
 | 16 | `threaten` | `attack`, `mock` |
 | 17 | `wander` | `idle`, `return` |
 
-
 **Intentional Scripting Language (ISL)**
 
 The `condition` for each Intention transition is given in a simple truth-valued language that admits the logical operations and terms,
@@ -164,7 +163,29 @@ Notice in the example there is a self-entrant transition. A Sprite with an `atta
 !!! important
     The conditions for an Intention transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == 'sprite'`, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into `attack`.
 
-Intention transition conditions are converted into lambda functions by the application and then evaluated at runtime.
+Intention transition conditions are converted into lambda functions by the application and then evaluated at runtime.The application evaluates ISL conditions sequentially utilizing Python's native short-circuit logic.
+
+To avoid AttributeError exceptions during runtime, existential checks must strictly precede attribute accesses. Consider,
+
+```yaml
+# CORRECT CONFIGURATION
+- sprite.goal
+- sprite.goal.category == 'sprite
+```
+
+versus,
+
+```yaml
+- sprite.goal.category == 'sprite'
+- sprite.goal
+```
+
+In the first case, `goal` is guaranteed to exist before the subsequent condition is applied to `goal.category`.
+
+The ISL environment is injected with exactly two variables during execution:
+
+- `sprite`: The SpriteState of the entity currently evaluating its transitions.
+- `sprites`: A dictionary mapping `name: AssetState` for all mutable characters (Sprites and Players) currently on the board.
 
 ## Goal
 

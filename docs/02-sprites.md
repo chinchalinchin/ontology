@@ -133,6 +133,7 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
 - `parameters.fear.limit`: Percentage of health below which Sprite triggers the `triggers.fear` mutator.
 - `parameters.fear.enemy`: Number of enemies within the `parameters.fear.radius` that must be present to trigger the `triggers.fear` mutator.
 - `parameters.vision.radius`: Radius of separation within which the Sprite triggers the `triggers.vision` mutator. Measured in pixels.
+- `parameters.community.radius`: Radius used for [Town Formation Mechanics](./09-emergence.md#towns).
 
 ### Animation
 
@@ -183,11 +184,11 @@ Motivations are long-term state variables that are used to modulate the [Intenti
 - `memory.rumors`: List of Lexicon keys the Sprite has heard through entering into the `speak` Intention.
 - `memory.prices`:
 - `memory.relationship`:
-- `memory.property`:
+- `memory.property: Dict[str, Position]`
 
 **Prices**
 
-Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the `barter` Intention. This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.
+Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the `barter` [Intention](./04-intentions.md). This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.
 
 When two Sprites enter the `speak` Intention within a certain radius of each other, the `SpeechMechanic` does the following:
 
@@ -196,7 +197,7 @@ When two Sprites enter the `speak` Intention within a certain radius of each oth
 
 **Property**
 
-TODO
+A Sprite can acquire property through the `build` [Intention](./04-intentions.md). When a Sprite creates a [Strut](./01-assets.md#struts), the location of that Strut is stored in `memory.property`, keyed to the name of the Strut Asset.
 
 **Relationships**
 

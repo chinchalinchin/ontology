@@ -1,6 +1,6 @@
 # Ontology: Mechanics
 
-A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an `update(board: Board, delta: float, bus: collections.deque)` method. The arguments of this interface are the [Board](./00-overview.md#board), a game loop time delta and an [Event Bus](./06-widgets.md#events) for storing Menu Events. These arguments are injected from above by the [Engine](./00-overview.md#engine)
+A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an `update(board: Board, delta: float, bus: collections.deque, payload: DevicePayload)` method. The arguments of this interface are the [Board](./00-overview.md#board), a game loop time delta, an [Event Bus](./06-widgets.md#events) for storing Menu Events and the current [Device](./02-sprites.md#devices) Payload. These arguments are injected from above by the [Engine](./00-overview.md#engine)
 
 ## Overview
 
@@ -96,6 +96,7 @@ These Mechanics handle spatial interactions and collisions between Assets.
     - `if source.instance == 'players':`
         - `if target.instance == 'chests': bus.append(MenuEvent('inventory', player.state)` 
         - `if target.instance == 'doors': source.state.layer = door.state.outlayer` 
+        - `if target.instance == 'signs': TODO`
 
 **CollisionMechanics**
 
@@ -118,11 +119,22 @@ The [Player](./03-player.md) does not observe momentum transfers. Instead, the P
 These Mechanics handle the Sprite Intention logic.
 
 - `player: PlayerMechanics`: Resolve Device input into Player (Intention, Goal)-state.
+- `cognition: CognitionMechanics`: Handles Sprite goal-seeking.
 - `transition: TransitionMechanics`: Applies the Intention Transition Matrix conditions to all Sprite Sheets.
 - `commerce: CommerceMechanics`: Translate Intentions (barter, attract, etc.) into trades and price movements.
 - `speech: SpeechMechanics`: TODO
 
-TODO
+**CognitionMechanics**
+
+CognitionMechanics acts as the Sprite's "Device." Its job is to update `sprite.state.goal.position` based on the Sprite's current [Intention](./04-intentions.md) and its `mutators.vision.parameters` (and other Mutators).
+
+- `WANDER`: If the Sprite has no Goal, CognitionMechanics generates a random coordinate within a certain radius and sets it as `goal.position`. Once reached, it generates a new one.
+
+- `FIND / FOLLOW / HUNT`: The Sprite already has a `goal.name`. CognitionMechanics queries the Board for that target. If the target is within the Sprite's `vision.radius`, it updates `sprite.state.goal.position` to match the target's current coordinates. If the target steps out of the radius, `goal.position` stops updating, freezing at the last known location.
+
+- `ESCAPE`: CognitionMechanics finds the threat, calculates the vector away from the threat, and projects a goal.position in the opposite direction.
+
+Once CognitionMechanics has updated the` goal.position`, it hands off the updated state to [MotionMechanics](#core)
 
 ## Configuration
 
