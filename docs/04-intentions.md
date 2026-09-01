@@ -176,11 +176,12 @@ To avoid AttributeError exceptions during runtime, existential checks must stric
 versus,
 
 ```yaml
+# INCORRECT CONFIGURATION
 - sprite.goal.category == 'sprite'
 - sprite.goal
 ```
 
-In the first case, `goal` is guaranteed to exist before the subsequent condition is applied to `goal.category`.
+In the first case, `goal` is guaranteed to exist before the subsequent condition is applied to `goal.category`, while the second will generate a runtime error.
 
 The ISL environment is injected with exactly two variables during execution:
 

@@ -15,10 +15,8 @@ if TYPE_CHECKING:
 from app.config.enums import (
     Intentions, 
     AssetInstances, 
-    AssetCategories,
     GoalCategories, 
     Motivations
-
 )
 from app.game.logic.mechanics.core import Mechanic
 from app.models.state import DevicePayload, Goal
