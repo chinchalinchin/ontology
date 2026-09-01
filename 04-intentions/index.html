@@ -1322,7 +1322,22 @@
 <p class="admonition-title">Important</p>
 <p>The conditions for an Intention transition are evaluated in the order they specified! In the given example, if <code>sprite.goal.category == 'sprite'</code>, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into <code>attack</code>.</p>
 </div>
-<p>Intention transition conditions are converted into lambda functions by the application and then evaluated at runtime.</p>
+<p>Intention transition conditions are converted into lambda functions by the application and then evaluated at runtime.The application evaluates ISL conditions sequentially utilizing Python's native short-circuit logic.</p>
+<p>To avoid AttributeError exceptions during runtime, existential checks must strictly precede attribute accesses. Consider,</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># CORRECT CONFIGURATION</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == &#39;sprite</span>
+</code></pre></div>
+<p>versus,</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == &#39;sprite&#39;</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+</code></pre></div>
+<p>In the first case, <code>goal</code> is guaranteed to exist before the subsequent condition is applied to <code>goal.category</code>.</p>
+<p>The ISL environment is injected with exactly two variables during execution:</p>
+<ul>
+<li><code>sprite</code>: The SpriteState of the entity currently evaluating its transitions.</li>
+<li><code>sprites</code>: A dictionary mapping <code>name: AssetState</code> for all mutable characters (Sprites and Players) currently on the board.</li>
+</ul>
 <h2 id="goal">Goal</h2>
 <p><em>Goals</em> provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's <em>modus operandi</em>, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Intention is <em>in order</em> to achieve a Goal.</p>
 <ul>

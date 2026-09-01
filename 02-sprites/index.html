@@ -1350,6 +1350,7 @@
 <li><code>parameters.fear.limit</code>: Percentage of health below which Sprite triggers the <code>triggers.fear</code> mutator.</li>
 <li><code>parameters.fear.enemy</code>: Number of enemies within the <code>parameters.fear.radius</code> that must be present to trigger the <code>triggers.fear</code> mutator.</li>
 <li><code>parameters.vision.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.vision</code> mutator. Measured in pixels.</li>
+<li><code>parameters.community.radius</code>: Radius used for <a href="../09-emergence/#towns">Town Formation Mechanics</a>.</li>
 </ul>
 <h3 id="animation">Animation</h3>
 <p>Animations are tuples of (Action, Direction, Frame). Action and Direction were previously defined in the <a href="../01-assets/">Assets documentation</a>.</p>
@@ -1390,17 +1391,17 @@
 <li><code>memory.rumors</code>: List of Lexicon keys the Sprite has heard through entering into the <code>speak</code> Intention.</li>
 <li><code>memory.prices</code>:</li>
 <li><code>memory.relationship</code>:</li>
-<li><code>memory.property</code>:</li>
+<li><code>memory.property: Dict[str, Position]</code></li>
 </ul>
 <p><strong>Prices</strong></p>
-<p>Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the <code>barter</code> Intention. This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.</p>
+<p>Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the <code>barter</code> <a href="../04-intentions/">Intention</a>. This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.</p>
 <p>When two Sprites enter the <code>speak</code> Intention within a certain radius of each other, the <code>SpeechMechanic</code> does the following:</p>
 <ol>
 <li>It averages the intersection of Prices. For example, if one Sprite has a price of 1 for Loot A and another has a price of 5 for Loot A, then the new price of Loot A for both Sprites will be (1 + 5)/2 = 3. It performs this calculation for every such Loot Key the Sprites have in common.</li>
 <li>For each Sprite A and Sprite B, the prices of A subtracted (in the set-theoretic sense) from the prices of B is added to A and visa versa. In other words, if a Sprite converses with another Sprite that has Price information it does not possess, the <code>SpeechMechanic</code> will populate the Sprite's Prices.</li>
 </ol>
 <p><strong>Property</strong></p>
-<p>TODO</p>
+<p>A Sprite can acquire property through the <code>build</code> <a href="../04-intentions/">Intention</a>. When a Sprite creates a <a href="../01-assets/#struts">Strut</a>, the location of that Strut is stored in <code>memory.property</code>, keyed to the name of the Strut Asset.</p>
 <p><strong>Relationships</strong></p>
 <p>TODO</p>
 <p><strong>Rumors</strong></p>

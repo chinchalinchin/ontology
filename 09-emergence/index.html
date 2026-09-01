@@ -736,10 +736,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#formation" class="md-nav__link">
+  <a href="#government" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Formation
+        Government
       
     </span>
   </a>
@@ -747,10 +747,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#government" class="md-nav__link">
+  <a href="#taxes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Government
+        Taxes
       
     </span>
   </a>
@@ -785,11 +785,43 @@
 <h1 id="ontology-emergence">Ontology: Emergence</h1>
 <p>TODO</p>
 <h2 id="towns">Towns</h2>
-<p>TODO</p>
-<h3 id="formation">Formation</h3>
-<p>TODO</p>
+<p>Every Sprite has a Community Radius, <code>mutator.parameter.community.radius</code>. When more than 2 Sprites own <code>sprite.memory.property</code> within their respective Community Radii, a Town Charter is formed.</p>
+<p>To visualize the process, imagine A, B, C represent the circles implied by the Community Radius of 3 Sprites, each centeedr on the location of their respective Property (assuming each Sprite only owns one piece of Property). For any A, B, C, where A and B overlap, B and C overlap, but not necessarily A and C, the conditions for a Town Charter are satisfied.</p>
+<p>Any time a Charter is formed, a <code>town-hall</code> Strut is instantiated in the center of A, B, C. If the center is otherwise occupied, the <code>town-hall</code> Position is randomly generated within the Community Radii.</p>
+<p><strong>CharterConfiguration</strong></p>
+<ul>
+<li><code>collection: int</code>: Number of ticks per tax collection.</li>
+</ul>
+<p><strong>CharterState</strong></p>
+<ul>
+<li><code>name: str</code></li>
+<li><code>radius: int</code>:</li>
+<li><code>mayor: str</code>:</li>
+<li><code>taxes</code>:<ul>
+<li><code>property</code>: float</li>
+<li><code>excise</code>: float</li>
+</ul>
+</li>
+<li><code>property: Dict[str, Position]</code></li>
+<li><code>coffers: int</code></li>
+<li><code>citizens: List[str]</code></li>
+</ul>
 <h3 id="government">Government</h3>
+<p><strong>Elections</strong></p>
 <p>TODO</p>
+<p><strong>Mayor</strong></p>
+<p>Once a mayor is elected and assigned to the Charter, the <code>charter.coffers</code> become bound to that Sprite's <code>wallet</code>, effectively giving them access to the <a href="#taxes">Tax Income</a>.</p>
+<h3 id="taxes">Taxes</h3>
+<p>A Charter enforces two kinds of taxes within its boundaries: Excise and Property.</p>
+<p><strong>Property Taxes</strong></p>
+<p>While a Charter is in effect, any Sprite who owns Property within the Charter Radius is charged a Property tax periodically. The amount of the Property Tax is deducted from the Sprite <code>wallet</code> and added to <code>charter.coffers</code>.</p>
+<p>If a Sprite's <code>wallet &lt; property_tax</code> when the taxes come due, the Property is confiscated by the Charter and assigned an owner of <code>charter.name</code>.</p>
+<p>The Property tax deducted by a Charter for a given Sprite who owns Property within that Charter is calculated as follows:</p>
+<div class="arithmatex">\[
+\text{Property Tax} = \frac{\text{total value of Sprite Struts}}{\text{total value of Charter Struts}} \cdot \text{Charter Property Tax Rate} \cdot \text{total value of Sprite Struts}
+\]</div>
+<p><strong>Excise Taxes</strong></p>
+<p>Any time a transaction occurs within <code>charter.radius</code> of <code>town-hall</code>, an <code>excise</code> tax percentage is applied and added to <code>charter.coffers</code>.</p>
 
 
 

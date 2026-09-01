@@ -917,7 +917,7 @@
 
 
 <h1 id="ontology-mechanics">Ontology: Mechanics</h1>
-<p>A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an <code>update(board: Board, delta: float, bus: collections.deque)</code> method. The arguments of this interface are the <a href="../00-overview/#board">Board</a>, a game loop time delta and an <a href="../06-widgets/#events">Event Bus</a> for storing Menu Events. These arguments are injected from above by the <a href="../00-overview/#engine">Engine</a></p>
+<p>A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an <code>update(board: Board, delta: float, bus: collections.deque, payload: DevicePayload)</code> method. The arguments of this interface are the <a href="../00-overview/#board">Board</a>, a game loop time delta, an <a href="../06-widgets/#events">Event Bus</a> for storing Menu Events and the current <a href="../02-sprites/#devices">Device</a> Payload. These arguments are injected from above by the <a href="../00-overview/#engine">Engine</a></p>
 <h2 id="overview">Overview</h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1004,6 +1004,7 @@
 <li><code>if source.instance == 'players':</code><ul>
 <li><code>if target.instance == 'chests': bus.append(MenuEvent('inventory', player.state)</code> </li>
 <li><code>if target.instance == 'doors': source.state.layer = door.state.outlayer</code> </li>
+<li><code>if target.instance == 'signs': TODO</code></li>
 </ul>
 </li>
 </ul>
@@ -1028,11 +1029,25 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <p>These Mechanics handle the Sprite Intention logic.</p>
 <ul>
 <li><code>player: PlayerMechanics</code>: Resolve Device input into Player (Intention, Goal)-state.</li>
+<li><code>cognition: CognitionMechanics</code>: Handles Sprite goal-seeking.</li>
 <li><code>transition: TransitionMechanics</code>: Applies the Intention Transition Matrix conditions to all Sprite Sheets.</li>
 <li><code>commerce: CommerceMechanics</code>: Translate Intentions (barter, attract, etc.) into trades and price movements.</li>
 <li><code>speech: SpeechMechanics</code>: TODO</li>
 </ul>
-<p>TODO</p>
+<p><strong>CognitionMechanics</strong></p>
+<p>CognitionMechanics acts as the Sprite's "Device." Its job is to update <code>sprite.state.goal.position</code> based on the Sprite's current <a href="../04-intentions/">Intention</a> and its <code>mutators.vision.parameters</code> (and other Mutators).</p>
+<ul>
+<li>
+<p><code>WANDER</code>: If the Sprite has no Goal, CognitionMechanics generates a random coordinate within a certain radius and sets it as <code>goal.position</code>. Once reached, it generates a new one.</p>
+</li>
+<li>
+<p><code>FIND / FOLLOW / HUNT</code>: The Sprite already has a <code>goal.name</code>. CognitionMechanics queries the Board for that target. If the target is within the Sprite's <code>vision.radius</code>, it updates <code>sprite.state.goal.position</code> to match the target's current coordinates. If the target steps out of the radius, <code>goal.position</code> stops updating, freezing at the last known location.</p>
+</li>
+<li>
+<p><code>ESCAPE</code>: CognitionMechanics finds the threat, calculates the vector away from the threat, and projects a goal.position in the opposite direction.</p>
+</li>
+</ul>
+<p>Once CognitionMechanics has updated the<code>goal.position</code>, it hands off the updated state to <a href="#core">MotionMechanics</a></p>
 <h2 id="configuration">Configuration</h2>
 <ul>
 <li>Location: <code>/src/data/config/mechanics/main.yaml</code></li>
