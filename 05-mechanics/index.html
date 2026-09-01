@@ -923,6 +923,31 @@
 <p class="admonition-title">Note</p>
 <p>Mechanics are listed below using <code>key: class</code>, where <code>key</code> is the unique string identifier for the associated Mechanic implementation class. This <code>key</code> is used in the <a href="#configuration">Mechanics Configuration</a> to specify the order of execution.</p>
 </div>
+<p>Mechanics and <a href="../04-intentions/">Intentions</a> are the "foundation" of the gameplay. Their interplay and dynamics generates all of the complexity within the game engine. Mechanics are the "<em>laws of nature</em>" and Intentions are the "<em>states of mind</em>"</p>
+<ol>
+<li>Navigational Intentions (<code>FIND</code>, <code>FOLLOW</code>, <code>HUNT</code>, <code>ESCAPE</code>, <code>WANDER</code>, <code>RETURN</code>)<ul>
+<li>Handled by: CognitionMechanics + MotionMechanics</li>
+<li>Logic: Cognition moves the goal.position coordinate. Motion accelerates the velocity vector toward it.</li>
+</ul>
+</li>
+<li>Spatial/Interactive Intentions (<code>ATTACK</code>, <code>MINE</code>, <code>BUILD</code>, <code>INTERACT</code>)<ul>
+<li>Handled by: CombatMechanics, MineMechanics, InteractionMechanics</li>
+<li>Logic: These Mechanics iterate only over Sprites in their respective Intentions. CombatMechanics does not care how a Sprite got into the ATTACK intention; it simply says: "Is this Sprite in the ATTACK intention? Yes. Are its hitboxes intersecting with its Goal? Yes. Apply damage calculation."</li>
+</ul>
+</li>
+<li>Communicative Intentions (<code>SPEAK</code>, <code>THREATEN</code>, <code>BARTER</code>)<ul>
+<li>Handled by: SpeechMechanics, CommerceMechanics</li>
+<li>Logic: Iterates over Sprites in communicative Intentions, checking if they are within conversational radius of their target to swap prices or rumors.</li>
+</ul>
+</li>
+</ol>
+<p>To visualize how this all ties together for a <a href="../02-sprites/">Sprite</a> in a single frame:</p>
+<ul>
+<li>CognitionMechanics: Reads the Intention and updates goal.position (e.g., tracking a running Player).</li>
+<li>TransitionMechanics: Evaluates the <a href="../04-intentions/#transition-matrix">ISL</a>. It then maps the Intention and Goal to the Animation (action, direction).</li>
+<li>MotionMechanics: Sees the <code>goal.position</code> and applies impulse to velocity.</li>
+<li>SpatialMechanics: If the Sprite is in an interactive Intention, checks if the hitboxes overlap to trigger physical world changes (damage, mining, looting).</li>
+</ul>
 <h3 id="core">Core</h3>
 <p>These Mechanics handle the core engine logic.</p>
 <ul>
