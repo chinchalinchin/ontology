@@ -7,6 +7,25 @@ A Mechanic is an implementation of an abstract interface the engine calls during
 !!! note
     Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation class. This `key` is used in the [Mechanics Configuration](#configuration) to specify the order of execution.
 
+Mechanics and [Intentions](./04-intentions.md) are the "foundation" of the gameplay. Their interplay and dynamics generates all of the complexity within the game engine. Mechanics are the "*laws of nature*" and Intentions are the "*states of mind*"
+
+1. Navigational Intentions (`FIND`, `FOLLOW`, `HUNT`, `ESCAPE`, `WANDER`, `RETURN`)
+    - Handled by: CognitionMechanics + MotionMechanics
+    - Logic: Cognition moves the goal.position coordinate. Motion accelerates the velocity vector toward it.
+2. Spatial/Interactive Intentions (`ATTACK`, `MINE`, `BUILD`, `INTERACT`)
+    - Handled by: CombatMechanics, MineMechanics, InteractionMechanics
+    - Logic: These Mechanics iterate only over Sprites in their respective Intentions. CombatMechanics does not care how a Sprite got into the ATTACK intention; it simply says: "Is this Sprite in the ATTACK intention? Yes. Are its hitboxes intersecting with its Goal? Yes. Apply damage calculation."
+3. Communicative Intentions (`SPEAK`, `THREATEN`, `BARTER`)
+    - Handled by: SpeechMechanics, CommerceMechanics
+    - Logic: Iterates over Sprites in communicative Intentions, checking if they are within conversational radius of their target to swap prices or rumors.
+
+To visualize how this all ties together for a [Sprite](./02-sprites.md) in a single frame:
+
+- CognitionMechanics: Reads the Intention and updates goal.position (e.g., tracking a running Player).
+- TransitionMechanics: Evaluates the [ISL](./04-intentions.md#transition-matrix). It then maps the Intention and Goal to the Animation (action, direction).
+- MotionMechanics: Sees the `goal.position` and applies impulse to velocity.
+- SpatialMechanics: If the Sprite is in an interactive Intention, checks if the hitboxes overlap to trigger physical world changes (damage, mining, looting).
+
 ### Core
 
 These Mechanics handle the core engine logic.
