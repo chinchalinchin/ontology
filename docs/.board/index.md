@@ -38,4 +38,23 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Bug B000: Attacking](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering](./phases/patch/bug-b001.md)
   - Report:
-    - [x]: [2026-08-10: SDL Pipeline Failure](./phases/report/2026-08-16.md)
+    - [x]: [2026-08-16: SDL Pipeline Failure](./phases/report/2026-08-16.md)
+
+**Bug Report Template**
+
+For ancillary or tangential bugs detected, use the following template to open new Bugs,
+
+```markdown
+# Bug {{ id }}: {{ title }}
+
+**STATUS**: OPEN
+**SEVERITY**: {{ severity }}
+
+**Description**
+
+{{ description }}
+
+**Steps to Replicate** 
+
+{{ steps }}
+```

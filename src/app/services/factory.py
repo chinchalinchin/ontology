@@ -31,7 +31,8 @@ from app.config.enums import (
     FrameRecipe, 
     Devices,
     Mechanics,
-    Controllers
+    Controllers,
+    Translators
 )
 from app.game.logic.mechanics import (
     AnimationMechanics,
@@ -51,7 +52,9 @@ from app.game.logic.mechanics import (
 )
 from app.game.menus.controllers import (
     DisplayController,
-    ScrollController
+    ScrollController,
+    MainController,
+    LoadController
 )
 from app.models.config import (
     RecipeConfiguration,
@@ -111,12 +114,14 @@ class Factory:
 
     CONTROLLER_MAP  = {
         Controllers.DISPLAY: DisplayController,
-        Controllers.SCROLL: ScrollController
+        Controllers.SCROLL: ScrollController,
+        Controllers.MAIN: MainController,
+        Controllers.LOAD: LoadController,
     }
     
     TRANSLATOR_MAP = {
-        "lambda": LambdaTranslator,
-        "compiler": CompilerTranslator
+        Translators.LAMBDA: LambdaTranslator,
+        Translators.COMPILER: CompilerTranslator
     }
 
     @staticmethod

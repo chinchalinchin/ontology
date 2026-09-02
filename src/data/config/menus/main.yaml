@@ -1,6 +1,6 @@
 menus:
   main:
-    controller: display
+    controller: main
     roots: 
       - id: neutral
         name: main-menu
@@ -33,3 +33,20 @@ menus:
             bind:
               selector: editor
               selection: menu
+  load:
+    controller: load
+    roots: 
+      - id: neutral
+        name: main-menu
+        position:
+          px: 0
+          py: 0
+        layout: stack
+        alignment: center
+        gap: 10
+        children: 
+          - instance: meters
+            id: health
+            name: load-bar
+            bind: 
+              state: context.registry

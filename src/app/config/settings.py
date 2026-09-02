@@ -10,6 +10,7 @@ from pathlib import Path
 ### SEPARATOR: Constant used by registry indexing to
 ###             separate asset keys.
 SEPARATOR = "-"
+NEW_BOARD = "world-01"
 # ---------------------------------------------------
 ## --------------------------------- ENGINE CONSTANTS
 ### TARGET_FPS: Engine's target FPS.

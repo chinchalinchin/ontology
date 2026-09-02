@@ -8,11 +8,9 @@ Cythonized extension for ingesting physical image files, tracking their GPU memo
 import os
 import time
 import logging
-from typing import Tuple
 
 # Application Libraries
 import app.config.settings as settings
-from app.services.factory import Factory
 
 # Cython Libraries
 from libs.graphics.render cimport (
@@ -59,25 +57,71 @@ cdef class TTFFont:
             TTF_CloseFont(self.ptr)
             self.ptr = NULL
 
-class Registry:
+def _sys_load_image(filepath: str):
+    """Module-level C-call wrapper to allow Python unit testing."""
+    cdef bytes b_filepath = filepath.encode('utf-8')
+    cdef SDL_Texture* tex = IMG_LoadTexture(_renderer, b_filepath)
+    
+    if tex == NULL:
+        raise RuntimeError(f"Failed to load texture into GPU memory: {filepath}")
+
+    cdef int w, l
+    SDL_QueryTexture(tex, NULL, NULL, &w, &l)
+
+    cdef TexturePtr wrapper = TexturePtr()
+    wrapper.ptr = tex
+    wrapper.w = w
+    wrapper.l = l
+    return wrapper
+
+def _sys_load_font(filepath: str, pt_size: int, style: dict):
+    """Module-level C-call wrapper to allow Python unit testing."""
+    cdef bytes b_filepath = filepath.encode('utf-8')
+    cdef TTF_Font* f_ptr = TTF_OpenFont(b_filepath, pt_size)
+    
+    if f_ptr == NULL:
+        raise RuntimeError(f"Failed to load font into memory: {filepath}")
+        
+    cdef int sdl_style = TTF_STYLE_NORMAL
+    if style.get("bold", False): sdl_style |= TTF_STYLE_BOLD
+    if style.get("italics", False): sdl_style |= TTF_STYLE_ITALIC
+    TTF_SetFontStyle(f_ptr, sdl_style)
+    
+    cdef TTFFont font_obj = TTFFont()
+    font_obj.ptr = f_ptr
+    font_obj.margins = style.get("margins", 0.05)
+    font_obj.align_str = style.get("alignment", "left")
+    
+    cdef dict color_cfg = style.get("color", {})
+    font_obj.color.r = color_cfg.get("r", 255)
+    font_obj.color.g = color_cfg.get("g", 255)
+    font_obj.color.b = color_cfg.get("b", 255)
+    font_obj.color.a = color_cfg.get("a", 255)
+    
+    return font_obj
+
+cdef class Registry:
     """
     Centralized Asset Registry to ingest configuration, cache GPU textures, 
     and map dynamic string keys to crop coordinates.
     """
     
-    properties: dict
-    recipes: dict
-    typography: dict
+    cdef public dict properties
+    cdef public dict recipes
+    cdef public dict typography
 
-    cdef dict _textures
-    cdef dict _frames
-    cdef dict _fonts
+    cdef public dict _textures
+    cdef public dict _frames
+    cdef public dict _fonts
     cdef public dict _filepaths
     cdef public list _pending_assets
     cdef public int maximum
     cdef public int current
 
-    def __init__(self, properties, recipes, typography={}):
+    def __init__(self, dict properties, dict recipes, dict typography=None):
+        if typography is None:
+            typography = {}
+            
         logger.debug("Initializing Asset Registry...")
         self._textures = {}
         self._frames = {}
@@ -129,32 +173,20 @@ class Registry:
             return tex
             
         if filepath_or_stack.endswith('.png'):
-            tex = self._load_image(asset_key, filepath_or_stack)
+            tex = self._load_image(filepath_or_stack)
             if tex: self._textures[asset_key] = tex
             return tex
         return None
 
-    def _load_image(self, image_key, filepath: str) -> TexturePtr:
-        """Loads a physical .png file directly into GPU memory via SDL2 extensions."""
-        cdef bytes b_filepath = filepath.encode('utf-8')
-        cdef SDL_Texture* tex = IMG_LoadTexture(_renderer, b_filepath)
-        
-        if tex == NULL:
-            raise RuntimeError(f"Failed to load texture into GPU memory: {filepath}")
-
-        cdef int w, l
-        SDL_QueryTexture(tex, NULL, NULL, &w, &l)
-
-        cdef TexturePtr wrapper = TexturePtr()
-        wrapper.ptr = tex
-        wrapper.w = w
-        wrapper.l = l
-        return wrapper
+    def _load_image(self, filepath: str):
+        """Internal delegator to the module-level C-call wrapper."""
+        return _sys_load_image(filepath)
 
     def _get_or_load_font(self, font_key: str):
         if font_key in self._fonts:
             return self._fonts[font_key]
         filepath = self._filepaths.get(font_key)
+        
         if filepath and filepath.endswith('.ttf'):
             font_obj = self._load_font(font_key, filepath)
             if font_obj: self._fonts[font_key] = font_obj
@@ -162,36 +194,13 @@ class Registry:
         return None
 
     def _load_font(self, font_key: str, filepath: str):
-        """Loads and pre-styles a .ttf file into memory based on its configuration block."""
-
+        """Internal delegator to the module-level C-call wrapper."""
         if font_key not in self.typography:
             return None
             
         cdef dict style = self.typography[font_key]
         cdef int pt_size = style.get("size", 24)
-        cdef bytes b_filepath = filepath.encode('utf-8')
-        
-        cdef TTF_Font* f_ptr = TTF_OpenFont(b_filepath, pt_size)
-        if f_ptr == NULL:
-            raise RuntimeError(f"Failed to load font into memory: {filepath}")
-            
-        cdef int sdl_style = TTF_STYLE_NORMAL
-        if style.get("bold", False): sdl_style |= TTF_STYLE_BOLD
-        if style.get("italics", False): sdl_style |= TTF_STYLE_ITALIC
-        TTF_SetFontStyle(f_ptr, sdl_style)
-        
-        cdef TTFFont font_obj = TTFFont()
-        font_obj.ptr = f_ptr
-        font_obj.margins = style.get("margins", 0.05)
-        font_obj.align_str = style.get("alignment", "left")
-        
-        cdef dict color_cfg = style.get("color", {})
-        font_obj.color.r = color_cfg.get("r", 255)
-        font_obj.color.g = color_cfg.get("g", 255)
-        font_obj.color.b = color_cfg.get("b", 255)
-        font_obj.color.a = color_cfg.get("a", 255)
-        
-        return font_obj
+        return _sys_load_font(filepath, pt_size, style)
 
     def _extract(self, inst_props):
         """Helper to agnostically extract property items from schema variations."""
@@ -216,6 +225,8 @@ class Registry:
 
     def _index(self):
         """Maps runtime dynamic frame keys to their GPU mapping tuple coordinates."""
+        from app.services.factory import Factory
+
         logger.debug("Indexing Frame Keys to Texture Crops...")
         for cat_name, cat_props in self.properties.items():
             if not cat_props: continue

@@ -60,7 +60,7 @@ class Equipment(str, Enum):
 
 class Shortcuts(str, Enum):
     COMPOSITIONS    = "compositions"
-    
+
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 
 class FrameRecipe(str, Enum):
@@ -245,11 +245,18 @@ class AnimatedIntentions(str, Enum):
 
 class MineableAssets(str, Enum):
     RESOURCES       = "resources"
+
+class Translators(str, Enum):
+    COMPILER        = "compiler"
+    LAMBDA          = "lambda"
+    
 # -------------------------------- WIDGET ENUMERATIONS
 
 class Controllers(str, Enum):
     SCROLL          = "scroll"
     DISPLAY         = "display"
+    MAIN            = "main"
+    LOAD            = "load"
     
 class Layouts(str, Enum):
     DOCK            = "dock"
