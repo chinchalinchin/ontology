@@ -501,6 +501,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cognition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cognition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1033,6 +1050,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Mechanics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cognition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cognition
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -1179,61 +1213,57 @@
     attack --&gt; hunt
     attack --&gt; scavenge
 
-    attract --&gt; attract
     attract --&gt; barter
     attract --&gt; speak
 
-    barter --&gt; speak
-    barter --&gt; find
     barter --&gt; threaten
+    barter --&gt; idle
 
-    build --&gt; barter
-    build --&gt; find
-    build --&gt; mine
+    build --&gt; idle
 
+    escape --&gt; escape
     escape --&gt; return
-    escape --&gt; find
-    escape --&gt; sprint
 
+    find --&gt; scavenge
     find --&gt; interact
     find --&gt; speak
-    find --&gt; barter
+    find --&gt; return
 
-    follow --&gt; find
-    follow --&gt; sprint
+    follow --&gt; follow
+    follow --&gt; speak
+    follow --&gt; wander
 
-    hunt --&gt; sprint
+    hunt --&gt; attack
+    hunt --&gt; return
 
-    idle --&gt; return
     idle --&gt; wander
+    idle --&gt; idle
 
-    interact --&gt; barter
-    interact --&gt; speak
-    interact --&gt; attract
+    interact --&gt; idle
 
-    mine --&gt; barter
-    mine --&gt; scavenge
+    mine --&gt; build
+    mine --&gt; mine
+    mine --&gt; idle
 
     mock --&gt; threaten
-    mock --&gt; escape
+    mock --&gt; idle
 
-    return --&gt; find
-    return --&gt; wander
+    return --&gt; idle
+    return --&gt; return
 
-    scavenge --&gt; find
+    scavenge --&gt; idle
 
-    speak --&gt; barter
-    speak --&gt; mock
-    speak --&gt; threaten
+    speak --&gt; follow
+    speak --&gt; idle
 
-    sprint --&gt; escape
-    sprint --&gt; hunt
+    sprint --&gt; return
+    sprint --&gt; idle
 
     threaten --&gt; attack
-    threaten --&gt; mock
+    threaten --&gt; hunt
+    threaten --&gt; idle
 
-    wander --&gt; idle
-    wander --&gt; return</code></pre>
+    wander --&gt; idle</code></pre>
 <table>
 <thead>
 <tr>
@@ -1251,87 +1281,87 @@
 <tr>
 <td>2</td>
 <td><code>attract</code></td>
-<td><code>attract</code>, <code>barter</code>, <code>speak</code></td>
+<td><code>barter</code>, <code>speak</code></td>
 </tr>
 <tr>
 <td>3</td>
 <td><code>barter</code></td>
-<td><code>speak</code>, <code>find</code>, <code>threaten</code></td>
+<td><code>threaten</code>, <code>idle</code></td>
 </tr>
 <tr>
 <td>4</td>
 <td><code>build</code></td>
-<td><code>barter</code>, <code>find</code>, <code>mine</code></td>
+<td><code>idle</code></td>
 </tr>
 <tr>
 <td>5</td>
 <td><code>escape</code></td>
-<td><code>return</code>, <code>find</code>, <code>sprint</code></td>
+<td><code>escape</code>, <code>return</code></td>
 </tr>
 <tr>
 <td>6</td>
 <td><code>find</code></td>
-<td><code>interact</code>, <code>speak</code>, <code>barter</code></td>
+<td><code>scavenge</code>, <code>interact</code>, <code>speak</code>, <code>return</code></td>
 </tr>
 <tr>
 <td>7</td>
 <td><code>follow</code></td>
-<td><code>find</code>, <code>sprint</code></td>
+<td><code>follow</code>, <code>speak</code>, <code>wander</code></td>
 </tr>
 <tr>
 <td>8</td>
 <td><code>hunt</code></td>
-<td><code>sprint</code></td>
+<td><code>attack</code>, <code>return</code></td>
 </tr>
 <tr>
 <td>9</td>
 <td><code>idle</code></td>
-<td><code>return</code>, <code>wander</code></td>
+<td><code>wander</code>, <code>idle</code></td>
 </tr>
 <tr>
 <td>10</td>
 <td><code>interact</code></td>
-<td><code>barter</code>, <code>speak</code>, <code>attract</code></td>
+<td><code>idle</code></td>
 </tr>
 <tr>
 <td>11</td>
 <td><code>mine</code></td>
-<td><code>barter</code>, <code>scavenge</code></td>
-</tr>
-<tr>
-<td>11</td>
-<td><code>mock</code></td>
-<td><code>threaten</code>, <code>escape</code></td>
+<td><code>build</code>, <code>mine</code>, <code>idle</code></td>
 </tr>
 <tr>
 <td>12</td>
-<td><code>return</code></td>
-<td><code>find</code>, <code>wander</code></td>
+<td><code>mock</code></td>
+<td><code>threaten</code>, <code>idle</code></td>
 </tr>
 <tr>
 <td>13</td>
-<td><code>scavenge</code></td>
-<td><code>find</code></td>
+<td><code>return</code></td>
+<td><code>idle</code>, <code>return</code></td>
 </tr>
 <tr>
 <td>14</td>
-<td><code>speak</code></td>
-<td><code>barter</code>, <code>mock</code>, <code>threaten</code></td>
+<td><code>scavenge</code></td>
+<td><code>idle</code></td>
 </tr>
 <tr>
 <td>15</td>
-<td><code>sprint</code></td>
-<td><code>escape</code>, <code>hunt</code></td>
+<td><code>speak</code></td>
+<td><code>follow</code>, <code>idle</code></td>
 </tr>
 <tr>
 <td>16</td>
-<td><code>threaten</code></td>
-<td><code>attack</code>, <code>mock</code></td>
+<td><code>sprint</code></td>
+<td><code>return</code>, <code>idle</code></td>
 </tr>
 <tr>
 <td>17</td>
+<td><code>threaten</code></td>
+<td><code>attack</code>, <code>hunt</code>, <code>idle</code></td>
+</tr>
+<tr>
+<td>18</td>
 <td><code>wander</code></td>
-<td><code>idle</code>, <code>return</code></td>
+<td><code>idle</code></td>
 </tr>
 </tbody>
 </table>
@@ -1351,10 +1381,12 @@
 <li><code>str</code>: constants</li>
 <li><code>sprite.&lt;attribute&gt;</code>: self State variable</li>
 <li><code>sprites.get(&lt;sprite-name&gt;).&lt;attribute&gt;</code>: other Sprites state variable</li>
+<li><code>constants</code>: A dictionary of game constants.</li>
+<li><code>functions</code>: A dictionary of helper functions.</li>
 </ul>
 <p>For example, in the default Intention Transition matrix given above, the transition from <code>attack</code> to <code>hunt</code> is conditional on the following,</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goal.category == Goals.SPRITE.value</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goal.category == constants.Goals.SPRITE.value</span>
 </code></pre></div>
 <p><code>sprite</code> is a reference to the Sprite's state which is currently having its Intention processed by the game engine. Thus, the Sprite's Intention state will transition to <code>hunt</code> if the Sprite currently does not have a Goal, but remembers having a Goal of Category <code>sprite</code>.</p>
 <div class="admonition note">
@@ -1371,17 +1403,17 @@
 </code></pre></div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>The conditions for an Intention transition are evaluated in the order they specified! In the given example, if <code>sprite.goal.category == Goals.SPRITE.value</code>, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into <code>attack</code>.</p>
+<p>The conditions for an Intention transition are evaluated in the order they specified! In the given example, if <code>sprite.goal.category == constants.Goals.SPRITE.value</code>, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into <code>attack</code>.</p>
 </div>
 <p>Intention transition conditions are compiled by the application during initialization and evaluated at runtime. The engine supports two execution strategies, configured via <code>ISL_TRANSLATOR</code> in <code>settings.py</code>: <code>lambda</code> (which generates inline Python functions) and <code>compiler</code> (which generates native Abstract Syntax Trees). The application evaluates ISL conditions sequentially utilizing Python's native short-circuit logic.</p>
 <p>To avoid AttributeError exceptions during runtime, existential checks must strictly precede attribute accesses. Consider,</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># CORRECT CONFIGURATION</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == Goals.SPRITE.value</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.SPRITE.value</span>
 </code></pre></div>
 <p>versus,</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># INCORRECT CONFIGURATION</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == Goals.SPRITE.value</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.SPRITE.value</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
 </code></pre></div>
 <p>In the first case, <code>goal</code> is guaranteed to exist before the subsequent condition is applied to <code>goal.category</code>, while the second will generate a runtime error.</p>
@@ -1465,6 +1497,29 @@
 <li>CognitionMechanics ("<em>The Brain</em>"): Manages the Goal Lifecycle. It evaluates the environment, consults Motivations and Meters, sets the Goal, determines if the Goal has been achieved (or invalidated), and manages the Memory stack.</li>
 <li>TransitionMechanics ("<em>The Instinct</em>"): Manages the Intention Transitions. It looks at the current Goal set by Cognition and evaluates the ISL matrix to figure out how to achieve it (e.g., <code>sprite.state.goal EXISTS</code>, so <code>transition: idle -&gt; find</code>).</li>
 <li>Spatial Mechanics (<em>The Muscle</em>): CombatMechanics, InteractionMechanics, etc., alter the physical world state (e.g., killing the target, opening the Chest). This physical change is what signals CognitionMechanics on the next tick that the goal is achieved.</li>
+</ul>
+<h3 id="cognition">Cognition</h3>
+<p><strong>1. Phase A: Resolution</strong></p>
+<p>The ISL relies on <code>not sprite.goal</code> to exit action nodes. Cognition must evaluate if the current goal is satisfied or invalidated.</p>
+<ul>
+<li>If <code>goal.category == SPRITE</code>: Check if <code>sprites.get(sprite.goal.name).mutators.triggers.dead</code>. If true, set <code>sprite.state.goal = None</code>.</li>
+<li>If <code>goal.category == LOOT</code>: Check if <code>sprite.goal.name in sprite.inventory.loot</code>. If true, set <code>sprite.state.goal = None</code>.</li>
+<li>If <code>goal.category == POSITION</code>: Check if <code>is_near(sprite.position, sprite.goal.position, 5)</code>. If true, set <code>sprite.state.goal = None</code>.</li>
+<li>If <code>goal.category == ASSET</code>: Check if the target chest is empty or the door is removed. If true, set <code>sprite.state.goal = None</code>.</li>
+</ul>
+<p><strong>2. Phase B: Memory Management</strong></p>
+<p>If <code>sprite.state.goal</code> is <code>None</code> (either because it was just resolved or never existed), pop the top goal from <code>sprite.state.memory.goals</code> (if one exists) and assign it to <code>sprite.state.goal</code>.</p>
+<p><strong>3. Phase C: Ideation</strong></p>
+<ul>
+<li><strong><code>CONQUEST</code></strong>: TODO</li>
+<li><strong><code>PROFIT</code>:</strong> Scan <code>board.renderables</code> for items in <code>AssetInstances.CHESTS</code> or <code>MineableAssets</code>. Assign <code>Goals.ASSET</code> or <code>Goals.LOOT</code>.</li>
+<li><strong><code>SURVIVAL</code>:</strong> TODO</li>
+</ul>
+<p><strong>4. Tracking Category Expansion</strong></p>
+<ul>
+<li><code>Goals.SPRITE</code> <span class="arithmatex">\(\to\)</span> query <code>board._cached_characters</code>.</li>
+<li><code>Goals.ASSET</code> <span class="arithmatex">\(\to\)</span> query <code>board.renderables</code>.</li>
+<li><code>Goals.POSITION</code> <span class="arithmatex">\(\to\)</span> bypass lookup entirely; the position is static.</li>
 </ul>
 
 
