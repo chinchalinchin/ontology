@@ -17,15 +17,16 @@ sheets:
       character:
         strength: 5
         defense: 5
-        speed: 100
+        speed: 50
         impulse: 25
       mutators:
-        fear:
-          radius: 128
-          limit: 0.50
-          enemy: 5
-        vision:
-          radius: 128
+        parameters:
+          fear:
+            radius: 128
+            limit: 0.50
+            enemy: 5
+          vision:
+            radius: 128
       psyche:
         dialogue: null
         expression: null

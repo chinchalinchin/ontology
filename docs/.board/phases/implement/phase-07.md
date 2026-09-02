@@ -155,4 +155,4 @@ Even if a Sprite has a Goal, the environment can interrupt them.
 
 **7. Complete the Finite Automaton**
 
-* [ ] Review `/src/data/config/intentions/main.yaml` and resolve all dead ends. Create new Tasks to achieve this, if necessary.
+* [x] Review `/src/data/config/intentions/main.yaml` and resolve all dead ends. Create new Tasks to achieve this, if necessary.

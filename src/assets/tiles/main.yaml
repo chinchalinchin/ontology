@@ -20,7 +20,7 @@
         dimensions:
           w: 32
           l: 32
-        friction: 100
+        friction: 300
       lava: 
         dimensions:
           w: 32

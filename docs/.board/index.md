@@ -17,10 +17,9 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 04: Physics](./phases/implement/phase-04.md)
     - [x]: [Phase 05: Widgets](./phases/implement/phase-05.md)
     - [~]: [Phase 06: Editor](./phases/implement/phase-06.md)
-    - [~]: [Phase 07: Intentions](./phases/implement/phase-07.md)
+    - [x]: [Phase 07: Intentions](./phases/implement/phase-07.md)
     - [x]: [Phase 08: Compositions](./phases/implement/phase-08.md)
     - [ ]: [Phase 09: Commerce](./phases/implement/phase-09.md)
-    - [ ]: [Phase 10: Pathfinding](./phase/implement/phase-10.md)
   - Refactor
     - [x]: [Phase 01.01: Orchestration](./phases/refactor/phase-01-01.md)
     - [x]: [Phase 02.01: Frames](./phases/refactor/phase-02-01.md)
