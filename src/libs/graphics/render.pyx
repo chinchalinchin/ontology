@@ -260,7 +260,15 @@ def superimpose(list assets):
         c_dst.w, c_dst.h = dw, dl
         SDL_RenderCopy(_renderer, tex_wrapper.ptr, &c_src, &c_dst)
 
-
+def destroy(TexturePtr target):
+    """
+    Explicitly destroys an SDL_Texture to free VRAM immediately, 
+    bypassing Python's non-deterministic garbage collector.
+    """
+    if target is not None and target.ptr != NULL:
+        SDL_DestroyTexture(target.ptr)
+        target.ptr = NULL
+        
 def canvas(int w, int l, bint opaque=False) -> TexturePtr:
     """
     Instantiates a blank texture assigned as a rendering target using primitive integers.

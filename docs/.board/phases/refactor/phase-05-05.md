@@ -361,8 +361,8 @@ Currently, `Registry._stack()` runs during `__init__`. It uses `render.compose()
 
 *Objective*: Allow Cython canvases to resize safely between game states.
 
-- [ ] Subtask: In `libs.graphics.render.pyx`, expose a `destroy(TexturePtr)` function that explicitly calls `SDL_DestroyTexture` and nullifies the pointer.
-- [ ] Subtask: Implement `Screen.rebake(tiles, boardsize)`. It must call `render.destroy()` on existing canvases, allocate new ones via `render.canvas()`, and call `construct()`.
+- [x] Subtask: In `libs.graphics.render.pyx`, expose a `destroy(TexturePtr)` function that explicitly calls `SDL_DestroyTexture` and nullifies the pointer.
+- [x] Subtask: Implement `Screen.rebake(tiles, boardsize)`. It must call `render.destroy()` on existing canvases, allocate new ones via `render.canvas()`, and call `construct()`.
 
 **5. Task: Menu Controllers (Main & Load)**
 

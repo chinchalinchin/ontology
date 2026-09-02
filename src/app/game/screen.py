@@ -159,6 +159,8 @@ class Screen:
 
     def present(self) -> None: present()
 
+    # ------------------------------------------------ CANVAS METHODS
+
     def draw(self, 
         assets: List[Asset], 
         focus: Position,
@@ -279,6 +281,49 @@ class Screen:
 
         superimpose(primitives)
 
+    def rebake(self, 
+        tiles: List[Asset], 
+        boardsize: Dimensions,
+        screensize: Dimensions = None
+    ) -> None:
+        """
+        Dynamically reallocates Cython VRAM canvases for a new world state.
+        Safely destroys old textures immediately to prevent VRAM OOM crashes.
+        """
+        logger.info("Rebaking Screen canvases for new world state...")
+
+        # 1. Explicitly free GPU memory immediately (bypassing Python GC)
+        if hasattr(self, 'bg_canvas') and self.bg_canvas:
+            render.destroy(self.bg_canvas)
+        if hasattr(self, 'fg_canvas') and self.fg_canvas:
+            render.destroy(self.fg_canvas)
+
+        # 2. Update dimensions
+        if screensize:
+            self.screensize = screensize
+
+        # Hardware Minimum Clamp: Guarantee rendering bounds never drop below viewport size
+        self.boardsize = Dimensions(
+            w=max(boardsize.w, self.screensize.w),
+            l=max(boardsize.l, self.screensize.l)
+        )
+        
+        logger.debug(f"New Canvas Bounds: {self.boardsize.w}x{self.boardsize.l}")
+
+        # 3. Canvas Opacity Flag: If layer has no tiles, initialize to opaque black
+        is_opaque = len(tiles) == 0
+
+        # 4. Reallocate VRAM
+        self.bg_canvas = render.canvas(self.boardsize.w, self.boardsize.l, opaque=is_opaque)
+        self.fg_canvas = render.canvas(self.boardsize.w, self.boardsize.l)
+
+        # 5. Prerender and Construct
+        back_tiles, fore_tiles = self._prerender(tiles)
+
+        render.construct(self.bg_canvas, back_tiles)
+        render.construct(self.fg_canvas, fore_tiles)
+
+    # ------------------------------------------------ EXPORT METHODS
 
     def export_background(self, out_path: str) -> None:
         """
