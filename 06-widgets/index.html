@@ -1484,9 +1484,17 @@
 <li><code>SCROLLUP</code></li>
 <li><code>SCROLLDOWN</code></li>
 <li><code>SELECT</code></li>
+<li><code>NEW</code></li>
+<li><code>LOAD</code></li>
+<li><code>MENU</code></li>
 </ul>
 </li>
-<li><code>selector</code>: The dictionary key (<code>name</code>) of a target Widget in <code>menu.widgets</code>.</li>
+<li><code>selector</code>: The name of a target to be used in the SelectionEvent.<ul>
+<li><code>selections in [SCROLLUP, SCROLLDOWN, SELECT]</code>: Selector is the target Widget name.</li>
+<li><code>selections == MENU</code>: Selector is the target Menu.</li>
+<li><code>selections in [NEW, LOAD]</code>: TODO</li>
+</ul>
+</li>
 <li><code>state</code>: String path to the Event Context (e.g., <code>context.sprite.state.psyche.communication</code>).</li>
 </ul>
 <h3 id="layouts">Layouts</h3>
@@ -1502,13 +1510,13 @@
 <li><strong>Resolve Pane Anchors</strong>: Convert <code>ScreenPosition</code> (e.g., <code>px: 0.3</code>) to absolute pixels using <code>screensize.w * px</code>. This becomes the Pane's anchor <code>(x, y)</code>.</li>
 <li><strong>Measure Children</strong>: Retrieve the <code>properties</code> for the dimensions <code>(w, l)</code> of each child Widget.</li>
 <li><strong>Apply Algorithm</strong>:<ul>
-<li>If <code>pane.layout in [dock, row]</code><ul>
+<li>If <code>pane.layout == dock</code><ul>
 <li>If <code>alignment == start</code>: TODO</li>
 <li>If <code>alignment == end</code>: TODO</li>
 <li>If <code>alignment == center</code>: Calculate the maximum width of all children. Offset each child's X coordinate by (Max Width - Child Width) // 2.</li>
 </ul>
 </li>
-<li>If <code>pane.layout in [stack, column]</code>:<ul>
+<li>If <code>pane.layout == stack</code>:<ul>
 <li>If <code>alignment == start</code>: TODO</li>
 <li>If <code>alignment == end</code>: TODO</li>
 <li>If <code>alignment == center</code>: Calculate the maximum height of all children. Offset each child's Y coordinate by (Max Height - Child Height) // 2.</li>
@@ -1517,7 +1525,7 @@
 <li>If <code>pane.layout == tab</code>: Alignments do not apply. Pane children are Panes. Each receives the same ScreenPosition. Algorithm recurses to find the coordinates of the grandchildren.    </li>
 </ul>
 </li>
-<li><strong>Flatten</strong>: Return a list of standard Asset objects. The engine now treats them exactly like Game Board assets, completely ignoring the UI hierarchy.</li>
+<li><strong>Flatten</strong>: Return a list of standard Asset objects. The engine now treats them exactly like Game Board assets, completely ignoring the Menu hierarchy.</li>
 </ol>
 <p><strong>Traversal Graph</strong></p>
 <p>The prior example oversimplifies considerations; Irregular shaped grids, e.g. <code>[[a,b,c], [d, e]]</code>, need to be treated with special care.</p>
@@ -1571,7 +1579,7 @@
 </li>
 <li>View: Also known as the Heads-Up Display (HUD). The View Menu is not instantiated by the MenuEvents. It is created when the game loop initializes and is painted onto the screen along with every frame. It is updated when UpdateEvents are fired by other Menus.<ul>
 <li><strong>Arguments</strong>: <code>sprite.state</code></li>
-<li><strong>Events</strong>: TODO</li>
+<li><strong>Events</strong>: None</li>
 </ul>
 </li>
 </ol>
