@@ -2,153 +2,154 @@ intentions:
   attack:
     - next: attack
       conditions:  
-        - sprite.goal.category == 'sprite'
+        - sprite.goal.category == constants.Goals.SPRITE.value
     - next: hunt
       conditions: 
         - not sprite.goal
-        - sprite.memory.goal.category == 'sprite'
+        - sprite.memory.goal and sprite.memory.goal.category == constants.Goals.SPRITE.value
     - next: scavenge
       conditions: 
-        - sprites[sprite.goal.name].mutators.triggers.dead
+        - sprites.get(sprite.goal.name).mutators.triggers.dead
   attract:
     - next: barter
       conditions:
         - sprite.inventory.loot
-        - sprite.psyche.motivation == 'profit'
+        - sprite.psyche.motivation == constants.Motivations.PROFIT.value
     - next: speak
       conditions: 
-        - sprite.memory.communications
+        - sprite.psyche.dialogue
   barter:
     - next: threaten
       conditions:
-        - sprite.memory.goal.category == 'loot'
-        - sprite.inventory.wallet < sprite.prices[sprite.memory.goal.name]
-        - sprite.psyche.motivation == 'survival'
-    - next: speak
+        - sprite.memory.goal and sprite.memory.goal.category == constants.Goals.LOOT.value
+        - sprite.inventory.wallet < sprite.memory.prices.get(sprite.memory.goal.name, 9999)
+        - sprite.psyche.motivation == constants.Motivations.SURVIVAL.value
+    - next: idle
       conditions: 
-        # TODO
-        - sprite.intention
+        - not sprite.goal
   build:
-    - next: find
+    - next: idle
       conditions:
-        # TODO
-        - sprite.intention 
+        - not sprite.goal
   escape: 
     - next: escape
       conditions: 
-        - sprites[sprite.goal.name].state.intention == 'attack'
+        - sprites.get(sprite.goal.name)
+        - sprites.get(sprite.goal.name).state.intention == constants.Intentions.ATTACK.value
     - next: return
       conditions: 
         - not sprite.goal
   find: 
     - next: scavenge
       conditions: 
-        # TODO
-        - sprite.intention
-    - next: return
-      conditions:
-        # TODO
-        - sprite.intention
+        - sprite.goal.category == constants.Goals.LOOT.value
+        - functions.is_near(sprite.position, sprite.goal.position, 15)
     - next: interact
       conditions: 
-        - sprite.goal
-        - is_near(sprite.position, sprite.goal.position, 10)
+        - sprite.goal.category == constants.Goals.ASSET.value
+        - functions.is_near(sprite.position, sprite.goal.position, 15)
+    - next: speak
+      conditions: 
+        - sprite.goal.category == constants.Goals.SPRITE.value
+        - sprite.psyche.dialogue
+        - functions.is_near(sprite.position, sprite.goal.position, 20)
+    - next: return
+      conditions:
+        - not sprite.goal
   follow: 
     - next: follow
       conditions:
-        # TODO
-        - sprite.intention
-    - next: hunt
+        - sprite.goal.category == constants.Goals.SPRITE.value
+        - not functions.is_near(sprite.position, sprite.goal.position, 40)
+    - next: speak
       conditions:
-        # TODO
-        - sprite.intention
+        - sprite.psyche.dialogue
+        - functions.is_near(sprite.position, sprite.goal.position, 20)
     - next: wander
       conditions:
-        # TODO
-        - sprite.intention 
+        - not sprite.goal
   hunt: 
     - next: attack
       conditions: 
-        # TODO
-        - sprite.intentionn 
-  idle: 
-    - next: idle
+        - sprite.goal.category == constants.Goals.SPRITE.value
+        - functions.is_near(sprite.position, sprite.goal.position, 25)
+    - next: return
       conditions:
-        # TODO
-        - sprite.intention
+        - not sprite.goal
+  idle: 
     - next: wander
       conditions:
-        # TODO
-        - sprite.intention
-  interact:
-    - next: find
-      conditions: 
-        # TODO
-        - sprite.intention
-  mine:
-    - next: mine
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.POSITION.value
+    - next: idle
       conditions:
-        # TODO
-        - sprite.goal.category == 'loot'
-        - sprite.inventory.loot[sprite.goal.name] in MineableAssets
-        # TODO: determine how boundary should be calculated
-        - sprite.inventory.loot[sprite.goal.name] < 10
+        - not sprite.goal
+  interact:
+    - next: idle
+      conditions: 
+        - not sprite.goal
+  mine:
     - next: build
       conditions:
-        # TODO
-        - sprite.inventory.loot[sprite.goal] >= SOME_TARGET_QUANTITY 
-  mock:
-    - next: mock
+        - sprite.goal.category == constants.Goals.LOOT.value
+        - sprite.inventory.loot.get(sprite.goal.name, 0) >= 10 
+    - next: mine
       conditions:
-        # TODO
-        - sprite.intention 
+        - sprite.goal.category == constants.Goals.LOOT.value
+        - sprite.goal.name in constants.MineableAssets
+        - sprite.inventory.loot.get(sprite.goal.name, 0) < 10
+    - next: idle
+      conditions:
+        - not sprite.goal
+  mock:
     - next: threaten
       conditions:
-        # TODO
-        - sprite.intention
+        - sprite.goal.category == constants.Goals.SPRITE.value
+        - sprites.get(sprite.goal.name)
+        - sprites.get(sprite.goal.name).state.intention == constants.Intentions.ATTACK.value
+    - next: idle
+      conditions:
+        - not sprite.goal
   return:
     - next: idle
       conditions: 
-        # TODO
-        - sprite.intention
+        - not sprite.goal
     - next: return
       conditions:
-        # TODO
-        - sprite.intention
-    - next: wander
-      conditions: 
-        # TODO
-        - sprite.intention
+        - sprite.goal
+        - not functions.is_near(sprite.position, sprite.goal.position, 10)
   scavenge:
-    - next: return
+    - next: idle
       conditions:
-        # TODO
-        - sprite.intention
+        - not sprite.goal
   speak:
     - next: follow
       conditions: 
-        # TODO
-        - sprite.intentionn
+        - sprite.goal.category == constants.Goals.SPRITE.value
+        - not functions.is_near(sprite.position, sprite.goal.position, 20)
+    - next: idle
+      conditions:
+        - not sprite.psyche.dialogue
   sprint:
     - next: return
       conditions: 
-        # TODO
-        - sprite.intentionn
+        - not sprite.goal
+    - next: idle
+      conditions:
+        - sprite.meters.health.current < 10
   threaten:
     - next: attack
       conditions:
-        # TODO
-        - sprite.intention
+        - sprite.goal.category == constants.Goals.SPRITE.value
+        - functions.is_near(sprite.position, sprite.goal.position, 25)
     - next: hunt
       conditions:
-        # TODO
-        - sprite.intention   
-    - next: threaten
+        - sprite.goal.category == constants.Goals.SPRITE.value
+        - not functions.is_near(sprite.position, sprite.goal.position, 25)
+    - next: idle
       conditions:
-        # TODO
-        - sprite.intention
+        - not sprite.goal
   wander:
     - next: idle
       conditions:
-        # TODO
-        - sprite.intention
+        - not sprite.goal

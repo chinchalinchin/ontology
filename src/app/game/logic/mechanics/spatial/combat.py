@@ -13,15 +13,14 @@ if TYPE_CHECKING:
     from app.game.board import Board
 
 from app.config.enums import (
-    AssetCategories, 
     AssetInstances,
     Intentions,
 )
-from app.game.logic.mechanics.spatial.base import SpatialMechanic
+from app.models.state import DevicePayload
+from app.game.logic.mechanics.spatial import SpatialMechanic
 
 # Cython Libraries
 from libs.core.math import Geometry
-from libs.core.models import Position
 
 class CombatMechanics(SpatialMechanic):
     """

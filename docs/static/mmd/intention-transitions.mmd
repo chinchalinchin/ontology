@@ -5,58 +5,54 @@ stateDiagram-v2
     attack --> hunt
     attack --> scavenge
 
-    attract --> attract
     attract --> barter
     attract --> speak
 
-    barter --> speak
-    barter --> find
     barter --> threaten
+    barter --> idle
 
-    build --> barter
-    build --> find
-    build --> mine
+    build --> idle
 
+    escape --> escape
     escape --> return
-    escape --> find
-    escape --> sprint
 
+    find --> scavenge
     find --> interact
     find --> speak
-    find --> barter
+    find --> return
 
-    follow --> find
-    follow --> sprint
+    follow --> follow
+    follow --> speak
+    follow --> wander
 
-    hunt --> sprint
+    hunt --> attack
+    hunt --> return
 
-    idle --> return
     idle --> wander
+    idle --> idle
 
-    interact --> barter
-    interact --> speak
-    interact --> attract
+    interact --> idle
 
-    mine --> barter
-    mine --> scavenge
+    mine --> build
+    mine --> mine
+    mine --> idle
 
     mock --> threaten
-    mock --> escape
+    mock --> idle
 
-    return --> find
-    return --> wander
+    return --> idle
+    return --> return
 
-    scavenge --> find
+    scavenge --> idle
 
-    speak --> barter
-    speak --> mock
-    speak --> threaten
+    speak --> follow
+    speak --> idle
 
-    sprint --> escape
-    sprint --> hunt
+    sprint --> return
+    sprint --> idle
 
     threaten --> attack
-    threaten --> mock
+    threaten --> hunt
+    threaten --> idle
 
     wander --> idle
-    wander --> return

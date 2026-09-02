@@ -3,6 +3,7 @@
 """
 # Standard Libraries
 import logging
+from types import SimpleNamespace
 from typing import (
     Dict, 
     List,
@@ -20,7 +21,7 @@ from app.services.translators.base import (
     Executor, 
     IntentionTransition
 )
-from app.services.translators.environ import ISL_ENVIRONMENT
+from app.services.translators.environ import Environ
 
 logger = logging.getLogger(__name__)
 
@@ -46,15 +47,21 @@ class LambdaExecutor(Executor):
                     break
                     
             if match:
-                return transition.next_intention
+                return transition.next
         
         return None
 
 
 class LambdaTranslator(Translator):
+    def __init__(self):
+        self.env_globals = {
+            "constants": SimpleNamespace(**Environ.constants),
+            "functions": SimpleNamespace(**Environ.functions)
+        }
+
     def compile(self, raw_intentions: Dict[str, List[IntentionConfiguration]]) -> Executor:
         compiled_transitions: Dict[Intentions, List[IntentionTransition]] = {}
-        
+
         for state_str, configs in raw_intentions.items():
             try:
                 intention_key = Intentions(state_str)
@@ -75,7 +82,7 @@ class LambdaTranslator(Translator):
                 for cond_str in config.conditions:
                     try:
                         func_str = f"lambda sprite, sprites: {cond_str}"
-                        compiled_func = eval(func_str, ISL_ENVIRONMENT)
+                        compiled_func = eval(func_str, self.env_globals)
                         callables.append(compiled_func)
                     except Exception as e:
                         logger.error(f"Failed to compile ISL lambda condition '{cond_str}': {e}")

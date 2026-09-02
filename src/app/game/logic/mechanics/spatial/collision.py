@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 from app.assets.base import Asset
 from app.config.enums import AssetInstances
-from app.game.logic.mechanics.spatial.base import SpatialMechanic
+from app.game.logic.mechanics.spatial import SpatialMechanic
 from app.models.state import DevicePayload
 
 # Cython Libraries

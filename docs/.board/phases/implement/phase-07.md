@@ -156,19 +156,3 @@ Even if a Sprite has a Goal, the environment can interrupt them.
 **7. Complete the Finite Automaton**
 
 * [ ] Review `/src/data/config/intentions/main.yaml` and resolve all dead ends. Create new Tasks to achieve this, if necessary.
-
-
-
-
-
-
-
-
-
-
-
-### Summary Recommendations
-
-1. **Do not create `MemoryMechanics`.** Centralize all Goal lifecycle management (Resolution, Popping, Ideation, Interruption, Tracking) within `CognitionMechanics`.
-2. **Refactor `memory.goal**` to be a `List[Goal]` stack to handle interruptions cleanly.
-3. **Keep `TransitionMechanics` ignorant of "Why".** It should only process the ISL matrix to map the current `Goal` to the correct physical `Intention`.

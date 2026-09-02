@@ -100,23 +100,23 @@ Provided below is the Intention Transition Matrix bundled with the application b
 | # | Starting Intention | Reachable Intentions |
 | --- | --- | --- |
 | 1 | `attack` | `attack`, `hunt`, `scavenge` |
-| 2 | `attract` | `attract`, `barter`, `speak` |
-| 3 | `barter` | `speak`, `find`, `threaten` |
-| 4 | `build` | `barter`, `find`, `mine` |
-| 5 | `escape` | `return`, `find`, `sprint` |
-| 6 | `find` | `interact`, `speak`, `barter` |
-| 7 | `follow` | `find`, `sprint` |
-| 8 | `hunt` | `sprint` |
-| 9 | `idle` | `return`, `wander` |
-| 10 | `interact` | `barter`, `speak`, `attract` |
-| 11 | `mine` | `barter`, `scavenge` |
-| 11 | `mock` | `threaten`, `escape` |
-| 12 | `return` | `find`, `wander` |
-| 13 | `scavenge` | `find` |
-| 14 | `speak` | `barter`, `mock`, `threaten` |
-| 15 | `sprint` | `escape`, `hunt` |
-| 16 | `threaten` | `attack`, `mock` |
-| 17 | `wander` | `idle`, `return` |
+| 2 | `attract` | `barter`, `speak` |
+| 3 | `barter` | `threaten`, `idle` |
+| 4 | `build` | `idle` |
+| 5 | `escape` | `escape`, `return` |
+| 6 | `find` | `scavenge`, `interact`, `speak`, `return` |
+| 7 | `follow` | `follow`, `speak`, `wander` |
+| 8 | `hunt` | `attack`, `return` |
+| 9 | `idle` | `wander`, `idle` |
+| 10 | `interact` | `idle` |
+| 11 | `mine` | `build`, `mine`, `idle` |
+| 12 | `mock` | `threaten`, `idle` |
+| 13 | `return` | `idle`, `return` |
+| 14 | `scavenge` | `idle` |
+| 15 | `speak` | `follow`, `idle` |
+| 16 | `sprint` | `return`, `idle` |
+| 17 | `threaten` | `attack`, `hunt`, `idle` |
+| 18 | `wander` | `idle` |
 
 **Intentional Scripting Language (ISL)**
 
@@ -136,12 +136,14 @@ Terms:
 * `str`: constants
 * `sprite.<attribute>`: self State variable
 * `sprites.get(<sprite-name>).<attribute>`: other Sprites state variable
+* `constants`: A dictionary of game constants.
+* `functions`: A dictionary of helper functions.
 
 For example, in the default Intention Transition matrix given above, the transition from `attack` to `hunt` is conditional on the following,
 
 ```yaml
 - not sprite.goal
-- sprite.memory.goal.category == Goals.SPRITE.value
+- sprite.memory.goal.category == constants.Goals.SPRITE.value
 ```
 
 `sprite` is a reference to the Sprite's state which is currently having its Intention processed by the game engine. Thus, the Sprite's Intention state will transition to `hunt` if the Sprite currently does not have a Goal, but remembers having a Goal of Category `sprite`.
@@ -165,7 +167,7 @@ Notice in the example there is a self-entrant transition. A Sprite with an `atta
 ```
 
 !!! important
-    The conditions for an Intention transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == Goals.SPRITE.value`, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into `attack`.
+    The conditions for an Intention transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == constants.Goals.SPRITE.value`, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into `attack`.
 
 Intention transition conditions are compiled by the application during initialization and evaluated at runtime. The engine supports two execution strategies, configured via `ISL_TRANSLATOR` in `settings.py`: `lambda` (which generates inline Python functions) and `compiler` (which generates native Abstract Syntax Trees). The application evaluates ISL conditions sequentially utilizing Python's native short-circuit logic.
 
@@ -174,14 +176,14 @@ To avoid AttributeError exceptions during runtime, existential checks must stric
 ```yaml
 # CORRECT CONFIGURATION
 - sprite.goal
-- sprite.goal.category == Goals.SPRITE.value
+- sprite.goal.category == constants.Goals.SPRITE.value
 ```
 
 versus,
 
 ```yaml
 # INCORRECT CONFIGURATION
-- sprite.goal.category == Goals.SPRITE.value
+- sprite.goal.category == constants.Goals.SPRITE.value
 - sprite.goal
 ```
 
@@ -279,3 +281,30 @@ The (Intention, Goal) of a Sprite is managed across the application lifecycle by
 - TransitionMechanics ("*The Instinct*"): Manages the Intention Transitions. It looks at the current Goal set by Cognition and evaluates the ISL matrix to figure out how to achieve it (e.g., `sprite.state.goal EXISTS`, so `transition: idle -> find`).
 - Spatial Mechanics (*The Muscle*): CombatMechanics, InteractionMechanics, etc., alter the physical world state (e.g., killing the target, opening the Chest). This physical change is what signals CognitionMechanics on the next tick that the goal is achieved.
 
+### Cognition
+
+
+**1. Phase A: Resolution**
+
+The ISL relies on `not sprite.goal` to exit action nodes. Cognition must evaluate if the current goal is satisfied or invalidated.
+
+* If `goal.category == SPRITE`: Check if `sprites.get(sprite.goal.name).mutators.triggers.dead`. If true, set `sprite.state.goal = None`.
+* If `goal.category == LOOT`: Check if `sprite.goal.name in sprite.inventory.loot`. If true, set `sprite.state.goal = None`.
+* If `goal.category == POSITION`: Check if `is_near(sprite.position, sprite.goal.position, 5)`. If true, set `sprite.state.goal = None`.
+* If `goal.category == ASSET`: Check if the target chest is empty or the door is removed. If true, set `sprite.state.goal = None`.
+
+**2. Phase B: Memory Management**
+
+If `sprite.state.goal` is `None` (either because it was just resolved or never existed), pop the top goal from `sprite.state.memory.goals` (if one exists) and assign it to `sprite.state.goal`.
+
+**3. Phase C: Ideation**
+
+* **`CONQUEST`**: TODO
+* **`PROFIT`:** Scan `board.renderables` for items in `AssetInstances.CHESTS` or `MineableAssets`. Assign `Goals.ASSET` or `Goals.LOOT`.
+* **`SURVIVAL`:** TODO
+
+**4. Tracking Category Expansion**
+
+* `Goals.SPRITE` $\to$ query `board._cached_characters`.
+* `Goals.ASSET` $\to$ query `board.renderables`.
+* `Goals.POSITION` $\to$ bypass lookup entirely; the position is static.

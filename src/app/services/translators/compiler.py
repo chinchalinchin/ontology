@@ -2,17 +2,34 @@
 # Ontology: app.services.translators.compiler
 """
 import logging
-from typing import Dict, List, Optional, Any
-
+from types import SimpleNamespace
+from typing import (
+    Dict, 
+    List, 
+    Optional, 
+    Any
+)
 from app.config.enums import Intentions
 from app.models.state import SpriteState
 from app.models.config import IntentionConfiguration
-from app.services.translators.base import Translator, Executor, IntentionTransition
-from app.services.translators.environ import ISL_ENVIRONMENT
+from app.services.translators.base import (
+    Translator, 
+    Executor, 
+    IntentionTransition
+)
+from app.services.translators.environ import Environ
 
 logger = logging.getLogger(__name__)
 
 class CompilerExecutor(Executor):
+    def __init__(self, transitions: Dict[Intentions, List[IntentionTransition]]):
+        super().__init__(transitions)
+        # Construct the globals dictionary once
+        self.env_globals = {
+            "constants": SimpleNamespace(**Environ.constants),
+            "functions": SimpleNamespace(**Environ.functions)
+        }
+
     def evaluate(self, sprite: SpriteState, sprites: Dict[str, Any]) -> Optional[Intentions]:
         if sprite.intention not in self.transitions:
             return None
@@ -30,8 +47,8 @@ class CompilerExecutor(Executor):
             match = True
             for code_obj in transition.conditions:
                 try:
-                    # Evaluate the compiled AST object
-                    if not eval(code_obj, ISL_ENVIRONMENT, execution_locals):
+                    # Evaluate the compiled AST object using the cached globals
+                    if not eval(code_obj, self.env_globals, execution_locals):
                         match = False
                         break
                 except AttributeError as e:
@@ -40,7 +57,7 @@ class CompilerExecutor(Executor):
                     break
                     
             if match:
-                return transition.next_intention
+                return transition.next
                 
         return None
 

@@ -25,8 +25,8 @@ def is_near(pos1, pos2, radius: int = 15) -> bool:
 
 # ----------------------------------------------------------------------------
 
-ISL_ENVIRONMENT = {
-    "constants": {
+class Environ:
+    constants: dict = {
         #### Asset Space Enumerations
         'AssetInstances': AssetInstances,
         'AssetCategories': AssetCategories,
@@ -36,9 +36,7 @@ ISL_ENVIRONMENT = {
         'Motivations': Motivations,
         #### Interaction Space Enumerations
         'MineableAssets': MineableAssets
-    },
-    'functions': {
+    }
+    functions: dict = {
         'is_near': is_near
     }
-    
-}
