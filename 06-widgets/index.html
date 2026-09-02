@@ -1458,7 +1458,7 @@
 <ul>
 <li><code>selection</code>: The specific action or command a Control Widget emits when selected by the user (e.g., <code>scrollup</code>).</li>
 <li><code>selector</code>: A direct pointer to the unique <code>name</code> of another Widget in the Menu. Used when a Control Widget needs to mutate or read another Widget's state.</li>
-<li><code>state</code>: A string path referencing a specific variable in the Event Context. The Provider resolves this string into a live state reference during Menu instantiation.</li>
+<li><code>state</code>: A string path referencing a specific variable in the Event Context. The Provider resolves this string into a live state reference during Menu instantiation.IIn other words, <code>bind.state</code> generates a runtime closure (Callable), not a static evaluation, ensuring bound Widget inherently mirror live state data.</li>
 </ul>
 <p>In the provided <code>text</code> Menu example, the <code>text-scroll-up</code> and <code>text-scroll-down</code> Buttons are bound to the <code>selection</code> actions <code>scrollup</code> and <code>scrolldown</code>. Because these buttons control the Page widget, their <code>selector</code> bindings are set to <code>text-display</code>—the unique name of the target Page. </p>
 <p>When a Button is selected, the MenuMechanics route the input to the appropriate Controller (in this case, the <code>ScrollController</code>). The Controller uses the <code>selector</code> binding to perform an <span class="arithmatex">\(O(1)\)</span> dictionary lookup for the target widget and applies the <code>selection</code> action:</p>
