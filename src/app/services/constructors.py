@@ -224,18 +224,6 @@ class Builder:
             self.context.properties.widgets, 
             self.registry
         )
-        
-        view = self.context.configurations.menus.get('view')
-        if view:
-            # Fallback for View Menu bindings when player isn't loaded yet
-            player = self.board.player()
-            hud_menu = self.provider.unpack(
-                'view', 
-                view, 
-                {'sprite': {'state': getattr(player, 'state', None)}}, 
-                self.context.screensize
-            )
-            self.board.set_overlays([hud_menu])
 
 
     def get_engine(self) -> Engine:

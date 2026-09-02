@@ -96,7 +96,22 @@ class Engine:
 
             elif isinstance(event, TerminalEvent):
                 if self.board.menus:
-                    self.board.menus.pop()
+                    popped_menu = self.board.menus.pop()
+                    
+                    # HUD INJECTION: Once the load screen finishes, bind the HUD to the live player
+                    if popped_menu.id == 'load':
+                        view_cfg = self.board.configurations.menus.get('view')
+                        player = self.board.player()
+                        if view_cfg and player:
+                            screen = self.screens.get(player.state.layer, next(iter(self.screens.values())))
+                            hud_menu = self.provider.unpack(
+                                'view', 
+                                view_cfg, 
+                                {'sprite': {'state': getattr(player, 'state', None)}}, 
+                                screen.screensize
+                            )
+                            self.board.set_overlays([hud_menu])
+
                 if not self.board.menus:
                     self.board.paused = False
                     

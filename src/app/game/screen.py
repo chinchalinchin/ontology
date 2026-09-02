@@ -32,7 +32,8 @@ from libs.graphics.render import (
     render, 
     save, 
     superimpose, 
-    write 
+    write,
+    destroy
 )
 from libs.graphics.registry import (
     Registry, 
@@ -294,9 +295,9 @@ class Screen:
 
         # 1. Explicitly free GPU memory immediately (bypassing Python GC)
         if hasattr(self, 'bg_canvas') and self.bg_canvas:
-            render.destroy(self.bg_canvas)
+            destroy(self.bg_canvas)
         if hasattr(self, 'fg_canvas') and self.fg_canvas:
-            render.destroy(self.fg_canvas)
+            destroy(self.fg_canvas)
 
         # 2. Update dimensions
         if screensize:
@@ -314,14 +315,14 @@ class Screen:
         is_opaque = len(tiles) == 0
 
         # 4. Reallocate VRAM
-        self.bg_canvas = render.canvas(self.boardsize.w, self.boardsize.l, opaque=is_opaque)
-        self.fg_canvas = render.canvas(self.boardsize.w, self.boardsize.l)
+        self.bg_canvas = canvas(self.boardsize.w, self.boardsize.l, opaque=is_opaque)
+        self.fg_canvas = canvas(self.boardsize.w, self.boardsize.l)
 
         # 5. Prerender and Construct
         back_tiles, fore_tiles = self._prerender(tiles)
 
-        render.construct(self.bg_canvas, back_tiles)
-        render.construct(self.fg_canvas, fore_tiles)
+        construct(self.bg_canvas, back_tiles)
+        construct(self.fg_canvas, fore_tiles)
 
     # ------------------------------------------------ EXPORT METHODS
 
