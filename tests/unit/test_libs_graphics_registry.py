@@ -166,7 +166,6 @@ def test_registry_fallback_retrieval(mock_properties, mock_configurations):
         assert data[3] == 32
         assert data[4] == 32
 
-
 def test_registry_stack_assembly(mock_properties, mock_configurations):
     """Test that Registry data-driven stacking works correctly via JIT compilation."""
     mock_properties.sheets.sprites["player"].stack = ["base_body", "armor", "helmet"]
@@ -196,8 +195,8 @@ def test_registry_stack_assembly(mock_properties, mock_configurations):
             fonts_dict
         )
         
-        # Stack recipe is mapped to filepaths
-        assert isinstance(registry._filepaths["player"], list)
+        # FIX: Stack recipe is now mapped to _stacks
+        assert isinstance(registry._stacks["player"], list)
         assert "player" not in registry._textures
         
         # Trigger JIT
@@ -210,6 +209,96 @@ def test_registry_stack_assembly(mock_properties, mock_configurations):
         args, _ = mock_compose.call_args
         assert args[0] == registry._textures["base_body"]
         assert len(args[1]) == 2
+
+
+def test_registry_cyclic_stack_resolution(mock_properties, mock_configurations):
+    """Test that Registry breaks cyclic stack dependencies to prevent C-stack overflow."""
+    # Create a cyclic dependency: player stacks an aura ON TOP of itself
+    mock_properties.sheets.sprites["player"].stack = ["player", "player-aura"]
+    
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+
+    with patch('libs.graphics.registry.os.walk') as mock_walk, \
+         patch('libs.graphics.registry._sys_load_image') as mock_load, \
+         patch('libs.graphics.registry.render.compose') as mock_compose:
+         
+        mock_composed_tex = MagicMock()
+        mock_compose.return_value = mock_composed_tex
+        
+        mock_walk.return_value = [
+            ('/mock/assets', [], ['player.png', 'player-aura.png'])
+        ]
+        
+        # Mock load returning different textures so we can track them
+        mock_base_tex = MagicMock()
+        mock_aura_tex = MagicMock()
+        mock_load.side_effect = [mock_base_tex, mock_aura_tex]
+        
+        registry = Registry(
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
+        )
+        
+        # Both the stack and the raw file exist for 'player'
+        assert "player" in registry._filepaths
+        assert "player" in registry._stacks
+        
+        # Trigger JIT image retrieval
+        registry.image("player")
+        
+        # Assert compose was called correctly, proving recursion was broken
+        mock_compose.assert_called_once()
+        args, _ = mock_compose.call_args
+        assert args[0] == mock_base_tex  # Base pointer should be the raw 'player.png'
+        assert args[1] == [mock_aura_tex] # Feature pointer should be the 'player-aura.png'
+        assert registry._textures["player"] == mock_composed_tex
+        
+
+def test_registry_prewarm_budget(mock_properties, mock_configurations):
+    """Test that prewarming exhausts the queue or yields to the time budget."""
+    properties_dict = dataclasses.asdict(mock_properties)
+    fonts_dict = properties_dict.pop("fonts", {})
+
+    with patch('libs.graphics.registry.os.walk') as mock_walk, \
+         patch('libs.graphics.registry._sys_load_image') as mock_load, \
+         patch('libs.graphics.registry.time.perf_counter') as mock_time:
+         
+        # Provide multiple files to populate the pending queue
+        mock_walk.return_value = [
+            ('/mock/assets', [], ['asset1.png', 'asset2.png', 'asset3.png'])
+        ]
+        
+        mock_load.return_value = MagicMock()
+        
+        registry = Registry(
+            properties_dict, 
+            dataclasses.asdict(mock_configurations.recipes),
+            fonts_dict
+        )
+        
+        assert registry.maximum == 3
+        assert registry.current == 0
+        
+        # Simulate an immediate time budget breach
+        # Call 1: start timer. Call 2: check inside loop.
+        mock_time.side_effect = [0.0, 0.020] 
+        
+        # Budget is 10ms. 20ms delta should trigger an early exit returning False.
+        done = registry.prewarm(budget_ms=10)
+        assert done is False
+        assert registry.current == 0 # Queue shouldn't have popped
+        assert len(registry._pending_assets) == 3
+        
+        # Simulate plenty of time to process everything
+        # Call 1: start. Call 2,3,4: loop checks (0 delta)
+        mock_time.side_effect = [0.0, 0.001, 0.001, 0.001, 0.001]
+        
+        done = registry.prewarm(budget_ms=10)
+        assert done is True
+        assert registry.current == 3
+        assert len(registry._pending_assets) == 0
 
 
 def test_registry_noframe_indexing(mock_properties, mock_configurations):

@@ -305,20 +305,22 @@ def canvas(int w, int l, bint opaque=False) -> TexturePtr:
 
 
 def compose(TexturePtr base_ptr, list feature_ptrs) -> TexturePtr:
-    """
-    Binds a blank TEXTUREACCESS_TARGET, stamps the base and features onto it, 
-    unbinds, and returns the new flattened TexturePtr.
-    """
+    logger.debug(f"[TELEMETRY] Compositing base texture ({base_ptr.w}x{base_ptr.l}) with {len(feature_ptrs)} features.")
+    
     cdef TexturePtr target = canvas(base_ptr.w, base_ptr.l)
 
     SDL_SetRenderTarget(_renderer, target.ptr)
-    SDL_RenderCopy(_renderer, base_ptr.ptr, NULL, NULL)
+    
+    if SDL_RenderCopy(_renderer, base_ptr.ptr, NULL, NULL) < 0:
+        logger.error(f"[TELEMETRY] Compose Base Copy Error: {SDL_GetError().decode('utf-8')}")
 
     cdef TexturePtr feat
-    for feat in feature_ptrs:
-        SDL_RenderCopy(_renderer, feat.ptr, NULL, NULL)
+    for i, feat in enumerate(feature_ptrs):
+        if SDL_RenderCopy(_renderer, feat.ptr, NULL, NULL) < 0:
+            logger.error(f"[TELEMETRY] Compose Feature {i} Copy Error: {SDL_GetError().decode('utf-8')}")
 
     SDL_SetRenderTarget(_renderer, NULL)
+    logger.debug(f"[TELEMETRY] Composition complete.")
     return target
 
 

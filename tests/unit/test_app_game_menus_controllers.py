@@ -55,6 +55,7 @@ def test_load_controller_update():
     ctrl = LoadController()
     
     mock_board = MagicMock()
+    mock_board.loaded = False  # Explicitly set to False to bypass the new guard clause
     mock_migrator = MagicMock()
     mock_migrator.target = "world-01"
     mock_migrator.step.return_value = True # Migrator is fully hydrated

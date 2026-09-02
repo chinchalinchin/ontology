@@ -7,6 +7,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
   `[x]`: Closed/Implemented
   `[!]`: DO NOT COMPLETE
 
+Do not burn cycles trying to infer the problem if it is not immediately obvious upon examination. Instead, propose telemetry logs to add at critical junctions in the application to provide insight into what is going on.
 **Table of Contents**
 
 - Phases
@@ -37,6 +38,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
   - Patch 
     - [x]: [Bug B000: Attacking](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering](./phases/patch/bug-b001.md)
+    - [ ]: [Bug B002: Board Cache Wipe on Layerless Assets](./phases/patch/bug-b002.md)
+    - [ ]: [Bug B003: Painter's Algorithm String Exception](./phases/patch/bug-b003.md)
   - Report:
     - [x]: [2026-08-16: SDL Pipeline Failure](./phases/report/2026-08-16.md)
 

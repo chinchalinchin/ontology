@@ -32,6 +32,10 @@ class LoadController(MenuController):
         pass
 
     def update(self, menu: Menu, board: Board, bus: collections.deque) -> None:
+        # GUARD: Prevent transition loop while waiting for Engine to drain the TerminalEvent
+        if board.loaded:
+            return
+
         # 1. Process Migrator Data Construction
         migrator_done = True
         if board.migrator and board.migrator.target:
@@ -73,5 +77,6 @@ class LoadController(MenuController):
                 if hasattr(screen, 'fg_canvas') and screen.fg_canvas:
                     render.destroy(screen.fg_canvas)
             
+            # Set the flag to trip the guard clause on the next tick
             board.loaded = True
             bus.append(TerminalEvent())

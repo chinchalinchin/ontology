@@ -163,7 +163,7 @@ class MenuMechanics(Mechanic):
 
         # Input Interception
         traversal = payload.menu.traversal
-        interaction = payload.menu.interactions
+        interaction = payload.menu.interaction
 
         if interaction in [Interactions.CANCEL, Interactions.PAUSE]:
             bus.append(TerminalEvent())

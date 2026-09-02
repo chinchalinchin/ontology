@@ -337,12 +337,13 @@ Currently, `Registry._stack()` runs during `__init__`. It uses `render.compose()
 - [x] Subtask: In `Engine`, replace `while self.board.loaded` with a generic `while self.running` loop condition.
 - [x] Subtask: In `Engine.__init__`, add `self.running = False`.
 - [x] Subtask: In `Engine.start()`, set `self.running = True`. Replace `while self.board.loaded` with `while self.running`.
-- [~] Subtask: Create `StateEvent(id: str)` to manage Board migration events.  `StateEvent` must be added to `events.py`. `Engine._drain()` must explicitly catch `StateEvent`, configure the `board.migrator.target = event.id`, and automatically append `MenuEvent('load')` to the bus to summon the loading screen.
-- [~] Subtask: In `Engine._drain()`, implement `StateEvent` catching: assign the event payload (`id`) to the `Migrator`, and append `MenuEvent('load')` to the bus.
+- [x] Subtask: Create `StateEvent(id: str)` to manage Board migration events.  `StateEvent` must be added to `events.py`. `Engine._drain()` must explicitly catch `StateEvent`, configure the `board.migrator.target = event.id`, and automatically append `MenuEvent('load')` to the bus to summon the loading screen.
+- [x] Subtask: In `Engine._drain()`, implement `StateEvent` catching: assign the event payload (`id`) to the `Migrator`, and append `MenuEvent('load')` to the bus.
 
 **2. Task: Registry Lazy-Loading & JIT Stacking**
 
 *Objective*: Decouple asset indexing from VRAM allocation for instant engine booting.
+
 - [x] Subtask: Refactor `Registry._cache()` to map filepaths to keys without invoking `IMG_LoadTexture`.
 - [x] Subtask: Refactor `Registry._index()` to store string `item_id`s in the `_frames` tuple instead of `TexturePtr`s.
 - [x] Subtask: Implement `Registry._get_or_load_texture(asset_key)`.

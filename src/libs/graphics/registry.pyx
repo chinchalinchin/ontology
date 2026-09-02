@@ -1,8 +1,6 @@
 # cython: language_level=3
 """
 # Ontology: libs.graphics.registry
-
-Cythonized extension for ingesting physical image files, tracking their GPU memory pointers and flat-mapping Frame keys directly to GPU texture croppings. 
 """
 # Standard Libraries
 import os
@@ -37,28 +35,18 @@ cdef extern from "SDL2/SDL_ttf.h":
     void TTF_CloseFont(TTF_Font* font)
 
 cdef class TexturePtr:
-    """
-    Cython extension type wrapping the raw C-pointer for an SDL_Texture.
-    Provides automated memory leak prevention on pointer garbage collection.
-    """
     def __dealloc__(self):
         if self.ptr != NULL:
             SDL_DestroyTexture(self.ptr)
             self.ptr = NULL
 
 cdef class TTFFont:
-    """
-    Cython extension type wrapping the raw C-pointer for an TTF_Font.
-    Provides automated memory leak prevention on pointer garbage collection.
-    """
-    
     def __dealloc__(self):
         if self.ptr != NULL:
             TTF_CloseFont(self.ptr)
             self.ptr = NULL
 
 def _sys_load_image(filepath: str):
-    """Module-level C-call wrapper to allow Python unit testing."""
     cdef bytes b_filepath = filepath.encode('utf-8')
     cdef SDL_Texture* tex = IMG_LoadTexture(_renderer, b_filepath)
     
@@ -75,7 +63,6 @@ def _sys_load_image(filepath: str):
     return wrapper
 
 def _sys_load_font(filepath: str, pt_size: int, style: dict):
-    """Module-level C-call wrapper to allow Python unit testing."""
     cdef bytes b_filepath = filepath.encode('utf-8')
     cdef TTF_Font* f_ptr = TTF_OpenFont(b_filepath, pt_size)
     
@@ -101,11 +88,6 @@ def _sys_load_font(filepath: str, pt_size: int, style: dict):
     return font_obj
 
 cdef class Registry:
-    """
-    Centralized Asset Registry to ingest configuration, cache GPU textures, 
-    and map dynamic string keys to crop coordinates.
-    """
-    
     cdef public dict properties
     cdef public dict recipes
     cdef public dict typography
@@ -114,6 +96,7 @@ cdef class Registry:
     cdef public dict _frames
     cdef public dict _fonts
     cdef public dict _filepaths
+    cdef public dict _stacks
     cdef public list _pending_assets
     cdef public int maximum
     cdef public int current
@@ -127,18 +110,19 @@ cdef class Registry:
         self._frames = {}
         self._fonts = {}
         self._filepaths = {}
+        self._stacks = {}
         self._pending_assets = []
         self.maximum = 0
         self.current = 0
         self.properties = properties
         self.recipes = recipes
         self.typography = typography
+        
         self._cache()
         self._stack()
         self._index()
 
     def _cache(self):
-        """Recursively parses all physical PNG and TTF files across the static asset directory."""
         asset_dir = str(settings.ASSET_DIR)
         logger.debug(f"Walking asset directory for assets: {asset_dir}")
         for root, _, files in os.walk(asset_dir):
@@ -152,34 +136,44 @@ cdef class Registry:
         self.maximum = len(self._pending_assets)
         self.current = 0
 
-    def _get_or_load_texture(self, asset_key: str):
-        if asset_key in self._textures:
+    def _get_or_load_texture(self, asset_key: str, bint raw_only=False):
+        if not raw_only and asset_key in self._textures:
             return self._textures[asset_key]
             
-        filepath_or_stack = self._filepaths.get(asset_key)
-        if not filepath_or_stack:
-            return None
+        # 1. Virtual Stack Resolution
+        if not raw_only and asset_key in self._stacks:
+            stack = self._stacks[asset_key]
             
-        if isinstance(filepath_or_stack, list):
-            base_key = filepath_or_stack[0]
-            base_ptr = self._get_or_load_texture(base_key)
+            # If a stack component references the parent key, force a physical 
+            # load to break the cyclic dependency and prevent a C-stack overflow.
+            base_key = stack[0]
+            force_raw = (base_key == asset_key)
+            base_ptr = self._get_or_load_texture(base_key, raw_only=force_raw)
+            
             if not base_ptr: return None
+            
             stack_ptrs = []
-            for f_key in filepath_or_stack[1:]:
-                f_ptr = self._get_or_load_texture(f_key)
+            for f_key in stack[1:]:
+                f_force_raw = (f_key == asset_key)
+                f_ptr = self._get_or_load_texture(f_key, raw_only=f_force_raw)
                 if f_ptr: stack_ptrs.append(f_ptr)
+                
             tex = render.compose(base_ptr, stack_ptrs) if stack_ptrs else base_ptr
             self._textures[asset_key] = tex
             return tex
-            
-        if filepath_or_stack.endswith('.png'):
-            tex = self._load_image(filepath_or_stack)
-            if tex: self._textures[asset_key] = tex
+
+        # 2. Physical File Resolution
+        filepath = self._filepaths.get(asset_key)
+        if filepath and filepath.endswith('.png'):
+            tex = self._load_image(filepath)
+            # Prevent intermediate raw textures from polluting the composited cache
+            if not raw_only and tex: 
+                self._textures[asset_key] = tex
             return tex
+            
         return None
 
     def _load_image(self, filepath: str):
-        """Internal delegator to the module-level C-call wrapper."""
         return _sys_load_image(filepath)
 
     def _get_or_load_font(self, font_key: str):
@@ -194,7 +188,6 @@ cdef class Registry:
         return None
 
     def _load_font(self, font_key: str, filepath: str):
-        """Internal delegator to the module-level C-call wrapper."""
         if font_key not in self.typography:
             return None
             
@@ -203,14 +196,12 @@ cdef class Registry:
         return _sys_load_font(filepath, pt_size, style)
 
     def _extract(self, inst_props):
-        """Helper to agnostically extract property items from schema variations."""
         if not isinstance(inst_props, dict): return
         else:
             for k, v in inst_props.items():
                 if isinstance(v, dict): yield k, v
 
     def _stack(self):
-        """Data-Driven Texture Assembly."""
         logger.debug("Registering Texture Stacks dependencies...")
         for _, cat_props in self.properties.items():
             if not cat_props: continue
@@ -218,13 +209,12 @@ cdef class Registry:
                 for item_id, item_props in self._extract(inst_props):
                     stack = item_props.get("stack", [])
                     if not stack: continue
-                    self._filepaths[item_id] = stack
+                    self._stacks[item_id] = stack
                     if item_id not in self._pending_assets:
                         self._pending_assets.append(item_id)
                         self.maximum += 1
 
     def _index(self):
-        """Maps runtime dynamic frame keys to their GPU mapping tuple coordinates."""
         from app.services.factory import Factory
 
         logger.debug("Indexing Frame Keys to Texture Crops...")
@@ -238,33 +228,25 @@ cdef class Registry:
                 if not inst_props: continue
                 frame_worker = Factory.frame(recipe["frame"])
                 for item_id, item_props in self._extract(inst_props):
-                    if item_id not in self._filepaths: continue
+                    if item_id not in self._filepaths and item_id not in self._stacks: 
+                        continue
                     crop_map = frame_worker.index(item_id, item_props)
-                    if not crop_map:
-                        logger.warning(f"[REGISTRY] Frame indexer {type(frame_worker).__name__} returned empty crop_map for '{item_id}'")
                     for frame_key, crop in crop_map.items():
-                        logger.debug(f"Indexed frame: '{frame_key}'")
                         self._frames[frame_key] = (item_id, crop[0], crop[1], crop[2], crop[3])
 
     def image(self, frame_key: str) -> tuple:
-        """
-        Returns a lightweight Python tuple resolving mapped texture configurations for the camera.
-        Format: (TexturePtr, src_x, src_y, src_w, src_l)
-        """
-        logger.debug(f"Querying registry for frame_key: '{frame_key}'")
         if frame_key in self._frames:
             item_id, sx, sy, sw, sl = self._frames[frame_key]
             tex = self._get_or_load_texture(item_id)
             if tex: return (tex, sx, sy, sw, sl)
-        if frame_key in self._filepaths:
-            val = self._filepaths[frame_key]
-            if isinstance(val, list) or val.endswith('.png'):
-                tex = self._get_or_load_texture(frame_key)
-                if tex: return (tex, 0, 0, tex.w, tex.l)
+            
+        if frame_key in self._filepaths or frame_key in self._stacks:
+            tex = self._get_or_load_texture(frame_key)
+            if tex: return (tex, 0, 0, tex.w, tex.l)
+            
         return None
 
     def font(self, font_key: str):
-        """Returns the pre-configured TTFFont wrapper indexed during initialization."""
         return self._get_or_load_font(font_key)
         
     def prewarm(self, budget_ms: int) -> bool:
@@ -272,11 +254,10 @@ cdef class Registry:
         while self._pending_assets:
             if (time.perf_counter() - start) * 1000 > budget_ms:
                 return False
+                
             asset_key = self._pending_assets.pop()
-            val = self._filepaths.get(asset_key)
-            if isinstance(val, list) or (isinstance(val, str) and val.endswith('.png')):
-                self._get_or_load_texture(asset_key)
-            elif isinstance(val, str) and val.endswith('.ttf'):
-                self._get_or_load_font(asset_key)
+            self._get_or_load_texture(asset_key)
+            self._get_or_load_font(asset_key)
             self.current += 1
+            
         return True
