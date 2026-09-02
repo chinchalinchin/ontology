@@ -114,69 +114,99 @@ class Provider:
             
         return pages
     
-    def _resolve(self, 
-        bind_path: str, context: dict):
+    def _resolve(self, bind_path: str, context: dict) -> tuple[Any, str]:
         """
-        Resolves a string path (e.g., 'context.sprite.state.meters.health') into a live memory reference.
+        Resolves a string path into a tuple of (parent_object, attribute_name).
         """
         if not bind_path:
-            return None
+            return None, None
             
         parts = bind_path.split('.')
         if parts[0] == 'context':
             parts = parts[1:]
         
+        if not parts:
+            return None, None
+            
         try:
-            return functools.reduce(
+            parent = functools.reduce(
                 lambda obj, attr: obj.get(attr) if isinstance(obj, dict) else getattr(obj, attr),
-                parts,
+                parts[:-1],
                 context
             )
+            return parent, parts[-1]
         except AttributeError:
-            return None
+            return None, None
 
     def _unpack_page(self, cfg: MenuWidget, context: dict) -> DisplayState:
         props_dict = getattr(self.properties, cfg.instance, {})
         props = props_dict.get(cfg.id)
-        resolved = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else ""
-        content = resolved if resolved else ""
+        parent, attr = self._resolve(cfg.bind.state, context) \
+                            if cfg.bind and cfg.bind.state \
+                            else (None, None)
+        
         w = props.dimensions.w
         l = props.dimensions.l
         canvas_ptr = render.canvas(w, l)
-        
-        # Execute physical measurements only if we possess the text and the Font Registry
-        if content:
-            font = self.registry.font("dialogue") 
-            content = self._paginate(content, font, w, l)
-            
+
+        def get_paginated_content():
+            if parent is None or attr is None:
+                raw = ""
+            else:
+                raw = parent.get(attr) \
+                        if isinstance(parent, dict) \
+                        else getattr(parent, attr, "")
+                
+            if raw:
+                font = self.registry.font("dialogue") 
+                return self._paginate(raw, font, w, l)
+            return []
+
         return DisplayState(
             position=Position(x=0, y=0),
-            content=content,
+            content_function=get_paginated_content,
             pageindex=0,
-            pagesize=1, # One aggregated string page per pageindex
+            pagesize=1,
             canvas=canvas_ptr
         )
                     
     def _unpack_meter(self, cfg: MenuWidget, context: dict) -> MeterState:
-        resolved = self._resolve(cfg.bind.state, context) \
-                        if cfg.bind and cfg.bind.state else None
-        reading_function = lambda r=resolved: (
-            r.current if hasattr(r, 'current') 
-                else (r if isinstance(r, (int, float)) else 0)
-        )
-        unit_function = lambda r=resolved: (
-            r.maximum if hasattr(r, 'maximum') 
-                else (1 if isinstance(r, (int, float)) else 1)
-        )
+        parent, attr = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else (None, None)
+        
+        def get_val():
+            if parent is None or attr is None:
+                return 0
+            return parent.get(attr) if isinstance(parent, dict) else getattr(parent, attr, 0)
+            
+        def reading_function():
+            r = get_val()
+            return r.current if hasattr(r, 'current') else (r if isinstance(r, (int, float)) else 0)
+            
+        def unit_function():
+            r = get_val()
+            return r.maximum if hasattr(r, 'maximum') else (1 if isinstance(r, (int, float)) else 1)
+
         state = MeterState(
             position=Position(x=0, y=0),
-            reading_function = reading_function,
-            unit_function = unit_function
+            reading_function=reading_function,
+            unit_function=unit_function
         )
-        # Evaluate immediately to prevent 1-frame empty gauge flicker
         if state.unit > 0:
             state.animation.frame = max(0, min(100, int(round((state.reading / state.unit) * 100))))
         return state
+
+    def _unpack_icon(self, cfg: MenuWidget, context: dict) -> IconState:
+        parent, attr = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else (None, None)
+        
+        def get_icon():
+            if parent is None or attr is None:
+                return ""
+            return parent.get(attr) if isinstance(parent, dict) else getattr(parent, attr, "")
+
+        return IconState(
+            position=Position(x=0, y=0),
+            icon_function=get_icon
+        )
 
     def _unpack_button(self, cfg: MenuWidget, context: dict) -> TraversalState:
         initial_status = cfg.status.value \
@@ -186,16 +216,6 @@ class Provider:
             position=Position(x=0, y=0),
             status=initial_status,
             animation=AnimationState(action=initial_status) # Sync action immediately
-        )
-
-    def _unpack_icon(self, cfg: MenuWidget, context: dict) -> IconState:
-        resolved = self._resolve(cfg.bind.state, context) \
-                            if cfg.bind and cfg.bind.state else None
-        initial_icon = resolved 
-
-        return IconState(
-            position=Position(x=0, y=0),
-            icon=initial_icon
         )
 
     def _unpack_node(self, 

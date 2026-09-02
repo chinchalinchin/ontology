@@ -326,36 +326,36 @@ Currently, `Registry._stack()` runs during `__init__`. It uses `render.compose()
 
 *Objective*: Fix pass-by-value primitive traps across all UI Widgets.
 
-- [ ] Subtask: Refactor `Provider._resolve()` to return a `(parent_object, property_name)` tuple instead of an evaluated primitive.
-- [ ] Subtask: Update `MeterState`, `IconState`, and `DisplayState` to accept `Callable` closures instead of static primitives.
-- [ ] Subtask: Refactor `Provider._unpack_meter`, `_unpack_icon`, and `_unpack_page` to generate `lambda: getattr(parent, prop)` closures.
+- [x] Subtask: Refactor `Provider._resolve()` to return a `(parent_object, property_name)` tuple instead of an evaluated primitive.
+- [x] Subtask: Update `MeterState`, `IconState`, and `DisplayState` to accept `Callable` closures instead of static primitives.
+- [x] Subtask: Refactor `Provider._unpack_meter`, `_unpack_icon`, and `_unpack_page` to generate `lambda: getattr(parent, prop)` closures.
 
 **1. Task: Engine & Board Preparation**
 
 *Objective*: Allow the Engine to tick while the Board is completely empty.
 
-- [ ] Subtask: In `Engine`, replace `while self.board.loaded` with a generic `while self.running` loop condition.
-- [ ] Subtask: In `Engine.__init__`, add `self.running = False`.
-- [ ] Subtask: In `Engine.start()`, set `self.running = True`. Replace `while self.board.loaded` with `while self.running`.
-- [ ] Subtask: Create `StateEvent(id: str)` to manage Board migration events.  `StateEvent` must be added to `events.py`. `Engine._drain()` must explicitly catch `StateEvent`, configure the `board.migrator.target = event.id`, and automatically append `MenuEvent('load')` to the bus to summon the loading screen.
-- [ ] Subtask: In `Engine._drain()`, implement `StateEvent` catching: assign the event payload (`id`) to the `Migrator`, and append `MenuEvent('load')` to the bus.
+- [x] Subtask: In `Engine`, replace `while self.board.loaded` with a generic `while self.running` loop condition.
+- [x] Subtask: In `Engine.__init__`, add `self.running = False`.
+- [x] Subtask: In `Engine.start()`, set `self.running = True`. Replace `while self.board.loaded` with `while self.running`.
+- [~] Subtask: Create `StateEvent(id: str)` to manage Board migration events.  `StateEvent` must be added to `events.py`. `Engine._drain()` must explicitly catch `StateEvent`, configure the `board.migrator.target = event.id`, and automatically append `MenuEvent('load')` to the bus to summon the loading screen.
+- [~] Subtask: In `Engine._drain()`, implement `StateEvent` catching: assign the event payload (`id`) to the `Migrator`, and append `MenuEvent('load')` to the bus.
 
 **2. Task: Registry Lazy-Loading & JIT Stacking**
 
 *Objective*: Decouple asset indexing from VRAM allocation for instant engine booting.
-- [ ] Subtask: Refactor `Registry._cache()` to map filepaths to keys without invoking `IMG_LoadTexture`.
-- [ ] Subtask: Refactor `Registry._index()` to store string `item_id`s in the `_frames` tuple instead of `TexturePtr`s.
-- [ ] Subtask: Implement `Registry._get_or_load_texture(asset_key)`.
-- [ ] Subtask: Refactor `Registry._stack()` logic. Instead of running at init, store stack recipes. Update `_get_or_load_texture` to recursively load and composite stack dependencies Just-In-Time.
-- [ ] Subtask: Implement `Registry.prewarm(budget_ms: int)`. Use `time.perf_counter()` to load textures from a pending queue until the budget is exhausted. Maintain `loaded_count` and `maximum_count` for Meter bindings.
+- [x] Subtask: Refactor `Registry._cache()` to map filepaths to keys without invoking `IMG_LoadTexture`.
+- [x] Subtask: Refactor `Registry._index()` to store string `item_id`s in the `_frames` tuple instead of `TexturePtr`s.
+- [x] Subtask: Implement `Registry._get_or_load_texture(asset_key)`.
+- [x] Subtask: Refactor `Registry._stack()` logic. Instead of running at init, store stack recipes. Update `_get_or_load_texture` to recursively load and composite stack dependencies Just-In-Time.
+- [x] Subtask: Implement `Registry.prewarm(budget_ms: int)`. Use `time.perf_counter()` to load textures from a pending queue until the budget is exhausted. Maintain `loaded_count` and `maximum_count` for Meter bindings.
 
 **3. Task: The Migrator Object**
 
 *Objective*: Extract hydration logic from `Builder` into a state machine that yields execution.
 
-- [ ] Subtask: Create `Migrator` class. Migrate the loop from `Builder.build_board()` into `Migrator.step()`.
-- [ ] Subtask: Implement `Migrator.step(budget_ms: int)` to process a slice of the state YAML per tick, returning a boolean (`True` when complete).
-- [ ] Subtask: Inject `Migrator` into `Board`. Add `board.loaded = False` to Board initialization.
+- [x] Subtask: Create `Migrator` class. Migrate the loop from `Builder.build_board()` into `Migrator.step()`.
+- [x] Subtask: Implement `Migrator.step(budget_ms: int)` to process a slice of the state YAML per tick, returning a boolean (`True` when complete).
+- [x] Subtask: Inject `Migrator` into `Board`. Add `board.loaded = False` to Board initialization.
 
 **4. Task: Dynamic Screen Allocation (Memory Safe)**
 
@@ -368,14 +368,14 @@ Currently, `Registry._stack()` runs during `__init__`. It uses `render.compose()
 
 *Objective*: Orchestrate the transition from Boot -> Menu -> Gameplay.
 
-- [ ] Subtask: Implement `MainController`. `select('new-game')` pushes `StateEvent('world-01')` to the bus.
-- [ ] Subtask: Implement `LoadController`. In `update()`, call `registry.prewarm()` and `board.migrator.step()`. 
-- [ ] Subtask: When `Migrator` and `Registry` both report 100%, `LoadController.update()` must call `screen.rebake()` on all active screens, set `board.loaded = True`, and emit a `TerminalEvent`.
-- [ ] Subtask: In `Orchestrator.orchestrate()`, inject a `MenuEvent('main')` into the Engine bus immediately before calling `engine.start()`.
+- [x] Subtask: Implement `MainController`. `select('new-game')` pushes `StateEvent('world-01')` to the bus.
+- [x] Subtask: Implement `LoadController`. In `update()`, call `registry.prewarm()` and `board.migrator.step()`. 
+- [x] Subtask: When `Migrator` and `Registry` both report 100%, `LoadController.update()` must call `screen.rebake()` on all active screens, set `board.loaded = True`, and emit a `TerminalEvent`.
+- [x] Subtask: In `Orchestrator.orchestrate()`, inject a `MenuEvent('main')` into the Engine bus immediately before calling `engine.start()`.
 
 **6. Task: State Serialization (Saving)**
 
 *Objective*: Dump runtime Board state to YAML.
 
-- [ ] Subtask: Implement `Board.serialize()`. Iterate `_assets`, converting mutable `AssetState` dataclasses to dictionary structures. Exclude stateless assets (e.g., Widgets, Tiles, Equipment).
-- [ ] Subtask: Write output to `/data/save/<slot>.yaml`.
+- [x] Subtask: Implement `Board.serialize()`. Iterate `_assets`, converting mutable `AssetState` dataclasses to dictionary structures. Exclude stateless assets (e.g., Widgets, Tiles, Equipment).
+- [x] Subtask: Write output to `/data/save/<slot>.yaml`.

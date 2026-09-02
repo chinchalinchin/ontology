@@ -29,9 +29,9 @@ def test_builder_build_board(mock_builder):
     mock_builder.build_board()
     
     assert mock_builder.board is not None
-    assert mock_builder.board.loaded is True
-    # mock_state contains exactly 1 sprite asset
-    assert len(mock_builder.board.assets()) == 1
+    assert mock_builder.board.loaded is False
+    # Board initializes completely empty, deferred to Migrator
+    assert len(mock_builder.board.assets()) == 0
     assert mock_builder.decomposer is not None
 
 def test_builder_build_services(mock_builder):
@@ -61,7 +61,8 @@ def test_orchestrator_construct(mock_render, mock_registry, mock_screen, mock_or
     
     assert engine is not None
     assert engine.board is not None
-    assert engine.board.loaded is True
+    assert engine.board.loaded is False
+    
     
     # Mechanics lists should fall back to defaults when not explicitly configured
     assert len(engine.core) == 3

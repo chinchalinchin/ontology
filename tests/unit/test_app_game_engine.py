@@ -1,5 +1,3 @@
-# /home/grant/Projects/ontology/tests/unit/test_app_game_engine.py
-
 """
 # Ontology: tests.unit.test_app_game_engine
 
@@ -44,12 +42,7 @@ def test_engine_start():
     screen = Mock()
     mechanic = Mock()
 
-    # Break the Engine's while loop by changing board.loaded to False during the first update
-    def mock_update(*args, **kwargs):
-        board.loaded = False
-
-    mechanic.update.side_effect = mock_update
-
+    # Pre-instantiate the Engine so our mock can mutate its state
     engine = Engine(
         board=board, 
         screens={"0": screen}, 
@@ -57,7 +50,13 @@ def test_engine_start():
         world=[], 
         provider=Mock()
     )
-    
+
+    # Break the Engine's while loop by changing engine.running to False during the first update
+    def mock_update(*args, **kwargs):
+        engine.running = False
+
+    mechanic.update.side_effect = mock_update
+
     # Patch Engine.time to advance consistently, and mock time.sleep to avoid halting the test
     with patch.object(Engine, 'time', side_effect=IncrementalTime(step=0.017)):
         with patch('time.sleep') as mock_sleep:

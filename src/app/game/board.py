@@ -11,6 +11,10 @@ from typing import (
     Tuple,
     Any
 )
+from dataclasses import asdict
+
+# External Libraries
+import yaml
 
 # Application Libraries
 from app.assets.base import Asset
@@ -78,7 +82,7 @@ class Board:
         self._assets = assets
         self._catalogue()
         self._cache()
-        self.loaded = True
+        # Ensure loaded remains False until fully hydrated by the Migrator
         logger.info("Board completely hydrated and initialized.")
 
     # ---------------------------------------------------------
@@ -163,7 +167,10 @@ class Board:
                 self._cached_weights[layer].append(asset)
                 
             # Cross-layer Character lookup for Intentional Scripting Language
-            if cat == AssetCategories.SHEETS.value and inst in (AssetInstances.SPRITES.value, AssetInstances.PLAYERS.value):
+            if cat == AssetCategories.SHEETS.value and inst in (
+                AssetInstances.SPRITES.value, 
+                AssetInstances.PLAYERS.value
+            ):
                 if asset.name:
                     self._cached_characters[asset.name] = asset.state
 
@@ -216,12 +223,14 @@ class Board:
 
     def player(self, slot = 0) -> Asset:
         """
-        Returns the player at the indicated slot. Defaults to 0.
+        Returns the player at the indicated slot safely even if the board is empty. Defaults to 0.
         """
-        if slot < len(self._all_instances[AssetInstances.PLAYERS.value]):
-            return self._all_instances[AssetInstances.PLAYERS.value][slot]
-        return self._all_instances[AssetInstances.PLAYERS.value][0]
-
+        players = self._all_instances.get(AssetInstances.PLAYERS.value, [])
+        if not players:
+            return None
+        if slot < len(players):
+            return players[slot]
+        return players[0]
 
     def tile(self, 
         layer: str, 
@@ -468,3 +477,43 @@ class Board:
             if cat == AssetCategories.SHEETS.value and inst in (AssetInstances.SPRITES.value, AssetInstances.PLAYERS.value):
                 if asset.name and asset.name in self._cached_characters:
                     del self._cached_characters[asset.name]
+
+        def serialize(self, slot: str) -> None:
+            """
+            Dumps runtime Board state back to YAML for saves.
+            """
+            dump = {}
+            for asset in self._assets:
+                # Exclude highly transient or completely stateless system assets
+                if asset.category in (
+                    AssetCategories.WIDGETS.value, 
+                    AssetCategories.TILES.value, 
+                    AssetCategories.EFFECTS.value
+                ):
+                    continue
+                    
+                # Exclude stateless Equipment wrappers (they bind directly to Sprite Inventories)
+                if asset.category == AssetCategories.SHEETS.value and asset.instance not in (
+                    AssetInstances.SPRITES.value, 
+                    AssetInstances.PLAYERS.value, 
+                    AssetInstances.PIXIES.value
+                ):
+                    continue
+                    
+                cat = asset.category
+                inst = asset.instance
+                
+                if cat not in dump:
+                    dump[cat] = {}
+                if inst not in dump[cat]:
+                    dump[cat][inst] = []
+                    
+                dump[cat][inst].append(asdict(asset.state))
+
+            # TODO: file access should be handled through app.config.loader
+            out_dir = settings.SAVE_DIR
+            out_dir.mkdir(parents=True, exist_ok=True)
+            out_path = out_dir / f"{slot}.yaml"
+            
+            with open(out_path, 'w') as f:
+                yaml.dump(dump, f, default_flow_style=False)

@@ -1,39 +1,36 @@
 """
-# Ontology: app.gane.menus.controllers.display
+# Ontology: app.game.menus.controllers.main
 """
-from __future__ import annotations
-
-# Standard Libraries
 import collections
 from typing import TYPE_CHECKING
 
-# Application Libraries
-from app.config.enums import (
-    Menus,
-    Selections
-)
+from app.config.enums import Selections
 from app.game.menus.controllers.base import MenuController
 from app.game.menus.core import Menu
-from app.game.menus.events import MenuEvent
+from app.game.menus.events import StateEvent
 
 if TYPE_CHECKING:
     from app.game.board import Board
 
 class MainController(MenuController):
-    def select(self, 
-        name: str, 
-        menu: Menu, 
-        board: Board, 
-        bus: collections.deque
-    ) -> None:
+    def open(self, menu: Menu, board: 'Board', bus: collections.deque) -> None:
+        pass
+        
+    def close(self, menu: Menu, board: 'Board', bus: collections.deque) -> None:
+        pass
+        
+    def update(self, menu: Menu, board: 'Board', bus: collections.deque) -> None:
+        # Prewarm rendering textures while the user is idle on the Main Menu
+        registry = menu.context.get('registry')
+        if registry:
+            registry.prewarm(budget_ms=5)
+
+    def select(self, name: str, menu: Menu, board: 'Board', bus: collections.deque) -> None:
         widget = menu.widgets[name]
-                
-        # 1. Get the action and the target key
         selection = widget.binding.selection
 
+        # Target the requested board state mapping
         if selection == Selections.NEW.value:
-            # Pass the registry into the Event context
-            bus.append(MenuEvent(
-                id=Menus.LOAD.value, 
-                context={'registry': board.screens[0].registry} 
-            ))
+            bus.append(StateEvent(id='world-01'))
+        elif selection == Selections.LOAD.value:
+            bus.append(StateEvent(id='world-01')) # Standardized for MVP architecture

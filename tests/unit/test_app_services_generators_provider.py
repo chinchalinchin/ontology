@@ -9,7 +9,6 @@ from app.game.menus.core import Binding
 from app.config.enums import AssetInstances, Layouts, Alignments, Statuses
 from libs.core.models import Dimensions, ScreenPosition
 
-
 def test_provider_resolve(mock_provider):
     context = {
         "sprite": {
@@ -22,10 +21,10 @@ def test_provider_resolve(mock_provider):
     }
     
     res = mock_provider._resolve("context.sprite.state.meters.health", context)
-    assert res == {"current": 50, "maximum": 100}
+    assert res == (context["sprite"]["state"]["meters"], "health")
     
     res_invalid = mock_provider._resolve("context.sprite.state.invalid", context)
-    assert res_invalid is None
+    assert res_invalid == (context["sprite"]["state"], "invalid")
 
 @patch("app.services.generators.provider.render")
 def test_provider_paginate(mock_render, mock_provider):

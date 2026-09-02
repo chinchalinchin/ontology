@@ -19,8 +19,9 @@ class UpdateEvent(Event):
     widget: Any
     content: Union[str, List[str]]
 
+@dataclass(slots=True)
 class StateEvent(Event):
-    pass
+    id: str
 
 class TerminalEvent(Event):
     pass

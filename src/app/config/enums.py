@@ -60,6 +60,7 @@ class Equipment(str, Enum):
 
 class Shortcuts(str, Enum):
     COMPOSITIONS    = "compositions"
+    
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 
 class FrameRecipe(str, Enum):

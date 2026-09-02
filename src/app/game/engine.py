@@ -5,17 +5,24 @@
 
 Package for core game loop.
 """
+# Standard Libraries
 import time
 import collections
 from typing import List
 import logging
 
+# Application Libraries
 import app.config.settings as settings
 from app.game.board import Board
 from app.game.logic.mechanics.core import Mechanic
 from app.game.screen import Screen
 from app.services.generators.provider import Provider
-from app.game.menus.events import MenuEvent, TerminalEvent, UpdateEvent
+from app.game.menus.events import (
+    MenuEvent, 
+    TerminalEvent, 
+    UpdateEvent,
+    StateEvent
+)
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +38,7 @@ class Engine:
     world: List[Mechanic]
     bus: collections.deque
     provider: Provider
+    running: bool
 
     def __init__(self, 
         board: Board, 
@@ -45,15 +53,13 @@ class Engine:
         self.world = world
         self.provider = provider
         self.bus = collections.deque()
+        self.running = False
 
     @staticmethod
     def time() -> float:
         return time.perf_counter()
 
     def _drain(self) -> None:
-        """
-        Process Events.
-        """
         while self.bus:
             event = self.bus.popleft()
 
@@ -62,7 +68,11 @@ class Engine:
                 if menu_cfg:
                     self.board.paused = True
                     player = self.board.player()
-                    screen = self.screens[player.state.layer]
+                    # Handle screen targeting when no player is spawned yet
+                    screen = self.screens[player.state.layer] \
+                                if player and self.board.loaded \
+                                    else next(iter(self.screens.values()))
+                    
                     menu = self.provider.unpack(
                         event.id, 
                         menu_cfg, 
@@ -70,6 +80,19 @@ class Engine:
                         screen.screensize
                     )
                     self.board.menus.append(menu)
+
+            elif isinstance(event, StateEvent):
+                if hasattr(self.board, 'migrator') and self.board.migrator:
+                    self.board.migrator.target = event.id
+                    
+                self.bus.append(MenuEvent(
+                    id='load', 
+                    context={
+                        'registry': next(iter(self.screens.values())).registry,
+                        'screens': self.screens,
+                        'screensize': next(iter(self.screens.values())).screensize
+                    }
+                ))
 
             elif isinstance(event, TerminalEvent):
                 if self.board.menus:
@@ -79,7 +102,9 @@ class Engine:
                     
             elif isinstance(event, UpdateEvent):
                 player = self.board.player()
-                screen = self.screens[player.state.layer]
+                screen = self.screens[player.state.layer] \
+                            if player and self.board.loaded \
+                                else next(iter(self.screens.values()))
                 screen.stamp(event.widget, event.content)
 
     def _play(self, delta) -> None:
@@ -90,7 +115,7 @@ class Engine:
         for mechanic in self.core:
             mechanic.update(self.board, delta, self.bus, payload)
 
-        if not self.board.paused:
+        if not self.board.paused and self.board.loaded:
             for mechanic in self.world:
                 mechanic.update(self.board, delta, self.bus, payload)
 
@@ -100,6 +125,14 @@ class Engine:
         """
         player = self.board.player()
         
+        # Trap the rendering flow if we are in MainMenu or Loading mode
+        if not self.board.loaded or not player:
+            screen = next(iter(self.screens.values()))
+            screen.clear()
+            screen.interface(self.board.menus, self.board.overlays)
+            screen.present()
+            return
+            
         screen = self.screens[player.state.layer]
         screen.clear()
         screen.draw(
@@ -118,16 +151,15 @@ class Engine:
 
         delta = 1.0 / settings.TARGET_FPS
         accumulator = 0.0
-        
         spin_threshold = 0.002 
-        
         last_time = self.time()
 
         telemetry_frames = 0
         telemetry_updates = 0
         telemetry_start_time = last_time
 
-        while self.board.loaded:
+        self.running = True
+        while self.running:
             current_time = self.time()
             frame_time = current_time - last_time
             last_time = current_time
@@ -142,7 +174,6 @@ class Engine:
                 telemetry_updates += 1
 
             self._render()
-
             telemetry_frames += 1
 
             #  Hybrid Pacing (Sleep + Spin)

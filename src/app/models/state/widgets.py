@@ -28,11 +28,14 @@ from app.models.state.core import (
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------- WIDGET STATES
-
 @dataclass(slots=True)
 class IconState:
     position: Position # type: ignore
-    icon: str
+    icon_function: Callable[[], str]
+    
+    @property
+    def icon(self) -> str:
+        return self.icon_function()
 
 @dataclass(slots=True)
 class TraversalState:
@@ -66,27 +69,33 @@ class MeterState:
 @dataclass(slots=True)
 class DisplayState:
     position: Position # type: ignore
-    content: Union[str, List[str]]
+    content_function: Callable[[], Union[str, List[str]]]
     pageindex: int
     pagesize: int = 1
     canvas: Any = None
 
     @property
+    def content(self) -> Union[str, List[str]]:
+        return self.content_function()
+
+    @property
     def _pagecount(self) -> int:
-        if not self.content:
+        content = self.content
+        if not content:
             return 0
-        if isinstance(self.content, list):
-            return len(self.content)
+        if isinstance(content, list):
+            return len(content)
         return 1
 
     def current(self) -> str:
-        if not self.content:
+        content = self.content
+        if not content:
             return ""
-        if isinstance(self.content, list):
-            if self.pageindex < len(self.content):
-                return self.content[self.pageindex]
+        if isinstance(content, list):
+            if self.pageindex < len(content):
+                return content[self.pageindex]
             return ""
-        return self.content
+        return content
 
     def more(self) -> bool: 
         return self.pageindex < (self._pagecount - 1)

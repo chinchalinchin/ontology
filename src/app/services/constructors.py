@@ -11,14 +11,10 @@ from enum import Enum
 
 # Application Libraries
 import app.config.settings as settings
-from app.assets.base import Asset
 from app.config.loader import Loader
 from app.config.enums import (
-    AssetCategories, 
-    AssetInstances, 
     Devices, 
     Mechanics, 
-    Shortcuts
 )
 from app.game.board import Board
 from app.game.engine import Engine
@@ -33,12 +29,9 @@ from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
 from app.services.factory import Factory
+from app.services.migrator import Migrator
 from app.services.generators.decomposer import Decomposer
 from app.services.generators.provider import Provider
-from app.services.translators import (
-    CompilerTranslator,
-    LambdaTranslator
-)
 
 # Cython Libraries
 from libs.core.models import Dimensions
@@ -67,7 +60,6 @@ class Builder:
         self.context = Context()
         self.registry: Registry = None
         self.board: Board = None
-        self.decomposer: Decomposer = None
         self.provider: Provider = None
         self.screens: Dict[str, Screen] = {}
         self.core: List[Mechanic] = []
@@ -134,9 +126,7 @@ class Builder:
 
 
     def build_board(self) -> None:
-        """
-        """
-        logger.info("Migrating properties and constructing Board...")
+        logger.info("Constructing Empty Board and Migrator subsystem...")
         self._resolve_actions()
 
         # 1. Instantiate Decomposer ahead of standard Asset migrations
@@ -146,7 +136,6 @@ class Builder:
             recipes=self.context.configurations.recipes
         )
 
-        # 2. Map Equipment
         equipment = EquipmentGroup(
             armor=self.context.properties.sheets.armor,
             weapons=self.context.properties.sheets.weapons,
@@ -154,67 +143,11 @@ class Builder:
             utilities=self.context.properties.sheets.utilities,
             shields=self.context.properties.sheets.shields
         )
-       
-        assets = []
         
-        # 3. Hydrate Compositions
-        if hasattr(self.context.state, Shortcuts.COMPOSITIONS.value) and self.context.state.compositions:
-            for comp_deployed_state in self.context.state.compositions:
-                expanded_assets = self.decomposer.unpack(comp_deployed_state)
-                assets.extend(expanded_assets)
-
-        # 4. Hydrate remaining Assets
-        for cat_field in dataclasses.fields(self.context.state):
-            category_key = cat_field.name
-            if category_key == Shortcuts.COMPOSITIONS.value: 
-                continue 
-                
-            category_data = getattr(self.context.state, category_key)
-            if not category_data: 
-                continue
-            
-            for inst_field in dataclasses.fields(category_data):
-                instance_key = inst_field.name
-                instance_list = getattr(category_data, instance_key)
-                if not instance_list: 
-                    continue
-                
-                for state_obj in instance_list:
-                    asset_id = state_obj.id
-                    asset_name = state_obj.name
-                    
-                    cat_recipes = getattr(self.context.configurations.recipes, category_key, None)
-                    recipe = getattr(cat_recipes, instance_key, None) if cat_recipes else None
-                    
-                    # --- PLAYER PROPERTY MAPPING ---
-                    prop_instance_key = instance_key
-                    if category_key == AssetCategories.SHEETS.value and \
-                        instance_key == AssetInstances.PLAYERS.value:
-                        prop_instance_key = AssetInstances.SPRITES.value
-                    # ---------------------------------
-                        
-                    cat_props = getattr(self.context.properties, category_key, None)
-                    inst_props = getattr(cat_props, prop_instance_key, {}) if cat_props else {}
-                    props = inst_props.get(asset_id)
-                    
-                    assets.append(Asset(
-                        taxonomy   = Factory.taxonomy(
-                            asset_id, 
-                            asset_name, 
-                            category_key, 
-                            instance_key
-                        ),
-                        properties = props,
-                        state      = state_obj,
-                        frame      = Factory.frame(recipe.frame) \
-                                        if recipe and recipe.frame \
-                                            else Factory.frame(None),
-                        animation  = Factory.animation(recipe.animation) \
-                                        if recipe and recipe.animation \
-                                            else Factory.animation(None)
-                    ))
-                    
-        self.board = Board(assets, self.context.configurations, equipment)
+        self.board = Board([], self.context.configurations, equipment)
+        
+        # Attach Migrator logic for deferred ECS evaluation
+        self.board.migrator = Migrator(self.board, self.context.properties, self.context.configurations)
 
     def build_registry(self) -> None:
         """
@@ -247,20 +180,25 @@ class Builder:
     def build_pipeline(self) -> None:
         logger.info("Building rendering pipelines, mechanics, and UI...")
 
-        # Allocate Screens
-        max_width = max((self.board.size(layer)[0].w for layer in self.board.layers()), default=0)
-        max_length = max((self.board.size(layer)[0].l for layer in self.board.layers()), default=0)
-        self.screens = {
-            layer: Screen(
-                self.context.screensize, 
-                Dimensions(max_width, max_length),
-                self.board.categories(AssetCategories.TILES.value, layer),
-                self.registry
-            )
-            for layer in self.board.layers()
-        } 
+        if not self.board.layers():
+            # Initial Boot - No scene layers yet; provision a blank Master Screen
+            self.screens = {
+                'default': Screen(self.context.screensize, self.context.screensize, [], self.registry)
+            }
+        else:
+            # Rehydrate logic fallback (if Migrator handles it differently in the future)
+            self.screens = {}
+            for layer in self.board.layers():
+                max_width = max((self.board.size(layer)[0].w for layer in self.board.layers()), default=0)
+                max_length = max((self.board.size(layer)[0].l for layer in self.board.layers()), default=0)
+                self.screens[layer] = Screen(
+                    self.context.screensize, 
+                    Dimensions(max_width, max_length),
+                    self.board.categories('tiles', layer),
+                    self.registry
+                )
 
-        # Allocate Mechanics
+        # Allocate Mechanics (Unchanged implementation)
         core_cfg = getattr(self.context.configurations.mechanics, 'core', None) or [
             Mechanics.MENU.value, Mechanics.ANIMATION.value, Mechanics.REMOVE.value
         ]
@@ -272,7 +210,7 @@ class Builder:
         self.core = [Factory.mechanics(m) for m in core_cfg]
         self.world = [Factory.mechanics(m) for m in world_cfg]
 
-        # Post-Process Core: Inject the compiled ISL Executor into TransitionMechanics
+        # Post-Process Core: Inject the compiled ISL Executor into TransitionMechanics (Unchanged implementation)
         translator = Factory.translator(settings.ISL_TRANSLATOR)
         executor = translator.compile(self.context.configurations.intentions)
             
@@ -280,7 +218,7 @@ class Builder:
             if isinstance(m, TransitionMechanics):
                 m.executor = executor
 
-        # Allocate Menu Provider & Views
+        # Allocate Menu Provider & Views (Unchanged implementation)
         self.provider = Provider(
             self.context.configurations.recipes.widgets, 
             self.context.properties.widgets, 
@@ -289,11 +227,12 @@ class Builder:
         
         view = self.context.configurations.menus.get('view')
         if view:
+            # Fallback for View Menu bindings when player isn't loaded yet
             player = self.board.player()
             hud_menu = self.provider.unpack(
                 'view', 
                 view, 
-                {'sprite': {'state': player.state}}, 
+                {'sprite': {'state': getattr(player, 'state', None)}}, 
                 self.context.screensize
             )
             self.board.set_overlays([hud_menu])
@@ -325,7 +264,8 @@ class Orchestrator:
         device: str, 
         headless: bool = False
     ) -> Engine:
-        self.builder.load_data(state_key)
+        # Load state definitions (deferred evaluation by Migrator)
+        self.builder.load_data(state_key) 
         self.builder.init_subsystems(screensize, headless)
         
         self.builder.build_board()
@@ -334,4 +274,11 @@ class Orchestrator:
         self.builder.build_services(device)
         self.builder.build_pipeline()
         
-        return self.builder.get_engine()
+        engine = self.builder.get_engine()
+        registry = next(iter(engine.screens.values())).registry
+        
+        # Seed the Menu stack immediately for instantaneous launch
+        from app.game.menus.events import MenuEvent
+        engine.bus.append(MenuEvent('main', {'registry': registry}))
+        
+        return engine

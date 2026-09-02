@@ -31,6 +31,7 @@ DATA_DIR = SRC_DIR / "data"
 CONFIG_DIR = DATA_DIR / "config"
 STATE_DIR = DATA_DIR / "state"
 TEMPLATE_DIR = DATA_DIR / "templates"
+SAVE_DIR =  DATA_DIR / 'save'
 FONT_DIR = ASSET_DIR / "fonts" 
 ### APP_EXT: Common Application filename extension
 APP_EXT = "main.yaml"

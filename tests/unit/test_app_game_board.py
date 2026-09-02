@@ -8,29 +8,30 @@ from libs.core.models import Position
 # --------------------------------------------------------------------- TESTS
 
 def test_board_initial_caching(mock_board):
-    assert mock_board.loaded is True
+    # 1. New Architecture: Board initializes with loaded = False until Migrator finishes
+    assert mock_board.loaded is False
     
     # Layer Indexing
     assets_layer_0 = mock_board.assets('0')
     assert len(assets_layer_0) == 3  # Updated: Sprite, Tile, Player
     
-    # Category Indexing
-    sprites = mock_board.categories(AssetCategories.SHEETS, '0')
-    tiles = mock_board.categories(AssetCategories.TILES, '0')
+    # Category Indexing (Fix: Use .value to match internal string taxonomy keys)
+    sprites = mock_board.categories(AssetCategories.SHEETS.value, '0')
+    tiles = mock_board.categories(AssetCategories.TILES.value, '0')
     assert len(sprites) == 2  # Updated: Sprite, Player
     assert len(tiles) == 1
     
     # Inner Render Loop Indexing (Tiles bypassed)
     renderables = mock_board.renderables('0')
     assert len(renderables) == 2  # Updated: Sprite, Player
-    assert renderables[0].category == AssetCategories.SHEETS
+    assert renderables[0].category == AssetCategories.SHEETS.value
     
     # Physics Caching
     weights = mock_board.weights('0')
     assert len(weights) == 2  # Updated: Sprite, Player
 
 def test_board_relayering_synchronization(mock_board):
-    player = mock_board.instances(AssetInstances.SPRITES, '0')[0]
+    player = mock_board.instances(AssetInstances.SPRITES.value, '0')[0]
     
     # Apply relocation via DoorMechanics equivalent
     mock_board.relayer(player, '1')
@@ -38,13 +39,13 @@ def test_board_relayering_synchronization(mock_board):
     
     # 1. Verify purged from origin layer caches
     assert player not in mock_board.assets('0')
-    assert player not in mock_board.categories(AssetCategories.SHEETS, '0')
+    assert player not in mock_board.categories(AssetCategories.SHEETS.value, '0')
     assert player not in mock_board.renderables('0')
     assert player not in mock_board.weights('0')
     
     # 2. Verify appended to destination layer caches
     assert player in mock_board.assets('1')
-    assert player in mock_board.categories(AssetCategories.SHEETS, '1')
+    assert player in mock_board.categories(AssetCategories.SHEETS.value, '1')
     assert player in mock_board.renderables('1')
     assert player in mock_board.weights('1')
 
