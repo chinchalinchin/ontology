@@ -1,0 +1,35 @@
+menus:
+  main:
+    controller: display
+    roots: 
+      - id: neutral
+        name: main-menu
+        position:
+          px: 0
+          py: 0
+        layout: stack
+        alignment: center
+        gap: 10
+        children: 
+          - instance: buttons
+            id: label
+            name: new-game
+            bind: 
+              selection: new
+          - instance: buttons
+            id: label
+            name: load-game
+            bind: 
+              selection: load
+          - instance: buttons
+            id: label
+            name: options-menu
+            bind:
+              selector: options
+              selection: menu
+          - instance: buttons
+            id: label
+            name: editor-menu
+            bind:
+              selector: editor
+              selection: menu
