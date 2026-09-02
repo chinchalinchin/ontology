@@ -33,7 +33,9 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 05.02: Simplification](./phases/refactor/phase-05-02.md)
     - [~]: [Phase 05.03: ScrollController, Library & Plots](./phases/refactor/phase-05-03.md)
     - [ ]: [Phase 05.04: InventoryController & Loot](./phases/refactor/phase-05-04.md)
+    - [ ]: [Phase 05.05: Main Menu & Saving](./phases/refactor/phase-05-05.md)
   - Patch 
     - [x]: [Bug B000: Attacking](./phases/patch/bug-b000.md)
+    - [ ]: [Bug B001: Relayering](./phases/patch/bug-b001.md)
   - Report:
     - [x]: [2026-08-10: SDL Pipeline Failure](./phases/report/2026-08-16.md)

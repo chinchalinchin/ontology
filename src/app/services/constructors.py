@@ -280,7 +280,7 @@ class Builder:
             if isinstance(m, TransitionMechanics):
                 m.executor = executor
 
-        # Allocate UI Provider & Views
+        # Allocate Menu Provider & Views
         self.provider = Provider(
             self.context.configurations.recipes.widgets, 
             self.context.properties.widgets, 

@@ -385,7 +385,13 @@ Bindings are enumerated and summarized below:
     * `SCROLLUP`
     * `SCROLLDOWN`
     * `SELECT`
-* `selector`: The dictionary key (`name`) of a target Widget in `menu.widgets`.
+    * `NEW`
+    * `LOAD`
+    * `MENU`
+* `selector`: The name of a target to be used in the SelectionEvent.
+    * `selections in [SCROLLUP, SCROLLDOWN, SELECT]`: Selector is the target Widget name.
+    * `selections == MENU`: Selector is the target Menu.
+    * `selections in [NEW, LOAD]`: TODO
 * `state`: String path to the Event Context (e.g., `context.sprite.state.psyche.communication`).
 
 ### Layouts
@@ -404,16 +410,16 @@ To generate the Render List, when a Menu is triggered, a `Layout` class executes
 1. **Resolve Pane Anchors**: Convert `ScreenPosition` (e.g., `px: 0.3`) to absolute pixels using `screensize.w * px`. This becomes the Pane's anchor `(x, y)`.
 2. **Measure Children**: Retrieve the `properties` for the dimensions `(w, l)` of each child Widget.
 3. **Apply Algorithm**:
-    * If `pane.layout in [dock, row]`
+    * If `pane.layout == dock`
         * If `alignment == start`: TODO
         * If `alignment == end`: TODO
         * If `alignment == center`: Calculate the maximum width of all children. Offset each child's X coordinate by (Max Width - Child Width) // 2.
-    * If `pane.layout in [stack, column]`:
+    * If `pane.layout == stack`:
         * If `alignment == start`: TODO
         * If `alignment == end`: TODO
         * If `alignment == center`: Calculate the maximum height of all children. Offset each child's Y coordinate by (Max Height - Child Height) // 2.
     * If `pane.layout == tab`: Alignments do not apply. Pane children are Panes. Each receives the same ScreenPosition. Algorithm recurses to find the coordinates of the grandchildren.    
-4. **Flatten**: Return a list of standard Asset objects. The engine now treats them exactly like Game Board assets, completely ignoring the UI hierarchy.
+4. **Flatten**: Return a list of standard Asset objects. The engine now treats them exactly like Game Board assets, completely ignoring the Menu hierarchy.
 
 **Traversal Graph**
 
@@ -461,4 +467,4 @@ The HUD is always painted on top of all dynamic Assets; as such, it is stored in
     - **Events**: TODO
 7. View: Also known as the Heads-Up Display (HUD). The View Menu is not instantiated by the MenuEvents. It is created when the game loop initializes and is painted onto the screen along with every frame. It is updated when UpdateEvents are fired by other Menus.
     - **Arguments**: `sprite.state`
-    - **Events**: TODO
+    - **Events**: None
