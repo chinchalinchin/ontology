@@ -21,6 +21,7 @@ TILE_HASH_SIZE = 32
 ### ON/OFF: Binary Object Keys
 ON = 1
 OFF = 0
+EMPTY = 0
 # ---------------------------------------------------
 ## ------------------------------- DIRECTORY SETTINGS
 ### *_DIR: Application directories

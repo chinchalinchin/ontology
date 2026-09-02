@@ -15,7 +15,7 @@ from app.models.state import AssetState
 
 logger = logging.getLogger(__name__)
 
-def _safe_dim(properties: dict) -> tuple[int, int]:
+def safe_dim(properties: dict) -> tuple[int, int]:
     """
     Extract dimensions safely whether it's a raw dict or a Cython object bypassing asdict().
     """
@@ -60,7 +60,7 @@ class SingleFrame(Frame):
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
         """
-        w, l = _safe_dim(properties)
+        w, l = safe_dim(properties)
         return {id: (0, 0, w, l)}
 
         
@@ -71,20 +71,17 @@ class IterableFrame(Frame):
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
-        return [settings.SEPARATOR.join([
-            id, 
-            str(state.animation.frame)
-        ])]
+        return [settings.SEPARATOR.join([id, str(state.animation.frame)])]
 
         
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
         """
-        w, l = _safe_dim(properties)
+        w, l = safe_dim(properties)
         crops = {}
         count = properties.get("count", 1)
         for f in range(count):
-            crops[f"{id}-{f}"] = (f * w, 0, w, l)
+            crops[settings.SEPARATOR.join([id,str(f)])] = (f * w, 0, w, l)
         return crops
 
 
@@ -107,7 +104,7 @@ class StateFrame(Frame):
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
         """
         """
-        w, l = _safe_dim(properties)
+        w, l = safe_dim(properties)
         crops = {}
         
         # Handle dict format since this goes through dataclasses.asdict()
@@ -116,7 +113,12 @@ class StateFrame(Frame):
                 row = dir_prop["row"]
                 count = action_prop["count"]
                 for f in range(count):
-                    frame_key = f"{id}-{action}-{direction}-{f}"
+                    frame_key = settings.SEPARATOR.join([
+                        id,
+                        action,
+                        direction,
+                        str(f)
+                    ])
                     crops[frame_key] = (f * w, row * l, w, l)
         return crops
 
@@ -148,73 +150,3 @@ class SpriteFrame(StateFrame):
             logger.info(f"[TELEMETRY] SpriteFrame generated keys: {frame_keys}")
         
         return frame_keys
-    
-# -------------------------------------------------------------------------------------
-
-
-class TraversalFrame(Frame):
-    """
-    ## TraversalFrame
-    """
-
-    def keys(self, id: str, state: AssetState) -> List[str]:
-        """
-        """
-        return [f"{id}-{state.animation.action}"]
-
-
-    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
-        """
-        """
-        w, l = _safe_dim(properties)
-        return {
-            f"{id}-idle": (0, 0, w, l),
-            f"{id}-active": (w, 0, w, l),
-            f"{id}-selected": (2*w, 0, w, l),
-            f"{id}-disabled": (3*w, 0, w, l)
-        }
-
-class MeterFrame(Frame):
-    """
-    ## MeterFrame
-    """
-
-    def keys(self, id: str, state: AssetState) -> List[str]:
-        """
-        """
-        return [f"{id}-0", f"{id}-{state.animation.frame}"]
-
-
-    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
-        """
-        """
-        w, l = _safe_dim(properties)
-        crops = {f"{id}-0": (0, 0, w, l)}
-        for res in range(1, 101):
-            crops[f"{id}-{res}"] = (w, 0, int(w * (res / 100.0)), l)
-        return crops
-
-
-class IndexFrame(Frame):
-    """
-    ## IndexedFrame
-    Parses horizontal spritesheets where each frame corresponds to a specific string key.
-    """
-    def keys(self, id: str, state: AssetState) -> List[str]:
-        # Retrieve the specific icon key from the state, defaulting to the asset ID
-        return [getattr(state, 'icon', id)]
-
-
-    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
-        w, l = _safe_dim(properties)
-        crops = {}
-        frames = properties.get("frames", [])
-        
-        # Failsafe: if no frames are defined, index the whole image
-        if not frames:
-            return {id: (0, 0, w, l)}
-            
-        for i, frame_name in enumerate(frames):
-            crops[frame_name] = (i * w, 0, w, l)
-            
-        return crops

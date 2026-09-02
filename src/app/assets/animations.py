@@ -60,7 +60,7 @@ class StateAnimation(Animation):
     Advances frame based on configured action delay.
     """
     def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
-        if hasattr(state, 'mutators') and state.mutators and hasattr(state.mutators, 'triggers'):
+        if state.mutators and state.mutators.triggers:
             if not state.mutators.triggers.animated:
                 state.animation.frame = 0
                 state.animation.tick = 0
