@@ -235,6 +235,25 @@ class Board:
         cy = int(position.y) // settings.TILE_HASH_SIZE
         return self._cached_tilemap.get(layer, {}).get(instance, {}).get((cx, cy))
 
+    def character(self, name: str) -> Any:
+        """
+        O(1) retrieval of Sprite or Player state by name.
+        """
+        return self._cached_characters.get(name)
+
+    def characters(self) -> Dict[str, Any]:
+        """
+        Returns the cross-layer dictionary of all active Sprite and Player states.
+        """
+        return self._cached_characters
+
+    def asset(self, name: str, layer: str = None) -> Asset:
+        """
+        Retrieves a general Asset by its unique name. 
+        """
+        search_list = self.renderables(layer) if layer else self._assets
+        return next((a for a in search_list if a.name == name), None)
+    
     def assets(self, layer=None) -> List[Asset]:
         """
         Returns a list of Assets. If `layer` is specified, list will be filtered by Layer.

@@ -70,8 +70,8 @@ class CognitionMechanics(Mechanic):
         goal = sprite.state.goal
 
         if goal.category == Goals.SPRITE.value:
-            target = getattr(board, '_cached_characters', {}).get(goal.name)
-            if not target or target.mutators.triggers.dead:
+            target_state = board.character(goal.name)
+            if not target_state or target_state.mutators.triggers.dead:
                 sprite.state.goal = None
 
         elif goal.category == Goals.LOOT.value:
@@ -86,11 +86,11 @@ class CognitionMechanics(Mechanic):
                 sprite.state.goal = None
 
         elif goal.category == Goals.ASSET.value:
-            target = next((s for s in board.renderables(sprite.state.layer) if s.name == goal.name), None)
-            if not target:
+            target_asset = board.asset(goal.name, sprite.state.layer)
+            if not target_asset:
                 sprite.state.goal = None
-            elif target.taxonomy.instance == AssetInstances.CHESTS.value:
-                if not getattr(target.state, 'content', None):
+            elif target_asset.taxonomy.instance == AssetInstances.CHESTS.value:
+                if not getattr(target_asset.state, 'content', None):
                     sprite.state.goal = None
 
     def _acquire_target(self, sprite, board: Board) -> None:
@@ -152,13 +152,12 @@ class CognitionMechanics(Mechanic):
 
         # Dynamically route the lookup based on goal category
         if goal.category == Goals.SPRITE.value:
-            # TODO: mechanic shouldn't be accessing hidden field
-            target_state = getattr(board, '_cached_characters', {}).get(goal.name)
+            target_state = board.character(goal.name)
             if target_state:
                 target_pos = target_state.position
 
         elif goal.category == Goals.ASSET.value:
-            target_asset = next((s for s in board.renderables(sprite.state.layer) if s.name == goal.name), None)
+            target_asset = board.asset(goal.name, sprite.state.layer)
             if target_asset:
                 target_pos = target_asset.state.position
 

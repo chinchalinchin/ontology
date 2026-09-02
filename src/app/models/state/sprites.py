@@ -58,10 +58,10 @@ class Meters:
 
 @dataclass(slots=True)
 class Psyche:
-    motivation: str
-    expression: str
-    dialogue: str
     persona: str
+    motivation: Optional[str] = None
+    expression: Optional[str] = None
+    dialogue: Optional[str] = None
 
 @dataclass(slots=True)
 class Goal:
@@ -78,10 +78,10 @@ class Inventory:
 @dataclass(slots=True)
 class Memory:
     goals: Optional[Goal] = None
-    rumors: List[str] = field(default_factory=list)
-    prices: Dict[str, float] = field(default_factory=dict)
-    relationships: Dict[str, Relationships] = field(default_factory=dict)
-    property: List[str] = field(default_factory=list)
+    rumors: Optional[List[str]] = None
+    prices: Optional[Dict[str, float]] = None
+    relationships: Optional[Dict[str, Relationships]] = None
+    property: Optional[List[str]] = None
 
 @dataclass(slots=True)
 class VisionMutatorParameters:

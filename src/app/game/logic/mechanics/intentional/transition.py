@@ -10,7 +10,10 @@ import collections
 if TYPE_CHECKING:
     from app.game.board import Board
 
-from app.config.enums import AssetInstances
+from app.config.enums import (
+    AssetInstances,
+    Intentions
+)
 from app.game.logic.maps import AnimationMap
 from app.game.logic.mechanics.core import Mechanic
 from app.models.state import DevicePayload
@@ -33,26 +36,30 @@ class TransitionMechanics(Mechanic):
     ) -> None:
         
         sprites = board.instances(AssetInstances.SPRITES.value)
-        sprites_dict = getattr(board, '_cached_characters', {})
+        sprites_dict = board.characters()  # Clean getter instead of getattr(board, '_cached_characters')
 
         for sprite in sprites:
-            
             # 1. Evaluate State ISL Conditions
             if self.executor:
                 next_intent = self.executor.evaluate(sprite.state, sprites_dict)
                 if next_intent:
-                    # Condition satisfied; breaking behavior is handled safely by the Executor resolving immediately
                     sprite.state.intention = next_intent
 
-            # 2. Resolve final intention into corresponding Action frame mapping
+            # 2. Resolve Action
             sprite.state.animation.action = AnimationMap.action(
-                sprite.state,
-                board.equipment
+                sprite.state, board.equipment
             )
             
-            # 3. Orient Spatial Direction toward the tracked Goal
+            # 3. Resolve Direction
             if sprite.state.goal:
                 sprite.state.animation.direction = AnimationMap.direction(
-                    sprite.state.position,
-                    sprite.state.goal.position
+                    sprite.state.position, sprite.state.goal.position
                 )
+
+            # 4. Update Animation Trigger
+            if sprite.name != board.player().name:
+                # Animate if doing an action OR if moving towards a goal
+                is_active_intention = sprite.state.intention not in (Intentions.IDLE, Intentions.WANDER)
+                has_active_velocity = (sprite.state.velocity.vx != 0 or sprite.state.velocity.vy != 0)
+                
+                sprite.state.mutators.triggers.animated = is_active_intention or has_active_velocity

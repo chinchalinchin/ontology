@@ -1,0 +1,55 @@
+sheets:
+  sprites: 
+    - id: jasilynn
+      name: evil-empress-jasilynn
+      layer: '0'
+      depth: 0
+      position:
+        x: 100
+        y: 100
+      meters:
+        health: 
+          current: 50
+          maximum: 100
+        magic: 
+          current: 100
+          maximum: 100
+      character:
+        strength: 5
+        defense: 5
+        speed: 100
+        impulse: 25
+      mutators:
+        fear:
+          radius: 128
+          limit: 0.50
+          enemy: 5
+        vision:
+          radius: 128
+      psyche:
+        dialogue: null
+        expression: null
+        motivation: conquest
+        persona: jasilynn
+      intention: find
+      goal:
+        name: player
+        category: sprite
+        position:
+          x: 200
+          y: 200
+      memory:
+        goal: null
+        rumors: null
+        prices: null
+        relationships: null
+        property: null
+      inventory: 
+        loot: null
+        equipment:
+          armor: 
+          tool: null
+          utility: null
+          weapon: shortsword
+          shield: null
+        wallet: 0
