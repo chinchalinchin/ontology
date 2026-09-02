@@ -17,10 +17,10 @@
 
 ## 2. Mapped Frame Coordinates
 
-*Dynamic frame keys mapped to physical GPU texture crops:*
+*Dynamic frame keys mapped to target asset IDs and their crop coordinates:*
 
-| Frame Key | Crop X | Crop Y | Crop W | Crop L | Tex W | Tex L |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| Frame Key | Target Asset ID | Crop X | Crop Y | Crop W | Crop L |
+| :--- | :--- | :--- | :--- | :--- | :--- |
 {%- for key, data in frames|dictsort %}
-| `{{ key }}` | {{ data.crop_x }} | {{ data.crop_y }} | {{ data.crop_w }} | {{ data.crop_l }} | {{ data.tex_w }} | {{ data.tex_l }} |
+| `{{ key }}` | `{{ data.item_id }}` | {{ data.crop_x }} | {{ data.crop_y }} | {{ data.crop_w }} | {{ data.crop_l }} |
 {%- endfor %}

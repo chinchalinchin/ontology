@@ -22,7 +22,7 @@ sheets:
       inventory: 
         loot: null
         equipment:
-          armor: 
+          armor: null
           tool: null
           utility: null
           weapon: shortsword

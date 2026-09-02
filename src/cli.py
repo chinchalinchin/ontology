@@ -17,7 +17,6 @@ import jinja2
 
 # ---------------------------------------------------------
 # PATH RESOLUTION: Add project root to sys.path
-# This allows Python to find the /libs directory at the root
 # ---------------------------------------------------------
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -37,7 +36,6 @@ logger = logging.getLogger(__name__)
 def dump(board_key, context, temp='state'):
     logger.info(f"Generating {temp} dump...")
     
-    # Safely resolve template name, defaulting to <temp>.md if not registered in settings
     template_filename = getattr(settings, 'DUMP_TEMPLATES', {}).get(temp, f"{temp}.md")
     template_path = settings.TEMPLATE_DIR / template_filename
     
@@ -65,15 +63,13 @@ def dump(board_key, context, temp='state'):
         args['sys_info'] = get_system_info()
         
     elif temp == 'registry':
-        # Safely extract registry from the first available screen
         screen = next(iter(context.screens.values()))
         
         frames = {}
         for k, v in screen.registry._frames.items():
-            tex_ptr, cx, cy, cw, cl = v
+            item_id, cx, cy, cw, cl = v
             frames[k] = {
-                "tex_w": tex_ptr.w,
-                "tex_l": tex_ptr.l,
+                "item_id": item_id,
                 "crop_x": cx,
                 "crop_y": cy,
                 "crop_w": cw,
@@ -95,35 +91,28 @@ def dump(board_key, context, temp='state'):
 def arguments():
     parser = argparse.ArgumentParser(description="Ontology CLI Tools")
     parser.add_argument("--log-level", type=str, default="INFO", 
-                        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], 
-                        help="Set the application logging level.")
-    parser.add_argument("--dump-state", action="store_true", default=False,
-                        help="Generate a state dump markdown file after execution.")
-    parser.add_argument("--dump-sdl", action="store_true", default=False,
-                        help="Generate an SDL configuration dump markdown file after execution.")
-    parser.add_argument("--dump-registry", action="store_true", default=False,
-                        help="Generate a Registry mapping dump markdown file after execution.")
-    parser.add_argument("--software", action="store_true", default=False,
-                        help="Force CPU software rendering (bypasses GPU).")
+                        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
+    parser.add_argument("--dump-state", action="store_true", default=False)
+    parser.add_argument("--dump-sdl", action="store_true", default=False)
+    parser.add_argument("--dump-registry", action="store_true", default=False)
+    parser.add_argument("--software", action="store_true", default=False)
 
     subparsers = parser.add_subparsers(dest="command", required=True)
     
-    # Register arguments for headless rendering subparsers
     for cmd in ["prerender", "render"]:
         p = subparsers.add_parser(cmd)
-        p.add_argument("board_key", type=str, help="The configuration key for the target board")
-        p.add_argument("--out", type=str, required=True, help="Output directory path")
-        p.add_argument("--layer", type=str, required=True, help="Target layer to construct/render")
-        p.add_argument("--width", type=int, default=360, help="Simulated screen width")
-        p.add_argument("--height", type=int, default=360, help="Simulated screen height")
-        p.add_argument("--device", type=str, default=Devices.KEYBOARD.value, help="Player device")
+        p.add_argument("board_key", type=str)
+        p.add_argument("--out", type=str, required=True)
+        p.add_argument("--layer", type=str, required=True)
+        p.add_argument("--width", type=int, default=360)
+        p.add_argument("--height", type=int, default=360)
+        p.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
 
-    # Register live game loop subparser
     p_start = subparsers.add_parser("start")
-    p_start.add_argument("board_key", type=str, help="The configuration key for the target board")
-    p_start.add_argument("--width", type=int, default=360, help="Window screen width")
-    p_start.add_argument("--height", type=int, default=360, help="Window screen height")
-    p_start.add_argument("--device", type=str, default=Devices.KEYBOARD.value, help="Player device")
+    p_start.add_argument("board_key", type=str)
+    p_start.add_argument("--width", type=int, default=360)
+    p_start.add_argument("--height", type=int, default=360)
+    p_start.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
 
     return parser.parse_args()
 
@@ -143,18 +132,16 @@ def handle_prerender(args, orchestrator, screensize):
     
     if args.layer not in engine.screens:
         logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
-        return engine.board
+        return engine
 
     screen = engine.screens[args.layer]
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     out_path = out_dir / f"{args.board_key}-{args.layer}-background.png"
-    logger.info(f"Constructing background map image for layer '{args.layer}'...")
     screen.export_background(str(out_path))
-    logger.info(f"Background successfully exported to: {out_path}")
 
-    return engine.board
+    return engine
 
 
 def handle_render(args, orchestrator, screensize):
@@ -168,22 +155,20 @@ def handle_render(args, orchestrator, screensize):
     
     if args.layer not in engine.screens:
         logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
-        return engine.board
+        return engine
 
     screen = engine.screens[args.layer]
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     out_path = out_dir / f"{args.board_key}-{args.layer}.png"
-    logger.info(f"Rendering composite frame for layer '{args.layer}'...")
     
     assets = engine.board.renderables(args.layer)        
     player = engine.board.player()
 
     screen.export_render(str(out_path), assets, player.state.position, player.dimensions)
-    logger.info(f"Composite frame successfully rendered and exported to: {out_path}")
 
-    return engine.board
+    return engine
 
 
 def handle_start(args, orchestrator, screensize):
@@ -195,18 +180,12 @@ def handle_start(args, orchestrator, screensize):
         headless=False
     )
     
-    if args.dump_sdl:
-        dump(args.board_key, engine.board, 'sdl')
-        
-    if args.dump_registry:
-        dump(args.board_key, engine, 'registry')
-
     try:
         engine.start()
     except KeyboardInterrupt:
         logger.info("Game engine loop interrupted by user.")
         
-    return engine.board
+    return engine
 
 
 # Dispatcher Registry
@@ -221,14 +200,8 @@ COMMAND_REGISTRY = {
 # ---------------------------------------------------------
 
 def main():
-    """
-    ## main
-
-    Command line entrypoint for the application.
-    """
     args = arguments()
 
-    # Configure logging level dynamically based on args
     logging.basicConfig(
         level=getattr(logging, args.log_level.upper(), logging.INFO),
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
@@ -238,29 +211,32 @@ def main():
 
     screensize = Dimensions(w=args.width, l=args.height)
 
-    # Force the CPU renderer if requested prior to SDL Initialization
     if args.software:
         os.environ["SDL_RENDER_DRIVER"] = "software"
-        logger.info("Forcing SDL to use CPU-bound software renderer via environment variable.")
 
-    # Initialize Builder Pattern
     orchestrator = Orchestrator()
     
-    # Dispatch execution based on parsed command
     handler = COMMAND_REGISTRY.get(args.command)
     if not handler:
         logger.error(f"Unknown command received: {args.command}")
         sys.exit(1)
 
-    # Execute designated function and capture the board state for potential dumping
-    board = handler(args, orchestrator, screensize)
+    # Execute designated function and capture the engine instance
+    engine = handler(args, orchestrator, screensize)
 
-    if args.dump_state and board:
-        dump(args.board_key, board, 'state')
+    # Deferred Dumps Execution
+    if args.dump_state:
+        dump(args.board_key, engine.board, 'state')
+        
+    if args.dump_sdl:
+        dump(args.board_key, engine.board, 'sdl')
+        
+    if args.dump_registry:
+        dump(args.board_key, engine, 'registry')
     
     # Cleanly release memory bounds
-    if 'board' in locals():
-        del board
+    if 'engine' in locals():
+        del engine
         
     gc.collect()
     quit_sdl()

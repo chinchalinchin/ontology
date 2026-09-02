@@ -30,7 +30,7 @@ sheets:
       actions: lpc-full
       hitboxes: null
       stack:
-        - leather-shield
+        - buckler
   tools:
     axe:
       dimensions:

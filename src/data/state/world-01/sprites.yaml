@@ -5,7 +5,7 @@ sheets:
       layer: '0'
       depth: 0
       position:
-        x: 100
+        x: 180
         y: 100
       meters:
         health: 
@@ -37,8 +37,8 @@ sheets:
         name: player
         category: sprite
         position:
-          x: 200
-          y: 200
+          x: 250
+          y: 100
       memory:
         goal: null
         rumors: null

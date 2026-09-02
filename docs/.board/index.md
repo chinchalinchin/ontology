@@ -7,7 +7,6 @@ This is the Task Board for the project. Below is a backlog of completed and pend
   `[x]`: Closed/Implemented
   `[!]`: DO NOT COMPLETE
 
-Do not burn cycles trying to infer the problem if it is not immediately obvious upon examination. Instead, propose telemetry logs to add at critical junctions in the application to provide insight into what is going on.
 **Table of Contents**
 
 - Phases
@@ -21,6 +20,7 @@ Do not burn cycles trying to infer the problem if it is not immediately obvious 
     - [x]: [Phase 07: Intentions](./phases/implement/phase-07.md)
     - [x]: [Phase 08: Compositions](./phases/implement/phase-08.md)
     - [ ]: [Phase 09: Commerce](./phases/implement/phase-09.md)
+    - [ ]: [Phase 10: Towns](./phases/implement/phase-10.md)
   - Refactor
     - [x]: [Phase 01.01: Orchestration](./phases/refactor/phase-01-01.md)
     - [x]: [Phase 02.01: Frames](./phases/refactor/phase-02-01.md)
@@ -34,11 +34,12 @@ Do not burn cycles trying to infer the problem if it is not immediately obvious 
     - [x]: [Phase 05.02: Simplification](./phases/refactor/phase-05-02.md)
     - [~]: [Phase 05.03: ScrollController, Library & Plots](./phases/refactor/phase-05-03.md)
     - [ ]: [Phase 05.04: InventoryController & Loot](./phases/refactor/phase-05-04.md)
-    - [~]: [Phase 05.05: Main Menu & Saving](./phases/refactor/phase-05-05.md)
+    - [x]: [Phase 05.05: Main Menu & Saving](./phases/refactor/phase-05-05.md)
+    - [ ]: [Phase 05.06: EventHandlers & EventContent](./phases/refactor/phase-05-06.md)
   - Patch 
     - [x]: [Bug B000: Attacking](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering](./phases/patch/bug-b001.md)
-    - [ ]: [Bug B002: Board Cache Wipe on Layerless Assets](./phases/patch/bug-b002.md)
+    - [ ]: [Bug B002: Board Cache Wipe](./phases/patch/bug-b002.md)
     - [ ]: [Bug B003: Painter's Algorithm String Exception](./phases/patch/bug-b003.md)
   - Report:
     - [x]: [2026-08-16: SDL Pipeline Failure](./phases/report/2026-08-16.md)
