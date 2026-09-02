@@ -279,14 +279,14 @@ class Menus(str, Enum):
     TEXT            = "text"
     TRADE           = "trade"
     VIEW            = "view"
+    LOAD            = "load"
 
 class Selections(str, Enum):
     SCROLLUP        = "scrollup"
     SCROLLDOWN      = "scrolldown"
-
-class Selectors(str, Enum):
-    SCROLL          = "scroll"
-    SLOT            = "slot"
+    NEW             = "new"
+    LOAD            = "load"
+    MENU            = "menu"
 
 class Statuses(str, Enum):
     ACTIVE          = "active"

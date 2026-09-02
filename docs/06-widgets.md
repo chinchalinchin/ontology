@@ -353,7 +353,7 @@ Bindings define how Widgets interact with user input and game state. They are di
 
 - `selection`: The specific action or command a Control Widget emits when selected by the user (e.g., `scrollup`).
 - `selector`: A direct pointer to the unique `name` of another Widget in the Menu. Used when a Control Widget needs to mutate or read another Widget's state.
-- `state`: A string path referencing a specific variable in the Event Context. The Provider resolves this string into a live state reference during Menu instantiation.
+- `state`: A string path referencing a specific variable in the Event Context. The Provider resolves this string into a live state reference during Menu instantiation.IIn other words, `bind.state` generates a runtime closure (Callable), not a static evaluation, ensuring bound Widget inherently mirror live state data.
 
 In the provided `text` Menu example, the `text-scroll-up` and `text-scroll-down` Buttons are bound to the `selection` actions `scrollup` and `scrolldown`. Because these buttons control the Page widget, their `selector` bindings are set to `text-display`—the unique name of the target Page. 
 

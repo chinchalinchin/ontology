@@ -4,38 +4,40 @@ This section contains an in-depth presentation of the game engine's programmatic
 
 ## Initialization
 
-1. **Bootstrapping & Loading (`Orchestrator.__init__`)**
-    * Loads YAML files from the `assets/`, `data/config/`, and `data/state/` directories using Pydantic `TypeAdapters`.
-    * Instantiates the [Decomposer](./03-compositions.md#decomposer) early as a singleton to track unique name increments for macro-generated assets.
-2. **Cython Context Initialization (`render.init`)**
-    * Initializes the underlying C-level SDL2 video, image, and typography subsystems before any textures are processed.
-3. **Board Migration (`Orchestrator.migrate`)**
-    * Resolves [Actions](./01-assets.md#asset-concepts) globally within [Properties](./01-assets.md#asset-hierarchy) to prevent redundant dictionary lookups during runtime.
-    * Intercepts [Compositions](./03-compositions.md) defined in the state YAML, passing them to the [Decomposer](./03-compositions.md#decomposer) to unpack into a flat list of absolute-positioned Assets.
-    * Iterates over all remaining state fields, applying the Entity-Component-System (ECS) pattern. Assets are injected with Frame, Animation, Properties, and State components via Factory [recipes](./appendices/01-schemas.md#configuration-recipes), and mapped accurately (e.g., Players inherit [Sprite](./02-sprites.md) properties).
-    * Instantiates the [Board](./00-overview.md#board) database.
-4. **Board Injection (`Orchestrator.inject`)**
-    * Hydrates the input mappings and injects the [Device](./02-sprites.md#devices) (e.g., Keyboard) into the [Board](./00-overview.md#board).
-    * Creates the SpawnableGroup and instantiates the Cradle, injecting both into the [Board](./00-overview.md#board) to allow Mechanics to generate temporary effects, projectiles, and struts at runtime.
-5. **Registry Initialization (`Registry`)**
-    * Recursively unboxes all Python `Enum` values into primitive strings/integers (`Orchestrator._unbox_enums`). Cython cannot natively parse Pydantic/Python Enums without significant GIL overhead.
-    * Caches `.png` and `.ttf` files into GPU memory (`TexturePtr` and `TTFFont`).
-    * Resolves Asset Stacks and generates strict index crop-maps for $O(1)$ frame lookups.
-6. **Screen Allocation (`Screen`)**
-    * Dynamically calculates the maximum width and length across all Board layers.
-    * Instantiates a distinct [Screen](./00-overview.md#screen) object for *each* layer, generating independent background and foreground Cython canvases for the Painter's Algorithm.
-7. **Mechanics & Menus (`Provider`)**
-    * Instantiates [Mechanics](./05-mechanics.md) into two distinct lists: `core` and `world`.
-    * Instantiates the [Provider](./06-widgets.md#provider) to handle runtime Widget unpacking.
-    * Automatically generates the non-blocking Heads-Up Display (HUD) via the `view` Menu Configuration and mounts it to `board.overlays`.
-8. **Ignition (`Engine.start`)**
-    * Injects the fully hydrated Board, Screens, Mechanics, and Provider into the [Engine](./00-overview.md#engine) and initiates the fixed-timestep loop.
+The engine utilizes a decoupled boot-and-hydrate lifecycle to achieve instantaneous menu rendering and non-blocking scene transitions. The general flow is shwon in the following diagram and detailed further in the following sections,
+
+```mermaid
+flowchart LR
+    A[Orchestrator Boot] --> B[Registry Indexes (No VRAM)]
+    B --> C[Engine Starts (Empty Board)]
+    C --> D[MainMenu]
+    D --> E[StateEvent]
+    E --> F[Migrator/Prewarm (Time-sliced)]
+    F --> G[World Simulation]
+```
 
 !!! important "Hardware Rendering Context Pre-requisites"
     When running in live (non-headless) mode, the hardware window context (`render.show()`) **must** be instantiated strictly *after* `render.init()` but *before* `Registry` initialization. 
     
     The `Registry` caches textures directly into GPU memory via Cython (`TexturePtr`). If the window context does not exist when the Registry attempts to index and load `.png` files, the textures will silently resolve as empty `0x0` null pointers. This results in a "ghost state" where the entire game board is invisible, but the `Board` database, spatial physics, and collision systems continue to operate normally.
-    
+
+### Phase 1: Boot (Static Memory)
+
+1. **Bootstrapping & Loading (`Orchestrator.__init__`)**: Loads configuration YAML files via Pydantic and instantiates the `Decomposer` singleton.
+2. **Cython Context Initialization (`render.init`)**: Initializes SDL2 video, image, and typography subsystems.
+3. **Registry Initialization (`Registry`)**: Recursively parses the asset directory, mapping file paths and generating crop-map indexes. **VRAM allocation is completely deferred.**
+4. **Mechanics, Menus & Board (`Provider`)**: Instantiates `core` and `world` mechanics, the UI `Provider`, and an empty `Board` database initialized with `loaded = False`. 
+5. **Ignition (`Engine.start`)**: The fixed-timestep loop begins. A `MenuEvent('main')` is injected into the Engine bus prior to ignition to immediately render the Main Menu.
+
+### Phase 2: Hydration (Dynamic World Memory)
+
+Triggered by a `StateEvent` (e.g., selecting "New Game" or "Load"), the Engine transitions into world generation without blocking the Python GIL.
+
+1. **Time-Sliced Generation (`Migrator.step`)**: The `LoadController` calls the Migrator each frame. The Migrator applies the Entity-Component-System (ECS) pattern to a batch of assets from the state YAML, injecting Frame, Animation, Properties, and State components, then yields execution back to the Engine to maintain UI responsiveness.
+2. **Asset Prewarming (`Registry.prewarm`)**: Concurrently, the Registry parses a queue of dependency string keys, loading `.png` and `.ttf` files into GPU memory (`TexturePtr`) within a strictly enforced millisecond time budget.
+3. **Screen Allocation (`Screen.rebake`)**: Once hydration reaches 100%, the Migrator triggers `rebake()` on all active Screens to dynamically calculate max dimensions and allocate independent hardware canvases for the Painter's Algorithm.
+4. **Execution**: The `LoadController` emits a `TerminalEvent`, popping the loading screen, setting `board.loaded = True`, and unpausing the `world` Mechanics.
+
 ## Mechanics
 
 The Engine delegates behavior to [Mechanics](./05-mechanics.md). Rather than the Engine passing arguments to a system, a Mechanic is responsible for querying the [Board](./00-overview.md#board) for the exact data it requires, processing the state, and optionally pushing Events to the Engine's `bus`.
@@ -151,13 +153,17 @@ The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate t
 * **Background Compilation (`canvas` & `construct`):** A blank texture (`SDL_TEXTUREACCESS_TARGET`) is created in memory to match the full size of the Board. Python passes a single list of flattened integer tuples representing the source/destination coordinates and grid multipliers. Cython unpacks these primitives and executes thousands of `SDL_RenderCopy` calls natively via the C-level software rasterizer. This caches a unified map texture, eliminating the need to instantiate and re-render thousands of background tiles every frame.
 * **Buffer Management (`clear` & `present`):** Extracted from the core drawing loop to support multi-phase rendering. `clear()` wipes the current VRAM buffer at the start of the frame, and `present()` finalizes the buffer (`SDL_RenderPresent`) while pumping SDL events at the end of the frame.
 * **World Rendering (`render`):** During the main game loop, `Screen.draw()` performs lightweight integer-based AABB camera culling natively in Python. The visible world assets are flattened into primitive integer tuples and passed across the C-boundary in a single list. `render()` copies the cropped background texture and then maps world-coordinates to camera-relative coordinates on the fly, stamping the active primitives onto the back buffer.
-* **UI Overlays (`superimpose`):** After the world is rendered, `Screen.interface()` passes a flattened list of active Menu and Widget primitives. `superimpose()` bypasses the camera offset logic entirely, rendering these textures via strict absolute screen coordinates (`SDL_RenderCopy`) directly on top of the world view, ensuring the HUD and Menus remain statically positioned on the glass.
+* **Overlays (`superimpose`):** After the world is rendered, `Screen.interface()` passes a flattened list of active Menu and Widget primitives. `superimpose()` bypasses the camera offset logic entirely, rendering these textures via strict absolute screen coordinates (`SDL_RenderCopy`) directly on top of the world view, ensuring the HUD and Menus remain statically positioned on the glass.
 
 **Memory Management**
 
 The engine uses Cython extension types (`cdef class`) to bridge Python's garbage collector with SDL's manual memory management.
 
 * **`TexturePtr`**: Wraps a raw `SDL_Texture*` pointer alongside its integer dimensions (`w`, `l`).
-* **`TTFFont`**: Wraps a raw `TTF_Font*` pointer alongside its pre-configured styling metadata (`color`, `margins`, `align_str`).
+* **`TTFFont`**: Wraps a raw `TTF_Font*` pointer alongside its pre-configured styling metadata.
 
-Both classes implement the Cython `__dealloc__` method. When the Python interpreter garbage-collects these objects out of scope, they automatically invoke `SDL_DestroyTexture` and `TTF_CloseFont`. This architecture guarantees safe C-level memory cleanup and prevents VRAM leaks without requiring explicit teardown commands in the Python application layer.
+Both classes implement the Cython `__dealloc__` method. When the Python interpreter garbage-collects these objects out of scope, they automatically invoke `SDL_DestroyTexture` and `TTF_CloseFont`. This architecture guarantees safe C-level memory cleanup for standard assets and prevents VRAM leaks without requiring explicit teardown commands in the Python application layer.
+
+While `__dealloc__` is sufficient for standard asset garbage collection, relying on Python's non-deterministic GC timing for massive VRAM allocations (e.g., the `Screen` background and foreground canvases) during scene transitions risks Out-Of-Memory (OOM) GPU crashes. 
+
+To mitigate this, the Cython layer exposes a `render.destroy()` interface. During a world transition, `Screen.rebake()` explicitly calls this method to force an immediate, synchronous `SDL_DestroyTexture` on the old `TexturePtr` canvases before allocating the new environment's memory footprint.

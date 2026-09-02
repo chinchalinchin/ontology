@@ -1,5 +1,5 @@
 """
-# Ontology: app.asset.animations
+# Ontology: app.asset.animations.core
 
 Package for Asset Animation implementations.
 """
@@ -79,29 +79,4 @@ class StateAnimation(Animation):
             if state.animation.frame >= action_props.count:
                 state.animation.frame = 0
 
-        return state
-
-class TraversalAnimation(Animation):
-    """
-    """
-
-    def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
-        """
-        """
-        state.animation.action = state.status
-        return state
-
-class MeterAnimation(Animation):
-    """
-    """
-
-    def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
-        """
-        """
-        if getattr(state, 'unit', 0) > 0:
-            pct = state.reading / state.unit
-        else:
-            pct = 0.0
-        res = int(round(pct * 100))
-        state.animation.frame = max(0, min(100, res))
         return state
