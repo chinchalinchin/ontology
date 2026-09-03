@@ -201,6 +201,9 @@ The Recipe for an Asset, i.e. the list of components which go into a particular 
     - `keys(id, state)`: Interface for retrieving Asset's current Frame key.
     - `index(id, properties)`: Interface for indexing Asset frames in Registry.
 
+!!! note
+    The state model can be calculated from (Category, Instance), but (Animation, Frame) is independent of the state assigned to an Asset through the Asset Hierarchy. It must be specified through a Recipe.
+
 ### Asset Taxonomy
 
 An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These attributes exist on every Asset instantiated within the game. A Taxonomy is neither state, configuration or properties.

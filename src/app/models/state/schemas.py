@@ -19,7 +19,8 @@ from app.models.state.objects import (
     SwitchState,
     PropertyState,
     MotorState,
-    AnimatorState
+    AnimatorState,
+    DialogueState
 )
 from app.models.state.sprites import (
     SpriteState,
@@ -41,7 +42,8 @@ class ObjectStateInstances:
     doors: List[DoorState] = field(default_factory=list)
     gates: List[SwitchState] = field(default_factory=list)
     plates: List[SwitchState] = field(default_factory=list)
-
+    signs: List[DialogueState] = field(default_factory=list)
+    
 @dataclass(slots=True)
 class CraftStateInstances:
     struts: List[PropertyState] = field(default_factory=list)

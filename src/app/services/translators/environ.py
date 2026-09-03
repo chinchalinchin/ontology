@@ -9,8 +9,7 @@ from app.config.enums import (
     Intentions, 
     AssetInstances, 
     AssetCategories,
-    Motivations,
-    MineableAssets
+    Motivations
 )
 
 # ----------------------------------------------------- ISL CONDITION CONJUNCTS
@@ -33,9 +32,7 @@ class Environ:
         #### Intention Space Enumerations
         'Goals': Goals,
         'Intentions': Intentions,
-        'Motivations': Motivations,
-        #### Interaction Space Enumerations
-        'MineableAssets': MineableAssets
+        'Motivations': Motivations
     }
     functions: dict = {
         'is_near': is_near

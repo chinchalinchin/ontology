@@ -10,8 +10,7 @@ from dataclasses import dataclass
 # Application Libraries
 from app.config.enums import (
     FrameRecipe, 
-    AnimationRecipe,
-    StateRecipe,
+    AnimationRecipe
 )
 from app.models.config.core import Configuration
 
@@ -23,7 +22,6 @@ from app.models.config.core import Configuration
 class Recipe:
     frame: FrameRecipe = None
     animation: AnimationRecipe = None
-    state: StateRecipe = None
 
 @dataclass(slots=True, frozen=True)
 class TileRecipe:

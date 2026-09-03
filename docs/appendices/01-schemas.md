@@ -116,7 +116,10 @@ Mechanics Configuration defines what Mechanic classes are instantiated by the ga
 
 ### Configuration: Recipes
 
-Recipe Configuration files determine the specific (State, Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.
+Recipe Configuration files determine the specific (Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.
+
+!!! note
+    The state model can be calculated from (Category, Instance), but (Animation, Frame) is independent of the state assigned to an Asset through the Asset Hierarchy.
 
 * Location: `/src/data/config/recipes/main.yaml`
 

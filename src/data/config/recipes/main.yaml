@@ -3,106 +3,84 @@ recipes:
     back:
       frame: single
       animation: none
-      state: multiplier
     fore:
       frame: single
       animation: none
-      state: multiplier
   crafts:
     struts:
       frame: single
       animation: none
-      state: property
   cursors:
     expressions:
       frame: single
       animation: none
-      state: positional
     projectiles:
       frame: single
       animation: none
-      state: metric
   effects:
     temporary:
       frame: iterable
       animation: temporary
-      state: animator
     persistent:
       frame: iterable
       animation: persistent
-      state: animator
   objects:
     chests:
       frame: iterable
       animation: binary
-      state: container
     crates:
       frame: single
       animation: none
-      state: positional
     doors:
       frame: single
       animation: none
-      state: door
     gates: 
       frame: iterable
       animation: binary
-      state: switch
     plates:
       frame: iterable
       animation: binary
-      state: switch
+    signs:
+      frame: single
+      animation: none
   sheets:
     players:
       frame: sprite
       animation: state
-      state: player
     pixies:
       frame: state
       animation: state
-      state: animator
     sprites:
       frame: sprite
       animation: state
-      state: sprite
     armor:
       frame: state
       animation: none
-      state: none
     tools:
       frame: state
       animation: none
-      state: none
     shields:
       frame: state
       animation: none
-      state: none
     utilities:
       frame: state
       animation: none
-      state: none
     weapons:
       frame: state
       animation: none
-      state: none
   widgets:
     buttons:
       frame: traversal
       animation: traversal
-      state: traversal
     icons:
       frame: index
       animation: none
-      state: icon
     meters:
       frame: meter
       animation: meter
-      state: meter
     pages:
       frame: single
       animation: none
-      state: display
     panes:
       frame: single
       animation: none
-      state: pane

@@ -21,6 +21,7 @@ class AssetCategories(str, Enum):
     EFFECTS         = "effects"
     OBJECTS         = "objects"
     SHEETS          = "sheets"
+    RESOURCES       = "resources"
     TILES           = "tiles"
     WIDGETS         = "widgets"
 
@@ -41,7 +42,7 @@ class AssetInstances(str, Enum):
     GATES           = "gates"
     PLATES          = "plates"
     SIGNS           = "signs"
-    # STRITS
+    # CRAFTS
     STRUTS          = "struts"
     # SHEETS
     PIXIES          = "pixies"
@@ -52,6 +53,9 @@ class AssetInstances(str, Enum):
     UTILITIES       = "utilities"
     TOOLS           = "tools"
     SHIELDS         = "shields"
+    # RESOURCES
+    CROPS           = "crops"
+    ORE             = "ore"
     # WIDGETS
     PANES           = "panes"
     BUTTONS         = "buttons"
@@ -59,12 +63,24 @@ class AssetInstances(str, Enum):
     METERS          = "meters"
     ICONS           = "icons"
 
+class Spawnables(str, Enum):
+    TEMPORARY       = "temporary"
+    PROJECTILES     = "projectiles"
+    STRUTS          = "struts"
+    COMPOSITIONS    = "compositions"
+    CROPS           = "crops"
+    ORE             = "ore"
+
 class Equipment(str, Enum):
     WEAPONS         = "weapons"
     ARMOR           = "armor"
     UTILITIES       = "utilities"
     TOOLS           = "tools"
     SHIELDS         = "shields"
+
+class Groups(str, Enum):
+    EQUIPMENT       = "equipment"
+    SPAWNABLES      = "spawnables"
 
 class Shortcuts(str, Enum):
     COMPOSITIONS    = "compositions"
@@ -96,6 +112,7 @@ class StateRecipe(str, Enum):
     SPRITE          = "sprite"
     SWITCH          = "switch"
     DOOR            = "door"
+    DIALOGUE        = "dialogue"
     POSITIONAL      = "positional"
     PROPERTY        = "property"
     CONTAINER       = "container"
@@ -176,7 +193,6 @@ class Relationships(str, Enum):
 class Goals(str, Enum):
     ASSET           = "asset"
     LOOT            = "loot"
-    WEALTH          = "wealth"
     PROPERTY        = "property"
     POSITION        = "position"
     SPRITE          = "sprite"
@@ -186,10 +202,6 @@ class PlayerGoals(str, Enum):
     LEFT            = "left"
     DOWN            = "down"
     RIGHT           = "right"
-
-class PlayerIntentions(str, Enum):
-    INVENTORY       = "inventory"
-    PAUSE           = "pause"
 
 # -------------------------------- ENGINE ENUMERATIONS
 
@@ -216,19 +228,7 @@ class Configurations(str, Enum):
     MECHANICS       = "mechanics"
     MENUS           = "menus"
     RECIPES         = "recipes"
-    SCRIPTS         = "scripts"
     COMPOSITIONS    = "compositions"
-
-class Spawnables(str, Enum):
-    TEMPORARY       = "temporary"
-    PROJECTILES     = "projectiles"
-    STRUTS          = "struts"
-    COMPOSITIONS    = "compositions"
-
-class Groups(str, Enum):
-    CONFIGURATIONS  = "configurations"
-    EQUIPMENT       = "equipment"
-    SPAWNABLES      = "spawnables"
 
 class MotiveAssets(str, Enum):
     PLAYERS         = "players"
@@ -248,11 +248,6 @@ class AnimatedIntentions(str, Enum):
     # TODO: possibly redundant with respect to BlockingIntentions
     ATTACK          = "attack"
     MINE            = "mine"
-
-# -------------------------------- ISL ENUMERATIONS
-
-class MineableAssets(str, Enum):
-    RESOURCES       = "resources"
 
 class Translators(str, Enum):
     COMPILER        = "compiler"
