@@ -1,4 +1,4 @@
-# Bug B002: Board Cache Wipe on Layerless Assets
+##### Bug B002: Board Cache Wipe on Layerless Assets
 
 **STATUS**: OPEN
 **SEVERITY**: CRITICAL

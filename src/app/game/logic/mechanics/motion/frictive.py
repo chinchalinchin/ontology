@@ -3,16 +3,19 @@
 """
 # Standard Libraries
 import math
+import logging
 
 # Cython Libraries
 from libs.core.models import Position
+
+logger = logging.getLogger(__name__)
 
 def update(crates, board, delta):
     """
     Determines linear velocity decay based on environmental properties for inert moving assets.
     """
     for crate in crates:
-        if not hasattr(crate.state, 'velocity') or crate.state.velocity is None:
+        if not crate.state.velocity or crate.state.velocity is None:
             continue
 
         w = crate.dimensions.w if crate.dimensions else 0
@@ -23,7 +26,7 @@ def update(crates, board, delta):
         center_pos = Position(int(cx), int(cy))
         tile = board.tile(crate.state.layer, center_pos)
 
-        if tile and hasattr(tile.properties, 'friction'):
+        if tile:
             friction = tile.properties.friction
             dv = friction * delta
 

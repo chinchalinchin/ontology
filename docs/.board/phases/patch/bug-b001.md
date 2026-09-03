@@ -1,4 +1,4 @@
-# Bug B001: Layering
+##### Bug B001: Layering
 
 **STATUS:** OPEN
 **SEVERITY**: LOW

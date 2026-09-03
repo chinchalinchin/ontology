@@ -1,5 +1,4 @@
-
-# Bug B003: Painter's Algorithm String Exception
+##### Bug B003: Painter's Algorithm String Exception
 
 **STATUS**: OPEN
 **SEVERITY**: HIGH

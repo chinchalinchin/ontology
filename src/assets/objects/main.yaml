@@ -9,23 +9,11 @@ objects:
       hitboxes: null
   # -------------------------------------------------------
   crates:
-    crate-statue:
-      dimensions:
-        w: 30
-        l: 64
-      mass: 1
-      hitboxes:
-        - position:
-            x: 0
-            y: 0
-          dimensions:
-            w: 30
-            l: 64
     crate-barrel:
       dimensions:
         w: 28
         l: 38
-      mass: 2
+      mass: 5
       hitboxes:
         - position:
             x: 0
@@ -37,50 +25,8 @@ objects:
       dimensions:
         w: 28
         l: 30
-      mass: 1
+      mass: 100
       hitboxes: null
-  # -------------------------------------------------------
-  doors:
-    door-castle-open:
-      mass: -1
-      dimensions:
-        w: 64
-        l: 64
-    door-double:
-      mass: -1
-      dimensions:
-        w: 64
-        l: 64
-    door-dungeon:
-      mass: -1
-      dimensions:
-        w: 32
-        l: 48
-    door-mansion:
-      mass: -1
-      dimensions:
-        w: 32
-        l: 48
-    door-house:
-      mass: -1
-      dimensions: 
-        w: 32
-        l: 48
-    door-shadow:
-      mass: -1
-      dimensions:
-        w: 32
-        l: 48
-    door-open:
-      mass: -1
-      dimensions:
-        w: 32
-        l: 57
-    door-shack:
-      mass: -1 
-      dimensions:
-        w: 32
-        l: 48
   # -------------------------------------------------------
   gates:
     gate-castle:
@@ -98,3 +44,18 @@ objects:
         w: 15
         l: 14
       count: 2
+      hitboxes: null
+  # -------------------------------------------------------
+  signs:
+    board-wood: 
+      mass: 0
+    dimensions:
+      w: 30
+      l: 32
+    hitboxes:
+      - position:
+          x: 4
+          y: 4
+        dimensions:
+          w: 22
+          l: 24

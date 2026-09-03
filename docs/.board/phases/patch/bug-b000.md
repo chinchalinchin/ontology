@@ -1,4 +1,4 @@
-# Bug B000: Attacking
+##### Bug B000: Attacking
 
 **STATUS:** CLOSED
 **SEVERITY:** HIGH

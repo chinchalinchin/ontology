@@ -413,7 +413,6 @@ class Board:
         """
         Add Assets to the Board
         """
-
         for asset in additions:
             layer = asset.state.layer
 
@@ -438,6 +437,21 @@ class Board:
                 if asset.name:
                     self._cached_characters[asset.name] = asset.state
 
+            # --- PATCH: Dynamically hash incoming Tiles into the environment cache ---
+            if asset.category == AssetCategories.TILES.value:
+                w = asset.properties.dimensions.w
+                l = asset.properties.dimensions.l
+                
+                start_x = int(asset.state.position.x)
+                start_y = int(asset.state.position.y)
+                end_x = start_x + (asset.state.multiple.nx * w)
+                end_y = start_y + (asset.state.multiple.ny * l)
+
+                for cx in range(start_x // settings.TILE_HASH_SIZE, (end_x - 1) // settings.TILE_HASH_SIZE + 1):
+                    for cy in range(start_y // settings.TILE_HASH_SIZE, (end_y - 1) // settings.TILE_HASH_SIZE + 1):
+                        if asset.instance not in self._cached_tilemap[layer]:
+                            self._cached_tilemap[layer][asset.instance] = {}
+                        self._cached_tilemap[layer][asset.instance][(cx, cy)] = asset
 
     def remove(self, removals: List[Asset]) -> None:
         """
@@ -478,42 +492,42 @@ class Board:
                 if asset.name and asset.name in self._cached_characters:
                     del self._cached_characters[asset.name]
 
-        def serialize(self, slot: str) -> None:
-            """
-            Dumps runtime Board state back to YAML for saves.
-            """
-            dump = {}
-            for asset in self._assets:
-                # Exclude highly transient or completely stateless system assets
-                if asset.category in (
-                    AssetCategories.WIDGETS.value, 
-                    AssetCategories.TILES.value, 
-                    AssetCategories.EFFECTS.value
-                ):
-                    continue
-                    
-                # Exclude stateless Equipment wrappers (they bind directly to Sprite Inventories)
-                if asset.category == AssetCategories.SHEETS.value and asset.instance not in (
-                    AssetInstances.SPRITES.value, 
-                    AssetInstances.PLAYERS.value, 
-                    AssetInstances.PIXIES.value
-                ):
-                    continue
-                    
-                cat = asset.category
-                inst = asset.instance
+    def serialize(self, slot: str) -> None:
+        """
+        Dumps runtime Board state back to YAML for saves.
+        """
+        dump = {}
+        for asset in self._assets:
+            # Exclude highly transient or completely stateless system assets
+            if asset.category in (
+                AssetCategories.WIDGETS.value, 
+                AssetCategories.TILES.value, 
+                AssetCategories.EFFECTS.value
+            ):
+                continue
                 
-                if cat not in dump:
-                    dump[cat] = {}
-                if inst not in dump[cat]:
-                    dump[cat][inst] = []
-                    
-                dump[cat][inst].append(asdict(asset.state))
-
-            # TODO: file access should be handled through app.config.loader
-            out_dir = settings.SAVE_DIR
-            out_dir.mkdir(parents=True, exist_ok=True)
-            out_path = out_dir / f"{slot}.yaml"
+            # Exclude stateless Equipment wrappers (they bind directly to Sprite Inventories)
+            if asset.category == AssetCategories.SHEETS.value and asset.instance not in (
+                AssetInstances.SPRITES.value, 
+                AssetInstances.PLAYERS.value, 
+                AssetInstances.PIXIES.value
+            ):
+                continue
+                
+            cat = asset.category
+            inst = asset.instance
             
-            with open(out_path, 'w') as f:
-                yaml.dump(dump, f, default_flow_style=False)
+            if cat not in dump:
+                dump[cat] = {}
+            if inst not in dump[cat]:
+                dump[cat][inst] = []
+                
+            dump[cat][inst].append(asdict(asset.state))
+
+        # TODO: file access should be handled through app.config.loader
+        out_dir = settings.SAVE_DIR
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / f"{slot}.yaml"
+        
+        with open(out_path, 'w') as f:
+            yaml.dump(dump, f, default_flow_style=False)

@@ -41,6 +41,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [ ]: [Bug B001: Relayering Instantied Assets](./phases/patch/bug-b001.md)
     - [ ]: [Bug B002: Board Cache Wipe](./phases/patch/bug-b002.md)
     - [ ]: [Bug B003: Painter's Algorithm String Exception](./phases/patch/bug-b003.md)
+    - [x]: [Bug B004: Friction Regression](./phases/patch/bug-b004.md)
   - Report:
     - [x]: [2026-08-16: SDL Pipeline Failure](./phases/report/2026-08-16.md)
 
@@ -49,7 +50,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 For ancillary or tangential bugs detected, use the following template to open new Bugs,
 
 ```markdown
-# Bug {{ id }}: {{ title }}
+##### Bug {{ id }}: {{ title }}
 
 **STATUS**: OPEN
 **SEVERITY**: {{ severity }}

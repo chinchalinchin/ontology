@@ -32,7 +32,7 @@ sheets:
         - head-wizard-hat-moon
       actions: lpc-full
     jasilynn:
-      mass: 15
+      mass: 25
       dimensions:
         w: 64
         l: 64
