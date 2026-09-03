@@ -328,7 +328,12 @@ class Provider:
 
         # Default focus to the first traversible button if graph is present
         focus = next(iter(graph.keys())) if graph else ""
-            
+
+        # Initialize focus state
+        if focus and focus in ordered_widgets:
+            ordered_widgets[focus].state.status = Statuses.ACTIVE.value
+            ordered_widgets[focus].state.animation.action = Statuses.ACTIVE.value
+
         return Menu(
             id          = id,
             focus       = focus,

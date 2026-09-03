@@ -152,7 +152,7 @@ class MenuMechanics(Mechanic):
             return
 
         board.device.context(DeviceContexts.MENU)
-            
+
         active_menu = board.menus[-1]
         
         # Animate Active Menu (Menu-time)

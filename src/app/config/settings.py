@@ -11,6 +11,7 @@ from pathlib import Path
 ###             separate asset keys.
 SEPARATOR = "-"
 NEW_BOARD = "world-01"
+MIGRATOR_DELAY = 1
 # ---------------------------------------------------
 ## --------------------------------- ENGINE CONSTANTS
 ### TARGET_FPS: Engine's target FPS.

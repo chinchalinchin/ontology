@@ -13,6 +13,7 @@ import logging
 
 # Application Libraries
 import app.config.settings as settings
+from app.config.enums import Menus
 from app.game.board import Board
 from app.game.logic.mechanics.core import Mechanic
 from app.game.screen import Screen
@@ -86,7 +87,7 @@ class Engine:
                     self.board.migrator.target = event.id
                     
                 self.bus.append(MenuEvent(
-                    id='load', 
+                    id=Menus.LOAD.value, 
                     context={
                         'registry': next(iter(self.screens.values())).registry,
                         'screens': self.screens,
@@ -99,13 +100,16 @@ class Engine:
                     popped_menu = self.board.menus.pop()
                     
                     # HUD INJECTION: Once the load screen finishes, bind the HUD to the live player
-                    if popped_menu.id == 'load':
-                        view_cfg = self.board.configurations.menus.get('view')
+                    if popped_menu.id == Menus.LOAD.value:
+                        view_cfg = self.board.configurations.menus.get(Menus.VIEW.value)
                         player = self.board.player()
                         if view_cfg and player:
-                            screen = self.screens.get(player.state.layer, next(iter(self.screens.values())))
+                            screen = self.screens.get(
+                                player.state.layer, 
+                                next(iter(self.screens.values()))
+                            )
                             hud_menu = self.provider.unpack(
-                                'view', 
+                                Menus.VIEW.value, 
                                 view_cfg, 
                                 {'sprite': {'state': getattr(player, 'state', None)}}, 
                                 screen.screensize
