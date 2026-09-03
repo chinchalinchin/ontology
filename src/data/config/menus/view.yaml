@@ -5,7 +5,7 @@ menus:
       - id: dark-small
         name: hud-menu
         position:
-          px: 0.1
+          px: 0.075
           py: 0.75
         layout: dock
         alignment: start

@@ -37,8 +37,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 05.05: Main Menu & Saving](./phases/refactor/phase-05-05.md)
     - [ ]: [Phase 05.06: EventHandlers & EventContent](./phases/refactor/phase-05-06.md)
   - Patch 
-    - [x]: [Bug B000: Attacking](./phases/patch/bug-b000.md)
-    - [ ]: [Bug B001: Relayering](./phases/patch/bug-b001.md)
+    - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
+    - [ ]: [Bug B001: Relayering Instantied Assets](./phases/patch/bug-b001.md)
     - [ ]: [Bug B002: Board Cache Wipe](./phases/patch/bug-b002.md)
     - [ ]: [Bug B003: Painter's Algorithm String Exception](./phases/patch/bug-b003.md)
   - Report:

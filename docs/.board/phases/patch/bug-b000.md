@@ -1,7 +1,8 @@
 # Bug B000: Attacking
 
-**Status:** CLOSED
-**Resolution:** PATCHED
+**STATUS:** CLOSED
+**SEVERITY:** HIGH
+**RESOLUTION:** PATCHED
 
 When pressing the Space Bar to attack, the player briefly (*very* briefly, less than a fraction of a second) enters into the appropriate Action, but immediately returns to the Walk Action.
 

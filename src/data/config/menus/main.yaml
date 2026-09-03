@@ -5,8 +5,8 @@ menus:
       - id: neutral
         name: main-menu
         position:
-          px: 0
-          py: 0
+          px: 0.075
+          py: 0.15
         layout: stack
         alignment: center
         gap: 10

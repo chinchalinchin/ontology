@@ -1,7 +1,7 @@
 # Bug B001: Layering
 
-**Status:** OPEN
-**Resolution:** N/A
+**STATUS:** OPEN
+**SEVERITY**: LOW
 
 Layers can be instantiated on the fly through the `build` Intention and Struts/Compositons. Currently, Screens are initialized and keyed by layer. If a Layer is instantiated during the game, lookups for this key against the Screen will fail.
 
