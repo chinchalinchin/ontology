@@ -5,7 +5,7 @@ effects:
       dimensions:
         w: 32
         l: 32
-  persistent:
+  hazards:
     spike:
       count: 7
       dimensions:

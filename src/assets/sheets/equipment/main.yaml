@@ -8,6 +8,7 @@ sheets:
       hitboxes: null
       stack:
         - leather-gloves
+        - leather-kilt
         - leather-sandals
     plate:
       dimensions:
@@ -81,14 +82,22 @@ sheets:
       actions: lpc-slash
       stack:
         - shortsword
-    warhammer:
+    longsword:
       dimensions:
         w: 64
         l: 64
       hitboxes: null
       actions: lpc-slash
       stack:
-        - warhammer
+        - longsword
+    spear:
+      dimensions:
+        w: 64
+        l: 64
+      hitboxes: null
+      actions: lpc-thrust
+      stack:
+        - spear
     longbow:
       dimensions:
         w: 64

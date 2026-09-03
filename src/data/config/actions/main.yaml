@@ -1,4 +1,17 @@
 actions:
+  - id: extemded-walk
+    data:
+      walk:
+        count: 11
+        directions:
+          up:
+            row: 0
+          left:
+            row: 1
+          down:
+            row: 2
+          right:
+            row: 3
   - id: simple-walk
     data:
       walk:

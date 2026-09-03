@@ -1,53 +1,12 @@
 sheets:
   pixies:
-    bee:
+    giant-rat:
+      mass: 10
       dimensions:
-        w: 32
-        l: 32
-      hitboxes: null
-      stack:
-        - bee
-      actions: simple-walk
-    eyeball:
-      dimensions:
-        w: 64 
+        w: 80
         l: 64
       hitboxes: null
-      stack:
-        - eyeball
-      actions: simple-walk
-    ghost:
-      dimensions:
-        w: 64
-        l: 64
-      hitboxes: null
-      stack: 
-        - ghost
-      actions: simple-walk
-    malboro:
-      dimensions:
-        w: 128
-        l: 128
-      hitboxes: null
-      stack:
-        - malboro
-      actions: simple-walk
-    sandworm:
-      dimensions:
-        w: 64
-        l: 64
-      hitboxes: null
-      stack:
-        - sandworm
-      actions: simple-walk
-    slime:
-      dimensions:
-        w: 64
-        l: 64
-      hitboxes: null
-      stack:
-        - slime
-      actions: simple-walk
+      actions: extended-walk
   sprites:
     player:
       mass: 7

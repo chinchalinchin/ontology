@@ -4,7 +4,7 @@ cursors:
       dimensions:
         w: 144
         l: 16
-      indices:
+      frames:
         - affection
         - agreement
         - anger
@@ -15,22 +15,10 @@ cursors:
         - surprise
         - tired
   projectiles:
-    arrow-fire:
-      dimensions:
-        w: 31
-        l: 18
-    arrow-magic:
+    arrow:
       dimensions:
         w: 30
         l: 21
-    bolt-poison:
-      dimensions:
-        w: 24
-        l: 17
-    bolt-precise:
-      dimensions:
-        w: 24
-        l: 9
     bolt:
       dimensions:
         w: 32
