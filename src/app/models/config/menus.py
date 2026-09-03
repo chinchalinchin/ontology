@@ -26,7 +26,7 @@ from app.models.config.core import Configuration
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------- MENU CONFIGURATION
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class MenuWidget:
     instance: str
     id: str
@@ -34,7 +34,7 @@ class MenuWidget:
     bind: Optional[Binding] = None
     status: Optional[Statuses] = Statuses.IDLE
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class MenuPane:
     id: str 
     name: str
@@ -45,7 +45,7 @@ class MenuPane:
     margins: Optional[int] = 0
     position: Optional[ScreenPosition] = None # type: ignore
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class MenuConfiguration(Configuration):
     controller: str
     roots: List[MenuPane]

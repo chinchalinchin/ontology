@@ -80,3 +80,9 @@ class SwitchState(AssetState):
     position: Optional[Position] = None # type: ignore
     switch: Optional[bool] = False
     animation: AnimationState = field(default_factory=AnimationState)
+
+@dataclass(slots=True)
+class DialogueState(AssetState):
+    position: Optional[Position] = None # type: ignore
+    persona: Optional[str] = None
+    lexicon: Optional[str] = None

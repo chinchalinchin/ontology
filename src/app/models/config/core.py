@@ -31,7 +31,7 @@ class Configuration:
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ ACTION CONFIGURATION
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class ActionConfiguration(Configuration):
     id: str
     data: Dict[str, Action]
@@ -39,7 +39,7 @@ class ActionConfiguration(Configuration):
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------- INTENTION CONFIGURATION
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class IntentionConfiguration(Configuration):
     """
     """
@@ -49,7 +49,7 @@ class IntentionConfiguration(Configuration):
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------- INTENTION CONFIGURATION
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class MechanicsConfiguration(Configuration):
     core: List[str] = field(default_factory=list)
     world: List[str] = field(default_factory=list)
@@ -57,12 +57,12 @@ class MechanicsConfiguration(Configuration):
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------- COMPOSITION CONFIGURATION
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class CompositionPseudoState:
     strut: PropertyState
     components: StateSchema
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class CompositionConfiguration(Configuration):
     root: CompositionPseudoState
     branches: Optional[List[CompositionPseudoState]] = field(default_factory=list)

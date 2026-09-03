@@ -164,7 +164,7 @@ Each Category has Instances. Asset *Instances* form the bottom layer of the hier
 | Tile | Back | Position, Layer, Depth, Height |
 | Tile | Fore | Position, Layer, Depth, Height |
 | Object | Crate | Position, Layer, Depth, Height |
-| Object | Sign | TODO |
+| Object | Sign | Position, Layer, Depth, Height, Persona, Lexicon |
 | Object | Door | Position, Layer, Depth, Height, OutLayer |
 | Object | Chest | Position, Layer, Depth, Height, Animation, Switch, Content |
 | Object | Gate | Position, Layer, Depth, Height, Aniamtion, Switch, Link |

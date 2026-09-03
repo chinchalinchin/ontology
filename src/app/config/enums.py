@@ -25,31 +25,39 @@ class AssetCategories(str, Enum):
     WIDGETS         = "widgets"
 
 class AssetInstances(str, Enum):
+    # TILES
     BACK            = "back"
     FORE            = "fore"
+    # CURSORS
     EXPRESSIONS     = "expressions"
     PROJECTILES     = "projectiles"
+    # EFFECTS
     PERSISTENT      = "persistent"
     TEMPORARY       = "temporary"
+    # OBJECTS
     CHESTS          = "chests"
     CRATES          = "crates"
     DOORS           = "doors"
     GATES           = "gates"
     PLATES          = "plates"
+    SIGNS           = "signs"
+    # STRITS
     STRUTS          = "struts"
+    # SHEETS
     PIXIES          = "pixies"
     SPRITES         = "sprites"
     PLAYERS         = "players"
-    PANES           = "panes"
-    BUTTONS         = "buttons"
-    PAGES           = "pages"
-    METERS          = "meters"
-    ICONS           = "icons"
     WEAPONS         = "weapons"
     ARMOR           = "armor"
     UTILITIES       = "utilities"
     TOOLS           = "tools"
     SHIELDS         = "shields"
+    # WIDGETS
+    PANES           = "panes"
+    BUTTONS         = "buttons"
+    PAGES           = "pages"
+    METERS          = "meters"
+    ICONS           = "icons"
 
 class Equipment(str, Enum):
     WEAPONS         = "weapons"

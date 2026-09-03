@@ -19,32 +19,32 @@ from app.models.config.core import Configuration
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------ RECIPE CONFIGURATION
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class Recipe:
     frame: FrameRecipe = None
     animation: AnimationRecipe = None
     state: StateRecipe = None
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class TileRecipe:
     fore: Recipe = None
     back: Recipe = None
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class CraftRecipe:
     struts: Recipe = None
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class CursorRecipe:
     expressions: Recipe = None
     projectiles: Recipe = None
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class EffectRecipe:
     temporary: Recipe = None
     persistent: Recipe = None
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class ObjectRecipe:
     chests: Recipe = None
     crates: Recipe = None
@@ -52,7 +52,7 @@ class ObjectRecipe:
     gates: Recipe = None
     plates: Recipe = None
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class SheetRecipe:
     pixies: Recipe = None
     sprites: Recipe = None
@@ -63,7 +63,7 @@ class SheetRecipe:
     tools: Recipe = None
     shields: Recipe = None
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class WidgetRecipe:
     buttons: Recipe = None
     icons: Recipe = None
@@ -71,7 +71,7 @@ class WidgetRecipe:
     pages: Recipe = None
     panes: Recipe = None
     
-@dataclass(slots=True) 
+@dataclass(slots=True, frozen=True) 
 class RecipeConfiguration(Configuration):
     """
     """

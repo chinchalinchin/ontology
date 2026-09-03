@@ -25,7 +25,7 @@ from app.models.config.menus import MenuConfiguration
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------- ROOT SCHEMA
 
-@dataclass(slots=True)
+@dataclass(slots=True, frozen=True)
 class ConfigurationSchema:
     recipes: RecipeConfiguration = field(default_factory=RecipeConfiguration)
     mappings: MappingConfiguration = field(default_factory=MappingConfiguration)
