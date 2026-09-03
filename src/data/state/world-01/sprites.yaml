@@ -5,8 +5,8 @@ sheets:
       layer: '0'
       depth: 0
       position:
-        x: 180
-        y: 100
+        x: 320
+        y: 400
       meters:
         health: 
           current: 50
@@ -38,7 +38,7 @@ sheets:
         category: sprite
         position:
           x: 250
-          y: 100
+          y: 300
       memory:
         goal: null
         rumors: null

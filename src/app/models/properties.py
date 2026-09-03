@@ -113,6 +113,7 @@ class ObjectPropertyInstances:
     doors: Dict[str, ObjectProperties] = field(default_factory=dict)
     gates: Dict[str, ObjectProperties] = field(default_factory=dict)
     plates: Dict[str, ObjectProperties] = field(default_factory=dict)
+    signs: Dict[str, ObjectProperties] = field(default_factory=dict)
 
 @dataclass(slots=True)
 class CraftPropertyInstances:

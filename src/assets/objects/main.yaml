@@ -49,13 +49,13 @@ objects:
   signs:
     board-wood: 
       mass: 0
-    dimensions:
-      w: 30
-      l: 32
-    hitboxes:
-      - position:
-          x: 4
-          y: 4
-        dimensions:
-          w: 22
-          l: 24
+      dimensions:
+        w: 30
+        l: 32
+      hitboxes:
+        - position:
+            x: 4
+            y: 4
+          dimensions:
+            w: 22
+            l: 24

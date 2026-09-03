@@ -6,7 +6,7 @@ sheets:
       depth: 0
       position:
         x: 10
-        y: 10
+        y: 80
       meters:
         health: 
           current: 50
