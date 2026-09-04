@@ -10,61 +10,10 @@ This document serves to specify the Asset architecture and provide key definitio
 
 ## Overview 
 
-The Asset directory is organized as follows,
+The Asset directory (and all subdirectories) contains Asset Image Files (`*.png`) and Asset Property indices (`*.yaml`). The [initialization](./10-architecture.md#initialization) will read in all of these files recursively and then use the property indices to index each Asset file. Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the game. The property configuration in the `*.yaml` files must conform to the [Asset property schema](./appendices/01-schemas.md#model-properties) of the respective Asset Category they are configuring. 
 
-```bash
-assets % tree -L 2
-.
-├── crafts
-│   ├── main.yaml
-│   └── struts
-├── cursors
-│   ├── expressions
-│   ├── main.yaml
-│   └── projectiles
-├── effects
-│   ├── main.yaml
-│   ├── persistent
-│   └── temporary
-├── objects
-│   ├── chests
-│   ├── crates
-│   ├── doors
-│   ├── gates
-│   ├── main.yaml
-│   ├── plates
-│   └── struts
-├── resources
-│   ├── crops
-│   ├── main.yaml
-│   └── ore
-├── sheets
-│   ├── armor
-│   ├── main.yaml
-│   ├── pixies
-│   ├── shields
-│   ├── sprites
-│   ├── tools
-│   ├── utilities
-│   └── weapons
-├── sounds
-│   ├── main.yaml
-│   ├── music
-│   └── speech
-├── tiles
-│   ├── back
-│   ├── fore
-│   └── main.yaml
-└── widgets
-│   ├── buttons
-│   ├── language
-│   ├── main.yaml
-│   ├── meters
-│   ├── pages
-│   ├── panes
-```
-
-The `main.yaml` files in each subdirectory conform to the [Asset property schema](./appendices/01-schemas.md#model-properties) of their respective Asset Category. 
+!!! important
+    All `*.yaml` files in the Asset directories are merged into a single schema, so every key must be unique. If two image files have the same name, one of them will be overwritten during [Registry indexing](./00-overview.md#registry).
 
 ### Asset Concepts
 

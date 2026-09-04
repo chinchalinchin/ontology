@@ -36,6 +36,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [ ]: [Phase 05.04: InventoryController & Loot](./phases/refactor/phase-05-04.md)
     - [x]: [Phase 05.05: Main Menu & Saving](./phases/refactor/phase-05-05.md)
     - [ ]: [Phase 05.06: EventHandlers & EventContent](./phases/refactor/phase-05-06.md)
+    - [~]: [Phase 07.01: Speak Intentions](./phases/refactor/phase-07-01.md)
   - Patch 
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantied Assets](./phases/patch/bug-b001.md)

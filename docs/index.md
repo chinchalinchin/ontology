@@ -21,6 +21,8 @@
 - [Appendices](./appendices/index.md)
     - [Appendix I: References](./appendices/00-references.md)
     - [Appendix II: Schemas](./appendices/01-schemas.md)
+- [Specifications](./specs/index.md)
+    - [Intention: Speak](./specs/00-speak.md)
     
 ## CI/CD
 

@@ -19,4 +19,4 @@
 ### SDL2
 
 - [SDL2](https://wiki.libsdl.org/SDL2/FrontPage)
-- [SDL Scancodes](https://wiki.libsdl.org/SDL2/SDL_Scancode)
+- [SDL Scancodes](https://wiki.libsdl.org/SDL2/SDL_Scancode)a

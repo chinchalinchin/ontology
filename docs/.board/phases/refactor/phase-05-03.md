@@ -2,19 +2,19 @@
 
 **Overview** 
 
-The core functionality of Widgets and Menus has been implemented and tested. The View is functional and reacts to Player state updates. The goal of this refactor is to enhance Menu interaction in the game loop, through implementing Controller interfaces and instantiating Events through interactions to initiate the Menu.
+The core functionality of Widgets and Menus has been implemented and tested. The View, Main and Load Menu are functional. Widgets react to live game state updates. The goal of this refactor is to enhance Menu interaction in the game loop, through implementing Controller interfaces and instantiating Events through interactions to initiate the Menu.
 
 **Goals**
 
 The eventual goal (in the next [phase](../refactor/phase-05-04.md)) is to layout and implement the Inventory controller, but the larger Menu framework needs to be put to the test first. Before the complexity of the Inventory is tackled, a simpler case of the ScrollController will be undertaken. This will involve implementing the [Sign Object](../../../01-assets.md#signs) to trigger an ingame Text Menu.
 
-This, in turn, will require implementation of the [Library](../../../08-plots.md#library), to parse and hold the dialogue to be rendered. 
+This, in turn, will require implementation of the [Library](../../../08-plots.md#library), to parse and hold the dialogue to be rendered. As yet another consequence, this will require further elaboration of the plotting mechanism used bythe game.
 
 The font and text rendering is, as of yet, purely theoretical and untested. Many things could go wrong along the way. The current goal is to determine what must be done in order to get Signs up and running, alongside the Library and MenuEvent('text').
 
 **Specification**
 
-ScrollController will be polymorphic to handle Dialogue Menus with Character Portraits (initiated by the `speak` Intention in conjunction with Sprite `state.psyche.dialogue`) and simpler Text Menus (initiated by the `interact` Intention with Signs). It may also to be used to handle submenus in the Main Menu, when the Main Menu is finally implemented, although this is not a certainty at this point.
+ScrollController will be polymorphic to handle Dialogue Menus with Character Portraits (initiated by the `speak` Intention in conjunction with Sprite `state.psyche.dialogue`) and simpler Text Menus (initiated by the `interact` Intention with Signs). It may also to be used to handle submenus in the Main Menu, when the Main Menu is fully implemented, although this is not a certainty at this point.
 
 **Working Schemas**
 
@@ -146,6 +146,13 @@ plots:
 ```
 
 ##### Tasks
+
+**Task #0: Sign Object**
+
+* [x] Create a Sign Object to trigger ingame Text menus.
+  * [x] Add state model.
+  * [x] Add property model.
+  * [x] Configure assets and state files.
 
 **Task #1: Library Service**
 

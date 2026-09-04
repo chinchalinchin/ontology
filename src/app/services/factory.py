@@ -41,11 +41,10 @@ from app.game.logic.mechanics import (
     SwitchMechanics, 
     MotionMechanics,
     CombatMechanics,
-    CommerceMechanics,
     TransitionMechanics,
     PlayerMechanics,
     RemoveMechanics,
-    SpeechMechanics,
+    SocialMechanics,
     InteractionMechanics,
     MenuMechanics,
     CognitionMechanics
@@ -100,14 +99,13 @@ class Factory:
         Mechanics.COLLISION: CollisionMechanics,
         Mechanics.PROJECTILE: ProjectileMechanics,
         Mechanics.SWITCH: SwitchMechanics,
-        Mechanics.COMMERCE: CommerceMechanics,
         Mechanics.TRANSITION: TransitionMechanics,
         Mechanics.INTERACTION: InteractionMechanics,
         Mechanics.PLAYER: PlayerMechanics,
         Mechanics.REMOVE: RemoveMechanics,
         Mechanics.COMBAT: CombatMechanics,
         Mechanics.MOTION: MotionMechanics,
-        Mechanics.SPEECH: SpeechMechanics,
+        Mechanics.SOCIAL: SocialMechanics,
         Mechanics.MENU: MenuMechanics,
         Mechanics.COGNITION: CognitionMechanics
     }

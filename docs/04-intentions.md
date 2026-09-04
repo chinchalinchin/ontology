@@ -6,6 +6,9 @@ Both Sprites and Players utilize the interface of Intention and Goals to communi
 
 Broadly speaking, an Intention is a "verb", e.g. `attack`, `find`, `barter`, etc. A Goal is a "noun" (e.g. `sprite`, `position`, `loot`, etc.). While the exact mapping is more complex, in general terms: Intentions produce Actions, Goals produce Directions.
 
+!!! note
+    Each individual intention has a detailed specification in the [Specifications section](./specs/index.md).
+
 ## Intention
 
 A Intention is a [Sprite](./02-sprites.md) field that factors into the Asset Animation calculations indirectly; It may be thought of as a "hidden" state. An Animation is a "projection" of a Sprite's Intention into the (Action, Direction)-space. 
