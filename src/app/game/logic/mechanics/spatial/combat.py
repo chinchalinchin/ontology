@@ -40,10 +40,10 @@ class CombatMechanics(SpatialMechanic):
         """
         for layer in board.layers():
             # Gather all attacking entities
-            attackers = [
-                asset 
-                for asset  in board.instances(AssetInstances.PLAYERS, layer) + \
-                                board.instances(AssetInstances.SPRITES, layer)
+            attackers = [ asset 
+                for asset 
+                in board.instances(AssetInstances.PLAYERS.value, layer) + \
+                    board.instances(AssetInstances.SPRITES.value, layer)
                 if asset.state.intention == Intentions.ATTACK
             ]
             
@@ -54,15 +54,12 @@ class CombatMechanics(SpatialMechanic):
             
             for attacker in attackers:
                 # Determine effective hitboxes (fallback to base asset hitboxes if unarmed)
-                active_hitboxes = attacker.hitboxes
-                weapon_key = None
-                
-                if getattr(attacker.state, 'inventory', None) and getattr(attacker.state.inventory, 'equipment', None):
-                    weapon_key = attacker.state.inventory.equipment.weapon
-                    if weapon_key and weapon_key in board.equipment.weapons:
-                        weapon_props = board.equipment.weapons[weapon_key]
-                        if weapon_props.hitboxes:
-                            active_hitboxes = weapon_props.hitboxes
+                active_hitboxes = attacker.hitboxes                
+                weapon_key = attacker.state.inventory.equipment.weapon
+                if weapon_key and weapon_key in board.equipment.weapons:
+                    weapon_props = board.equipment.weapons[weapon_key]
+                    if weapon_props.hitboxes:
+                        active_hitboxes = weapon_props.hitboxes
 
                 action = attacker.state.animation.action
 
@@ -71,6 +68,7 @@ class CombatMechanics(SpatialMechanic):
                 if action in ['shoot', 'cast']:
                     # Trigger projectile spawn on critical frame (frame 0) to guarantee it's fired exactly once per action loop.
                     # TODO: update frame calculation with configuration
+
                     if attacker.state.animation.frame == 0 and not attacker.state.mutators.triggers.executed:
                         proj_id = "TODO"
                         
@@ -91,8 +89,8 @@ class CombatMechanics(SpatialMechanic):
             if not melee_attackers:
                 continue
 
-            targets = board.instances(AssetInstances.SPRITES, layer) + \
-                        board.instances(AssetInstances.PLAYERS, layer)
+            targets = board.instances(AssetInstances.SPRITES.value, layer) + \
+                        board.instances(AssetInstances.PLAYERS.value, layer)
             
             # Unpack melee_attackers for collision querying
             melee_assets = [a for a, hb in melee_attackers]

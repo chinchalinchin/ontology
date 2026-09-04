@@ -44,9 +44,6 @@ intentions:
         - sprite.goal.category == constants.Goals.SUBJECT.value
         - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
         - sprite.memory.relationships[sprite.goal.name] in [Relationships.FRIEND.value, Relationships.FAMILY.value]
-    - next: return
-      conditions:
-        - not sprite.goal
   follow: 
     - next: follow
       conditions:

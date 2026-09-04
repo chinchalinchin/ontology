@@ -30,10 +30,10 @@ def update(sprites, delta):
         if mag < speed * delta:
             sprite.state.velocity.vx = dx / delta
             sprite.state.velocity.vy = dy / delta
-            
+
         else:
             ux, uy = dx / mag, dy / mag
-            impulse = getattr(sprite.state.character, 'impulse', 0)
+            impulse = sprite.state.character.impulse
 
             sprite.state.velocity.vx += ux * impulse * delta
             sprite.state.velocity.vy += uy * impulse * delta

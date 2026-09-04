@@ -5,6 +5,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import collections
+import logging
 
 # Application Libraries
 if TYPE_CHECKING:
@@ -18,6 +19,8 @@ from app.game.logic.maps import AnimationMap
 from app.game.logic.mechanics.core import Mechanic
 from app.models.state import DevicePayload
 from app.services.translators.base import Executor
+
+logger = logging.getLogger(__name__)
 
 class TransitionMechanics(Mechanic):
     """
@@ -42,7 +45,13 @@ class TransitionMechanics(Mechanic):
             # 1. Evaluate State ISL Conditions
             if self.executor:
                 next_intent = self.executor.evaluate(sprite.state, sprites_dict)
+                current_intent = sprite.state.intention
+
                 if next_intent:
+                    if next_intent != current_intent:
+                        logger.info(f"Transitioning {sprite.name} from {sprite.state.intention} to "
+                                    f"{next_intent}")
+                        
                     sprite.state.intention = next_intent
 
             # 2. Resolve Action

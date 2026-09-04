@@ -13,9 +13,6 @@
   - Instance: `{{ asset.instance }}`
   - ID: `{{ asset.id }}`
 **Layer:** {{ asset.state.layer }}
-
-### State
-
 {% if asset.state.position -%}
 - **Position:** ({{ asset.state.position.x }}, {{ asset.state.position.y }})
 {% endif -%}

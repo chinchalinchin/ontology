@@ -43,13 +43,13 @@ class InteractionMechanics(SpatialMechanic):
         processed_sources = set()
 
         for layer in board.layers():
-            sprites = board.instances(AssetInstances.SPRITES, layer)
-            players = board.instances(AssetInstances.PLAYERS, layer)
+            sprites = board.instances(AssetInstances.SPRITES.value, layer)
+            players = board.instances(AssetInstances.PLAYERS.value, layer)
             
             # Filter sources with 'interact' intention
             sources = [
                 asset for asset in sprites + players
-                if asset.state.intention == Intentions.INTERACT
+                if asset.state.intention == Intentions.INTERACT.value
                 and asset.name not in processed_sources 
                 # Filter out already processed sources instantly
             ]
@@ -57,8 +57,8 @@ class InteractionMechanics(SpatialMechanic):
             if not sources:
                 continue
 
-            doors = board.instances(AssetInstances.DOORS, layer)
-            chests = board.instances(AssetInstances.CHESTS, layer)
+            doors = board.instances(AssetInstances.DOORS.value, layer)
+            chests = board.instances(AssetInstances.CHESTS.value, layer)
             targets = doors + chests
 
             if not targets:

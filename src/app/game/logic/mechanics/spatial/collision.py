@@ -77,6 +77,7 @@ class CollisionMechanics(SpatialMechanic):
                 if hasattr(asset_a.state, 'mutators') and \
                     hasattr(asset_a.state.mutators, 'triggers'):
                     asset_a.state.mutators.triggers.struck = True
+                    
                 if hasattr(asset_b.state, 'mutators') and \
                     hasattr(asset_b.state.mutators, 'triggers'):
                     asset_b.state.mutators.triggers.struck = True
