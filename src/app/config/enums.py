@@ -191,11 +191,11 @@ class Relationships(str, Enum):
 # -------------------------------- GOAL ENUMERATIONS
 
 class Goals(str, Enum):
-    ASSET           = "asset"
-    LOOT            = "loot"
+    OBJECT          = "object"
     PROPERTY        = "property"
     POSITION        = "position"
-    SPRITE          = "sprite"
+    TARGET          = "target"
+    SUBJECT         = "subject"
     
 class PlayerGoals(str, Enum):
     UP              = "up"

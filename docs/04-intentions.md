@@ -4,7 +4,7 @@ Intentions and Goals are an internal data structure that governs a Sprite's core
 
 Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the [Intention Transition Matrix](#transition-matrix).
 
-Broadly speaking, an Intention is a "verb", e.g. `attack`, `find`, `barter`, etc. A Goal is a "noun" (e.g. `sprite`, `position`, `loot`, etc.). While the exact mapping is more complex, in general terms: Intentions produce Actions, Goals produce Directions.
+Broadly speaking, an Intention is a "verb", e.g. `attack`, `find`, `barter`, etc. A Goal is a "noun" (e.g. `object`, `position`, `property`, etc.). While the exact mapping is more complex, in general terms: Intentions produce Actions, Goals produce Directions.
 
 !!! note
     Each individual intention has a detailed specification in the [Specifications section](./specs/index.md).
@@ -19,60 +19,34 @@ It may indirectly alter the Sprite state changes or other properties of the Spri
 
 A brief explanation of each Intention state value is given below,
 
-- `attack`: Initiate an Attack Animation..
-    - *Sprite*: Apply CombatMechanics, conditional on Equipment constraint.
-    - *Player*: Apply CombatMechanics, conditional on Equipment constraint.
+- `attack`: Initiate an Attack Animation.
 - `attract`: Attract a Sprite for interaction.
-    - *Sprite*:
-    - *Player*: N/A
-- `barter`: Exhcange Inventories.
-    - *Sprite*: Apply CommerceMechanics.
-    - *Player*: Open a TradeWindow with Target.
-- `build`: Instantiate a Strut
-    - *Sprite*: Apply IndustryMechanics for Sprites
-    - *Player*: Open a BuildWindow. 
+- `barter`: Exchange Inventories.
+- `build`: Instantiate a Strut.
 - `escape`: Move away from target.
-    - *Sprite*:
-    - *Player*: N/A
 - `find`: Move towards target.
-    - *Sprite*:
-    - *Player*: N/A
-- `follow`: Move towards target. (Redundant? Functionally, but separate node in tree leading to different outcomes)
-    - *Sprite*: 
-    - *Player*: N/A
-- `hunt`: Move towards target (Redundant? Functionally, but separate node in tree leading to different outcomes and interactions.)
-    - *Sprite*: 
-    - *Player*: N/A
-- `idle`: Do nothing.
-    - *Sprite*:
-    - *Player*: N/A
+- `follow`: Move towards target.
+- `hunt`: Move towards target.
+- `idle`: Do nothing. Used for memory buffering, i.e. allowing remembered goals to pop onto the stack.
 - `interact`: Interact with Objects.
-    - *Sprite*: 
-    - *Player*: 
 - `mine`: Convert Resources into Inventory. 
-    - *Sprite*: Apply MineMechanics, conditional on Equpiment constraints.
-    - *Player*: Apply MineMechanics, conditional on Equipment constraints.
 - `return`: Return to remembered locations.
-    - *Sprite*: Move `sprite.state.memory.goal` to `sprite.state.goal`
-    - *Player*: N/A
 - `scavenge`: Collect loot.
-    - *Sprite*: 
-    - *Player*: 
 - `speak`: Initiate dialogue.
-    - *Sprite*: Apply CommerceMechanics (exchanges `prices`). Apply RumorMechanics (exchange `rumors`) 
-    - *Player*: Draw the target Sprite's `state.psyche.dialogue` on a Dialogue window.
 - `sprint`: Increase movement speed.
-    - *Sprite*:
-    - *Player*: 
-- `threaten`: Pre-cursor to Attack (wiggle-room).
-    - *Sprite*:
-    - *Player*: N/A
-- `wander`: 
-    - *Sprite*:
-    - *Player*: N/A
+- `threaten`: Pre-cursor to Attack.
+- `wander`: Move to randomized positions.
 
 !!! note
     `mine` is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by [Action Sets](./appendices/01-schemas.md#configuration-actions) and [AnimationMaps](./10-architecture.md#maps).
+
+**Intention Loops**
+
+In order to avoid complex automata, `idle` acts as the origin and terminus of all "*Intention Loops*". In other words, `idle` is the "hub" Intention. All autonomous Sprite Animations are modelled as loops back into their `idle` Intention node in their finite automata. For example, the *Dialogue Loop* is given below.
+
+$$
+\text{idle} \to \text{find} \to \text{speak} \to \text{idle}
+$$
 
 ### Transition Matrix
 
@@ -102,24 +76,22 @@ Provided below is the Intention Transition Matrix bundled with the application b
 
 | # | Starting Intention | Reachable Intentions |
 | --- | --- | --- |
-| 1 | `attack` | `attack`, `hunt`, `scavenge` |
-| 2 | `attract` | `barter`, `speak` |
-| 3 | `barter` | `threaten`, `idle` |
-| 4 | `build` | `idle` |
-| 5 | `escape` | `escape`, `return` |
-| 6 | `find` | `scavenge`, `interact`, `speak`, `return` |
-| 7 | `follow` | `follow`, `speak`, `wander` |
-| 8 | `hunt` | `attack`, `return` |
-| 9 | `idle` | `wander`, `idle` |
-| 10 | `interact` | `idle` |
-| 11 | `mine` | `build`, `mine`, `idle` |
-| 12 | `mock` | `threaten`, `idle` |
-| 13 | `return` | `idle`, `return` |
-| 14 | `scavenge` | `idle` |
-| 15 | `speak` | `follow`, `idle` |
-| 16 | `sprint` | `return`, `idle` |
-| 17 | `threaten` | `attack`, `hunt`, `idle` |
-| 18 | `wander` | `idle` |
+| 1 | `attack` | `attack`, `hunt` |
+| 2 | `barter` | `threaten`, `idle` |
+| 3 | `build` | `idle` |
+| 4 | `escape` | `escape`, `idle` |
+| 5 | `find` | `interact`, `speak`, `follow` |
+| 6 | `follow` | `follow`, `find` |
+| 7 | `hunt` | `attack`, `return` |
+| 8 | `idle` |  `find`, `idle` |
+| 9 | `interact` | `idle` |
+| 10 | `mine` | `build`, `mine`, `idle` |
+| 11 | `mock` | `threaten`, `idle` |
+| 12 | `return` | `find` |
+| 13 | `speak` | `idle` |
+| 14 | `sprint` | `idle` |
+| 15 | `threaten` | `attack`, `hunt`, `idle` |
+| 16 | `wander` | `idle` |
 
 **Intentional Scripting Language (ISL)**
 
@@ -208,19 +180,27 @@ The ISL environment is injected with variables during execution:
 *Goals* provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's *modus operandi*, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Intention is *in order* to achieve a Goal.
 
 - `name`: Unique Identifier of the Goal.
-- `category`: Category of the Goal. (`asset`, `sprite`, `loot`, `wealth`, `property`, `position`)
+- `category`: Category of the Goal. 
 - `position`: Last-known position of the Goal. When the Goal is within the `mutators.vision.radius`, this position is updated every game loop. Once the Goal exits the Sprites `mutators.vision.radius`, it becomes a static value that freezes on the last known Position of its Goal.
 
 ### Goal Category
 
 When a Sprite has Goal, it will seek out (path-find) its way to `name`. The `category` of a Goal affects the type of identifier given in `name`. 
 
-- `category == position`: The Goal is a Position, i.e. the Sprite is trying to find a location on the Board. The `name` will be the Sprite's name.
-- `category == asset`: The Goal is a Sprite Asset, i.e. the Sprite is trying to find an Asset. The `name` will be the Asset `name`.
+- `category == position`: The Goal is a Position, i.e. the Sprite is trying to find a location on the Board. The `name` will be a placeholder constant.
+- `category == object`: The Goal is an Object, i.e. the Sprite is trying to find an Object. The `name` will be the Object `instance` (*not* the ID).
+- `category == property`: The goal is Property, i.e. the Sprite is seeking to create property. The `name` will be the *ID* of the Strut the Sprite is seeking to create.
+- `category == target`: The goal is a Sprite, with aggressive intent implied. The `name` will be the name of a Sprite.
+- `category == subject`: The goal is a Sprite, with passive intent impled. The `name` will be the name of a Sprite.
+
+**TODO: In Design**
+
 - `category == loot`: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The `name` will be an Inventory key. 
-- `category == wealth`: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The `name` will be an Inventory key. The key will be of the loot with the maximum value in the Sprite's Prices, e.g. the highest priced loot.
-- `category == property`: The goal is Property, i.e. the Sprite is seeking the location of Property. The `name` will be an Asset name of an Asset that implements a `PropertyState`.
-- `category == sprite`: The goal is a Sprite. The `name` will be a name of a Sprite.
+- `category == money`: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The `name` will be an Inventory key. The key will be of the loot with the maximum value in the Sprite's Prices, e.g. the highest priced loot.
+
+### Goal Satisfaction
+
+TODO
 
 ## AnimationMap
 
@@ -281,33 +261,40 @@ TODO
 The (Intention, Goal) of a Sprite is managed across the application lifecycle by [Mechanics](./05-mechanics.md). 
 
 - CognitionMechanics ("*The Brain*"): Manages the Goal Lifecycle. It evaluates the environment, consults Motivations and Meters, sets the Goal, determines if the Goal has been achieved (or invalidated), and manages the Memory stack.
-- TransitionMechanics ("*The Instinct*"): Manages the Intention Transitions. It looks at the current Goal set by Cognition and evaluates the ISL matrix to figure out how to achieve it (e.g., `sprite.state.goal EXISTS`, so `transition: idle -> find`).
-- Spatial Mechanics (*The Muscle*): CombatMechanics, InteractionMechanics, etc., alter the physical world state (e.g., killing the target, opening the Chest). This physical change is what signals CognitionMechanics on the next tick that the goal is achieved.
+- TransitionMechanics ("*The Instinct*"): Manages the Intention Transitions. It blindly evaluates the Transitions condition and shunts the Sprite to its next Intention if they are satisfied.
+- SpatialMechanics (*The Muscle*): CombatMechanics, InteractionMechanics, etc., alter the physical world state (e.g., killing the target, opening the Chest). This physical change is what signals CognitionMechanics on the next tick that the goal is achieved.
 
 ### Cognition
 
+CognitionMechanics manages the life cycle of Sprite Goals.
 
-**1. Phase A: Resolution**
-
-The ISL relies on `not sprite.goal` to exit action nodes. Cognition must evaluate if the current goal is satisfied or invalidated.
-
-* If `goal.category == SPRITE`: Check if `sprites.get(sprite.goal.name).mutators.triggers.dead`. If true, set `sprite.state.goal = None`.
-* If `goal.category == LOOT`: Check if `sprite.goal.name in sprite.inventory.loot`. If true, set `sprite.state.goal = None`.
-* If `goal.category == POSITION`: Check if `is_near(sprite.position, sprite.goal.position, 5)`. If true, set `sprite.state.goal = None`.
-* If `goal.category == ASSET`: Check if the target chest is empty or the door is removed. If true, set `sprite.state.goal = None`.
-
-**2. Phase B: Memory Management**
-
-If `sprite.state.goal` is `None` (either because it was just resolved or never existed), pop the top goal from `sprite.state.memory.goals` (if one exists) and assign it to `sprite.state.goal`.
-
-**3. Phase C: Ideation**
-
-* **`CONQUEST`**: TODO
-* **`PROFIT`:** Scan `board.renderables` for items in `AssetInstances.CHESTS` or `MineableAssets`. Assign `Goals.ASSET` or `Goals.LOOT`.
-* **`SURVIVAL`:** TODO
-
-**4. Tracking Category Expansion**
-
-* `Goals.SPRITE` $\to$ query `board._cached_characters`.
-* `Goals.ASSET` $\to$ query `board.renderables`.
-* `Goals.POSITION` $\to$ bypass lookup entirely; the position is static.
+1. **Phase A: Resolution**: Conditions are evaluated for goal resolution
+    - `if goal.category == TARGET`: If `target.mutators.triggers.dead`, `goal = None`.
+    - `if goal.category == SUBJECT`: If `not psyche.dialogue`, `goal = None`.
+    - `if goal.category == POSITION`: If `position - goal.position < some_radius`.
+    - `if goal.category == OBJECT`: TODO
+    - `if goal.category == PROPERTY`: If `goal.name in memory.property`, `goal = None`. 
+2. **Phase B: Memory**: The Sprite's memory is managed and updated relative to its vision. 
+    - If the Sprite has no Goals, Goals in the Memory are popped off the stack and added to the current Goal. 
+    - A scan of the `mutator.parameter.vision.radius` is conducted. If a Sprite is found, its location is updated in `memory.sprites`.
+3. **Phase C: Ideation**: If the Sprite has no Goals, environmental and proximal Goals are ideated. 
+    - `if psyche.dialogue`: If target Sprite is within `mutators.parameters.vision.radius`, then `goal.category = Goals.SUBJECT.value` and `goal.name` is set to target Sprite.
+4. **Phase D: Motivation**: If the Sprite has still no Goals, overarching Motivations are used to form new Goals. These goals are pushed onto the `memory.goals` stack.
+    - `if psyche.motivation.CONQUEST`: TODO
+    - `if psyche.motivation.PROFIT`: TODO
+    - `if psyche.motivation.SURVIVAL`: TODO
+    - `if psyche.motivation.LOVE`: TODO
+    - `if psyche.motivation.REVENGE`: TODO
+    - `if psyche.motivation.REBELLION`: TODO
+    - `if psyche.motivation.SAFETY`: TODO
+5. **Phase E: Tracking**: The Sprite's current Goal is tracked.
+    - `if goal.category in [TARGET, SUBJECT]`: 
+        - `if goal.memory.locations.get(goal.name): goal.position = goal.memory.locations[goal.name].position`
+        - TODO
+    - `if goal.category == POSITION`: 
+    - `if goal.category == OBJECT`: 
+    - `if goal.category == PROERTY`:
+6. **Phase F: Projection**
+    - `if intention == ESCAPE`:
+    - `if intention == FIND`:
+    - `if intention == WANDER`: 

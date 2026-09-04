@@ -1,5 +1,5 @@
 #### Ontology: Specifications
 
-#### Sections
+##### Sections
 
-- [Specification: Speak](./00-speak.md)
+- [Spec: Dialogue Loop](./00-speak.md)

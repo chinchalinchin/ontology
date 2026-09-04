@@ -57,6 +57,7 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
     * `goals: List[Goal]`
     * `prices: Dict[str, double]`
     * `relationships: Dict[str, str]`
+    * `locations: Dict[str, Positions]`
     * `property: List[str]`
     * `rumors: List[str]`
 * `psyche`:
@@ -181,11 +182,12 @@ Motivations are long-term state variables that are used to modulate the [Intenti
 
 *Memory* is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. 
 
-- `memory.goals`: Remember Goal. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.
-- `memory.rumors`: List of Lexicon keys the Sprite has heard through entering into the `speak` Intention.
-- `memory.prices`:
-- `memory.relationship`:
+- `memory.goals: List[Goal]`: Remembered Goals. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.
+- `memory.prices: Dict[str, float]`:
 - `memory.property: Dict[str, Position]`
+- `memory.relationship: Dict[str, Relationships]`:
+- `memory.rumors: List[str]`: List of Lexicon keys the Sprite has heard through entering into the `speak` Intention.
+- `memory.sprites: Dict[str, Position]`
 
 **Prices**
 
@@ -202,15 +204,26 @@ A Sprite can acquire property through the `build` [Intention](./04-intentions.md
 
 **Relationships**
 
-TODO
+A map of Sprite-to-Sprite relationships, keyed by name. Relationships are enumerated below,
+
+- `FRIEND`
+- `FAMILY`
+- `FOE`
+- `STRANGER`
 
 **Rumors**
 
 TODO
 
+**Sprites**
+
+A map of Sprite locations the Sprite remembers, keyed by Sprite Name and last remembered location. 
+
 ### Inventory
 
 TODO
+
+**Equipment**
 
 Equipment, while part of the Inventory, affects the rendering of the Sprite, and thus is covered in its own section, [Equipment](#equipment).
 

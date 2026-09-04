@@ -81,7 +81,8 @@ class Memory:
     rumors: Optional[List[str]] = None
     prices: Optional[Dict[str, float]] = None
     relationships: Optional[Dict[str, Relationships]] = None
-    property: Optional[List[str]] = None
+    property: Optional[Dict[str, Position]] = None # type: ignore
+    sprites: Optional[Dict[str, Position]] = None # type: ignore
 
 @dataclass(slots=True)
 class VisionMutatorParameters:

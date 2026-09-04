@@ -39,134 +39,173 @@ class CognitionMechanics(Mechanic):
         sprites = board.instances(AssetInstances.SPRITES.value)
         
         for sprite in sprites:
-            # Skip the player, as PlayerMechanics handles their goals via device polling
+            # Skip the player
             if sprite.name == board.player().name:
                 continue
 
-            # Phase A: Resolution (Goal Clearing)
-            if sprite.state.goal:
-                self._resolve_goal(sprite, board)
+            # Phase A: Resolution
+            self._resolve(sprite, board)
+            # Phase B: Memory
+            self._remember(sprite, board)
+            # Phase C: Ideate
+            self._ideate(sprite, board)
+            # Phase D: Acquistion
+            self._motivate(sprite, board)
+            # Phase E: Tracking
+            self._track(sprite, board)
+            # Phase F: Projection
+            self._project(sprite, board)
 
-            # Phase B: Memory Management
-            if not sprite.state.goal and sprite.state.memory.goals:
-                sprite.state.goal = sprite.state.memory.goals
-                sprite.state.memory.goals = None
+    def _completed(self, sprite, board: Board) -> bool:
+        goal = sprite.state.goal
 
-            # Phase C: Perception & Ideation (Target Acquisition)
-            if not sprite.state.goal:
-                self._acquire_target(sprite, board)
+        if not goal:
+            return True
 
-            # Phase D: Focus (Update Goal Coordinates)
-            if sprite.state.goal:
-                self._track_target(sprite, board)
+        if goal.category == Goals.TARGET.value:
+            return board.character(goal.name).mutators.triggers.dead
 
-            # Phase E: Projection (Modify Coordinates Based on Intention)
-            self._project_intention(sprite)
+        elif goal.category == Goals.SUBJECT.value:
+            # TODO
+            pass
 
-    def _resolve_goal(self, sprite, board: Board) -> None:
+        elif goal.category == Goals.POSITION.value:
+            dx = sprite.state.goal.position.x - sprite.state.position.x
+            dy = sprite.state.goal.position.y - sprite.state.position.y
+            # TODO: fix this dumb hardcoded bullshit
+            return (dx*dx + dy*dy) < 25
+
+        elif goal.category == Goals.OBJECT.value:
+            # TODO:
+            pass
+
+        elif goal.category == Goals.PROPERTY.value:
+            # TODO:
+            pass
+
+
+    def _resolve(self, sprite, board: Board) -> None:
         """
         Evaluates whether the current Goal has been satisfied or invalidated.
         """
         goal = sprite.state.goal
 
-        if goal.category == Goals.SPRITE.value:
+        if not goal:
+            return
+        
+        if goal.category == Goals.TARGET.value:
             target_state = board.character(goal.name)
-            if not target_state or target_state.mutators.triggers.dead:
+            if target_state.mutators.triggers.dead:
                 sprite.state.goal = None
 
-        elif goal.category == Goals.LOOT.value:
-            if sprite.state.inventory.loot:
-                if goal.name in sprite.state.inventory.loot:
-                    sprite.state.goal = None
+        elif goal.category == Goals.SUBJECT.value:
+            # TODO
+            pass
 
         elif goal.category == Goals.POSITION.value:
             dx = goal.position.x - sprite.state.position.x
             dy = goal.position.y - sprite.state.position.y
+
+            # TODO: fix this. shouldn't be hardcoding logic.
             if (dx*dx + dy*dy) <= 25:  # Within 5 pixels
                 sprite.state.goal = None
 
-        elif goal.category == Goals.ASSET.value:
-            target_asset = board.asset(goal.name, sprite.state.layer)
-            if not target_asset:
-                sprite.state.goal = None
-            elif target_asset.taxonomy.instance == AssetInstances.CHESTS.value:
-                if not getattr(target_asset.state, 'content', None):
-                    sprite.state.goal = None
+        elif goal.category == Goals.OBJECT.value:
+            # TODO:
+            pass
 
-    def _acquire_target(self, sprite, board: Board) -> None:
+        elif goal.category == Goals.PROPERTY.value:
+            # TODO:
+            pass
+
+        
+    def _remember(self, sprite, Board: Board) -> None:
+        """
+        Pops the remembered goals onto the stack.
+        """
+        if not (sprite.state.goal or sprite.state.memory.goals):
+            return
+        
+        sprite.state.goal = sprite.state.memory.goals
+        sprite.state.memory.goals = None
+
+
+    def _ideate(self, sprite, Board: Board) -> None:
+        pass
+
+    def _motivate(self, sprite, board: Board) -> None:
         """
         Scans the environment for targets matching the Sprite's motivation.
         """
-        if getattr(sprite.state, 'psyche', None) is None or getattr(sprite.state, 'mutators', None) is None or sprite.state.mutators.parameters is None:
+        if sprite.state.mutators.parameters is None:
             return
-            
-        vision_radius_sq = sprite.state.mutators.parameters.vision.radius ** 2
+
+        if sprite.state.goal:
+            return
+
         motivation = sprite.state.psyche.motivation
         
         if motivation == Motivations.CONQUEST.value:
-            player = board.player()
-            dx = player.state.position.x - sprite.state.position.x
-            dy = player.state.position.y - sprite.state.position.y
-            
-            if (dx*dx + dy*dy) <= vision_radius_sq:
-                sprite.state.goal = Goal(
-                    name=player.name,
-                    category=Goals.SPRITE.value,
-                    position=Position(player.state.position.x, player.state.position.y)
-                )
+            # TODO
+            pass
 
         elif motivation == Motivations.PROFIT.value:
-            # TODO: Scan board.renderables for CHESTS or MineableAssets. Assign Goals.ASSET or Goals.LOOT.
+            # TODO
             pass
 
         elif motivation == Motivations.SURVIVAL.value:
-            # TODO: Scan environment for nearby health potions, food, or safe zones.
+            # TODO
             pass
 
         elif motivation == Motivations.LOVE.value:
-            # TODO: Identify and track Sprite linked via memory.relationships.
+            # TODO
             pass
 
         elif motivation == Motivations.REVENGE.value:
-            # TODO: Track targets that have recently struck this Sprite.
+            # TODO
             pass
 
         elif motivation == Motivations.REBELLION.value:
-            # TODO: Target town-hall Struts or town guards if taxed heavily.
+            # TODO
             pass
 
         elif motivation == Motivations.SAFETY.value:
-            # TODO: Pathfind back to owned property in memory.property.
+            # TODO
             pass
 
-    def _track_target(self, sprite, board: Board) -> None:
+
+    def _track(self, sprite, board: Board) -> None:
         """
         Updates the goal position if the target is visible. Freezes it if not.
         """
         goal = sprite.state.goal
+
+        if not goal:
+            return
+        
         target_pos = None
 
-        if sprite.state.mutators is None or sprite.state.mutators.parameters is None:
+        if sprite.state.mutators.parameters is None:
             sprite.state.mutators.triggers.vision = False
             return
 
-        # Dynamically route the lookup based on goal category
-        if goal.category == Goals.SPRITE.value:
-            target_state = board.character(goal.name)
-            if target_state:
-                target_pos = target_state.position
-
-        elif goal.category == Goals.ASSET.value:
-            target_asset = board.asset(goal.name, sprite.state.layer)
-            if target_asset:
-                target_pos = target_asset.state.position
+        if goal.category in [
+            Goals.TARGET.value,
+            Goals.SUBJECT.value
+        ]:
+            # TODO
+            pass 
+        
+        elif goal.category == Goals.OBJECT.value:
+            # TODO
+            pass
 
         elif goal.category == Goals.POSITION.value:
             sprite.state.mutators.triggers.vision = True
             return
 
-        elif goal.category == Goals.LOOT.value:
-            # Loot tracking freezes coordinates unless mapped to a specific dynamic drop instance
+        elif goal.category == Goals.PROPERTY.value:
+            # TODO
             pass
 
         if not target_pos:
@@ -188,7 +227,8 @@ class CognitionMechanics(Mechanic):
             # Target lost: freeze coordinates at last known position
             sprite.state.mutators.triggers.vision = False
 
-    def _project_intention(self, sprite) -> None:
+
+    def _project(self, sprite, board: Board) -> None:
         """
         Alters the spatial coordinates of the Goal based on abstract Intentions.
         """
@@ -203,21 +243,23 @@ class CognitionMechanics(Mechanic):
             sprite.state.goal.position.x = sprite.state.position.x + (dx * 10)
             sprite.state.goal.position.y = sprite.state.position.y + (dy * 10)
 
+        elif intention == Intentions.FIND.value and sprite.state.mutators.triggers.vision:
+            dx = sprite.state.goal.position.x - sprite.state.position.x 
+            dy = sprite.state.goal.position.y - sprite.state.position.y
+            
+            # Extrapolate a point far in the opposite direction
+            sprite.state.goal.position.x = sprite.state.position.x + (dx * 10)
+            sprite.state.goal.position.y = sprite.state.position.y + (dy * 10)
+
         elif intention == Intentions.WANDER.value:
-            # If we reached our wander point (or don't have one), pick a new random nearby point
-            if not sprite.state.goal or self._reached_goal(sprite):
+            # If we reached our wander point (or don't have one), 
+            #   pick a new random nearby point
+            if not sprite.state.goal or self._completed(sprite):
                 offset_x = random.randint(-50, 50)
                 offset_y = random.randint(-50, 50)
                 sprite.state.goal = Goal(
+                    # TODO: generate name somehow
                     name="wander_point",
                     category=Goals.POSITION.value,
                     position=Position(sprite.state.position.x + offset_x, sprite.state.position.y + offset_y)
                 )
-
-    def _reached_goal(self, sprite) -> bool:
-        if not sprite.state.goal:
-            return True
-        dx = sprite.state.goal.position.x - sprite.state.position.x
-        dy = sprite.state.goal.position.y - sprite.state.position.y
-        # Consider the goal "reached" if within 5 pixels
-        return (dx*dx + dy*dy) < 25

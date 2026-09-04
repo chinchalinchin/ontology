@@ -32,19 +32,20 @@ sheets:
         expression: null
         motivation: conquest
         persona: jasilynn
-      intention: find
+      intention: idle
       goal:
         name: player
-        category: sprite
+        category: subject
         position:
           x: 250
           y: 300
       memory:
-        goal: null
-        rumors: null
+        goals: null
         prices: null
-        relationships: null
         property: null
+        relationships: null
+        rumors: null
+        sprites: 
       inventory: 
         loot: null
         equipment:

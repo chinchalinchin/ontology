@@ -10,7 +10,7 @@ def update(sprites, delta):
     Evaluates pathfinding and translates distance to target into vector velocities with friction emulation.
     """
     for sprite in sprites:
-        if not getattr(sprite.state, 'goal', None) or not sprite.state.goal:
+        if not sprite.state.goal:
             sprite.state.velocity.vx = 0.0
             sprite.state.velocity.vy = 0.0
             continue
@@ -30,6 +30,7 @@ def update(sprites, delta):
         if mag < speed * delta:
             sprite.state.velocity.vx = dx / delta
             sprite.state.velocity.vy = dy / delta
+            
         else:
             ux, uy = dx / mag, dy / mag
             impulse = getattr(sprite.state.character, 'impulse', 0)
