@@ -412,6 +412,7 @@ N/A
 
 * `key: str`
 * `offset: Position`
+* `ttl: int`: Number of game ticks for which the Expression is present.
 
 ### Projectiles
 

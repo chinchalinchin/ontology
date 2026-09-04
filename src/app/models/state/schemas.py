@@ -20,7 +20,8 @@ from app.models.state.objects import (
     PropertyState,
     MotorState,
     AnimatorState,
-    DialogueState
+    DialogueState,
+    AttachmentState
 )
 from app.models.state.sprites import (
     SpriteState,
@@ -50,7 +51,7 @@ class CraftStateInstances:
 
 @dataclass(slots=True)
 class CursorStateInstances:
-    expressions: List[PositionalState] = field(default_factory=list)
+    expressions: List[AttachmentState] = field(default_factory=list)
     projectiles: List[MotorState] = field(default_factory=list)
 
 @dataclass(slots=True)

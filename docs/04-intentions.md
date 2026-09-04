@@ -40,6 +40,16 @@ A brief explanation of each Intention state value is given below,
 !!! note
     `mine` is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by [Action Sets](./appendices/01-schemas.md#configuration-actions) and [AnimationMaps](./10-architecture.md#maps).
 
+**Intention Groups**
+
+Intentions form natural groups based on the gameplay logic they inhabit and produce. Intention Groups are enumerated below,
+
+- BlockingIntentions (`attack`, `mine`): Intentions whose projected animations must be complete before control is released.
+- AnimatedIntentions (`attack`, `mine`): Intentions that produce an animation.
+- StaticIntentions (`idle`, `barter`, `speak`, `interact`, `threaten`, `mock`): Intentions that do not produce an animation.
+- NavigationIntentions (`find`, `follow`, `hunt`, `escape`, `wander`, `return`): Intentions with a velocity.
+- StationaryIntentions (`barter`, `build`, `idle`, `interact`, `mine`,): Intentions with no velocity.
+
 **Intention Loops**
 
 In order to avoid complex automata, `idle` acts as the origin and terminus of all "*Intention Loops*". In other words, `idle` is the "hub" Intention. All autonomous Sprite Animations are modelled as loops back into their `idle` Intention node in their finite automata. For example, the *Dialogue Loop* is given below.
@@ -138,11 +148,11 @@ In another example, the transition from `attack` to `scavenge` in the default In
 Notice in the example there is a self-entrant transition. A Sprite with an `attack` Intention can re-enter the `attack` Intention conditional on the Sprite still having a target,
 
 ```yaml
-- sprite.goal.category == Goals.SPRITE.value
+- sprite.goal.category == Goals.TARGET.value
 ```
 
 !!! important
-    The conditions for an Intention transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == constants.Goals.SPRITE.value`, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into `attack`.
+    The conditions for an Intention transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == constants.Goals.TARGET.value`, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into `attack`.
 
 Intention transition conditions are compiled by the application during initialization and evaluated at runtime. The engine supports two execution strategies, configured via `ISL_TRANSLATOR` in `settings.py`: `lambda` (which generates inline Python functions) and `compiler` (which generates native Abstract Syntax Trees). The application evaluates ISL conditions sequentially utilizing Python's native short-circuit logic.
 
@@ -151,14 +161,14 @@ To avoid AttributeError exceptions during runtime, existential checks must stric
 ```yaml
 # CORRECT CONFIGURATION
 - sprite.goal
-- sprite.goal.category == constants.Goals.SPRITE.value
+- sprite.goal.category == constants.Goals.TARGET.value
 ```
 
 versus,
 
 ```yaml
 # INCORRECT CONFIGURATION
-- sprite.goal.category == constants.Goals.SPRITE.value
+- sprite.goal.category == constants.Goals.TARGET.value
 - sprite.goal
 ```
 
@@ -187,16 +197,16 @@ The ISL environment is injected with variables during execution:
 
 When a Sprite has Goal, it will seek out (path-find) its way to `name`. The `category` of a Goal affects the type of identifier given in `name`. 
 
-- `category == position`: The Goal is a Position, i.e. the Sprite is trying to find a location on the Board. The `name` will be a placeholder constant.
-- `category == object`: The Goal is an Object, i.e. the Sprite is trying to find an Object. The `name` will be the Object `instance` (*not* the ID).
-- `category == property`: The goal is Property, i.e. the Sprite is seeking to create property. The `name` will be the *ID* of the Strut the Sprite is seeking to create.
-- `category == target`: The goal is a Sprite, with aggressive intent implied. The `name` will be the name of a Sprite.
-- `category == subject`: The goal is a Sprite, with passive intent impled. The `name` will be the name of a Sprite.
+- `category == POSITION`: The Goal is a Position, i.e. the Sprite is trying to find a location on the Board. The `name` will be a placeholder constant.
+- `category == OBJECT`: The Goal is an Object, i.e. the Sprite is trying to find an Object. The `name` will be the Object `instance` (*not* the ID).
+- `category == PROPERTY`: The goal is Property, i.e. the Sprite is seeking to create property. The `name` will be the *ID* of the Strut the Sprite is seeking to create.
+- `category == TARGET': The goal is a Sprite, with aggressive intent implied. The `name` will be the name of a Sprite.
+- `category == SUBJECT`: The goal is a Sprite, with passive intent impled. The `name` will be the name of a Sprite.
 
 **TODO: In Design**
 
-- `category == loot`: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The `name` will be an Inventory key. 
-- `category == money`: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The `name` will be an Inventory key. The key will be of the loot with the maximum value in the Sprite's Prices, e.g. the highest priced loot.
+- `category == LOOT`: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The `name` will be an Inventory key. 
+- `category == MONEY`: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The `name` will be an Inventory key. The key will be of the loot with the maximum value in the Sprite's Prices, e.g. the highest priced loot.
 
 ### Goal Satisfaction
 
@@ -247,14 +257,6 @@ Let `dx = position.x - goal.position.x, dy = position.y - goal.position.y`.
 - `if dy < dx, dy > -dx: direction = right`
 - `if dy < dx, dy < -dx: direction = up`
 - `if dy > dx, dy > -dx: direction = left`
-
-## DialogueMap
-
-TODO
-
-**Formulae**
-
-- `if state.intention == speak and state.psyche.dialogue: dialogue = state.psyche.dialogue`
 
 ## Mechanics
 

@@ -128,6 +128,7 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
     - Triggered if Sprite's health dips below `fear.limit`
     - Triggered if Sprite is surrounded by more than `fear.enemy` enemies with the pixel distance of `fear.radius`.
 - `triggers.vision`: Trigger if a Sprite is within visible distance of its Goal.
+- `trigger.action`: Triggers if a Sprite is within acting distance of its Goal.
 
 **Parameters**
 
@@ -135,6 +136,7 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
 - `parameters.fear.limit`: Percentage of health below which Sprite triggers the `triggers.fear` mutator.
 - `parameters.fear.enemy`: Number of enemies within the `parameters.fear.radius` that must be present to trigger the `triggers.fear` mutator.
 - `parameters.vision.radius`: Radius of separation within which the Sprite triggers the `triggers.vision` mutator. Measured in pixels.
+- `parameters.action.radius`: Radius of separation within which the Sprite triggers the `triggers.action` mutator. Measured in pixels.
 - `parameters.community.radius`: Radius used for [Town Formation Mechanics](./09-emergence.md#towns).
 
 ### Animation

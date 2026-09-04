@@ -24,6 +24,7 @@ from app.models.state.core import (
     AnimationState,
     AssetState
 )
+from app.models.state.objects import AttachmentState
 
 # Cython Libraries
 from libs.core.models import Velocity as CoreVelocity
@@ -60,7 +61,7 @@ class Meters:
 class Psyche:
     persona: str
     motivation: Optional[str] = None
-    expression: Optional[str] = None
+    expression: Optional[AttachmentState] = None
     dialogue: Optional[str] = None
 
 @dataclass(slots=True)
@@ -77,7 +78,7 @@ class Inventory:
 
 @dataclass(slots=True)
 class Memory:
-    goals: Optional[Goal] = None
+    goals: Optional[List[Goal]] = field(default_factory=list)
     rumors: Optional[List[str]] = None
     prices: Optional[Dict[str, float]] = None
     relationships: Optional[Dict[str, Relationships]] = None
@@ -85,12 +86,11 @@ class Memory:
     sprites: Optional[Dict[str, Position]] = None # type: ignore
 
 @dataclass(slots=True)
-class VisionMutatorParameters:
+class RadialParameters:
     radius: int
 
 @dataclass(slots=True)
-class FearMutatorParameters:
-    radius: int
+class FearParameters(RadialParameters):
     limit: float
     enemy: int
 
@@ -101,12 +101,12 @@ class MutatorTriggers:
     frightened: bool = False
     dead: bool = False
     vision: bool = False
-    executed: bool = False
 
 @dataclass(slots=True)
 class MutatorParameters:
-    fear: FearMutatorParameters
-    vision: VisionMutatorParameters
+    fear: FearParameters
+    vision: RadialParameters
+    action: RadialParameters
 
 @dataclass(slots=True)
 class Mutators:

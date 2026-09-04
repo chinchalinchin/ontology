@@ -1,7 +1,9 @@
 intentions:
+  # ----------------------------------------------------------------------------------
   attack:
     - next: attack
       conditions:  
+        - sprite.goal
         - sprite.goal.category == constants.Goals.TARGET.value
     - next: hunt
       conditions: 
@@ -11,59 +13,72 @@ intentions:
     - next: scavenge
       conditions: 
         - sprites.get(sprite.goal.name).mutators.triggers.dead
+  # ----------------------------------------------------------------------------------
   barter:
     - next: threaten
       conditions:
         - sprite.goal 
         - sprite.goal.category == constants.Goals.LOOT.value
-        - sprite.inventory.wallet < sprite.memory.prices.get(sprite.memory.goal.name
+        - sprite.inventory.wallet < sprite.memory.prices.get(sprite.memory.goal.name)
         - sprite.psyche.motivation == constants.Motivations.SURVIVAL.value
     - next: idle
       conditions: 
         - not sprite.goal
+  # ----------------------------------------------------------------------------------
   build:
     - next: idle
       conditions:
         - not sprite.goal
+  # ----------------------------------------------------------------------------------
   escape: 
     - next: escape
       conditions: 
+        - sprite.goal
         - sprites.get(sprite.goal.name)
         - sprites.get(sprite.goal.name).state.intention == constants.Intentions.ATTACK.value
     - next: return
       conditions: 
         - not sprite.goal
+  # ----------------------------------------------------------------------------------
   find: 
     - next: interact
       conditions: 
+        - sprite.goal
         - sprite.goal.category == constants.Goals.OBJECT.value
         - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
     - next: speak
       conditions: 
+        - sprite.goal
         - sprite.psyche.dialogue
         - sprite.goal.category == constants.Goals.SUBJECT.value
         - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
         - sprite.memory.relationships[sprite.goal.name] in [Relationships.FRIEND.value, Relationships.FAMILY.value]
+  # ----------------------------------------------------------------------------------
   follow: 
     - next: follow
       conditions:
+        - sprite.goal
         - sprite.goal.category == constants.Goals.SUBJECT.value
         - not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
     - next: speak
       conditions:
+        - sprite.goal
         - sprite.psyche.dialogue
         - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
-    - next: wander
+    - next: idle
       conditions:
         - not sprite.goal
+  # ----------------------------------------------------------------------------------
   hunt: 
     - next: attack
       conditions: 
-        - sprite.goal.category == constants.Goals.SPRITE.value
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET.value
         - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
-    - next: return
+    - next: idle
       conditions:
         - not sprite.goal
+  # ----------------------------------------------------------------------------------
   idle: 
     - next: wander
       conditions:
@@ -76,62 +91,68 @@ intentions:
     - next: idle
       conditions:
         - not sprite.goal
+  # ----------------------------------------------------------------------------------
   interact:
     - next: idle
       conditions: 
         - not sprite.goal
+  # ----------------------------------------------------------------------------------
   mine:
     - next: build
       conditions:
+        - sprite.goal
         - sprite.goal.category == constants.Goals.LOOT.value
         - sprite.inventory.loot.get(sprite.goal.name, 0) >= 10 
     - next: mine
       conditions:
+        - sprite.goal
         - sprite.goal.category == constants.Goals.LOOT.value
         - sprite.goal.name in constants.MineableAssets
         - sprite.inventory.loot.get(sprite.goal.name, 0) < 10
     - next: idle
       conditions:
         - not sprite.goal
+  # ----------------------------------------------------------------------------------
   mock:
     - next: threaten
       conditions:
-        - sprite.goal.category == constants.Goals.SPRITE.value
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET.value
         - sprites.get(sprite.goal.name)
         - sprites.get(sprite.goal.name).state.intention == constants.Intentions.ATTACK.value
     - next: idle
       conditions:
         - not sprite.goal
+  # ----------------------------------------------------------------------------------
   return:
     - next: idle
       conditions: 
         - not sprite.goal
-    - next: return
-      conditions:
-        - sprite.goal
-        - not functions.is_near(sprite.position, sprite.goal.position, 10)
+  # ----------------------------------------------------------------------------------
   scavenge:
     - next: idle
       conditions:
         - not sprite.goal
+  # ----------------------------------------------------------------------------------
   speak:
     - next: follow
       conditions: 
-        - sprite.goal.category == constants.Goals.SPRITE.value
-        - not functions.is_near(sprite.position, sprite.goal.position, 20)
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.SUBJECT.value
+        - not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)
     - next: idle
       conditions:
         - not sprite.psyche.dialogue
+  # ----------------------------------------------------------------------------------
   sprint:
-    - next: return
-      conditions: 
-        - not sprite.goal
     - next: idle
       conditions:
-        - sprite.meters.health.current < 10
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
   threaten:
     - next: attack
       conditions:
+        - sprite.goal
         - sprite.goal.category == constants.Goals.SPRITE.value
         - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
     - next: hunt
@@ -141,6 +162,7 @@ intentions:
     - next: idle
       conditions:
         - not sprite.goal
+  # ----------------------------------------------------------------------------------
   wander:
     - next: idle
       conditions:

@@ -121,6 +121,24 @@ def spawn_expression(self, expression_id: str, expression_key: str, target: Asse
 * `CognitionMechanics` immediately pops `memory.goals`, restoring the overarching goal.
 * `TransitionMechanics` evaluates ISL. Because the goal is updated, the Sprite natively transits to `return`, `wander`, or `idle`.
 
+##### Bug: Navigational Acceleration applied to Stationary Intentions
+
+!!! note
+    To be addressed during refactor.
+
+**STATUS**: OPEN
+**SEVERITY**: HIGH
+
+**Description**
+`motive.update()` evaluates pathfinding and accelerates Sprites toward `sprite.state.goal.position`. It currently applies this acceleration so long as `sprite.state.goal` exists. When a Sprite enters a stationary Intention (`SPEAK`, `MINE`, `BUILD`), it still possesses a Goal (the target Sprite, the ore vein, etc.). Consequently, `motive.update()` continuously accelerates the Sprite into the target during the action, causing constant `CollisionMechanics` overlap resolution and visual jitter.
+
+**Steps to Replicate** 
+
+1. Spawn a Sprite with `psyche.dialogue` populated.
+2. Allow CognitionMechanics to acquire a `SUBJECT` Goal.
+3. Observe the Sprite enter `SPEAK` Intention upon arrival.
+4. The Sprite continues to push into the target Sprite for the duration of the conversation.
+
 ##### Tasks
 
 **1. Task: Establish the "Phantom State" Expression Architecture**
@@ -138,13 +156,12 @@ def spawn_expression(self, expression_id: str, expression_key: str, target: Asse
 
 *Objective*: Align the data models and `CognitionMechanics` to support nested, interruptible goals. Fix "Goal Amnesia" by giving CognitionMechanics precise contexts for goal resolution.
 
-* [ ] Subtask: Update `Goals` Enum: Replace `SPRITE` with `TARGET` (for combat) and `SUBJECT` (for social). 
-* [ ] Subtask: Update `app.models.state.sprites.Memory` to type `goals` as `List[Goal] = field(default_factory=list)`.
+* [x] Subtask: Update `Goals` Enum: Replace `SPRITE` with `TARGET` (for combat) and `SUBJECT` (for social). 
+* [x] Subtask: Update `app.models.state.sprites.Memory` to type `goals` as `List[Goal] = field(default_factory=list)`.
 * [ ] Subtask: Refactor `CognitionMechanics._resolve`. Map `Goals.TARGET` to the existing death check. Map `Goals.SUBJECT` to check `if not sprite.psyche.dialogue`.
-* [ ] Subtask: Refactor `CognitionMechanics._resolve_goal` to use `.pop()` to retrieve the most recent goal from `memory.goals` when `sprite.state.goal` resolves to `None`.
-* [ ] Subtask: Implement "Provenance" in `CognitionMechanics._acquire`: If `sprite.psyche.dialogue` exists, scan `board.characters()` for a valid target within vision radius, assign `Goals.SUBJECT`, and push the current goal to `memory.goals`.
-* [ ] Subtask: Update `app.models.state.sprites.Memory` to type `goals` as `List[Goal] = field(default_factory=list)`.
-* [ ] Subtask: Update `CognitionMechanics._resolve` to use `.pop()` to retrieve the most recent goal when `sprite.state.goal` resolves to `None`.
+* [ ] Subtask: Refactor `CognitionMechanics._resolve` to use `.pop()` to retrieve the most recent goal from `memory.goals` when `sprite.state.goal` resolves to `None`.
+* [ ] Subtask: Implement ideation in `CognitionMechanics._ideate`: If `sprite.psyche.dialogue` exists, scan `board.characters()` for a valid target within vision radius, assign `Goals.SUBJECT`, and push the current goal to `memory.goals`.
+
 
 **3. Task: Implement `SocialMechanics`**
 
@@ -152,8 +169,8 @@ def spawn_expression(self, expression_id: str, expression_key: str, target: Asse
 
 * [ ] Subtask: Create `SocialMechanics` inheriting from `Mechanic`. Register in `mechanics/main.yaml` under the `world` pipeline.
 * [ ] Subtask: Implement logic to filter Sprites with `SPEAK`, `BARTER`, and `THREATEN` Intentions.
-* [ ] Subtask: Implement NPC-to-NPC logic: transfer `psyche.dialogue` to target's `memory.rumors`, set source `psyche.expression = Cradle.spawn_expression(...)`.
-* [ ] Subtask: Implement tick-decay on `psyche.expression.ttl`. Set `psyche.dialogue = None` *only* when `ttl <= 0` to ensure the conversation renders before the ISL forces an Intention transition.
+* [ ] Subtask: Implement NPC-to-NPC logic: Execute *only* `if not sprite.psyche.expression`. Transfer `psyche.dialogue` to target's `memory.rumors`, set source `psyche.expression = Cradle.spawn_expression(...)`, and set `expression.ttl = 120`.
+* [ ] Subtask: Implement tick-decay logic: `if sprite.psyche.expression`, decrement `ttl`. Set `psyche.expression = None` and `psyche.dialogue = None` strictly when `ttl <= 0`.
 * [ ] Subtask: Implement Player-to-NPC logic: push `MenuEvent('dialogue', ...)` to the `bus` to pause the world and render the UI.
 
 - *Logical Flaw:* `SocialMechanics.update()` executes every game tick. If a Sprite is in the `speak` Intention, the mechanic will continuously spawn new `AttachmentState` objects, reset the TTL to 120, and pass duplicate rumors to the target 60 times a second until the Intention forcefully changes.
@@ -163,8 +180,11 @@ def spawn_expression(self, expression_id: str, expression_key: str, target: Asse
 
 *Objective*: Fix stationary Intentions and update the matrix to utilize Semantic Goals.
 
+The "Stationary Moonwalking" bug stems from tightly coupling Animation triggers to Intentions. `TransitionMechanics` currently assumes any non-`idle` Intention should force animation. This is a category error. Animation is a function of *Action*, not *Intention*. By updating `AnimationMap` to translate communicative Intentions (`SPEAK`, `BARTER`) into `Actions.CAST`, `TransitionMechanics` can simply evaluate if the current `Action` is non-navigational.
+
 * [ ] Subtask: Update `AnimationMap.action` to return `Actions.CAST` (serving as a physical gesture) for communicative Intentions, preventing the "Stationary Moonwalking" glitch.
-* [ ] Subtask: Update `TransitionMechanics` to only evaluate `mutators.triggers.animated = True` if the Sprite has active velocity or an explicitly animated action, rather than a blanket catch-all.
+* [ ] Subtask: Update `TransitionMechanics` to evaluate `mutators.triggers.animated = True` IF `sprite.state.animation.action != Actions.WALK.value` OR `has_active_velocity`.
+
 
 **5. Flesh Out Motivations**
 
@@ -188,3 +208,11 @@ def spawn_expression(self, expression_id: str, expression_key: str, target: Asse
 * [ ] Subtask: Update `intentions/main.yaml` to use `.get()` on relationship dictionaries (`sprite.memory.relationships.get(sprite.goal.name) in [...]`) to prevent runtime KeyErrors.
 * [ ] Subtask: Update `/src/data/config/intentions/main.yaml` ISL conditions to safely evaluate `sprite.memory.goals` as a list rather than a scalar attribute.
 * [ ] Refactor `/src/data/config/intentions/main.yaml`: Replace array attribute queries like `sprite.memory.goal.category == ...` with the new `functions.check_memory(sprite.memory.goals, ...)` helper.
+
+**Task 7: Fix Motive Mechanics Navigation Bug**
+
+
+*Objective*: Prevent `MotionMechanics` from applying acceleration to Sprites engaged in stationary Intentions.
+
+* [ ] Subtask: Define a static set of navigational Intentions in `app.config.enums.NavigationIntentions` (`FIND`, `FOLLOW`, `HUNT`, `ESCAPE`, `WANDER`, `RETURN`).
+* [ ] Subtask: Update `motive.update()` to immediately set `velocity.vx = 0.0` and `velocity.vy = 0.0` and `continue` if the Sprite's Intention is not in the navigational set, regardless of Goal presence.

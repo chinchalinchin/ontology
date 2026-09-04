@@ -86,3 +86,8 @@ class DialogueState(AssetState):
     position: Optional[Position] = None # type: ignore
     persona: Optional[str] = None
     lexicon: Optional[str] = None
+
+class AttachmentState(slots=True):
+    key: Optional[str] = None
+    ttl: Optional[int] = 0
+    offset: Optional[Position] = None# type: ignore

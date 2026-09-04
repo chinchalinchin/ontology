@@ -26,6 +26,16 @@ When a Sprite is in the `idle` Intention, `CognitionMechanics._ideate` evaluates
 
 - `functions.is_near(sprites.get(sprite.goal.name).position, sprite.position, sprite.mutators.parameters.vision.radius)`
 
+**Speak -> Follow**
+
+- `sprite.goal.category == constants.Goals.SUBJECT.value`
+- `not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)`
+
+**Follow -> Speak**
+
+- `sprite.goal.category == constants.Goals.SUBJECT.value`
+- `functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)`
+
 ##### Step: Exitpoint
 
 **Speak -> Idle**
