@@ -10,7 +10,7 @@ This specification governs the exchange of dialogue.
 
 ##### Step: Prologue
 
-When a Sprite is in the `idle` Intention, `CognitionMechanics._ideate` evaluates immediate psychological overrides. If a Sprite has a non-null `state.psyche.dialogue`, it queries `board.characters()` for a valid target within `state.mutators.parameters.vision.radius`. If found, a new `GoalCategories.SUBJECT` goal is assigned. In addition, the `sprite.memory.sprites` dictionary is updated with the location of Sprite.
+When a Sprite has no goal, `CognitionMechanics._ideate` evaluates immediate psychological overrides. If a Sprite has a non-null `state.psyche.dialogue`, it queries `board.characters()` for a valid target within `state.mutators.parameters.vision.radius`. If found, a new `GoalCategories.SUBJECT` goal is assigned. In addition, the `sprite.memory.sprites` dictionary is updated with the location of Sprite.
 
 ##### Step: Entrypoint
 

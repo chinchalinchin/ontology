@@ -86,22 +86,24 @@ Provided below is the Intention Transition Matrix bundled with the application b
 
 | # | Starting Intention | Reachable Intentions |
 | --- | --- | --- |
-| 1 | `attack` | `attack`, `hunt` |
+| 1 | `attack` | `attack`, `hunt`, `scavenge` |
 | 2 | `barter` | `threaten`, `idle` |
 | 3 | `build` | `idle` |
-| 4 | `escape` | `escape`, `idle` |
-| 5 | `find` | `interact`, `speak`, `follow` |
-| 6 | `follow` | `follow`, `find` |
-| 7 | `hunt` | `attack`, `return` |
-| 8 | `idle` |  `find`, `idle` |
+| 4 | `escape` | `escape`, `return` |
+| 5 | `find` | `interact`, `speak` |
+| 6 | `follow` | `follow`, `speak`, `idle` |
+| 7 | `hunt` | `attack`, `idle` |
+| 8 | `idle` | `wander`, `find`, `idle` |
 | 9 | `interact` | `idle` |
 | 10 | `mine` | `build`, `mine`, `idle` |
 | 11 | `mock` | `threaten`, `idle` |
-| 12 | `return` | `find` |
-| 13 | `speak` | `idle` |
-| 14 | `sprint` | `idle` |
-| 15 | `threaten` | `attack`, `hunt`, `idle` |
-| 16 | `wander` | `idle` |
+| 12 | `return` | `idle` |
+| 13 | `scavenge` | `idle` |
+| 14 | `speak` | `follow`, `idle` |
+| 15 | `sprint` | `idle` |
+| 16 | `threaten` | `attack`, `hunt`, `idle` |
+| 17 | `wander` | `idle` |
+
 
 **Intentional Scripting Language (ISL)**
 

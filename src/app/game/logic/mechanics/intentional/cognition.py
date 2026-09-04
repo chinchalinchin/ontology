@@ -72,8 +72,7 @@ class CognitionMechanics(Mechanic):
         elif goal.category == Goals.POSITION.value:
             dx = sprite.state.goal.position.x - sprite.state.position.x
             dy = sprite.state.goal.position.y - sprite.state.position.y
-            # TODO: fix this dumb hardcoded bullshit
-            return (dx*dx + dy*dy) < 25
+            return (dx*dx + dy*dy) < (sprite.state.mutators.parameters.action.radius ** 2)
 
         elif goal.category == Goals.OBJECT.value:
             # TODO:
@@ -106,8 +105,7 @@ class CognitionMechanics(Mechanic):
             dx = goal.position.x - sprite.state.position.x
             dy = goal.position.y - sprite.state.position.y
 
-            # TODO: fix this. shouldn't be hardcoding logic.
-            if (dx*dx + dy*dy) <= 25:  # Within 5 pixels
+            if (dx*dx + dy*dy) < (sprite.state.mutators.parameters.action.radius ** 2):
                 sprite.state.goal = None
 
         elif goal.category == Goals.OBJECT.value:
@@ -195,7 +193,7 @@ class CognitionMechanics(Mechanic):
         ]:
             # TODO
             pass 
-        
+
         elif goal.category == Goals.OBJECT.value:
             # TODO
             pass
