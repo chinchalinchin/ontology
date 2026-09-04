@@ -9,8 +9,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 
 **Table of Contents**
 
-- Phases
-  - Implement
+- Phases:
+  - Implement:
     - [x]: [Phase 01: Renderer](./phases/implement/phase-01.md)
     - [x]: [Phase 02: Player](./phases/implement/phase-02.md)
     - [x]: [Phase 03: Finetuning](./phases/implement/phase-03.md)
@@ -21,7 +21,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 08: Compositions](./phases/implement/phase-08.md)
     - [ ]: [Phase 09: Commerce](./phases/implement/phase-09.md)
     - [ ]: [Phase 10: Towns](./phases/implement/phase-10.md)
-  - Refactor
+  - Refactor:
     - [x]: [Phase 01.01: Orchestration](./phases/refactor/phase-01-01.md)
     - [x]: [Phase 02.01: Frames](./phases/refactor/phase-02-01.md)
     - [x]: [Phase 02.02: Registry Indexing](./phases/refactor/phase-02-02.md)
@@ -37,7 +37,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 05.05: Main Menu & Saving](./phases/refactor/phase-05-05.md)
     - [ ]: [Phase 05.06: EventHandlers & EventContent](./phases/refactor/phase-05-06.md)
     - [~]: [Phase 07.01: Speak Intentions](./phases/refactor/phase-07-01.md)
-  - Patch 
+  - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantied Assets](./phases/patch/bug-b001.md)
     - [ ]: [Bug B002: Board Cache Wipe](./phases/patch/bug-b002.md)

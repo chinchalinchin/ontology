@@ -48,7 +48,7 @@ class CognitionMechanics(Mechanic):
                 self._resolve_goal(sprite, board)
 
             # Phase B: Memory Management
-            if not sprite.state.goal and getattr(sprite.state, 'memory', None) and sprite.state.memory.goals:
+            if not sprite.state.goal and sprite.state.memory.goals:
                 sprite.state.goal = sprite.state.memory.goals
                 sprite.state.memory.goals = None
 
@@ -75,7 +75,7 @@ class CognitionMechanics(Mechanic):
                 sprite.state.goal = None
 
         elif goal.category == Goals.LOOT.value:
-            if getattr(sprite.state, 'inventory', None) and getattr(sprite.state.inventory, 'loot', None):
+            if sprite.state.inventory.loot:
                 if goal.name in sprite.state.inventory.loot:
                     sprite.state.goal = None
 
@@ -146,7 +146,7 @@ class CognitionMechanics(Mechanic):
         goal = sprite.state.goal
         target_pos = None
 
-        if getattr(sprite.state, 'mutators', None) is None or sprite.state.mutators.parameters is None:
+        if sprite.state.mutators is None or sprite.state.mutators.parameters is None:
             sprite.state.mutators.triggers.vision = False
             return
 

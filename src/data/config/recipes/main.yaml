@@ -12,7 +12,7 @@ recipes:
       animation: none
   cursors:
     expressions:
-      frame: single
+      frame: index
       animation: none
     projectiles:
       frame: single

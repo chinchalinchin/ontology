@@ -36,7 +36,7 @@ class TransitionMechanics(Mechanic):
     ) -> None:
         
         sprites = board.instances(AssetInstances.SPRITES.value)
-        sprites_dict = board.characters()  # Clean getter instead of getattr(board, '_cached_characters')
+        sprites_dict = board.characters()  
 
         for sprite in sprites:
             # 1. Evaluate State ISL Conditions
@@ -59,7 +59,10 @@ class TransitionMechanics(Mechanic):
             # 4. Update Animation Trigger
             if sprite.name != board.player().name:
                 # Animate if doing an action OR if moving towards a goal
-                is_active_intention = sprite.state.intention not in (Intentions.IDLE, Intentions.WANDER)
+                is_active_intention = sprite.state.intention not in (
+                    Intentions.IDLE.value, 
+                    Intentions.WANDER.value
+                )
                 has_active_velocity = (sprite.state.velocity.vx != 0 or sprite.state.velocity.vy != 0)
                 
                 sprite.state.mutators.triggers.animated = is_active_intention or has_active_velocity

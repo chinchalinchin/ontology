@@ -19,60 +19,59 @@ class AnimationMap:
         - state: sprite state
         - equipment: equipment properties
         """
-        weapon = None
-        tool = None
-        utility = None
-        
-        if getattr(state, 'inventory', None) and getattr(state.inventory, 'equipment', None):
-            weapon = state.inventory.equipment.weapon
-            tool = state.inventory.equipment.tool
-            utility = state.inventory.equipment.utility
-
+        weapon = state.inventory.equipment.weapon
+        tool = state.inventory.equipment.tool
+        utility = state.inventory.equipment.utility
         intention = state.intention
 
-        if intention == Intentions.IDLE:
-            return Actions.WALK
+        if intention == Intentions.IDLE.value:
+            return Actions.WALK.value
 
-        if intention == Intentions.ATTACK:
+        if intention == Intentions.ATTACK.value:
             if not weapon:
-                return Actions.CAST # Default
+                return Actions.CAST.value # Default
             
             weapon_property = equipment.weapons.get(weapon)
 
             if weapon_property and weapon_property.actions:
                 return next(iter(weapon_property.actions))
             
-            return Actions.CAST
+            return Actions.CAST.value
     
-        if intention == Intentions.MINE:
+        if intention == Intentions.MINE.value:
             if not tool:
-                return Actions.THRUST # Default mining action fallback
+                return Actions.THRUST.value # Default mining action fallback
             
             tool_property = equipment.tools.get(tool)
             
             if tool_property and tool_property.actions:
                 return next(iter(tool_property.actions))
                 
-            return Actions.THRUST
+            return Actions.THRUST.value
 
-        if intention == Intentions.BUILD:
+        if intention == Intentions.BUILD.value:
             if not utility:
-                return Actions.CAST # Default build action fallback
+                return Actions.CAST.value # Default build action fallback
             
             utility_property = equipment.utilities.get(utility)
             
             if utility_property and utility_property.actions:
                 return next(iter(utility_property.actions))
                 
-            return Actions.CAST
-            
-        if intention == Intentions.INTERACT:
-            return Actions.WALK
-            
-        if intention in (Intentions.WANDER, Intentions.FIND, Intentions.FOLLOW, Intentions.HUNT, Intentions.ESCAPE, Intentions.RETURN):
-            return Actions.WALK
+            return Actions.CAST.value
 
-        return Actions.WALK
+        if intention in (
+            Intentions.INTERACT.value,
+            Intentions.WANDER, 
+            Intentions.FIND, 
+            Intentions.FOLLOW, 
+            Intentions.HUNT, 
+            Intentions.ESCAPE, 
+            Intentions.RETURN
+        ):
+            return Actions.WALK.value
+
+        return Actions.WALK.value
     
 
     @staticmethod
@@ -83,10 +82,10 @@ class AnimationMap:
         # In graphics coordinates, larger y is physically lower.
         if dy > dx:
             # Lower than both diagonals means it is physically DOWN
-            return Directions.DOWN if dy > -dx else Directions.LEFT
+            return Directions.DOWN.value if dy > -dx else Directions.LEFT.value
         
         # Higher than both diagonals means it is physically UP
-        return Directions.RIGHT if dy > -dx else Directions.UP
+        return Directions.RIGHT.value if dy > -dx else Directions.UP.value
 
 class DialogueMap:
     """

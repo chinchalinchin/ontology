@@ -408,7 +408,7 @@ N/A
 * `keys(id, state): returns [ (id, 0, 0) ]` *(Note: Bypassed during active rendering; `SpriteFrame` handles the dynamic offset injection).*
 * `index(self, id, properties): returns { "{id}-{properties.frames[i]}": (i * properties.dimension.w, 0, properties.dimension.w, properties.dimensions.l) }`
 
-**"Phantom" State: ExpressionData**
+**"Phantom" State: AttachmentState**
 
 * `key: str`
 * `offset: Position`

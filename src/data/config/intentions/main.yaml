@@ -21,7 +21,8 @@ intentions:
   barter:
     - next: threaten
       conditions:
-        - sprite.memory.goal and sprite.memory.goal.category == constants.Goals.LOOT.value
+        - sprite.memory.goal 
+        - sprite.memory.goal.category == constants.Goals.LOOT.value
         - sprite.inventory.wallet < sprite.memory.prices.get(sprite.memory.goal.name, 9999)
         - sprite.psyche.motivation == constants.Motivations.SURVIVAL.value
     - next: idle
@@ -43,16 +44,18 @@ intentions:
     - next: scavenge
       conditions: 
         - sprite.goal.category == constants.Goals.LOOT.value
-        - functions.is_near(sprite.position, sprite.goal.position, 15)
+        - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
     - next: interact
       conditions: 
         - sprite.goal.category == constants.Goals.ASSET.value
-        - functions.is_near(sprite.position, sprite.goal.position, 15)
+        - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
     - next: speak
       conditions: 
+        - sprite.goal
         - sprite.goal.category == constants.Goals.SPRITE.value
         - sprite.psyche.dialogue
-        - functions.is_near(sprite.position, sprite.goal.position, 20)
+        - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
+        - sprite.memory.relationships[sprite.goal.name] in [Relationships.FRIEND.value, Relationships.FAMILY.value]
     - next: return
       conditions:
         - not sprite.goal
@@ -60,11 +63,11 @@ intentions:
     - next: follow
       conditions:
         - sprite.goal.category == constants.Goals.SPRITE.value
-        - not functions.is_near(sprite.position, sprite.goal.position, 40)
+        - not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
     - next: speak
       conditions:
         - sprite.psyche.dialogue
-        - functions.is_near(sprite.position, sprite.goal.position, 20)
+        - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
     - next: wander
       conditions:
         - not sprite.goal
@@ -72,7 +75,7 @@ intentions:
     - next: attack
       conditions: 
         - sprite.goal.category == constants.Goals.SPRITE.value
-        - functions.is_near(sprite.position, sprite.goal.position, 25)
+        - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
     - next: return
       conditions:
         - not sprite.goal
@@ -141,11 +144,11 @@ intentions:
     - next: attack
       conditions:
         - sprite.goal.category == constants.Goals.SPRITE.value
-        - functions.is_near(sprite.position, sprite.goal.position, 25)
+        - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
     - next: hunt
       conditions:
         - sprite.goal.category == constants.Goals.SPRITE.value
-        - not functions.is_near(sprite.position, sprite.goal.position, 25)
+        - not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
     - next: idle
       conditions:
         - not sprite.goal

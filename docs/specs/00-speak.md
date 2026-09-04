@@ -12,6 +12,14 @@ The `speak` Intention governs the exchange of Dialogue.
 
 The entrypoints into the `speak` Intention are enumerated below.
 
+**Attract**
+
+- `sprite.psyche.dialogue`
+- TODO: ANY Sprite is near
+
+!!! todo
+    Is `attract` a necessary intention?
+    
 **Find**
 
 - `sprite.goal`
