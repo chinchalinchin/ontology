@@ -397,27 +397,21 @@ Cursors are inanimate, mutable Assets. Cursors track positions and trajectories.
 
 ### Expressions
 
-Expressions are pinned to other Assets and have their position state updated in tandem with the Asset to which they are linked. 
+Expressions are "Phantom States" used as visual decorators. Unlike most Assets, Expressions are not instantiated as physical entities on the Board. Instead, their spatial offsets and frame keys are calculated dynamically by the [Cradle](./00-overview.md#board) and embedded directly into a Sprite's `Psyche` state as pure data. When the Sprite is rendered, the `SpriteFrame` reads this embedded data and superimposes the Expression into the rendering pipeline.
 
 **Animation: None**
 
 N/A
 
-**Frame: SingleFrame**
+**Frame: MappedFrame**
 
-* `keys(asset, id): returns [ id ]`
-* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ (id, 0, 0) ]` *(Note: Bypassed during active rendering; `SpriteFrame` handles the dynamic offset injection).*
+* `index(self, id, properties): returns { "{id}-{properties.frames[i]}": (i * properties.dimension.w, 0, properties.dimension.w, properties.dimensions.l) }`
 
-!!! todo
-    Rethink how Expressions work in relation to Sprite's Intention and Psyche. Expressions should be a sheet, and should attach to Sprites based on formulas involving Intention and Psyche. This will involve refining the `keys()` and `index()` schemas. Perhaps a new Frame type.
+**"Phantom" State: ExpressionData**
 
-**State: PositionalState**
-
-* `layer: str`
-* `depth: int`
-* `height: int`
-* `position: Position`
-* `velocity: Velocity`
+* `key: str`
+* `offset: Position`
 
 ### Projectiles
 

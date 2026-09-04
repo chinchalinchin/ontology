@@ -7,7 +7,6 @@ mechanics:
     - player
     - cognition
     - transition
-    - commerce
     - motion
     - collision
     - combat

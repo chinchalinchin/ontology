@@ -221,11 +221,15 @@ cdef class Registry:
         for cat_name, cat_props in self.properties.items():
             if not cat_props: continue
             cat_recipes = self.recipes.get(cat_name)
+            
             if not cat_recipes: continue
+
             for inst_name, recipe in cat_recipes.items():
                 if not recipe: continue
+
                 inst_props = cat_props.get(inst_name)
                 if not inst_props: continue
+
                 frame_worker = Factory.frame(recipe["frame"])
                 for item_id, item_props in self._extract(inst_props):
                     if item_id not in self._filepaths and item_id not in self._stacks: 
