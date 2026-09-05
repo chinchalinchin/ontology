@@ -1,0 +1,45 @@
+# Task: update(dump template)
+
+The dump template is used to dump game state at the end of a CLI session through the command,
+
+```bash
+python main.py ---dump-state start world-01
+```
+
+Assets are dynamic game entites. Widgets are Menu components. 
+
+**Guidelines**
+
+- Update the template to match the latest models.
+- Ensure all whitespace in the Jinja2 template is properly handled.
+- Enumerate all Asset, Widget and Menu fields. 
+- Ensure Optional fields are handled appriopriately.
+- Ensure there are new lines between the end of sections and the next heading.
+- Ensure all attribute appear as nested markdown lists ,"-".
+
+## Latest Models
+
+### Asset State
+
+```python
+{{ asset_models }}
+```
+
+### Widget State
+
+```python
+{{ widget_models }}
+```
+
+### Menu State
+
+
+```python
+{{ menu_models }}
+```
+
+## Previous Dump Template
+
+```jinja2
+{{ dump_template }}
+```

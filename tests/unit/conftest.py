@@ -69,18 +69,24 @@ from app.models.state import (
     Meters,
     Meter,
     Psyche,
-    Goal
+    Goal,
+    DevicePayload,
+    WorldPayload,
+    MenuPayload
 )
 from app.models.groups import (
     SpawnableGroup,
     EquipmentGroup
 )
 
+from app.models.state.objects import PositionalState
+
 # Cython Libraries
 from libs.core.models import (
     Dimensions, 
     Position,
-    Multiple
+    Multiple,
+    Velocity
 )
 
 # ---------------------------------------------------------------------------
@@ -273,3 +279,15 @@ def mock_isl_configs():
             IntentionConfiguration(next="idle", conditions=["sprite.health =="]) # syntax error
         ]
     }
+
+@pytest.fixture
+def mock_crate():
+    """
+    Generic crate asset to support mechanics tests utilizing frictive motion.
+    """
+    tax = Taxonomy("crate-1", "box", AssetCategories.OBJECTS.value, AssetInstances.CRATES.value)
+    props = SheetProperties(dimensions=Dimensions(w=32, l=32), mass=5) 
+    state = PositionalState(
+        id="crate-1", layer="0", position=Position(x=10, y=10), velocity=Velocity(vx=0.0, vy=0.0)
+    )
+    return Asset(tax, props, state, DummyFrame(), DummyAnimation())

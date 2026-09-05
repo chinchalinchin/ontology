@@ -33,6 +33,7 @@ from libs.core.models import (
 )
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------- WIDGET STATES
+
 @dataclass(slots=True)
 class IconState(AssetState):
     position: Position = field(default_factory=lambda: CorePosition(0,0)) # type: ignore

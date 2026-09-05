@@ -5,103 +5,213 @@
 
 ---
 
-{% for asset in assets %}
-## {{ asset.name }} 
+{%- for asset in assets %}
+## {{ asset.name | default(asset.id, true) }} 
 
 **Taxonomy:** 
   - Category: `{{ asset.category }}` 
   - Instance: `{{ asset.instance }}`
   - ID: `{{ asset.id }}`
+{%- if asset.state.layer %}
 **Layer:** {{ asset.state.layer }}
-{% if asset.state.position -%}
+{%- endif %}
+{%- if asset.state.depth is defined %}
+- **Depth:** {{ asset.state.depth }}
+{%- endif %}
+{%- if asset.state.height is defined and asset.state.height is not none %}
+- **Height:** {{ asset.state.height }}
+{%- endif %}
+{%- if asset.state.position %}
 - **Position:** ({{ asset.state.position.x }}, {{ asset.state.position.y }})
-{% endif -%}
-{% if asset.state.multiple -%}
+{%- endif %}
+{%- if asset.state.initial %}
+- **Initial Position:** ({{ asset.state.initial.x }}, {{ asset.state.initial.y }})
+{%- endif %}
+{%- if asset.state.velocity %}
+- **Velocity:** ({{ asset.state.velocity.x }}, {{ asset.state.velocity.y }})
+{%- endif %}
+{%- if asset.state.speed is defined and asset.state.speed is not none %}
+- **Speed:** {{ asset.state.speed }}
+{%- endif %}
+{%- if asset.state.direction %}
+- **Direction (Motor):** `{{ asset.state.direction }}`
+{%- endif %}
+{%- if asset.state.multiple %}
 - **Multiple:** nx: {{ asset.state.multiple.nx }}, ny: {{ asset.state.multiple.ny }}
-{% endif -%}
-{% if asset.state.animation -%}
+{%- endif %}
+{%- if asset.state.animation %}
 - **Animation:** 
   - Action: `{{ asset.state.animation.action }}`
   - Direction: `{{ asset.state.animation.direction }}`
-  - Frame: `{{ asset.state.animation.frame }}`
-{% endif -%}
-{% if asset.state.switch is defined -%}
+  - Frame: {{ asset.state.animation.frame }}
+  - Tick: {{ asset.state.animation.tick }}
+{%- endif %}
+{%- if asset.state.switch is defined and asset.state.switch is not none %}
 - **Switch:** {{ asset.state.switch }}
-{% endif -%}
-{% if asset.state.content is defined -%}
+{%- endif %}
+{%- if asset.state.content is defined and asset.state.content is not none %}
 - **Content:** {{ asset.state.content }}
-{% endif -%}
-{% if asset.state.link -%}
+{%- endif %}
+{%- if asset.state.link %}
 - **Link:** {{ asset.state.link }}
-{% endif -%}
-{% if asset.state.outlayer -%}
-- **Door Out:** Layer: {{ asset.state.outlayer }}, Position: ({{ asset.state.out.x }}, {{ asset.state.out.y }})
-{% endif -%}
-{% if asset.state.owner -%}
+{%- endif %}
+{%- if asset.state.outlayer %}
+- **Door Out:** Layer: {{ asset.state.outlayer }}{% if asset.state.out %}, Position: ({{ asset.state.out.x }}, {{ asset.state.out.y }}){% endif %}
+{%- endif %}
+{%- if asset.state.owner %}
 - **Owner:** {{ asset.state.owner }}
-{% endif -%}
-{% if asset.state.character -%}
-- **Character:** STR: {{ asset.state.character.strength }}, DEF: {{ asset.state.character.defense }}, SPD: {{ asset.state.character.speed }}
-{% endif -%}
-{% if asset.state.psyche %}
+{%- endif %}
+{%- if asset.state.icon %}
+- **Icon:** `{{ asset.state.icon }}`
+{%- endif %}
+{%- if asset.state.ttl is defined and asset.state.ttl is not none %}
+- **TTL:** {{ asset.state.ttl }}
+{%- endif %}
+{%- if asset.state.offset %}
+- **Offset:** ({{ asset.state.offset.x }}, {{ asset.state.offset.y }})
+{%- endif %}
+{%- if asset.state.character %}
+- **Character:** STR: {{ asset.state.character.strength }}, DEF: {{ asset.state.character.defense }}, SPD: {{ asset.state.character.speed }}, IMP: {{ asset.state.character.impulse }}
+{%- endif %}
+{%- if asset.state.persona %}
+- **Persona:** `{{ asset.state.persona }}`
+{%- endif %}
+{%- if asset.state.lexicon %}
+- **Lexicon:** `{{ asset.state.lexicon }}`
+{%- endif %}
+{%- if asset.state.psyche %}
 - **Psyche**:
+  {%- if asset.state.psyche.persona %}
+  - Persona: {{ asset.state.psyche.persona }}
+  {%- endif %}
+  {%- if asset.state.psyche.motivation %}
+  - Motivation: {{ asset.state.psyche.motivation }}
+  {%- endif %}
+  {%- if asset.state.psyche.dialogue %}
   - Dialogue: {{ asset.state.psyche.dialogue }}
-  - Expression: {{ asset.state.psyche.expression }}
-{% endif %}
-{% if asset.state.meters -%}
+  {%- endif %}
+  {%- if asset.state.psyche.expression %}
+  - Expression (Attachment):
+    - Icon: {{ asset.state.psyche.expression.icon }}
+    - TTL: {{ asset.state.psyche.expression.ttl }}
+    {%- if asset.state.psyche.expression.offset %}
+    - Offset: ({{ asset.state.psyche.expression.offset.x }}, {{ asset.state.psyche.expression.offset.y }})
+    {%- endif %}
+  {%- endif %}
+{%- endif %}
+{%- if asset.state.meters %}
 - **Meters:**
   - Health: {{ asset.state.meters.health.current }} / {{ asset.state.meters.health.maximum }}
   - Magic: {{ asset.state.meters.magic.current }} / {{ asset.state.meters.magic.maximum }}
-{% endif -%}
-{% if asset.state.inventory -%}
+{%- endif %}
+{%- if asset.state.inventory %}
 - **Inventory:**
   - Wallet: {{ asset.state.inventory.wallet }}
+  {%- if asset.state.inventory.loot %}
+  - Loot: {{ asset.state.inventory.loot }}
+  {%- endif %}
+  {%- if asset.state.inventory.equipment %}
   - Equipment: 
     - Armor: `{{ asset.state.inventory.equipment.armor }}` 
     - Weapon: `{{ asset.state.inventory.equipment.weapon }}`
     - Tool: `{{ asset.state.inventory.equipment.tool }}`
     - Utility: `{{ asset.state.inventory.equipment.utility }}`
     - Shield: `{{ asset.state.inventory.equipment.shield }}`
-{% endif -%}
-{% if asset.state.goal -%}
+  {%- endif %}
+{%- endif %}
+{%- if asset.state.goal %}
 - **Goal:** 
   - Name: `{{ asset.state.goal.name }}`
   - Category: `{{ asset.state.goal.category }}`
+  {%- if asset.state.goal.position %}
   - Position: ({{ asset.state.goal.position.x }}, {{ asset.state.goal.position.y }})
-{% endif -%}
-{% if asset.state.memory -%}
+  {%- endif %}
+{%- endif %}
+{%- if asset.state.mutators %}
+- **Mutators:**
+  - Triggers: Animated: {{ asset.state.mutators.triggers.animated }}, Struck: {{ asset.state.mutators.triggers.struck }}, Frightened: {{ asset.state.mutators.triggers.frightened }}, Dead: {{ asset.state.mutators.triggers.dead }}, Vision: {{ asset.state.mutators.triggers.vision }}
+  {%- if asset.state.mutators.parameters %}
+  - Parameters:
+    - Fear: Radius {{ asset.state.mutators.parameters.fear.radius }}, Limit {{ asset.state.mutators.parameters.fear.limit }}, Enemy {{ asset.state.mutators.parameters.fear.enemy }}
+    - Vision: Radius {{ asset.state.mutators.parameters.vision.radius }}
+    - Action: Radius {{ asset.state.mutators.parameters.action.radius }}
+  {%- endif %}
+{%- endif %}
+{%- if asset.state.memory %}
 - **Memory:** 
+  {%- if asset.state.memory.goals %}
   - Goals:
-  {% for goal in asset.state.memory.goals.values() %}
+  {%- for goal in asset.state.memory.goals.values() %}
     - Name: `{{ goal.name }}`
-    - Category: `{{ goal.category }}`
-    - Position: `({{ goal.position.x }}, {{ goal.position.y }})` 
-  {% endfor%}
+      Category: `{{ goal.category }}`
+      {%- if goal.position %}
+      Position: `({{ goal.position.x }}, {{ goal.position.y }})` 
+      {%- endif %}
+  {%- endfor %}
+  {%- endif %}
+  {%- if asset.state.memory.sprites %}
   - Sprites:
-  {% for name, position in asset.state.memory.sprites.items() %}
-    - Name: `{{ name }}`
-    - Position: `({{ position.x }}, {{ position.y }})`
-  {% endfor %}
+  {%- for name, position in asset.state.memory.sprites.items() %}
+    - `{{ name }}`: `({{ position.x }}, {{ position.y }})`
+  {%- endfor %}
+  {%- endif %}
+  {%- if asset.state.memory.property %}
+  - Property:
+  {%- for name, position in asset.state.memory.property.items() %}
+    - `{{ name }}`: `({{ position.x }}, {{ position.y }})`
+  {%- endfor %}
+  {%- endif %}
+  {%- if asset.state.memory.relationships %}
   - Relationships: `{{ asset.state.memory.relationships }}`
-{% endif -%}
-{% if asset.state.intention -%}
+  {%- endif %}
+  {%- if asset.state.memory.rumors %}
+  - Rumors: `{{ asset.state.memory.rumors }}`
+  {%- endif %}
+  {%- if asset.state.memory.prices %}
+  - Prices: `{{ asset.state.memory.prices }}`
+  {%- endif %}
+{%- endif %}
+{%- if asset.state.intention %}
 - **Intention:** `{{ asset.state.intention }}`
-{% endif -%}
-{%- endfor -%}
+{%- endif %}
+{%- endfor %}
 {%- for section_name, menu_list in [('Menus', menus), ('Overlays', overlays)] %}
-{%- if menu_list -%}
+{%- if menu_list %}
+
 ---
 
 # {{ section_name }}
 
-{% for menu in menu_list %}
-## {{ section_name[:-1] }}: {{ menu.id }}
+{%- for menu in menu_list %}
+## {{ section_name[:-1] }}: {{ menu.id | default(menu.name) }}
 
+{%- if menu.focus %}
 **Focus:** `{{ menu.focus }}`
+{%- endif %}
+{%- if menu.context %}
 **Context:** {{ menu.context }}
+{%- endif %}
+{%- if menu.controller %}
+**Controller:** `{{ menu.controller }}`
+{%- endif %}
+{%- if menu.layout %}
+**Layout:** `{{ menu.layout }}`
+{%- endif %}
+{%- if menu.alignment %}
+**Alignment:** `{{ menu.alignment }}`
+{%- endif %}
+{%- if menu.gap is defined and menu.gap is not none %}
+**Gap:** {{ menu.gap }}
+{%- endif %}
+{%- if menu.margins is defined and menu.margins is not none %}
+**Margins:** {{ menu.margins }}
+{%- endif %}
+{%- if menu.position %}
+**Position:** ({{ menu.position.x }}, {{ menu.position.y }})
+{%- endif %}
 
 ### Widgets
-{% for w_key, widget in menu.widgets.items() %}
+{%- for w_key, widget in menu.widgets.items() %}
 #### {{ widget.name }} (`{{ widget.id }}`)
 
 **Taxonomy:** 
@@ -109,32 +219,68 @@
   - Instance: `{{ widget.instance }}`
   - ID: `{{ widget.id }}`
 **Component Classes:**
+  {%- if widget.frame %}
   - Frame: `{{ widget.frame.__class__.__name__ }}`
+  {%- endif %}
+  {%- if widget.animation %}
   - Animation: `{{ widget.animation.__class__.__name__ }}`
+  {%- endif %}
 **Calculated Values:**
+  {%- if widget.frame %}
   - Computed Keys: `{{ widget.frame.keys(widget.id, widget.state) }}`
+  {%- endif %}
 **Properties**:
+  {%- if widget.dimensions %}
   - Dimensions: w: {{ widget.dimensions.w }}, l: {{ widget.dimensions.l }}
-{% if widget.binding -%}
+  {%- endif %}
+{%- set bind_obj = widget.bind if widget.bind else widget.binding %}
+{%- if bind_obj %}
 **Binding:**
-  - Selection: `{{ widget.binding.selection }}`
-  - Selector: `{{ widget.binding.selector }}`
-  - State: `{{ widget.binding.state }}`
-{% endif -%}
+  - Selection: `{{ bind_obj.selection }}`
+  - Selector: `{{ bind_obj.selector }}`
+  - State: `{{ bind_obj.state }}`
+{%- endif %}
 **State:**
-{% if widget.state.position -%}
+{%- if widget.state %}
+  {%- if widget.state.position %}
   - Position: ({{ widget.state.position.x }}, {{ widget.state.position.y }})
-{% endif -%}
-{% if widget.state.status is defined -%}
+  {%- endif %}
+  {%- if widget.state.status is defined and widget.state.status is not none %}
   - Status: `{{ widget.state.status }}`
-{% endif -%}
-{% if widget.state.content is defined -%}
+  {%- endif %}
+  {%- if widget.state.layout is defined and widget.state.layout is not none %}
+  - Layout: `{{ widget.state.layout }}`
+  {%- endif %}
+  {%- if widget.state.alignment is defined and widget.state.alignment is not none %}
+  - Alignment: `{{ widget.state.alignment }}`
+  {%- endif %}
+  {%- if widget.state.gap is defined and widget.state.gap is not none %}
+  - Gap: {{ widget.state.gap }}
+  {%- endif %}
+  {%- if widget.state.margins is defined and widget.state.margins is not none %}
+  - Margins: {{ widget.state.margins }}
+  {%- endif %}
+  {%- if widget.state.icon is defined and widget.state.icon is not none %}
+  - Icon: `{{ widget.state.icon }}`
+  {%- endif %}
+  {%- if widget.state.content is defined and widget.state.content is not none %}
   - Content: {{ widget.state.content }}
-{% endif -%}
-{% if widget.state.reading is defined -%}
+  {%- endif %}
+  {%- if widget.state.pageindex is defined and widget.state.pageindex is not none %}
+  - Pagination: Index {{ widget.state.pageindex }} / Size {{ widget.state.pagesize }}
+  {%- endif %}
+  {%- if widget.state.reading is defined and widget.state.unit is defined %}
   - Reading: {{ widget.state.reading }} / {{ widget.state.unit }}
-{% endif -%}
-{% endfor %}
-{% endfor %}
-{% endif %}
-{% endfor %}
+  {%- endif %}
+  {%- if widget.state.animation %}
+  - Animation: 
+    - Action: `{{ widget.state.animation.action }}`
+    - Direction: `{{ widget.state.animation.direction }}`
+    - Frame: {{ widget.state.animation.frame }}
+    - Tick: {{ widget.state.animation.tick }}
+  {%- endif %}
+{%- endif %}
+{%- endfor %}
+{%- endfor %}
+{%- endif %}
+{%- endfor %}
