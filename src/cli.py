@@ -33,6 +33,13 @@ from libs.graphics.render import quit_sdl, get_system_info
 
 logger = logging.getLogger(__name__)
 
+SCREENSIZES = {
+    'small': 360,
+    'medium': 480,
+    'large': 600
+}
+SCREENSIZE = SCREENSIZES['medium']
+
 def dump(board_key, context, temp='state'):
     logger.info(f"Generating {temp} dump...")
     
@@ -104,14 +111,14 @@ def arguments():
         p.add_argument("board_key", type=str)
         p.add_argument("--out", type=str, required=True)
         p.add_argument("--layer", type=str, required=True)
-        p.add_argument("--width", type=int, default=480)
-        p.add_argument("--height", type=int, default=480)
+        p.add_argument("--width", type=int, default=SCREENSIZE)
+        p.add_argument("--height", type=int, default=SCREENSIZE)
         p.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
 
     p_start = subparsers.add_parser("start")
     p_start.add_argument("board_key", type=str)
-    p_start.add_argument("--width", type=int, default=480)
-    p_start.add_argument("--height", type=int, default=480)
+    p_start.add_argument("--width", type=int, default=SCREENSIZE)
+    p_start.add_argument("--height", type=int, default=SCREENSIZE)
     p_start.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
 
     return parser.parse_args()
