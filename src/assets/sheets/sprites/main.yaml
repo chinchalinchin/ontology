@@ -1,0 +1,67 @@
+sheets:
+  sprites:
+    # ------------------------------------------------
+    # ------------------------------ PLAYER PROPERTIES
+    # ------------------------------------------------
+    player:
+      mass: 7
+      dimensions:
+        w: 64
+        l: 64
+      hitboxes: 
+        - position: 
+            x: 23
+            y: 34
+          dimensions:
+            w: 18
+            l: 15
+      stack:
+        - human-male-ivory
+        - feet-boots-black
+        - legs-robe-black
+        - torso-shirt-male-black
+        - toros-cape-black
+        - head-glasses
+        - head-beard-white
+        - hair-curls-white
+        - head-wizard-hat-moon
+      actions: lpc-full
+    # ------------------------------------------------
+    # ------------------------------ SPRITE PROPERTIES
+    # ------------------------------------------------
+    # ------------------------------------------------
+    jasilynn:
+      mass: 25
+      dimensions:
+        w: 64
+        l: 64
+      hitboxes: 
+        - position: 
+            x: 23
+            y: 34
+          dimensions:
+            w: 18
+            l: 15
+      stack:
+        - human-female-ivory
+        - torso-dress-black
+        - hair-long-black
+        - head-crown-gold
+        - feet-shoes-red
+      actions: lpc-full
+    # ------------------------------------------------
+    archaxes:
+      mass: 50
+      dimensions:
+        w: 64
+        l: 64
+      hitboxes:
+        - position: 
+            x: 23
+            y: 34
+          dimensions:
+            w: 18
+            l: 15
+      stack:
+        - human-male-ivory
+      actions: lpc-full

@@ -5,8 +5,12 @@ menus:
       - id: dark-small
         name: hud-menu
         position:
-          px: 0.075
-          py: 0.75
+          # ---- 360 x 360
+          # px: 0.075
+          # py: 0.75
+          # ---- 480 x 480
+          px: 0.175
+          py: 0.80
         layout: dock
         alignment: start
         gap: 10
