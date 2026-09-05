@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 from app.config.enums import (
     AssetInstances,
     Intentions,
+    Menus
 )
 from app.game.logic.mechanics.spatial.base import SpatialMechanic
 from app.game.menus.events import MenuEvent
@@ -91,13 +92,15 @@ class InteractionMechanics(SpatialMechanic):
                 
                 if not (tx <= cx <= tx + tw and ty <= cy <= ty + tl):
                     continue
-                    
+
+                # -------------------------------- DOOR INTERACTIONS
                 if target.taxonomy.instance == AssetInstances.DOORS:
                     board.relayer(source, target.state.outlayer)
                     source.state.position.x = target.state.out.x
                     source.state.position.y = target.state.out.y
                     processed_sources.add(source.name)
-                    
+
+                # -------------------------------- CHEST INTERACTIONS
                 elif target.taxonomy.instance == AssetInstances.CHESTS:
                     if source.taxonomy.instance == AssetInstances.SPRITES:
                         if hasattr(target.state, 'content') and target.state.content:
@@ -105,14 +108,26 @@ class InteractionMechanics(SpatialMechanic):
                                 source.state.inventory.loot[item] = source.state.inventory.loot.get(item, 0) + 1
                             target.state.content = []
                         processed_sources.add(source.name)
+
                     elif source.taxonomy.instance == AssetInstances.PLAYERS:
-                        bus.append(MenuEvent(
-                            # TODO:
-                            id='inventory', context={'sprite': source, 'chest': target}
-                        ))
+                        pass
+                        # TODO
+                        # bus.append(MenuEvent(
+                        #     id=Menus.INVENTORY.value, 
+                        #     context={
+                        #       TODO: the context for InventoryMenu
+                        # ))
+                        # NOTE: might need to differentiate between
+                        #       ExchangeMenu and InventoryMenu here...
+
+                # -------------------------------- SIGN INTERACTIONS
                 elif target.taxonomy.instance == AssetInstances.SIGNS:
                     if source.taxonomy.instance == AssetInstances.PLAYERS:
                         bus.append(MenuEvent(
                             # TODO: 
-                            id='dialogue', context={'sprite': source, 'sign': target }
+                            id=Menus.TEXT.value, context={
+                                'plot': board.plot, 
+                                'persona': target.state.persona,
+                                'lexicon': target.state.lexicon 
+                            }
                         ))

@@ -106,6 +106,14 @@ The Engine contains a Bus for processing Menu Events.
 
 The Engine contains a Provider for instantiating Menus.
 
+**Binder**
+
+The Provider contains a Binder for binding Widget states to game state.
+
+**Library**
+
+The Provider contains a Library for injecting Widget states with plot-dependent content.
+
 ### Board
 
 - Package: `app.game.board`

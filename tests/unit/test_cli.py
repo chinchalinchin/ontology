@@ -24,8 +24,8 @@ def test_arguments_start_defaults():
         
         assert args.command == "start"
         assert args.board_key == "level_01"
-        assert args.width == 360
-        assert args.height == 360
+        assert args.width == 480
+        assert args.height == 480
         assert args.device == "keyboard"
         assert args.log_level == "INFO"
         assert args.dump_state is False

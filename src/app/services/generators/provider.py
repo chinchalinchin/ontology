@@ -21,7 +21,7 @@ from app.config.enums import (
     Statuses,
     Menus
 )
-from app.services.factory import Factory
+from app.services.orchestration.factory import Factory
 from app.models.properties import WidgetProperties
 from app.models.state import (
     DisplayState, 
@@ -164,6 +164,7 @@ class Provider:
             return []
 
         return DisplayState(
+            id=cfg.id,
             position=Position(x=0, y=0),
             content_function=get_paginated_content,
             pageindex=0,
@@ -172,7 +173,8 @@ class Provider:
         )
                     
     def _unpack_meter(self, cfg: MenuWidget, context: dict) -> MeterState:
-        parent, attr = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else (None, None)
+        parent, attr = self._resolve(cfg.bind.state, context) \
+                        if cfg.bind and cfg.bind.state else (None, None)
         
         def get_val():
             if parent is None or attr is None:
@@ -188,6 +190,7 @@ class Provider:
             return r.maximum if hasattr(r, 'maximum') else (1 if isinstance(r, (int, float)) else 1)
 
         state = MeterState(
+            id = cfg.id,
             position=Position(x=0, y=0),
             reading_function=reading_function,
             unit_function=unit_function
@@ -206,6 +209,7 @@ class Provider:
             return parent.get(attr) if isinstance(parent, dict) else getattr(parent, attr, "")
 
         return IconState(
+            id = cfg.id,
             position=Position(x=0, y=0),
             icon_function=get_icon
         )
@@ -215,6 +219,7 @@ class Provider:
                             if cfg.status else Statuses.IDLE.value
         
         return TraversalState(
+            id = cfg.id,
             position=Position(x=0, y=0),
             status=initial_status,
             animation=AnimationState(action=initial_status) # Sync action immediately

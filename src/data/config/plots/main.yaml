@@ -1,11 +1,23 @@
 plots:
-  act-1-intro:
-    next: act-1-town-unlocked
-    conditions:
-      - "sprites['gatekeeper'].mutators.triggers.dead"
-      - "player.state.inventory.loot['kings-pass'] >= 1"
-  act-1-town:
-    next: act-2-invasion
-    conditions:
-      - "board.time > 10000"
-      - "sprites['mayor'].memory.relationships['player'] == 'hostile'"
+  castle-dawn-locked:
+    - next: castle-dawn-unlocked
+      conditions:
+        - sprites[constants.RequiredAssets.PLAYER.value].state.inventory.loot.get('writ-of-dawn') >= 1
+    - next: town-unlocked
+      conditions:
+        - sprites.get('castle-dawn-guard')
+        - sprites['castle-dawn-guard'].mutators.triggers.dead
+    - next: castle-dawn-unlocked
+      conditions:
+        - sprites.get('evil-empress-jasilynn')
+        - sprites['evil-empress-jasilynn'].state.memory.relationships['player'] != constants.Relationships.FRIEND
+  castle-dawn-unlocked:
+    - next: castle-dawn-hostile
+      conditions:
+        - sprites.get('evil-empress-jasilynn')
+        - sprites['evil-empress-jasiylnn'].state.memory.relationships['player'] == constants.Relationships.FOE
+  castle-dawn-hostile:
+    - next: castle-dawn-unlocked
+      conditions:
+        - sprites.get('evil-empress-jasilynn')
+        - sprites['evil-empress-jasiylnn'].state.memory.relationships['player'] != constants.Relationships.FOE

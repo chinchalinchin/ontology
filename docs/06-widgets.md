@@ -346,15 +346,70 @@ To start, ScreenPosition is a *configuration-time* concept, not a *runtime* conc
 
 Every Menu has a Controller that handles Menu-specific logic. Widgets that are embedded into Menus have their states altered through action-reaction bindings which specify how a SelectionEvent propagates through the Menu. This logic is handled by the Controller.
 
-However, since Menus are unpacked by the Provider into Assets, otherwise indistinguishable from other Assets to the rendering engine, to faciliate these relationships, every child Widget of a Menu Pane may bind to a `selection`, `selector` or a `state`.
+However, since Menus are unpacked by the Provider into Assets, otherwise indistinguishable from other Assets to the rendering engine, to faciliate these relationships, every child Widget of a Menu Pane may utilize a *Binding*.
 
-**Bindings**
+### Bindings
 
-Bindings define how Widgets interact with user input and game state. They are divided into three distinct roles:
+!!! important
+    Update in progress with Phase 05.03. This section represents changes to be implemented.
+    
+Widget Bindings to game state are generated inside of the Provider via the Binder factory. Each Binding requires a BindingContext and a BindingSchema. 
+
+- `context`: A string path referencing a specific Asset field in the game state. The Binder resolves this string into a live state reference during Menu instantiation.IIn other words, `bind.state` generates a runtime closure (Callable), not a static evaluation, ensuring bound Widget inherently mirror live state data.
+- `schema`: A data model that represents the binding. 
+
+```yaml
+# 1. LibraryBinding
+bind:
+    schema: library
+    target: context.<asset>.<field>
+
+# 2. MeterBinding
+bind:
+    schema: meter
+    target: context.<asset>.<field>
+
+# 3. IconBinding
+bind:
+    schema: icon
+    target: context.<asset>.<field>
+
+# 4. SelectBinding
+bind:
+    schema: select
+    selection: scrolldown | scrollup
+    selector: <asset-id>
+```
+
+Each binding *expects* the bound Asset field to conform to the binding schema; otherwise the binding will not function properly. In other words, 
+
+- `if type == library: typeof(context.<asset>.<field>) == LibraryBinding`
+- `if type == meter: typeof(context.<asset>.<field>) == MeterBinding`
+- `if type == icon: typeof(context.<asset>.<field>) == IconBinding`
+
+`type == select` are handled specially, since they are bindings to Widget actions in the menu itself, i.e. they do not receive external updates.
+
+For example, in the View (HUD) Menu, a Meter is bound to the Player health,
+
+```yaml
+-   instance: meters
+    id: health
+    name: health-meter
+    bind: 
+        schema: meter
+        target: context.sprite.state.meters.health
+```
+
+When the Binding is generated, it uses the `schema` to unpack the `target` data structure.
+
+By decoupling the layout from the logic, Widgets do not need to know what is controlling them; they only require a Binding to know what data they are displaying.
+
+**Selection Bindings**
+
+Selection Bindings define how Widgets interact with user input and game state. They have two components:
 
 - `selection`: The specific action or command a Control Widget emits when selected by the user (e.g., `scrollup`).
 - `selector`: A direct pointer to the unique `name` of another Widget in the Menu. Used when a Control Widget needs to mutate or read another Widget's state.
-- `state`: A string path referencing a specific variable in the Event Context. The Provider resolves this string into a live state reference during Menu instantiation.IIn other words, `bind.state` generates a runtime closure (Callable), not a static evaluation, ensuring bound Widget inherently mirror live state data.
 
 In the provided `text` Menu example, the `text-scroll-up` and `text-scroll-down` Buttons are bound to the `selection` actions `scrollup` and `scrolldown`. Because these buttons control the Page widget, their `selector` bindings are set to `text-display`—the unique name of the target Page. 
 
@@ -378,8 +433,6 @@ class ScrollController(Controller):
 
 ```
 
-By decoupling the layout from the logic, Pages and Meters do not need to know what is controlling them; they only require a `state` binding to know what data they are displaying.
-
 Bindings are enumerated and summarized below:
 
 * `selections`:  Widget action commands.
@@ -393,7 +446,6 @@ Bindings are enumerated and summarized below:
     * `selections in [SCROLLUP, SCROLLDOWN, SELECT]`: Selector is the target Widget name.
     * `selections == MENU`: Selector is the target Menu.
     * `selections in [NEW, LOAD]`: TODO
-* `state`: String path to the Event Context (e.g., `context.sprite.state.psyche.communication`).
 
 ### Layouts
 

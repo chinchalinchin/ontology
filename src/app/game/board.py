@@ -44,6 +44,8 @@ class Board:
     # Flags
     loaded: bool
     paused: bool
+    # Game Data
+    plot: str
     # Configurations
     configurations: ConfigurationSchema
     equipment: EquipmentGroup
@@ -75,6 +77,7 @@ class Board:
         logger.info(f"Initializing Board with {len(assets)} incoming assets.")
         self.loaded = False
         self.paused = False
+        self.plot = None
         self.menus = []
         self.overlays = []
         self.configurations = configurations
@@ -202,22 +205,13 @@ class Board:
 
     # ------------------------------------------------ SETTERS 
 
-    def set_device(self, device: Device) -> None:
-        """
-        Sets the Device on the board for polling.
-        """
-        self.device = device
+    def set_device(self, device: Device) -> None: self.device = device
 
+    def set_cradle(self, cradle: Cradle) -> None: self.cradle = cradle
 
-    def set_cradle(self, cradle: Cradle) -> None:
-        """
-        """
-        self.cradle = cradle
+    def set_overlays(self, overlays: List[Menu]) -> None: self.overlays = overlays
 
-    def set_overlays(self, overlays: List[Menu]) -> None:
-        """
-        """
-        self.overlays = overlays
+    def set_plot(self, plot: str) -> None: self.plot = plot
 
     # ------------------------------------------------ GETTERS
 

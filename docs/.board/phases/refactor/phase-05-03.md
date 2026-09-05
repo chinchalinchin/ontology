@@ -16,7 +16,9 @@ The font and text rendering is, as of yet, purely theoretical and untested. Many
 
 ScrollController will be polymorphic to handle Dialogue Menus with Character Portraits (initiated by the `speak` Intention in conjunction with Sprite `state.psyche.dialogue`) and simpler Text Menus (initiated by the `interact` Intention with Signs). It may also to be used to handle submenus in the Main Menu, when the Main Menu is fully implemented, although this is not a certainty at this point.
 
-**Working Schemas**
+**Current Schemas in /src/data/config/menus/**
+
+*NOTE*: This wil be updated during the implementation of this phase. See below.
 
 ```yaml
 menus:
@@ -97,25 +99,40 @@ menus:
               selector: character-speech
 ```
 
+**Working Schemas (Not Yet Implemented)**
+
 ```yaml
 # ------ LIBRARY SCHEMA
 library:
-  plot-a:
-    sprite-a:
+  castle-dawn-locked:
+    jasiylnn:
+      busy: Out of my way!
+      greeting: Who are you?
+      mock: Begone, simpleton!
+      threaten: One wrong move and I will call my guards.
+    castle-dawn-sign:
+      spring: Spring has Sprung
+      summer: Summer must Simmer
+      autumn: Autumn has Fallen
+      winter: Winter must Enter 
+  castle-dawn-unlocked:
+    jasiylnn:
       busy: Away with you! I am engaged in endeavors!
       greeting: Good morrow, neighbor!
-      insult: Thou art a brutish knave!
-    town-sign:
-      spring: Welcome to Town
-      summer: WANTED Player 
-      autumn: Harvest Festival Coming
+      mock: Thou art a brutish knave!
+      threaten: Your head shall soon be on a spike!
+    castle-dawn-sign:
+      spring: Welcome to Castle Dawn
+      summer: Travelling Troupe in Town Square
+      autumn: Harvest Festival Soon
       winter: Road Blocked
-  plot-b:
-    sprite-a:
+  castle-dawn-hostile:
+    jasiylnn:
       busy: Go away!
-      greeting: What mistery...
-      insult:  You're a right simpleton!
-    town-sign:
+      greeting: Bow before your betters.
+      mock: Your presence is troublesome.
+      threaten: My guards will cut you down!
+    castle-dawn-sign:
       spring: BE GONE
       summer: NO TRAVELLERS WANTED 
       autumn: NO TRESPASSERS
@@ -125,24 +142,28 @@ library:
 ```yaml
 # ---- PLOT SCHEMA
 plots:
-  town-locked:
+  castle-dawn-locked:
+    - next: castle-dawn-unlocked
+      conditions:
+        - sprites[constants.RequiredAssets.PLAYER.value].state.inventory.loot.get('writ-of-dawn') >= 1
     - next: town-unlocked
       conditions:
-        - sprites['player'].state.inventory.loot['town-key'] >= 1
-    - next: town-unlocked
+        - sprites.get('castle-dawn-guard')
+        - sprites['castle-dawn-guard'].mutators.triggers.dead
+    - next: castle-dawn-unlocked
       conditions:
-        - sprites['town-guard'].mutators.triggers.dead
-    - next: town-unlocked
+        - sprites.get('evil-empress-jasilynn')
+        - sprites['evil-empress-jasilynn'].state.memory.relationships['player'] != constants.Relationships.FRIEND
+  castle-dawn-unlocked:
+    - next: castle-dawn-hostile
       conditions:
-        - sprites['mayor'].state.memory.relationships['player'] != Relationships.FRIEND
-  town-unlocked:
-    - next: town-hostile
+        - sprites.get('evil-empress-jasilynn')
+        - sprites['evil-empress-jasiylnn'].state.memory.relationships['player'] == constants.Relationships.FOE
+  castle-dawn-hostile:
+    - next: castle-dawn-unlocked
       conditions:
-        - sprites['mayor'].state.memory.relationships['player'] == Relationships.FOE
-  town-hostile:
-    - next: town-unlocked
-      conditions:
-        - sprites['mayor'].state.memory.relationships['player'] != Relationships.FOE
+        - sprites.get('evil-empress-jasilynn')
+        - sprites['evil-empress-jasiylnn'].state.memory.relationships['player'] != constants.Relationships.FOE
 ```
 
 ##### Goal: Plot State & Mechanics
@@ -157,7 +178,6 @@ plot:
   path:
     - woke-up
     - found-sword
-
 ```
 
 Where `current` is the current state of the plot and `path` is a list of time-ordered plot states the plot has progressed through during the entire history of gameplay. The first entry is the earliest.
@@ -175,11 +195,81 @@ Just as `TransitionMechanics` iterates over Sprites to check if their Intention 
 
 *Benefit:* Because this executes in the `world` mechanics array, it naturally pauses when a `MenuEvent` fires. The plot cannot advance while the player is reading dialogue or trading, which prevents edge-case bugs where a background event triggers a plot shift while the UI is open.
 
-##### Goal: Library
+##### Goal: Update Widget Binding
 
-When `InteractionMechanics` processes a Player reading a Sign, it executes:
-`content = Library.fetch(board.plot.current, target.state.persona, target.state.lexicon)`
-and emits the literal string to the Event Bus.
+Instead of hardcoding specific resolution paths in the UI, the `Provider` will act as a compiler for `Bindings`. When the `Provider` unpacks a Widget, it reads a `bind` dictionary from the YAML schema and returns a native Python `Callable` that the Widget's `State` object (e.g., `DisplayState.content_function`) evaluates continuously.
+
+**Working Schema**
+
+```yaml
+# 1. LibraryBinding
+bind:
+  type: library
+  target: context.<asset>.<field>
+
+# 2. MeterBinding
+bind:
+  type: meter
+  target: context.<asset>.<field>
+
+# 3. IconBinding
+bind:
+  type: icon
+  target: context.<asset>.<field>
+
+# 4. SelectBinding
+bind:
+  type: select
+  selection: scrolldown | scrollup
+  selector: <asset-id>
+```
+
+Each binding *expects* the bound Asset field to conform to the binding schema; otherwise the binding will not function properly. In other words, 
+
+- `if type == library: typeof(context.<asset>.<field>) == LibraryBinding`
+- `if type == meter: typeof(context.<asset>.<field>) == MeterBinding`
+- `if type == icon: typeof(context.<asset>.<field>) == IconBinding`
+
+`type == select` are handled specially, since they are bindings to Widget actions in the menu itself, i.e. they do not receive external updates.
+
+**Binder**
+
+When `Engine._drain()` calls `Provider.unpack(...)`, it passes the `Board` and the resolved `MenuEvent.context.binding` payload (Binding model). The `Provider` utilizes the `Binder` factory methods, e.g.:
+
+```python
+def bind_library(self, binding: LibraryBinding) -> Callable:
+   
+    def content_function():
+        return self.library.fetch(**binding)
+
+    return content_function
+```
+
+
+##### Bug B005: DisplayState Pagination Performance Loop
+
+**STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+In the proposed implementation of `Provider._unpack_page()`, the `content_function` evaluates `self._paginate(raw, font, w, l)`. Because `DisplayState.current()`, `DisplayState.more()`, and `DisplayState._pagecount` all access the `self.content` property, the `content_function` lambda is executed multiple times per interaction.
+
+`_paginate()` splits strings and calls the C-level SDL text measurement function (`TTF_SizeUTF8`) in a loop to calculate word wrapping. Executing this geometric calculation repeatedly every time the player scrolls or the UI refreshes will lock the main thread and severely degrade the frame rate.
+
+**Steps to Replicate** 
+
+1. Interact with a Sign Object to open a Text Menu.
+2. The `ScrollController` triggers `MenuEvent('text')`.
+3. Press `SELECT` to scroll down. `ScrollController` calls `page.state.scrolldown()`.
+4. `scrolldown()` calls `self.more()`, which accesses `self.content`, executing `TTF_SizeUTF8` over the entire text block.
+5. The bus emits `UpdateEvent` with `page.state.current()`, which accesses `self.content` again, executing `TTF_SizeUTF8` over the entire text block a second time.
+
+**Proposed Remediation**
+
+Introduce lazy-evaluation caching into `DisplayState` or the `Binder` lambda. 
+
+When `content_function()` is executed, it should check a local `_cached_pages` variable. If the text has already been paginated, it should return the cached list. Because the game world pauses while a Menu is open, the Plot state cannot change, meaning the retrieved Library dialogue is guaranteed to remain perfectly static for the lifespan of the active Menu.
 
 ##### Tasks
 
@@ -192,39 +282,43 @@ and emits the literal string to the Event Bus.
 
 **Task #1: Data Models & Configurations**
 
-* [ ] Create `PlotConfiguration` in `app.models.config` (mirroring `IntentionConfiguration`).
-* [ ] Create `PlotState` in `app.models.state` (fields: `current: str`, `previous: List[str]`).
-* [ ] Add `plots` to `ConfigurationSchema` and `plot` to `StateSchema`.
-* [ ] Update `Board.__init__` to accept and expose `board.plot`.
+* [x] Create `PlotConfiguration` in `app.models.config`.
+* [x] Create `PlotState` in `app.models.state` (`current: str`, `path: List[str]`).
+* [x] Add `plots` to `ConfigurationSchema` and `plot` to `StateSchema`.
+* [x] Add `PLOT = 'plot'` to `app.config.enums.Shortcuts`.
+* [x] In `Migrator._build_generator()`, extract the plot state immediately after loading: `self.board.plot = getattr(self.state, Shortcuts.PLOT.value, None)`.
+* [x] Update the reflection loop's skip condition to bypass metadata fields: `if category_key in (Shortcuts.COMPOSITIONS.value, Shortcuts.PLOT.value): continue`
 
-**Task #2: Library Service**
+**Task #2: ISL Compiler Abstraction**
 
-* [ ] Create `app.services.library.Library` to parse `src/data/config/library/main.yaml`.
-* [ ] Implement a static or singleton fetch method: `Library.fetch(plot_key, persona, lexicon) -> str`.
-* [ ] Inject `Library` into `Board`.
+* [ ] Refactor `Executor.evaluate()` to accept a generic `execution_locals: dict` instead of strictly `SpriteState`.
+* [ ] Update `TransitionMechanics` to pass `{'sprite': sprite.state, 'sprites': board.characters(), 'functions': ..., 'constants': ...}` into the updated `Executor`.
+* [ ] Ensure `CompilerTranslator` and `LambdaTranslator` dynamically map the `execution_locals` dictionary to the ISL runtime without breaking backwards compatibility.
 
-**Task #2: InteractionMechanics Injection**
+**Task #3: Widget Binding System & Provider Refactor**
 
-* [ ] Update `InteractionMechanics.update()`: When a Player interacts with a `Sign`, query the `Library` using `board.plot`, `sign.state.persona`, and `sign.state.lexicon`.
-* [ ] Emit `MenuEvent(id='text', context={'content': fetched_text})` to the bus.
+* [ ] Create `app.game.services.generators.binder` to hold `Binder` factory.
+* [ ] Create `app.models.state.bindings` to hold Binding models.
+* [ ] Implement `Binder` methods for `library`, `select`, `icon`, and `meter`.
+* [ ] Refactor `Provider.unpack()` to parse `widget.bind.type`, dispatch it to the `Binder`, and inject the resulting `Callable` into `DisplayState`, `MeterState`, etc.
+* [ ] Update `Engine._drain()` to pass a `Board` reference into `Provider.unpack()` so lambdas can close over live game state.
 
-**Task #3: Plot Mechanics**
+*Crucial:* The `library` binding must cache its paginated output on the first execution. It cannot recalculate pagination on every evaluation. Incorporate a lazy-evaluation cache into the `library` binding lambda to prevent the `_paginate` method from executing the SDL `TTF_SizeUTF8` calculations multiple times per frame. See B005 Report.
 
-* [ ] Create `PlotMechanics(Mechanic)` in `app.game.logic.mechanics.intentional`.
-* [ ] Implement `update()` to evaluate `board.configurations.plots[board.plot.current].conditions` using the existing ISL parser.
-* [ ] Add `Mechanics.PLOT` to the `Mechanics` Enum and `Factory.MECHANICS_MAP`.
-* [ ] Add `plot` to the `world` mechanics sequence in `/src/data/config/mechanics/main.yaml`.
+**Task #4: Library Service Integration**
 
-**Task #4: ScrollController Implementation**
+* [ ] Create `app.services.generators.library.Library` to parse `src/data/config/library/main.yaml`.
+* [ ] Implement `Library.fetch(plot, persona, lexicon) -> List[str]`.
+* [ ] Inject `Library` into `Provider` during the `Orchestrator` bootstrapping sequence.
 
-* [ ] Create `ScrollController(Controller)`.
-* [ ] Implement `select(focus: str, menu: Menu, board: Board, bus: deque)`.
-* [ ] In `select()`, retrieve `action = menu.widgets[focus].binding.selection` (e.g., `scrollup`).
-* [ ] Retrieve target widget `target = menu.widgets[menu.widgets[focus].binding.selector]`.
-* [ ] Call `target.state.scrolldown()` (or up) and emit `UpdateEvent(widget=target, content=target.state.current())` to the bus.
+**Task #5: Mechanics Routing (The Triggers)**
 
-**Task #5: Interaction Routing**
+* [ ] Create `PlotMechanics(Mechanic)`. Evaluate `board.configurations.plots[board.plot.current]` against the `PlotExecutor` and progress the plot key if conditions are met.
+* [x] Add `plot` to the `world` mechanics sequence in `/src/data/config/mechanics/main.yaml`.
+* [x] Update `InteractionMechanics.update()`: On sign interaction, emit `MenuEvent(id='text', context={'plot': board.plot, 'persona': target.persona, 'lexicon': target.lexicon)`.
 
-* [ ] Update `InteractionMechanics` (for Signs/Objects) and `SpeechMechanics` (for Sprites).
-* [ ] When triggering dialogue, query the `Library` using `board.plot.current`.
-* [ ] Emit `MenuEvent` with the fully resolved text payload, keeping the UI generic and isolated.
+**Task #6: ScrollController Implementation**
+
+* [ ] Implement `ScrollController(MenuController)`.
+* [ ] In `select()`, execute `target.state.scrollup()` or `scrolldown()` based on the `SelectBinding`.
+* [ ] Emit `UpdateEvent(widget=target)` to the bus to flag the screen for a partial render stamp.

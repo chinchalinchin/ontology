@@ -1,7 +1,7 @@
 """
 # Ontology: tests.unit.test_app_services_factory
 """
-from app.services.factory import Factory
+from app.services.orchestration.factory import Factory
 from app.config.enums import (
     FrameRecipe, 
     AnimationRecipe, 
@@ -93,7 +93,7 @@ def test_factory_controller():
 
 def test_factory_string_resolution():
     """Verify Factory unboxes Cython strings correctly to their Enum equivalents."""
-    from app.services.factory import Factory
+    from app.services.orchestration.factory import Factory
     from app.assets.frames import TraversalFrame
     from app.assets.animations import MeterAnimation
     from app.game.logic.mechanics.core import MenuMechanics

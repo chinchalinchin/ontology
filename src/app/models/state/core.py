@@ -7,8 +7,12 @@ Python data models for typing Asset state attributes.
 from typing import (
     Optional, 
     Union, 
+    List
 )
-from dataclasses import dataclass
+from dataclasses import (
+    dataclass,
+    field
+)
 
 # Application Libraries
 from app.config.enums import (
@@ -37,3 +41,8 @@ class AnimationState:
     direction: str = Directions.DOWN.value
     frame: int = 0
     tick: int = 1
+
+@dataclass(slots=True)
+class PlotState:
+    current: str
+    previous: List[str] = field(default_factory=list)

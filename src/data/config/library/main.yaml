@@ -1,20 +1,33 @@
 library:
-  plot-a:
-    sprite-a:
+  castle-dawn-locked:
+    jasiylnn:
+      busy: Out of my way!
+      greeting: Who are you?
+      mock: Begone, simpleton!
+      threaten: One wrong move and I will call my guards.
+    castle-dawn-sign:
+      spring: Spring has Sprung
+      summer: Summer must Simmer
+      autumn: Autumn has Fallen
+      winter: Winter must Enter 
+  castle-dawn-unlocked:
+    jasiylnn:
       busy: Away with you! I am engaged in endeavors!
       greeting: Good morrow, neighbor!
-      insult: Thou art a brutish knave!
-    town-sign:
-      spring: Welcome to Town
-      summer: WANTED Player 
-      autumn: Harvest Festival Coming
+      mock: Thou art a brutish knave!
+      threaten: Your head shall soon be on a spike!
+    castle-dawn-sign:
+      spring: Welcome to Castle Dawn
+      summer: Travelling Troupe in Town Square
+      autumn: Harvest Festival Soon
       winter: Road Blocked
-  plot-b:
-    sprite-a:
+  castle-dawn-hostile:
+    jasiylnn:
       busy: Go away!
-      greeting: What misery...
-      insult:  You're a right simpleton!
-    town-sign:
+      greeting: Bow before your betters.
+      mock: Your presence is troublesome.
+      threaten: My guards will cut you down!
+    castle-dawn-sign:
       spring: BE GONE
       summer: NO TRAVELLERS WANTED 
       autumn: NO TRESPASSERS

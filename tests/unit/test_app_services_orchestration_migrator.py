@@ -2,14 +2,14 @@
 # Ontology: tests.unit.test_app_services_migrator
 """
 from unittest.mock import MagicMock, patch
-from app.services.migrator import Migrator
+from app.services.orchestration.migrator import Migrator
 
 def test_migrator_no_target():
     migrator = Migrator(MagicMock(), MagicMock(), MagicMock())
     # Should return True instantly if no target is set
     assert migrator.step(budget_ms=16) is True
 
-@patch('app.services.migrator.time.perf_counter')
+@patch('app.services.orchestration.migrator.time.perf_counter')
 def test_migrator_time_slicing(mock_perf_counter):
     migrator = Migrator(MagicMock(), MagicMock(), MagicMock())
     migrator.target = "test-level"
@@ -35,9 +35,9 @@ def test_migrator_time_slicing(mock_perf_counter):
     assert migrator.target is None
     assert migrator._generator is None
 
-@patch('app.services.migrator.dataclasses.fields')
-@patch('app.services.migrator.Loader.load_state')
-@patch('app.services.migrator.Decomposer')
+@patch('app.services.orchestration.migrator.dataclasses.fields')
+@patch('app.services.orchestration.migrator.Loader.load_state')
+@patch('app.services.orchestration.migrator.Decomposer')
 def test_migrator_build_generator(mock_decomposer, mock_load_state, mock_fields):
     mock_board = MagicMock()
     mock_props = MagicMock()
@@ -64,8 +64,8 @@ def test_migrator_build_generator(mock_decomposer, mock_load_state, mock_fields)
     assert mock_board.add.called
     assert migrator.maximum >= 1
 
-@patch('app.services.migrator.Loader.load_state')
-@patch('app.services.migrator.Decomposer')
+@patch('app.services.orchestration.migrator.Loader.load_state')
+@patch('app.services.orchestration.migrator.Decomposer')
 def test_migrator_build_generator_assets(mock_decomposer, mock_load_state, mock_state):
     mock_board = MagicMock()
     mock_props = MagicMock()

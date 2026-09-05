@@ -16,7 +16,7 @@ from app.config.enums import (
     AssetInstances, 
     AssetCategories
 )
-from app.services.factory import Factory
+from app.services.orchestration.factory import Factory
 from app.models.config import RecipeConfiguration
 from app.models.groups import SpawnableGroup
 from app.models.state import (

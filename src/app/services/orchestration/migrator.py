@@ -1,18 +1,31 @@
 """
-# Ontology: app.services.migrator
+# Ontology: app.services.orchestration.migrator
 
 Package for state hydration and ECS component injection.
 """
+from __future__ import annotations
+
+# Standard Libraries
 import time
 import dataclasses
 import logging
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
+# Application Libraries
 from app.assets.base import Asset
 from app.config.loader import Loader
-from app.config.enums import AssetCategories, AssetInstances, Shortcuts
-from app.services.factory import Factory
+from app.config.enums import (
+    AssetCategories,
+    AssetInstances, 
+    Shortcuts
+)
+from app.models.properties import PropertiesSchema
+from app.models.config import ConfigurationSchema
+from app.services.orchestration.factory import Factory
 from app.services.generators.decomposer import Decomposer
+
+if TYPE_CHECKING:
+    from app.game.board import Board
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +34,16 @@ class Migrator:
     Time-sliced state machine for unpacking board state dynamically,
     preventing Python GIL locking during heavy loading operations.
     """
-    def __init__(self, board, properties, configurations):
+    board: Board
+    decomposer: Decomposer
+    configurations: ConfigurationSchema
+    properties: PropertiesSchema
+
+    def __init__(self, 
+        board: Board, 
+        properties: PropertiesSchema, 
+        configurations: ConfigurationSchema
+    ):
         self.board = board
         self.properties = properties
         self.configurations = configurations
@@ -48,11 +70,14 @@ class Migrator:
         tasks = []
         if hasattr(self.state, Shortcuts.COMPOSITIONS.value) and self.state.compositions:
             for comp_state in self.state.compositions:
-                tasks.append(('composition', comp_state))
-                
+                tasks.append((Shortcuts.COMPOSITIONS.value, comp_state))
+
+        if hasattr(self.state, Shortcuts.PLOTS.value) and self.state.plot:
+            tasks.append((Shortcuts.PLOTS.value, self.state.plot))
+
         for cat_field in dataclasses.fields(self.state):
             category_key = cat_field.name
-            if category_key == Shortcuts.COMPOSITIONS.value: 
+            if category_key in Shortcuts: 
                 continue 
                 
             category_data = getattr(self.state, category_key)
@@ -73,10 +98,15 @@ class Migrator:
         
         # 2. Yield through component injection
         for task in tasks:
-            if task[0] == 'composition':
+            if task[0] == Shortcuts.COMPOSITIONS.value:
                 comp_state = task[1]
                 expanded_assets = self.decomposer.unpack(comp_state)
                 self.board.add(expanded_assets)
+
+            elif task[0] == Shortcuts.PLOTS.value:
+                plot = task[1]
+                self.board.set_plot(plot)
+
             else:
                 _, category_key, instance_key, state_obj = task
                 asset_id = state_obj.id

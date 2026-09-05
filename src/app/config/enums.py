@@ -86,6 +86,7 @@ class Groups(str, Enum):
 
 class Shortcuts(str, Enum):
     COMPOSITIONS    = "compositions"
+    PLOTS           = "plots"
 
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 

@@ -14,13 +14,16 @@ from dataclasses import dataclass, field
 from app.config.enums import (
     Intentions
 )
-from app.models.config.recipes import RecipeConfiguration
+from app.models.config.core import (
+    ActionConfiguration, 
+    IntentionConfiguration,
+    MechanicsConfiguration,
+    PlotConfiguration,
+    CompositionConfiguration
+)
 from app.models.config.mappings import MappingConfiguration
-from app.models.config.core import ActionConfiguration
-from app.models.config.core import MechanicsConfiguration
-from app.models.config.core import CompositionConfiguration
-from app.models.config.core import IntentionConfiguration
 from app.models.config.menus import MenuConfiguration
+from app.models.config.recipes import RecipeConfiguration
 
 # ---------------------------------------------------------------------------------------
 # --------------------------------------------------------------------------- ROOT SCHEMA

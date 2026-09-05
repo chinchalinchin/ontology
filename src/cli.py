@@ -25,7 +25,7 @@ if str(PROJECT_ROOT) not in sys.path:
 # Application Libraries
 import app.config.settings as settings
 from app.config.enums import Devices
-from app.services.constructors import Orchestrator
+from app.services.orchestration.constructors import Orchestrator
 
 # Cython Libraries
 from libs.core.models import Dimensions

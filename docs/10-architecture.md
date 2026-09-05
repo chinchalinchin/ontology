@@ -38,6 +38,8 @@ Triggered by a `StateEvent` (e.g., selecting "New Game" or "Load"), the Engine t
 3. **Screen Allocation (`Screen.rebake`)**: Once hydration reaches 100%, the Migrator triggers `rebake()` on all active Screens to dynamically calculate max dimensions and allocate independent hardware canvases for the Painter's Algorithm.
 4. **Execution**: The `LoadController` emits a `TerminalEvent`, popping the loading screen, setting `board.loaded = True`, and unpausing the `world` Mechanics.
 
+The Board and StateSchema distinguish between Physical Assets (Assets requiring state, frames, and logic, such as Tiles or Sprites) and World Metadata (abstract governing states, such as the current Plot). During hydration, the Migrator parses World Metadata instantly ($O(1)$) and assigns it directly to the Board, explicitly bypassing the time-sliced ECS component injection loop reserved for Physical Assets.
+
 ## Mechanics
 
 The Engine delegates behavior to [Mechanics](./05-mechanics.md). Rather than the Engine passing arguments to a system, a Mechanic is responsible for querying the [Board](./00-overview.md#board) for the exact data it requires, processing the state, and optionally pushing Events to the Engine's `bus`.

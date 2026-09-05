@@ -1,5 +1,5 @@
 """
-# Ontology: app.services.constructors
+# Ontology: app.services.orchestration.constructors
 
 Classes for constructing game objects.
 """
@@ -31,8 +31,8 @@ from app.models.groups import (
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
-from app.services.factory import Factory
-from app.services.migrator import Migrator
+from app.services.orchestration.factory import Factory
+from app.services.orchestration.migrator import Migrator
 from app.services.generators.decomposer import Decomposer
 from app.services.generators.provider import Provider
 

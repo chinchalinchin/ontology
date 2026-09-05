@@ -23,39 +23,44 @@ from app.models.adapters import (
     PydanticPosition as Position, 
 )
 from app.models.state.core import (
+    AssetState,
     AnimationState
 )
 
+# Cython Libraries
+from libs.core.models import (
+    Position as CorePosition
+)
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------- WIDGET STATES
 @dataclass(slots=True)
-class IconState:
-    position: Position # type: ignore
-    icon_function: Callable[[], str]
+class IconState(AssetState):
+    position: Position = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+    icon_function: Callable[[], str] = field(default_factory=Callable)
     
     @property
     def icon(self) -> str:
         return self.icon_function()
 
 @dataclass(slots=True)
-class TraversalState:
-    position: Position # type: ignore
-    status: Statuses
+class TraversalState(AssetState):
+    position: Position = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+    status: Statuses = Statuses.IDLE.value
     animation: AnimationState = field(default_factory=AnimationState)
     
 @dataclass(slots=True)
 class PaneState:
-    position: Position # type: ignore
-    layout: Layouts
-    alignment: Alignments
-    gap: int
+    position: Position= field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+    layout: Layouts = Layouts.STACK.value
+    alignment: Alignments = Alignments.CENTER.value
+    gap: Optional[int] = 0
     margins: Optional[int] = 0
 
 @dataclass(slots=True)
-class MeterState:
-    position: Position # type: ignore
-    reading_function: Callable[[], Union[int, float]]
-    unit_function: Callable[[], Union[int, float]]
+class MeterState(AssetState):
+    position: Position = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+    reading_function: Callable[[], Union[int, float]] = field(default_factory=Callable)
+    unit_function: Callable[[], Union[int, float]] = field(default_factory=Callable)
     animation: AnimationState = field(default_factory=AnimationState)
 
     @property
@@ -67,10 +72,10 @@ class MeterState:
         return self.unit_function()
     
 @dataclass(slots=True)
-class DisplayState:
-    position: Position # type: ignore
-    content_function: Callable[[], Union[str, List[str]]]
-    pageindex: int
+class DisplayState(AssetState):
+    position: Position = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+    content_function: Callable[[], Union[str, List[str]]] = field(default_factory=Callable)
+    pageindex: int = 0
     pagesize: int = 1
     canvas: Any = None
 

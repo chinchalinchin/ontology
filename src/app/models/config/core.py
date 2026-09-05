@@ -46,8 +46,15 @@ class IntentionConfiguration(Configuration):
     next: str
     conditions: List[str] = field(default_factory=list)
 
+@dataclass(slots=True, frozen=True)
+class PlotConfiguration(Configuration):
+    """
+    """
+    next: str
+    conditions: List[str] = field(default_factory=list)
+
 # ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------- INTENTION CONFIGURATION
+# --------------------------------------------------------------- MECHANICS CONFIGURATION
 
 @dataclass(slots=True, frozen=True)
 class MechanicsConfiguration(Configuration):

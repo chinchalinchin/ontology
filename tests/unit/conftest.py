@@ -28,7 +28,10 @@ from app.config.enums import (
     Motivations
 )
 from app.game.board import Board
-from app.services.constructors import Builder, Orchestrator
+from app.services.orchestration.constructors import (
+    Builder, 
+    Orchestrator
+)
 from app.services.generators.provider import Provider
 from app.models.properties import (
     PropertiesSchema, 
@@ -156,7 +159,7 @@ def mock_mapping() -> DeviceMapping:
 
 @pytest.fixture
 def mock_builder(mock_properties, mock_configurations, mock_state):
-    with patch('app.services.constructors.Loader') as mock_loader:
+    with patch('app.services.orchestration.constructors.Loader') as mock_loader:
         mock_loader.load_properties.return_value = mock_properties
         mock_loader.load_configurations.return_value = mock_configurations
         mock_loader.load_state.return_value = mock_state

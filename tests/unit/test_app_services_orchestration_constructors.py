@@ -13,7 +13,7 @@ def test_builder_load_data(mock_builder):
     assert mock_builder.context.configurations is not None
     assert mock_builder.context.state is not None
 
-@patch('app.services.constructors.render')
+@patch('app.services.orchestration.constructors.render')
 def test_builder_init_subsystems(mock_render, mock_builder):
     dims = Dimensions(w=1280, l=720)
     mock_builder.init_subsystems(dims, headless=False)
@@ -45,9 +45,9 @@ def test_builder_build_services(mock_builder):
     # Ensure the keyboard mapping from configuration was applied
     assert mock_builder.board.device.poll() is not None
 
-@patch('app.services.constructors.Screen')
-@patch('app.services.constructors.Registry')
-@patch('app.services.constructors.render')
+@patch('app.services.orchestration.constructors.Screen')
+@patch('app.services.orchestration.constructors.Registry')
+@patch('app.services.orchestration.constructors.render')
 def test_orchestrator_construct(mock_render, mock_registry, mock_screen, mock_orchestrator):
     dims = Dimensions(w=1280, l=720)
     
