@@ -575,6 +575,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#bindings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bindings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#layouts" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1108,6 +1119,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#bindings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bindings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#layouts" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1455,13 +1477,60 @@
 <p>To start, ScreenPosition is a <em>configuration-time</em> concept, not a <em>runtime</em> concept. When the Provider and Layout engine instantiate a Menu, they must calculate the absolute pixel values <code>(px * screensize.w, py * screensize.l)</code> and inject a Position into the Widget state. By flattening the Menu tree and translating all percentages to absolute <code>Positions</code>, <code>Screen.draw()</code> can consume Widgets exactly like world Assets, satisfying the zero-allocation prior.</p>
 <h3 id="controllers">Controllers</h3>
 <p>Every Menu has a Controller that handles Menu-specific logic. Widgets that are embedded into Menus have their states altered through action-reaction bindings which specify how a SelectionEvent propagates through the Menu. This logic is handled by the Controller.</p>
-<p>However, since Menus are unpacked by the Provider into Assets, otherwise indistinguishable from other Assets to the rendering engine, to faciliate these relationships, every child Widget of a Menu Pane may bind to a <code>selection</code>, <code>selector</code> or a <code>state</code>.</p>
-<p><strong>Bindings</strong></p>
-<p>Bindings define how Widgets interact with user input and game state. They are divided into three distinct roles:</p>
+<p>However, since Menus are unpacked by the Provider into Assets, otherwise indistinguishable from other Assets to the rendering engine, to faciliate these relationships, every child Widget of a Menu Pane may utilize a <em>Binding</em>.</p>
+<h3 id="bindings">Bindings</h3>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Update in progress with Phase 05.03. This section represents changes to be implemented.</p>
+</div>
+<p>Widget Bindings to game state are generated inside of the Provider via the Binder factory. Each Binding requires a BindingContext and a BindingSchema. </p>
+<ul>
+<li><code>context</code>: A string path referencing a specific Asset field in the game state. The Binder resolves this string into a live state reference during Menu instantiation.IIn other words, <code>bind.state</code> generates a runtime closure (Callable), not a static evaluation, ensuring bound Widget inherently mirror live state data.</li>
+<li><code>schema</code>: A data model that represents the binding. </li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="c1"># 1. LibraryBinding</span>
+<span class="nt">bind</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">library</span>
+<span class="w">    </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.&lt;asset&gt;.&lt;field&gt;</span>
+
+<span class="c1"># 2. MeterBinding</span>
+<span class="nt">bind</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meter</span>
+<span class="w">    </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.&lt;asset&gt;.&lt;field&gt;</span>
+
+<span class="c1"># 3. IconBinding</span>
+<span class="nt">bind</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">icon</span>
+<span class="w">    </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.&lt;asset&gt;.&lt;field&gt;</span>
+
+<span class="c1"># 4. SelectBinding</span>
+<span class="nt">bind</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">select</span>
+<span class="w">    </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scrolldown | scrollup</span>
+<span class="w">    </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;asset-id&gt;</span>
+</code></pre></div>
+<p>Each binding <em>expects</em> the bound Asset field to conform to the binding schema; otherwise the binding will not function properly. In other words, </p>
+<ul>
+<li><code>if type == library: typeof(context.&lt;asset&gt;.&lt;field&gt;) == LibraryBinding</code></li>
+<li><code>if type == meter: typeof(context.&lt;asset&gt;.&lt;field&gt;) == MeterBinding</code></li>
+<li><code>if type == icon: typeof(context.&lt;asset&gt;.&lt;field&gt;) == IconBinding</code></li>
+</ul>
+<p><code>type == select</code> are handled specially, since they are bindings to Widget actions in the menu itself, i.e. they do not receive external updates.</p>
+<p>For example, in the View (HUD) Menu, a Meter is bound to the Player health,</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meters</span>
+<span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health-meter</span>
+<span class="w">    </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meter</span>
+<span class="w">        </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.sprite.state.meters.health</span>
+</code></pre></div>
+<p>When the Binding is generated, it uses the <code>schema</code> to unpack the <code>target</code> data structure.</p>
+<p>By decoupling the layout from the logic, Widgets do not need to know what is controlling them; they only require a Binding to know what data they are displaying.</p>
+<p><strong>Selection Bindings</strong></p>
+<p>Selection Bindings define how Widgets interact with user input and game state. They have two components:</p>
 <ul>
 <li><code>selection</code>: The specific action or command a Control Widget emits when selected by the user (e.g., <code>scrollup</code>).</li>
 <li><code>selector</code>: A direct pointer to the unique <code>name</code> of another Widget in the Menu. Used when a Control Widget needs to mutate or read another Widget's state.</li>
-<li><code>state</code>: A string path referencing a specific variable in the Event Context. The Provider resolves this string into a live state reference during Menu instantiation.IIn other words, <code>bind.state</code> generates a runtime closure (Callable), not a static evaluation, ensuring bound Widget inherently mirror live state data.</li>
 </ul>
 <p>In the provided <code>text</code> Menu example, the <code>text-scroll-up</code> and <code>text-scroll-down</code> Buttons are bound to the <code>selection</code> actions <code>scrollup</code> and <code>scrolldown</code>. Because these buttons control the Page widget, their <code>selector</code> bindings are set to <code>text-display</code>—the unique name of the target Page. </p>
 <p>When a Button is selected, the MenuMechanics route the input to the appropriate Controller (in this case, the <code>ScrollController</code>). The Controller uses the <code>selector</code> binding to perform an <span class="arithmatex">\(O(1)\)</span> dictionary lookup for the target widget and applies the <code>selection</code> action:</p>
@@ -1480,7 +1549,6 @@
 
         <span class="c1"># apply selection logic to target_widget...</span>
 </code></pre></div>
-<p>By decoupling the layout from the logic, Pages and Meters do not need to know what is controlling them; they only require a <code>state</code> binding to know what data they are displaying.</p>
 <p>Bindings are enumerated and summarized below:</p>
 <ul>
 <li><code>selections</code>:  Widget action commands.<ul>
@@ -1498,7 +1566,6 @@
 <li><code>selections in [NEW, LOAD]</code>: TODO</li>
 </ul>
 </li>
-<li><code>state</code>: String path to the Event Context (e.g., <code>context.sprite.state.psyche.communication</code>).</li>
 </ul>
 <h3 id="layouts">Layouts</h3>
 <p>Consider a <code>nest</code> Pane with two children <code>dock</code> Panes, each with three buttons, represented by the matrix, <code>[[a,b,c], [d, e, f]]</code>. Consider the problem of the Menu focus residing on the <code>b</code> Button element when the user presses <code>SOUTH</code>. In this case, the Menu must shift focus to the <code>e</code> element. The <code>graph</code> attribute of the Menu holds this relational struture. </p>

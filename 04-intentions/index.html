@@ -1378,7 +1378,8 @@
 <li><code>sprites</code>: The <code>_cached_characters</code> dictionary mapping <code>name: AssetState</code> for all mutable characters (Sprites and Players) currently on the board.</li>
 <li><code>constants</code>: A dictionary of Enums. Keys are: <code>AssetInstances</code>, <code>AssetCategories</code>, <code>Goals</code>, <code>Intentions</code>, <code>Motivations</code>.</li>
 <li><code>functions</code>: A dictionary of boolean helper functions. All functions return a truth value.<ul>
-<li><code>is_near(p1: Position, p2: Position, radius: int)</code></li>
+<li><code>is_near(p1: Position, p2: Position, radius: int)</code>: Determine if positions are close.</li>
+<li><code>check_goals(m: List[Goal], category: str)</code>: Determine if a GoalCategory exists in the Sprite memory.</li>
 </ul>
 </li>
 </ul>
@@ -1459,7 +1460,7 @@
 <li><strong>Phase A: Resolution</strong>: Conditions are evaluated for goal resolution<ul>
 <li><code>if goal.category == TARGET</code>: If <code>target.mutators.triggers.dead</code>, <code>goal = None</code>.</li>
 <li><code>if goal.category == SUBJECT</code>: If <code>not psyche.dialogue</code>, <code>goal = None</code>.</li>
-<li><code>if goal.category == POSITION</code>: If <code>position - goal.position &lt; some_radius</code>.</li>
+<li><code>if goal.category == POSITION</code>: If <code>position - goal.position &lt; mutators.parameters.action.radius</code>.</li>
 <li><code>if goal.category == OBJECT</code>: TODO</li>
 <li><code>if goal.category == PROPERTY</code>: If <code>goal.name in memory.property</code>, <code>goal = None</code>.</li>
 </ul>

@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/specs/00-dialogue/">
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/specs/01-interaction/">
       
       
       
@@ -21,7 +21,7 @@
     
     
       
-        <title>00 dialogue - Ontology</title>
+        <title>01 interaction - Ontology</title>
       
     
     
@@ -72,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ontology-specification-dialogue-loop" class="md-skip">
+        <a href="#ontology-specification-spec-loop" class="md-skip">
           Skip to content
         </a>
       
@@ -108,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              00 dialogue
+              01 interaction
             
           </span>
         </div>
@@ -749,15 +749,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#ontology-specification-dialogue-loop" class="md-nav__link">
+  <a href="#ontology-specification-spec-loop" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Ontology Specification: Dialogue Loop
+        Ontology Specification: {{ spec }} Loop
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Ontology Specification: Dialogue Loop">
+    <nav class="md-nav" aria-label="Ontology Specification: {{ spec }} Loop">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -772,10 +772,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-entrypoint" class="md-nav__link">
+  <a href="#step-entrypoints" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step: Entrypoint
+        Step: Entrypoints
       
     </span>
   </a>
@@ -794,10 +794,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-exitpoint" class="md-nav__link">
+  <a href="#step-exitpoints" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Step: Exitpoint
+        Step: Exitpoints
       
     </span>
   </a>
@@ -805,10 +805,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#workflow-speak-intention" class="md-nav__link">
+  <a href="#workflow-spec-intention" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Workflow: Speak Intention
+        Workflow: {{ spec }} Intention
       
     </span>
   </a>
@@ -840,9 +840,9 @@
   
 
 
-  <h1>00 dialogue</h1>
+  <h1>01 interaction</h1>
 
-<h4 id="ontology-specification-dialogue-loop">Ontology Specification: Dialogue Loop</h4>
+<h4 id="ontology-specification-spec-loop">Ontology Specification: {{ spec }} Loop</h4>
 <p>This specification governs the exchange of dialogue.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -853,47 +853,24 @@
 <p>This specification excludes the <a href="../../02-sprites/#player">Player</a>, whose Intentions are handled through input polling and device mapping.</p>
 </div>
 <h5 id="prologue">Prologue</h5>
-<p>When a Sprite has no goal, <code>CognitionMechanics._ideate</code> evaluates immediate psychological overrides. If a Sprite has a non-null <code>state.psyche.dialogue</code>, it queries <code>board.characters()</code> for a valid target within <code>state.mutators.parameters.vision.radius</code>. If found, a new <code>GoalCategories.SUBJECT</code> goal is assigned. In addition, the <code>sprite.memory.sprites</code> dictionary is updated with the location of Sprite.</p>
-<h5 id="step-entrypoint">Step: Entrypoint</h5>
-<p><strong>idle:find</strong></p>
+<p>TODO</p>
+<h5 id="step-entrypoints">Step: Entrypoints</h5>
+<p><strong>idle:i_2</strong></p>
 <ul>
-<li><code>sprite.goal</code></li>
-<li><code>sprite.goal.category == constants.Goal.SUBJECT.value</code></li>
-<li><code>sprite.psyche.dialogue</code></li>
+<li><code>condition</code></li>
 </ul>
 <h5 id="step-interpoints">Step: Interpoints</h5>
-<p><strong>find:speak</strong></p>
+<p><strong>i_2:i_3</strong></p>
 <ul>
-<li><code>functions.is_near(sprites.get(sprite.goal.name).position, sprite.position, sprite.mutators.parameters.vision.radius)</code></li>
+<li><code>condition</code></li>
 </ul>
-<p><strong>speak:follow</strong></p>
+<h5 id="step-exitpoints">Step: Exitpoints</h5>
+<p><strong>i_n:idle</strong></p>
 <ul>
-<li><code>sprite.goal.category == constants.Goals.SUBJECT.value</code></li>
-<li><code>not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)</code></li>
+<li><code>condition</code></li>
 </ul>
-<p><strong>follow:speak</strong></p>
-<ul>
-<li><code>sprite.goal.category == constants.Goals.SUBJECT.value</code></li>
-<li><code>functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)</code></li>
-</ul>
-<h5 id="step-exitpoint">Step: Exitpoint</h5>
-<p><strong>speak:idle</strong></p>
-<ul>
-<li><code>not sprite.psyche.expression</code></li>
-</ul>
-<p><strong>speak:idle</strong></p>
-<ul>
-<li><code>sprite.goal.name == constants.RequiredAssets.PLAYER.value</code></li>
-</ul>
-<h5 id="workflow-speak-intention">Workflow: Speak Intention</h5>
-<p>A Sprite processing a <code>speak</code> Intention undergoes a strict lifecycle distributed across the Engine's Mechanics to ensure data integrity and visual consistency:</p>
-<ol>
-<li><strong>Execution (<code>SocialMechanics</code>)</strong>: Upon entering <code>speak</code>, the mechanic transfers the source Sprite's <code>state.psyche.dialogue</code> key into the <code>state.memory.rumors</code> list of the target Sprite. </li>
-<li><strong>Anchoring (<code>SocialMechanics</code>)</strong>: It immediately injects an <code>AttachmentState</code> into <code>state.psyche.expression</code> configured with a Time-To-Live (TTL). The Sprite's <code>state.velocity</code> stops receiving updates from <code>character.impulse</code>, allowing friction to bring it to a halt.</li>
-<li><strong>Decay (<code>SocialMechanics</code>)</strong>: For each subsequent game tick, the TTL is decremented. The <code>state.psyche.dialogue</code> and <code>state.psyche.expression</code> variables are <em>only</em> nulled once the TTL reaches zero. </li>
-<li><strong>Resolution (<code>CognitionMechanics</code>)</strong>: On the tick following the TTL expiration, <code>CognitionMechanics</code> evaluates the Goal. Because <code>goal.category == Goals.SUBJECT</code> and <code>not sprite.psyche.dialogue</code> evaluates to <code>True</code>, the interaction is marked satisfied. <code>CognitionMechanics</code> sets <code>sprite.state.goal = None</code> and pops the original overarching goal from <code>memory.goals</code> back into <code>sprite.state.goal</code>.</li>
-<li><strong>Transition (<code>TransitionMechanics</code>)</strong>: With <code>psyche.dialogue</code> empty, the ISL conditions for <code>speak</code> fail. The Sprite natively transits out of <code>speak</code> directly back into the <code>idle</code> hub. On the next tick, <code>idle</code> will evaluate the restored goal and dispatch the Sprite accordingly.</li>
-</ol>
+<h5 id="workflow-spec-intention">Workflow: {{ spec }} Intention</h5>
+<p>TODO</p>
 
 
 
