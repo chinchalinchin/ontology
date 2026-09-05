@@ -27,7 +27,10 @@ from app.models.state.core import (
 from app.models.state.objects import AttachmentState
 
 # Cython Libraries
-from libs.core.models import Velocity as CoreVelocity
+from libs.core.models import (
+    Velocity as CoreVelocity, 
+    Position as CorePosition
+)
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------- SPRITE STATE FIELDS
@@ -66,9 +69,9 @@ class Psyche:
 
 @dataclass(slots=True)
 class Goal:
-    name: str
-    category: str
-    position: Position # type: ignore
+    name: Optional[str] = None
+    category: Optional[str] = None
+    position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
 
 @dataclass(slots=True)
 class Inventory:
@@ -131,25 +134,25 @@ class Mutators:
 @dataclass(slots=True)
 class SpriteState(AssetState):
     intention: Optional[Intentions] = None
-    goal: Optional[Goal] = None
-    position: Optional[Position] = None # type: ignore
-    character: Optional[Character] = None
-    inventory: Optional[Inventory] = None
-    meters: Optional[Meters] = None
-    mutators: Optional[Mutators] = None
-    memory: Optional[Memory] = None
-    psyche: Optional[Psyche] = None
+    goal: Optional[Goal] = field(default_factory=Goal)
+    position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+    character: Optional[Character] = field(default_factory=Character)
+    inventory: Optional[Inventory] = field(default_factory=Inventory)
+    meters: Optional[Meters] = field(default_factory=Meters)
+    mutators: Optional[Mutators] = field(default_factory=Mutators)
+    memory: Optional[Memory] = field(default_factory=Memory)
+    psyche: Optional[Psyche] = field(default_factory=Psyche)
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class PlayerState(AssetState):
-    position: Optional[Position] = None # type: ignore
-    character: Optional[Character] = None
-    inventory: Optional[Inventory] = None
-    meters: Optional[Meters] = None
+    position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
+    character: Optional[Character] = field(default_factory=Character)
+    inventory: Optional[Inventory] = field(default_factory=Inventory)
+    meters: Optional[Meters] = field(default_factory=Meters)
     mutators: Mutators = field(default_factory=Mutators)   
-    goal: Optional[Goal] = None
-    intention: Optional[Intentions] = None
+    goal: Optional[Goal] = field(default_factory=Goal)
+    intention: Optional[Intentions] = Intentions.IDLE.value
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)

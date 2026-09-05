@@ -285,7 +285,7 @@ class CognitionMechanics(Mechanic):
         elif intention == Intentions.WANDER.value:
             # If we reached our wander point (or don't have one), 
             #   pick a new random nearby point
-            if not sprite.state.goal or self._completed(sprite):
+            if not sprite.state.goal or self._completed(sprite, board):
                 offset_x = random.randint(-50, 50)
                 offset_y = random.randint(-50, 50)
                 sprite.state.goal = Goal(
