@@ -37,7 +37,7 @@ class InteractionMechanics(SpatialMechanic):
         payload: DevicePayload
     ) -> None:
         """
-        Resolves interactions between Sprites/Players and Objects (e.g., Doors, Chests).
+        Resolves interactions between Sprites/Players and Objects (e.g., Doors, Chests, Signs).
         """
         # Ensures an entity can only interact ONCE per frame, 
         # preventing same-frame teleport bounces across layers.
@@ -60,7 +60,8 @@ class InteractionMechanics(SpatialMechanic):
 
             doors = board.instances(AssetInstances.DOORS.value, layer)
             chests = board.instances(AssetInstances.CHESTS.value, layer)
-            targets = doors + chests
+            signs = board.instances(AssetInstances.SIGNS.value, layer)
+            targets = doors + chests + signs
 
             if not targets:
                 continue
@@ -111,23 +112,16 @@ class InteractionMechanics(SpatialMechanic):
 
                     elif source.taxonomy.instance == AssetInstances.PLAYERS:
                         pass
-                        # TODO
-                        # bus.append(MenuEvent(
-                        #     id=Menus.INVENTORY.value, 
-                        #     context={
-                        #       TODO: the context for InventoryMenu
-                        # ))
-                        # NOTE: might need to differentiate between
-                        #       ExchangeMenu and InventoryMenu here...
+                        # TODO: ExchangeMenu and InventoryMenu routing
 
                 # -------------------------------- SIGN INTERACTIONS
                 elif target.taxonomy.instance == AssetInstances.SIGNS:
                     if source.taxonomy.instance == AssetInstances.PLAYERS:
                         bus.append(MenuEvent(
-                            # TODO: 
                             id=Menus.TEXT.value, context={
-                                'plot': board.plot, 
+                                'plot': board.plot.current, 
                                 'persona': target.state.persona,
                                 'lexicon': target.state.lexicon 
                             }
                         ))
+                        processed_sources.add(source.name)

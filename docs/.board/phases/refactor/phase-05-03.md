@@ -291,9 +291,9 @@ When `content_function()` is executed, it should check a local `_cached_pages` v
 
 **Task #2: ISL Compiler Abstraction**
 
-* [ ] Refactor `Executor.evaluate()` to accept a generic `execution_locals: dict` instead of strictly `SpriteState`.
-* [ ] Update `TransitionMechanics` to pass `{'sprite': sprite.state, 'sprites': board.characters(), 'functions': ..., 'constants': ...}` into the updated `Executor`.
-* [ ] Ensure `CompilerTranslator` and `LambdaTranslator` dynamically map the `execution_locals` dictionary to the ISL runtime without breaking backwards compatibility.
+* [ ] Refactor `Executor.evaluate()` to accept a generic `locals: dict` instead of strictly `SpriteState`.
+* [ ] Update `TransitionMechanics` to pass `{'sprite': sprite.state, 'sprites': board.characters()}` into the updated `Executor`.
+* [ ] Ensure `CompilerTranslator` and `LambdaTranslator` dynamically map the `locals` dictionary to the ISL runtime without breaking backwards compatibility.
 
 **Task #3: Widget Binding System & Provider Refactor**
 

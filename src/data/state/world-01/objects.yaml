@@ -1,17 +1,17 @@
 objects:
   crates: 
     - id: crate-barrel
-      name: the-barrel
+      name: castle-dawn-barrel-00
       layer: '0'
       position:
         x: 100
         y: 250
   signs:
-    - id: board-wood
-      name: sign-board
+    - id: wood-bulletin
+      name: castle-dawn-sign-board-00
       layer: '0'
-      content: some words
-      persona: board
+      persona: castle-dawn-sign
+      lexicon: spring
       position:
         x: 430
         y: 370

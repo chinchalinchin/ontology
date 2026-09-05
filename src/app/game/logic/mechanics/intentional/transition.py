@@ -44,16 +44,21 @@ class TransitionMechanics(Mechanic):
 
         for sprite in sprites:
             # 1. Evaluate State ISL Conditions
-            if self.executor:
-                next_intent = self.executor.evaluate(sprite.state, sprites_dict)
+            if self.executor and sprite.state.intention:
+                next_intent_str = self.executor.evaluate(
+                    current_state=sprite.state.intention.value,
+                    locals={'sprite': sprite.state, 'sprites': sprites_dict}
+                )
+                
                 current_intent = sprite.state.intention
 
-                if next_intent:
+                if next_intent_str:
+                    next_intent = Intentions(next_intent_str)
                     if next_intent != current_intent:
                         logger.info(f"Transitioning {sprite.name} from {sprite.state.intention} to "
                                     f"{next_intent}")
                         
-                    sprite.state.intention = next_intent
+                        sprite.state.intention = next_intent
 
             # 2. Resolve Action
             sprite.state.animation.action = AnimationMap.action(
@@ -71,7 +76,7 @@ class TransitionMechanics(Mechanic):
                 # Animate if doing an action OR if moving towards a goal
                 is_active_intention = sprite.state.intention not in StaticIntentions
                 has_active_velocity = (sprite.state.velocity.vx != 0 or 
-                                        sprite.state.velocity.vy != 0)
+                                       sprite.state.velocity.vy != 0)
                 
                 sprite.state.mutators.triggers.animated = (is_active_intention or 
-                                                            has_active_velocity)
+                                                           has_active_velocity)

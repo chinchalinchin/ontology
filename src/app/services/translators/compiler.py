@@ -3,26 +3,19 @@
 """
 import logging
 from types import SimpleNamespace
-from typing import (
-    Dict, 
-    List, 
-    Optional, 
-    Any
-)
-from app.config.enums import Intentions
-from app.models.state import SpriteState
-from app.models.config import IntentionConfiguration
+from typing import Dict, List, Optional, Any
+
 from app.services.translators.base import (
     Translator, 
     Executor, 
-    IntentionTransition
+    Transition
 )
 from app.services.translators.environ import Environ
 
 logger = logging.getLogger(__name__)
 
 class CompilerExecutor(Executor):
-    def __init__(self, transitions: Dict[Intentions, List[IntentionTransition]]):
+    def __init__(self, transitions: Dict[str, List[Transition]]):
         super().__init__(transitions)
         # Construct the globals dictionary once
         self.env_globals = {
@@ -30,25 +23,19 @@ class CompilerExecutor(Executor):
             "functions": SimpleNamespace(**Environ.functions)
         }
 
-    def evaluate(self, sprite: SpriteState, sprites: Dict[str, Any]) -> Optional[Intentions]:
-        if sprite.intention not in self.transitions:
+    def evaluate(self, current_state: str, locals: Dict[str, Any]) -> Optional[str]:
+        if current_state not in self.transitions:
             return None
             
-        # Bind the dynamic execution locals
-        execution_locals = {
-            'sprite': sprite,
-            'sprites': sprites
-        }
-            
-        for transition in self.transitions[sprite.intention]:
+        for transition in self.transitions[current_state]:
             if not transition.conditions:
                 continue
                 
             match = True
             for code_obj in transition.conditions:
                 try:
-                    # Evaluate the compiled AST object using the cached globals
-                    if not eval(code_obj, self.env_globals, execution_locals):
+                    # Evaluate the compiled AST object using the cached globals and dynamic locals
+                    if not eval(code_obj, self.env_globals, locals):
                         match = False
                         break
                 except AttributeError as e:
@@ -63,25 +50,13 @@ class CompilerExecutor(Executor):
 
 
 class CompilerTranslator(Translator):
-    def compile(self, raw_intentions: Dict[str, List[IntentionConfiguration]]) -> Executor:
-        compiled_transitions: Dict[Intentions, List[IntentionTransition]] = {}
+    def compile(self, raw_configs: Dict[str, List[Any]]) -> Executor:
+        compiled_transitions: Dict[str, List[Transition]] = {}
         
-        for state_str, configs in raw_intentions.items():
-            try:
-                intention_key = Intentions(state_str)
-            except ValueError:
-                logger.warning(f"Unrecognized Intention key in ISL configuration: {state_str}")
-                continue
-                
-            compiled_transitions[intention_key] = []
+        for state_str, configs in raw_configs.items():
+            compiled_transitions[state_str] = []
             
             for config in configs:
-                try:
-                    next_intention = Intentions(config.next)
-                except ValueError:
-                    logger.warning(f"Unrecognized Target Intention in ISL configuration: {config.next}")
-                    continue
-                    
                 code_objects: List[Any] = []
                 for cond_str in config.conditions:
                     try:
@@ -90,9 +65,9 @@ class CompilerTranslator(Translator):
                     except Exception as e:
                         logger.error(f"Failed to compile ISL AST condition '{cond_str}': {e}")
                         
-                compiled_transitions[intention_key].append(
-                    IntentionTransition(
-                        next=next_intention,
+                compiled_transitions[state_str].append(
+                    Transition(
+                        next=config.next,
                         conditions=code_objects
                     )
                 )

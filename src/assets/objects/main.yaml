@@ -47,7 +47,7 @@ objects:
       hitboxes: null
   # -------------------------------------------------------
   signs:
-    board-wood: 
+    wood-bulletin: 
       mass: 0
       dimensions:
         w: 30

@@ -49,7 +49,8 @@ from app.models.config import (
     CursorRecipe,
     CraftRecipe,
     WidgetRecipe,
-    Recipe
+    Recipe,
+    IntentionConfiguration
 )
 from app.models.state import (
     StateSchema, 
@@ -246,3 +247,29 @@ def mock_board(mock_board_assets, mock_configurations):
     
     with patch('app.game.board.settings.TILE_HASH_SIZE', 32):
         return Board(assets=mock_board_assets, configurations=mock_configurations, equipment=equipment)
+
+@pytest.fixture
+def mock_isl_configs():
+    """
+    Shared mock configurations covering various ISL edge cases.
+    """
+    return {
+        "idle": [
+            IntentionConfiguration(next="attack", conditions=["sprite.health < 50"]),
+            IntentionConfiguration(next="wander", conditions=["sprite.health >= 50"])
+        ],
+        "attack": [
+            IntentionConfiguration(next="idle", conditions=["sprites['enemy'].dead"])
+        ],
+        "town-locked": [
+            IntentionConfiguration(next="town-unlocked", conditions=["plot.mayor_bribed == True"])
+        ],
+        "find": [
+            # BUGFIX: Route targeting through the standard 'sprites' ISL dictionary namespace 
+            # instead of creating a custom root namespace.
+            IntentionConfiguration(next="interact", conditions=["functions.is_near(sprite.pos, sprites['target'].pos, 10)"])
+        ],
+        "bad_syntax": [
+            IntentionConfiguration(next="idle", conditions=["sprite.health =="]) # syntax error
+        ]
+    }

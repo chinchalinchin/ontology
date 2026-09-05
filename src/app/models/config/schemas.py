@@ -37,3 +37,4 @@ class ConfigurationSchema:
     mechanics: MechanicsConfiguration = field(default_factory=MechanicsConfiguration)
     compositions: Dict[str, CompositionConfiguration] = field(default_factory=dict)
     menus: Dict[str, MenuConfiguration] = field(default_factory=dict)
+    plots: Dict[str, List[PlotConfiguration]] = field(default_factory=dict)

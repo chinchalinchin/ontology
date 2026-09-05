@@ -18,7 +18,8 @@ from app.models.state.objects import (
     PropertyState,
     MotorState,
     AnimatorState,
-    AttachmentState
+    AttachmentState,
+    DialogueState
 )
 from app.models.state.schemas import (
     TileStateInstances,
@@ -73,6 +74,7 @@ __all__ = [
     'MotorState',
     'AnimatorState',
     'AttachmentState',
+    'DialogueState',
     # SPRITE STATES
     'SpriteState',
     'PlayerState',

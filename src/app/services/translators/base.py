@@ -9,34 +9,29 @@ from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from typing import Dict, List, Optional, Any
 
-# Application Libraries
-from app.models.state import SpriteState
-from app.config.enums import Intentions
-from app.models.config import IntentionConfiguration
-
 @dataclass(slots=True)
-class IntentionTransition:
+class Transition:
     """
     Dynamic game model representing a compiled transition rule.
     """
-    next: Intentions
+    next: str
     conditions: List[Any]  # Can hold Callables (Lambdas) or CodeType objects (AST)
 
 class Executor(ABC):
     """
-    Defines the execution contract for evaluating intention transitions.
+    Defines the execution contract for evaluating intention/plot transitions.
     """
-    transitions: Dict[Intentions, List[IntentionTransition]]
+    transitions: Dict[str, List[Transition]]
     
-    def __init__(self, transitions: Dict[Intentions, List[IntentionTransition]]):
+    def __init__(self, transitions: Dict[str, List[Transition]]):
         self.transitions = transitions
 
     @abstractmethod
-    def evaluate(self, sprite: SpriteState, sprites: Dict[str, Any]) -> Optional[Intentions]:
+    def evaluate(self, current_state: str, locals: Dict[str, Any]) -> Optional[str]:
         """
-        Evaluates the Sprite's state against the compiled ISL conditions.
+        Evaluates the dynamic locals against the compiled ISL conditions for a given state.
         
-        Returns the Intentions enum key for the next valid state transition, 
+        Returns the string key for the next valid state transition, 
         or None if no transitions evaluate to True.
         """
         pass
@@ -49,7 +44,7 @@ class Translator(ABC):
     """
     
     @abstractmethod
-    def compile(self, raw_intentions: Dict[str, List[IntentionConfiguration]]) -> Executor:
+    def compile(self, raw_configs: Dict[str, List[Any]]) -> Executor:
         """
         Compiles string conditions into Python executables and constructs an Executor 
         capable of evaluating them at runtime.

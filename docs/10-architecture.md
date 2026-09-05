@@ -34,11 +34,10 @@ flowchart LR
 Triggered by a `StateEvent` (e.g., selecting "New Game" or "Load"), the Engine transitions into world generation without blocking the Python GIL.
 
 1. **Time-Sliced Generation (`Migrator.step`)**: The `LoadController` calls the Migrator each frame. The Migrator applies the Entity-Component-System (ECS) pattern to a batch of assets from the state YAML, injecting Frame, Animation, Properties, and State components, then yields execution back to the Engine to maintain UI responsiveness.
+   - The StateSchema distinguishes between Physical Assets (Assets requiring state, frames, and logic, such as Tiles or Sprites) and World Metadata (abstract governing states, such as the current Plot). During hydration, the Migrator parses World Metadata instantly ($O(1)$) and assigns it directly to the Board, explicitly bypassing the time-sliced ECS component injection loop reserved for Physical Assets.
 2. **Asset Prewarming (`Registry.prewarm`)**: Concurrently, the Registry parses a queue of dependency string keys, loading `.png` and `.ttf` files into GPU memory (`TexturePtr`) within a strictly enforced millisecond time budget.
 3. **Screen Allocation (`Screen.rebake`)**: Once hydration reaches 100%, the Migrator triggers `rebake()` on all active Screens to dynamically calculate max dimensions and allocate independent hardware canvases for the Painter's Algorithm.
 4. **Execution**: The `LoadController` emits a `TerminalEvent`, popping the loading screen, setting `board.loaded = True`, and unpausing the `world` Mechanics.
-
-The Board and StateSchema distinguish between Physical Assets (Assets requiring state, frames, and logic, such as Tiles or Sprites) and World Metadata (abstract governing states, such as the current Plot). During hydration, the Migrator parses World Metadata instantly ($O(1)$) and assigns it directly to the Board, explicitly bypassing the time-sliced ECS component injection loop reserved for Physical Assets.
 
 ## Mechanics
 
