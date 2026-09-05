@@ -437,6 +437,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#goal-satisfaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal Satisfaction
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -478,17 +489,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dialoguemap" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        DialogueMap
-      
-    </span>
-  </a>
   
 </li>
       
@@ -986,6 +986,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#goal-satisfaction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goal Satisfaction
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1027,17 +1038,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#dialoguemap" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        DialogueMap
-      
-    </span>
-  </a>
   
 </li>
       
@@ -1092,103 +1092,68 @@
 <h1 id="ontology-intentions-goals">Ontology: Intentions &amp; Goals</h1>
 <p>Intentions and Goals are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite's "<em>finite automaton</em>", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.</p>
 <p>Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the <a href="#transition-matrix">Intention Transition Matrix</a>.</p>
-<p>Broadly speaking, an Intention is a "verb", e.g. <code>attack</code>, <code>find</code>, <code>barter</code>, etc. A Goal is a "noun" (e.g. <code>sprite</code>, <code>position</code>, <code>loot</code>, etc.). While the exact mapping is more complex, in general terms: Intentions produce Actions, Goals produce Directions.</p>
+<p>Broadly speaking, an Intention is a "verb", e.g. <code>attack</code>, <code>find</code>, <code>barter</code>, etc. A Goal is a "noun" (e.g. <code>object</code>, <code>position</code>, <code>property</code>, etc.). While the exact mapping is more complex, in general terms: Intentions produce Actions, Goals produce Directions.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Each individual intention has a detailed specification in the <a href="../specs/">Specifications section</a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A Transition from the Intention <span class="arithmatex">\(i_1\)</span> to the Intention <span class="arithmatex">\(i_2\)</span> is denoted <span class="arithmatex">\(i_1:i_2\)</span></p>
+</div>
 <h2 id="intention">Intention</h2>
 <p>A Intention is a <a href="../02-sprites/">Sprite</a> field that factors into the Asset Animation calculations indirectly; It may be thought of as a "hidden" state. An Animation is a "projection" of a Sprite's Intention into the (Action, Direction)-space. </p>
 <p>For Sprites, Intention is an attribute that controls state transitions and action mappings. For the Player, it controls action mappings.</p>
 <p>It may indirectly alter the Sprite state changes or other properties of the Sprites, e.g. entering into the <code>sprint</code> state increases the velocity of the <code>(walk, *)</code> states, but does not factor into the animation speed or the frame indexing scheme. Similarly, entering into the <code>interact</code> state does not alter the Sprite's current animation in any way, but instead allows, for example, the Sprite to open a Chest or Door.</p>
 <p>A brief explanation of each Intention state value is given below,</p>
 <ul>
-<li><code>attack</code>: Initiate an Attack Animation..<ul>
-<li><em>Sprite</em>: Apply CombatMechanics, conditional on Equipment constraint.</li>
-<li><em>Player</em>: Apply CombatMechanics, conditional on Equipment constraint.</li>
-</ul>
-</li>
-<li><code>attract</code>: Attract a Sprite for interaction.<ul>
-<li><em>Sprite</em>:</li>
-<li><em>Player</em>: N/A</li>
-</ul>
-</li>
-<li><code>barter</code>: Exhcange Inventories.<ul>
-<li><em>Sprite</em>: Apply CommerceMechanics.</li>
-<li><em>Player</em>: Open a TradeWindow with Target.</li>
-</ul>
-</li>
-<li><code>build</code>: Instantiate a Strut<ul>
-<li><em>Sprite</em>: Apply IndustryMechanics for Sprites</li>
-<li><em>Player</em>: Open a BuildWindow. </li>
-</ul>
-</li>
-<li><code>escape</code>: Move away from target.<ul>
-<li><em>Sprite</em>:</li>
-<li><em>Player</em>: N/A</li>
-</ul>
-</li>
-<li><code>find</code>: Move towards target.<ul>
-<li><em>Sprite</em>:</li>
-<li><em>Player</em>: N/A</li>
-</ul>
-</li>
-<li><code>follow</code>: Move towards target. (Redundant? Functionally, but separate node in tree leading to different outcomes)<ul>
-<li><em>Sprite</em>: </li>
-<li><em>Player</em>: N/A</li>
-</ul>
-</li>
-<li><code>hunt</code>: Move towards target (Redundant? Functionally, but separate node in tree leading to different outcomes and interactions.)<ul>
-<li><em>Sprite</em>: </li>
-<li><em>Player</em>: N/A</li>
-</ul>
-</li>
-<li><code>idle</code>: Do nothing.<ul>
-<li><em>Sprite</em>:</li>
-<li><em>Player</em>: N/A</li>
-</ul>
-</li>
-<li><code>interact</code>: Interact with Objects.<ul>
-<li><em>Sprite</em>: </li>
-<li><em>Player</em>: </li>
-</ul>
-</li>
-<li><code>mine</code>: Convert Resources into Inventory. <ul>
-<li><em>Sprite</em>: Apply MineMechanics, conditional on Equpiment constraints.</li>
-<li><em>Player</em>: Apply MineMechanics, conditional on Equipment constraints.</li>
-</ul>
-</li>
-<li><code>return</code>: Return to remembered locations.<ul>
-<li><em>Sprite</em>: Move <code>sprite.state.memory.goal</code> to <code>sprite.state.goal</code></li>
-<li><em>Player</em>: N/A</li>
-</ul>
-</li>
-<li><code>scavenge</code>: Collect loot.<ul>
-<li><em>Sprite</em>: </li>
-<li><em>Player</em>: </li>
-</ul>
-</li>
-<li><code>speak</code>: Initiate dialogue.<ul>
-<li><em>Sprite</em>: Apply CommerceMechanics (exchanges <code>prices</code>). Apply RumorMechanics (exchange <code>rumors</code>) </li>
-<li><em>Player</em>: Draw the target Sprite's <code>state.psyche.dialogue</code> on a Dialogue window.</li>
-</ul>
-</li>
-<li><code>sprint</code>: Increase movement speed.<ul>
-<li><em>Sprite</em>:</li>
-<li><em>Player</em>: </li>
-</ul>
-</li>
-<li><code>threaten</code>: Pre-cursor to Attack (wiggle-room).<ul>
-<li><em>Sprite</em>:</li>
-<li><em>Player</em>: N/A</li>
-</ul>
-</li>
-<li><code>wander</code>: <ul>
-<li><em>Sprite</em>:</li>
-<li><em>Player</em>: N/A</li>
-</ul>
-</li>
+<li><code>attack</code>: Initiate an Attack Animation.</li>
+<li><code>attract</code>: Attract a Sprite for interaction.</li>
+<li><code>barter</code>: Exchange Inventories.</li>
+<li><code>build</code>: Instantiate a Strut.</li>
+<li><code>escape</code>: Move away from target.</li>
+<li><code>find</code>: Move towards target.</li>
+<li><code>follow</code>: Move towards target.</li>
+<li><code>hunt</code>: Move towards target.</li>
+<li><code>idle</code>: Do nothing. Used for memory buffering, i.e. allowing remembered goals to pop onto the stack.</li>
+<li><code>interact</code>: Interact with Objects.</li>
+<li><code>mine</code>: Convert Resources into Inventory. </li>
+<li><code>return</code>: Return to remembered locations.</li>
+<li><code>scavenge</code>: Collect loot.</li>
+<li><code>speak</code>: Initiate dialogue.</li>
+<li><code>sprint</code>: Increase movement speed.</li>
+<li><code>threaten</code>: Pre-cursor to Attack.</li>
+<li><code>wander</code>: Move to randomized positions.</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p><code>mine</code> is complicated by the polymorphism that exists in the LPC spec between the Action of Thrust (i.e. attacking) and using a Shovel or Pickaxe, i.e. the Spear Weapon and the Shovel/Pickaxe Tool both use the same underlying animation rows. This is resolved by <a href="../appendices/01-schemas/#configuration-actions">Action Sets</a> and <a href="../10-architecture/#maps">AnimationMaps</a>.</p>
 </div>
+<p><strong>Intention Groups</strong></p>
+<p>Intentions form natural groups based on the gameplay logic they inhabit and produce. Intention Groups are enumerated below,</p>
+<ul>
+<li>BlockingIntentions (<code>attack</code>, <code>mine</code>): Intentions whose projected animations must be complete before control is released.</li>
+<li>AnimatedIntentions (<code>attack</code>, <code>mine</code>): Intentions that produce an animation.</li>
+<li>StaticIntentions (<code>idle</code>, <code>barter</code>, <code>speak</code>, <code>interact</code>, <code>threaten</code>, <code>mock</code>): Intentions that do not produce an animation.</li>
+<li>NavigationIntentions (<code>find</code>, <code>follow</code>, <code>hunt</code>, <code>escape</code>, <code>wander</code>, <code>return</code>): Intentions with a velocity.</li>
+<li>StationaryIntentions (<code>barter</code>, <code>build</code>, <code>idle</code>, <code>interact</code>, <code>mine</code>,): Intentions with no velocity.</li>
+</ul>
+<p><strong>Intention Loops</strong></p>
+<p>In order to avoid complex automata, <code>idle</code> acts as the origin and terminus of all "<em>Intention Loops</em>" in the Intention Transition Matrix. In other words, <code>idle</code> is the "hub" Intention. All autonomous Sprite Animations are modelled as loops back into the <code>idle</code> Intention. For example, one variation of the <em>Dialogue Loop</em> is given below,</p>
+<div class="arithmatex">\[
+\text{idle} \to \text{find} \to \text{speak} \to \text{idle}
+\]</div>
+<p>Another route through the <em>Dialogue Loop</em> is given by,</p>
+<div class="arithmatex">\[
+\text{idle} \to \text{find} \to \text{speak} \to \text{follow} \to \text{find} \to \text{speak} \text{idle}
+\]</div>
+<p>For this reason, Intention <em>Transitions</em> are further classified as <em>Entrypoints</em>, <em>Interpoints</em> and <em>Exitpoints</em>, where the entrance and exit is in reference to the particular loop being traversed. </p>
+<p>A valid Intention Loop with <span class="arithmatex">\(n\)</span> steps must always satisfy the following constraints,</p>
+<ul>
+<li><span class="arithmatex">\(\text{idle}:i_1\)</span> : The Entrypoint must transition from <code>idle</code></li>
+<li><span class="arithmatex">\(:i_{n-1}:\text{idle}\)</span> : The Exitpoint must transition into <code>idle</code></li>
+</ul>
+<p>If <span class="arithmatex">\(i_j:i_{j+1}\)</span> where <span class="arithmatex">\(i_j, i_{j+1} \neq \text{idle}\)</span>, then that transition is called an Interpoint.</p>
 <h3 id="transition-matrix">Transition Matrix</h3>
 <ul>
 <li>Location: <code>/src/data/config/intentions/main.yaml</code></li>
@@ -1196,6 +1161,10 @@
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>The Player state does not observe the Intention Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See <a href="../02-sprites/#player">Player documentation</a> for more information on the Player.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Nothing in the game engine changes Intentions <em>except</em> Transitions. Transitions (and TransitionMechanics) are the only component of the application that alters Intention State. This is important for consistency. Failure to observe this rule may result in the Sprite Intention logic not behaving correctly. </p>
 </div>
 <p>The Intention Transition Matrix determines which Intention states are currently reachable for a Sprite from its current Intention. The general schema for the Intention Transition Matrix is given below,</p>
 <div class="highlight"><pre><span></span><code><span class="nt">intentions</span><span class="p">:</span>
@@ -1213,9 +1182,6 @@
     attack --&gt; hunt
     attack --&gt; scavenge
 
-    attract --&gt; barter
-    attract --&gt; speak
-
     barter --&gt; threaten
     barter --&gt; idle
 
@@ -1224,19 +1190,18 @@
     escape --&gt; escape
     escape --&gt; return
 
-    find --&gt; scavenge
     find --&gt; interact
     find --&gt; speak
-    find --&gt; return
 
     follow --&gt; follow
     follow --&gt; speak
-    follow --&gt; wander
+    follow --&gt; idle
 
     hunt --&gt; attack
-    hunt --&gt; return
+    hunt --&gt; idle
 
     idle --&gt; wander
+    idle --&gt; find
     idle --&gt; idle
 
     interact --&gt; idle
@@ -1249,14 +1214,12 @@
     mock --&gt; idle
 
     return --&gt; idle
-    return --&gt; return
 
     scavenge --&gt; idle
 
     speak --&gt; follow
     speak --&gt; idle
 
-    sprint --&gt; return
     sprint --&gt; idle
 
     threaten --&gt; attack
@@ -1280,86 +1243,81 @@
 </tr>
 <tr>
 <td>2</td>
-<td><code>attract</code></td>
-<td><code>barter</code>, <code>speak</code></td>
-</tr>
-<tr>
-<td>3</td>
 <td><code>barter</code></td>
 <td><code>threaten</code>, <code>idle</code></td>
 </tr>
 <tr>
-<td>4</td>
+<td>3</td>
 <td><code>build</code></td>
 <td><code>idle</code></td>
 </tr>
 <tr>
-<td>5</td>
+<td>4</td>
 <td><code>escape</code></td>
 <td><code>escape</code>, <code>return</code></td>
 </tr>
 <tr>
-<td>6</td>
+<td>5</td>
 <td><code>find</code></td>
-<td><code>scavenge</code>, <code>interact</code>, <code>speak</code>, <code>return</code></td>
+<td><code>interact</code>, <code>speak</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>follow</code></td>
+<td><code>follow</code>, <code>speak</code>, <code>idle</code></td>
 </tr>
 <tr>
 <td>7</td>
-<td><code>follow</code></td>
-<td><code>follow</code>, <code>speak</code>, <code>wander</code></td>
+<td><code>hunt</code></td>
+<td><code>attack</code>, <code>idle</code></td>
 </tr>
 <tr>
 <td>8</td>
-<td><code>hunt</code></td>
-<td><code>attack</code>, <code>return</code></td>
+<td><code>idle</code></td>
+<td><code>wander</code>, <code>find</code>, <code>idle</code></td>
 </tr>
 <tr>
 <td>9</td>
-<td><code>idle</code></td>
-<td><code>wander</code>, <code>idle</code></td>
-</tr>
-<tr>
-<td>10</td>
 <td><code>interact</code></td>
 <td><code>idle</code></td>
 </tr>
 <tr>
-<td>11</td>
+<td>10</td>
 <td><code>mine</code></td>
 <td><code>build</code>, <code>mine</code>, <code>idle</code></td>
 </tr>
 <tr>
-<td>12</td>
+<td>11</td>
 <td><code>mock</code></td>
 <td><code>threaten</code>, <code>idle</code></td>
 </tr>
 <tr>
-<td>13</td>
+<td>12</td>
 <td><code>return</code></td>
-<td><code>idle</code>, <code>return</code></td>
+<td><code>idle</code></td>
 </tr>
 <tr>
-<td>14</td>
+<td>13</td>
 <td><code>scavenge</code></td>
 <td><code>idle</code></td>
 </tr>
 <tr>
-<td>15</td>
+<td>14</td>
 <td><code>speak</code></td>
 <td><code>follow</code>, <code>idle</code></td>
 </tr>
 <tr>
-<td>16</td>
+<td>15</td>
 <td><code>sprint</code></td>
-<td><code>return</code>, <code>idle</code></td>
+<td><code>idle</code></td>
 </tr>
 <tr>
-<td>17</td>
+<td>16</td>
 <td><code>threaten</code></td>
 <td><code>attack</code>, <code>hunt</code>, <code>idle</code></td>
 </tr>
 <tr>
-<td>18</td>
+<td>17</td>
 <td><code>wander</code></td>
 <td><code>idle</code></td>
 </tr>
@@ -1386,7 +1344,7 @@
 </ul>
 <p>For example, in the default Intention Transition matrix given above, the transition from <code>attack</code> to <code>hunt</code> is conditional on the following,</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goal.category == constants.Goals.SPRITE.value</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goal.category == constants.Goals.TARGET.value</span>
 </code></pre></div>
 <p><code>sprite</code> is a reference to the Sprite's state which is currently having its Intention processed by the game engine. Thus, the Sprite's Intention state will transition to <code>hunt</code> if the Sprite currently does not have a Goal, but remembers having a Goal of Category <code>sprite</code>.</p>
 <div class="admonition note">
@@ -1398,22 +1356,19 @@
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(sprite.goal.name).mutators.triggers.dead</span>
 </code></pre></div>
 <p><code>sprites</code> is a reference to a cross-layer dictionary (<code>_cached_characters</code>) of all ingame Sprites states keyed by their identifying and unique <code>name</code>, which provides <span class="arithmatex">\(O(1)\)</span> access to their state attributes.</p>
-<p>Notice in the example there is a self-entrant transition. A Sprite with an <code>attack</code> Intention can re-enter the <code>attack</code> Intention conditional on the Sprite still having a target,</p>
-<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == Goals.SPRITE.value</span>
-</code></pre></div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>The conditions for an Intention transition are evaluated in the order they specified! In the given example, if <code>sprite.goal.category == constants.Goals.SPRITE.value</code>, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into <code>attack</code>.</p>
+<p>The conditions for an Intention transition are evaluated in the order they specified! In the given example, if <code>sprite.goal.category == constants.Goals.TARGET.value</code>, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into <code>attack</code>.</p>
 </div>
 <p>Intention transition conditions are compiled by the application during initialization and evaluated at runtime. The engine supports two execution strategies, configured via <code>ISL_TRANSLATOR</code> in <code>settings.py</code>: <code>lambda</code> (which generates inline Python functions) and <code>compiler</code> (which generates native Abstract Syntax Trees). The application evaluates ISL conditions sequentially utilizing Python's native short-circuit logic.</p>
 <p>To avoid AttributeError exceptions during runtime, existential checks must strictly precede attribute accesses. Consider,</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># CORRECT CONFIGURATION</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.SPRITE.value</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.TARGET.value</span>
 </code></pre></div>
 <p>versus,</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># INCORRECT CONFIGURATION</span>
-<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.SPRITE.value</span>
+<span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.TARGET.value</span>
 <span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
 </code></pre></div>
 <p>In the first case, <code>goal</code> is guaranteed to exist before the subsequent condition is applied to <code>goal.category</code>, while the second will generate a runtime error.</p>
@@ -1435,19 +1390,25 @@
 <p><em>Goals</em> provide the seed (or energy) for transitions through Intentions and the application of Motivations to modulate said transitions. A Goal is a Sprite's <em>modus operandi</em>, the abstract thing it pursues over the course of the game loop. A Sprite's transitions through Intention is <em>in order</em> to achieve a Goal.</p>
 <ul>
 <li><code>name</code>: Unique Identifier of the Goal.</li>
-<li><code>category</code>: Category of the Goal. (<code>asset</code>, <code>sprite</code>, <code>loot</code>, <code>wealth</code>, <code>property</code>, <code>position</code>)</li>
+<li><code>category</code>: Category of the Goal. </li>
 <li><code>position</code>: Last-known position of the Goal. When the Goal is within the <code>mutators.vision.radius</code>, this position is updated every game loop. Once the Goal exits the Sprites <code>mutators.vision.radius</code>, it becomes a static value that freezes on the last known Position of its Goal.</li>
 </ul>
 <h3 id="goal-category">Goal Category</h3>
 <p>When a Sprite has Goal, it will seek out (path-find) its way to <code>name</code>. The <code>category</code> of a Goal affects the type of identifier given in <code>name</code>. </p>
 <ul>
-<li><code>category == position</code>: The Goal is a Position, i.e. the Sprite is trying to find a location on the Board. The <code>name</code> will be the Sprite's name.</li>
-<li><code>category == asset</code>: The Goal is a Sprite Asset, i.e. the Sprite is trying to find an Asset. The <code>name</code> will be the Asset <code>name</code>.</li>
-<li><code>category == loot</code>: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The <code>name</code> will be an Inventory key. </li>
-<li><code>category == wealth</code>: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The <code>name</code> will be an Inventory key. The key will be of the loot with the maximum value in the Sprite's Prices, e.g. the highest priced loot.</li>
-<li><code>category == property</code>: The goal is Property, i.e. the Sprite is seeking the location of Property. The <code>name</code> will be an Asset name of an Asset that implements a <code>PropertyState</code>.</li>
-<li><code>category == sprite</code>: The goal is a Sprite. The <code>name</code> will be a name of a Sprite.</li>
+<li><code>category == POSITION</code>: The Goal is a Position, i.e. the Sprite is trying to find a location on the Board. The <code>name</code> will be a placeholder constant.</li>
+<li><code>category == OBJECT</code>: The Goal is an Object, i.e. the Sprite is trying to find an Object. The <code>name</code> will be the Object <code>instance</code> (<em>not</em> the ID).</li>
+<li><code>category == PROPERTY</code>: The goal is Property, i.e. the Sprite is seeking to create property. The <code>name</code> will be the <em>ID</em> of the Strut the Sprite is seeking to create.</li>
+<li><code>category == TARGET': The goal is a Sprite, with aggressive intent implied. The</code>name` will be the name of a Sprite.</li>
+<li><code>category == SUBJECT</code>: The goal is a Sprite, with passive intent impled. The <code>name</code> will be the name of a Sprite.</li>
 </ul>
+<p><strong>TODO: In Design</strong></p>
+<ul>
+<li><code>category == LOOT</code>: The Goal is Loot, i.e. the Sprite is seeking to acquire Loot. The <code>name</code> will be an Inventory key. </li>
+<li><code>category == MONEY</code>: The Goal is Money, i.e. the Sprite is seeking to increase its Wallet. The <code>name</code> will be an Inventory key. The key will be of the loot with the maximum value in the Sprite's Prices, e.g. the highest priced loot.</li>
+</ul>
+<h3 id="goal-satisfaction">Goal Satisfaction</h3>
+<p>TODO</p>
 <h2 id="animationmap">AnimationMap</h2>
 <p>A Sprite's State is mapped onto an (Action, Direction) through an AnimationMap. This component of the Application statically ingests a Sprite State, applies formulas and returns the mapped tuple.</p>
 <p><strong>Player Device</strong></p>
@@ -1485,42 +1446,64 @@
 <li><code>if dy &lt; dx, dy &lt; -dx: direction = up</code></li>
 <li><code>if dy &gt; dx, dy &gt; -dx: direction = left</code></li>
 </ul>
-<h2 id="dialoguemap">DialogueMap</h2>
-<p>TODO</p>
-<p><strong>Formulae</strong></p>
-<ul>
-<li><code>if state.intention == speak and state.psyche.dialogue: dialogue = state.psyche.dialogue</code></li>
-</ul>
 <h2 id="mechanics">Mechanics</h2>
 <p>The (Intention, Goal) of a Sprite is managed across the application lifecycle by <a href="../05-mechanics/">Mechanics</a>. </p>
 <ul>
 <li>CognitionMechanics ("<em>The Brain</em>"): Manages the Goal Lifecycle. It evaluates the environment, consults Motivations and Meters, sets the Goal, determines if the Goal has been achieved (or invalidated), and manages the Memory stack.</li>
-<li>TransitionMechanics ("<em>The Instinct</em>"): Manages the Intention Transitions. It looks at the current Goal set by Cognition and evaluates the ISL matrix to figure out how to achieve it (e.g., <code>sprite.state.goal EXISTS</code>, so <code>transition: idle -&gt; find</code>).</li>
-<li>Spatial Mechanics (<em>The Muscle</em>): CombatMechanics, InteractionMechanics, etc., alter the physical world state (e.g., killing the target, opening the Chest). This physical change is what signals CognitionMechanics on the next tick that the goal is achieved.</li>
+<li>TransitionMechanics ("<em>The Instinct</em>"): Manages the Intention Transitions. It blindly evaluates the Transitions condition and shunts the Sprite to its next Intention if they are satisfied.</li>
+<li>SpatialMechanics (<em>The Muscle</em>): CombatMechanics, InteractionMechanics, etc., alter the physical world state (e.g., killing the target, opening the Chest). This physical change is what signals CognitionMechanics on the next tick that the goal is achieved.</li>
 </ul>
 <h3 id="cognition">Cognition</h3>
-<p><strong>1. Phase A: Resolution</strong></p>
-<p>The ISL relies on <code>not sprite.goal</code> to exit action nodes. Cognition must evaluate if the current goal is satisfied or invalidated.</p>
-<ul>
-<li>If <code>goal.category == SPRITE</code>: Check if <code>sprites.get(sprite.goal.name).mutators.triggers.dead</code>. If true, set <code>sprite.state.goal = None</code>.</li>
-<li>If <code>goal.category == LOOT</code>: Check if <code>sprite.goal.name in sprite.inventory.loot</code>. If true, set <code>sprite.state.goal = None</code>.</li>
-<li>If <code>goal.category == POSITION</code>: Check if <code>is_near(sprite.position, sprite.goal.position, 5)</code>. If true, set <code>sprite.state.goal = None</code>.</li>
-<li>If <code>goal.category == ASSET</code>: Check if the target chest is empty or the door is removed. If true, set <code>sprite.state.goal = None</code>.</li>
+<p>CognitionMechanics manages the life cycle of Sprite Goals.</p>
+<ol>
+<li><strong>Phase A: Resolution</strong>: Conditions are evaluated for goal resolution<ul>
+<li><code>if goal.category == TARGET</code>: If <code>target.mutators.triggers.dead</code>, <code>goal = None</code>.</li>
+<li><code>if goal.category == SUBJECT</code>: If <code>not psyche.dialogue</code>, <code>goal = None</code>.</li>
+<li><code>if goal.category == POSITION</code>: If <code>position - goal.position &lt; some_radius</code>.</li>
+<li><code>if goal.category == OBJECT</code>: TODO</li>
+<li><code>if goal.category == PROPERTY</code>: If <code>goal.name in memory.property</code>, <code>goal = None</code>.</li>
 </ul>
-<p><strong>2. Phase B: Memory Management</strong></p>
-<p>If <code>sprite.state.goal</code> is <code>None</code> (either because it was just resolved or never existed), pop the top goal from <code>sprite.state.memory.goals</code> (if one exists) and assign it to <code>sprite.state.goal</code>.</p>
-<p><strong>3. Phase C: Ideation</strong></p>
-<ul>
-<li><strong><code>CONQUEST</code></strong>: TODO</li>
-<li><strong><code>PROFIT</code>:</strong> Scan <code>board.renderables</code> for items in <code>AssetInstances.CHESTS</code> or <code>MineableAssets</code>. Assign <code>Goals.ASSET</code> or <code>Goals.LOOT</code>.</li>
-<li><strong><code>SURVIVAL</code>:</strong> TODO</li>
+</li>
+<li><strong>Phase B: Scan</strong>: <ul>
+<li>A scan of the <code>mutator.parameter.vision.radius</code> is conducted. If a Sprite is found, its location is updated in <code>memory.sprites</code>.</li>
 </ul>
-<p><strong>4. Tracking Category Expansion</strong></p>
-<ul>
-<li><code>Goals.SPRITE</code> <span class="arithmatex">\(\to\)</span> query <code>board._cached_characters</code>.</li>
-<li><code>Goals.ASSET</code> <span class="arithmatex">\(\to\)</span> query <code>board.renderables</code>.</li>
-<li><code>Goals.POSITION</code> <span class="arithmatex">\(\to\)</span> bypass lookup entirely; the position is static.</li>
+</li>
+<li><strong>Phase C: Memory</strong>: The Sprite's memory is managed and updated relative to its vision. <ul>
+<li>If the Sprite has no Goals, Goals in the Memory are popped off the stack and added to the current Goal. </li>
 </ul>
+</li>
+<li><strong>Phase D: Ideation</strong>: If the Sprite has no Goals, environmental and proximal Goals are ideated. <ul>
+<li><code>if psyche.dialogue</code>: If target Sprite is within <code>mutators.parameters.vision.radius</code>, then <code>goal.category = Goals.SUBJECT.value</code> and <code>goal.name</code> is set to target Sprite.</li>
+</ul>
+</li>
+<li><strong>Phase E: Motivation</strong>: If the Sprite has still no Goals, overarching Motivations are used to form new Goals. These goals are pushed onto the <code>memory.goals</code> stack.<ul>
+<li><code>if psyche.motivation.CONQUEST</code>: TODO</li>
+<li><code>if psyche.motivation.PROFIT</code>: TODO</li>
+<li><code>if psyche.motivation.SURVIVAL</code>: TODO</li>
+<li><code>if psyche.motivation.LOVE</code>: TODO</li>
+<li><code>if psyche.motivation.REVENGE</code>: TODO</li>
+<li><code>if psyche.motivation.REBELLION</code>: TODO</li>
+<li><code>if psyche.motivation.SAFETY</code>: TODO</li>
+</ul>
+</li>
+<li><strong>Phase F: Tracking</strong>: The Sprite's current Goal is tracked.<ul>
+<li><code>if goal.category in [TARGET, SUBJECT]</code>: <ul>
+<li><code>if goal.memory.sprites.get(goal.name): goal.position = goal.memory.sprites[goal.name].position</code></li>
+<li>TODO</li>
+</ul>
+</li>
+<li><code>if goal.category == POSITION</code>: </li>
+<li><code>if goal.category == OBJECT</code>: </li>
+<li><code>if goal.category == PROERTY</code>:</li>
+</ul>
+</li>
+<li><strong>Phase F: Projection</strong><ul>
+<li><code>if intention == ESCAPE</code>:</li>
+<li><code>if intention == FIND</code>:</li>
+<li><code>if intention == WANDER</code>: </li>
+</ul>
+</li>
+</ol>
 
 
 

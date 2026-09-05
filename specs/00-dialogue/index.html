@@ -8,29 +8,27 @@
       
       
       
-        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/">
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/specs/00-dialogue/">
       
       
-      
-        <link rel="next" href="00-overview/">
       
       
         
       
       
-      <link rel="icon" href="assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Ontology</title>
+        <title>00 dialogue - Ontology</title>
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -49,9 +47,9 @@
       
     
     
-      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -74,7 +72,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ontology" class="md-skip">
+        <a href="#ontology-specification-dialogue-loop" class="md-skip">
           Skip to content
         </a>
       
@@ -90,7 +88,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+    <a href="../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -110,7 +108,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Index
+              00 dialogue
             
           </span>
         </div>
@@ -160,7 +158,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+    <a href="../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -187,37 +185,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Index
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -233,48 +204,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#sections" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Sections
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cicd" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        CI/CD
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -286,7 +215,7 @@
   
   
     <li class="md-nav__item">
-      <a href="00-overview/" class="md-nav__link">
+      <a href="../../00-overview/" class="md-nav__link">
         
   
   
@@ -313,7 +242,7 @@
   
   
     <li class="md-nav__item">
-      <a href="01-assets/" class="md-nav__link">
+      <a href="../../01-assets/" class="md-nav__link">
         
   
   
@@ -340,7 +269,7 @@
   
   
     <li class="md-nav__item">
-      <a href="02-sprites/" class="md-nav__link">
+      <a href="../../02-sprites/" class="md-nav__link">
         
   
   
@@ -367,7 +296,7 @@
   
   
     <li class="md-nav__item">
-      <a href="03-compositions/" class="md-nav__link">
+      <a href="../../03-compositions/" class="md-nav__link">
         
   
   
@@ -394,7 +323,7 @@
   
   
     <li class="md-nav__item">
-      <a href="04-intentions/" class="md-nav__link">
+      <a href="../../04-intentions/" class="md-nav__link">
         
   
   
@@ -421,7 +350,7 @@
   
   
     <li class="md-nav__item">
-      <a href="05-mechanics/" class="md-nav__link">
+      <a href="../../05-mechanics/" class="md-nav__link">
         
   
   
@@ -448,7 +377,7 @@
   
   
     <li class="md-nav__item">
-      <a href="06-widgets/" class="md-nav__link">
+      <a href="../../06-widgets/" class="md-nav__link">
         
   
   
@@ -475,7 +404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="07-sounds/" class="md-nav__link">
+      <a href="../../07-sounds/" class="md-nav__link">
         
   
   
@@ -502,7 +431,7 @@
   
   
     <li class="md-nav__item">
-      <a href="08-plots/" class="md-nav__link">
+      <a href="../../08-plots/" class="md-nav__link">
         
   
   
@@ -529,7 +458,7 @@
   
   
     <li class="md-nav__item">
-      <a href="09-emergence/" class="md-nav__link">
+      <a href="../../09-emergence/" class="md-nav__link">
         
   
   
@@ -556,7 +485,7 @@
   
   
     <li class="md-nav__item">
-      <a href="10-architecture/" class="md-nav__link">
+      <a href="../../10-architecture/" class="md-nav__link">
         
   
   
@@ -607,7 +536,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="appendices/" class="md-nav__link ">
+            <a href="../../appendices/" class="md-nav__link ">
               
   
   
@@ -651,7 +580,7 @@
   
   
     <li class="md-nav__item">
-      <a href="appendices/00-references/" class="md-nav__link">
+      <a href="../../appendices/00-references/" class="md-nav__link">
         
   
   
@@ -679,7 +608,7 @@
   
   
     <li class="md-nav__item">
-      <a href="appendices/01-schema0s.md" class="md-nav__link">
+      <a href="../../appendices/01-schema0s.md" class="md-nav__link">
         
   
   
@@ -767,7 +696,7 @@
   
   
     <li class="md-nav__item">
-      <a href="coverage/index" class="md-nav__link">
+      <a href="../../coverage/index" class="md-nav__link">
         
   
   
@@ -812,8 +741,6 @@
   
   
   
-    
-  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -822,24 +749,74 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#sections" class="md-nav__link">
+  <a href="#ontology-specification-dialogue-loop" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Sections
+        Ontology Specification: Dialogue Loop
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ontology Specification: Dialogue Loop">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prologue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prologue
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#cicd" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#step-entrypoint" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CI/CD
+        Step: Entrypoint
       
     </span>
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-interpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step: Interpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-exitpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step: Exitpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workflow-speak-intention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow: Speak Intention
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -863,37 +840,61 @@
   
 
 
-<h1 id="ontology">Ontology</h1>
-<p><em>Ontology</em> is a personal project I have been working on in some form for over a decade, begun shortly after the actual Liberated Pixel Cup concluded. It has been scrapped and remade many times as I learned the mechanics of game development and software engineering. This is my latest attempt to build a highly configurable game engine. The general philosophy of the project is: simulation and emergence, at all costs. The goal of the engine is to provide a process that ingests a starting world state and then evolves according to its own internal logic, without scripting. All gameplay is achieved by configuring the initial conditions of the world state and letting it "rip", so to speak.</p>
+  <h1>00 dialogue</h1>
+
+<h4 id="ontology-specification-dialogue-loop">Ontology Specification: Dialogue Loop</h4>
+<p>This specification governs the exchange of dialogue.</p>
 <div class="admonition note">
-<p class="admonition-title">LPC</p>
-<p>All assets are taken from the <a href="https://lpc.opengameart.org/">Liberated Pixel Cup</a></p>
+<p class="admonition-title">Note</p>
+<p>All information in this section assumes the default values for the <a href="../../appendices/01-schemas/#configuration-intentions">Intention Configuration</a>.</p>
 </div>
-<h2 id="sections">Sections</h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This specification excludes the <a href="../../02-sprites/#player">Player</a>, whose Intentions are handled through input polling and device mapping.</p>
+</div>
+<h5 id="prologue">Prologue</h5>
+<p>When a Sprite has no goal, <code>CognitionMechanics._ideate</code> evaluates immediate psychological overrides. If a Sprite has a non-null <code>state.psyche.dialogue</code>, it queries <code>board.characters()</code> for a valid target within <code>state.mutators.parameters.vision.radius</code>. If found, a new <code>GoalCategories.SUBJECT</code> goal is assigned. In addition, the <code>sprite.memory.sprites</code> dictionary is updated with the location of Sprite.</p>
+<h5 id="step-entrypoint">Step: Entrypoint</h5>
+<p><strong>Idle:Find</strong></p>
 <ul>
-<li><a href="00-overview/">Overview</a></li>
-<li><a href="01-assets/">Assets</a></li>
-<li><a href="02-sprites/">Sprites</a></li>
-<li><a href="03-compositions/">Compositions</a></li>
-<li><a href="04-intentions/">Intentions</a></li>
-<li><a href="05-mechanics/">Mechanics</a></li>
-<li><a href="06-widgets/">Widgets</a></li>
-<li><a href="07-sounds/">Sounds</a></li>
-<li><a href="08-plots/">Plots</a></li>
-<li><a href="09-emergence/">Emergence</a></li>
-<li><a href="10-architecture/">Architecture</a></li>
-<li><a href="appendices/">Appendices</a><ul>
-<li><a href="appendices/00-references/">Appendix I: References</a></li>
-<li><a href="appendices/01-schemas/">Appendix II: Schemas</a></li>
+<li><code>sprite.goal</code></li>
+<li><code>sprite.goal.category == constants.Goal.SUBJECT.value</code></li>
+<li><code>sprite.psyche.dialogue</code></li>
 </ul>
-</li>
-<li><a href="specs/">Specifications</a><ul>
-<li><a href="./specs/00-speak.md">Intention: Speak</a></li>
+<h5 id="step-interpoints">Step: Interpoints</h5>
+<p><strong>Find:Speak</strong></p>
+<ul>
+<li><code>functions.is_near(sprites.get(sprite.goal.name).position, sprite.position, sprite.mutators.parameters.vision.radius)</code></li>
 </ul>
-</li>
+<p><strong>Speak:Follow</strong></p>
+<ul>
+<li><code>sprite.goal.category == constants.Goals.SUBJECT.value</code></li>
+<li><code>not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)</code></li>
 </ul>
-<h2 id="cicd">CI/CD</h2>
-<p><a href="https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml"><img alt="ontology-tests" src="https://github.com/chinchalinchin/ontology/actions/workflows/tests.yml/badge.svg?branch=main" /></a></p>
+<p><strong>Follow:Speak</strong></p>
+<ul>
+<li><code>sprite.goal.category == constants.Goals.SUBJECT.value</code></li>
+<li><code>functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)</code></li>
+</ul>
+<h5 id="step-exitpoint">Step: Exitpoint</h5>
+<p><strong>Speak:Idle</strong></p>
+<ul>
+<li><code>not sprite.psyche.dialogue</code></li>
+<li><code>not sprite.psyche.expression</code></li>
+</ul>
+<p><strong>Speak:Idle</strong></p>
+<ul>
+<li><code>sprite.goal.name == constants.Player.value</code></li>
+</ul>
+<h5 id="workflow-speak-intention">Workflow: Speak Intention</h5>
+<p>A Sprite processing a <code>speak</code> Intention undergoes a strict lifecycle distributed across the Engine's Mechanics to ensure data integrity and visual consistency:</p>
+<ol>
+<li><strong>Execution (<code>SocialMechanics</code>)</strong>: Upon entering <code>speak</code>, the mechanic transfers the source Sprite's <code>state.psyche.dialogue</code> key into the <code>state.memory.rumors</code> list of the target Sprite. </li>
+<li><strong>Anchoring (<code>SocialMechanics</code>)</strong>: It immediately injects an <code>AttachmentState</code> into <code>state.psyche.expression</code> configured with a Time-To-Live (TTL). The Sprite's <code>state.velocity</code> stops receiving updates from <code>character.impulse</code>, allowing friction to bring it to a halt.</li>
+<li><strong>Decay (<code>SocialMechanics</code>)</strong>: For each subsequent game tick, the TTL is decremented. The <code>state.psyche.dialogue</code> and <code>state.psyche.expression</code> variables are <em>only</em> nulled once the TTL reaches zero. </li>
+<li><strong>Resolution (<code>CognitionMechanics</code>)</strong>: On the tick following the TTL expiration, <code>CognitionMechanics</code> evaluates the Goal. Because <code>goal.category == Goals.SUBJECT</code> and <code>not sprite.psyche.dialogue</code> evaluates to <code>True</code>, the interaction is marked satisfied. <code>CognitionMechanics</code> sets <code>sprite.state.goal = None</code> and pops the original overarching goal from <code>memory.goals</code> back into <code>sprite.state.goal</code>.</li>
+<li><strong>Transition (<code>TransitionMechanics</code>)</strong>: With <code>psyche.dialogue</code> empty, the ISL conditions for <code>speak</code> fail. The Sprite natively transits out of <code>speak</code> directly back into the <code>idle</code> hub. On the next tick, <code>idle</code> will evaluate the restored goal and dispatch the Sprite accordingly.</li>
+</ol>
 
 
 
@@ -943,12 +944,12 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
-        <script src="static/js/mathjax.js"></script>
+        <script src="../../static/js/mathjax.js"></script>
       
         <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
       

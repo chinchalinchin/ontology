@@ -1307,6 +1307,7 @@
 <li><code>goals: List[Goal]</code></li>
 <li><code>prices: Dict[str, double]</code></li>
 <li><code>relationships: Dict[str, str]</code></li>
+<li><code>locations: Dict[str, Positions]</code></li>
 <li><code>property: List[str]</code></li>
 <li><code>rumors: List[str]</code></li>
 </ul>
@@ -1371,6 +1372,7 @@
 </ul>
 </li>
 <li><code>triggers.vision</code>: Trigger if a Sprite is within visible distance of its Goal.</li>
+<li><code>trigger.action</code>: Triggers if a Sprite is within acting distance of its Goal.</li>
 </ul>
 <p><strong>Parameters</strong></p>
 <ul>
@@ -1378,6 +1380,7 @@
 <li><code>parameters.fear.limit</code>: Percentage of health below which Sprite triggers the <code>triggers.fear</code> mutator.</li>
 <li><code>parameters.fear.enemy</code>: Number of enemies within the <code>parameters.fear.radius</code> that must be present to trigger the <code>triggers.fear</code> mutator.</li>
 <li><code>parameters.vision.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.vision</code> mutator. Measured in pixels.</li>
+<li><code>parameters.action.radius</code>: Radius of separation within which the Sprite triggers the <code>triggers.action</code> mutator. Measured in pixels.</li>
 <li><code>parameters.community.radius</code>: Radius used for <a href="../09-emergence/#towns">Town Formation Mechanics</a>.</li>
 </ul>
 <h3 id="animation">Animation</h3>
@@ -1415,11 +1418,12 @@
 <h3 id="memory">Memory</h3>
 <p><em>Memory</em> is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. </p>
 <ul>
-<li><code>memory.goals</code>: Remember Goal. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.</li>
-<li><code>memory.rumors</code>: List of Lexicon keys the Sprite has heard through entering into the <code>speak</code> Intention.</li>
-<li><code>memory.prices</code>:</li>
-<li><code>memory.relationship</code>:</li>
+<li><code>memory.goals: List[Goal]</code>: Remembered Goals. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.</li>
+<li><code>memory.prices: Dict[str, float]</code>:</li>
 <li><code>memory.property: Dict[str, Position]</code></li>
+<li><code>memory.relationship: Dict[str, Relationships]</code>:</li>
+<li><code>memory.rumors: List[str]</code>: List of Lexicon keys the Sprite has heard through entering into the <code>speak</code> Intention.</li>
+<li><code>memory.sprites: Dict[str, Position]</code></li>
 </ul>
 <p><strong>Prices</strong></p>
 <p>Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the <code>barter</code> <a href="../04-intentions/">Intention</a>. This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.</p>
@@ -1431,11 +1435,20 @@
 <p><strong>Property</strong></p>
 <p>A Sprite can acquire property through the <code>build</code> <a href="../04-intentions/">Intention</a>. When a Sprite creates a <a href="../01-assets/#struts">Strut</a>, the location of that Strut is stored in <code>memory.property</code>, keyed to the name of the Strut Asset.</p>
 <p><strong>Relationships</strong></p>
-<p>TODO</p>
+<p>A map of Sprite-to-Sprite relationships, keyed by name. Relationships are enumerated below,</p>
+<ul>
+<li><code>FRIEND</code></li>
+<li><code>FAMILY</code></li>
+<li><code>FOE</code></li>
+<li><code>STRANGER</code></li>
+</ul>
 <p><strong>Rumors</strong></p>
 <p>TODO</p>
+<p><strong>Sprites</strong></p>
+<p>A map of Sprite locations the Sprite remembers, keyed by Sprite Name and last remembered location. </p>
 <h3 id="inventory">Inventory</h3>
 <p>TODO</p>
+<p><strong>Equipment</strong></p>
 <p>Equipment, while part of the Inventory, affects the rendering of the Sprite, and thus is covered in its own section, <a href="#equipment">Equipment</a>.</p>
 <p><strong>Loot</strong></p>
 <p>TODO</p>

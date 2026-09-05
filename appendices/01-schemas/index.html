@@ -1198,7 +1198,11 @@
 <span class="w">              </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.sprite.state.inventory.equipment.shield</span>
 </code></pre></div>
 <h3 id="configuration-recipes">Configuration: Recipes</h3>
-<p>Recipe Configuration files determine the specific (State, Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.</p>
+<p>Recipe Configuration files determine the specific (Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The state model can be calculated from (Category, Instance), but (Animation, Frame) is independent of the state assigned to an Asset through the Asset Hierarchy.</p>
+</div>
 <ul>
 <li>Location: <code>/src/data/config/recipes/main.yaml</code></li>
 </ul>

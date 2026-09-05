@@ -5,9 +5,6 @@ stateDiagram-v2
     attack --> hunt
     attack --> scavenge
 
-    attract --> barter
-    attract --> speak
-
     barter --> threaten
     barter --> idle
 
@@ -16,19 +13,18 @@ stateDiagram-v2
     escape --> escape
     escape --> return
 
-    find --> scavenge
     find --> interact
     find --> speak
-    find --> return
 
     follow --> follow
     follow --> speak
-    follow --> wander
+    follow --> idle
 
     hunt --> attack
-    hunt --> return
+    hunt --> idle
 
     idle --> wander
+    idle --> find
     idle --> idle
 
     interact --> idle
@@ -41,14 +37,12 @@ stateDiagram-v2
     mock --> idle
 
     return --> idle
-    return --> return
 
     scavenge --> idle
 
     speak --> follow
     speak --> idle
 
-    sprint --> return
     sprint --> idle
 
     threaten --> attack

@@ -1576,58 +1576,11 @@
 <p><a href="https://lpc.opengameart.org/">LPC</a> Assets are bundled with the application by default.</p>
 </div>
 <h2 id="overview">Overview</h2>
-<p>The Asset directory is organized as follows,</p>
-<div class="highlight"><pre><span></span><code>assets<span class="w"> </span>%<span class="w"> </span>tree<span class="w"> </span>-L<span class="w"> </span><span class="m">2</span>
-.
-├──<span class="w"> </span>crafts
-│<span class="w">   </span>├──<span class="w"> </span>main.yaml
-│<span class="w">   </span>└──<span class="w"> </span>struts
-├──<span class="w"> </span>cursors
-│<span class="w">   </span>├──<span class="w"> </span>expressions
-│<span class="w">   </span>├──<span class="w"> </span>main.yaml
-│<span class="w">   </span>└──<span class="w"> </span>projectiles
-├──<span class="w"> </span>effects
-│<span class="w">   </span>├──<span class="w"> </span>main.yaml
-│<span class="w">   </span>├──<span class="w"> </span>persistent
-│<span class="w">   </span>└──<span class="w"> </span>temporary
-├──<span class="w"> </span>objects
-│<span class="w">   </span>├──<span class="w"> </span>chests
-│<span class="w">   </span>├──<span class="w"> </span>crates
-│<span class="w">   </span>├──<span class="w"> </span>doors
-│<span class="w">   </span>├──<span class="w"> </span>gates
-│<span class="w">   </span>├──<span class="w"> </span>main.yaml
-│<span class="w">   </span>├──<span class="w"> </span>plates
-│<span class="w">   </span>└──<span class="w"> </span>struts
-├──<span class="w"> </span>resources
-│<span class="w">   </span>├──<span class="w"> </span>crops
-│<span class="w">   </span>├──<span class="w"> </span>main.yaml
-│<span class="w">   </span>└──<span class="w"> </span>ore
-├──<span class="w"> </span>sheets
-│<span class="w">   </span>├──<span class="w"> </span>armor
-│<span class="w">   </span>├──<span class="w"> </span>main.yaml
-│<span class="w">   </span>├──<span class="w"> </span>pixies
-│<span class="w">   </span>├──<span class="w"> </span>shields
-│<span class="w">   </span>├──<span class="w"> </span>sprites
-│<span class="w">   </span>├──<span class="w"> </span>tools
-│<span class="w">   </span>├──<span class="w"> </span>utilities
-│<span class="w">   </span>└──<span class="w"> </span>weapons
-├──<span class="w"> </span>sounds
-│<span class="w">   </span>├──<span class="w"> </span>main.yaml
-│<span class="w">   </span>├──<span class="w"> </span>music
-│<span class="w">   </span>└──<span class="w"> </span>speech
-├──<span class="w"> </span>tiles
-│<span class="w">   </span>├──<span class="w"> </span>back
-│<span class="w">   </span>├──<span class="w"> </span>fore
-│<span class="w">   </span>└──<span class="w"> </span>main.yaml
-└──<span class="w"> </span>widgets
-│<span class="w">   </span>├──<span class="w"> </span>buttons
-│<span class="w">   </span>├──<span class="w"> </span>language
-│<span class="w">   </span>├──<span class="w"> </span>main.yaml
-│<span class="w">   </span>├──<span class="w"> </span>meters
-│<span class="w">   </span>├──<span class="w"> </span>pages
-│<span class="w">   </span>├──<span class="w"> </span>panes
-</code></pre></div>
-<p>The <code>main.yaml</code> files in each subdirectory conform to the <a href="../appendices/01-schemas/#model-properties">Asset property schema</a> of their respective Asset Category. </p>
+<p>The Asset directory (and all subdirectories) contains Asset Image Files (<code>*.png</code>) and Asset Property indices (<code>*.yaml</code>). The <a href="../10-architecture/#initialization">initialization</a> will read in all of these files recursively and then use the property indices to index each Asset file. Each image file that appears in the Asset directories must be configured in a YAML file to get indexed and injected into the game. The property configuration in the <code>*.yaml</code> files must conform to the <a href="../appendices/01-schemas/#model-properties">Asset property schema</a> of the respective Asset Category they are configuring. </p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>All <code>*.yaml</code> files in the Asset directories are merged into a single schema, so every key must be unique. If two image files have the same name, one of them will be overwritten during <a href="../00-overview/#registry">Registry indexing</a>.</p>
+</div>
 <h3 id="asset-concepts">Asset Concepts</h3>
 <p><strong>IDs &amp; Names</strong></p>
 <p>IDs are used to map Assets to images loaded into the <a href="../00-overview/#registry">Registry</a>, to ensure each Asset is only loaded into the memory once, no matter how many times it is rendered in a single frame. In other words, IDs uniquely identify a physical Asset, but not in-game entities.</p>
@@ -1815,7 +1768,7 @@
 <tr>
 <td>Object</td>
 <td>Sign</td>
-<td>TODO</td>
+<td>Position, Layer, Depth, Height, Persona, Lexicon</td>
 </tr>
 <tr>
 <td>Object</td>
@@ -1929,6 +1882,10 @@
 </ul>
 </li>
 </ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The state model can be calculated from (Category, Instance), but (Animation, Frame) is independent of the state assigned to an Asset through the Asset Hierarchy. It must be specified through a Recipe.</p>
+</div>
 <h3 id="asset-taxonomy">Asset Taxonomy</h3>
 <p>An Asset's position in the Asset Hierarchy is encoded into its Taxonomy. These attributes exist on every Asset instantiated within the game. A Taxonomy is neither state, configuration or properties.</p>
 <ul>
@@ -2134,25 +2091,27 @@
 <li><code>dimensions: Dimensions</code></li>
 </ul>
 <h3 id="expressions">Expressions</h3>
-<p>Expressions are pinned to other Assets and have their position state updated in tandem with the Asset to which they are linked. </p>
+<p>Expressions are "Phantom States" used as visual decorators. Unlike most Assets, Expressions are not instantiated as physical entities on the Board. Instead, their spatial offsets and frame keys are calculated dynamically by the <a href="../00-overview/#board">Cradle</a> and embedded directly into a Sprite's <code>Psyche</code> state as pure data. When the Sprite is rendered, the <code>SpriteFrame</code> reads this embedded data and superimposes the Expression into the rendering pipeline.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Due to the nature of Expressions as representations of the Sprite's internal state, there exists a hard dependency between Expression image files and their properties and the possible Expression frame enumerations. Each file name must exist and the following frames must be indexed by the Expression property index,</p>
+<ul>
+<li>bubbles: <code>agreement</code>, <code>anger</code>, <code>confusion</code>, <code>disagreement</code>, <code>loquacity</code>, <code>surprise</code>, <code>tired</code></li>
+<li>buffs: TODO</li>
+</ul>
+</div>
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
-<p><strong>Frame: SingleFrame</strong></p>
+<p><strong>Frame: IndexFrame</strong></p>
 <ul>
-<li><code>keys(asset, id): returns [ id ]</code></li>
-<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state): returns [ (id, 0, 0) ]</code> <em>(Note: Bypassed during active rendering; <code>SpriteFrame</code> handles the dynamic offset injection).</em></li>
+<li><code>index(self, id, properties): returns { "{id}-{properties.frames[i]}": (i * properties.dimension.w, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
-<div class="admonition todo">
-<p class="admonition-title">Todo</p>
-<p>Rethink how Expressions work in relation to Sprite's Intention and Psyche. Expressions should be a sheet, and should attach to Sprites based on formulas involving Intention and Psyche. This will involve refining the <code>keys()</code> and <code>index()</code> schemas. Perhaps a new Frame type.</p>
-</div>
-<p><strong>State: PositionalState</strong></p>
+<p><strong>"Phantom" State: AttachmentState</strong></p>
 <ul>
-<li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
-<li><code>position: Position</code></li>
-<li><code>velocity: Velocity</code></li>
+<li><code>icon: str</code></li>
+<li><code>offset: Position</code></li>
+<li><code>ttl: int</code>: Number of game ticks for which the Expression is present.</li>
 </ul>
 <h3 id="projectiles">Projectiles</h3>
 <p>Projectiles are spawned via the <code>shoot</code> Action (entered through the <code>attack</code> <a href="../04-intentions/">Intention</a> when the <code>longbow</code> <a href="../02-sprites/#equipment">Equipment</a> is slotted, for instance) with a certain direction and velocity and then follow a fixed trajectory based on the spawn conditions. Projectiles will either impact a hitbox or trigger garbage-collection and be removed from the <a href="../00-overview/#board">Board</a>.</p>
@@ -2345,7 +2304,7 @@
 </ul>
 <p><strong>Frame: StateFrame</strong></p>
 <ul>
-<li><code>keys(id, animation): returns [ "{id}-{animation.action}-{animation.direction}-{animation.frame}" ]</code></li>
+<li><code>keys(id, state): returns [ "{id}-{state.animation.action}-{state,animation.direction}-{state.animation.frame}" ]</code></li>
 <li><code>index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
@@ -2365,7 +2324,7 @@
 </ul>
 <p><strong>Frame: SpriteFrame</strong></p>
 <ul>
-<li><code>keys(id, animation): returns [ "{id}-{animation.action}-{animation.direction}-{animation.frame}" ] + [ &lt;equipment-frames&gt;]</code></li>
+<li><code>keys(id, state): returns [ "{id}-{state.animation.action}-{state.animation.direction}-{animation.frame}" ] + [ &lt;equipment-frames&gt; ] + [ &lt;expression-frames&gt; ]</code></li>
 <li><code>index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SpriteState</strong></p>
