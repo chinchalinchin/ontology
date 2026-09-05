@@ -185,7 +185,8 @@ The "Stationary Moonwalking" bug stems from tightly coupling Animation triggers 
     
 **6. Task: Resolve Architectural Discrepancies & Bugs**
 
-* [ ] Subtask: Introduce `_cached_objects: Dict[str, Asset]` to `app.game.board` alongside `_cached_characters` to provide $O(1)$ lookups for `Goals.ASSET` tracking in `CognitionMechanics`.
+* [!] Subtask: Introduce `_cached_objects: Dict[str, Asset]` to `app.game.board` alongside `_cached_characters` to provide $O(1)$ lookups for `Goals.OBJECT` tracking in `CognitionMechanics`.
+    * Added to [Phase 07.02](./phase-07-02.md)
 * [x] Subtask: Refactor `CognitionMechanics`, `TransitionMechanics`, and `AnimationMap` to replace `getattr(state, 'field', None)` anti-patterns with direct namespace access, relying on Pydantic's guaranteed data schemas.
 * [!] Subtask: Update `TransitionMechanics` to only evaluate `mutators.triggers.animated = True` if the Sprite has active velocity or an explicitly animated action.
 * [x] Refactor `/src/data/config/intentions/main.yaml`: Replace array attribute queries like `sprite.memory.goal.category == ...` with the new `functions.check_memory(sprite.memory.goals, ...)` helper.

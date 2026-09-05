@@ -9,7 +9,10 @@ intentions:
       conditions: 
         - not sprite.goal
         - sprite.memory.goals 
-        - functions.check_memory(sprite.memory.goals, constants.Goals.TARGET.value)
+        - functions.check_goals(
+            sprite.memory.goals, 
+            constants.Goals.TARGET.value
+          )
     - next: scavenge
       conditions: 
         - sprites.get(sprite.goal.name)
@@ -36,7 +39,7 @@ intentions:
       conditions: 
         - sprite.goal
         - sprites.get(sprite.goal.name)
-        - sprites.get(sprite.goal.name).state.intention == constants.Intentions.ATTACK.value
+        - sprites.get(sprite.goal.name).intention == constants.Intentions.ATTACK.value
     - next: return
       conditions: 
         - not sprite.goal
@@ -46,7 +49,11 @@ intentions:
       conditions: 
         - sprite.goal
         - sprite.goal.category == constants.Goals.OBJECT.value
-        - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)
+        - functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
+            sprite.mutators.parameters.action.radius
+          )
     - next: speak
       conditions: 
         - sprite.goal
@@ -57,14 +64,22 @@ intentions:
             constants.Relationships.FRIEND.value, 
             constants.Relationships.FAMILY.value
           ]
-        - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)
+        - functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
+            sprite.mutators.parameters.action.radius
+          )
   # ----------------------------------------------------------------------------------
   follow: 
     - next: speak
       conditions:
         - sprite.goal
         - sprite.psyche.dialogue
-        - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
+        - functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
+            sprite.mutators.parameters.action.radius
+          )
     - next: idle
       conditions:
         - not sprite.goal
@@ -74,7 +89,11 @@ intentions:
       conditions: 
         - sprite.goal
         - sprite.goal.category == constants.Goals.TARGET.value
-        - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
+        - functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
+            sprite.mutators.parameters.action.radius
+          )
     - next: idle
       conditions:
         - not sprite.goal
@@ -88,7 +107,11 @@ intentions:
       conditions: 
         - sprite.goal
         - sprite.goal.category == constants.Goals.SUBJECT.value
-        - not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)
+        - not functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
+            sprite.mutators.parameters.action.radius
+          )
     - next: idle
       conditions:
         - not sprite.goal
@@ -122,7 +145,7 @@ intentions:
         - sprite.goal
         - sprite.goal.category == constants.Goals.TARGET.value
         - sprites.get(sprite.goal.name)
-        - sprites.get(sprite.goal.name).state.intention == constants.Intentions.ATTACK.value
+        - sprites.get(sprite.goal.name).intention == constants.Intentions.ATTACK.value
     - next: idle
       conditions:
         - not sprite.goal
@@ -144,7 +167,7 @@ intentions:
         - sprite.goal.name == constants.RequiredAssets.PLAYER.value
     - next: idle
       conditions:
-        - not sprite.psyche.dialogue
+        - not sprite.psyche.expression
   # ----------------------------------------------------------------------------------
   sprint:
     - next: idle
@@ -155,12 +178,20 @@ intentions:
     - next: attack
       conditions:
         - sprite.goal
-        - sprite.goal.category == constants.Goals.SPRITE.value
-        - functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
+        - sprite.goal.category == constants.Goals.TARGET.value
+        - functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
+            sprite.mutators.parameters.action.radius
+          )
     - next: hunt
       conditions:
-        - sprite.goal.category == constants.Goals.SPRITE.value
-        - not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.vision.radius)
+        - sprite.goal.category == constants.Goals.TARGET.value
+        - not functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
+            sprite.mutators.parameters.vision.radius
+          )
     - next: idle
       conditions:
         - not sprite.goal

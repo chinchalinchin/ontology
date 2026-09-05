@@ -3,6 +3,9 @@
 
 Helper functions for ISL conditions.
 """
+# Standard Libraries
+from typing import List
+
 # Application Libraries
 from app.config.enums import (
     Goals, 
@@ -13,10 +16,14 @@ from app.config.enums import (
     Motivations,
     Relationships
 )
+from app.models.state import Goal
+
+# Cython Libraries
+from libs.core.models import Position
 
 # ----------------------------------------------------- ISL CONDITION CONJUNCTS
 
-def is_near(pos1, pos2, radius: int = 15) -> bool:
+def is_near(pos1: Position, pos2: Position, radius: int = 15) -> bool:
     """Fast, pure-Python squared distance check for ISL."""
     if not pos1 or not pos2:
         return False
@@ -24,14 +31,14 @@ def is_near(pos1, pos2, radius: int = 15) -> bool:
     dy = pos2.y - pos1.y
     return (dx*dx + dy*dy) <= (radius * radius)
 
-def check_memory(goals, category=None) -> bool:
+def check_goals(goals: List[Goal], category=None) -> bool:
     if not goals: 
         return False
     if category:
         return any(g.category == category for g in goals.values())
     return True
 
-# ----------------------------------------------------------------------------
+# -------------------------------------------------- ISL EXECUTION ENVIRONMENT
 
 class Environ:
     constants: dict = {
@@ -47,5 +54,5 @@ class Environ:
     }
     functions: dict = {
         'is_near': is_near,
-        'check_memory': check_memory
+        'check_goals': check_goals
     }

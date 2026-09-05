@@ -128,7 +128,7 @@ plots:
   town-locked:
     - next: town-unlocked
       conditions:
-        - player.state.inventory.loot['town-key'] >= 1
+        - sprites['player'].state.inventory.loot['town-key'] >= 1
     - next: town-unlocked
       conditions:
         - sprites['town-guard'].mutators.triggers.dead
@@ -145,67 +145,7 @@ plots:
         - sprites['mayor'].state.memory.relationships['player'] != Relationships.FOE
 ```
 
-##### Tasks
-
-**Task #0: Sign Object**
-
-* [x] Create a Sign Object to trigger ingame Text menus.
-  * [x] Add state model.
-  * [x] Add property model.
-  * [x] Configure assets and state files.
-
-**Task #1: Library Service**
-
-* [ ] Create `app.services.library.Library` to parse `src/data/config/library/main.yaml`.
-* [ ] Implement `Library.fetch(plot: str, persona: str, lexicon: str) -> str`.
-* [ ] Inject `Library` into `Board`.
-
-**Task #2: InteractionMechanics Injection**
-
-* [ ] Update `InteractionMechanics.update()`: When a Player interacts with a `Sign`, query the `Library` using `board.plot`, `sign.state.persona`, and `sign.state.lexicon`.
-* [ ] Emit `MenuEvent(id='text', context={'content': fetched_text})` to the bus.
-
-**Task #3: ScrollController Implementation**
-
-* [ ] Create `ScrollController(Controller)`.
-* [ ] Implement `select(focus: str, menu: Menu, board: Board, bus: deque)`.
-* [ ] In `select()`, retrieve `action = menu.widgets[focus].binding.selection` (e.g., `scrollup`).
-* [ ] Retrieve target widget `target = menu.widgets[menu.widgets[focus].binding.selector]`.
-* [ ] Call `target.state.scrolldown()` (or up) and emit `UpdateEvent(widget=target, content=target.state.current())` to the bus.
-
-
-
-
-
-
-
-
-### Step 1: Plot Configuration (The Rules)
-
-Plot configurations should define the "directed graph" of THE game's narrative, decoupled entirely from the physical Assets.
-
-**Location:** `/src/data/config/plots/main.yaml`
-
-```yaml
-plots:
-  act-1-intro:
-    next: act-1-town-unlocked
-    conditions:
-      - "sprites['gatekeeper'].mutators.triggers.dead"
-      - "player.state.inventory.loot['kings-pass'] >= 1"
-  act-1-town-unlocked:
-    next: act-2-invasion
-    conditions:
-      - "board.time > 10000"
-      - "sprites['mayor'].memory.relationships['player'] == 'hostile'"
-
-```
-
-**Architecture Implication:**
-
-This requires extending `ConfigurationSchema` in `app.models.config` to include `plots: Dict[str, PlotConfiguration]`. The `PlotConfiguration` model will look identical to `IntentionConfiguration` (a `next` string and a list of `conditions`).
-
-### Step 2: Plot State (The Runtime)
+##### Goal: Plot State & Mechanics
 
 Because the Plot is a property of the World, its current state belongs on the `Board`. When the engine bootstraps, it needs to know where the world currently stands so the `Library` can route dialogue correctly.
 
@@ -213,22 +153,16 @@ Because the Plot is a property of the World, its current state belongs on the `B
 
 ```yaml
 plot:
-  current: act-1-intro
-  milestones:
+  current: town-unlocked
+  path:
     - woke-up
     - found-sword
 
 ```
 
-**Architecture Implication:**
+Where `current` is the current state of the plot and `path` is a list of time-ordered plot states the plot has progressed through during the entire history of gameplay. The first entry is the earliest.
 
-* Create a `PlotState` model in `app.models.state`.
-* Update `StateSchema` to include `plot: PlotState`.
-* Inject it directly into the `Board` upon instantiation, giving you `board.plot.current`.
-
-### Step 3: Plot Mechanics (The Evaluator)
-
-To progress the plot, we introduce `PlotMechanics` into the `world` mechanics pipeline.
+To progress the plot, introduce `PlotMechanics` into the `world` mechanics pipeline.
 
 Just as `TransitionMechanics` iterates over Sprites to check if their Intention conditions are met, `PlotMechanics` checks if the *Board's* current plot conditions are met.
 
@@ -239,30 +173,27 @@ Just as `TransitionMechanics` iterates over Sprites to check if their Intention 
 3. Evaluate the ISL `conditions` against the current `board` and `sprites` dictionaries (using the same lambda compilation strategy you use for Intentions).
 4. If the conditions evaluate to `True`, update the state: `board.plot.current = rules.next`.
 
-*Self-Correction/Benefit:* Because this executes in the `world` mechanics array, it naturally pauses when a `MenuEvent` fires. The plot cannot advance while the player is reading dialogue or trading, which prevents edge-case bugs where a background event triggers a plot shift while the UI is open.
+*Benefit:* Because this executes in the `world` mechanics array, it naturally pauses when a `MenuEvent` fires. The plot cannot advance while the player is reading dialogue or trading, which prevents edge-case bugs where a background event triggers a plot shift while the UI is open.
 
-### Step 4: Library Integration
-
-Now that `board.plot.current` exists globally, the `Library` becomes a simple, static dictionary lookup, entirely decoupled from the UI.
+##### Goal: Library
 
 When `InteractionMechanics` processes a Player reading a Sign, it executes:
 `content = Library.fetch(board.plot.current, target.state.persona, target.state.lexicon)`
 and emits the literal string to the Event Bus.
 
----
+##### Tasks
 
-### Task Board Modifications
+**Task #0: Sign Object**
 
-Currently, the Task Board lists `[x]: Phase 08: Compositions` under "Implement", but your documentation sections define `08-plots.md`. We should create a dedicated Phase 11 for Plots and Library integration to formally establish this global architecture.
-
-Here is how I recommend structuring the backlog:
-
-#### Implement: Phase 11 - Plot & Library Architecture
+* [x] Create a Sign Object to trigger ingame Text menus.
+  * [x] Add state model.
+  * [x] Add property model.
+  * [x] Configure assets and state files.
 
 **Task #1: Data Models & Configurations**
 
 * [ ] Create `PlotConfiguration` in `app.models.config` (mirroring `IntentionConfiguration`).
-* [ ] Create `PlotState` in `app.models.state` (fields: `current: str`, `milestones: List[str]`).
+* [ ] Create `PlotState` in `app.models.state` (fields: `current: str`, `previous: List[str]`).
 * [ ] Add `plots` to `ConfigurationSchema` and `plot` to `StateSchema`.
 * [ ] Update `Board.__init__` to accept and expose `board.plot`.
 
@@ -270,7 +201,12 @@ Here is how I recommend structuring the backlog:
 
 * [ ] Create `app.services.library.Library` to parse `src/data/config/library/main.yaml`.
 * [ ] Implement a static or singleton fetch method: `Library.fetch(plot_key, persona, lexicon) -> str`.
-* [ ] Implement fallback logic (e.g., if `act-2` dialogue doesn't exist for a sign, fall back to `act-1`, or a `default` key).
+* [ ] Inject `Library` into `Board`.
+
+**Task #2: InteractionMechanics Injection**
+
+* [ ] Update `InteractionMechanics.update()`: When a Player interacts with a `Sign`, query the `Library` using `board.plot`, `sign.state.persona`, and `sign.state.lexicon`.
+* [ ] Emit `MenuEvent(id='text', context={'content': fetched_text})` to the bus.
 
 **Task #3: Plot Mechanics**
 
@@ -279,12 +215,16 @@ Here is how I recommend structuring the backlog:
 * [ ] Add `Mechanics.PLOT` to the `Mechanics` Enum and `Factory.MECHANICS_MAP`.
 * [ ] Add `plot` to the `world` mechanics sequence in `/src/data/config/mechanics/main.yaml`.
 
-**Task #4: Interaction Routing**
+**Task #4: ScrollController Implementation**
+
+* [ ] Create `ScrollController(Controller)`.
+* [ ] Implement `select(focus: str, menu: Menu, board: Board, bus: deque)`.
+* [ ] In `select()`, retrieve `action = menu.widgets[focus].binding.selection` (e.g., `scrollup`).
+* [ ] Retrieve target widget `target = menu.widgets[menu.widgets[focus].binding.selector]`.
+* [ ] Call `target.state.scrolldown()` (or up) and emit `UpdateEvent(widget=target, content=target.state.current())` to the bus.
+
+**Task #5: Interaction Routing**
 
 * [ ] Update `InteractionMechanics` (for Signs/Objects) and `SpeechMechanics` (for Sprites).
 * [ ] When triggering dialogue, query the `Library` using `board.plot.current`.
 * [ ] Emit `MenuEvent` with the fully resolved text payload, keeping the UI generic and isolated.
-
----
-
-By elevating Plot to the `Board` and evaluating it via `PlotMechanics`, you maintain strict ECS compliance. The Engine doesn't "play" a script; it simply watches the simulation, and when the physical variables align with a logical threshold, the global epoch shifts.

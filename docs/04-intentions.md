@@ -195,7 +195,8 @@ The ISL environment is injected with variables during execution:
 * `sprites`: The `_cached_characters` dictionary mapping `name: AssetState` for all mutable characters (Sprites and Players) currently on the board.
 * `constants`: A dictionary of Enums. Keys are: `AssetInstances`, `AssetCategories`, `Goals`, `Intentions`, `Motivations`.
 * `functions`: A dictionary of boolean helper functions. All functions return a truth value.
-    - `is_near(p1: Position, p2: Position, radius: int)`
+    - `is_near(p1: Position, p2: Position, radius: int)`: Determine if positions are close.
+    - `check_goals(m: List[Goal], category: str)`: Determine if a GoalCategory exists in the Sprite memory.
 
 !!! warning
     When referencing `sprites[...]` via a Goal name, authors must use `sprites.get(sprite.goal.name)` to protect the runtime against `KeyErrors` from garbage-collected entities.
@@ -288,7 +289,7 @@ CognitionMechanics manages the life cycle of Sprite Goals.
 1. **Phase A: Resolution**: Conditions are evaluated for goal resolution
     - `if goal.category == TARGET`: If `target.mutators.triggers.dead`, `goal = None`.
     - `if goal.category == SUBJECT`: If `not psyche.dialogue`, `goal = None`.
-    - `if goal.category == POSITION`: If `position - goal.position < some_radius`.
+    - `if goal.category == POSITION`: If `position - goal.position < mutators.parameters.action.radius`.
     - `if goal.category == OBJECT`: TODO
     - `if goal.category == PROPERTY`: If `goal.name in memory.property`, `goal = None`.
 2. **Phase B: Scan**: 

@@ -14,7 +14,7 @@ When a Sprite has no goal, `CognitionMechanics._ideate` evaluates immediate psyc
 
 ##### Step: Entrypoint
 
-**Idle:Find**
+**idle:find**
 
 - `sprite.goal`
 - `sprite.goal.category == constants.Goal.SUBJECT.value`
@@ -22,30 +22,29 @@ When a Sprite has no goal, `CognitionMechanics._ideate` evaluates immediate psyc
 
 ##### Step: Interpoints
 
-**Find:Speak**
+**find:speak**
 
 - `functions.is_near(sprites.get(sprite.goal.name).position, sprite.position, sprite.mutators.parameters.vision.radius)`
 
-**Speak:Follow**
+**speak:follow**
 
 - `sprite.goal.category == constants.Goals.SUBJECT.value`
 - `not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)`
 
-**Follow:Speak**
+**follow:speak**
 
 - `sprite.goal.category == constants.Goals.SUBJECT.value`
 - `functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)`
 
 ##### Step: Exitpoint
 
-**Speak:Idle**
+**speak:idle**
 
-- `not sprite.psyche.dialogue`
 - `not sprite.psyche.expression`
 
-**Speak:Idle**
+**speak:idle**
 
-- `sprite.goal.name == constants.Player.value`
+- `sprite.goal.name == constants.RequiredAssets.PLAYER.value`
 
 ##### Workflow: Speak Intention
 

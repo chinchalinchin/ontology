@@ -18,7 +18,8 @@ from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories, 
     AssetInstances, 
-    Statuses
+    Statuses,
+    Menus
 )
 from app.services.factory import Factory
 from app.models.properties import WidgetProperties
@@ -328,7 +329,10 @@ class Provider:
         ctrl = Factory.controller(config.controller)
 
         # Default focus to the first traversible button if graph is present
-        focus = next(iter(graph.keys())) if graph else ""
+        if id != Menus.VIEW.value:
+            focus = next(iter(graph.keys())) if graph else ""
+        else:
+            focus = ""
 
         # Initialize focus state
         if focus and focus in ordered_widgets:

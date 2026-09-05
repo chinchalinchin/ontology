@@ -5,10 +5,8 @@ sheets:
       layer: '0'
       depth: 0
       position:
-        # x: 320
-        # y: 400
-        x: 80
-        y: 160
+        x: 320
+        y: 400
       meters:
         health: 
           current: 50
@@ -57,6 +55,9 @@ sheets:
           player: friend
         rumors: null
         sprites: 
+          player:
+            x: 250
+            y: 300
       inventory: 
         loot: null
         equipment:
