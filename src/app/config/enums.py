@@ -85,6 +85,10 @@ class Groups(str, Enum):
 class Shortcuts(str, Enum):
     COMPOSITIONS    = "compositions"
 
+class ExpressionsPalette(str, Enum):
+    BUBBLES         = "bubbles"
+    BUFFS           = "buffs"
+
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 
 class FrameRecipe(str, Enum):
@@ -173,6 +177,43 @@ class Intentions(str, Enum):
     THREATEN        = "threaten"
     WANDER          = "wander"
 
+class BlockingIntentions(str, Enum):
+    # Intentions that must complete to release animation control
+    ATTACK          = "attack"
+    MINE            = "mine"
+
+class AnimatedIntentions(str, Enum):
+    # Intentions that are animated
+    ATTACK          = "attack"
+    MINE            = "mine"
+
+class StaticIntentions(str, Enum):
+    # Intentions that are not animated
+    BARTER          = "barter"
+    IDLE            = "idle"
+    INTERACT        = "interact"
+    MOCK            = "mock"
+    SPEAK           = "speak"
+    THREATEN        = "threaten"
+
+class NavigationIntentions(str, Enum):
+    # Intentions with Velocity
+    FIND            = "find" 
+    FOLLOW          = "follow" 
+    HUNT            = "hunt" 
+    ESCAPE          = "escape" 
+    WANDER          = "wander"
+    RETURN          = "return"
+
+class StationaryIntentions(str, Enum):
+    # Intentions with no Velocity
+    BARTER          = "barter"
+    BUILD           = "build"
+    IDLE            = "idle"
+    INTERACT        = "interact"
+    MINE            = "mine"
+    SPEAK           = "build"
+
 class Motivations(str, Enum):
     CONQUEST        = "conquest"
     LOVE            = "love"
@@ -238,43 +279,6 @@ class FrictiveAssets(str, Enum):
 
 class InertAssets(str, Enum):
     PROJECTILES     = "projectiles"
-
-class BlockingIntentions(str, Enum):
-    # Intentions that must complete to release animation control
-    ATTACK          = "attack"
-    MINE            = "mine"
-
-class AnimatedIntentions(str, Enum):
-    # Intentions that are animated
-    ATTACK          = "attack"
-    MINE            = "mine"
-
-class StaticIntentions(str, Enum):
-    # Intentions that are not animated
-    BARTER          = "barter"
-    IDLE            = "idle"
-    INTERACT        = "interact"
-    MOCK            = "mock"
-    SPEAK           = "speak"
-    THREATEN        = "threaten"
-
-class NavigationIntentions(str, Enum):
-    # Intentions with Velocity
-    FIND            = "find" 
-    FOLLOW          = "follow" 
-    HUNT            = "hunt" 
-    ESCAPE          = "escape" 
-    WANDER          = "wander"
-    RETURN          = "return"
-
-class StationaryIntentions(str, Enum):
-    # Intentions with no Velocity
-    BARTER          = "barter"
-    BUILD           = "build"
-    IDLE            = "idle"
-    INTERACT        = "interact"
-    MINE            = "mine"
-    SPEAK           = "build"
 
 class Translators(str, Enum):
     COMPILER        = "compiler"

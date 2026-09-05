@@ -2,7 +2,12 @@
 # Ontology: app.game.maps
 """
 # Application Libraries
-from app.config.enums import Actions, Directions, Intentions
+from app.config.enums import (
+    Actions, 
+    Directions, 
+    Intentions,
+    StaticIntentions
+)
 
 # Cython Libraries
 from libs.core.models import Position
@@ -24,7 +29,7 @@ class AnimationMap:
         utility = state.inventory.equipment.utility
         intention = state.intention
 
-        if intention == Intentions.IDLE.value:
+        if intention in StaticIntentions:
             return Actions.WALK.value
 
         if intention == Intentions.ATTACK.value:

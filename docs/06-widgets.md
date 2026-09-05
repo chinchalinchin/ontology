@@ -263,9 +263,10 @@ Due to the nature of Icons as representations of other ingame Assets, Icons have
 
 N/A
 
-**Frame: IndexedFrame**
+**Frame: IndexFrame**
 
-TODO
+- `keys(id: str, state: AssetState): return [(state.icon, 0, 0)]`
+- `index(id, properties: AssetProperties): return [{ }]`
 
 ## Menus
 

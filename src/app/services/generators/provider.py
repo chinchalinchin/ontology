@@ -196,7 +196,8 @@ class Provider:
         return state
 
     def _unpack_icon(self, cfg: MenuWidget, context: dict) -> IconState:
-        parent, attr = self._resolve(cfg.bind.state, context) if cfg.bind and cfg.bind.state else (None, None)
+        parent, attr = self._resolve(cfg.bind.state, context) \
+                        if cfg.bind and cfg.bind.state else (None, None)
         
         def get_icon():
             if parent is None or attr is None:

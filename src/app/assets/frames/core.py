@@ -9,7 +9,10 @@ import logging
 
 # Application Libraries
 import app.config.settings as settings
-from app.config.enums import Intentions
+from app.config.enums import (
+    Intentions,
+    ExpressionsPalette
+)
 from app.assets.base import Frame
 from app.models.state import AssetState
 
@@ -36,7 +39,7 @@ class NoFrame(Frame):
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
-        return [id]
+        return [(id, 0, 0)]
 
             
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
@@ -54,7 +57,7 @@ class SingleFrame(Frame):
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
-        return [id]
+        return [(id, 0, 0)]
 
         
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
@@ -71,7 +74,9 @@ class IterableFrame(Frame):
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
-        return [settings.SEPARATOR.join([id, str(state.animation.frame)])]
+        return [
+            (settings.SEPARATOR.join([id, str(state.animation.frame)]), 0, 0)
+        ]
 
         
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
@@ -93,12 +98,12 @@ class StateFrame(Frame):
     def keys(self, id: str, state: AssetState) -> List[str]:
         """
         """
-        return [settings.SEPARATOR.join([
+        return [(settings.SEPARATOR.join([
             id, 
             state.animation.action, 
             state.animation.direction,
             str(state.animation.frame)
-        ])]
+        ]), 0, 0)]
 
 
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
@@ -139,14 +144,19 @@ class SpriteFrame(StateFrame):
             eq = state.inventory.equipment
             for eq_key in (eq.armor, eq.utility, eq.tool, eq.weapon, eq.shield):
                 if eq_key:
-                    frame_keys.append(settings.SEPARATOR.join([
+                    key_str = settings.SEPARATOR.join([
                         eq_key,
                         state.animation.action,
                         state.animation.direction,
                         str(state.animation.frame)
-                    ]))
+                    ])
+                    frame_keys.append((key_str, 0, 0))
+
+        if id != 'player' and state.psyche.expression:
+            expr = state.psyche.expression
+            frame_keys.append((expr.icon, expr.offset.x, expr.offset.y))
 
         if state.intention is not None and state.intention == Intentions.ATTACK:
-            logger.info(f"[TELEMETRY] SpriteFrame generated keys: {frame_keys}")
+            logger.info(f"SpriteFrame generated keys: {frame_keys}")
         
         return frame_keys

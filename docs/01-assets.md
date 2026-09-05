@@ -399,6 +399,13 @@ Cursors are inanimate, mutable Assets. Cursors track positions and trajectories.
 
 Expressions are "Phantom States" used as visual decorators. Unlike most Assets, Expressions are not instantiated as physical entities on the Board. Instead, their spatial offsets and frame keys are calculated dynamically by the [Cradle](./00-overview.md#board) and embedded directly into a Sprite's `Psyche` state as pure data. When the Sprite is rendered, the `SpriteFrame` reads this embedded data and superimposes the Expression into the rendering pipeline.
 
+!!! important
+    Due to the nature of Expressions as representations of the Sprite's internal state, there exists a hard dependency between Expression image files and their properties and the possible Expression frame enumerations. Each file name must exist and the following frames must be indexed by the Expression property index,
+
+    - bubbles: `agreement`, `anger`, `confusion`, `disagreement`, `loquacity`, `surprise`, `tired`
+    - buffs: TODO
+
+
 **Animation: None**
 
 N/A
@@ -410,7 +417,7 @@ N/A
 
 **"Phantom" State: AttachmentState**
 
-* `key: str`
+* `icon: str`
 * `offset: Position`
 * `ttl: int`: Number of game ticks for which the Expression is present.
 

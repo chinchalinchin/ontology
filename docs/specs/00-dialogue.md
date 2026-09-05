@@ -8,13 +8,13 @@ This specification governs the exchange of dialogue.
 !!! note
     This specification excludes the [Player](../02-sprites.md#player), whose Intentions are handled through input polling and device mapping.
 
-##### Step: Prologue
+##### Prologue
 
 When a Sprite has no goal, `CognitionMechanics._ideate` evaluates immediate psychological overrides. If a Sprite has a non-null `state.psyche.dialogue`, it queries `board.characters()` for a valid target within `state.mutators.parameters.vision.radius`. If found, a new `GoalCategories.SUBJECT` goal is assigned. In addition, the `sprite.memory.sprites` dictionary is updated with the location of Sprite.
 
 ##### Step: Entrypoint
 
-**Idle -> Find**
+**Idle:Find**
 
 - `sprite.goal`
 - `sprite.goal.category == constants.Goal.SUBJECT.value`
@@ -22,28 +22,28 @@ When a Sprite has no goal, `CognitionMechanics._ideate` evaluates immediate psyc
 
 ##### Step: Interpoints
 
-**Find -> Speak**
+**Find:Speak**
 
 - `functions.is_near(sprites.get(sprite.goal.name).position, sprite.position, sprite.mutators.parameters.vision.radius)`
 
-**Speak -> Follow**
+**Speak:Follow**
 
 - `sprite.goal.category == constants.Goals.SUBJECT.value`
 - `not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)`
 
-**Follow -> Speak**
+**Follow:Speak**
 
 - `sprite.goal.category == constants.Goals.SUBJECT.value`
 - `functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)`
 
 ##### Step: Exitpoint
 
-**Speak -> Idle**
+**Speak:Idle**
 
 - `not sprite.psyche.dialogue`
 - `not sprite.psyche.expression`
 
-**Speak -> Idle**
+**Speak:Idle**
 
 - `sprite.goal.name == constants.Player.value`
 

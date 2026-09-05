@@ -29,8 +29,10 @@ sheets:
             enemy: 5
           vision:
             radius: 128
+          action:
+            radius: 10
       psyche:
-        dialogue: null
+        dialogue: test
         expression: null
         motivation: conquest
         persona: jasilynn
@@ -45,7 +47,8 @@ sheets:
         goals: null
         prices: null
         property: null
-        relationships: null
+        relationships: 
+          player: friend
         rumors: null
         sprites: 
       inventory: 

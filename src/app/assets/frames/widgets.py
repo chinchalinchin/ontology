@@ -28,7 +28,7 @@ class TraversalFrame(Frame):
         """
         """
         return [ 
-            settings.SEPARATOR.join([id, state.animation.action]) 
+            (settings.SEPARATOR.join([id, state.animation.action]), 0, 0) 
         ]
 
 
@@ -52,8 +52,8 @@ class MeterFrame(Frame):
         """
         """
         return [
-            settings.SEPARATOR.join([id, str(settings.EMPTY)]),
-            settings.SEPARATOR.join([id, str(state.animation.frame)]) 
+            (settings.SEPARATOR.join([id, str(settings.EMPTY)]), 0, 0),
+            (settings.SEPARATOR.join([id, str(state.animation.frame)]), 0, 0) 
         ]
 
 
@@ -77,7 +77,7 @@ class IndexFrame(Frame):
     """
     def keys(self, id: str, state: AssetState) -> List[str]:
         # Retrieve the specific icon key from the state, defaulting to the asset ID
-        return [state.icon]
+        return [(state.icon, 0, 0)]
 
 
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:

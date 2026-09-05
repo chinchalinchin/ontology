@@ -58,8 +58,8 @@ from app.models.state import (
     Mutators,
     MutatorTriggers,
     MutatorParameters,
-    VisionMutatorParameters,
-    FearMutatorParameters,
+    RadialParameters,
+    FearParameters,
     Character,
     AnimationState,
     Meters,
@@ -201,8 +201,9 @@ def mock_board_assets():
         mutators=Mutators(
             triggers=MutatorTriggers(),
             parameters=MutatorParameters(
-                fear=FearMutatorParameters(radius=50, limit=0.2, enemy=1),
-                vision=VisionMutatorParameters(radius=100)
+                fear=FearParameters(radius=50, limit=0.2, enemy=1),
+                vision=RadialParameters(radius=100),
+                action=RadialParameters(radius=10)
             )
         ),
         inventory=Inventory(equipment=Equipment()),

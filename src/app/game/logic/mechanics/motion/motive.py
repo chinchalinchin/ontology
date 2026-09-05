@@ -2,15 +2,17 @@
 # Ontology: app.game.logic.mechanics.motion.motive
 """
 # Standard Libraries
-
 import math
+
+# Application Libraries
+from app.config.enums import NavigationIntentions
 
 def update(sprites, delta):
     """
     Evaluates pathfinding and translates distance to target into vector velocities with friction emulation.
     """
     for sprite in sprites:
-        if not sprite.state.goal:
+        if not sprite.state.goal or sprite.state.intention not in NavigationIntentions:
             sprite.state.velocity.vx = 0.0
             sprite.state.velocity.vy = 0.0
             continue

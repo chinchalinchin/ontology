@@ -25,7 +25,8 @@ from app.models.groups import SpawnableGroup
 from app.models.state import (
     PositionalState, 
     MotorState, 
-    PropertyState
+    PropertyState,
+    AttachmentState
 )
 
 if TYPE_CHECKING:
@@ -57,31 +58,23 @@ class Cradle:
     
     def spawn_expression(self, 
         id: str, 
-        position: Position,  # type: ignore
-        layer: str
-    ):
-        recipe = self.recipes.cursors.expressions
+        icon: str, 
+        target: Asset
+    ) -> AttachmentState:
         properties = self.spawnables.expressions.get(id)
-        name = self._generate()
         
-        state = PositionalState(
-            id          = id, 
-            name        = name, 
-            layer       = layer, 
-            position    = position
+        # Calculate top-right anchor using properties and target dimensions
+        if properties and target.dimensions:
+            ox = target.dimensions.w - properties.dimensions.w
+            oy = -properties.dimensions.l
+        else:
+            ox, oy = 0, 0
+            
+        return AttachmentState(
+            icon=icon, 
+            offset=Position(x=ox, y=oy),
+            ttl=120
         )
-        frame = Factory.frame(recipe.frame) \
-                    if recipe else Factory.frame(None)
-        animation = Factory.animation(recipe.animation) \
-                    if recipe else Factory.animation(None)
-        taxonomy = Factory.taxonomy(
-            id          = id, 
-            name        = name, 
-            category    = AssetCategories.CURSORS, 
-            instance    = AssetInstances.EXPRESSIONS
-        )
-        
-        return Asset(taxonomy, properties, state, frame, animation)
 
     def spawn_projectile(self, 
         id: str, 

@@ -98,8 +98,8 @@ class CognitionMechanics(Mechanic):
                 sprite.state.goal = None
 
         elif goal.category == Goals.SUBJECT.value:
-            # TODO
-            pass
+            if not sprite.state.psyche.dialogue:
+                sprite.state.goal = None
 
         elif goal.category == Goals.POSITION.value:
             dx = goal.position.x - sprite.state.position.x
@@ -121,15 +121,33 @@ class CognitionMechanics(Mechanic):
         """
         Pops the remembered goals onto the stack.
         """
-        if not (sprite.state.goal or sprite.state.memory.goals):
+        if not sprite.state.goal and not sprite.state.memory.goals:
             return
         
-        sprite.state.goal = sprite.state.memory.goals
-        sprite.state.memory.goals = None
+        if not sprite.state.goal:
+            sprite.state.goal = sprite.state.memory.goals.pop()
 
 
-    def _ideate(self, sprite, Board: Board) -> None:
-        pass
+    def _ideate(self, sprite, board: Board) -> None:
+        vision_radius = sprite.state.mutators.parameters.vision.radius
+            
+        for other_name, other_state in board.characters().items():
+            if other_name == sprite.name: 
+                continue
+                
+            dx = other_state.position.x - sprite.state.position.x
+            dy = other_state.position.y - sprite.state.position.y
+            
+            if (dx*dx + dy*dy) <= (vision_radius ** 2):
+                if sprite.state.goal:
+                    sprite.state.memory.goals.append(sprite.state.goal)
+                
+                sprite.state.goal = Goal(
+                    name=other_name, 
+                    category=Goals.SUBJECT.value, 
+                    position=Position(x=other_state.position.x, y=other_state.position.y)
+                )
+                break
 
     def _motivate(self, sprite, board: Board) -> None:
         """
@@ -191,8 +209,8 @@ class CognitionMechanics(Mechanic):
             Goals.TARGET.value,
             Goals.SUBJECT.value
         ]:
-            # TODO
-            pass 
+            if sprite.state.memory.sprites and sprite.state.memory.sprites.get(goal.name):
+                target_pos = sprite.state.memory.locations[goal.name]
 
         elif goal.category == Goals.OBJECT.value:
             # TODO

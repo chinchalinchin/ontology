@@ -6,6 +6,10 @@ Package for foundational Asset classes and interfaces.
 # Standard Libraries
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import (
+    List, 
+    Tuple
+)
 
 # Application Libraries
 from app.models.properties import AssetProperties
@@ -33,9 +37,10 @@ class Frame(ABC):
     def keys(self, 
         id: str, 
         state: AssetState
-    ) -> list[str]:
+    ) -> List[Tuple[str, int, int]]:
         """
-        Abstract method for Asset's frame key schema. Returns a list of keys for layered textures.
+        Abstract method for Asset's frame key schema. 
+        Returns a list of tuples: (frame_key, offset_x, offset_y)
         """
         pass
 

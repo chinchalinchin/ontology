@@ -17,7 +17,8 @@ from app.models.state.objects import (
     SwitchState,
     PropertyState,
     MotorState,
-    AnimatorState
+    AnimatorState,
+    AttachmentState
 )
 from app.models.state.schemas import (
     TileStateInstances,
@@ -39,10 +40,10 @@ from app.models.state.sprites import (
     Goal,
     Inventory,
     Memory,
-    VisionMutatorParameters,
-    FearMutatorParameters,
     MutatorTriggers,
     MutatorParameters,
+    RadialParameters,
+    FearParameters,
     Mutators
 )
 from app.models.state.widgets import (
@@ -71,6 +72,7 @@ __all__ = [
     'PropertyState',
     'MotorState',
     'AnimatorState',
+    'AttachmentState',
     # SPRITE STATES
     'SpriteState',
     'PlayerState',
@@ -83,11 +85,11 @@ __all__ = [
     'Goal',
     'Inventory',
     'Memory',
-    'VisionMutatorParameters',
-    'FearMutatorParameters',
     'MutatorTriggers',
     'MutatorParameters',
     'Mutators',
+    'RadialParameters',
+    'FearParameters',
     # WIDGET STATES
     'IconState',
     'TraversalState',

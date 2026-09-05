@@ -9,6 +9,9 @@ Broadly speaking, an Intention is a "verb", e.g. `attack`, `find`, `barter`, etc
 !!! note
     Each individual intention has a detailed specification in the [Specifications section](./specs/index.md).
 
+!!! note
+    A Transition from the Intention $i_1$ to the Intention $i_2$ is denoted $i_1:i_2$
+
 ## Intention
 
 A Intention is a [Sprite](./02-sprites.md) field that factors into the Asset Animation calculations indirectly; It may be thought of as a "hidden" state. An Animation is a "projection" of a Sprite's Intention into the (Action, Direction)-space. 
@@ -52,11 +55,26 @@ Intentions form natural groups based on the gameplay logic they inhabit and prod
 
 **Intention Loops**
 
-In order to avoid complex automata, `idle` acts as the origin and terminus of all "*Intention Loops*". In other words, `idle` is the "hub" Intention. All autonomous Sprite Animations are modelled as loops back into their `idle` Intention node in their finite automata. For example, the *Dialogue Loop* is given below.
+In order to avoid complex automata, `idle` acts as the origin and terminus of all "*Intention Loops*" in the Intention Transition Matrix. In other words, `idle` is the "hub" Intention. All autonomous Sprite Animations are modelled as loops back into the `idle` Intention. For example, one variation of the *Dialogue Loop* is given below,
 
 $$
 \text{idle} \to \text{find} \to \text{speak} \to \text{idle}
 $$
+
+Another route through the *Dialogue Loop* is given by,
+
+$$
+\text{idle} \to \text{find} \to \text{speak} \to \text{follow} \to \text{find} \to \text{speak} \text{idle}
+$$
+
+For this reason, Intention *Transitions* are further classified as *Entrypoints*, *Interpoints* and *Exitpoints*, where the entrance and exit is in reference to the particular loop being traversed. 
+
+A valid Intention Loop with $n$ steps must always satisfy the following constraints,
+
+- $\text{idle}:i_1$ : The Entrypoint must transition from `idle`
+- $:i_{n-1}:\text{idle}$ : The Exitpoint must transition into `idle`
+
+If $i_j:i_{j+1}$ where $i_j, i_{j+1} \neq \text{idle}$, then that transition is called an Interpoint.
 
 ### Transition Matrix
 
@@ -64,6 +82,9 @@ $$
 
 !!! important
     The Player state does not observe the Intention Transition matrix; the Player state is managed by polling the user's input and mapping input to intention. See [Player documentation](./02-sprites.md#player) for more information on the Player.
+
+!!! warning
+    Nothing in the game engine changes Intentions *except* Transitions. Transitions (and TransitionMechanics) are the only component of the application that alters Intention State. This is important for consistency. Failure to observe this rule may result in the Sprite Intention logic not behaving correctly. 
 
 The Intention Transition Matrix determines which Intention states are currently reachable for a Sprite from its current Intention. The general schema for the Intention Transition Matrix is given below,
 
@@ -73,7 +94,6 @@ intentions:
         - next: <intention-key>
           conditions: 
             - <condition>
-
 ```
 
 **Default Intention Transition Matrix**
@@ -104,7 +124,6 @@ Provided below is the Intention Transition Matrix bundled with the application b
 | 16 | `threaten` | `attack`, `hunt`, `idle` |
 | 17 | `wander` | `idle` |
 
-
 **Intentional Scripting Language (ISL)**
 
 The `condition` for each Intention transition is given in a simple truth-valued language that admits the logical operations and terms,
@@ -130,7 +149,7 @@ For example, in the default Intention Transition matrix given above, the transit
 
 ```yaml
 - not sprite.goal
-- sprite.memory.goal.category == constants.Goals.SPRITE.value
+- sprite.memory.goal.category == constants.Goals.TARGET.value
 ```
 
 `sprite` is a reference to the Sprite's state which is currently having its Intention processed by the game engine. Thus, the Sprite's Intention state will transition to `hunt` if the Sprite currently does not have a Goal, but remembers having a Goal of Category `sprite`.
@@ -146,12 +165,6 @@ In another example, the transition from `attack` to `scavenge` in the default In
 ```
 
 `sprites` is a reference to a cross-layer dictionary (`_cached_characters`) of all ingame Sprites states keyed by their identifying and unique `name`, which provides $O(1)$ access to their state attributes.
-
-Notice in the example there is a self-entrant transition. A Sprite with an `attack` Intention can re-enter the `attack` Intention conditional on the Sprite still having a target,
-
-```yaml
-- sprite.goal.category == Goals.TARGET.value
-```
 
 !!! important
     The conditions for an Intention transition are evaluated in the order they specified! In the given example, if `sprite.goal.category == constants.Goals.TARGET.value`, none of the other conditions for Intention transitions are evaluated and the Intention transitions back into `attack`.
@@ -293,7 +306,7 @@ CognitionMechanics manages the life cycle of Sprite Goals.
     - `if psyche.motivation.SAFETY`: TODO
 5. **Phase E: Tracking**: The Sprite's current Goal is tracked.
     - `if goal.category in [TARGET, SUBJECT]`: 
-        - `if goal.memory.locations.get(goal.name): goal.position = goal.memory.locations[goal.name].position`
+        - `if goal.memory.sprites.get(goal.name): goal.position = goal.memory.sprites[goal.name].position`
         - TODO
     - `if goal.category == POSITION`: 
     - `if goal.category == OBJECT`: 

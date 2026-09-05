@@ -98,24 +98,18 @@ class Screen:
         logger.debug(f"Constructing {len(tiles)} total tiles...")
 
         for tile in tiles:
-            # Query Registry using the computed tile keys
             frame_keys = tile.frame.keys(tile.id, tile.state)
-            for frame_key in frame_keys:
+            for frame_key, ox, oy in frame_keys:
                 tex_data = self.registry.image(frame_key)
                 if tex_data:
                     tex, sx, sy, sw, sl = tex_data
-                    
-                    # Append flat primitives directly for the C-loop
                     tile_tuple = (
                         tex, sx, sy, sw, sl,
-                        tile.state.position.x, 
-                        tile.state.position.y,
-                        tile.dimensions.w, 
-                        tile.dimensions.l,
-                        tile.state.multiple.nx, 
-                        tile.state.multiple.ny
+                        tile.state.position.x + ox, 
+                        tile.state.position.y + oy,
+                        tile.dimensions.w, tile.dimensions.l,
+                        tile.state.multiple.nx, tile.state.multiple.ny
                     )
-
                     # Route properties
                     if tile.taxonomy.instance == AssetInstances.BACK:
                         back_tiles.append(tile_tuple)
@@ -128,10 +122,10 @@ class Screen:
         """
         widgets = []
         for menu in overlays:
-            if hasattr(menu, 'widgets') and menu.widgets:
+            if menu.widgets:
                 widgets.extend(menu.widgets.values())
         for menu in menus:
-            if hasattr(menu, 'widgets') and menu.widgets:
+            if menu.widgets:
                 widgets.extend(menu.widgets.values())
         return widgets
     
@@ -173,43 +167,32 @@ class Screen:
         pov = self.camera(focus, dim)
         active_assets = []
         
-        # 1. Height-sort the assets directly prior to querying asset.frame.keys()
-        # Primary Sort: Explicit Height OR (Y + Length)
-        # Secondary Sort: Depth-index tie-breaker for overlapping entities
+        # Height-sort the assets directly prior to querying asset.frame.keys()
+        #   Primary Sort: Explicit Height OR (Y + Length)
+        #   Secondary Sort: Depth-index tie-breaker for overlapping entities
         assets.sort(key=lambda a: (
             a.state.height if getattr(a.state, 'height', None) is not None else (
                 (a.state.position.y + (a.dimensions.l if a.dimensions else 0))
             ),
             getattr(a.state, 'depth', 0)
         ))
-        
+
         for asset in assets:
-            # Filter out Tile assets to avoid dynamic rendering artifacts; 
-            # they are already drawn on the pre-compiled canvases.
-            if asset.category == AssetCategories.TILES:
-                continue
+            if asset.category == AssetCategories.TILES: continue
 
-            # 2. Resolve current animation frame keys
             frame_keys = asset.frame.keys(asset.id, asset.state)
-            
-            for frame_key in frame_keys:
-                # 3. Query registry for C-level source coordinates
+            for frame_key, ox, oy in frame_keys:
                 tex_data = self.registry.image(frame_key)
+                if not tex_data: continue 
 
-                if not tex_data:
-                    continue 
-
+                # Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
                 tex, sx, sy, sw, sl = tex_data
-                
-                # 4. Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
-                dx, dy = asset.state.position.x, asset.state.position.y
+                dx, dy = asset.state.position.x + ox, asset.state.position.y + oy
                 dw, dl = sw, sl
-                # dw, dl = asset.dimensions.w, asset.dimensions.l
-                
-                # 5. Strict Camera Culling: Only pass geometry if intersecting the camera frame 
+
+                # Strict Camera Culling: Only pass geometry if intersecting the camera frame 
                 if (dx + dw >= pov.x and dx <= pov.x + self.screensize.w and
                     dy + dl >= pov.y and dy <= pov.y + self.screensize.l):
-                    
                     active_assets.append((tex, sx, sy, sw, sl, dx, dy, dw, dl))
 
         logger.debug(f"Render Payload: Camera({pov.x}, {pov.y}) | Total Assets: {len(active_assets)}")
@@ -235,7 +218,8 @@ class Screen:
             
         tex = widget.state.canvas
         base_keys = widget.frame.keys(widget.id, widget.state)
-        base_ptr, sx, sy, sw, sl = self.registry.image(base_keys[0])
+        base_key, ox, oy = base_keys[0]  # Just unpack the first element
+        base_ptr, sx, sy, sw, sl = self.registry.image(base_key)
         
         # 1. Fetch and stamp clean background
         construct(tex, [(base_ptr, sx, sy, sw, sl, 0, 0, sw, sl, 1, 1)])
@@ -265,15 +249,14 @@ class Screen:
                 ))
             else:
                 frame_keys = widget.frame.keys(widget.id, widget.state)
-
-                for key in frame_keys:
+                for key, ox, oy in frame_keys:
                     if key:
                         tex_data = self.registry.image(key)
                         if tex_data:
                             tex, sx, sy, sw, sl = tex_data
                             primitives.append((
                                 tex, sx, sy, sw, sl, 
-                                widget.state.position.x, widget.state.position.y, 
+                                widget.state.position.x + ox, widget.state.position.y + oy, 
                                 sw, sl
                             ))
                         elif widget.taxonomy.instance != AssetInstances.PANES:

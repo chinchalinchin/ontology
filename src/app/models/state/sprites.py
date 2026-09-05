@@ -85,6 +85,10 @@ class Memory:
     property: Optional[Dict[str, Position]] = None # type: ignore
     sprites: Optional[Dict[str, Position]] = None # type: ignore
 
+    def __post_init__(self) -> None:
+        if self.goals is None:
+            self.goals = []
+            
 @dataclass(slots=True)
 class RadialParameters:
     radius: int
