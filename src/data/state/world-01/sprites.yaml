@@ -30,7 +30,7 @@ sheets:
           vision:
             radius: 128
           action:
-            radius: 10
+            radius: 30
       psyche:
         dialogue: test
         expression: null
@@ -44,7 +44,13 @@ sheets:
           x: 250
           y: 300
       memory:
-        goals: null
+        goals:
+          player:
+            name: player
+            category: subject
+            position:
+              x: 250
+              y: 300
         prices: null
         property: null
         relationships: 

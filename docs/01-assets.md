@@ -405,7 +405,6 @@ Expressions are "Phantom States" used as visual decorators. Unlike most Assets, 
     - bubbles: `agreement`, `anger`, `confusion`, `disagreement`, `loquacity`, `surprise`, `tired`
     - buffs: TODO
 
-
 **Animation: None**
 
 N/A

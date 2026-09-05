@@ -78,7 +78,7 @@ class Inventory:
 
 @dataclass(slots=True)
 class Memory:
-    goals: Optional[List[Goal]] = field(default_factory=list)
+    goals: Optional[Dict[str, Goal]] = field(default_factory=dict)
     rumors: Optional[List[str]] = None
     prices: Optional[Dict[str, float]] = None
     relationships: Optional[Dict[str, Relationships]] = None
@@ -87,7 +87,15 @@ class Memory:
 
     def __post_init__(self) -> None:
         if self.goals is None:
-            self.goals = []
+            self.goals = {}
+        if self.sprites is None:
+            self.sprites = {}
+        if self.relationships is None:
+            self.relationships = {}
+        if self.property is None:
+            self.property = {}
+        if self.rumors is None:
+            self.rumors = []
             
 @dataclass(slots=True)
 class RadialParameters:

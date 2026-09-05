@@ -55,6 +55,7 @@ class FontProperties:
 @dataclass(slots=True)
 class CursorProperties(AssetProperties):
     dimensions: Dimensions # type: ignore
+    frames: List[str] = field(default_factory=list)
 
 @dataclass(slots=True)
 class EffectProperties(AssetProperties):

@@ -43,6 +43,11 @@
 {% if asset.state.character -%}
 - **Character:** STR: {{ asset.state.character.strength }}, DEF: {{ asset.state.character.defense }}, SPD: {{ asset.state.character.speed }}
 {% endif -%}
+{% if asset.state.psyche %}
+- **Psyche**:
+  - Dialogue: {{ asset.state.psyche.dialogue }}
+  - Expression: {{ asset.state.psyche.expression }}
+{% endif %}
 {% if asset.state.meters -%}
 - **Meters:**
   - Health: {{ asset.state.meters.health.current }} / {{ asset.state.meters.health.maximum }}
@@ -63,6 +68,21 @@
   - Name: `{{ asset.state.goal.name }}`
   - Category: `{{ asset.state.goal.category }}`
   - Position: ({{ asset.state.goal.position.x }}, {{ asset.state.goal.position.y }})
+{% endif -%}
+{% if asset.state.memory -%}
+- **Memory:** 
+  - Goals:
+  {% for goal in asset.state.memory.goals.values() %}
+    - Name: `{{ goal.name }}`
+    - Category: `{{ goal.category }}`
+    - Position: `({{ goal.position.x }}, {{ goal.position.y }})` 
+  {% endfor%}
+  - Sprites:
+  {% for name, position in asset.state.memory.sprites.items() %}
+    - Name: `{{ name }}`
+    - Position: `({{ position.x }}, {{ position.y }})`
+  {% endfor %}
+  - Relationships: `{{ asset.state.memory.relationships }}`
 {% endif -%}
 {% if asset.state.intention -%}
 - **Intention:** `{{ asset.state.intention }}`

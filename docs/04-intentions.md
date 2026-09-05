@@ -290,13 +290,14 @@ CognitionMechanics manages the life cycle of Sprite Goals.
     - `if goal.category == SUBJECT`: If `not psyche.dialogue`, `goal = None`.
     - `if goal.category == POSITION`: If `position - goal.position < some_radius`.
     - `if goal.category == OBJECT`: TODO
-    - `if goal.category == PROPERTY`: If `goal.name in memory.property`, `goal = None`. 
-2. **Phase B: Memory**: The Sprite's memory is managed and updated relative to its vision. 
-    - If the Sprite has no Goals, Goals in the Memory are popped off the stack and added to the current Goal. 
+    - `if goal.category == PROPERTY`: If `goal.name in memory.property`, `goal = None`.
+2. **Phase B: Scan**: 
     - A scan of the `mutator.parameter.vision.radius` is conducted. If a Sprite is found, its location is updated in `memory.sprites`.
-3. **Phase C: Ideation**: If the Sprite has no Goals, environmental and proximal Goals are ideated. 
+3. **Phase C: Memory**: The Sprite's memory is managed and updated relative to its vision. 
+    - If the Sprite has no Goals, Goals in the Memory are popped off the stack and added to the current Goal. 
+4. **Phase D: Ideation**: If the Sprite has no Goals, environmental and proximal Goals are ideated. 
     - `if psyche.dialogue`: If target Sprite is within `mutators.parameters.vision.radius`, then `goal.category = Goals.SUBJECT.value` and `goal.name` is set to target Sprite.
-4. **Phase D: Motivation**: If the Sprite has still no Goals, overarching Motivations are used to form new Goals. These goals are pushed onto the `memory.goals` stack.
+5. **Phase E: Motivation**: If the Sprite has still no Goals, overarching Motivations are used to form new Goals. These goals are pushed onto the `memory.goals` stack.
     - `if psyche.motivation.CONQUEST`: TODO
     - `if psyche.motivation.PROFIT`: TODO
     - `if psyche.motivation.SURVIVAL`: TODO
@@ -304,7 +305,7 @@ CognitionMechanics manages the life cycle of Sprite Goals.
     - `if psyche.motivation.REVENGE`: TODO
     - `if psyche.motivation.REBELLION`: TODO
     - `if psyche.motivation.SAFETY`: TODO
-5. **Phase E: Tracking**: The Sprite's current Goal is tracked.
+6. **Phase F: Tracking**: The Sprite's current Goal is tracked.
     - `if goal.category in [TARGET, SUBJECT]`: 
         - `if goal.memory.sprites.get(goal.name): goal.position = goal.memory.sprites[goal.name].position`
         - TODO

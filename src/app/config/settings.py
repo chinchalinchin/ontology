@@ -12,6 +12,7 @@ from pathlib import Path
 SEPARATOR = "-"
 NEW_BOARD = "world-01"
 MIGRATOR_DELAY = 1
+EXPRESSION_TTL = 120
 # ---------------------------------------------------
 ## --------------------------------- ENGINE CONSTANTS
 ### TARGET_FPS: Engine's target FPS.

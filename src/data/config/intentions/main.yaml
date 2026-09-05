@@ -8,8 +8,8 @@ intentions:
     - next: hunt
       conditions: 
         - not sprite.goal
-        - sprite.memory.goal 
-        - sprite.memory.goal.category == constants.Goals.TARGET.value
+        - sprite.memory.goals 
+        - functions.check_memory(sprite.memory.goals, constants.Goals.TARGET.value)
     - next: scavenge
       conditions: 
         - sprites.get(sprite.goal.name)

@@ -11,5 +11,6 @@ mechanics:
     - collision
     - combat
     - interaction
+    - social
     - switch
     - projectile

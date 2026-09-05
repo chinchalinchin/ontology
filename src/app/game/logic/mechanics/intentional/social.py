@@ -37,26 +37,26 @@ class SocialMechanics(Mechanic):
                             # NPC-to-NPC
                             if target.instance == AssetInstances.SPRITES.value:
                                 if sprite.state.psyche.dialogue:
-                                    if target.state.memory.rumors is None:
-                                        target.state.memory.rumors = []
                                     target.state.memory.rumors.append(sprite.state.psyche.dialogue)
                                 
                                 sprite.state.psyche.expression = board.cradle.spawn_expression(
-                                    ExpressionsPalette.BUBBLES, 
-                                    Expressions.LOQUACITY, 
-                                    target
+                                    ExpressionsPalette.BUBBLES.value, 
+                                    Expressions.LOQUACITY.value, 
+                                    sprite
                                 )
 
                             # Player-to-NPC
                             elif target.instance == AssetInstances.PLAYERS.value:
-                                bus.append(MenuEvent(
-                                    Menus.DIALOGUE.value, 
-                                    context={'sprite': sprite}
-                                ))
+                                pass
+                                # TODO: this should be initiated by player, not sprite.
+                                # bus.append(MenuEvent(
+                                #     Menus.DIALOGUE.value, 
+                                #     context={'sprite': sprite}
+                                # ))
                                 sprite.state.psyche.expression = board.cradle.spawn_expression(
-                                    ExpressionsPalette.BUBBLES, 
-                                    Expressions.LOQUACITY, 
-                                    target
+                                    ExpressionsPalette.BUBBLES.value, 
+                                    Expressions.LOQUACITY.value, 
+                                    sprite
                                 )
                 else:
                     # Decay

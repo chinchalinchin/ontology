@@ -155,7 +155,7 @@ class SpriteFrame(StateFrame):
         if id != 'player' and state.psyche.expression:
             expr = state.psyche.expression
             frame_keys.append((expr.icon, expr.offset.x, expr.offset.y))
-
+            
         if state.intention is not None and state.intention == Intentions.ATTACK:
             logger.info(f"SpriteFrame generated keys: {frame_keys}")
         

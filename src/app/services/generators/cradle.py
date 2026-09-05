@@ -10,16 +10,13 @@ from typing import TYPE_CHECKING, List
 import logging 
 
 # Application Libraries
+import app.config.settings as settings
 from app.assets.base import Asset
 from app.config.enums import (
     AssetInstances, 
     AssetCategories
 )
 from app.services.factory import Factory
-from app.models.adapters import (
-    PydanticVelocity as Velocity, 
-    PydanticPosition as Position
-)
 from app.models.config import RecipeConfiguration
 from app.models.groups import SpawnableGroup
 from app.models.state import (
@@ -32,6 +29,8 @@ from app.models.state import (
 if TYPE_CHECKING:
     from app.services.generators.decomposer import Decomposer
     from app.models.properties import Cost
+
+from libs.core.models import Position, Velocity
 
 logger = logging.getLogger(__name__)
 
@@ -65,15 +64,17 @@ class Cradle:
         
         # Calculate top-right anchor using properties and target dimensions
         if properties and target.dimensions:
-            ox = target.dimensions.w - properties.dimensions.w
-            oy = -properties.dimensions.l
+            ox = target.dimensions.w - 2*properties.dimensions.w
+            oy = -0.9*properties.dimensions.l
         else:
             ox, oy = 0, 0
             
         return AttachmentState(
+            id=id,
+            layer=target.state.layer,
             icon=icon, 
             offset=Position(x=ox, y=oy),
-            ttl=120
+            ttl=settings.EXPRESSION_TTL
         )
 
     def spawn_projectile(self, 

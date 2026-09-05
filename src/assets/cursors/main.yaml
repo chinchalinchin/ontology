@@ -2,7 +2,7 @@ cursors:
   expressions:
     bubbles:
       dimensions:
-        w: 144
+        w: 16
         l: 16
       frames:
         - affection

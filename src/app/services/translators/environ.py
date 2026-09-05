@@ -27,7 +27,7 @@ def check_memory(goals, category=None) -> bool:
     if not goals: 
         return False
     if category:
-        return any(g.category == category for g in goals)
+        return any(g.category == category for g in goals.values())
     return True
 
 # ----------------------------------------------------------------------------

@@ -45,6 +45,8 @@ class CognitionMechanics(Mechanic):
 
             # Phase A: Resolution
             self._resolve(sprite, board)
+            # Phase B: Scan
+            self._scan(sprite, board)
             # Phase B: Memory
             self._remember(sprite, board)
             # Phase C: Ideate
@@ -97,6 +99,9 @@ class CognitionMechanics(Mechanic):
             if target_state.mutators.triggers.dead:
                 sprite.state.goal = None
 
+            if goal.name in sprite.state.memory.goals.keys():
+                sprite.state.memory.goals.pop(goal.name)
+
         elif goal.category == Goals.SUBJECT.value:
             if not sprite.state.psyche.dialogue:
                 sprite.state.goal = None
@@ -116,21 +121,9 @@ class CognitionMechanics(Mechanic):
             # TODO:
             pass
 
-        
-    def _remember(self, sprite, Board: Board) -> None:
-        """
-        Pops the remembered goals onto the stack.
-        """
-        if not sprite.state.goal and not sprite.state.memory.goals:
-            return
-        
-        if not sprite.state.goal:
-            sprite.state.goal = sprite.state.memory.goals.pop()
-
-
-    def _ideate(self, sprite, board: Board) -> None:
+    def _scan(self, sprite, board: Board) -> None:
         vision_radius = sprite.state.mutators.parameters.vision.radius
-            
+
         for other_name, other_state in board.characters().items():
             if other_name == sprite.name: 
                 continue
@@ -139,15 +132,44 @@ class CognitionMechanics(Mechanic):
             dy = other_state.position.y - sprite.state.position.y
             
             if (dx*dx + dy*dy) <= (vision_radius ** 2):
-                if sprite.state.goal:
-                    sprite.state.memory.goals.append(sprite.state.goal)
+                sprite.state.memory.sprites[other_name] = other_state.position
+
+
+    def _remember(self, sprite, Board: Board) -> None:
+        """
+        Pops the remembered goals onto the stack.
+        """
+        if not sprite.state.goal and not sprite.state.memory.goals:
+            return
+        
+        if not sprite.state.goal:
+            first = next(iter(sprite.state.memory.goals))
+            sprite.state.goal = sprite.state.memory.goals.pop(first)
+        
+
+    def _ideate(self, sprite, board: Board) -> None:
+        if sprite.state.psyche.dialogue:
+            vision_radius = sprite.state.mutators.parameters.vision.radius
                 
-                sprite.state.goal = Goal(
-                    name=other_name, 
-                    category=Goals.SUBJECT.value, 
-                    position=Position(x=other_state.position.x, y=other_state.position.y)
-                )
-                break
+            for other_name, other_state in board.characters().items():
+                if other_name == sprite.name: 
+                    continue
+                    
+                dx = other_state.position.x - sprite.state.position.x
+                dy = other_state.position.y - sprite.state.position.y
+                
+                if (dx*dx + dy*dy) <= (vision_radius ** 2):
+                    if sprite.state.goal and \
+                        sprite.state.goal.name not in sprite.state.memory.goals.keys():
+
+                        sprite.state.memory.goals[sprite.state.goal.name] = sprite.state.goal
+                    
+                    sprite.state.goal = Goal(
+                        name=other_name, 
+                        category=Goals.SUBJECT.value, 
+                        position=Position(x=other_state.position.x, y=other_state.position.y)
+                    )
+                    break
 
     def _motivate(self, sprite, board: Board) -> None:
         """
@@ -209,8 +231,9 @@ class CognitionMechanics(Mechanic):
             Goals.TARGET.value,
             Goals.SUBJECT.value
         ]:
+            # TODO: hamdle dead sprites
             if sprite.state.memory.sprites and sprite.state.memory.sprites.get(goal.name):
-                target_pos = sprite.state.memory.locations[goal.name]
+                target_pos = sprite.state.memory.sprites[goal.name]
 
         elif goal.category == Goals.OBJECT.value:
             # TODO
@@ -254,14 +277,6 @@ class CognitionMechanics(Mechanic):
             # Invert the target vector to run away
             dx = sprite.state.position.x - sprite.state.goal.position.x
             dy = sprite.state.position.y - sprite.state.goal.position.y
-            
-            # Extrapolate a point far in the opposite direction
-            sprite.state.goal.position.x = sprite.state.position.x + (dx * 10)
-            sprite.state.goal.position.y = sprite.state.position.y + (dy * 10)
-
-        elif intention == Intentions.FIND.value and sprite.state.mutators.triggers.vision:
-            dx = sprite.state.goal.position.x - sprite.state.position.x 
-            dy = sprite.state.goal.position.y - sprite.state.position.y
             
             # Extrapolate a point far in the opposite direction
             sprite.state.goal.position.x = sprite.state.position.x + (dx * 10)
