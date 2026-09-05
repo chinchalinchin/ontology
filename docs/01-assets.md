@@ -409,7 +409,7 @@ Expressions are "Phantom States" used as visual decorators. Unlike most Assets, 
 
 N/A
 
-**Frame: MappedFrame**
+**Frame: IndexFrame**
 
 * `keys(id, state): returns [ (id, 0, 0) ]` *(Note: Bypassed during active rendering; `SpriteFrame` handles the dynamic offset injection).*
 * `index(self, id, properties): returns { "{id}-{properties.frames[i]}": (i * properties.dimension.w, 0, properties.dimension.w, properties.dimensions.l) }`
@@ -642,7 +642,7 @@ Pixies are Sheets that have simple game mechanics, e.g. are excluded from the co
 
 **Frame: StateFrame**
 
-* `keys(id, animation): returns [ "{id}-{animation.action}-{animation.direction}-{animation.frame}" ]`
+* `keys(id, state): returns [ "{id}-{state.animation.action}-{state,animation.direction}-{state.animation.frame}" ]`
 * `index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: AnimatorState**
@@ -664,7 +664,7 @@ Sprites are Sheets over multiple rows of frames, where each row may have a varia
 
 **Frame: SpriteFrame**
 
-* `keys(id, animation): returns [ "{id}-{animation.action}-{animation.direction}-{animation.frame}" ] + [ <equipment-frames>]`
+* `keys(id, state): returns [ "{id}-{state.animation.action}-{state.animation.direction}-{animation.frame}" ] + [ <equipment-frames> ] + [ <expression-frames> ]`
 * `index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SpriteState**

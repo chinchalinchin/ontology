@@ -57,12 +57,12 @@ class Meter:
 
 @dataclass(slots=True)
 class Meters:
-    health: Meter
-    magic: Meter
+    health: Meter = field(default_factory=Meter)
+    magic: Meter = field(default_factory=Meter)
 
 @dataclass(slots=True)
 class Psyche:
-    persona: str
+    persona: Optional[str] = None
     motivation: Optional[str] = None
     expression: Optional[AttachmentState] = None
     dialogue: Optional[str] = None
@@ -76,7 +76,7 @@ class Goal:
 @dataclass(slots=True)
 class Inventory:
     loot: Optional[Dict[str, int]] = field(default_factory=dict)
-    equipment: Optional[Equipment] = None
+    equipment: Optional[Equipment] = field(default_factory=Equipment)
     wallet: int = 0
 
 @dataclass(slots=True)

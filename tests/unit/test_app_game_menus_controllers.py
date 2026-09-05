@@ -6,8 +6,9 @@ from collections import deque
 
 from app.game.menus.controllers.main import MainController
 from app.game.menus.controllers.load import LoadController
+from app.game.menus.controllers.scroll import ScrollController
 from app.game.menus.core import Menu, Widget, Binding
-from app.game.menus.events import StateEvent, TerminalEvent
+from app.game.menus.events import StateEvent, TerminalEvent, UpdateEvent
 from app.config.enums import Selections
 
 def test_main_controller_select():
@@ -27,17 +28,21 @@ def test_main_controller_select():
     
     ctrl.select("btn-new", menu, board, bus)
     
-    assert len(bus) == 1
-    event = bus.popleft()
-    assert isinstance(event, StateEvent)
-    assert event.id == 'world-01'
+    assert len(bus) == 2
+    event1 = bus.popleft()
+    event2 = bus.popleft()
+    assert isinstance(event1, TerminalEvent)
+    assert isinstance(event2, StateEvent)
+    assert event2.id == 'world-01'
     
     ctrl.select("btn-load", menu, board, bus)
     
-    assert len(bus) == 1
-    event = bus.popleft()
-    assert isinstance(event, StateEvent)
-    assert event.id == 'world-01'
+    assert len(bus) == 2
+    event1 = bus.popleft()
+    event2 = bus.popleft()
+    assert isinstance(event1, TerminalEvent)
+    assert isinstance(event2, StateEvent)
+    assert event2.id == 'world-01'
 
 def test_main_controller_update():
     ctrl = MainController()
@@ -48,8 +53,7 @@ def test_main_controller_update():
     ctrl.update(menu, MagicMock(), deque())
     
     # Main menu idle loop should prewarm the registry textures
-    mock_registry.prewarm.assert_called_once_with(budget_ms=5)
-
+    mock_registry.prewarm.assert_called_once_with(budget_ms=1)
 
 def test_load_controller_update():
     ctrl = LoadController()
@@ -113,3 +117,37 @@ def test_load_controller_update_not_done():
     
     # Should not push terminal event or flip board state
     assert len(bus) == 0
+
+def test_scroll_controller_select():
+    ctrl = ScrollController()
+    menu = MagicMock(spec=Menu)
+    bus = deque()
+    board = MagicMock()
+    
+    mock_page = MagicMock(spec=Widget)
+    mock_page.state = MagicMock()
+    mock_page.state.current.return_value = ["line 1", "line 2"]
+    
+    mock_btn_down = MagicMock(spec=Widget)
+    mock_btn_down.binding = Binding(selection=Selections.SCROLLDOWN.value, selector="text_page")
+    
+    mock_btn_up = MagicMock(spec=Widget)
+    mock_btn_up.binding = Binding(selection=Selections.SCROLLUP.value, selector="text_page")
+    
+    menu.widgets = {
+        "text_page": mock_page,
+        "btn_down": mock_btn_down,
+        "btn_up": mock_btn_up
+    }
+    
+    ctrl.select("btn_down", menu, board, bus)
+    mock_page.state.scrolldown.assert_called_once()
+    assert len(bus) == 1
+    event = bus.popleft()
+    assert isinstance(event, UpdateEvent)
+    
+    ctrl.select("btn_up", menu, board, bus)
+    mock_page.state.scrollup.assert_called_once()
+    assert len(bus) == 1
+    event = bus.popleft()
+    assert isinstance(event, UpdateEvent)

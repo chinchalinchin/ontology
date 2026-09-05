@@ -14,6 +14,8 @@ class DeviceContexts(str, Enum):
     MENU            = "menu"
     
 # -------------------------------- ASSET ENUMERATIONS
+class RequiredAssets(str, Enum):
+    PLAYER          = "player"
 
 class AssetCategories(str, Enum):
     CRAFTS          = "crafts"
@@ -84,10 +86,6 @@ class Groups(str, Enum):
 
 class Shortcuts(str, Enum):
     COMPOSITIONS    = "compositions"
-
-class ExpressionsPalette(str, Enum):
-    BUBBLES         = "bubbles"
-    BUFFS           = "buffs"
 
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 
@@ -228,6 +226,10 @@ class Relationships(str, Enum):
     FOE             = "foe"
     FRIEND          = "friend"
     STRANGER        = "stranger"
+
+class ExpressionsPalette(str, Enum):
+    BUBBLES         = "bubbles"
+    BUFFS           = "buffs"
 
 # -------------------------------- GOAL ENUMERATIONS
 

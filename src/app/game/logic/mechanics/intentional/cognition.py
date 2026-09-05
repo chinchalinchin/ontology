@@ -58,6 +58,7 @@ class CognitionMechanics(Mechanic):
             # Phase F: Projection
             self._project(sprite, board)
 
+
     def _completed(self, sprite, board: Board) -> bool:
         goal = sprite.state.goal
 
@@ -68,8 +69,7 @@ class CognitionMechanics(Mechanic):
             return board.character(goal.name).mutators.triggers.dead
 
         elif goal.category == Goals.SUBJECT.value:
-            # TODO
-            pass
+            return sprite.state.psyche.dialogue is None
 
         elif goal.category == Goals.POSITION.value:
             dx = sprite.state.goal.position.x - sprite.state.position.x
@@ -96,6 +96,7 @@ class CognitionMechanics(Mechanic):
         
         if goal.category == Goals.TARGET.value:
             target_state = board.character(goal.name)
+
             if target_state.mutators.triggers.dead:
                 sprite.state.goal = None
 
@@ -105,6 +106,9 @@ class CognitionMechanics(Mechanic):
         elif goal.category == Goals.SUBJECT.value:
             if not sprite.state.psyche.dialogue:
                 sprite.state.goal = None
+
+            if goal.name in sprite.state.memory.goals.keys():
+                sprite.state.memory.goals.pop(goal.name)
 
         elif goal.category == Goals.POSITION.value:
             dx = goal.position.x - sprite.state.position.x
@@ -121,7 +125,11 @@ class CognitionMechanics(Mechanic):
             # TODO:
             pass
 
+
     def _scan(self, sprite, board: Board) -> None:
+        if sprite.state.mutators.parameters is None:
+            return
+        
         vision_radius = sprite.state.mutators.parameters.vision.radius
 
         for other_name, other_state in board.characters().items():
@@ -139,16 +147,25 @@ class CognitionMechanics(Mechanic):
         """
         Pops the remembered goals onto the stack.
         """
-        if not sprite.state.goal and not sprite.state.memory.goals:
+        if sprite.state.intention != Intentions.IDLE.value:
             return
         
+        if not sprite.state.goal and not sprite.state.memory.goals:
+            return
         if not sprite.state.goal:
             first = next(iter(sprite.state.memory.goals))
             sprite.state.goal = sprite.state.memory.goals.pop(first)
         
 
     def _ideate(self, sprite, board: Board) -> None:
+        # Prevent endless targeting and memory leaks if we already have a dialogue goal
+        if sprite.state.goal and sprite.state.goal.category == Goals.SUBJECT.value:
+            return
+            
         if sprite.state.psyche.dialogue:
+            if sprite.state.mutators.parameters is None:
+                return
+                
             vision_radius = sprite.state.mutators.parameters.vision.radius
                 
             for other_name, other_state in board.characters().items():
@@ -170,6 +187,7 @@ class CognitionMechanics(Mechanic):
                         position=Position(x=other_state.position.x, y=other_state.position.y)
                     )
                     break
+
 
     def _motivate(self, sprite, board: Board) -> None:
         """
@@ -231,7 +249,7 @@ class CognitionMechanics(Mechanic):
             Goals.TARGET.value,
             Goals.SUBJECT.value
         ]:
-            # TODO: hamdle dead sprites
+            # TODO: hamdle dead sprites - future phase
             if sprite.state.memory.sprites and sprite.state.memory.sprites.get(goal.name):
                 target_pos = sprite.state.memory.sprites[goal.name]
 

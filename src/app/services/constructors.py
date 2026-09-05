@@ -15,7 +15,8 @@ from app.config.loader import Loader
 from app.config.enums import (
     Devices, 
     Mechanics,
-    Menus
+    Menus,
+    AssetCategories
 )
 from app.game.board import Board
 from app.game.engine import Engine
@@ -191,22 +192,28 @@ class Builder:
             # Rehydrate logic fallback (if Migrator handles it differently in the future)
             self.screens = {}
             for layer in self.board.layers():
-                max_width = max((self.board.size(layer)[0].w for layer in self.board.layers()), default=0)
-                max_length = max((self.board.size(layer)[0].l for layer in self.board.layers()), default=0)
+                max_width = max((self.board.size(layer)[0].w 
+                                 for layer in self.board.layers()), default=0)
+                max_length = max((self.board.size(layer)[0].l 
+                                  for layer in self.board.layers()), default=0)
                 self.screens[layer] = Screen(
                     self.context.screensize, 
                     Dimensions(max_width, max_length),
-                    self.board.categories('tiles', layer),
+                    self.board.categories(AssetCategories.TILES.value, layer),
                     self.registry
                 )
 
         # Allocate Mechanics (Unchanged implementation)
         core_cfg = getattr(self.context.configurations.mechanics, 'core', None) or [
-            Mechanics.MENU.value, Mechanics.ANIMATION.value, Mechanics.REMOVE.value
+            Mechanics.MENU.value, 
+            Mechanics.ANIMATION.value, 
+            Mechanics.REMOVE.value
         ]
         world_cfg = getattr(self.context.configurations.mechanics, 'world', None) or [
-            Mechanics.PLAYER.value, Mechanics.COGNITION.value, 
-            Mechanics.TRANSITION.value, Mechanics.MOTION.value
+            Mechanics.PLAYER.value, 
+            Mechanics.COGNITION.value, 
+            Mechanics.TRANSITION.value, 
+            Mechanics.MOTION.value
         ]
         
         self.core = [Factory.mechanics(m) for m in core_cfg]

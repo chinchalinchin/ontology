@@ -94,24 +94,24 @@ def test_frame_keys_generation():
     )
     
     # 1. NoFrame
-    assert NoFrame().keys("dummy", state) == ["dummy"]
+    assert NoFrame().keys("dummy", state) == [("dummy", 0, 0)]
     
     # 2. SingleFrame
-    assert SingleFrame().keys("dummy", state) == ["dummy"]
+    assert SingleFrame().keys("dummy", state) == [("dummy", 0, 0)]
     
     # 3. IterableFrame
-    assert IterableFrame().keys("eff", anim_state) == ["eff-2"]
+    assert IterableFrame().keys("eff", anim_state) == [("eff-2", 0, 0)]
     
     # 4. StateFrame
-    assert StateFrame().keys("npc", anim_state) == ["npc-walk-down-2"]
+    assert StateFrame().keys("npc", anim_state) == [("npc-walk-down-2", 0, 0)]
     
     # 5. SpriteFrame (Strict Z-index: Base -> Armor -> Utility -> Tool -> Weapon -> Shield)
     keys = SpriteFrame().keys("player", sprite_state)
     expected_keys = [
-        "player-thrust-up-4",
-        "leather-thrust-up-4",
-        "sword-thrust-up-4",
-        "buckler-thrust-up-4"
+        ("player-thrust-up-4", 0, 0),
+        ("leather-thrust-up-4", 0, 0),
+        ("sword-thrust-up-4", 0, 0),
+        ("buckler-thrust-up-4", 0, 0)
     ]
     # NOTE: Missing None items (utility, tool) are dynamically dropped.
     assert keys == expected_keys
@@ -140,7 +140,7 @@ def test_screen_draw_culling_and_sorting(mock_construct, mock_canvas, mock_rende
     asset1.state.height = 100
     asset1.state.depth = 0
     asset1.dimensions = Dimensions(w=32, l=32)
-    asset1.frame.keys.return_value = ["obj1-key"]
+    asset1.frame.keys.return_value = [("obj1-key", 0, 0)]
     
     # Asset 2: Outside camera view (culled)
     asset2 = MagicMock()
@@ -151,7 +151,7 @@ def test_screen_draw_culling_and_sorting(mock_construct, mock_canvas, mock_rende
     asset2.state.height = 1000
     asset2.state.depth = 0
     asset2.dimensions = Dimensions(w=32, l=32)
-    asset2.frame.keys.return_value = ["obj2-key"]
+    asset2.frame.keys.return_value = [("obj2-key", 0, 0)]
     
     # Asset 3: Inside view, but should render ON TOP of Asset 1 (higher height)
     asset3 = MagicMock()
@@ -162,7 +162,7 @@ def test_screen_draw_culling_and_sorting(mock_construct, mock_canvas, mock_rende
     asset3.state.height = 120
     asset3.state.depth = 1
     asset3.dimensions = Dimensions(w=32, l=32)
-    asset3.frame.keys.return_value = ["obj3-key"]
+    asset3.frame.keys.return_value = [("obj3-key", 0, 0)]
     
     assets = [asset3, asset2, asset1]
     

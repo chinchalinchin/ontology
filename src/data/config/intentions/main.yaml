@@ -141,7 +141,7 @@ intentions:
     - next: idle
       conditions:
         - sprite.goal
-        - sprite.goal.name == 'player'
+        - sprite.goal.name == constants.RequiredAssets.PLAYER.value
     - next: idle
       conditions:
         - not sprite.psyche.dialogue

@@ -77,7 +77,7 @@ class IndexFrame(Frame):
     """
     def keys(self, id: str, state: AssetState) -> List[str]:
         # Retrieve the specific icon key from the state, defaulting to the asset ID
-        return [(state.icon, 0, 0)]
+        return [(settings.SEPARATOR.join([id, state.icon]), 0, 0)]
 
 
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
@@ -90,6 +90,7 @@ class IndexFrame(Frame):
             return {id: (0, 0, w, l)}
             
         for i, frame_name in enumerate(frames):
-            crops[frame_name] = (i * w, 0, w, l)
+            frame_index = settings.SEPARATOR.join([id, frame_name])
+            crops[frame_index] = (i * w, 0, w, l)
             
         return crops

@@ -11,6 +11,7 @@ import logging
 import app.config.settings as settings
 from app.config.enums import (
     Intentions,
+    RequiredAssets,
     ExpressionsPalette
 )
 from app.assets.base import Frame
@@ -152,9 +153,13 @@ class SpriteFrame(StateFrame):
                     ])
                     frame_keys.append((key_str, 0, 0))
 
-        if id != 'player' and state.psyche.expression:
+        if id != RequiredAssets.PLAYER.value and state.psyche.expression:
             expr = state.psyche.expression
-            frame_keys.append((expr.icon, expr.offset.x, expr.offset.y))
+            expr_key = settings.SEPARATOR.join([
+                ExpressionsPalette.BUBBLES.value,
+                state.psyche.expression.icon
+            ])
+            frame_keys.append((expr_key, expr.offset.x, expr.offset.y))
             
         if state.intention is not None and state.intention == Intentions.ATTACK:
             logger.info(f"SpriteFrame generated keys: {frame_keys}")

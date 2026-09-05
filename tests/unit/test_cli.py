@@ -120,13 +120,12 @@ def test_handle_prerender_success():
     mock_engine.screens = {"bg": mock_screen}
     
     with patch("pathlib.Path.mkdir") as mock_mkdir:
-        board = cli.handle_prerender(args, mock_orchestrator, screensize)
+        engine = cli.handle_prerender(args, mock_orchestrator, screensize)
         
         mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
         mock_screen.export_background.assert_called_once()
         
-        # Verify it returns the board object
-        assert board == mock_engine.board
+        assert engine == mock_engine
 
 def test_handle_render_missing_layer(caplog):
     args = MagicMock(board_key="level_01", device="keyboard", layer="invalid_layer", out="/tmp/out")
@@ -137,16 +136,14 @@ def test_handle_render_missing_layer(caplog):
     mock_orchestrator.orchestrate.return_value = mock_engine
     mock_engine.screens = {"bg": MagicMock()} # "invalid_layer" is missing
     
-    board = cli.handle_render(args, mock_orchestrator, screensize)
+    engine = cli.handle_render(args, mock_orchestrator, screensize)
     
     assert "Layer 'invalid_layer' not found" in caplog.text
-    assert board == mock_engine.board
+    assert engine == mock_engine
 
 def test_handle_start_keyboard_interrupt(caplog):
-    # Tell pytest to capture INFO level logs for this specific test
     caplog.set_level(logging.INFO)
     
-    # PATCH: Added dump_registry=False to correctly short-circuit the execution
     args = MagicMock(board_key="level_01", device="keyboard", dump_sdl=False, dump_registry=False)
     screensize = MagicMock()
     
@@ -157,10 +154,10 @@ def test_handle_start_keyboard_interrupt(caplog):
     # Simulate user pressing Ctrl+C during the game loop
     mock_engine.start.side_effect = KeyboardInterrupt()
     
-    board = cli.handle_start(args, mock_orchestrator, screensize)
+    engine = cli.handle_start(args, mock_orchestrator, screensize)
     
     assert "Game engine loop interrupted by user." in caplog.text
-    assert board == mock_engine.board
+    assert engine == mock_engine
 
 # ---------------------------------------------------------
 # MAIN EXECUTION TESTS
@@ -203,8 +200,8 @@ def test_main_dump_state_flag(mock_quit, mock_orchestrator):
         
         cli.main()
         
-        # Verify state dump was requested post-execution
-        mock_dump.assert_called_once_with("level_01", mock_handler.return_value, 'state')
+        # Verify state dump was requested post-execution with engine.board
+        mock_dump.assert_called_once_with("level_01", mock_handler.return_value.board, 'state')
 
 @patch("cli.arguments")
 def test_main_unknown_command(mock_arguments, caplog):

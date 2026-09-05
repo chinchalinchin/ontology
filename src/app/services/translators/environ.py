@@ -7,6 +7,7 @@ Helper functions for ISL conditions.
 from app.config.enums import (
     Goals, 
     Intentions, 
+    RequiredAssets,
     AssetInstances, 
     AssetCategories,
     Motivations,
@@ -37,6 +38,7 @@ class Environ:
         #### Asset Space Enumerations
         'AssetInstances': AssetInstances,
         'AssetCategories': AssetCategories,
+        'RequiredAssets': RequiredAssets,
         #### Intention Space Enumerations
         'Goals': Goals,
         'Intentions': Intentions,
