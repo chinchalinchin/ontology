@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="z_cbd0911b0595c541___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.0">coverage.py v7.16.0</a>,
-            created at 2026-09-06 05:25 +0000
+            created at 2026-09-06 15:09 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -118,7 +118,7 @@
     <p class="run run2"><span class="n"><a id="t36" href="#t36">36</a></span><span class="t"><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t37" href="#t37">37</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t38" href="#t38">38</a></span><span class="t"><span class="com"># Cython Libraries</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t"><span class="key">from</span> <span class="nam">libs</span><span class="op">.</span><span class="nam">core</span><span class="op">.</span><span class="nam">math</span> <span class="key">import</span> <span class="nam">Physics</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t39" href="#t39">39</a></span><span class="t"><span class="key">import</span> <span class="nam">libs</span><span class="op">.</span><span class="nam">core</span><span class="op">.</span><span class="nam">math</span><span class="op">.</span><span class="nam">physics</span> <span class="key">as</span> <span class="nam">physics</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t"><span class="nam">logger</span> <span class="op">=</span> <span class="nam">logging</span><span class="op">.</span><span class="nam">getLogger</span><span class="op">(</span><span class="nam">__name__</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -198,7 +198,7 @@
     <p class="mis show_mis"><span class="n"><a id="t116" href="#t116">116</a></span><span class="t">        <span class="nam">frictive</span><span class="op">.</span><span class="nam">update</span><span class="op">(</span><span class="nam">crates</span><span class="op">,</span> <span class="nam">board</span><span class="op">,</span> <span class="nam">delta</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t117" href="#t117">117</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t118" href="#t118">118</a></span><span class="t">        <span class="nam">all_mutable</span> <span class="op">=</span> <span class="nam">players</span> <span class="op">+</span> <span class="nam">sprites</span> <span class="op">+</span> <span class="nam">crates</span> <span class="op">+</span> <span class="nam">projectiles</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t">        <span class="nam">Physics</span><span class="op">.</span><span class="nam">integrate_kinematics</span><span class="op">(</span><span class="nam">all_mutable</span><span class="op">,</span> <span class="nam">delta</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t119" href="#t119">119</a></span><span class="t">        <span class="nam">physics</span><span class="op">.</span><span class="nam">integrate</span><span class="op">(</span><span class="nam">all_mutable</span><span class="op">,</span> <span class="nam">delta</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t120" href="#t120">120</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t121" href="#t121">121</a></span><span class="t"><span class="key">class</span> <span class="nam">MenuMechanics</span><span class="op">(</span><span class="nam">Mechanic</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t122" href="#t122">122</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -272,7 +272,7 @@
             <a class="nav" href="z_cbd0911b0595c541___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.0">coverage.py v7.16.0</a>,
-            created at 2026-09-06 05:25 +0000
+            created at 2026-09-06 15:09 +0000
         </p>
     </div>
 </footer>

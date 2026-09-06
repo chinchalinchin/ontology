@@ -700,10 +700,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#sdl" class="md-nav__link">
+  <a href="#graphics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        SDL
+        Graphics
       
     </span>
   </a>
@@ -1120,10 +1120,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#sdl" class="md-nav__link">
+  <a href="#graphics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        SDL
+        Graphics
       
     </span>
   </a>
@@ -1279,19 +1279,49 @@
 </ul>
 <h3 id="math">Math</h3>
 <ul>
-<li><code>libs/core/math.pyx</code></li>
+<li><code>libs/core/math/geometry.pyx</code></li>
+<li><code>libs/core/math/physics.pyx</code></li>
+<li><code>libs/core/math/space.pyx</code></li>
 </ul>
-<p>Spatial data like are modeled as Cython Extension Types (<code>cdef class</code> in <code>.pxd</code> definition files). This structure allows geometry methods like <code>Geometry.intersects</code> to access spatial properties (e.g., <code>position.x</code>, <code>hb.dimensions.l</code>) natively at C-speeds.</p>
-<p>The engine explicitly retains the Global Interpreter Lock (GIL) during geometry calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax (like <code>for hb in hitboxes</code>), while executing the actual mathematical overlap checks inline using primitive C variables on the CPU stack.</p>
-<p><strong>Collisions</strong></p>
-<p>At the start of every collision, the physics pipeline executes a spatial hashing procedure, given in the following sequence:</p>
-<ol>
-<li><strong>Hash (Populate the Grid)</strong>: Maintain a 1D array or hash map (dictionary) where the keys are the <code>(cell_x, cell_y)</code> tuples, and the values are lists of integer Asset IDs. Iterate over all dynamic Assets exactly once (<code>O(N)</code>). For each Asset, calculate its cell using integer division and append its ID to that cell's list.(Note: If an Asset overlaps a cell boundary, insert it into all cells it touches. This is easily calculated using its width and length divided by the cell size).</li>
-<li><strong>Query (Generate Candidate Pairs)</strong>: Iterate over the populated cells. For each cell, look at the list of Asset IDs inside the grid. Only generate collision pairs for Assets that exist in the same cell.</li>
-<li><strong>Narrow Phase (Raw Intersection)</strong>: Pass this much smaller list of candidate pairs into <code>Geometry.intersects</code>.</li>
+<p>The engine leverages Cython for high-frequency mathematical, geometric, and physical calculations. To achieve maximum throughput, stateless operations are implemented as module-level <code>cpdef</code> functions within the <code>libs.core.math</code> package, completely avoiding the Virtual Method Table (vtable) overhead of class wrappers.</p>
+<p>Spatial data (such as <code>Position</code>, <code>Velocity</code>, <code>Dimensions</code>, and <code>Hitbox</code>) are modeled as Cython Extension Types (<code>cdef class</code> in <code>libs.core.models</code>). This structure allows the engine to pass objects across the boundary while allowing C-level functions to access spatial properties (e.g., <code>pos.x</code>, <code>hb.dimensions.l</code>) natively without falling back to slow Python dictionary lookups.</p>
+<p>The engine explicitly retains the Global Interpreter Lock (GIL) during math calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax when iterating over collections (e.g., <code>for hb in hitboxes</code>), while executing the actual arithmetic inline using primitive C variables (<code>int</code>, <code>double</code>) on the CPU stack.</p>
+<p><strong>Geometry (<code>libs/core/math/geometry.pyx</code>)</strong></p>
+<p>This module houses pure geometric evaluations, translating expensive Python float and distance mathematics into C-level primitives.</p>
+<ul>
+<li><strong><code>intersects</code></strong>: Calculates Axis-Aligned Bounding Box (AABB) intersections. It iterates through an entity's hitboxes, explicitly typecasting them (<code>&lt;Hitbox&gt;item</code>) to enforce C-struct memory layouts, returning the overlapping tuple pair or <code>None</code>.</li>
+<li><strong><code>onscreen</code></strong>: A fast AABB camera culling check used by the renderer. Evaluates if an asset's absolute position intersects with the camera's viewport by calculating bounds entirely via C integers.</li>
+<li><strong><code>cone</code></strong>: A zero-allocation field-of-view check. Bypasses Python's <code>math</code> module overhead by utilizing C's <code>&lt;math.h&gt;</code> to compute Euclidean magnitude and orthogonal dot products (<code>dx * ux + dy * uy</code>). Validates if a target falls within a parameterized directional vision cone.</li>
+<li><strong><code>nearby</code></strong>: A pure integer squared-distance check (<code>dx*dx + dy*dy &lt; r*r</code>). Replacing Python-side radial evaluations prevents the continuous creation and destruction of intermediate boolean and float objects during environment scans.</li>
+</ul>
+<p><strong>Space (<code>libs/core/math/space.pyx</code>)</strong></p>
+<p>This module manages the broad-phase spatial partitioning grid, reducing collision detection complexity from <span class="arithmatex">\(O(N^2)\)</span> to <span class="arithmatex">\(O(N)\)</span> for local clusters.</p>
+<ul>
+<li><strong>Memory Management (<code>__init__</code>, <code>__dealloc__</code>)</strong>: Unlike standard Python objects, <code>Space</code> manually allocates continuous blocks of system memory (<code>malloc</code>) for its <code>bucket_counts</code> and <code>bucket_data</code> arrays. It enforces safe teardown via <code>__dealloc__</code> calling <code>free()</code>, preventing memory leaks when the grid is garbage collected.</li>
+<li><strong><code>clear</code></strong>: Resets the grid for the current frame by zeroing out the allocated memory block using C's <code>memset()</code>.</li>
+<li>**<code>insert</code> &amp; <code>_hash**</code>: Maps 2D spatial coordinates to a 1D flat array. Assets intersecting cell boundaries are hashed into multiple buckets dynamically.</li>
+<li><strong><code>query</code></strong>: Iterates through the populated buckets and yields a list of unique <code>(id1, id2)</code> integer tuples, generating candidate pairs for the narrow-phase evaluation.</li>
+</ul>
+<p><strong>Physics (<code>libs/core/math/physics.pyx</code>)</strong></p>
+<p>This module orchestrates the physical simulation, bridging the broad-phase grid with narrow-phase resolution and applying forces to engine states.</p>
+<ul>
+<li><strong><code>collisions</code></strong>: The master collision pipeline. It ingests a flat list of primitive integer tuples to avoid Python object overhead. The sequence executes as follows:<ol>
+<li><strong>Hash</strong>: Iterates over all dynamic assets and inserts them into the <code>Space</code> grid using their bounding boxes.</li>
+<li><strong>Query</strong>: Retrieves the reduced list of candidate pairs occupying the same spatial buckets.</li>
+<li><strong>Narrow Phase</strong>: Pre-allocates dummy <code>Position</code> and <code>Dimensions</code> objects on the C-stack. Iterates through the candidate pairs, unpacking their primitives into the dummy objects, and passes them to <code>geometry.intersects</code>. Returns verified colliding pairs.</li>
 </ol>
-<p>The grid's blueprint (<code>cdef class Space</code>) is defined in the Cython math library.</p>
-<h3 id="sdl">SDL</h3>
+</li>
+<li><strong><code>collide</code></strong>: Resolves confirmed physical overlaps.<ol>
+<li><strong>Spatial Resolution</strong>: Shifts overlapping entities apart based on inverse mass ratios (e.g., an <span class="arithmatex">\(m=0\)</span> wall absorbs 0% of the shift, forcing the dynamic asset out).</li>
+<li><strong>Momentum Transfer</strong>: Evaluates 1D elastic collision formulas, updating the <code>.vx</code> and <code>.vy</code> attributes of the participating <code>Velocity</code> objects. Kinematic assets (like the Player) bypass the momentum transfer, retaining immediate control over their vectors.</li>
+</ol>
+</li>
+<li><strong><code>integrate</code></strong>: Executes Symplectic Euler Integration (<span class="arithmatex">\(x_{n+1} = x_n + v_n \Delta t\)</span>). Because the game board utilizes integer grid coordinates, this function maintains sub-pixel accumulators (<code>rx</code>, <code>ry</code>). When an accumulator exceeds <code>1.0</code> or <code>-1.0</code>, it casts the shift to an integer, updates the physical <code>Position</code>, and decrements the accumulator.</li>
+</ul>
+<h3 id="graphics">Graphics</h3>
+<ul>
+<li><code>libs/core/graphics.pyx</code></li>
+</ul>
 <p>The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate the overhead of crossing the Python-to-C boundary, the rendering pipeline does not pass heavy Python objects (like <code>SpriteState</code> or <code>Dimensions</code>) to the renderer. Instead, it extracts raw integers on the Python side and unpacks them cleanly onto the C-stack.</p>
 <ul>
 <li><strong>Context Initialization (<code>init</code>):</strong> Sets up the SDL environment, including video, images, and typography (<code>SDL2_ttf</code>). If <code>headless</code>, a SDL software rendering context (<code>_renderer</code>) is bound directly to a master memory surface (<code>SDL_Surface</code>), completely bypassing window creation.</li>
