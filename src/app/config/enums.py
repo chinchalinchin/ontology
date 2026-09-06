@@ -258,6 +258,7 @@ class Mechanics(str, Enum):
     MOTION          = "motion"
     MENU            = "menu"
     PLAYER          = "player"
+    PLOT            = "plot"
     PROJECTILE      = "projectile"
     REMOVE          = "remove"
     SOCIAL          = "social"

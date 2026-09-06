@@ -69,7 +69,6 @@ class Engine:
                 if menu_cfg:
                     self.board.paused = True
                     player = self.board.player()
-                    # Handle screen targeting when no player is spawned yet
                     screen = self.screens[player.state.layer] \
                                 if player and self.board.loaded \
                                     else next(iter(self.screens.values()))
@@ -82,12 +81,11 @@ class Engine:
                     )
                     self.board.menus.append(menu)
 
-                    # BUGFIX: Force initial bake for all canvas-based widgets
                     for widget in menu.widgets.values():
                         if hasattr(widget.state, 'canvas') and widget.state.canvas is not None:
                             if hasattr(widget.state, 'current'):
                                 screen.stamp(widget, widget.state.current())
-                                
+                            
             elif isinstance(event, StateEvent):
                 if hasattr(self.board, 'migrator') and self.board.migrator:
                     self.board.migrator.target = event.id
@@ -105,7 +103,6 @@ class Engine:
                 if self.board.menus:
                     popped_menu = self.board.menus.pop()
                     
-                    # HUD INJECTION: Once the load screen finishes, bind the HUD to the live player
                     if popped_menu.id == Menus.LOAD.value:
                         view_cfg = self.board.configurations.menus.get(Menus.VIEW.value)
                         player = self.board.player()
@@ -114,6 +111,7 @@ class Engine:
                                 player.state.layer, 
                                 next(iter(self.screens.values()))
                             )
+                            
                             hud_menu = self.provider.unpack(
                                 Menus.VIEW.value, 
                                 view_cfg, 

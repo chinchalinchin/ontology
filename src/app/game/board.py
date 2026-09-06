@@ -26,6 +26,7 @@ import app.config.settings as settings
 from app.game.devices import Device
 from app.game.menus.core import Menu
 from app.services.generators.cradle import Cradle
+from app.models.state.core import PlotState
 from app.models.config import ConfigurationSchema
 from app.models.groups import EquipmentGroup
 
@@ -45,7 +46,7 @@ class Board:
     loaded: bool
     paused: bool
     # Game Data
-    plot: str
+    plot: PlotState
     # Configurations
     configurations: ConfigurationSchema
     equipment: EquipmentGroup

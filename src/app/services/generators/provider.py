@@ -3,24 +3,11 @@
 
 Package for ingame Menu instantiation.
 """
-# Standard Libraries
 import logging
-import functools
-from typing import (
-    Dict, 
-    Any, 
-    List,
-    Union
-)
+from typing import Dict, Any, Union
 
-# Application Libraries
 from app.assets.base import Asset
-from app.config.enums import (
-    AssetCategories, 
-    AssetInstances, 
-    Statuses,
-    Menus
-)
+from app.config.enums import AssetCategories, AssetInstances, Statuses, Menus
 from app.services.orchestration.factory import Factory
 from app.models.properties import WidgetProperties
 from app.models.state import (
@@ -31,20 +18,12 @@ from app.models.state import (
     AnimationState,
     IconState
 )
-from app.models.config import (
-    WidgetRecipe, 
-    MenuConfiguration, 
-    MenuPane, 
-    MenuWidget
-)
-from app.game.menus.core import (
-    Menu, 
-    Widget, 
-    Binding
-)
+from app.models.config import MenuConfiguration, MenuPane, MenuWidget
+from app.game.menus.core import Menu, Widget
+from app.game.menus.bindings import Binding
 from app.game.menus.layout import Layout
+from app.services.generators.binder import Binder
 
-# Cython Libraries
 import libs.graphics.render as render
 from libs.core.models import Dimensions, Position
 from libs.graphics.registry import Registry
@@ -52,191 +31,133 @@ from libs.graphics.registry import Registry
 logger = logging.getLogger(__name__)
 
 class Provider:
-    recipes: WidgetRecipe
+    recipes: Any
     properties: WidgetProperties
+    binder: Binder
 
     def __init__(self, 
-        recipes: WidgetRecipe, 
-        properties: WidgetProperties,
-        registry: Registry = None
+        recipes: Any, 
+        properties: WidgetProperties, 
+        binder: Binder
     ):
         self.recipes = recipes
         self.properties = properties
-        self.registry = registry
+        self.binder = binder
 
-    def _paginate(self, text: str, font: Any, w: int, l: int) -> List[str]:
-        """
-        Calculates line-breaks and returns a list of perfectly fitted strings, 
-        where each string represents a single page with explicit '\n' breaks.
-        """
-        if not text or not font:
-            return [text]
-            
-        margin_w = int(w * font.margins)
-        margin_l = int(l * font.margins)
-        
-        wrap_width = w - (2 * margin_w)
-        wrap_height = l - (2 * margin_l)
-        
-        if wrap_width <= 0 or wrap_height <= 0:
-            return [text]
-            
-        words = text.split(' ')
-        lines = []
-        current_line = ""
-        
-        # 1. Word wrap into distinct lines
-        for word in words:
-            test_line = f"{current_line} {word}".strip()
-            tw, th = render.measure(test_line, font)
-            
-            if tw > wrap_width and current_line:
-                lines.append(current_line)
-                current_line = word
-            else:
-                current_line = test_line
-        if current_line:
-            lines.append(current_line)
-            
-        if not lines:
-            return [""]
-            
-        # 2. Divide lines into pages based on vertical canvas constraints
-        _, line_height = render.measure(lines[0], font)
-        if line_height <= 0:
-            line_height = 10 # Fallback failsafe
-            
-        max_lines_per_page = max(1, wrap_height // line_height)
-        
-        pages = []
-        for i in range(0, len(lines), max_lines_per_page):
-            page_lines = lines[i : i + max_lines_per_page]
-            pages.append("\n".join(page_lines))
-            
-        return pages
-    
-    def _resolve(self, bind_path: str, context: dict) -> tuple[Any, str]:
-        """
-        Resolves a string path into a tuple of (parent_object, attribute_name).
-        """
-        if not bind_path:
-            return None, None
-            
-        parts = bind_path.split('.')
-        if parts[0] == 'context':
-            parts = parts[1:]
-        
-        if not parts:
-            return None, None
-            
-        try:
-            parent = functools.reduce(
-                lambda obj, attr: obj.get(attr) if isinstance(obj, dict) else getattr(obj, attr),
-                parts[:-1],
-                context
-            )
-            return parent, parts[-1]
-        except AttributeError:
-            return None, None
 
-    def _unpack_page(self, cfg: MenuWidget, context: dict) -> DisplayState:
+    def _unpack_page(self, cfg: MenuWidget, binding: Binding) -> DisplayState:
         props_dict = getattr(self.properties, cfg.instance, {})
         props = props_dict.get(cfg.id)
-        parent, attr = self._resolve(cfg.bind.state, context) \
-                            if cfg.bind and cfg.bind.state \
-                            else (None, None)
         
         w = props.dimensions.w
         l = props.dimensions.l
         canvas_ptr = render.canvas(w, l)
 
-        def get_paginated_content():
-            if parent is None or attr is None:
-                raw = ""
-            else:
-                raw = parent.get(attr) \
-                        if isinstance(parent, dict) \
-                        else getattr(parent, attr, "")
-                
-            if raw:
-                font = self.registry.font("dialogue") 
-                return self._paginate(raw, font, w, l)
-            return []
+        if binding:
+            callables = binding.bind(w=w, l=l)
+            content_function = callables[0] if callables else lambda: []
+        else:
+            content_function = lambda: []
 
         return DisplayState(
             id=cfg.id,
             position=Position(x=0, y=0),
-            content_function=get_paginated_content,
+            content_function=content_function,
             pageindex=0,
             pagesize=1,
             canvas=canvas_ptr
         )
-                    
-    def _unpack_meter(self, cfg: MenuWidget, context: dict) -> MeterState:
-        parent, attr = self._resolve(cfg.bind.state, context) \
-                        if cfg.bind and cfg.bind.state else (None, None)
-        
-        def get_val():
-            if parent is None or attr is None:
-                return 0
-            return parent.get(attr) if isinstance(parent, dict) else getattr(parent, attr, 0)
-            
-        def reading_function():
-            r = get_val()
-            return r.current if hasattr(r, 'current') else (r if isinstance(r, (int, float)) else 0)
-            
-        def unit_function():
-            r = get_val()
-            return r.maximum if hasattr(r, 'maximum') else (1 if isinstance(r, (int, float)) else 1)
 
+                    
+    def _unpack_meter(self, cfg: MenuWidget, binding: Binding) -> MeterState:
+        if binding:
+            callables = binding.bind()
+            reading_fn, unit_fn = callables if len(callables) >= 2 else (lambda: 0, lambda: 1)
+        else:
+            reading_fn, unit_fn = lambda: 0, lambda: 1
+            
         state = MeterState(
             id = cfg.id,
             position=Position(x=0, y=0),
-            reading_function=reading_function,
-            unit_function=unit_function
+            reading_function=reading_fn,
+            unit_function=unit_fn
         )
+        
         if state.unit > 0:
             state.animation.frame = max(0, min(100, int(round((state.reading / state.unit) * 100))))
+
         return state
 
-    def _unpack_icon(self, cfg: MenuWidget, context: dict) -> IconState:
-        parent, attr = self._resolve(cfg.bind.state, context) \
-                        if cfg.bind and cfg.bind.state else (None, None)
-        
-        def get_icon():
-            if parent is None or attr is None:
-                return ""
-            return parent.get(attr) if isinstance(parent, dict) else getattr(parent, attr, "")
+
+    def _unpack_icon(self, cfg: MenuWidget, binding: Binding) -> IconState:
+        if binding:
+            callables = binding.bind()
+            icon_function = callables[0] if callables else lambda: ""
+        else:
+            icon_function = lambda: ""
 
         return IconState(
             id = cfg.id,
             position=Position(x=0, y=0),
-            icon_function=get_icon
+            icon_function=icon_function
         )
 
-    def _unpack_button(self, cfg: MenuWidget, context: dict) -> TraversalState:
-        initial_status = cfg.status.value \
-                            if cfg.status else Statuses.IDLE.value
-        
+
+
+    def _unpack_button(self, cfg: MenuWidget, binding: Binding) -> TraversalState:
         return TraversalState(
             id = cfg.id,
             position=Position(x=0, y=0),
-            status=initial_status,
-            animation=AnimationState(action=initial_status) # Sync action immediately
+            status=cfg.status,
+            animation=AnimationState(action=cfg.status)
         )
 
-    def _unpack_node(self, 
-        cfg: Union[MenuPane, MenuWidget], 
-        context: dict, 
-        widgets: Dict[str, Asset]
-    ) -> None:
-        """
-        Recursive router for unpacking the Menu Tree.
-        """
+    
+    def _unpack_widget(self, cfg: MenuWidget, context: dict) -> Widget:
+        props_dict = getattr(self.properties, cfg.instance, {})
+        properties = props_dict.get(cfg.id)
+        recipe = getattr(self.recipes, cfg.instance, None)
+        instance_key = cfg.instance
+
+        # Build the ECS component using the factory
+        binding = self.binder.binding(cfg.bind, context)
+
+        delegator = {
+            AssetInstances.PAGES.value: self._unpack_page,
+            AssetInstances.METERS.value: self._unpack_meter,
+            AssetInstances.BUTTONS.value: self._unpack_button,
+            AssetInstances.ICONS.value: self._unpack_icon
+        }
+
+        # Inject Component into State unpacking
+        state = delegator[instance_key](cfg, binding)
+
+        frame = Factory.frame(recipe.frame) \
+                    if recipe else Factory.frame(None)
+        animation = Factory.animation(recipe.animation) \
+                    if recipe else Factory.animation(None)
+        taxonomy = Factory.taxonomy(
+            cfg.id, 
+            cfg.name, 
+            AssetCategories.WIDGETS.value, 
+            cfg.instance
+        )
+
+        return Widget(
+            taxonomy=taxonomy,
+            properties=properties,
+            state=state,
+            frame=frame,
+            animation=animation,
+            binding=binding
+        )
+
+    def _unpack_node(self, cfg: Union[MenuPane, MenuWidget], context: dict, widgets: Dict[str, Asset]) -> None:
         if isinstance(cfg, MenuPane):
             self._unpack_pane(cfg, context, widgets)
         else:
             widgets[cfg.name] = self._unpack_widget(cfg, context)
+
             
     def _unpack_pane(self, pane: MenuPane, context: dict, widgets: Dict[str, Asset]) -> None:
         props = self.properties.panes.get(pane.id)
@@ -246,8 +167,8 @@ class Provider:
             taxonomy        = Factory.taxonomy(
                 id          = pane.id, 
                 name        = pane.name, 
-                category    = AssetCategories.WIDGETS, 
-                instance    = AssetInstances.PANES
+                category    = AssetCategories.WIDGETS.value, 
+                instance    = AssetInstances.PANES.value
             ),
             properties      = props,
             state           = PaneState(
@@ -257,89 +178,30 @@ class Provider:
                 gap         = pane.gap,
                 margins     = pane.margins
             ),
-            frame            = Factory.frame(recipe.frame) if recipe \
-                                else Factory.frame(None),
-            animation       = Factory.animation(recipe.animation) if recipe \
-                                else Factory.animation(None)
+            frame           = Factory.frame(recipe.frame) if recipe else Factory.frame(None),
+            animation       = Factory.animation(recipe.animation) if recipe else Factory.animation(None)
         )
         widgets[pane.name] = pane_asset
     
-        # 2. Recurse into children
         for child in pane.children:
             self._unpack_node(child, context, widgets)
 
-    def _unpack_widget(self, cfg: MenuWidget, context: dict) -> Widget:
-        props_dict = getattr(self.properties, cfg.instance, {})
-        props = props_dict.get(cfg.id)
-        recipe = getattr(self.recipes, cfg.instance, None)
-
-        delegator = {
-            AssetInstances.PAGES: self._unpack_page,
-            AssetInstances.METERS: self._unpack_meter,
-            AssetInstances.BUTTONS: self._unpack_button,
-            AssetInstances.ICONS: self._unpack_icon
-        }
-
-        state = delegator[cfg.instance](cfg, context)
-
-        binding = Binding(
-            selection=cfg.bind.selection if cfg.bind else None,
-            selector=cfg.bind.selector if cfg.bind else None,
-            state=cfg.bind.state if cfg.bind else None
-        )
-        frame = Factory.frame(recipe.frame) \
-                    if recipe else Factory.frame(None)
-        animation = Factory.animation(recipe.animation) \
-                        if recipe else Factory.animation(None)
-        taxonomy = Factory.taxonomy(
-            cfg.id, 
-            cfg.name, 
-            AssetCategories.WIDGETS, 
-            cfg.instance
-        )
-
-        logger.info(
-            f"Unpacked Widget: {cfg.name} | "
-            f"Recipe Frame: {recipe.frame} | "
-            f"Resolved Frame: {type(frame).__name__} | "
-            f"Recipe Animation: {recipe.animation} | "
-            f"Resolved Animation: {type(animation).__name__}"
-        )
-
-        return Widget(
-            taxonomy=taxonomy,
-            properties=props,
-            state=state,
-            frame=frame,
-            animation=animation,
-            binding=binding
-        )
 
     def unpack(self, id: str, config: MenuConfiguration, context: dict, screensize: Dimensions) -> Menu:
-        """
-        Unpacks a MenuConfiguration into a live Menu object containing a flattened, sorted widget dictionary.
-        """
+        context = context or {}
+            
         widgets = {}
-        
         for pane in config.roots:
             self._unpack_pane(pane, context, widgets)
             
         layout = Layout(screensize)
         flattened_list, graph = layout.compute(config.roots, widgets)
         
-        # Rebuild dictionary honoring flattened list's Painter's Algorithm ordering 
-        #   (Python 3.7+ preserves insertion order)
-        ordered_widgets = { w.name: w for w in flattened_list}
-        
+        ordered_widgets = { w.name: w for w in flattened_list }
         ctrl = Factory.controller(config.controller)
 
-        # Default focus to the first traversible button if graph is present
-        if id != Menus.VIEW.value:
-            focus = next(iter(graph.keys())) if graph else ""
-        else:
-            focus = ""
+        focus = next(iter(graph.keys())) if graph and id != Menus.VIEW.value else ""
 
-        # Initialize focus state
         if focus and focus in ordered_widgets:
             ordered_widgets[focus].state.status = Statuses.ACTIVE.value
             ordered_widgets[focus].state.animation.action = Statuses.ACTIVE.value

@@ -19,6 +19,9 @@ from app.game.logic.mechanics.intentional import (
     PlayerMechanics,
     CognitionMechanics
 )
+from app.game.logic.mechanics.world.plot import (
+    PlotMechanics
+)
 __all__ = [ 
     'AnimationMechanics',
     'RemoveMechanics',
@@ -36,5 +39,7 @@ __all__ = [
     'TransitionMechanics',
     'SocialMechanics',
     'PlayerMechanics',
-    'CognitionMechanics'
+    'CognitionMechanics',
+    # 
+    'PlotMechanics'
 ]

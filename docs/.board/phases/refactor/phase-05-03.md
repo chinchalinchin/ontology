@@ -205,32 +205,32 @@ Instead of hardcoding specific resolution paths in the UI, the `Provider` will a
 # 1. LibraryBinding
 bind:
   type: library
-  target: context.<asset>.<field>
+  schema: context.<asset>.<field>
 
 # 2. MeterBinding
 bind:
-  type: meter
+  schema: meter
   target: context.<asset>.<field>
 
 # 3. IconBinding
 bind:
-  type: icon
+  schema: icon
   target: context.<asset>.<field>
 
 # 4. SelectBinding
 bind:
-  type: select
+  schema: select
   selection: scrolldown | scrollup
   selector: <asset-id>
 ```
 
 Each binding *expects* the bound Asset field to conform to the binding schema; otherwise the binding will not function properly. In other words, 
 
-- `if type == library: typeof(context.<asset>.<field>) == LibraryBinding`
-- `if type == meter: typeof(context.<asset>.<field>) == MeterBinding`
-- `if type == icon: typeof(context.<asset>.<field>) == IconBinding`
+- `if schema == library: typeof(context.<asset>.<field>) == LibraryBinding`
+- `if schema == meter: typeof(context.<asset>.<field>) == MeterBinding`
+- `if schema == icon: typeof(context.<asset>.<field>) == IconBinding`
 
-`type == select` are handled specially, since they are bindings to Widget actions in the menu itself, i.e. they do not receive external updates.
+`schema == select` are handled specially, since they are bindings to Widget actions in the menu itself, i.e. they do not receive external updates.
 
 **Binder**
 
@@ -297,28 +297,88 @@ When `content_function()` is executed, it should check a local `_cached_pages` v
 
 **Task #3: Widget Binding System & Provider Refactor**
 
-* [ ] Create `app.game.services.generators.binder` to hold `Binder` factory.
-* [ ] Create `app.models.state.bindings` to hold Binding models.
-* [ ] Implement `Binder` methods for `library`, `select`, `icon`, and `meter`.
-* [ ] Refactor `Provider.unpack()` to parse `widget.bind.type`, dispatch it to the `Binder`, and inject the resulting `Callable` into `DisplayState`, `MeterState`, etc.
-* [ ] Update `Engine._drain()` to pass a `Board` reference into `Provider.unpack()` so lambdas can close over live game state.
+* [x] Create `app.game.menus.bindings` to define the `Binding` interface and concrete implementations (`LibraryBinding`, `MeterBinding`, `IconBinding`, `SelectBinding`).
+    * `__init__(self, target: str, context: dict, **kwargs)`: Resolve the string target into `(parent, attr)` references immediately.
+    * `get_callables(self, **kwargs) -> tuple[Callable, ...]`: Return the closures used by Widget states.
+* [x] Implement lazy-evaluation cache specifically inside `LibraryBinding.get_callables(w, l)` to prevent `TTF_SizeUTF8` from re-calculating page wraps on every frame (Remediates B005).
+* [x] Create `app.services.generators.binder.Binder` factory class.
+    * Implement `binding(self, bind_cfg: dict, context: dict) -> Binding` to dispatch construction based on `bind_cfg.schema`.
+* [x] Refactor `Provider` to utilize the `Binder`.
+    * `_unpack_widget` calls `binder.binding(cfg.bind, context)`.
+    * `_unpack_<widget>` methods are updated to accept `(cfg: MenuWidget, binding_component: Binding)`.
+    * Remove all string-path parsing and data-smuggling from the `Provider`.
 
 *Crucial:* The `library` binding must cache its paginated output on the first execution. It cannot recalculate pagination on every evaluation. Incorporate a lazy-evaluation cache into the `library` binding lambda to prevent the `_paginate` method from executing the SDL `TTF_SizeUTF8` calculations multiple times per frame. See B005 Report.
 
 **Task #4: Library Service Integration**
 
-* [ ] Create `app.services.generators.library.Library` to parse `src/data/config/library/main.yaml`.
-* [ ] Implement `Library.fetch(plot, persona, lexicon) -> List[str]`.
-* [ ] Inject `Library` into `Provider` during the `Orchestrator` bootstrapping sequence.
+* [x] Create `app.services.generators.library.Library` to parse `src/data/config/library/main.yaml`.
+* [x] Implement `Library.fetch(plot, persona, lexicon) -> List[str]`.
+* [x] Inject `Library` into `Provider` during the `Orchestrator` bootstrapping sequence.
 
 **Task #5: Mechanics Routing (The Triggers)**
 
-* [ ] Create `PlotMechanics(Mechanic)`. Evaluate `board.configurations.plots[board.plot.current]` against the `PlotExecutor` and progress the plot key if conditions are met.
+* [x] Create `PlotMechanics(Mechanic)`. Evaluate `board.configurations.plots[board.plot.current]` against the `PlotExecutor` and progress the plot key if conditions are met.
 * [x] Add `plot` to the `world` mechanics sequence in `/src/data/config/mechanics/main.yaml`.
 * [x] Update `InteractionMechanics.update()`: On sign interaction, emit `MenuEvent(id='text', context={'plot': board.plot, 'persona': target.persona, 'lexicon': target.lexicon)`.
 
 **Task #6: ScrollController Implementation**
 
-* [ ] Implement `ScrollController(MenuController)`.
-* [ ] In `select()`, execute `target.state.scrollup()` or `scrolldown()` based on the `SelectBinding`.
-* [ ] Emit `UpdateEvent(widget=target)` to the bus to flag the screen for a partial render stamp.
+* [x] Implement `ScrollController(MenuController)`.
+* [x] In `select()`, execute `target.state.scrollup()` or `scrolldown()` based on the `SelectBinding`.
+* [x] Emit `UpdateEvent(widget=target)` to the bus to flag the screen for a partial render stamp.
+
+
+
+
+
+
+### Documentation Divergences
+
+The following discrepancies between the design documentation and the implemented code were discovered and should be updated to prevent configuration errors.
+
+#### 1. Menu Widget Binding Schema
+
+* **Page:** `06-widgets.md` or Phase 05.03 Task Board
+* **Heading:** Working Schemas (Not Yet Implemented) / Text Menu Schema
+* **Divergence:** The `text` menu documentation proposes `bind: { state: context.content }`. This breaks the implementation in two ways:
+1. The `MenuBinding` dataclass utilizes `slots=True` and only accepts `schema`, `target`, `selection`, and `selector`. A `state` key will raise configuration validation errors.
+2. `InteractionMechanics` passes `plot`, `persona`, and `lexicon` inside the `MenuEvent` context—it does not pass `content`. Using `TextBinding` will fail to resolve the string.
+
+
+* **Recommended Update:** Update the `text` menu schema documentation to properly utilize `LibraryBinding`:
+
+```yaml
+children: 
+  - instance: pages
+    id: text
+    name: text-display
+    bind:
+      schema: library
+      target: context
+
+```
+
+#### 2. Plot ISL Condition Syntax
+
+* **Page:** `08-plots.md`
+* **Heading:** Plot Mechanics / Transition Matrix
+* **Divergence:** The example ISL conditions for `PlotMechanics` contain runtime errors based on how the environment is injected.
+1. It references `sprites['...'].state.memory...`. The `sprites` local dictionary (provided by `board.characters()`) caches `AssetState` objects directly. Attempting to access `.state` on a `SpriteState` will trigger an `AttributeError`.
+2. It references `player.state.inventory...` directly as a local variable. `player` is not injected into `PlotMechanics` locals (only `sprites` and `board` are).
+
+
+* **Recommended Update:** Revise the documentation to reflect proper syntax using `.get()` and bypassing `.state`:
+
+```yaml
+plots:
+  castle-dawn-locked:
+    - next: castle-dawn-unlocked
+      conditions:
+        - sprites.get('player').inventory.loot.get('writ-of-dawn') >= 1
+    - next: town-unlocked
+      conditions:
+        - sprites.get('castle-dawn-guard')
+        - sprites.get('castle-dawn-guard').mutators.triggers.dead
+
+```

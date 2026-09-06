@@ -27,11 +27,18 @@ from app.models.config.core import Configuration
 # -------------------------------------------------------------------- MENU CONFIGURATION
 
 @dataclass(slots=True, frozen=True)
+class MenuBinding:
+    schema: str = None
+    selection: str = None
+    selector: str = None
+    target: str = None
+
+@dataclass(slots=True, frozen=True)
 class MenuWidget:
     instance: str
     id: str
     name: str
-    bind: Optional[Binding] = None
+    bind: Optional[MenuBinding] = None
     status: Optional[Statuses] = Statuses.IDLE
 
 @dataclass(slots=True, frozen=True)

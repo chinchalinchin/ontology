@@ -42,7 +42,7 @@ def test_interaction_with_door_relayers_source(interaction_mechanics, mock_board
     payload = MagicMock(spec=DevicePayload)
     
     # Force collision bypass for deterministic testing
-    with patch.object(InteractionMechanics, 'collisions', return_value=[(player, door)]), \
+    with patch.object(InteractionMechanics, 'intersections', return_value=[(player, door)]), \
          patch.object(InteractionMechanics, 'center', return_value=(15, 15)):
         
         interaction_mechanics.update(mock_board, 1.0, bus, payload)
@@ -76,7 +76,7 @@ def test_interaction_with_chest_transfers_loot_to_sprite(interaction_mechanics, 
     bus = collections.deque()
     payload = MagicMock(spec=DevicePayload)
     
-    with patch.object(InteractionMechanics, 'collisions', return_value=[(sprite, chest)]), \
+    with patch.object(InteractionMechanics, 'intersections', return_value=[(sprite, chest)]), \
          patch.object(InteractionMechanics, 'center', return_value=(15, 15)):
         
         interaction_mechanics.update(mock_board, 1.0, bus, payload)
@@ -91,7 +91,6 @@ def test_interaction_with_sign_dispatches_menu_event(interaction_mechanics, mock
     player.state.intention = Intentions.INTERACT.value
     player.state.position = Position(x=10, y=10)
     
-    # Provide dummy plot state to satisfy context extraction
     mock_board.plot = MagicMock()
     mock_board.plot.current = "tutorial"
     
@@ -114,7 +113,7 @@ def test_interaction_with_sign_dispatches_menu_event(interaction_mechanics, mock
     bus = collections.deque()
     payload = MagicMock(spec=DevicePayload)
     
-    with patch.object(InteractionMechanics, 'collisions', return_value=[(player, sign)]), \
+    with patch.object(InteractionMechanics, 'intersections', return_value=[(player, sign)]), \
          patch.object(InteractionMechanics, 'center', return_value=(15, 15)):
         
         interaction_mechanics.update(mock_board, 1.0, bus, payload)
@@ -124,7 +123,7 @@ def test_interaction_with_sign_dispatches_menu_event(interaction_mechanics, mock
         
         assert isinstance(event, MenuEvent)
         assert event.id == Menus.TEXT.value
-        assert event.context['plot'] == "tutorial"
+        assert event.context['plot'] == mock_board.plot
         assert event.context['persona'] == "narrator"
         assert event.context['lexicon'] == "welcome_msg"
 
@@ -144,7 +143,7 @@ def test_interaction_ignores_non_intersecting_centers(interaction_mechanics, moc
     mock_board.add([door])
     bus = collections.deque()
     
-    with patch.object(InteractionMechanics, 'collisions', return_value=[(player, door)]), \
+    with patch.object(InteractionMechanics, 'intersections', return_value=[(player, door)]), \
          patch.object(InteractionMechanics, 'center', return_value=(0, 0)): # Center is outside the target's bounds
         
         interaction_mechanics.update(mock_board, 1.0, bus, MagicMock())

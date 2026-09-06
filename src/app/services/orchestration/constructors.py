@@ -184,18 +184,14 @@ class Builder:
         logger.info("Building rendering pipelines, mechanics, and UI...")
 
         if not self.board.layers():
-            # Initial Boot - No scene layers yet; provision a blank Master Screen
             self.screens = {
                 'default': Screen(self.context.screensize, self.context.screensize, [], self.registry)
             }
         else:
-            # Rehydrate logic fallback (if Migrator handles it differently in the future)
             self.screens = {}
             for layer in self.board.layers():
-                max_width = max((self.board.size(layer)[0].w 
-                                 for layer in self.board.layers()), default=0)
-                max_length = max((self.board.size(layer)[0].l 
-                                  for layer in self.board.layers()), default=0)
+                max_width = max((self.board.size(layer)[0].w for layer in self.board.layers()), default=0)
+                max_length = max((self.board.size(layer)[0].l for layer in self.board.layers()), default=0)
                 self.screens[layer] = Screen(
                     self.context.screensize, 
                     Dimensions(max_width, max_length),
@@ -203,7 +199,6 @@ class Builder:
                     self.registry
                 )
 
-        # Allocate Mechanics (Unchanged implementation)
         core_cfg = getattr(self.context.configurations.mechanics, 'core', None) or [
             Mechanics.MENU.value, 
             Mechanics.ANIMATION.value, 
@@ -219,19 +214,32 @@ class Builder:
         self.core = [Factory.mechanics(m) for m in core_cfg]
         self.world = [Factory.mechanics(m) for m in world_cfg]
 
-        # Post-Process Core: Inject the compiled ISL Executor into TransitionMechanics (Unchanged implementation)
+        # New: Instantiate Generator Services (Library & Binder)
+        from app.services.generators.library import Library
+        from app.services.generators.binder import Binder
+        
+        library_data = getattr(self.context.configurations, 'library', {})
+        self.library = Library(library_data)
+        self.binder = Binder(self.registry, self.library)
+
         translator = Factory.translator(settings.ISL_TRANSLATOR)
         executor = translator.compile(self.context.configurations.intentions)
+        
+        # New: Compile Plot ISL Rules
+        plot_cfg = getattr(self.context.configurations, 'plots', {})
+        plot_executor = translator.compile(plot_cfg) if plot_cfg else None
             
         for m in self.world:
-            if isinstance(m, TransitionMechanics):
+            if type(m).__name__ == 'TransitionMechanics':
                 m.executor = executor
+            elif type(m).__name__ == 'PlotMechanics':
+                m.executor = plot_executor
 
-        # Allocate Menu Provider & Views (Unchanged implementation)
+        # Allocate Menu Provider & Views with new dependencies
         self.provider = Provider(
             self.context.configurations.recipes.widgets, 
             self.context.properties.widgets, 
-            self.registry
+            self.binder
         )
 
 

@@ -25,21 +25,25 @@ menus:
                 id: portraits 
                 name: character-portrait-icon
                 bind:
-                  state: context.sprite.state.character.portrait
+                  schema: icon
+                  target: context.sprite.state.character.portrait
           - instance: pages
             id: dialogue
             name: character-speech
             bind:
-              state: context.sprite.state.psyche.dialogue
+              schema: library
+              target: context.sprite.state.psyche.dialogue
           - instance: buttons
             id: arrow-up
             name: character-speech-scroll-up
-            bind: 
+            bind:
+              schema: select
               selection: scrollup
               selector: character-speech
           - instance: buttons
             id: arrow-down
             name: character-speech-scroll-down
             bind: 
+              schema: select
               selection: scrolldown
               selector: character-speech

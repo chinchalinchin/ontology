@@ -117,10 +117,10 @@ class InteractionMechanics(SpatialMechanic):
                 # -------------------------------- SIGN INTERACTIONS
                 elif target.taxonomy.instance == AssetInstances.SIGNS:
                     if source.taxonomy.instance == AssetInstances.PLAYERS:
-                        plot_val = board.plot.current if hasattr(board.plot, 'current') else board.plot
+                        # Pass the live PlotState reference directly into context
                         bus.append(MenuEvent(
                             id=Menus.TEXT.value, context={
-                                'plot': plot_val, 
+                                'plot': board.plot, 
                                 'persona': target.state.persona,
                                 'lexicon': target.state.lexicon 
                             }

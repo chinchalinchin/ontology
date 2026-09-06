@@ -32,7 +32,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 04.03: Motion](./phases/refactor/phase-04-03.md)
     - [x]: [Phase 05.01: Typography](./phases/refactor/phase-05-01.md)
     - [x]: [Phase 05.02: Simplification](./phases/refactor/phase-05-02.md)
-    - [~]: [Phase 05.03: ScrollController, Library & Plots](./phases/refactor/phase-05-03.md)
+    - [x]: [Phase 05.03: ScrollController, Library & Plots](./phases/refactor/phase-05-03.md)
     - [ ]: [Phase 05.04: InventoryController & Loot](./phases/refactor/phase-05-04.md)
     - [x]: [Phase 05.05: Main Menu & Saving](./phases/refactor/phase-05-05.md)
     - [ ]: [Phase 05.06: EventHandlers & EventContent](./phases/refactor/phase-05-06.md)
@@ -52,20 +52,60 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 For ancillary or tangential bugs detected, use the following template to open new Bugs,
 
 ```markdown
-##### Bug {{ id }}: {{ title }}
+{% for bug in bugs %}
+##### Bug {{ bug.id }}: {{ bug.title }}
 
 **STATUS**: OPEN
-**SEVERITY**: {{ severity }}
+**SEVERITY**: {{ bug.severity }}
 
 **Description**
 
-{{ description }}
+{{ bug.description }}
 
+{% if is_reproducible(bug) %}
 **Steps to Replicate** 
 
-{{ steps }}
+{{ bug.steps }}
+{% endif %}
 
 **Proposed Remeditation**
 
 {{ remediation }}
+
+{% endfor %}
+```
+
+#### Phase Template
+
+To add new Tasks to the backlog, use the following template,
+
+```markdown
+{% set action = "Refactor" or "Implement" %}
+{% set number = {{ phase.number }} if action == "Implement" else {{ phase.number }}-{{ phase.refactor }} %}
+
+#### {{ action }}: Phase {{ number }} - {{ phase.title }}
+
+**Overview** 
+
+{{ overview }}
+
+{% for goal in goals %}
+##### Goal: {{ goal.title }}
+
+{{ goal.description | architectural_discussion or pseduo_code }}
+
+{% endfor %}
+
+{% for task in tasks %}
+##### Tasks
+
+**{{ loop.index }}. Task: {{ task.title }}**
+
+*Objective*: {{ task.objective }}
+
+{% for subtask in task $}
+- [] Subtask: {{ subtask.description }}
+{% endfor %}
+
+{% endfor %}
 ```

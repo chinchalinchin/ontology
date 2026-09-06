@@ -16,7 +16,8 @@ from app.models.config.mappings import (
 from app.models.config.menus import (
     MenuWidget,
     MenuPane,
-    MenuConfiguration
+    MenuConfiguration,
+    MenuBinding
 )
 from app.models.config.recipes import (
     Recipe,
@@ -54,5 +55,6 @@ __all__ = [
     'SheetRecipe',
     'WidgetRecipe',
     'RecipeConfiguration',
-    'ConfigurationSchema'
+    'ConfigurationSchema',
+    'MenuBinding'
 ]

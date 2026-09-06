@@ -4,12 +4,12 @@
 import pytest
 from unittest.mock import MagicMock, patch
 
-from app.models.config import MenuWidget, MenuPane, MenuConfiguration
-from app.game.menus.core import Binding
+from app.models.config import MenuWidget, MenuPane, MenuConfiguration, MenuBinding
 from app.config.enums import AssetInstances, Layouts, Alignments, Statuses
 from libs.core.models import Dimensions, ScreenPosition
+from app.game.menus.bindings import TextBinding, paginate
 
-def test_provider_resolve(mock_provider):
+def test_provider_resolve():
     context = {
         "sprite": {
             "state": {
@@ -20,14 +20,17 @@ def test_provider_resolve(mock_provider):
         }
     }
     
-    res = mock_provider._resolve("context.sprite.state.meters.health", context)
-    assert res == (context["sprite"]["state"]["meters"], "health")
+    binding = TextBinding(target="context.sprite.state.meters.health", context=context)
+    assert binding.parent == context["sprite"]["state"]["meters"]
+    assert binding.attr == "health"
     
-    res_invalid = mock_provider._resolve("context.sprite.state.invalid", context)
-    assert res_invalid == (context["sprite"]["state"], "invalid")
+    binding_invalid = TextBinding(target="context.sprite.state.invalid", context=context)
+    assert binding_invalid.parent == context["sprite"]["state"]
+    assert binding_invalid.attr == "invalid"
 
-@patch("app.services.generators.provider.render")
-def test_provider_paginate(mock_render, mock_provider):
+
+@patch("app.game.menus.bindings.render")
+def test_provider_paginate(mock_render):
     def measure_side_effect(text, font):
         return (len(text) * 10, 10)
     
@@ -36,24 +39,27 @@ def test_provider_paginate(mock_render, mock_provider):
     mock_font.margins = 0.0
     
     text = "one two three four five six"
-    pages = mock_provider._paginate(text, mock_font, w=50, l=20)
+    pages = paginate(text, mock_font, w=50, l=20)
     
     assert len(pages) == 3
     assert pages[0] == "one\ntwo"
     assert pages[1] == "three\nfour"
     assert pages[2] == "five\nsix"
 
+
+@patch("app.game.menus.bindings.render")
 @patch("app.services.generators.provider.render")
-def test_provider_unpack_widget(mock_render, mock_provider):
-    mock_render.canvas.return_value = "mock_canvas_ptr"
-    mock_render.measure.return_value = (10, 10)
+def test_provider_unpack_widget(mock_provider_render, mock_bindings_render, mock_provider):
+    mock_provider_render.canvas.return_value = "mock_canvas_ptr"
+    # Fix: Patch Cython evaluation internally to accept the font MagicMock securely
+    mock_bindings_render.measure.return_value = (10, 10)
     
     cfg = MenuWidget(
-        instance=AssetInstances.PAGES,
+        instance=AssetInstances.PAGES.value,
         id="test-page",
         name="page-1",
-        bind=Binding(state="context.text"),
-        status=Statuses.IDLE
+        bind=MenuBinding(schema="text", target="context.text"),
+        status=Statuses.IDLE.value
     )
     context = {"text": "Hello World"}
     
@@ -64,27 +70,27 @@ def test_provider_unpack_widget(mock_render, mock_provider):
     assert widget.state.content == ["Hello World"] 
     assert widget.state.canvas == "mock_canvas_ptr"
 
+
 def test_provider_unpack_widget_traversal(mock_provider):
-    """Verify Traversal widget unpacks with synced starting action."""
     cfg = MenuWidget(
-        instance=AssetInstances.BUTTONS,
+        instance=AssetInstances.BUTTONS.value,
         id="test-btn",
         name="btn-1",
-        bind=Binding(),
-        status=Statuses.DISABLED
+        bind=None,
+        status=Statuses.DISABLED.value
     )
     widget = mock_provider._unpack_widget(cfg, {})
     assert widget.state.status == Statuses.DISABLED.value
     assert widget.state.animation.action == Statuses.DISABLED.value
 
+
 def test_provider_unpack_widget_meter(mock_provider):
-    """Verify Meter widget calculates its initial frame instantly to prevent 1-frame flicker."""
     cfg = MenuWidget(
-        instance=AssetInstances.METERS,
+        instance=AssetInstances.METERS.value,
         id="test-meter",
         name="meter-1",
-        bind=Binding(state="context.hp"),
-        status=Statuses.IDLE
+        bind=MenuBinding(schema="meter", target="context.hp"),
+        status=Statuses.IDLE.value
     )
     
     class MockHP:
@@ -96,14 +102,14 @@ def test_provider_unpack_widget_meter(mock_provider):
     assert widget.state.unit == 100
     assert widget.state.animation.frame == 75
 
+
 @patch("app.services.generators.provider.Layout")
 def test_provider_unpack_menu(mock_layout_class, mock_provider):
     mock_layout = MagicMock()
     mock_btn_asset = MagicMock()
     mock_btn_asset.id = "test-btn"
-    mock_btn_asset.name = "btn-1" # Fix: Assign name so unpacking loop registers properly
+    mock_btn_asset.name = "btn-1" 
     
-    # Simulate flattening process output from layout engine
     mock_layout.compute.return_value = ([mock_btn_asset], {"btn-1": {}})
     mock_layout_class.return_value = mock_layout
     
@@ -119,11 +125,11 @@ def test_provider_unpack_menu(mock_layout_class, mock_provider):
                 gap=5,
                 children=[
                     MenuWidget(
-                        instance=AssetInstances.BUTTONS,
+                        instance=AssetInstances.BUTTONS.value,
                         id="test-btn",
                         name="btn-1",
-                        bind=Binding(),
-                        status=Statuses.IDLE
+                        bind=None,
+                        status=Statuses.IDLE.value
                     )
                 ]
             )
@@ -138,21 +144,19 @@ def test_provider_unpack_menu(mock_layout_class, mock_provider):
     assert menu.widgets["btn-1"] == mock_btn_asset
     assert menu.focus == "btn-1"
 
+
 def test_provider_unpack_widget_icon(mock_provider):
-    """Verify Icon widget unpacks with correct bound string state and defaults."""
-    from app.models.config import MenuWidget
-    from app.game.menus.core import Binding
+    from app.models.config import MenuWidget, MenuBinding
     from app.config.enums import AssetInstances, Statuses
     
     cfg = MenuWidget(
-        instance=AssetInstances.ICONS,
+        instance=AssetInstances.ICONS.value,
         id="test-icon",
         name="icon-1",
-        bind=Binding(state="context.equipped_item"),
-        status=Statuses.IDLE
+        bind=MenuBinding(schema="icon", target="context.equipped_item"),
+        status=Statuses.IDLE.value
     )
     
-    # Bound dynamic icon mapping
     widget = mock_provider._unpack_widget(cfg, {"equipped_item": "sword_icon"})
     assert widget.state.icon == "sword_icon"
     assert widget.state.position.x == 0

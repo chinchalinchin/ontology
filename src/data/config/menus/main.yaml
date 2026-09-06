@@ -19,22 +19,28 @@ menus:
             id: label
             name: new-game
             bind: 
+              schema: select
               selection: new
+              selector: world-01
           - instance: buttons
             id: label
             name: load-game
             bind: 
+              schema: select
               selection: load
+              selector: world-01
           - instance: buttons
             id: label
             name: options-menu
             bind:
+              schema: select
               selector: options
               selection: menu
           - instance: buttons
             id: label
             name: editor-menu
             bind:
+              schema: select
               selector: editor
               selection: menu
   load:
@@ -57,4 +63,5 @@ menus:
             id: health
             name: load-bar
             bind: 
-              state: context.registry
+              schema: meter
+              target: context.registry

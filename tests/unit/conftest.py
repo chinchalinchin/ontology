@@ -33,6 +33,8 @@ from app.services.orchestration.constructors import (
     Orchestrator
 )
 from app.services.generators.provider import Provider
+from app.services.generators.binder import Binder
+
 from app.models.properties import (
     PropertiesSchema, 
     SheetProperties,
@@ -178,7 +180,8 @@ def mock_orchestrator(mock_builder):
     return Orchestrator(mock_builder)
 
 @pytest.fixture
-def mock_provider():
+def mock_provider(mock_registry):
+    
     recipes = WidgetRecipe(
         pages=Recipe(frame=FrameRecipe.SINGLE),
         buttons=Recipe(frame=FrameRecipe.TRAVERSAL, animation=AnimationRecipe.TRAVERSAL),
@@ -186,15 +189,16 @@ def mock_provider():
         panes=Recipe(frame=FrameRecipe.NONE),
         icons=Recipe(frame=FrameRecipe.INDEX)
     )
+    
     properties = MagicMock()
     properties.pages = {"test-page": WidgetProperties(dimensions=Dimensions(w=100, l=100))}
     properties.buttons = {"test-btn": WidgetProperties(dimensions=Dimensions(w=32, l=32))}
     properties.meters = {"test-meter": WidgetProperties(dimensions=Dimensions(w=50, l=10))}
     properties.panes = {"test-pane": WidgetProperties(dimensions=Dimensions(w=200, l=200))}
     properties.icons = {"test-icon": WidgetProperties(dimensions=Dimensions(w=16, l=16), frames=["sword"])}
-    registry = MagicMock()
     
-    return Provider(recipes=recipes, properties=properties, registry=registry)
+    binder = Binder(registry=mock_registry, library=MagicMock())
+    return Provider(recipes=recipes, properties=properties, binder=binder)
 
 @pytest.fixture
 def mock_board_assets():

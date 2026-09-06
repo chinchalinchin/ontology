@@ -352,7 +352,7 @@ However, since Menus are unpacked by the Provider into Assets, otherwise indisti
 
 !!! important
     Update in progress with Phase 05.03. This section represents changes to be implemented.
-    
+
 Widget Bindings to game state are generated inside of the Provider via the Binder factory. Each Binding requires a BindingContext and a BindingSchema. 
 
 - `context`: A string path referencing a specific Asset field in the game state. The Binder resolves this string into a live state reference during Menu instantiation.IIn other words, `bind.state` generates a runtime closure (Callable), not a static evaluation, ensuring bound Widget inherently mirror live state data.
@@ -383,11 +383,11 @@ bind:
 
 Each binding *expects* the bound Asset field to conform to the binding schema; otherwise the binding will not function properly. In other words, 
 
-- `if type == library: typeof(context.<asset>.<field>) == LibraryBinding`
-- `if type == meter: typeof(context.<asset>.<field>) == MeterBinding`
-- `if type == icon: typeof(context.<asset>.<field>) == IconBinding`
+- `if schema == library: typeof(context.<asset>.<field>) == LibraryBinding`
+- `if schema == meter: typeof(context.<asset>.<field>) == MeterBinding`
+- `if schema == icon: typeof(context.<asset>.<field>) == IconBinding`
 
-`type == select` are handled specially, since they are bindings to Widget actions in the menu itself, i.e. they do not receive external updates.
+`schema == select` are handled specially, since they are bindings to Widget actions in the menu itself, i.e. they do not receive external updates.
 
 For example, in the View (HUD) Menu, a Meter is bound to the Player health,
 

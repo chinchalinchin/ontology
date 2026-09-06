@@ -16,8 +16,8 @@ menus:
             id: notification
             name: text-display
             bind:
-              state: context.content
-          
+              schema: library
+              target: context.content
           # Use the 40x40 slot to constrain horizontal width
           - id: transparent-slot
             name: text-scroll-buttons
@@ -29,11 +29,13 @@ menus:
                 id: arrow-up
                 name: text-scroll-up
                 bind: 
+                  schema: select
                   selection: scrollup
                   selector: text-display
               - instance: buttons
                 id: arrow-down
                 name: text-scroll-down
                 bind: 
+                  schema: select
                   selection: scrolldown
                   selector: text-display

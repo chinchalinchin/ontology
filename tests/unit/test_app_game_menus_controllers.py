@@ -9,16 +9,17 @@ from app.game.menus.controllers.load import LoadController
 from app.game.menus.controllers.scroll import ScrollController
 from app.game.menus.core import Menu, Widget, Binding
 from app.game.menus.events import StateEvent, TerminalEvent, UpdateEvent
+from app.game.menus.bindings import SelectBinding
 from app.config.enums import Selections
 
 def test_main_controller_select():
     ctrl = MainController()
     
     mock_widget_new = MagicMock(spec=Widget)
-    mock_widget_new.binding = Binding(selection=Selections.NEW.value)
+    mock_widget_new.binding = SelectBinding(target="", context={}, selection=Selections.NEW.value)
     
     mock_widget_load = MagicMock(spec=Widget)
-    mock_widget_load.binding = Binding(selection=Selections.LOAD.value)
+    mock_widget_load.binding = SelectBinding(target="", context={}, selection=Selections.LOAD.value)
     
     menu = MagicMock(spec=Menu)
     menu.widgets = {"btn-new": mock_widget_new, "btn-load": mock_widget_load}
@@ -129,10 +130,10 @@ def test_scroll_controller_select():
     mock_page.state.current.return_value = ["line 1", "line 2"]
     
     mock_btn_down = MagicMock(spec=Widget)
-    mock_btn_down.binding = Binding(selection=Selections.SCROLLDOWN.value, selector="text_page")
+    mock_btn_down.binding = SelectBinding(target="", context={}, selection=Selections.SCROLLDOWN.value, selector="text_page")
     
     mock_btn_up = MagicMock(spec=Widget)
-    mock_btn_up.binding = Binding(selection=Selections.SCROLLUP.value, selector="text_page")
+    mock_btn_up.binding = SelectBinding(target="", context={}, selection=Selections.SCROLLUP.value, selector="text_page")
     
     menu.widgets = {
         "text_page": mock_page,
