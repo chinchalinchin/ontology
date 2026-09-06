@@ -34,7 +34,7 @@ class ConfigurationSchema:
     actions: List[ActionConfiguration] = field(default_factory=list)
     compositions: Dict[str, CompositionConfiguration] = field(default_factory=dict)
     intentions: Dict[Intentions, List[IntentionConfiguration]] = field(default_factory=dict)
-    library: Dict[str, Dict[str, str]] = field(default_factory=dict)
+    library: Dict[str, Dict[str, Dict[str, str]]] = field(default_factory=dict)
     mappings: MappingConfiguration = field(default_factory=MappingConfiguration)
     mechanics: MechanicsConfiguration = field(default_factory=MechanicsConfiguration)
     plots: Dict[str, List[PlotConfiguration]] = field(default_factory=dict)

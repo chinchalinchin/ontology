@@ -10,11 +10,8 @@ from app.assets.base import Asset
 from app.game.logic.mechanics import Mechanic
 
 # Cython Libraries
-from libs.core.math import (
-    Geometry, 
-    Physics, 
-    Space
-)
+import libs.core.math.physics as physics
+from libs.core.math.space import Space
 from libs.core.models import Position, Dimensions, Hitbox
 
 # ----------------------------------------------------------------------------------------
@@ -47,7 +44,7 @@ class SpatialMechanic(Mechanic):
         asset_map = dict(enumerate(assets))
         primitive_data = [asset.primitive(i) for i, asset in enumerate(assets)]
         
-        colliding_indices = Physics.collisions(primitive_data, self.grid)
+        colliding_indices = physics.collisions(primitive_data, self.grid)
         return [(asset_map[id_a], asset_map[id_b]) for id_a, id_b in colliding_indices]
 
     def intersections(self, assets: List[Asset]) -> List[Tuple]:
@@ -73,5 +70,5 @@ class SpatialMechanic(Mechanic):
             # Inject the virtual hitbox into the Cython primitive payload
             primitive_data.append(asset.primitive(i, hitboxes=[dim_hb]))
             
-        colliding_indices = Physics.collisions(primitive_data, self.grid)
+        colliding_indices = physics.collisions(primitive_data, self.grid)
         return [(asset_map[id_a], asset_map[id_b]) for id_a, id_b in colliding_indices]

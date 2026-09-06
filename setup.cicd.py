@@ -16,8 +16,16 @@ ext_modules = [
         libraries=["SDL2"],
     ),
     Extension(
-        "libs.core.math",
-        sources=["src/libs/core/math.pyx"],
+        "libs.core.math.geometry",
+        sources=["src/libs/core/math/geometry.pyx"],
+    ),
+    Extension(
+        "libs.core.math.physics",
+        sources=["src/libs/core/math/physics.pyx"],
+    ),
+    Extension(
+        "libs.core.math.space",
+        sources=["src/libs/core/math/space.pyx"],
     ),
     Extension(
         "libs.graphics.render",

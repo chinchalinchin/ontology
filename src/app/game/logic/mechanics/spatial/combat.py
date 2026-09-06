@@ -20,7 +20,7 @@ from app.models.state import DevicePayload
 from app.game.logic.mechanics.spatial import SpatialMechanic
 
 # Cython Libraries
-from libs.core.math import Geometry
+import libs.core.math.geometry as geometry
 
 class CombatMechanics(SpatialMechanic):
     """
@@ -120,7 +120,7 @@ class CombatMechanics(SpatialMechanic):
 
                 # The broad-phase checked the default hitboxes (because `primitive` uses `self.hitboxes`).
                 # We need to narrow-phase check the specific weapon hitboxes against the target hitboxes.
-                if Geometry.intersects(
+                if geometry.intersects(
                     attacker.state.position, 
                     attacker.dimensions, 
                     active_hitboxes,

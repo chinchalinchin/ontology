@@ -18,7 +18,8 @@ from app.game.logic.mechanics.spatial import SpatialMechanic
 from app.models.state import DevicePayload
 
 # Cython Libraries
-from libs.core.math import Physics, Geometry
+import libs.core.math.physics as physics
+import libs.core.math.geometry as geometry
 
 class CollisionMechanics(SpatialMechanic):
     """
@@ -42,7 +43,7 @@ class CollisionMechanics(SpatialMechanic):
         vel1 = getattr(asset_a.state, 'velocity', None)
         vel2 = getattr(asset_b.state, 'velocity', None)
 
-        intersection = Geometry.intersects(
+        intersection = geometry.intersects(
             asset_a.state.position, asset_a.dimensions, asset_a.hitboxes,
             asset_b.state.position, asset_b.dimensions, asset_b.hitboxes
         )
@@ -52,7 +53,7 @@ class CollisionMechanics(SpatialMechanic):
 
         hb_a, hb_b = intersection
 
-        Physics.resolve_collision(
+        physics.collide(
             asset_a.state.position, hb_a, vel1, m1, is_kinematic1,
             asset_b.state.position, hb_b, vel2, m2, is_kinematic2
         )

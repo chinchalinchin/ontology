@@ -39,16 +39,16 @@ sheets:
         name: player
         category: subject
         position:
-          x: 250
-          y: 300
+          x: 100
+          y: 200
       memory:
         goals:
           player:
             name: player
             category: subject
             position:
-              x: 250
-              y: 300
+              x: 100
+              y: 200
         prices: null
         property: null
         relationships: 
@@ -56,8 +56,8 @@ sheets:
         rumors: null
         sprites: 
           player:
-            x: 250
-            y: 300
+            x: 100
+            y: 200
       inventory: 
         loot: null
         equipment:

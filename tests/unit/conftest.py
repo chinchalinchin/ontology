@@ -295,3 +295,12 @@ def mock_crate():
         id="crate-1", layer="0", position=Position(x=10, y=10), velocity=Velocity(vx=0.0, vy=0.0)
     )
     return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+
+@pytest.fixture
+def mock_space_grid():
+    """
+    Fixture providing an initialized Cython Space grid for testing 
+    O(1) bucket lookups and broad-phase physics.
+    """
+    from libs.core.math.space import Space
+    return Space(cell_size=64, max_entities=100)

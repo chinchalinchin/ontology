@@ -382,3 +382,17 @@ plots:
         - sprites.get('castle-dawn-guard').mutators.triggers.dead
 
 ```
+
+
+
+
+## Further Candidates for Cython Optimization
+
+Based on the application architecture provided, the Python garbage collector is currently taking unnecessary hits in a few areas that should be fully pushed to C-level primitives:
+
+1. **Motive Navigation Vector Calculations (`motive.py`)**
+Currently, `motive.update()` normalizes vector velocities in Python via `math.sqrt(dx*dx + dy*dy)`, doing constant float division, assignments, and magnitude clamping for every Sprite every game tick. All of this can be pushed into a `cpdef void accelerate_motive(Velocity vel, int sx, int sy, int tx, int ty, int speed, int impulse, float delta)` function in `physics.pyx`. This would allow C to process the heavy float math and mutate the `.vx`/`.vy` attributes in memory natively.
+2. **Friction Symplectic Euler Integration (`frictive.py`)**
+Applying friction to unpowered assets requires calculating velocity decay $v = \max(0, v - \text{friction} \cdot \Delta t)$. Because this interacts directly with the `Velocity` Cython extension type, putting a `cpdef void apply_friction(Velocity vel, float friction, float delta)` in `physics.pyx` will eliminate the slow float extraction sequence that Python currently employs.
+3. **Cognition Proximity Checks (`CognitionMechanics.nearby`)**
+I have proactively included `cpdef bint nearby` in `geometry.pyx` above. You should replace the pure Python static method in `CognitionMechanics` with an import to `libs.core.math.geometry.nearby`. When `CognitionMechanics` runs its heavy spatial checks over the environment arrays, doing the $dx^2 + dy^2 < r^2$ operations entirely in C avoids generating temporary float and boolean wrapper objects in the Python heap.

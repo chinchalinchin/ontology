@@ -36,7 +36,7 @@ from app.models.state import (
 )
 
 # Cython Libraries
-from libs.core.math import Physics
+import libs.core.math.physics as physics
 
 logger = logging.getLogger(__name__)
 
@@ -116,7 +116,7 @@ class MotionMechanics(Mechanic):
         frictive.update(crates, board, delta)
         
         all_mutable = players + sprites + crates + projectiles
-        Physics.integrate_kinematics(all_mutable, delta)
+        physics.integrate(all_mutable, delta)
 
 class MenuMechanics(Mechanic):
 

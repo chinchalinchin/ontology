@@ -44,7 +44,7 @@ intentions:
       conditions: 
         - not sprite.goal
   # ----------------------------------------------------------------------------------
-  find: 
+  find:
     - next: interact
       conditions: 
         - sprite.goal
@@ -59,16 +59,21 @@ intentions:
         - sprite.goal
         - sprite.psyche.dialogue
         - sprite.goal.category == constants.Goals.SUBJECT.value
+        - sprites.get(sprite.goal.name)
         - sprite.memory.relationships.get(sprite.goal.name)
         - sprite.memory.relationships[sprite.goal.name] in [
             constants.Relationships.FRIEND.value, 
             constants.Relationships.FAMILY.value
           ]
+        # CRITICAL: Evaluate against the physical entity, not the remembered coordinate
         - functions.is_near(
             sprite.position, 
-            sprite.goal.position, 
+            sprites.get(sprite.goal.name).position, 
             sprite.mutators.parameters.action.radius
           )
+    - next: idle
+      conditions:
+        - not sprite.goal
   # ----------------------------------------------------------------------------------
   follow: 
     - next: speak
@@ -107,12 +112,13 @@ intentions:
       conditions: 
         - sprite.goal
         - sprite.goal.category == constants.Goals.SUBJECT.value
+        - sprites.get(sprite.goal.name)
         - not functions.is_near(
             sprite.position, 
-            sprite.goal.position, 
+            sprites.get(sprite.goal.name).position, 
             sprite.mutators.parameters.action.radius
           )
-    - next: idle
+    - next: wander
       conditions:
         - not sprite.goal
   # ----------------------------------------------------------------------------------
@@ -197,6 +203,10 @@ intentions:
         - not sprite.goal
   # ----------------------------------------------------------------------------------
   wander:
+    - next: idle
+      conditions:
+        - sprite.goal
+        - sprite.goal.category != constants.Goals.POSITION.value
     - next: idle
       conditions:
         - not sprite.goal

@@ -63,7 +63,8 @@ def test_spatial_mechanic_intersections():
     
     assets = [asset_a, asset_b]
     
-    with patch('app.game.logic.mechanics.spatial.base.Physics') as mock_physics:
+    # BUGFIX: Patch the refactored 'physics' module instead of the dissolved 'Physics' class
+    with patch('app.game.logic.mechanics.spatial.base.physics') as mock_physics:
         mock_physics.collisions.return_value = [(0, 1)]
         
         pairs = mechanic.intersections(assets)

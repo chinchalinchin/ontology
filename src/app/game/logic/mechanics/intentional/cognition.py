@@ -6,6 +6,7 @@ Package for handling the Sprite Goal lifecycle.
 from __future__ import annotations
 
 # Standard Libraries
+import math
 import random
 from typing import TYPE_CHECKING
 import collections
@@ -16,10 +17,11 @@ if TYPE_CHECKING:
 # Application Libraries
 from app.assets.base import Asset
 from app.config.enums import (
+    Directions,
     Intentions, 
-    AssetInstances, 
     Goals, 
-    Motivations
+    Motivations,
+    AssetInstances, 
 )
 from app.game.logic.mechanics.core import Mechanic
 from app.models.state import (
@@ -28,6 +30,7 @@ from app.models.state import (
 )
 
 # Cython Libraries
+import libs.core.math.geometry as geometry
 from libs.core.models import Position
 
 class CognitionMechanics(Mechanic):
@@ -39,11 +42,8 @@ class CognitionMechanics(Mechanic):
 
     @staticmethod
     def nearby(p1: Position, p2: Position, radius: int) -> bool:
-        dx = p1.x - p2.x
-        dy = p1.y - p2.y
-        
-        return (dx*dx + dy*dy) < (radius ** 2)
-
+        return geometry.nearby(p1.x, p2.y, p2.x, p2.y, radius)
+    
     @staticmethod
     def complete(sprite: Asset, board: Board) -> bool:
         goal = sprite.state.goal
@@ -128,8 +128,11 @@ class CognitionMechanics(Mechanic):
                     sprite.state.memory.goals.pop(goal.name)
 
             # if goal is close but not visible give up
-            elif self.nearby(goal.position, sprite.state.position, action_radius) \
-                and not sprite.state.mutators.triggers.vision:
+            elif self.nearby(
+                goal.position, 
+                sprite.state.position, 
+                action_radius
+            ) and not sprite.state.mutators.triggers.vision:
                     sprite.state.goal = None
 
         # ------------------------------------------------------------------------
@@ -142,15 +145,22 @@ class CognitionMechanics(Mechanic):
                     sprite.state.memory.goals.pop(goal.name)
 
             # if goal is close but not visible give up
-            elif self.nearby(goal.position, sprite.state.position, action_radius) \
-                and not sprite.state.mutators.triggers.vision:
+            elif self.nearby(
+                goal.position, 
+                sprite.state.position, 
+                action_radius
+            ) and not sprite.state.mutators.triggers.vision:
                     sprite.state.goal = None
 
         # ------------------------------------------------------------------------
         # ----------------------------------------------- POSITION GOAL RESOLUTION
         # ------------------------------------------------------------------------
         elif goal.category == Goals.POSITION.value:
-            if self.nearby(goal.position, sprite.state.position, action_radius):
+            if self.nearby(
+                goal.position, 
+                sprite.state.position, 
+                action_radius
+            ):
                 sprite.state.goal = None
 
         # ------------------------------------------------------------------------
@@ -185,9 +195,12 @@ class CognitionMechanics(Mechanic):
             # ------------------------------------------------------------------------
             # ------------------------------------------------- SPRITE LOCATION MEMORY
             # ------------------------------------------------------------------------
-            if self.nearby(other_state.position, sprite.state.position, vision_radius):
+            if self.nearby(
+                other_state.position, 
+                sprite.state.position, 
+                vision_radius
+            ):
                 sprite.state.memory.sprites[other_name] = other_state.position
-            # ------------------------------------------------------------------------
 
 
     def _remember(self, sprite, board: Board) -> None:
@@ -248,24 +261,28 @@ class CognitionMechanics(Mechanic):
         if sprite.state.goal and sprite.state.goal.category == Goals.SUBJECT.value:
             return
 
+        if sprite.state.mutators.parameters is None:
+            return
+        
+        vision_radius = sprite.state.mutators.parameters.vision.radius
+
         # ------------------------------------------------------------------------
         # -------------------------------------------------- SPEAK LOOP GENERATION
         # ------------------------------------------------------------------------ 
         if sprite.state.psyche.dialogue:
-
-            
-            if sprite.state.mutators.parameters is None:
-                return
-                
-            vision_radius = sprite.state.mutators.parameters.vision.radius
-                
             for other_name, other_state in board.characters().items():
                 if other_name == sprite.name: 
                     continue
 
-                if self.nearby(other_state.position, sprite.position, vision_radius):
-                    if sprite.state.goal and \
-                        sprite.state.goal.name not in sprite.state.memory.goals.keys():
+                if self.nearby(
+                    other_state.position, 
+                    sprite.state.position, 
+                    vision_radius
+                ):
+                    if sprite.state.goal and (
+                        sprite.state.goal.name 
+                        not in sprite.state.memory.goals.keys()
+                    ):
                         sprite.state.memory.goals[sprite.state.goal.name] = sprite.state.goal
                     
                     sprite.state.goal = Goal(
@@ -273,7 +290,7 @@ class CognitionMechanics(Mechanic):
                         category=Goals.SUBJECT.value, 
                         position=Position(x=other_state.position.x, y=other_state.position.y)
                     )
-                    break
+                    return
 
 
     def _motivate(self, sprite: Asset, board: Board) -> None:
@@ -338,37 +355,41 @@ class CognitionMechanics(Mechanic):
         if not goal:
             return
         
-        target_pos = None
+        target_state = None
 
+        # ------------------------------------------------------------------------ 
         if goal.category in [
             Goals.TARGET.value,
             Goals.SUBJECT.value
         ]:
             # TODO: hamdle dead sprites - future phase
-            if sprite.state.memory.sprites and sprite.state.memory.sprites.get(goal.name):
-                target_pos = sprite.state.memory.sprites[goal.name]
-
+            # Retrieve the ACTUAL entity state for vision tracking
+            target_state = board.character(goal.name)
+        # ------------------------------------------------------------------------ 
         elif goal.category == Goals.OBJECT.value:
             # TODO
             pass
 
+        # ------------------------------------------------------------------------ 
         elif goal.category == Goals.POSITION.value:
             sprite.state.mutators.triggers.vision = True
             return
 
+        # ------------------------------------------------------------------------ 
         elif goal.category == Goals.PROPERTY.value:
             # TODO
             pass
 
-        if not target_pos:
-            sprite.state.mutators.triggers.vision = False
-            return
-
-        if self.nearby(target_pos, sprite.state.position, vision_radius):
+        # ------------------------------------------------------------------------ 
+        if target_state and self.nearby(
+            target_state.position, 
+            sprite.state.position, 
+            vision_radius
+        ):
             # Target is visible: update coordinates to track movement
             sprite.state.mutators.triggers.vision = True
-            sprite.state.goal.position.x = target_pos.x
-            sprite.state.goal.position.y = target_pos.y
+            sprite.state.goal.position.x = target_state.position.x
+            sprite.state.goal.position.y = target_state.position.y
         else:
             # Target lost: freeze coordinates at last known position
             sprite.state.mutators.triggers.vision = False
@@ -381,6 +402,7 @@ class CognitionMechanics(Mechanic):
         Alters the spatial coordinates of the Goal based on abstract Intentions.
         """
         intention = sprite.state.intention
+        vision_radius = sprite.state.mutators.parameters.vision.radius
 
         if intention == Intentions.ESCAPE.value and sprite.state.mutators.triggers.vision:
             # Invert the target vector to run away
@@ -392,11 +414,11 @@ class CognitionMechanics(Mechanic):
             sprite.state.goal.position.y = sprite.state.position.y + (dy * 10)
 
         elif intention == Intentions.WANDER.value:
-            # If we reached our wander point (or don't have one), 
-            #   pick a new random nearby point
+            # If generatrate a randomized goal
+            
             if not sprite.state.goal or self.complete(sprite, board):
-                offset_x = random.randint(-50, 50)
-                offset_y = random.randint(-50, 50)
+                offset_x = random.randint(-vision_radius, vision_radius)
+                offset_y = random.randint(-vision_radius, vision_radius)
                 sprite.state.goal = Goal(
                     # TODO: generate name somehow
                     name="wander_point",

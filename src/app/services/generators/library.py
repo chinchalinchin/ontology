@@ -15,7 +15,6 @@ class Library:
     """
     def __init__(self, data: Dict[str, Dict[str, str]]):
         self.data = data or {}
-        logger.info(self.data)
 
     def fetch(self, plot: str, persona: str, lexicon: str) -> str:
         if not plot or not persona or not lexicon:
