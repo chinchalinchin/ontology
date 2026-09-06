@@ -46,7 +46,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Bug B004: Friction Regression](./phases/patch/bug-b004.md)
   - Report:
     - [x]: [2026-08-16: SDL Pipeline Failure](./phases/report/2026-08-16.md)
-
+- Backlog:
+  
 #### Bug Report Template
 
 For ancillary or tangential bugs detected, use the following template to open new Bugs,

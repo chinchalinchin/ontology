@@ -1,0 +1,28 @@
+# Task: Finite Automaton Documentation
+
+The [YAML](#latest-finite-automata-schema) represents a finite automaton and the conditions for its transitions into different nodes. 
+
+**Guidelines**
+
+- Update the table and diagram to match the latest state of the automata presented in the YAML.
+- Do not include information about the conditions in the diagram or table. Only include the node connections.
+
+## Latest Schema
+
+```yaml
+{{ file(root + '/src/data/config/intentions/main.yaml') }}
+```
+
+## Old Representations
+
+### Markdown Table
+
+```markdown
+{{ file(root + '/docs/static/md/intention-transitions.md') }}
+```
+
+### Mermaid Diagram
+
+```mermaid
+{{ file(root + '/docs/static/mmd/intention-transitions.mmd') }}
+```

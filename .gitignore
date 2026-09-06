@@ -8,6 +8,8 @@ build/**
 **/*.*-dump.md
 !**/templates/*-dump.md
 **/prompt.md
+**/.prompts/**/*.md
+!**/.prompts/blocks/**
 **/.pytest_cache/**
 **/.vscode/**
 
