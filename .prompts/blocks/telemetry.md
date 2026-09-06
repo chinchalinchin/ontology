@@ -1,1 +1,1 @@
-Do not burn cycles trying to infer the problem if it is not immediately obvious upon examination. Instead, propose telemetry logs to add at critical junctions in the application to provide insight into what is going on.
+Do not burn cycles trying to infer the problem if it is not immediately obvious upon examination. Instead, propose telemetry logs to add at critical junctions in the application to provide insight into what is going wrong.

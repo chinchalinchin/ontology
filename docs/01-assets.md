@@ -112,6 +112,7 @@ Each Category has Instances. Asset *Instances* form the bottom layer of the hier
 | - | - | - | 
 | Tile | Back | Position, Layer, Depth, Height |
 | Tile | Fore | Position, Layer, Depth, Height |
+| Tile | Grid | Position |
 | Object | Crate | Position, Layer, Depth, Height |
 | Object | Sign | Position, Layer, Depth, Height, Persona, Lexicon |
 | Object | Door | Position, Layer, Depth, Height, OutLayer |
@@ -211,6 +212,32 @@ N/A
 ### Fore
 
 A Fore Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Fore Tiles will always be rendered on top of all of other Assets, regardless of their `depth` or `height`. The *one* exception to this rule is Widgets. Fore Tiles are an "in-world" Asset, and thus their Z-ordering is superseded by Widgets.
+
+**Animation: None**
+
+N/A
+
+**Frame: SingleFrame**
+
+* `keys(id, None): returns [ id ] "`
+* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+
+**State: MultiplerState**
+
+* `layer: str`
+* `depth: int`
+* `height: int`
+* `position: Position`
+* `multiple: Multiple`
+
+### Grid
+
+A Grid is a special Type reserved for use in the [Editor Menu](./06-widgets.md#menus). It is used overlay canvases in the Editor with a spatial grid that can be traversed through focus. 
+
+There must be precisely *two* Grid tiles:
+
+- `focus`: A Grid Tile to represent active selections.
+- `cell`: A Grid Tile to represent idle selections.
 
 **Animation: None**
 

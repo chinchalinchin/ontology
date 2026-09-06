@@ -34,7 +34,7 @@ nav:
   - Appendix: 
     - Index: appendices/index.md
     - References: appendices/00-references.md
-    - Schemas: appendices/01-schema0s.md
+    - Schemas: appendices/01-schemas.md
   - Reports:
     - Unit Test Coverage: coverage/index
 markdown_extensions:

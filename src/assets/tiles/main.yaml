@@ -1,5 +1,14 @@
 # -------------------------------------------------------
   tiles:
+    grid:
+      focus:
+        dimensions:
+          w: 32
+          l: 32
+      cell:
+        dimensions:
+          w: 32
+          l: 32
     back:
       clay:
         dimensions:
