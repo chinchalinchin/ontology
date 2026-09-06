@@ -27,6 +27,10 @@ nav:
   - Plots: 08-plots.md
   - Emergence: 09-emergence.md
   - Architecture: 10-architecture.md
+  - Specifications:
+    - Index: specs/index.md
+    - Dialogue Loop: specs/00-dialogue.md
+    - Interaction Loop: specs/01-interaction.md
   - Appendix: 
     - Index: appendices/index.md
     - References: appendices/00-references.md
