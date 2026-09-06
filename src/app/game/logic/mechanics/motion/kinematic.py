@@ -2,37 +2,25 @@
 # Ontology: app.game.logic.mechanics.motion.kinematic
 """
 # Standard Libraries
-import math
+from typing import List
 
 # Application Libraries
+from app.assets.base import Asset
+from app.models.state.devices import DevicePayload
 from app.config.enums import PlayerGoals
 
-def update(players, mapping, delta):
+# Cython Libraries
+import libs.core.math.physics as physics
+
+def update(players: List[Asset], payload: DevicePayload, delta: float):
     """
     Snaps axis and applies velocity to kinematic player entities without generating impulses.
     """
     for player in players:
         ix, iy = 0.0, 0.0
-        if PlayerGoals.UP in mapping.world.goals: iy -= 1.0
-        if PlayerGoals.DOWN in mapping.world.goals: iy += 1.0
-        if PlayerGoals.LEFT in mapping.world.goals: ix -= 1.0
-        if PlayerGoals.RIGHT in mapping.world.goals: ix += 1.0
+        if PlayerGoals.UP in payload.world.goals: iy -= 1.0
+        if PlayerGoals.DOWN in payload.world.goals: iy += 1.0
+        if PlayerGoals.LEFT in payload.world.goals: ix -= 1.0
+        if PlayerGoals.RIGHT in payload.world.goals: ix += 1.0
 
-        # Axis-Snapping logic: nullify orthogonal axes for cardinal movement precedence
-        if ix != 0.0 and iy == 0.0:
-            player.state.velocity.vy = 0.0
-        if iy != 0.0 and ix == 0.0:
-            player.state.velocity.vx = 0.0
-
-        if ix != 0.0 or iy != 0.0:
-            # Retain diagonal support and normalize
-            mag = math.sqrt(ix*ix + iy*iy)
-            ux, uy = ix / mag, iy / mag
-            
-            speed = player.state.character.speed
-            # Bypass impulse. Set max magnitude immediately.
-            player.state.velocity.vx = ux * speed
-            player.state.velocity.vy = uy * speed
-        else:
-            player.state.velocity.vx = 0.0
-            player.state.velocity.vy = 0.0
+        physics.kinematics(player.state.velocity, ix, iy, player.state.character.speed)

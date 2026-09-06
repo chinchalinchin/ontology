@@ -3,11 +3,16 @@
 """
 # Standard Libraries
 import math
+from typing import List
 
 # Application Libraries
+from app.assets.base import Asset
 from app.config.enums import NavigationIntentions
 
-def update(sprites, delta):
+# Cython Libraries
+import libs.core.math.physics as physics
+
+def update(sprites: List[Asset], delta: float) -> None:
     """
     Evaluates pathfinding and translates distance to target into vector velocities with friction emulation.
     """
@@ -17,30 +22,13 @@ def update(sprites, delta):
             sprite.state.velocity.vy = 0.0
             continue
 
-        dx = sprite.state.goal.position.x - sprite.state.position.x
-        dy = sprite.state.goal.position.y - sprite.state.position.y
-
-        if dx == 0 and dy == 0:
-            sprite.state.velocity.vx = 0.0
-            sprite.state.velocity.vy = 0.0
-            continue
-
-        mag = math.sqrt(dx*dx + dy*dy)
-        speed = sprite.state.character.speed
-        
-        # Clamp velocity if within arrival threshold to prevent oscillation 
-        if mag < speed * delta:
-            sprite.state.velocity.vx = dx / delta
-            sprite.state.velocity.vy = dy / delta
-
-        else:
-            ux, uy = dx / mag, dy / mag
-            impulse = sprite.state.character.impulse
-
-            sprite.state.velocity.vx += ux * impulse * delta
-            sprite.state.velocity.vy += uy * impulse * delta
-
-            vmag = math.sqrt(sprite.state.velocity.vx**2 + sprite.state.velocity.vy**2)
-            if vmag > speed:
-                sprite.state.velocity.vx = (sprite.state.velocity.vx / vmag) * speed
-                sprite.state.velocity.vy = (sprite.state.velocity.vy / vmag) * speed
+        physics.dynamics(
+            sprite.state.velocity, 
+            sprite.state.position.x, 
+            sprite.state.position.y, 
+            sprite.state.goal.position.x, 
+            sprite.state.goal.position.y, 
+            sprite.state.character.speed, 
+            sprite.state.character.impulse, 
+            delta
+        )

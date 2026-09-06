@@ -1,4 +1,6 @@
 # cython: language_level=3
+from libc.math cimport sqrt
+
 from libs.core.models cimport Position, Dimensions, Hitbox, Velocity
 from libs.core.math.space cimport Space
 from libs.core.math.geometry cimport intersects
@@ -47,11 +49,11 @@ cpdef list collisions(list primitive_data, Space grid):
             
     return colliding_pairs
 
+
 cpdef void collide(
     Position pos1, Hitbox hb1, Velocity vel1, float m1, bint is_kinematic1,
     Position pos2, Hitbox hb2, Velocity vel2, float m2, bint is_kinematic2
 ):
-    # (Implementation remains identical, just unindented from the class definition)
     cdef float cx_a = pos1.x + hb1.position.x + hb1.dimensions.w / 2.0
     cdef float cy_a = pos1.y + hb1.position.y + hb1.dimensions.l / 2.0
     cdef float cx_b = pos2.x + hb2.position.x + hb2.dimensions.w / 2.0
@@ -82,6 +84,7 @@ cpdef void collide(
             if overlap_x < overlap_y:
                 shift_x1 = overlap_x * p1
                 shift_x2 = overlap_x * p2
+
                 if dx > 0:
                     pos1.x -= int(shift_x1)
                     pos2.x += int(shift_x2)
@@ -107,6 +110,7 @@ cpdef void collide(
                         vel1.vx = v1f_x
                     if vel2 is not None and not is_kinematic2:
                         vel2.vx = v2f_x
+
             else:
                 shift_y1 = overlap_y * p1
                 shift_y2 = overlap_y * p2
@@ -136,6 +140,7 @@ cpdef void collide(
                     if vel2 is not None and not is_kinematic2:
                         vel2.vy = v2f_y
 
+
 cpdef void integrate(list assets, float delta):
     cdef int shift
     cdef Position p
@@ -157,3 +162,80 @@ cpdef void integrate(list assets, float delta):
                 shift = int(p.ry)
                 p.y += shift
                 p.ry -= shift
+
+
+cpdef void friction(Velocity vel, float fric, float delta):
+    """
+    Decays velocity vector magnitudes using environment friction.
+    """
+    cdef float dv = fric * delta
+    cdef float vx = vel.vx
+    cdef float vy = vel.vy
+    cdef float vmag = sqrt((vx * vx) + (vy * vy))
+
+    if vmag > 0:
+        if dv >= vmag:
+            vel.vx = 0.0
+            vel.vy = 0.0
+        else:
+            vel.vx -= (vx / vmag) * dv
+            vel.vy -= (vy / vmag) * dv
+
+
+cpdef void kinematics(Velocity vel, float ix, float iy, float speed):
+    """
+    Snaps axis and applies strictly normalized target velocities.
+    """
+    cdef float mag
+
+    if ix != 0.0 and iy == 0.0:
+        vel.vy = 0.0
+    if iy != 0.0 and ix == 0.0:
+        vel.vx = 0.0
+
+    if ix != 0.0 or iy != 0.0:
+        mag = sqrt((ix * ix) + (iy * iy))
+        vel.vx = (ix / mag) * speed
+        vel.vy = (iy / mag) * speed
+    else:
+        vel.vx = 0.0
+        vel.vy = 0.0
+
+
+cpdef void dynamics(
+    Velocity vel, 
+    float sx, 
+    float sy, 
+    float tx, 
+    float ty, 
+    float speed, 
+    float impulse, 
+    float delta
+):
+    """
+    Calculates dynamic acceleration vectors towards a target coordinate, 
+    clamping maximum magnitude or snapping to exact arrival bounds.
+    """
+    cdef float dx = tx - sx
+    cdef float dy = ty - sy
+    cdef float mag, vmag
+
+    if dx == 0 and dy == 0:
+        vel.vx = 0.0
+        vel.vy = 0.0
+        return
+
+    mag = sqrt((dx * dx) + (dy * dy))
+    
+    # Clamp velocity if within arrival threshold to prevent oscillation 
+    if mag < speed * delta:
+        vel.vx = dx / delta
+        vel.vy = dy / delta
+    else:
+        vel.vx += (dx / mag) * impulse * delta
+        vel.vy += (dy / mag) * impulse * delta
+
+        vmag = sqrt((vel.vx * vel.vx) + (vel.vy * vel.vy))
+        if vmag > speed:
+            vel.vx = (vel.vx / vmag) * speed
+            vel.vy = (vel.vy / vmag) * speed

@@ -18,3 +18,27 @@ cpdef void collide(
 )
 
 cpdef void integrate(list assets, float delta)
+
+cpdef void friction(
+    Velocity vel, 
+    float friction, 
+    float delta
+)
+
+cpdef void kinematics(
+    Velocity vel, 
+    float ix, 
+    float iy, 
+    float speed
+)
+
+cpdef void dynamics(
+    Velocity vel, 
+    float sx, 
+    float sy, 
+    float tx, 
+    float ty, 
+    float speed, 
+    float impulse, 
+    float delta
+)
