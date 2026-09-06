@@ -22,7 +22,8 @@
     - [Appendix I: References](./appendices/00-references.md)
     - [Appendix II: Schemas](./appendices/01-schemas.md)
 - [Specifications](./specs/index.md)
-    - [Intention: Speak](./specs/00-speak.md)
+    - [Spec: Dialogue Loop](./specs/00-dialogue.md)
+    - [Spec: Interaction Loop](./specs/01-interaction.md)
     
 ## CI/CD
 

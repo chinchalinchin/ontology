@@ -33,11 +33,12 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 05.01: Typography](./phases/refactor/phase-05-01.md)
     - [x]: [Phase 05.02: Simplification](./phases/refactor/phase-05-02.md)
     - [x]: [Phase 05.03: ScrollController, Library & Plots](./phases/refactor/phase-05-03.md)
-    - [ ]: [Phase 05.04: InventoryController & Loot](./phases/refactor/phase-05-04.md)
+    - [~]: [Phase 05.04: ExchangeController & Loot](./phases/refactor/phase-05-04.md)
     - [x]: [Phase 05.05: Main Menu & Saving](./phases/refactor/phase-05-05.md)
-    - [ ]: [Phase 05.06: EventHandlers & EventContent](./phases/refactor/phase-05-06.md)
+    - [~]: [Phase 05.06: EventHandlers & EventContent](./phases/refactor/phase-05-06.md)
+    - [ ]: [Phase 05.07: InventoryController](./phases/refactor/phase-05-07.md)
     - [x]: [Phase 07.01: Speak Intentions](./phases/refactor/phase-07-01.md)
-    - [ ]: [Phase 07.02: Interact Intentions](./phases/refactor/phase-07-02.md)
+    - [~]: [Phase 07.02: Interact Intentions](./phases/refactor/phase-07-02.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantied Assets](./phases/patch/bug-b001.md)
@@ -82,10 +83,7 @@ For ancillary or tangential bugs detected, use the following template to open ne
 To add new Tasks to the backlog, use the following template,
 
 ```markdown
-{% set action = "Refactor" or "Implement" %}
-{% set number = {{ phase.number }} if action == "Implement" else {{ phase.number }}-{{ phase.refactor }} %}
-
-#### {{ action }}: Phase {{ number }} - {{ phase.title }}
+#### Backlog: {{ title }}
 
 **Overview** 
 

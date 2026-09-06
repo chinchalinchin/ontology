@@ -6,11 +6,12 @@ build/**
 **/__pycache__/**
 **/**.pyc
 **/*.*-dump.md
-!**/templates/*-dump.md
 **/prompt.md
 **/.prompts/**/*.md
-!**/.prompts/blocks/**
 **/.pytest_cache/**
 **/.vscode/**
 
 !**/.gitkeep
+!**/templates/*-dump.md
+!**/.prompts/blocks/**
+!**/.prompts/board/**

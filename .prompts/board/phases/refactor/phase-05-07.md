@@ -1,4 +1,4 @@
-#### Refactor: Phase 05.04 - Library
+#### Refactor: Phase 05.04 - InventoryController
 
 **Overview** 
 
@@ -10,8 +10,8 @@ TODO
 
 *Objective*: Ensure controller specific logic is migrated into the new Menu-Widget paradigm.
 
-* [!] Remove the `equip()` method from `MenuMechanics`.
-* [!] Verify `MenuMechanics.update()` acts strictly as a traversal router and event delegator.
+* [ ] Remove the `equip()` method from `MenuMechanics`.
+* [ ] Verify `MenuMechanics.update()` acts strictly as a traversal router and event delegator.
 
 **Task #2: Inventory Controller**
 
