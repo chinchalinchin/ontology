@@ -12,7 +12,7 @@ menus:
         gap: 10
         children: 
           - instance: pages
-            id: text
+            id: dialogue
             name: text-display
             bind:
               state: context.content

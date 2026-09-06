@@ -52,7 +52,6 @@ class InteractionMechanics(SpatialMechanic):
                 asset for asset in sprites + players
                 if asset.state.intention == Intentions.INTERACT.value
                 and asset.name not in processed_sources 
-                # Filter out already processed sources instantly
             ]
             
             if not sources:
@@ -66,7 +65,8 @@ class InteractionMechanics(SpatialMechanic):
             if not targets:
                 continue
 
-            colliding_pairs = self.collisions(sources + targets)
+            # Route through dimension-based intersection rather than physics collision
+            colliding_pairs = self.intersections(sources + targets)
 
             for asset_a, asset_b in colliding_pairs:
                 is_a_source = asset_a in sources
@@ -85,7 +85,7 @@ class InteractionMechanics(SpatialMechanic):
                 if source.name in processed_sources:
                     continue
 
-                # Check if the mutating Sprite's center point intersects the Target.
+                # Check if the mutating Sprite's center point intersects the Target dimensions.
                 cx, cy = self.center(source.state.position, source.dimensions)
 
                 tx, ty = target.state.position.x, target.state.position.y
@@ -117,9 +117,10 @@ class InteractionMechanics(SpatialMechanic):
                 # -------------------------------- SIGN INTERACTIONS
                 elif target.taxonomy.instance == AssetInstances.SIGNS:
                     if source.taxonomy.instance == AssetInstances.PLAYERS:
+                        plot_val = board.plot.current if hasattr(board.plot, 'current') else board.plot
                         bus.append(MenuEvent(
                             id=Menus.TEXT.value, context={
-                                'plot': board.plot.current, 
+                                'plot': plot_val, 
                                 'persona': target.state.persona,
                                 'lexicon': target.state.lexicon 
                             }

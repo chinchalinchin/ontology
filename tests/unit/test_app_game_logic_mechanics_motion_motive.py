@@ -1,5 +1,4 @@
 import pytest
-import math
 from app.game.logic.mechanics.motion import motive
 
 def test_motive_no_intention(mock_board_assets):

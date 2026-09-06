@@ -8,6 +8,7 @@ mappings:
         east: 7           # SDL_SCANCODE_D
       interactions:
         select: 44        # SDL_SCANCODE_SPACE
+        cancel: 43        # SDL_SCANCODE_TAB
     world:
       menus:
         pause: 30         # SDL_SCANCODE_1

@@ -219,7 +219,11 @@ class Screen:
         tex = widget.state.canvas
         base_keys = widget.frame.keys(widget.id, widget.state)
         base_key, ox, oy = base_keys[0]  # Just unpack the first element
-        base_ptr, sx, sy, sw, sl = self.registry.image(base_key)
+
+        tex_data = self.registry.image(base_key)
+        if not tex_data: return
+
+        base_ptr, sx, sy, sw, sl = tex_data
         
         # 1. Fetch and stamp clean background
         construct(tex, [(base_ptr, sx, sy, sw, sl, 0, 0, sw, sl, 1, 1)])

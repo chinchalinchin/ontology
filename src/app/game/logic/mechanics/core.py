@@ -148,10 +148,10 @@ class MenuMechanics(Mechanic):
 
         # Context Control
         if not board.menus:
-            board.device.context(DeviceContexts.WORLD)
+            board.device.context(DeviceContexts.WORLD.value)
             return
 
-        board.device.context(DeviceContexts.MENU)
+        board.device.context(DeviceContexts.MENU.value)
 
         active_menu = board.menus[-1]
         
@@ -165,7 +165,7 @@ class MenuMechanics(Mechanic):
         traversal = payload.menu.traversal
         interaction = payload.menu.interaction
 
-        if interaction in [Interactions.CANCEL, Interactions.PAUSE]:
+        if interaction == Interactions.CANCEL.value:
             bus.append(TerminalEvent())
             return
 
@@ -178,5 +178,5 @@ class MenuMechanics(Mechanic):
                 active_menu.widgets[new_focus].state.status = Statuses.ACTIVE
                 active_menu.focus = new_focus
 
-        if Interactions.SELECT == interaction and active_menu.focus:
+        if interaction == Interactions.SELECT.value and active_menu.focus:
             active_menu.controller.select(active_menu.focus, active_menu, board, bus)
