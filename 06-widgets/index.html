@@ -1511,11 +1511,11 @@
 </code></pre></div>
 <p>Each binding <em>expects</em> the bound Asset field to conform to the binding schema; otherwise the binding will not function properly. In other words, </p>
 <ul>
-<li><code>if type == library: typeof(context.&lt;asset&gt;.&lt;field&gt;) == LibraryBinding</code></li>
-<li><code>if type == meter: typeof(context.&lt;asset&gt;.&lt;field&gt;) == MeterBinding</code></li>
-<li><code>if type == icon: typeof(context.&lt;asset&gt;.&lt;field&gt;) == IconBinding</code></li>
+<li><code>if schema == library: typeof(context.&lt;asset&gt;.&lt;field&gt;) == LibraryBinding</code></li>
+<li><code>if schema == meter: typeof(context.&lt;asset&gt;.&lt;field&gt;) == MeterBinding</code></li>
+<li><code>if schema == icon: typeof(context.&lt;asset&gt;.&lt;field&gt;) == IconBinding</code></li>
 </ul>
-<p><code>type == select</code> are handled specially, since they are bindings to Widget actions in the menu itself, i.e. they do not receive external updates.</p>
+<p><code>schema == select</code> are handled specially, since they are bindings to Widget actions in the menu itself, i.e. they do not receive external updates.</p>
 <p>For example, in the View (HUD) Menu, a Meter is bound to the Player health,</p>
 <div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meters</span>
 <span class="w">    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health</span>
