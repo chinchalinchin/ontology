@@ -400,6 +400,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grid
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1162,7 +1173,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../appendices/01-schema0s.md" class="md-nav__link">
+      <a href="../appendices/01-schemas/" class="md-nav__link">
         
   
   
@@ -1393,6 +1404,17 @@
     <span class="md-ellipsis">
       
         Fore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Grid
       
     </span>
   </a>
@@ -1892,6 +1914,11 @@
 <td>Position, Layer, Depth, Height</td>
 </tr>
 <tr>
+<td>Tile</td>
+<td>Grid</td>
+<td>Position</td>
+</tr>
+<tr>
 <td>Object</td>
 <td>Crate</td>
 <td>Position, Layer, Depth, Height</td>
@@ -2061,6 +2088,28 @@
 </ul>
 <h3 id="fore">Fore</h3>
 <p>A Fore Tile is the last Asset rendered on screen. It has the highest Z coordinate of all Assets. Fore Tiles will always be rendered on top of all of other Assets, regardless of their <code>depth</code> or <code>height</code>. The <em>one</em> exception to this rule is Widgets. Fore Tiles are an "in-world" Asset, and thus their Z-ordering is superseded by Widgets.</p>
+<p><strong>Animation: None</strong></p>
+<p>N/A</p>
+<p><strong>Frame: SingleFrame</strong></p>
+<ul>
+<li><code>keys(id, None): returns [ id ] "</code></li>
+<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+</ul>
+<p><strong>State: MultiplerState</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>depth: int</code></li>
+<li><code>height: int</code></li>
+<li><code>position: Position</code></li>
+<li><code>multiple: Multiple</code></li>
+</ul>
+<h3 id="grid">Grid</h3>
+<p>A Grid is a special Type reserved for use in the <a href="../06-widgets/#menus">Editor Menu</a>. It is used overlay canvases in the Editor with a spatial grid that can be traversed through focus. </p>
+<p>There must be precisely <em>two</em> Grid tiles:</p>
+<ul>
+<li><code>focus</code>: A Grid Tile to represent active selections.</li>
+<li><code>cell</code>: A Grid Tile to represent idle selections.</li>
+</ul>
 <p><strong>Animation: None</strong></p>
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
