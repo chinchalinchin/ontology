@@ -15,8 +15,8 @@ stateDiagram-v2
 
     find --> interact
     find --> speak
+    find --> idle
 
-    follow --> follow
     follow --> speak
     follow --> idle
 
@@ -25,7 +25,6 @@ stateDiagram-v2
 
     idle --> wander
     idle --> find
-    idle --> idle
 
     interact --> idle
 
@@ -40,7 +39,6 @@ stateDiagram-v2
 
     scavenge --> idle
 
-    speak --> follow
     speak --> idle
 
     sprint --> idle

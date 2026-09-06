@@ -1192,8 +1192,8 @@
 
     find --&gt; interact
     find --&gt; speak
+    find --&gt; idle
 
-    follow --&gt; follow
     follow --&gt; speak
     follow --&gt; idle
 
@@ -1202,7 +1202,6 @@
 
     idle --&gt; wander
     idle --&gt; find
-    idle --&gt; idle
 
     interact --&gt; idle
 
@@ -1217,7 +1216,6 @@
 
     scavenge --&gt; idle
 
-    speak --&gt; follow
     speak --&gt; idle
 
     sprint --&gt; idle
@@ -1259,12 +1257,12 @@
 <tr>
 <td>5</td>
 <td><code>find</code></td>
-<td><code>interact</code>, <code>speak</code></td>
+<td><code>interact</code>, <code>speak</code>, <code>idle</code></td>
 </tr>
 <tr>
 <td>6</td>
 <td><code>follow</code></td>
-<td><code>follow</code>, <code>speak</code>, <code>idle</code></td>
+<td><code>speak</code>, <code>idle</code></td>
 </tr>
 <tr>
 <td>7</td>
@@ -1274,7 +1272,7 @@
 <tr>
 <td>8</td>
 <td><code>idle</code></td>
-<td><code>wander</code>, <code>find</code>, <code>idle</code></td>
+<td><code>wander</code>, <code>find</code></td>
 </tr>
 <tr>
 <td>9</td>
@@ -1304,7 +1302,7 @@
 <tr>
 <td>14</td>
 <td><code>speak</code></td>
-<td><code>follow</code>, <code>idle</code></td>
+<td><code>idle</code></td>
 </tr>
 <tr>
 <td>15</td>
