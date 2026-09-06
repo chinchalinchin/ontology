@@ -18,15 +18,15 @@ library:
       threaten: Your head shall soon be on a spike!
     castle-dawn-sign:
       spring: Welcome to Castle Dawn
-      summer: Travelling Troupe in Town Square
+      summer: 
       autumn: Harvest Festival Soon
       winter: Road Blocked
   castle-dawn-hostile:
     jasiylnn:
       busy: Go away!
       greeting: Bow before your betters.
-      mock: Your presence is troublesome.
-      threaten: My guards will cut you down!
+      mock: Thy pants are ugly.
+      threaten: Guards! Cut this insolent cur down!
     castle-dawn-sign:
       spring: BE GONE
       summer: NO TRAVELLERS WANTED 

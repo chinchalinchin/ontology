@@ -31,12 +31,12 @@ from app.models.config.recipes import RecipeConfiguration
 
 @dataclass(slots=True, frozen=True)
 class ConfigurationSchema:
-    recipes: RecipeConfiguration = field(default_factory=RecipeConfiguration)
-    mappings: MappingConfiguration = field(default_factory=MappingConfiguration)
-    intentions: Dict[Intentions, List[IntentionConfiguration]] = field(default_factory=dict)
     actions: List[ActionConfiguration] = field(default_factory=list)
-    mechanics: MechanicsConfiguration = field(default_factory=MechanicsConfiguration)
     compositions: Dict[str, CompositionConfiguration] = field(default_factory=dict)
-    menus: Dict[str, MenuConfiguration] = field(default_factory=dict)
+    intentions: Dict[Intentions, List[IntentionConfiguration]] = field(default_factory=dict)
+    library: Dict[str, Dict[str, str]] = field(default_factory=dict)
+    mappings: MappingConfiguration = field(default_factory=MappingConfiguration)
+    mechanics: MechanicsConfiguration = field(default_factory=MechanicsConfiguration)
     plots: Dict[str, List[PlotConfiguration]] = field(default_factory=dict)
-    library: LibraryConfiguration = field(default_factory=LibraryConfiguration)
+    recipes: RecipeConfiguration = field(default_factory=RecipeConfiguration)
+    menus: Dict[str, MenuConfiguration] = field(default_factory=dict)
