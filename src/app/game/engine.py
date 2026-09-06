@@ -82,6 +82,12 @@ class Engine:
                     )
                     self.board.menus.append(menu)
 
+                    # BUGFIX: Force initial bake for all canvas-based widgets
+                    for widget in menu.widgets.values():
+                        if hasattr(widget.state, 'canvas') and widget.state.canvas is not None:
+                            if hasattr(widget.state, 'current'):
+                                screen.stamp(widget, widget.state.current())
+                                
             elif isinstance(event, StateEvent):
                 if hasattr(self.board, 'migrator') and self.board.migrator:
                     self.board.migrator.target = event.id

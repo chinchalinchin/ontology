@@ -63,16 +63,17 @@ class AnimationMechanics(Mechanic):
         bus: collections.deque,
         payload: DevicePayload
     ) -> None:
-        for asset in board.categories(AssetCategories.EFFECTS):
-            asset.animation.animate(asset.state, asset.properties)
-        for asset in board.categories(AssetCategories.SHEETS):
-            asset.animation.animate(asset.state, asset.properties)
-        for asset in board.instances(AssetInstances.CHESTS):
-            asset.animation.animate(asset.state, asset.properties)
-        for asset in board.instances(AssetInstances.GATES):
-            asset.animation.animate(asset.state, asset.properties)
-        for asset in board.instances(AssetInstances.PLATES):
-            asset.animation.animate(asset.state, asset.properties)
+        if not board.paused:
+            for asset in board.categories(AssetCategories.EFFECTS):
+                asset.animation.animate(asset.state, asset.properties)
+            for asset in board.categories(AssetCategories.SHEETS):
+                asset.animation.animate(asset.state, asset.properties)
+            for asset in board.instances(AssetInstances.CHESTS):
+                asset.animation.animate(asset.state, asset.properties)
+            for asset in board.instances(AssetInstances.GATES):
+                asset.animation.animate(asset.state, asset.properties)
+            for asset in board.instances(AssetInstances.PLATES):
+                asset.animation.animate(asset.state, asset.properties)
 
 class RemoveMechanics(Mechanic):
     """
