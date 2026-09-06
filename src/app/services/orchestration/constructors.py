@@ -35,6 +35,8 @@ from app.services.orchestration.factory import Factory
 from app.services.orchestration.migrator import Migrator
 from app.services.generators.decomposer import Decomposer
 from app.services.generators.provider import Provider
+from app.services.generators.library import Library
+from app.services.generators.binder import Binder
 
 # Cython Libraries
 from libs.core.models import Dimensions
@@ -214,12 +216,7 @@ class Builder:
         self.core = [Factory.mechanics(m) for m in core_cfg]
         self.world = [Factory.mechanics(m) for m in world_cfg]
 
-        # New: Instantiate Generator Services (Library & Binder)
-        from app.services.generators.library import Library
-        from app.services.generators.binder import Binder
-        
-        library_data = getattr(self.context.configurations, 'library', {})
-        self.library = Library(library_data)
+        self.library = Library(self.context.configurations.library)
         self.binder = Binder(self.registry, self.library)
 
         translator = Factory.translator(settings.ISL_TRANSLATOR)

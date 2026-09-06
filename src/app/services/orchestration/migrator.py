@@ -72,8 +72,8 @@ class Migrator:
             for comp_state in self.state.compositions:
                 tasks.append((Shortcuts.COMPOSITIONS.value, comp_state))
 
-        if hasattr(self.state, Shortcuts.PLOTS.value) and self.state.plot:
-            tasks.append((Shortcuts.PLOTS.value, self.state.plot))
+        if hasattr(self.state, Shortcuts.PLOTS.value) and self.state.plots:
+            tasks.append((Shortcuts.PLOTS.value, self.state.plots))
 
         for cat_field in dataclasses.fields(self.state):
             category_key = cat_field.name

@@ -19,7 +19,8 @@ from app.models.config.core import (
     IntentionConfiguration,
     MechanicsConfiguration,
     PlotConfiguration,
-    CompositionConfiguration
+    CompositionConfiguration,
+    LibraryConfiguration
 )
 from app.models.config.mappings import MappingConfiguration
 from app.models.config.menus import MenuConfiguration
@@ -38,3 +39,4 @@ class ConfigurationSchema:
     compositions: Dict[str, CompositionConfiguration] = field(default_factory=dict)
     menus: Dict[str, MenuConfiguration] = field(default_factory=dict)
     plots: Dict[str, List[PlotConfiguration]] = field(default_factory=dict)
+    library: LibraryConfiguration = field(default_factory=LibraryConfiguration)

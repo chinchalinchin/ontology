@@ -11,6 +11,9 @@ from dataclasses import (
 )
 
 # Application Libraries
+from app.models.state.core import (
+    PlotState
+)
 from app.models.state.objects import (
     MultiplierState,
     ContainerState,
@@ -74,3 +77,4 @@ class StateSchema:
     effects: EffectStateInstances = field(default_factory=EffectStateInstances)
     sheets: SheetStateInstances = field(default_factory=SheetStateInstances)
     compositions: List[PropertyState] = field(default_factory=list)
+    plots: PlotState = field(default_factory=PlotState)

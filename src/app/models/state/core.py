@@ -44,5 +44,5 @@ class AnimationState:
 
 @dataclass(slots=True)
 class PlotState:
-    current: str
+    current: Optional[str] = None
     previous: List[str] = field(default_factory=list)

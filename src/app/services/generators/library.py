@@ -15,7 +15,8 @@ class Library:
     """
     def __init__(self, data: Dict[str, Any]):
         self.data = data or {}
-
+        logger.info(self.data)
+        
     def fetch(self, plot: str, persona: str, lexicon: str) -> str:
         if not plot or not persona or not lexicon:
             logger.warning(f"Library fetch missing keys: plot={plot}, persona={persona}, lexicon={lexicon}")
