@@ -5,11 +5,12 @@ menus:
       - id: neutral
         name: dialogue-menu
         position:
-          px: 0.1
-          py: 0.55
+          # 480 x 480
+          px: 0.175
+          py: 0.60
         layout: dock
-        alignment: start
-        gap: 10
+        alignment: center
+        gap: 15
         children:
           - id: transparent-slot 
             name: portrait-slot-container
@@ -29,27 +30,34 @@ menus:
                   target: 
                     icon: context.sprite.character.portrait
           - instance: pages
-            id: dialogue
+            id: notification
             name: character-speech
             bind:
               schema: library
               target:
                 plot: context.plot.current
-                persona: context.sprite.character.persona
+                persona: context.sprite.psyche.persona
                 lexicon: context.sprite.psyche.dialogue
-          - instance: buttons
-            id: arrow-up
-            name: character-speech-scroll-up
-            bind:
-              schema: select
-              target:
-                selection: scrollup
-                selector: character-speech
-          - instance: buttons
-            id: arrow-down
-            name: character-speech-scroll-down
-            bind: 
-              schema: select
-              target:
-                selection: scrolldown
-                selector: character-speech
+          # Use the 40x40 slot to constrain horizontal width
+          - id: transparent-slot
+            name: text-scroll-buttons
+            layout: stack
+            alignment: center
+            gap: 5
+            children:
+              - instance: buttons
+                id: arrow-up
+                name: text-scroll-up
+                bind: 
+                  schema: select
+                  target:
+                    selection: scrollup
+                    selector: character-speech
+              - instance: buttons
+                id: arrow-down
+                name: text-scroll-down
+                bind: 
+                  schema: select
+                  target:
+                    selection: scrolldown
+                    selector: character-speech

@@ -5,20 +5,42 @@ Centralized logging configuration for the Ontology application.
 """
 # Standard Libraries
 import logging.config
+import re
+from datetime import datetime
 from pathlib import Path
 
 # Application Libraries
 import app.config.settings as settings
 
+def _get_session_log_filename(log_dir: Path = settings.LOG_DIR) -> str:
+    """
+    Calculates the next session index for the current date and returns the filename.
+    """
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    file_pattern = re.compile(rf"^ontology_{date_str}_(\d+)\.log$")
+    
+    max_index = 0
+    if log_dir.exists():
+        for file_path in log_dir.glob(f"ontology_{date_str}_*.log"):
+            match = file_pattern.match(file_path.name)
+            if match:
+                index = int(match.group(1))
+                max_index = max(max_index, index)
+                
+    next_index = max_index + 1
+    return f"ontology_{date_str}-{next_index}.log"
+
 def configure_logging(
     log_level: str = settings.LOG_LEVEL, 
-    log_dir: Path = settings.LOG_DIR,
-    log_name: str = settings.LOG_FILE
+    log_dir: Path = settings.LOG_DIR
 ) -> None:
     """
     Configures the application to write logs to both stdout and a rotating file.
     """
     log_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Calculate the dynamic session filename
+    log_name = _get_session_log_filename(log_dir)
     filename = str(log_dir / log_name)
 
     logging.config.dictConfig({
@@ -41,20 +63,19 @@ def configure_logging(
             },
             "file": {
                 "class": "logging.handlers.RotatingFileHandler",
-                "level": "DEBUG", # Capture deeper diagnostics on disk
+                "level": log_level,
                 "formatter": "detailed",
                 "filename": filename,
-                "maxBytes": 10 * 1024 * 1024, # 10 MB per file
-                "backupCount": 5,             # Keep 5 rotated backup files
+                "maxBytes": 10 * 1024 * 1024,
+                "backupCount": 5,
                 "encoding": "utf-8",
             },
         },
         "root": {
-            "level": "DEBUG", # Root must be lowest level so handlers can filter
+            "level": log_level, 
             "handlers": ["stdout", "file"],
         },
         "loggers": {
-            # Silence noisy third-party libraries here if necessary
             "jinja2": {
                 "level": "WARNING",
                 "handlers": ["stdout", "file"],

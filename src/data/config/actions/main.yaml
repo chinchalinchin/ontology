@@ -25,6 +25,20 @@ actions:
             row: 2
           right:
             row: 3
+  - id: lpc-walk
+    data:
+      walk:
+        count: 9
+        delay: 3
+        directions: 
+          up:
+            row: 8
+          left:
+            row: 9
+          down: 
+            row: 10
+          right:
+            row: 11
   - id: lpc-thrust
     data:
       thrust:
@@ -104,6 +118,7 @@ actions:
             row: 7
       walk:
         count: 9
+        delay: 3
         directions: 
           up:
             row: 8

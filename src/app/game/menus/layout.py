@@ -17,7 +17,8 @@ from app.assets.base import Asset
 from app.config.enums import (
     Layouts, 
     Alignments,
-    Traversal
+    Traversal,
+    Statuses
 )
 from app.models.config import (
     MenuPane, 
@@ -51,6 +52,7 @@ class Layout:
 
         graph = self._build_graph([w for w in flattened if w.instance == 'buttons'])
         return flattened, graph
+
 
     def _compute_recursive(self, cfg: Union[MenuPane, MenuWidget], widgets: Dict, flattened: List) -> None:
         asset = widgets.get(cfg.name)
@@ -114,6 +116,7 @@ class Layout:
             child.state.position = Position(x=current_x, y=current_y + y_offset)
             current_x += w + gap
 
+
     def _layout_stack(self,
         pane: Asset, 
         children: List[Asset], 
@@ -150,6 +153,7 @@ class Layout:
             child.state.position = Position(x=current_x + x_offset, y=current_y)
             current_y += l + gap
 
+
     def _layout_overlay(self, pane: Asset, children: List[Asset]):
         """
         Overlays superimpose children centered natively at the exact anchor of the parent.
@@ -172,6 +176,7 @@ class Layout:
                 x=pane_x + x_offset, 
                 y=pane_y + y_offset
             )
+
             
     def _build_graph(self, 
         buttons: List[Asset]
@@ -182,6 +187,9 @@ class Layout:
         """
         graph = {}
         for b1 in buttons:
+            if b1.state.status == Statuses.DISABLED.value:
+                continue 
+
             b1_name = b1.name
             graph[b1_name] = {}
             b1_pos = b1.state.position
@@ -194,7 +202,7 @@ class Layout:
             east_candidates, west_candidates = [], []
 
             for b2 in buttons:
-                if b1 == b2: 
+                if b1 == b2 or b2.state.status == Statuses.DISABLED.value: 
                     continue
                     
                 b2_pos = b2.state.position

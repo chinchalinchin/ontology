@@ -5,6 +5,7 @@ Package for SpatialMechanic parent class.
 """
 # Standard Libraries
 from typing import List, Tuple
+import logging
 
 from app.assets.base import Asset
 from app.game.logic.mechanics import Mechanic
@@ -13,6 +14,8 @@ from app.game.logic.mechanics import Mechanic
 import libs.core.math.physics as physics
 from libs.core.math.space import Space
 from libs.core.models import Position, Dimensions, Hitbox
+
+logger = logging.getLogger(__name__)
 
 # ----------------------------------------------------------------------------------------
 
@@ -90,10 +93,12 @@ class SpatialMechanic(Mechanic):
             # Extract action radius safely, defaulting to 15 (1/2 grid cell)
             
             if not getattr(asset.state, 'mutators', None) or \
-                asset.state.mutators.parameters:
+                not asset.state.mutators.parameters:
                 continue
 
             radius = asset.state.mutators.parameters.action.radius
+
+            logger.info(radius)
 
             # Pad the dimensions by the radius in all directions
             pad_hb = Hitbox(

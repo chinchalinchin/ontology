@@ -13,7 +13,6 @@ SEPARATOR = "-"
 NEW_BOARD = "world-01"
 MIGRATOR_DELAY = 1
 EXPRESSION_TTL = 120
-LOG_FILE = "ontology.log"
 LOG_LEVEL = "INFO"
 # ---------------------------------------------------
 ## --------------------------------- ENGINE CONSTANTS

@@ -4,10 +4,20 @@
 Package for ingame Menu instantiation.
 """
 import logging
-from typing import Dict, Any, Union
+from typing import (
+    Dict, 
+    Any, 
+    Union, 
+    List
+)
 
 from app.assets.base import Asset
-from app.config.enums import AssetCategories, AssetInstances, Statuses, Menus
+from app.config.enums import (
+    AssetCategories, 
+    AssetInstances, 
+    Statuses, 
+    Menus
+)
 from app.services.orchestration.factory import Factory
 from app.models.properties import WidgetProperties
 from app.models.state import (
@@ -18,8 +28,15 @@ from app.models.state import (
     AnimationState,
     IconState
 )
-from app.models.config import MenuConfiguration, MenuPane, MenuWidget
-from app.game.menus.core import Menu, Widget
+from app.models.config import (
+    MenuConfiguration, 
+    MenuPane, 
+    MenuWidget
+)
+from app.game.menus.core import (
+    Menu, 
+    Widget
+)
 from app.game.menus.contexts import MenuContext
 from app.game.menus.bindings import Binding
 from app.game.menus.layout import Layout
@@ -196,6 +213,30 @@ class Provider:
             self._unpack_node(child, context, widgets)
 
 
+    def _focus(self, id: str, widgets: List[Asset], graph: dict) -> str:
+        """
+        Compute the initial focused widget in the Menu.
+        """
+        if id == Menus.VIEW.value or not graph:
+            return None
+        
+        focus_names = iter(graph.keys())
+        focus = next(focus_names)
+
+        if not focus or focus not in widgets:
+            return None
+
+        focused = False
+        while not focused:
+            if widgets[focus].state.status != Statuses.DISABLED.value:
+                widgets[focus].state.status = Statuses.ACTIVE.value
+                widgets[focus].state.animation.action = Statuses.ACTIVE.value
+                return focus
+            
+            focus = next(focus_names)
+            if focus is None:
+                return None
+            
     def unpack(self, id: str, config: MenuConfiguration, context: dict, screensize: Dimensions) -> Menu:
         context = context or {}
             
@@ -209,11 +250,7 @@ class Provider:
         ordered_widgets = { w.name: w for w in flattened_list }
         ctrl = Factory.controller(config.controller)
 
-        focus = next(iter(graph.keys())) if graph and id != Menus.VIEW.value else ""
-
-        if focus and focus in ordered_widgets:
-            ordered_widgets[focus].state.status = Statuses.ACTIVE.value
-            ordered_widgets[focus].state.animation.action = Statuses.ACTIVE.value
+        focus = self._focus(id, ordered_widgets, graph)
 
         return Menu(
             id          = id,

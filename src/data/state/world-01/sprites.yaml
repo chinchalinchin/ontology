@@ -30,7 +30,7 @@ sheets:
           action:
             radius: 30
       psyche:
-        dialogue: test
+        dialogue: greeting
         expression: null
         motivation: conquest
         persona: jasilynn

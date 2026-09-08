@@ -7,6 +7,7 @@ Package for InteractionMechanics
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import collections
+import logging
 
 # Application Libraries
 if TYPE_CHECKING:
@@ -21,6 +22,8 @@ from app.game.logic.mechanics.spatial.base import SpatialMechanic
 from app.game.menus.contexts import DialogueContext
 from app.game.menus.events import MenuEvent
 from app.models.state import DevicePayload
+
+logger = logging.getLogger(__name__)
 
 class InteractionMechanics(SpatialMechanic):
     """

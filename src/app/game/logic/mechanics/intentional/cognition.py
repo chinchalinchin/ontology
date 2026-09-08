@@ -6,10 +6,10 @@ Package for handling the Sprite Goal lifecycle.
 from __future__ import annotations
 
 # Standard Libraries
-import math
 import random
 from typing import TYPE_CHECKING
 import collections
+import logging
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -33,6 +33,8 @@ from app.models.state import (
 # Cython Libraries
 import libs.core.math.geometry as geometry
 from libs.core.models import Position
+
+logger = logging.getLogger(__name__)
 
 class CognitionMechanics(Mechanic):
     """

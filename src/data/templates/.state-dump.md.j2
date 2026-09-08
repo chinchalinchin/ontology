@@ -174,6 +174,7 @@
 {%- if asset.state.intention %}
 - **Intention:** `{{ asset.state.intention }}`
 {%- endif %}
+
 {%- endfor %}
 {%- for section_name, menu_list in [('Menus', menus), ('Overlays', overlays)] %}
 {%- if menu_list %}

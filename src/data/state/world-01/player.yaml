@@ -19,6 +19,10 @@ sheets:
         defense: 5
         speed: 100
         impulse: 25
+      mutators:
+        parameters:
+          action:
+            radius: 30
       inventory: 
         loot: null
         equipment:

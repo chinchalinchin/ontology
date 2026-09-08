@@ -102,12 +102,12 @@ class Memory:
             
 @dataclass(slots=True)
 class RadialParameters:
-    radius: int
+    radius: int = 30
 
 @dataclass(slots=True)
 class FearParameters(RadialParameters):
-    limit: float
-    enemy: int
+    limit: float = 0.50
+    enemy: int = 5
 
 @dataclass(slots=True)
 class MutatorTriggers:
@@ -119,9 +119,9 @@ class MutatorTriggers:
 
 @dataclass(slots=True)
 class MutatorParameters:
-    fear: FearParameters
-    vision: RadialParameters
-    action: RadialParameters
+    fear: Optional[FearParameters] = field(default_factory=FearParameters)
+    vision: Optional[RadialParameters] = field(default_factory=RadialParameters)
+    action: Optional[RadialParameters] = field(default_factory=RadialParameters)
 
 @dataclass(slots=True)
 class Mutators:

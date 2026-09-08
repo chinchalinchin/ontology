@@ -8,10 +8,10 @@ mechanics:
     - cognition
     - transition
     - motion
+    - social
     - collision
     - combat
     - interaction
-    - social
     - switch
     - projectile
     - world
