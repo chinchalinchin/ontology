@@ -1329,7 +1329,217 @@
 <span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;condition-for-transition&gt;</span>
 </code></pre></div>
 <p><strong>Default Intention Configuration</strong></p>
-<div class="highlight"><pre><span></span><code>
+<div class="highlight"><pre><span></span><code><span class="nt">intentions</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">attack</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">attack</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w">  </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.TARGET.value</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hunt</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goals</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">functions.check_goals(</span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.goals,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">constants.Goals.TARGET.value</span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">)</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scavenge</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(sprite.goal.name)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(sprite.goal.name).mutators.triggers.dead</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">barter</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">threaten</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.LOOT.value</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.inventory.wallet &lt; sprite.memory.prices.get(sprite.memory.goal.name)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.psyche.motivation == constants.Motivations.SURVIVAL.value</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">escape</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">escape</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(sprite.goal.name)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(sprite.goal.name).intention == constants.Intentions.ATTACK.value</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">return</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">find</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">interact</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.OBJECT.value</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">functions.is_near(</span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.mutators.parameters.action.radius</span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">)</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speak</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.psyche.dialogue</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.SUBJECT.value</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(sprite.goal.name)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.relationships.get(sprite.goal.name)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.memory.relationships[sprite.goal.name] in [</span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">constants.Relationships.FRIEND.value,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">constants.Relationships.FAMILY.value</span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">]</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">functions.is_near(</span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(sprite.goal.name).position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.mutators.parameters.action.radius</span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">)</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">follow</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">speak</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.psyche.dialogue</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">functions.is_near(</span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.mutators.parameters.action.radius</span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">)</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">hunt</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">attack</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.TARGET.value</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">functions.is_near(</span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.mutators.parameters.action.radius</span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">)</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">idle</span><span class="p">:</span><span class="w"> </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wander</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.POSITION.value</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">find</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.SUBJECT.value</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(sprite.goal.name)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not functions.is_near(</span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(sprite.goal.name).position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.mutators.parameters.action.radius</span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">)</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">wander</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">interact</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">mine</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">build</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.LOOT.value</span>
+<span class="w">        </span><span class="c1"># TODO: figure out how to resolve boundary</span>
+<span class="w">        </span><span class="c1"># - sprite.inventory.loot.get(sprite.goal.name, 0) &gt;= 10 </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mine</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.LOOT.value</span>
+<span class="w">        </span><span class="c1"># TODO: figure out how to resolve boundary</span>
+<span class="w">        </span><span class="c1"># - sprite.goal.name in constants.MineableAssets</span>
+<span class="w">        </span><span class="c1"># - sprite.inventory.loot.get(sprite.goal.name, 0) &lt; 10</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">mock</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">threaten</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.TARGET.value</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(sprite.goal.name)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(sprite.goal.name).intention == constants.Intentions.ATTACK.value</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">return</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span><span class="w"> </span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">scavenge</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">speak</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.name == constants.RequiredAssets.PLAYER.value</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.psyche.expression</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">sprint</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">threaten</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">attack</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.TARGET.value</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">functions.is_near(</span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.mutators.parameters.action.radius</span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">)</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hunt</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category == constants.Goals.TARGET.value</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not functions.is_near(</span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.position,</span><span class="w"> </span>
+<span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">sprite.mutators.parameters.vision.radius</span>
+<span class="w">          </span><span class="l l-Scalar l-Scalar-Plain">)</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
+<span class="w">  </span><span class="c1"># ----------------------------------------------------------------------------------</span>
+<span class="w">  </span><span class="nt">wander</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite.goal.category != constants.Goals.POSITION.value</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">idle</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">not sprite.goal</span>
 </code></pre></div>
 <h3 id="configuration-library">Configuration: Library</h3>
 <ul>
@@ -1367,11 +1577,11 @@
 <span class="w">        </span><span class="nt">east</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">7</span><span class="w">           </span><span class="c1"># SDL_SCANCODE_D</span>
 <span class="w">      </span><span class="nt">interactions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">select</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">44</span><span class="w">        </span><span class="c1"># SDL_SCANCODE_SPACE</span>
+<span class="w">        </span><span class="nt">cancel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">43</span><span class="w">        </span><span class="c1"># SDL_SCANCODE_TAB</span>
 <span class="w">    </span><span class="nt">world</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">menus</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">pause</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span><span class="w">         </span><span class="c1"># SDL_SCANCODE_1</span>
 <span class="w">        </span><span class="nt">inventory</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">31</span><span class="w">     </span><span class="c1"># SDL_SCANCODE_2</span>
-<span class="w">        </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span><span class="w">         </span><span class="c1"># SDL_SCANCODE_3</span>
 <span class="w">        </span><span class="nt">trade</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">33</span><span class="w">         </span><span class="c1"># SDL_SCANCODE_4</span>
 <span class="w">      </span><span class="nt">intentions</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">interact</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">8</span><span class="w">       </span><span class="c1"># SDL_SCANCODE_E</span>
@@ -1379,6 +1589,7 @@
 <span class="w">        </span><span class="nt">speak</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">226</span><span class="w">        </span><span class="c1"># SDL_SCANCODE_LALT</span>
 <span class="w">        </span><span class="nt">mine</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">225</span><span class="w">         </span><span class="c1"># SDL_SCANCODE_LSHIFT</span>
 <span class="w">        </span><span class="nt">attack</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">44</span><span class="w">        </span><span class="c1"># SDL_SCANCODE_SPACE</span>
+<span class="w">        </span><span class="nt">build</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span><span class="w">         </span><span class="c1"># SDL_SCANCODE_3</span>
 <span class="w">      </span><span class="nt">goals</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">up</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">26</span><span class="w">            </span><span class="c1"># SDL_SCANCODE_W</span>
 <span class="w">        </span><span class="nt">down</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">22</span><span class="w">          </span><span class="c1"># SDL_SCANCODE_S</span>
@@ -1433,99 +1644,6 @@
 <span class="w">              </span><span class="nt">ref</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state | traversal</span>
 <span class="w">              </span><span class="nt">data</span><span class="p">:</span><span class="w"> </span>
 </code></pre></div>
-<p><strong>Default Menus</strong></p>
-<div class="highlight"><pre><span></span><code><span class="nt">menus</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">text</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">controller</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scroll</span>
-<span class="w">    </span><span class="nt">roots</span><span class="p">:</span><span class="w"> </span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neutral</span>
-<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-menu</span>
-<span class="w">        </span><span class="nt">position</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">px</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
-<span class="w">          </span><span class="nt">py</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.75</span>
-<span class="w">        </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dock</span>
-<span class="w">        </span><span class="nt">alignment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">left</span>
-<span class="w">        </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">        </span><span class="nt">children</span><span class="p">:</span><span class="w"> </span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">page</span>
-<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text</span>
-<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-display</span>
-<span class="w">            </span><span class="nt">bind</span><span class="p">:</span>
-<span class="w">              </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scroll</span>
-<span class="w">              </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.content</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">button</span>
-<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-up</span>
-<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-scroll-up</span>
-<span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
-<span class="w">              </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scrollup</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">button</span>
-<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-down</span>
-<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">text-scroll-down</span>
-<span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
-<span class="w">              </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scrolldown</span>
-<span class="w">  </span><span class="nt">dialogue</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">controller</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scroll</span>
-<span class="w">    </span><span class="nt">roots</span><span class="p">:</span><span class="w"> </span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">neutral</span>
-<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dialogue-menu</span>
-<span class="w">        </span><span class="nt">position</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">px</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
-<span class="w">          </span><span class="nt">py</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.75</span>
-<span class="w">        </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dock</span>
-<span class="w">        </span><span class="nt">alignment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">left</span>
-<span class="w">        </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">        </span><span class="nt">children</span><span class="p">:</span><span class="w"> </span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">page</span>
-<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">portrait</span>
-<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">character-portrait</span>
-<span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
-<span class="w">              </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.sprite.state.character.portrait</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">page</span>
-<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dialogue</span>
-<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">character-speech</span>
-<span class="w">            </span><span class="nt">bind</span><span class="p">:</span>
-<span class="w">              </span><span class="nt">selector</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scroll</span>
-<span class="w">              </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.sprite.state.psyche.communication</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">button</span>
-<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-up</span>
-<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">character-speech-scroll-up</span>
-<span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
-<span class="w">              </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scrollup</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">button</span>
-<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arrow-down</span>
-<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">character-speech-scroll-down</span>
-<span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
-<span class="w">              </span><span class="nt">selection</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">scrolldown</span>
-<span class="w">  </span><span class="nt">view</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">controller</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">display</span>
-<span class="w">    </span><span class="nt">roots</span><span class="p">:</span><span class="w"> </span>
-<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">transparent</span>
-<span class="w">        </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hud-menu</span>
-<span class="w">        </span><span class="nt">position</span><span class="p">:</span>
-<span class="w">          </span><span class="nt">px</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
-<span class="w">          </span><span class="nt">py</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.85</span>
-<span class="w">        </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dock</span>
-<span class="w">        </span><span class="nt">alignment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">left</span>
-<span class="w">        </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
-<span class="w">        </span><span class="nt">children</span><span class="p">:</span><span class="w"> </span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meter</span>
-<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health</span>
-<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">health-meter</span>
-<span class="w">            </span><span class="nt">bind</span><span class="p">:</span><span class="w"> </span>
-<span class="w">              </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.sprite.state.meters.health</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">button</span>
-<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">slot</span>
-<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">weapon-slot</span>
-<span class="w">            </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disabled</span>
-<span class="w">            </span><span class="nt">bind</span><span class="p">:</span>
-<span class="w">              </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.sprite.state.inventory.equipment.weapon</span>
-<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">button</span><span class="w"> </span>
-<span class="w">            </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">slot</span>
-<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">shield-slot</span>
-<span class="w">            </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disable</span>
-<span class="w">            </span><span class="nt">bind</span><span class="p">:</span>
-<span class="w">              </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.sprite.state.inventory.equipment.shield</span>
-</code></pre></div>
 <h3 id="configuration-recipes">Configuration: Recipes</h3>
 <p>Recipe Configuration files determine the specific (Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.</p>
 <div class="admonition note">
@@ -1559,85 +1677,88 @@
 <span class="w">  </span><span class="nt">tiles</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">back</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">multiplier</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
 <span class="w">    </span><span class="nt">fore</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">multiplier</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
 <span class="w">  </span><span class="nt">crafts</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">struts</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">property</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
 <span class="w">  </span><span class="nt">cursors</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">expressions</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">positional</span>
+<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">index</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
 <span class="w">    </span><span class="nt">projectiles</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">metric</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
 <span class="w">  </span><span class="nt">effects</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">temporary</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">iterable</span>
 <span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">temporary</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">animator</span>
 <span class="w">    </span><span class="nt">persistent</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">iterable</span>
 <span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">persistent</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">animator</span>
 <span class="w">  </span><span class="nt">objects</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">chests</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">iterable</span>
 <span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">binary</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">container</span>
 <span class="w">    </span><span class="nt">crates</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">positional</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
 <span class="w">    </span><span class="nt">doors</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">door</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
 <span class="w">    </span><span class="nt">gates</span><span class="p">:</span><span class="w"> </span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">iterable</span>
 <span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">binary</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">switch</span>
 <span class="w">    </span><span class="nt">plates</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">iterable</span>
 <span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">binary</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">switch</span>
+<span class="w">    </span><span class="nt">signs</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
 <span class="w">  </span><span class="nt">sheets</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">players</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">player</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite</span>
 <span class="w">    </span><span class="nt">pixies</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
 <span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">animator</span>
 <span class="w">    </span><span class="nt">sprites</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprite</span>
 <span class="w">    </span><span class="nt">armor</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
 <span class="w">    </span><span class="nt">tools</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
+<span class="w">    </span><span class="nt">shields</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
 <span class="w">    </span><span class="nt">utilities</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
 <span class="w">    </span><span class="nt">weapons</span><span class="p">:</span>
-<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
-<span class="w">      </span><span class="nt">state</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">null</span>
+<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">state</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
+<span class="w">  </span><span class="nt">widgets</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">buttons</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">traversal</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">traversal</span>
+<span class="w">    </span><span class="nt">icons</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">index</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
+<span class="w">    </span><span class="nt">meters</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meter</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meter</span>
+<span class="w">    </span><span class="nt">pages</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
+<span class="w">    </span><span class="nt">panes</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">frame</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">single</span>
+<span class="w">      </span><span class="nt">animation</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
 </code></pre></div>
 <h3 id="model-properties">Model: Properties</h3>
 <p>Asset property index files hydrate the Registry and set the static attributes of Assets.</p>

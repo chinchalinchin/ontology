@@ -2,82 +2,85 @@ recipes:
   tiles:
     back:
       frame: single
-      animation: null
-      state: multiplier
+      animation: none
     fore:
       frame: single
-      animation: null
-      state: multiplier
+      animation: none
   crafts:
     struts:
       frame: single
-      animation: null
-      state: property
+      animation: none
   cursors:
     expressions:
-      frame: single
-      animation: null
-      state: positional
+      frame: index
+      animation: none
     projectiles:
       frame: single
-      animation: null
-      state: metric
+      animation: none
   effects:
     temporary:
       frame: iterable
       animation: temporary
-      state: animator
     persistent:
       frame: iterable
       animation: persistent
-      state: animator
   objects:
     chests:
       frame: iterable
       animation: binary
-      state: container
     crates:
       frame: single
-      animation: null
-      state: positional
+      animation: none
     doors:
       frame: single
-      animation: null
-      state: door
+      animation: none
     gates: 
       frame: iterable
       animation: binary
-      state: switch
     plates:
       frame: iterable
       animation: binary
-      state: switch
+    signs:
+      frame: single
+      animation: none
   sheets:
     players:
       frame: sprite
-      animation: state
-      state: player
+      animation: sprite
     pixies:
       frame: state
       animation: state
-      state: animator
     sprites:
       frame: sprite
-      animation: state
-      state: sprite
+      animation: sprite
     armor:
-      frame: null
-      animation: null
-      state: null
+      frame: state
+      animation: none
     tools:
-      frame: null
-      animation: null
-      state: null
+      frame: state
+      animation: none
+    shields:
+      frame: state
+      animation: none
     utilities:
-      frame: null
-      animation: null
-      state: null
+      frame: state
+      animation: none
     weapons:
-      frame: null
-      animation: null
-      state: null
+      frame: state
+      animation: none
+  widgets:
+    buttons:
+      frame: traversal
+      animation: traversal
+    icons:
+      frame: index
+      animation: none
+    meters:
+      frame: meter
+      animation: meter
+    pages:
+      frame: single
+      animation: none
+    panes:
+      frame: single
+      animation: none
