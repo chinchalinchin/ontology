@@ -1456,8 +1456,9 @@
 </ul>
 </li>
 </ul>
-<p><strong>Animation: StateAnimation</strong></p>
+<p><strong>Animation: SpriteAnimation</strong></p>
 <ul>
+<li><code>state.psyche.expression.ttl -= 1</code> (Nullifies expression on expiration)</li>
 <li><code>state.animation.frame += 1</code></li>
 <li><code>if state.animation.frame &gt;= properties.actions[state.animation.action].count: state.animation.frame = 0</code></li>
 </ul>
@@ -1518,8 +1519,10 @@
 <p>Animations are tuples of (Action, Direction, Frame). Action and Direction were previously defined in the <a href="../01-assets/">Assets documentation</a>.</p>
 <h3 id="psyche">Psyche</h3>
 <p>The <em>Psyche</em> is an internal State data structure that governs a Sprite's ancillary Animation and Intention logic. All Sprite Assets besides the Player are given a Psyche state when deployed onto the Board. Psyche coordinates encode alterations and modulations of the Sprite state. The complete Psyche state for a Sprite is given by the tuple,</p>
-<pre><code>(Persona, Expression, Motivation)
+<pre><code>(Dialogue, Persona, Expression, Motivation)
 </code></pre>
+<p><strong>Dialogue</strong></p>
+<p>The Dialogue dimension of a Sprite's Psyche can be thought of as the short-term memory or a buffer for dialogue the Sprite is about to transmit. This field holds the lexicon key that will be exchanged at the <a href="../08-plots/#library">Library</a> for content and rendered in a <a href="../06-widgets/#menus">Dialogue Menu</a> if the Player enters into the <code>speak</code> Intention. In addition, Sprites may enter into <code>speak</code> Intentions with other Sprites, but these events are not routed to <a href="../06-widgets/#menus">Menus</a>. Instead, Sprite-to-Sprite Dialogue is used by the <a href="../05-mechanics/">RumorMechanics</a>.</p>
 <p><strong>Persona</strong></p>
 <p>A Sprite persona is a data structure used to index Dialogue to a Sprite through the <a href="../08-plots/#library">Library</a>. It can be thought of as the "personality" of the Sprite.</p>
 <p><strong>Expression</strong></p>
@@ -1534,7 +1537,9 @@
 <li><code>surprise</code></li>
 <li><code>tired</code></li>
 </ul>
-<p>Over and above this modification to the Asset frame, the Expression dimension of a Sprite's Psyche can be thought of as the short-term memory or a buffer for dialogue the Sprite is about to transmit. This field holds the lexicon key that will be exchanged at the <a href="../08-plots/#library">Library</a> for content and rendered in a <a href="../06-widgets/#menus">Dialogue Menu</a> if the Player enters into the <code>speak</code> Intention. In addition, Sprites may enter into <code>speak</code> Intentions with other Sprites, but these events are not routed to <a href="../06-widgets/#menus">Menus</a>. Instead, Sprite-to-Sprite Dialogue is used by the <a href="../05-mechanics/">RumorMechanics</a>.</p>
+<p>Expressions possess a strict Time-To-Live (TTL) dictating their visual duration. This decay is managed by the SpriteAnimation component, completely decoupled from the Sprite's Intention state or Mechanics. </p>
+<p>This separation of concerns ensures that a Sprite can visually retain a psychological state (e.g., lingering <code>CONFUSION</code> from a lost target, or <code>LOQUACITY</code> after being interrupted) even as it physically transitions between distinct actions, such as snapping from <code>speak</code> to <code>idle</code> or <code>escape</code>. </p>
+<p>Furthermore, the visual expiration of an Expression does not inherently nullify underlying drivers like <code>psyche.dialogue</code>. If a speech bubble fades before a <code>SUBJECT</code> goal is satisfied, the Sprite's intentional logic remains intact, i.e. the Sprite will continue pursuing its Goal, even as its loses sight of the Player.</p>
 <p><strong>Motivation</strong></p>
 <p>Motivations are long-term state variables that are used to modulate the <a href="../04-intentions/">Intention Transition matrix</a>. Motivations are enumerated below,</p>
 <ul>

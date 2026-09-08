@@ -1434,20 +1434,23 @@
 <li><strong><code>query</code></strong>: Iterates through the populated buckets and yields a list of unique <code>(id1, id2)</code> integer tuples, generating candidate pairs for the narrow-phase evaluation.</li>
 </ul>
 <p><strong>Physics (<code>libs/core/math/physics.pyx</code>)</strong></p>
-<p>This module orchestrates the physical simulation, bridging the broad-phase grid with narrow-phase resolution and applying forces to engine states.</p>
+<p>This module orchestrates the physical simulation, bridging the broad-phase grid with narrow-phase resolution, computing forces, and applying velocities to engine states.</p>
 <ul>
 <li><strong><code>collisions</code></strong>: The master collision pipeline. It ingests a flat list of primitive integer tuples to avoid Python object overhead. The sequence executes as follows:<ol>
-<li><strong>Hash</strong>: Iterates over all dynamic assets and inserts them into the <code>Space</code> grid using their bounding boxes.</li>
+<li><strong>Hash</strong>: Iterates over all dynamic assets and inserts them into the <code>Space</code> grid using their physical dimensions.</li>
 <li><strong>Query</strong>: Retrieves the reduced list of candidate pairs occupying the same spatial buckets.</li>
-<li><strong>Narrow Phase</strong>: Pre-allocates dummy <code>Position</code> and <code>Dimensions</code> objects on the C-stack. Iterates through the candidate pairs, unpacking their primitives into the dummy objects, and passes them to <code>geometry.intersects</code>. Returns verified colliding pairs.</li>
+<li><strong>Narrow Phase</strong>: Pre-allocates dummy <code>Position</code> and <code>Dimensions</code> objects on the C-stack. Iterates through the candidate pairs, unpacking their primitives into the dummy objects, and passes them to <code>geometry.intersects</code> alongside their collision data. Returns verified colliding pairs.</li>
 </ol>
 </li>
-<li><strong><code>collide</code></strong>: Resolves confirmed physical overlaps.<ol>
+<li><strong><code>collide</code></strong>: Resolves confirmed physical overlaps, accounting for local <code>Hitbox</code> offsets.<ol>
 <li><strong>Spatial Resolution</strong>: Shifts overlapping entities apart based on inverse mass ratios (e.g., an <span class="arithmatex">\(m=0\)</span> wall absorbs 0% of the shift, forcing the dynamic asset out).</li>
-<li><strong>Momentum Transfer</strong>: Evaluates 1D elastic collision formulas, updating the <code>.vx</code> and <code>.vy</code> attributes of the participating <code>Velocity</code> objects. Kinematic assets (like the Player) bypass the momentum transfer, retaining immediate control over their vectors.</li>
+<li><strong>Momentum Transfer</strong>: Evaluates 1D elastic collision formulas, updating the <code>.vx</code> and <code>.vy</code> attributes of the participating <code>Velocity</code> objects. Kinematic assets (identified via <code>is_kinematic</code> boolean flags) bypass the momentum transfer, retaining immediate control over their vectors.</li>
 </ol>
 </li>
-<li><strong><code>integrate</code></strong>: Executes Symplectic Euler Integration (<span class="arithmatex">\(x_{n+1} = x_n + v_n \Delta t\)</span>). Because the game board utilizes integer grid coordinates, this function maintains sub-pixel accumulators (<code>rx</code>, <code>ry</code>). When an accumulator exceeds <code>1.0</code> or <code>-1.0</code>, it casts the shift to an integer, updates the physical <code>Position</code>, and decrements the accumulator.</li>
+<li><strong><code>integrate</code></strong>: Executes Symplectic Euler Integration (<span class="arithmatex">\(x_{n+1} = x_n + v_n \Delta t\)</span>). Because the game board utilizes integer grid coordinates, this function maintains sub-pixel accumulators (<code>rx</code>, <code>ry</code>). When an accumulator exceeds <span class="arithmatex">\(1.0\)</span> or <span class="arithmatex">\(-1.0\)</span>, it casts the shift to an integer, updates the physical <code>Position</code>, and decrements the accumulator.</li>
+<li><strong><code>friction</code></strong>: Decays the magnitude of a <code>Velocity</code> vector over time using an environmental friction coefficient, clamping to exactly <span class="arithmatex">\(0.0\)</span> to prevent negative overshoot.</li>
+<li><strong><code>kinematics</code></strong>: Handles direct velocity assignment. It snaps axes to zero when no input is provided on a given axis and strictly normalizes the resulting vector to the specified <code>speed</code>.</li>
+<li><strong><code>dynamics</code></strong>: Calculates dynamic acceleration vectors towards a target coordinate (<code>tx</code>, <code>ty</code>) based on a given <code>impulse</code>. It clamps the resulting velocity to a maximum <code>speed</code> and bypasses the impulse to snap directly to the target velocity if within the arrival threshold, preventing oscillation.</li>
 </ul>
 <h3 id="graphics">Graphics</h3>
 <ul>
