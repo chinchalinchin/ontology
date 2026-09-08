@@ -46,8 +46,6 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [ ]: [Bug B002: Board Cache Wipe](./phases/patch/bug-b002.md)
     - [ ]: [Bug B003: Painter's Algorithm String Exception](./phases/patch/bug-b003.md)
     - [x]: [Bug B004: Friction Regression](./phases/patch/bug-b004.md)
-  - Report:
-    - [x]: [2026-08-16: SDL Pipeline Failure](./phases/report/2026-08-16.md)
 - Backlog:
   - [Telemetry Menu](./backlog/todo-t000.md)
 

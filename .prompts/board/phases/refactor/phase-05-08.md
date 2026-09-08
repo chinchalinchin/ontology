@@ -92,5 +92,5 @@ Update the type hints across `app.services.generators.provider`, `app.services.g
 *Objective*: Ensure generic notifications use `TextContext` and `TextBinding`.
 
 * [x] Subtask: In `app.game.menus.contexts`, ensure `TextContext` is defined simply as `content: Union[str, List[str]]`.
-* [ ] Subtask: Verify `app.game.menus.bindings.TextBinding` correctly resolves a single string `target` (e.g., `context.content`).
-* [ ] Subtask: In `data/config/menus/text.yaml`, verify the `text-display` widget binding schema is explicitly set to `text` instead of `library`.
+* [X] Subtask: Verify `app.game.menus.bindings.TextBinding` correctly resolves a single string `target` (e.g., `context.content`).
+* [X] Subtask: In `data/config/menus/text.yaml`, verify the `text-display` widget binding schema is explicitly set to `text` instead of `library`.

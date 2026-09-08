@@ -62,7 +62,8 @@ def _sys_load_image(filepath: str):
     wrapper.l = l
     return wrapper
 
-def _sys_load_font(filepath: str, pt_size: int, style: dict):
+def _sys_load_font(filepath: str, style: dict):
+    cdef int pt_size = style.get("size", 24)
     cdef bytes b_filepath = filepath.encode('utf-8')
     cdef TTF_Font* f_ptr = TTF_OpenFont(b_filepath, pt_size)
     
@@ -192,8 +193,7 @@ cdef class Registry:
             return None
             
         cdef dict style = self.typography[font_key]
-        cdef int pt_size = style.get("size", 24)
-        return _sys_load_font(filepath, pt_size, style)
+        return _sys_load_font(filepath, style)
 
     def _extract(self, inst_props):
         if not isinstance(inst_props, dict): return

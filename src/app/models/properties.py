@@ -37,18 +37,19 @@ class AssetProperties:
 
 @dataclass(slots=True)
 class RGBA:
-    r: int
-    g: int
-    b: int
-    a: float
+    r: int = 255
+    g: int = 255
+    b: int = 255
+    a: int = 255
 
 @dataclass(slots=True)
 class FontProperties:
-    alignment: Alignments
-    bold: bool
-    italics: bool
-    margins: int
-    color: RGBA
+    alignment: Alignments = Alignments.START.value
+    color: RGBA = field(default=lambda: RGBA(r=255, g=255, b=255, a=255))
+    bold: bool = False
+    italics: bool = False
+    margins: float = 0
+    size: int = 24
 
 # ---------------------------------------------------------------------------------------
 
