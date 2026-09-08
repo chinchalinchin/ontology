@@ -62,6 +62,7 @@ class Meters:
 
 @dataclass(slots=True)
 class Psyche:
+    gender: Optional[str] = None
     persona: Optional[str] = None
     motivation: Optional[str] = None
     expression: Optional[AttachmentState] = None

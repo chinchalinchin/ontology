@@ -30,10 +30,11 @@ sheets:
           action:
             radius: 30
       psyche:
+        gender: female
         dialogue: greeting
         expression: null
         motivation: conquest
-        persona: jasilynn
+        persona: persona_1
       intention: find
       goal:
         name: player

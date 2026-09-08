@@ -26,9 +26,10 @@ menus:
                 id: portraits 
                 name: character-portrait-icon
                 bind:
-                  schema: icon
+                  schema: portrait
                   target: 
-                    icon: context.sprite.character.portrait
+                    gender: context.sprite.psyche.gender
+                    persona: context.sprite.psyche.persona
           - instance: pages
             id: notification
             name: character-speech
