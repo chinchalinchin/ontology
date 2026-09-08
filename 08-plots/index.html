@@ -1088,25 +1088,37 @@
 <span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;condition&gt;</span>
 </code></pre></div>
 <p>For example, the following Plot Transition Matrix demonstrates how a Plot tree can be embedded into the game by specifying nodes and the conditions that must be met to transition out of a given node, </p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+</div>
+<p>Plot Transitions use the same scripting syntax and constants as <a href="../04-intentions/#transition-matrix">Intention Transitions</a>.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">plots</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">town-locked</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">town-unlocked</span>
-<span class="w">          </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">player.state.inventory.loot[&#39;town-key&#39;] &gt;= 1</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">town-unlocked</span>
-<span class="w">          </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[&#39;town-guard&#39;].mutators.triggers.dead</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">town-unlocked</span>
-<span class="w">          </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[&#39;mayor&#39;].state.memory.relationships[&#39;player&#39;] == Relationships.FRIEND</span>
-<span class="w">    </span><span class="nt">town-unlocked</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">town-hostile</span>
-<span class="w">          </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[&#39;mayor&#39;].state.memory.relationships[&#39;player&#39;] == Relationships.FOE</span>
-<span class="w">    </span><span class="nt">town-hostile</span><span class="p">:</span>
-<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">town-unlocked</span>
-<span class="w">          </span><span class="nt">conditions</span><span class="p">:</span>
-<span class="w">            </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites[&#39;mayor&#39;].state.memory.relationships[&#39;player&#39;] != Relationships.FOE</span>
+<span class="w">  </span><span class="nt">castle-dawn-locked</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">castle-dawn-unlocked</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(constants.RequiredAssets.PLAYER.value)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(constants.RequiredAssets.PLAYER.value).state.inventory.loot.get(&#39;writ-of-dawn&#39;) &gt;= 1</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">town-unlocked</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;castle-dawn-guard&#39;)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;castle-dawn-guard&#39;).mutators.triggers.dead</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">castle-dawn-unlocked</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasilynn&#39;)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasiylnn&#39;).state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasilynn&#39;).state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FRIEND</span>
+<span class="w">  </span><span class="nt">castle-dawn-unlocked</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">castle-dawn-hostile</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasilynn&#39;)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasiylnn&#39;).state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasilynn&#39;).state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FOE</span>
+<span class="w">  </span><span class="nt">castle-dawn-hostile</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">next</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">castle-dawn-unlocked</span>
+<span class="w">      </span><span class="nt">conditions</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasilynn&#39;)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasiylnn&#39;).state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sprites.get(&#39;evil-empress-jasilynn&#39;).state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) != constants.Relationships.FOE</span>
 </code></pre></div>
 <p>TODO</p>
 
