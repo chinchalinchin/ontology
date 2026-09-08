@@ -3,8 +3,13 @@
 
 Unit tests for the core Engine loop and time management.
 """
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, MagicMock, patch
+import pytest
+from unittest.mock import MagicMock
+from collections import deque
+
 from app.game.engine import Engine
+from app.game.menus.events import Event
 
 class IncrementalTime:
     """
@@ -71,3 +76,28 @@ def test_engine_start():
         player_mock.state.position, 
         player_mock.dimensions
     )
+
+
+def test_engine_drain_routes_events_to_handlers():
+    # Setup dummy Engine
+    mock_board = MagicMock()
+    engine = Engine(board=mock_board, screens={}, core=[], world=[], provider=MagicMock())
+    
+    # Create a custom event and inject a mock handler into the Engine's router
+    class DummyEvent(Event):
+        pass
+        
+    mock_handler = MagicMock()
+    engine.handlers[DummyEvent] = mock_handler
+    
+    # Put event on the bus
+    engine.bus.append(DummyEvent())
+    
+    # Drain the bus
+    engine._drain()
+    
+    # Verify the strategy successfully routed to our mock
+    assert len(engine.bus) == 0
+    mock_handler.handle.assert_called_once()
+    assert isinstance(mock_handler.handle.call_args[0][0], DummyEvent)
+    assert mock_handler.handle.call_args[0][1] == engine.event_context

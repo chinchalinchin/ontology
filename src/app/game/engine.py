@@ -1,5 +1,3 @@
-# /home/grant/Projects/ontology/src/app/game/engine.py
-
 """
 # Ontology: app.game.engine
 
@@ -8,12 +6,11 @@ Package for core game loop.
 # Standard Libraries
 import time
 import collections
-from typing import List
+from typing import List, Dict
 import logging
 
 # Application Libraries
 import app.config.settings as settings
-from app.config.enums import Menus
 from app.game.board import Board
 from app.game.logic.mechanics.core import Mechanic
 from app.game.screen import Screen
@@ -22,11 +19,15 @@ from app.game.menus.events import (
     MenuEvent, 
     TerminalEvent, 
     UpdateEvent,
-    StateEvent
+    StateEvent,
+    EventContext
 )
-from app.game.menus.contexts import (
-    LoadContext, 
-    ViewContext
+from app.game.menus.handlers import (
+    MenuEventHandler,
+    StateEventHandler,
+    TerminalEventHandler,
+    UpdateEventHandler,
+    EventHandler
 )
 
 logger = logging.getLogger(__name__)
@@ -38,16 +39,18 @@ class Engine:
     Class for running the game loop and performing framerate calculations.
     """
     board: Board
-    screens: List[Screen]
+    screens: Dict[str, Screen]
     core: List[Mechanic]
     world: List[Mechanic]
     bus: collections.deque
     provider: Provider
     running: bool
+    event_context: EventContext
+    handlers: Dict[type, EventHandler]
 
     def __init__(self, 
         board: Board, 
-        screens: List[Screen], 
+        screens: Dict[str, Screen], 
         core: List[Mechanic],
         world: List[Mechanic],
         provider: Provider
@@ -59,86 +62,39 @@ class Engine:
         self.provider = provider
         self.bus = collections.deque()
         self.running = False
+        
+        # Package Engine dependencies for Event Handler distribution
+        self.event_context = EventContext(
+            board=self.board,
+            screens=self.screens,
+            provider=self.provider,
+            bus=self.bus
+        )
+        
+        # Route Event classes to their Strategy implementation
+        self.handlers = {
+            MenuEvent: MenuEventHandler(),
+            StateEvent: StateEventHandler(),
+            TerminalEvent: TerminalEventHandler(),
+            UpdateEvent: UpdateEventHandler()
+        }
 
     @staticmethod
     def time() -> float:
         return time.perf_counter()
 
     def _drain(self) -> None:
+        """
+        Drains the event bus and routes events to their handlers.
+        """
         while self.bus:
             event = self.bus.popleft()
-
-            if isinstance(event, MenuEvent):
-                if not self.board.configurations.menus.get(event.id):
-                    logger.warning(f"MenuEvent Received, but no {event.id} Menu Defined")
-                    return
-                
-                self.board.paused = True
-                player = self.board.player()
-                screen = self.screens[player.state.layer] \
-                            if player and self.board.loaded \
-                                else next(iter(self.screens.values()))
-                
-                menu = self.provider.unpack(
-                    event.id, 
-                    self.board.configurations.menus.get(event.id), 
-                    event.context, 
-                    screen.screensize
-                )
-                self.board.menus.append(menu)
-
-                # garbage fucking AI code
-                for widget in menu.widgets.values():
-                    if hasattr(widget.state, 'canvas') and widget.state.canvas is not None:
-                        if hasattr(widget.state, 'current'):
-                            screen.stamp(widget, widget.state.current())
-                            
-            elif isinstance(event, StateEvent):
-                if not self.board.migrator:
-                    logger.warning("StateEvent received, but no Migrator defined on Board")
-                    return
-                
-                self.board.migrator.target = event.id    
-                self.bus.append(MenuEvent(
-                    id=Menus.LOAD.value, 
-                    context=LoadContext(
-                        registry=next(iter(self.screens.values())).registry,
-                        screens=self.screens,
-                        screensize=next(iter(self.screens.values())).screensize
-                    )
-                ))
-
-            elif isinstance(event, TerminalEvent):
-                if not self.board.menus:
-                    logger.warning("TerminalEvent received, but no Menus running on Board.")
-                    return 
-                
-                popped_menu = self.board.menus.pop()
-                    
-                if popped_menu.id == Menus.LOAD.value:
-                    player = self.board.player()
-                    screen = self.screens.get(
-                        player.state.layer, 
-                        next(iter(self.screens.values()))
-                    )
-                    
-                    hud_menu = self.provider.unpack(
-                        Menus.VIEW.value, 
-                        self.board.configurations.menus.get(Menus.VIEW.value), 
-                        ViewContext(sprite=player.state), 
-                        screen.screensize
-                    )
-                    self.board.set_overlays([hud_menu])
-
-                if not self.board.menus:
-                    self.board.paused = False
-                    
-            elif isinstance(event, UpdateEvent):
-                player = self.board.player()
-                screen = self.screens[player.state.layer] \
-                            if player and self.board.loaded \
-                                else next(iter(self.screens.values()))
-                screen.stamp(event.widget, event.content)
+            handler = self.handlers.get(type(event))
+            
+            if handler:
+                handler.handle(event, self.event_context)
+            else:
+                logger.warning(f"No Event Handler registered for type: {type(event)}")
 
     def _play(self, delta) -> None:
         """

@@ -203,8 +203,9 @@ def test_main_dump_state_flag(mock_quit, mock_orchestrator):
         # Verify state dump was requested post-execution with engine.board
         mock_dump.assert_called_once_with("level_01", mock_handler.return_value.board, 'state')
 
+@patch("cli.configure_logging")
 @patch("cli.arguments")
-def test_main_unknown_command(mock_arguments, caplog):
+def test_main_unknown_command(mock_arguments, mock_configure_logging, caplog):
     # Simulate an argument parse that somehow bypasses argparse choices
     mock_args = MagicMock(command="invalid_cmd", log_level="INFO", software=False)
     mock_arguments.return_value = mock_args

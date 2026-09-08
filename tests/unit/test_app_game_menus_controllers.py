@@ -7,7 +7,8 @@ from collections import deque
 from app.game.menus.controllers.main import MainController
 from app.game.menus.controllers.load import LoadController
 from app.game.menus.controllers.scroll import ScrollController
-from app.game.menus.core import Menu, Widget, Binding
+from app.game.menus.contexts import MainContext, LoadContext
+from app.game.menus.core import Menu, Widget
 from app.game.menus.events import StateEvent, TerminalEvent, UpdateEvent
 from app.game.menus.bindings import SelectBinding
 from app.config.enums import Selections
@@ -16,10 +17,10 @@ def test_main_controller_select():
     ctrl = MainController()
     
     mock_widget_new = MagicMock(spec=Widget)
-    mock_widget_new.binding = SelectBinding(target="", context={}, selection=Selections.NEW.value)
+    mock_widget_new.binding = SelectBinding(target={'selection': Selections.NEW.value}, context={})
     
     mock_widget_load = MagicMock(spec=Widget)
-    mock_widget_load.binding = SelectBinding(target="", context={}, selection=Selections.LOAD.value)
+    mock_widget_load.binding = SelectBinding(target={'selection': Selections.LOAD.value}, context={})
     
     menu = MagicMock(spec=Menu)
     menu.widgets = {"btn-new": mock_widget_new, "btn-load": mock_widget_load}
@@ -49,7 +50,7 @@ def test_main_controller_update():
     ctrl = MainController()
     menu = MagicMock(spec=Menu)
     mock_registry = MagicMock()
-    menu.context = {'registry': mock_registry}
+    menu.context = MainContext(registry=mock_registry)
     
     ctrl.update(menu, MagicMock(), deque())
     
@@ -75,11 +76,11 @@ def test_load_controller_update():
     mock_screen = MagicMock()
     mock_screens = {"0": mock_screen}
     
-    mock_menu.context = {
-        'registry': mock_registry,
-        'screens': mock_screens,
-        'screensize': MagicMock()
-    }
+    mock_menu.context = LoadContext(
+        registry=mock_registry,
+        screens=mock_screens,
+        screensize=MagicMock()
+    )
     
     bus = deque()
     
@@ -107,10 +108,11 @@ def test_load_controller_update_not_done():
     mock_menu = MagicMock(spec=Menu)
     mock_registry = MagicMock()
     mock_registry.prewarm.return_value = False # Registry still parsing
-    mock_menu.context = {
-        'registry': mock_registry,
-        'screens': {"0": MagicMock()}
-    }
+    mock_menu.context = LoadContext(
+        registry=mock_registry,
+        screens={"0": MagicMock()},
+        screensize=MagicMock()
+    )
     
     bus = deque()
     
@@ -130,10 +132,10 @@ def test_scroll_controller_select():
     mock_page.state.current.return_value = ["line 1", "line 2"]
     
     mock_btn_down = MagicMock(spec=Widget)
-    mock_btn_down.binding = SelectBinding(target="", context={}, selection=Selections.SCROLLDOWN.value, selector="text_page")
+    mock_btn_down.binding = SelectBinding(target={'selection': Selections.SCROLLDOWN.value, 'selector': "text_page"}, context={})
     
     mock_btn_up = MagicMock(spec=Widget)
-    mock_btn_up.binding = SelectBinding(target="", context={}, selection=Selections.SCROLLUP.value, selector="text_page")
+    mock_btn_up.binding = SelectBinding(target={'selection': Selections.SCROLLUP.value, 'selector': "text_page"}, context={})
     
     menu.widgets = {
         "text_page": mock_page,

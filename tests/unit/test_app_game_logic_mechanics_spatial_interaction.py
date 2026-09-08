@@ -8,6 +8,7 @@ from unittest.mock import MagicMock, patch
 from app.game.logic.mechanics.spatial.interaction import InteractionMechanics
 from app.config.enums import Intentions, AssetInstances, AssetCategories, Menus
 from app.game.menus.events import MenuEvent
+from app.game.menus.contexts import DialogueContext
 from app.models.state import DevicePayload, ContainerState, DoorState, DialogueState
 from libs.core.models import Position, Dimensions
 
@@ -123,9 +124,10 @@ def test_interaction_with_sign_dispatches_menu_event(interaction_mechanics, mock
         
         assert isinstance(event, MenuEvent)
         assert event.id == Menus.TEXT.value
-        assert event.context['plot'] == mock_board.plot
-        assert event.context['persona'] == "narrator"
-        assert event.context['lexicon'] == "welcome_msg"
+        assert isinstance(event.context, DialogueContext)
+        assert event.context.plot == mock_board.plot
+        assert event.context.object.persona == "narrator"
+        assert event.context.object.lexicon == "welcome_msg"
 
 
 def test_interaction_ignores_non_intersecting_centers(interaction_mechanics, mock_board):

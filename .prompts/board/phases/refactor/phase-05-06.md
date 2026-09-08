@@ -61,22 +61,22 @@ class TerminalEventHandler(EventHandler):
 
 *Objective*: Define the decoupled data structures for routing.
 
-* [ ] Subtask: In `app.game.menus.events`, define the `EventContext` dataclass.
-* [ ] Subtask: Create `app.game.menus.handlers.py`. Define the abstract `EventHandler` class.
+* [x] Subtask: In `app.game.menus.events`, define the `EventContext` dataclass.
+* [x] Subtask: Create `app.game.menus.handlers.py`. Define the abstract `EventHandler` class.
 
 **2. Task: Handler Implementations**
 
 *Objective*: Extract the logic from `Engine._drain()` into isolated strategy classes.
 
-* [ ] Subtask: Implement `MenuEventHandler` in `handlers.py`.
-* [ ] Subtask: Implement `StateEventHandler` in `handlers.py`.
-* [ ] Subtask: Implement `TerminalEventHandler` in `handlers.py`.
-* [ ] Subtask: Implement `UpdateEventHandler` in `handlers.py`.
+* [x] Subtask: Implement `MenuEventHandler` in `handlers.py`.
+* [x] Subtask: Implement `StateEventHandler` in `handlers.py`.
+* [x] Subtask: Implement `TerminalEventHandler` in `handlers.py`.
+* [x] Subtask: Implement `UpdateEventHandler` in `handlers.py`.
 
 **3. Task: Engine Router Refactor**
 
 *Objective*: Clean the Engine loop and apply the registry.
 
-* [ ] Subtask: In `Engine.__init__`, instantiate an `EventContext`.
-* [ ] Subtask: In `Engine.__init__`, define a dictionary `self.handlers` mapping the `Event` classes to their respective `EventHandler` instances.
-* [ ] Subtask: Refactor `Engine._drain()` to use a dictionary lookup: `handler = self.handlers.get(type(event))`, executing `handler.handle(event, self.event_context)`.
+* [x] Subtask: In `Engine.__init__`, instantiate an `EventContext`.
+* [x] Subtask: In `Engine.__init__`, define a dictionary `self.handlers` mapping the `Event` classes to their respective `EventHandler` instances.
+* [x] Subtask: Refactor `Engine._drain()` to use a dictionary lookup: `handler = self.handlers.get(type(event))`, executing `handler.handle(event, self.event_context)`.

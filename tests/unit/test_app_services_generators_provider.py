@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 from app.models.config import MenuWidget, MenuPane, MenuConfiguration, MenuBinding
 from app.config.enums import AssetInstances, Layouts, Alignments, Statuses
 from libs.core.models import Dimensions, ScreenPosition
-from app.game.menus.bindings import TextBinding, paginate
+from app.game.menus.bindings.text import TextBinding, paginate
 
 def test_provider_resolve():
     context = {
@@ -20,16 +20,16 @@ def test_provider_resolve():
         }
     }
     
-    binding = TextBinding(target="context.sprite.state.meters.health", context=context)
-    assert binding.parent == context["sprite"]["state"]["meters"]
-    assert binding.attr == "health"
+    binding = TextBinding(target={"content": "context.sprite.state.meters.health"}, context=context)
+    assert binding.resolved["content"][0] == context["sprite"]["state"]["meters"]
+    assert binding.resolved["content"][1] == "health"
     
-    binding_invalid = TextBinding(target="context.sprite.state.invalid", context=context)
-    assert binding_invalid.parent == context["sprite"]["state"]
-    assert binding_invalid.attr == "invalid"
+    binding_invalid = TextBinding(target={"content": "context.sprite.state.invalid"}, context=context)
+    assert binding_invalid.resolved["content"][0] == context["sprite"]["state"]
+    assert binding_invalid.resolved["content"][1] == "invalid"
 
 
-@patch("app.game.menus.bindings.render")
+@patch("app.game.menus.bindings.text.render")
 def test_provider_paginate(mock_render):
     def measure_side_effect(text, font):
         return (len(text) * 10, 10)
@@ -47,18 +47,17 @@ def test_provider_paginate(mock_render):
     assert pages[2] == "five\nsix"
 
 
-@patch("app.game.menus.bindings.render")
+@patch("app.game.menus.bindings.text.render")
 @patch("app.services.generators.provider.render")
 def test_provider_unpack_widget(mock_provider_render, mock_bindings_render, mock_provider):
     mock_provider_render.canvas.return_value = "mock_canvas_ptr"
-    # Fix: Patch Cython evaluation internally to accept the font MagicMock securely
     mock_bindings_render.measure.return_value = (10, 10)
     
     cfg = MenuWidget(
         instance=AssetInstances.PAGES.value,
         id="test-page",
         name="page-1",
-        bind=MenuBinding(schema="text", target="context.text"),
+        bind=MenuBinding(schema="text", target={"content": "context.text"}),
         status=Statuses.IDLE.value
     )
     context = {"text": "Hello World"}
@@ -89,7 +88,7 @@ def test_provider_unpack_widget_meter(mock_provider):
         instance=AssetInstances.METERS.value,
         id="test-meter",
         name="meter-1",
-        bind=MenuBinding(schema="meter", target="context.hp"),
+        bind=MenuBinding(schema="meter", target={"meter": "context.hp"}),
         status=Statuses.IDLE.value
     )
     
@@ -105,6 +104,7 @@ def test_provider_unpack_widget_meter(mock_provider):
 
 @patch("app.services.generators.provider.Layout")
 def test_provider_unpack_menu(mock_layout_class, mock_provider):
+    # (Implementation remains mostly untouched, only the layout setup)
     mock_layout = MagicMock()
     mock_btn_asset = MagicMock()
     mock_btn_asset.id = "test-btn"
@@ -153,7 +153,7 @@ def test_provider_unpack_widget_icon(mock_provider):
         instance=AssetInstances.ICONS.value,
         id="test-icon",
         name="icon-1",
-        bind=MenuBinding(schema="icon", target="context.equipped_item"),
+        bind=MenuBinding(schema="icon", target={"icon": "context.equipped_item"}),
         status=Statuses.IDLE.value
     )
     

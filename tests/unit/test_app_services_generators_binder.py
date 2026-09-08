@@ -1,5 +1,6 @@
-# /home/grant/Projects/ontology/tests/unit/test_app_services_generators_binder.py
-
+"""
+# Ontology: tests.unit.test_app_services_generators_binder.py
+"""
 import pytest
 from unittest.mock import MagicMock
 
@@ -19,15 +20,15 @@ def binder():
 def test_binding_library(binder):
     bind_cfg = MagicMock()
     bind_cfg.schema = 'library'
-    bind_cfg.target = 'context.sprite.state'
+    bind_cfg.target = {'plot': 'context.plot'}
     
-    binding = binder.binding(bind_cfg, {'sprite': {'state': {}}})
+    binding = binder.binding(bind_cfg, {'plot': {}})
     assert isinstance(binding, LibraryBinding)
 
 def test_binding_meter(binder):
     bind_cfg = MagicMock()
     bind_cfg.schema = 'meter'
-    bind_cfg.target = 'context.hp'
+    bind_cfg.target = {'meter': 'context.hp'}
     
     binding = binder.binding(bind_cfg, {'hp': {}})
     assert isinstance(binding, MeterBinding)
@@ -35,7 +36,7 @@ def test_binding_meter(binder):
 def test_binding_icon(binder):
     bind_cfg = MagicMock()
     bind_cfg.schema = 'icon'
-    bind_cfg.target = 'context.item'
+    bind_cfg.target = {'icon': 'context.item'}
     
     binding = binder.binding(bind_cfg, {'item': {}})
     assert isinstance(binding, IconBinding)
@@ -43,8 +44,7 @@ def test_binding_icon(binder):
 def test_binding_select(binder):
     bind_cfg = MagicMock()
     bind_cfg.schema = 'select'
-    bind_cfg.selection = 'scrollup'
-    bind_cfg.selector = 'my_page'
+    bind_cfg.target = {'selection': 'scrollup', 'selector': 'my_page'}
     
     binding = binder.binding(bind_cfg, {})
     assert isinstance(binding, SelectBinding)
@@ -54,7 +54,7 @@ def test_binding_select(binder):
 def test_binding_fallback_text(binder):
     bind_cfg = MagicMock()
     bind_cfg.schema = 'unknown'
-    bind_cfg.target = 'context.text'
+    bind_cfg.target = {'content': 'context.text'}
     
     binding = binder.binding(bind_cfg, {'text': 'hello'})
     assert isinstance(binding, TextBinding)
