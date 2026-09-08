@@ -72,3 +72,38 @@ class SpatialMechanic(Mechanic):
             
         colliding_indices = physics.collisions(primitive_data, self.grid)
         return [(asset_map[id_a], asset_map[id_b]) for id_a, id_b in colliding_indices]
+
+
+    def proximities(self, assets: List[Asset]) -> List[Tuple]:
+        """
+        Bypasses physics hitboxes, constructing a virtual hitbox padded by 
+        the entity's action radius. This determines interaction reach.
+        """
+        self.grid.clear()
+        if not assets:
+            return []
+
+        asset_map = dict(enumerate(assets))
+        primitive_data = []
+
+        for i, asset in enumerate(assets):
+            # Extract action radius safely, defaulting to 15 (1/2 grid cell)
+            
+            if not getattr(asset.state, 'mutators', None) or \
+                asset.state.mutators.parameters:
+                continue
+
+            radius = asset.state.mutators.parameters.action.radius
+
+            # Pad the dimensions by the radius in all directions
+            pad_hb = Hitbox(
+                position=Position(x=-radius, y=-radius), 
+                dimensions=Dimensions(
+                    w=asset.dimensions.w + (radius * 2), 
+                    l=asset.dimensions.l + (radius * 2)
+                )
+            )
+            primitive_data.append(asset.primitive(i, hitboxes=[pad_hb]))
+
+        colliding_indices = physics.collisions(primitive_data, self.grid)
+        return [(asset_map[id_a], asset_map[id_b]) for id_a, id_b in colliding_indices]

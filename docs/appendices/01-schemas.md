@@ -12,12 +12,12 @@
 - [craft-strut-wall-blue](../static/xcf/hitboxes/craft-strut-wall-blue.xcf)
 - [craft-strut-wall-castle](../static/xcf/hitboxes/craft-strut-wall-castle.xcf)
 
-![LPC Sprite Hitboxes](static/png/hitboxes/sheet-sprite-walk-down-0.png)
+![LPC Sprite Hitboxes](../static/png/hitboxes/sheet-sprite-walk-down-0.png)
 /// caption
 LPC Sprite Hitbox in (Walk, Down, 0) State
 ///
 
-![Brick Frame Strut Hitboxes](static/png/hitboxes/craft-strut-frame-brick.png)
+![Brick Frame Strut Hitboxes](../static/png/hitboxes/craft-strut-frame-brick.png)
 /// caption
 Brick Frame Strut Hitbox
 ///
