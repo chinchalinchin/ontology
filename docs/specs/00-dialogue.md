@@ -42,10 +42,16 @@ When a Sprite has no goal, `CognitionMechanics._ideate` evaluates immediate psyc
 
 - `not sprite.psyche.expression`
 
+!!! note
+    Sprite-to-Sprite branch.
+
 **speak:idle**
 
 - `sprite.goal.name == constants.RequiredAssets.PLAYER.value`
 
+!!! note
+    Player-to-Sprite branch
+    
 ##### Workflow: Speak Intention
 
 A Sprite processing a `speak` Intention undergoes a strict lifecycle distributed across the Engine's Mechanics to ensure data integrity and visual consistency:

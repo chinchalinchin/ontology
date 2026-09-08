@@ -11,11 +11,16 @@ from app.assets.animations import (
     PersistentAnimation, 
     TemporaryAnimation, 
     StateAnimation,
+    SpriteAnimation,
     TraversalAnimation,
     MeterAnimation,
     NoAnimation
 )
-from app.assets.base import Taxonomy
+from app.assets.base import (
+    Taxonomy,
+    Frame,
+    Animation
+)
 from app.assets.frames import (
     SingleFrame, 
     IterableFrame, 
@@ -85,6 +90,7 @@ class Factory:
         AnimationRecipe.PERSISTENT: PersistentAnimation,
         AnimationRecipe.TEMPORARY: TemporaryAnimation,
         AnimationRecipe.STATE: StateAnimation,
+        AnimationRecipe.SPRITE: SpriteAnimation,
         AnimationRecipe.TRAVERSAL: TraversalAnimation,
         AnimationRecipe.METER: MeterAnimation,
         AnimationRecipe.NONE: NoAnimation
@@ -125,7 +131,7 @@ class Factory:
     }
 
     @staticmethod
-    def frame(recipe: Any):
+    def frame(recipe: Any) -> Frame:
         if isinstance(recipe, str):
             for enum_key, frame_cls in Factory.FRAME_MAP.items():
                 if enum_key.value == recipe:
@@ -133,7 +139,7 @@ class Factory:
         return Factory.FRAME_MAP.get(recipe, SingleFrame)()
 
     @staticmethod
-    def animation(recipe: Any):
+    def animation(recipe: Any) -> Animation:
         if isinstance(recipe, str):
             for enum_key, anim_cls in Factory.ANIMATION_MAP.items():
                 if enum_key.value == recipe:
@@ -141,7 +147,7 @@ class Factory:
         return Factory.ANIMATION_MAP.get(recipe, PersistentAnimation)()
     
     @staticmethod
-    def taxonomy(id: str, name: str, category: str, instance: str):
+    def taxonomy(id: str, name: str, category: str, instance: str) -> Taxonomy:
         return Taxonomy(id, name, category, instance)
 
     @staticmethod
@@ -174,3 +180,8 @@ class Factory:
     def translator(translation: str):
         target_cls = Factory.TRANSLATOR_MAP.get(translation, LambdaTranslator)
         return target_cls()
+
+    @staticmethod
+    def context(menu: str, **kwargs):
+        # TODO
+        pass 

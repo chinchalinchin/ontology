@@ -106,6 +106,7 @@ class AnimationRecipe(str, Enum):
     PERSISTENT      = "persistent"
     BINARY          = "binary"
     STATE           = "state"
+    SPRITE          = "sprite"
     METER           = "meter"
     TRAVERSAL       = "traversal"
 

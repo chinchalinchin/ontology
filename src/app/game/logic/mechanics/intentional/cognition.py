@@ -17,11 +17,12 @@ if TYPE_CHECKING:
 # Application Libraries
 from app.assets.base import Asset
 from app.config.enums import (
-    Directions,
     Intentions, 
     Goals, 
     Motivations,
-    AssetInstances, 
+    AssetInstances,
+    ExpressionsPalette,
+    Expressions
 )
 from app.game.logic.mechanics.core import Mechanic
 from app.models.state import (
@@ -42,7 +43,7 @@ class CognitionMechanics(Mechanic):
 
     @staticmethod
     def nearby(p1: Position, p2: Position, radius: int) -> bool:
-        return geometry.nearby(p1.x, p2.y, p2.x, p2.y, radius)
+        return geometry.nearby(p1.x, p1.y, p2.x, p2.y, radius)
     
     @staticmethod
     def complete(sprite: Asset, board: Board) -> bool:
@@ -133,7 +134,7 @@ class CognitionMechanics(Mechanic):
                 sprite.state.position, 
                 action_radius
             ) and not sprite.state.mutators.triggers.vision:
-                    sprite.state.goal = None
+                sprite.state.goal = None
 
         # ------------------------------------------------------------------------
         # ------------------------------------------------ SUBJECT GOAL RESOLUTION
@@ -150,7 +151,12 @@ class CognitionMechanics(Mechanic):
                 sprite.state.position, 
                 action_radius
             ) and not sprite.state.mutators.triggers.vision:
-                    sprite.state.goal = None
+                sprite.state.goal = None
+                sprite.state.psyche.expression = board.cradle.spawn_expression(
+                    ExpressionsPalette.BUBBLES.value, 
+                    Expressions.CONFUSION.value, 
+                    sprite
+                )
 
         # ------------------------------------------------------------------------
         # ----------------------------------------------- POSITION GOAL RESOLUTION

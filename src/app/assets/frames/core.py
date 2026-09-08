@@ -15,7 +15,7 @@ from app.config.enums import (
     ExpressionsPalette
 )
 from app.assets.base import Frame
-from app.models.state import AssetState
+from app.models.state import AssetState, SpriteState
 
 logger = logging.getLogger(__name__)
 
@@ -136,7 +136,7 @@ class SpriteFrame(StateFrame):
     Specialized Frame component for Sprites that yields a strict Z-indexed list of frame keys based on the Sprite's inventory.
     """
 
-    def keys(self, id: str, state: AssetState) -> List[str]:
+    def keys(self, id: str, state: SpriteState) -> List[str]:
         # Start with the base Persona frame key
         frame_keys = super().keys(id, state)
         

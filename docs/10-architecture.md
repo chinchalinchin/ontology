@@ -158,16 +158,19 @@ This module manages the broad-phase spatial partitioning grid, reducing collisio
 
 **Physics (`libs/core/math/physics.pyx`)**
 
-This module orchestrates the physical simulation, bridging the broad-phase grid with narrow-phase resolution and applying forces to engine states.
+This module orchestrates the physical simulation, bridging the broad-phase grid with narrow-phase resolution, computing forces, and applying velocities to engine states.
 
 * **`collisions`**: The master collision pipeline. It ingests a flat list of primitive integer tuples to avoid Python object overhead. The sequence executes as follows:
-    1. **Hash**: Iterates over all dynamic assets and inserts them into the `Space` grid using their bounding boxes.
+    1. **Hash**: Iterates over all dynamic assets and inserts them into the `Space` grid using their physical dimensions.
     2. **Query**: Retrieves the reduced list of candidate pairs occupying the same spatial buckets.
-    3. **Narrow Phase**: Pre-allocates dummy `Position` and `Dimensions` objects on the C-stack. Iterates through the candidate pairs, unpacking their primitives into the dummy objects, and passes them to `geometry.intersects`. Returns verified colliding pairs.
-* **`collide`**: Resolves confirmed physical overlaps.
+    3. **Narrow Phase**: Pre-allocates dummy `Position` and `Dimensions` objects on the C-stack. Iterates through the candidate pairs, unpacking their primitives into the dummy objects, and passes them to `geometry.intersects` alongside their collision data. Returns verified colliding pairs.
+* **`collide`**: Resolves confirmed physical overlaps, accounting for local `Hitbox` offsets.
     1. **Spatial Resolution**: Shifts overlapping entities apart based on inverse mass ratios (e.g., an $m=0$ wall absorbs 0% of the shift, forcing the dynamic asset out).
-    2. **Momentum Transfer**: Evaluates 1D elastic collision formulas, updating the `.vx` and `.vy` attributes of the participating `Velocity` objects. Kinematic assets (like the Player) bypass the momentum transfer, retaining immediate control over their vectors.
-* **`integrate`**: Executes Symplectic Euler Integration ($x_{n+1} = x_n + v_n \Delta t$). Because the game board utilizes integer grid coordinates, this function maintains sub-pixel accumulators (`rx`, `ry`). When an accumulator exceeds `1.0` or `-1.0`, it casts the shift to an integer, updates the physical `Position`, and decrements the accumulator.
+    2. **Momentum Transfer**: Evaluates 1D elastic collision formulas, updating the `.vx` and `.vy` attributes of the participating `Velocity` objects. Kinematic assets (identified via `is_kinematic` boolean flags) bypass the momentum transfer, retaining immediate control over their vectors.
+* **`integrate`**: Executes Symplectic Euler Integration ($x_{n+1} = x_n + v_n \Delta t$). Because the game board utilizes integer grid coordinates, this function maintains sub-pixel accumulators (`rx`, `ry`). When an accumulator exceeds $1.0$ or $-1.0$, it casts the shift to an integer, updates the physical `Position`, and decrements the accumulator.
+* **`friction`**: Decays the magnitude of a `Velocity` vector over time using an environmental friction coefficient, clamping to exactly $0.0$ to prevent negative overshoot.
+* **`kinematics`**: Handles direct velocity assignment. It snaps axes to zero when no input is provided on a given axis and strictly normalizes the resulting vector to the specified `speed`.
+* **`dynamics`**: Calculates dynamic acceleration vectors towards a target coordinate (`tx`, `ty`) based on a given `impulse`. It clamps the resulting velocity to a maximum `speed` and bypasses the impulse to snap directly to the target velocity if within the arrival threshold, preventing oscillation.
 
 ### Graphics
 

@@ -46,13 +46,13 @@ recipes:
   sheets:
     players:
       frame: sprite
-      animation: state
+      animation: sprite
     pixies:
       frame: state
       animation: state
     sprites:
       frame: sprite
-      animation: state
+      animation: sprite
     armor:
       frame: state
       animation: none

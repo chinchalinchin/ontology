@@ -38,6 +38,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 05.06: EventHandlers](./phases/refactor/phase-05-06.md)
     - [ ]: [Phase 05.07: InventoryController](./phases/refactor/phase-05-07.md)
     - [x]: [Phase 05.08: MenuContext](./phases/refactor/phase-05-08.md)
+    - [x]: [Phase 05.09: Expression Management](./phases/refactor/phase-05-09.md)
     - [x]: [Phase 07.01: Speak Intentions](./phases/refactor/phase-07-01.md)
     - [~]: [Phase 07.02: Interact Intentions](./phases/refactor/phase-07-02.md)
   - Patch:

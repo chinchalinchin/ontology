@@ -42,16 +42,3 @@ def test_social_mechanics_npc_to_npc(mock_board):
         sprite
     )
     assert sprite.state.psyche.expression is not None
-
-def test_social_mechanics_decay(mock_board):
-    mechanic = SocialMechanics()
-    sprite = mock_board.instances("sprites")[0]
-    
-    sprite.state.intention = Intentions.SPEAK.value
-    sprite.state.psyche.dialogue = "secret_rumor"
-    sprite.state.psyche.expression = MagicMock(ttl=1)
-    
-    mechanic.update(mock_board, 0.016, deque(), MagicMock())
-    
-    assert sprite.state.psyche.expression is None
-    assert sprite.state.psyche.dialogue is None

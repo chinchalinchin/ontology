@@ -5,10 +5,9 @@ Package for Asset Animation implementations.
 """
 # Application Libraries
 import app.config.settings as settings
-from app.config.enums import Statuses
 from app.assets.base import Animation
-from app.models.properties import AssetProperties
-from app.models.state import AssetState
+from app.models.properties import AssetProperties, SheetProperties
+from app.models.state import AssetState, SpriteState
 
 class NoAnimation(Animation):
     """
@@ -19,6 +18,7 @@ class NoAnimation(Animation):
         """
         return state
 
+
 class BinaryAnimation(Animation):
     """
     """
@@ -28,6 +28,7 @@ class BinaryAnimation(Animation):
         """
         state.animation.frame = settings.ON if state.switch else settings.OFF
         return state
+
         
 class PersistentAnimation(Animation):
     """
@@ -42,6 +43,7 @@ class PersistentAnimation(Animation):
             state.animation.frame = 0
 
         return state
+
     
 class TemporaryAnimation(Animation):
     """
@@ -55,24 +57,17 @@ class TemporaryAnimation(Animation):
 
         return state
 
+
 class StateAnimation(Animation):
     """
     Advances frame based on configured action delay.
     """
     def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
-        if state.mutators and state.mutators.triggers:
-            if not state.mutators.triggers.animated:
-                state.animation.frame = 0
-                state.animation.tick = 0
-                return state
-
         action_props = properties.actions[state.animation.action]
-        delay = getattr(action_props, 'delay', 1)
-
         state.animation.tick += 1
 
         # Only advance the frame if the tick accumulator reaches the delay threshold
-        if state.animation.tick >= delay:
+        if state.animation.tick >= action_props.delay:
             state.animation.tick = 0
             state.animation.frame += 1
 
@@ -80,3 +75,24 @@ class StateAnimation(Animation):
                 state.animation.frame = 0
 
         return state
+
+
+class SpriteAnimation(StateAnimation):
+    """
+    """
+    def animate(self, state: SpriteState, properties: SheetProperties):
+        if not state.mutators.triggers.animated:
+            state.animation.frame = 0
+            state.animation.tick = 0
+            return state
+
+        super().animate(state, properties)
+
+        # NOTE: handle players
+        if getattr(state, 'psyche', None) is None:
+            return state
+        
+        if state.psyche.expression:
+            state.psyche.expression.ttl -= 1
+            if state.psyche.expression.ttl <= 0:
+                state.psyche.expression = None

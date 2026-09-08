@@ -65,7 +65,6 @@ intentions:
             constants.Relationships.FRIEND.value, 
             constants.Relationships.FAMILY.value
           ]
-        # CRITICAL: Evaluate against the physical entity, not the remembered coordinate
         - functions.is_near(
             sprite.position, 
             sprites.get(sprite.goal.name).position, 
