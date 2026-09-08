@@ -1,119 +1,211 @@
 intentions:
+  # ----------------------------------------------------------------------------------
   attack:
     - next: attack
       conditions:  
-        - sprite.goal.category == 'sprite'
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET.value
     - next: hunt
       conditions: 
         - not sprite.goal
-        - sprite.memory.goal.category == 'sprite'
+        - sprite.memory.goals 
+        - functions.check_goals(
+            sprite.memory.goals, 
+            constants.Goals.TARGET.value
+          )
     - next: scavenge
       conditions: 
-        - sprites[sprite.goal.name].mutators.triggers.dead
-  attract:
-    - next: barter
-      conditions:
-        - sprite.inventory.loot
-        - sprite.psyche.motivation == 'profit'
-    - next: speak
-      conditions: 
-        - sprite.memory.communications
+        - sprites.get(sprite.goal.name)
+        - sprites.get(sprite.goal.name).mutators.triggers.dead
+  # ----------------------------------------------------------------------------------
   barter:
     - next: threaten
       conditions:
-        - sprite.memory.goal.category == 'loot'
-        - sprite.inventory.wallet < sprite.prices[sprite.memory.goal.name]
-        - sprite.psyche.motivation == 'survival'
-    - next: speak
+        - sprite.goal 
+        - sprite.goal.category == constants.Goals.LOOT.value
+        - sprite.inventory.wallet < sprite.memory.prices.get(sprite.memory.goal.name)
+        - sprite.psyche.motivation == constants.Motivations.SURVIVAL.value
+    - next: idle
       conditions: 
-        - sprite.intention
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
   build:
-    - next: find
+    - next: idle
       conditions:
-        - sprite.intention 
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
   escape: 
     - next: escape
       conditions: 
-        - sprites[sprite.goal.name].intention == 'attack'
+        - sprite.goal
+        - sprites.get(sprite.goal.name)
+        - sprites.get(sprite.goal.name).intention == constants.Intentions.ATTACK.value
     - next: return
       conditions: 
         - not sprite.goal
-  find: 
-    - next: scavenge
+  # ----------------------------------------------------------------------------------
+  find:
+    - next: interact
       conditions: 
-        - sprite.intention
-    - next: return
-      conditions:
-        - sprite.intention
-  follow: 
-    - next: follow
-      conditions:
-        - sprite.intention
-    - next: hunt
-      conditions:
-        - sprite.intention  
-    - next: wander
-      conditions:
-        - sprite.intention 
-  hunt: 
-    - next:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.OBJECT.value
+        - functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
+            sprite.mutators.parameters.action.radius
+          )
+    - next: speak
       conditions: 
-        - sprite.intention 
-  idle: 
+        - sprite.goal
+        - sprite.psyche.dialogue
+        - sprite.goal.category == constants.Goals.SUBJECT.value
+        - sprites.get(sprite.goal.name)
+        - sprite.memory.relationships.get(sprite.goal.name)
+        - sprite.memory.relationships[sprite.goal.name] in [
+            constants.Relationships.FRIEND.value, 
+            constants.Relationships.FAMILY.value
+          ]
+        - functions.is_near(
+            sprite.position, 
+            sprites.get(sprite.goal.name).position, 
+            sprite.mutators.parameters.action.radius
+          )
     - next: idle
       conditions:
-        - sprite.intention
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
+  follow: 
+    - next: speak
+      conditions:
+        - sprite.goal
+        - sprite.psyche.dialogue
+        - functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
+            sprite.mutators.parameters.action.radius
+          )
+    - next: idle
+      conditions:
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
+  hunt: 
+    - next: attack
+      conditions: 
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET.value
+        - functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
+            sprite.mutators.parameters.action.radius
+          )
+    - next: idle
+      conditions:
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
+  idle: 
     - next: wander
       conditions:
-        - sprite.intention
-  interact:
-    - next: 
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.POSITION.value
+    - next: find
       conditions: 
-        - sprite.intention
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.SUBJECT.value
+        - sprites.get(sprite.goal.name)
+        - not functions.is_near(
+            sprite.position, 
+            sprites.get(sprite.goal.name).position, 
+            sprite.mutators.parameters.action.radius
+          )
+    - next: wander
+      conditions:
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
+  interact:
+    - next: idle
+      conditions: 
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
   mine:
     - next: build
       conditions:
-        - sprite.intention
-  mock:
-    - next: mock
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.LOOT.value
+        # TODO: figure out how to resolve boundary
+        # - sprite.inventory.loot.get(sprite.goal.name, 0) >= 10 
+    - next: mine
       conditions:
-        - sprite.intention 
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.LOOT.value
+        # TODO: figure out how to resolve boundary
+        # - sprite.goal.name in constants.MineableAssets
+        # - sprite.inventory.loot.get(sprite.goal.name, 0) < 10
+    - next: idle
+      conditions:
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
+  mock:
     - next: threaten
       conditions:
-        - sprite.intention 
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET.value
+        - sprites.get(sprite.goal.name)
+        - sprites.get(sprite.goal.name).intention == constants.Intentions.ATTACK.value
+    - next: idle
+      conditions:
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
   return:
     - next: idle
       conditions: 
-        - sprite.intention
-    - next: return
-      conditions:
-        - sprite.intention
-    - next: wander
-      conditions: 
-        - sprite.intention
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
   scavenge:
-    - next: return
+    - next: idle
       conditions:
-        - sprite.intention
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
   speak:
-    - next: follow
-      conditions: 
-        - sprite.intention
+    - next: idle
+      conditions:
+        - sprite.goal
+        - sprite.goal.name == constants.RequiredAssets.PLAYER.value
+    - next: idle
+      conditions:
+        - not sprite.psyche.expression
+  # ----------------------------------------------------------------------------------
   sprint:
-    - next: return
-      conditions: 
-        - sprite.intention
+    - next: idle
+      conditions:
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
   threaten:
     - next: attack
       conditions:
-        - sprite.intention
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET.value
+        - functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
+            sprite.mutators.parameters.action.radius
+          )
     - next: hunt
       conditions:
-        - sprite.intention   
-    - next: threaten
+        - sprite.goal.category == constants.Goals.TARGET.value
+        - not functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
+            sprite.mutators.parameters.vision.radius
+          )
+    - next: idle
       conditions:
-        - sprite.intention
+        - not sprite.goal
+  # ----------------------------------------------------------------------------------
   wander:
     - next: idle
       conditions:
-        - sprite.intention
+        - sprite.goal
+        - sprite.goal.category != constants.Goals.POSITION.value
+    - next: idle
+      conditions:
+        - not sprite.goal

@@ -61,7 +61,7 @@ Composition Configuration defines a collection of Assets that can be deployed as
 **Default Intention Configuration**
 
 ```yaml
---8<-- "static/yaml/examples/default-intention-matrix.yaml"
+--8<-- "static/yaml/examples/default-intentions.yaml"
 ```
 
 ### Configuration: Library
@@ -108,12 +108,6 @@ Mechanics Configuration defines what Mechanic classes are instantiated by the ga
 --8<-- "static/yaml/data-menus.yaml"
 ```
 
-**Default Menus**
-
-```yaml
---8<-- "static/yaml/examples/default-menus.yaml"
-```
-
 ### Configuration: Recipes
 
 Recipe Configuration files determine the specific (Animation, Frame) components injected into an Asset Category Instance. The Category and Instance key are encoded into the top-level fields of each Recipe.
@@ -132,7 +126,6 @@ Recipe Configuration files determine the specific (Animation, Frame) components 
 ```yaml
 --8<-- "static/yaml/examples/default-recipes.yaml"
 ```
-
 
 ### Model: Properties
 
