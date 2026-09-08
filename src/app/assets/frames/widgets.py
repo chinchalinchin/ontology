@@ -4,7 +4,12 @@
 Package for Widget Frame implementations.
 """
 # Stamdard Libraries
-from typing import List
+from typing import (
+    List,
+    Any,
+    Dict,
+    Tuple
+)
 import logging
 
 # Application Libraries
@@ -73,14 +78,15 @@ class MeterFrame(Frame):
 class IndexFrame(Frame):
     """
     ## IndexedFrame
-    Parses horizontal spritesheets where each frame corresponds to a specific string key.
+
+    Parses horizontal sheets where each frame corresponds to a specific string key.
     """
     def keys(self, id: str, state: AssetState) -> List[str]:
         # Retrieve the specific icon key from the state, defaulting to the asset ID
         return [(settings.SEPARATOR.join([id, state.icon]), 0, 0)]
 
 
-    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, id: str, properties: Dict[str, Any]) -> Dict[str, Tuple[int, int, int, int]]:
         w, l = safe_dim(properties)
         crops = {}
         frames = properties.get("frames", [])
@@ -94,3 +100,4 @@ class IndexFrame(Frame):
             crops[frame_index] = (i * w, 0, w, l)
             
         return crops
+

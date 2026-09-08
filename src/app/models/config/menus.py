@@ -46,8 +46,8 @@ class MenuPane:
     name: str
     layout: Layouts
     alignment: Alignments
-    gap: int
-    children: List[Union['MenuPane', MenuWidget]]
+    children: List[Union[MenuPane, MenuWidget]]
+    gap: Optional[int] = 0
     margins: Optional[int] = 0
     position: Optional[ScreenPosition] = None # type: ignore
 

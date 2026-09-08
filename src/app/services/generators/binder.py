@@ -11,7 +11,6 @@ from app.game.menus.bindings import (
     LibraryBinding, 
     MeterBinding, 
     IconBinding,
-    PortraitBinding, 
     SelectBinding, 
     TextBinding
 )
@@ -41,7 +40,5 @@ class Binder:
             return IconBinding(target, context, **kwargs)
         elif schema == 'select':
             return SelectBinding(target, context, **kwargs)
-        elif schema == 'portrait':
-            return PortraitBinding(target, context, **kwargs)
         else:
             return TextBinding(target, context, **kwargs)

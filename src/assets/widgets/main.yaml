@@ -59,40 +59,35 @@ widgets:
         l: 32
       frames:
         - buckler
-    portraits-female:
+    portraits:
       dimensions: 
-        w: 300
-        l: 300
+        w: 50
+        l: 63
       frames:
-        - persona_1
-        - persona_2
-        - persona_3
-        - persona_4
-        - persona_5
-        - persona_6
-        - persona_7
-        - persona_8
-        - persona_9
-        - persona_10
-        - persona_11
-        - persona_12
-        - persona 13
-    portraits-male:
-      dimensions: 
-        w: 300
-        l: 300
-      frames:
-        - persona_1
-        - persona_2
-        - persona_3
-        - persona_4
-        - persona_5
-        - persona_6
-        - persona_7
-        - persona_8
-        - persona_9
-        - persona_10
-        - persona_11
+        - female-persona-1
+        - female-persona-2
+        - female-persona-3
+        - female-persona-4
+        - female-persona-5
+        - female-persona-6
+        - female-persona-7
+        - female-persona-8
+        - female-persona-9
+        - female-persona-10
+        - female-persona-11
+        - female-persona-12
+        - female-persona-13
+        - male-persona-1
+        - male-persona-2
+        - male-persona-3
+        - male-persona-4
+        - male-persona-5
+        - male-persona-6
+        - male-persona-7
+        - male-persona-8
+        - male-persona-9
+        - male-persona-10
+        - male-persona-11
   meters:
     health:
       dimensions:
@@ -152,16 +147,12 @@ widgets:
       dimensions:
         w: 318
         l: 78
-    transparent:
-      dimensions:
-        w: 318
-        l: 180
     transparent-slot:
       dimensions:
         w: 40
         l: 40
     transparent-block:
       dimensions:
-        w: 159
-        l: 78
+        w: 80
+        l: 80
     

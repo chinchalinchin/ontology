@@ -1,7 +1,14 @@
 """
 # Ontology: app.assets.frames
 
-Package for Asset Frame implementations.
+Package for Asset Frame implementations. 
+
+**Overview**
+
+Frames exist on the boundary of the Python-Cython interface.
+
+-`index()`: This interface is a configuration-time method for generating the Asset Frame space from the Asset properties; this method is called inside of Cython from the Registry. Asset Properties are passed in as dicts.
+- `keys()` interface is a runtime method for accessing the Frame key that corresponds to an Asset Frame state. It is called inside of Python from the Screen. Asset States are passed in as Python objects.
 """
 # Stamdard Libraries
 from typing import List

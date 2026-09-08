@@ -10,26 +10,24 @@ menus:
           py: 0.60
         layout: dock
         alignment: center
-        gap: 15
+        gap: 5
+        margin: 10
         children:
-          - id: transparent-slot 
-            name: portrait-slot-container
+          # ------------------------------- PORTRAIT DISPLAY
+          - id: transparent-block 
+            name: character-portrait-container
             layout: overlay
-            alignment: center
+            alignment: start
             gap: 0
             children:
-              - instance: buttons
-                id: slot
-                name: portrait-slot
-                status: disabled
               - instance: icons
-                id: portraits 
+                id: portraits
                 name: character-portrait-icon
                 bind:
-                  schema: portrait
+                  schema: icon
                   target: 
-                    gender: context.sprite.psyche.gender
-                    persona: context.sprite.psyche.persona
+                    icon: context.sprite.psyche.persona
+          # ------------------------------- DIALOGUE DISPLAY
           - instance: pages
             id: notification
             name: character-speech
@@ -39,7 +37,7 @@ menus:
                 plot: context.plot.current
                 persona: context.sprite.psyche.persona
                 lexicon: context.sprite.psyche.dialogue
-          # Use the 40x40 slot to constrain horizontal width
+          # ------------------------------- CONTROL DISPLAY
           - id: transparent-slot
             name: text-scroll-buttons
             layout: stack

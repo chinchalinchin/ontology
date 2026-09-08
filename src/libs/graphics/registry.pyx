@@ -22,6 +22,8 @@ import libs.graphics.render as render
 
 logger = logging.getLogger("libs.graphics.registry")
 
+# -------------------------------------------------------------------------------
+
 cdef extern from "SDL2/SDL_image.h":
     SDL_Texture* IMG_LoadTexture(SDL_Renderer* renderer, const char* file)
     
@@ -34,6 +36,8 @@ cdef extern from "SDL2/SDL_ttf.h":
     TTF_Font* TTF_OpenFont(const char* file, int ptsize)
     void TTF_CloseFont(TTF_Font* font)
 
+# -------------------------------------------------------------------------------
+
 cdef class TexturePtr:
     def __dealloc__(self):
         if self.ptr != NULL:
@@ -45,6 +49,8 @@ cdef class TTFFont:
         if self.ptr != NULL:
             TTF_CloseFont(self.ptr)
             self.ptr = NULL
+
+# -------------------------------------------------------------------------------
 
 def _sys_load_image(filepath: str):
     cdef bytes b_filepath = filepath.encode('utf-8')
@@ -87,6 +93,8 @@ def _sys_load_font(filepath: str, style: dict):
     font_obj.color.a = color_cfg.get("a", 255)
     
     return font_obj
+
+# -------------------------------------------------------------------------------
 
 cdef class Registry:
     cdef public dict properties
