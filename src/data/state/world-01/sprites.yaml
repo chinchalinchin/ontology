@@ -33,7 +33,7 @@ sheets:
         dialogue: greeting
         expression: null
         motivation: conquest
-        persona: female-persona-7
+        persona: empress-jasilynn
       intention: find
       goal:
         name: player

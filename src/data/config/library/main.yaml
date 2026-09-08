@@ -1,6 +1,6 @@
 library:
   castle-dawn-locked:
-    jasiylnn:
+    empress-jasilynn:
       busy: Out of my way!
       greeting: Who are you?
       mock: Begone, simpleton!
@@ -11,7 +11,7 @@ library:
       autumn: Autumn has Fallen
       winter: Winter must Enter 
   castle-dawn-unlocked:
-    jasiylnn:
+    empress-jasilynn:
       busy: Away with you! I am engaged in endeavors!
       greeting: Good morrow, neighbor!
       mock: Thou art a brutish knave!
@@ -22,7 +22,7 @@ library:
       autumn: Harvest Festival Soon
       winter: Road Blocked
   castle-dawn-hostile:
-    jasiylnn:
+    empress-jasilynn:
       busy: Go away!
       greeting: Bow before your betters.
       mock: Thy pants are ugly.

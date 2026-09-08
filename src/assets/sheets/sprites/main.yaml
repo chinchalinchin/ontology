@@ -44,10 +44,10 @@ sheets:
             l: 15
       stack:
         - human-female-ivory
-        - torso-dress-black
+        - torso-dress-red
         - hair-long-black
         - head-crown-gold
-        - feet-shoes-red
+        - feet-boots-black
       actions: lpc-full
     # ------------------------------------------------
     archaxes:
