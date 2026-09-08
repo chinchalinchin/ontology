@@ -24,6 +24,10 @@ from app.game.menus.events import (
     UpdateEvent,
     StateEvent
 )
+from app.game.menus.contexts import (
+    LoadContext, 
+    ViewContext
+)
 
 logger = logging.getLogger(__name__)
 
@@ -65,60 +69,66 @@ class Engine:
             event = self.bus.popleft()
 
             if isinstance(event, MenuEvent):
-                menu_cfg = self.board.configurations.menus.get(event.id)
-                if menu_cfg:
-                    self.board.paused = True
-                    player = self.board.player()
-                    screen = self.screens[player.state.layer] \
-                                if player and self.board.loaded \
-                                    else next(iter(self.screens.values()))
-                    
-                    menu = self.provider.unpack(
-                        event.id, 
-                        menu_cfg, 
-                        event.context, 
-                        screen.screensize
-                    )
-                    self.board.menus.append(menu)
+                if not self.board.configurations.menus.get(event.id):
+                    logger.warning(f"MenuEvent Received, but no {event.id} Menu Defined")
+                    return
+                
+                self.board.paused = True
+                player = self.board.player()
+                screen = self.screens[player.state.layer] \
+                            if player and self.board.loaded \
+                                else next(iter(self.screens.values()))
+                
+                menu = self.provider.unpack(
+                    event.id, 
+                    self.board.configurations.menus.get(event.id), 
+                    event.context, 
+                    screen.screensize
+                )
+                self.board.menus.append(menu)
 
-                    for widget in menu.widgets.values():
-                        if hasattr(widget.state, 'canvas') and widget.state.canvas is not None:
-                            if hasattr(widget.state, 'current'):
-                                screen.stamp(widget, widget.state.current())
+                # garbage fucking AI code
+                for widget in menu.widgets.values():
+                    if hasattr(widget.state, 'canvas') and widget.state.canvas is not None:
+                        if hasattr(widget.state, 'current'):
+                            screen.stamp(widget, widget.state.current())
                             
             elif isinstance(event, StateEvent):
-                if hasattr(self.board, 'migrator') and self.board.migrator:
-                    self.board.migrator.target = event.id
-                    
+                if not self.board.migrator:
+                    logger.warning("StateEvent received, but no Migrator defined on Board")
+                    return
+                
+                self.board.migrator.target = event.id    
                 self.bus.append(MenuEvent(
                     id=Menus.LOAD.value, 
-                    context={
-                        'registry': next(iter(self.screens.values())).registry,
-                        'screens': self.screens,
-                        'screensize': next(iter(self.screens.values())).screensize
-                    }
+                    context=LoadContext(
+                        registry=next(iter(self.screens.values())).registry,
+                        screens=self.screens,
+                        screensize=next(iter(self.screens.values())).screensize
+                    )
                 ))
 
             elif isinstance(event, TerminalEvent):
-                if self.board.menus:
-                    popped_menu = self.board.menus.pop()
+                if not self.board.menus:
+                    logger.warning("TerminalEvent received, but no Menus running on Board.")
+                    return 
+                
+                popped_menu = self.board.menus.pop()
                     
-                    if popped_menu.id == Menus.LOAD.value:
-                        view_cfg = self.board.configurations.menus.get(Menus.VIEW.value)
-                        player = self.board.player()
-                        if view_cfg and player:
-                            screen = self.screens.get(
-                                player.state.layer, 
-                                next(iter(self.screens.values()))
-                            )
-                            
-                            hud_menu = self.provider.unpack(
-                                Menus.VIEW.value, 
-                                view_cfg, 
-                                {'sprite': {'state': getattr(player, 'state', None)}}, 
-                                screen.screensize
-                            )
-                            self.board.set_overlays([hud_menu])
+                if popped_menu.id == Menus.LOAD.value:
+                    player = self.board.player()
+                    screen = self.screens.get(
+                        player.state.layer, 
+                        next(iter(self.screens.values()))
+                    )
+                    
+                    hud_menu = self.provider.unpack(
+                        Menus.VIEW.value, 
+                        self.board.configurations.menus.get(Menus.VIEW.value), 
+                        ViewContext(sprite=player.state), 
+                        screen.screensize
+                    )
+                    self.board.set_overlays([hud_menu])
 
                 if not self.board.menus:
                     self.board.paused = False

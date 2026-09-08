@@ -20,6 +20,7 @@ from app.models.state import (
 )
 from app.models.config import MenuConfiguration, MenuPane, MenuWidget
 from app.game.menus.core import Menu, Widget
+from app.game.menus.contexts import MenuContext
 from app.game.menus.bindings import Binding
 from app.game.menus.layout import Layout
 from app.services.generators.binder import Binder
@@ -113,7 +114,7 @@ class Provider:
         )
 
     
-    def _unpack_widget(self, cfg: MenuWidget, context: dict) -> Widget:
+    def _unpack_widget(self, cfg: MenuWidget, context: MenuContext) -> Widget:
         props_dict = getattr(self.properties, cfg.instance, {})
         properties = props_dict.get(cfg.id)
         recipe = getattr(self.recipes, cfg.instance, None)
@@ -152,14 +153,22 @@ class Provider:
             binding=binding
         )
 
-    def _unpack_node(self, cfg: Union[MenuPane, MenuWidget], context: dict, widgets: Dict[str, Asset]) -> None:
+    def _unpack_node(self, 
+        cfg: Union[MenuPane, MenuWidget], 
+        context: MenuContext, 
+        widgets: Dict[str, Asset]
+    ) -> None:
         if isinstance(cfg, MenuPane):
             self._unpack_pane(cfg, context, widgets)
         else:
             widgets[cfg.name] = self._unpack_widget(cfg, context)
 
             
-    def _unpack_pane(self, pane: MenuPane, context: dict, widgets: Dict[str, Asset]) -> None:
+    def _unpack_pane(self, 
+        pane: MenuPane, 
+        context: MenuContext, 
+        widgets: Dict[str, Asset]
+    ) -> None:
         props = self.properties.panes.get(pane.id)
         recipe = self.recipes.panes
         

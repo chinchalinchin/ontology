@@ -2,22 +2,26 @@ plots:
   castle-dawn-locked:
     - next: castle-dawn-unlocked
       conditions:
-        - sprites[constants.RequiredAssets.PLAYER.value].state.inventory.loot.get('writ-of-dawn') >= 1
+        - sprites.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get(constants.RequiredAssets.PLAYER.value).state.inventory.loot.get('writ-of-dawn') >= 1
     - next: town-unlocked
       conditions:
         - sprites.get('castle-dawn-guard')
-        - sprites['castle-dawn-guard'].mutators.triggers.dead
+        - sprites.get('castle-dawn-guard').mutators.triggers.dead
     - next: castle-dawn-unlocked
       conditions:
         - sprites.get('evil-empress-jasilynn')
-        - sprites['evil-empress-jasilynn'].state.memory.relationships['player'] != constants.Relationships.FRIEND
+        - sprites.get('evil-empress-jasiylnn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get('evil-empress-jasilynn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FRIEND
   castle-dawn-unlocked:
     - next: castle-dawn-hostile
       conditions:
         - sprites.get('evil-empress-jasilynn')
-        - sprites['evil-empress-jasiylnn'].state.memory.relationships['player'] == constants.Relationships.FOE
+        - sprites.get('evil-empress-jasiylnn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get('evil-empress-jasilynn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FOE
   castle-dawn-hostile:
     - next: castle-dawn-unlocked
       conditions:
         - sprites.get('evil-empress-jasilynn')
-        - sprites['evil-empress-jasiylnn'].state.memory.relationships['player'] != constants.Relationships.FOE
+        - sprites.get('evil-empress-jasiylnn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get('evil-empress-jasilynn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) != constants.Relationships.FOE

@@ -17,7 +17,10 @@ menus:
             name: text-display
             bind:
               schema: library
-              target: context.content
+              target: 
+                plot: context.plot.current
+                persona: context.object.persona
+                lexicon: context.object.lexicon
           # Use the 40x40 slot to constrain horizontal width
           - id: transparent-slot
             name: text-scroll-buttons
@@ -30,12 +33,14 @@ menus:
                 name: text-scroll-up
                 bind: 
                   schema: select
-                  selection: scrollup
-                  selector: text-display
+                  target:
+                    selection: scrollup
+                    selector: text-display
               - instance: buttons
                 id: arrow-down
                 name: text-scroll-down
                 bind: 
                   schema: select
-                  selection: scrolldown
-                  selector: text-display
+                  target:
+                    selection: scrolldown
+                    selector: text-display

@@ -24,7 +24,7 @@ class MainController(MenuController):
         
     def update(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         # Prewarm rendering textures while the user is idle on the Main Menu
-        registry = menu.context.get('registry')
+        registry = menu.context.registry
         if registry:
             registry.prewarm(budget_ms=settings.MIGRATOR_DELAY)
 

@@ -4,6 +4,8 @@
 Factory for generating and preparing Binding components.
 """
 from typing import Any
+from app.models.config import MenuBinding
+from app.game.menus.contexts import MenuContext
 from app.game.menus.bindings import (
     Binding, 
     LibraryBinding, 
@@ -18,20 +20,14 @@ class Binder:
         self.registry = registry
         self.library = library
         
-    def binding(self, bind_cfg: Any, context: dict) -> Binding:
-        """
-        Parses YAML schema and instantiates the correct Binding interface.
-        """
-        if not bind_cfg:
+    def binding(self, bind: MenuBinding, context: MenuContext) -> Binding:
+        if not bind:
             return None
             
-        schema = getattr(bind_cfg, 'schema', getattr(bind_cfg, 'type', None))
-        target = getattr(bind_cfg, 'target', getattr(bind_cfg, 'state', None))
+        schema = bind.schema
+        target = bind.target or {}
         
-        # Consolidate dependencies to pass via kwargs
         kwargs = {
-            'selection': getattr(bind_cfg, 'selection', None),
-            'selector': getattr(bind_cfg, 'selector', None),
             'registry': self.registry,
             'library': self.library
         }
@@ -45,5 +41,4 @@ class Binder:
         elif schema == 'select':
             return SelectBinding(target, context, **kwargs)
         else:
-            # Fallback for basic variable string interpolation
             return TextBinding(target, context, **kwargs)

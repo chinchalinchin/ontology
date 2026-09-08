@@ -35,8 +35,9 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 05.03: ScrollController, Library & Plots](./phases/refactor/phase-05-03.md)
     - [~]: [Phase 05.04: ExchangeController & Loot](./phases/refactor/phase-05-04.md)
     - [x]: [Phase 05.05: Main Menu & Saving](./phases/refactor/phase-05-05.md)
-    - [~]: [Phase 05.06: EventHandlers & EventContent](./phases/refactor/phase-05-06.md)
+    - [~]: [Phase 05.06: EventHandlers](./phases/refactor/phase-05-06.md)
     - [ ]: [Phase 05.07: InventoryController](./phases/refactor/phase-05-07.md)
+    - [x]: [Phase 05.08: MenuContext](./phases/refactor/phase-05-08.md)
     - [x]: [Phase 07.01: Speak Intentions](./phases/refactor/phase-07-01.md)
     - [~]: [Phase 07.02: Interact Intentions](./phases/refactor/phase-07-02.md)
   - Patch:

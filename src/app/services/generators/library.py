@@ -28,5 +28,6 @@ class Library:
         
         if not content:
             logger.warning(f"Library fetch failed for {plot}.{persona}.{lexicon}")
-        
+
+        logger.info(content)
         return str(content)

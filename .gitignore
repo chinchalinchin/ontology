@@ -10,8 +10,10 @@ build/**
 **/.prompts/**/*.md
 **/.pytest_cache/**
 **/.vscode/**
+**/logs/**
 
 !**/.gitkeep
 !**/templates/*-dump.md
 !**/.prompts/blocks/**
 !**/.prompts/board/**
+!/**/.gitkeep

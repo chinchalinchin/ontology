@@ -13,6 +13,8 @@ SEPARATOR = "-"
 NEW_BOARD = "world-01"
 MIGRATOR_DELAY = 1
 EXPRESSION_TTL = 120
+LOG_FILE = "ontology.log"
+LOG_LEVEL = "INFO"
 # ---------------------------------------------------
 ## --------------------------------- ENGINE CONSTANTS
 ### TARGET_FPS: Engine's target FPS.
@@ -31,6 +33,7 @@ EMPTY = 0
 SRC_DIR = Path(__file__).resolve().parent.parent.parent
 ASSET_DIR = SRC_DIR / "assets"
 DATA_DIR = SRC_DIR / "data"
+LOG_DIR = DATA_DIR / "logs"
 CONFIG_DIR = DATA_DIR / "config"
 STATE_DIR = DATA_DIR / "state"
 TEMPLATE_DIR = DATA_DIR / "templates"

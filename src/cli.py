@@ -24,6 +24,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 # Application Libraries
 import app.config.settings as settings
+from app.config.logging import configure_logging
 from app.config.enums import Devices
 from app.services.orchestration.constructors import Orchestrator
 
@@ -209,10 +210,8 @@ COMMAND_REGISTRY = {
 def main():
     args = arguments()
 
-    logging.basicConfig(
-        level=getattr(logging, args.log_level.upper(), logging.INFO),
-        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s"
-    )
+    # Initialize centralized logging
+    configure_logging(log_level=args.log_level.upper())
 
     logger.info(f"Starting CLI with command: '{args.command}' for board: '{args.board_key}'")
 

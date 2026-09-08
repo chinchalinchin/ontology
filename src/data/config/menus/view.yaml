@@ -27,13 +27,15 @@ menus:
                 name: health-meter
                 bind: 
                   schema: meter
-                  target: context.sprite.state.meters.health
+                  target: 
+                    meter: context.sprite.meters.health
               - instance: meters
                 id: magic
                 name: magic-meter
                 bind: 
                   schema: meter
-                  target: context.sprite.state.meters.magic
+                  target: 
+                    meter: context.sprite.meters.magic
           - id: transparent-block
             name: hud-slots-pane
             layout: dock
@@ -58,7 +60,8 @@ menus:
                     name: weapon-icon
                     bind:
                       schema: icon
-                      target: context.sprite.state.inventory.equipment.weapon
+                      target: 
+                        icon: context.sprite.inventory.equipment.weapon
               # --- bounding box for the slot ---
               - id: transparent-slot
                 name: shield-slot-container
@@ -75,4 +78,5 @@ menus:
                     name: shield-icon
                     bind:
                       schema: icon
-                      target: context.sprite.state.inventory.equipment.shield
+                      target: 
+                        icon: context.sprite.inventory.equipment.shield

@@ -42,7 +42,7 @@ class LoadController(MenuController):
             migrator_done = board.migrator.step(budget_ms=16)
 
         # 2. Process Registry Texture Prewarming
-        registry = menu.context.get('registry')
+        registry = menu.context.registry
         registry_done = True
         if registry:
             registry_done = registry.prewarm(budget_ms=16)
@@ -50,8 +50,8 @@ class LoadController(MenuController):
         # 3. Handle Transitions
         if migrator_done and registry_done:
             logger.info("Hydration complete. Reallocating rendering canvases...")
-            screens = menu.context.get('screens', {})
-            screensize = menu.context.get('screensize')
+            screens = menu.context.screens
+            screensize = menu.context.screensize
             
             old_screens = list(screens.values())
             screens.clear()
@@ -72,9 +72,9 @@ class LoadController(MenuController):
             # Explicitly force Cython VRAM deletion on discarded Screens
             for j in range(len(board.layers()), len(old_screens)):
                 screen = old_screens[j]
-                if hasattr(screen, 'bg_canvas') and screen.bg_canvas:
+                if screen.bg_canvas:
                     render.destroy(screen.bg_canvas)
-                if hasattr(screen, 'fg_canvas') and screen.fg_canvas:
+                if screen.fg_canvas:
                     render.destroy(screen.fg_canvas)
             
             # Set the flag to trip the guard clause on the next tick

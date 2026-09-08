@@ -18,6 +18,7 @@ from app.config.enums import (
     Menus
 )
 from app.game.logic.mechanics.spatial.base import SpatialMechanic
+from app.game.menus.contexts import DialogueContext
 from app.game.menus.events import MenuEvent
 from app.models.state import DevicePayload
 
@@ -119,10 +120,9 @@ class InteractionMechanics(SpatialMechanic):
                     if source.taxonomy.instance == AssetInstances.PLAYERS:
                         # Pass the live PlotState reference directly into context
                         bus.append(MenuEvent(
-                            id=Menus.TEXT.value, context={
-                                'plot': board.plot, 
-                                'persona': target.state.persona,
-                                'lexicon': target.state.lexicon 
-                            }
-                        ))
+                            id = Menus.TEXT.value,
+                            context = DialogueContext(
+                                plot = board.plot, 
+                                object = target.state
+                        )))
                         processed_sources.add(source.name)

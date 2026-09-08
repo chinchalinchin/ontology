@@ -7,7 +7,8 @@ Models for typing the configuration attributes of Menus.
 from typing import (
     List, 
     Optional, 
-    Union
+    Union,
+    Dict
 )
 from dataclasses import dataclass
 
@@ -29,9 +30,7 @@ from app.models.config.core import Configuration
 @dataclass(slots=True, frozen=True)
 class MenuBinding:
     schema: str = None
-    selection: str = None
-    selector: str = None
-    target: str = None
+    target: Union[str, Dict[str, str]] = None  # <--- Modified
 
 @dataclass(slots=True, frozen=True)
 class MenuWidget:

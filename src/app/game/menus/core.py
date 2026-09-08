@@ -2,13 +2,15 @@
 # Ontology: app.game.menus.core
 """
 from __future__ import annotations
+
 # Standard Libraries
-from typing import Dict, Any, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING
 from dataclasses import dataclass
 
 # Application Libraries
 from app.assets.base import Asset
 from app.game.menus.bindings import Binding
+from app.game.menus.contexts import MenuContext
 
 if TYPE_CHECKING:
     from app.game.menus.controllers.base import MenuController
@@ -31,6 +33,6 @@ class Menu:
     id: str
     focus: str
     graph: Dict[str, Dict[str, str]]
-    context: Dict[str, Any]
+    context: MenuContext
     widgets: Dict[str, Widget]    
     controller: MenuController

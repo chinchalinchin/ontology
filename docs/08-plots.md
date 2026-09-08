@@ -53,26 +53,37 @@ plots:
 
 For example, the following Plot Transition Matrix demonstrates how a Plot tree can be embedded into the game by specifying nodes and the conditions that must be met to transition out of a given node, 
 
+!!! important
+  Plot Transitions use the same scripting syntax and constants as [Intention Transitions](./04-intentions.md#transition-matrix).
+
 ```yaml
 plots:
-    town-locked:
-        - next: town-unlocked
-          conditions:
-            - player.state.inventory.loot['town-key'] >= 1
-        - next: town-unlocked
-          conditions:
-            - sprites['town-guard'].mutators.triggers.dead
-        - next: town-unlocked
-          conditions:
-            - sprites['mayor'].state.memory.relationships['player'] == Relationships.FRIEND
-    town-unlocked:
-        - next: town-hostile
-          conditions:
-            - sprites['mayor'].state.memory.relationships['player'] == Relationships.FOE
-    town-hostile:
-        - next: town-unlocked
-          conditions:
-            - sprites['mayor'].state.memory.relationships['player'] != Relationships.FOE
+  castle-dawn-locked:
+    - next: castle-dawn-unlocked
+      conditions:
+        - sprites.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get(constants.RequiredAssets.PLAYER.value).state.inventory.loot.get('writ-of-dawn') >= 1
+    - next: town-unlocked
+      conditions:
+        - sprites.get('castle-dawn-guard')
+        - sprites.get('castle-dawn-guard').mutators.triggers.dead
+    - next: castle-dawn-unlocked
+      conditions:
+        - sprites.get('evil-empress-jasilynn')
+        - sprites.get('evil-empress-jasiylnn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get('evil-empress-jasilynn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FRIEND
+  castle-dawn-unlocked:
+    - next: castle-dawn-hostile
+      conditions:
+        - sprites.get('evil-empress-jasilynn')
+        - sprites.get('evil-empress-jasiylnn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get('evil-empress-jasilynn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) == constants.Relationships.FOE
+  castle-dawn-hostile:
+    - next: castle-dawn-unlocked
+      conditions:
+        - sprites.get('evil-empress-jasilynn')
+        - sprites.get('evil-empress-jasiylnn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value)
+        - sprites.get('evil-empress-jasilynn').state.memory.relationships.get(constants.RequiredAssets.PLAYER.value) != constants.Relationships.FOE
 ```
 
 TODO

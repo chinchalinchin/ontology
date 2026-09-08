@@ -24,6 +24,7 @@ from app.game.screen import Screen
 from app.game.logic.mechanics.core import Mechanic
 from app.game.logic.mechanics.intentional import TransitionMechanics
 from app.game.menus.events import MenuEvent
+from app.game.menus.contexts import MainContext
 from app.models.groups import (
     SpawnableGroup, 
     EquipmentGroup
@@ -220,15 +221,15 @@ class Builder:
         self.binder = Binder(self.registry, self.library)
 
         translator = Factory.translator(settings.ISL_TRANSLATOR)
-        executor = translator.compile(self.context.configurations.intentions)
+        intention_executor = translator.compile(self.context.configurations.intentions)
         
         # New: Compile Plot ISL Rules
-        plot_cfg = getattr(self.context.configurations, 'plots', {})
+        plot_cfg = self.context.configurations.plots
         plot_executor = translator.compile(plot_cfg) if plot_cfg else None
             
         for m in self.world:
             if type(m).__name__ == 'TransitionMechanics':
-                m.executor = executor
+                m.executor = intention_executor
             elif type(m).__name__ == 'PlotMechanics':
                 m.executor = plot_executor
 
@@ -280,6 +281,6 @@ class Orchestrator:
         registry = next(iter(engine.screens.values())).registry
         
         # Seed the Menu stack immediately for instantaneous launch
-        engine.bus.append(MenuEvent(Menus.MAIN.value, {'registry': registry}))
-        
+        engine.bus.append(MenuEvent(Menus.MAIN.value, MainContext(registry=registry)))        
+
         return engine
