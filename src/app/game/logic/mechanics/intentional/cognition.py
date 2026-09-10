@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from app.game.board import Board
 
 # Application Libraries
+import app.config.settings as settings
 from app.assets.base import Asset
 from app.config.enums import (
     Intentions, 
@@ -25,6 +26,7 @@ from app.config.enums import (
     Expressions
 )
 from app.game.logic.mechanics.core import Mechanic
+from app.game.logic.mechanics.modules.paths.plan import Planner
 from app.models.state import (
     DevicePayload, 
     Goal
@@ -109,6 +111,76 @@ class CognitionMechanics(Mechanic):
             self._project(sprite, board)
 
 
+    def _obstacles(self, layer: str, board: Board, exclude: list) -> list:
+        """Transforms board weights and perimeters into flat C-primitive tuples."""
+        obstacles = []
+        for asset in board.weights(layer):
+            if asset.name in exclude:
+                continue
+            obstacles.append(asset.primitive())
+
+        for bound in board.perimeters.get(layer, []):
+            obstacles.append(bound.primitve())
+
+        return obstacles
+
+
+    def _path(self, sprite: Asset, segments: list, final_goal: Goal) -> None:
+        """Converts an RRT geometric path into intentional POSITION goals (FIFO)."""        
+        # 1. Clear existing waypoints in memory
+        sprite.state.memory.goals = {
+            k: v for k, v in sprite.state.memory.goals.items() 
+            if not str(k).startswith(settings.RRT_PATH_PREFIX)
+        }
+        
+        # 2. Inject new waypoints sequentially (dicts preserve insertion order)
+        for i, wp in enumerate(segments):
+            name = settings.SEPARATOR.join([
+                settings.RRT_PATH_PREFIX, 
+                str(i)
+            ])
+            sprite.state.memory.goals[name] = Goal(
+                name=name,
+                category=Goals.POSITION.value,
+                layer=sprite.state.layer,
+                position=Position(x=wp.x, y=wp.y)
+            )
+            
+        sprite.state.memory.goals[sprite.state.goal.name] = sprite.state.goal
+
+        sprite.state.goal = None
+
+
+    def _plan(self, sprite: Asset, board: Board):
+        obstacles = self._obstacles(
+            sprite.state.layer, 
+            board, 
+            exclude=[sprite.name]
+        )
+                
+        # Check LOS and trigger planner if occluded
+        if not geometry.los(
+            sprite.state.position.x, 
+            sprite.state.position.y, 
+            sprite.state.goal.position.x, 
+            sprite.goal.position.y, 
+            obstacles
+        ):
+            logger.info(f"LOS blocked for {sprite.name}. Triggering RRT.")
+            planner = Planner(
+                start=sprite.state.position,
+                target=sprite.state.goal.position,
+                obstacles=obstacles,
+                step_size=32.0,
+                max_iter=300
+            )
+            path = planner.plan()
+            if path:
+                self._path(sprite, path)
+            else:
+                sprite.state.goal = None
+
+
     def _resolve(self, sprite: Asset, board: Board) -> None:
         """
         ### _resolve(sprite: Asset, board: Board)
@@ -174,6 +246,7 @@ class CognitionMechanics(Mechanic):
             ):
                 sprite.state.goal = None
                 logger.info(f"{sprite.name} cleared POSITION Goal.")
+
         # ------------------------------------------------------------------------
         # ------------------------------------------------- OBJECT GOAL RESOLUTION
         # ------------------------------------------------------------------------
@@ -394,11 +467,11 @@ class CognitionMechanics(Mechanic):
         Updates the goal position if the target is visible. Freezes it if not.
         """
         goal = sprite.state.goal
-        vision_radius = sprite.state.mutators.parameters.vision.radius
 
         if not goal:
             return
-        
+
+        vision_radius = sprite.state.mutators.parameters.vision.radius
         target_state = None
 
         # ------------------------------------------------------------------------ 

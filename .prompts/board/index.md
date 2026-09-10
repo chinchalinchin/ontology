@@ -32,8 +32,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 01.01: Orchestration](./phases/refactor/refactor-01-01.md)
     - Phase 02:
       - [x]: [Phase 02.01: Frames](./phases/refactor/refactor-02-01.md)
-      - [x]: [Phase 02.02: Registry Indexing](./phases/refactor/refactor-02-02.md)
-      - [x]: [Phase 02.03: Equipment Animations](./phases/refactor/refactor-02-03.md)
+      - [x]: [Phase 02.02: Registry](./phases/refactor/refactor-02-02.md)
+      - [x]: [Phase 02.03: Equipment](./phases/refactor/refactor-02-03.md)
       - [x]: [Phase 02.04: Engine](./phases/refactor/refactor-02-04.md)
       - [x]: [Phase 02.05: Finetuning](./phases/refactor/refactor-02-05.md)
     - Phase 03:
@@ -46,7 +46,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 04.03: EventHandlers](./phases/refactor/refactor-04-03.md)
       - [x]: [Phase 04.04: MenuContext](./phases/refactor/refactor-04-04.md)
     - Phase 06:
-      - [x]: [Phase 06.01: Expression Animations](./phases/refactor/refactor-06-01.md)
+      - [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantied Assets](./phases/patch/bug-b001.md)

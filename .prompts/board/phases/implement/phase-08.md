@@ -156,7 +156,7 @@ Running RRT across the entire `Board` dimensions is computationally wasteful and
 Generating a new RRT on every frame inside `_track()` would instantly lock the Python GIL and crash the framerate. RRT should be treated as an expensive, asynchronous-like operation triggered only by specific edge-case state changes:
 
 1. **Initial Obscuration:** In `_track()`, if a Sprite acquires a `TARGET`/`SUBJECT`/`POSITION`, we project a line to the goal. If `geometry.intersects` detects an intervening Asset with `mass >= 0` (using `board.weights()`), we trigger RRT.
-2. **Path Invalidation:** While a Sprite is following a waypoint (`wp_x`), if a dynamic asset (like a pushed `Crate`) moves into the waypoint vector, the path is invalidated. The Sprite dumps its `memory.goals` and recalculates.
+2. **Path Invalidation:** While a Sprite is following a waypoint (`path-i`), if a dynamic asset (like a pushed `Crate`) moves into the waypoint vector, the path is invalidated. The Sprite dumps its `memory.goals` and recalculates.
 3. **Target Deviation:** If the ultimate `TARGET` (e.g., the Player) moves outside a certain tolerance radius from where the RRT originally expected them to be, the path is dumped and recalculated.
 
 **4. Collision Detection Strategy**
@@ -176,11 +176,11 @@ def plan(start: Position, target: Position, board: Board) -> List[Position]:
     # 2. Iterate RRT sampling
     # 3. For collision checks, construct a bounding Hitbox for the branch segment
     # 4. Use board.weights() + board.perimeters to check for mass >= 0 overlaps via geometry.intersects
-    # 5. Return List[Position] waypoints.
+    # 5. Return List[Position] path segments.
 
 ```
 
-##### Goal: Waypoint Memory Mapping
+##### Goal: Path Memory
 
 Translate the geometric output of the RRT algorithm into intentional data structures the engine already understands.
 
@@ -205,30 +205,49 @@ def inject_path(sprite: Asset, waypoints: List[Position], final_goal: Goal):
 
 ```
 
+##### Goal: Line of Sight & Raycasting
+
+Implement the RRT planner. Use the new Cython `segment_intersects` to validate RRT branches against the `Space` grid to avoid false positives from diagonal bounding boxes.
+
+```python
+# Pseudo-code for Planner
+def plan(start: Position, target: Position, board: Board) -> List[Position]:
+    # 1. Define bounded search area (AABB of start/target + padding factor)
+    # 2. Iterate RRT sampling.
+    # 3. For collision checks, use Cython line-segment math against board.weights() and board.perimeters.
+    # 4. Return List[Position] coordinates.
+
+```
+
 ##### Tasks
 
-**1. Task: RRT Algorithm Base Implementation**
+**1. Task: Cython Geometry Primitives**
 
-*Objective*: Create the mathematical RRT planner in the logic utilities.
+*Objective*: Implement `los` and `bisects` in the core math library.
 
-- [ ] Subtask: Create `app/game/logic/mechanics/modules/paths/plan.py`.
-- [ ] Subtask: Implement `Planner` class with `plan()` method.
-- [ ] Subtask: Implement dynamic search area bounding (Start to Target + 20% padding).
-- [ ] Subtask: Bridge `Planner` collision checks to use `Asset.primitive()` against `board.weights()`.
-- [ ] Subtask: Extend collision validation to iterate over `board.perimeters.get(layer, [])` to prevent pathing through static level geometry.
+* [x] Subtask: Add `bisects` to `libs/core/math/geometry.pyx` to accurately detect if an RRT branch cuts through an asset's hitbox.
+* [x] Subtask: Add `los` (Line of Sight) to `geometry.pyx` utilizing Bresenham's line algorithm to query the `Space` grid natively.
+* [x] Subtask: Recompile Cython extensions.
 
-**2. Task: CognitionMechanics Ideation & Tracking**
+**2. Task: RRT Algorithm Implementation**
 
-*Objective*: Hook the RRT planner into the Sprite's sensory loop.
+*Objective*: Build the planner utility.
 
-- [ ] Subtask: In `CognitionMechanics._track()`, implement a line-of-sight check to the current `Goal`.
-- [ ] Subtask: If line-of-sight is blocked by an Asset with `mass >= 0` OR a `Boundary` from `board.perimeters`, invoke `Planner.plan()`.
-- [ ] Subtask: Implement `inject_path()` logic to translate the returned `List[Position]` into `POSITION` goals and push them to `sprite.state.memory.goals`.
-- [ ] Subtask: Set `sprite.state.goal = None` immediately after injection to force `_remember()` to pop the first waypoint on the next tick.
+* [x] Subtask: Create `app/game/logic/mechanics/modules/paths/plan.py`.
+* [x] Subtask: Implement the `Planner` class with the `plan()` method.
+* [x] Subtask: Bridge `Planner` collision checks to use the new `segment_intersects` primitive against `board.weights()` and `board.perimeters`.
 
-**3. Task: Path Recalculation & Invalidation**
+**3. Task: CognitionMechanics Hook**
 
-*Objective*: Ensure Sprites react dynamically if the environment or target moves while they are traversing a path.
+*Objective*: Integrate LOS and RRT into the Sprite's sensory loop.
 
-- [ ] Subtask: In `CognitionMechanics._track()`, track the distance delta of the ultimate target. If the target deviates by $> X$ pixels from its position when the RRT was generated, clear the `path-` keys from memory and recalculate.
-- [ ] Subtask: If the Sprite is currently seeking a `path-` goal and the line-of-sight to that specific waypoint becomes blocked by a moving weight, clear memory and recalculate.
+* [ ] Subtask: In `CognitionMechanics._track()`, use the Cython `los` primitive to check if the direct vector to the `TARGET`, `SUBJECT` or `OBJECT` is blocked.
+* [ ] Subtask: If `los` returns `False`, trigger `Planner.plan()`.
+* [x] Subtask: Implement the `_path()` function to convert the path into `POSITION` goals, push them to `memory.goals`, push the original goal last, and clear the active `sprite.state.goal`. (This allows `_remember()` to naturally pop the first waypoint on the next tick).
+
+**4. Task: Path Invalidation & Recalculation**
+
+*Objective*: Handle dynamic environment changes during path traversal.
+
+* [ ] Subtask: In `_track()`, if the Sprite is currently tracking a `path-` goal, run a quick `los` check to that specific waypoint coordinate. If a dynamic weight (like a pushed Crate) has moved into the path, dump the `path-` goals from memory and recalculate.
+* [!] Subtask: When `TransitionMechanics` shifts a Sprite into `ESCAPE` or `WANDER`, explicitly clear any lingering `path-` goals from `memory.goals` so they don't corrupt the new Intention loop.

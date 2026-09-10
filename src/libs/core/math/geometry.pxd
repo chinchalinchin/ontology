@@ -49,3 +49,11 @@ cpdef tuple bounded(
     int b_w,
     int b_l
 )
+
+cpdef bint los(
+    float x1, 
+    float y1, 
+    float x2, 
+    float y2, 
+    list rects
+)

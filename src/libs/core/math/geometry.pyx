@@ -116,6 +116,77 @@ cpdef bint nearby(
 
 
 # -----------------------------------------------------------------------------
+# LINE OF SIGHT & RAYCASTING
+# -----------------------------------------------------------------------------
+
+cpdef bint bisects(
+    float x1, 
+    float y1, 
+    float x2, 
+    float y2, 
+    float rx, 
+    float ry, 
+    float rw, 
+    float rl
+):
+    """
+    Liang-Barsky line clipping algorithm to check if a segment intersects an AABB.
+    Returns True if the line segment intersects the rectangle, False otherwise.
+    """
+    cdef float dx = x2 - x1
+    cdef float dy = y2 - y1
+    cdef float p[4]
+    cdef float q[4]
+    
+    p[0] = -dx
+    q[0] = x1 - rx
+    p[1] = dx
+    q[1] = (rx + rw) - x1
+    p[2] = -dy
+    q[2] = y1 - ry
+    p[3] = dy
+    q[3] = (ry + rl) - y1
+
+    cdef float u1 = 0.0
+    cdef float u2 = 1.0
+    cdef int i
+    cdef float r
+
+    for i in range(4):
+        if p[i] == 0:
+            # Line is parallel to clipping window edge
+            if q[i] < 0:
+                return False
+        else:
+            r = q[i] / p[i]
+            if p[i] < 0:
+                if r > u2:
+                    return False
+                elif r > u1:
+                    u1 = r
+            elif p[i] > 0:
+                if r < u1:
+                    return False
+                elif r < u2:
+                    u2 = r
+
+    if u1 > u2:
+        return False
+        
+    return True
+
+
+cpdef bint los(float x1, float y1, float x2, float y2, list rects):
+    """
+    Queries Line of Sight against a list of primitive AABBs.
+    Returns True if LOS is completely clear, False if blocked by any rect.
+    """
+    cdef tuple r
+    for r in rects:
+        if bisects(x1, y1, x2, y2, r[0], r[1], r[2], r[3]):
+            return False
+    return True
+# -----------------------------------------------------------------------------
 # SWEEP-LINE CONTOUR ALGORITHM
 # -----------------------------------------------------------------------------
 

@@ -11,7 +11,7 @@ build/**
 **/.pytest_cache/**
 **/.vscode/**
 **/logs/**
-
+**/new.py
 !**/.gitkeep
 !**/templates/*-dump.md
 !**/.prompts/blocks/**
