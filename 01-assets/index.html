@@ -2144,7 +2144,7 @@
 <h3 id="chests">Chests</h3>
 <p><em>Chests</em> are <em>Binary Objects</em> whose frame can be changed by the player entering into an <code>interact</code> <a href="../04-intentions/">Intention</a> while intersecting the hitboxes of the Chest. When <code>switch == true</code>, the Chest is <em>on</em> (open). When <code>switch == false</code>, the Chest is <em>off</em> (closed).</p>
 <p>A Chest is <em>reusable</em> through the <code>interact</code> <a href="../04-intentions/">Intention</a>, meaning <a href="../02-sprites/#inventory">Inventory Loot</a> can be taken out of and also placed into a Chest. The <code>content</code> state field manages the current contents of the Chest through a list of Inventory Loot keys.</p>
-<p>When <em>interacting</em> with a Chest, the <a href="./03-player.md">Player</a> is shown the <a href="../06-widgets/#menus">Chest menu</a>, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an <code>interact</code> Intention with a Chest through its <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. This interaction is managed through a dedicated Sprite <a href="../05-mechanics/">Mechanic</a></p>
+<p>When <em>interacting</em> with a Chest, the <a href="../02-sprites/#player">Player</a> is shown the <a href="../06-widgets/#menus">Chest menu</a>, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an <code>interact</code> Intention with a Chest through its <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. This interaction is managed through a dedicated Sprite <a href="../05-mechanics/">Mechanic</a></p>
 <p><strong>Animation: BinaryAnimation</strong></p>
 <ul>
 <li><code>if switch == true: animation.frame = 1</code></li>
@@ -2459,7 +2459,7 @@
 <li><code>delay</code>: (<em>Optional</em>) Number of Engine ticks to accumulate before a frame update. Used to control the speed of the animation. Defaults to 1. </li>
 </ul>
 <p><strong>Action Sets</strong></p>
-<p>Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See <a href="#action-configuration">Action Configuration Schema</a> below for more details. </p>
+<p>Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See <a href="../appendices/01-schemas/#configuration-actions">Action Configuration Schema</a> below for more details. </p>
 <p><strong>Stacks</strong></p>
 <p>A Stack is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.</p>
 <p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. This Sprite stack is assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>stack</code> property during the <a href="../10-architecture/#initialization">application bootstrap</a>. The assembled <code>stack</code> is saved as a Sheet Asset, using the <code>&lt;sheet-id&gt;</code> as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.</p>
@@ -2534,7 +2534,7 @@
 <p>Fonts are stateless Assets initialized at <a href="../10-architecture/#initialization">runtime</a>, i.e. they are not deployed onto the Board; instead Fonts are utilized by the <a href="../00-overview/#screen">Screen</a> to render text whenever the game loop calls for text. </p>
 <p>A Font is a wrapper <code>.ttf</code> file and a data structure used to configure the Font styling. Each styled Font is stored in the <a href="../00-overview/#registry">Registy</a> using its file name. The <a href="../00-overview/#screen">Screen</a> retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.</p>
 <p>In other words, a Font Asset encapsulates both the script and the styling applied to the script. </p>
-<p>See <a href="../10-architecture/#sdl">SDL Architecture documentation</a> for more information on Fonts.</p>
+<p>See <a href="../10-architecture/#graphics">Graphics Architecture documentation</a> for more information on Fonts.</p>
 <p><strong>Properties: FontProperties</strong></p>
 <ul>
 <li><code>alignment: str</code></li>

@@ -1339,8 +1339,7 @@
 </ul>
 <p>When a <a href="../06-widgets/#events">MenuEvent</a> fires and a modal Menu is pushed to the screen, <code>board.paused</code> evaluates to <code>True</code>. The Engine skips the <code>world</code> mechanics loop entirely. The world freezes, but <code>core</code> mechanics continue ticking, allowing the Player to navigate the menu while background torches remain animated without the risk of enemies moving or attacking.</p>
 <h2 id="maps">Maps</h2>
-<p>Maps associate ancillary Asset states to their final Animation state.</p>
-<p>See <a href="../04-intentions/#animationmap">AnimationMap</a> and <a href="../04-intentions/#dialoguemap">DialogueMap</a> for more information.</p>
+<p>Maps associate ancillary Asset states to their final Animation state. See <a href="../04-intentions/#animationmap">AnimationMap</a> for more information.</p>
 <p>The <code>AnimationMap</code> plays a crucial role in enforcing logical constraints. For example, <code>TransitionMechanics</code> and <code>PlayerMechanics</code> utilize <code>AnimationMap.action(state, equipment)</code> to resolve whether an intended action is possible. This guarantees that an <code>attack</code> intention will not translate into a <code>thrust</code> animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.</p>
 <h2 id="board">Board</h2>
 <h3 id="spatial-grid-caching">Spatial Grid Caching</h3>
