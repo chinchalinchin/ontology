@@ -1,4 +1,4 @@
-#### Refactor: Phase 05.04 - InventoryController
+#### Achieve: Goal 05 - InventoryController
 
 **Overview** 
 

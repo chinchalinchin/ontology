@@ -1,62 +1,71 @@
-#### Implement: Phase 03 - Finetuning
+#### Implement: Phase 04 - Physics
 
-Current keyboard mappings are given by,
+**Overview**
 
-```yaml
-mappings:
-  keyboard:
-    intentions:
-      interact: 44  # SDL_SCANCODE_SPACE
-      sprint: 225   # SDL_SCANCODE_LSHIFT
-      speak:
-      build: 
-      mine: 
-      attack:
-    goals:
-      up: 26    # SDL_SCANCODE_W
-      down: 22  # SDL_SCANCODE_S
-      left: 4   # SDL_SCANCODE_A
-      right: 7  # SDL_SCANCODE_D
+The current collision system relies on a brute-force $O(N^2)$ nested loop executing across heavy Python objects within a Cython function, causing excessive GIL thrashing. This phase overhauls the physics pipeline by fully decoupling **Collision Detection** (handled natively in C/Cython via primitives) from **Collision Resolution** (handled in Python).
+
+By serializing spatial data, partitioning the board with a Broad-Phase grid, and returning integer pairs for Python to resolve, we preserve readability while guaranteeing massive performance gains for dense environments.
+
+The grid's blueprint (`cdef class Space`) must be defined in the Cython math library.
+
+Because the entire point of the spatial hash is to operate at C-speeds, it cannot rely on Python lists or dictionaries under the hood. It needs to be built using contiguous C-memory (like a flat C-array or a C++ `std::vector`). Defining it in `math.pyx` allows us to strictly type the variables and bypass the Python Global Interpreter Lock (GIL) during the hashing and querying steps.
+
+The *instance* of the grid should be an attribute of the `CollisionMechanics` class. Here is why it shouldn't live on the `Board` or as a static variable in `Physics`:
+
+* **The Board is a Database:** The `Board` is designed to hold the absolute truth of the game state (Assets, Configurations, Equipment). The spatial grid, however, is a transient, algorithmic data structure. Its data is only valid for a single frame. It represents *behavioral context*, not absolute state.
+* **Mechanics are Filters:** The engine's philosophy states that Mechanics query the Board for what they need. `CollisionMechanics` is the system responsible for physics. It should own the tools required to perform its job.
+* **The "Zero Heap Allocation" Rule:** If we define the grid inside a static `Physics.collisions` method, we would have to instantiate a new grid and destroy it every single frame. At 60 FPS, that means allocating and garbage-collecting 60 objects a second, which causes micro-stutters.
+
+By making the grid an attribute of `CollisionMechanics`, we instantiate it *exactly once* when the game bootstraps:
+
+```python
+class CollisionMechanics(Mechanic):
+    def __init__(self):
+        # Allocated once in memory during orchestration
+        self.grid = SpatialHash(cell_size=64, max_entities=2000)
+
 ```
 
-**Goals:**
+Then, at the start of every frame's `update(self, board, delta)` loop, we simply call `self.grid.clear()`. This zeroes out the underlying C-array but keeps the memory allocated. We repopulate it, query it, and move on. No heap allocation, no garbage collection, and maximum performance.
 
-- Ensure animations are smooth, i.e. FPS and UPS is well-balanced.
-- Ensure player only animates when input is provided or player is otherwise locked into a state (i.e. swinging a sword in `slash`). Same applies to non-player Sprites.
-- Ensure keyboard mappings translate to state changes.
+!!! note
+    It is acceptable for the SwitchMechanics, ProjectileMechanics, and other Mechanics to keep their own SpatialHash.
 
-**Current Problems:**
+**1. Task: The Data Bridge (Serialization)**
 
-- Player sprite animates as soon as engine boots. The intended function `mutators.triggers.animated` does not exist in the data schema.
+*Objective*: Prevent Python objects from crossing the Cython boundary. `CollisionMechanics` must extract and flatten spatial data into primitive structures before passing it to the C-stack.
 
-**1. Task: Resolve Critical Initialization Exceptions**
+* [x] Subtask: Update `CollisionMechanics.update()` to map dynamic Assets (e.g., `crates`, `sprites`, `players`) into an indexed dictionary or list, assigning a temporary integer ID to each entity for the duration of the frame.
+* [x] Subtask: Construct a flattening routine in `CollisionMechanics` that extracts `x, y, w, l` and any active `hitboxes` from the Assets into parallel arrays, memoryviews, or primitive tuples.
+* [x] Subtask: Refactor the signature of `Physics.collisions()` in `libs/core/math.pyx` to accept these primitive arrays/lists instead of `Asset` objects.
 
-*Objective*: Fix schema and enum misalignments preventing engine loop execution.
+**2. Task: Broad-Phase Spatial Partitioning**
 
-- [x] Subtask: Add `POSITION` to the `GoalCategories` Enum in `app/config/enums.py`.
-- [!] Subtask: Update `Board.player()` to use `.get()` with safe list checking to prevent `KeyError` exceptions when evaluating the `PLAYERS` instance array. (CLOSED: There is currently no reason for the board to exist without a player.)
-- [x] Subtask: Update `AnimationMap.action()` to explicitly handle the `IDLE` intention, returning a locked `WALK` action but preparing the state for frame 0.
+*Objective*: Eliminate the `O(N^2)` brute-force check by implementing a Spatial Hash Grid natively in Cython, guaranteeing that narrow-phase checks only occur between entities in adjacent physical space.
 
-**2. Task: Reconcile Mutator Schemas & Implement Animation Triggers**
+* [x] Subtask: Define a `cdef class SpatialHash` in `libs/core/math.pyx` configured with a static cell size (e.g., 64x64 or 128x128 pixels).
+* [x] Subtask: Implement a fast insertion method that takes the primitive `x, y, w, l` boundaries of an entity and maps its temporary integer ID into the appropriate grid bucket(s).
+* [x] Subtask: Implement a query method that iterates through the populated buckets and yields a deduplicated list of candidate ID pairs that share the same or adjacent cells.
 
-*Objective*: Allow Sprites to halt animation cycles based on behavioral state.
+**3. Task: Narrow-Phase Detection (Cython)**
 
-- [x] Subtask: Modify `app.models.state.Mutators` to include `triggers: Dict[str, bool]` as dictated by the documentation. Nest `fear` and `vision` under `parameters`.
-- [x] Subtask: Update Pydantic validators. Ensure validated models are correctly migrated during orchestration.
-- [x] Subtask: Since Mutators may be absent from the Player State YAML file (e.g. Player mutators are not parameterized), ensure the new models set defaults to prevent validation failures. 
-- [x] Subtask: Update `PlayerMechanics` to set `player.state.mutators.triggers.animated = has_movement`. Ensure this evaluation ignores movement if the player is locked in a non-interruptible action (e.g., `attack`).
-- [x] Subtask: Update `StateAnimation.animate()` in `app/assets/animations.py` to check `state.mutators.triggers.animated`. If False, force `state.animation.frame = 0` and bypass the increment calculation.
+*Objective*: Perform the actual AABB hitbox checks on the candidate pairs strictly using C-level primitives, returning actionable data to Python.
 
-**3. Task: Resolve Cartesian Motion Mechanics**
+* [x] Subtask: Refactor the internal loop of `Physics.collisions()` to iterate *only* over the candidate pairs generated by the Broad-Phase Spatial Hash.
+* [x] Subtask: Invoke the existing `Geometry.intersects` logic on these pairs, relying entirely on the unpacked primitive data (C-integers) rather than fetching from Python attributes.
+* [x] Subtask: Accumulate confirmed collisions into a Python list of integer tuples (e.g., `[(id_1, id_2), (id_3, id_4)]`) and return this list to the caller.
 
-*Objective*: Standardize velocity calculations to prevent diagonal speed exploitation.
+**4. Task: Physics & State Resolution (Python)**
 
-- [x] Subtask: Refactor `MotionMechanics.update()` to calculate the Euclidean distance to the goal. Normalize the `dx, dy` components into a unit vector, then multiply by `speed` before applying the positional translation.
-    - [x] Subtask: Before completing this task, discuss whether introducing square-root calculations into the engine and turning the game space into the continuum presents any problems. I am not against this approach, but I want to consider all angles.
+*Objective*: Map the collision pairs back to game entities and apply the actual gameplay logic (kinematics, halting, triggers) on the Python side.
 
-**4. Task: Implement Rendering Constraint (Frame Limiter)**
+* [x] Subtask: In `CollisionMechanics.update()`, receive the list of colliding ID pairs from `Physics.collisions()` and map them back to their respective `Asset` instances.
+* [x] Subtask: Implement resolution logic. Calculate the overlap vectors to push entities out of one another (e.g., preventing a Player from walking through a Crate or Wall).
+* [x] Subtask: Apply state updates based on entity types. If a collision involves a mutable entity, revert its position or halt its motion vector. If appropriate, set `asset.state.mutators.triggers.struck = True`.
 
-*Objective*: Stop the engine from busy-waiting and rendering visually redundant frames.
+**5. Task: Documentation & Cleanup**
 
-- [x] Subtask: Introduce a `TARGET_FPS` configuration into `app.config.settings` (e.g., 60 or 144).
-- [x] Subtask: Update `app.game.engine.Engine.start()` to track a render_accumulator or sleep delta. If the time elapsed since the last `draw()` call is less than 1.0 / `target_fps`, invoke time.sleep() or an equivalent SDL yield to release the CPU thread back to the operating system.
+*Objective*: Ensure the architectural principles behind the new physics pipeline are immortalized for future development phases.
+
+* [x] Subtask: Update `docs/10-architecture.md` under the **Cython** and **Mechanics** sections to explain the Broad-Phase / Narrow-Phase split and the integer-serialization requirement for physics calculations.
+* [x] Subtask: Clean up any obsolete collision stubs left in `ProjectileMechanics` or `SwitchMechanics` if they can be unified under the new broad-phase grid.

@@ -1,4 +1,4 @@
-#### Refactor: Phase 07.01 Speak Intention
+#### Achieve: Goal 06 - Speak Intention
 
 **Overview**: Implement the `speak` Intention and its Dialogue Loop. Unify the Expression pipeline using "Phantom State" data overlays. Isolate linguistic interactions into a dedicated Mechanic. Resolve Goal Acquisition logic and memory bugs.
 

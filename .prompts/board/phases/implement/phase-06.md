@@ -1,245 +1,158 @@
+#### Implement: Phase 07 - Intentions
 
-#### Implement: Phase 06 - Editor
+##### Goals
 
-**Overview**
+**1. Interfaces (`app.services.translators.base`)**
 
-Construct an integrated Editor Menu utilizing a dual-mode workflow (Selecting vs. Editing). The UI will utilize a custom Canvas Widget that dynamically scales and bakes an abstract game Board into a fixed-size texture.
+* **`Executor` (ABC):** Defines the execution contract.
 
-**Specifications**:
-  - Initializes a Board.
-  - Adds Assets to the Board based on user input.
-  - Outputs state YAMLs. 
-
-##### Goal: Canvas Widget & Bindings
-
-Extend the UI ECS pipeline to support rendering scaled World representations on a Menu Widget.
-
-
-##### Goal: Dual-Mode Workflow
-
-Implement the input routing and Cython rebaking pipeline.
-
-##### Design: Data Models
-
-**EditorState**
-
-- `mode: Enum[creating | selecting | editing ]`
-- `selection: Taxonomy`:
-    - `id`: str
-    - `name`: str
-    - `instance`: str
-    - `category`: str
-- `palettes: dict`
-  - `tiles: List[Asset]`
-  - `objects: List[Asset]`
-- `grid: Dict[hash: (x,y)]`
-- `focus: str`
-
-**CanvasState**
-
-- `texture: TexturePtr`
-- `board: Board`
-
-- `undo(asset: Asset) -> None: board.remove(asset)`
-
-**BoardBinding**
-
-```yaml
-bind:
-  schema: board
-  target: <component>.board
+```python
+class Executor(ABC):
+    @abstractmethod
+    def evaluate(self, sprite: SpriteState, sprites: Dict[str, Any]) -> Optional[Intentions]:
+        pass
 ```
 
-Returns a live reference to a Board object. 
 
-##### Design: MVP
+* **`Translator` (ABC):** Defines the compilation contract.
 
-Editor Menu has the following layout:
+```python
+class Translator(ABC):
+    @abstractmethod
+    def compile(self, raw_intentions: Dict[Intentions, List[IntentionConfiguration]]) -> Executor:
+        pass
+```
 
-- A Header of Buttons:
-  - New: Creates a New Modal to get Canvas size from User.
-  - Save: Create a Save Modal to get World name from User.
-  - Mode: Toggle between `selecting` and `editing`
-- Pane:
-  - Tabs:
-    - Pane(World Canvas): Disabled when `selecting`
-    - Pane(Tile Palette): Disabled when `editing`
-    - Pane(Object Palette): Disabled when `editing`
-- Pane:
-  - Slot(Palette Selection): Current `selection` from `palettes` and its metadata.
+**2. Concrete Implementations**
 
-###### Tab: Pane(Tile Palette)
+* **`LambdaTranslator` & `LambdaExecutor`:** Evaluates string conditions by generating a Python function via `eval(f"lambda sprite, sprites: {condition_str}")`. Relies on `LOAD_FAST` bytecode optimization.
+* **`CompilerTranslator` & `CompilerExecutor`:** Evaluates string conditions by compiling raw expressions via `compile(expr, '<string>', 'eval')` and executing them via `eval(code_obj, globals, locals)`. Relies on `LOAD_NAME` dictionary lookups.
 
-All Tiles in the Property Index are read in from the registry and scaled into icons. 
+**3. Integration Point**
 
-**Layout**: `stack` of `docks`. The number of elements in a `dock` is calulated based on pane size, slot size and the number of Tiles loaded into the registry. For example, if the pane is 100px wide, the slot is 20px wide and there are 14 Tiles in the registry. There will be two `docks` of five Tiles and one `dock` of four tiles. The `docks` will be aligned `center`.
+The `Orchestrator` or `Builder` inspects `settings.TRANSLATOR`, instantiates the appropriate `Translator`, compiles the raw YAML intention configurations into an `Executor`, and injects that `Executor` into `TransitionMechanics`.
 
-**Pane Workflow**
+**4. Benchmarking Methodology**
 
-- User clicks on Tile.
-- Selection loads with Tile. 
+To empirically determine whether AST compilation's elegance is "worth the squeeze" in a CPython 2D game loop, the benchmarking harness must measure **inner-loop execution time** under realistic load (e.g., evaluating transitions for $N$ active sprites across thousands of frames).
 
-###### Tab: Pane(Object Palette)
+1. **Metric:** Average execution time per sprite tick (measured in nanoseconds/microseconds using `time.perf_counter_ns()`).
+2. **Test Harness:** A dedicated benchmark script (`scripts/benchmark_isl.py`) or an integrated telemetry flag that runs a headless simulation for 1,000 game ticks with 100 active sprites constantly evaluating intention transitions.
+3. **Data Collection:** Capture total CPU time spent inside `TransitionMechanics.update()` across both strategies under identical board states.
+4. **Evaluation Criteria:** If the `CompilerTranslator` introduces more than a marginal percentage increase in frame-time overhead due to dictionary allocation and `LOAD_NAME` resolution, `LambdaTranslator` remains the default.
 
-**Layout**: `stack` of `docks`. The number of elements in a `dock` is calulated based on pane size, slot size and the number of Tiles loaded into the registry. For example, if the pane is 100px wide, the slot is 20px wide and there are 14 Tiles in the registry. There will be two `docks` of five Tiles and one `dock` of four tiles. The `docks` will be aligned `center`.
-
-**Pane Workflow**
-
-- User clicks on Object.
-- Selection loads with Object.
-
-###### Tab: Pane(World Canvas)
-
-A Pane containing a specialized Widget for representing the Board World state.
-
-**Pane Workflow**
-
-- EditorController hijacks focus traversal.
-- Focus traverses grid.
-- User pastes Selection into grid coordinates of the Widget.
-
-###### Assets
-
-**Canvas**: It holds a Cython `TexturePtr` (the visual canvas) and an isolated `Board` object (the abstract representation of the world being edited)
-**Grid**: Basically a fixed transparent Tile with a border (32x32 px), to highlight the lattice. There are exactly *two* Grid Tiles, required by the application, `focus` and `cell`. `focus` is the frame displayed when the Editor is focused on a particular cell of its `grid`. `cell` is the frame displayed when a particular cell of the grid does not have `focus`. Grid Tiles are superimposed over the Canvas.
-
-###### Workflow
-
-- All Buttons in Bar are disabled but New. 
-- User is forced to select New.
-  - User enters (width, length) into New Modal.
-- Canvas(world=(width, length)) is created.
-  - **NOTE**: Canvas Size is part of the Editor configuration. Canvas calculates a constant of portionality, `ratio`, upon instantiation. This represents the conversion rate between World space and Canvas space.
-  - Editor uses Grid Tiles to construct a scaled replica of World space in Canvas space. Editor assumes World is partitioned into grid of `(tiles.grid.dimension.w, tiles.grid.dimensions.l)` squares.
-  - Editor uses `ratio` to scale the World to Canvas size.
-- User enters `selecting` mode. Canvas is displayed next to empty Selection Slot.
-  - User is able to navigate `grid` by shifting `focus` at this point, but selecting does nothing.
-- User navigates to the Palette Tab
-  - `focus` moves between Canvas and Button Bar.
-  - `focus` traverses Button Bar.
-  - `focus` selects appropriate Tab.
-- Palette Tab is displayed.
-- User makes a Selection. 
-- Selection is saved into the `selection` buffer. 
-- Selection Slot is updated with `selection`.
-- Editor automatically switches to `editing` mode. Palette tabs are disabled and Canvas tab is shown.
-- User navigates `grid` by shifting focus. 
-- User selects `grid` coordinates, where (x,y) is the top left of the grid square.
-- Selection is instantiated at (x, y) and added to the Board. 
-  - Update/CamvasEvent is fired to rebake Canvas.
-  - Canvas (or TBD component) renders entire Board state, scales it down to the Canvas size for stamping the Canvas display.
-  - Canvas is redrawn. 
-- Editor is still in `editing` mode. Selection is still selected in Selection Slot. 
-  - User may continue instantiating the selected Palette Asset.
-  - User may presses `CANCEL` to undo the Selection paste.
-- User clicks Save. Board is serialized into state file.
-  - User enters `<board-key>` into Save Modal.
-  - Board is saved to `/src/data/state/<board-key>/<timestamp>.yaml`
-
-**Notes**
-
-1. *Hardware Texture Limits (The Rebake Method)*: Do not render at 1:1. The `render.construct()` interface in `libs/graphics/render.pyx` already accepts `dx, dy, dw, dl`. Calculate the proportional constant on the Python side, scale every asset's dimensions and positions, and pass those reduced integers across the boundary. Bake *directly* onto the fixed-size Canvas Widget texture.
-2. *Traversal Hijacking*: Right now, `MenuMechanics` blindly reads `DevicePayload.menu.traversal` and checks `active_menu.graph` to jump focus from widget to widget. If user presses `EAST` while focused on the Canvas, it will try to jump to the next Widget in the traversal grpah button. `MenuMechanics` needs an explicit mechanism to relinquish traversal control. When the "editing" toggle is active, `MenuMechanics` must stop querying the AABB graph and route `NORTH/SOUTH/EAST/WEST` directly into the `EditorController.update()` to move the grid coordinate.
-3 *The `CANCEL` Undo Conflict\* In the current implementation, passing `Interactions.CANCEL` pushes a `TerminalEvent` to the bus, which instantly pops the active Menu off the stack and closes it. If `CANCEL` is to act as "undo", this behavior must be intercepted. The `EditorController` must intercept the `CANCEL` input when in `editing` mode, pop the last modification from an internal `undo_stack`, and swallow the input so it never reaches the `MenuMechanics` teardown logic.
-
-#### Tasks
-
-**1. Task: Board Binding Implementation**
-
-*Objective*: Create a binding schema to link a World Board to a Menu Widget.
-
-* [ ] Subtask: Create `BoardBinding(Binding)` in `app.game.menus.bindings.py`. Implement `bind()` to return a `board_function` closure resolving the target abstract Board.
-* [ ] Subtask: Register `schema == 'board'` in `Binder.binding()` (`app.services.generators.binder.py`).
-
-**2. Task: Canvas State Models**
-
-*Objective*: Define the data models for the Canvas Widget.
-
-* [ ] Subtask: Create `CanvasState` in `app.models.state.widgets`.
-* [ ] Subtask: Include fields: `board` (abstract Board), `world_size` (Dimensions), `ratio` (float), `cursor_grid` (Position), `undo_stack` (List).
-
-**2. Task: Provider Instantiation**
-
-*Objective*: Allow the Provider to instantiate the Canvas Widget.
-
-* [ ] Subtask: Implement `_unpack_canvas` in `app.services.generators.provider`.
-* [ ] Subtask: Initialize the Canvas by calculating the `ratio` (`widget.dimensions.w / world_size.w`). Allocate the fixed-size UI texture via `render.canvas()`.
-
-**3. Task: The Rebake Pipeline**
-
-*Objective*: Bake the abstract world onto the Canvas texture using scaled primitive tuples.
-
-* [ ] Subtask: Implement a `_rebake_canvas()` helper in the `EditorController`.
-* [ ] Subtask: Iterate over `CanvasState.board`. Multiply each asset's `dx, dy, dw, dl` by the `ratio`.
-* [ ] Subtask: Pass the scaled primitive tuples, along with a tiled grid asset and the highlighted cursor coordinate asset, to `render.construct()` targeting the Canvas Widget's `TexturePtr`.
-
-**4. Task: Traversal & Undo Routing**
-
-*Objective*: Intercept inputs based on the mode toggle.
-
-* [ ] Subtask: Refactor `MenuMechanics.update()` to check for an `editing_mode` flag. If true, bypass `active_menu.graph` traversal and route directional input to the Controller.
-* [ ] Subtask: Intercept `Interactions.CANCEL` in `MenuMechanics`. If `editing_mode` is true, route to the Controller for Undo logic instead of firing a `TerminalEvent`.
-
-**5. Task: Editor Controller Logic**
-
-*Objective*: Implement the core mode-switching and placement behaviors.
-
-* [ ] Subtask: Implement `select()`. If in `selecting` mode, update the active `Taxonomy` selection. If in `editing` mode, push the current cell state to the `undo_stack`, append the selected asset to the abstract `Board` at `cursor_grid * 32`, and trigger `_rebake_canvas()`.
-* [ ] Subtask: Implement `update()`. If in 'editing' mode, listen for traversal inputs to increment/decrement `cursor_grid` and trigger `_rebake_canvas()` to update the highlight position.
+**5. The Core Paradigm: Separation of "Brain" and "Instinct"**
 
 
+* **`CognitionMechanics` (The Brain):** Manages the **Goal Lifecycle**. It evaluates the environment, consults `Motivations` and `Meters`, sets the `Goal`, determines if the `Goal` has been achieved (or invalidated), and manages the Memory stack.
+* **`TransitionMechanics` (The Instinct):** Manages the **Intention Transitions**. It looks at the current `Goal` set by Cognition and evaluates the ISL matrix to figure out *how* to achieve it (e.g., "I have a target Sprite, so I transition from `IDLE` to `FIND`").
+* **Spatial Mechanics (The Muscle):** `CombatMechanics`, `InteractionMechanics`, etc., alter the physical world state (e.g., killing the target, opening the chest). This physical change is what signals `CognitionMechanics` on the *next* frame that the goal is achieved.
 
+**6. The Goal Lifecycle (Implementation in `CognitionMechanics`)**
 
+`CognitionMechanics.update()` should execute the following four phases in strict order every game tick:
 
+*Phase A: Resolution (Is the goal finished?)*
 
+Before doing anything, the Sprite evaluates its current `goal`. Has the world state changed such that the goal is complete or no longer valid?
 
+* *If `goal.category == SPRITE`:* Is the target dead? If yes, `sprite.state.goal = None`.
+* *If `goal.category == LOOT`:* Does `sprite.inventory` now contain the item? If yes, `sprite.state.goal = None`.
+* *If `goal.category == POSITION`:* Is `sprite.position` within an epsilon radius of the target? If yes, `sprite.state.goal = None`.
 
+*Phase B: Memory Management (The Stack)*
 
+If `sprite.state.goal` is `None` (either because it was just resolved or never existed), the Sprite checks its memory.
 
-#### Backlog: Implement Phase 06 - Editor
+* If `memory.goals` has items, pop the top item and set it as `sprite.state.goal`.
 
-**Overview**
-Construct an integrated Editor Menu utilizing a dual-mode workflow (Selecting vs. Editing). The UI will utilize a custom Canvas Widget bound to a Board via `BoardBinding`. The `EditorController` manages mode toggling, internal grid coordinates, and the undo stack.
+*Phase C: Ideation (Goal Selection)*
 
-##### Goal: Canvas Widget & Bindings
+If `sprite.state.goal` is *still* `None` (memory is empty), the Sprite must ideate a new Goal based on internal needs and external stimuli. This operates on a hierarchy of priorities:
 
-Extend the UI ECS pipeline to support rendering scaled World representations on a Menu Widget.
+1. **Immediate Needs (Meters):** If `health` is critically low, generate a `Goal(POSITION, nearest_safe_zone)` or `Goal(LOOT, health_potion)`.
+2. **Motivations (Psyche):**
+    * `PROFIT`: Scan environment for `CHESTS` or `MINEABLE` resources. Generate `Goal(LOOT, ore)`.
+    * `CONQUEST`: Scan for `PLAYERS` or rival faction `SPRITES`. Generate `Goal(SPRITE, player_name)`.
+    * `SURVIVAL`: Scan for food or shelter.
+* *Fallback:* If no motivational targets are in the `vision.radius`, generate a generic `Wander` coordinate.
+
+*Phase D: Interruptions & Tracking*
+
+Even if a Sprite has a Goal, the environment can interrupt them.
+
+* If the Sprite is struck by an enemy (triggering `mutators.triggers.struck`), survival overrides profit. The Sprite pushes its current `Goal(LOOT, chest)` onto the `memory.goals` stack, and generates an immediate `Goal(SPRITE, attacker)`.
+* Finally, `CognitionMechanics` updates `goal.position` for moving targets (what the mechanic currently does).
+
+##### Example Scenario Flow
+
+**Frame 1 (Ideation):**
+
+1. `CognitionMechanics`: Sprite has no Goal. Motivation is `PROFIT`. Scans environment, finds a Chest. Sets `Goal(category=ASSET, name="chest-01")`.
+2. `TransitionMechanics`: ISL rule triggers: `not sprite.intention and sprite.goal -> intention = FIND`.
+3. `MotionMechanics`: Accelerates Sprite toward `goal.position`.
+
+**Frame X (Arrival):**
+
+1. `MotionMechanics`: Sprite physically collides with the Chest.
+2. `TransitionMechanics`: ISL rule triggers: `intersects(sprite, goal) -> intention = INTERACT`.
+
+**Frame X+1 (Interaction):**
+
+1. `InteractionMechanics`: Sees Sprite is in `INTERACT`. Flips chest `switch` to `ON`. Puts chest contents into Sprite's `inventory`.
+
+**Frame X+2 (Resolution):**
+
+1. `CognitionMechanics`: Evaluates Phase A. Target was a Chest, and the Chest is now `ON` (empty). Goal achieved. Sets `goal = None`. Memory is empty. Phase C (Ideation) generates a new goal (e.g., `Wander`).
+2. `TransitionMechanics`: ISL rule triggers: `not sprite.goal -> intention = IDLE`.
 
 ##### Tasks
 
-**1. Task: Board Binding Implementation**
-*Objective*: Create a binding schema to link a World Board to a Menu Widget.
 
-* [ ] Subtask: Create `BoardBinding(Binding)` in `app.game.menus.bindings.py`. Implement `bind()` to return a `board_function` closure resolving the target abstract Board.
-* [ ] Subtask: Register `schema == 'board'` in `Binder.binding()` (`app.services.generators.binder.py`).
+**0. Animation & Cognition Map Bug Fixes**
 
-**2. Task: Canvas Widget Core**
-*Objective*: Define the data models for the Canvas Widget.
+- BUG: *Null Reference in CognitionMechanics:* In `CognitionMechanics._acquire_target` and `_track_target`, you call `sprite.state.mutators.parameters.vision.radius`. However, in `models.state.py`, `Mutators.parameters` defaults to `None`. If a basic Sprite (like a Pixie or simple NPC) lacks parameterized mutators, this will throw an `AttributeError`.
+- BUG: *Transition vs. Animation Sync:* Currently, `TransitionMechanics` maps the Animation Action *before* evaluating the Intention conditions. This means the sprite visually reacts one frame *after* its internal state transitions. (Your backlog successfully identified this, but it must be explicitly fixed).
 
-* [ ] Subtask: Create `CanvasState` in `app.models.state.widgets`. Include `board_function` (Callable), `proportional_constant` (float), and `canvas` (TexturePtr).
-* [ ] Subtask: Implement `_unpack_canvas` in `app.services.generators.provider`. Calculate `proportional_constant = widget.dimensions.w / world_size.w` and allocate the fixed-size UI texture via `render.canvas()`.
+*   [x] Update `AnimationMap.action()` to properly resolve spatial/interactive Intentions (`MINE`, `BUILD`, `INTERACT`) against slotted Tools, Utilities, or default actions.
+*   [x] Patch `CognitionMechanics` to check `if sprite.state.mutators.parameters is not None` before accessing `vision.radius` or `fear` radii. 
 
-**3. Task: The Editor Controller State**
-*Objective*: Consolidate Editor logic into the Controller.
+**1. Data Model Preparation**
 
-* [ ] Subtask: Create `EditorController(MenuController)` in `app.game.menus.controllers`.
-* [ ] Subtask: Initialize instance variables on the Controller: `editing_mode: bool`, `grid_cursor: Position`, and `undo_stack: List[Asset]`.
+*   [x] Create `IntentionTransition` in `app/models/config.py` to include the compiled `conditions: List[Callable] = field(default_factory=list)`.
+*   [x] Define an `ISLEnvironment` dictionary in `app/config/settings.py` containing required Enums (e.g., `Goals`), and system targets so they can be injected into the `eval()` context safely.
 
-##### Goal: Dual-Mode Workflow
 
-Implement the input routing and Cython rebaking pipeline.
+**2. Settings & Interface Foundations**
 
-##### Tasks
+* [x] Add `ISL_TRANSLATOR: str = "lambda"` (options: `"lambda"`, `"compiler"`) to `app/config/settings.py`.
+* [x] Create `app/services/translators/base.py` defining the `Translator` and `Executor` abstract base classes.
 
-**4. Task: Traversal & Undo Routing**
-*Objective*: Intercept inputs based on the mode toggle.
+**3. Concrete Translators and Executors**
 
-* [ ] Subtask: Refactor `MenuMechanics.update()` to check for `active_menu.controller.editing_mode` (or similar flag). If true, bypass `active_menu.graph` traversal and route `NORTH/SOUTH/EAST/WEST` to `active_menu.controller.update()`.
-* [ ] Subtask: Intercept `Interactions.CANCEL` in `MenuMechanics`. If `editing_mode` is true, route to the Controller for Undo logic instead of firing a `TerminalEvent`.
+* [x] Implement `LambdaTranslator` and `LambdaExecutor` in `app/services/translators/lambda_translator.py`, utilizing string-templated `eval(f"lambda sprite, sprites: {cond}")`.
+* [x] Implement `CompilerTranslator` and `CompilerExecutor` in `app/services/translators/compiler_translator.py`, utilizing Python's native `compile(cond, '<string>', 'eval')`.
 
-**5. Task: Placement and Rebaking Pipeline**
-*Objective*: Implement the core placement behaviors and Canvas texture updates.
+**4. Chronological Refactoring (`TransitionMechanics`)**
 
-* [ ] Subtask: Implement `EditorController._rebake(canvas_widget)`. Retrieve the Board via `canvas_widget.state.board_function()`. Iterate over the Board's assets, scaling their primitives by `proportional_constant`. Pass to `render.construct()` targeting the `TexturePtr`.
-* [ ] Subtask: Implement `EditorController.update()`. When receiving directional input in editing mode, increment/decrement `grid_cursor`, clamp to boundaries, and trigger `_rebake()` (passing a scaled highlight decal primitive).
-* [ ] Subtask: Implement `EditorController.select()`. If editing, append the selected taxonomy to the Board at `grid_cursor * 32`, push the Asset to `undo_stack`, and `_rebake()`. If `CANCEL`, pop the `undo_stack`, call `board.remove([popped_asset])`, and `_rebake()`.
+* [x] Update `Builder` to compile the YAML intention rules during `build_board()` and inject the `Executor` directly into `TransitionMechanics`.
+* [x] In `TransitionMechanics.update()`, generate `sprites_dict = {s.name: s for s in board.instances(AssetInstances.SPRITES) + board.instances(AssetInstances.PLAYERS)}` once at the start of the loop to satisfy the ISL target lookups.
+* [x] Refactor `TransitionMechanics.update()` to evaluate the Intention Transition Matrix *first* using the `Executor` and the $O(1)$ `board._cached_characters` dictionary.
+* [x] Break the transition loop upon the first successful condition match to prevent multi-node jumps in a single frame.
+* [x] *Then* calculate `AnimationMap.action` and `direction` using the newly resolved Intention.
+
+**5. Pipeline Integration & Board Caching**
+
+* [x] Refactor `Board` (`app/game/board.py`) to maintain a cross-layer dictionary: `self._cached_characters: Dict[str, AssetState]` for $O(1)$ sprite reference resolution.
+    * [x] Update `Board._cache()`, `add()`, and `remove()` to keep `_cached_characters` perfectly synchronized with all active Sprites and Players.
+* [x] Update `Builder` (`app/services/constructors.py`) to select the translator based on `settings.ISL_TRANSLATOR`, compile the intention rules during `build_board()`, and inject the resulting `Executor` into `TransitionMechanics`.
+* [x] Refactor `TransitionMechanics` (`app/game/logic/mechanics/intentional/transition.py`) to delegate rule evaluation entirely to the injected `Executor`.
+
+**6. Benchmarking Suite & Empirical Analysis**
+
+* [!] Create a benchmarking utility in `scripts/benchmark.py` that instantiates a test headless board state, runs 1,000 ticks of `TransitionMechanics` under both strategies, and logs precise execution time deltas.
+* [!] Execute the benchmark under both settings, record the nanosecond overhead of AST compilation versus lambdas, and document the empirical findings in `docs/appendices/`.
+
+**7. Complete the Finite Automaton**
+
+* [x] Review `/src/data/config/intentions/main.yaml` and resolve all dead ends. Create new Tasks to achieve this, if necessary.

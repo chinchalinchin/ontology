@@ -14,22 +14,25 @@ TODO
 
 ##### Step: Entrypoints
 
-**idle:i_2**
+**idle:find**
 
-- `condition`
+- `sprite.goal`
+- `sprite.goal.category == constants.Goals.OBJECT.value`
+- `sprite.layer == sprite.goal.layer`
+- `not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)`
 
 ##### Step: Interpoints
 
-**i_2:i_3**
+**find:interact**
 
-- `condition`
+- `functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)`
 
 ##### Step: Exitpoints
 
-**i_n:idle**
+**interact:idle**
 
-- `condition`
+- `not sprite.goal`
 
-##### Workflow: {{ spec }} Intention
+##### Workflow: Interact Intention
 
 TODO

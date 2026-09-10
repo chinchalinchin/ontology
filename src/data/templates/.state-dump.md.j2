@@ -124,6 +124,7 @@
 - **Goal:** 
   - Name: `{{ asset.state.goal.name }}`
   - Category: `{{ asset.state.goal.category }}`
+  - Layer: `{{ asset.state.goal.layer }}
   {%- if asset.state.goal.position %}
   - Position: ({{ asset.state.goal.position.x }}, {{ asset.state.goal.position.y }})
   {%- endif %}
@@ -144,10 +145,11 @@
   - Goals:
   {%- for goal in asset.state.memory.goals.values() %}
     - Name: `{{ goal.name }}`
-      Category: `{{ goal.category }}`
-      {%- if goal.position %}
-      Position: `({{ goal.position.x }}, {{ goal.position.y }})` 
-      {%- endif %}
+    - Category: `{{ goal.category }}`
+    - Layer: `{{ goal.layer }}`
+    {%- if goal.position %}
+    - Position: `({{ goal.position.x }}, {{ goal.position.y }})` 
+    {%- endif %}
   {%- endfor %}
   {%- endif %}
   {%- if asset.state.memory.sprites %}

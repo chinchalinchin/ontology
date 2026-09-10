@@ -1,4 +1,4 @@
-##### Refactor: Phase 05.06 - Event Bus Routing & Handlers
+##### Refactor: Phase 05.03 - Event Bus Routing & Handlers
 
 **Overview**
 

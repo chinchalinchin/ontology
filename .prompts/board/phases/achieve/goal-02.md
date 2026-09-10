@@ -1,4 +1,4 @@
-#### Refactor: Phase 05.03 - ScrollController, Library & Plots
+#### Achieve: Goal 02 - ScrollController, Library & Plots
 
 **Overview** 
 

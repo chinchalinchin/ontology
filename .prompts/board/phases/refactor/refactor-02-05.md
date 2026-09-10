@@ -1,0 +1,62 @@
+#### Implement: Phase 03 - Finetuning
+
+Current keyboard mappings are given by,
+
+```yaml
+mappings:
+  keyboard:
+    intentions:
+      interact: 44  # SDL_SCANCODE_SPACE
+      sprint: 225   # SDL_SCANCODE_LSHIFT
+      speak:
+      build: 
+      mine: 
+      attack:
+    goals:
+      up: 26    # SDL_SCANCODE_W
+      down: 22  # SDL_SCANCODE_S
+      left: 4   # SDL_SCANCODE_A
+      right: 7  # SDL_SCANCODE_D
+```
+
+**Goals:**
+
+- Ensure animations are smooth, i.e. FPS and UPS is well-balanced.
+- Ensure player only animates when input is provided or player is otherwise locked into a state (i.e. swinging a sword in `slash`). Same applies to non-player Sprites.
+- Ensure keyboard mappings translate to state changes.
+
+**Current Problems:**
+
+- Player sprite animates as soon as engine boots. The intended function `mutators.triggers.animated` does not exist in the data schema.
+
+**1. Task: Resolve Critical Initialization Exceptions**
+
+*Objective*: Fix schema and enum misalignments preventing engine loop execution.
+
+- [x] Subtask: Add `POSITION` to the `GoalCategories` Enum in `app/config/enums.py`.
+- [!] Subtask: Update `Board.player()` to use `.get()` with safe list checking to prevent `KeyError` exceptions when evaluating the `PLAYERS` instance array. (CLOSED: There is currently no reason for the board to exist without a player.)
+- [x] Subtask: Update `AnimationMap.action()` to explicitly handle the `IDLE` intention, returning a locked `WALK` action but preparing the state for frame 0.
+
+**2. Task: Reconcile Mutator Schemas & Implement Animation Triggers**
+
+*Objective*: Allow Sprites to halt animation cycles based on behavioral state.
+
+- [x] Subtask: Modify `app.models.state.Mutators` to include `triggers: Dict[str, bool]` as dictated by the documentation. Nest `fear` and `vision` under `parameters`.
+- [x] Subtask: Update Pydantic validators. Ensure validated models are correctly migrated during orchestration.
+- [x] Subtask: Since Mutators may be absent from the Player State YAML file (e.g. Player mutators are not parameterized), ensure the new models set defaults to prevent validation failures. 
+- [x] Subtask: Update `PlayerMechanics` to set `player.state.mutators.triggers.animated = has_movement`. Ensure this evaluation ignores movement if the player is locked in a non-interruptible action (e.g., `attack`).
+- [x] Subtask: Update `StateAnimation.animate()` in `app/assets/animations.py` to check `state.mutators.triggers.animated`. If False, force `state.animation.frame = 0` and bypass the increment calculation.
+
+**3. Task: Resolve Cartesian Motion Mechanics**
+
+*Objective*: Standardize velocity calculations to prevent diagonal speed exploitation.
+
+- [x] Subtask: Refactor `MotionMechanics.update()` to calculate the Euclidean distance to the goal. Normalize the `dx, dy` components into a unit vector, then multiply by `speed` before applying the positional translation.
+    - [x] Subtask: Before completing this task, discuss whether introducing square-root calculations into the engine and turning the game space into the continuum presents any problems. I am not against this approach, but I want to consider all angles.
+
+**4. Task: Implement Rendering Constraint (Frame Limiter)**
+
+*Objective*: Stop the engine from busy-waiting and rendering visually redundant frames.
+
+- [x] Subtask: Introduce a `TARGET_FPS` configuration into `app.config.settings` (e.g., 60 or 144).
+- [x] Subtask: Update `app.game.engine.Engine.start()` to track a render_accumulator or sleep delta. If the time elapsed since the last `draw()` call is less than 1.0 / `target_fps`, invoke time.sleep() or an equivalent SDL yield to release the CPU thread back to the operating system.

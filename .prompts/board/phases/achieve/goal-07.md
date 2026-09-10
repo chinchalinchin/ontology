@@ -1,4 +1,4 @@
-#### Refactor: Phase 07.02 - Interact Intention
+#### Achieve: Goal 07 - Interact Intention
 
 **Goals**: Implement the `interact` Intention and its Interaction Loop.
 

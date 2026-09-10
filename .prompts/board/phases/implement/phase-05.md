@@ -1,135 +1,245 @@
-#### Implement: Phase 05 - Widgets
 
-##### Bugs
+#### Implement: Phase 06 - Editor
 
-**1. Unsafe Board Sizing (`app.game.board.py`):**
+**Overview**
 
-In `Board.size()`, the max calculations (`max([...], default=0)`) assume that `nx` and `ny` correctly define the grid bounds. However, if a Layer contains no tiles (e.g., a purely UI layer or an empty staging layer), the generator expressions will evaluate to empty, defaulting to 0, which yields a `Dimensions(0, 0)` Board size. This will crash the Cython `construct` canvas allocation.
+Construct an integrated Editor Menu utilizing a dual-mode workflow (Selecting vs. Editing). The UI will utilize a custom Canvas Widget that dynamically scales and bakes an abstract game Board into a fixed-size texture.
 
-!!! note "CLOSED"
-    Not worth fixing yet.
+**Specifications**:
+  - Initializes a Board.
+  - Adds Assets to the Board based on user input.
+  - Outputs state YAMLs. 
+
+##### Goal: Canvas Widget & Bindings
+
+Extend the UI ECS pipeline to support rendering scaled World representations on a Menu Widget.
+
+
+##### Goal: Dual-Mode Workflow
+
+Implement the input routing and Cython rebaking pipeline.
+
+##### Design: Data Models
+
+**EditorState**
+
+- `mode: Enum[creating | selecting | editing ]`
+- `selection: Taxonomy`:
+    - `id`: str
+    - `name`: str
+    - `instance`: str
+    - `category`: str
+- `palettes: dict`
+  - `tiles: List[Asset]`
+  - `objects: List[Asset]`
+- `grid: Dict[hash: (x,y)]`
+- `focus: str`
+
+**CanvasState**
+
+- `texture: TexturePtr`
+- `board: Board`
+
+- `undo(asset: Asset) -> None: board.remove(asset)`
+
+**BoardBinding**
+
+```yaml
+bind:
+  schema: board
+  target: <component>.board
+```
+
+Returns a live reference to a Board object. 
+
+##### Design: MVP
+
+Editor Menu has the following layout:
+
+- A Header of Buttons:
+  - New: Creates a New Modal to get Canvas size from User.
+  - Save: Create a Save Modal to get World name from User.
+  - Mode: Toggle between `selecting` and `editing`
+- Pane:
+  - Tabs:
+    - Pane(World Canvas): Disabled when `selecting`
+    - Pane(Tile Palette): Disabled when `editing`
+    - Pane(Object Palette): Disabled when `editing`
+- Pane:
+  - Slot(Palette Selection): Current `selection` from `palettes` and its metadata.
+
+###### Tab: Pane(Tile Palette)
+
+All Tiles in the Property Index are read in from the registry and scaled into icons. 
+
+**Layout**: `stack` of `docks`. The number of elements in a `dock` is calulated based on pane size, slot size and the number of Tiles loaded into the registry. For example, if the pane is 100px wide, the slot is 20px wide and there are 14 Tiles in the registry. There will be two `docks` of five Tiles and one `dock` of four tiles. The `docks` will be aligned `center`.
+
+**Pane Workflow**
+
+- User clicks on Tile.
+- Selection loads with Tile. 
+
+###### Tab: Pane(Object Palette)
+
+**Layout**: `stack` of `docks`. The number of elements in a `dock` is calulated based on pane size, slot size and the number of Tiles loaded into the registry. For example, if the pane is 100px wide, the slot is 20px wide and there are 14 Tiles in the registry. There will be two `docks` of five Tiles and one `dock` of four tiles. The `docks` will be aligned `center`.
+
+**Pane Workflow**
+
+- User clicks on Object.
+- Selection loads with Object.
+
+###### Tab: Pane(World Canvas)
+
+A Pane containing a specialized Widget for representing the Board World state.
+
+**Pane Workflow**
+
+- EditorController hijacks focus traversal.
+- Focus traverses grid.
+- User pastes Selection into grid coordinates of the Widget.
+
+###### Assets
+
+**Canvas**: It holds a Cython `TexturePtr` (the visual canvas) and an isolated `Board` object (the abstract representation of the world being edited)
+**Grid**: Basically a fixed transparent Tile with a border (32x32 px), to highlight the lattice. There are exactly *two* Grid Tiles, required by the application, `focus` and `cell`. `focus` is the frame displayed when the Editor is focused on a particular cell of its `grid`. `cell` is the frame displayed when a particular cell of the grid does not have `focus`. Grid Tiles are superimposed over the Canvas.
+
+###### Workflow
+
+- All Buttons in Bar are disabled but New. 
+- User is forced to select New.
+  - User enters (width, length) into New Modal.
+- Canvas(world=(width, length)) is created.
+  - **NOTE**: Canvas Size is part of the Editor configuration. Canvas calculates a constant of portionality, `ratio`, upon instantiation. This represents the conversion rate between World space and Canvas space.
+  - Editor uses Grid Tiles to construct a scaled replica of World space in Canvas space. Editor assumes World is partitioned into grid of `(tiles.grid.dimension.w, tiles.grid.dimensions.l)` squares.
+  - Editor uses `ratio` to scale the World to Canvas size.
+- User enters `selecting` mode. Canvas is displayed next to empty Selection Slot.
+  - User is able to navigate `grid` by shifting `focus` at this point, but selecting does nothing.
+- User navigates to the Palette Tab
+  - `focus` moves between Canvas and Button Bar.
+  - `focus` traverses Button Bar.
+  - `focus` selects appropriate Tab.
+- Palette Tab is displayed.
+- User makes a Selection. 
+- Selection is saved into the `selection` buffer. 
+- Selection Slot is updated with `selection`.
+- Editor automatically switches to `editing` mode. Palette tabs are disabled and Canvas tab is shown.
+- User navigates `grid` by shifting focus. 
+- User selects `grid` coordinates, where (x,y) is the top left of the grid square.
+- Selection is instantiated at (x, y) and added to the Board. 
+  - Update/CamvasEvent is fired to rebake Canvas.
+  - Canvas (or TBD component) renders entire Board state, scales it down to the Canvas size for stamping the Canvas display.
+  - Canvas is redrawn. 
+- Editor is still in `editing` mode. Selection is still selected in Selection Slot. 
+  - User may continue instantiating the selected Palette Asset.
+  - User may presses `CANCEL` to undo the Selection paste.
+- User clicks Save. Board is serialized into state file.
+  - User enters `<board-key>` into Save Modal.
+  - Board is saved to `/src/data/state/<board-key>/<timestamp>.yaml`
+
+**Notes**
+
+1. *Hardware Texture Limits (The Rebake Method)*: Do not render at 1:1. The `render.construct()` interface in `libs/graphics/render.pyx` already accepts `dx, dy, dw, dl`. Calculate the proportional constant on the Python side, scale every asset's dimensions and positions, and pass those reduced integers across the boundary. Bake *directly* onto the fixed-size Canvas Widget texture.
+2. *Traversal Hijacking*: Right now, `MenuMechanics` blindly reads `DevicePayload.menu.traversal` and checks `active_menu.graph` to jump focus from widget to widget. If user presses `EAST` while focused on the Canvas, it will try to jump to the next Widget in the traversal grpah button. `MenuMechanics` needs an explicit mechanism to relinquish traversal control. When the "editing" toggle is active, `MenuMechanics` must stop querying the AABB graph and route `NORTH/SOUTH/EAST/WEST` directly into the `EditorController.update()` to move the grid coordinate.
+3 *The `CANCEL` Undo Conflict\* In the current implementation, passing `Interactions.CANCEL` pushes a `TerminalEvent` to the bus, which instantly pops the active Menu off the stack and closes it. If `CANCEL` is to act as "undo", this behavior must be intercepted. The `EditorController` must intercept the `CANCEL` input when in `editing` mode, pop the last modification from an internal `undo_stack`, and swallow the input so it never reaches the `MenuMechanics` teardown logic.
+
+#### Tasks
+
+**1. Task: Board Binding Implementation**
+
+*Objective*: Create a binding schema to link a World Board to a Menu Widget.
+
+* [ ] Subtask: Create `BoardBinding(Binding)` in `app.game.menus.bindings.py`. Implement `bind()` to return a `board_function` closure resolving the target abstract Board.
+* [ ] Subtask: Register `schema == 'board'` in `Binder.binding()` (`app.services.generators.binder.py`).
+
+**2. Task: Canvas State Models**
+
+*Objective*: Define the data models for the Canvas Widget.
+
+* [ ] Subtask: Create `CanvasState` in `app.models.state.widgets`.
+* [ ] Subtask: Include fields: `board` (abstract Board), `world_size` (Dimensions), `ratio` (float), `cursor_grid` (Position), `undo_stack` (List).
+
+**2. Task: Provider Instantiation**
+
+*Objective*: Allow the Provider to instantiate the Canvas Widget.
+
+* [ ] Subtask: Implement `_unpack_canvas` in `app.services.generators.provider`.
+* [ ] Subtask: Initialize the Canvas by calculating the `ratio` (`widget.dimensions.w / world_size.w`). Allocate the fixed-size UI texture via `render.canvas()`.
+
+**3. Task: The Rebake Pipeline**
+
+*Objective*: Bake the abstract world onto the Canvas texture using scaled primitive tuples.
+
+* [ ] Subtask: Implement a `_rebake_canvas()` helper in the `EditorController`.
+* [ ] Subtask: Iterate over `CanvasState.board`. Multiply each asset's `dx, dy, dw, dl` by the `ratio`.
+* [ ] Subtask: Pass the scaled primitive tuples, along with a tiled grid asset and the highlighted cursor coordinate asset, to `render.construct()` targeting the Canvas Widget's `TexturePtr`.
+
+**4. Task: Traversal & Undo Routing**
+
+*Objective*: Intercept inputs based on the mode toggle.
+
+* [ ] Subtask: Refactor `MenuMechanics.update()` to check for an `editing_mode` flag. If true, bypass `active_menu.graph` traversal and route directional input to the Controller.
+* [ ] Subtask: Intercept `Interactions.CANCEL` in `MenuMechanics`. If `editing_mode` is true, route to the Controller for Undo logic instead of firing a `TerminalEvent`.
+
+**5. Task: Editor Controller Logic**
+
+*Objective*: Implement the core mode-switching and placement behaviors.
+
+* [ ] Subtask: Implement `select()`. If in `selecting` mode, update the active `Taxonomy` selection. If in `editing` mode, push the current cell state to the `undo_stack`, append the selected asset to the abstract `Board` at `cursor_grid * 32`, and trigger `_rebake_canvas()`.
+* [ ] Subtask: Implement `update()`. If in 'editing' mode, listen for traversal inputs to increment/decrement `cursor_grid` and trigger `_rebake_canvas()` to update the highlight position.
+
+
+
+
+
+
+
+
+
+
+#### Backlog: Implement Phase 06 - Editor
+
+**Overview**
+Construct an integrated Editor Menu utilizing a dual-mode workflow (Selecting vs. Editing). The UI will utilize a custom Canvas Widget bound to a Board via `BoardBinding`. The `EditorController` manages mode toggling, internal grid coordinates, and the undo stack.
+
+##### Goal: Canvas Widget & Bindings
+
+Extend the UI ECS pipeline to support rendering scaled World representations on a Menu Widget.
 
 ##### Tasks
 
-**Task 0. Engine Deadlock Bug**
+**1. Task: Board Binding Implementation**
+*Objective*: Create a binding schema to link a World Board to a Menu Widget.
 
-*Objective*: Ensure Engine is prepared for Widget and Menu implementations to follow.
+* [ ] Subtask: Create `BoardBinding(Binding)` in `app.game.menus.bindings.py`. Implement `bind()` to return a `board_function` closure resolving the target abstract Board.
+* [ ] Subtask: Register `schema == 'board'` in `Binder.binding()` (`app.services.generators.binder.py`).
 
-* [x] Update Data Model: Modify `app.models.config.MechanicsConfiguration` to replace order with core and world lists.
-* [x] Update YAML: Modify `data/config/mechanics/main.yaml` to separate mechanics into core and world pipelines.
-* [x] Update Orchestrator: Update `Orchestrator.init()` to parse core and world configurations, instantiate them via` Factory.mechanics()`, and pass both lists into the Engine constructor.
-* [x] Update Engine: Modify `Engine.__init__` to accept core_mechanics and world_mechanics.
-* [x] Update Mechanics Logic: Modify `Engine.start()` to gate the world mechanics behind `paused`.
+**2. Task: Canvas Widget Core**
+*Objective*: Define the data models for the Canvas Widget.
 
-**Task 1. Data Models & Application Hooks**
+* [ ] Subtask: Create `CanvasState` in `app.models.state.widgets`. Include `board_function` (Callable), `proportional_constant` (float), and `canvas` (TexturePtr).
+* [ ] Subtask: Implement `_unpack_canvas` in `app.services.generators.provider`. Calculate `proportional_constant = widget.dimensions.w / world_size.w` and allocate the fixed-size UI texture via `render.canvas()`.
 
-* [x] *Define WidgetProperties:* Implement `WidgetProperties` in `app.models.properties`.
-* [x] *Define States:* Implement `TraversalState`, `MeterState`, and `DisplayState` in `app.models.state`. 
-    * [x] Implement scrolling methods for `DisplayState`. `content` is either a string to be rendered that needs to be sliced, or it is a list of Icon keys. Leave TODO placeholders for the Icon handling, as the spec has not been completed.
-* [x] *Define Menu*: Implement `Menu` in `app.game.menus.core`.
-* [x] *Update Recipes*: Add Widgets to the Asset Recipes configuration, `data/config/recipes.yaml`
-* [x] *Define Configuration Schema*: Add configuration validation models for Menu configuration in `data/config/menus.yaml`
-* [x] *Extend Factory Hydration:* Update `Factory` schemas to parse the new models. Configure `Loader` to ingest `assets/widgets/main.yaml` and `data/config/menus/main.yaml`.
-* [x] *Add Menu Stack* Update `Board` to include `menus: List[Menu]` and `overlays: List[Menu]`.
-* [x] *Refine Menu Schema:* 
-    - [x] Add Action-Reaction bindings to allow Widgets embedded into a Menu, but unpacked into flat Asset lists, to emit signals for other Widgets in the Menu to catch.
+**3. Task: The Editor Controller State**
+*Objective*: Consolidate Editor logic into the Controller.
 
-**Task 2. Frame & Animation Implementation**
+* [ ] Subtask: Create `EditorController(MenuController)` in `app.game.menus.controllers`.
+* [ ] Subtask: Initialize instance variables on the Controller: `editing_mode: bool`, `grid_cursor: Position`, and `undo_stack: List[Asset]`.
 
-* [x] *Widget Frames* Implement Widget frames.
-    * [x] Implement `TraversalFrame`
-    * [x] Implement `MeterFrame`:
-        * `keys()` must return a list of two keys: `[f"{id}-0", f"{id}-{resolution}"]`.
-        * `index()` must map `empty` to `(0, 0, w, l)` and calculate the `fill` crop by dynamically multiplying `w` by the resolution percentage: `(w, 0, int(w * (res/100)), l)`.
-    * [x] Modify MeterState to accept an Any reference. Add @property methods for reading and unit that dynamically return `self.reference.current` and `self.reference.maximum`
-* [x] *Widget Animations*: Implement `TraversalAnimation` to handle status transitions and `MeterAnimation` for gauge updates.
+##### Goal: Dual-Mode Workflow
 
-**Task 3. The Menu Provider & Data Binding**
+Implement the input routing and Cython rebaking pipeline.
 
-* [x] *Implement Provider:* Create a service similar to `Decomposer` called the Provider in `app.game.provider`. It accepts a `MenuConfiguration` and an `EventContext`.
-* [x] *Context Binding:* Implement `getattr` resolution to parse YAML bindings (e.g., `context.sprite.state.meters.health`) into direct memory references pointing to the runtime objects.
-    * **Optimization:** Because Python passes objects by reference, the `Provider` does not need to set up a continuous string-polling loop for the HUD. When parsing `bind: state: context.sprite.state.meters.health` during `Provider` instantiation, use `reduce()` and `getattr()` to resolve the string down to the actual `Meter` dataclass instance in memory. Assign this exact object reference to the `MeterState` of the widget. As the game mutates the Player's health, the Widget inherently reads the mutated values instantly.
-* [x] *Text Canvas Allocation*: The Provider must call `render.canvas(w, l)` to allocate a blank TexturePtr when instantiating Page Widgets. It must bind this pointer to DisplayState.canvas`. It should not attempt to write text.
-* [x] Provider must resolve bindings, run the `Layout` and instantiate the mapped `MenuController`
-* [x] Orchestrator uses the Provider to create View (HUD) and Main Menu. Orchestrator then pushes the resulting Menus onto `board.overlays`.
+##### Tasks
 
-**Task 4. The Layout Engine**
+**4. Task: Traversal & Undo Routing**
+*Objective*: Intercept inputs based on the mode toggle.
 
-* [x] *Create Layout Module:* Implement `app.game.menus.layout`.
-* [x] *Calculate Anchors:* Convert `ScreenPosition` percentages into absolute `Position(x, y)` pixels for all child Widgets.
-* [x] *Z-Sorting Enforcement:* Assign `state.height` and `state.depth` modifiers to embedded Icons and Decals to ensure strict Painter's Algorithm compliance during flattening.
-* [x] *Stack/Dock/Tab/Nest Algorithms:* Implement the spatial layout algorithms, incorporating `gap` and `alignment` offsets.
-    * [x] Calculate offset mathematics for `CENTER` and `END` alignments.
-    * [x] Update `_layout_tab()` to physically assign the parent Pane's absolute `Position(x, y)` to its children instead of passing.
-* [x] *Z-Sorting Enforcement:* Assign `state.height` and `state.depth` modifiers to embedded Icons and Decals o ensure strict Painter's Algorithm compliance during flattening.
-* [x] **Spatial Traversal Graph*: Implement an AABB spatial projection algorithm to link traversable `Button` widgets based on their absolute coordinates, outputting a directed adjacency dictionary.
-* [x] *Return Tuple:* Layout Engine returns `(List[Asset], TraversalGraph)`.
+* [ ] Subtask: Refactor `MenuMechanics.update()` to check for `active_menu.controller.editing_mode` (or similar flag). If true, bypass `active_menu.graph` traversal and route `NORTH/SOUTH/EAST/WEST` to `active_menu.controller.update()`.
+* [ ] Subtask: Intercept `Interactions.CANCEL` in `MenuMechanics`. If `editing_mode` is true, route to the Controller for Undo logic instead of firing a `TerminalEvent`.
 
-**Task 5. Engine Loop & Event Bus Architecture**
+**5. Task: Placement and Rebaking Pipeline**
+*Objective*: Implement the core placement behaviors and Canvas texture updates.
 
-* [x] *Implement Event Queue:* Add an `Event` data class and `bus: collections.deque` to `Engine`.
-* [x] *Define Events:* Implement `MenuEvent` (pauses, pushes to `menus`), `UpdateEvent` (updates Menu states), and `TerminalEvent` (pops from `menus`).
-* [x] *Trigger Events:* Update `Intentions` (like `barter`, `build`) to push `MenuEvent` to the queue.
-* [x] *Implement Bus Draining*: In Engine.start(), drain the bus after Mechanics update but before the Render phase.
-    - Route MenuEvent to pause the Board and push to board.menus.
-    - Route TerminalEvent to unpause the Board and pop from board.menus.
-    - Route UpdateEvent to execute Cython texture clearing and text baking.
-
-**Task 6. Menu Controllers**
-
-* [x] *Define Interface*: Define `MenuController` abstract base class with `open`, `select`, `update`, and `close`.
-* [x] *Implement Scrolling*: Implement `app.game.menus.controllers.scroll.ScrollController` (Calls `DisplayState.scroll()` methods).
-    * [x] Implement `ScrollController.select()`. It must parse the selection binding (e.g., `SCROLLUP`), locate the target widget via the selector binding and call `scroll()`
-* [x] *Implement Heads Up Display*: Implement `app.game.menus.controllers.display.DisplayController` (Mutates `MeterState` (health meters) amd `TraversalState` (disabled Button slots showing equipped items)).
-
-**Task 7. Mechanics & Input Handling**
-
-* [x] *Menu Time vs World Time*: Update `MenuMechanics.update()` to call `animate()` on all Widgets inside `board.overlays` and the top of `board.menus`, ensuring UI animations run independently of the world state.
-* [x] *Device Context Switching:* Update `Device` mappings to support a `MENU` context, translating raw SDL inputs into UI commands (Up, Down, Left, Right, Select, Cancel).
-    - [x] Add nested attributes, `mappings.<device>.world` and `mappings.<device>.menu`, to the Devive mapping configuration in `data/config/mappings/main.yaml`.
-    - [x] Update MappingConfiguration models in `app.models.config`.
-    - [x] Updated the Device class to initialize and poll using the new mapping data structure.
-    - Implement `Keyboard.context(context: str)`. When `context == 'world'`, map `_scancodes` to Intentions/Goals. When `context == 'menu'`, map to Traversal/Interactions. Update `_last_state` accordingly.
-* [x] *Interface*: Update the Mechanic interface to accept the Bus. 
-    * [x] Propagate updated interface through previous Mechanics.
-* [x] *Focus Resolution & Input Interception:* In `MenuMechanics.update()`:
-    * [x] If `len(board.menus) > 0`, intercept `device.poll()` mapped commands.
-    * [x] Route directional inputs to update `MenuState.focus` via the `TraversalGraph`.
-    * [x] Route `SELECT` input to `active_menu.controller.select()`.
-    * [x] Emit `TerminalEvent` to unpause the board when the user exits.
-    
-**Task 8. Rendering Pipeline**
-
-* [x] *Cython Refactor:* Break `libs/graphics/render.pyx:render()` into `clear()`, `render()`, `superimpose()`, and `present()`. Remove `SDL_RenderClear` and `SDL_RenderPresent` from the core rendering loops.
-* [x] *Screen Refactor:* Split `app.game.screen.Screen.draw()` into `draw()` and `interface()`. 
-    * [x]: `draw()` retains the current camera culling. 
-    * [x]: `interface()` takes Menus and Overlays, extracts their `Widgets`, and passes them to Cython with absolute coordinates. Implement the duck-typing check for `widget.state.canvas`. The Screen must retrieve the base background from the Registry, use `render.construct` to overwrite the existing canvas (clearing old text), and call `render.write `to bake the updated `DisplayState.current()` text`.
-    * [x] Implement `_flatten(menus, overlays)`.
-    * [x] `stamp()`: Implement this method for re-rendering text and stamping it onto a Page asset.
-* [x] *Engine Refactor:* Update `Engine.start()` to explicitly call `screen.clear()`, `screen.draw()`, `screen.interface()`, and `screen.present()` in sequence.
-* [x] *Fix Destination Stretching:* In `Screen.draw()`, update the dimension assignment to respect dynamic source cropping from the Registry: `dw, dl = sw, sl`
-
-**Task 9. Layout Engine Completion**
-
-* [x] Implement `Layouts.TAB` recursion in `LayoutEngine.compute()`.
-* [x] Implement `Layouts.COLUMN` recursion in `LayoutEngine.compute()`.
-* [x] **Schema:** Update `MenuPane.children` in `app.models.config` to `List[Union['MenuPane', MenuWidget]]`.
-* [x] **Provider:** Replace linear iteration in `Provider._unpack_pane` with a recursive `_unpack_node` router capable of handling nested Panes.
-* [x] **Layout:** Refactor `LayoutEngine.compute` to use a top-down spatial recursion algorithm (`_compute_recursive`), removing dead Z-sorting code.
-
-**Task 10. Unit Test & Documentation Updates**
-
-* [x] *Existing*: Ensure all unit tests are passing after prior Task updates.
-* [x] *New*: `tests/unit/test_lib_graphics_registry.py`: Ensure new Widget frame indexing is adequately covered.
-* [x] *New*: `tests/unit/test_app_hooks_factory.py`: Ensure new Widget instantiation is adequately covered.
-* [x] *New*: `tests/unit/test_app_hooks_provider.py`: Ensure Menu generation is adequately covered.
-* [x] Update documentation to reflect the latest state of the application.
-
-**Task 11. In Game Test**
-
-!!! note
-    Needs further specification and definition before implementation.
-
-* [!] Create a Sign Object that triggers Text menus.
-    * [!] Define Sign State to include `persona` and `lexicon`.
-* [!] Create Library for parsing `src/data/config/library/main.yaml`. 
+* [ ] Subtask: Implement `EditorController._rebake(canvas_widget)`. Retrieve the Board via `canvas_widget.state.board_function()`. Iterate over the Board's assets, scaling their primitives by `proportional_constant`. Pass to `render.construct()` targeting the `TexturePtr`.
+* [ ] Subtask: Implement `EditorController.update()`. When receiving directional input in editing mode, increment/decrement `grid_cursor`, clamp to boundaries, and trigger `_rebake()` (passing a scaled highlight decal primitive).
+* [ ] Subtask: Implement `EditorController.select()`. If editing, append the selected taxonomy to the Board at `grid_cursor * 32`, push the Asset to `undo_stack`, and `_rebake()`. If `CANCEL`, pop the `undo_stack`, call `board.remove([popped_asset])`, and `_rebake()`.

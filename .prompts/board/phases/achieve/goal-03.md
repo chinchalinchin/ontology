@@ -1,4 +1,4 @@
-#### Refactor: Phase 05.04 - ExchangeController & Loot
+#### Achieve: Goal 03 - ExchangeController & Loot
 
 **Overview** 
 

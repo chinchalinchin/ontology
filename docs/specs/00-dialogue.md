@@ -17,6 +17,7 @@ When a Sprite has no goal, `CognitionMechanics._ideate` evaluates immediate psyc
 **idle:find**
 
 - `sprite.goal`
+- `sprite.layer == sprite.goal.layer`
 - `sprite.goal.category == constants.Goal.SUBJECT.value`
 - `sprite.psyche.dialogue`
 
@@ -25,6 +26,7 @@ When a Sprite has no goal, `CognitionMechanics._ideate` evaluates immediate psyc
 **find:speak**
 
 - `functions.is_near(sprites.get(sprite.goal.name).position, sprite.position, sprite.mutators.parameters.vision.radius)`
+- `sprite.memory.relationships[sprite.goal.name] in [ constants.Relationships.FRIEND.value, constants.Relationships.FAMILY.value ]`
 
 **speak:follow**
 
