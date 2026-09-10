@@ -37,7 +37,7 @@ Action Configurations determine the (Action, Direction) partitions employed by a
 **Default Action Configuration**
 
 ```yaml
---8<-- "static/yaml/examples/default-actions.yaml
+--8<-- "static/yaml/examples/default-actions.yaml"
 ```
 
 ### Configuration: Compositions
