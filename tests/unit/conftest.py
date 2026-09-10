@@ -71,11 +71,9 @@ from app.models.state import (
     Meters,
     Meter,
     Psyche,
-    Goal,
-    DevicePayload,
-    WorldPayload,
-    MenuPayload
+    PropertyState
 )
+from app.models.properties import CraftProperties
 from app.models.groups import (
     SpawnableGroup,
     EquipmentGroup
@@ -304,3 +302,15 @@ def mock_space_grid():
     """
     from libs.core.math.space import Space
     return Space(cell_size=64, max_entities=100)
+
+@pytest.fixture
+def mock_strut():
+    """
+    Generic strut asset to support perimeter generator tests for CRAFTS.
+    """
+    tax = Taxonomy("strut-1", "wall", AssetCategories.CRAFTS.value, AssetInstances.STRUTS.value)
+    props = CraftProperties(dimensions=Dimensions(w=32, l=32), cost=[], mass=0) 
+    state = PropertyState(
+        id="strut-1", layer="0", position=Position(x=40, y=40), owner="player"
+    )
+    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
