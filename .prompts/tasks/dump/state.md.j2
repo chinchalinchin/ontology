@@ -17,29 +17,42 @@ Assets are dynamic game entites. Widgets are Menu components.
 - Ensure there are new lines between the end of sections and the next heading.
 - Ensure all attribute appear as nested markdown lists ,"-".
 
+## CLI
+
+```python
+{{ file(root + '/src/cli.py') }}
+```
+
 ## Latest Models
 
 ### Asset State
 
 ```python
-{{ asset_models }}
+{{ file(root + '/src/app/models/state/core.py') }}
+```
+
+```python
+{{ file(root + '/src/app/models/state/sprites.py') }}
+```
+
+```python
+{{ file(root + '/src/app/models/state/objects.py') }}
 ```
 
 ### Widget State
 
 ```python
-{{ widget_models }}
+{{ file(root + '/src/app/models/state/widgets.py') }}
 ```
 
 ### Menu State
 
-
 ```python
-{{ menu_models }}
+{{ file(root + '/src/app/game/menus/core.py') }}
 ```
 
 ## Previous Dump Template
 
 ```jinja2
-{{ dump_template }}
+{{ file(root + '/src/data/templates/.state-dump.md.j2') }}
 ```

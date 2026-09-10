@@ -46,7 +46,8 @@ APP_EXT = "main.yaml"
 DUMP_TEMPLATES = {
     'state': ".state-dump.md.j2",
     'sdl': ".sdl-dump.md.j2",
-    'registry': '.registry-dump.md.j2'
+    'registry': '.registry-dump.md.j2',
+    'menus': '.menu-dump.md.j2'
 }
 # ---------------------------------------------------
 ## ------------------------------- RENDERING SETTINGS

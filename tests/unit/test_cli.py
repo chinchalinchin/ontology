@@ -29,6 +29,7 @@ def test_arguments_start_defaults():
         assert args.device == "keyboard"
         assert args.log_level == "INFO"
         assert args.dump_state is False
+        assert args.dump_menus is False
         assert args.dump_sdl is False
         assert args.dump_registry is False
         assert args.software is False
@@ -70,8 +71,7 @@ def test_dump_state_success(mock_settings, mock_datetime):
     
     mock_board = MagicMock()
     mock_board.assets.return_value = ["asset1", "asset2"]
-    mock_board.menus = ["menu1"]
-    mock_board.overlays = ["overlay1"]
+    mock_board.perimeters.return_value = {"layer_0": [{"mock": "bounds"}]}
 
     mock_template_str = "Template: {{ board_key }} {{ timestamp }}"
     
@@ -86,13 +86,91 @@ def test_dump_state_success(mock_settings, mock_datetime):
             board_key="level_01", 
             timestamp="20260101_120000",
             assets=["asset1", "asset2"],
-            menus=["menu1"],
-            overlays=["overlay1"]
+            perimeters={"layer_0": [{"mock": "bounds"}]}
         )
         
         # Verify file writes
         assert mocked_file.call_count == 2
         mocked_file().write.assert_called_once_with("Rendered Output")
+
+@patch("cli.datetime")
+@patch("cli.settings")
+def test_dump_menus_success(mock_settings, mock_datetime):
+    # Setup mocks
+    mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
+    mock_settings.TEMPLATE_DIR = Path("/mock/dir")
+    mock_settings.DUMP_TEMPLATES = {"menus": "menus_template.md"}
+    
+    mock_board = MagicMock()
+    mock_board.menus = ["menu1"]
+    mock_board.overlays = ["overlay1"]
+
+    mock_template_str = "Template: {{ board_key }} {{ timestamp }}"
+    
+    with patch("pathlib.Path.exists", return_value=True), \
+         patch("builtins.open", mock_open(read_data=mock_template_str)) as mocked_file, \
+         patch("cli.jinja2.Template.render", return_value="Rendered Output") as mock_render:
+         
+        cli.dump("level_01", mock_board, "menus")
+        
+        # Verify render was called with correct menu arguments
+        mock_render.assert_called_once_with(
+            board_key="level_01", 
+            timestamp="20260101_120000",
+            menus=["menu1"],
+            overlays=["overlay1"]
+        )
+        
+        assert mocked_file.call_count == 2
+        mocked_file().write.assert_called_once_with("Rendered Output")
+
+@patch("cli.datetime")
+@patch("cli.settings")
+@patch("cli.get_system_info")
+def test_dump_sdl_success(mock_sys_info, mock_settings, mock_datetime):
+    mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
+    mock_settings.TEMPLATE_DIR = Path("/mock/dir")
+    mock_sys_info.return_value = {"os": "Linux", "renderer": "opengl"}
+    
+    mock_board = MagicMock()
+    
+    with patch("pathlib.Path.exists", return_value=True), \
+         patch("builtins.open", mock_open(read_data="")) as mocked_file, \
+         patch("cli.jinja2.Template.render", return_value="Output") as mock_render:
+         
+        cli.dump("level_01", mock_board, "sdl")
+        
+        mock_render.assert_called_once_with(
+            board_key="level_01", 
+            timestamp="20260101_120000",
+            sys_info={"os": "Linux", "renderer": "opengl"}
+        )
+
+@patch("cli.datetime")
+@patch("cli.settings")
+def test_dump_registry_success(mock_settings, mock_datetime):
+    mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
+    mock_settings.TEMPLATE_DIR = Path("/mock/dir")
+    
+    mock_screen = MagicMock()
+    mock_screen.registry._frames = {"frame_1": ("item_1", 0, 0, 32, 32)}
+    mock_screen.registry._textures = {"tex_1": "pointer"}
+    
+    mock_engine = MagicMock()
+    mock_engine.screens = {"layer_0": mock_screen}
+    
+    with patch("pathlib.Path.exists", return_value=True), \
+         patch("builtins.open", mock_open(read_data="")) as mocked_file, \
+         patch("cli.jinja2.Template.render", return_value="Output") as mock_render:
+         
+        cli.dump("level_01", mock_engine, "registry")
+        
+        mock_render.assert_called_once_with(
+            board_key="level_01", 
+            timestamp="20260101_120000",
+            textures=["tex_1"],
+            frames={"frame_1": {"item_id": "item_1", "crop_x": 0, "crop_y": 0, "crop_w": 32, "crop_l": 32}}
+        )
 
 @patch("cli.settings")
 def test_dump_missing_template(mock_settings, caplog):
@@ -189,8 +267,11 @@ def test_main_software_flag(mock_gc, mock_quit_sdl, mock_orchestrator_class):
 
 @patch("cli.Orchestrator")
 @patch("cli.quit_sdl")
-def test_main_dump_state_flag(mock_quit, mock_orchestrator):
-    test_args = ["cli.py", "--dump-state", "prerender", "level_01", "--out", "./out", "--layer", "bg"]
+def test_main_dump_flags(mock_quit, mock_orchestrator):
+    test_args = [
+        "cli.py", "--dump-state", "--dump-menus", "--dump-sdl", "--dump-registry", 
+        "prerender", "level_01", "--out", "./out", "--layer", "bg"
+    ]
     
     mock_handler = MagicMock()
     
@@ -200,8 +281,16 @@ def test_main_dump_state_flag(mock_quit, mock_orchestrator):
         
         cli.main()
         
-        # Verify state dump was requested post-execution with engine.board
-        mock_dump.assert_called_once_with("level_01", mock_handler.return_value.board, 'state')
+        # Verify all types of dumps were requested post-execution 
+        assert mock_dump.call_count == 4
+        
+        # Extract engine to assert context routing
+        mock_engine = mock_handler.return_value
+        
+        mock_dump.assert_any_call("level_01", mock_engine.board, 'state')
+        mock_dump.assert_any_call("level_01", mock_engine.board, 'menus')
+        mock_dump.assert_any_call("level_01", mock_engine.board, 'sdl')
+        mock_dump.assert_any_call("level_01", mock_engine, 'registry')
 
 @patch("cli.configure_logging")
 @patch("cli.arguments")

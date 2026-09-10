@@ -1,193 +1,263 @@
 # Ontology State Dump
 
-**Board:** {{ board_key }}
-**Timestamp:** {{ timestamp }}
+- **Board:** {{ board_key }}
+- **Timestamp:** {{ timestamp }}
 
 ---
-
 {%- for asset in assets %}
 
-## {{ asset.name | default(asset.id, true) }} 
+## {{ asset.name | default(asset.id, true) }}
 
-**Taxonomy:** 
-  - Category: `{{ asset.category }}` 
+- **Taxonomy:**
+  - Category: `{{ asset.category }}`
   - Instance: `{{ asset.instance }}`
   - ID: `{{ asset.id }}`
-{%- if asset.state.layer %}
-**Layer:** {{ asset.state.layer }}
+{%- if asset.dimensions is defined and asset.dimensions %}
+- **Dimensions:**
+  - Width: {{ asset.dimensions.w }}
+  - Length: {{ asset.dimensions.l }}
 {%- endif %}
-{%- if asset.state.depth is defined %}
+{%- if asset.state.layer is defined and asset.state.layer is not none %}
+- **Layer:** `{{ asset.state.layer }}`
+{%- endif %}
+{%- if asset.state.depth is defined and asset.state.depth is not none %}
 - **Depth:** {{ asset.state.depth }}
 {%- endif %}
 {%- if asset.state.height is defined and asset.state.height is not none %}
 - **Height:** {{ asset.state.height }}
 {%- endif %}
-{%- if asset.state.position %}
+{%- if asset.state.position is defined and asset.state.position is not none %}
 - **Position:** ({{ asset.state.position.x }}, {{ asset.state.position.y }})
 {%- endif %}
-{%- if asset.state.initial %}
+{%- if asset.state.initial is defined and asset.state.initial is not none %}
 - **Initial Position:** ({{ asset.state.initial.x }}, {{ asset.state.initial.y }})
 {%- endif %}
-{%- if asset.state.velocity %}
+{%- if asset.state.velocity is defined and asset.state.velocity is not none %}
 - **Velocity:** ({{ asset.state.velocity.x }}, {{ asset.state.velocity.y }})
 {%- endif %}
 {%- if asset.state.speed is defined and asset.state.speed is not none %}
 - **Speed:** {{ asset.state.speed }}
 {%- endif %}
-{%- if asset.state.direction %}
+{%- if asset.state.direction is defined and asset.state.direction is not none %}
 - **Direction:** `{{ asset.state.direction }}`
 {%- endif %}
-{%- if asset.state.multiple %}
-- **Multiple:** nx: {{ asset.state.multiple.nx }}, ny: {{ asset.state.multiple.ny }}
+{%- if asset.state.multiple is defined and asset.state.multiple is not none %}
+- **Multiple:**
+  - nx: {{ asset.state.multiple.nx }}
+  - ny: {{ asset.state.multiple.ny }}
 {%- endif %}
-{%- if asset.state.animation %}
-- **Animation:** 
+{%- if asset.state.animation is defined and asset.state.animation is not none %}
+- **Animation:**
   - Action: `{{ asset.state.animation.action }}`
   - Direction: `{{ asset.state.animation.direction }}`
   - Frame: {{ asset.state.animation.frame }}
   - Tick: {{ asset.state.animation.tick }}
 {%- endif %}
+{%- if asset.state.plot is defined and asset.state.plot is not none %}
+- **Plot:**
+  {%- if asset.state.plot.current is not none %}
+  - Current: `{{ asset.state.plot.current }}`
+  {%- endif %}
+  {%- if asset.state.plot.previous %}
+  - Previous:
+    {%- for prev_plot in asset.state.plot.previous %}
+    - `{{ prev_plot }}`
+    {%- endfor %}
+  {%- endif %}
+{%- endif %}
 {%- if asset.state.switch is defined and asset.state.switch is not none %}
 - **Switch:** {{ asset.state.switch }}
 {%- endif %}
 {%- if asset.state.content is defined and asset.state.content is not none %}
-- **Content:** {{ asset.state.content }}
+- **Content:**
+  {%- if asset.state.content is iterable and asset.state.content is not string %}
+    {%- for item in asset.state.content %}
+  - `{{ item }}`
+    {%- endfor %}
+  {%- else %}
+  - `{{ asset.state.content }}`
+  {%- endif %}
 {%- endif %}
-{%- if asset.state.link %}
-- **Link:** {{ asset.state.link }}
+{%- if asset.state.link is defined and asset.state.link is not none %}
+- **Link:** `{{ asset.state.link }}`
 {%- endif %}
-{%- if asset.state.outlayer %}
-- **Door Out:** Layer: {{ asset.state.outlayer }}{% if asset.state.out %}, Position: ({{ asset.state.out.x }}, {{ asset.state.out.y }}){% endif %}
+{%- if asset.state.outlayer is defined and asset.state.outlayer is not none %}
+- **Door Out:**
+  - Layer: `{{ asset.state.outlayer }}`
+  {%- if asset.state.out %}
+  - Position: ({{ asset.state.out.x }}, {{ asset.state.out.y }})
+  {%- endif %}
 {%- endif %}
-{%- if asset.state.owner %}
-- **Owner:** {{ asset.state.owner }}
+{%- if asset.state.owner is defined and asset.state.owner is not none %}
+- **Owner:** `{{ asset.state.owner }}`
 {%- endif %}
-{%- if asset.state.icon %}
+{%- if asset.state.persona is defined and asset.state.persona is not none %}
+- **Persona:** `{{ asset.state.persona }}`
+{%- endif %}
+{%- if asset.state.lexicon is defined and asset.state.lexicon is not none %}
+- **Lexicon:** `{{ asset.state.lexicon }}`
+{%- endif %}
+{%- if asset.state.icon is defined and asset.state.icon is not none %}
 - **Icon:** `{{ asset.state.icon }}`
 {%- endif %}
 {%- if asset.state.ttl is defined and asset.state.ttl is not none %}
 - **TTL:** {{ asset.state.ttl }}
 {%- endif %}
-{%- if asset.state.offset %}
+{%- if asset.state.offset is defined and asset.state.offset is not none %}
 - **Offset:** ({{ asset.state.offset.x }}, {{ asset.state.offset.y }})
 {%- endif %}
-{%- if asset.state.character %}
-- **Character:** STR: {{ asset.state.character.strength }}, DEF: {{ asset.state.character.defense }}, SPD: {{ asset.state.character.speed }}, IMP: {{ asset.state.character.impulse }}
+{%- if asset.state.character is defined and asset.state.character is not none %}
+- **Character:**
+  - Strength: {{ asset.state.character.strength }}
+  - Defense: {{ asset.state.character.defense }}
+  - Speed: {{ asset.state.character.speed }}
+  - Impulse: {{ asset.state.character.impulse }}
 {%- endif %}
-{%- if asset.state.persona %}
-- **Persona:** `{{ asset.state.persona }}`
-{%- endif %}
-{%- if asset.state.lexicon %}
-- **Lexicon:** `{{ asset.state.lexicon }}`
-{%- endif %}
-{%- if asset.state.psyche %}
-- **Psyche**:
-  {%- if asset.state.psyche.persona %}
-  - Persona: {{ asset.state.psyche.persona }}
-  {%- endif %}
-  {%- if asset.state.psyche.motivation %}
-  - Motivation: {{ asset.state.psyche.motivation }}
-  {%- endif %}
-  {%- if asset.state.psyche.dialogue %}
-  - Dialogue: {{ asset.state.psyche.dialogue }}
-  {%- endif %}
-  {%- if asset.state.psyche.expression %}
-  - Expression (Attachment):
-    - Icon: {{ asset.state.psyche.expression.icon }}
-    - TTL: {{ asset.state.psyche.expression.ttl }}
-    {%- if asset.state.psyche.expression.offset %}
-    - Offset: ({{ asset.state.psyche.expression.offset.x }}, {{ asset.state.psyche.expression.offset.y }})
-    {%- endif %}
-  {%- endif %}
-{%- endif %}
-{%- if asset.state.meters %}
+{%- if asset.state.meters is defined and asset.state.meters is not none %}
 - **Meters:**
   - Health: {{ asset.state.meters.health.current }} / {{ asset.state.meters.health.maximum }}
   - Magic: {{ asset.state.meters.magic.current }} / {{ asset.state.meters.magic.maximum }}
 {%- endif %}
-{%- if asset.state.inventory %}
+{%- if asset.state.inventory is defined and asset.state.inventory is not none %}
 - **Inventory:**
   - Wallet: {{ asset.state.inventory.wallet }}
   {%- if asset.state.inventory.loot %}
-  - Loot: {{ asset.state.inventory.loot }}
+  - Loot:
+    {%- for item_id, qty in asset.state.inventory.loot.items() %}
+    - `{{ item_id }}`: {{ qty }}
+    {%- endfor %}
   {%- endif %}
   {%- if asset.state.inventory.equipment %}
-  - Equipment: 
-    - Armor: `{{ asset.state.inventory.equipment.armor }}` 
+  - Equipment:
+    - Armor: `{{ asset.state.inventory.equipment.armor }}`
     - Weapon: `{{ asset.state.inventory.equipment.weapon }}`
     - Tool: `{{ asset.state.inventory.equipment.tool }}`
     - Utility: `{{ asset.state.inventory.equipment.utility }}`
     - Shield: `{{ asset.state.inventory.equipment.shield }}`
   {%- endif %}
 {%- endif %}
-{%- if asset.state.goal %}
-- **Goal:** 
+{%- if asset.state.goal is defined and asset.state.goal is not none %}
+- **Goal:**
   - Name: `{{ asset.state.goal.name }}`
   - Category: `{{ asset.state.goal.category }}`
-  - Layer: `{{ asset.state.goal.layer }}
+  - Layer: `{{ asset.state.goal.layer }}`
   {%- if asset.state.goal.position %}
   - Position: ({{ asset.state.goal.position.x }}, {{ asset.state.goal.position.y }})
   {%- endif %}
 {%- endif %}
-{%- if asset.state.mutators %}
+{%- if asset.state.mutators is defined and asset.state.mutators is not none %}
 - **Mutators:**
-  - Triggers: Animated: {{ asset.state.mutators.triggers.animated }}, Frightened: {{ asset.state.mutators.triggers.frightened }}, Dead: {{ asset.state.mutators.triggers.dead }}, Vision: {{ asset.state.mutators.triggers.vision }}
+  - Triggers:
+    - Animated: {{ asset.state.mutators.triggers.animated }}
+    - Frightened: {{ asset.state.mutators.triggers.frightened }}
+    - Dead: {{ asset.state.mutators.triggers.dead }}
+    - Vision: {{ asset.state.mutators.triggers.vision }}
   {%- if asset.state.mutators.parameters %}
   - Parameters:
-    - Fear: Radius {{ asset.state.mutators.parameters.fear.radius }}, Limit {{ asset.state.mutators.parameters.fear.limit }}, Enemy {{ asset.state.mutators.parameters.fear.enemy }}
-    - Vision: Radius {{ asset.state.mutators.parameters.vision.radius }}
-    - Action: Radius {{ asset.state.mutators.parameters.action.radius }}
+    {%- if asset.state.mutators.parameters.fear %}
+    - Fear:
+      - Radius: {{ asset.state.mutators.parameters.fear.radius }}
+      - Limit: {{ asset.state.mutators.parameters.fear.limit }}
+      - Enemy: {{ asset.state.mutators.parameters.fear.enemy }}
+    {%- endif %}
+    {%- if asset.state.mutators.parameters.vision %}
+    - Vision:
+      - Radius: {{ asset.state.mutators.parameters.vision.radius }}
+    {%- endif %}
+    {%- if asset.state.mutators.parameters.action %}
+    - Action:
+      - Radius: {{ asset.state.mutators.parameters.action.radius }}
+    {%- endif %}
   {%- endif %}
 {%- endif %}
-{%- if asset.state.memory %}
-- **Memory:** 
+{%- if asset.state.memory is defined and asset.state.memory is not none %}
+- **Memory:**
   {%- if asset.state.memory.goals %}
   - Goals:
-  {%- for goal in asset.state.memory.goals.values() %}
-    - Name: `{{ goal.name }}`
-    - Category: `{{ goal.category }}`
-    - Layer: `{{ goal.layer }}`
-    {%- if goal.position %}
-    - Position: `({{ goal.position.x }}, {{ goal.position.y }})` 
-    {%- endif %}
-  {%- endfor %}
+    {%- for g_key, goal in asset.state.memory.goals.items() %}
+    - `{{ g_key }}`:
+      - Name: `{{ goal.name }}`
+      - Category: `{{ goal.category }}`
+      - Layer: `{{ goal.layer }}`
+      {%- if goal.position %}
+      - Position: ({{ goal.position.x }}, {{ goal.position.y }})
+      {%- endif %}
+    {%- endfor %}
   {%- endif %}
   {%- if asset.state.memory.sprites %}
   - Sprites:
-  {%- for name, position in asset.state.memory.sprites.items() %}
-    - `{{ name }}`: `({{ position.x }}, {{ position.y }})`
-  {%- endfor %}
+    {%- for name, pos in asset.state.memory.sprites.items() %}
+    - `{{ name }}`: ({{ pos.x }}, {{ pos.y }})
+    {%- endfor %}
   {%- endif %}
   {%- if asset.state.memory.property %}
   - Property:
-  {%- for name, position in asset.state.memory.property.items() %}
-    - `{{ name }}`: `({{ position.x }}, {{ position.y }})`
-  {%- endfor %}
+    {%- for name, pos in asset.state.memory.property.items() %}
+    - `{{ name }}`: ({{ pos.x }}, {{ pos.y }})
+    {%- endfor %}
+  {%- endif %}
+  {%- if asset.state.memory.doors %}
+  - Doors:
+    {%- for door_key, dest in asset.state.memory.doors.items() %}
+    - `{{ door_key }}`: `{{ dest }}`
+    {%- endfor %}
   {%- endif %}
   {%- if asset.state.memory.relationships %}
-  - Relationships: `{{ asset.state.memory.relationships }}`
+  - Relationships:
+    {%- for entity, rel in asset.state.memory.relationships.items() %}
+    - `{{ entity }}`: `{{ rel }}`
+    {%- endfor %}
   {%- endif %}
   {%- if asset.state.memory.rumors %}
-  - Rumors: `{{ asset.state.memory.rumors }}`
+  - Rumors:
+    {%- for rumor in asset.state.memory.rumors %}
+    - `{{ rumor }}`
+    {%- endfor %}
   {%- endif %}
   {%- if asset.state.memory.prices %}
-  - Prices: `{{ asset.state.memory.prices }}`
+  - Prices:
+    {%- for item, price in asset.state.memory.prices.items() %}
+    - `{{ item }}`: {{ price }}
+    {%- endfor %}
   {%- endif %}
 {%- endif %}
-{%- if asset.state.intention %}
+{%- if asset.state.psyche is defined and asset.state.psyche is not none %}
+- **Psyche:**
+  {%- if asset.state.psyche.persona is not none %}
+  - Persona: `{{ asset.state.psyche.persona }}`
+  {%- endif %}
+  {%- if asset.state.psyche.motivation is not none %}
+  - Motivation: `{{ asset.state.psyche.motivation }}`
+  {%- endif %}
+  {%- if asset.state.psyche.dialogue is not none %}
+  - Dialogue: `{{ asset.state.psyche.dialogue }}`
+  {%- endif %}
+  {%- if asset.state.psyche.expression %}
+  - Expression (Attachment):
+    {%- if asset.state.psyche.expression.icon is not none %}
+    - Icon: `{{ asset.state.psyche.expression.icon }}`
+    {%- endif %}
+    {%- if asset.state.psyche.expression.ttl is not none %}
+    - TTL: {{ asset.state.psyche.expression.ttl }}
+    {%- endif %}
+    {%- if asset.state.psyche.expression.offset %}
+    - Offset: ({{ asset.state.psyche.expression.offset.x }}, {{ asset.state.psyche.expression.offset.y }})
+    {%- endif %}
+  {%- endif %}
+{%- endif %}
+{%- if asset.state.intention is defined and asset.state.intention is not none %}
 - **Intention:** `{{ asset.state.intention }}`
 {%- endif %}
-
 {%- endfor %}
-
 {%- if perimeters %}
+
 ---
 
 # Perimeters
-
 {%- for layer, bounds in perimeters.items() %}
+
 ## Layer: {{ layer }}
-{%- if bounds %}
+{% if bounds %}
 {%- for b in bounds %}
 - Position: ({{ b.position.x }}, {{ b.position.y }}) | Dimensions: w: {{ b.dimensions.w }}, l: {{ b.dimensions.l }}
 {%- endfor %}
@@ -196,113 +266,3 @@
 {%- endif %}
 {%- endfor %}
 {%- endif %}
-
-{%- for section_name, menu_list in [('Menus', menus), ('Overlays', overlays)] %}
-{%- if menu_list %}
-
----
-
-# {{ section_name }}
-
-{%- for menu in menu_list %}
-## {{ section_name[:-1] }}: {{ menu.id | default(menu.name) }}
-
-{%- if menu.focus %}
-**Focus:** `{{ menu.focus }}`
-{%- endif %}
-{%- if menu.context %}
-**Context:** {{ menu.context }}
-{%- endif %}
-{%- if menu.controller %}
-**Controller:** `{{ menu.controller }}`
-{%- endif %}
-{%- if menu.layout %}
-**Layout:** `{{ menu.layout }}`
-{%- endif %}
-{%- if menu.alignment %}
-**Alignment:** `{{ menu.alignment }}`
-{%- endif %}
-{%- if menu.gap is defined and menu.gap is not none %}
-**Gap:** {{ menu.gap }}
-{%- endif %}
-{%- if menu.margins is defined and menu.margins is not none %}
-**Margins:** {{ menu.margins }}
-{%- endif %}
-{%- if menu.position %}
-**Position:** ({{ menu.position.x }}, {{ menu.position.y }})
-{%- endif %}
-
-### Widgets
-{%- for w_key, widget in menu.widgets.items() %}
-#### {{ widget.name }} (`{{ widget.id }}`)
-
-**Taxonomy:** 
-  - Category: `{{ widget.category }}` 
-  - Instance: `{{ widget.instance }}`
-  - ID: `{{ widget.id }}`
-**Component Classes:**
-  {%- if widget.frame %}
-  - Frame: `{{ widget.frame.__class__.__name__ }}`
-  {%- endif %}
-  {%- if widget.animation %}
-  - Animation: `{{ widget.animation.__class__.__name__ }}`
-  {%- endif %}
-**Calculated Values:**
-  {%- if widget.frame %}
-  - Computed Keys: `{{ widget.frame.keys(widget.id, widget.state) }}`
-  {%- endif %}
-**Properties**:
-  {%- if widget.dimensions %}
-  - Dimensions: w: {{ widget.dimensions.w }}, l: {{ widget.dimensions.l }}
-  {%- endif %}
-{%- set bind_obj = widget.bind if widget.bind else widget.binding %}
-{%- if bind_obj %}
-**Binding:**
-  - Selection: `{{ bind_obj.selection }}`
-  - Selector: `{{ bind_obj.selector }}`
-  - State: `{{ bind_obj.state }}`
-{%- endif %}
-**State:**
-{%- if widget.state %}
-  {%- if widget.state.position %}
-  - Position: ({{ widget.state.position.x }}, {{ widget.state.position.y }})
-  {%- endif %}
-  {%- if widget.state.status is defined and widget.state.status is not none %}
-  - Status: `{{ widget.state.status }}`
-  {%- endif %}
-  {%- if widget.state.layout is defined and widget.state.layout is not none %}
-  - Layout: `{{ widget.state.layout }}`
-  {%- endif %}
-  {%- if widget.state.alignment is defined and widget.state.alignment is not none %}
-  - Alignment: `{{ widget.state.alignment }}`
-  {%- endif %}
-  {%- if widget.state.gap is defined and widget.state.gap is not none %}
-  - Gap: {{ widget.state.gap }}
-  {%- endif %}
-  {%- if widget.state.margins is defined and widget.state.margins is not none %}
-  - Margins: {{ widget.state.margins }}
-  {%- endif %}
-  {%- if widget.state.icon is defined and widget.state.icon is not none %}
-  - Icon: `{{ widget.state.icon }}`
-  {%- endif %}
-  {%- if widget.state.content is defined and widget.state.content is not none %}
-  - Content: {{ widget.state.content }}
-  {%- endif %}
-  {%- if widget.state.pageindex is defined and widget.state.pageindex is not none %}
-  - Pagination: Index {{ widget.state.pageindex }} / Size {{ widget.state.pagesize }}
-  {%- endif %}
-  {%- if widget.state.reading is defined and widget.state.unit is defined %}
-  - Reading: {{ widget.state.reading }} / {{ widget.state.unit }}
-  {%- endif %}
-  {%- if widget.state.animation %}
-  - Animation: 
-    - Action: `{{ widget.state.animation.action }}`
-    - Direction: `{{ widget.state.animation.direction }}`
-    - Frame: {{ widget.state.animation.frame }}
-    - Tick: {{ widget.state.animation.tick }}
-  {%- endif %}
-{%- endif %}
-{%- endfor %}
-{%- endfor %}
-{%- endif %}
-{%- endfor %}

@@ -1,0 +1,143 @@
+# Ontology Menu Dump
+
+- **Board:** {{ board_key }}
+- **Timestamp:** {{ timestamp }}
+{%- for section_name, menu_list in [('Menus', menus), ('Overlays', overlays)] %}
+{%- if menu_list %}
+
+---
+
+# {{ section_name }}
+{%- for menu in menu_list %}
+
+## {{ section_name[:-1] }}: {{ menu.id | default(menu.name, true) }}
+
+- **ID:** `{{ menu.id }}`
+{%- if menu.focus is defined and menu.focus is not none %}
+- **Focus:** `{{ menu.focus }}`
+{%- endif %}
+{%- if menu.context is defined and menu.context is not none %}
+- **Context:** `{{ menu.context }}`
+{%- endif %}
+{%- if menu.controller is defined and menu.controller is not none %}
+- **Controller:** `{{ menu.controller }}`
+{%- endif %}
+{%- if menu.graph is defined and menu.graph %}
+- **Navigation Graph:**
+  {%- for src_node, edges in menu.graph.items() %}
+  - `{{ src_node }}`:
+    {%- for dir_key, dest_node in edges.items() %}
+    - {{ dir_key }}: `{{ dest_node }}`
+    {%- endfor %}
+  {%- endfor %}
+{%- endif %}
+{%- if menu.widgets %}
+
+### Widgets
+{%- for w_key, widget in menu.widgets.items() %}
+
+#### {{ widget.name | default(widget.id, true) }} (`{{ widget.id }}`)
+
+- **Taxonomy:**
+  - Category: `{{ widget.category }}`
+  - Instance: `{{ widget.instance }}`
+  - ID: `{{ widget.id }}`
+{%- if widget.dimensions is defined and widget.dimensions %}
+- **Properties:**
+  - Dimensions: w: {{ widget.dimensions.w }}, l: {{ widget.dimensions.l }}
+{%- endif %}
+{%- if widget.frame or widget.animation %}
+- **Component Classes:**
+  {%- if widget.frame %}
+  - Frame: `{{ widget.frame.__class__.__name__ }}`
+  {%- endif %}
+  {%- if widget.animation %}
+  - Animation: `{{ widget.animation.__class__.__name__ }}`
+  {%- endif %}
+{%- endif %}
+{%- if widget.frame and widget.state %}
+- **Calculated Values:**
+  - Computed Keys: `{{ widget.frame.keys(widget.id, widget.state) }}`
+{%- endif %}
+{%- set bind_obj = widget.binding if widget.binding is defined and widget.binding else widget.bind %}
+{%- if bind_obj %}
+- **Binding:**
+  {%- if bind_obj.selection is defined and bind_obj.selection is not none %}
+  - Selection: `{{ bind_obj.selection }}`
+  {%- endif %}
+  {%- if bind_obj.selector is defined and bind_obj.selector is not none %}
+  - Selector: `{{ bind_obj.selector }}`
+  {%- endif %}
+  {%- if bind_obj.state is defined and bind_obj.state is not none %}
+  - State: `{{ bind_obj.state }}`
+  {%- endif %}
+{%- endif %}
+{%- if widget.state %}
+- **State:**
+  {%- if widget.state.layer is defined and widget.state.layer is not none %}
+  - Layer: `{{ widget.state.layer }}`
+  {%- endif %}
+  {%- if widget.state.depth is defined and widget.state.depth is not none %}
+  - Depth: {{ widget.state.depth }}
+  {%- endif %}
+  {%- if widget.state.height is defined and widget.state.height is not none %}
+  - Height: {{ widget.state.height }}
+  {%- endif %}
+  {%- if widget.state.position is defined and widget.state.position is not none %}
+  - Position: ({{ widget.state.position.x }}, {{ widget.state.position.y }})
+  {%- endif %}
+  {%- if widget.state.status is defined and widget.state.status is not none %}
+  - Status: `{{ widget.state.status }}`
+  {%- endif %}
+  {%- if widget.state.layout is defined and widget.state.layout is not none %}
+  - Layout: `{{ widget.state.layout }}`
+  {%- endif %}
+  {%- if widget.state.alignment is defined and widget.state.alignment is not none %}
+  - Alignment: `{{ widget.state.alignment }}`
+  {%- endif %}
+  {%- if widget.state.gap is defined and widget.state.gap is not none %}
+  - Gap: {{ widget.state.gap }}
+  {%- endif %}
+  {%- if widget.state.margins is defined and widget.state.margins is not none %}
+  - Margins: {{ widget.state.margins }}
+  {%- endif %}
+  {%- if widget.state.icon is defined and widget.state.icon is not none %}
+  - Icon: `{{ widget.state.icon }}`
+  {%- endif %}
+  {%- if widget.state.reading is defined and widget.state.reading is not none %}
+  - Reading: {{ widget.state.reading }}{% if widget.state.unit is defined and widget.state.unit is not none %} / {{ widget.state.unit }}{% endif %}
+  {%- endif %}
+  {%- if widget.state.content is defined and widget.state.content is not none %}
+    {%- if widget.state.content is iterable and widget.state.content is not string %}
+  - Content:
+      {%- for item in widget.state.content %}
+    - `{{ item }}`
+      {%- endfor %}
+    {%- else %}
+  - Content: `{{ widget.state.content }}`
+    {%- endif %}
+  {%- endif %}
+  {%- if widget.state.pageindex is defined and widget.state.pageindex is not none %}
+  - Pagination:
+    - Index: {{ widget.state.pageindex }}
+    - Size: {{ widget.state.pagesize }}
+    {%- if widget.state._pagecount is defined %}
+    - Count: {{ widget.state._pagecount }}
+    {%- endif %}
+  {%- endif %}
+  {%- if widget.state.canvas is defined and widget.state.canvas is not none %}
+  - Canvas: `{{ widget.state.canvas }}`
+  {%- endif %}
+  {%- if widget.state.animation is defined and widget.state.animation is not none %}
+  - Animation:
+    - Action: `{{ widget.state.animation.action }}`
+    - Direction: `{{ widget.state.animation.direction }}`
+    - Frame: {{ widget.state.animation.frame }}
+    - Tick: {{ widget.state.animation.tick }}
+  {%- endif %}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+{%- endfor %}

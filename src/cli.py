@@ -64,6 +64,10 @@ def dump(board_key, context, temp='state'):
 
     if temp == 'state':
         args['assets'] = context.assets()
+        if hasattr(context, 'perimeters'):
+            args['perimeters'] = context.perimeters() if callable(context.perimeters) else context.perimeters
+
+    elif temp == 'menus':
         args['menus'] = context.menus
         args['overlays'] = context.overlays
         
@@ -93,7 +97,7 @@ def dump(board_key, context, temp='state'):
     with open(dump_out_path, "w", encoding="utf-8") as f:
         f.write(dump_str)
         
-    logger.info(f"State dump successfully written to {dump_out_path}")
+    logger.info(f"{temp.capitalize()} dump successfully written to {dump_out_path}")
 
 
 def arguments():
@@ -101,6 +105,7 @@ def arguments():
     parser.add_argument("--log-level", type=str, default="INFO", 
                         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
     parser.add_argument("--dump-state", action="store_true", default=False)
+    parser.add_argument("--dump-menus", action="store_true", default=False)
     parser.add_argument("--dump-sdl", action="store_true", default=False)
     parser.add_argument("--dump-registry", action="store_true", default=False)
     parser.add_argument("--software", action="store_true", default=False)
@@ -209,8 +214,6 @@ COMMAND_REGISTRY = {
 
 def main():
     args = arguments()
-
-    # Initialize centralized logging
     configure_logging(log_level=args.log_level.upper())
 
     logger.info(f"Starting CLI with command: '{args.command}' for board: '{args.board_key}'")
@@ -227,12 +230,14 @@ def main():
         logger.error(f"Unknown command received: {args.command}")
         sys.exit(1)
 
-    # Execute designated function and capture the engine instance
     engine = handler(args, orchestrator, screensize)
 
     # Deferred Dumps Execution
     if args.dump_state:
         dump(args.board_key, engine.board, 'state')
+
+    if args.dump_menus:
+        dump(args.board_key, engine.board, 'menus')
         
     if args.dump_sdl:
         dump(args.board_key, engine.board, 'sdl')
@@ -240,13 +245,12 @@ def main():
     if args.dump_registry:
         dump(args.board_key, engine, 'registry')
     
-    # Cleanly release memory bounds
     if 'engine' in locals():
         del engine
         
     gc.collect()
     quit_sdl()
     logger.info("CLI processes completed.")
-
+    
 if __name__ == "__main__":
     main()
