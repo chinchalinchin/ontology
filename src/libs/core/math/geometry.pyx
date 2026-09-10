@@ -1,6 +1,17 @@
+"""
+# Ontology: libs.core.math.geometry
+"""
 # cython: language_level=3
-from libs.core.models cimport Position, Dimensions, Hitbox
+# C Libraries
 from libc.math cimport sqrt
+
+# Cython Libraries
+from libs.core.models cimport (
+    Position, 
+    Dimensions, 
+    Hitbox, 
+    Boundary
+)
 
 cpdef tuple intersects(
     Position pos1, 
@@ -37,6 +48,7 @@ cpdef tuple intersects(
                 
     return None
 
+
 cpdef bint onscreen(
     Position pos, 
     Dimensions dim, 
@@ -44,11 +56,12 @@ cpdef bint onscreen(
     Dimensions p_dim, 
     Dimensions screen
 ):
-    cdef int cam_x = p_pos.x + (p_dim.l // 2) - (screen.w // 2)
-    cdef int cam_y = p_pos.y + (p_dim.w // 2) - (screen.l // 2)
+    cdef int cam_x = p_pos.x + (p_dim.w // 2) - (screen.w // 2)
+    cdef int cam_y = p_pos.y + (p_dim.l // 2) - (screen.l // 2)
     
     return (pos.x < cam_x + screen.w and pos.x + dim.w > cam_x and
             pos.y < cam_y + screen.l and pos.y + dim.l > cam_y)
+
 
 cpdef bint cone(
     int sx, 
@@ -86,6 +99,7 @@ cpdef bint cone(
     
     return dot_product >= cos_threshold
 
+
 cpdef bint nearby(
     int sx, 
     int sy, 
@@ -99,3 +113,159 @@ cpdef bint nearby(
     cdef int dx = tx - sx
     cdef int dy = ty - sy
     return (dx * dx + dy * dy) < (radius * radius)
+
+
+# -----------------------------------------------------------------------------
+# SWEEP-LINE CONTOUR ALGORITHM
+# -----------------------------------------------------------------------------
+
+
+cdef list merge(list intervals):
+    """
+    Sorts and merges overlapping active 1D intervals.
+    """
+    if not intervals:
+        return []
+    intervals.sort()
+    cdef list merged = []
+    cdef int current_start = intervals[0][0]
+    cdef int current_end = intervals[0][1]
+    cdef int start, end
+    cdef tuple iv
+    
+    for iv in intervals[1:]:
+        start, end = iv
+        if start <= current_end:
+            if end > current_end:
+                current_end = end
+        else:
+            merged.append((current_start, current_end))
+            current_start = start
+            current_end = end
+            
+    merged.append((current_start, current_end))
+    return merged
+
+cdef list xor(list A, list B):
+    """
+    Evaluates the symmetric difference between two sets of merged intervals.
+    Any interval present in (A XOR B) exactly represents an exposed contour edge.
+    """
+    cdef list events = []
+    for start, end in A:
+        events.append((start, 1))
+        events.append((end, -1))
+    for start, end in B:
+        events.append((start, 1))
+        events.append((end, -1))
+        
+    events.sort()
+    
+    cdef list xor_intervals = []
+    cdef int count = 0
+    cdef int last_y = -1
+    cdef int i = 0
+    cdef int n = len(events)
+    cdef int y
+    
+    while i < n:
+        y = events[i][0]
+        if count == 1 and y > last_y:
+            xor_intervals.append((last_y, y))
+            
+        # Process all coincident coordinates to avoid false fragmentation
+        while i < n and events[i][0] == y:
+            count += events[i][1]
+            i += 1
+        last_y = y
+        
+    return merge(xor_intervals)
+
+
+cpdef list contours(list rects):
+    """
+    Executes a 2-pass Sweep-Line algorithm over primitive AABBs.
+    Returns the exact mathematical segments of the outer hull as Boundaries.
+    Input: list of (min_x, min_y, max_x, max_y)
+    Output: list of Boundary
+    """
+    cdef list boundaries = []
+    
+    # ---------------------------------------------------------
+    # PASS 1: VERTICAL SWEEP
+    # ---------------------------------------------------------
+    cdef list v_events = []
+    cdef tuple r
+    cdef int i = 0
+    for r in rects:
+        v_events.append((r[0], 1, r[1], r[3], i))  # Left edge
+        v_events.append((r[2], -1, r[1], r[3], i)) # Right edge
+        i += 1
+        
+    v_events.sort()
+    
+    cdef dict active_v = {}
+    cdef list prev_merged_v = []
+    cdef list curr_merged_v = []
+    cdef int x
+    cdef int n_v = len(v_events)
+    i = 0
+    
+    while i < n_v:
+        x = v_events[i][0]
+        
+        while i < n_v and v_events[i][0] == x:
+            if v_events[i][1] == 1:
+                active_v[v_events[i][4]] = (v_events[i][2], v_events[i][3])
+            else:
+                if v_events[i][4] in active_v:
+                    del active_v[v_events[i][4]]
+            i += 1
+            
+        curr_merged_v = merge(list(active_v.values()))
+        
+        for y1, y2 in xor(prev_merged_v, curr_merged_v):
+            # A vertical segment has width 1 and length y2 - y1
+            boundaries.append(Boundary(Position(x, y1), Dimensions(1, y2 - y1)))
+            
+        prev_merged_v = curr_merged_v
+        
+    # ---------------------------------------------------------
+    # PASS 2: HORIZONTAL SWEEP
+    # ---------------------------------------------------------
+    cdef list h_events = []
+    i = 0
+    for r in rects:
+        h_events.append((r[1], 1, r[0], r[2], i))  # Bottom edge
+        h_events.append((r[3], -1, r[0], r[2], i)) # Top edge
+        i += 1
+        
+    h_events.sort()
+    
+    cdef dict active_h = {}
+    cdef list prev_merged_h = []
+    cdef list curr_merged_h = []
+    cdef int y
+    cdef int n_h = len(h_events)
+    i = 0
+    
+    while i < n_h:
+        y = h_events[i][0]
+        
+        while i < n_h and h_events[i][0] == y:
+            if h_events[i][1] == 1:
+                active_h[h_events[i][4]] = (h_events[i][2], h_events[i][3])
+            else:
+                if h_events[i][4] in active_h:
+                    del active_h[h_events[i][4]]
+            i += 1
+            
+        curr_merged_h = merge(list(active_h.values()))
+        
+        for x1, x2 in xor(prev_merged_h, curr_merged_h):
+            # A horizontal segment has width x2 - x1 and length 1
+            boundaries.append(Boundary(Position(x1, y), Dimensions(x2 - x1, 1)))
+            
+        prev_merged_h = curr_merged_h
+
+    return boundaries

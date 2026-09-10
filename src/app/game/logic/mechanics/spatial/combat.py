@@ -134,7 +134,6 @@ class CombatMechanics(SpatialMechanic):
                     
                     target.state.meters.health.current = max(0, 
                         target.state.meters.health.current - damage)
-                    target.state.mutators.triggers.struck = True
                     
                     if target.state.meters.health.current == 0:
                         target.state.mutators.triggers.dead = True

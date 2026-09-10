@@ -21,3 +21,7 @@ cdef class Velocity:
 cdef class Hitbox:
     cdef public Position position
     cdef public Dimensions dimensions
+
+cdef class Boundary:
+    cdef public Position position
+    cdef public Dimensions dimensions

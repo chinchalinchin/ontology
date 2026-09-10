@@ -75,12 +75,4 @@ class CollisionMechanics(SpatialMechanic):
             colliding_pairs = self.collisions(weights)
             
             for asset_a, asset_b in colliding_pairs:
-                if hasattr(asset_a.state, 'mutators') and \
-                    hasattr(asset_a.state.mutators, 'triggers'):
-                    asset_a.state.mutators.triggers.struck = True
-                    
-                if hasattr(asset_b.state, 'mutators') and \
-                    hasattr(asset_b.state.mutators, 'triggers'):
-                    asset_b.state.mutators.triggers.struck = True
-
                 self._resolve(asset_a, asset_b)

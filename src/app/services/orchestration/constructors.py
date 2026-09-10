@@ -22,7 +22,6 @@ from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
 from app.game.logic.mechanics.core import Mechanic
-from app.game.logic.mechanics.intentional import TransitionMechanics
 from app.game.menus.events import MenuEvent
 from app.game.menus.contexts import MainContext
 from app.models.groups import (
@@ -32,7 +31,7 @@ from app.models.groups import (
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
-from app.services.orchestration.factory import Factory
+from app.services.generators.factory import Factory
 from app.services.orchestration.migrator import Migrator
 from app.services.generators.decomposer import Decomposer
 from app.services.generators.provider import Provider

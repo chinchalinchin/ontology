@@ -132,9 +132,9 @@ While Python objects are fast enough for general logic, calculating collisions a
 - `libs/core/math/physics.pyx`
 - `libs/core/math/space.pyx`
 
-The engine leverages Cython for high-frequency mathematical, geometric, and physical calculations. To achieve maximum throughput, stateless operations are implemented as module-level `cpdef` functions within the `libs.core.math` package, completely avoiding the Virtual Method Table (vtable) overhead of class wrappers.
+The engine leverages Cython for high-frequency mathematical, geometric, and physical calculations. To achieve maximum throughput, stateless operations are implemented as module-level `cpdef` functions within the `libs.core.math` package, avoiding the Virtual Method Table (vtable) overhead of class wrappers.
 
-Spatial data (such as `Position`, `Velocity`, `Dimensions`, and `Hitbox`) are modeled as Cython Extension Types (`cdef class` in `libs.core.models`). This structure allows the engine to pass objects across the boundary while allowing C-level functions to access spatial properties (e.g., `pos.x`, `hb.dimensions.l`) natively without falling back to slow Python dictionary lookups.
+Spatial data (such as `Position`, `Velocity`, `Dimensions`, and `Hitbox`) are modeled as Cython Extension Types (`cdef class` in `libs.core.models`). This structure allows the engine to pass objects across the boundary while allowing C-level functions to access spatial properties (e.g., `pos.x`, `hb.dimensions.l`) natively without falling back to Python dictionary lookups.
 
 The engine explicitly retains the Global Interpreter Lock (GIL) during math calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax when iterating over collections (e.g., `for hb in hitboxes`), while executing the actual arithmetic inline using primitive C variables (`int`, `double`) on the CPU stack.
 
@@ -142,16 +142,17 @@ The engine explicitly retains the Global Interpreter Lock (GIL) during math calc
 
 This module houses pure geometric evaluations, translating expensive Python float and distance mathematics into C-level primitives.
 
-* **`intersects`**: Calculates Axis-Aligned Bounding Box (AABB) intersections. It iterates through an entity's hitboxes, explicitly typecasting them (`<Hitbox>item`) to enforce C-struct memory layouts, returning the overlapping tuple pair or `None`.
-* **`onscreen`**: A fast AABB camera culling check used by the renderer. Evaluates if an asset's absolute position intersects with the camera's viewport by calculating bounds entirely via C integers.
-* **`cone`**: A zero-allocation field-of-view check. Bypasses Python's `math` module overhead by utilizing C's `<math.h>` to compute Euclidean magnitude and orthogonal dot products (`dx * ux + dy * uy`). Validates if a target falls within a parameterized directional vision cone.
-* **`nearby`**: A pure integer squared-distance check (`dx*dx + dy*dy < r*r`). Replacing Python-side radial evaluations prevents the continuous creation and destruction of intermediate boolean and float objects during environment scans.
+* **`intersects`**: Calculates Axis-Aligned Bounding Box (AABB) intersections. It iterates through an entity's hitboxes, returning the overlapping tuple pair or `None`.
+* **`onscreen`**: An AABB camera culling check used by the renderer. Evaluates if an asset's absolute position intersects with the camera's viewport by calculating bounds.
+* **`cone`**: A zero-allocation field-of-view check. Validates if a target falls within a parameterized directional vision cone.
+* **`nearby`**: A pure integer squared-distance check (`dx*dx + dy*dy < r*r`). 
+* **`contours`**: Executes an two-pass Sweep-Line algorithm over primitive AABBs to dynamically generate map boundaries. It leverages C-level interval merging and XOR symmetric differences to isolate all exposed contour edges, returning boundary segments.
 
 **Space (`libs/core/math/space.pyx`)**
 
 This module manages the broad-phase spatial partitioning grid, reducing collision detection complexity from $O(N^2)$ to $O(N)$ for local clusters.
 
-* **Memory Management (`__init__`, `__dealloc__`)**: Unlike standard Python objects, `Space` manually allocates continuous blocks of system memory (`malloc`) for its `bucket_counts` and `bucket_data` arrays. It enforces safe teardown via `__dealloc__` calling `free()`, preventing memory leaks when the grid is garbage collected.
+* **Memory Management (`__init__`, `__dealloc__`)**: Manually allocates continuous blocks of system memory (`malloc`) for its `bucket_counts` and `bucket_data` arrays. It enforces safe teardown via `__dealloc__` calling `free()`, preventing memory leaks when the grid is garbage collected.
 * **`clear`**: Resets the grid for the current frame by zeroing out the allocated memory block using C's `memset()`.
 * **`insert` & `_hash**`: Maps 2D spatial coordinates to a 1D flat array. Assets intersecting cell boundaries are hashed into multiple buckets dynamically.
 * **`query`**: Iterates through the populated buckets and yields a list of unique `(id1, id2)` integer tuples, generating candidate pairs for the narrow-phase evaluation.
@@ -168,9 +169,9 @@ This module orchestrates the physical simulation, bridging the broad-phase grid 
     1. **Spatial Resolution**: Shifts overlapping entities apart based on inverse mass ratios (e.g., an $m=0$ wall absorbs 0% of the shift, forcing the dynamic asset out).
     2. **Momentum Transfer**: Evaluates 1D elastic collision formulas, updating the `.vx` and `.vy` attributes of the participating `Velocity` objects. Kinematic assets (identified via `is_kinematic` boolean flags) bypass the momentum transfer, retaining immediate control over their vectors.
 * **`integrate`**: Executes Symplectic Euler Integration ($x_{n+1} = x_n + v_n \Delta t$). Because the game board utilizes integer grid coordinates, this function maintains sub-pixel accumulators (`rx`, `ry`). When an accumulator exceeds $1.0$ or $-1.0$, it casts the shift to an integer, updates the physical `Position`, and decrements the accumulator.
-* **`friction`**: Decays the magnitude of a `Velocity` vector over time using an environmental friction coefficient, clamping to exactly $0.0$ to prevent negative overshoot.
-* **`kinematics`**: Handles direct velocity assignment. It snaps axes to zero when no input is provided on a given axis and strictly normalizes the resulting vector to the specified `speed`.
-* **`dynamics`**: Calculates dynamic acceleration vectors towards a target coordinate (`tx`, `ty`) based on a given `impulse`. It clamps the resulting velocity to a maximum `speed` and bypasses the impulse to snap directly to the target velocity if within the arrival threshold, preventing oscillation.
+* **`friction`**: Decays the magnitude of a `Velocity` vector over time using an environmental friction coefficient, clamping to $0.0$ to prevent negative overshoot.
+* **`kinematics`**: Handles velocity assignment. It snaps axes to zero when no input is provided on a given axis and strictly normalizes the resulting vector to the specified `speed`.
+* **`dynamics`**: Calculates acceleration vectors towards a target coordinate (`tx`, `ty`) based on a given `impulse`. It clamps the resulting velocity to a maximum `speed` and bypasses the impulse to snap to the target velocity if within the arrival threshold, preventing oscillation.
 
 ### Graphics
 
@@ -178,13 +179,13 @@ This module orchestrates the physical simulation, bridging the broad-phase grid 
 
 The engine relies on a Cythonized bridge to C-level SDL2 bindings. To mitigate the overhead of crossing the Python-to-C boundary, the rendering pipeline does not pass heavy Python objects (like `SpriteState` or `Dimensions`) to the renderer. Instead, it extracts raw integers on the Python side and unpacks them cleanly onto the C-stack.
 
-* **Context Initialization (`init`):** Sets up the SDL environment, including video, images, and typography (`SDL2_ttf`). If `headless`, a SDL software rendering context (`_renderer`) is bound directly to a master memory surface (`SDL_Surface`), completely bypassing window creation.
-* **Asset & Font Allocation (`_load_image`, `_load_font`):** Loads physical image (`.png`) and font (`.ttf`) assets from disk directly into system memory, returning safe, reference-counted Cython wrappers (`TexturePtr` and `TTFFont`). To prevent styling overhead in the inner loop, fonts are pre-styled (bold, italics, RGBA color, margins) natively via SDL during ingestion using the YAML configuration properties.
-* **Typography (`measure`, `write`):** The `measure` function queries the exact pixel dimensions of a string without allocating a rendering surface. The `write` function calculates wrapping bounds and alignment, rendering UTF-8 characters as a blended surface that is permanently stamped (baked) directly onto a target `TexturePtr`. This zero-allocation technique ensures typography does not generate memory garbage during the main game loop.
-* **Background Compilation (`canvas` & `construct`):** A blank texture (`SDL_TEXTUREACCESS_TARGET`) is created in memory to match the full size of the Board. Python passes a single list of flattened integer tuples representing the source/destination coordinates and grid multipliers. Cython unpacks these primitives and executes thousands of `SDL_RenderCopy` calls natively via the C-level software rasterizer. This caches a unified map texture, eliminating the need to instantiate and re-render thousands of background tiles every frame.
-* **Buffer Management (`clear` & `present`):** Extracted from the core drawing loop to support multi-phase rendering. `clear()` wipes the current VRAM buffer at the start of the frame, and `present()` finalizes the buffer (`SDL_RenderPresent`) while pumping SDL events at the end of the frame.
+* **Context Initialization (`init`):** Sets up the SDL environment, including video, images, and typography (`SDL2_ttf`). If `headless`, a SDL software rendering context (`_renderer`) is bound to a master memory surface (`SDL_Surface`), bypassing window creation.
+* **Asset & Font Allocation (`_load_image`, `_load_font`):** Loads physical image (`.png`) and font (`.ttf`) assets from disk into system memory, returning Cython wrappers (`TexturePtr` and `TTFFont`). To prevent styling overhead in the inner loop, fonts are pre-styled (bold, italics, RGBA color, margins) natively via SDL during ingestion using the YAML configuration properties.
+* **Typography (`measure`, `write`):** The `measure` function queries the pixel dimensions of a string without allocating a rendering surface. The `write` function calculates wrapping bounds and alignment, rendering UTF-8 characters as a blended surface that is stamped  onto a target `TexturePtr`. This zero-allocation technique ensures typography does not generate memory garbage during the main game loop.
+* **Background Compilation (`canvas` & `construct`):** A blank texture (`SDL_TEXTUREACCESS_TARGET`) is created in memory to match the full size of the Board. Python passes a single list of flattened integer tuples representing the source/destination coordinates and grid multipliers. Cython unpacks these primitives and executes`SDL_RenderCopy` calls natively via the C-level software rasterizer. This caches a unified map texture, eliminating the need to instantiate and re-render tiles every frame.
+* **Buffer Management (`clear` & `present`):** `clear()` wipes the current VRAM buffer at the start of the frame, and `present()` finalizes the buffer (`SDL_RenderPresent`) while pumping SDL events at the end of the frame.
 * **World Rendering (`render`):** During the main game loop, `Screen.draw()` performs lightweight integer-based AABB camera culling natively in Python. The visible world assets are flattened into primitive integer tuples and passed across the C-boundary in a single list. `render()` copies the cropped background texture and then maps world-coordinates to camera-relative coordinates on the fly, stamping the active primitives onto the back buffer.
-* **Overlays (`superimpose`):** After the world is rendered, `Screen.interface()` passes a flattened list of active Menu and Widget primitives. `superimpose()` bypasses the camera offset logic entirely, rendering these textures via strict absolute screen coordinates (`SDL_RenderCopy`) directly on top of the world view, ensuring the HUD and Menus remain statically positioned on the glass.
+* **Overlays (`superimpose`):** After the world is rendered, `Screen.interface()` passes a flattened list of active Menu and Widget primitives. `superimpose()` bypasses the camera offset logic, rendering these textures via strict absolute screen coordinates (`SDL_RenderCopy`) directly on top of the world view, ensuring Menus remain statically positioned.
 
 **Memory Management**
 

@@ -78,3 +78,17 @@ cdef class ScreenPosition:
 
     def to_dict(self) -> dict:
         return {"px": self.px, "py": self.py}
+
+cdef class Boundary:
+    """
+    Absolute world-space environmental constraint.
+    """
+    def __init__(self, Position position, Dimensions dimensions):
+        self.position = position
+        self.dimensions = dimensions
+
+    def to_dict(self) -> dict:
+        return {
+            "position": self.position.to_dict() if self.position is not None else None,
+            "dimensions": self.dimensions.to_dict() if self.dimensions is not None else None
+        }

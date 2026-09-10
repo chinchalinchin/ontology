@@ -18,7 +18,7 @@ from app.config.enums import (
     Statuses, 
     Menus
 )
-from app.services.orchestration.factory import Factory
+from app.services.generators.factory import Factory
 from app.models.properties import WidgetProperties
 from app.models.state import (
     DisplayState, 

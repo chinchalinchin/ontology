@@ -5,6 +5,7 @@ intentions:
       conditions:  
         - sprite.goal
         - sprite.goal.category == constants.Goals.TARGET.value
+        - sprite.layer == sprite.goal.layer
     - next: hunt
       conditions: 
         - not sprite.goal
@@ -15,7 +16,9 @@ intentions:
           )
     - next: scavenge
       conditions: 
+        - sprite.goal
         - sprites.get(sprite.goal.name)
+        - sprite.layer == sprite.goal.layer
         - sprites.get(sprite.goal.name).mutators.triggers.dead
   # ----------------------------------------------------------------------------------
   barter:
@@ -49,6 +52,7 @@ intentions:
       conditions: 
         - sprite.goal
         - sprite.goal.category == constants.Goals.OBJECT.value
+        - sprite.layer == sprite.goal.layer
         - functions.is_near(
             sprite.position, 
             sprite.goal.position, 
@@ -59,6 +63,7 @@ intentions:
         - sprite.goal
         - sprite.psyche.dialogue
         - sprite.goal.category == constants.Goals.SUBJECT.value
+        - sprite.layer == sprite.goal.layer
         - sprites.get(sprite.goal.name)
         - sprite.memory.relationships.get(sprite.goal.name)
         - sprite.memory.relationships[sprite.goal.name] in [
@@ -79,6 +84,7 @@ intentions:
       conditions:
         - sprite.goal
         - sprite.psyche.dialogue
+        - sprite.layer == sprite.goal.layer
         - functions.is_near(
             sprite.position, 
             sprite.goal.position, 
@@ -93,6 +99,7 @@ intentions:
       conditions: 
         - sprite.goal
         - sprite.goal.category == constants.Goals.TARGET.value
+        - sprite.layer == sprite.goal.layer
         - functions.is_near(
             sprite.position, 
             sprite.goal.position, 
@@ -107,14 +114,26 @@ intentions:
       conditions:
         - sprite.goal
         - sprite.goal.category == constants.Goals.POSITION.value
+        - sprite.layer == sprite.goal.layer
     - next: find
       conditions: 
         - sprite.goal
         - sprite.goal.category == constants.Goals.SUBJECT.value
+        - sprite.layer == sprite.goal.layer
         - sprites.get(sprite.goal.name)
         - not functions.is_near(
             sprite.position, 
             sprites.get(sprite.goal.name).position, 
+            sprite.mutators.parameters.action.radius
+          )
+    - next: find
+      conditions: 
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.OBJECT.value
+        - sprite.layer == sprite.goal.layer
+        - not functions.is_near(
+            sprite.position, 
+            sprite.goal.position, 
             sprite.mutators.parameters.action.radius
           )
     - next: wander
@@ -131,15 +150,10 @@ intentions:
       conditions:
         - sprite.goal
         - sprite.goal.category == constants.Goals.LOOT.value
-        # TODO: figure out how to resolve boundary
-        # - sprite.inventory.loot.get(sprite.goal.name, 0) >= 10 
     - next: mine
       conditions:
         - sprite.goal
         - sprite.goal.category == constants.Goals.LOOT.value
-        # TODO: figure out how to resolve boundary
-        # - sprite.goal.name in constants.MineableAssets
-        # - sprite.inventory.loot.get(sprite.goal.name, 0) < 10
     - next: idle
       conditions:
         - not sprite.goal
@@ -184,6 +198,7 @@ intentions:
       conditions:
         - sprite.goal
         - sprite.goal.category == constants.Goals.TARGET.value
+        - sprite.layer == sprite.goal.layer
         - functions.is_near(
             sprite.position, 
             sprite.goal.position, 
@@ -191,7 +206,9 @@ intentions:
           )
     - next: hunt
       conditions:
+        - sprite.goal
         - sprite.goal.category == constants.Goals.TARGET.value
+        - sprite.layer == sprite.goal.layer
         - not functions.is_near(
             sprite.position, 
             sprite.goal.position, 

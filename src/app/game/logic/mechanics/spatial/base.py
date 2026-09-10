@@ -31,8 +31,10 @@ class SpatialMechanic(Mechanic):
         # Allocated exactly once in memory during orchestration
         self.grid = Space(cell_size=cell_size, max_entities=max_entities)
 
+
     def center(self, position: Position, dimensions: Dimensions):
         return (position.x + dimensions.w / 2, position.y + dimensions.l / 2)
+
     
     def collisions(self, assets: List[Asset]) -> List[Tuple]:
         """
@@ -49,6 +51,7 @@ class SpatialMechanic(Mechanic):
         
         colliding_indices = physics.collisions(primitive_data, self.grid)
         return [(asset_map[id_a], asset_map[id_b]) for id_a, id_b in colliding_indices]
+
 
     def intersections(self, assets: List[Asset]) -> List[Tuple]:
         """
@@ -97,8 +100,6 @@ class SpatialMechanic(Mechanic):
                 continue
 
             radius = asset.state.mutators.parameters.action.radius
-
-            logger.info(radius)
 
             # Pad the dimensions by the radius in all directions
             pad_hb = Hitbox(

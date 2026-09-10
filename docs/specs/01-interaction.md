@@ -1,4 +1,4 @@
-#### Ontology Specification: {{ spec }} Loop
+#### Ontology Specification: Interaction Loop
 
 This specification governs the exchange of dialogue.
 

@@ -108,6 +108,7 @@ class CognitionMechanics(Mechanic):
             # Phase F: Projection
             self._project(sprite, board)
 
+
     def _resolve(self, sprite: Asset, board: Board) -> None:
         """
         ### _resolve(sprite: Asset, board: Board)
@@ -144,6 +145,7 @@ class CognitionMechanics(Mechanic):
         elif goal.category == Goals.SUBJECT.value:
             if not sprite.state.psyche.dialogue:
                 sprite.state.goal = None
+                logger.info(f"{sprite.name} cleared SUBJECT goal.")
                 if goal.name in sprite.state.memory.goals.keys():
                     sprite.state.memory.goals.pop(goal.name)
 
@@ -154,6 +156,7 @@ class CognitionMechanics(Mechanic):
                 action_radius
             ) and not sprite.state.mutators.triggers.vision:
                 sprite.state.goal = None
+                logger.info(f"{sprite.name} lost SUBJECT goal.")
                 sprite.state.psyche.expression = board.cradle.spawn_expression(
                     ExpressionsPalette.BUBBLES.value, 
                     Expressions.CONFUSION.value, 
@@ -170,13 +173,19 @@ class CognitionMechanics(Mechanic):
                 action_radius
             ):
                 sprite.state.goal = None
-
+                logger.info(f"{sprite.name} cleared POSITION goal..")
         # ------------------------------------------------------------------------
         # ------------------------------------------------- OBJECT GOAL RESOLUTION
         # ------------------------------------------------------------------------
         elif goal.category == Goals.OBJECT.value:
-            # TODO:
-            pass
+            # If the Sprite's layer no longer matches the door's layer, 
+            # InteractionMechanics successfully pushed them through.
+            # TODO: what if the sprite is seeking a Chest on a different layer?
+            #       this resolution is dependent on the goal being a Door Object.
+            #       may need to differentiate Goal Categories between Doors and Chest...s
+            if sprite.state.layer != goal.layer:
+                sprite.state.goal = None
+                sprite.state.memory.goals.pop(goal.name, None)
 
         # ------------------------------------------------------------------------
         # ---------------------------------------------- PROPERTY GOAL RESOLUTION
@@ -200,6 +209,11 @@ class CognitionMechanics(Mechanic):
         for other_name, other_state in board.characters().items():
             if other_name == sprite.name: 
                 continue
+
+            # STRICT LAYER CHECK: Cannot see across dimensions
+            if other_state.layer != sprite.state.layer:
+                continue
+
             # ------------------------------------------------------------------------
             # ------------------------------------------------- SPRITE LOCATION MEMORY
             # ------------------------------------------------------------------------
@@ -229,7 +243,11 @@ class CognitionMechanics(Mechanic):
         if not sprite.state.goal:
             first = next(iter(sprite.state.memory.goals))
             sprite.state.goal = sprite.state.memory.goals.pop(first)
-        
+            logger.info(
+                f"{sprite.name} recalled goal from memory: "
+                f"{sprite.state.goal.category}({sprite.state.goal.name})"
+            )
+
 
     def _ideate(self, sprite: Asset, board: Board) -> None:
         """
@@ -282,6 +300,9 @@ class CognitionMechanics(Mechanic):
                 if other_name == sprite.name: 
                     continue
 
+                if other_state.layer != sprite.state.layer:
+                    continue
+
                 if self.nearby(
                     other_state.position, 
                     sprite.state.position, 
@@ -296,7 +317,13 @@ class CognitionMechanics(Mechanic):
                     sprite.state.goal = Goal(
                         name=other_name, 
                         category=Goals.SUBJECT.value, 
+                        layer=other_state.layer,
                         position=Position(x=other_state.position.x, y=other_state.position.y)
+                    )
+                    logger.info(
+                        f"{sprite.name} ideated goal:" 
+                        f"{sprite.state.goal.category}({sprite.state.goal.name}) "
+                        f"on layer {sprite.state.goal.layer}"
                     )
                     return
 
@@ -370,25 +397,73 @@ class CognitionMechanics(Mechanic):
             Goals.TARGET.value,
             Goals.SUBJECT.value
         ]:
-            # TODO: hamdle dead sprites - future phase
-            # Retrieve the ACTUAL entity state for vision tracking
             target_state = board.character(goal.name)
+
+            if target_state:
+                goal.layer = target_state.layer
+
         # ------------------------------------------------------------------------ 
         elif goal.category == Goals.OBJECT.value:
             # TODO
             pass
-
         # ------------------------------------------------------------------------ 
         elif goal.category == Goals.POSITION.value:
             sprite.state.mutators.triggers.vision = True
             return
-
         # ------------------------------------------------------------------------ 
         elif goal.category == Goals.PROPERTY.value:
             # TODO
             pass
 
         # ------------------------------------------------------------------------ 
+        # CROSS-LAYER GOAL MANAGEMENT
+        # ------------------------------------------------------------------------ 
+        if goal.layer and goal.layer != sprite.state.layer: 
+            # 1. Search for a mapped door leading to target layer
+            target_door = None
+            for door_name, outlayer in sprite.state.memory.doors.items():
+                if outlayer == goal.layer:
+                    target_door = board.asset(door_name, sprite.state.layer)
+                    if target_door:
+                        break
+                        
+            # 2. Explore unmapped doors if no mapped path exists
+            if not target_door:
+                # FIX: Use a generator expression with a default None fallback 
+                # to prevent TypeError and StopIteration crashes.
+                target_door = next((
+                    d for d in board.instances(AssetInstances.DOORS.value, sprite.state.layer) 
+                    if d.name not in sprite.state.memory.doors 
+                    and self.nearby(
+                        d.state.position, 
+                        sprite.state.position,
+                        vision_radius
+                    )
+                ), None)
+                        
+            # 3. Subsumption Logic
+            sprite.state.memory.goals[goal.name] = goal
+
+            if target_door:
+                # Path found. Inject prerequisite OBJECT goal.
+                sprite.state.goal = Goal(
+                    name=target_door.name,
+                    category=Goals.OBJECT.value,
+                    layer=sprite.state.layer,
+                    position=Position(x=target_door.state.position.x, y=target_door.state.position.y)
+                )
+                logger.info(
+                    f"{sprite.name} generated goal: {sprite.state.goal.category}"
+                    f"({sprite.state.goal.name}) on layer {sprite.state.goal.layer}"
+                )
+            else:
+                # Unattainable. Clear the goal to force a transition to `wander`.
+                sprite.state.goal = None
+            return
+        
+        # ------------------------------------------------------------------------ 
+        # SAME-LAYER GOAL TRACKING
+        # ------------------------------------------------------------------------
         if target_state and self.nearby(
             target_state.position, 
             sprite.state.position, 
@@ -401,7 +476,6 @@ class CognitionMechanics(Mechanic):
         else:
             # Target lost: freeze coordinates at last known position
             sprite.state.mutators.triggers.vision = False
-
 
     def _project(self, sprite, board: Board) -> None:
         """
@@ -431,5 +505,10 @@ class CognitionMechanics(Mechanic):
                     # TODO: generate name somehow
                     name="wander_point",
                     category=Goals.POSITION.value,
+                    layer=sprite.state.layer, # Inject strict layer tracking
                     position=Position(sprite.state.position.x + offset_x, sprite.state.position.y + offset_y)
+                )
+                logger.info(
+                    f"{sprite.name} generated wander goal at "
+                    f"({sprite.state.goal.position.x}, {sprite.state.goal.position.y})"
                 )

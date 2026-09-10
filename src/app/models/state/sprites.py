@@ -71,6 +71,7 @@ class Psyche:
 class Goal:
     name: Optional[str] = None
     category: Optional[str] = None
+    layer: Optional[str] = None 
     position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
 
 @dataclass(slots=True)
@@ -87,6 +88,7 @@ class Memory:
     relationships: Optional[Dict[str, Relationships]] = None
     property: Optional[Dict[str, Position]] = None # type: ignore
     sprites: Optional[Dict[str, Position]] = None # type: ignore
+    doors: Optional[Dict[str, str]] = None
 
     def __post_init__(self) -> None:
         if self.goals is None:
@@ -99,7 +101,9 @@ class Memory:
             self.property = {}
         if self.rumors is None:
             self.rumors = []
-            
+        if self.doors is None:
+            self.doors = {} 
+
 @dataclass(slots=True)
 class RadialParameters:
     radius: int = 30
@@ -112,7 +116,6 @@ class FearParameters(RadialParameters):
 @dataclass(slots=True)
 class MutatorTriggers:
     animated: bool = False
-    struck: bool = False
     frightened: bool = False
     dead: bool = False
     vision: bool = False

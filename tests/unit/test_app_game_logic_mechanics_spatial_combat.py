@@ -13,7 +13,6 @@ def _setup_target():
     target.name = "enemy"
     target.instance = AssetInstances.SPRITES
     target.state.mutators.triggers.dead = False
-    target.state.mutators.triggers.struck = False
     target.dimensions = Dimensions(32, 32)
     target.hitboxes = [Hitbox(Position(0,0), Dimensions(32, 32))]
     target.state.position = Position(15, 15)
@@ -45,7 +44,6 @@ def test_combat_mechanics_melee_resolution(mock_board):
     
     # 20 strength - 5 defense = 15 damage. Health should drop from 50 to 35.
     assert target.state.meters.health.current == 35
-    assert target.state.mutators.triggers.struck is True
     assert target.state.mutators.triggers.dead is False
 
 def test_combat_mechanics_lethal_blow(mock_board):

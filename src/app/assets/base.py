@@ -113,7 +113,7 @@ class Asset:
         return None
 
     @property
-    def hitboxes(self) -> list:
+    def hitboxes(self) -> List[Hitbox]:
         """Unified hitbox retrieval. Defaults to sprite bounding box if none explicitly defined."""
         hbs = []
         if hasattr(self.properties, 'hitboxes') and self.properties.hitboxes:
@@ -127,9 +127,12 @@ class Asset:
             
         return hbs
 
-    def primitive(self, index: int = 0, hitboxes: list = None) -> tuple:
+    def primitive(self, index: int = 0, hitboxes: List[Hitbox] = None) -> Tuple:
         """
         Extracts spatial attributes into primitive integers for Cython math operations.
+
+        - hitboxes: List of Hitbox overrides.
+
         Returns: (index, x, y, w, l, hitboxes)
         """
         pos = getattr(self.state, 'position', None)

@@ -99,7 +99,11 @@ class InteractionMechanics(SpatialMechanic):
                     continue
 
                 # -------------------------------- DOOR INTERACTIONS
-                if target.taxonomy.instance == AssetInstances.DOORS:
+                if target.taxonomy.instance == AssetInstances.DOORS.value:
+                    # NPC Path Learning: Record the door-to-layer mapping before traversing
+                    if source.taxonomy.instance == AssetInstances.SPRITES.value:
+                        source.state.memory.doors[target.name] = target.state.outlayer
+                        
                     board.relayer(source, target.state.outlayer)
                     source.state.position.x = target.state.out.x
                     source.state.position.y = target.state.out.y
@@ -108,7 +112,7 @@ class InteractionMechanics(SpatialMechanic):
                 # -------------------------------- CHEST INTERACTIONS
                 elif target.taxonomy.instance == AssetInstances.CHESTS:
                     if source.taxonomy.instance == AssetInstances.SPRITES:
-                        if hasattr(target.state, 'content') and target.state.content:
+                        if target.state.content:
                             for item in target.state.content:
                                 source.state.inventory.loot[item] = source.state.inventory.loot.get(item, 0) + 1
                             target.state.content = []

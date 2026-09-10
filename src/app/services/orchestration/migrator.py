@@ -21,8 +21,9 @@ from app.config.enums import (
 )
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
-from app.services.orchestration.factory import Factory
+from app.services.generators.factory import Factory
 from app.services.generators.decomposer import Decomposer
+from app.services.generators.perimeter import Perimeter
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -144,6 +145,12 @@ class Migrator:
             
             self.current += 1
             yield True
+
+        # 3. Post-Hydration Phase: Procedural Boundaries
+        perimeter_gen = Perimeter()
+        for layer in self.board.layers():
+            self.board.perimeters[layer] = perimeter_gen.generate(self.board, layer)
+
 
     def step(self, budget_ms: int = 16) -> bool:
         """

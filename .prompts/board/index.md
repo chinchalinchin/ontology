@@ -40,13 +40,15 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 05.08: MenuContext](./phases/refactor/phase-05-08.md)
     - [x]: [Phase 05.09: Expression Management](./phases/refactor/phase-05-09.md)
     - [x]: [Phase 07.01: Speak Intentions](./phases/refactor/phase-07-01.md)
-    - [~]: [Phase 07.02: Interact Intentions](./phases/refactor/phase-07-02.md)
+    - [x]: [Phase 07.02: Door Interact Intentions](./phases/refactor/phase-07-02.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantied Assets](./phases/patch/bug-b001.md)
     - [ ]: [Bug B002: Board Cache Wipe](./phases/patch/bug-b002.md)
     - [ ]: [Bug B003: Painter's Algorithm String Exception](./phases/patch/bug-b003.md)
     - [x]: [Bug B004: Friction Regression](./phases/patch/bug-b004.md)
+  - Support:
+    - [ ]: [Goal 01: Boundaries](./phases/support/goal-01.md)
 - Backlog:
   - [Telemetry Menu](./backlog/todo-t000.md)
 

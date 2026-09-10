@@ -2,11 +2,11 @@ sheets:
   sprites: 
     - id: jasilynn
       name: evil-empress-jasilynn
-      layer: '0'
+      layer: brick-house-compose-layer
       depth: 0
       position:
-        x: 320
-        y: 400
+        x: 150
+        y: 100
       meters:
         health: 
           current: 50
@@ -28,7 +28,7 @@ sheets:
           vision:
             radius: 128
           action:
-            radius: 30
+            radius: 5
       psyche:
         dialogue: greeting
         expression: null
@@ -38,6 +38,7 @@ sheets:
       goal:
         name: player
         category: subject
+        layer: '0'
         position:
           x: 100
           y: 200
@@ -46,6 +47,7 @@ sheets:
           player:
             name: player
             category: subject
+            layer: '0'
             position:
               x: 100
               y: 200

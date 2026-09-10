@@ -223,7 +223,7 @@ cdef class Registry:
                         self.maximum += 1
 
     def _index(self):
-        from app.services.orchestration.factory import Factory
+        from app.services.generators.factory import Factory
 
         logger.debug("Indexing Frame Keys to Texture Crops...")
         for cat_name, cat_props in self.properties.items():

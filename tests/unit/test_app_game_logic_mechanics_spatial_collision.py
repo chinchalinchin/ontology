@@ -22,10 +22,6 @@ def test_collision_mechanics_update(mock_board):
             
             mechanic.update(mock_board, 0.016, bus, payload)
             
-            # Verify struck mutation triggered (asset_a has mutators, tile doesn't)
-            assert asset_a.state.mutators.triggers.struck is True
-            assert asset_b.state.mutators.triggers.struck is True
-            
             # Verify resolution hand-off
             mock_resolve.assert_called_once_with(asset_a, asset_b)
 

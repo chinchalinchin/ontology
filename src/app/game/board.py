@@ -31,7 +31,11 @@ from app.models.config import ConfigurationSchema
 from app.models.groups import EquipmentGroup
 
 # Cython Libraries
-from libs.core.models import Dimensions, Position
+from libs.core.models import (
+    Dimensions, 
+    Position,
+    Boundary
+)
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +51,7 @@ class Board:
     paused: bool
     # Game Data
     plot: PlotState
+    perimeters: Dict[str, List[Boundary]]
     # Configurations
     configurations: ConfigurationSchema
     equipment: EquipmentGroup
@@ -83,6 +88,7 @@ class Board:
         self.overlays = []
         self.configurations = configurations
         self.equipment = equipment
+        self.perimeters = {}
         self._assets = assets
         self._catalogue()
         self._cache()
@@ -130,6 +136,7 @@ class Board:
             AssetInstances.BACK.value: {},
             AssetInstances.FORE.value: {}
         }
+        self.perimeters[layer] = []
         return
 
 

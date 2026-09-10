@@ -124,7 +124,6 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
 
 - `trigger.animated`: Triggered if a Sprite is currently able to animate, i.e. increment its Frame. When this Mutator trigger is false, the Sprite does not receive animation updates from the game loop, e.g. if the user releases the right arrow button on the keyboard, leaving the Player in a `(walk, right)` state, then this mutator prevents the animation from progressing until the Player resumes pressing the right arrow button.
 - `triggers.dead`: Triggered if a Sprite dies. This can only occur if the Sprite's `character.health.current = 0`
-- `triggers.struck`: Triggered if a Sprite collides with a hitbox.
 - `triggers.fear`: Triggered for the logical disjunction of the following conditions:
     - Triggered if Sprite's health dips below `fear.limit`
     - Triggered if Sprite is surrounded by more than `fear.enemy` enemies with the pixel distance of `fear.radius`.
@@ -193,12 +192,12 @@ Motivations are long-term state variables that are used to modulate the [Intenti
 
 *Memory* is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. 
 
-- `memory.goals: List[Goal]`: Remembered Goals. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation.
+- `memory.goals: DIct[str, Goal]`: Remembered Goals. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation. Keyed by the `asset.name` of the Goal.
 - `memory.prices: Dict[str, float]`:
 - `memory.property: Dict[str, Position]`
 - `memory.relationship: Dict[str, Relationships]`:
 - `memory.rumors: List[str]`: List of Lexicon keys the Sprite has heard through entering into the `speak` Intention.
-- `memory.sprites: Dict[str, Position]`
+- `memory.sprites: Dict[str, Position]`: A map of Sprite locations the Sprite remembers, keyed by Sprite Name and last remembered location. 
 
 **Prices**
 
@@ -225,10 +224,6 @@ A map of Sprite-to-Sprite relationships, keyed by name. Relationships are enumer
 **Rumors**
 
 TODO
-
-**Sprites**
-
-A map of Sprite locations the Sprite remembers, keyed by Sprite Name and last remembered location. 
 
 ### Inventory
 
