@@ -102,7 +102,7 @@ def test_dump_missing_template(mock_settings, caplog):
     with patch("pathlib.Path.exists", return_value=False):
         cli.dump("level_01", MagicMock(), "state")
         
-        assert "State dump template not found" in caplog.text
+        assert "Dump template not found" in caplog.text
 
 # ---------------------------------------------------------
 # HANDLER TESTS

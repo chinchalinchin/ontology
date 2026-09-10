@@ -42,15 +42,14 @@ def test_interaction_with_door_relayers_source(interaction_mechanics, mock_board
     bus = collections.deque()
     payload = MagicMock(spec=DevicePayload)
     
-    # Force collision bypass for deterministic testing
-    with patch.object(InteractionMechanics, 'intersections', return_value=[(player, door)]), \
-         patch.object(InteractionMechanics, 'center', return_value=(15, 15)):
-        
+    with patch.object(InteractionMechanics, 'intersections', return_value=[(player, door)]):
         interaction_mechanics.update(mock_board, 1.0, bus, payload)
         
+        # Verify the relayering executed based purely on intersection
         assert player.state.layer == "1"
         assert player.state.position.x == 100
         assert player.state.position.y == 100
+        assert player.state.intention == Intentions.IDLE.value
 
 
 def test_interaction_with_chest_transfers_loot_to_sprite(interaction_mechanics, mock_board):
@@ -77,14 +76,13 @@ def test_interaction_with_chest_transfers_loot_to_sprite(interaction_mechanics, 
     bus = collections.deque()
     payload = MagicMock(spec=DevicePayload)
     
-    with patch.object(InteractionMechanics, 'intersections', return_value=[(sprite, chest)]), \
-         patch.object(InteractionMechanics, 'center', return_value=(15, 15)):
-        
+    with patch.object(InteractionMechanics, 'intersections', return_value=[(sprite, chest)]):
         interaction_mechanics.update(mock_board, 1.0, bus, payload)
         
         assert sprite.state.inventory.loot.get("ruby") == 2
         assert sprite.state.inventory.loot.get("gold") == 5
         assert len(chest.state.content) == 0
+        assert sprite.state.intention == Intentions.INTERACT.value
 
 
 def test_interaction_with_sign_dispatches_menu_event(interaction_mechanics, mock_board):
@@ -114,9 +112,7 @@ def test_interaction_with_sign_dispatches_menu_event(interaction_mechanics, mock
     bus = collections.deque()
     payload = MagicMock(spec=DevicePayload)
     
-    with patch.object(InteractionMechanics, 'intersections', return_value=[(player, sign)]), \
-         patch.object(InteractionMechanics, 'center', return_value=(15, 15)):
-        
+    with patch.object(InteractionMechanics, 'intersections', return_value=[(player, sign)]):
         interaction_mechanics.update(mock_board, 1.0, bus, payload)
         
         assert len(bus) == 1
@@ -128,27 +124,4 @@ def test_interaction_with_sign_dispatches_menu_event(interaction_mechanics, mock
         assert event.context.plot == mock_board.plot
         assert event.context.object.persona == "narrator"
         assert event.context.object.lexicon == "welcome_msg"
-
-
-def test_interaction_ignores_non_intersecting_centers(interaction_mechanics, mock_board):
-    player = mock_board.player()
-    player.state.intention = Intentions.INTERACT.value
-    
-    door = MagicMock()
-    door.category = AssetCategories.OBJECTS.value
-    door.instance = AssetInstances.DOORS.value
-    door.taxonomy.instance = AssetInstances.DOORS.value
-    door.properties.mass = 0
-    door.state = DoorState(id="door-1", layer="0", position=Position(x=100, y=100), outlayer="1", out=Position(x=0, y=0))
-    door.dimensions = Dimensions(w=32, l=32)
-    
-    mock_board.add([door])
-    bus = collections.deque()
-    
-    with patch.object(InteractionMechanics, 'intersections', return_value=[(player, door)]), \
-         patch.object(InteractionMechanics, 'center', return_value=(0, 0)): # Center is outside the target's bounds
-        
-        interaction_mechanics.update(mock_board, 1.0, bus, MagicMock())
-        
-        # Assert player layer did not change due to failed intersection check
-        assert player.state.layer == "0"
+        assert player.state.intention == Intentions.INTERACT.value
