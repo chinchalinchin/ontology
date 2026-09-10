@@ -139,7 +139,7 @@ Asset property index files hydrate the Registry and set the static attributes of
 
 ### Model: State
 
-Asset state files populate the [Board](./00-overview.md#board). 
+Asset state files populate the [Board](../00-overview.md#board). 
 
 * Location: `/src/data/state/<board-key>/*.yaml`
 

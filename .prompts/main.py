@@ -1,5 +1,5 @@
 """
-Jinja2 Template Renderer
+# Jinja2 Template Renderer
 
 This module automates the generation of context-rich Markdown files. It extends the standard Jinja2 environment with custom hooks for filesystem access and shell command execution, allowing templates to dynamically include the latest project state.
 

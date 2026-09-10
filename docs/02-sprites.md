@@ -333,7 +333,7 @@ The Player Sprite Sheet is configured through the `player` Sprite Sheet.
 
 Players utilize the same information channel (e.g. Goals and Intentions) as Sprites for communicating state changes.
 
-* **Goals (Level-Triggered & Polymorphic):** Players use a "pseudo" Goal to project their input into their intended direction of motion. Multiple directional inputs can overlap simultaneously (e.g., `UP` and `RIGHT`) and are accumulated as a list to allow for diagonal vector movement. This determines the direction of the Player's Velocity in their [kinematic sliding](/05-mechanics.md#core), i.e. $\text{player.velocity} \parallel \text{player.state.goal.position} - \text{player.state.position}$.
+* **Goals (Level-Triggered & Polymorphic):** Players use a "pseudo" Goal to project their input into their intended direction of motion. Multiple directional inputs can overlap simultaneously (e.g., `UP` and `RIGHT`) and are accumulated as a list to allow for diagonal vector movement. This determines the direction of the Player's Velocity in their [kinematic sliding](./05-mechanics.md#core), i.e. $\text{player.velocity} \parallel \text{player.state.goal.position} - \text{player.state.position}$.
 * **Intentions (Edge-Triggered & Singular):** Unlike Goals, Intentions represent discrete state transitions. The hardware polling layer enforces a strict singularity rule: overlapping Intention inputs are collapsed into a single scalar value based on configuration order. This acts as a blocking mechanism, preventing impossible state superpositions (e.g., trying to `build` and `attack` simultaneously).
 
 ### Devices
