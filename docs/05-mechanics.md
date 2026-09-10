@@ -9,21 +9,21 @@ A Mechanic is an implementation of an abstract interface the engine calls during
 
 Mechanics and [Intentions](./04-intentions.md) are the "foundation" of the gameplay. Their interplay and dynamics generates all of the complexity within the game engine. Mechanics are the "*laws of nature*" and Intentions are the "*states of mind*"
 
-1. Navigational Intentions (`FIND`, `FOLLOW`, `HUNT`, `ESCAPE`, `WANDER`, `RETURN`)
-    - Handled by: CognitionMechanics + MotionMechanics
-    - Logic: Cognition moves the goal.position coordinate. Motion accelerates the velocity vector toward it.
-2. Spatial/Interactive Intentions (`ATTACK`, `MINE`, `BUILD`, `INTERACT`)
-    - Handled by: CombatMechanics, MineMechanics, InteractionMechanics
-    - Logic: These Mechanics iterate only over Sprites in their respective Intentions. CombatMechanics does not care how a Sprite got into the ATTACK intention; it simply says: "Is this Sprite in the ATTACK intention? Yes. Are its hitboxes intersecting with its Goal? Yes. Apply damage calculation."
-3. Communicative Intentions (`SPEAK`, `THREATEN`, `BARTER`)
-    - Handled by: SpeechMechanics, CommerceMechanics
+1. Navigational Intentions (`find`, `follow`, `hunt`, `escape`, `wander`, `return`)
+    - Handled by: CognitionMechanics, MotionMechanics
+    - Logic: Cognition moves the Goal Position coordinate. Motion accelerates the velocity vector toward it.
+2. Spatial/Interactive Intentions (`attack`, `mine`, `build`, `interaction`)
+    - Handled by: CombatMechanics, InteractionMechanics
+    - Logic: These Mechanics iterate only over Sprites in their respective Intentions. CombatMechanics does not care how a Sprite got into the `attack` intention; it only applies logic once the Sprite is in `attack`.
+3. Communicative Intentions (`speak`, `threaten`, `barter`)
+    - Handled by: SocialMechanics
     - Logic: Iterates over Sprites in communicative Intentions, checking if they are within conversational radius of their target to swap prices or rumors.
 
 To visualize how this all ties together for a [Sprite](./02-sprites.md) in a single frame:
 
-- CognitionMechanics: Reads the Intention and updates goal.position (e.g., tracking a running Player).
+- CognitionMechanics: Reads the Intention and updates the Goal Position, e.g. tracking a Player.
 - TransitionMechanics: Evaluates the [ISL](./04-intentions.md#transition-matrix). It then maps the Intention and Goal to the Animation (action, direction).
-- MotionMechanics: Sees the `goal.position` and applies impulse to velocity.
+- MotionMechanics: Sees the Goal Position and applies impulse to Velocity.
 - SpatialMechanics: If the Sprite is in an interactive Intention, checks if the hitboxes overlap to trigger physical world changes (damage, mining, looting).
 
 ### Core
@@ -145,15 +145,15 @@ These Mechanics handle the Sprite Intention logic.
 
 **CognitionMechanics**
 
-CognitionMechanics acts as the Sprite's "Device." Its job is to update `sprite.state.goal.position` based on the Sprite's current [Intention](./04-intentions.md) and its `mutators.vision.parameters` (and other Mutators).
+CognitionMechanics acts as the Sprite's "Device." Its job is to update `sprite.state.goal.position` based on the Sprite's current [Intention](./04-intentions.md) and its Mutators. For example,
 
-- `WANDER`: If the Sprite has no Goal, CognitionMechanics generates a random coordinate within a certain radius and sets it as `goal.position`. Once reached, it generates a new one.
-
-- `FIND / FOLLOW / HUNT`: The Sprite already has a `goal.name`. CognitionMechanics queries the Board for that target. If the target is within the Sprite's `vision.radius`, it updates `sprite.state.goal.position` to match the target's current coordinates. If the target steps out of the radius, `goal.position` stops updating, freezing at the last known location.
-
-- `ESCAPE`: CognitionMechanics finds the threat, calculates the vector away from the threat, and projects a goal.position in the opposite direction.
+- `wander`: If the Sprite has no Goal, CognitionMechanics generates a random coordinate within a certain radius and sets it as `goal.position`. Once reached, it generates a new one.
+- `find / follow / hunt`: The Sprite already has a `goal.name`. CognitionMechanics queries the Board for that target. If the target is within the Sprite's `vision.radius`, it updates `sprite.state.goal.position` to match the target's current coordinates. If the target steps out of the radius, `goal.position` stops updating, freezing at the last known location.
+- `escape`: CognitionMechanics finds the threat, calculates the vector away from the threat, and projects a goal.position in the opposite direction.
 
 Once CognitionMechanics has updated the` goal.position`, it hands off the updated state to [MotionMechanics](#core)
+
+Since CognitionMechanics is intrinsically tied to Sprite Intentions, the cognition workflow is covered in more detail in the [Intention documentation](./04-intentions.md#cognition).
 
 ## Configuration
 

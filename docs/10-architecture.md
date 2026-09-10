@@ -76,7 +76,7 @@ The `AnimationMap` plays a crucial role in enforcing logical constraints. For ex
 
 ### Spatial Grid Caching
 
-To optimize environmental queries during the high-frequency game loop, the Board implements an $O(1)$ spatial hashing grid (`_cached_tilemap`). The Board chunks static Assets into a dictionary grid during initialization, keyed by a fixed `TILE_HASH_SIZE` (defaulting to 32x32 pixels).
+To optimize environmental queries during the game loop, the Board implements an $O(1)$ spatial hashing grid (`_cached_tilemap`). The Board chunks static Assets into a dictionary grid during initialization, keyed by a fixed `TILE_HASH_SIZE` (defaulting to 32x32 pixels).
 
 When systems like MotionMechanics need to compute the environmental friction acting on a moving Crate or Sprite, the Board divides the Asset's absolute `(x, y)` coordinates by the hash size to retrieve the exact Tile beneath it. 
 

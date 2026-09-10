@@ -43,9 +43,11 @@ class Perimeter:
             y1 = int(tile.state.position.y)
             rects.append((x1, y1, x1 + (nx * w), y1 + (ny * l)))
             
-        # 2. Map Objects
+        # 2. Map Game Space
         objects = board.categories(AssetCategories.OBJECTS.value, layer)
-        for obj in objects:
+        crafts = board.categories(AssetCategories.CRAFTS.value)
+        space = objects + crafts
+        for obj in space:
             x1 = int(obj.state.position.x)
             y1 = int(obj.state.position.y)
             rects.append((x1, y1, x1 + obj.dimensions.w, y1 + obj.dimensions.l))

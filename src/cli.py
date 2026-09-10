@@ -48,7 +48,7 @@ def dump(board_key, context, temp='state'):
     template_path = settings.TEMPLATE_DIR / template_filename
     
     if not template_path.exists():
-        logger.error(f"State dump template not found at {template_path}")
+        logger.error(f"Dump template not found at {template_path}")
         return
     
     with open(template_path, "r", encoding="utf-8") as f:

@@ -5,8 +5,8 @@ sheets:
       layer: brick-house-compose-layer
       depth: 0
       position:
-        x: 150
-        y: 100
+        x: 175
+        y: 200
       meters:
         health: 
           current: 50

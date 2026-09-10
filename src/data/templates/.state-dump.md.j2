@@ -6,6 +6,7 @@
 ---
 
 {%- for asset in assets %}
+
 ## {{ asset.name | default(asset.id, true) }} 
 
 **Taxonomy:** 
@@ -176,6 +177,24 @@
 {%- endif %}
 
 {%- endfor %}
+
+{%- if perimeters %}
+---
+
+# Perimeters
+
+{%- for layer, bounds in perimeters.items() %}
+## Layer: {{ layer }}
+{%- if bounds %}
+{%- for b in bounds %}
+- Position: ({{ b.position.x }}, {{ b.position.y }}) | Dimensions: w: {{ b.dimensions.w }}, l: {{ b.dimensions.l }}
+{%- endfor %}
+{%- else %}
+- *No boundaries derived for this layer.*
+{%- endif %}
+{%- endfor %}
+{%- endif %}
+
 {%- for section_name, menu_list in [('Menus', menus), ('Overlays', overlays)] %}
 {%- if menu_list %}
 

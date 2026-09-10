@@ -35,3 +35,17 @@ cpdef bint nearby(
     int ty, 
     int radius
 )
+
+cpdef list contours(
+    list rects
+)
+
+cpdef tuple bounded(
+    int a_x,
+    int a_y,
+    list hitboxes,
+    int b_x,
+    int b_y, 
+    int b_w,
+    int b_l
+)

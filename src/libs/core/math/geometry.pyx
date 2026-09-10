@@ -269,3 +269,26 @@ cpdef list contours(list rects):
         prev_merged_h = curr_merged_h
 
     return boundaries
+
+cpdef tuple bounded(
+    int a_x, int a_y, list hitboxes,
+    int b_x, int b_y, int b_w, int b_l
+):
+    """
+    Evaluates Asset hitboxes against a raw mathematical Boundary constraint.
+    """
+    cdef int x1, y1, w1, h1
+    cdef Hitbox hb
+    
+    for item in hitboxes:
+        hb = <Hitbox>item
+        x1 = a_x + hb.position.x
+        y1 = a_y + hb.position.y
+        w1 = hb.dimensions.w
+        h1 = hb.dimensions.l
+        
+        if (x1 < b_x + b_w and x1 + w1 > b_x and
+            y1 < b_y + b_l and y1 + h1 > b_y):
+            return (hb,)
+            
+    return None

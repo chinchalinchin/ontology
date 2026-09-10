@@ -3,7 +3,7 @@ from libc.math cimport sqrt
 
 from libs.core.models cimport Position, Dimensions, Hitbox, Velocity
 from libs.core.math.space cimport Space
-from libs.core.math.geometry cimport intersects
+from libs.core.math.geometry cimport intersects, bounded
 
 cpdef list collisions(list primitive_data, Space grid):
     cdef int i, x, y, w, l
@@ -239,3 +239,89 @@ cpdef void dynamics(
         if vmag > speed:
             vel.vx = (vel.vx / vmag) * speed
             vel.vy = (vel.vy / vmag) * speed
+
+
+cpdef list boundaries(list asset_data, list boundary_data, Space grid):
+    """
+    Evaluates Candidate Pairs for Environmental Boundaries using negative IDs.
+    """
+    grid.clear()
+    cdef tuple b_data, a_data
+    cdef int i
+    
+    # 1. Insert Boundaries (Using Negative IDs to differentiate them)
+    for i in range(len(boundary_data)):
+        b_data = boundary_data[i]
+        grid.insert(-i - 1, b_data[1], b_data[2], b_data[3], b_data[4])
+        
+    # 2. Insert Assets (Using Positive IDs)
+    for a_data in asset_data:
+        grid.insert(a_data[0], a_data[1], a_data[2], a_data[3], a_data[4])
+        
+    cdef list candidate_pairs = grid.query()
+    cdef list colliding = []
+    cdef int id_a, id_b, asset_id, bound_id
+    
+    for pair in candidate_pairs:
+        id_a = pair[0]
+        id_b = pair[1]
+        
+        # 3. Filter strictly for (Asset vs Boundary) pairs
+        if (id_a < 0 and id_b >= 0) or (id_a >= 0 and id_b < 0):
+            asset_id = id_b if id_a < 0 else id_a
+            bound_id = (-id_a - 1) if id_a < 0 else (-id_b - 1)
+            
+            a_data = asset_data[asset_id]
+            b_data = boundary_data[bound_id]
+            
+            # Narrow-phase AABB validation
+            if bounded(
+                a_data[1], a_data[2], a_data[5], 
+                b_data[1], b_data[2], b_data[3], b_data[4]
+            ) is not None:
+                colliding.append((asset_id, bound_id))
+                
+    return colliding
+
+
+cpdef void constrain(
+    Position pos, Hitbox hb, Velocity vel, bint is_kinematic, 
+    int b_x, int b_y, int b_w, int b_l
+):
+    """
+    Resolves overlap between a Dynamic Body and an infinitely massive Boundary.
+    """
+    cdef float cx_a = pos.x + hb.position.x + hb.dimensions.w / 2.0
+    cdef float cy_a = pos.y + hb.position.y + hb.dimensions.l / 2.0
+    cdef float cx_b = b_x + b_w / 2.0
+    cdef float cy_b = b_y + b_l / 2.0
+
+    cdef float dx = cx_b - cx_a
+    cdef float dy = cy_b - cy_a
+
+    if dx == 0 and dy == 0:
+        dx = 1.0
+
+    cdef float overlap_x = (hb.dimensions.w / 2.0 + b_w / 2.0) - abs(dx)
+    cdef float overlap_y = (hb.dimensions.l / 2.0 + b_l / 2.0) - abs(dy)
+
+    # 1. Spatial Resolution (Asset absorbs 100% of shift)
+    if overlap_x > 0 and overlap_y > 0:
+        if overlap_x < overlap_y:
+            if dx > 0:
+                pos.x -= int(overlap_x)
+            else:
+                pos.x += int(overlap_x)
+                
+            # 2. Momentum Inversion
+            if vel is not None and not is_kinematic:
+                vel.vx = -vel.vx
+        else:
+            if dy > 0:
+                pos.y -= int(overlap_y)
+            else:
+                pos.y += int(overlap_y)
+                
+            # 2. Momentum Inversion
+            if vel is not None and not is_kinematic:
+                vel.vy = -vel.vy

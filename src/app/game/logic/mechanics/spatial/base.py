@@ -13,7 +13,12 @@ from app.game.logic.mechanics import Mechanic
 # Cython Libraries
 import libs.core.math.physics as physics
 from libs.core.math.space import Space
-from libs.core.models import Position, Dimensions, Hitbox
+from libs.core.models import (
+    Position, 
+    Dimensions, 
+    Hitbox,
+    Boundary
+)
 
 logger = logging.getLogger(__name__)
 
@@ -113,3 +118,26 @@ class SpatialMechanic(Mechanic):
 
         colliding_indices = physics.collisions(primitive_data, self.grid)
         return [(asset_map[id_a], asset_map[id_b]) for id_a, id_b in colliding_indices]
+
+
+    def constrain(self, assets: List[Asset], boundaries: List[Boundary]) -> List[Tuple[Asset, Boundary]]:
+        """
+        Extracts primitives, queries the C-grid for Negative IDs (Boundaries), 
+        and returns colliding constraint pairs.
+        """
+        self.grid.clear()
+        
+        if not assets or not boundaries:
+            return []
+
+        asset_map = dict(enumerate(assets))
+        bound_map = dict(enumerate(boundaries))
+        
+        primitive_assets = [asset.primitive(i) for i, asset in enumerate(assets)]
+        primitive_bounds = [
+            (i, b.position.x, b.position.y, b.dimensions.w, b.dimensions.l) 
+            for i, b in enumerate(boundaries)
+        ]
+        
+        colliding_indices = physics.boundaries(primitive_assets, primitive_bounds, self.grid)
+        return [(asset_map[id_a], bound_map[id_b]) for id_a, id_b in colliding_indices]
