@@ -125,7 +125,7 @@ $$
 v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 $$
 
-The [Player](./03-player.md) does not observe momentum transfers. Instead, the Player follows the procedures outlined below,
+The [Player](./02-sprites.md#player) does not observe momentum transfers. Instead, the Player follows the procedures outlined below,
 
 * **Property Level:** The Player retains a normal, dynamic mass (e.g., $m = 10$).
 * **Phase 1 - Spatial Resolution:**

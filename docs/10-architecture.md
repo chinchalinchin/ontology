@@ -66,9 +66,7 @@ When a [MenuEvent](./06-widgets.md#events) fires and a modal Menu is pushed to t
 
 ## Maps
 
-Maps associate ancillary Asset states to their final Animation state.
-
-See [AnimationMap](./04-intentions.md#animationmap) and [DialogueMap](./04-intentions.md#dialoguemap) for more information.
+Maps associate ancillary Asset states to their final Animation state. See [AnimationMap](./04-intentions.md#animationmap) for more information.
 
 The `AnimationMap` plays a crucial role in enforcing logical constraints. For example, `TransitionMechanics` and `PlayerMechanics` utilize `AnimationMap.action(state, equipment)` to resolve whether an intended action is possible. This guarantees that an `attack` intention will not translate into a `thrust` animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.
 

@@ -57,7 +57,7 @@ Finally, the [Screen](./00-overview.md#screen) iterates over the Widgets and pas
 
 **MenuMechanics**
 
-When the Board is paused by a MenuEvent, MenuMechanics take over. This [Mechanic](./05-mechanics.md) translates the [Player Device mappings](./03-player.md#device-mapping) to Menu state changes. These Menu state changes then map back onto game state changes through Event notifications sent to the Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see [Inventory Menu](#inventory) below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  
+When the Board is paused by a MenuEvent, MenuMechanics take over. This [Mechanic](./05-mechanics.md) translates the [Player Device mappings](./02-sprites.md#devices) to Menu state changes. These Menu state changes then map back onto game state changes through Event notifications sent to the Bus. For example, a Player may traverse the Button Widgets in an Inventory Menu and select a new piece of Equipment (see [Inventory Menu](#menus) below for more detail); This generates an StateEvent from the Inventory Menu. This Event is processed by the Bus and the Player state is in turn updated.  
 
 When the Menu enters certain end states, such as the user selecting an Exit Button, the corresponding Widget will emit a TerminalEvent that bubbles up through the Menu and generates a notification to the Bus the MenuEvent has ended. The Board is unpaused, and the game resumes.
 

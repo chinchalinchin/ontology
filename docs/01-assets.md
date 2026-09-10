@@ -283,7 +283,7 @@ Binary Objects have a `count` of 2, where as all other Objects are initialized w
 
 A Chest is *reusable* through the `interact` [Intention](./04-intentions.md), meaning [Inventory Loot](./02-sprites.md#inventory) can be taken out of and also placed into a Chest. The `content` state field manages the current contents of the Chest through a list of Inventory Loot keys.
 
-When *interacting* with a Chest, the [Player](./03-player.md) is shown the [Chest menu](./06-widgets.md#menus), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
+When *interacting* with a Chest, the [Player](./02-sprites.md#player) is shown the [Chest menu](./06-widgets.md#menus), allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an `interact` Intention with a Chest through its [Intention Transition Matrix](./04-intentions.md#transition-matrix). This interaction is managed through a dedicated Sprite [Mechanic](05-mechanics.md)
 
 **Animation: BinaryAnimation**
 
@@ -639,7 +639,7 @@ This snippet from the [Schemas](./appendices/01-schemas.md#configuration-actions
 
 **Action Sets**
 
-Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See [Action Configuration Schema](#action-configuration) below for more details. 
+Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See [Action Configuration Schema](./appendices/01-schemas.md#configuration-actions) below for more details. 
 
 **Stacks**
 
@@ -732,7 +732,7 @@ A Font is a wrapper `.ttf` file and a data structure used to configure the Font 
 
 In other words, a Font Asset encapsulates both the script and the styling applied to the script. 
 
-See [SDL Architecture documentation](./10-architecture.md#sdl) for more information on Fonts.
+See [Graphics Architecture documentation](./10-architecture.md#graphics) for more information on Fonts.
 
 **Properties: FontProperties**
 

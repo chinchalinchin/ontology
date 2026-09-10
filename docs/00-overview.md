@@ -55,12 +55,14 @@ An Asset Category has a single schema for properties that each Instance utilizes
 Mechanics and other components of the game Engine (e.g. Menus, Actions, etc.) utilize configuration stored in the configuration directory. The following Engine components are configured by the files in this directory.
 
 - [Actions](./01-assets.md#sheets)
+- [Compositions](./03-compositions.md)
 - [Intentions](./04-intentions.md)
+- [Library](./08-plots.md)
 - [Mappings](./02-sprites.md#devices)
 - [Mechanics](./05-mechanics.md)
 - [Menus](./06-widgets.md#menus)
-- [Recipes](./01-assets.md#recipes)
-- [Scripts](./08-plots.md)
+- [Plots](./08-plots.md)
+- [Recipes](./01-assets.md#asset-concepts)
 
 ## Application 
 
