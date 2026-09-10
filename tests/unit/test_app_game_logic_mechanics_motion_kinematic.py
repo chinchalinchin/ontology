@@ -1,6 +1,6 @@
 import pytest
 import math
-from app.game.logic.mechanics.motion import kinematic
+from app.game.logic.mechanics.modules.motion import kinematic
 from app.config.enums import PlayerGoals
 from app.models.state import DevicePayload, WorldPayload, MenuPayload
 

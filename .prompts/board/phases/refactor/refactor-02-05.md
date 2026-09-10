@@ -1,4 +1,4 @@
-#### Implement: Phase 03 - Finetuning
+#### Refactor: Phase 02.05 - Finetuning
 
 Current keyboard mappings are given by,
 

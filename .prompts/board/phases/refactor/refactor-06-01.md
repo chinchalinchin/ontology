@@ -1,4 +1,4 @@
-#### Refactor: Phase 05.05 - Expression Animations
+#### Refactor: Phase 06.01 - Expression Animations
 
 **Loquacity**
 

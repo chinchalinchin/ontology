@@ -1,82 +1,234 @@
-#### Implement: Phase 09 - Commerce
+#### Implement: Phase 08 - RRT Pathfinding
 
-1. Subjective Value and "Gossip" Pricing
+**Goals**: Implement RRT (Rapidly-exploring Random Tree) based pathfinding for the Sprites.
 
-To avoid a global price board, prices must be decentralized. A Sprite should only know what *it* thinks an item is worth, and what it recently heard from others.
+**Toy Implementation of RRT (Pure Python, No Cython)**
 
-* **Subjective Valuation:** A Sprite's base valuation of an item is a function of its `Inventory` and its `Goal`. If a Sprite's overarching `Goal` requires 50 Wood (to build a house), and it has 0 Wood, its internal valuation for Wood is extremely high. Once it has 45 Wood, the urgency drops.
-* **Price Memory:** Add a `price_book: Dict[str, float]` to the `Memory` state model. This tracks the Sprite's belief of what things cost.
-* **Price Transmission (Gossip):** You already have a `speak` INtention and a `memory.communications` buffer. When two Sprites enter the `speak` Intention within a certain radius, the `CommunicationMechanic` doesn't just swap dialogue; it swaps the latest transaction values from their `price_book`.
+```python
+import math
+import random
 
-If Wood is scarce in the NPC town, Sprites there will continuously bid up the price in their local `price_books`. When an NPC travels to the Borderlands and `communicates` with an Enemy, the Enemy's `price_book` updates with this high Wood price, incentivizing the Enemy to gather Wood and bring it to the NPC town to sell.
+class Node:
+    """A node in the RRT tree."""
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        self.parent = None
 
-2. The `barter` Intention & Transactions
+class RRT:
+    def __init__(self, start, goal, obstacle_list, rand_area, step_size=1.0, max_iter=500):
+        self.start = Node(start[0], start[1])
+        self.goal = Node(goal[0], goal[1])
+        self.min_rand, self.max_rand = rand_area
+        self.step_size = step_size
+        self.max_iter = max_iter
+        self.obstacle_list = obstacle_list
+        self.node_list = [self.start]
 
+    def plan(self):
+        """Executes the RRT algorithm and returns the path if found."""
+        for _ in range(self.max_iter):
+            rnd_node = self._sample_free_space()
+            nearest_node = self._get_nearest_node(self.node_list, rnd_node)
+            new_node = self._steer(nearest_node, rnd_node, self.step_size)
 
-* **The Intent:** A Sprite realizes it needs Wood. Its Intentionn matrix evaluates its inventory, transitioning it from `idle` -> `find` (Goal: Sprite with Wood). Once within `parameters.vision.radius` of a target Sprite, it transitions to `barter`.
-* **The CommerceMechanic:** Add a `CommerceMechanic` to `Board.play()`. This mechanic specifically queries `board.sprites` for Sprites in the `barter` Intention.
-* **The Handshake:**
-    - Sprite A enters `barter` with target Sprite B.
-    - Sprite B's Intention matrix evaluates the interaction. If Sprite B feels safe and is interested, it also transitions to `barter`.
-    - The `CommerceMechanic` checks if their subjective values overlap. If Sprite A is willing to pay 10 Gold for Wood, and Sprite B is willing to sell it for 8 Gold, a transaction occurs.
-    - The mechanic directly deducts/adds to their respective `inventory.loot` and `inventory.wallet`, and updates both of their `price_books` to 9 Gold (the clearing price).
-    - The Intention transitions to `return` or `idle`.
+            if self._check_collision(nearest_node, new_node, self.obstacle_list):
+                self.node_list.append(new_node)
 
-3. Congregation and Property (Town Formation)
+                # Check if the new node is within step size of the goal
+                if self._calc_dist(new_node, self.goal) <= self.step_size:
+                    self.goal.parent = new_node
+                    self.node_list.append(self.goal)
+                    return self._generate_final_path()
 
-Towns shouldn't be predefined zones. A "town" should simply emerge as a spatial cluster of "Owned Assets" bounded by the geography of the `Board`.
+        return None  # Max iterations reached without finding the goal
 
-* **The `build` Intention:** When a Sprite acquires enough materials (e.g., 50 Wood, 10 Stone), its overarching `Goal` shifts. Its Intention changes to `wander` to find an empty plot (using `CollisionMechanics` to ensure the space is clear), and then enters a `build` Intention.
-* **Asset Spawning:** While in the `build` Intention, a new `Mutable, Inanimate Asset` (e.g., `Foundation`) is appended to the `Board`. As the game loop progresses, the Sprite consumes its inventory, and the `AnimationMechanics` advances the `Foundation`'s frame until it becomes a `House`.
-* **Property Ownership:** The `House` Asset's `State` contains an `owner_name` matching the Sprite.
-* **Congregation (The "Gravity" of Towns):** Why do NPCs group together? Modify your `Motivations` (e.g., `kinship`, `safety`). A Sprite with `safety` motivation will set a `Goal` to pathfind toward the highest density of Assets owned by its own category (NPCs). Enemies might have a `profit` motivation, pathfinding toward resource-rich terrain (mines/forests) and building their homes there. The "Borderlands" town naturally emerges in the spatial midpoint between the resource-rich Enemy town and the safe NPC town, because traders want to minimize travel distance.
+    def _sample_free_space(self):
+        """Samples a random point in the defined continuous area."""
+        # 5% chance to bias the sample directly at the goal to pull the tree forward
+        if random.randint(0, 100) > 5:
+            return Node(
+                random.uniform(self.min_rand, self.max_rand),
+                random.uniform(self.min_rand, self.max_rand)
+            )
+        return Node(self.goal.x, self.goal.y)
 
-4. Emergent Conflict: Scarcity -> Violence
-
-```yaml
-  barter:
-    # If the transaction is successful, go back to idle
-    - next: idle
-      condition:
-        - sprite.inventory.wallet > 0
-
-    # THE ESCALATION TRIGGER:
-    # If the target wants too much money, or won't trade, but I need the item for survival
-    - next: threaten
-      condition:
-        - sprite.memory.goal.target.category == 'sprite'
-        - sprite.inventory.wallet < sprite.price_book['wood']
-        - sprite.psyche.motivation == 'survival'
-          
-  threaten:
-    # If the target submits and drops the loot, return to idle
-    - next: idle
-      condition:
-        - not sprites[sprite.memory.goal.name].inventory.loot['wood']
+    def _steer(self, from_node, to_node, step_size):
+        """Generates a new node a fixed step_size away from the nearest node."""
+        new_node = Node(from_node.x, from_node.y)
+        theta = math.atan2(to_node.y - from_node.y, to_node.x - from_node.x)
         
-    # If the target doesn't submit, escalate to attack
-    - next: attack
-      condition:
-        - sprites[sprite.memory.goal.name].intention != 'escape'
+        new_node.x += step_size * math.cos(theta)
+        new_node.y += step_size * math.sin(theta)
+        new_node.parent = from_node
+        
+        return new_node
+
+    def _check_collision(self, near_node, new_node, obstacle_list):
+        """Checks for intersection with any circular obstacle using point-line segment distances."""
+        for (ox, oy, size) in obstacle_list:
+            dx = new_node.x - near_node.x
+            dy = new_node.y - near_node.y
+            dist = math.hypot(dx, dy)
+            
+            # Sub-step along the segment to ensure the line doesn't cut through a circle
+            steps = int(dist / (self.step_size / 2))
+            for i in range(steps + 1):
+                px = near_node.x + dx * (i / steps) if steps > 0 else near_node.x
+                py = near_node.y + dy * (i / steps) if steps > 0 else near_node.y
+                
+                if math.hypot(px - ox, py - oy) <= size:
+                    return False  # Collision detected
+        return True  # Collision-free
+
+    def _get_nearest_node(self, node_list, rnd_node):
+        """Finds the closest existing node in the tree to the randomly sampled point."""
+        distances = [(self._calc_dist(node, rnd_node), node) for node in node_list]
+        distances.sort(key=lambda x: x[0])
+        return distances[0][1]
+
+    @staticmethod
+    def _calc_dist(node1, node2):
+        return math.hypot(node1.x - node2.x, node1.y - node2.y)
+
+    def _generate_final_path(self):
+        """Backtraces the parents from the goal to the start."""
+        path = [[self.goal.x, self.goal.y]]
+        node = self.goal.parent
+        while node.parent is not None:
+            path.append([node.x, node.y])
+            node = node.parent
+        path.append([self.start.x, self.start.y])
+        return path[::-1] # Reverse to output start-to-finish
+
+# Example Usage
+if __name__ == '__main__':
+    start_pos = (0.0, 0.0)
+    goal_pos = (15.0, 15.0)
+    # Format: (x, y, radius)
+    obstacles = [(5.0, 5.0, 2.0), (8.0, 10.0, 3.0), (12.0, 5.0, 2.0)]
+    bounds = (0.0, 20.0)
+
+    rrt = RRT(start=start_pos, goal=goal_pos, obstacle_list=obstacles, rand_area=bounds, step_size=1.5)
+    path = rrt.plan()
+
+    if path:
+        print("Path successfully found:")
+        for point in path:
+            print(f"({point[0]:.2f}, {point[1]:.2f})")
+    else:
+        print("Path blocked or max iterations reached.")
+```
+
+!!! note
+    Actual implementation in game engine will need to be Cythonized.
+
+##### Overview
+
+**1. The RRT Data Translation (The FIFO Queue)**
+
+The central question of the RRT architectural shift is: *"How does the Sprite step through the RRT return list?"*
+
+In `SpriteState`, `memory.goals` is typed as `Dict[str, Goal]`. Because Python 3.7+ dictionaries preserve insertion order, `CognitionMechanics._remember()` acts as a strict **FIFO (First-In, First-Out) Queue**:
+
+```python
+if not sprite.state.goal:
+    first = next(iter(sprite.state.memory.goals))
+    sprite.state.goal = sprite.state.memory.goals.pop(first)
+```
+
+When the RRT algorithm generates a path to a Target (e.g., the Player), it returns a list of coordinates. We can translate this into gameplay by:
+
+1. Converting each coordinate into a `Goal(category=POSITION)`.
+2. Inserting them into `memory.goals` sequentially (e.g., keys `wp_1`, `wp_2`, etc.).
+3. Re-inserting the overarching `TARGET` Goal at the very end of the dictionary.
+
+As `CognitionMechanics._resolve()` naturally clears the `POSITION` goals when the Sprite gets within `action_radius`, the Sprite will "pop" the next Goal off the dictionary until it finally pops the original `TARGET` goal and resumes direct tracking.
+
+**2. Scope & Bounding the RRT**
+
+Running RRT across the entire `Board` dimensions is computationally wasteful and increases the chance of the tree branching into irrelevant corners of the map.
+
+* **Solution:** The search space should be an Axis-Aligned Bounding Box (AABB) defined by the `Sprite`'s current position and the `Goal`'s current position, expanded by a ~20% padding factor (to be set in `settings.RRT_PADDING`) to allow the tree to route *around* obstacles that sit perfectly flush on the direct vector.
+
+**3. Execution Frequency**
+
+Generating a new RRT on every frame inside `_track()` would instantly lock the Python GIL and crash the framerate. RRT should be treated as an expensive, asynchronous-like operation triggered only by specific edge-case state changes:
+
+1. **Initial Obscuration:** In `_track()`, if a Sprite acquires a `TARGET`/`SUBJECT`/`POSITION`, we project a line to the goal. If `geometry.intersects` detects an intervening Asset with `mass >= 0` (using `board.weights()`), we trigger RRT.
+2. **Path Invalidation:** While a Sprite is following a waypoint (`wp_x`), if a dynamic asset (like a pushed `Crate`) moves into the waypoint vector, the path is invalidated. The Sprite dumps its `memory.goals` and recalculates.
+3. **Target Deviation:** If the ultimate `TARGET` (e.g., the Player) moves outside a certain tolerance radius from where the RRT originally expected them to be, the path is dumped and recalculated.
+
+**4. Collision Detection Strategy**
+
+Application already possesses `Space` (the Cython spatial hash grid used by `physics.pyx`). However, RRT requires line-segment collision checks, not just AABB overlap.
+
+Since we are avoiding C-level optimizations for now, the Python implementation of RRT can construct a temporary `Hitbox` that perfectly bounds the line segment between `nearest_node` and `new_node`. It can pass this virtual Hitbox to `SpatialMechanics.intersections()` to leverage the existing Cython broad-phase grid for rapid obstacle detection without reinventing the wheel.
+
+##### Goal: RRT Algorithm Integration
+
+Implement a pure Python RRT planner that utilizes the engine's existing spatial architecture for collision detection.
+
+```python
+# Pseudo-code for RRT Integration
+def plan(start: Position, target: Position, board: Board) -> List[Position]:
+    # 1. Define bounded search area (AABB of start/target + padding)
+    # 2. Iterate RRT sampling
+    # 3. For collision checks, construct a bounding Hitbox for the branch segment
+    # 4. Use board.weights() + board.perimeters to check for mass >= 0 overlaps via geometry.intersects
+    # 5. Return List[Position] waypoints.
 
 ```
 
-**The Emergent Narrative:**
+##### Goal: Waypoint Memory Mapping
 
-1. The NPC town exhausts its local forest.
-2. The NPC travels to the Borderlands to buy Wood from the Enemies.
-3. The Enemies have realized Wood is in high demand (via the gossip network updating their `price_book`), so they refuse to sell it for cheap.
-4. The NPC doesn't have enough Gold in its `wallet`.
-5. The `CommerceMechanic` refuses the trade.
-6. The NPC's Intention matrix sees that it cannot afford the Wood, but its `motivation` is `survival`. The matrix kicks the NPC into `threaten`.
-7. The Enemy, having a `profit` motivation and a high `strength` character stat, refuses to drop the Wood and enters `recoil` -> `attack`.
-8. Violence erupts. Other Sprites nearby with `kinship` motivations see their ally in `attack` Imtention and cascade into the fight. A full-scale border war emerges purely from inflation.
+Translate the geometric output of the RRT algorithm into intentional data structures the engine already understands.
 
-### Architectural Updates Required
+```python
+# Pseudo-code for Path Injection
+def inject_path(sprite: Asset, waypoints: List[Position], final_goal: Goal):
+    # 1. Clear existing waypoints in memory
+    sprite.state.memory.goals = {k: v for k, v in sprite.state.memory.goals.items() if not k.startswith(settings.RRT_PATH_PREFIX)}
+    
+    # 2. Inject new waypoints sequentially (Python dicts preserve insertion order -> FIFO)
+    for i, wp in enumerate(waypoints):
+        name = settings.SEPARATOR.join([settings.RRT_PATH_PREFIX, i])"
+        sprite.state.memory.goals[name] = Goal(
+            name=name,
+            category=Goals.POSITION.value,
+            position=wp,
+            layer=sprite.state.layer
+        )
+        
+    # 3. Re-append the final goal so it pops last
+    sprite.state.memory.goals[final_goal.name] = final_goal
 
-To support this phase of the engine, 
+```
 
-1. **YAML Schemas:** Add `price_book: Dict[str, float]` to `PyMemoryState`.
-2. **Cython Mechanics:** Create a `CommerceMechanic` that processes interactions between overlapping Sprites in the `barter` state.
-3. **Spawning Logic:** Create a mechanism in the `Board` class to dynamically instantiate and append new `Object` Assets (like Houses) to the `assets` list at runtime when a Sprite is in the `build` Extension.
-4. **Spatial Hashing:** If Sprites are constantly querying "where is the nearest cluster of friendly houses" or "who has Wood," your Cython `math.pyx` will need a spatial hashing grid. Checking the distance to every other Sprite/House in a $O(N^2)$ loop will crush your framerate as towns grow large.
+##### Tasks
+
+**1. Task: RRT Algorithm Base Implementation**
+
+*Objective*: Create the mathematical RRT planner in the logic utilities.
+
+- [ ] Subtask: Create `app/game/logic/mechanics/modules/paths/plan.py`.
+- [ ] Subtask: Implement `Planner` class with `plan()` method.
+- [ ] Subtask: Implement dynamic search area bounding (Start to Target + 20% padding).
+- [ ] Subtask: Bridge `Planner` collision checks to use `Asset.primitive()` against `board.weights()`.
+- [ ] Subtask: Extend collision validation to iterate over `board.perimeters.get(layer, [])` to prevent pathing through static level geometry.
+
+**2. Task: CognitionMechanics Ideation & Tracking**
+
+*Objective*: Hook the RRT planner into the Sprite's sensory loop.
+
+- [ ] Subtask: In `CognitionMechanics._track()`, implement a line-of-sight check to the current `Goal`.
+- [ ] Subtask: If line-of-sight is blocked by an Asset with `mass >= 0` OR a `Boundary` from `board.perimeters`, invoke `Planner.plan()`.
+- [ ] Subtask: Implement `inject_path()` logic to translate the returned `List[Position]` into `POSITION` goals and push them to `sprite.state.memory.goals`.
+- [ ] Subtask: Set `sprite.state.goal = None` immediately after injection to force `_remember()` to pop the first waypoint on the next tick.
+
+**3. Task: Path Recalculation & Invalidation**
+
+*Objective*: Ensure Sprites react dynamically if the environment or target moves while they are traversing a path.
+
+- [ ] Subtask: In `CognitionMechanics._track()`, track the distance delta of the ultimate target. If the target deviates by $> X$ pixels from its position when the RRT was generated, clear the `path-` keys from memory and recalculate.
+- [ ] Subtask: If the Sprite is currently seeking a `path-` goal and the line-of-sight to that specific waypoint becomes blocked by a moving weight, clear memory and recalculate.

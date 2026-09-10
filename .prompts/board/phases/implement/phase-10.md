@@ -1,8 +1,8 @@
-#### Implement: Phase TODO
+#### Implement: Phase 10 - Towns
 
 **Goals**
 
-- TODO
+- Town Formation
 
 ##### Tasks
 

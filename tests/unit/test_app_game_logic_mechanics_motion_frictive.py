@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock
-from app.game.logic.mechanics.motion import frictive
+from app.game.logic.mechanics.modules.motion import frictive
 
 def test_frictive_update_partial_decay(mock_crate, mock_board):
     # Set initial velocity moving right

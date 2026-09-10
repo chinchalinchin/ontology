@@ -11,6 +11,8 @@ from typing import TYPE_CHECKING
 import collections
 import logging
 
+from app.game.logic.mechanics.modules.motion import frictive, kinematic
+
 if TYPE_CHECKING:
     from app.game.board import Board
 
@@ -22,10 +24,8 @@ from app.config.enums import (
     Interactions,
     DeviceContexts
 )
-from app.game.logic.mechanics.motion import (
-    kinematic, 
-    motive, 
-    frictive
+from app.game.logic.mechanics.modules.motion import (
+    motive
 )
 from app.game.menus.events import (
     TerminalEvent

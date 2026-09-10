@@ -1,5 +1,5 @@
 import pytest
-from app.game.logic.mechanics.motion import motive
+from app.game.logic.mechanics.modules.motion import motive
 
 def test_motive_no_intention(mock_board_assets):
     sprite = mock_board_assets[0]
@@ -15,7 +15,7 @@ def test_motive_no_intention(mock_board_assets):
 
 def test_motive_at_goal(mock_board_assets, monkeypatch):
     sprite = mock_board_assets[0]
-    monkeypatch.setattr('app.game.logic.mechanics.motion.motive.NavigationIntentions', ["FIND"])
+    monkeypatch.setattr('app.game.logic.mechanics.modules.motion.motive.NavigationIntentions', ["FIND"])
     sprite.state.intention = "FIND"
     
     sprite.state.position.x = 10
@@ -32,7 +32,7 @@ def test_motive_at_goal(mock_board_assets, monkeypatch):
 
 def test_motive_accelerates_towards_goal(mock_board_assets, monkeypatch):
     sprite = mock_board_assets[0]
-    monkeypatch.setattr('app.game.logic.mechanics.motion.motive.NavigationIntentions', ["FIND"])
+    monkeypatch.setattr('app.game.logic.mechanics.modules.motion.motive.NavigationIntentions', ["FIND"])
     sprite.state.intention = "FIND"
     
     sprite.state.position.x = 0
@@ -52,7 +52,7 @@ def test_motive_accelerates_towards_goal(mock_board_assets, monkeypatch):
 
 def test_motive_clamps_to_speed(mock_board_assets, monkeypatch):
     sprite = mock_board_assets[0]
-    monkeypatch.setattr('app.game.logic.mechanics.motion.motive.NavigationIntentions', ["FIND"])
+    monkeypatch.setattr('app.game.logic.mechanics.modules.motion.motive.NavigationIntentions', ["FIND"])
     sprite.state.intention = "FIND"
     
     sprite.state.position.x = 0
@@ -71,7 +71,7 @@ def test_motive_clamps_to_speed(mock_board_assets, monkeypatch):
 
 def test_motive_arrival_clamp(mock_board_assets, monkeypatch):
     sprite = mock_board_assets[0]
-    monkeypatch.setattr('app.game.logic.mechanics.motion.motive.NavigationIntentions', ["FIND"])
+    monkeypatch.setattr('app.game.logic.mechanics.modules.motion.motive.NavigationIntentions', ["FIND"])
     sprite.state.intention = "FIND"
     
     sprite.state.position.x = 0
