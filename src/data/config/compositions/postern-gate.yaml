@@ -1,0 +1,35 @@
+compositions:
+  postern-gate:
+    root:
+      strut: 
+        id: wall-castle
+        name: castle-wall
+      components:
+        objects:
+          gates:
+            - id: gate-castle
+              name: castle-entrance
+              link: castle-gate-link
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: 81
+                y: 49
+          plates:
+            - id: plate-stone
+              name: castle-entrance-switch
+              link: castle-gate-link
+              depth: 1
+              height: bind(root.height)
+              position:
+                x: 24
+                y: 145
+          doors: 
+            - id: door-castle-open
+              name: castle-entrance-open
+              height: bind(root.height)
+              depth: 0
+              position:
+                x: 81
+                y: 49
+              outlayer: castle-compose-layer

@@ -1,5 +1,4 @@
 compositions:
-  # --------------------------------------------------------------------------- 
   brick-house:
     root:
       strut: 
@@ -12,21 +11,20 @@ compositions:
               name: entrance
               outlayer: brick-house-compose-layer
               depth: 1
-              height: bind(parent.height) # CORRECT: Decal on the exterior wall
+              height: bind(parent.height) 
               position:
                 x: 32
                 y: 118
               out:
-                x: 36
-                y: 148
+                x: 82
+                y: 143
     branches:
       - strut: 
           id: wall-blue
           name: house-interior
           owner: bind(root.owner)
           layer: brick-house-compose-layer
-          depth: 0 # Normal depth
-          # height: bind(parent.height) <--- REMOVED
+          depth: 0 
           position:
             x: 0
             y: 0
@@ -37,7 +35,7 @@ compositions:
                 name: house-doorframe
                 layer: brick-house-compose-layer
                 outlayer: bind(root.layer)
-                depth: 0 # Normal depth
+                depth: 0
                 position:
                   x: 47
                   y: 142

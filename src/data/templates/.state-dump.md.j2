@@ -35,7 +35,7 @@
 - **Speed:** {{ asset.state.speed }}
 {%- endif %}
 {%- if asset.state.direction %}
-- **Direction (Motor):** `{{ asset.state.direction }}`
+- **Direction:** `{{ asset.state.direction }}`
 {%- endif %}
 {%- if asset.state.multiple %}
 - **Multiple:** nx: {{ asset.state.multiple.nx }}, ny: {{ asset.state.multiple.ny }}
@@ -131,7 +131,7 @@
 {%- endif %}
 {%- if asset.state.mutators %}
 - **Mutators:**
-  - Triggers: Animated: {{ asset.state.mutators.triggers.animated }}, Struck: {{ asset.state.mutators.triggers.struck }}, Frightened: {{ asset.state.mutators.triggers.frightened }}, Dead: {{ asset.state.mutators.triggers.dead }}, Vision: {{ asset.state.mutators.triggers.vision }}
+  - Triggers: Animated: {{ asset.state.mutators.triggers.animated }}, Frightened: {{ asset.state.mutators.triggers.frightened }}, Dead: {{ asset.state.mutators.triggers.dead }}, Vision: {{ asset.state.mutators.triggers.vision }}
   {%- if asset.state.mutators.parameters %}
   - Parameters:
     - Fear: Radius {{ asset.state.mutators.parameters.fear.radius }}, Limit {{ asset.state.mutators.parameters.fear.limit }}, Enemy {{ asset.state.mutators.parameters.fear.enemy }}

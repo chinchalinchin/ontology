@@ -145,7 +145,7 @@ class CognitionMechanics(Mechanic):
         elif goal.category == Goals.SUBJECT.value:
             if not sprite.state.psyche.dialogue:
                 sprite.state.goal = None
-                logger.info(f"{sprite.name} cleared SUBJECT goal.")
+                logger.info(f"{sprite.name} cleared SUBJECT Goal.")
                 if goal.name in sprite.state.memory.goals.keys():
                     sprite.state.memory.goals.pop(goal.name)
 
@@ -156,7 +156,7 @@ class CognitionMechanics(Mechanic):
                 action_radius
             ) and not sprite.state.mutators.triggers.vision:
                 sprite.state.goal = None
-                logger.info(f"{sprite.name} lost SUBJECT goal.")
+                logger.info(f"{sprite.name} lost SUBJECT Goal.")
                 sprite.state.psyche.expression = board.cradle.spawn_expression(
                     ExpressionsPalette.BUBBLES.value, 
                     Expressions.CONFUSION.value, 
@@ -173,7 +173,7 @@ class CognitionMechanics(Mechanic):
                 action_radius
             ):
                 sprite.state.goal = None
-                logger.info(f"{sprite.name} cleared POSITION goal..")
+                logger.info(f"{sprite.name} cleared POSITION Goal.")
         # ------------------------------------------------------------------------
         # ------------------------------------------------- OBJECT GOAL RESOLUTION
         # ------------------------------------------------------------------------
@@ -244,8 +244,10 @@ class CognitionMechanics(Mechanic):
             first = next(iter(sprite.state.memory.goals))
             sprite.state.goal = sprite.state.memory.goals.pop(first)
             logger.info(
-                f"{sprite.name} recalled goal from memory: "
-                f"{sprite.state.goal.category}({sprite.state.goal.name})"
+                f"{sprite.name} remembered Goal(" 
+                f"category={sprite.state.goal.category}, "
+                f"name = {sprite.state.goal.name}, "
+                f"layer = {sprite.state.goal.layer}"
             )
 
 
@@ -283,6 +285,9 @@ class CognitionMechanics(Mechanic):
             6. Sprite transitions into `idle` (TransitionMechanics).
 
         """
+        if sprite.state.intention != Intentions.IDLE.value:
+            return
+        
         # Prevent endless targeting and memory leaks if we already have a dialogue goal
         if sprite.state.goal and sprite.state.goal.category == Goals.SUBJECT.value:
             return
@@ -321,9 +326,10 @@ class CognitionMechanics(Mechanic):
                         position=Position(x=other_state.position.x, y=other_state.position.y)
                     )
                     logger.info(
-                        f"{sprite.name} ideated goal:" 
-                        f"{sprite.state.goal.category}({sprite.state.goal.name}) "
-                        f"on layer {sprite.state.goal.layer}"
+                        f"{sprite.name} ideated Goal(" 
+                        f"category={sprite.state.goal.category}, "
+                        f"name = {sprite.state.goal.name}, "
+                        f"layer = {sprite.state.goal.layer}"
                     )
                     return
 
@@ -334,6 +340,9 @@ class CognitionMechanics(Mechanic):
 
         Scans the environment for targets matching the Sprite's motivation.
         """
+        if sprite.state.intention != Intentions.IDLE.value:
+            return
+        
         if sprite.state.mutators.parameters is None:
             return
 
@@ -453,8 +462,10 @@ class CognitionMechanics(Mechanic):
                     position=Position(x=target_door.state.position.x, y=target_door.state.position.y)
                 )
                 logger.info(
-                    f"{sprite.name} generated goal: {sprite.state.goal.category}"
-                    f"({sprite.state.goal.name}) on layer {sprite.state.goal.layer}"
+                    f"{sprite.name} tracked Goal(" 
+                    f"category={sprite.state.goal.category}, "
+                    f"name = {sprite.state.goal.name}, "
+                    f"layer = {sprite.state.goal.layer}"
                 )
             else:
                 # Unattainable. Clear the goal to force a transition to `wander`.
@@ -509,6 +520,6 @@ class CognitionMechanics(Mechanic):
                     position=Position(sprite.state.position.x + offset_x, sprite.state.position.y + offset_y)
                 )
                 logger.info(
-                    f"{sprite.name} generated wander goal at "
+                    f"{sprite.name} generated random Goal at "
                     f"({sprite.state.goal.position.x}, {sprite.state.goal.position.y})"
                 )

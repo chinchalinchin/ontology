@@ -90,13 +90,12 @@ class InteractionMechanics(SpatialMechanic):
                     continue
 
                 # Check if the mutating Sprite's center point intersects the Target dimensions.
-                cx, cy = self.center(source.state.position, source.dimensions)
-
-                tx, ty = target.state.position.x, target.state.position.y
-                tw, tl = target.dimensions.w, target.dimensions.l
+                # cx, cy = self.center(source.state.position, source.dimensions)
+                # tx, ty = target.state.position.x, target.state.position.y
+                # tw, tl = target.dimensions.w, target.dimensions.l
                 
-                if not (tx <= cx <= tx + tw and ty <= cy <= ty + tl):
-                    continue
+                # if not (tx <= cx <= tx + tw and ty <= cy <= ty + tl):
+                #     continue
 
                 # -------------------------------- DOOR INTERACTIONS
                 if target.taxonomy.instance == AssetInstances.DOORS.value:
@@ -107,6 +106,13 @@ class InteractionMechanics(SpatialMechanic):
                     board.relayer(source, target.state.outlayer)
                     source.state.position.x = target.state.out.x
                     source.state.position.y = target.state.out.y
+
+                    # Consume PLAYER intention ONLY
+                    # NOTE: Sprite Intentions MUST not be altered by logic
+                    #       to preserve Transition Matrix.
+                    if source.taxonomy.instance == AssetInstances.PLAYERS.value:
+                        source.state.intention = Intentions.IDLE.value
+
                     processed_sources.add(source.name)
 
                 # -------------------------------- CHEST INTERACTIONS

@@ -97,6 +97,10 @@ class SocialMechanics(SpatialMechanic):
                                 sprite=npc.state
                             )
                         ))
+                        # Consume PLAYER intention ONLY
+                        # NOTE: Sprite Intentions MUST not be altered by logic
+                        #       to preserve Transition Matrix.
+                        player.state.intention = Intentions.IDLE.value
 
                     processed_sources.add(player.name)
 

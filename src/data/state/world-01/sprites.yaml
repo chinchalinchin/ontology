@@ -28,7 +28,7 @@ sheets:
           vision:
             radius: 128
           action:
-            radius: 5
+            radius: 25
       psyche:
         dialogue: greeting
         expression: null
@@ -63,7 +63,7 @@ sheets:
       inventory: 
         loot: null
         equipment:
-          armor: 
+          armor: null
           tool: null
           utility: null
           weapon: shortsword

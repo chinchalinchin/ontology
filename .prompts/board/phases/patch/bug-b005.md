@@ -1,6 +1,6 @@
 ##### Bug B005 - Speak Regression
 
-**STATUS**: OPEN
+**STATUS**: CLOSED
 **SEVERITY**: MEDIUM
 
 **Context**
@@ -268,7 +268,32 @@ State Dump (Relevant sections):
 - **Intention:** `Intentions.IDLE`
 ```
 
+##### Root Cause Analysis
 
-**Proposed Remeditation**
+The root cause of this regression stems from a mathematical conflict between the engine's rigid-body spatial resolution (`CollisionMechanics`) and the pure-point distance logic used by the Intentional Scripting Language (`is_near`), compounded by a misconfigured parameter.
 
-Uncertain until source of problem is identified.
+Based on the provided game logs and engine architecture, `evil-empress-jasilynn` is behaving exactly as programmed, but she is mathematically blocked from fulfilling the transition conditions for `speak`.
+
+1. **Physics Collision Constraints:** Both the Player and Jasilynn are `sprites` with mass ($m > 0$). When Jasilynn attempts to navigate to the Player's coordinates, `physics.collide` resolves their physical overlap by separating their Hitboxes. For standard LPC sprites, the bounding boxes dictate that their top-left `Position` origins can never get closer than the sum of their hitbox half-extents (approximately 22 pixels).
+2. **ISL Distance Logic:** The Intentional Scripting Language condition for `find:speak` evaluates `functions.is_near(sprite.position, target.position, action.radius)`. The `is_near` function in `Environ` calculates a strict Euclidean point-to-point distance between the two top-left origins, without accounting for the entity's dimensions or bounding boxes.
+3. **Parameter Mismatch:** In the state dump, `evil-empress-jasilynn` is configured with `mutators.parameters.action.radius` set to `5`.
+
+Because the physics engine rigidly enforces a minimum origin distance of ~22 pixels, the condition `(dx*dx + dy*dy) <= (5 * 5)` perpetually evaluates to `False` ($22^2 = 484 \gg 25$). Visually, the sprites are touching, but programmatically, they are not within the 5-pixel origin threshold required to trigger the transition.
+
+*(Note: The transition from `find` to `interact` for the door succeeded because the door is a sensor/static object that does not repel the sprite's origin, allowing her to achieve an exact coordinate match).*
+
+### Proposed Remediation
+
+Two avenues for resolving this issue, depending on whether it is the engine that is patched or the asset configurations.
+
+**Option 1: Configuration Patch (Recommended)**
+
+Update the NPC YAML configurations to ensure their `action.radius` accounts for physical bounding box separation. The `player` asset already utilizes an `action.radius` of `30`, which successfully bridges the ~22-pixel physical gap.
+
+* **Fix:** Increase `evil-empress-jasilynn`'s `action.radius` to `30`.
+
+**Option 2: Engine Patch**
+
+If `action.radius` is strictly intended to represent edge-to-edge distance rather than origin-to-origin distance, `Environ.is_near` must be brought into alignment with the spatial logic used by the rest of the engine.
+
+* **Fix:** Refactor `functions.is_near` in `app.services.translators.environ` to evaluate intersecting Axis-Aligned Bounding Boxes (AABBs) padded by the radius, mirroring the logic currently successfully implemented in `SocialMechanics.proximities`.
