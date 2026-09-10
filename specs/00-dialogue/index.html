@@ -1108,6 +1108,7 @@
 <p><strong>idle:find</strong></p>
 <ul>
 <li><code>sprite.goal</code></li>
+<li><code>sprite.layer == sprite.goal.layer</code></li>
 <li><code>sprite.goal.category == constants.Goal.SUBJECT.value</code></li>
 <li><code>sprite.psyche.dialogue</code></li>
 </ul>
@@ -1115,6 +1116,7 @@
 <p><strong>find:speak</strong></p>
 <ul>
 <li><code>functions.is_near(sprites.get(sprite.goal.name).position, sprite.position, sprite.mutators.parameters.vision.radius)</code></li>
+<li><code>sprite.memory.relationships[sprite.goal.name] in [ constants.Relationships.FRIEND.value, constants.Relationships.FAMILY.value ]</code></li>
 </ul>
 <p><strong>speak:follow</strong></p>
 <ul>

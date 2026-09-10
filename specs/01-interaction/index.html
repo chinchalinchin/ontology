@@ -724,10 +724,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#workflow-spec-intention" class="md-nav__link">
+  <a href="#workflow-interact-intention-door-branch" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Workflow: {{ spec }} Intention
+        Workflow: Interact Intention (Door Branch)
       
     </span>
   </a>
@@ -1055,10 +1055,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#workflow-spec-intention" class="md-nav__link">
+  <a href="#workflow-interact-intention-door-branch" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Workflow: {{ spec }} Intention
+        Workflow: Interact Intention (Door Branch)
       
     </span>
   </a>
@@ -1093,7 +1093,7 @@
   <h1>Interaction Loop</h1>
 
 <h4 id="ontology-specification-interaction-loop">Ontology Specification: Interaction Loop</h4>
-<p>This specification governs the exchange of dialogue.</p>
+<p>This specification governs how Sprites traverse the environment and manipulate Objects (such as Doors and Chests).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>All information in this section assumes the default values for the <a href="../../appendices/01-schemas/#configuration-intentions">Intention Configuration</a>.</p>
@@ -1103,24 +1103,39 @@
 <p>This specification excludes the <a href="../../02-sprites/#player">Player</a>, whose Intentions are handled through input polling and device mapping.</p>
 </div>
 <h5 id="prologue">Prologue</h5>
-<p>TODO</p>
+<p>The <code>interact</code> loop serves a dual purpose: interacting with same-layer Objects (like Chests) and serving as the engine's primary traversal mechanism for cross-layer navigation. </p>
+<p>When CognitionMechanics detects that a Sprite's current Goal resides on a different layer, it performs a <strong>Subsumption</strong>. The Sprite pushes its current goal into <code>state.memory.goals</code> and spontaneously injects a prerequisite <code>OBJECT</code> goal targeting the nearest available Door. The Interaction Loop is then executed to successfully cross the dimension.</p>
 <h5 id="step-entrypoints">Step: Entrypoints</h5>
-<p><strong>idle:i_2</strong></p>
+<p><strong>idle:find</strong></p>
 <ul>
-<li><code>condition</code></li>
+<li><code>sprite.goal</code></li>
+<li><code>sprite.goal.category == constants.Goals.OBJECT.value</code></li>
+<li><code>sprite.layer == sprite.goal.layer</code></li>
+<li><code>not functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)</code></li>
 </ul>
 <h5 id="step-interpoints">Step: Interpoints</h5>
-<p><strong>i_2:i_3</strong></p>
+<p><strong>find:interact</strong></p>
 <ul>
-<li><code>condition</code></li>
+<li><code>sprite.goal</code></li>
+<li><code>sprite.goal.category == constants.Goals.OBJECT.value</code></li>
+<li><code>sprite.layer == sprite.goal.layer</code></li>
+<li><code>functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)</code></li>
 </ul>
 <h5 id="step-exitpoints">Step: Exitpoints</h5>
-<p><strong>i_n:idle</strong></p>
+<p><strong>interact:idle</strong></p>
 <ul>
-<li><code>condition</code></li>
+<li><code>not sprite.goal</code></li>
 </ul>
-<h5 id="workflow-spec-intention">Workflow: {{ spec }} Intention</h5>
-<p>TODO</p>
+<h5 id="workflow-interact-intention-door-branch">Workflow: Interact Intention (Door Branch)</h5>
+<p>A Sprite processing an <code>interact</code> Intention targeting a Door undergoes a strict sequence distributed across the engine ticks to ensure spatial continuity and goal integrity:</p>
+<ol>
+<li><strong>Approach (<code>CognitionMechanics</code> &amp; <code>MotionMechanics</code>)</strong>: The Sprite, while in the <code>find</code> intention, accelerates toward the Door until its origin is within <code>mutators.parameters.action.radius</code> of the Door's origin. </li>
+<li><strong>Transition (<code>TransitionMechanics</code>)</strong>: The ISL condition <code>is_near</code> evaluates to True. The Sprite transitions from <code>find</code> to <code>interact</code>. Because <code>interact</code> is a static intention, the Sprite's velocity drops to <code>0.0</code>.</li>
+<li><strong>Execution (<code>InteractionMechanics</code>)</strong>: The mechanic evaluates the intersection of the Sprite and the target Door using their exact Axis-Aligned Bounding Boxes (AABBs). Upon a successful collision, it records the Door's routing in <code>sprite.memory.doors</code>, alters the Sprite's <code>state.position</code>, and calls <code>board.relayer</code> to shift the Sprite to the destination layer. </li>
+<li><strong>Resolution (<code>CognitionMechanics</code>)</strong>: On the subsequent engine tick, <code>_resolve</code> evaluates the Sprite's current layer against its <code>OBJECT</code> goal's layer. Because the Sprite has successfully teleported, <code>sprite.state.layer != goal.layer</code> evaluates to True. The <code>OBJECT</code> goal is satisfied and cleared (<code>sprite.state.goal = None</code>).</li>
+<li><strong>Exit (<code>TransitionMechanics</code>)</strong>: With <code>sprite.goal</code> safely nulled out, the ISL conditions to exit <code>interact</code> are met. The Sprite transitions directly back into the <code>idle</code> hub.</li>
+<li><strong>Recall (<code>CognitionMechanics</code>)</strong>: On the next tick, while the Sprite is safely resting in <code>idle</code>, <code>_remember</code> runs. It pops the original, overarching goal off the <code>memory.goals</code> stack and reinstates it as the active goal, allowing the Sprite to resume its original pursuit on the new layer.</li>
+</ol>
 
 
 

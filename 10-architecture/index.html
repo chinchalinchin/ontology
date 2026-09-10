@@ -1344,7 +1344,7 @@
 <p>The <code>AnimationMap</code> plays a crucial role in enforcing logical constraints. For example, <code>TransitionMechanics</code> and <code>PlayerMechanics</code> utilize <code>AnimationMap.action(state, equipment)</code> to resolve whether an intended action is possible. This guarantees that an <code>attack</code> intention will not translate into a <code>thrust</code> animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.</p>
 <h2 id="board">Board</h2>
 <h3 id="spatial-grid-caching">Spatial Grid Caching</h3>
-<p>To optimize environmental queries during the high-frequency game loop, the Board implements an <span class="arithmatex">\(O(1)\)</span> spatial hashing grid (<code>_cached_tilemap</code>). The Board chunks static Assets into a dictionary grid during initialization, keyed by a fixed <code>TILE_HASH_SIZE</code> (defaulting to 32x32 pixels).</p>
+<p>To optimize environmental queries during the game loop, the Board implements an <span class="arithmatex">\(O(1)\)</span> spatial hashing grid (<code>_cached_tilemap</code>). The Board chunks static Assets into a dictionary grid during initialization, keyed by a fixed <code>TILE_HASH_SIZE</code> (defaulting to 32x32 pixels).</p>
 <p>When systems like MotionMechanics need to compute the environmental friction acting on a moving Crate or Sprite, the Board divides the Asset's absolute <code>(x, y)</code> coordinates by the hash size to retrieve the exact Tile beneath it. </p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
