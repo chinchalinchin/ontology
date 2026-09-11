@@ -46,14 +46,23 @@ class CognitionMechanics(Mechanic):
     """
 
     @staticmethod
-    def log_goal(sprite: Asset, verb: str = "transformed"):
-        logger.info(
-            f"{sprite.name} {verb} Goal(" 
-            f"category={sprite.state.goal.category}, "
-            f"name = {sprite.state.goal.name}, "
-            f"layer = {sprite.state.goal.layer}, "
-            f"position=({sprite.state.goal.position.x}, {sprite.state.goal.position.y}))"
-        )
+    def log_goal(sprite: Asset, verb: str = "transformed", level: str = "info"):
+        if level == "info":
+            logger.info(
+                f"{sprite.name} {verb} Goal(" 
+                f"category={sprite.state.goal.category}, "
+                f"name = {sprite.state.goal.name}, "
+                f"layer = {sprite.state.goal.layer}, "
+                f"position=({sprite.state.goal.position.x}, {sprite.state.goal.position.y}))"
+            )
+        elif level == "debug":
+            logger.debug(
+                f"{sprite.name} {verb} Goal(" 
+                f"category={sprite.state.goal.category}, "
+                f"name = {sprite.state.goal.name}, "
+                f"layer = {sprite.state.goal.layer}, "
+                f"position=({sprite.state.goal.position.x}, {sprite.state.goal.position.y}))"
+            )
 
 
     @staticmethod
@@ -605,7 +614,8 @@ class CognitionMechanics(Mechanic):
             sprite.state.mutators.triggers.vision = True
             self._plan(sprite, board)
             goal = sprite.state.goal
-            CognitionMechanics.log_goal(sprite, verb="tracked")
+            if goal:
+                CognitionMechanics.log_goal(sprite, verb="tracked", level="debug")
             return
 
         # ------------------------------------------------------------------------ 
