@@ -1222,6 +1222,10 @@
 
 <h1 id="ontology-intentions-goals">Ontology: Intentions &amp; Goals</h1>
 <p>Intentions and Goals are an internal data structure that governs a Sprite's core logic. All Sprite Assets, when deployed on a Board, are given, along with an Animation state, an Intention state and Goal state that is updated by the gameplay loop. Intentions represent a node in the Sprite's "<em>finite automaton</em>", the Intention Transition Matrix. They are used to calculate the (Action, Direction) dimensions of a Sprite Animations state. Goals represent the focus of the Sprite's logic, e.g. a position to move to, a chest to open, etc.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p><a href="#cognition">CognitionMechanics</a> mutates Goals, TransitionMechanics mutates Intentions, and the Transition Matrix governs the mapping. This rule <strong>must</strong> be followed at all times.</p>
+</div>
 <p>Both Sprites and Players utilize the interface of Intention and Goals to communicate state updates. The key difference is how Intentions and Goals are generated. In the case of the Player, they are mapped from polling the input codes of a Device. For a non-playable Sprite, they are calculated using the <a href="#transition-matrix">Intention Transition Matrix</a>.</p>
 <p>Broadly speaking, an Intention is a "verb", e.g. <code>attack</code>, <code>find</code>, <code>barter</code>, etc. A Goal is a "noun" (e.g. <code>object</code>, <code>position</code>, <code>property</code>, etc.). While the exact mapping is more complex, in general terms: Intentions produce Actions, Goals produce Directions.</p>
 <div class="admonition note">

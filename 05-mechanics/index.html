@@ -1135,32 +1135,30 @@
 </ul>
 <p>The mathematical bounds for Friction are <span class="arithmatex">\([0, \infty)\)</span>.</p>
 <ul>
-<li><strong>Lower Bound (<span class="arithmatex">\(0\)</span>):</strong> A value of exactly <span class="arithmatex">\(0\)</span> yields <span class="arithmatex">\(\Delta v = 0\)</span>, meaning the asset will glide indefinitely without losing momentum until it strikes a static body. A value <span class="arithmatex">\(&lt; 0\)</span> violates thermodynamic priors; it would yield a negative <span class="arithmatex">\(\Delta v\)</span>, causing the asset to accelerate infinitely opposite to its current trajectory.</li>
-<li><strong>Upper Bound (<span class="arithmatex">\(\infty\)</span>):</strong> There is no programmatic upper bound. Any value satisfying the condition <span class="arithmatex">\(\text{friction} \cdot \Delta t \ge \vert v \vert\)</span> instantly halts the asset in a single frame.</li>
+<li><strong>Lower Bound (<span class="arithmatex">\(0\)</span>):</strong> A value of exactly <span class="arithmatex">\(0\)</span> yields <span class="arithmatex">\(\Delta v = 0\)</span>, meaning the asset will glide indefinitely without losing momentum until it strikes a static body. </li>
+<li><strong>Upper Bound (<span class="arithmatex">\(\infty\)</span>):</strong> There is no programmatic upper bound. Any value satisfying the condition <span class="arithmatex">\(\text{friction} \cdot \Delta t \ge \vert v \vert\)</span> will eventually halt the asset.</li>
 </ul>
 <p>The <code>friction</code> property defines the rate of linear velocity decay, measured in pixels per second squared (<span class="arithmatex">\(px/s^2\)</span>).</p>
 <p>The engine updates the velocity magnitude <span class="arithmatex">\(v\)</span> via Symplectic Euler Integration:</p>
 <div class="arithmatex">\[v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)\]</div>
-<ul>
-<li><strong>Low Friction (e.g., <span class="arithmatex">\(0.01\)</span>):</strong> The deceleration scalar is minute. The asset bleeds momentum extremely slowly, simulating a frictionless surface like ice.</li>
-<li><strong>High Friction (e.g., <span class="arithmatex">\(100.0\)</span>):</strong> The asset sheds velocity rapidly and comes to rest in a short distance, simulating dense surfaces like mud or deep grass.</li>
-</ul>
 <p><strong>MenuMechanics</strong></p>
-<p>To keep MenuMechanics clean, the Engine uses the <strong>Strategy Pattern</strong> and delegates to MenuController classes. </p>
-<p>MenuMechanics is responsible for <em>Universal Menu Physics</em> (e.g. traversal, opening, closing). The MenuController is responsible for <em>Bespoke Menu Logic</em> (e.g. equipping, buying, selling).<code>MenuMechanics only ever interacts with</code>board.menus[-1]` (the top of the stack).</p>
-<p>With the controllers handling the semantic meaning of button presses, MenuMechanics becomes a simple router. Its <code>update()</code> loop looks like this:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the event of multiple Menus (e.g. a dialogue modal over a trade menu), MenuMechanics is constrained to interact with the top of the Menu stack (<code>board.menus[-1]</code>).</p>
+</div>
+<p>MenuMechanics delegates to logic to MenuController classes. MenuMechanics is responsible for general Menu logic (e.g. traversal, opening, closing). The MenuController is responsible for particular Menu logic (e.g. equipping, buying, selling). The general workflow of MenuMechanics is given below,</p>
 <ol>
 <li><strong>Check Stack:</strong> If <code>len(board.menus) == 0</code>, exit early.</li>
-<li><strong>Get Top Menu:</strong> <code>active_menu = board.menus[-1]</code></li>
+<li><strong>Get Top Menu:</strong> <code>menu = board.menus[-1]</code></li>
 <li><strong>Poll Input:</strong><ul>
 <li>If <code>NORTH/SOUTH/WEST/EAST</code>: Look at <code>menu.state.focus</code>. Look up the key in <code>active_menu.state.graph</code>. If a neighbor exists, change <code>focus</code> and update the <code>TraversalAnimation</code> status of the respective Button Assets.</li>
-<li>If <code>SELECT</code>: Call <code>active_menu.controller.select(menu.state.focus, menu, board)</code>.</li>
+<li>If <code>SELECT</code>: Call <code>amenu.controller.select(menu.state.focus, menu, board)</code>.</li>
 <li>If <code>CANCEL</code>: Pop the menu off the stack. (Unpause the board if the stack is now empty).</li>
 </ul>
 </li>
-<li><strong>Tick:</strong> Call <code>active_menu.controller.update()</code> so continuous menus (like the HUD) can update their meters.</li>
+<li><strong>Tick:</strong> Call <code>menu.controller.update()</code> so continuous menus (like the View) can update their meters.</li>
 </ol>
-<p>AnimationMechanics strictly governs "World Time". MenuMechanics governs "Menu Time". The <code>animate()</code> interface for Widgets is called inside <code>MenuMechanics.update()</code>, iterating over <code>board.overlays</code> (always) and <code>board.menus[-1]</code> (if active).</p>
+<p>AnimationMechanics strictly governs "World Time". MenuMechanics governs "Menu Time". The <code>animate()</code> interface for Widgets is called inside MenuMechanics, iterating over <code>board.overlays</code> (always) and <code>board.menus[-1]</code> (if active).</p>
 <h3 id="spatial">Spatial</h3>
 <p>These Mechanics handle spatial interactions and collisions between Assets.</p>
 <ul>
@@ -1194,7 +1192,7 @@
 </li>
 </ul>
 <p><strong>CollisionMechanics</strong></p>
-<p>When Assets collide, overlap resolution uses inverse mass ratios to correct spatial positioning, ensuring immutable Assets with no Mass (<code>m = 0</code>) remain completely immobile while dynamic Assets with Mass (<code>m &gt; 0</code>) absorb 100% of the displacement shift. Post-separation, Velocities are updated via 1D elastic collision formulas, conserving momentum cleanly across all participating masses,</p>
+<p>When Assets collide, overlap resolution uses inverse mass ratios to correct spatial positioning, ensuring immutable Assets with no Mass (<code>m = 0</code>) remain completely immobile while dynamic Assets with Mass (<code>m &gt; 0</code>) absorb 100% of the displacement shift. Post-separation, Velocities are updated via elastic collision formulas, conserving momentum across all participating masses,</p>
 <div class="arithmatex">\[
 v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 \]</div>
@@ -1202,8 +1200,8 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <ul>
 <li><strong>Property Level:</strong> The Player retains a normal, dynamic mass (e.g., <span class="arithmatex">\(m = 10\)</span>).</li>
 <li><strong>Phase 1 - Spatial Resolution:</strong><ul>
-<li><strong>Player vs. Wall (<span class="arithmatex">\(m=0\)</span>):</strong> <code>inv_total</code> is <span class="arithmatex">\(&gt; 0\)</span>. The Wall absorbs 0% of the overlap shift, and the Player absorbs 100%. The Player correctly halts at the wall boundary.</li>
-<li><strong>Player vs. Crate (<span class="arithmatex">\(m=5\)</span>):</strong> Both absorb the spatial shift proportional to their inverse mass. The Player effectively pushes the Crate out of the way.</li>
+<li><strong>Player vs. Wall (<span class="arithmatex">\(m=0\)</span>):</strong> <code>inv_total</code> is <span class="arithmatex">\(&gt; 0\)</span>. The Wall absorbs 0% of the overlap shift, and the Player absorbs 100%. The Player halts at the wall boundary.</li>
+<li><strong>Player vs. Crate (<span class="arithmatex">\(m=5\)</span>):</strong> Both absorb the spatial shift proportional to their inverse mass. The Player pushes the Crate out of the way.</li>
 </ul>
 </li>
 <li><strong>Phase 2 - Momentum Transfer:</strong> Bypass the 1D elastic collision calculation <em>only</em> for the Player.</li>
@@ -1214,18 +1212,22 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <li><code>player: PlayerMechanics</code>: Resolve Device input into Player (Intention, Goal)-state.</li>
 <li><code>cognition: CognitionMechanics</code>: Handles Sprite goal-seeking.</li>
 <li><code>transition: TransitionMechanics</code>: Applies the Intention Transition Matrix conditions to all Sprite Sheets.</li>
-<li><code>commerce: CommerceMechanics</code>: Translate Intentions (barter, attract, etc.) into trades and price movements.</li>
-<li><code>speech: SpeechMechanics</code>: TODO</li>
+<li><code>commerce: CommerceMechanics</code>: Translate Intentions (<code>barter</code>, <code>attract</code>, etc.) into trades and price movements.</li>
+<li><code>social: SpeechMechanics</code>: Handle <code>speak</code> Intentions and <a href="../08-plots/">Plot calculations</a>.</li>
 </ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>CognitionMechanics mutates Goals, TransitionMechanics mutates Intentions, and the Transition Matrix governs the mapping. This rule <strong>must</strong> be followed at all times.</p>
+</div>
 <p><strong>CognitionMechanics</strong></p>
-<p>CognitionMechanics acts as the Sprite's "Device." Its job is to update <code>sprite.state.goal.position</code> based on the Sprite's current <a href="../04-intentions/">Intention</a> and its Mutators. For example,</p>
+<p>CognitionMechanics acts as the Sprite's "Device." Its job is to manage the Sprite's Goal based on the Sprite's current <a href="../04-intentions/">Intention</a> and its Mutators. For example,</p>
 <ul>
 <li><code>wander</code>: If the Sprite has no Goal, CognitionMechanics generates a random coordinate within a certain radius and sets it as <code>goal.position</code>. Once reached, it generates a new one.</li>
 <li><code>find / follow / hunt</code>: The Sprite already has a <code>goal.name</code>. CognitionMechanics queries the Board for that target. If the target is within the Sprite's <code>vision.radius</code>, it updates <code>sprite.state.goal.position</code> to match the target's current coordinates. If the target steps out of the radius, <code>goal.position</code> stops updating, freezing at the last known location.</li>
-<li><code>escape</code>: CognitionMechanics finds the threat, calculates the vector away from the threat, and projects a goal.position in the opposite direction.</li>
+<li><code>escape</code>: CognitionMechanics finds the threat, calculates the vector away from the threat, and projects a Goal in the opposite direction.</li>
 </ul>
-<p>Once CognitionMechanics has updated the<code>goal.position</code>, it hands off the updated state to <a href="#core">MotionMechanics</a></p>
-<p>Since CognitionMechanics is intrinsically tied to Sprite Intentions, the cognition workflow is covered in more detail in the <a href="../04-intentions/#cognition">Intention documentation</a>.</p>
+<p>Once CognitionMechanics has updated the <code>goal</code>, it hands off the updated state to <a href="#core">MotionMechanics</a></p>
+<p>Since CognitionMechanics is intrinsically tied to Sprite Intentions and Goals, the cognition workflow is covered in more detail in the <a href="../04-intentions/#cognition">Intentions amd Goals documentation</a>.</p>
 <h2 id="configuration">Configuration</h2>
 <ul>
 <li>Location: <code>/src/data/config/mechanics/main.yaml</code></li>
