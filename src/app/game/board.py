@@ -234,6 +234,7 @@ class Board:
             return players[slot]
         return players[0]
 
+
     def tile(self, 
         layer: str, 
         position: Position, 
@@ -246,11 +247,13 @@ class Board:
         cy = int(position.y) // settings.TILE_HASH_SIZE
         return self._cached_tilemap.get(layer, {}).get(instance, {}).get((cx, cy))
 
+
     def character(self, name: str) -> Any:
         """
         O(1) retrieval of Sprite or Player state by name.
         """
         return self._cached_characters.get(name)
+
 
     def characters(self) -> Dict[str, Any]:
         """
@@ -258,12 +261,14 @@ class Board:
         """
         return self._cached_characters
 
+
     def asset(self, name: str, layer: str = None) -> Asset:
         """
         Retrieves a general Asset by its unique name. 
         """
         search_list = self.renderables(layer) if layer else self._assets
         return next((a for a in search_list if a.name == name), None)
+
     
     def assets(self, layer=None) -> List[Asset]:
         """
@@ -279,14 +284,21 @@ class Board:
         Returns a list of Assets that have mass. If `layer` is specified, list will be filtered by Layer.
         """
         if layer is None:
-            return [
-                asset 
-                for asset in self._assets 
-                if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0
-            ]
+            return [ asset for asset in self._assets  if asset.properties.mass >= 0 ]
         return self._cached_weights.get(layer, [])
 
 
+    def obstacles(self, layer=None) -> List[Asset]:
+        """
+        """
+        if layer is None:
+            return
+        
+        self._cached_instances[layer][AssetInstances.CRATES]
+        self._cached_instances[layer][AssetInstances.GATES]
+        return
+
+    
     def layers(self) -> List[str]:
         """
         Returns a list of Layers.
@@ -317,11 +329,7 @@ class Board:
         Returns a cached list of non-tile dynamic assets for rendering, saving frame iteration time.
         """
         if layer is None:
-            return [
-                asset 
-                for asset in self._assets 
-                if asset.category != AssetCategories.TILES.value
-            ]
+            return [ asset for asset in self._assets if asset.category != AssetCategories.TILES.value ]
         return self._cached_renderables.get(layer, [])
 
 
@@ -407,7 +415,7 @@ class Board:
         if new_layer not in self._cached_weights:
             self._cached_weights[new_layer] = []
             
-        if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0:
+        if asset.properties.mass >= 0:
             self._cached_weights[new_layer].append(asset)
 
 
@@ -431,15 +439,16 @@ class Board:
             
             if asset.category != AssetCategories.TILES.value:
                 self._cached_renderables[layer].append(asset)
-
-            if hasattr(asset.properties, 'mass') and asset.properties.mass >= 0:
-                self._cached_weights[layer].append(asset)
+                if asset.properties.mass >= 0:
+                    self._cached_weights[layer].append(asset)
                 
-            if asset.category == AssetCategories.SHEETS.value and asset.instance in (AssetInstances.SPRITES.value, AssetInstances.PLAYERS.value):
+            if asset.instance in (
+                AssetInstances.SPRITES.value, 
+                AssetInstances.PLAYERS.value
+            ):
                 if asset.name:
                     self._cached_characters[asset.name] = asset.state
 
-            # --- PATCH: Dynamically hash incoming Tiles into the environment cache ---
             if asset.category == AssetCategories.TILES.value:
                 w = asset.properties.dimensions.w
                 l = asset.properties.dimensions.l
@@ -449,11 +458,18 @@ class Board:
                 end_x = start_x + (asset.state.multiple.nx * w)
                 end_y = start_y + (asset.state.multiple.ny * l)
 
-                for cx in range(start_x // settings.TILE_HASH_SIZE, (end_x - 1) // settings.TILE_HASH_SIZE + 1):
-                    for cy in range(start_y // settings.TILE_HASH_SIZE, (end_y - 1) // settings.TILE_HASH_SIZE + 1):
+                for cx in range(
+                    start_x // settings.TILE_HASH_SIZE, 
+                    (end_x - 1) // settings.TILE_HASH_SIZE + 1
+                ):
+                    for cy in range(
+                        start_y // settings.TILE_HASH_SIZE, 
+                        (end_y - 1) // settings.TILE_HASH_SIZE + 1
+                    ):
                         if asset.instance not in self._cached_tilemap[layer]:
                             self._cached_tilemap[layer][asset.instance] = {}
                         self._cached_tilemap[layer][asset.instance][(cx, cy)] = asset
+
 
     def remove(self, removals: List[Asset]) -> None:
         """
@@ -490,9 +506,13 @@ class Board:
             if inst in self._all_instances and asset in self._all_instances[inst]:
                 self._all_instances[inst].remove(asset)
                 
-            if cat == AssetCategories.SHEETS.value and inst in (AssetInstances.SPRITES.value, AssetInstances.PLAYERS.value):
+            if inst in (
+                AssetInstances.SPRITES.value, 
+                AssetInstances.PLAYERS.value
+            ):
                 if asset.name and asset.name in self._cached_characters:
                     del self._cached_characters[asset.name]
+
 
     def serialize(self, slot: str) -> None:
         """

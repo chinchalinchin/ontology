@@ -128,6 +128,7 @@ class CognitionMechanics(Mechanic):
         """
         obstacles = []
         for asset in board.instances(AssetInstances.CRATES.value):
+
         # for asset in board.weights(layer):
             if asset.name in exclude:
                 continue
@@ -233,7 +234,7 @@ class CognitionMechanics(Mechanic):
             sprite.state.goal.position.y, 
             obstacles
         ):
-            logger.info(f"Line of sight blocked for {sprite.name}. Triggering RRT.")
+            logger.info(f"Line-of-sight blocked for {sprite.name}. Triggering RRT.")
             planner = Planner(
                 start=sprite.state.position,
                 target=sprite.state.goal.position,
@@ -245,6 +246,12 @@ class CognitionMechanics(Mechanic):
             if path:
                 self.path(sprite, path)
             else:
+                logger.info(
+                    f"{sprite.name} lost Goal(" 
+                    f"category={sprite.state.goal.category}, "
+                    f"name = {sprite.state.goal.name}, "
+                    f"layer = {sprite.state.goal.layer})"
+                )
                 sprite.state.goal = None
 
             return True
@@ -498,7 +505,7 @@ class CognitionMechanics(Mechanic):
                         f"{sprite.name} ideated Goal(" 
                         f"category={sprite.state.goal.category}, "
                         f"name = {sprite.state.goal.name}, "
-                        f"layer = {sprite.state.goal.layer}"
+                        f"layer = {sprite.state.goal.layer})"
                     )
                     return
 
@@ -647,15 +654,7 @@ class CognitionMechanics(Mechanic):
             # Target is visible: check LOS obscuration
             sprite.state.mutators.triggers.vision = True
 
-            if self._plan(sprite, board):
-                logger.info(
-                    f"{sprite.name} lost Goal(" 
-                    f"category={sprite.state.goal.category}, "
-                    f"name = {sprite.state.goal.name}, "
-                    f"layer = {sprite.state.goal.layer})"
-                )
-                goal = sprite.state.goal
-                return
+            if self._plan(sprite, board): return
 
             sprite.state.goal.position.x = target_state.position.x
             sprite.state.goal.position.y = target_state.position.y

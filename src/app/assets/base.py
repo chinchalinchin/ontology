@@ -24,6 +24,7 @@ from libs.core.models import (
     Position
 )
 
+
 @dataclass(slots=True)
 class Taxonomy:
     id: str
@@ -117,9 +118,7 @@ class Asset:
     @property
     def dimensions(self) -> Dimensions:
         """Unified spatial retrieval for rendering and camera culling."""
-        if hasattr(self.properties, 'dimensions'):
-            return self.properties.dimensions
-        return None
+        return self.properties.dimensions
 
     @property
     def hitboxes(self) -> List[Hitbox]:

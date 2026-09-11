@@ -6,7 +6,7 @@
 
 !!! note
     This is just a test example to explore the RRT algorithm. Actual implementation should be in Cython.
-    
+
 ```python
 import math
 import random
@@ -298,3 +298,67 @@ Add two specific LOS evaluations in `_track`:
 **Task 3: Handle Memory Scrubbing (`CognitionMechanics._resolve`)**
 
 - [!] If a Goal terminates prematurely (e.g., a `TARGET` dies while the Sprite is navigating a path toward them, or the Sprite gives up), `_resolve` sets `goal = None`. Add one line to strip any residual `path-*` strings from `memory.goals` to ensure ghost-paths don't corrupt the next Intention loop.
+
+##### Bug B009: Infinite Wander Loop via Subverted ISL Transitions
+
+**STATUS**: OPEN
+**SEVERITY**: HIGH
+
+**Description**
+
+The Sprite becomes permanently trapped in the `wander` Intention because `CognitionMechanics._project()` undermines `TransitionMechanics`. 
+
+In the game loop, `CognitionMechanics` executes before `TransitionMechanics`. When a Sprite reaches its wander destination, `_resolve()` correctly sets `goal = None`. However, at the end of the same tick, `_project()` evaluates `elif intention == Intentions.WANDER.value:` and immediately randomizes a *new* goal because `not sprite.state.goal` evaluates to True. 
+
+By the time `TransitionMechanics` evaluates the ISL condition for exiting `wander` (`not sprite.goal`), the goal has already been repopulated. The condition fails, and the Sprite loops in `wander` forever.
+
+**Steps to Replicate** 
+
+1. Allow a Sprite to enter the `wander` intention.
+2. Wait for the Sprite to reach its randomized `POSITION` goal.
+3. Observe the CLI logs: it clears the goal and immediately generates a new one in the same tick, bypassing the transition to `idle`.
+
+**Proposed Remediation**
+
+Remove the `WANDER` goal regeneration from `_project()`. Instead, shift the randomization logic into `_ideate()` during the `IDLE` intention, or simply allow `_project` to pass if the goal was just cleared, letting the engine naturally transition to `idle` on the next tick.
+
+**USER NOTES** 
+
+I am not sure I agree with your analysis. While I don't generally like the idea of `_project()` since it is distributing responsibility for Goal creation across the whole class, I am still not inclined to agree with you. Why would a Sprite that needs to stay in `wander` transition into idle? No, the generation of a new `wander` goal is not the issue. The issue is there is no transition from `wander` into `find`. The point of `wander` is to generate a search area when the sprite loses track of a goal. If the goal comes back into sight, it needs to transition into an intention where it can start tracking again. However, the problem here: The ISL Environ conjuncts currently lack the ability to form propositions about particular memories. It only allows categorical claims. The ISL conjuncts need to be able to say: the `cat` such that: `memory_exists(cat) and is_near(memory[indexof(cat)] .position, sprite position) and cat in [TARGET, SUBJECT, OBJECT]`. Obviously not that exact syntax as it needs to evaluate to a true/false, but the general idea is: if memory exists, and the location of the memory is near and the memory is a certain category, then transition from wander into find. 
+
+##### Bug B010: Cython LOS Raycast Trap at t=0 (Boundary Grazing)
+
+**STATUS**: OPEN
+**SEVERITY**: CRITICAL
+
+**Description**
+
+The `geometry.los` calculation (and specifically the Liang-Barsky `bisects` implementation) contains a fatal edge-case. If a Sprite grazes or touches the physical boundary of an obstacle (like the map perimeter), `bisects` will permanently evaluate to `True` (Intersection) for *every* raycast, regardless of direction.
+
+If a Sprite touches the `y=1` top perimeter, the ray's origin \(y_1\) equals the boundary. In `bisects`, \(q_3 = y_{max} - y_1 = 1 - 1 = 0\). This results in \(r = 0\). The algorithm updates \(u_1\) or \(u_2\) to $0$, satisfying the \(u_1 \le u_2\) intersection condition at \(t=0\). The Sprite is now permanently "blind" because the raycast origin is technically intersecting the obstacle. This triggers the RRT planner, which immediately fails for the exact same reason, returning an empty path, clearing the goal, and triggering an infinite loop of RRT failures.
+
+**Steps to Replicate** 
+
+1. Place a Sprite exactly adjacent to an obstacle or map perimeter.
+2. Assign the Sprite a goal moving away from the obstacle.
+3. `geometry.los` will return `False` (Blocked) despite the path being completely clear.
+
+**Proposed Remediation**
+
+In `libs/core/math/geometry.pyx`, add an epsilon padding or strict inequality check to ignore intersections at \(t=0\). If \(u_1 = 0\) or \(r = 0\), the ray originates on the boundary and should not be considered an occlusion unless the vector is directed *into* the obstacle.
+
+
+##### Bug B011: Out-of-Bounds Wander Goal Generation
+
+**STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+In `CognitionMechanics._project()`, the coordinates for `WANDER` are generated using a raw offset: `Position(sprite.state.position.x + offset_x, sprite.state.position.y + offset_y)`. 
+
+There is no clamping applied to ensure these coordinates stay within the Board dimensions. In the provided logs, the Sprite rapidly generates goals like `(344, -68)` and `(418, -51)`. Because these coordinates lie outside the `y=0` map perimeter, any LOS check cast to them will correctly intersect the perimeter and register as blocked, causing unnecessary RRT triggers and pathing failures.
+
+**Proposed Remediation**
+
+In `CognitionMechanics._project()`, clamp the randomized `offset_x` and `offset_y` coordinates against `board.size(sprite.state.layer)` to ensure wandering sprites do not attempt to path outside the physical boundaries of the map.

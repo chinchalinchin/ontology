@@ -36,7 +36,7 @@ def check_goals(goals: List[Goal], category=None) -> bool:
         return False
     if category:
         return any(g.category == category for g in goals.values())
-    return True
+    return False
 
 # -------------------------------------------------- ISL EXECUTION ENVIRONMENT
 
