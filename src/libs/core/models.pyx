@@ -98,5 +98,5 @@ cdef class Boundary:
             self.position.x,
             self.position.y,
             self.dimensions.w, 
-            self.dimension.l
+            self.dimensions.l
         )

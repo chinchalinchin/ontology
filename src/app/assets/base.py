@@ -7,6 +7,8 @@ Package for foundational Asset classes and interfaces.
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import (
+    Any,
+    Dict,
     List, 
     Tuple
 )
@@ -29,10 +31,12 @@ class Taxonomy:
     category: str
     instance: str
 
+
 class Frame(ABC):
     """
     Foundational interface for Assets.
     """
+
     @abstractmethod
     def keys(self, 
         id: str, 
@@ -45,11 +49,15 @@ class Frame(ABC):
         pass
 
     @abstractmethod
-    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, 
+        id: str, 
+        properties: Dict[str, Any]
+    ) -> Dict[str, Tuple[int, int, int, int]]:
         """
         Generates a mapping of all possible frame keys to their crop coordinates (sx, sy, w, l).
         """
         pass
+
 
 class Animation(ABC):
     """
@@ -65,6 +73,7 @@ class Animation(ABC):
         Abstract method for incrementing Asset's frame key. 
         """
         pass
+
 
 class Asset:
     """
@@ -115,11 +124,7 @@ class Asset:
     @property
     def hitboxes(self) -> List[Hitbox]:
         """Unified hitbox retrieval. Defaults to sprite bounding box if none explicitly defined."""
-        hbs = []
-        if hasattr(self.properties, 'hitboxes') and self.properties.hitboxes:
-            hbs = self.properties.hitboxes
-        elif hasattr(self.properties, 'personas') and self.properties.personas.get(self.taxonomy.id) and self.properties.personas[self.taxonomy.id].hitboxes:
-            hbs = self.properties.personas[self.taxonomy.id].hitboxes
+        hbs = self.properties.hitboxes
             
         # Automatically generate a default physics body matching the visual dimensions
         if not hbs and self.dimensions:
@@ -135,9 +140,11 @@ class Asset:
 
         Returns: (index, x, y, w, l, hitboxes)
         """
-        pos = getattr(self.state, 'position', None)
-        x = pos.x if pos else 0
-        y = pos.y if pos else 0
-        w = self.dimensions.w if self.dimensions else 0
-        l = self.dimensions.l if self.dimensions else 0
-        return (index, x, y, w, l, hitboxes if hitboxes is not None else self.hitboxes)
+        return (
+            index, 
+            self.state.position.x, 
+            self.state.position.y, 
+            self.dimensions.w, 
+            self.dimensions.l,
+            hitboxes if hitboxes is not None else self.hitboxes
+        )

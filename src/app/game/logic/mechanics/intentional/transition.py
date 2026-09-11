@@ -55,20 +55,25 @@ class TransitionMechanics(Mechanic):
                 if next_intent_str:
                     next_intent = Intentions(next_intent_str)
                     if next_intent != current_intent:
-                        logger.info(f"Transitioning {sprite.name} from {sprite.state.intention} to "
-                                    f"{next_intent}")
+                        logger.info(
+                            f"Transition({sprite.name}): "
+                            f"{sprite.state.intention.value} -> "
+                            f"{next_intent.value}"
+                        )
                         
                         sprite.state.intention = next_intent
 
             # 2. Resolve Action
             sprite.state.animation.action = AnimationMap.action(
-                sprite.state, board.equipment
+                sprite.state, 
+                board.equipment
             )
             
             # 3. Resolve Direction
             if sprite.state.goal:
                 sprite.state.animation.direction = AnimationMap.direction(
-                    sprite.state.position, sprite.state.goal.position
+                    sprite.state.position, 
+                    sprite.state.goal.position
                 )
 
             # 4. Update Animation Trigger

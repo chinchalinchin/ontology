@@ -136,6 +136,11 @@ intentions:
             sprite.goal.position, 
             sprite.mutators.parameters.action.radius
           )
+    - next: hunt
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET.value
+        - sprite.layer == sprite.goal.layer
     - next: wander
       conditions:
         - not sprite.goal

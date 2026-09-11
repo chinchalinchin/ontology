@@ -61,8 +61,8 @@ The general flow of MotionMechanics is given by,
 
 The mathematical bounds for Friction are $[0, \infty)$.
 
-* **Lower Bound ($0$):** A value of exactly $0$ yields $\Delta v = 0$, meaning the asset will glide indefinitely without losing momentum until it strikes a static body. A value $< 0$ violates thermodynamic priors; it would yield a negative $\Delta v$, causing the asset to accelerate infinitely opposite to its current trajectory.
-* **Upper Bound ($\infty$):** There is no programmatic upper bound. Any value satisfying the condition $\text{friction} \cdot \Delta t \ge \vert v \vert$ instantly halts the asset in a single frame.
+* **Lower Bound ($0$):** A value of exactly $0$ yields $\Delta v = 0$, meaning the asset will glide indefinitely without losing momentum until it strikes a static body. 
+* **Upper Bound ($\infty$):** There is no programmatic upper bound. Any value satisfying the condition $\text{friction} \cdot \Delta t \ge \vert v \vert$ will eventually halt the asset.
 
 The `friction` property defines the rate of linear velocity decay, measured in pixels per second squared ($px/s^2$).
 
@@ -70,26 +70,22 @@ The engine updates the velocity magnitude $v$ via Symplectic Euler Integration:
 
 $$v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)$$
 
-* **Low Friction (e.g., $0.01$):** The deceleration scalar is minute. The asset bleeds momentum extremely slowly, simulating a frictionless surface like ice.
-* **High Friction (e.g., $100.0$):** The asset sheds velocity rapidly and comes to rest in a short distance, simulating dense surfaces like mud or deep grass.
-
 **MenuMechanics**
 
-To keep MenuMechanics clean, the Engine uses the **Strategy Pattern** and delegates to MenuController classes. 
+!!! note
+    In the event of multiple Menus (e.g. a dialogue modal over a trade menu), MenuMechanics is constrained to interact with the top of the Menu stack (`board.menus[-1]`).
 
-MenuMechanics is responsible for *Universal Menu Physics* (e.g. traversal, opening, closing). The MenuController is responsible for *Bespoke Menu Logic* (e.g. equipping, buying, selling).`MenuMechanics only ever interacts with `board.menus[-1]` (the top of the stack).
-
-With the controllers handling the semantic meaning of button presses, MenuMechanics becomes a simple router. Its `update()` loop looks like this:
+MenuMechanics delegates to logic to MenuController classes. MenuMechanics is responsible for general Menu logic (e.g. traversal, opening, closing). The MenuController is responsible for particular Menu logic (e.g. equipping, buying, selling). The general workflow of MenuMechanics is given below,
 
 1. **Check Stack:** If `len(board.menus) == 0`, exit early.
-2. **Get Top Menu:** `active_menu = board.menus[-1]`
+2. **Get Top Menu:** `menu = board.menus[-1]`
 3. **Poll Input:**
     * If `NORTH/SOUTH/WEST/EAST`: Look at `menu.state.focus`. Look up the key in `active_menu.state.graph`. If a neighbor exists, change `focus` and update the `TraversalAnimation` status of the respective Button Assets.
-    * If `SELECT`: Call `active_menu.controller.select(menu.state.focus, menu, board)`.
+    * If `SELECT`: Call `amenu.controller.select(menu.state.focus, menu, board)`.
     * If `CANCEL`: Pop the menu off the stack. (Unpause the board if the stack is now empty).
-4. **Tick:** Call `active_menu.controller.update()` so continuous menus (like the HUD) can update their meters.
+4. **Tick:** Call `menu.controller.update()` so continuous menus (like the View) can update their meters.
 
-AnimationMechanics strictly governs "World Time". MenuMechanics governs "Menu Time". The `animate()` interface for Widgets is called inside `MenuMechanics.update()`, iterating over `board.overlays` (always) and `board.menus[-1]` (if active).
+AnimationMechanics strictly governs "World Time". MenuMechanics governs "Menu Time". The `animate()` interface for Widgets is called inside MenuMechanics, iterating over `board.overlays` (always) and `board.menus[-1]` (if active).
 
 ### Spatial
 
@@ -119,7 +115,7 @@ These Mechanics handle spatial interactions and collisions between Assets.
 
 **CollisionMechanics**
 
-When Assets collide, overlap resolution uses inverse mass ratios to correct spatial positioning, ensuring immutable Assets with no Mass (`m = 0`) remain completely immobile while dynamic Assets with Mass (`m > 0`) absorb 100% of the displacement shift. Post-separation, Velocities are updated via 1D elastic collision formulas, conserving momentum cleanly across all participating masses,
+When Assets collide, overlap resolution uses inverse mass ratios to correct spatial positioning, ensuring immutable Assets with no Mass (`m = 0`) remain completely immobile while dynamic Assets with Mass (`m > 0`) absorb 100% of the displacement shift. Post-separation, Velocities are updated via elastic collision formulas, conserving momentum across all participating masses,
 
 $$
 v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
@@ -129,8 +125,8 @@ The [Player](./02-sprites.md#player) does not observe momentum transfers. Instea
 
 * **Property Level:** The Player retains a normal, dynamic mass (e.g., $m = 10$).
 * **Phase 1 - Spatial Resolution:**
-    * **Player vs. Wall ($m=0$):** `inv_total` is $> 0$. The Wall absorbs 0% of the overlap shift, and the Player absorbs 100%. The Player correctly halts at the wall boundary.
-    * **Player vs. Crate ($m=5$):** Both absorb the spatial shift proportional to their inverse mass. The Player effectively pushes the Crate out of the way.
+    * **Player vs. Wall ($m=0$):** `inv_total` is $> 0$. The Wall absorbs 0% of the overlap shift, and the Player absorbs 100%. The Player halts at the wall boundary.
+    * **Player vs. Crate ($m=5$):** Both absorb the spatial shift proportional to their inverse mass. The Player pushes the Crate out of the way.
 * **Phase 2 - Momentum Transfer:** Bypass the 1D elastic collision calculation *only* for the Player.
 
 ### Intentional
@@ -140,20 +136,23 @@ These Mechanics handle the Sprite Intention logic.
 - `player: PlayerMechanics`: Resolve Device input into Player (Intention, Goal)-state.
 - `cognition: CognitionMechanics`: Handles Sprite goal-seeking.
 - `transition: TransitionMechanics`: Applies the Intention Transition Matrix conditions to all Sprite Sheets.
-- `commerce: CommerceMechanics`: Translate Intentions (barter, attract, etc.) into trades and price movements.
-- `speech: SpeechMechanics`: TODO
+- `commerce: CommerceMechanics`: Translate Intentions (`barter`, `attract`, etc.) into trades and price movements.
+- `social: SpeechMechanics`: Handle `speak` Intentions and [Plot calculations](./08-plots.md).
+
+!!! important
+    CognitionMechanics mutates Goals, TransitionMechanics mutates Intentions, and the Transition Matrix governs the mapping. This rule **must** be followed at all times.
 
 **CognitionMechanics**
 
-CognitionMechanics acts as the Sprite's "Device." Its job is to update `sprite.state.goal.position` based on the Sprite's current [Intention](./04-intentions.md) and its Mutators. For example,
+CognitionMechanics acts as the Sprite's "Device." Its job is to manage the Sprite's Goal based on the Sprite's current [Intention](./04-intentions.md) and its Mutators. For example,
 
 - `wander`: If the Sprite has no Goal, CognitionMechanics generates a random coordinate within a certain radius and sets it as `goal.position`. Once reached, it generates a new one.
 - `find / follow / hunt`: The Sprite already has a `goal.name`. CognitionMechanics queries the Board for that target. If the target is within the Sprite's `vision.radius`, it updates `sprite.state.goal.position` to match the target's current coordinates. If the target steps out of the radius, `goal.position` stops updating, freezing at the last known location.
-- `escape`: CognitionMechanics finds the threat, calculates the vector away from the threat, and projects a goal.position in the opposite direction.
+- `escape`: CognitionMechanics finds the threat, calculates the vector away from the threat, and projects a Goal in the opposite direction.
 
-Once CognitionMechanics has updated the` goal.position`, it hands off the updated state to [MotionMechanics](#core)
+Once CognitionMechanics has updated the `goal`, it hands off the updated state to [MotionMechanics](#core)
 
-Since CognitionMechanics is intrinsically tied to Sprite Intentions, the cognition workflow is covered in more detail in the [Intention documentation](./04-intentions.md#cognition).
+Since CognitionMechanics is intrinsically tied to Sprite Intentions and Goals, the cognition workflow is covered in more detail in the [Intentions amd Goals documentation](./04-intentions.md#cognition).
 
 ## Configuration
 

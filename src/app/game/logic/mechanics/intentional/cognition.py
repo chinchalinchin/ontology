@@ -45,12 +45,24 @@ class CognitionMechanics(Mechanic):
     The central Mechanic for managing the lifecycle of Sprite Goals. Acts as the sensory input for Sprites, handling target acquisition, vision radiuses, and goal coordinate updates. 
     """
 
+
     @staticmethod
     def nearby(p1: Position, p2: Position, radius: int) -> bool:
+        """
+        ### nearby(p1: Position, p2: Position, radius: int)
+
+        Quick Euclidean check if two points are within radius of one another.
+        """
         return geometry.nearby(p1.x, p1.y, p2.x, p2.y, radius)
+
     
     @staticmethod
     def complete(sprite: Asset, board: Board) -> bool:
+        """
+        ### complete(sprite: Asset, board: Board)
+
+        Determines if a Sprite's goal is resolved without mutating state.
+        """
         goal = sprite.state.goal
 
         if not goal:
@@ -76,6 +88,97 @@ class CognitionMechanics(Mechanic):
         elif goal.category == Goals.PROPERTY.value:
             # TODO:
             pass
+
+
+    @staticmethod
+    def door(sprite: Asset, board: Board) -> Asset:
+        """
+        """
+        # 1. Search for a mapped door leading to target layer
+        vision_radius = sprite.state.mutators.parameters.vision.radius
+        target_door = None
+        for door_name, outlayer in sprite.state.memory.doors.items():
+            if outlayer == sprite.state.goal.layer:
+                target_door = board.asset(door_name, sprite.state.layer)
+                if target_door:
+                    break
+                        
+        # 2. Explore unmapped doors if no mapped path exists
+        if not target_door:
+
+            target_door = next((
+                d for d in board.instances(AssetInstances.DOORS.value, sprite.state.layer) 
+                if d.name not in sprite.state.memory.doors 
+                and CognitionMechanics.nearby(
+                    d.state.position, 
+                    sprite.state.position,
+                    vision_radius
+                )
+            ), None)
+
+        return target_door
+
+    
+    @staticmethod
+    def obstacles(layer: str, board: Board, exclude: list) -> list:
+        """
+        ### obstacles(layer: str, board: Board, exclude: list)
+        
+        Transforms board weights and perimeters into flat C-primitive tuples.
+        """
+        obstacles = []
+        for asset in board.instances(AssetInstances.CRATES.value):
+        # for asset in board.weights(layer):
+            if asset.name in exclude:
+                continue
+            obstacles.append((
+                asset.state.position.x,
+                asset.state.position.y,
+                asset.dimensions.w,
+                asset.dimensions.l
+            ))
+
+        for bound in board.perimeters.get(layer, []):
+            obstacles.append((
+                bound.position.x,
+                bound.position.y,
+                bound.dimensions.w,
+                bound.dimensions.l
+            ))
+
+        return obstacles
+
+
+    @staticmethod
+    def path(sprite: Asset, segments: list) -> None:
+        """
+        ### path(sprite: Asset, segments: list)
+
+        Converts an RRT geometric path into intentional POSITION goals (FIFO).
+        """        
+        # 1. Clear existing waypoints in memory
+        sprite.state.memory.goals = {
+            k: v for k, v in sprite.state.memory.goals.items() 
+            if not str(k).startswith(settings.RRT_PATH_PREFIX)
+        }
+        
+        # 2. Inject new waypoints sequentially (dicts preserve insertion order)
+        for i, wp in enumerate(segments):
+            name = settings.SEPARATOR.join([
+                settings.RRT_PATH_PREFIX, 
+                str(i)
+            ])
+            sprite.state.memory.goals[name] = Goal(
+                name=name,
+                category=Goals.POSITION.value,
+                layer=sprite.state.layer,
+                position=Position(x=wp.x, y=wp.y)
+            )
+            
+        sprite.state.memory.goals[sprite.state.goal.name] = sprite.state.goal
+
+        sprite.state.goal = None
+
 
     def update(self, 
         board: Board, 
@@ -111,51 +214,15 @@ class CognitionMechanics(Mechanic):
             self._project(sprite, board)
 
 
-    def _obstacles(self, layer: str, board: Board, exclude: list) -> list:
-        """Transforms board weights and perimeters into flat C-primitive tuples."""
-        obstacles = []
-        for asset in board.weights(layer):
-            if asset.name in exclude:
-                continue
-            obstacles.append(asset.primitive())
+    def _plan(self, sprite: Asset, board: Board) -> bool:
+        """
 
-        for bound in board.perimeters.get(layer, []):
-            obstacles.append(bound.primitve())
-
-        return obstacles
-
-
-    def _path(self, sprite: Asset, segments: list, final_goal: Goal) -> None:
-        """Converts an RRT geometric path into intentional POSITION goals (FIFO)."""        
-        # 1. Clear existing waypoints in memory
-        sprite.state.memory.goals = {
-            k: v for k, v in sprite.state.memory.goals.items() 
-            if not str(k).startswith(settings.RRT_PATH_PREFIX)
-        }
-        
-        # 2. Inject new waypoints sequentially (dicts preserve insertion order)
-        for i, wp in enumerate(segments):
-            name = settings.SEPARATOR.join([
-                settings.RRT_PATH_PREFIX, 
-                str(i)
-            ])
-            sprite.state.memory.goals[name] = Goal(
-                name=name,
-                category=Goals.POSITION.value,
-                layer=sprite.state.layer,
-                position=Position(x=wp.x, y=wp.y)
-            )
-            
-        sprite.state.memory.goals[sprite.state.goal.name] = sprite.state.goal
-
-        sprite.state.goal = None
-
-
-    def _plan(self, sprite: Asset, board: Board):
-        obstacles = self._obstacles(
+        Returns true is plan or goal was altered.
+        """
+        obstacles = self.obstacles(
             sprite.state.layer, 
             board, 
-            exclude=[sprite.name]
+            exclude=[ sprite.name ]
         )
                 
         # Check LOS and trigger planner if occluded
@@ -163,10 +230,10 @@ class CognitionMechanics(Mechanic):
             sprite.state.position.x, 
             sprite.state.position.y, 
             sprite.state.goal.position.x, 
-            sprite.goal.position.y, 
+            sprite.state.goal.position.y, 
             obstacles
         ):
-            logger.info(f"LOS blocked for {sprite.name}. Triggering RRT.")
+            logger.info(f"Line of sight blocked for {sprite.name}. Triggering RRT.")
             planner = Planner(
                 start=sprite.state.position,
                 target=sprite.state.goal.position,
@@ -176,9 +243,34 @@ class CognitionMechanics(Mechanic):
             )
             path = planner.plan()
             if path:
-                self._path(sprite, path)
+                self.path(sprite, path)
             else:
                 sprite.state.goal = None
+
+            return True
+        return False
+
+
+    def _scrap(self, sprite: Asset, board: Board) -> None: 
+        obstacles = self.obstacles(
+            sprite.state.layer, 
+            board, 
+            exclude=[sprite.name]
+        )
+        if not geometry.los(
+            sprite.state.position.x, 
+            sprite.state.position.y, 
+            sprite.state.goal.position.x, 
+            sprite.state.goal.position.y, 
+            obstacles
+        ):
+            logger.info(f"Path invalidated for {sprite.name}.")
+            sprite.state.memory.goals = {
+                k: v for k, v in sprite.state.memory.goals.items() 
+                if not str(k).startswith(settings.RRT_PATH_PREFIX)
+            }
+            sprite.state.goal = None
+            return
 
 
     def _resolve(self, sprite: Asset, board: Board) -> None:
@@ -320,7 +412,7 @@ class CognitionMechanics(Mechanic):
                 f"{sprite.name} remembered Goal(" 
                 f"category={sprite.state.goal.category}, "
                 f"name = {sprite.state.goal.name}, "
-                f"layer = {sprite.state.goal.layer}"
+                f"layer = {sprite.state.goal.layer})"
             )
 
 
@@ -363,6 +455,10 @@ class CognitionMechanics(Mechanic):
         
         # Prevent endless targeting and memory leaks if we already have a dialogue goal
         if sprite.state.goal and sprite.state.goal.category == Goals.SUBJECT.value:
+            return
+
+        # Prevent ideation along Sprite path finding points
+        if sprite.state.goal and str(sprite.state.goal.name).startswith(settings.RRT_PATH_PREFIX):
             return
 
         if sprite.state.mutators.parameters is None:
@@ -460,7 +556,7 @@ class CognitionMechanics(Mechanic):
             pass
 
 
-    def _track(self, sprite, board: Board) -> None:
+    def _track(self, sprite: Asset, board: Board) -> None:
         """
         ### _track(sprite: Asset, board: Board)
 
@@ -474,75 +570,70 @@ class CognitionMechanics(Mechanic):
         vision_radius = sprite.state.mutators.parameters.vision.radius
         target_state = None
 
+        prefix = settings.RRT_PATH_PREFIX
+        is_path = goal.name and goal.name.startswith(prefix)
+
+        if is_path:
+            self._scrap(sprite, board)
+
         # ------------------------------------------------------------------------ 
         if goal.category in [
             Goals.TARGET.value,
             Goals.SUBJECT.value
         ]:
             target_state = board.character(goal.name)
-
             if target_state:
                 goal.layer = target_state.layer
 
         # ------------------------------------------------------------------------ 
-        elif goal.category == Goals.OBJECT.value:
-            # TODO
-            pass
-        # ------------------------------------------------------------------------ 
-        elif goal.category == Goals.POSITION.value:
+        elif goal.category in [
+            Goals.POSITION.value,
+            Goals.OBJECT.value, 
+            Goals.PROPERTY.value
+
+        ]:
             sprite.state.mutators.triggers.vision = True
+            self._plan(sprite, board)
+            goal = sprite.state.goal
             return
-        # ------------------------------------------------------------------------ 
-        elif goal.category == Goals.PROPERTY.value:
-            # TODO
-            pass
 
         # ------------------------------------------------------------------------ 
         # CROSS-LAYER GOAL MANAGEMENT
         # ------------------------------------------------------------------------ 
-        if goal.layer and goal.layer != sprite.state.layer: 
-            # 1. Search for a mapped door leading to target layer
-            target_door = None
-            for door_name, outlayer in sprite.state.memory.doors.items():
-                if outlayer == goal.layer:
-                    target_door = board.asset(door_name, sprite.state.layer)
-                    if target_door:
-                        break
+        if goal and goal.layer and goal.layer != sprite.state.layer: 
+            # Search for a mapped door leading to target layer
+            target_door = self.door(sprite, board)
                         
-            # 2. Explore unmapped doors if no mapped path exists
-            if not target_door:
-                # FIX: Use a generator expression with a default None fallback 
-                # to prevent TypeError and StopIteration crashes.
-                target_door = next((
-                    d for d in board.instances(AssetInstances.DOORS.value, sprite.state.layer) 
-                    if d.name not in sprite.state.memory.doors 
-                    and self.nearby(
-                        d.state.position, 
-                        sprite.state.position,
-                        vision_radius
-                    )
-                ), None)
-                        
-            # 3. Subsumption Logic
+            # Subsumption Logic
             sprite.state.memory.goals[goal.name] = goal
 
             if target_door:
                 # Path found. Inject prerequisite OBJECT goal.
-                sprite.state.goal = Goal(
-                    name=target_door.name,
-                    category=Goals.OBJECT.value,
-                    layer=sprite.state.layer,
-                    position=Position(x=target_door.state.position.x, y=target_door.state.position.y)
+                sprite.state.goal   = Goal(
+                    name            = target_door.name,
+                    category        = Goals.OBJECT.value,
+                    layer           = sprite.state.layer,
+                    position        = Position(
+                        x           = target_door.state.position.x, 
+                        y           = target_door.state.position.y
+                    )
                 )
                 logger.info(
                     f"{sprite.name} tracked Goal(" 
                     f"category={sprite.state.goal.category}, "
                     f"name = {sprite.state.goal.name}, "
-                    f"layer = {sprite.state.goal.layer}"
+                    f"layer = {sprite.state.goal.layer})"
                 )
             else:
+                logger.info(
+                    f"{sprite.name} lost Goal(" 
+                    f"category={sprite.state.goal.category}, "
+                    f"name = {sprite.state.goal.name}, "
+                    f"layer = {sprite.state.goal.layer})"
+                )
                 # Unattainable. Clear the goal to force a transition to `wander`.
                 sprite.state.goal = None
+
             return
         
         # ------------------------------------------------------------------------ 
@@ -553,13 +644,26 @@ class CognitionMechanics(Mechanic):
             sprite.state.position, 
             vision_radius
         ):
-            # Target is visible: update coordinates to track movement
+            # Target is visible: check LOS obscuration
             sprite.state.mutators.triggers.vision = True
+
+            if self._plan(sprite, board):
+                logger.info(
+                    f"{sprite.name} lost Goal(" 
+                    f"category={sprite.state.goal.category}, "
+                    f"name = {sprite.state.goal.name}, "
+                    f"layer = {sprite.state.goal.layer})"
+                )
+                goal = sprite.state.goal
+                return
+
             sprite.state.goal.position.x = target_state.position.x
             sprite.state.goal.position.y = target_state.position.y
-        else:
+
+        elif target_state:
             # Target lost: freeze coordinates at last known position
             sprite.state.mutators.triggers.vision = False
+
 
     def _project(self, sprite, board: Board) -> None:
         """
@@ -582,17 +686,25 @@ class CognitionMechanics(Mechanic):
         elif intention == Intentions.WANDER.value:
             # If generatrate a randomized goal
             
-            if not sprite.state.goal or self.complete(sprite, board):
+            path_pending = any(
+                str(k).startswith(settings.RRT_PATH_PREFIX) 
+                for k in sprite.state.memory.goals.keys()
+            )
+
+            if not path_pending and (not sprite.state.goal or self.complete(sprite, board)):
                 offset_x = random.randint(-vision_radius, vision_radius)
                 offset_y = random.randint(-vision_radius, vision_radius)
                 sprite.state.goal = Goal(
                     # TODO: generate name somehow
-                    name="wander_point",
+                    name="wander",
                     category=Goals.POSITION.value,
                     layer=sprite.state.layer, # Inject strict layer tracking
                     position=Position(sprite.state.position.x + offset_x, sprite.state.position.y + offset_y)
                 )
                 logger.info(
-                    f"{sprite.name} generated random Goal at "
+                    f"{sprite.name} randomized Goal("
+                    f"category={sprite.state.goal.category}, "
+                    f"name={sprite.state.goal.name}, "
+                    f"layer={sprite.state.goal.layer})@"
                     f"({sprite.state.goal.position.x}, {sprite.state.goal.position.y})"
                 )

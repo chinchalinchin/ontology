@@ -4,6 +4,9 @@
 
 **Toy Implementation of RRT (Pure Python, No Cython)**
 
+!!! note
+    This is just a test example to explore the RRT algorithm. Actual implementation should be in Cython.
+    
 ```python
 import math
 import random
@@ -219,7 +222,7 @@ def plan(start: Position, target: Position, board: Board) -> List[Position]:
 
 ```
 
-##### Tasks
+##### Tasks: Part I
 
 **1. Task: Cython Geometry Primitives**
 
@@ -241,13 +244,57 @@ def plan(start: Position, target: Position, board: Board) -> List[Position]:
 
 *Objective*: Integrate LOS and RRT into the Sprite's sensory loop.
 
-* [ ] Subtask: In `CognitionMechanics._track()`, use the Cython `los` primitive to check if the direct vector to the `TARGET`, `SUBJECT` or `OBJECT` is blocked.
-* [ ] Subtask: If `los` returns `False`, trigger `Planner.plan()`.
+* [!] Subtask: In `CognitionMechanics._track()`, use the Cython `los` primitive to check if the direct vector to the `TARGET`, `SUBJECT` or `OBJECT` is blocked.
+* [!] Subtask: If `los` returns `False`, trigger `Planner.plan()`.
 * [x] Subtask: Implement the `_path()` function to convert the path into `POSITION` goals, push them to `memory.goals`, push the original goal last, and clear the active `sprite.state.goal`. (This allows `_remember()` to naturally pop the first waypoint on the next tick).
 
 **4. Task: Path Invalidation & Recalculation**
 
 *Objective*: Handle dynamic environment changes during path traversal.
 
-* [ ] Subtask: In `_track()`, if the Sprite is currently tracking a `path-` goal, run a quick `los` check to that specific waypoint coordinate. If a dynamic weight (like a pushed Crate) has moved into the path, dump the `path-` goals from memory and recalculate.
+* [!] Subtask: In `_track()`, if the Sprite is currently tracking a `path-` goal, run a quick `los` check to that specific waypoint coordinate. If a dynamic weight (like a pushed Crate) has moved into the path, dump the `path-` goals from memory and recalculate.
 * [!] Subtask: When `TransitionMechanics` shifts a Sprite into `ESCAPE` or `WANDER`, explicitly clear any lingering `path-` goals from `memory.goals` so they don't corrupt the new Intention loop.
+
+##### Interlude: The Pathfinding Loop
+
+To get RRT working without breaking the finite state automaton, we must rely on the existing loop. Here is how the engine will natively handle RRT pathing by chaining `CognitionMechanics` and `TransitionMechanics` together:
+
+1. **Acquisition:** A Sprite is in `hunt` or `find`, tracking its `TARGET` / `SUBJECT`.
+2. **Obstruction:** `CognitionMechanics._track` runs `geometry.los` and detects a blockage. It triggers `_plan`, pushes the `POSITION` waypoints to `memory.goals`, pushes the original goal last, and sets `current goal = None`.
+3. **Standby:** `TransitionMechanics` evaluates the `hunt` ISL. It sees `not sprite.goal` and shifts the Intention to `idle`.
+4. **Recall:** On the next tick, `CognitionMechanics._remember` fires (because `intention == IDLE`) and pops `path-0` (a `POSITION` goal) into the active goal.
+5. **Traversal:** `TransitionMechanics` evaluates the `idle` ISL. It sees `goal.category == POSITION` and shifts Intention to `wander`. `MotionMechanics` pushes the Sprite to the waypoint.
+6. **Resolution:** The Sprite reaches the waypoint. `CognitionMechanics._resolve` sets `goal = None`. `TransitionMechanics` shifts `wander` back to `idle`.
+7. **Resumption:** The loop repeats until all waypoints are exhausted and the original `TARGET` is popped in `idle`.
+
+**The Flaw in the Current Matrix:**
+
+The loop is perfect, except for the very last step. When the final `TARGET` goal is popped from memory into the active goal during `idle`, the ISL Matrix currently has **no transition** from `idle` to `hunt`. The Sprite will pop its target and freeze in `idle` indefinitely.
+
+##### Tasks: Part II
+
+**Task 1: Update the Intention Matrix (`src/data/config/intentions/main.yaml`)**
+
+- [x] Add the missing transition rule so the Sprite resumes hunting once the path is consumed and the `TARGET` pops out of memory.
+
+```yaml
+  idle:
+    # ... existing transitions ...
+    - next: hunt
+      conditions:
+        - sprite.goal
+        - sprite.goal.category == constants.Goals.TARGET.value
+        - sprite.layer == sprite.goal.layer
+
+```
+
+**Task 2: Implement Planning & Invalidation (`CognitionMechanics._track`)**
+
+Add two specific LOS evaluations in `_track`:
+
+1. [x] **Triggering:** If `goal.category` is an entity (`TARGET`, `SUBJECT`, `OBJECT`), check LOS. If blocked, call `self._plan` (which sets `goal = None`).
+2. [x] **Invalidation:** If `goal` is an active waypoint (`name.startswith(RRT_PATH_PREFIX)`), check LOS to the waypoint. If a dynamic asset (like a pushed Crate) obstructs it, clear `path-*` from memory and set `goal = None`. The engine will naturally loop to `idle`, pop the original goal, and replan.
+
+**Task 3: Handle Memory Scrubbing (`CognitionMechanics._resolve`)**
+
+- [!] If a Goal terminates prematurely (e.g., a `TARGET` dies while the Sprite is navigating a path toward them, or the Sprite gives up), `_resolve` sets `goal = None`. Add one line to strip any residual `path-*` strings from `memory.goals` to ensure ghost-paths don't corrupt the next Intention loop.
