@@ -10,7 +10,7 @@ intentions:
       conditions: 
         - not sprite.goal
         - sprite.memory.goals 
-        - functions.check_goals(
+        - functions.any_goals(
             sprite.memory.goals, 
             constants.Goals.TARGET.value
           )
@@ -217,13 +217,29 @@ intentions:
         - not functions.is_near(
             sprite.position, 
             sprite.goal.position, 
-            sprite.mutators.parameters.vision.radius
+            sprite.mutators.parameters.action.radius
           )
     - next: idle
       conditions:
         - not sprite.goal
   # ----------------------------------------------------------------------------------
   wander:
+    - next: hunt
+      conditions:
+        - sprite.goal
+        - functions.any_memories_visible(
+            sprite,
+            sprites,
+            [ constants.Goals.TARGET.value ], 
+          )
+    - next: find
+      conditions:
+        - sprite.goal
+        - functions.any_memories_visible(
+            sprite,
+            sprites,
+            [ constants.Goals.SUBJECT.value ], 
+          )
     - next: idle
       conditions:
         - sprite.goal

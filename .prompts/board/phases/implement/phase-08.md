@@ -219,7 +219,6 @@ def plan(start: Position, target: Position, board: Board) -> List[Position]:
     # 2. Iterate RRT sampling.
     # 3. For collision checks, use Cython line-segment math against board.weights() and board.perimeters.
     # 4. Return List[Position] coordinates.
-
 ```
 
 ##### Tasks: Part I
@@ -322,43 +321,160 @@ By the time `TransitionMechanics` evaluates the ISL condition for exiting `wande
 
 Remove the `WANDER` goal regeneration from `_project()`. Instead, shift the randomization logic into `_ideate()` during the `IDLE` intention, or simply allow `_project` to pass if the goal was just cleared, letting the engine naturally transition to `idle` on the next tick.
 
-**USER NOTES** 
+**Notes** 
 
-I am not sure I agree with your analysis. While I don't generally like the idea of `_project()` since it is distributing responsibility for Goal creation across the whole class, I am still not inclined to agree with you. Why would a Sprite that needs to stay in `wander` transition into idle? No, the generation of a new `wander` goal is not the issue. The issue is there is no transition from `wander` into `find`. The point of `wander` is to generate a search area when the sprite loses track of a goal. If the goal comes back into sight, it needs to transition into an intention where it can start tracking again. However, the problem here: The ISL Environ conjuncts currently lack the ability to form propositions about particular memories. It only allows categorical claims. The ISL conjuncts need to be able to say: the `cat` such that: `memory_exists(cat) and is_near(memory[indexof(cat)] .position, sprite position) and cat in [TARGET, SUBJECT, OBJECT]`. Obviously not that exact syntax as it needs to evaluate to a true/false, but the general idea is: if memory exists, and the location of the memory is near and the memory is a certain category, then transition from wander into find. 
+Not sure I agree with your analysis. While I don't generally like the idea of `_project()` since it is distributing responsibility for Goal creation across the whole class, I am still not inclined to agree with you. Why would a Sprite that needs to stay in `wander` transition into idle? No, the generation of a new `wander` goal is not the issue. The issue is there is no transition from `wander` into `find`. The point of `wander` is to generate a search area when the sprite loses track of a goal. If the goal comes back into sight, it needs to transition into an intention where it can start tracking again. However, the problem here: The ISL Environ conjuncts currently lack the ability to form propositions about particular memories. It only allows categorical claims. The ISL conjuncts need to be able to say: the `cat` such that: `memory_exists(cat) and is_near(memory[indexof(cat)] .position, sprite position) and cat in [TARGET, SUBJECT, OBJECT]`. Obviously not that exact syntax as it needs to evaluate to a true/false, but the general idea is: if memory exists, and the location of the memory is near and the memory is a certain category, then transition from wander into find. 
 
-##### Bug B010: Cython LOS Raycast Trap at t=0 (Boundary Grazing)
+**Additional Anaylsis**
+
+The initial remediation incorrectly treated `wander` as an ephemeral state that should immediately yield back to `idle`. As noted in your design requirements, `wander` functions as an active, exploratory search loop: when a Sprite loses track of an entity, it should continue generating search waypoints.
+
+The architectural problem stems from two system gaps:
+
+1. **ISL Relational Limitation**: The ISL environment only supports coarse existential checks on memory (e.g., `check_goals(sprite.memory.goals, category)`), lacking the relational capability to evaluate whether a remembered entity's position is within perceptual proximity.
+2. **Missing Outbound Transitions in `wander**`: In `src/data/config/intentions/main.yaml`, `wander` only defines exits back to `idle`. There are no transition rules allowing `wander` to shift directly to `find` or `hunt` when a target re-enters perceptual range.
+3. **Goal Reacquisition Contract**: When `TransitionMechanics` changes the intention from `wander` to `find` or `hunt`, the active `goal` is still the synthetic `wander` waypoint. In accordance with the engine contract (*CognitionMechanics mutates Goals, TransitionMechanics mutates Intentions*), `CognitionMechanics` must detect the transition out of `wander` and pop the matching goal from `memory.goals`.
+
+#### Tasks: Part III
+
+**Overview** 
+
+Implements relational ISL predicates for remembered entity proximity, adds direct transitions from `wander` to `find`/`hunt`, and wires Goal reacquisition in `CognitionMechanics`.
+
+##### Goal: Relational ISL Memory Predicates
+
+Provide ISL runtime with the capacity to assert whether a remembered entity of a given category is currently near the Sprite's position.
+
+##### Goal: Wander Transition Extensions
+
+Add direct ISL transitions from `wander` to `find` (for `SUBJECT` and `OBJECT` memories) and `hunt` (for `TARGET` memories).
+
+##### Goal: Memory Goal Reacquisition
+
+Ensure `CognitionMechanics` reconciles active goals when an entity transitions from exploratory `wander` to targeted navigation.
+
+##### Tasks
+
+**1. Task: Implement `any_memories_visible` in ISL Environ**
+
+*Objective*: Add a spatial memory query function to `app/services/translators/environ.py`.
+
+- [x] Subtask: Implement `any_memories_visible(sprite, sprites, categories)` in `environ.py`. If the remembered entity is present in `sprites`, validate layer matching and evaluate Euclidean distance against the current character coordinate; otherwise fall back to `goal.position`.
+- [x] Subtask: Expose `any_memories_visible` in `Environ.functions`.
+
+**2. Task: Extend Wander Intention Matrix**
+
+*Objective*: Configure outbound transitions in `src/data/config/intentions/main.yaml`.
+
+- [x] Subtask: Add `wander -> hunt` transition conditioned on `functions.any_memories_visible(sprite, sprites, [ constants.Goals.TARGET.value ])`.
+- [x] Subtask: Add `wander -> find` transition conditioned on `functions.any_memories_visible(sprite, sprites, [ constants.Goals.SUBJECT.value, constants.Goals.OBJECT.value ])`.
+
+**3. Task: Cognition Goal Reconciliation**
+
+*Objective*: Restore real goals upon intention transitions in `app/game/logic/mechanics/intentional/cognition.py`.
+
+- [x] Subtask: In `CognitionMechanics._resolve()`, if `sprite.state.intention in [Intentions.FIND.value, Intentions.HUNT.value]` and `sprite.state.goal.name == "wander"`, clear `sprite.state.goal = None`.
+- [ ] Subtask: In `CognitionMechanics._remember()`, expand recall eligibility beyond `IDLE` so that whenever `sprite.state.goal is None` and `sprite.state.intention in [Intentions.IDLE.value, Intentions.FIND.value, Intentions.HUNT.value]`, the relevant goal is popped from 
+
+
+##### Bug B012: Unchecked NoneType Dereference in Cognition Tracking on Path Invalidation
 
 **STATUS**: OPEN
+
 **SEVERITY**: CRITICAL
 
 **Description**
 
-The `geometry.los` calculation (and specifically the Liang-Barsky `bisects` implementation) contains a fatal edge-case. If a Sprite grazes or touches the physical boundary of an obstacle (like the map perimeter), `bisects` will permanently evaluate to `True` (Intersection) for *every* raycast, regardless of direction.
+In `CognitionMechanics._track()` (`src/app/game/logic/mechanics/intentional/cognition.py`), when a Sprite is following an active waypoint (`is_path = True`), `self._scrap(sprite, board)` is executed to test line of sight against intervening dynamic obstacles. If occluded, `_scrap()` nullifies the active goal via `sprite.state.goal = None`.
 
-If a Sprite touches the `y=1` top perimeter, the ray's origin \(y_1\) equals the boundary. In `bisects`, \(q_3 = y_{max} - y_1 = 1 - 1 = 0\). This results in \(r = 0\). The algorithm updates \(u_1\) or \(u_2\) to $0$, satisfying the \(u_1 \le u_2\) intersection condition at \(t=0\). The Sprite is now permanently "blind" because the raycast origin is technically intersecting the obstacle. This triggers the RRT planner, which immediately fails for the exact same reason, returning an empty path, clearing the goal, and triggering an infinite loop of RRT failures.
+However, `_track()` does not check if `sprite.state.goal` was cleared following `self._scrap()`. Execution falls through into the category checks:
 
-**Steps to Replicate** 
+```python
+        elif goal.category in [
+            Goals.POSITION.value,
+            Goals.OBJECT.value, 
+            Goals.PROPERTY.value
+        ]:
+            sprite.state.mutators.triggers.vision = True
+            self._plan(sprite, board)
+            goal = sprite.state.goal
+            return
 
-1. Place a Sprite exactly adjacent to an obstacle or map perimeter.
-2. Assign the Sprite a goal moving away from the obstacle.
-3. `geometry.los` will return `False` (Blocked) despite the path being completely clear.
+```
+
+`self._plan()` is invoked immediately, executing `sprite.state.goal.position.x`, which raises an unhandled `AttributeError: 'NoneType' object has no attribute 'position'` and halts the engine loop.
+
+**Steps to Replicate**
+
+1. Assign a Sprite an RRT path with generated waypoints (`path-0`, `path-1`, ...).
+2. Move a dynamic Crate across the current waypoint vector to invalidate line of sight.
+3. Observe crash in `_plan()` called from `_track()`.
 
 **Proposed Remediation**
 
-In `libs/core/math/geometry.pyx`, add an epsilon padding or strict inequality check to ignore intersections at \(t=0\). If \(u_1 = 0\) or \(r = 0\), the ray originates on the boundary and should not be considered an occlusion unless the vector is directed *into* the obstacle.
+In `CognitionMechanics._track()`, immediately inspect `sprite.state.goal` after `self._scrap()`:
 
+```python
+        if is_path:
+            self._scrap(sprite, board)
+            if not sprite.state.goal:
+                return
 
-##### Bug B011: Out-of-Bounds Wander Goal Generation
+```
+
+---
+
+##### Bug B013: Cross-Layer Leak and Unfiltered Obstacle Extraction in CognitionMechanics
 
 **STATUS**: OPEN
-**SEVERITY**: MEDIUM
+
+**SEVERITY**: HIGH
 
 **Description**
 
-In `CognitionMechanics._project()`, the coordinates for `WANDER` are generated using a raw offset: `Position(sprite.state.position.x + offset_x, sprite.state.position.y + offset_y)`. 
+In `CognitionMechanics.obstacles()` (`src/app/game/logic/mechanics/intentional/cognition.py`), dynamic bodies are retrieved via:
 
-There is no clamping applied to ensure these coordinates stay within the Board dimensions. In the provided logs, the Sprite rapidly generates goals like `(344, -68)` and `(418, -51)`. Because these coordinates lie outside the `y=0` map perimeter, any LOS check cast to them will correctly intersect the perimeter and register as blocked, causing unnecessary RRT triggers and pathing failures.
+```python
+for asset in board.instances(AssetInstances.CRATES.value):
+
+```
+
+1. `board.instances()` is called without specifying the `layer` argument. It queries `_all_instances`, returning all Crates across every board layer. Crates positioned on subterranean or elevated layers are mistakenly injected as collision rectangles into the current layer's RRT planner.
+2. Obstacle retrieval queries only `AssetInstances.CRATES.value`, bypassing other impassable entities with mass $m \ge 0$ (such as closed `GATES`, `STRUTS`, or other sheet entities). The active line was commented out (`# for asset in board.weights(layer):`).
+
+**Steps to Replicate**
+
+1. Place a Crate on `layer_2` at coordinate $(100, 100)$.
+2. Run RRT pathfinding for a Sprite on `layer_1` traversing coordinate $(100, 100)$.
+3. The planner fails or routes around $(100, 100)$ despite `layer_1` being completely clear.
 
 **Proposed Remediation**
 
-In `CognitionMechanics._project()`, clamp the randomized `offset_x` and `offset_y` coordinates against `board.size(sprite.state.layer)` to ensure wandering sprites do not attempt to path outside the physical boundaries of the map.
+In `CognitionMechanics.obstacles()`, restore `board.weights(layer)` to filter obstacles strictly by the Sprite's active layer:
+
+```python
+        for asset in board.weights(layer):
+            if asset.name in exclude:
+                continue
+            obstacles.append((
+                asset.state.position.x,
+                asset.state.position.y,
+                asset.dimensions.w,
+                asset.dimensions.l
+            ))
+
+```
+
+---
+
+### Suggested Documentation Updates
+
+#### 1. `docs/04-intentions.md` (Intentions & Transitions)
+
+* Update the **Intentional Scripting Language (ISL)** section to document the `functions.check_memory_near` predicate. Clarify that while the Intention Transition Matrix evaluates transitions via finite automata rules, memory predicates bridge dynamic world perceptions to remembered goals.
+* Document the **Exploratory State Pattern**: Clarify that navigational states such as `wander` are persistent search modes that do not cycle through `idle` upon waypoint arrival; instead, they continue sampling local coordinates until perceptual predicates trigger edge-triggered shifts into directed tracking (`find` / `hunt`).
+
+#### 2. `docs/05-mechanics.md` (Spatial & Mathematical Primitives)
+
+* In the **Geometry (`libs/core/math/geometry.pyx`)** section, document the Liang-Barsky $\epsilon$-penetration rule. Note that segments sharing a boundary or vertex contact where $t_{exit} \le t_{enter} + \epsilon$ are defined as non-occluding.
+* Explicitly state that line of sight evaluations model ray propagation through volume rather than surface contact, preventing $t=0$ boundary self-occlusions during navigation tracking.

@@ -38,6 +38,8 @@ from libs.core.models import Position
 
 logger = logging.getLogger(__name__)
 
+WANDER = "wander"
+
 class CognitionMechanics(Mechanic):
     """
     ## CognitionMechanics
@@ -146,7 +148,8 @@ class CognitionMechanics(Mechanic):
         Transforms board weights and perimeters into flat C-primitive tuples.
         """
         obstacles = []
-        for asset in board.instances(AssetInstances.CRATES.value):
+        
+        for asset in board.instances(AssetInstances.CRATES.value, layer):
 
         # for asset in board.weights(layer):
             if asset.name in exclude:
@@ -274,6 +277,9 @@ class CognitionMechanics(Mechanic):
 
 
     def _scrap(self, sprite: Asset, board: Board) -> None: 
+        """
+        Returns true is goal was scrapped.
+        """
         obstacles = self.obstacles(
             sprite.state.layer, 
             board, 
@@ -293,7 +299,8 @@ class CognitionMechanics(Mechanic):
             }
             CognitionMechanics.log_goal(sprite, verb="abandoned")
             sprite.state.goal = None
-            return
+            return True
+        return False
 
 
     def _resolve(self, sprite: Asset, board: Board) -> None:
@@ -307,7 +314,17 @@ class CognitionMechanics(Mechanic):
 
         if not goal:
             return
-        
+
+        # Clear stale wander goal when TransitionMechanics switches intention
+        if sprite.state.intention in (
+            Intentions.FIND.value, 
+            Intentions.HUNT.value
+        ):
+            if goal.name == WANDER:
+                CognitionMechanics.log_goal(sprite, verb="dropped")
+                sprite.state.goal = None
+                return
+            
         # ------------------------------------------------------------------------
         # ------------------------------------------------- TARGET GOAL RESOLUTION
         # ------------------------------------------------------------------------
@@ -326,6 +343,7 @@ class CognitionMechanics(Mechanic):
                 action_radius
             ) and not sprite.state.mutators.triggers.vision:
                 CognitionMechanics.log_goal(sprite, verb="abandoned")
+                sprite.state.memory.goals[goal.name] = goal
                 sprite.state.goal = None
 
         # ------------------------------------------------------------------------
@@ -346,6 +364,7 @@ class CognitionMechanics(Mechanic):
             ) and not sprite.state.mutators.triggers.vision:
                 CognitionMechanics.log_goal(sprite, verb="abandoned")
                 sprite.state.goal = None
+                sprite.state.memory.goals[goal.name] = goal
                 sprite.state.psyche.expression = board.cradle.spawn_expression(
                     ExpressionsPalette.BUBBLES.value, 
                     Expressions.CONFUSION.value, 
@@ -363,8 +382,7 @@ class CognitionMechanics(Mechanic):
             ):
                 CognitionMechanics.log_goal(sprite, verb="resolved")
                 sprite.state.goal = None
-                logger.info(f"{sprite.name} cleared POSITION Goal.")
-
+                
         # ------------------------------------------------------------------------
         # ------------------------------------------------- OBJECT GOAL RESOLUTION
         # ------------------------------------------------------------------------
@@ -416,6 +434,12 @@ class CognitionMechanics(Mechanic):
             ):
                 sprite.state.memory.sprites[other_name] = other_state.position
 
+                if other_name in sprite.state.memory.goals:
+                    mem_goal = sprite.state.memory.goals[other_name]
+                    mem_goal.position.x = other_state.position.x
+                    mem_goal.position.y = other_state.position.y
+                    mem_goal.layer = other_state.layer
+
 
     def _remember(self, sprite, board: Board) -> None:
         """
@@ -423,19 +447,39 @@ class CognitionMechanics(Mechanic):
 
         Pops the remembered goals onto the stack.
         """
-        if sprite.state.intention != Intentions.IDLE.value:
+        if sprite.state.intention not in [
+            Intentions.IDLE.value,
+            Intentions.HUNT.value, 
+            Intentions.FIND.value
+        ]: 
             return
         
         if not sprite.state.goal and not sprite.state.memory.goals:
             return
 
-        # ------------------------------------------------------------------------
-        # ----------------------------------------------------- SPRITE GOAL RECALL
-        # ------------------------------------------------------------------------
         if not sprite.state.goal:
-            first = next(iter(sprite.state.memory.goals))
-            sprite.state.goal = sprite.state.memory.goals.pop(first)
-            CognitionMechanics.log_goal(sprite, verb="remembered")
+            action_radius = sprite.state.mutators.parameters.action.radius
+            
+            selected_key = None
+            for key, candidate in sprite.state.memory.goals.items():
+                # If we reached the target's last-known coordinates and found it empty,
+                # leave it dormant in memory until any_memories_visible spots it.
+                if candidate.category in (
+                    Goals.TARGET.value, 
+                    Goals.SUBJECT.value
+                ):
+                    if self.nearby(
+                        candidate.position, 
+                        sprite.state.position, 
+                        action_radius
+                    ) and not sprite.state.mutators.triggers.vision:
+                        continue
+                selected_key = key
+                break
+
+            if selected_key:
+                sprite.state.goal = sprite.state.memory.goals.pop(selected_key)
+                CognitionMechanics.log_goal(sprite, verb="remembered")
 
 
     def _ideate(self, sprite: Asset, board: Board) -> None:
@@ -592,8 +636,8 @@ class CognitionMechanics(Mechanic):
         prefix = settings.RRT_PATH_PREFIX
         is_path = goal.name and goal.name.startswith(prefix)
 
-        if is_path:
-            self._scrap(sprite, board)
+        if is_path and self._scrap(sprite, board):
+            return
 
         # ------------------------------------------------------------------------ 
         if goal.category in [
@@ -613,8 +657,7 @@ class CognitionMechanics(Mechanic):
         ]:
             sprite.state.mutators.triggers.vision = True
             self._plan(sprite, board)
-            goal = sprite.state.goal
-            if goal:
+            if sprite.state.goal:
                 CognitionMechanics.log_goal(sprite, verb="tracked", level="debug")
             return
 
@@ -691,7 +734,7 @@ class CognitionMechanics(Mechanic):
                 str(k).startswith(settings.RRT_PATH_PREFIX) 
                 for k in sprite.state.memory.goals.keys()
             )
-
+            
             if not path_pending and (not sprite.state.goal or self.complete(sprite, board)):
                 offset_x = random.randint(-vision_radius, vision_radius)
                 offset_y = random.randint(-vision_radius, vision_radius)
@@ -714,7 +757,7 @@ class CognitionMechanics(Mechanic):
                 clamped_y = max(0, min(raw_y, bound_l if max_l > 0 else raw_y))
 
                 sprite.state.goal = Goal(
-                    name="wander", # TODO: enumerate
+                    name=WANDER, # TODO: enumerate
                     category=Goals.POSITION.value,
                     layer=sprite.state.layer,
                     position=Position(x=int(clamped_x), y=int(clamped_y))
