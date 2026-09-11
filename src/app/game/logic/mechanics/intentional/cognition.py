@@ -45,6 +45,16 @@ class CognitionMechanics(Mechanic):
     The central Mechanic for managing the lifecycle of Sprite Goals. Acts as the sensory input for Sprites, handling target acquisition, vision radiuses, and goal coordinate updates. 
     """
 
+    @staticmethod
+    def log_goal(sprite: Asset, verb: str = "transformed"):
+        logger.info(
+            f"{sprite.name} {verb} Goal(" 
+            f"category={sprite.state.goal.category}, "
+            f"name = {sprite.state.goal.name}, "
+            f"layer = {sprite.state.goal.layer}, "
+            f"position=({sprite.state.goal.position.x}, {sprite.state.goal.position.y}))"
+        )
+
 
     @staticmethod
     def nearby(p1: Position, p2: Position, radius: int) -> bool:
@@ -175,7 +185,8 @@ class CognitionMechanics(Mechanic):
                 layer=sprite.state.layer,
                 position=Position(x=wp.x, y=wp.y)
             )
-            
+            CognitionMechanics.log_goal(sprite, verb="planned")
+
         sprite.state.memory.goals[sprite.state.goal.name] = sprite.state.goal
 
         sprite.state.goal = None
@@ -246,12 +257,7 @@ class CognitionMechanics(Mechanic):
             if path:
                 self.path(sprite, path)
             else:
-                logger.info(
-                    f"{sprite.name} lost Goal(" 
-                    f"category={sprite.state.goal.category}, "
-                    f"name = {sprite.state.goal.name}, "
-                    f"layer = {sprite.state.goal.layer})"
-                )
+                CognitionMechanics.log_goal(sprite, verb="abandoned")
                 sprite.state.goal = None
 
             return True
@@ -276,6 +282,7 @@ class CognitionMechanics(Mechanic):
                 k: v for k, v in sprite.state.memory.goals.items() 
                 if not str(k).startswith(settings.RRT_PATH_PREFIX)
             }
+            CognitionMechanics.log_goal(sprite, verb="abandoned")
             sprite.state.goal = None
             return
 
@@ -298,6 +305,7 @@ class CognitionMechanics(Mechanic):
         if goal.category == Goals.TARGET.value:
             target_state = board.character(goal.name)
             if target_state.mutators.triggers.dead:
+                CognitionMechanics.log_goal(sprite, verb="resolved")
                 sprite.state.goal = None
                 if goal.name in sprite.state.memory.goals.keys():
                     sprite.state.memory.goals.pop(goal.name)
@@ -308,6 +316,7 @@ class CognitionMechanics(Mechanic):
                 sprite.state.position, 
                 action_radius
             ) and not sprite.state.mutators.triggers.vision:
+                CognitionMechanics.log_goal(sprite, verb="abandoned")
                 sprite.state.goal = None
 
         # ------------------------------------------------------------------------
@@ -315,8 +324,8 @@ class CognitionMechanics(Mechanic):
         # ------------------------------------------------------------------------
         elif goal.category == Goals.SUBJECT.value:
             if not sprite.state.psyche.dialogue:
+                CognitionMechanics.log_goal(sprite, verb="resolved")
                 sprite.state.goal = None
-                logger.info(f"{sprite.name} cleared SUBJECT Goal.")
                 if goal.name in sprite.state.memory.goals.keys():
                     sprite.state.memory.goals.pop(goal.name)
 
@@ -326,8 +335,8 @@ class CognitionMechanics(Mechanic):
                 sprite.state.position, 
                 action_radius
             ) and not sprite.state.mutators.triggers.vision:
+                CognitionMechanics.log_goal(sprite, verb="abandoned")
                 sprite.state.goal = None
-                logger.info(f"{sprite.name} lost SUBJECT Goal.")
                 sprite.state.psyche.expression = board.cradle.spawn_expression(
                     ExpressionsPalette.BUBBLES.value, 
                     Expressions.CONFUSION.value, 
@@ -343,6 +352,7 @@ class CognitionMechanics(Mechanic):
                 sprite.state.position, 
                 action_radius
             ):
+                CognitionMechanics.log_goal(sprite, verb="resolved")
                 sprite.state.goal = None
                 logger.info(f"{sprite.name} cleared POSITION Goal.")
 
@@ -356,6 +366,7 @@ class CognitionMechanics(Mechanic):
             #       this resolution is dependent on the goal being a Door Object.
             #       may need to differentiate Goal Categories between Doors and Chest...s
             if sprite.state.layer != goal.layer:
+                CognitionMechanics.log_goal(sprite, verb="resolved")
                 sprite.state.goal = None
                 sprite.state.memory.goals.pop(goal.name, None)
 
@@ -415,12 +426,7 @@ class CognitionMechanics(Mechanic):
         if not sprite.state.goal:
             first = next(iter(sprite.state.memory.goals))
             sprite.state.goal = sprite.state.memory.goals.pop(first)
-            logger.info(
-                f"{sprite.name} remembered Goal(" 
-                f"category={sprite.state.goal.category}, "
-                f"name = {sprite.state.goal.name}, "
-                f"layer = {sprite.state.goal.layer})"
-            )
+            CognitionMechanics.log_goal(sprite, verb="remembered")
 
 
     def _ideate(self, sprite: Asset, board: Board) -> None:
@@ -461,12 +467,14 @@ class CognitionMechanics(Mechanic):
             return
         
         # Prevent endless targeting and memory leaks if we already have a dialogue goal
-        if sprite.state.goal and sprite.state.goal.category == Goals.SUBJECT.value:
-            return
+        if sprite.state.goal and ( 
+            sprite.state.goal.category == Goals.SUBJECT.value
+        ): return
 
         # Prevent ideation along Sprite path finding points
-        if sprite.state.goal and str(sprite.state.goal.name).startswith(settings.RRT_PATH_PREFIX):
-            return
+        if sprite.state.goal and (
+            str(sprite.state.goal.name).startswith(settings.RRT_PATH_PREFIX)
+        ): return
 
         if sprite.state.mutators.parameters is None:
             return
@@ -501,12 +509,7 @@ class CognitionMechanics(Mechanic):
                         layer=other_state.layer,
                         position=Position(x=other_state.position.x, y=other_state.position.y)
                     )
-                    logger.info(
-                        f"{sprite.name} ideated Goal(" 
-                        f"category={sprite.state.goal.category}, "
-                        f"name = {sprite.state.goal.name}, "
-                        f"layer = {sprite.state.goal.layer})"
-                    )
+                    CognitionMechanics.log_goal(sprite, verb="ideated")
                     return
 
 
@@ -602,6 +605,7 @@ class CognitionMechanics(Mechanic):
             sprite.state.mutators.triggers.vision = True
             self._plan(sprite, board)
             goal = sprite.state.goal
+            CognitionMechanics.log_goal(sprite, verb="tracked")
             return
 
         # ------------------------------------------------------------------------ 
@@ -625,19 +629,9 @@ class CognitionMechanics(Mechanic):
                         y           = target_door.state.position.y
                     )
                 )
-                logger.info(
-                    f"{sprite.name} tracked Goal(" 
-                    f"category={sprite.state.goal.category}, "
-                    f"name = {sprite.state.goal.name}, "
-                    f"layer = {sprite.state.goal.layer})"
-                )
+                CognitionMechanics.log_goal(sprite, verb="tracked")
             else:
-                logger.info(
-                    f"{sprite.name} lost Goal(" 
-                    f"category={sprite.state.goal.category}, "
-                    f"name = {sprite.state.goal.name}, "
-                    f"layer = {sprite.state.goal.layer})"
-                )
+                CognitionMechanics.log_goal(sprite, verb="abandoned")
                 # Unattainable. Clear the goal to force a transition to `wander`.
                 sprite.state.goal = None
 
@@ -683,8 +677,6 @@ class CognitionMechanics(Mechanic):
             sprite.state.goal.position.y = sprite.state.position.y + (dy * 10)
 
         elif intention == Intentions.WANDER.value:
-            # If generatrate a randomized goal
-            
             path_pending = any(
                 str(k).startswith(settings.RRT_PATH_PREFIX) 
                 for k in sprite.state.memory.goals.keys()
@@ -693,17 +685,28 @@ class CognitionMechanics(Mechanic):
             if not path_pending and (not sprite.state.goal or self.complete(sprite, board)):
                 offset_x = random.randint(-vision_radius, vision_radius)
                 offset_y = random.randint(-vision_radius, vision_radius)
+
+                # Query board boundaries for the sprite's active layer
+                layer_sizes = board.size(sprite.state.layer)
+                max_w = layer_sizes[0].w
+                max_l = layer_sizes[0].l
+
+                # Account for entity boundaries to avoid placing origin on map edge
+                sprite_w = sprite.dimensions.w
+                sprite_l = sprite.dimensions.l
+                bound_w = max(0, max_w - sprite_w)
+                bound_l = max(0, max_l - sprite_l)
+
+                raw_x = sprite.state.position.x + offset_x
+                raw_y = sprite.state.position.y + offset_y
+
+                clamped_x = max(0, min(raw_x, bound_w if max_w > 0 else raw_x))
+                clamped_y = max(0, min(raw_y, bound_l if max_l > 0 else raw_y))
+
                 sprite.state.goal = Goal(
-                    # TODO: generate name somehow
-                    name="wander",
+                    name="wander", # TODO: enumerate
                     category=Goals.POSITION.value,
-                    layer=sprite.state.layer, # Inject strict layer tracking
-                    position=Position(sprite.state.position.x + offset_x, sprite.state.position.y + offset_y)
+                    layer=sprite.state.layer,
+                    position=Position(x=int(clamped_x), y=int(clamped_y))
                 )
-                logger.info(
-                    f"{sprite.name} randomized Goal("
-                    f"category={sprite.state.goal.category}, "
-                    f"name={sprite.state.goal.name}, "
-                    f"layer={sprite.state.goal.layer})@"
-                    f"({sprite.state.goal.position.x}, {sprite.state.goal.position.y})"
-                )
+                CognitionMechanics.log_goal(sprite, verb="randomized")

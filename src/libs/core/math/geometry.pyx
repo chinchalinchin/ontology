@@ -131,12 +131,13 @@ cpdef bint bisects(
 ):
     """
     Liang-Barsky line clipping algorithm to check if a segment intersects an AABB.
-    Returns True if the line segment intersects the rectangle, False otherwise.
+    Returns True if the line segment intersects the rectangle interior, False otherwise.
     """
     cdef float dx = x2 - x1
     cdef float dy = y2 - y1
     cdef float p[4]
     cdef float q[4]
+    cdef float EPS = 1e-5
     
     p[0] = -dx
     q[0] = x1 - rx
@@ -154,23 +155,27 @@ cpdef bint bisects(
 
     for i in range(4):
         if p[i] == 0:
-            # Line is parallel to clipping window edge
-            if q[i] < 0:
+            # Line is parallel to clipping edge: ignore if on or outside boundary
+            if q[i] <= EPS:
                 return False
         else:
             r = q[i] / p[i]
             if p[i] < 0:
+                # Directed into half-space (entry)
                 if r > u2:
                     return False
                 elif r > u1:
                     u1 = r
             elif p[i] > 0:
-                if r < u1:
+                # Directed out of half-space (exit)
+                # If exit occurs at or before ray origin, vector is directed away
+                if r <= u1 + EPS:
                     return False
                 elif r < u2:
                     u2 = r
 
-    if u1 > u2:
+    # Require non-degenerate penetration depth to count as occlusion
+    if u1 >= u2 - EPS:
         return False
         
     return True
