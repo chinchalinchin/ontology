@@ -1,4 +1,4 @@
 root: /home/grant/Projects/ontology
 task:
-  verb: dump
-  noun: state
+  verb: diagram
+  noun: intentions

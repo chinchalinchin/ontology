@@ -7,7 +7,7 @@
 | 5 | `find` | `interact`, `speak`, `idle` |
 | 6 | `follow` | `speak`, `idle` |
 | 7 | `hunt` | `attack`, `idle` |
-| 8 | `idle` | `wander`, `find` |
+| 8 | `idle` | `wander`, `find`, `hunt` |
 | 9 | `interact` | `idle` |
 | 10 | `mine` | `build`, `mine`, `idle` |
 | 11 | `mock` | `threaten`, `idle` |
@@ -16,4 +16,4 @@
 | 14 | `speak` | `idle` |
 | 15 | `sprint` | `idle` |
 | 16 | `threaten` | `attack`, `hunt`, `idle` |
-| 17 | `wander` | `idle` |
+| 17 | `wander` | `hunt`, `find`, `idle` |
