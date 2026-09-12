@@ -1367,6 +1367,7 @@
 
     idle --&gt; wander
     idle --&gt; find
+    idle --&gt; hunt
 
     interact --&gt; idle
 
@@ -1389,6 +1390,8 @@
     threaten --&gt; hunt
     threaten --&gt; idle
 
+    wander --&gt; hunt
+    wander --&gt; find
     wander --&gt; idle</code></pre>
 <table>
 <thead>
@@ -1437,7 +1440,7 @@
 <tr>
 <td>8</td>
 <td><code>idle</code></td>
-<td><code>wander</code>, <code>find</code></td>
+<td><code>wander</code>, <code>find</code>, <code>hunt</code></td>
 </tr>
 <tr>
 <td>9</td>
@@ -1482,7 +1485,7 @@
 <tr>
 <td>17</td>
 <td><code>wander</code></td>
-<td><code>idle</code></td>
+<td><code>hunt</code>, <code>find</code>, <code>idle</code></td>
 </tr>
 </tbody>
 </table>

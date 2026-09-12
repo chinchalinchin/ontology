@@ -25,6 +25,7 @@ stateDiagram-v2
 
     idle --> wander
     idle --> find
+    idle --> hunt
 
     interact --> idle
 
@@ -47,4 +48,6 @@ stateDiagram-v2
     threaten --> hunt
     threaten --> idle
 
+    wander --> hunt
+    wander --> find
     wander --> idle
