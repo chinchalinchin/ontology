@@ -528,6 +528,8 @@
       
         
       
+        
+      
     
     
     
@@ -685,6 +687,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#step-divergence-target-lost-to-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step: Divergence (Target Lost to Search)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#step-exitpoint" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -735,6 +748,34 @@
     
   
     Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../02-wander/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
   
 
     
@@ -1044,6 +1085,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#step-divergence-target-lost-to-search" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step: Divergence (Target Lost to Search)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#step-exitpoint" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1093,7 +1145,7 @@
   <h1>Dialogue Loop</h1>
 
 <h4 id="ontology-specification-dialogue-loop">Ontology Specification: Dialogue Loop</h4>
-<p>This specification governs the exchange of dialogue.</p>
+<p>This specification governs the exchange of dialogue between Sprites, and between Sprites and the Player.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>All information in this section assumes the default values for the <a href="../../appendices/01-schemas/#configuration-intentions">Intention Configuration</a>.</p>
@@ -1103,20 +1155,30 @@
 <p>This specification excludes the <a href="../../02-sprites/#player">Player</a>, whose Intentions are handled through input polling and device mapping.</p>
 </div>
 <h5 id="prologue">Prologue</h5>
-<p>When a Sprite has no goal, <code>CognitionMechanics._ideate</code> evaluates immediate psychological overrides. If a Sprite has a non-null <code>state.psyche.dialogue</code>, it queries <code>board.characters()</code> for a valid target within <code>state.mutators.parameters.vision.radius</code>. If found, a new <code>GoalCategories.SUBJECT</code> goal is assigned. In addition, the <code>sprite.memory.sprites</code> dictionary is updated with the location of Sprite.</p>
+<p><strong>Ideation</strong></p>
+<p>When a Sprite is in <code>idle</code> without an active goal, <code>CognitionMechanics._ideate</code> evaluates psychological states. If a Sprite has a non-null <code>state.psyche.dialogue</code>, it scans <code>board.characters()</code> for a valid target within <code>state.mutators.parameters.vision.radius</code>. If found on the same layer, a new <code>Goal(category=Goals.SUBJECT.value)</code> is assigned, and <code>sprite.state.memory.sprites</code> caches the target's current coordinates.</p>
+<p><strong>Motivation</strong></p>
+<p>TODO</p>
 <h5 id="step-entrypoint">Step: Entrypoint</h5>
 <p><strong>idle:find</strong></p>
 <ul>
 <li><code>sprite.goal</code></li>
+<li><code>sprite.goal.category == constants.Goals.SUBJECT.value</code></li>
 <li><code>sprite.layer == sprite.goal.layer</code></li>
-<li><code>sprite.goal.category == constants.Goal.SUBJECT.value</code></li>
-<li><code>sprite.psyche.dialogue</code></li>
+<li><code>sprites.get(sprite.goal.name)</code></li>
+<li><code>not functions.is_near(sprite.position, sprites.get(sprite.goal.name).position, sprite.mutators.parameters.action.radius)</code></li>
 </ul>
 <h5 id="step-interpoints">Step: Interpoints</h5>
 <p><strong>find:speak</strong></p>
 <ul>
-<li><code>functions.is_near(sprites.get(sprite.goal.name).position, sprite.position, sprite.mutators.parameters.vision.radius)</code></li>
+<li><code>sprite.goal</code></li>
+<li><code>sprite.psyche.dialogue</code></li>
+<li><code>sprite.goal.category == constants.Goals.SUBJECT.value</code></li>
+<li><code>sprite.layer == sprite.goal.layer</code></li>
+<li><code>sprites.get(sprite.goal.name)</code></li>
+<li><code>sprite.memory.relationships.get(sprite.goal.name)</code></li>
 <li><code>sprite.memory.relationships[sprite.goal.name] in [ constants.Relationships.FRIEND.value, constants.Relationships.FAMILY.value ]</code></li>
+<li><code>functions.is_near(sprite.position, sprites.get(sprite.goal.name).position, sprite.mutators.parameters.action.radius)</code></li>
 </ul>
 <p><strong>speak:follow</strong></p>
 <ul>
@@ -1128,31 +1190,39 @@
 <li><code>sprite.goal.category == constants.Goals.SUBJECT.value</code></li>
 <li><code>functions.is_near(sprite.position, sprite.goal.position, sprite.mutators.parameters.action.radius)</code></li>
 </ul>
+<h5 id="step-divergence-target-lost-to-search">Step: Divergence (Target Lost to Search)</h5>
+<p>If a target moves outside <code>state.mutators.parameters.vision.radius</code> while the Sprite is traversing toward it, the Dialogue Loop diverts into the <a href="../02-wander/">Wander Loop</a>:</p>
+<ol>
+<li><strong>Abandonment (<code>CognitionMechanics._resolve</code>)</strong>: The Sprite reaches the last known coordinates without visual contact (<code>nearby and not vision</code>). <code>_resolve()</code> shelves the <code>SUBJECT</code> goal back into <code>sprite.state.memory.goals</code>, triggers a <code>CONFUSION</code> expression, and clears <code>sprite.state.goal = None</code>.</li>
+<li><strong>Divergence (<code>TransitionMechanics</code>)</strong>: With <code>not sprite.goal</code>, the Sprite transitions <code>find -&gt; idle -&gt; wander</code>.</li>
+<li><strong>Reacquisition (<code>TransitionMechanics</code>)</strong>: While in <code>wander</code>, if <code>functions.any_memories_visible</code> detects the remembered <code>SUBJECT</code> within <code>vision.radius</code>, the automaton triggers <code>wander -&gt; find</code>.</li>
+<li><strong>Resumption (<code>CognitionMechanics._remember</code>)</strong>: <code>_remember()</code> restores the <code>SUBJECT</code> goal from <code>memory.goals</code>, resuming direct tracking.</li>
+</ol>
 <h5 id="step-exitpoint">Step: Exitpoint</h5>
 <p><strong>speak:idle</strong></p>
 <ul>
 <li><code>not sprite.psyche.expression</code></li>
 </ul>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Sprite-to-Sprite branch.</p>
+<p class="admonition-title">Sprite-to-Sprite Branch</p>
+<p>Applies when communicating with NPC Sprites. Control returns to <code>idle</code> after the dialogue expression TTL expires.</p>
 </div>
 <p><strong>speak:idle</strong></p>
 <ul>
 <li><code>sprite.goal.name == constants.RequiredAssets.PLAYER.value</code></li>
 </ul>
 <div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Player-to-Sprite branch</p>
+<p class="admonition-title">Player-to-Sprite Branch</p>
+<p>Applies when communicating with the Player. The intention releases immediately to <code>idle</code> upon interaction.</p>
 </div>
 <h5 id="workflow-speak-intention">Workflow: Speak Intention</h5>
-<p>A Sprite processing a <code>speak</code> Intention undergoes a strict lifecycle distributed across the Engine's Mechanics to ensure data integrity and visual consistency:</p>
+<p>A Sprite processing a <code>speak</code> Intention executes across distributed Engine Mechanics:</p>
 <ol>
-<li><strong>Execution (<code>SocialMechanics</code>)</strong>: Upon entering <code>speak</code>, the mechanic transfers the source Sprite's <code>state.psyche.dialogue</code> key into the <code>state.memory.rumors</code> list of the target Sprite. </li>
-<li><strong>Anchoring (<code>SocialMechanics</code>)</strong>: It immediately injects an <code>AttachmentState</code> into <code>state.psyche.expression</code> configured with a Time-To-Live (TTL). The Sprite's <code>state.velocity</code> stops receiving updates from <code>character.impulse</code>, allowing friction to bring it to a halt.</li>
-<li><strong>Decay (<code>SocialMechanics</code>)</strong>: For each subsequent game tick, the TTL is decremented. The <code>state.psyche.dialogue</code> and <code>state.psyche.expression</code> variables are <em>only</em> nulled once the TTL reaches zero. </li>
-<li><strong>Resolution (<code>CognitionMechanics</code>)</strong>: On the tick following the TTL expiration, <code>CognitionMechanics</code> evaluates the Goal. Because <code>goal.category == Goals.SUBJECT</code> and <code>not sprite.psyche.dialogue</code> evaluates to <code>True</code>, the interaction is marked satisfied. <code>CognitionMechanics</code> sets <code>sprite.state.goal = None</code> and pops the original overarching goal from <code>memory.goals</code> back into <code>sprite.state.goal</code>.</li>
-<li><strong>Transition (<code>TransitionMechanics</code>)</strong>: With <code>psyche.dialogue</code> empty, the ISL conditions for <code>speak</code> fail. The Sprite natively transits out of <code>speak</code> directly back into the <code>idle</code> hub. On the next tick, <code>idle</code> will evaluate the restored goal and dispatch the Sprite accordingly.</li>
+<li><strong>Execution (<code>SocialMechanics</code>)</strong>: Upon entering <code>speak</code>, the mechanic transfers the source Sprite's <code>state.psyche.dialogue</code> key into the <code>state.memory.rumors</code> list of the target Sprite.</li>
+<li><strong>Anchoring (<code>SocialMechanics</code>)</strong>: An <code>AttachmentState</code> is injected into <code>state.psyche.expression</code> configured with a Time-To-Live (TTL). <code>MotionMechanics</code> drops impulse, allowing friction to bring the Sprite to a halt.</li>
+<li><strong>Decay (<code>SocialMechanics</code>)</strong>: Every engine tick decrements the TTL. <code>state.psyche.dialogue</code> and <code>state.psyche.expression</code> are nulled only when the TTL reaches zero.</li>
+<li><strong>Resolution (<code>CognitionMechanics</code>)</strong>: On the tick following TTL expiration, <code>_resolve()</code> evaluates the goal. Because <code>goal.category == Goals.SUBJECT</code> and <code>not sprite.psyche.dialogue</code> evaluates to <code>True</code>, the goal is cleared (<code>sprite.state.goal = None</code>).</li>
+<li><strong>Transition (<code>TransitionMechanics</code>)</strong>: With <code>not sprite.goal</code>, the Sprite transitions back to <code>idle</code>.</li>
 </ol>
 
 
