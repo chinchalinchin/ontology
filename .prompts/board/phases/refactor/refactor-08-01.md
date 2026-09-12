@@ -96,20 +96,5 @@ sprite.state.goal = None
 
 *Objective*: Stabilize the automaton when a target is obstructed.
 
-* [ ] Subtask: Add an unreachable/dormant tracking mechanism in `SpriteState.memory` to prevent `_remember()` from immediately popping goals that failed RRT.
-* [ ] Subtask: Ensure that upon path failure, control falls through to `idle -> wander` until sensory conditions change or the retry timeout expires.
-
----
-
-### Architectural & Documentation Alignments
-
-1. **`docs/05-mechanics.md` (`CognitionMechanics`)**:
-Document the distinction between **Render Position** (`asset.state.position`) and **Sensory Anchor** (`anchor(asset)`). Clarify that spatial queries involving perception (`los`, `cone`, `plan`) operate in anchor space, whereas rendering, camera culling, and canvas allocation operate in canvas space.
-2. **`docs/specs/01-interaction.md` (Door Traversal Loop)**:
-Add explicit documentation for cross-layer door subsumption: when navigating to a door on the same layer, the interaction radius check must be evaluated against the door's physical footprint center, not its top-left origin.
-3. **`docs/04-intentions.md` (Pathfinding Loop State Transitions)**:
-Document the lifecycle of RRT failure recovery:
-
-$$\text{find} \xrightarrow[\text{RRT Fail}]{\text{goal}=\text{None}} \text{idle} \xrightarrow[\text{Goal Dormant}]{\text{not sprite.goal}} \text{wander}$$
-
-Explicitly specify that unroutable goals must be marked dormant to prevent thrashing the `idle:find` entrypoint.
+* [!] Subtask: Add an unreachable/dormant tracking mechanism in `SpriteState.memory` to prevent `_remember()` from immediately popping goals that failed RRT.
+* [!] Subtask: Ensure that upon path failure, control falls through to `idle -> wander` until sensory conditions change or the retry timeout expires.
