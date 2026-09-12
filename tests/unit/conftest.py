@@ -86,7 +86,8 @@ from libs.core.models import (
     Dimensions, 
     Position,
     Multiple,
-    Velocity
+    Velocity,
+    Hitbox
 )
 
 # ---------------------------------------------------------------------------
@@ -312,5 +313,86 @@ def mock_strut():
     props = CraftProperties(dimensions=Dimensions(w=32, l=32), cost=[], mass=0) 
     state = PropertyState(
         id="strut-1", layer="0", position=Position(x=40, y=40), owner="player"
+    )
+    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+
+# ---------------------------------------------------------------------------
+# -------------------------------------------------------- PATHFINDING FIXTURES
+
+@pytest.fixture
+def mock_offset_hitbox_asset():
+    """
+    Asset with single offset collision hitbox and mass=0 (e.g. wall-blue).
+    """
+    tax = Taxonomy("wall-blue-1", "blue-wall", AssetCategories.CRAFTS.value, AssetInstances.STRUTS.value)
+    hb = Hitbox(Position(6, 17), Dimensions(116, 54))
+    props = CraftProperties(
+        dimensions=Dimensions(w=128, l=96),
+        cost=[],
+        mass=0,
+        hitboxes=[hb]
+    )
+    state = PropertyState(
+        id="wall-blue-1",
+        layer="brick-house-compose-layer",
+        position=Position(x=150, y=150),
+        owner="player"
+    )
+    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+
+
+@pytest.fixture
+def mock_multi_hitbox_asset():
+    """
+    Asset with multiple discrete hitboxes and mass=0 (e.g. wall-castle).
+    """
+    tax = Taxonomy("wall-castle-1", "castle-wall", AssetCategories.CRAFTS.value, AssetInstances.STRUTS.value)
+    hb1 = Hitbox(Position(178, 102), Dimensions(25, 12))
+    hb2 = Hitbox(Position(17, 102), Dimensions(25, 12))
+    hb3 = Hitbox(Position(5, 39), Dimensions(203, 63))
+    props = CraftProperties(
+        dimensions=Dimensions(w=222, l=133),
+        cost=[],
+        mass=0,
+        hitboxes=[hb1, hb2, hb3]
+    )
+    state = PropertyState(
+        id="wall-castle-1",
+        layer="0",
+        position=Position(x=250, y=250),
+        owner="player"
+    )
+    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+
+
+@pytest.fixture
+def mock_sprite_with_hitbox():
+    """
+    Sprite asset featuring a standard LPC offset collision hitbox.
+    """
+    tax = Taxonomy("sprite-jasilynn", "evil-empress-jasilynn", AssetCategories.SHEETS.value, AssetInstances.SPRITES.value)
+    hb = Hitbox(Position(21, 23), Dimensions(22, 21))
+    props = SheetProperties(
+        dimensions=Dimensions(w=64, l=64),
+        mass=10,
+        hitboxes=[hb]
+    )
+    state = SpriteState(
+        id="sprite-jasilynn",
+        name="evil-empress-jasilynn",
+        layer="brick-house-compose-layer",
+        position=Position(x=175, y=200),
+        intention=Intentions.FIND,
+        psyche=Psyche(motivation=Motivations.CONQUEST.value, persona="empress-jasilynn", dialogue="greeting"),
+        mutators=Mutators(
+            triggers=MutatorTriggers(vision=True),
+            parameters=MutatorParameters(
+                vision=RadialParameters(radius=128),
+                action=RadialParameters(radius=25),
+                fear=FearParameters(radius=128, limit=0.5, enemy=5)
+            )
+        ),
+        inventory=Inventory(equipment=Equipment()),
+        animation=AnimationState(frame=0, tick=1)
     )
     return Asset(tax, props, state, DummyFrame(), DummyAnimation())

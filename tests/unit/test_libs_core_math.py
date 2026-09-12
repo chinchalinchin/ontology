@@ -99,3 +99,43 @@ def test_physics_integrate():
     # Floating accumulators (rx, ry) must cleanly reset after sub-pixel boundaries snap
     assert asset.state.position.rx == 0.0
     assert asset.state.position.ry == 0.0
+
+# ----------------------------------------------------------------------------------------
+# RAYCASTING & LINE OF SIGHT TESTS
+# ----------------------------------------------------------------------------------------
+
+def test_geometry_bisects_intersection():
+    # Segment from (0, 10) to (100, 10) through box (40, 0, 20, 20)
+    assert geometry.bisects(0.0, 10.0, 100.0, 10.0, 40.0, 0.0, 20.0, 20.0) is True
+
+
+def test_geometry_bisects_clear():
+    # Segment passes safely above the bounding box
+    assert geometry.bisects(0.0, 50.0, 100.0, 50.0, 40.0, 0.0, 20.0, 20.0) is False
+
+
+def test_geometry_bisects_origin_inside_box():
+    # Ray originating inside the obstacle
+    assert geometry.bisects(45.0, 10.0, 100.0, 10.0, 40.0, 0.0, 20.0, 20.0) is True
+
+
+def test_geometry_bisects_parallel_outside():
+    # Segment parallel to X axis outside Y boundaries
+    assert geometry.bisects(0.0, -10.0, 100.0, -10.0, 40.0, 0.0, 20.0, 20.0) is False
+
+
+def test_geometry_los_unobstructed():
+    rects = [
+        (10.0, 10.0, 20.0, 20.0),
+        (50.0, 50.0, 10.0, 10.0)
+    ]
+    # Trajectory clears all bounding boxes
+    assert geometry.los(0.0, 0.0, 100.0, 0.0, rects) is True
+
+
+def test_geometry_los_obstructed():
+    rects = [
+        (40.0, 0.0, 20.0, 20.0)
+    ]
+    # Trajectory intersects the middle obstacle
+    assert geometry.los(0.0, 10.0, 100.0, 10.0, rects) is False
