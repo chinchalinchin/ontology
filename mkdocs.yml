@@ -31,6 +31,7 @@ nav:
     - Index: specs/index.md
     - Dialogue Loop: specs/00-dialogue.md
     - Interaction Loop: specs/01-interaction.md
+    - Wander Loop: specs/02-wander.md
   - Appendix: 
     - Index: appendices/index.md
     - References: appendices/00-references.md

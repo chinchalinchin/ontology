@@ -149,17 +149,18 @@ class CognitionMechanics(Mechanic):
         """
         obstacles = []
         
-        for asset in board.instances(AssetInstances.CRATES.value, layer):
+        # for asset in board.instances(AssetInstances.CRATES.value, layer):
 
-        # for asset in board.weights(layer):
+        for asset in board.weights(layer):
             if asset.name in exclude:
                 continue
-            obstacles.append((
-                asset.state.position.x,
-                asset.state.position.y,
-                asset.dimensions.w,
-                asset.dimensions.l
-            ))
+            for hb in asset.hitboxes:
+                obstacles.append((
+                    asset.state.position.x + hb.position.x,
+                    asset.state.position.y + hb.position.y,
+                    hb.dimensions.w,
+                    hb.dimensions.l,
+                ))
 
         for bound in board.perimeters.get(layer, []):
             obstacles.append((
@@ -197,13 +198,29 @@ class CognitionMechanics(Mechanic):
                 layer=sprite.state.layer,
                 position=Position(x=wp.x, y=wp.y)
             )
-            CognitionMechanics.log_goal(sprite, verb="planned")
+
+        logger.info(f"{sprite.name} planned {len(sprite.state.memory.goals)} routes.")
 
         sprite.state.memory.goals[sprite.state.goal.name] = sprite.state.goal
 
         sprite.state.goal = None
 
 
+    @staticmethod
+    def anchor(asset: Asset) -> Position:
+        hbs = asset.hitboxes
+        if not hbs:
+            return Position(
+                x=asset.state.position.x + asset.dimensions.w // 2,
+                y=asset.state.position.y + asset.dimensions.l // 2,
+            )
+        hb = hbs[0]
+        return Position(
+            x=asset.state.position.x + hb.position.x + hb.dimensions.w // 2,
+            y=asset.state.position.y + hb.position.y + hb.dimensions.l // 2,
+        )
+
+        
     def update(self, 
         board: Board, 
         delta: float, 
@@ -243,23 +260,28 @@ class CognitionMechanics(Mechanic):
 
         Returns true is plan or goal was altered.
         """
+        exclude = [sprite.name]
+        if sprite.state.goal and sprite.state.goal.name:
+            exclude.append(sprite.state.goal.name)
+
         obstacles = self.obstacles(
             sprite.state.layer, 
             board, 
-            exclude=[ sprite.name ]
+            exclude=exclude
         )
-                
+        anchor = self.anchor(sprite)
+
         # Check LOS and trigger planner if occluded
         if not geometry.los(
-            sprite.state.position.x, 
-            sprite.state.position.y, 
+            anchor.x, 
+            anchor.y, 
             sprite.state.goal.position.x, 
             sprite.state.goal.position.y, 
             obstacles
         ):
             logger.info(f"Line-of-sight blocked for {sprite.name}. Triggering RRT.")
             planner = Planner(
-                start=sprite.state.position,
+                start=anchor,
                 target=sprite.state.goal.position,
                 obstacles=obstacles,
                 step_size=32.0,
@@ -280,14 +302,21 @@ class CognitionMechanics(Mechanic):
         """
         Returns true is goal was scrapped.
         """
+        exclude = [sprite.name]
+        if sprite.state.goal and sprite.state.goal.name:
+            exclude.append(sprite.state.goal.name)
+
         obstacles = self.obstacles(
             sprite.state.layer, 
             board, 
-            exclude=[sprite.name]
+            exclude=exclude
         )
+
+        anchor = self.anchor(sprite)
+
         if not geometry.los(
-            sprite.state.position.x, 
-            sprite.state.position.y, 
+            anchor.x, 
+            anchor.y, 
             sprite.state.goal.position.x, 
             sprite.state.goal.position.y, 
             obstacles
@@ -528,6 +557,11 @@ class CognitionMechanics(Mechanic):
         if sprite.state.goal and (
             str(sprite.state.goal.name).startswith(settings.RRT_PATH_PREFIX)
         ): return
+
+        if any(
+            str(k).startswith(settings.RRT_PATH_PREFIX)
+            for k in sprite.state.memory.goals.keys()
+        ) : return
 
         if sprite.state.mutators.parameters is None:
             return

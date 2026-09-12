@@ -24,7 +24,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [~]: [Phase 05: Editor](./phases/implement/phase-05.md)
     - [x]: [Phase 06: Intentions](./phases/implement/phase-06.md)
     - [x]: [Phase 07: Compositions](./phases/implement/phase-07.md)
-    - [~]: [Phase 08: Pathfinding](./phases/implement/phase-08.md)
+    - [x]: [Phase 08: Pathfinding](./phases/implement/phase-08.md)
     - [ ]: [Phase 09: Commerce](./phases/implement/phase-09.md)
     - [ ]: [Phase 10: Towns](./phases/implement/phase-10.md)
   - Refactor:
@@ -47,6 +47,8 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 04.04: MenuContext](./phases/refactor/refactor-04-04.md)
     - Phase 06:
       - [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
+    - Phase 08:
+      - [~]: [Obstable Geometry](./phases/refactor/refactor-08-01.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantied Assets](./phases/patch/bug-b001.md)

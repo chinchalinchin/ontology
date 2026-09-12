@@ -335,12 +335,6 @@ The architectural problem stems from two system gaps:
 2. **Missing Outbound Transitions in `wander**`: In `src/data/config/intentions/main.yaml`, `wander` only defines exits back to `idle`. There are no transition rules allowing `wander` to shift directly to `find` or `hunt` when a target re-enters perceptual range.
 3. **Goal Reacquisition Contract**: When `TransitionMechanics` changes the intention from `wander` to `find` or `hunt`, the active `goal` is still the synthetic `wander` waypoint. In accordance with the engine contract (*CognitionMechanics mutates Goals, TransitionMechanics mutates Intentions*), `CognitionMechanics` must detect the transition out of `wander` and pop the matching goal from `memory.goals`.
 
-#### Tasks: Part III
-
-**Overview** 
-
-Implements relational ISL predicates for remembered entity proximity, adds direct transitions from `wander` to `find`/`hunt`, and wires Goal reacquisition in `CognitionMechanics`.
-
 ##### Goal: Relational ISL Memory Predicates
 
 Provide ISL runtime with the capacity to assert whether a remembered entity of a given category is currently near the Sprite's position.
@@ -353,7 +347,7 @@ Add direct ISL transitions from `wander` to `find` (for `SUBJECT` and `OBJECT` m
 
 Ensure `CognitionMechanics` reconciles active goals when an entity transitions from exploratory `wander` to targeted navigation.
 
-##### Tasks
+##### Tasks: Part III
 
 **1. Task: Implement `any_memories_visible` in ISL Environ**
 
@@ -374,57 +368,902 @@ Ensure `CognitionMechanics` reconciles active goals when an entity transitions f
 *Objective*: Restore real goals upon intention transitions in `app/game/logic/mechanics/intentional/cognition.py`.
 
 - [x] Subtask: In `CognitionMechanics._resolve()`, if `sprite.state.intention in [Intentions.FIND.value, Intentions.HUNT.value]` and `sprite.state.goal.name == "wander"`, clear `sprite.state.goal = None`.
-- [ ] Subtask: In `CognitionMechanics._remember()`, expand recall eligibility beyond `IDLE` so that whenever `sprite.state.goal is None` and `sprite.state.intention in [Intentions.IDLE.value, Intentions.FIND.value, Intentions.HUNT.value]`, the relevant goal is popped from 
+- [x] Subtask: In `CognitionMechanics._remember()`, expand recall eligibility beyond `IDLE` so that whenever `sprite.state.goal is None` and `sprite.state.intention in [Intentions.IDLE.value, Intentions.FIND.value, Intentions.HUNT.value]`, the relevant goal is popped from 
 
+##### Final Boss: RRT Path Generation Bug
 
-##### Bug B012: Unchecked NoneType Dereference in Cognition Tracking on Path Invalidation
-
-**STATUS**: OPEN
-
-**SEVERITY**: CRITICAL
-
-**Description**
-
-In `CognitionMechanics._track()` (`src/app/game/logic/mechanics/intentional/cognition.py`), when a Sprite is following an active waypoint (`is_path = True`), `self._scrap(sprite, board)` is executed to test line of sight against intervening dynamic obstacles. If occluded, `_scrap()` nullifies the active goal via `sprite.state.goal = None`.
-
-However, `_track()` does not check if `sprite.state.goal` was cleared following `self._scrap()`. Execution falls through into the category checks:
+Up to this point, this line in the CognitionMechanics has been intentionally hiding a bug whose source yet to be pinpointed, in order to streamline and get the Goal-Intention logic working correctly around the pathfinding. Everything is currently working to spec. However, when this line is changed from,
 
 ```python
-        elif goal.category in [
-            Goals.POSITION.value,
-            Goals.OBJECT.value, 
-            Goals.PROPERTY.value
-        ]:
-            sprite.state.mutators.triggers.vision = True
-            self._plan(sprite, board)
-            goal = sprite.state.goal
-            return
+for asset in board.instances(AssetInstances.CRATES.value, layer):
 
+# for asset in board.weights(layer):
 ```
 
-`self._plan()` is invoked immediately, executing `sprite.state.goal.position.x`, which raises an unhandled `AttributeError: 'NoneType' object has no attribute 'position'` and halts the engine loop.
-
-**Steps to Replicate**
-
-1. Assign a Sprite an RRT path with generated waypoints (`path-0`, `path-1`, ...).
-2. Move a dynamic Crate across the current waypoint vector to invalidate line of sight.
-3. Observe crash in `_plan()` called from `_track()`.
-
-**Proposed Remediation**
-
-In `CognitionMechanics._track()`, immediately inspect `sprite.state.goal` after `self._scrap()`:
+To:
 
 ```python
-        if is_path:
-            self._scrap(sprite, board)
-            if not sprite.state.goal:
-                return
+# for asset in board.instances(AssetInstances.CRATES.value, layer):
 
+for asset in board.weights(layer):
 ```
+
+A bug enters into the application. To fully understand the bug, first set the scene.
+
+**Properties**
+
+```yaml
+# ------------------------------------------------------------------
+# ----------------------------------------------------------- CRAFTS
+crafts:
+  struts:
+    # ----------------------------------------------------- FRAMES
+    frame-adobe:
+      dimensions:
+        w: 96
+        l: 160
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 0
+            y: 0
+          dimensions:
+            w: 96
+            l: 160
+      cost:
+        - item: clay
+          quantity: 10
+    frame-brick:
+      dimensions:
+        w: 96
+        l: 190
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 10
+            y: 20
+          dimensions:
+            w: 76
+            l: 144
+      cost:
+        - item: stone
+          quantity: 10
+    # ----------------------------------------------------- FENCES
+    fence-horizontal:
+      dimensions:
+        w: 72
+        l: 73
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 0
+            y: 0
+          dimensions:
+            w: 72
+            l: 73
+      cost:
+        - item: wood
+          quantity: 10
+    fence-vertical:
+      dimensions:
+        w: 8 
+        l: 87
+      mass: 0
+      hitboxes:
+        - position: 
+            x: 0
+            y: 0
+          dimensions:
+            w: 8
+            l: 87
+      cost:
+        - item: wood
+          quantity: 10
+    # ----------------------------------------------------- FLOORS
+    floor-wood:
+      dimensions:
+        w: 128
+        l: 96
+      mass: -1
+      cost: 
+        - item: wood
+          quantity: 10
+    # ----------------------------------------------------- WALLS
+    wall-blue:
+      dimensions:
+        w: 128
+        l: 96
+      mass: 0
+      cost: 
+        - item: wood
+          quantity: 10
+      hitboxes:
+        - position:
+            x: 6
+            y: 17
+          dimensions:
+            w: 116
+            l: 54
+    wall-castle:
+      dimensions:
+        w: 222
+        l: 133
+      mass: 0
+      cost: 
+        - item: stone
+          quantity: 100
+      hitboxes:
+        - position:
+            x: 178
+            y: 102
+          dimensions:
+            w: 25
+            l: 12
+        - position: 
+            x: 17
+            y: 102
+          dimensions:
+            w: 25
+            l: 12
+        - position:
+            x: 5
+            y: 39
+          dimensions:
+            w: 203
+            l: 63
+objects:
+  doors:
+    door-castle-open:
+      mass: -1
+      dimensions:
+        w: 64
+        l: 64
+    door-double:
+      mass: -1
+      dimensions:
+        w: 64
+        l: 64
+    door-dungeon:
+      mass: -1
+      dimensions:
+        w: 32
+        l: 48
+    door-mansion:
+      mass: -1
+      dimensions:
+        w: 32
+        l: 48
+    door-house:
+      mass: -1
+      dimensions: 
+        w: 32
+        l: 48
+    door-shadow:
+      mass: -1
+      dimensions:
+        w: 32
+        l: 48
+    door-open:
+      mass: -1
+      dimensions:
+        w: 32
+        l: 57
+    door-shack:
+      mass: -1 
+      dimensions:
+        w: 32
+        l: 48
+```
+
+**Initial State**
+
+```yaml
+sheets:
+  sprites: 
+    - id: jasilynn
+      name: evil-empress-jasilynn
+      layer: brick-house-compose-layer
+      depth: 0
+      position:
+        x: 175
+        y: 200
+      meters:
+        health: 
+          current: 50
+          maximum: 100
+        magic: 
+          current: 100
+          maximum: 100
+      character:
+        strength: 5
+        defense: 5
+        speed: 50
+        impulse: 25
+      mutators:
+        parameters:
+          fear:
+            radius: 128
+            limit: 0.50
+            enemy: 5
+          vision:
+            radius: 128
+          action:
+            radius: 25
+      psyche:
+        dialogue: greeting
+        expression: null
+        motivation: conquest
+        persona: empress-jasilynn
+      intention: find
+      goal:
+        name: player
+        category: subject
+        layer: '0'
+        position:
+          x: 100
+          y: 200
+      memory:
+        goals:
+          player:
+            name: player
+            category: subject
+            layer: '0'
+            position:
+              x: 100
+              y: 200
+        prices: null
+        property: null
+        relationships: 
+          player: friend
+        rumors: null
+        sprites: 
+          player:
+            x: 100
+            y: 200
+      inventory: 
+        loot: null
+        equipment:
+          armor: null
+          tool: null
+          utility: null
+          weapon: shortsword
+          shield: null
+        wallet: 0
+sheets:
+  players: 
+    - id: player
+      name: player
+      layer: '0'
+      depth: 0
+      position:
+        x: 10
+        y: 80
+      meters:
+        health: 
+          current: 50
+          maximum: 100
+        magic: 
+          current: 100
+          maximum: 100
+      character:
+        strength: 5
+        defense: 5
+        speed: 100
+        impulse: 25
+      mutators:
+        parameters:
+          action:
+            radius: 30
+      inventory: 
+        loot: null
+        equipment:
+          armor: null
+          tool: null
+          utility: null
+          weapon: shortsword
+          shield: buckler
+        wallet: 0
+```
+
+**Obstacles Are Only Crates Logs (All is Well)**
+
+```bash
+2026-09-11 20:32:45,208 - INFO - __main__ - Starting CLI with command: 'start' for board: 'world-01'
+2026-09-11 20:32:45,209 - INFO - __main__ - Igniting engine for live execution...
+2026-09-11 20:32:45,209 - INFO - app.services.orchestration.constructors - Loading YAML data for target state: world-01 ...
+2026-09-11 20:32:45,209 - INFO - app.config.loader - Loading YAML property schemas...
+2026-09-11 20:32:45,333 - INFO - app.config.loader - Loading YAML configurations...
+2026-09-11 20:32:45,489 - INFO - app.config.loader - Loading YAML state configurations from /home/grant/Projects/ontology/src/data/state/world-01 ...
+2026-09-11 20:32:45,553 - INFO - app.services.orchestration.constructors - Initializing SDL and Cython rendering subsystems...
+2026-09-11 20:32:45,773 - INFO - app.services.orchestration.constructors - Constructing Empty Board and Migrator subsystem...
+2026-09-11 20:32:45,774 - INFO - app.game.board - Initializing Board with 0 incoming assets.
+2026-09-11 20:32:45,775 - INFO - app.game.board - Board completely hydrated and initialized.
+2026-09-11 20:32:45,776 - INFO - app.services.orchestration.constructors - Initializing Registry...
+2026-09-11 20:32:45,792 - INFO - app.services.orchestration.constructors - Injecting Generators and Devices into Board...
+2026-09-11 20:32:45,793 - INFO - app.services.orchestration.constructors - Building rendering pipelines, mechanics, and UI...
+2026-09-11 20:32:45,794 - INFO - app.game.screen - Initializing Screen (Viewport: 480x480 |Board: 480x480)
+2026-09-11 20:32:45,809 - INFO - app.services.orchestration.constructors - Engine successfully assembled.
+2026-09-11 20:32:45,809 - INFO - app.game.engine - Entering Game Loop...
+libpng warning: iCCP: known incorrect sRGB profile
+libpng warning: iCCP: known incorrect sRGB profile
+libpng warning: iCCP: known incorrect sRGB profile
+2026-09-11 20:32:46,745 - INFO - app.services.orchestration.migrator - Migrator starting hydration for target state: world-01
+2026-09-11 20:32:46,746 - INFO - app.config.loader - Loading YAML state configurations from /home/grant/Projects/ontology/src/data/state/world-01 ...
+2026-09-11 20:32:46,819 - INFO - app.services.generators.perimeter - Calculating dynamic perimeter boundaries for layer: 0
+2026-09-11 20:32:46,820 - INFO - app.services.generators.perimeter - Derived simply-connected hull containing 4 edges.
+2026-09-11 20:32:46,820 - INFO - app.services.generators.perimeter - Calculating dynamic perimeter boundaries for layer: brick-house-compose-layer
+2026-09-11 20:32:46,820 - INFO - app.services.generators.perimeter - Derived simply-connected hull containing 8 edges.
+2026-09-11 20:32:46,820 - INFO - app.game.menus.controllers.load - Hydration complete. Reallocating rendering canvases...
+2026-09-11 20:32:46,821 - INFO - app.game.screen - Rebaking Screen canvases for new world state...
+2026-09-11 20:32:46,887 - INFO - app.game.screen - Initializing Screen (Viewport: 480x480 |Board: 480x480)
+2026-09-11 20:32:46,889 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn tracked Goal(category=object, name = door-strut-house-interior-1-1, layer = brick-house-compose-layer, position=(197, 292))
+2026-09-11 20:32:49,192 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): find -> interact
+2026-09-11 20:32:49,209 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn resolved Goal(category=object, name = door-strut-house-interior-1-1, layer = brick-house-compose-layer, position=(197, 292))
+2026-09-11 20:32:49,209 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): interact -> idle
+2026-09-11 20:32:49,226 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn remembered Goal(category=subject, name = player, layer = 0, position=(100, 200))
+2026-09-11 20:32:49,226 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): idle -> find
+2026-09-11 20:32:52,426 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): find -> speak
+2026-09-11 20:32:52,443 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): speak -> idle
+2026-09-11 20:32:53,693 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): idle -> find
+2026-09-11 20:32:56,744 - INFO - app.game.engine - [TELEMETRY] Avg FPS: 54.9 |Avg UPS (Ticks): 59.9
+2026-09-11 20:33:01,429 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): find -> speak
+2026-09-11 20:33:01,446 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): speak -> idle
+2026-09-11 20:33:02,146 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): idle -> find
+2026-09-11 20:33:05,547 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn abandoned Goal(category=subject, name = player, layer = 0, position=(451, 459))
+2026-09-11 20:33:05,548 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): find -> idle
+2026-09-11 20:33:05,564 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): idle -> wander
+2026-09-11 20:33:05,580 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn randomized Goal(category=position, name = wander, layer = 0, position=(330, 553))
+2026-09-11 20:33:06,752 - INFO - app.game.engine - [TELEMETRY] Avg FPS: 60.0 |Avg UPS (Ticks): 60.0
+2026-09-11 20:33:08,770 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn resolved Goal(category=position, name = wander, layer = 0, position=(330, 553))
+2026-09-11 20:33:08,770 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn randomized Goal(category=position, name = wander, layer = 0, position=(440, 524))
+2026-09-11 20:33:10,754 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): wander -> find
+2026-09-11 20:33:10,770 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn dropped Goal(category=position, name = wander, layer = 0, position=(440, 524))
+2026-09-11 20:33:10,770 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn remembered Goal(category=subject, name = player, layer = 0, position=(412, 501))
+2026-09-11 20:33:12,971 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): find -> speak
+2026-09-11 20:33:12,987 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): speak -> idle
+^C2026-09-11 20:33:14,648 - INFO - __main__ - Game engine loop interrupted by user.
+2026-09-11 20:33:14,649 - INFO - __main__ - Generating state dump...
+2026-09-11 20:33:14,751 - INFO - __main__ - State dump successfully written to /home/grant/Projects/ontology/20260911_203314.state-dump.md
+2026-09-11 20:33:14,898 - INFO - __main__ - CLI processes completed.
+```
+
+Note: Sprite correctly transitions through all Intentions, popping and pushing Goals accordingly.
+
+**Obstacles Are Weight (Kaboom)**
+
+```bash
+2026-09-11 20:34:58,950 - INFO - __main__ - Starting CLI with command: 'start' for board: 'world-01'
+2026-09-11 20:34:58,950 - INFO - __main__ - Igniting engine for live execution...
+2026-09-11 20:34:58,950 - INFO - app.services.orchestration.constructors - Loading YAML data for target state: world-01 ...
+2026-09-11 20:34:58,950 - INFO - app.config.loader - Loading YAML property schemas...
+2026-09-11 20:34:59,103 - INFO - app.config.loader - Loading YAML configurations...
+2026-09-11 20:34:59,311 - INFO - app.config.loader - Loading YAML state configurations from /home/grant/Projects/ontology/src/data/state/world-01 ...
+2026-09-11 20:34:59,397 - INFO - app.services.orchestration.constructors - Initializing SDL and Cython rendering subsystems...
+2026-09-11 20:34:59,631 - INFO - app.services.orchestration.constructors - Constructing Empty Board and Migrator subsystem...
+2026-09-11 20:34:59,632 - INFO - app.game.board - Initializing Board with 0 incoming assets.
+2026-09-11 20:34:59,632 - INFO - app.game.board - Board completely hydrated and initialized.
+2026-09-11 20:34:59,632 - INFO - app.services.orchestration.constructors - Initializing Registry...
+2026-09-11 20:34:59,647 - INFO - app.services.orchestration.constructors - Injecting Generators and Devices into Board...
+2026-09-11 20:34:59,648 - INFO - app.services.orchestration.constructors - Building rendering pipelines, mechanics, and UI...
+2026-09-11 20:34:59,648 - INFO - app.game.screen - Initializing Screen (Viewport: 480x480 |Board: 480x480)
+2026-09-11 20:34:59,665 - INFO - app.services.orchestration.constructors - Engine successfully assembled.
+2026-09-11 20:34:59,666 - INFO - app.game.engine - Entering Game Loop...
+libpng warning: iCCP: known incorrect sRGB profile
+libpng warning: iCCP: known incorrect sRGB profile
+libpng warning: iCCP: known incorrect sRGB profile
+2026-09-11 20:35:00,745 - INFO - app.services.orchestration.migrator - Migrator starting hydration for target state: world-01
+2026-09-11 20:35:00,745 - INFO - app.config.loader - Loading YAML state configurations from /home/grant/Projects/ontology/src/data/state/world-01 ...
+2026-09-11 20:35:00,837 - INFO - app.services.generators.perimeter - Calculating dynamic perimeter boundaries for layer: 0
+2026-09-11 20:35:00,837 - INFO - app.services.generators.perimeter - Derived simply-connected hull containing 4 edges.
+2026-09-11 20:35:00,837 - INFO - app.services.generators.perimeter - Calculating dynamic perimeter boundaries for layer: brick-house-compose-layer
+2026-09-11 20:35:00,838 - INFO - app.services.generators.perimeter - Derived simply-connected hull containing 8 edges.
+2026-09-11 20:35:00,838 - INFO - app.game.menus.controllers.load - Hydration complete. Reallocating rendering canvases...
+2026-09-11 20:35:00,838 - INFO - app.game.screen - Rebaking Screen canvases for new world state...
+2026-09-11 20:35:00,916 - INFO - app.game.screen - Initializing Screen (Viewport: 480x480 |Board: 480x480)
+2026-09-11 20:35:00,918 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn tracked Goal(category=object, name = door-strut-house-interior-1-1, layer = brick-house-compose-layer, position=(197, 292))
+2026-09-11 20:35:00,921 - INFO - app.game.logic.mechanics.intentional.cognition - Line-of-sight blocked for evil-empress-jasilynn. Triggering RRT.
+2026-09-11 20:35:00,923 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn abandoned Goal(category=object, name = door-strut-house-interior-1-1, layer = brick-house-compose-layer, position=(197, 292))
+2026-09-11 20:35:00,924 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): find -> idle
+2026-09-11 20:35:00,925 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn remembered Goal(category=subject, name = player, layer = 0, position=(100, 200))
+2026-09-11 20:35:00,926 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn tracked Goal(category=object, name = door-strut-house-interior-1-1, layer = brick-house-compose-layer, position=(197, 292))
+2026-09-11 20:35:00,926 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): idle -> find
+2026-09-11 20:35:00,927 - INFO - app.game.logic.mechanics.intentional.cognition - Line-of-sight blocked for evil-empress-jasilynn. Triggering RRT.
+2026-09-11 20:35:00,929 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn abandoned Goal(category=object, name = door-strut-house-interior-1-1, layer = brick-house-compose-layer, position=(197, 292))
+2026-09-11 20:35:00,929 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): find -> idle
+2026-09-11 20:35:00,932 - INFO - app.game.logic.mechanics.intentional.cognition - evil-empress-jasilynn remembered Goal(category=subject, name = player, layer = 0, position=(
+# ... infinite loop elided ...
+2026-09-11 20:35:03,168 - INFO - app.game.logic.mechanics.intentional.transition - Transition(evil-empress-jasilynn): find -> idle
+^C2026-09-11 20:35:03,175 - INFO - __main__ - Game engine loop interrupted by user.
+2026-09-11 20:35:03,176 - INFO - __main__ - Generating state dump...
+2026-09-11 20:35:03,330 - INFO - __main__ - State dump successfully written to /home/grant/Projects/ontology/20260911_203503.state-dump.md
+2026-09-11 20:35:03,576 - INFO - __main__ - CLI processes completed.
+```
+
+**State Dump (Kaboom Case)**
+
+```markdown
+# Ontology State Dump
+
+- **Board:** world-01
+- **Timestamp:** 20260911_203503
 
 ---
 
-##### Bug B013: Cross-Layer Leak and Unfiltered Obstacle Extraction in CognitionMechanics
+## strut-house-1
+
+- **Taxonomy:**
+  - Category: `AssetCategories.CRAFTS`
+  - Instance: `AssetInstances.STRUTS`
+  - ID: `frame-brick`
+- **Dimensions:**
+  - Width: 96
+  - Length: 190
+- **Layer:** `0`
+- **Depth:** 0
+- **Position:** (150, 150)
+- **Owner:** `player`
+
+## door-strut-house-1-1
+
+- **Taxonomy:**
+  - Category: `objects`
+  - Instance: `doors`
+  - ID: `door-house`
+- **Dimensions:**
+  - Width: 32
+  - Length: 48
+- **Layer:** `0`
+- **Depth:** 1
+- **Height:** 340
+- **Position:** (182, 268)
+- **Door Out:**
+  - Layer: `brick-house-compose-layer`
+  - Position: (232, 293)
+
+## strut-house-interior-1
+
+- **Taxonomy:**
+  - Category: `AssetCategories.CRAFTS`
+  - Instance: `AssetInstances.STRUTS`
+  - ID: `wall-blue`
+- **Dimensions:**
+  - Width: 128
+  - Length: 96
+- **Layer:** `brick-house-compose-layer`
+- **Depth:** 0
+- **Position:** (150, 150)
+- **Owner:** `player`
+
+## door-strut-house-interior-1-1
+
+- **Taxonomy:**
+  - Category: `objects`
+  - Instance: `doors`
+  - ID: `door-shadow`
+- **Dimensions:**
+  - Width: 32
+  - Length: 48
+- **Layer:** `brick-house-compose-layer`
+- **Depth:** 0
+- **Position:** (197, 292)
+- **Door Out:**
+  - Layer: `0`
+  - Position: (193, 313)
+
+## strut-strut-house-interior-1-1
+
+- **Taxonomy:**
+  - Category: `crafts`
+  - Instance: `struts`
+  - ID: `floor-wood`
+- **Dimensions:**
+  - Width: 128
+  - Length: 96
+- **Layer:** `brick-house-compose-layer`
+- **Depth:** 0
+- **Height:** -100
+- **Position:** (150, 246)
+- **Owner:** `player`
+
+## strut-castle-wall-2
+
+- **Taxonomy:**
+  - Category: `AssetCategories.CRAFTS`
+  - Instance: `AssetInstances.STRUTS`
+  - ID: `wall-castle`
+- **Dimensions:**
+  - Width: 222
+  - Length: 133
+- **Layer:** `0`
+- **Depth:** 0
+- **Position:** (250, 250)
+- **Owner:** `the-government`
+
+## door-strut-castle-wall-2-2
+
+- **Taxonomy:**
+  - Category: `objects`
+  - Instance: `doors`
+  - ID: `door-castle-open`
+- **Dimensions:**
+  - Width: 64
+  - Length: 64
+- **Layer:** `0`
+- **Depth:** 0
+- **Height:** 383
+- **Position:** (331, 299)
+- **Door Out:**
+  - Layer: `castle-compose-layer`
+
+## door-strut-castle-wall-2-2
+
+- **Taxonomy:**
+  - Category: `objects`
+  - Instance: `doors`
+  - ID: `door-castle-open`
+- **Dimensions:**
+  - Width: 64
+  - Length: 64
+- **Layer:** `0`
+- **Depth:** 0
+- **Height:** 383
+- **Position:** (331, 299)
+- **Door Out:**
+  - Layer: `castle-compose-layer`
+
+## gate-strut-castle-wall-2-2
+
+- **Taxonomy:**
+  - Category: `objects`
+  - Instance: `gates`
+  - ID: `gate-castle`
+- **Dimensions:**
+  - Width: 64
+  - Length: 64
+- **Layer:** `0`
+- **Depth:** 1
+- **Height:** 383
+- **Position:** (331, 299)
+- **Animation:**
+  - Action: `walk`
+  - Direction: `down`
+  - Frame: 0
+  - Tick: 1
+- **Switch:** False
+- **Link:** `castle-gate-link`
+
+## gate-strut-castle-wall-2-2
+
+- **Taxonomy:**
+  - Category: `objects`
+  - Instance: `gates`
+  - ID: `gate-castle`
+- **Dimensions:**
+  - Width: 64
+  - Length: 64
+- **Layer:** `0`
+- **Depth:** 1
+- **Height:** 383
+- **Position:** (331, 299)
+- **Animation:**
+  - Action: `walk`
+  - Direction: `down`
+  - Frame: 0
+  - Tick: 1
+- **Switch:** False
+- **Link:** `castle-gate-link`
+
+## plate-strut-castle-wall-2-2
+
+- **Taxonomy:**
+  - Category: `objects`
+  - Instance: `plates`
+  - ID: `plate-stone`
+- **Dimensions:**
+  - Width: 15
+  - Length: 14
+- **Layer:** `0`
+- **Depth:** 1
+- **Height:** 383
+- **Position:** (274, 395)
+- **Animation:**
+  - Action: `walk`
+  - Direction: `down`
+  - Frame: 0
+  - Tick: 1
+- **Switch:** False
+- **Link:** `castle-gate-link`
+
+## plate-strut-castle-wall-2-2
+
+- **Taxonomy:**
+  - Category: `objects`
+  - Instance: `plates`
+  - ID: `plate-stone`
+- **Dimensions:**
+  - Width: 15
+  - Length: 14
+- **Layer:** `0`
+- **Depth:** 1
+- **Height:** 383
+- **Position:** (274, 395)
+- **Animation:**
+  - Action: `walk`
+  - Direction: `down`
+  - Frame: 0
+  - Tick: 1
+- **Switch:** False
+- **Link:** `castle-gate-link`
+
+## the-steppe
+
+- **Taxonomy:**
+  - Category: `tiles`
+  - Instance: `back`
+  - ID: `grass`
+- **Dimensions:**
+  - Width: 32
+  - Length: 32
+- **Layer:** `0`
+- **Depth:** 0
+- **Position:** (0, 0)
+- **Multiple:**
+  - nx: 100
+  - ny: 100
+
+## castle-dawn-barrel-00
+
+- **Taxonomy:**
+  - Category: `objects`
+  - Instance: `crates`
+  - ID: `crate-barrel`
+- **Dimensions:**
+  - Width: 28
+  - Length: 38
+- **Layer:** `0`
+- **Depth:** 0
+- **Position:** (100, 250)
+- **Velocity:** (, )
+
+## castle-dawn-sign-board-00
+
+- **Taxonomy:**
+  - Category: `objects`
+  - Instance: `signs`
+  - ID: `wood-bulletin`
+- **Dimensions:**
+  - Width: 30
+  - Length: 32
+- **Layer:** `0`
+- **Depth:** 0
+- **Position:** (430, 370)
+- **Persona:** `castle-dawn-sign`
+- **Lexicon:** `spring`
+
+## evil-empress-jasilynn
+
+- **Taxonomy:**
+  - Category: `sheets`
+  - Instance: `sprites`
+  - ID: `jasilynn`
+- **Dimensions:**
+  - Width: 64
+  - Length: 64
+- **Layer:** `brick-house-compose-layer`
+- **Depth:** 0
+- **Position:** (175, 200)
+- **Velocity:** (, )
+- **Animation:**
+  - Action: `walk`
+  - Direction: `down`
+  - Frame: 5
+  - Tick: 1
+- **Character:**
+  - Strength: 5
+  - Defense: 5
+  - Speed: 50
+  - Impulse: 25
+- **Meters:**
+  - Health: 50 / 100
+  - Magic: 100 / 100
+- **Inventory:**
+  - Wallet: 0
+  - Equipment:
+    - Armor: `None`
+    - Weapon: `shortsword`
+    - Tool: `None`
+    - Utility: `None`
+    - Shield: `None`
+- **Mutators:**
+  - Triggers:
+    - Animated: True
+    - Frightened: False
+    - Dead: False
+    - Vision: True
+  - Parameters:
+    - Fear:
+      - Radius: 128
+      - Limit: 0.5
+      - Enemy: 5
+    - Vision:
+      - Radius: 128
+    - Action:
+      - Radius: 25
+- **Memory:**
+  - Goals:
+    - `player`:
+      - Name: `player`
+      - Category: `subject`
+      - Layer: `0`
+      - Position: (100, 200)
+  - Sprites:
+    - `player`: (100, 200)
+  - Relationships:
+    - `player`: `Relationships.FRIEND`
+- **Psyche:**
+  - Persona: `empress-jasilynn`
+  - Motivation: `conquest`
+  - Dialogue: `greeting`
+- **Intention:** `Intentions.FIND`
+
+## player
+
+- **Taxonomy:**
+  - Category: `sheets`
+  - Instance: `players`
+  - ID: `player`
+- **Dimensions:**
+  - Width: 64
+  - Length: 64
+- **Layer:** `0`
+- **Depth:** 0
+- **Position:** (10, 135)
+- **Velocity:** (, )
+- **Animation:**
+  - Action: `walk`
+  - Direction: `down`
+  - Frame: 0
+  - Tick: 0
+- **Character:**
+  - Strength: 5
+  - Defense: 5
+  - Speed: 100
+  - Impulse: 25
+- **Meters:**
+  - Health: 50 / 100
+  - Magic: 100 / 100
+- **Inventory:**
+  - Wallet: 0
+  - Equipment:
+    - Armor: `None`
+    - Weapon: `shortsword`
+    - Tool: `None`
+    - Utility: `None`
+    - Shield: `buckler`
+- **Goal:**
+  - Name: `None`
+  - Category: `None`
+  - Layer: `None`
+  - Position: (10, 135)
+- **Mutators:**
+  - Triggers:
+    - Animated: False
+    - Frightened: False
+    - Dead: False
+    - Vision: False
+  - Parameters:
+    - Fear:
+      - Radius: 30
+      - Limit: 0.5
+      - Enemy: 5
+    - Vision:
+      - Radius: 30
+    - Action:
+      - Radius: 30
+- **Intention:** `Intentions.IDLE`
+
+---
+
+# Perimeters
+
+## Layer: 0
+
+- Position: (0, 0) | Dimensions: w: 1, l: 3200
+- Position: (3200, 0) | Dimensions: w: 1, l: 3200
+- Position: (0, 0) | Dimensions: w: 3200, l: 1
+- Position: (0, 3200) | Dimensions: w: 3200, l: 1
+
+## Layer: brick-house-compose-layer
+
+- Position: (150, 150) | Dimensions: w: 1, l: 192
+- Position: (250, 342) | Dimensions: w: 1, l: 41
+- Position: (278, 150) | Dimensions: w: 1, l: 100
+- Position: (472, 250) | Dimensions: w: 1, l: 133
+- Position: (150, 150) | Dimensions: w: 128, l: 1
+- Position: (278, 250) | Dimensions: w: 194, l: 1
+- Position: (150, 342) | Dimensions: w: 100, l: 1
+- Position: (250, 383) | Dimensions: w: 222, l: 1
+```
+
+**Root-Cause Analysis: The "Final Boss" Loop**
+
+The failure observed when transitioning from `board.instances(AssetInstances.CRATES.value, layer)` to `board.weights(layer)` is caused by an architectural mismatch between **visual bounding geometry** and **physical collision geometry**, compounded by evaluating raycasting from the sprite's **texture canvas origin** rather than its **physical sensory anchor**.
+
+When `board.weights(layer)` is activated, `strut-house-interior-1` (`wall-blue`) at `(150, 150)` is included in the obstacle query because its mass is `0`. Three cascading defects cause the engine to freeze in an infinite two-tick loop:
+
+1. Visual Geometry vs. Hitbox Footprint in Obstacle Extraction
+
+In `CognitionMechanics.obstacles()`, the obstacle list is populated as:
+
+```python
+obstacles.append((
+    asset.state.position.x,
+    asset.state.position.y,
+    asset.dimensions.w,
+    asset.dimensions.l,
+))
+
+```
+
+`asset.dimensions` represents the full graphical texture bounds. For `wall-blue`, dimensions are $w=128, l=96$, establishing an obstacle box spanning:
+
+$$X \in [150, 278], \quad Y \in [150, 246]$$
+
+However, the actual physical collision barrier defined in `crafts.yaml` is its hitbox:
+
+```yaml
+hitboxes:
+  - position: { x: 6, y: 17 }
+    dimensions: { w: 116, l: 54 }
+
+```
+
+The true impassable collision barrier spans only:
+
+$$X \in [156, 272], \quad Y \in [167, 221]$$
+
+The bottom 25 pixels ($Y \in [221, 246]$) represent the visual baseboard and walkable floor trim in front of the wall where sprites can stand. By using `asset.dimensions`, `CognitionMechanics.obstacles()` inflates the obstacle by 25 pixels downward into the room's walkable space.
+
+2. Texture Origin vs. Physical Footprint Anchor
+
+`evil-empress-jasilynn` is spawned at `(175, 200)`. In LPC sprite sheets (64x64), `(x, y)` is the top-left coordinate of the rendering canvas. The sprite's physical collision hitbox is offset at `(21, 23)` with dimensions `(22, 21)`:
+
+$$X_{\text{hitbox}} \in [196, 218], \quad Y_{\text{hitbox}} \in [223, 244]$$
+
+Because $223 > 221$, Jasilynn's physical collision body does **not** overlap the wall's hitbox. `CollisionMechanics` detects no overlap, so physics permits her to exist and move freely.
+
+However, `CognitionMechanics._plan()` and `_track()` query line of sight using the top-left canvas origin `sprite.state.position`:
+
+$$\text{Start} = (175, 200)$$
+
+Because $150 \le 175 \le 278$ and $150 \le 200 \le 246$, $(175, 200)$ is inside the inflated bounding box of `wall-blue`. In `geometry.bisects()`, when a ray origin is inside an obstacle box, the entry fraction is $u_1 = 0.0$ and exit fraction $u_2 > 0.0$. Thus, $u_1 < u_2$ evaluates to `True`, flagging line of sight as blocked.
+
+3. RRT Root Node Invalidity & Tree Stalling
+
+Because LOS is blocked, `_plan()` constructs `Planner(start=sprite.state.position, target=sprite.state.goal.position)`.
+
+* The root node `self.start` is set to $(175, 200)$.
+* For every sampled point $\text{rnd}$, `_steer()` creates a vector from `self.start`.
+* `_check_collision(self.start, new_node)` calls `geometry.los()`.
+* Because `self.start` is inside the obstacle, **every outgoing branch from the root node registers a collision**.
+* No node is ever added to `node_list`. The tree stalls for 300 iterations and returns `[]`.
+
+4. The Two-Tick Intention Oscillation
+
+When `Planner.plan()` returns `[]`:
+
+1. `_plan()` logs `abandoned` and sets `sprite.state.goal = None`.
+2. In `TransitionMechanics`, the sprite is in `find`. The condition `not sprite.goal` triggers `find -> idle`.
+3. In `idle`, `CognitionMechanics._remember()` runs on the next tick. It pops `player` from `memory.goals`.
+4. In `_track()`, the cross-layer logic detects the player is on layer `0`, subsumes `player` back into `memory.goals`, and re-assigns the door (`door-strut-house-interior-1-1`) as an `OBJECT` goal.
+5. In `TransitionMechanics`, the ISL condition for `idle -> find` evaluates to `True`.
+6. In `find`, `_track()` calls `_plan()` on the door again. LOS is blocked, RRT fails, `sprite.state.goal = None`, and the sprite drops back to `idle`.
+7. This cycle repeats every two frames, permanently locking the NPC.
+
+
+
+
+##### Bug B011: Sensory Anchor Misalignment in Raycasting and Pathfinding
 
 **STATUS**: OPEN
 
@@ -432,49 +1271,47 @@ In `CognitionMechanics._track()`, immediately inspect `sprite.state.goal` after 
 
 **Description**
 
-In `CognitionMechanics.obstacles()` (`src/app/game/logic/mechanics/intentional/cognition.py`), dynamic bodies are retrieved via:
-
-```python
-for asset in board.instances(AssetInstances.CRATES.value):
-
-```
-
-1. `board.instances()` is called without specifying the `layer` argument. It queries `_all_instances`, returning all Crates across every board layer. Crates positioned on subterranean or elevated layers are mistakenly injected as collision rectangles into the current layer's RRT planner.
-2. Obstacle retrieval queries only `AssetInstances.CRATES.value`, bypassing other impassable entities with mass $m \ge 0$ (such as closed `GATES`, `STRUTS`, or other sheet entities). The active line was commented out (`# for asset in board.weights(layer):`).
+`CognitionMechanics._plan()` and `_track()` pass `sprite.state.position` (the top-left corner of the 64x64 rendering canvas) to `geometry.los()` and `Planner`. In 2.5D top-down perspective, an entity's head visually overlaps walls behind them while their feet occupy the passable floor. Using the top-left canvas origin causes raycasts to originate from inside wall hitboxes, immediately failing line-of-sight checks and trapping the RRT root node inside obstacles.
 
 **Steps to Replicate**
 
-1. Place a Crate on `layer_2` at coordinate $(100, 100)$.
-2. Run RRT pathfinding for a Sprite on `layer_1` traversing coordinate $(100, 100)$.
-3. The planner fails or routes around $(100, 100)$ despite `layer_1` being completely clear.
+1. Position a Sprite directly in front of a south-facing wall such that its hitbox is clear but its visual canvas ($Y_{\text{pos}}$) overlaps the wall structure.
+2. Direct the Sprite toward a target with an unobstructed line of sight to the south.
+3. Observe `geometry.los(sprite.state.position.x, sprite.state.position.y, ...)` returning `False`.
 
 **Proposed Remediation**
 
-In `CognitionMechanics.obstacles()`, restore `board.weights(layer)` to filter obstacles strictly by the Sprite's active layer:
+Introduce a sensory anchor calculation that extracts the center of the entity's primary collision hitbox:
 
-```python
-        for asset in board.weights(layer):
-            if asset.name in exclude:
-                continue
-            obstacles.append((
-                asset.state.position.x,
-                asset.state.position.y,
-                asset.dimensions.w,
-                asset.dimensions.l
-            ))
+$$x_{\text{anchor}} = x_{\text{pos}} + x_{\text{hb}} + \frac{w_{\text{hb}}}{2}, \quad y_{\text{anchor}} = y_{\text{pos}} + y_{\text{hb}} + \frac{l_{\text{hb}}}{2}$$
 
-```
+Pass this anchor coordinate as the start point for `geometry.los()` and `Planner`. When RRT outputs waypoints, translate them back to canvas origins by subtracting the anchor offset before storing them as `POSITION` goals.
 
----
 
-### Suggested Documentation Updates
 
-#### 1. `docs/04-intentions.md` (Intentions & Transitions)
 
-* Update the **Intentional Scripting Language (ISL)** section to document the `functions.check_memory_near` predicate. Clarify that while the Intention Transition Matrix evaluates transitions via finite automata rules, memory predicates bridge dynamic world perceptions to remembered goals.
-* Document the **Exploratory State Pattern**: Clarify that navigational states such as `wander` are persistent search modes that do not cycle through `idle` upon waypoint arrival; instead, they continue sampling local coordinates until perceptual predicates trigger edge-triggered shifts into directed tracking (`find` / `hunt`).
 
-#### 2. `docs/05-mechanics.md` (Spatial & Mathematical Primitives)
 
-* In the **Geometry (`libs/core/math/geometry.pyx`)** section, document the Liang-Barsky $\epsilon$-penetration rule. Note that segments sharing a boundary or vertex contact where $t_{exit} \le t_{enter} + \epsilon$ are defined as non-occluding.
-* Explicitly state that line of sight evaluations model ray propagation through volume rather than surface contact, preventing $t=0$ boundary self-occlusions during navigation tracking.
+
+##### Bug B012: Unreachable Goal Thrashing in Cognition-Transition Loop
+
+**STATUS**: OPEN
+
+**SEVERITY**: MEDIUM
+
+**Description**
+
+When `Planner.plan()` fails to find a valid path to an obstructed target, `CognitionMechanics._plan()` clears `sprite.state.goal = None`. Because the unresolved parent goal remains in `memory.goals`, `TransitionMechanics` transitions `find -> idle`, and `_remember()` immediately re-pops the goal on the subsequent tick. This creates an infinite two-tick thrashing loop between `find` and `idle`.
+
+**Steps to Replicate**
+
+1. Enclose an active goal completely inside solid boundaries.
+2. Assign the goal to a Sprite in `find`.
+3. Observe CLI logs: the engine alternates `find -> idle` and `idle -> find` every tick, flooding the logger with `abandoned` and `remembered` messages.
+
+**Proposed Remediation**
+
+When `_plan()` fails to generate a path:
+
+1. Mark the target in `memory.goals` as unreachable or attach a failure backoff cooldown.
+2. In `_resolve()`, if an active goal is abandoned due to path exhaustion, shelf it into memory with a dormant flag so `_remember()` ignores it until sensory conditions change (e.g., via `any_memories_visible`), freeing the automaton to enter `idle -> wander`.
