@@ -1130,17 +1130,14 @@
 </li>
 </ol>
 <p><strong>Sprite AI</strong></p>
-<p>As should already be obvious, much of the logic in Mechanics is in support of Sprite AI, via the management of <a href="../04-intentions/">Goals &amp; Intentions</a>. To visualize how this all ties together for a <a href="../02-sprites/">Sprite</a> in a single frame:</p>
+<p>As should already be obvious, much of the logic in Mechanics is in support of Sprite AI, via the management of <a href="../04-intentions/">Goals &amp; Intentions</a>. NPC behavior is distributed across four sequential Mechanics in the <code>world</code> pipeline:</p>
 <ul>
-<li>CognitionMechanics: Updates the Goal, e.g. tracking a Player or locating an Object.</li>
-<li>TransitionMechanics: Evaluates the <a href="../04-intentions/#transition-matrix">ISL</a>. It then maps the Intention and Goal to the Animation (action, direction).</li>
-<li>MotionMechanics: Sees the Goal Position and applies impulse to Velocity.</li>
-<li>SpatialMechanics: If the Sprite is in an interactive Intention, checks if the hitboxes overlap to trigger physical world changes (damage, mining, looting).</li>
+<li><strong>CognitionMechanics ("The Brain")</strong>: Manages high-level strategic <code>Goal</code> models (target entity tracking, cross-layer door subsumption, autonomous wander sampling).</li>
+<li><strong>TransitionMechanics ("The Instinct")</strong>: Evaluates the <a href="../04-intentions/#transition-matrix">ISL Transition Matrix</a> to transition <code>Intention</code> states and map animation actions.</li>
+<li><strong>NavigationMechanics ("The Navigator")</strong>: Manages tactical spatial steering. Validates line-of-sight, extracts obstacle hitboxes, executes RRT avoidance paths, and populates <code>sprite.state.trajectory</code>.</li>
+<li><strong>MotionMechanics ("The Muscle")</strong>: Steers velocity vectors toward <code>sprite.state.trajectory.target</code> and integrates physics.</li>
 </ul>
-<div class="admonition warning">
-<p class="admonition-title">to-be</p>
-<p>This flow represents the intended, to-be flow after Phase 08.02</p>
-</div>
+<p>To visualize how this all ties together for a <a href="../02-sprites/">Sprite</a> in a single frame,</p>
 <div class="highlight"><pre><span></span><code>flowchart TD
     %% Mechanics Nodes
     CM[&quot;CognitionMechanics&quot;]
@@ -1196,7 +1193,7 @@
 <p>The general flow of MotionMechanics is given by,</p>
 <ul>
 <li><strong>Kinematic Motion</strong> Check <code>device.poll()</code>. If directional input is present, accelerate velocity to direction and null out orthogonal velocity. If no input is present, hardcode <code>velocity = (0,0)</code>.</li>
-<li><strong>Motive Motion</strong> Calculate the unit vector pointing from <code>current_position</code> to <code>goal_position</code>. Multiply by <code>character.impulse</code> and <span class="arithmatex">\(\Delta t\)</span>. Add to <code>velocity</code>. Clamp magnitude to <code>character.speed</code>.</li>
+<li><strong>Motive Motion</strong>: Resolves the target coordinate from <code>sprite.state.trajectory.target</code> (falling back to <code>sprite.state.goal.position</code>). Calculates the unit vector pointing from <code>current_position</code> to target. Multiplies by <code>character.impulse</code> and <span class="arithmatex">\(\Delta t\)</span>, adds to <code>velocity</code>, and clamps magnitude to <code>character.speed</code> via <code>physics.dynamics()</code>.</li>
 <li><strong>Frictive Motion</strong> Query <code>Board.tile()</code> at asset's center. Calculate <span class="arithmatex">\(\Delta v = \text{friction} \cdot \Delta t\)</span>. Apply <span class="arithmatex">\(\Delta v\)</span> in the direction opposite to the current <code>velocity</code>. If <span class="arithmatex">\(\Delta v &gt; \vert{}\text{velocity}\vert{}\)</span>, set <code>velocity = (0,0)</code>.</li>
 <li><strong>Inert Motion</strong> Exclude Inert from the above steps. For all assets, apply <span class="arithmatex">\(v \cdot \Delta t\)</span> to the sub-pixel accumulators <code>rx/ry</code>. When <code>rx/ry</code> exceed <span class="arithmatex">\(1.0\)</span> or <span class="arithmatex">\(-1.0\)</span>, cast to <code>int</code>, shift the physical <code>Position</code>, and decrement the accumulator.</li>
 </ul>
@@ -1234,6 +1231,7 @@
 <li><code>collision: CollisioMechanics</code>: Resolves collisions.</li>
 <li><code>combat: CombatMechanics</code>: (Cython) Resolves attack hitbox overlaps, decrements health, etc.</li>
 <li><code>interaction: InteractionMechanics</code>: (Cython) Resolves Asset interactions.</li>
+<li><code>social: SpeechMechanics</code>: Handle <code>speak</code> Intentions and <a href="../08-plots/">Plot calculations</a>.</li>
 </ul>
 <p><strong>InteractionMechanics</strong></p>
 <div class="admonition note">
@@ -1274,27 +1272,43 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <li><strong>Phase 2 - Momentum Transfer:</strong> Bypass the 1D elastic collision calculation <em>only</em> for the Player.</li>
 </ul>
 <h3 id="intentional">Intentional</h3>
-<p>These Mechanics handle the Sprite Intention logic.</p>
+<p>These Mechanics handle Sprite intentionality, goal-seeking, and tactical navigation.</p>
 <ul>
-<li><code>player: PlayerMechanics</code>: Resolve Device input into Player (Intention, Goal)-state.</li>
-<li><code>cognition: CognitionMechanics</code>: Handles Sprite goal-seeking.</li>
-<li><code>transition: TransitionMechanics</code>: Applies the Intention Transition Matrix conditions to all Sprite Sheets.</li>
-<li><code>commerce: CommerceMechanics</code>: Translate Intentions (<code>barter</code>, <code>attract</code>, etc.) into trades and price movements.</li>
-<li><code>social: SpeechMechanics</code>: Handle <code>speak</code> Intentions and <a href="../08-plots/">Plot calculations</a>.</li>
+<li><code>player: PlayerMechanics</code>: Resolves Device input into Player (Intention, Goal)-state.</li>
+<li><code>cognition: CognitionMechanics</code>: Manages high-level strategic Goal selection and memory stacks.</li>
+<li><code>transition: TransitionMechanics</code>: Evaluates ISL condition matrices and transitions Intention states.</li>
+<li><code>navigation: NavigationMechanics</code>: Resolves tactical steering, sensory anchors, line-of-sight, and RRT waypoint queues.</li>
+<li><code>commerce: CommerceMechanics</code>: Translates communicative intentions (<code>barter</code>, <code>attract</code>) into trades and price updates.</li>
 </ul>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>CognitionMechanics mutates Goals, TransitionMechanics mutates Intentions, and the Transition Matrix governs the mapping. This rule <strong>must</strong> be followed at all times.</p>
+<p>CognitionMechanics mutates Goals, TransitionMechanics mutates Intentions, NavigationMechanics populates Trajectories, and MotionMechanics integrates velocities. This separation of concerns <strong>must</strong> be preserved at all times.</p>
 </div>
 <p><strong>CognitionMechanics</strong></p>
-<p>CognitionMechanics acts as the Sprite's "Device." Its job is to manage the Sprite's Goal based on the Sprite's current <a href="../04-intentions/">Intention</a> and its Mutators. For example,</p>
+<p>CognitionMechanics acts as the Sprite's deliberative core. It operates exclusively on high-level <strong>Strategic Goals</strong>:</p>
 <ul>
-<li><code>wander</code>: If the Sprite has no Goal, CognitionMechanics generates a random coordinate within a certain radius and sets it as <code>goal.position</code>. Once reached, it generates a new one.</li>
-<li><code>find / follow / hunt</code>: The Sprite already has a <code>goal.name</code>. CognitionMechanics queries the Board for that target. If the target is within the Sprite's <code>vision.radius</code>, it updates <code>sprite.state.goal.position</code> to match the target's current coordinates. If the target steps out of the radius, <code>goal.position</code> stops updating, freezing at the last known location.</li>
-<li><code>escape</code>: CognitionMechanics finds the threat, calculates the vector away from the threat, and projects a Goal in the opposite direction.</li>
+<li><code>wander</code>: Samples a random coordinate within the vision radius bounded by layer dimensions and commits a <code>Goal(name="wander", category=POSITION)</code>.</li>
+<li><code>find / follow / hunt</code>: Queries the Board for the target entity. If visible, updates <code>goal.position</code> to match the target's physical coordinates. If the target leaves the vision radius, coordinates freeze at the last known position.</li>
+<li><code>escape</code>: Extrapolates a spatial coordinate in the vector direction opposite to the threat.</li>
+<li><strong>Cross-Layer Subsumption</strong>: When a goal's layer mismatches the sprite's layer, Cognition pushes the goal to <code>memory.goals</code> and substitutes a prerequisite <code>OBJECT</code> goal for the nearest transition door.</li>
 </ul>
-<p>Once CognitionMechanics has updated the <code>goal</code>, it hands off the updated state to <a href="#core">MotionMechanics</a></p>
+<p>CognitionMechanics is completely decoupled from geometric obstacles, intermediate waypoints, and line-of-sight raycasts. Intermediate path planning is offloaded entirely to <code>NavigationMechanics</code>.</p>
 <p>Since CognitionMechanics is intrinsically tied to Sprite Intentions and Goals, the cognition workflow is covered in more detail in the <a href="../04-intentions/#cognition">Intentions amd Goals documentation</a>.</p>
+<p><strong>NavigationMechanics</strong></p>
+<p>NavigationMechanics acts as the Sprite's tactical navigator, bridging strategic intent with physical locomotion:</p>
+<ol>
+<li><strong>Goal Verification</strong>: Verifies <code>sprite.state.goal</code> exists and <code>sprite.state.intention</code> belongs to <code>NavigationIntentions</code>. Clears <code>trajectory</code> and yields if false.</li>
+<li><strong>Anchor Resolution</strong>: Computes sensory footprints using <code>anchor(sprite)</code> and target footprint offsets, preventing top-left origin hitbox drift.</li>
+<li><strong>Line-of-Sight Check</strong>: Raycasts using Cython <code>geometry.los()</code> against active layer weights (<code>board.weights</code>) and boundary perimeters (<code>board.perimeters</code>).</li>
+<li><strong>Path Maintenance</strong>:<ul>
+<li><strong>Clear LOS</strong>: Clears <code>trajectory.vertices</code> and sets <code>trajectory.target = sprite.state.goal.position</code>.</li>
+<li><strong>Occluded LOS</strong>: If <code>trajectory.vertices</code> is empty, extracts obstacle hitboxes, executes <code>Planner.plan()</code>, converts waypoints to canvas coordinates by subtracting anchor displacement, and populates <code>trajectory.vertices</code>. Sets <code>trajectory.target = trajectory.vertices[0]</code>.</li>
+<li><strong>Dynamic Invalidation</strong>: If active intermediate waypoints lose LOS due to a moving dynamic body (e.g., pushed crate), invalidates the queue and replans immediately.</li>
+</ul>
+</li>
+<li><strong>Waypoint Arrival</strong>: When the entity arrives within <code>action_radius</code> of <code>trajectory.target</code>, pops the completed waypoint from <code>trajectory.vertices</code> and sets <code>target</code> to the next vertex (or strategic goal when vertices are exhausted).</li>
+<li><strong>Stall &amp; Cooldown Handling</strong>: When RRT cannot resolve a collision-free path, sets <code>trajectory.stalled = True</code> and starts a <code>cooldown</code> timer (<code>settings.PATH_RETRY_INTERVAL</code>) to prevent per-frame re-planning thrash.</li>
+</ol>
 <h2 id="configuration">Configuration</h2>
 <ul>
 <li>Location: <code>/src/data/config/mechanics/main.yaml</code></li>

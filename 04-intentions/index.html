@@ -1545,7 +1545,8 @@
 <li><code>constants</code>: A dictionary of Enums. Keys are: <code>AssetInstances</code>, <code>AssetCategories</code>, <code>Goals</code>, <code>Intentions</code>, <code>Motivations</code>.</li>
 <li><code>functions</code>: A dictionary of boolean helper functions. All functions return a truth value.<ul>
 <li><code>is_near(p1: Position, p2: Position, radius: int)</code>: Determine if positions are close.</li>
-<li><code>check_goals(m: List[Goal], category: str)</code>: Determine if a GoalCategory exists in the Sprite memory.</li>
+<li><code>any_goals(m: List[Goal], category: str)</code>: Determine if a GoalCategory exists in the Sprite memory.</li>
+<li><code>any_memories_visible(sprite: SpriteState, sprites: Dict[str, SpriteState], categories: List[GoalCategories])</code></li>
 </ul>
 </li>
 </ul>
@@ -1595,9 +1596,10 @@
 <li><code>if state.intention == Intentions.MINE: state.animation.action = board.equipment.tools[state.equipment.tools].action</code></li>
 </ul>
 <h3 id="directions">Directions</h3>
-<p>Sprite Animation Direction is a function of Sprite Position state and Goal state,</p>
-<pre><code>f(Position, Goal) = Direction
-</code></pre>
+<p>Sprite Animation Direction is a function of Sprite Position state and Trajectory Target (falling back to Goal Position):</p>
+<div class="arithmatex">\[
+f(\text{Position}, \text{TrajectoryTarget}) = \text{Direction}
+\]</div>
 <p><strong>Player Mappings</strong></p>
 <ul>
 <li><code>if input.scancode == rightarrow: goal.position.x += speed</code></li>
@@ -1606,41 +1608,38 @@
 <li><code>if input.scancode == downarrow: goal.position.y += speed</code></li>
 </ul>
 <p><strong>Formulae</strong></p>
-<p>Let <code>dx = position.x - goal.position.x, dy = position.y - goal.position.y</code>.</p>
+<p>Let <span class="arithmatex">\(\text{target} = \text{trajectory.target} \lor \text{goal.position}\)</span>.</p>
+<p>Let <span class="arithmatex">\(dx = \text{position.x} - \text{target.x}\)</span> and <span class="arithmatex">\(dy = \text{position.y} - \text{target.y}\)</span>.</p>
 <ul>
-<li><code>if dy &gt; dx, dy &gt; -dx: direction = down</code></li>
-<li><code>if dy &lt; dx, dy &gt; -dx: direction = right</code></li>
-<li><code>if dy &lt; dx, dy &lt; -dx: direction = up</code></li>
-<li><code>if dy &gt; dx, dy &gt; -dx: direction = left</code></li>
+<li><code>if dy &gt; dx and dy &gt; -dx</code>: <span class="arithmatex">\(\text{direction} = \text{down}\)</span></li>
+<li><code>if dy &lt; dx and dy &gt; -dx</code>: <span class="arithmatex">\(\text{direction} = \text{right}\)</span></li>
+<li><code>if dy &lt; dx and dy &lt; -dx</code>: <span class="arithmatex">\(\text{direction} = \text{up}\)</span></li>
+<li><code>if dy &gt; dx and dy &lt; -dx</code>: <span class="arithmatex">\(\text{direction} = \text{left}\)</span></li>
 </ul>
 <h2 id="mechanics">Mechanics</h2>
-<p>The (Intention, Goal) of a Sprite is managed across the application lifecycle by <a href="../05-mechanics/">Mechanics</a>. </p>
+<p>The (Intention, Goal, Trajectory) triad of a Sprite is managed across the application lifecycle by <a href="../05-mechanics/">Mechanics</a>:</p>
 <ul>
-<li>CognitionMechanics ("<em>The Brain</em>"): Manages the Goal Lifecycle. It evaluates the environment, consults Motivations and Meters, sets the Goal, determines if the Goal has been achieved (or invalidated), and manages the Memory stack.</li>
-<li>TransitionMechanics ("<em>The Instinct</em>"): Manages the Intention Transitions. It blindly evaluates the Transitions condition and shunts the Sprite to its next Intention if they are satisfied.</li>
-<li>SpatialMechanics (<em>The Muscle</em>): CombatMechanics, InteractionMechanics, etc., alter the physical world state (e.g., killing the target, opening the Chest). This physical change is what signals CognitionMechanics on the next tick that the goal is achieved.</li>
+<li><strong>CognitionMechanics ("The Brain")</strong>: Manages the Strategic Goal Lifecycle. Evaluates environmental perceptions, consults Motivations and Psyche, sets and completes Goals, and manages episodic <code>memory.goals</code>.</li>
+<li><strong>TransitionMechanics ("The Instinct")</strong>: Manages Intention Transitions. Evaluates ISL conditions sequentially and shunts the Sprite to its next Intention state when criteria are satisfied.</li>
+<li><strong>NavigationMechanics ("The Navigator")</strong>: Manages Tactical Trajectories. Queries sensory anchors, obstacle geometry, and LOS raycasts to maintain <code>sprite.state.trajectory</code> and intermediate RRT waypoints.</li>
+<li><strong>MotionMechanics ("The Muscle")</strong>: Actuates movement. Accelerates velocity vectors toward <code>sprite.state.trajectory.target</code> via <code>physics.dynamics()</code>.</li>
+<li><strong>SpatialMechanics</strong>: Resolves collisions, combat damage, and physical object interactions (e.g., passing through Doors).</li>
 </ul>
 <h3 id="cognition">Cognition</h3>
-<p>CognitionMechanics manages the life cycle of Sprite Goals.</p>
+<p>CognitionMechanics manages the lifecycle of strategic Sprite Goals across seven deterministic phases:</p>
 <ol>
-<li><strong>Phase A: Resolution</strong>: Conditions are evaluated for goal resolution<ul>
-<li><code>if goal.category == TARGET</code>: If <code>target.mutators.triggers.dead</code>, <code>goal = None</code>.</li>
-<li><code>if goal.category == SUBJECT</code>: If <code>not psyche.dialogue</code>, <code>goal = None</code>.</li>
-<li><code>if goal.category == POSITION</code>: If <code>position - goal.position &lt; mutators.parameters.action.radius</code>.</li>
-<li><code>if goal.category == OBJECT</code>: TODO</li>
-<li><code>if goal.category == PROPERTY</code>: If <code>goal.name in memory.property</code>, <code>goal = None</code>.</li>
+<li><strong>Phase A: Resolution</strong>: Evaluates whether active strategic goals are complete or abandoned:<ul>
+<li><code>category == TARGET</code>: If <code>target.mutators.triggers.dead</code>, resolves goal (<code>goal = None</code>). If within <code>action.radius</code> without line of sight, shelves goal into <code>memory.goals</code> and abandons active tracking.</li>
+<li><code>category == SUBJECT</code>: If <code>not psyche.dialogue</code>, resolves goal. If within <code>action.radius</code> without sight, shelves goal into <code>memory.goals</code>, sets <code>goal = None</code>, and spawns a <code>CONFUSION</code> expression.</li>
+<li><code>category == POSITION</code>: If <code>is_near(position, goal.position, action.radius)</code>, resolves goal (<code>goal = None</code>).</li>
+<li><code>category == OBJECT</code>: If <code>sprite.layer != goal.layer</code>, the transition door was traversed; resolves goal (<code>goal = None</code>).</li>
+<li><code>category == PROPERTY</code>: If <code>goal.name in memory.property</code>, resolves goal.</li>
 </ul>
 </li>
-<li><strong>Phase B: Scan</strong>: <ul>
-<li>A scan of the <code>mutator.parameter.vision.radius</code> is conducted. If a Sprite is found, its location is updated in <code>memory.sprites</code>.</li>
-</ul>
-</li>
-<li><strong>Phase C: Memory</strong>: The Sprite's memory is managed and updated relative to its vision. <ul>
-<li>If the Sprite has no Goals, Goals in the Memory are popped off the stack and added to the current Goal. </li>
-</ul>
-</li>
-<li><strong>Phase D: Ideation</strong>: If the Sprite has no Goals, environmental and proximal Goals are ideated. <ul>
-<li><code>if psyche.dialogue</code>: If target Sprite is within <code>mutators.parameters.vision.radius</code>, then <code>goal.category = Goals.SUBJECT.value</code> and <code>goal.name</code> is set to target Sprite.</li>
+<li><strong>Phase B: Scan</strong>: Scans <code>vision.radius</code> on the same layer. Caches discovered entities into <code>memory.sprites</code> and updates coordinates of corresponding entries in <code>memory.goals</code>.</li>
+<li><strong>Phase C: Memory</strong>: Pops suspended strategic goals off <code>memory.goals</code> into <code>sprite.state.goal</code> when in <code>idle</code>, <code>find</code>, or <code>hunt</code>. Dormant targets whose last known positions were empty are skipped until sighted again.</li>
+<li><strong>Phase D: Ideation</strong>: Spontaneously generates new strategic goals from internal psychological state:<ul>
+<li><code>if psyche.dialogue</code>: Scans <code>board.characters()</code> on the same layer within <code>vision.radius</code>. Assigns <code>Goal(category=SUBJECT, name=target)</code>.</li>
 </ul>
 </li>
 <li><strong>Phase E: Motivation</strong>: If the Sprite has still no Goals, overarching Motivations are used to form new Goals. These goals are pushed onto the <code>memory.goals</code> stack.<ul>
@@ -1653,21 +1652,14 @@
 <li><code>if psyche.motivation.SAFETY</code>: TODO</li>
 </ul>
 </li>
-<li><strong>Phase F: Tracking</strong>: The Sprite's current Goal is tracked.<ul>
-<li><code>if goal.category in [TARGET, SUBJECT]</code>: <ul>
-<li><code>if goal.memory.sprites.get(goal.name): goal.position = goal.memory.sprites[goal.name].position</code></li>
-<li>TODO</li>
+<li><strong>Phase F: Tracking</strong>: Updates coordinates of active strategic goals:<ul>
+<li><code>category in [TARGET, SUBJECT]</code>: Updates <code>goal.position = target.position</code> when within <code>vision.radius</code>. Freezes coordinates when sight is lost.</li>
+<li><strong>Cross-Layer Subsumption</strong>: If <code>goal.layer != sprite.layer</code>, subsumes active goal into <code>memory.goals</code> and assigns a prerequisite <code>OBJECT</code> goal for the nearest connecting Door.</li>
 </ul>
 </li>
-<li><code>if goal.category == POSITION</code>: </li>
-<li><code>if goal.category == OBJECT</code>: </li>
-<li><code>if goal.category == PROERTY</code>:</li>
-</ul>
-</li>
-<li><strong>Phase F: Projection</strong><ul>
-<li><code>if intention == ESCAPE</code>:</li>
-<li><code>if intention == FIND</code>:</li>
-<li><code>if intention == WANDER</code>: </li>
+<li><strong>Phase G: Projection</strong>:<ul>
+<li><code>intention == ESCAPE</code>: Extrapolates a destination coordinate in the opposite vector direction of the threat.</li>
+<li><code>intention == WANDER</code>: Samples a random destination within <span class="arithmatex">\([-\text{radius}_{\text{vision}}, \text{radius}_{\text{vision}}]\)</span>, clamps to layer dimensions, and commits <code>Goal(name="wander", category=POSITION)</code>.</li>
 </ul>
 </li>
 </ol>

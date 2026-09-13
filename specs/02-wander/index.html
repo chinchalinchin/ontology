@@ -743,17 +743,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-interpoints" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step: Interpoints
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#step-exitpoints" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1085,17 +1074,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#step-interpoints" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Step: Interpoints
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#step-exitpoints" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1160,13 +1138,13 @@
 <li><strong>Terminal Action Loops (e.g., Dialogue, Combat)</strong>: Named after the discrete external emission or physical world mutation they produce (<code>speak:idle</code>, <code>attack:idle</code>, <code>interact:idle</code>). These are closed, finite cycles.</li>
 <li><strong>Residence Search Loops (e.g., Wander)</strong>: Named after an extended behavioral residence state. The Wander Loop produces no discrete terminal world event; it functions as an open-ended exploratory engine.</li>
 </ol>
-<p>The Wander Loop operates as a <strong>subsumptive secondary loop</strong>. It is traversed to resolve situational gaps in primary loops—specifically when an entity loses direct line of sight to a target or has no immediate ideated objective. Rather than freezing, the entity enters an autonomous spatial walk, preserving suspended primary goals in <code>memory.goals</code> until sensory predicates permit a re-entry transition into a terminal action loop.</p>
+<p>The Wander Loop operates as a <strong>subsumptive secondary loop</strong>. It is entered when an entity loses direct sensory contact with a target or exhausts active ideations. Suspended primary goals are preserved in <code>memory.goals</code> until sensory predicates trigger re-entry into a terminal action loop.</p>
+<p>Tactical pathfinding around obstacles does <strong>not</strong> route through the Wander Loop. RRT steering is managed independently by <code>NavigationMechanics</code> via <code>sprite.state.trajectory</code>. Entities navigating around walls remain continuously in their primary intentions (<code>hunt</code>, <code>find</code>) without dropping into <code>idle</code> or <code>wander</code>.</p>
 <pre class="mermaid"><code>flowchart TD
     A[Primary Loop Suspended] --&gt; B[wander]
     B --&gt;|Target Seen| C[any_memories_visible]
     C --&gt; D[find / hunt]
-    D --&gt;|No Vision| B
-    D --&gt;|Waypoint Step| B</code></pre>
+    D --&gt;|Target Lost| B</code></pre>
 <h5 id="prologue">Prologue</h5>
 <p><strong>Subsumption</strong></p>
 <p>Before entering the Wander Loop from an interrupted action loop (<code>find</code> or <code>hunt</code>), <code>CognitionMechanics._resolve</code> ensures the unresolved overarching goal is saved to <code>sprite.state.memory.goals</code>. This guarantees the target identity, category, and last-known coordinate remain queryable throughout exploratory navigation.</p>
@@ -1195,23 +1173,14 @@ y_{\text{dest}} = \max\left(0, \min(y_{\text{pos}} + \Delta y, L_{\text{layer}} 
 <li><code>sprite.layer == sprite.goal.layer</code></li>
 </ul>
 <div class="admonition note">
-<p class="admonition-title">Waypoint / Position Consumption</p>
-<p>Fires when an RRT waypoint (<code>path-*</code>) or a persistent positional target is loaded as the active goal.</p>
-</div>
-<h5 id="step-interpoints">Step: Interpoints</h5>
-<p><strong>wander:idle</strong></p>
-<ul>
-<li><code>not sprite.goal</code></li>
-</ul>
-<div class="admonition note">
-<p class="admonition-title">Waypoint Step Resolution</p>
-<p>When an RRT waypoint (<code>path-*</code>) is cleared in <code>_resolve()</code>, the goal is nulled. The Sprite drops to <code>idle</code> for a single tick, permitting <code>CognitionMechanics._remember()</code> to pop the next sequential waypoint off <code>memory.goals</code>.</p>
+<p class="admonition-title">Positional Goal Consumption</p>
+<p>Fires when an autonomous wander destination or persistent coordinate goal is loaded as the active goal.</p>
 </div>
 <h5 id="step-exitpoints">Step: Exitpoints</h5>
 <p><strong>wander:find</strong></p>
 <ul>
 <li><code>sprite.goal</code></li>
-<li><code>functions.any_memories_visible(sprite, sprites, constants.Goals.SUBJECT.value)</code></li>
+<li><code>functions.any_memories_visible(sprite, sprites, [ constants.Goals.SUBJECT.value ])</code></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Passive Target Reacquisition</p>
@@ -1220,7 +1189,7 @@ y_{\text{dest}} = \max\left(0, \min(y_{\text{pos}} + \Delta y, L_{\text{layer}} 
 <p><strong>wander:hunt</strong></p>
 <ul>
 <li><code>sprite.goal</code></li>
-<li><code>functions.any_memories_visible(sprite, sprites, constants.Goals.TARGET.value)</code></li>
+<li><code>functions.any_memories_visible(sprite, sprites, [ constants.Goals.TARGET.value ])</code></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Hostile Target Reacquisition</p>
@@ -1228,8 +1197,7 @@ y_{\text{dest}} = \max\left(0, \min(y_{\text{pos}} + \Delta y, L_{\text{layer}} 
 </div>
 <p><strong>wander:idle</strong></p>
 <ul>
-<li><code>sprite.goal</code></li>
-<li><code>sprite.goal.category != constants.Goals.POSITION.value</code></li>
+<li><code>not sprite.goal</code></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">External Goal Preemption</p>

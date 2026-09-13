@@ -444,6 +444,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#memory_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#inventory" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1290,6 +1301,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#memory_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#inventory" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1535,12 +1557,12 @@
 <p>Goals are the current focus of the Sprite's path-finding and Direction resolution.</p>
 <p>See <a href="../04-intentions/">Goals documentation</a> for more information.</p>
 <h3 id="trajectory">Trajectory</h3>
-<p>When the path to a Sprite's Goal is blocked, the Sprite uses a <a href="../10-architecture/#math">Rapidly-exploring Random Tree algorithm</a> under the hood to generate a series of consecutive waypoints around obstacles to its Goal. This path is stored in the Sprite's <code>trajectory</code>.</p>
+<p>Tactical obstacle avoidance is managed via <code>TrajectoryState</code>. When direct line of sight to a strategic Goal is occluded, <code>NavigationMechanics</code> executes an <a href="../10-architecture/#math">Rapidly-exploring Random Tree pathfinding routine</a> and populates the trajectory buffer:</p>
 <ul>
-<li><code>target</code>: The immediate physical coordinate <code>(x, y)</code> the Sprite must steer toward on the current tick. If line of sight to the strategic goal is clear, <code>target == sprite.state.goal.position</code>. If occluded, <code>target == waypoints[0]</code>.</li>
-<li><code>vertices</code>: The FIFO queue of intermediate RRT avoidance coordinates.</li>
-<li><code>stalled</code>: Boolean flag set when RRT fails to resolve a valid route, notifying deliberative systems of an impassable obstruction.</li>
-<li><code>cooldown</code>: Engine tick accumulator preventing thrashing re-evaluations against impassable geometries.</li>
+<li><code>target</code>: The immediate physical coordinate <span class="arithmatex">\((x, y)\)</span> that <code>MotionMechanics</code> steers toward on the current tick. If line of sight to the strategic goal is clear, <code>target == sprite.state.goal.position</code>. If occluded, <code>target == vertices[0]</code>.</li>
+<li><code>vertices</code>: The FIFO queue of intermediate RRT avoidance coordinates, adjusted for sensory anchor displacement.</li>
+<li><code>stalled</code>: Boolean flag set when RRT fails to resolve a valid route, signaling deliberative systems of an impassable obstruction.</li>
+<li><code>cooldown</code>: Tick accumulator enforcing a backoff interval (<code>PATH_RETRY_INTERVAL</code>) before retrying path generation against impassable geometries.</li>
 </ul>
 <p>See <a href="../05-mechanics/#intentional">NavigationMechanics</a> for more information on path generation and navigation.</p>
 <h3 id="meters">Meters</h3>
@@ -1621,14 +1643,16 @@
 <li><code>safety</code></li>
 </ul>
 <h3 id="memory">Memory</h3>
-<p><em>Memory</em> is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. </p>
+<h3 id="memory_1">Memory</h3>
+<p><em>Memory</em> stores episodic and relational data while the Sprite's active Goal focuses elsewhere:</p>
 <ul>
-<li><code>memory.goals: DIct[str, Goal]</code>: Remembered Goals. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation. Keyed by the <code>asset.name</code> of the Goal.</li>
-<li><code>memory.prices: Dict[str, float]</code>:</li>
-<li><code>memory.property: Dict[str, Position]</code></li>
-<li><code>memory.relationship: Dict[str, Relationships]</code>:</li>
-<li><code>memory.rumors: List[str]</code>: List of Lexicon keys the Sprite has heard through entering into the <code>speak</code> Intention.</li>
-<li><code>memory.sprites: Dict[str, Position]</code>: A map of Sprite locations the Sprite remembers, keyed by Sprite Name and last remembered location. </li>
+<li><code>memory.goals: Dict[str, Goal]</code>: Episodic store of true strategic goals. Keyed by the entity <code>name</code> (or door name during cross-layer subsumption). Strategic memory stores no intermediate path waypoints.</li>
+<li><code>memory.sprites: Dict[str, Position]</code>: Map of last-known Sprite locations keyed by entity name.</li>
+<li><code>memory.doors: Dict[str, str]</code>: Mapped door transitions (<code>door_name: outlayer</code>).</li>
+<li><code>memory.prices: Dict[str, float]</code>: Valuations for inventory barter.</li>
+<li><code>memory.property: Dict[str, Position]</code>: Locations of player/sprite-owned structures.</li>
+<li><code>memory.relationships: Dict[str, Relationships]</code>: Entity social relationships (<code>FRIEND</code>, <code>FAMILY</code>, <code>FOE</code>, <code>STRANGER</code>).</li>
+<li><code>memory.rumors: List[str]</code>: Lexicon dialogue keys received via conversation.</li>
 </ul>
 <p><strong>Prices</strong></p>
 <p>Sprites keep a dictionary keyed by inventory loot for the loot's associated value, known as its Prices. This distionary represents the Sprite's "belief" regarding the fair value of its inventory when engaging in the <code>barter</code> <a href="../04-intentions/">Intention</a>. This dictionary only has new keys appended to when the Sprite acquires a new item in its Inventory, e.g. the Sprite doesn't have "initial" Prices.</p>
