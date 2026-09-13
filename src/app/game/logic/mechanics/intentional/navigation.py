@@ -6,7 +6,7 @@ Package for managing tactical pathfinding trajectories and steering waypoints.
 from __future__ import annotations
 
 # Standard Libraries
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING
 import collections
 import logging
 

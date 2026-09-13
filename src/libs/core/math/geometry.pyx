@@ -13,6 +13,10 @@ from libs.core.models cimport (
     Boundary
 )
 
+# -----------------------------------------------------------------------------
+# BASIC GEOMETRY
+# -----------------------------------------------------------------------------
+
 cpdef tuple intersects(
     Position pos1, 
     Dimensions dim1, 
@@ -56,6 +60,8 @@ cpdef bint onscreen(
     Dimensions p_dim, 
     Dimensions screen
 ):
+    """
+    """
     cdef int cam_x = p_pos.x + (p_dim.w // 2) - (screen.w // 2)
     cdef int cam_y = p_pos.y + (p_dim.l // 2) - (screen.l // 2)
     
@@ -72,6 +78,8 @@ cpdef bint cone(
     double cos_threshold, 
     str direction
 ):
+    """
+    """
     cdef int dx = tx - sx
     cdef int dy = ty - sy
     cdef int dist_sq = (dx * dx) + (dy * dy)
@@ -108,92 +116,40 @@ cpdef bint nearby(
     int radius
 ):
     """
-    Zero-allocation squared distance check. Replaces Python-side nearby() calls.
+    Zero-allocation squared distance check. 
     """
     cdef int dx = tx - sx
     cdef int dy = ty - sy
     return (dx * dx + dy * dy) < (radius * radius)
 
 
-# -----------------------------------------------------------------------------
-# LINE OF SIGHT & RAYCASTING
-# -----------------------------------------------------------------------------
-
-cpdef bint bisects(
-    float x1, 
-    float y1, 
-    float x2, 
-    float y2, 
-    float rx, 
-    float ry, 
-    float rw, 
-    float rl
+cpdef tuple bounded(
+    int a_x, 
+    int a_y, 
+    list hitboxes,
+    int b_x, 
+    int b_y,
+    int b_w, 
+    int b_l
 ):
     """
-    Liang-Barsky line clipping algorithm to check if a segment intersects an AABB.
-    Returns True if the line segment intersects the rectangle interior, False otherwise.
+    Evaluates Asset hitboxes against a raw mathematical Boundary constraint.
     """
-    cdef float dx = x2 - x1
-    cdef float dy = y2 - y1
-    cdef float p[4]
-    cdef float q[4]
-    cdef float EPS = 1e-5
+    cdef int x1, y1, w1, h1
+    cdef Hitbox hb
     
-    p[0] = -dx
-    q[0] = x1 - rx
-    p[1] = dx
-    q[1] = (rx + rw) - x1
-    p[2] = -dy
-    q[2] = y1 - ry
-    p[3] = dy
-    q[3] = (ry + rl) - y1
-
-    cdef float u1 = 0.0
-    cdef float u2 = 1.0
-    cdef int i
-    cdef float r
-
-    for i in range(4):
-        if p[i] == 0:
-            # Line is parallel to clipping edge: ignore if on or outside boundary
-            if q[i] <= EPS:
-                return False
-        else:
-            r = q[i] / p[i]
-            if p[i] < 0:
-                # Directed into half-space (entry)
-                if r > u2:
-                    return False
-                elif r > u1:
-                    u1 = r
-            elif p[i] > 0:
-                # Directed out of half-space (exit)
-                # If exit occurs at or before ray origin, vector is directed away
-                if r <= u1 + EPS:
-                    return False
-                elif r < u2:
-                    u2 = r
-
-    # Require non-degenerate penetration depth to count as occlusion
-    if u1 >= u2 - EPS:
-        return False
+    for item in hitboxes:
+        hb = <Hitbox>item
+        x1 = a_x + hb.position.x
+        y1 = a_y + hb.position.y
+        w1 = hb.dimensions.w
+        h1 = hb.dimensions.l
         
-    return True
-
-
-cpdef bint los(float x1, float y1, float x2, float y2, list rects):
-    """
-    Queries Line of Sight against a list of primitive AABBs.
-    Returns True if LOS is completely clear, False if blocked by any rect.
-    """
-    cdef tuple r
-    for r in rects:
-        if bisects(x1, y1, x2, y2, r[0], r[1], r[2], r[3]):
-            return False
-    return True
-# -----------------------------------------------------------------------------
-# SWEEP-LINE CONTOUR ALGORITHM
-# -----------------------------------------------------------------------------
+        if (x1 < b_x + b_w and x1 + w1 > b_x and
+            y1 < b_y + b_l and y1 + h1 > b_y):
+            return (hb,)
+            
+    return None
 
 
 cdef list merge(list intervals):
@@ -221,6 +177,7 @@ cdef list merge(list intervals):
             
     merged.append((current_start, current_end))
     return merged
+
 
 cdef list xor(list A, list B):
     """
@@ -257,6 +214,102 @@ cdef list xor(list A, list B):
         
     return merge(xor_intervals)
 
+# -----------------------------------------------------------------------------
+# LINE OF SIGHT & RAYCASTING
+# -----------------------------------------------------------------------------
+
+cdef bint c_punctures(
+    float x1, 
+    float y1, 
+    float x2, 
+    float y2, 
+    float rx, 
+    float ry, 
+    float rw, 
+    float rl
+) noexcept nogil:
+    """
+    Liang-Barsky line clipping algorithm checking if a segment intersects an AABB.
+    Returns True if the segment intersects the rectangle interior, False otherwise.
+    Callable without the GIL.
+    """
+    cdef float dx = x2 - x1
+    cdef float dy = y2 - y1
+    cdef float p[4]
+    cdef float q[4]
+    cdef float EPS = 1e-5
+    
+    p[0] = -dx
+    q[0] = x1 - rx
+    p[1] = dx
+    q[1] = (rx + rw) - x1
+    p[2] = -dy
+    q[2] = y1 - ry
+    p[3] = dy
+    q[3] = (ry + rl) - y1
+
+    cdef float u1 = 0.0
+    cdef float u2 = 1.0
+    cdef int i
+    cdef float r
+
+    for i in range(4):
+        if p[i] == 0:
+            # Line is parallel to clipping edge: ignore if on or outside boundary
+            if q[i] <= EPS:
+                return False
+        else:
+            r = q[i] / p[i]
+            if p[i] < 0:
+                # Directed into half-space (entry)
+                if r > u2:
+                    return False
+                elif r > u1:
+                    u1 = r
+            elif p[i] > 0:
+                # Directed out of half-space (exit)
+                if r <= u1 + EPS:
+                    return False
+                elif r < u2:
+                    u2 = r
+
+    # Require non-degenerate penetration depth to count as occlusion
+    if u1 >= u2 - EPS:
+        return False
+        
+    return True
+
+
+cpdef bint punctures(
+    float x1, 
+    float y1, 
+    float x2, 
+    float y2, 
+    float rx, 
+    float ry, 
+    float rw, 
+    float rl
+):
+    """
+    Liang-Barsky line clipping algorithm. Delegates directly to c_punctures.
+    """
+    return c_punctures(x1, y1, x2, y2, rx, ry, rw, rl)
+
+
+cpdef bint los(float x1, float y1, float x2, float y2, list rects):
+    """
+    Queries Line of Sight against a list of primitive AABBs.
+    Returns True if LOS is completely clear, False if blocked by any rect.
+    """
+    cdef tuple r
+    for r in rects:
+        if c_punctures(x1, y1, x2, y2, r[0], r[1], r[2], r[3]):
+            return False
+    return True
+
+# -----------------------------------------------------------------------------
+# SWEEP-LINE CONTOUR ALGORITHM
+# -----------------------------------------------------------------------------
 
 cpdef list contours(list rects):
     """
@@ -345,26 +398,3 @@ cpdef list contours(list rects):
         prev_merged_h = curr_merged_h
 
     return boundaries
-
-cpdef tuple bounded(
-    int a_x, int a_y, list hitboxes,
-    int b_x, int b_y, int b_w, int b_l
-):
-    """
-    Evaluates Asset hitboxes against a raw mathematical Boundary constraint.
-    """
-    cdef int x1, y1, w1, h1
-    cdef Hitbox hb
-    
-    for item in hitboxes:
-        hb = <Hitbox>item
-        x1 = a_x + hb.position.x
-        y1 = a_y + hb.position.y
-        w1 = hb.dimensions.w
-        h1 = hb.dimensions.l
-        
-        if (x1 < b_x + b_w and x1 + w1 > b_x and
-            y1 < b_y + b_l and y1 + h1 > b_y):
-            return (hb,)
-            
-    return None

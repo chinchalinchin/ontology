@@ -36,6 +36,28 @@ cpdef bint nearby(
     int radius
 )
 
+cdef bint c_punctures(
+    float x1, 
+    float y1, 
+    float x2, 
+    float y2, 
+    float rx, 
+    float ry, 
+    float rw, 
+    float rl
+) noexcept nogil
+
+cpdef bint punctures(
+    float x1, 
+    float y1, 
+    float x2, 
+    float y2, 
+    float rx, 
+    float ry, 
+    float rw, 
+    float rl
+)
+
 cpdef list contours(
     list rects
 )

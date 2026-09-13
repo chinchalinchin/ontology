@@ -92,10 +92,10 @@ class CognitionMechanics(Mechanic):
         if goal.category == Goals.TARGET.value:
             return board.character(goal.name).mutators.triggers.dead
 
-        elif goal.category == Goals.SUBJECT.value:
+        if goal.category == Goals.SUBJECT.value:
             return sprite.state.psyche.dialogue is None
 
-        elif goal.category == Goals.POSITION.value:
+        if goal.category == Goals.POSITION.value:
             return CognitionMechanics.nearby(
                 sprite.state.goal.position, 
                 sprite.state.position,
@@ -104,11 +104,11 @@ class CognitionMechanics(Mechanic):
         
         elif goal.category == Goals.OBJECT.value:
             # TODO:
-            pass
+            return True
 
         elif goal.category == Goals.PROPERTY.value:
             # TODO:
-            pass
+            return True
 
 
     @staticmethod

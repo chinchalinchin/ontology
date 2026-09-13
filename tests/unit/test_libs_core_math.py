@@ -104,24 +104,24 @@ def test_physics_integrate():
 # RAYCASTING & LINE OF SIGHT TESTS
 # ----------------------------------------------------------------------------------------
 
-def test_geometry_bisects_intersection():
+def test_geometry_punctures_intersection():
     # Segment from (0, 10) to (100, 10) through box (40, 0, 20, 20)
-    assert geometry.bisects(0.0, 10.0, 100.0, 10.0, 40.0, 0.0, 20.0, 20.0) is True
+    assert geometry.punctures(0.0, 10.0, 100.0, 10.0, 40.0, 0.0, 20.0, 20.0) is True
 
 
-def test_geometry_bisects_clear():
+def test_geometry_punctures_clear():
     # Segment passes safely above the bounding box
-    assert geometry.bisects(0.0, 50.0, 100.0, 50.0, 40.0, 0.0, 20.0, 20.0) is False
+    assert geometry.punctures(0.0, 50.0, 100.0, 50.0, 40.0, 0.0, 20.0, 20.0) is False
 
 
-def test_geometry_bisects_origin_inside_box():
+def test_geometry_punctures_origin_inside_box():
     # Ray originating inside the obstacle
-    assert geometry.bisects(45.0, 10.0, 100.0, 10.0, 40.0, 0.0, 20.0, 20.0) is True
+    assert geometry.punctures(45.0, 10.0, 100.0, 10.0, 40.0, 0.0, 20.0, 20.0) is True
 
 
-def test_geometry_bisects_parallel_outside():
+def test_geometry_punctures_parallel_outside():
     # Segment parallel to X axis outside Y boundaries
-    assert geometry.bisects(0.0, -10.0, 100.0, -10.0, 40.0, 0.0, 20.0, 20.0) is False
+    assert geometry.punctures(0.0, -10.0, 100.0, -10.0, 40.0, 0.0, 20.0, 20.0) is False
 
 
 def test_geometry_los_unobstructed():

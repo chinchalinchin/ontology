@@ -28,6 +28,10 @@ ext_modules = [
         sources=["src/libs/core/math/space.pyx"],
     ),
     Extension(
+        "libs.core.math.paths",
+        sources=["src/libs/core/math/paths.pyx"]
+    ),
+    Extension(
         "libs.graphics.render",
         sources=["src/libs/graphics/render.pyx"],
         libraries=["SDL2", "SDL2_image", "SDL2_ttf"],

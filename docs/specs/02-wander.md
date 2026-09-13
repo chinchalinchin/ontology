@@ -15,15 +15,16 @@ There is an inherent ambiguity in designating an automaton cycle an "Intention L
 1. **Terminal Action Loops (e.g., Dialogue, Combat)**: Named after the discrete external emission or physical world mutation they produce (`speak:idle`, `attack:idle`, `interact:idle`). These are closed, finite cycles.
 2. **Residence Search Loops (e.g., Wander)**: Named after an extended behavioral residence state. The Wander Loop produces no discrete terminal world event; it functions as an open-ended exploratory engine.
 
-The Wander Loop operates as a **subsumptive secondary loop**. It is traversed to resolve situational gaps in primary loops—specifically when an entity loses direct line of sight to a target or has no immediate ideated objective. Rather than freezing, the entity enters an autonomous spatial walk, preserving suspended primary goals in `memory.goals` until sensory predicates permit a re-entry transition into a terminal action loop.
+The Wander Loop operates as a **subsumptive secondary loop**. It is entered when an entity loses direct sensory contact with a target or exhausts active ideations. Suspended primary goals are preserved in `memory.goals` until sensory predicates trigger re-entry into a terminal action loop.
+
+Tactical pathfinding around obstacles does **not** route through the Wander Loop. RRT steering is managed independently by `NavigationMechanics` via `sprite.state.trajectory`. Entities navigating around walls remain continuously in their primary intentions (`hunt`, `find`) without dropping into `idle` or `wander`.
 
 ```mermaid
 flowchart TD
     A[Primary Loop Suspended] --> B[wander]
     B -->|Target Seen| C[any_memories_visible]
     C --> D[find / hunt]
-    D -->|No Vision| B
-    D -->|Waypoint Step| B
+    D -->|Target Lost| B
 ```
 
 ##### Prologue
@@ -61,17 +62,8 @@ The resulting destination is committed as `Goal(name="wander", category=Goals.PO
 * `sprite.goal.category == constants.Goals.POSITION.value`
 * `sprite.layer == sprite.goal.layer`
 
-!!! note "Waypoint / Position Consumption"
-    Fires when an RRT waypoint (`path-*`) or a persistent positional target is loaded as the active goal.
-
-##### Step: Interpoints
-
-**wander:idle**
-
-* `not sprite.goal`
-
-!!! note "Waypoint Step Resolution"
-    When an RRT waypoint (`path-*`) is cleared in `_resolve()`, the goal is nulled. The Sprite drops to `idle` for a single tick, permitting `CognitionMechanics._remember()` to pop the next sequential waypoint off `memory.goals`.
+!!! note "Positional Goal Consumption"
+    Fires when an autonomous wander destination or persistent coordinate goal is loaded as the active goal.
 
 ##### Step: Exitpoints
 
@@ -93,8 +85,7 @@ The resulting destination is committed as `Goal(name="wander", category=Goals.PO
 
 **wander:idle**
 
-* `sprite.goal`
-* `sprite.goal.category != constants.Goals.POSITION.value`
+* `not sprite.goal`
 
 !!! note "External Goal Preemption"
 Fires if a mechanic, plot trigger, or mutator injects a non-positional goal directly into the active state.

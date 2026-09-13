@@ -78,7 +78,7 @@ def test_planner_check_collision():
     blocked_node = Node(100.0, 10.0)
     clear_node = Node(0.0, 50.0)
 
-    # Bisects obstacle at (40, 0, 20, 20)
+    # Punctures obstacle at (40, 0, 20, 20)
     assert planner._check_collision(near_node, blocked_node, planner.obstacles) is False
     # Avoids obstacle
     assert planner._check_collision(near_node, clear_node, planner.obstacles) is True

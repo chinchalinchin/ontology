@@ -380,3 +380,100 @@ physics.dynamics(
 * [!: User Task] Subtask: Add unit tests in `tests/unit/test_app_game_logic_mechanics_intentional_navigation.py` validating trajectory generation, waypoint advancement, and dynamic replanning.
 * [!: User Task] Subtask: Verify an NPC navigating around a wall to reach an enemy remains continuously in the `hunt` Intention without dropping into `idle` or `wander`.
 * [!: User Task] Subtask: Verify cross-layer door subsumption operates without memory queue corruption when the door itself requires pathfinding avoidance.
+
+##### Goal: Cython Migration
+
+**1. Architectural Scope & Boundary Layout**
+
+The current Python implementation (`app.game.logic.modules.paths.plan`) incurs heavy overhead in its inner loop due to:
+
+* Per-iteration Python heap allocations (`Node` instances, `Position` models).
+* Repeated dynamic dispatch and attribute lookups (`node.x`, `node.parent`).
+* Unpacking Python tuples and calling Python functions during obstacle collision checks (`geometry.los` iterating over Python `tuple` obstacles).
+* Python-level trigonometric and distance math (`math.atan2`, `math.cos`, `math.sin`, `math.hypot`).
+
+The core algorithm will move to `src/libs/core/math/paths.pyx`, exposing a fast C-level procedure, while `app.game.logic.modules.paths.plan` remains a lightweight Python wrapper that unpacks engine objects and delegates to the Cython binary.
+
+```
+src/
+├── libs/
+│   └── core/
+│       └── math/
+│           ├── geometry.pxd        # Expose C-level bisects to avoid Python tuple unpacking
+│           ├── paths.pxd           # C-declarations for RRT structs and routines
+│           └── paths.pyx           # Cython RRT implementation (contiguous C memory)
+└── app/
+    └── game/
+        └── logic/
+            └── modules/
+                └── paths/
+                    └── plan.py     # Thin Python wrapper retaining existing Planner interface
+
+```
+
+**2. C Data Structures & Memory Strategy**
+
+To satisfy the **"Zero Heap Allocation in the Inner Loop"** constraint:
+
+```c
+typedef struct {
+    float x;
+    float y;
+    int parent_idx; // Array index of parent node; eliminates object pointer overhead
+} RRTNode;
+
+typedef struct {
+    float x;
+    float y;
+    float w;
+    float l;
+} RRTObstacle;
+
+```
+
+* **Node Buffer**: Pre-allocated contiguous block via `malloc(sizeof(RRTNode) * (max_iter + 2))`. Released via `free()` in a `try...finally` block.
+* **Obstacle Buffer**: Ingest incoming obstacle list once at entry into a stack-allocated or `malloc`'d contiguous `RRTObstacle*` array. Obstacle queries in the inner loop then iterate over raw C-memory with zero Python object lookups.
+* **Collision Checking**: Call a C-level inline `c_bisects` function directly (sharing logic with `libs.core.math.geometry`), bypassing Python tuple unpacking during ray-box evaluations.
+* **Math & Sampling**: Use `libc.math` (`atan2f`, `cosf`, `sinf`, `hypotf`) and `libc.stdlib.rand` for 2D sampling within pre-calculated bounding limits.
+* **Backtracing**: Traverse `parent_idx` backwards from target to start, instantiating Python `Position` models only once when building the final path list.
+
+##### Tasks
+
+**1: Expose C-Level Segment Intersection in `geometry`**
+
+*Objective*: Allow `paths.pyx` to call line-of-sight collision checks directly without Python wrapper overhead.
+
+* [ ] Subtask 1.1: Create `src/libs/core/math/geometry.pxd` exposing `cdef bint c_bisects(float x1, float y1, float x2, float y2, float rx, float ry, float rw, float rl) nogil`.
+* [ ] Subtask 1.2: Refactor `bisects` in `src/libs/core/math/geometry.pyx` to delegate to `c_bisects`.
+
+**Task 2: Implement Cython RRT Engine (`libs.core.math.paths`)**
+
+*Objective*: Build the standalone, zero-allocation C-level RRT solver.
+
+* [ ] Subtask 2.1: Define `RRTNode` and `RRTObstacle` structs in `src/libs/core/math/paths.pxd`.
+* [ ] Subtask 2.2: Implement `cpdef list rrt(float sx, float sy, float tx, float ty, list obstacles, float step_size, int max_iter)` in `src/libs/core/math/paths.pyx`.
+* [ ] Subtask 2.3: Ingest `obstacles` into a flat `RRTObstacle*` buffer at entry and free on exit.
+* [ ] Subtask 2.4: Implement C-level nearest-neighbor search, 5% goal-biased sampling, and trigonometric node steering using `libc.math` and `libc.stdlib.rand`.
+* [ ] Subtask 2.5: Implement parent index backtracing to return `List[Position]`.
+
+**Task 3: Build & Extension Registration**
+
+*Objective*: Integrate the new Cython extension into the build pipeline.
+
+* [x] Subtask 3.1: Register `libs.core.math.paths` in `setup.py` and `setup.cicd.py`.
+* [!: User Task] Subtask 3.2: Verify clean compilation via `python setup.py build_ext --inplace`.
+
+**Task 4: Rebind `Planner` Interface in Python**
+
+*Objective*: Retain API compatibility while delegating all work to Cython.
+
+* [ ] Subtask 4.1: Refactor `app/game/logic/modules/paths/plan.py` to import `libs.core.math.paths.rrt`.
+* [ ] Subtask 4.2: Preserve `Planner(start, target, obstacles, step_size, max_iter).plan()` as a thin wrapper unpacking `Position` coordinates and delegating to `rrt()`.
+* [ ] Subtask 4.3: Deprecate Python `Node` class in `plan.py`.
+
+##### Task 5: Algorithmic Verification & Regression
+
+*Objective*: Verify path generation correctness and performance.
+
+* [!] Subtask 5.1: Execute `tests/algorithms/rrt.py` to ensure convergence, collision clearance, and return formats remain identical.
+* [!] Subtask 5.2: Verify integration through `tests/unit/test_app_game_logic_modules_paths.py` (or existing path test suite).

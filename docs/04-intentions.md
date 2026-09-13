@@ -183,7 +183,7 @@ The ISL environment is injected with variables during execution:
     - `is_near(p1: Position, p2: Position, radius: int)`: Determine if positions are close.
     - `any_goals(m: List[Goal], category: str)`: Determine if a GoalCategory exists in the Sprite memory.
     - `any_memories_visible(sprite: SpriteState, sprites: Dict[str, SpriteState], categories: List[GoalCategories])`
-    
+
 !!! warning
     When referencing `sprites[...]` via a Goal name, authors must use `sprites.get(sprite.goal.name)` to protect the runtime against `KeyErrors` from garbage-collected entities.
 
@@ -240,9 +240,11 @@ In order to pass from an `ATTACK` Intention to a phsyically animated Action, an 
 
 ### Directions
 
-Sprite Animation Direction is a function of Sprite Position state and Goal state,
+Sprite Animation Direction is a function of Sprite Position state and Trajectory Target (falling back to Goal Position):
 
-    f(Position, Goal) = Direction
+$$
+f(\text{Position}, \text{TrajectoryTarget}) = \text{Direction}
+$$
 
 **Player Mappings**
 
@@ -253,37 +255,39 @@ Sprite Animation Direction is a function of Sprite Position state and Goal state
 
 **Formulae**
 
-Let `dx = position.x - goal.position.x, dy = position.y - goal.position.y`.
+Let $\text{target} = \text{trajectory.target} \lor \text{goal.position}$.
 
-- `if dy > dx, dy > -dx: direction = down`
-- `if dy < dx, dy > -dx: direction = right`
-- `if dy < dx, dy < -dx: direction = up`
-- `if dy > dx, dy > -dx: direction = left`
+Let $dx = \text{position.x} - \text{target.x}$ and $dy = \text{position.y} - \text{target.y}$.
+
+* `if dy > dx and dy > -dx`: $\text{direction} = \text{down}$
+* `if dy < dx and dy > -dx`: $\text{direction} = \text{right}$
+* `if dy < dx and dy < -dx`: $\text{direction} = \text{up}$
+* `if dy > dx and dy < -dx`: $\text{direction} = \text{left}$
 
 ## Mechanics
 
-The (Intention, Goal) of a Sprite is managed across the application lifecycle by [Mechanics](./05-mechanics.md). 
+The (Intention, Goal, Trajectory) triad of a Sprite is managed across the application lifecycle by [Mechanics](./05-mechanics.md):
 
-- CognitionMechanics ("*The Brain*"): Manages the Goal Lifecycle. It evaluates the environment, consults Motivations and Meters, sets the Goal, determines if the Goal has been achieved (or invalidated), and manages the Memory stack.
-- TransitionMechanics ("*The Instinct*"): Manages the Intention Transitions. It blindly evaluates the Transitions condition and shunts the Sprite to its next Intention if they are satisfied.
-- SpatialMechanics (*The Muscle*): CombatMechanics, InteractionMechanics, etc., alter the physical world state (e.g., killing the target, opening the Chest). This physical change is what signals CognitionMechanics on the next tick that the goal is achieved.
+- **CognitionMechanics ("The Brain")**: Manages the Strategic Goal Lifecycle. Evaluates environmental perceptions, consults Motivations and Psyche, sets and completes Goals, and manages episodic `memory.goals`.
+- **TransitionMechanics ("The Instinct")**: Manages Intention Transitions. Evaluates ISL conditions sequentially and shunts the Sprite to its next Intention state when criteria are satisfied.
+- **NavigationMechanics ("The Navigator")**: Manages Tactical Trajectories. Queries sensory anchors, obstacle geometry, and LOS raycasts to maintain `sprite.state.trajectory` and intermediate RRT waypoints.
+- **MotionMechanics ("The Muscle")**: Actuates movement. Accelerates velocity vectors toward `sprite.state.trajectory.target` via `physics.dynamics()`.
+- **SpatialMechanics**: Resolves collisions, combat damage, and physical object interactions (e.g., passing through Doors).
 
 ### Cognition
 
-CognitionMechanics manages the life cycle of Sprite Goals.
+CognitionMechanics manages the lifecycle of strategic Sprite Goals across seven deterministic phases:
 
-1. **Phase A: Resolution**: Conditions are evaluated for goal resolution
-    - `if goal.category == TARGET`: If `target.mutators.triggers.dead`, `goal = None`.
-    - `if goal.category == SUBJECT`: If `not psyche.dialogue`, `goal = None`.
-    - `if goal.category == POSITION`: If `position - goal.position < mutators.parameters.action.radius`.
-    - `if goal.category == OBJECT`: TODO
-    - `if goal.category == PROPERTY`: If `goal.name in memory.property`, `goal = None`.
-2. **Phase B: Scan**: 
-    - A scan of the `mutator.parameter.vision.radius` is conducted. If a Sprite is found, its location is updated in `memory.sprites`.
-3. **Phase C: Memory**: The Sprite's memory is managed and updated relative to its vision. 
-    - If the Sprite has no Goals, Goals in the Memory are popped off the stack and added to the current Goal. 
-4. **Phase D: Ideation**: If the Sprite has no Goals, environmental and proximal Goals are ideated. 
-    - `if psyche.dialogue`: If target Sprite is within `mutators.parameters.vision.radius`, then `goal.category = Goals.SUBJECT.value` and `goal.name` is set to target Sprite.
+1. **Phase A: Resolution**: Evaluates whether active strategic goals are complete or abandoned:
+    - `category == TARGET`: If `target.mutators.triggers.dead`, resolves goal (`goal = None`). If within `action.radius` without line of sight, shelves goal into `memory.goals` and abandons active tracking.
+    - `category == SUBJECT`: If `not psyche.dialogue`, resolves goal. If within `action.radius` without sight, shelves goal into `memory.goals`, sets `goal = None`, and spawns a `CONFUSION` expression.
+    - `category == POSITION`: If `is_near(position, goal.position, action.radius)`, resolves goal (`goal = None`).
+    - `category == OBJECT`: If `sprite.layer != goal.layer`, the transition door was traversed; resolves goal (`goal = None`).
+    - `category == PROPERTY`: If `goal.name in memory.property`, resolves goal.
+2. **Phase B: Scan**: Scans `vision.radius` on the same layer. Caches discovered entities into `memory.sprites` and updates coordinates of corresponding entries in `memory.goals`.
+3. **Phase C: Memory**: Pops suspended strategic goals off `memory.goals` into `sprite.state.goal` when in `idle`, `find`, or `hunt`. Dormant targets whose last known positions were empty are skipped until sighted again.
+4. **Phase D: Ideation**: Spontaneously generates new strategic goals from internal psychological state:
+    - `if psyche.dialogue`: Scans `board.characters()` on the same layer within `vision.radius`. Assigns `Goal(category=SUBJECT, name=target)`.
 5. **Phase E: Motivation**: If the Sprite has still no Goals, overarching Motivations are used to form new Goals. These goals are pushed onto the `memory.goals` stack.
     - `if psyche.motivation.CONQUEST`: TODO
     - `if psyche.motivation.PROFIT`: TODO
@@ -292,14 +296,9 @@ CognitionMechanics manages the life cycle of Sprite Goals.
     - `if psyche.motivation.REVENGE`: TODO
     - `if psyche.motivation.REBELLION`: TODO
     - `if psyche.motivation.SAFETY`: TODO
-6. **Phase F: Tracking**: The Sprite's current Goal is tracked.
-    - `if goal.category in [TARGET, SUBJECT]`: 
-        - `if goal.memory.sprites.get(goal.name): goal.position = goal.memory.sprites[goal.name].position`
-        - TODO
-    - `if goal.category == POSITION`: 
-    - `if goal.category == OBJECT`: 
-    - `if goal.category == PROERTY`:
-6. **Phase F: Projection**
-    - `if intention == ESCAPE`:
-    - `if intention == FIND`:
-    - `if intention == WANDER`: 
+6. **Phase F: Tracking**: Updates coordinates of active strategic goals:
+    - `category in [TARGET, SUBJECT]`: Updates `goal.position = target.position` when within `vision.radius`. Freezes coordinates when sight is lost.
+    - **Cross-Layer Subsumption**: If `goal.layer != sprite.layer`, subsumes active goal into `memory.goals` and assigns a prerequisite `OBJECT` goal for the nearest connecting Door.
+7. **Phase G: Projection**:
+    - `intention == ESCAPE`: Extrapolates a destination coordinate in the opposite vector direction of the threat.
+    - `intention == WANDER`: Samples a random destination within $[-\text{radius}_{\text{vision}}, \text{radius}_{\text{vision}}]$, clamps to layer dimensions, and commits `Goal(name="wander", category=POSITION)`.

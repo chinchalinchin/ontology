@@ -101,12 +101,12 @@ See [Goals documentation](./04-intentions.md) for more information.
 
 ### Trajectory
 
-When the path to a Sprite's Goal is blocked, the Sprite uses a [Rapidly-exploring Random Tree algorithm](./10-architecture.md#math) under the hood to generate a series of consecutive waypoints around obstacles to its Goal. This path is stored in the Sprite's `trajectory`.
+Tactical obstacle avoidance is managed via `TrajectoryState`. When direct line of sight to a strategic Goal is occluded, `NavigationMechanics` executes an [Rapidly-exploring Random Tree pathfinding routine](./10-architecture.md#math) and populates the trajectory buffer:
 
-* `target`: The immediate physical coordinate `(x, y)` the Sprite must steer toward on the current tick. If line of sight to the strategic goal is clear, `target == sprite.state.goal.position`. If occluded, `target == waypoints[0]`.
-* `vertices`: The FIFO queue of intermediate RRT avoidance coordinates.
-* `stalled`: Boolean flag set when RRT fails to resolve a valid route, notifying deliberative systems of an impassable obstruction.
-* `cooldown`: Engine tick accumulator preventing thrashing re-evaluations against impassable geometries.
+* `target`: The immediate physical coordinate \((x, y)\) that `MotionMechanics` steers toward on the current tick. If line of sight to the strategic goal is clear, `target == sprite.state.goal.position`. If occluded, `target == vertices[0]`.
+* `vertices`: The FIFO queue of intermediate RRT avoidance coordinates, adjusted for sensory anchor displacement.
+* `stalled`: Boolean flag set when RRT fails to resolve a valid route, signaling deliberative systems of an impassable obstruction.
+* `cooldown`: Tick accumulator enforcing a backoff interval (`PATH_RETRY_INTERVAL`) before retrying path generation against impassable geometries.
 
 See [NavigationMechanics](./05-mechanics.md#intentional) for more information on path generation and navigation.
 
@@ -208,14 +208,17 @@ Motivations are long-term state variables that are used to modulate the [Intenti
 
 ### Memory
 
-*Memory* is a data structure that stores long-term state while the current Intention and Goal states are focused elsewhere. 
+### Memory
 
-- `memory.goals: DIct[str, Goal]`: Remembered Goals. A Sprite can store its overarching goal in its Memory while pursuing a sub Goal dictated by its Intention and Motivation. Keyed by the `asset.name` of the Goal.
-- `memory.prices: Dict[str, float]`:
-- `memory.property: Dict[str, Position]`
-- `memory.relationship: Dict[str, Relationships]`:
-- `memory.rumors: List[str]`: List of Lexicon keys the Sprite has heard through entering into the `speak` Intention.
-- `memory.sprites: Dict[str, Position]`: A map of Sprite locations the Sprite remembers, keyed by Sprite Name and last remembered location. 
+*Memory* stores episodic and relational data while the Sprite's active Goal focuses elsewhere:
+
+- `memory.goals: Dict[str, Goal]`: Episodic store of true strategic goals. Keyed by the entity `name` (or door name during cross-layer subsumption). Strategic memory stores no intermediate path waypoints.
+- `memory.sprites: Dict[str, Position]`: Map of last-known Sprite locations keyed by entity name.
+- `memory.doors: Dict[str, str]`: Mapped door transitions (`door_name: outlayer`).
+- `memory.prices: Dict[str, float]`: Valuations for inventory barter.
+- `memory.property: Dict[str, Position]`: Locations of player/sprite-owned structures.
+- `memory.relationships: Dict[str, Relationships]`: Entity social relationships (`FRIEND`, `FAMILY`, `FOE`, `STRANGER`).
+- `memory.rumors: List[str]`: Lexicon dialogue keys received via conversation.
 
 **Prices**
 
