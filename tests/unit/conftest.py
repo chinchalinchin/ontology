@@ -37,6 +37,7 @@ from app.services.generators.binder import Binder
 
 from app.models.properties import (
     PropertiesSchema, 
+    ObjectProperties,
     SheetProperties,
     WidgetProperties,
     TileProperties
@@ -58,6 +59,7 @@ from app.models.state import (
     StateSchema, 
     SpriteState,
     PlayerState,
+    DoorState,
     MultiplierState,
     Inventory,
     Equipment,
@@ -394,5 +396,26 @@ def mock_sprite_with_hitbox():
         ),
         inventory=Inventory(equipment=Equipment()),
         animation=AnimationState(frame=0, tick=1)
+    )
+    return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+
+@pytest.fixture
+def mock_door_asset():
+    """
+    Door asset transitioning from layer '0' to layer 'brick-house-compose-layer'.
+    """
+    tax = Taxonomy("door-1", "wood-door", AssetCategories.OBJECTS.value, AssetInstances.DOORS.value)
+    hb = Hitbox(Position(0, 0), Dimensions(32, 32))
+    props = ObjectProperties(
+        dimensions=Dimensions(w=32, l=32),
+        hitboxes=[hb],
+        mass=-1
+    )
+    state = DoorState(
+        id="door-1",
+        layer="0",
+        outlayer="brick-house-compose-layer",
+        position=Position(x=100, y=100),
+        out=Position(x=20, y=20)
     )
     return Asset(tax, props, state, DummyFrame(), DummyAnimation())

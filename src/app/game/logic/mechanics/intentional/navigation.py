@@ -6,7 +6,7 @@ Package for managing tactical pathfinding trajectories and steering waypoints.
 from __future__ import annotations
 
 # Standard Libraries
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 import collections
 import logging
 
@@ -57,6 +57,7 @@ class NavigationMechanics(Mechanic):
             y=asset.state.position.y + hb.position.y + hb.dimensions.l // 2,
         )
 
+
     @staticmethod
     def obstacles(layer: str, board: Board, exclude: list) -> list:
         """
@@ -85,6 +86,7 @@ class NavigationMechanics(Mechanic):
 
         return obstacles
 
+
     @staticmethod
     def _is_navigating(sprite: Asset) -> bool:
         """
@@ -100,6 +102,7 @@ class NavigationMechanics(Mechanic):
         ]
         return intent_val in nav_vals
 
+
     @staticmethod
     def _clear_trajectory(sprite: Asset) -> None:
         """
@@ -108,6 +111,7 @@ class NavigationMechanics(Mechanic):
         sprite.state.trajectory.target = None
         sprite.state.trajectory.vertices.clear()
         sprite.state.trajectory.stalled = False
+
 
     def _target_anchor(self, sprite: Asset, board: Board) -> Position:
         """
@@ -119,8 +123,8 @@ class NavigationMechanics(Mechanic):
 
         # Same-layer deployed asset: track physical footprint center
         if goal.name:
-            target_asset = board.asset(goal.name, sprite.state.layer)
-            if target_asset:
+            target_asset = board.asset(goal.name, sprite.state.layer) or board.asset(goal.name)
+            if target_asset and target_asset.state.layer == sprite.state.layer:
                 return self.anchor(target_asset)
 
         # Coordinate destination: apply sprite footprint displacement
@@ -131,6 +135,7 @@ class NavigationMechanics(Mechanic):
             x=goal.position.x + offset_x,
             y=goal.position.y + offset_y,
         )
+
 
     def _navigate(self, sprite: Asset, board: Board) -> None:
         """
@@ -168,6 +173,7 @@ class NavigationMechanics(Mechanic):
         )
 
         retry_interval = getattr(settings, "PATH_RETRY_INTERVAL", 60)
+        just_planned = False
 
         # 4. Path Maintenance
         if has_los:
@@ -201,6 +207,7 @@ class NavigationMechanics(Mechanic):
                     sprite.state.trajectory.target = sprite.state.trajectory.vertices[0]
                     sprite.state.trajectory.stalled = False
                     sprite.state.trajectory.cooldown = 0
+                    just_planned = True
                 else:
                     # 6. Stall Handling
                     sprite.state.trajectory.stalled = True
@@ -242,6 +249,7 @@ class NavigationMechanics(Mechanic):
                         sprite.state.trajectory.target = sprite.state.trajectory.vertices[0]
                         sprite.state.trajectory.stalled = False
                         sprite.state.trajectory.cooldown = 0
+                        just_planned = True
                     else:
                         # 6. Stall Handling
                         sprite.state.trajectory.stalled = True
@@ -251,7 +259,7 @@ class NavigationMechanics(Mechanic):
                         return
 
         # 5. Waypoint Arrival
-        if sprite.state.trajectory.target and sprite.state.trajectory.vertices:
+        if not just_planned and sprite.state.trajectory.target and sprite.state.trajectory.vertices:
             arrival_radius = 15
             if (
                 sprite.state.mutators
@@ -278,6 +286,7 @@ class NavigationMechanics(Mechanic):
                     sprite.state.trajectory.target = sprite.state.trajectory.vertices[0]
                 else:
                     sprite.state.trajectory.target = sprite.state.goal.position
+
 
     def update(
         self,
