@@ -129,8 +129,8 @@ for i, wp in enumerate(segments):
 #### Refactor: Phase 08.02: Path Execution & Recovery Finalization
 
 !!! warning
-    After an architectural review, this phase has been cancelled and superseded by what follows. It has been retained purely for record-keeping, to detail the thought process which led to the architectural shift discussed in the next section.
-
+    After an architectural review of the preceding bugs, this phase has been cancelled and superseded by what follows in the next section. It has been retained purely for record-keeping, to detail the thought process which led to the architectural shift discussed in the next section.
+    
 **Overview**
 
 Finalize RRT integration by resolving FIFO memory queue ordering, eliminating redundant per-tick planning on active paths, offsetting waypoints by sensory anchors, and implementing unreachable target backoff to prevent automaton thrashing.

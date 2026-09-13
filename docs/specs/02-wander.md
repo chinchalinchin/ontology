@@ -39,6 +39,7 @@ When an entity is in `wander` with no active goal (`not sprite.state.goal`) and 
 $$
 x_{\text{dest}} = \max\left(0, \min(x_{\text{pos}} + \Delta x, W_{\text{layer}} - W_{\text{sprite}})\right)
 $$
+
 $$
 y_{\text{dest}} = \max\left(0, \min(y_{\text{pos}} + \Delta y, L_{\text{layer}} - L_{\text{sprite}})\right)
 $$
