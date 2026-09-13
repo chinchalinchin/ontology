@@ -4,30 +4,39 @@
 Package for global application constants.
 """
 from pathlib import Path
+import os
 
 # ---------------------------------------------------
 ## ----------------------------- APPLICATION SETTINGS
 ### SEPARATOR: Constant used by registry indexing to
 ###             separate asset keys.
-SEPARATOR = "-"
+SEPARATOR = "-" # os.environ.setdefault()
+### NEW_BOARD: 
 NEW_BOARD = "world-01"
+### MIGRATOR_DELAY:
 MIGRATOR_DELAY = 1
+### EXPRESSION_TTL: Number of game ticks before Expressions
+###                 are garbage collected.
 EXPRESSION_TTL = 120
+### LOG_LEVEL: Application log level.
 LOG_LEVEL = "INFO"
-RRT_PATH_PREFIX = "path"
-TELEMETRY_TICKS = 600
-SPIN_RATE = 0.002
 # ---------------------------------------------------
 ## --------------------------------- ENGINE CONSTANTS
 ### TARGET_FPS: Engine's target FPS.
 TARGET_FPS = 60
 ### TILE_HASH_SIZE: Size of spatial cache on Board.
 TILE_HASH_SIZE = 32
+### PATH_RETRY_INTERVAL
+PATH_RETRY_INTERVAL = 60
+### TELEMERY_TICKS: Number of game ticks between telemetry logs.
+TELEMETRY_TICKS = 600
+### SPIN_RATE:
+SPIN_RATE = 0.002
 # ---------------------------------------------------
 ## ----------------------------------- STATE SETTINGS
 ### ON/OFF: Binary Object Keys
-ON = 1
-OFF = 0
+ON, OFF = 1, 0
+### EMPTY: 
 EMPTY = 0
 # ---------------------------------------------------
 ## ------------------------------- DIRECTORY SETTINGS
@@ -59,4 +68,4 @@ TITLE_FONT = FONT_DIR / "title.ttf"
 # ---------------------------------------------------
 ## ------------------------------------- ISL SETTINGS
 # ISL_TRANSLATOR: Options: "lambda", "compiler"
-ISL_TRANSLATOR: str = "lambda"
+ISL_TRANSLATOR = "lambda"

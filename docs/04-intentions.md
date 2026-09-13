@@ -181,8 +181,9 @@ The ISL environment is injected with variables during execution:
 * `constants`: A dictionary of Enums. Keys are: `AssetInstances`, `AssetCategories`, `Goals`, `Intentions`, `Motivations`.
 * `functions`: A dictionary of boolean helper functions. All functions return a truth value.
     - `is_near(p1: Position, p2: Position, radius: int)`: Determine if positions are close.
-    - `check_goals(m: List[Goal], category: str)`: Determine if a GoalCategory exists in the Sprite memory.
-
+    - `any_goals(m: List[Goal], category: str)`: Determine if a GoalCategory exists in the Sprite memory.
+    - `any_memories_visible(sprite: SpriteState, sprites: Dict[str, SpriteState], categories: List[GoalCategories])`
+    
 !!! warning
     When referencing `sprites[...]` via a Goal name, authors must use `sprites.get(sprite.goal.name)` to protect the runtime against `KeyErrors` from garbage-collected entities.
 

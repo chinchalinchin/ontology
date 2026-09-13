@@ -70,10 +70,14 @@ class TransitionMechanics(Mechanic):
             )
             
             # 3. Resolve Direction
-            if sprite.state.goal:
+            target_pos = sprite.state.trajectory.target or (
+                sprite.state.goal.position if sprite.state.goal else None
+            )
+            
+            if target_pos:
                 sprite.state.animation.direction = AnimationMap.direction(
                     sprite.state.position, 
-                    sprite.state.goal.position
+                    target_pos
                 )
 
             # 4. Update Animation Trigger

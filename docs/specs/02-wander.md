@@ -78,7 +78,7 @@ The resulting destination is committed as `Goal(name="wander", category=Goals.PO
 **wander:find**
 
 * `sprite.goal`
-* `functions.any_memories_visible(sprite, sprites, constants.Goals.SUBJECT.value)`
+* `functions.any_memories_visible(sprite, sprites, [ constants.Goals.SUBJECT.value ])`
 
 !!! note "Passive Target Reacquisition"
     Fires when a remembered dialogue partner or interactive entity re-enters the active vision radius on the same layer.
@@ -86,7 +86,7 @@ The resulting destination is committed as `Goal(name="wander", category=Goals.PO
 **wander:hunt**
 
 * `sprite.goal`
-* `functions.any_memories_visible(sprite, sprites, constants.Goals.TARGET.value)`
+* `functions.any_memories_visible(sprite, sprites, [ constants.Goals.TARGET.value ])`
 
 !!! note "Hostile Target Reacquisition"
     Fires when a remembered hostile target re-enters the active vision radius on the same layer.

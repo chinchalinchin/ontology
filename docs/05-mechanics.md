@@ -135,6 +135,7 @@ These Mechanics handle spatial interactions and collisions between Assets.
 - `collision: CollisioMechanics`: Resolves collisions.
 - `combat: CombatMechanics`: (Cython) Resolves attack hitbox overlaps, decrements health, etc.
 - `interaction: InteractionMechanics`: (Cython) Resolves Asset interactions.
+- `social: SpeechMechanics`: Handle `speak` Intentions and [Plot calculations](./08-plots.md).
 
 **InteractionMechanics**
 
@@ -176,7 +177,6 @@ These Mechanics handle the Sprite Intention logic.
 - `cognition: CognitionMechanics`: Handles Sprite goal-seeking.
 - `transition: TransitionMechanics`: Applies the Intention Transition Matrix conditions to all Sprite Sheets.
 - `commerce: CommerceMechanics`: Translate Intentions (`barter`, `attract`, etc.) into trades and price movements.
-- `social: SpeechMechanics`: Handle `speak` Intentions and [Plot calculations](./08-plots.md).
 
 !!! important
     CognitionMechanics mutates Goals, TransitionMechanics mutates Intentions, and the Transition Matrix governs the mapping. This rule **must** be followed at all times.

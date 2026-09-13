@@ -114,6 +114,7 @@ class CognitionMechanics(Mechanic):
     @staticmethod
     def door(sprite: Asset, board: Board) -> Asset:
         """
+        Locates mapped or nearby unmapped transition doors to reach destination layers.
         """
         # 1. Search for a mapped door leading to target layer
         vision_radius = sprite.state.mutators.parameters.vision.radius
@@ -140,87 +141,6 @@ class CognitionMechanics(Mechanic):
         return target_door
 
     
-    @staticmethod
-    def obstacles(layer: str, board: Board, exclude: list) -> list:
-        """
-        ### obstacles(layer: str, board: Board, exclude: list)
-        
-        Transforms board weights and perimeters into flat C-primitive tuples.
-        """
-        obstacles = []
-        
-        # for asset in board.instances(AssetInstances.CRATES.value, layer):
-
-        for asset in board.weights(layer):
-            if asset.name in exclude:
-                continue
-            for hb in asset.hitboxes:
-                obstacles.append((
-                    asset.state.position.x + hb.position.x,
-                    asset.state.position.y + hb.position.y,
-                    hb.dimensions.w,
-                    hb.dimensions.l,
-                ))
-
-        for bound in board.perimeters.get(layer, []):
-            obstacles.append((
-                bound.position.x,
-                bound.position.y,
-                bound.dimensions.w,
-                bound.dimensions.l
-            ))
-
-        return obstacles
-
-
-    @staticmethod
-    def path(sprite: Asset, segments: list) -> None:
-        """
-        ### path(sprite: Asset, segments: list)
-
-        Converts an RRT geometric path into intentional POSITION goals (FIFO).
-        """        
-        # 1. Clear existing waypoints in memory
-        sprite.state.memory.goals = {
-            k: v for k, v in sprite.state.memory.goals.items() 
-            if not str(k).startswith(settings.RRT_PATH_PREFIX)
-        }
-        
-        # 2. Inject new waypoints sequentially (dicts preserve insertion order)
-        for i, wp in enumerate(segments):
-            name = settings.SEPARATOR.join([
-                settings.RRT_PATH_PREFIX, 
-                str(i)
-            ])
-            sprite.state.memory.goals[name] = Goal(
-                name=name,
-                category=Goals.POSITION.value,
-                layer=sprite.state.layer,
-                position=Position(x=wp.x, y=wp.y)
-            )
-
-        logger.info(f"{sprite.name} planned {len(sprite.state.memory.goals)} routes.")
-
-        sprite.state.memory.goals[sprite.state.goal.name] = sprite.state.goal
-
-        sprite.state.goal = None
-
-
-    @staticmethod
-    def anchor(asset: Asset) -> Position:
-        hbs = asset.hitboxes
-        if not hbs:
-            return Position(
-                x=asset.state.position.x + asset.dimensions.w // 2,
-                y=asset.state.position.y + asset.dimensions.l // 2,
-            )
-        hb = hbs[0]
-        return Position(
-            x=asset.state.position.x + hb.position.x + hb.dimensions.w // 2,
-            y=asset.state.position.y + hb.position.y + hb.dimensions.l // 2,
-        )
-
-        
     def update(self, 
         board: Board, 
         delta: float, 
@@ -253,83 +173,6 @@ class CognitionMechanics(Mechanic):
             self._track(sprite, board)
             # Phase F: Projection
             self._project(sprite, board)
-
-
-    def _plan(self, sprite: Asset, board: Board) -> bool:
-        """
-
-        Returns true is plan or goal was altered.
-        """
-        exclude = [sprite.name]
-        if sprite.state.goal and sprite.state.goal.name:
-            exclude.append(sprite.state.goal.name)
-
-        obstacles = self.obstacles(
-            sprite.state.layer, 
-            board, 
-            exclude=exclude
-        )
-        anchor = self.anchor(sprite)
-
-        # Check LOS and trigger planner if occluded
-        if not geometry.los(
-            anchor.x, 
-            anchor.y, 
-            sprite.state.goal.position.x, 
-            sprite.state.goal.position.y, 
-            obstacles
-        ):
-            logger.info(f"Line-of-sight blocked for {sprite.name}. Triggering RRT.")
-            planner = Planner(
-                start=anchor,
-                target=sprite.state.goal.position,
-                obstacles=obstacles,
-                step_size=32.0,
-                max_iter=300
-            )
-            path = planner.plan()
-            if path:
-                self.path(sprite, path)
-            else:
-                CognitionMechanics.log_goal(sprite, verb="abandoned")
-                sprite.state.goal = None
-
-            return True
-        return False
-
-
-    def _scrap(self, sprite: Asset, board: Board) -> None: 
-        """
-        Returns true is goal was scrapped.
-        """
-        exclude = [sprite.name]
-        if sprite.state.goal and sprite.state.goal.name:
-            exclude.append(sprite.state.goal.name)
-
-        obstacles = self.obstacles(
-            sprite.state.layer, 
-            board, 
-            exclude=exclude
-        )
-
-        anchor = self.anchor(sprite)
-
-        if not geometry.los(
-            anchor.x, 
-            anchor.y, 
-            sprite.state.goal.position.x, 
-            sprite.state.goal.position.y, 
-            obstacles
-        ):
-            logger.info(f"Path invalidated for {sprite.name}.")
-            sprite.state.memory.goals = {
-                k: v for k, v in sprite.state.memory.goals.items() 
-                if not str(k).startswith(settings.RRT_PATH_PREFIX)
-            }
-            CognitionMechanics.log_goal(sprite, verb="abandoned")
-            sprite.state.goal = None
-            return True
-        return False
 
 
     def _resolve(self, sprite: Asset, board: Board) -> None:
@@ -366,7 +209,6 @@ class CognitionMechanics(Mechanic):
                 if goal.name in sprite.state.memory.goals.keys():
                     sprite.state.memory.goals.pop(goal.name)
 
-            # if goal is close but not visible give up
             elif self.nearby(
                 goal.position, 
                 sprite.state.position, 
@@ -386,7 +228,6 @@ class CognitionMechanics(Mechanic):
                 if goal.name in sprite.state.memory.goals.keys():
                     sprite.state.memory.goals.pop(goal.name)
 
-            # if goal is close but not visible give up
             elif self.nearby(
                 goal.position, 
                 sprite.state.position, 
@@ -421,7 +262,7 @@ class CognitionMechanics(Mechanic):
             # InteractionMechanics successfully pushed them through.
             # TODO: what if the sprite is seeking a Chest on a different layer?
             #       this resolution is dependent on the goal being a Door Object.
-            #       may need to differentiate Goal Categories between Doors and Chest...s
+            #       may need to differentiate Goal Categories between Doors and Chest...
             if sprite.state.layer != goal.layer:
                 CognitionMechanics.log_goal(sprite, verb="resolved")
                 sprite.state.goal = None
@@ -554,16 +395,6 @@ class CognitionMechanics(Mechanic):
             sprite.state.goal.category == Goals.SUBJECT.value
         ): return
 
-        # Prevent ideation along Sprite path finding points
-        if sprite.state.goal and (
-            str(sprite.state.goal.name).startswith(settings.RRT_PATH_PREFIX)
-        ): return
-
-        if any(
-            str(k).startswith(settings.RRT_PATH_PREFIX)
-            for k in sprite.state.memory.goals.keys()
-        ) : return
-
         if sprite.state.mutators.parameters is None:
             return
         
@@ -668,12 +499,6 @@ class CognitionMechanics(Mechanic):
         vision_radius = sprite.state.mutators.parameters.vision.radius
         target_state = None
 
-        prefix = settings.RRT_PATH_PREFIX
-        is_path = goal.name and goal.name.startswith(prefix)
-
-        if is_path and self._scrap(sprite, board):
-            return
-
         # ------------------------------------------------------------------------ 
         if goal.category in [
             Goals.TARGET.value,
@@ -690,10 +515,10 @@ class CognitionMechanics(Mechanic):
             Goals.PROPERTY.value
 
         ]:
+            if not sprite.state.mutators.triggers.vision:
+                CognitionMechanics.log_goal(sprite, verb="tracked")
+
             sprite.state.mutators.triggers.vision = True
-            self._plan(sprite, board)
-            if sprite.state.goal:
-                CognitionMechanics.log_goal(sprite, verb="tracked", level="debug")
             return
 
         # ------------------------------------------------------------------------ 
@@ -703,11 +528,11 @@ class CognitionMechanics(Mechanic):
             # Search for a mapped door leading to target layer
             target_door = self.door(sprite, board)
                         
-            # Subsumption Logic
+            # Subsume parent goal into episodic memory
             sprite.state.memory.goals[goal.name] = goal
 
             if target_door:
-                # Path found. Inject prerequisite OBJECT goal.
+                # Path found. Inject prerequisite OBJECT door goal.
                 sprite.state.goal   = Goal(
                     name            = target_door.name,
                     category        = Goals.OBJECT.value,
@@ -720,7 +545,6 @@ class CognitionMechanics(Mechanic):
                 CognitionMechanics.log_goal(sprite, verb="tracked")
             else:
                 CognitionMechanics.log_goal(sprite, verb="abandoned")
-                # Unattainable. Clear the goal to force a transition to `wander`.
                 sprite.state.goal = None
 
             return
@@ -735,9 +559,6 @@ class CognitionMechanics(Mechanic):
         ):
             # Target is visible: check LOS obscuration
             sprite.state.mutators.triggers.vision = True
-
-            if self._plan(sprite, board): return
-
             sprite.state.goal.position.x = target_state.position.x
             sprite.state.goal.position.y = target_state.position.y
 
@@ -764,13 +585,8 @@ class CognitionMechanics(Mechanic):
             sprite.state.goal.position.x = sprite.state.position.x + (dx * 10)
             sprite.state.goal.position.y = sprite.state.position.y + (dy * 10)
 
-        elif intention == Intentions.WANDER.value:
-            path_pending = any(
-                str(k).startswith(settings.RRT_PATH_PREFIX) 
-                for k in sprite.state.memory.goals.keys()
-            )
-            
-            if not path_pending and (not sprite.state.goal or self.complete(sprite, board)):
+        elif intention == Intentions.WANDER.value: 
+            if not sprite.state.goal or self.complete(sprite, board):
                 offset_x = random.randint(-vision_radius, vision_radius)
                 offset_y = random.randint(-vision_radius, vision_radius)
 

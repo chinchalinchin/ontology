@@ -126,11 +126,11 @@ for i, wp in enumerate(segments):
 !!! note
     Superseded by Phase Realignment.
 
-#### Refactor: Phase 08.02: Path Execution & Recovery Finalization
+#### Refactor: Phase 08.02: Path Execution & Recovery Finalization (CANCELLED)
 
 !!! warning
     After an architectural review of the preceding bugs, this phase has been cancelled and superseded by what follows in the next section. It has been retained purely for record-keeping, to detail the thought process which led to the architectural shift discussed in the next section.
-    
+
 **Overview**
 
 Finalize RRT integration by resolving FIFO memory queue ordering, eliminating redundant per-tick planning on active paths, offsetting waypoints by sensory anchors, and implementing unreachable target backoff to prevent automaton thrashing.
@@ -190,7 +190,7 @@ if not path:
 
 ---
 
-#### Refactor: Phase 08.02 - Tactical Navigation Decoupling & Trajectory State
+#### Refactor: Phase 08.02 - NavigationMechanics
 
 **Overview**
 
@@ -346,26 +346,26 @@ physics.dynamics(
 *Objective*: Build the tactical navigation subsystem.
 
 * [x] Subtask: Create `src/app/game/logic/mechanics/intentional/navigation.py` implementing `NavigationMechanics`.
-* [ ] Subtask: Migrate `anchor()` and `obstacles()` from `CognitionMechanics` into `NavigationMechanics` (or `libs.core.math`).
-* [ ] Subtask: Implement waypoint progress resolution: when a sprite's footprint arrives within `action_radius` of `trajectory.target`, advance to the next waypoint or return to direct tracking.
-* [ ] Subtask: Implement dynamic path invalidation: if line-of-sight to the active intermediate waypoint becomes obstructed, clear waypoints and recalculate via `Planner`.
+* [x] Subtask: Migrate `anchor()` and `obstacles()` from `CognitionMechanics` into `NavigationMechanics` (or `libs.core.math`).
+* [x] Subtask: Implement waypoint progress resolution: when a sprite's footprint arrives within `action_radius` of `trajectory.target`, advance to the next waypoint or return to direct tracking.
+* [x] Subtask: Implement dynamic path invalidation: if line-of-sight to the active intermediate waypoint becomes obstructed, clear waypoints and recalculate via `Planner`.
 * [x] Subtask: Register `NavigationMechanics` in `src/data/config/mechanics/main.yaml` directly following `TransitionMechanics` and preceding `MotionMechanics`.
 
 **3. Task: CognitionMechanics Purge & Realignment**
 
 *Objective*: Restrict `CognitionMechanics` purely to high-level strategic reasoning.
 
-* [ ] Subtask: Delete `_plan()`, `_scrap()`, `path()`, `obstacles()`, and `anchor()` from `src/app/game/logic/mechanics/intentional/cognition.py`.
-* [ ] Subtask: Remove waypoint bypass logic and `name.startswith(settings.RRT_PATH_PREFIX)` filtering from `_track()`, `_ideate()`, `_project()`, and `_remember()`.
-* [ ] Subtask: Revert `_resolve()` to evaluate exclusively strategic completion (`dead`, `not dialogue`, `layer != goal.layer`).
-* [ ] Subtask: In `_track()`, update same-layer entity goals directly without checking line of sight.
+* [x] Subtask: Delete `_plan()`, `_scrap()`, `path()`, `obstacles()`, and `anchor()` from `src/app/game/logic/mechanics/intentional/cognition.py`.
+* [x] Subtask: Remove waypoint bypass logic and `name.startswith(settings.RRT_PATH_PREFIX)` filtering from `_track()`, `_ideate()`, `_project()`, and `_remember()`.
+* [x] Subtask: Revert `_resolve()` to evaluate exclusively strategic completion (`dead`, `not dialogue`, `layer != goal.layer`).
+* [x] Subtask: In `_track()`, update same-layer entity goals directly without checking line of sight.
 
 **4. Task: Motive and Animation Redirection**
 
 *Objective*: Ensure movement vectors and facing directions track tactical waypoints.
 
-* [ ] Subtask: Update `src/app/game/logic/mechanics/modules/motion/motive.py` to accelerate towards `sprite.state.trajectory.target` when present, falling back to `sprite.state.goal.position`.
-* [ ] Subtask: Update `TransitionMechanics` / `AnimationMap.direction()` in `src/app/game/logic/maps.py` to resolve facing angles from `sprite.state.trajectory.target`.
+* [x] Subtask: Update `src/app/game/logic/mechanics/modules/motion/motive.py` to accelerate towards `sprite.state.trajectory.target` when present, falling back to `sprite.state.goal.position`.
+* [x] Subtask: Update `TransitionMechanics` / `AnimationMap.direction()` in `src/app/game/logic/maps.py` to resolve facing angles from `sprite.state.trajectory.target`.
 
 **5. Task: Cythonization**
 
