@@ -51,6 +51,12 @@ The Property tax deducted by a Charter for a given Sprite who owns Property with
 $$
 \text{Property Tax} = \frac{\text{total value of Sprite Struts}}{\text{total value of Charter Struts}} \cdot \text{Charter Property Tax Rate} \cdot \text{total value of Sprite Struts}
 $$
+ 
+Simplfying,
+
+$$
+\text{Property Tax} = \frac{\text{total value of Sprite Struts} ^2}{\text{total value of Charter Struts}} \cdot \text{Charter Property Tax Rate}
+$$
 
 **Excise Taxes**
 

@@ -25,12 +25,14 @@ if str(PROJECT_ROOT) not in sys.path:
 # Application Libraries
 import app.config.settings as settings
 from app.config.logging import configure_logging
-from app.config.enums import Devices
+from app.config.enums import Devices, AssetCategories
+from app.game.screen import Screen
 from app.services.orchestration.constructors import Orchestrator
 
 # Cython Libraries
-from libs.core.models import Dimensions
+from libs.core.models import Dimensions, Position
 from libs.graphics.render import quit_sdl, get_system_info
+
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +114,7 @@ def arguments():
 
     subparsers = parser.add_subparsers(dest="command", required=True)
     
-    for cmd in ["prerender", "render"]:
+    for cmd in ["prerender", "render", "map"]:
         p = subparsers.add_parser(cmd)
         p.add_argument("board_key", type=str)
         p.add_argument("--out", type=str, required=True)
@@ -130,33 +132,46 @@ def arguments():
     return parser.parse_args()
 
 
+def force_hydration(engine, board_key, screensize):
+    """
+    Forces synchronous evaluation of the Migrator and Registry prewarming 
+    for headless execution, then reallocates the VRAM canvases.
+    """
+    logger.info("Forcing synchronous state hydration for headless CLI...")
+    
+    # 1. Force Migrator to evaluate all state objects
+    if engine.board.migrator:
+        engine.board.migrator.target = board_key
+        while not engine.board.migrator.step(budget_ms=99999):
+            pass
+            
+    # 2. Force Registry to prewarm textures
+    registry = next(iter(engine.screens.values())).registry
+    if registry:
+        while not registry.prewarm(budget_ms=99999):
+            pass
+
+    # 3. Rebake Screen canvases for the newly hydrated tiles
+    old_screens = list(engine.screens.values())
+    engine.screens.clear()
+    
+    for i, layer in enumerate(engine.board.layers()):
+        tiles = engine.board.categories(AssetCategories.TILES.value, layer)
+        layer_sizes = engine.board.size(layer)
+        size = layer_sizes[0] if layer_sizes else screensize
+        
+        if i < len(old_screens):
+            screen = old_screens[i]
+            screen.rebake(tiles, size, screensize)
+            engine.screens[layer] = screen
+        else:
+            engine.screens[layer] = Screen(screensize, size, tiles, registry)
+            
+    engine.board.loaded = True
+
 # ---------------------------------------------------------
 # COMMAND HANDLERS
 # ---------------------------------------------------------
-
-def handle_prerender(args, orchestrator, screensize):
-    logger.info("Orchestrating engine components for headless execution (prerender)...")
-    engine = orchestrator.orchestrate(
-        state_key=args.board_key, 
-        screensize=screensize, 
-        device=args.device,
-        headless=True
-    )
-    
-    if args.layer not in engine.screens:
-        logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
-        return engine
-
-    screen = engine.screens[args.layer]
-    out_dir = Path(args.out)
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    out_path = out_dir / f"{args.board_key}-{args.layer}-background.png"
-    screen.export_background(str(out_path))
-
-    return engine
-
-
 def handle_render(args, orchestrator, screensize):
     logger.info("Orchestrating engine components for headless execution (render)...")
     engine = orchestrator.orchestrate(
@@ -165,6 +180,9 @@ def handle_render(args, orchestrator, screensize):
         device=args.device,
         headless=True
     )
+
+    # Synchronously hydrate state before attempting to render
+    force_hydration(engine, args.board_key, screensize)
     
     if args.layer not in engine.screens:
         logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
@@ -179,7 +197,39 @@ def handle_render(args, orchestrator, screensize):
     assets = engine.board.renderables(args.layer)        
     player = engine.board.player()
 
-    screen.export_render(str(out_path), assets, player.state.position, player.dimensions)
+    # Provide fallback focus if the board lacks a player
+    if player:
+        focus, fdim = player.state.position, player.dimensions
+    else:
+        focus, fdim = Position(x=0, y=0), Dimensions(w=0, l=0)
+
+    screen.export_render(str(out_path), assets, focus, fdim)
+
+    return engine
+
+
+def handle_prerender(args, orchestrator, screensize):
+    logger.info("Orchestrating engine components for headless execution (prerender)...")
+    engine = orchestrator.orchestrate(
+        state_key=args.board_key, 
+        screensize=screensize, 
+        device=args.device,
+        headless=True
+    )
+    
+    # Synchronously hydrate state before extracting the background
+    force_hydration(engine, args.board_key, screensize)
+    
+    if args.layer not in engine.screens:
+        logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
+        return engine
+
+    screen = engine.screens[args.layer]
+    out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    out_path = out_dir / f"{args.board_key}-{args.layer}-background.png"
+    screen.export_background(str(out_path))
 
     return engine
 
@@ -201,10 +251,40 @@ def handle_start(args, orchestrator, screensize):
     return engine
 
 
+def handle_map(args, orchestrator, screensize):
+    logger.info("Orchestrating engine components for full board execution (render-full)...")
+    engine = orchestrator.orchestrate(
+        state_key=args.board_key, 
+        screensize=screensize, 
+        device=args.device,
+        headless=True
+    )
+
+    force_hydration(engine, args.board_key, screensize)
+    
+    if args.layer not in engine.screens:
+        logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
+        return engine
+
+    screen = engine.screens[args.layer]
+    out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    out_path = out_dir / f"{args.board_key}-{args.layer}-full.png"
+    
+    assets = engine.board.renderables(args.layer)        
+
+    # Invoke the full board export instead of the standard clamped render
+    screen.export_full_render(str(out_path), assets)
+
+    return engine
+
+
 # Dispatcher Registry
 COMMAND_REGISTRY = {
     "prerender": handle_prerender,
     "render": handle_render,
+    'map': handle_map,
     "start": handle_start
 }
 

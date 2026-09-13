@@ -1,30 +1,69 @@
 # Ontology: Mechanics
 
+!!! note
+    Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation class. This `key` is used in the [Mechanics Configuration](#configuration) to specify the order of execution.
+
 A Mechanic is an implementation of an abstract interface the engine calls during the game loop; All Mechanics must implement an `update(board: Board, delta: float, bus: collections.deque, payload: DevicePayload)` method. The arguments of this interface are the [Board](./00-overview.md#board), a game loop time delta, an [Event Bus](./06-widgets.md#events) for storing Menu Events and the current [Device](./02-sprites.md#devices) Payload. These arguments are injected from above by the [Engine](./00-overview.md#engine)
 
 ## Overview
 
-!!! note
-    Mechanics are listed below using `key: class`, where `key` is the unique string identifier for the associated Mechanic implementation class. This `key` is used in the [Mechanics Configuration](#configuration) to specify the order of execution.
-
-Mechanics and [Intentions](./04-intentions.md) are the "foundation" of the gameplay. Their interplay and dynamics generates all of the complexity within the game engine. Mechanics are the "*laws of nature*" and Intentions are the "*states of mind*"
+Mechanics, [Intentions and Goals](./04-intentions.md) are the "foundation" of the gameplay. Their interplay and dynamic generates all of the complexity within the game engine. Mechanics are the "*laws of nature*" and Intentions & Goals are the "*states of mind*"
 
 1. Navigational Intentions (`find`, `follow`, `hunt`, `escape`, `wander`, `return`)
     - Handled by: CognitionMechanics, MotionMechanics
     - Logic: Cognition moves the Goal Position coordinate. Motion accelerates the velocity vector toward it.
 2. Spatial/Interactive Intentions (`attack`, `mine`, `build`, `interaction`)
     - Handled by: CombatMechanics, InteractionMechanics
-    - Logic: These Mechanics iterate only over Sprites in their respective Intentions. CombatMechanics does not care how a Sprite got into the `attack` intention; it only applies logic once the Sprite is in `attack`.
+    - Logic: These Mechanics iterate only over Sprites in their respective Intention "statelessly". For example, CombatMechanics does not care how a Sprite got into the `attack` intention; it only applies logic once the Sprite is in `attack`.
 3. Communicative Intentions (`speak`, `threaten`, `barter`)
     - Handled by: SocialMechanics
     - Logic: Iterates over Sprites in communicative Intentions, checking if they are within conversational radius of their target to swap prices or rumors.
 
-To visualize how this all ties together for a [Sprite](./02-sprites.md) in a single frame:
+**Sprite AI**
 
-- CognitionMechanics: Reads the Intention and updates the Goal Position, e.g. tracking a Player.
+As should already be obvious, much of the logic in Mechanics is in support of Sprite AI, via the management of [Goals & Intentions](./04-intentions.md). To visualize how this all ties together for a [Sprite](./02-sprites.md) in a single frame:
+
+- CognitionMechanics: Updates the Goal, e.g. tracking a Player or locating an Object.
 - TransitionMechanics: Evaluates the [ISL](./04-intentions.md#transition-matrix). It then maps the Intention and Goal to the Animation (action, direction).
 - MotionMechanics: Sees the Goal Position and applies impulse to Velocity.
 - SpatialMechanics: If the Sprite is in an interactive Intention, checks if the hitboxes overlap to trigger physical world changes (damage, mining, looting).
+
+!!! warning "to-be"
+    This flow represents the intended, to-be flow after Phase 08.02
+
+```
+flowchart TD
+    %% Mechanics Nodes
+    CM["CognitionMechanics"]
+    TM["TransitionMechanics"]
+    NM["NavigationMechanics"]
+    MM["MotionMechanics"]
+
+    %% Pipeline Flow
+    CM -->|"(sprite.state.goal)"| TM
+    TM -->|"(sprite.state.intention)"| NM
+    NM -->|"(sprite.state.trajectory.target)"| MM
+
+    %% Action / Output Annotations
+    CM --> A1["Sets Strategic Goal (TARGET, SUBJECT, OBJECT, POSITION)"]
+    TM --> A2["Evaluates ISL Intention (hunt, find, wander, idle)"]
+    NM --> A3["Manages Obstacles, LOS & RRT Queue (populates Trajectory)"]
+    MM --> A4["Steers Velocity Vector toward Trajectory Target"]
+
+    %% Class Assignments
+    class CM,TM,NM,MM mechanic;
+    class A1,A2,A3,A4 annotation;
+
+    %% Material UI Palette for MkDocs Slate Theme
+    %% Mechanics: Material Deep Purple 700 fill (#512da8) + Deep Purple 200 border (#b388ff)
+    classDef mechanic fill:#512da8,stroke:#b388ff,stroke-width:2px,color:#ffffff,font-weight:bold;
+
+    %% Annotations: Contrasting Lightened Blue Container (#1e2e4a) + Blue A200 border (#448aff)
+    classDef annotation fill:#1e2e4a,stroke:#448aff,stroke-width:1.5px,stroke-dasharray: 4 4,color:#e3f2fd,text-align:left;
+
+    %% Edge Labels
+    linkStyle default color:#e0e0e0,stroke:#90caf9,stroke-width:1.5px;
+```
 
 ### Core
 

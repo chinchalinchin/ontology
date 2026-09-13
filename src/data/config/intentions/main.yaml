@@ -26,7 +26,7 @@ intentions:
       conditions:
         - sprite.goal 
         - sprite.goal.category == constants.Goals.LOOT.value
-        - sprite.inventory.wallet < sprite.memory.prices.get(sprite.memory.goal.name)
+        - sprite.inventory.wallet < sprite.memory.prices.get(sprite.goal.name)
         - sprite.psyche.motivation == constants.Motivations.SURVIVAL.value
     - next: idle
       conditions: 

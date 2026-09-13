@@ -38,6 +38,7 @@ nav:
     - Schemas: appendices/01-schemas.md
   - Reports:
     - Unit Test Coverage: coverage/index
+
 markdown_extensions:
   - admonition
   - pymdownx.blocks.caption
@@ -59,11 +60,13 @@ exclude:
   - '**/.prompts/**'
   - '**/.assets/**'
   - '**/.*.md'
+
 exclude_docs: |
   .board/**
   .prompts/**
   .assets/**
   **/.*.md
+  
 extra_javascript:
   - static/js/mathjax.js
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
