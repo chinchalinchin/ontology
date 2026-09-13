@@ -17,6 +17,7 @@ from app.config.enums import (
     AssetInstances, 
     AssetCategories
 )
+from app.models.state.widgets import DisplayState
 from app.game.menus.core import Menu
 
 # Cython Libraries
@@ -101,23 +102,30 @@ class Screen:
             frame_keys = tile.frame.keys(tile.id, tile.state)
             for frame_key, ox, oy in frame_keys:
                 tex_data = self.registry.image(frame_key)
-                if tex_data:
-                    tex, sx, sy, sw, sl = tex_data
-                    tile_tuple = (
-                        tex, sx, sy, sw, sl,
-                        tile.state.position.x + ox, 
-                        tile.state.position.y + oy,
-                        tile.dimensions.w, tile.dimensions.l,
-                        tile.state.multiple.nx, tile.state.multiple.ny
-                    )
-                    # Route properties
-                    if tile.taxonomy.instance == AssetInstances.BACK:
-                        back_tiles.append(tile_tuple)
-                    elif tile.taxonomy.instance == AssetInstances.FORE:
-                        fore_tiles.append(tile_tuple)
+
+                if not tex_data: continue
+
+                tex, sx, sy, sw, sl = tex_data
+                tile_tuple = (
+                    tex, sx, sy, sw, sl,
+                    tile.state.position.x + ox, 
+                    tile.state.position.y + oy,
+                    tile.dimensions.w, tile.dimensions.l,
+                    tile.state.multiple.nx, tile.state.multiple.ny
+                )
+                # Route properties
+                if tile.taxonomy.instance == AssetInstances.BACK:
+                    back_tiles.append(tile_tuple)
+                elif tile.taxonomy.instance == AssetInstances.FORE:
+                    fore_tiles.append(tile_tuple)
+                    
         return back_tiles, fore_tiles
 
-    def _flatten(self, menus: List[Menu], overlays: List[Menu]) -> List[Asset]:
+
+    def _flatten(self, 
+        menus: List[Menu], 
+        overlays: List[Menu]
+    ) -> List[Asset]:
         """
         """
         widgets = []
@@ -128,6 +136,7 @@ class Screen:
             if menu.widgets:
                 widgets.extend(menu.widgets.values())
         return widgets
+
     
     def camera(self, 
         focus: Position, 
@@ -150,7 +159,9 @@ class Screen:
 
         return Position(x=cam_x, y=cam_y)
 
+
     def clear(self) -> None: clear()
+
 
     def present(self) -> None: present()
 
@@ -171,10 +182,10 @@ class Screen:
         #   Primary Sort: Explicit Height OR (Y + Length)
         #   Secondary Sort: Depth-index tie-breaker for overlapping entities
         assets.sort(key=lambda a: (
-            a.state.height if getattr(a.state, 'height', None) is not None else (
+            a.state.height if a.state.height is not None else (
                 (a.state.position.y + (a.dimensions.l if a.dimensions else 0))
             ),
-            getattr(a.state, 'depth', 0)
+            a.state.depth
         ))
 
         for asset in assets:
@@ -213,7 +224,7 @@ class Screen:
         """
         Dynamically restamps background and bakes updated text for O(N) runtime rendering. 
         """
-        if not hasattr(widget.state, 'canvas') or widget.state.canvas is None:
+        if not isinstance(widget.state, DisplayState):
             return
             
         tex = widget.state.canvas
@@ -244,30 +255,34 @@ class Screen:
         primitives = []
         
         for widget in widgets:
-            if hasattr(widget.state, 'canvas') and widget.state.canvas is not None:
+            if isinstance(widget.state, DisplayState):
                 tex = widget.state.canvas
                 primitives.append((
                     tex, 0, 0, tex.w, tex.l, 
                     widget.state.position.x, widget.state.position.y, 
                     widget.dimensions.w, widget.dimensions.l
                 ))
-            else:
-                frame_keys = widget.frame.keys(widget.id, widget.state)
-                for key, ox, oy in frame_keys:
-                    if key:
-                        tex_data = self.registry.image(key)
-                        if tex_data:
-                            tex, sx, sy, sw, sl = tex_data
-                            primitives.append((
-                                tex, sx, sy, sw, sl, 
-                                widget.state.position.x + ox, widget.state.position.y + oy, 
-                                sw, sl
-                            ))
-                        elif widget.taxonomy.instance != AssetInstances.PANES:
-                            # Ignore transparent layout panes
-                            logger.warning(f"Registry MISS for key: '{key}' on widget '{widget.name}'")
+                continue 
+
+            frame_keys = widget.frame.keys(widget.id, widget.state)
+            for key, ox, oy in frame_keys:
+                if key:
+                    tex_data = self.registry.image(key)
+                    if tex_data:
+                        tex, sx, sy, sw, sl = tex_data
+                        primitives.append((
+                            tex, sx, sy, sw, sl, 
+                            widget.state.position.x + ox, widget.state.position.y + oy, 
+                            sw, sl
+                        ))
+                    elif widget.taxonomy.instance != AssetInstances.PANES:
+                        # Ignore transparent layout panes
+                        logger.warning(
+                            f"Registry MISS: '{key}' on widget '{widget.name}'"
+                        )
 
         superimpose(primitives)
+
 
     def rebake(self, 
         tiles: List[Asset], 
@@ -281,9 +296,9 @@ class Screen:
         logger.info("Rebaking Screen canvases for new world state...")
 
         # 1. Explicitly free GPU memory immediately (bypassing Python GC)
-        if hasattr(self, 'bg_canvas') and self.bg_canvas:
+        if self.bg_canvas:
             destroy(self.bg_canvas)
-        if hasattr(self, 'fg_canvas') and self.fg_canvas:
+        if self.fg_canvas:
             destroy(self.fg_canvas)
 
         # 2. Update dimensions
@@ -344,10 +359,10 @@ class Screen:
         active_assets = []
         
         assets.sort(key=lambda a: (
-            a.state.height if getattr(a.state, 'height', None) is not None else (
+            a.state.height if a.state.height is not None else (
                 (a.state.position.y + (a.dimensions.l if a.dimensions else 0))
             ),
-            getattr(a.state, 'depth', 0)
+            a.state.depth
         ))
 
         for asset in assets:
@@ -365,8 +380,6 @@ class Screen:
                 if (dx + dw >= 0 and dx <= self.boardsize.w and
                     dy + dl >= 0 and dy <= self.boardsize.l):
                     active_assets.append((tex, sx, sy, sw, sl, dx, dy, dw, dl))
-
-        from libs.graphics.render import canvas, destroy
         
         # 1. Allocate a temporary canvas matching the absolute board dimensions
         full_target = canvas(self.boardsize.w, self.boardsize.l, opaque=True)

@@ -45,7 +45,7 @@ class Engine:
     bus: collections.deque
     provider: Provider
     running: bool
-    event_context: EventContext
+    context: EventContext
     handlers: Dict[type, EventHandler]
 
     def __init__(self, 
@@ -64,12 +64,13 @@ class Engine:
         self.running = False
         
         # Package Engine dependencies for Event Handler distribution
-        self.event_context = EventContext(
+        self.context = EventContext(
             board=self.board,
             screens=self.screens,
             provider=self.provider,
             bus=self.bus
         )
+
         
         # Route Event classes to their Strategy implementation
         self.handlers = {
@@ -79,9 +80,11 @@ class Engine:
             UpdateEvent: UpdateEventHandler()
         }
 
+
     @staticmethod
     def time() -> float:
         return time.perf_counter()
+
 
     def _drain(self) -> None:
         """
@@ -92,9 +95,10 @@ class Engine:
             handler = self.handlers.get(type(event))
             
             if handler:
-                handler.handle(event, self.event_context)
+                handler.handle(event, self.context)
             else:
                 logger.warning(f"No Event Handler registered for type: {type(event)}")
+
 
     def _play(self, delta) -> None:
         """
@@ -107,6 +111,7 @@ class Engine:
         if not self.board.paused and self.board.loaded:
             for mechanic in self.world:
                 mechanic.update(self.board, delta, self.bus, payload)
+
 
     def _render(self) -> None:
         """
@@ -135,12 +140,36 @@ class Engine:
         )
         screen.present()
 
-    def start(self) -> None:        
+
+    def _telemetry(self, 
+        frames: int, 
+        updates: int, 
+        start: float, 
+        ticks: int  = settings.TELEMETRY_TICKS
+    ) -> bool:
+        """
+        Returns True if telemetry was logged.
+        """
+        if frames % ticks == 0:
+            elapsed = self.time() - start
+            avg_fps = frames / elapsed
+            avg_ups = updates / elapsed
+            
+            logger.info(
+                f"Avg FPS: {avg_fps:.1f} |"
+                f"Avg UPS: {avg_ups:.1f}"
+            )
+            return True
+        return False
+
+
+    def start(self, 
+        delta: float = 1.0 / settings.TARGET_FPS,
+        spin: float = settings.SPIN_RATE
+    ) -> None:        
         logger.info("Entering Game Loop...")
 
-        delta = 1.0 / settings.TARGET_FPS
         accumulator = 0.0
-        spin_threshold = 0.002 
         last_time = self.time()
 
         telemetry_frames = 0
@@ -170,20 +199,17 @@ class Engine:
             sleep_time = delta - work_time
             
             if sleep_time > 0:
-                if sleep_time > spin_threshold:
-                    time.sleep(sleep_time - spin_threshold)
+                if sleep_time > spin:
+                    time.sleep(sleep_time - spin)
                 
                 while (self.time() - current_time) < delta:
                     pass
 
-            if telemetry_frames % 600 == 0:
-                elapsed = self.time() - telemetry_start_time
-                avg_fps = telemetry_frames / elapsed
-                avg_ups = telemetry_updates / elapsed
-                
-                logger.info(f"[TELEMETRY] Avg FPS: {avg_fps:.1f} |"
-                            f"Avg UPS (Ticks): {avg_ups:.1f}")
-                
+            if self._telemetry(
+                telemetry_frames,
+                telemetry_updates, 
+                telemetry_start_time
+            ):
                 telemetry_frames = 0
                 telemetry_updates = 0
                 telemetry_start_time = self.time()

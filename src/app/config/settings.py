@@ -15,6 +15,8 @@ MIGRATOR_DELAY = 1
 EXPRESSION_TTL = 120
 LOG_LEVEL = "INFO"
 RRT_PATH_PREFIX = "path"
+TELEMETRY_TICKS = 600
+SPIN_RATE = 0.002
 # ---------------------------------------------------
 ## --------------------------------- ENGINE CONSTANTS
 ### TARGET_FPS: Engine's target FPS.

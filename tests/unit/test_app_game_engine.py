@@ -100,4 +100,4 @@ def test_engine_drain_routes_events_to_handlers():
     assert len(engine.bus) == 0
     mock_handler.handle.assert_called_once()
     assert isinstance(mock_handler.handle.call_args[0][0], DummyEvent)
-    assert mock_handler.handle.call_args[0][1] == engine.event_context
+    assert mock_handler.handle.call_args[0][1] == engine.context
