@@ -345,11 +345,11 @@ physics.dynamics(
 
 *Objective*: Build the tactical navigation subsystem.
 
-* [ ] Subtask: Create `src/app/game/logic/mechanics/intentional/navigation.py` implementing `NavigationMechanics`.
+* [x] Subtask: Create `src/app/game/logic/mechanics/intentional/navigation.py` implementing `NavigationMechanics`.
 * [ ] Subtask: Migrate `anchor()` and `obstacles()` from `CognitionMechanics` into `NavigationMechanics` (or `libs.core.math`).
 * [ ] Subtask: Implement waypoint progress resolution: when a sprite's footprint arrives within `action_radius` of `trajectory.target`, advance to the next waypoint or return to direct tracking.
 * [ ] Subtask: Implement dynamic path invalidation: if line-of-sight to the active intermediate waypoint becomes obstructed, clear waypoints and recalculate via `Planner`.
-* [ ] Subtask: Register `NavigationMechanics` in `src/data/config/mechanics/main.yaml` directly following `TransitionMechanics` and preceding `MotionMechanics`.
+* [x] Subtask: Register `NavigationMechanics` in `src/data/config/mechanics/main.yaml` directly following `TransitionMechanics` and preceding `MotionMechanics`.
 
 **3. Task: CognitionMechanics Purge & Realignment**
 
@@ -367,7 +367,13 @@ physics.dynamics(
 * [ ] Subtask: Update `src/app/game/logic/mechanics/modules/motion/motive.py` to accelerate towards `sprite.state.trajectory.target` when present, falling back to `sprite.state.goal.position`.
 * [ ] Subtask: Update `TransitionMechanics` / `AnimationMap.direction()` in `src/app/game/logic/maps.py` to resolve facing angles from `sprite.state.trajectory.target`.
 
-**5. Task: Verification and Behavioral Regression Suite**
+**5. Task: Cythonization**
+
+*Objective*: Move intensive calculations across the Cython boundary.
+
+* [!] Once the implementation is complete and passes user acceptence, migrate the RRT math in `app.game.logic.modules.paths.plan` to Cython. Devise the interfaces and leave the `app.game.logic.modules.path.plan` as a light wrapper around the interfaces that unpacks the game data for Cython.
+
+**6. Task: Verification and Behavioral Regression Suite**
 
 *Objective*: Verify pathfinding and intention stability across obstacles.
 

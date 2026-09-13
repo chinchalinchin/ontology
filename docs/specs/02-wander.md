@@ -17,21 +17,13 @@ There is an inherent ambiguity in designating an automaton cycle an "Intention L
 
 The Wander Loop operates as a **subsumptive secondary loop**. It is traversed to resolve situational gaps in primary loops—specifically when an entity loses direct line of sight to a target or has no immediate ideated objective. Rather than freezing, the entity enters an autonomous spatial walk, preserving suspended primary goals in `memory.goals` until sensory predicates permit a re-entry transition into a terminal action loop.
 
-
-```
-    [Primary Loop Suspended]
-             │
-             ▼
-     ┌───────────────────┐
-┌───►│  wander (Random)  │◄───┐
-│    └─────────┬─────────┘    │
-│              │              │
-│ (No Vision)  │ (Target Seen)│ (Waypoint Step)
-│              ▼              │
-│     [any_memories_visible]  │
-│              │              │
-│              ▼              │
-└───────  find / hunt ────────┘
+```mermaid
+flowchart TD
+    A[Primary Loop Suspended] --> B[wander]
+    B -->|Target Seen| C[any_memories_visible]
+    C --> D[find / hunt]
+    D -->|No Vision| B
+    D -->|Waypoint Step| B
 ```
 
 ##### Prologue
@@ -44,9 +36,11 @@ Before entering the Wander Loop from an interrupted action loop (`find` or `hunt
 
 When an entity is in `wander` with no active goal (`not sprite.state.goal`) and no pending waypoints in memory, `CognitionMechanics._project` samples a coordinate within the bounding square \([-\text{radius}_{\text{vision}}, \text{radius}_{\text{vision}}]\) relative to the Sprite's position. This coordinate is clamped against the physical boundaries of the active board layer:
 
-$$x_{\text{dest}} = \max\left(0, \min(x_{\text{pos}} + \Delta x, W_{\text{layer}} - W_{\text{sprite}})\right)$$
+$$
+x_{\text{dest}} = \max\left(0, \min(x_{\text{pos}} + \Delta x, W_{\text{layer}} - W_{\text{sprite}})\right)
 
-$$y_{\text{dest}} = \max\left(0, \min(y_{\text{pos}} + \Delta y, L_{\text{layer}} - L_{\text{sprite}})\right)$$
+y_{\text{dest}} = \max\left(0, \min(y_{\text{pos}} + \Delta y, L_{\text{layer}} - L_{\text{sprite}})\right)
+$$
 
 The resulting destination is committed as `Goal(name="wander", category=Goals.POSITION.value)`.
 

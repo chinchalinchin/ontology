@@ -258,6 +258,7 @@ class Mechanics(str, Enum):
     INTERACTION     = "interaction"
     MOTION          = "motion"
     MENU            = "menu"
+    NAVIGATION      = "navigation"
     PLAYER          = "player"
     PLOT            = "plot"
     PROJECTILE      = "projectile"

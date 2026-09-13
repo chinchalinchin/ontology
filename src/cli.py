@@ -251,7 +251,6 @@ def handle_prerender(args, orchestrator, screensize):
         headless=True
     )
     
-    # Synchronously hydrate state before extracting the background
     hydrate(engine, args.board_key, screensize)
     
     if args.layer not in engine.screens:

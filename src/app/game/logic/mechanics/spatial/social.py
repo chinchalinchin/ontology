@@ -64,7 +64,6 @@ class SocialMechanics(SpatialMechanic):
                 logger.info(f"Possible Sprite Interactions: {len(sprites)}")
 
             if interacting_players and sprites:
-                logger.info('Checking collisions')
                 colliding_pairs = self.proximities(interacting_players + sprites)
 
                 if len(colliding_pairs) > 0:
@@ -87,10 +86,9 @@ class SocialMechanics(SpatialMechanic):
                     if player.name in processed_sources:
                         continue
 
-                    logger.info(f"processing: {npc.state.psyche.dialogue}")
-
                     # 1. Trigger Dialogue Menu
                     if npc.state.psyche.dialogue:
+                        logger.info(f"Processing Dialogue: {npc.state.psyche.dialogue}")
                         bus.append(MenuEvent(
                             id=Menus.DIALOGUE.value,
                             context=DialogueContext(

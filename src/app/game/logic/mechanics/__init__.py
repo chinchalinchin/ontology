@@ -17,11 +17,13 @@ from app.game.logic.mechanics.spatial import (
 from app.game.logic.mechanics.intentional import (
     TransitionMechanics,
     PlayerMechanics,
-    CognitionMechanics
+    CognitionMechanics,
+    NavigationMechanics
 )
 from app.game.logic.mechanics.world.plot import (
     PlotMechanics
 )
+
 __all__ = [ 
     'AnimationMechanics',
     'RemoveMechanics',
@@ -40,6 +42,7 @@ __all__ = [
     'TransitionMechanics',
     'PlayerMechanics',
     'CognitionMechanics',
+    'NavigationMechanics',
     # 
     'PlotMechanics'
 ]
