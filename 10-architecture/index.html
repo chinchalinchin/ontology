@@ -1455,6 +1455,10 @@
 <li><strong><code>nearby</code></strong>: A pure integer squared-distance check (<code>dx*dx + dy*dy &lt; r*r</code>). </li>
 <li><strong><code>contours</code></strong>: Executes an two-pass Sweep-Line algorithm over primitive AABBs to dynamically generate map boundaries. It leverages C-level interval merging and XOR symmetric differences to isolate all exposed contour edges, returning boundary segments.</li>
 </ul>
+<div class="admonition todo">
+<p class="admonition-title">Todo</p>
+<p>RRT algorithm.</p>
+</div>
 <p><strong>Space (<code>libs/core/math/space.pyx</code>)</strong></p>
 <p>This module manages the broad-phase spatial partitioning grid, reducing collision detection complexity from <span class="arithmatex">\(O(N^2)\)</span> to <span class="arithmatex">\(O(N)\)</span> for local clusters.</p>
 <ul>

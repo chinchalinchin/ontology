@@ -367,6 +367,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#trajectory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trajectory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#meters" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1202,6 +1213,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#trajectory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trajectory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#meters" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1465,24 +1487,33 @@
 </ul>
 </li>
 <li><code>memory:</code> <ul>
-<li><code>goals: List[Goal]</code></li>
-<li><code>prices: Dict[str, double]</code></li>
+<li><code>doors: Dict[str, str]</code></li>
+<li><code>goals: Dict[str, Goal]</code></li>
 <li><code>relationships: Dict[str, str]</code></li>
-<li><code>locations: Dict[str, Positions]</code></li>
+<li><code>prices: Dict[str, double]</code></li>
 <li><code>property: List[str]</code></li>
 <li><code>rumors: List[str]</code></li>
 </ul>
 </li>
 <li><code>psyche</code>:<ul>
+<li><code>dialogue: str</code></li>
 <li><code>expression: str</code></li>
 <li><code>motivation: str</code></li>
-<li><code>persona: str</code>: (Persona ley for Library Communication retrieval)</li>
+<li><code>persona: str</code>: (Persona key for Library dialogue retrieval)</li>
 </ul>
 </li>
 <li><code>goal:</code><ul>
 <li><code>name: str</code></li>
+<li><code>layer: str</code></li>
 <li><code>category: Enum[sprite, loot, wealth, property, position]</code></li>
 <li><code>position: Position</code></li>
+</ul>
+</li>
+<li><code>trajectory</code>:<ul>
+<li><code>target: Position</code></li>
+<li><code>vertices: List[Position]</code></li>
+<li><code>stalled: bool</code></li>
+<li><code>cooldown: int</code></li>
 </ul>
 </li>
 </ul>
@@ -1503,6 +1534,15 @@
 <h3 id="goal">Goal</h3>
 <p>Goals are the current focus of the Sprite's path-finding and Direction resolution.</p>
 <p>See <a href="../04-intentions/">Goals documentation</a> for more information.</p>
+<h3 id="trajectory">Trajectory</h3>
+<p>When the path to a Sprite's Goal is blocked, the Sprite uses a <a href="../10-architecture/#math">Rapidly-exploring Random Tree algorithm</a> under the hood to generate a series of consecutive waypoints around obstacles to its Goal. This path is stored in the Sprite's <code>trajectory</code>.</p>
+<ul>
+<li><code>target</code>: The immediate physical coordinate <code>(x, y)</code> the Sprite must steer toward on the current tick. If line of sight to the strategic goal is clear, <code>target == sprite.state.goal.position</code>. If occluded, <code>target == waypoints[0]</code>.</li>
+<li><code>vertices</code>: The FIFO queue of intermediate RRT avoidance coordinates.</li>
+<li><code>stalled</code>: Boolean flag set when RRT fails to resolve a valid route, notifying deliberative systems of an impassable obstruction.</li>
+<li><code>cooldown</code>: Engine tick accumulator preventing thrashing re-evaluations against impassable geometries.</li>
+</ul>
+<p>See <a href="../05-mechanics/#intentional">NavigationMechanics</a> for more information on path generation and navigation.</p>
 <h3 id="meters">Meters</h3>
 <p>A Meter has a <code>current</code> value and a <code>maximum</code> value.</p>
 <p><strong>Health</strong></p>
