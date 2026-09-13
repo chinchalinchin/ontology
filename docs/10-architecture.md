@@ -146,6 +146,9 @@ This module houses pure geometric evaluations, translating expensive Python floa
 * **`nearby`**: A pure integer squared-distance check (`dx*dx + dy*dy < r*r`). 
 * **`contours`**: Executes an two-pass Sweep-Line algorithm over primitive AABBs to dynamically generate map boundaries. It leverages C-level interval merging and XOR symmetric differences to isolate all exposed contour edges, returning boundary segments.
 
+!!! todo
+    RRT algorithm.
+    
 **Space (`libs/core/math/space.pyx`)**
 
 This module manages the broad-phase spatial partitioning grid, reducing collision detection complexity from $O(N^2)$ to $O(N)$ for local clusters.

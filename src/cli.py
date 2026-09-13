@@ -33,7 +33,6 @@ from app.services.orchestration.constructors import Orchestrator
 from libs.core.models import Dimensions, Position
 from libs.graphics.render import quit_sdl, get_system_info
 
-
 logger = logging.getLogger(__name__)
 
 SCREENSIZES = {
@@ -43,6 +42,9 @@ SCREENSIZES = {
 }
 SCREENSIZE = SCREENSIZES['medium']
 
+# ---------------------------------------------------------
+# COMMAND ARGUMENTS
+# ---------------------------------------------------------
 
 def arguments():
     parser = argparse.ArgumentParser(description="Ontology CLI Tools")
@@ -200,7 +202,6 @@ def handle_map(args, orchestrator, screensize):
     
     assets = engine.board.renderables(args.layer)        
 
-    # Invoke the full board export instead of the standard clamped render
     screen.export_map(str(out_path), assets)
 
     return engine
@@ -215,7 +216,6 @@ def handle_render(args, orchestrator, screensize):
         headless=True
     )
 
-    # Synchronously hydrate state before attempting to render
     hydrate(engine, args.board_key, screensize)
     
     if args.layer not in engine.screens:

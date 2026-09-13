@@ -49,7 +49,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
     - Phase 08:
       - [x]: [Phase 08.01: Obstable Geometry](./phases/refactor/refactor-08-01.md)
-      - [ ]: [Phase 08.02: NavigationMechanics](./phases/refactor/refactor-08-02.md)
+      - [~]: [Phase 08.02: NavigationMechanics](./phases/refactor/refactor-08-02.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantiated Assets](./phases/patch/bug-b001.md)
@@ -66,6 +66,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [ ]: [Goal 05: InventoryController](./phases/achieve/goal-05.md)
     - [x]: [Goal 06: Speak Intentions](./phases/achieve/goal-06.md)
     - [x]: [Goal 07: Door Interact Intentions](./phases/achieve/goal-07.md)
+    - [ ]: [Goal 08: Pause Menu](./phases/achieve/goal-08.md)
 - Backlog:
   - [Telemetry Menu](./backlog/todo-t000.md)
 

@@ -131,6 +131,13 @@ class Mutators:
     triggers: MutatorTriggers = field(default_factory=MutatorTriggers)
     parameters: Optional[MutatorParameters] = None
 
+@dataclass(slots=True)
+class Trajectory:
+    target: Optional[Position] = None # type: ignore
+    vertices: List[Position] = field(default_factory=list) # type: ignore
+    stalled: bool = False
+    cooldown: int = 0
+
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------- SPRITE STATES
 
@@ -147,6 +154,7 @@ class SpriteState(AssetState):
     psyche: Optional[Psyche] = field(default_factory=Psyche)
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
+    trajectory: Trajectory = field(default_factory=Trajectory)
 
 @dataclass(slots=True)
 class PlayerState(AssetState):

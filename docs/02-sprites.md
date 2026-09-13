@@ -54,20 +54,27 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
     * `triggers: Dict[str, bool]`
     * `parameters: Dict[str, Dict[str, Union[int, double]]]`
 * `memory:` 
-    * `goals: List[Goal]`
-    * `prices: Dict[str, double]`
+    * `doors: Dict[str, str]`
+    * `goals: Dict[str, Goal]`
     * `relationships: Dict[str, str]`
-    * `locations: Dict[str, Positions]`
+    * `prices: Dict[str, double]`
     * `property: List[str]`
     * `rumors: List[str]`
 * `psyche`:
+    * `dialogue: str`
     * `expression: str`
     * `motivation: str`
-    * `persona: str`: (Persona ley for Library Communication retrieval)
+    * `persona: str`: (Persona key for Library dialogue retrieval)
 * `goal:`
     * `name: str`
+    * `layer: str`
     * `category: Enum[sprite, loot, wealth, property, position]`
     * `position: Position`
+* `trajectory`:
+    * `target: Position`
+    * `vertices: List[Position]`
+    * `stalled: bool`
+    * `cooldown: int`
 
 **Animation: SpriteAnimation**
 
@@ -91,6 +98,17 @@ See [Intentions documentation](./04-intentions.md) for more information.
 Goals are the current focus of the Sprite's path-finding and Direction resolution.
 
 See [Goals documentation](./04-intentions.md) for more information.
+
+### Trajectory
+
+When the path to a Sprite's Goal is blocked, the Sprite uses a [Rapidly-exploring Random Tree algorithm](./10-architecture.md#math) under the hood to generate a series of consecutive waypoints around obstacles to its Goal. This path is stored in the Sprite's `trajectory`.
+
+* `target`: The immediate physical coordinate `(x, y)` the Sprite must steer toward on the current tick. If line of sight to the strategic goal is clear, `target == sprite.state.goal.position`. If occluded, `target == waypoints[0]`.
+* `vertices`: The FIFO queue of intermediate RRT avoidance coordinates.
+* `stalled`: Boolean flag set when RRT fails to resolve a valid route, notifying deliberative systems of an impassable obstruction.
+* `cooldown`: Engine tick accumulator preventing thrashing re-evaluations against impassable geometries.
+
+See [NavigationMechanics](./05-mechanics.md#intentional) for more information on path generation and navigation.
 
 ### Meters
 

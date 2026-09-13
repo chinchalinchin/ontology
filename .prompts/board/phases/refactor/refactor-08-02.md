@@ -39,8 +39,10 @@ for k, v in sprite.state.memory.goals.items():
         new_goals[k] = v
 sprite.state.memory.goals = new_goals
 sprite.state.goal = None
-
 ```
+
+!!! note
+    Superseded by Phase Realignment.
 
 ##### Bug B011: Spurious Waypoint Re-Planning via Fallthrough in `_track`
 
@@ -60,7 +62,6 @@ elif goal.category in [
 ]:
     sprite.state.mutators.triggers.vision = True
     self._plan(sprite, board)
-
 ```
 
 Because waypoints are typed with `category=Goals.POSITION.value`, `self._plan()` executes every single frame on every waypoint during active navigation. This causes massive redundant spatial checks and risks premature path trashing.
@@ -82,8 +83,10 @@ is_path = goal.name and goal.name.startswith(prefix)
 if is_path:
     self._scrap(sprite, board)
     return
-
 ```
+
+!!! note
+    Superseded by Phase Realignment.
 
 ##### Bug B012: Hitbox Drift from Missing Anchor Offset in `CognitionMechanics.path`
 
@@ -118,8 +121,10 @@ for i, wp in enumerate(segments):
         layer=sprite.state.layer,
         position=Position(x=int(wp.x - offset_x), y=int(wp.y - offset_y))
     )
-
 ```
+
+!!! note
+    Superseded by Phase Realignment.
 
 #### Refactor: Phase 08.02: Path Execution & Recovery Finalization
 
@@ -181,7 +186,7 @@ if not path:
 
 ---
 
-Stepping back, reviewing the complexity of CognitionMechanics and analyzing the underlying root cause of the bugs and woes...
+**User Note**: Stepping back, reviewing the complexity of CognitionMechanics and analyzing the underlying root cause of the bugs and woes...
 
 ---
 
@@ -193,31 +198,27 @@ The architectural friction in `CognitionMechanics` stems from a category error: 
 
 Treating RRT waypoints as `POSITION` goals forces the engine to abuse `sprite.state.memory.goals` as a path queue, resulting in dictionary FIFO inversion during door subsumptions (Bug B010), spurious per-tick re-planning (Bug B011), and anchor-offset spatial drift (Bug B012). Worse, it forces `TransitionMechanics` into an artificial ping-pong loop (`hunt -> idle -> wander -> idle -> wander -> hunt`), repeatedly throwing the automaton into `wander` simply to step past a wall.
 
-This phase extracts tactical steering into a dedicated `NavigationMechanics` and introduces `TrajectoryState`. `CognitionMechanics` retains sole authority over high-level `Goal` selection, while `NavigationMechanics` manages the spatial trajectory required to reach that goal. Sprites pursuing an entity remain continuously in their primary intention (`hunt`, `find`) while seamlessly navigating around physical barriers.
+This phase extracts tactical steering into a dedicated `NavigationMechanics` and introduces `TrajectoryState`. `CognitionMechanics` retains sole authority over high-level `Goal` selection, while `NavigationMechanics` manages the spatial trajectory required to reach that goal. Sprites pursuing an entity remain continuously in their primary intention (`hunt`, `find`) while navigating around physical barriers.
 
+```mermaid
+flowchart TD
+    %% Mechanics Nodes
+    CM["CognitionMechanics"]
+    TM["TransitionMechanics"]
+    NM["NavigationMechanics"]
+    MM["MotionMechanics"]
+
+    %% Pipeline Flow
+    CM -->|"(sprite.state.goal)"| TM
+    TM -->|"(sprite.state.intention)"| NM
+    NM -->|"(sprite.state.trajectory.target)"| MM
+
+    %% Action / Output Annotations
+    CM --> A1["Sets Strategic Goal (TARGET, SUBJECT, OBJECT, POSITION)"]
+    TM --> A2["Evaluates ISL Intention (hunt, find, wander, idle)"]
+    NM --> A3["Manages Obstacles, LOS & RRT Queue (populates Trajectory)"]
+    MM --> A4["Steers Velocity Vector toward Trajectory Target"]
 ```
-┌───────────────────────────┐
-│     CognitionMechanics    │  --> Sets Strategic Goal (TARGET, SUBJECT, OBJECT, POSITION)
-└─────────────┬─────────────┘
-              │ (sprite.state.goal)
-              ▼
-┌───────────────────────────┐
-│    TransitionMechanics    │  --> Evaluates ISL Intention (hunt, find, wander, idle)
-└─────────────┬─────────────┘
-              │ (sprite.state.intention)
-              ▼
-┌───────────────────────────┐
-│    NavigationMechanics    │  --> Manages Obstacles, LOS & RRT Queue (populates Trajectory)
-└─────────────┬─────────────┘
-              │ (sprite.state.trajectory.target)
-              ▼
-┌───────────────────────────┐
-│      MotionMechanics      │  --> Steers Velocity Vector toward Trajectory Target
-└───────────────────────────┘
-
-```
-
----
 
 ##### Goal: Data Structure Changes
 
@@ -229,34 +230,32 @@ Introduce `TrajectoryState` to encapsulate active steering waypoints, isolating 
 @dataclass(slots=True)
 class TrajectoryState:
     target: Optional[Position] = None
-    waypoints: List[Position] = field(default_factory=list)
+    vertices: List[Position] = field(default_factory=list)
     stalled: bool = False
     cooldown: int = 0
 
 ```
 
-* `target`: The immediate physical coordinate `(x, y)` the kinematic/motive engine must steer toward on the current tick. If LOS to the strategic goal is clear, `target == sprite.state.goal.position`. If occluded, `target == waypoints[0]`.
-* `waypoints`: The FIFO queue of intermediate RRT avoidance coordinates.
+* `target`: The immediate physical coordinate `(x, y)` the kinematic/motive engine must steer toward on the current tick. If LOS to the strategic goal is clear, `target == sprite.state.goal.position`. If occluded, `target == vertices[0]`.
+* `vertices`: The FIFO queue of intermediate RRT avoidance coordinates.
 * `stalled`: Boolean flag set when RRT fails to resolve a valid route, notifying deliberative systems of an impassable obstruction.
 * `cooldown`: Engine tick accumulator preventing thrashing re-evaluations against impassable geometries.
 
 **2. SpriteState Integration (`src/app/models/state/sprites.py`)**
 
-Inject `TrajectoryState` into `SpriteState`:
+Inject `Trajectory` into `SpriteState`:
 
 ```python
 @dataclass(slots=True)
 class SpriteState(AssetState):
     # ... existing fields ...
-    trajectory: TrajectoryState = field(default_factory=TrajectoryState)
+    trajectory: Trajectory = field(default_factory=Trajectory)
 
 ```
 
 **3. Strategic Memory Sanitation (`src/app/models/state/sprites.py`)**
 
 `sprite.state.memory.goals` reverts to its intended role: an episodic store of true strategic entities (`Dict[str, Goal]`). All string-prefix conventions (`path-*`, `RRT_PATH_PREFIX`) are eliminated from memory storage.
-
----
 
 ##### Goal: Mechanical Responsibilities & Logic Changes
 
@@ -315,7 +314,6 @@ class NavigationMechanics(Mechanic):
 * In `motive.update()`: Steer velocity vectors toward `sprite.state.trajectory.target` instead of `sprite.state.goal.position`.
 * In `AnimationMap.direction()`: Compute facing direction using the vector from `sprite.state.position` to `sprite.state.trajectory.target`.
 
-
 Rebind motive acceleration and directional orientation to track `sprite.state.trajectory.target`.
 
 ```python
@@ -339,8 +337,8 @@ physics.dynamics(
 
 *Objective*: Implement models for intermediate steering and navigation buffers.
 
-* [ ] Subtask: Define `TrajectoryState` in `src/app/models/state/sprites.py` with `target`, `waypoints`, `stalled`, and `cooldown` fields.
-* [ ] Subtask: Add `trajectory: TrajectoryState` to `SpriteState` and register the default factory.
+* [x] Subtask: Define `Trajectory` in `src/app/models/state/sprites.py` with `target`, `vertices`, `stalled`, and `cooldown` fields.
+* [x] Subtask: Add `trajectory: Trajectory` to `SpriteState` and register the default factory.
 * [ ] Subtask: Purge `RRT_PATH_PREFIX` references from `src/app/config/settings.py` and `src/app/models/state/sprites.py`.
 
 **2. Task: NavigationMechanics Construction**
@@ -373,6 +371,6 @@ physics.dynamics(
 
 *Objective*: Verify pathfinding and intention stability across obstacles.
 
-* [ ] Subtask: Add unit tests in `tests/unit/test_app_game_logic_mechanics_intentional_navigation.py` validating trajectory generation, waypoint advancement, and dynamic replanning.
-* [ ] Subtask: Verify an NPC navigating around a wall to reach an enemy remains continuously in the `hunt` Intention without dropping into `idle` or `wander`.
-* [ ] Subtask: Verify cross-layer door subsumption operates without memory queue corruption when the door itself requires pathfinding avoidance.
+* [!: User Task] Subtask: Add unit tests in `tests/unit/test_app_game_logic_mechanics_intentional_navigation.py` validating trajectory generation, waypoint advancement, and dynamic replanning.
+* [!: User Task] Subtask: Verify an NPC navigating around a wall to reach an enemy remains continuously in the `hunt` Intention without dropping into `idle` or `wander`.
+* [!: User Task] Subtask: Verify cross-layer door subsumption operates without memory queue corruption when the door itself requires pathfinding avoidance.
