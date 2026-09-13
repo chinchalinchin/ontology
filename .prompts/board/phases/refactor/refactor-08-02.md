@@ -443,37 +443,37 @@ typedef struct {
 
 *Objective*: Allow `paths.pyx` to call line-of-sight collision checks directly without Python wrapper overhead.
 
-* [ ] Subtask 1.1: Create `src/libs/core/math/geometry.pxd` exposing `cdef bint c_bisects(float x1, float y1, float x2, float y2, float rx, float ry, float rw, float rl) nogil`.
-* [ ] Subtask 1.2: Refactor `bisects` in `src/libs/core/math/geometry.pyx` to delegate to `c_bisects`.
+* [x] Subtask 1.1: Create `src/libs/core/math/geometry.pxd` exposing `cdef bint c_bisects(float x1, float y1, float x2, float y2, float rx, float ry, float rw, float rl) nogil`.
+* [x] Subtask 1.2: Refactor `bisects` in `src/libs/core/math/geometry.pyx` to delegate to `c_bisects`.
 
 **Task 2: Implement Cython RRT Engine (`libs.core.math.paths`)**
 
 *Objective*: Build the standalone, zero-allocation C-level RRT solver.
 
-* [ ] Subtask 2.1: Define `RRTNode` and `RRTObstacle` structs in `src/libs/core/math/paths.pxd`.
-* [ ] Subtask 2.2: Implement `cpdef list rrt(float sx, float sy, float tx, float ty, list obstacles, float step_size, int max_iter)` in `src/libs/core/math/paths.pyx`.
-* [ ] Subtask 2.3: Ingest `obstacles` into a flat `RRTObstacle*` buffer at entry and free on exit.
-* [ ] Subtask 2.4: Implement C-level nearest-neighbor search, 5% goal-biased sampling, and trigonometric node steering using `libc.math` and `libc.stdlib.rand`.
-* [ ] Subtask 2.5: Implement parent index backtracing to return `List[Position]`.
+* [x] Subtask 2.1: Define `RRTNode` and `RRTObstacle` structs in `src/libs/core/math/paths.pxd`.
+* [x] Subtask 2.2: Implement `cpdef list rrt(float sx, float sy, float tx, float ty, list obstacles, float step_size, int max_iter)` in `src/libs/core/math/paths.pyx`.
+* [x] Subtask 2.3: Ingest `obstacles` into a flat `RRTObstacle*` buffer at entry and free on exit.
+* [x] Subtask 2.4: Implement C-level nearest-neighbor search, 5% goal-biased sampling, and trigonometric node steering using `libc.math` and `libc.stdlib.rand`.
+* [x] Subtask 2.5: Implement parent index backtracing to return `List[Position]`.
 
 **Task 3: Build & Extension Registration**
 
 *Objective*: Integrate the new Cython extension into the build pipeline.
 
 * [x] Subtask 3.1: Register `libs.core.math.paths` in `setup.py` and `setup.cicd.py`.
-* [!: User Task] Subtask 3.2: Verify clean compilation via `python setup.py build_ext --inplace`.
+* [x] Subtask 3.2: Verify clean compilation via `python setup.py build_ext --inplace`.
 
 **Task 4: Rebind `Planner` Interface in Python**
 
 *Objective*: Retain API compatibility while delegating all work to Cython.
 
-* [ ] Subtask 4.1: Refactor `app/game/logic/modules/paths/plan.py` to import `libs.core.math.paths.rrt`.
-* [ ] Subtask 4.2: Preserve `Planner(start, target, obstacles, step_size, max_iter).plan()` as a thin wrapper unpacking `Position` coordinates and delegating to `rrt()`.
-* [ ] Subtask 4.3: Deprecate Python `Node` class in `plan.py`.
+* [x] Subtask 4.1: Refactor `app/game/logic/modules/paths/plan.py` to import `libs.core.math.paths.rrt`.
+* [x] Subtask 4.2: Preserve `Planner(start, target, obstacles, step_size, max_iter).plan()` as a thin wrapper unpacking `Position` coordinates and delegating to `rrt()`.
+* [x] Subtask 4.3: Deprecate Python `Node` class in `plan.py`.
 
 ##### Task 5: Algorithmic Verification & Regression
 
 *Objective*: Verify path generation correctness and performance.
 
-* [!] Subtask 5.1: Execute `tests/algorithms/rrt.py` to ensure convergence, collision clearance, and return formats remain identical.
-* [!] Subtask 5.2: Verify integration through `tests/unit/test_app_game_logic_modules_paths.py` (or existing path test suite).
+* [x] Subtask 5.1: Execute `tests/algorithms/rrt.py` to ensure convergence, collision clearance, and return formats remain identical.
+* [x] Subtask 5.2: Verify integration through `tests/unit/test_app_game_logic_modules_paths.py` (or existing path test suite).
