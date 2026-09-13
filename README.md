@@ -57,27 +57,27 @@ export LAYER=0
 export BUILD_DIR=/home/grant/Projects/ontology/build
 
 # 1. DEBUG: Render Background
-python src/cli.py \
-  --dump-state \
-  --dump-sdl \
-  --log-level $LOG_LEVEL \
-    prerender $WORLD \
-    --layer $LAYER \
-    --out $BUILD_DIR
+python src/cli.py prerender $WORLD \
+  --layer $LAYER \
+  --out $BUILD_DIR
 
 # 2. DEBUG: Render Stateful Assets
-python src/cli.py  \
-  --dump-state \
-  --dump-sdl \
-  --log-level $LOG_LEVEL \
-    render $WORLD \
-    --layer $LAYER \
-    --out $BUILD_DIR
+python src/cli.py render $WORLD \
+  --layer $LAYER \
+  --out $BUILD_DIR
 
-# 3. APP: Start Game Engine
+# 3. DEBUG: Render Entire Map with Stateful Assets
+python src/cli.py map $WORLD \
+  --layer $LAYER \
+  --out $BUILD_DIR
+
+# 4. APP: Start Game Engine
 python src/cli.py  \
+  # OPTIONAL: DUMPS
   --dump-state \
   --dump-sdl \
+  --dump-menus \
+  # OPTIONAL: LOGGING
   --log-level $LOG_LEVEL \
     start $WORLD
 ```
@@ -107,6 +107,8 @@ To ensure the Pylance linter correctly resolves the compiled Cython libraries fr
 
 ### Scripts
 
+Useful scripts for editing asset files in batches are provided in the `/scripts/` directory.
+
 ```bash
 # 1. Concatenate: Take all images in a directory and concatenate horizontally into a single row of frames.
 python ./scripts/concatenate/main.py \
@@ -133,7 +135,7 @@ This section provides an overview of the project's directory and file structure.
 
 ### /scripts
 
-Helper scripts.
+Batch scripts.
 
 * `/scripts/concatenate`: Script to concatenate image files into a row of frames.
 * `/scripts/transpose`: Script to transpose a column of frames into a row of frames.
@@ -153,6 +155,7 @@ Application source code.
 
 Various test
 
+* `/tests/exploratory/algorithms`: Exploratory algorithms tests
 * `/tests/exploratory/sdl`: Exploratory Cythonized SDL tests.
 * `/tests/unit`: Application unit tests.
 
