@@ -1172,10 +1172,12 @@
 <p>Before entering the Wander Loop from an interrupted action loop (<code>find</code> or <code>hunt</code>), <code>CognitionMechanics._resolve</code> ensures the unresolved overarching goal is saved to <code>sprite.state.memory.goals</code>. This guarantees the target identity, category, and last-known coordinate remain queryable throughout exploratory navigation.</p>
 <p><strong>Randomization</strong></p>
 <p>When an entity is in <code>wander</code> with no active goal (<code>not sprite.state.goal</code>) and no pending waypoints in memory, <code>CognitionMechanics._project</code> samples a coordinate within the bounding square <span class="arithmatex">\([-\text{radius}_{\text{vision}}, \text{radius}_{\text{vision}}]\)</span> relative to the Sprite's position. This coordinate is clamped against the physical boundaries of the active board layer:</p>
-<p>$$
-x_{\text{dest}} = \max\left(0, \min(x_{\text{pos}} + \Delta x, W_{\text{layer}} - W_{\text{sprite}})\right)</p>
-<p>y_{\text{dest}} = \max\left(0, \min(y_{\text{pos}} + \Delta y, L_{\text{layer}} - L_{\text{sprite}})\right)
-$$</p>
+<div class="arithmatex">\[
+x_{\text{dest}} = \max\left(0, \min(x_{\text{pos}} + \Delta x, W_{\text{layer}} - W_{\text{sprite}})\right)
+$$
+$$
+y_{\text{dest}} = \max\left(0, \min(y_{\text{pos}} + \Delta y, L_{\text{layer}} - L_{\text{sprite}})\right)
+\]</div>
 <p>The resulting destination is committed as <code>Goal(name="wander", category=Goals.POSITION.value)</code>.</p>
 <h5 id="step-entrypoint">Step: Entrypoint</h5>
 <p><strong>idle:wander</strong></p>
