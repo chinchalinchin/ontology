@@ -9,9 +9,9 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 
 !!! "Phase Actions"
   - Implement: Complex, multi-task development of new functionality.
-  - Refactor: Refactoring tasks for existing functionality.
+  - Refactor: Complex, multi-task iteration of existing functionality.
   - Patch: Tasks for fixing logical bugs and errors in the codebase.
-  - Achieve: Short, encapsulated tasks.
+  - Achieve: Short, encapsulated tasks for new functionality.
 
 **Table of Contents**
 
@@ -50,6 +50,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - Phase 08:
       - [x]: [Phase 08.01: Obstable Geometry](./phases/refactor/refactor-08-01.md)
       - [x]: [Phase 08.02: NavigationMechanics](./phases/refactor/refactor-08-02.md)
+      - [~]: [Phase 08.03: Trajectory Optimization](./phases/refactor/refactor-08-03.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantiated Assets](./phases/patch/bug-b001.md)
