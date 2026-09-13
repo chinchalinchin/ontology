@@ -1,14 +1,13 @@
 """
-# Ontology: app.game.logic.mechanics.intentional.social
+# Ontology: app.game.logic.mechanics.spatial.social
 """
 from __future__ import annotations
+# Standard Libraries
 from typing import TYPE_CHECKING
 import collections
 import logging
 
-if TYPE_CHECKING:
-    from app.game.board import Board
-
+# Application Libraries
 from app.config.enums import (
     Intentions, 
     AssetInstances, 
@@ -21,7 +20,9 @@ from app.game.logic.mechanics.spatial.base import SpatialMechanic
 from app.game.menus.contexts import DialogueContext
 from app.game.menus.events import MenuEvent
 from app.models.state import DevicePayload
-from libs.core.models import Position
+
+if TYPE_CHECKING:
+    from app.game.board import Board
 
 logger = logging.getLogger(__name__)
 

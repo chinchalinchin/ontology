@@ -245,6 +245,16 @@ def present():
     SDL_PumpEvents()
 
 
+def destroy(TexturePtr target):
+    """
+    Explicitly destroys an SDL_Texture to free VRAM immediately, 
+    bypassing Python's non-deterministic garbage collector.
+    """
+    if target is not None and target.ptr != NULL:
+        SDL_DestroyTexture(target.ptr)
+        target.ptr = NULL
+
+
 def superimpose(list assets):
     """
     """
@@ -260,15 +270,7 @@ def superimpose(list assets):
         c_dst.w, c_dst.h = dw, dl
         SDL_RenderCopy(_renderer, tex_wrapper.ptr, &c_src, &c_dst)
 
-def destroy(TexturePtr target):
-    """
-    Explicitly destroys an SDL_Texture to free VRAM immediately, 
-    bypassing Python's non-deterministic garbage collector.
-    """
-    if target is not None and target.ptr != NULL:
-        SDL_DestroyTexture(target.ptr)
-        target.ptr = NULL
-        
+
 def canvas(int w, int l, bint opaque=False) -> TexturePtr:
     """
     Instantiates a blank texture assigned as a rendering target using primitive integers.
@@ -372,6 +374,7 @@ def measure(
     
     return (w, h)
 
+
 def write(
     tuple asset, 
     str content, 
@@ -426,6 +429,67 @@ def write(
     SDL_DestroyTexture(text_tex)
     SDL_FreeSurface(text_surface)
 
+
+# def render(
+#     TexturePtr background, 
+#     TexturePtr foreground, 
+#     list assets, 
+#     int cam_x,
+#     int cam_y, 
+#     int screen_w, 
+#     int screen_l
+# ):
+#     """
+#     Executes the active frame render passing flat coordinates to bypass Python object allocations.
+#     assets format: (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l)
+#     """
+#     cdef SDL_Rect c_src, c_dst, bg_src, bg_dst
+
+#     cdef TexturePtr tex_wrapper
+#     cdef int sx, sy, sw, sl, dx, dy, dw, dl
+
+#     if background is not None:
+#         bg_src.x = cam_x
+#         bg_src.y = cam_y
+#         bg_src.w = screen_w
+#         bg_src.h = screen_l
+
+#         bg_dst.x = 0
+#         bg_dst.y = 0
+#         bg_dst.w = screen_w
+#         bg_dst.h = screen_l
+
+#         bg_status = SDL_RenderCopy(_renderer, background.ptr, &bg_src, &bg_dst)
+#         if bg_status < 0:
+#             logger.error(f"Background RenderCopy failed: {SDL_GetError().decode('utf-8')} "
+#                         f"| Texture Size: {background.w}x{background.l} "
+#                         f"| Requested Source: {bg_src.w}x{bg_src.h}")
+
+#     for asset in assets:
+#         tex_wrapper, sx, sy, sw, sl, dx, dy, dw, dl = asset
+        
+#         c_src.x, c_src.y, c_src.w, c_src.h = sx, sy, sw, sl
+        
+#         c_dst.x = dx - cam_x
+#         c_dst.y = dy - cam_y
+#         c_dst.w, c_dst.h = dw, dl
+            
+#         SDL_RenderCopy(_renderer, tex_wrapper.ptr, &c_src, &c_dst)
+
+#     if foreground is not None:
+#         bg_src.x = cam_x
+#         bg_src.y = cam_y
+#         bg_src.w = screen_w
+#         bg_src.h = screen_l
+        
+#         bg_dst.x = 0
+#         bg_dst.y = 0
+#         bg_dst.w = screen_w
+#         bg_dst.h = screen_l
+                    
+#         SDL_RenderCopy(_renderer, foreground.ptr, &bg_src, &bg_dst)
+                    
+
 def render(
     TexturePtr background, 
     TexturePtr foreground, 
@@ -433,14 +497,18 @@ def render(
     int cam_x,
     int cam_y, 
     int screen_w, 
-    int screen_l
+    int screen_l,
+    TexturePtr target=None
 ):
     """
     Executes the active frame render passing flat coordinates to bypass Python object allocations.
     assets format: (TexturePtr, src_x, src_y, src_w, src_l, dst_x, dst_y, dst_w, dst_l)
     """
-    cdef SDL_Rect c_src, c_dst, bg_src, bg_dst
+    # 1. Route the render output to the custom target (if provided)
+    if target is not None:
+        SDL_SetRenderTarget(_renderer, target.ptr)
 
+    cdef SDL_Rect c_src, c_dst, bg_src, bg_dst
     cdef TexturePtr tex_wrapper
     cdef int sx, sy, sw, sl, dx, dy, dw, dl
 
@@ -458,8 +526,8 @@ def render(
         bg_status = SDL_RenderCopy(_renderer, background.ptr, &bg_src, &bg_dst)
         if bg_status < 0:
             logger.error(f"Background RenderCopy failed: {SDL_GetError().decode('utf-8')} "
-                        f"| Texture Size: {background.w}x{background.l} "
-                        f"| Requested Source: {bg_src.w}x{bg_src.h}")
+                         f"| Texture Size: {background.w}x{background.l} "
+                         f"| Requested Source: {bg_src.w}x{bg_src.h}")
 
     for asset in assets:
         tex_wrapper, sx, sy, sw, sl, dx, dy, dw, dl = asset
@@ -484,7 +552,12 @@ def render(
         bg_dst.h = screen_l
                     
         SDL_RenderCopy(_renderer, foreground.ptr, &bg_src, &bg_dst)
-                    
+    
+    # 2. Safely restore the default render target
+    if target is not None:
+        SDL_SetRenderTarget(_renderer, NULL)
+
+        
 def save(str filename, int w, int l, TexturePtr target=None):
     """Extracts pixel data from the active hardware renderer or a specific texture to disk."""
     cdef bytes b_filename = filename.encode('utf-8')
@@ -509,6 +582,7 @@ def save(str filename, int w, int l, TexturePtr target=None):
 
     if target is not None:
         SDL_SetRenderTarget(_renderer, NULL)
+
 
 def quit_sdl():
     """Safely terminate SDL bindings."""

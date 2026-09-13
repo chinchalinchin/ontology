@@ -49,6 +49,16 @@ def test_arguments_prerender_flags():
         assert args.out == "./out"
         assert args.layer == "background"
 
+def test_arguments_map():
+    test_args = ["cli.py", "map", "level_01", "--out", "./out", "--layer", "background"]
+    
+    with patch.object(sys, "argv", test_args):
+        args = cli.arguments()
+        
+        assert args.command == "map"
+        assert args.out == "./out"
+        assert args.layer == "background"
+
 def test_arguments_missing_required():
     test_args = ["cli.py", "render", "level_01"]  # Missing --out and --layer
     
@@ -64,7 +74,6 @@ def test_arguments_missing_required():
 @patch("cli.datetime")
 @patch("cli.settings")
 def test_dump_state_success(mock_settings, mock_datetime):
-    # Setup mocks
     mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
     mock_settings.TEMPLATE_DIR = Path("/mock/dir")
     mock_settings.DUMP_TEMPLATES = {"state": "state_template.md"}
@@ -81,22 +90,18 @@ def test_dump_state_success(mock_settings, mock_datetime):
          
         cli.dump("level_01", mock_board, "state")
         
-        # Verify render was called with correct state arguments
         mock_render.assert_called_once_with(
             board_key="level_01", 
             timestamp="20260101_120000",
             assets=["asset1", "asset2"],
             perimeters={"layer_0": [{"mock": "bounds"}]}
         )
-        
-        # Verify file writes
         assert mocked_file.call_count == 2
         mocked_file().write.assert_called_once_with("Rendered Output")
 
 @patch("cli.datetime")
 @patch("cli.settings")
 def test_dump_menus_success(mock_settings, mock_datetime):
-    # Setup mocks
     mock_datetime.datetime.now.return_value.strftime.return_value = "20260101_120000"
     mock_settings.TEMPLATE_DIR = Path("/mock/dir")
     mock_settings.DUMP_TEMPLATES = {"menus": "menus_template.md"}
@@ -113,14 +118,12 @@ def test_dump_menus_success(mock_settings, mock_datetime):
          
         cli.dump("level_01", mock_board, "menus")
         
-        # Verify render was called with correct menu arguments
         mock_render.assert_called_once_with(
             board_key="level_01", 
             timestamp="20260101_120000",
             menus=["menu1"],
             overlays=["overlay1"]
         )
-        
         assert mocked_file.call_count == 2
         mocked_file().write.assert_called_once_with("Rendered Output")
 
@@ -179,14 +182,59 @@ def test_dump_missing_template(mock_settings, caplog):
     
     with patch("pathlib.Path.exists", return_value=False):
         cli.dump("level_01", MagicMock(), "state")
-        
         assert "Dump template not found" in caplog.text
+
+# ---------------------------------------------------------
+# HYDRATION TESTS
+# ---------------------------------------------------------
+
+@patch("cli.Screen")
+def test_force_hydration(mock_screen_class):
+    mock_engine = MagicMock()
+    
+    # 1. Setup Migrator
+    mock_migrator = MagicMock()
+    mock_migrator.step.side_effect = [False, False, True]
+    mock_engine.board.migrator = mock_migrator
+    
+    # 2. Setup Registry prewarming
+    mock_registry = MagicMock()
+    mock_registry.prewarm.side_effect = [False, True]
+    
+    # 3. Setup Screens and Board data
+    mock_old_screen = MagicMock()
+    mock_old_screen.registry = mock_registry
+    mock_engine.screens = {"layer_0": mock_old_screen}
+    
+    mock_engine.board.layers.return_value = ["layer_0", "layer_1"]
+    mock_engine.board.categories.return_value = ["tile_asset_1"]
+    mock_engine.board.size.return_value = [MagicMock()]
+    mock_screensize = MagicMock()
+    
+    # Execute
+    cli.hydrate(mock_engine, "level_01", mock_screensize)
+    
+    # Assertions
+    assert mock_migrator.step.call_count == 3
+    assert mock_registry.prewarm.call_count == 2
+    
+    # Assert layer_0 was salvaged and rebaked
+    mock_old_screen.rebake.assert_called_once()
+    assert mock_engine.screens["layer_0"] == mock_old_screen
+    
+    # Assert layer_1 forced a new Screen instantiation
+    mock_screen_class.assert_called_once()
+    assert mock_engine.screens["layer_1"] == mock_screen_class.return_value
+    
+    # Assert state flags
+    assert mock_engine.board.loaded is True
 
 # ---------------------------------------------------------
 # HANDLER TESTS
 # ---------------------------------------------------------
 
-def test_handle_prerender_success():
+@patch("cli.hydrate")
+def test_handle_prerender_success(mock_force_hydration):
     args = MagicMock(board_key="level_01", device="keyboard", layer="bg", out="/tmp/out")
     screensize = MagicMock()
     
@@ -200,12 +248,71 @@ def test_handle_prerender_success():
     with patch("pathlib.Path.mkdir") as mock_mkdir:
         engine = cli.handle_prerender(args, mock_orchestrator, screensize)
         
+        mock_force_hydration.assert_called_once_with(mock_engine, "level_01", screensize)
         mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
         mock_screen.export_background.assert_called_once()
         
         assert engine == mock_engine
 
-def test_handle_render_missing_layer(caplog):
+@patch("cli.hydrate")
+def test_handle_render_success(mock_force_hydration):
+    args = MagicMock(board_key="level_01", device="keyboard", layer="bg", out="/tmp/out")
+    screensize = MagicMock()
+    
+    mock_orchestrator = MagicMock()
+    mock_engine = MagicMock()
+    mock_screen = MagicMock()
+    
+    mock_orchestrator.orchestrate.return_value = mock_engine
+    mock_engine.screens = {"bg": mock_screen}
+    mock_engine.board.renderables.return_value = ["asset1", "asset2"]
+    
+    mock_player = MagicMock()
+    mock_player.state.position = MagicMock()
+    mock_player.dimensions = MagicMock()
+    mock_engine.board.player.return_value = mock_player
+    
+    with patch("pathlib.Path.mkdir") as mock_mkdir:
+        engine = cli.handle_render(args, mock_orchestrator, screensize)
+        
+        mock_force_hydration.assert_called_once_with(mock_engine, "level_01", screensize)
+        mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
+        
+        mock_screen.export_render.assert_called_once_with(
+            "/tmp/out/level_01-bg.png", 
+            ["asset1", "asset2"], 
+            mock_player.state.position, 
+            mock_player.dimensions
+        )
+        assert engine == mock_engine
+
+@patch("cli.hydrate")
+def test_handle_render_full_success(mock_force_hydration):
+    args = MagicMock(board_key="level_01", device="keyboard", layer="bg", out="/tmp/out")
+    screensize = MagicMock()
+    
+    mock_orchestrator = MagicMock()
+    mock_engine = MagicMock()
+    mock_screen = MagicMock()
+    
+    mock_orchestrator.orchestrate.return_value = mock_engine
+    mock_engine.screens = {"bg": mock_screen}
+    mock_engine.board.renderables.return_value = ["asset1", "asset2"]
+    
+    with patch("pathlib.Path.mkdir") as mock_mkdir:
+        engine = cli.handle_map(args, mock_orchestrator, screensize)
+        
+        mock_force_hydration.assert_called_once_with(mock_engine, "level_01", screensize)
+        mock_mkdir.assert_called_once_with(parents=True, exist_ok=True)
+        
+        mock_screen.export_map.assert_called_once_with(
+            "/tmp/out/level_01-bg-full.png", 
+            ["asset1", "asset2"]
+        )
+        assert engine == mock_engine
+
+@patch("cli.hydrate")
+def test_handle_render_missing_layer(mock_force_hydration, caplog):
     args = MagicMock(board_key="level_01", device="keyboard", layer="invalid_layer", out="/tmp/out")
     screensize = MagicMock()
     

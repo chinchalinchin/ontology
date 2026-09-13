@@ -4,7 +4,7 @@
 import pytest
 from unittest.mock import MagicMock
 
-from app.game.logic.maps import AnimationMap
+from app.game.logic.modules.maps import AnimationMap
 from app.config.enums import Intentions, Actions, Directions
 from libs.core.models import Position
 

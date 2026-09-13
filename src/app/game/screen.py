@@ -335,7 +335,7 @@ class Screen:
         save(out_path, self.screensize.w, self.screensize.l)
 
 
-    def export_full_render(self, out_path: str, assets: List[Asset]) -> None:
+    def export_map(self, out_path: str, assets: List[Asset]) -> None:
         """
         Draws a composited snapshot of the entire board and extracts the full VRAM buffer to disk,
         bypassing the viewport camera culling.
@@ -362,12 +362,16 @@ class Screen:
                 dx, dy = asset.state.position.x + ox, asset.state.position.y + oy
                 dw, dl = sw, sl
 
-                # Bypass viewport culling. Cull against absolute board bounds to prevent rendering off-canvas.
                 if (dx + dw >= 0 and dx <= self.boardsize.w and
                     dy + dl >= 0 and dy <= self.boardsize.l):
                     active_assets.append((tex, sx, sy, sw, sl, dx, dy, dw, dl))
 
-        # Anchor the POV at (0, 0) and extend the rendering viewport to the full board boundaries
+        from libs.graphics.render import canvas, destroy
+        
+        # 1. Allocate a temporary canvas matching the absolute board dimensions
+        full_target = canvas(self.boardsize.w, self.boardsize.l, opaque=True)
+
+        # 2. Render directly onto the transient target instead of the default viewport
         render(
             self.bg_canvas, 
             self.fg_canvas,
@@ -375,7 +379,12 @@ class Screen:
             0, 
             0, 
             self.boardsize.w, 
-            self.boardsize.l
+            self.boardsize.l,
+            target=full_target # Invokes the Cython update
         )
         
-        save(out_path, self.boardsize.w, self.boardsize.l)
+        # 3. Read the pixels strictly from the custom target
+        save(out_path, self.boardsize.w, self.boardsize.l, target=full_target)
+        
+        # 4. Explicitly free the GPU memory to prevent memory leaks
+        destroy(full_target)

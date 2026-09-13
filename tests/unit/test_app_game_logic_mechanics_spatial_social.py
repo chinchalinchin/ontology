@@ -5,7 +5,7 @@ import pytest
 from unittest.mock import MagicMock
 from collections import deque
 
-from app.game.logic.mechanics.intentional.social import SocialMechanics
+from app.game.logic.mechanics.spatial.social import SocialMechanics
 from app.config.enums import Goals, Intentions, Expressions, ExpressionsPalette, AssetInstances
 from libs.core.models import Position
 from app.models.state import Goal, SpriteState, Memory

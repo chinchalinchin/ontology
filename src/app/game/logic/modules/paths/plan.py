@@ -1,5 +1,5 @@
 """
-# Ontology: app.game.logic.mechanics.modules.paths.plan
+# Ontology: app.game.logic.modules.paths.plan
 
 Rapidly-exploring Random Tree (RRT) pathfinding implementation.
 """

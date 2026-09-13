@@ -16,7 +16,7 @@ from app.config.enums import (
     AssetInstances,
     Intentions
 )
-from app.game.logic.maps import AnimationMap
+from app.game.logic.modules.maps import AnimationMap
 from app.game.logic.mechanics.core import Mechanic
 from app.models.state import DevicePayload
 from app.services.translators.base import Executor

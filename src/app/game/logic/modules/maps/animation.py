@@ -91,8 +91,3 @@ class AnimationMap:
         
         # Higher than both diagonals means it is physically UP
         return Directions.RIGHT.value if dy > -dx else Directions.UP.value
-
-class DialogueMap:
-    """
-    """
-    pass

@@ -11,7 +11,8 @@ from typing import TYPE_CHECKING
 import collections
 import logging
 
-from app.game.logic.mechanics.modules.motion import frictive, kinematic
+from app.game.logic.modules.motion import kinematic
+from app.game.logic.modules.motion import frictive
 
 if TYPE_CHECKING:
     from app.game.board import Board
@@ -24,7 +25,7 @@ from app.config.enums import (
     Interactions,
     DeviceContexts
 )
-from app.game.logic.mechanics.modules.motion import (
+from app.game.logic.modules.motion import (
     motive
 )
 from app.game.menus.events import (
@@ -89,12 +90,14 @@ class RemoveMechanics(Mechanic):
         for effect in board.instances(AssetInstances.TEMPORARY):
             if effect.state.animation.frame >= effect.properties.count:
                 removals.append(effect)
-                
+
+        # TODO: delay corpse removal until no longer in camera      
         for sprite in board.instances(AssetInstances.SPRITES):
             if sprite.state.mutators.triggers.dead:
                 removals.append(sprite)
 
         board.remove(removals)
+
 
 class MotionMechanics(Mechanic):
     """
@@ -117,6 +120,7 @@ class MotionMechanics(Mechanic):
         
         all_mutable = players + sprites + crates + projectiles
         physics.integrate(all_mutable, delta)
+
 
 class MenuMechanics(Mechanic):
 

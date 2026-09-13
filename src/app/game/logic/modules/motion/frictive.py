@@ -17,21 +17,21 @@ from libs.core.models import Position
 
 logger = logging.getLogger(__name__)
 
-def update(crates: List[Asset], board: Board, delta: float) -> None:
+def update(assets: List[Asset], board: Board, delta: float) -> None:
     """
     Determines linear velocity decay based on environmental properties for inert moving assets.
     """
-    for crate in crates:
-        if crate.state.velocity is None:
+    for asset in assets:
+        if asset.state.velocity is None:
             continue
 
-        cx = crate.state.position.x + (crate.dimensions.w / 2.0)
-        cy = crate.state.position.y + (crate.dimensions.l / 2.0)
+        cx = asset.state.position.x + (asset.dimensions.w / 2.0)
+        cy = asset.state.position.y + (asset.dimensions.l / 2.0)
         
         center_pos = Position(int(cx), int(cy))
-        tile = board.tile(crate.state.layer, center_pos)
+        tile = board.tile(asset.state.layer, center_pos)
 
         if not tile:
             continue
 
-        physics.friction(crate.state.velocity, tile.properties.friction, delta)
+        physics.friction(asset.state.velocity, tile.properties.friction, delta)

@@ -26,7 +26,7 @@ from app.config.enums import (
     Expressions
 )
 from app.game.logic.mechanics.core import Mechanic
-from app.game.logic.mechanics.modules.paths.plan import Planner
+from app.game.logic.modules.paths.plan import Planner
 from app.models.state import (
     DevicePayload, 
     Goal
@@ -359,7 +359,8 @@ class CognitionMechanics(Mechanic):
         # ------------------------------------------------------------------------
         if goal.category == Goals.TARGET.value:
             target_state = board.character(goal.name)
-            if target_state.mutators.triggers.dead:
+
+            if target_state is None or target_state.mutators.triggers.dead:
                 CognitionMechanics.log_goal(sprite, verb="resolved")
                 sprite.state.goal = None
                 if goal.name in sprite.state.memory.goals.keys():

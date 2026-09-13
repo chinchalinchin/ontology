@@ -292,11 +292,14 @@ class Board:
         """
         """
         if layer is None:
-            return
-        
-        self._cached_instances[layer][AssetInstances.CRATES]
-        self._cached_instances[layer][AssetInstances.GATES]
-        return
+            return []
+
+        signs = self._cached_instances.get(layer, {}).get(AssetInstances.SIGNS.value, [])
+        crates = self._cached_instances.get(layer, {}).get(AssetInstances.CRATES.value, [])
+        gates = self._cached_instances.get(layer, {}).get(AssetInstances.GATES.value, [])
+        struts = self._cached_instances.get(layer, {}).get(AssetInstances.STRUTS.value, [])
+
+        return crates + gates + struts + signs
 
     
     def layers(self) -> List[str]:

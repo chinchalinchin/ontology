@@ -18,7 +18,7 @@ from app.config.enums import (
     AnimatedIntentions,
     BlockingIntentions
 )
-from app.game.logic.maps import AnimationMap
+from app.game.logic.modules.maps.animation import AnimationMap
 from app.game.logic.mechanics import Mechanic
 from app.models.state import (
     Goal, 

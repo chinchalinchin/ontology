@@ -1,12 +1,17 @@
 """
 # Ontology: tests.unit.test_app_game_logic_mechanics_modules_paths.py
 """
-import pytest
+# Standard Libraries
 from unittest.mock import patch
 
-from libs.core.models import Position
-from app.game.logic.mechanics.modules.paths.plan import Node, Planner
+# External Libraries
+import pytest
 
+# Application LIbraries
+from app.game.logic.modules.paths.plan import Node, Planner
+
+# Cython Libraries
+from libs.core.models import Position
 
 def test_node_initialization():
     node = Node(10.5, 20.25)

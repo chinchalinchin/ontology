@@ -121,70 +121,6 @@ for i, wp in enumerate(segments):
 
 ```
 
-##### Bug B013: Target State NoneType Dereference in `CognitionMechanics`
-
-**STATUS**: OPEN
-
-**SEVERITY**: MEDIUM
-
-**Description**
-
-In `CognitionMechanics._resolve()` and `CognitionMechanics.complete()`, evaluating target completion performs direct attribute access on `board.character(goal.name)`:
-
-```python
-if goal.category == Goals.TARGET.value:
-    return board.character(goal.name).mutators.triggers.dead
-
-```
-
-If the target entity is garbage-collected, relayered, or destroyed, `board.character()` returns `None`, raising an unhandled `AttributeError: 'NoneType' object has no attribute 'mutators'`.
-
-**Steps to Replicate**
-
-1. Assign a Sprite a `TARGET` goal.
-2. Remove or deregister the target from the active Board.
-3. Tick the engine loop to invoke `_resolve()`.
-
-**Proposed Remediation**
-
-Validate reference existence before attribute retrieval:
-
-```python
-if goal.category == Goals.TARGET.value:
-    target_state = board.character(goal.name)
-    return target_state.mutators.triggers.dead if target_state else True
-
-```
-
-##### Bug B014: Broken Implementation and KeyError in `Board.obstacles`
-
-**STATUS**: OPEN
-
-**SEVERITY**: LOW
-
-**Description**
-
-`Board.obstacles()` accesses `self._cached_instances[layer][AssetInstances.CRATES]` without accessing `.value`, raising a `KeyError` against string-keyed cache dictionaries. Furthermore, the statements perform no aggregation or assignments and return `None` despite the `List[Asset]` type hint.
-
-**Steps to Replicate**
-
-1. Invoke `board.obstacles('0')`.
-2. Catch `KeyError: `.
-
-**Proposed Remediation**
-
-Complete the caching aggregation or remove the dead interface:
-
-```python
-def obstacles(self, layer=None) -> List[Asset]:
-    if layer is None:
-        return []
-    crates = self._cached_instances.get(layer, {}).get(AssetInstances.CRATES.value, [])
-    gates = self._cached_instances.get(layer, {}).get(AssetInstances.GATES.value, [])
-    return crates + gates
-
-```
-
 #### Refactor: Phase 08.02: Path Execution & Recovery Finalization
 
 !!! warning
@@ -242,32 +178,6 @@ if not path:
 * [!] Subtask: Add `unreachable: Optional[Dict[str, int]] = field(default_factory=dict)` to `Memory` in `src/app/models/state/sprites.py`.
 * [!] Subtask: In `CognitionMechanics._remember()`, bypass candidate goals whose key exists in `sprite.state.memory.unreachable` if `current_tick < retry_tick`.
 * [!] Subtask: In `CognitionMechanics._plan()`, when `planner.plan()` returns `[]`, record `current_tick + settings.PATH_RETRY_INTERVAL` into `memory.unreachable` before setting `sprite.state.goal = None`.
-
-##### Documentation Divergence Review
-
-**1. Specification: Dialogue Loop (`docs/specs/00-dialogue.md`)**
-
-* **Heading**: `Step: Exitpoint`
-* **Divergence**: Spec lists exit condition as `not sprite.goal` following `_resolve()` nullification. `src/data/config/intentions/main.yaml` defines exit strictly on `sprite.goal.name == constants.RequiredAssets.PLAYER.value` or `not sprite.psyche.expression`.
-* **Recommended Update**: Add `- not sprite.goal` to the `speak` transition list in `docs/specs/00-dialogue.md` and `src/data/config/intentions/main.yaml` to ensure non-dialogue goal termination releases the state.
-
-**2. Specification: Wander Loop (`docs/specs/02-wander.md`)**
-
-* **Heading**: `Step: Exitpoints`
-* **Divergence**: Spec documents `functions.any_memories_visible(sprite, sprites, constants.Goals.SUBJECT.value)` with a scalar string argument. The implementation in `app.services.translators.environ` requires a `List[str]`: `[ constants.Goals.SUBJECT.value ]`.
-* **Recommended Update**: Update the condition examples in `docs/specs/02-wander.md` to wrap category constants in list literals.
-
-**3. Architecture: Intentional Scripting Language (`docs/04-intentions.md`)**
-
-* **Heading**: `Intentional Scripting Language (ISL)`
-* **Divergence**: Documentation states that `check_goals(m: List[Goal], category: str)` is exposed in `functions`. The codebase implements `any_goals(goals: Dict[str, Goal], category: str = None)` and `any_memories_visible(...)`.
-* **Recommended Update**: Replace `check_goals` with `any_goals` and add documentation for `any_memories_visible` in `docs/04-intentions.md`.
-
-**4. Models: Sprite State Schema (`docs/02-sprites.md`)**
-
-* **Heading**: `Memory`
-* **Divergence**: Documentation lists `memory.goals` as a `List[Goal]` and documents `memory.locations`. `app.models.state.sprites` defines `goals: Optional[Dict[str, Goal]]`, omits `locations`, and introduces `doors: Optional[Dict[str, str]]`.
-* **Recommended Update**: Align the `Memory` table in `docs/02-sprites.md` to reflect dictionary structures for `goals`, remove `locations`, and document `doors`.
 
 ---
 

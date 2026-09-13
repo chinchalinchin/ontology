@@ -43,6 +43,40 @@ SCREENSIZES = {
 }
 SCREENSIZE = SCREENSIZES['medium']
 
+
+def arguments():
+    parser = argparse.ArgumentParser(description="Ontology CLI Tools")
+    parser.add_argument("--log-level", type=str, default="INFO", 
+                        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
+    parser.add_argument("--dump-state", action="store_true", default=False)
+    parser.add_argument("--dump-menus", action="store_true", default=False)
+    parser.add_argument("--dump-sdl", action="store_true", default=False)
+    parser.add_argument("--dump-registry", action="store_true", default=False)
+    parser.add_argument("--software", action="store_true", default=False)
+
+    subparsers = parser.add_subparsers(dest="command", required=True)
+    
+    for cmd in ["prerender", "render", "map"]:
+        p = subparsers.add_parser(cmd)
+        p.add_argument("board_key", type=str)
+        p.add_argument("--out", type=str, required=True)
+        p.add_argument("--layer", type=str, required=True)
+        p.add_argument("--width", type=int, default=SCREENSIZE)
+        p.add_argument("--height", type=int, default=SCREENSIZE)
+        p.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
+
+    p_start = subparsers.add_parser("start")
+    p_start.add_argument("board_key", type=str)
+    p_start.add_argument("--width", type=int, default=SCREENSIZE)
+    p_start.add_argument("--height", type=int, default=SCREENSIZE)
+    p_start.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
+
+    return parser.parse_args()
+
+# ---------------------------------------------------------
+# COMMAND HELPERS
+# ---------------------------------------------------------
+
 def dump(board_key, context, temp='state'):
     logger.info(f"Generating {temp} dump...")
     
@@ -102,37 +136,7 @@ def dump(board_key, context, temp='state'):
     logger.info(f"{temp.capitalize()} dump successfully written to {dump_out_path}")
 
 
-def arguments():
-    parser = argparse.ArgumentParser(description="Ontology CLI Tools")
-    parser.add_argument("--log-level", type=str, default="INFO", 
-                        choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"])
-    parser.add_argument("--dump-state", action="store_true", default=False)
-    parser.add_argument("--dump-menus", action="store_true", default=False)
-    parser.add_argument("--dump-sdl", action="store_true", default=False)
-    parser.add_argument("--dump-registry", action="store_true", default=False)
-    parser.add_argument("--software", action="store_true", default=False)
-
-    subparsers = parser.add_subparsers(dest="command", required=True)
-    
-    for cmd in ["prerender", "render", "map"]:
-        p = subparsers.add_parser(cmd)
-        p.add_argument("board_key", type=str)
-        p.add_argument("--out", type=str, required=True)
-        p.add_argument("--layer", type=str, required=True)
-        p.add_argument("--width", type=int, default=SCREENSIZE)
-        p.add_argument("--height", type=int, default=SCREENSIZE)
-        p.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
-
-    p_start = subparsers.add_parser("start")
-    p_start.add_argument("board_key", type=str)
-    p_start.add_argument("--width", type=int, default=SCREENSIZE)
-    p_start.add_argument("--height", type=int, default=SCREENSIZE)
-    p_start.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
-
-    return parser.parse_args()
-
-
-def force_hydration(engine, board_key, screensize):
+def hydrate(engine, board_key, screensize):
     """
     Forces synchronous evaluation of the Migrator and Registry prewarming 
     for headless execution, then reallocates the VRAM canvases.
@@ -172,6 +176,36 @@ def force_hydration(engine, board_key, screensize):
 # ---------------------------------------------------------
 # COMMAND HANDLERS
 # ---------------------------------------------------------
+
+def handle_map(args, orchestrator, screensize):
+    logger.info("Orchestrating engine components for full board execution (render-full)...")
+    engine = orchestrator.orchestrate(
+        state_key=args.board_key, 
+        screensize=screensize, 
+        device=args.device,
+        headless=True
+    )
+
+    hydrate(engine, args.board_key, screensize)
+    
+    if args.layer not in engine.screens:
+        logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
+        return engine
+
+    screen = engine.screens[args.layer]
+    out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    out_path = out_dir / f"{args.board_key}-{args.layer}-full.png"
+    
+    assets = engine.board.renderables(args.layer)        
+
+    # Invoke the full board export instead of the standard clamped render
+    screen.export_map(str(out_path), assets)
+
+    return engine
+
+
 def handle_render(args, orchestrator, screensize):
     logger.info("Orchestrating engine components for headless execution (render)...")
     engine = orchestrator.orchestrate(
@@ -182,7 +216,7 @@ def handle_render(args, orchestrator, screensize):
     )
 
     # Synchronously hydrate state before attempting to render
-    force_hydration(engine, args.board_key, screensize)
+    hydrate(engine, args.board_key, screensize)
     
     if args.layer not in engine.screens:
         logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
@@ -218,7 +252,7 @@ def handle_prerender(args, orchestrator, screensize):
     )
     
     # Synchronously hydrate state before extracting the background
-    force_hydration(engine, args.board_key, screensize)
+    hydrate(engine, args.board_key, screensize)
     
     if args.layer not in engine.screens:
         logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
@@ -248,35 +282,6 @@ def handle_start(args, orchestrator, screensize):
     except KeyboardInterrupt:
         logger.info("Game engine loop interrupted by user.")
         
-    return engine
-
-
-def handle_map(args, orchestrator, screensize):
-    logger.info("Orchestrating engine components for full board execution (render-full)...")
-    engine = orchestrator.orchestrate(
-        state_key=args.board_key, 
-        screensize=screensize, 
-        device=args.device,
-        headless=True
-    )
-
-    force_hydration(engine, args.board_key, screensize)
-    
-    if args.layer not in engine.screens:
-        logger.error(f"Layer '{args.layer}' not found on board '{args.board_key}'.")
-        return engine
-
-    screen = engine.screens[args.layer]
-    out_dir = Path(args.out)
-    out_dir.mkdir(parents=True, exist_ok=True)
-
-    out_path = out_dir / f"{args.board_key}-{args.layer}-full.png"
-    
-    assets = engine.board.renderables(args.layer)        
-
-    # Invoke the full board export instead of the standard clamped render
-    screen.export_full_render(str(out_path), assets)
-
     return engine
 
 
