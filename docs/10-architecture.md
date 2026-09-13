@@ -126,53 +126,65 @@ While Python objects are fast enough for general logic, calculating collisions a
 
 ### Math
 
-- `libs/core/math/geometry.pyx`
-- `libs/core/math/physics.pyx`
-- `libs/core/math/space.pyx`
+* `libs/core/math/geometry.pyx`
+* `libs/core/math/paths.pyx`
+* `libs/core/math/physics.pyx`
+* `libs/core/math/space.pyx`
 
-The engine leverages Cython for high-frequency mathematical, geometric, and physical calculations. To achieve maximum throughput, stateless operations are implemented as module-level `cpdef` functions within the `libs.core.math` package, avoiding the Virtual Method Table (vtable) overhead of class wrappers.
+The engine leverages Cython for high-frequency mathematical, geometric, and physical calculations. To achieve maximum throughput, stateless operations are implemented as module-level `cpdef` and `cdef` functions within the `libs.core.math` package, avoiding the Virtual Method Table (vtable) overhead of class wrappers.
 
-Spatial data (such as `Position`, `Velocity`, `Dimensions`, and `Hitbox`) are modeled as Cython Extension Types (`cdef class` in `libs.core.models`). This structure allows the engine to pass objects across the boundary while allowing C-level functions to access spatial properties (e.g., `pos.x`, `hb.dimensions.l`) natively without falling back to Python dictionary lookups.
+Spatial data (such as `Position`, `Velocity`, `Dimensions`, and `Hitbox`) are modeled as Cython Extension Types (`cdef class` in `libs.core.models`). This structure allows the engine to pass objects across the Python/C boundary while allowing C-level functions to access spatial properties (e.g., `pos.x`, `hb.dimensions.l`) natively without dictionary lookups.
 
-The engine explicitly retains the Global Interpreter Lock (GIL) during math calculations. This safely manages Python reference counts and preserves readable, Pythonic syntax when iterating over collections (e.g., `for hb in hitboxes`), while executing the actual arithmetic inline using primitive C variables (`int`, `double`) on the CPU stack.
+The engine selectively manages the Global Interpreter Lock (GIL). Standard spatial routines retain the GIL to preserve reference counting and clean iteration syntax over Python collections. Performance-critical, loop-intensive mathematical routines—specifically RRT tree generation in `paths.pyx`—release the GIL (`nogil`) and execute entirely against contiguous C-allocated buffers.
 
 **Geometry (`libs/core/math/geometry.pyx`)**
 
-This module houses pure geometric evaluations, translating expensive Python float and distance mathematics into C-level primitives.
+This module houses pure geometric evaluations, translating expensive Python float and distance calculations into C-level primitives.
 
-* **`intersects`**: Calculates Axis-Aligned Bounding Box (AABB) intersections. It iterates through an entity's hitboxes, returning the overlapping tuple pair or `None`.
-* **`onscreen`**: An AABB camera culling check used by the renderer. Evaluates if an asset's absolute position intersects with the camera's viewport by calculating bounds.
-* **`cone`**: A zero-allocation field-of-view check. Validates if a target falls within a parameterized directional vision cone.
-* **`nearby`**: A pure integer squared-distance check (`dx*dx + dy*dy < r*r`). 
-* **`contours`**: Executes an two-pass Sweep-Line algorithm over primitive AABBs to dynamically generate map boundaries. It leverages C-level interval merging and XOR symmetric differences to isolate all exposed contour edges, returning boundary segments.
+* **`intersects`**: Calculates Axis-Aligned Bounding Box (AABB) intersections. Iterates through entity hitboxes, returning the overlapping tuple pair or `None`.
+* **`onscreen`**: AABB camera culling check used by the renderer. Evaluates if an asset's absolute position intersects with the camera viewport.
+* **`cone`**: A zero-allocation field-of-view check validating whether a target coordinate falls within a parameterized directional vision cone.
+* **`nearby`**: Pure integer squared-distance check ($dx^2 + dy^2 < r^2$).
+* **`punctures` / `c_punctures**`: A `noexcept nogil` implementation of the Liang-Barsky line clipping algorithm. Evaluates whether a line segment $(x_1, y_1) \to (x_2, y_2)$ penetrates the interior of an AABB obstacle with non-degenerate penetration depth ($u_1 < u_2 - \epsilon$).
+* **`los`**: Raycasts a line-of-sight segment across a collection of primitive AABB tuples using `c_punctures`, returning `True` if clear and `False` if occluded.
+* **`contours`**: Executes a two-pass Sweep-Line algorithm over primitive AABBs to dynamically generate map boundaries. Uses C-level interval merging and XOR symmetric differences to isolate exposed contour edges, returning boundary segments.
+* **`bounded`**: Narrow-phase validation checking whether an asset's offset hitboxes intersect a raw mathematical boundary constraint.
 
-!!! todo
-    RRT algorithm.
-    
+**Paths (`libs/core/math/paths.pyx`)**
+
+This module implements the Rapidly-exploring Random Tree (RRT) pathfinding algorithm in pure C memory, adhering to the "Zero Heap Allocation in the Inner Loop" philosophy.
+
+* **Memory Management**: Ingests obstacle lists at function entry into a flat `RRTObstacle*` contiguous buffer and allocates an `RRTNode*` tree buffer sized to `max_iter + 2` via `malloc()`. Both buffers are freed synchronously via a `try...finally` block.
+* **Tree Representation**: Nodes are represented as flat `RRTNode` structs containing coordinate values and an integer `parent_idx`, eliminating object pointer chasing and heap fragmentation.
+* **Inner Loop (`nogil`)**: Releases the Python GIL during the exploratory phase. Executes 5% goal-biased continuous coordinate sampling, $O(N)$ nearest-neighbor distance minimization via `hypotf()`, fixed-distance trigonometric node steering via `atan2f()`, `cosf()`, and `sinf()`, and line-of-sight segment verification via `c_punctures`.
+* **Path Reconstruction**: Re-acquires the GIL upon reaching the goal, traverses the `parent_idx` chain in reverse into an integer path buffer, and instantiates the final list of Python `Position` models. Returns an empty list if iterations expire without resolving a route.
+
 **Space (`libs/core/math/space.pyx`)**
 
 This module manages the broad-phase spatial partitioning grid, reducing collision detection complexity from $O(N^2)$ to $O(N)$ for local clusters.
 
-* **Memory Management (`__init__`, `__dealloc__`)**: Manually allocates continuous blocks of system memory (`malloc`) for its `bucket_counts` and `bucket_data` arrays. It enforces safe teardown via `__dealloc__` calling `free()`, preventing memory leaks when the grid is garbage collected.
+* **Memory Management (`__init__`, `__dealloc__`)**: Manually allocates continuous blocks of system memory (`malloc`) for its `bucket_counts` and `bucket_data` arrays. Enforces safe teardown via `__dealloc__` calling `free()`, preventing memory leaks.
 * **`clear`**: Resets the grid for the current frame by zeroing out the allocated memory block using C's `memset()`.
 * **`insert` & `_hash**`: Maps 2D spatial coordinates to a 1D flat array. Assets intersecting cell boundaries are hashed into multiple buckets dynamically.
-* **`query`**: Iterates through the populated buckets and yields a list of unique `(id1, id2)` integer tuples, generating candidate pairs for the narrow-phase evaluation.
+* **`query`**: Iterates through populated buckets and yields a list of unique `(id1, id2)` integer tuples, generating candidate pairs for narrow-phase evaluation.
 
 **Physics (`libs/core/math/physics.pyx`)**
 
 This module orchestrates the physical simulation, bridging the broad-phase grid with narrow-phase resolution, computing forces, and applying velocities to engine states.
 
-* **`collisions`**: The master collision pipeline. It ingests a flat list of primitive integer tuples to avoid Python object overhead. The sequence executes as follows:
-    1. **Hash**: Iterates over all dynamic assets and inserts them into the `Space` grid using their physical dimensions.
+* **`collisions`**: The master collision pipeline. Ingests a flat list of primitive integer tuples to avoid Python object overhead:
+    1. **Hash**: Inserts dynamic assets into the `Space` grid using physical dimensions.
     2. **Query**: Retrieves the reduced list of candidate pairs occupying the same spatial buckets.
-    3. **Narrow Phase**: Pre-allocates dummy `Position` and `Dimensions` objects on the C-stack. Iterates through the candidate pairs, unpacking their primitives into the dummy objects, and passes them to `geometry.intersects` alongside their collision data. Returns verified colliding pairs.
-* **`collide`**: Resolves confirmed physical overlaps, accounting for local `Hitbox` offsets.
-    1. **Spatial Resolution**: Shifts overlapping entities apart based on inverse mass ratios (e.g., an $m=0$ wall absorbs 0% of the shift, forcing the dynamic asset out).
-    2. **Momentum Transfer**: Evaluates 1D elastic collision formulas, updating the `.vx` and `.vy` attributes of the participating `Velocity` objects. Kinematic assets (identified via `is_kinematic` boolean flags) bypass the momentum transfer, retaining immediate control over their vectors.
-* **`integrate`**: Executes Symplectic Euler Integration ($x_{n+1} = x_n + v_n \Delta t$). Because the game board utilizes integer grid coordinates, this function maintains sub-pixel accumulators (`rx`, `ry`). When an accumulator exceeds $1.0$ or $-1.0$, it casts the shift to an integer, updates the physical `Position`, and decrements the accumulator.
+    3. **Narrow Phase**: Pre-allocates dummy `Position` and `Dimensions` objects on the C-stack, unpacks candidate primitives, and evaluates overlaps via `geometry.intersects`. Returns verified colliding pairs.
+* **`collide`**: Resolves confirmed physical overlaps, accounting for local `Hitbox` offsets:
+    1. **Spatial Resolution**: Shifts overlapping entities apart based on inverse mass ratios (e.g., an $m=0$ wall absorbs 0% of the shift, forcing dynamic bodies out).
+    2. **Momentum Transfer**: Evaluates 1D elastic collision formulas, updating the `.vx` and `.vy` attributes of participating `Velocity` objects. Kinematic assets bypass momentum transfer to retain immediate vector control.
+* **`integrate`**: Executes Symplectic Euler Integration ($x_{n+1} = x_n + v_n \Delta t$). Maintains sub-pixel accumulators (`rx`, `ry`) to update discrete integer positions without drift.
 * **`friction`**: Decays the magnitude of a `Velocity` vector over time using an environmental friction coefficient, clamping to $0.0$ to prevent negative overshoot.
-* **`kinematics`**: Handles velocity assignment. It snaps axes to zero when no input is provided on a given axis and strictly normalizes the resulting vector to the specified `speed`.
-* **`dynamics`**: Calculates acceleration vectors towards a target coordinate (`tx`, `ty`) based on a given `impulse`. It clamps the resulting velocity to a maximum `speed` and bypasses the impulse to snap to the target velocity if within the arrival threshold, preventing oscillation.
+* **`kinematics`**: Handles direct velocity assignment. Snaps non-input axes to zero and normalizes the resulting vector to the specified `speed`.
+* **`dynamics`**: Calculates acceleration vectors towards a target coordinate (`tx`, `ty`) based on a given `impulse`. Clamps the resulting velocity to `speed` and snaps directly to the target velocity if within the arrival threshold to prevent oscillation.
+* **`boundaries`**: Evaluates broad-phase and narrow-phase candidate collisions between dynamic assets and static environmental boundary hulls.
+* **`constrain`**: Resolves spatial overlap and inverts velocity vectors for assets colliding with infinitely massive boundary hulls.
 
 ### Graphics
 
