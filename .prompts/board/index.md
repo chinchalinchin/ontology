@@ -26,7 +26,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 07: Compositions](./phases/implement/phase-07.md)
     - [x]: [Phase 08: Pathfinding](./phases/implement/phase-08.md)
     - [ ]: [Phase 09: Commerce](./phases/implement/phase-09.md)
-    - [ ]: [Phase 10: Towns](./phases/implement/phase-10.md)
+    - [ ]: [Phase 10: Towns](./phase/implement/phase-10.md)
   - Refactor:
     - Phase 01:
       - [x]: [Phase 01.01: Orchestration](./phases/refactor/refactor-01-01.md)
@@ -50,7 +50,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - Phase 08:
       - [x]: [Phase 08.01: Obstable Geometry](./phases/refactor/refactor-08-01.md)
       - [x]: [Phase 08.02: NavigationMechanics](./phases/refactor/refactor-08-02.md)
-      - [~]: [Phase 08.03: Trajectory Optimization](./phases/refactor/refactor-08-03.md)
+      - [x]: [Phase 08.03: Trajectory Optimization](./phases/refactor/refactor-08-03.md)
   - Patch:
     - [x]: [Bug B000: Attacking Glitch](./phases/patch/bug-b000.md)
     - [ ]: [Bug B001: Relayering Instantiated Assets](./phases/patch/bug-b001.md)

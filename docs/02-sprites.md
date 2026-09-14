@@ -254,6 +254,8 @@ Equipment, while part of the Inventory, affects the rendering of the Sprite, and
 
 **Loot**
 
+Loot is added to the Inventory anytime a Sprite intersects a [Collectable](./01-assets.md#effects). 
+
 TODO
 
 **Wallet**

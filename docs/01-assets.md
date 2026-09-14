@@ -98,8 +98,8 @@ Asset *Categories* form the top layer of the hierarchy. Each Asset Category is d
 | - | - |
 | Tiles | Dimensions, Friction |
 | Cursors | Dimensions |
-| Effects | Dimensions, Count |
 | Objects | Dimensions, Hitboxes, Mass |
+| Effects | Dimensions, Hitboxes, Lifecycle, Count, Mass |
 | Crafts | Dimensions, Hitboxes, Mass, Cost |
 | Sheets | Dimensions, Hitboxes, Mass, Stack, Actions |
 | Widgets | Dimensions, Frames |
@@ -198,8 +198,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id, None): returns [ id ] "`
-* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ id ] "`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MultiplerState**
 
@@ -219,8 +219,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id, None): returns [ id ] "`
-* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ id ] "`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MultiplerState**
 
@@ -246,7 +246,7 @@ N/A
 **Frame: SingleFrame**
 
 * `keys(id, None): returns [ id ] "`
-* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MultiplerState**
 
@@ -287,13 +287,13 @@ When *interacting* with a Chest, the [Player](./02-sprites.md#player) is shown t
 
 **Animation: BinaryAnimation**
 
-- `if switch == true: animation.frame = 1`
-- `if switch != true: animation.frame = 0`
+- `if state.switch == true: state.animation.frame = 1`
+- `if state.switch != true: state.animation.frame = 0`
 
 **Frame: IterableFrame**
 
-* `keys(id, animation): returns [ "{id}-{animation.frame}" ]`
-* `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ "{id}-{state.animation.frame}" ]`
+* `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: ContainerState**
 
@@ -318,7 +318,7 @@ Crates are Objects who state can be altered by in-game physics. For example, whe
 
 **Frame: SingleFrame**
 
-* `keys(id, None): returns [ id ] "`
+* `keys(id, state): returns [ id ] "`
 * `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 ### Doors
@@ -336,8 +336,8 @@ Doors are Objects that alter a Sprite's `<layer>`. When a Sprite enters the hitb
 
 **Frame: SingleFrame**
 
-* `keys(id, animation): returns [ id ]`
-* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ id ]`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 ### Gates
 
@@ -345,13 +345,13 @@ Gates are Binary Objects whose state is connected to Plates. When a Gate is on (
 
 **Animation: BinaryAnimation**
 
-- `if switch == true: animation.frame = 1`
-- `if switch != true: animation.frame = 0`
+- `if state.switch == true: state.animation.frame = 1`
+- `if state.switch != true: state.animation.frame = 0`
 
 **Frame: IterableFrame**
 
-* `keys(id, animation): returns [ "{id}-{animation.frame}" ]`
-* `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ "{id}-{state.animation.frame}" ]`
+* `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SwitchState**
 
@@ -371,13 +371,13 @@ Plates are Binary Objects whose state can be changed by intersection, e.g. when 
 
 **Animation: BinaryAnimation**
 
-- `if switch == true: animation.frame = 1`
-- `if switch != true: animation.frame = 0`
+- `if state.switch == true: state.animation.frame = 1`
+- `if state.switch != true: state.animation.frame = 0`
 
 **Frame: IterableFrame**
 
-* `keys(id, animation): returns [ "{id}-{animation.frame}" ]`
-* `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ "{id}-{state.animation.frame}" ]`
+* `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SwitchState**
 
@@ -400,8 +400,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id, animation): returns [ id ]`
-* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ id ]`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: DialogueState**
 
@@ -439,7 +439,7 @@ N/A
 **Frame: IndexFrame**
 
 * `keys(id, state): returns [ (id, 0, 0) ]` *(Note: Bypassed during active rendering; `SpriteFrame` handles the dynamic offset injection).*
-* `index(self, id, properties): returns { "{id}-{properties.frames[i]}": (i * properties.dimension.w, 0, properties.dimension.w, properties.dimensions.l) }`
+* `index(id, properties): returns { "{id}-{properties.frames[i]}": (i * properties.dimension.w, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **"Phantom" State: AttachmentState**
 
@@ -457,8 +457,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id, animation): returns [ id ]`
-* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ id ]`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MotorState**
 
@@ -490,12 +490,12 @@ Temporary Effects are brief, short-lived effects, such as explosions or magic. A
 
 **Animation: TemporaryAnimation**
 
-- `if animation.frame =< properties.count: animation.frame += 1`
+- `if state.animation.frame =< properties.count: state.animation.frame += 1`
 
 **Frame: IterableFrame**
 
-* `keys(id, animation): returns [ "{id}-{animation.frame}" ]`
-* `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state): returns [ "{id}-{state.animation.frame}" ]`
+* `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: AnimatorState**
 
@@ -511,12 +511,12 @@ Persistent Effects are long-term, continuous effects, such as water ripples or w
 
 **Animation: PersistentAnimation**
 
-- `if animation.frame >= properties.count: animation.frame = 0`
+- `if state.animation.frame >= properties.count: state.animation.frame = 0`
 
 **Frame: IterableFrame**
 
-* `keys(id, animation) : [ "{id}-{animation.frame}" ]`
-* `index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state) : [ "{id}-{state.animation.frame}" ]`
+* `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: AnimatorState**
 
@@ -563,8 +563,8 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id, None) returns [ id ]`
-* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `keys(id, state) returns [ id ]`
+* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: PropertyState**
 
@@ -575,6 +575,10 @@ N/A
 * `owner: str`
 
 ## Resources
+
+TODO
+
+A Resource contains a `loot` key. When Resources are mined through the `mine` [Intention](./04-intentions.md), they are converted into [Collectables](#effects). The `loot` key from the Resource is passed to the Collectable when it is instantiated as a byproduct of `mine`.
 
 TODO
 
@@ -670,7 +674,7 @@ Pixies are Sheets that have simple game mechanics, e.g. are excluded from the co
 **Frame: StateFrame**
 
 * `keys(id, state): returns [ "{id}-{state.animation.action}-{state,animation.direction}-{state.animation.frame}" ]`
-* `index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: AnimatorState**
 
@@ -692,7 +696,7 @@ Sprites are Sheets over multiple rows of frames, where each row may have a varia
 **Frame: SpriteFrame**
 
 * `keys(id, state): returns [ "{id}-{state.animation.action}-{state.animation.direction}-{animation.frame}" ] + [ <equipment-frames> ] + [ <expression-frames> ]`
-* `index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SpriteState**
 
