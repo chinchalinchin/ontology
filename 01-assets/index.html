@@ -551,10 +551,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#temporary" class="md-nav__link">
+  <a href="#passive" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Temporary
+        Passive
       
     </span>
   </a>
@@ -562,10 +562,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#persistent" class="md-nav__link">
+  <a href="#hazard" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Persistent
+        Hazard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collectables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collectables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interactables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactables
       
     </span>
   </a>
@@ -1591,10 +1613,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#temporary" class="md-nav__link">
+  <a href="#passive" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Temporary
+        Passive
       
     </span>
   </a>
@@ -1602,10 +1624,32 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#persistent" class="md-nav__link">
+  <a href="#hazard" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Persistent
+        Hazard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collectables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Collectables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interactables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactables
       
     </span>
   </a>
@@ -2346,46 +2390,55 @@
 <ul>
 <li>Property File: <code>/src/assets/effects/main.yaml</code></li>
 </ul>
-<p>Effects are animate, immutable Objects. Effects iterate over a single row of frames. They are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface or body of water may ripple when a Sprite moves through it. The dust cloud and ripples are Effects.</p>
-<p><strong>Properties</strong></p>
+<p>Effects are animate Objects used for environmental dressing, hazards, pickups, and interactive mechanisms. </p>
+<p>All Effects iterate over a single row of frames using <code>IterableFrame</code> and advance via <code>LifecycleAnimation</code>. The only thing that differentiates their instances is their state model.</p>
+<p><strong>Properties: EffectProperties</strong></p>
 <ul>
-<li><code>dim: Dimensions</code></li>
+<li><code>dimensions: Dimensions</code></li>
 <li><code>count: int</code></li>
+<li><code>mass: int</code></li>
+<li><code>hitboxes: List[Hitbox]</code></li>
+<li><code>lifecycle: LifecycleProperties</code><ul>
+<li><code>type: str</code> (<code>continuous</code>, <code>periodic</code>, <code>temporary</code>)</li>
+<li><code>delay: int</code> (tick pacing between frames)</li>
+<li><code>frequency: int</code> (tick interval for periodic resets)</li>
+<li><code>persist: bool</code> (whether temporary effects persist on their final frame)</li>
 </ul>
-<div class="admonition todo">
-<p class="admonition-title">Todo</p>
-<p>Further Refinement of Effects. After examining Asset files, the groupings that seem to logically classify this Asset through its "differentia" are: Permanent-Continuous, Permanent-Periodic, Permanent-Hazard, Temporary-Collectables, Temporary-Hazard. Needs more thought.</p>
-</div>
-<h3 id="temporary">Temporary</h3>
-<p>Temporary Effects are brief, short-lived effects, such as explosions or magic. After their animation is concluded, they are garbage-collected and removed from the Board.</p>
-<p><strong>Animation: TemporaryAnimation</strong></p>
-<ul>
-<li><code>if state.animation.frame =&lt; properties.count: state.animation.frame += 1</code></li>
+</li>
 </ul>
-<p><strong>Frame: IterableFrame</strong></p>
-<ul>
-<li><code>keys(id, state): returns [ "{id}-{state.animation.frame}" ]</code></li>
-<li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
-</ul>
-<p><strong>State: AnimatorState</strong></p>
-<ul>
-<li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
-<li><code>position: Position</code></li>
-<li><code>animation: Animation</code></li>
-</ul>
-<h3 id="persistent">Persistent</h3>
-<p>Persistent Effects are long-term, continuous effects, such as water ripples or windmills, whose animation continuously cycles when the frame count is reached.</p>
-<p><strong>Animation: PersistentAnimation</strong></p>
-<ul>
-<li><code>if state.animation.frame &gt;= properties.count: state.animation.frame = 0</code></li>
-</ul>
+<p><strong>Animation: LifeCycleAnimation</strong></p>
+<p>TODO</p>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
 <li><code>keys(id, state) : [ "{id}-{state.animation.frame}" ]</code></li>
 <li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
+<p><strong>Lifecycles</strong></p>
+<p>Rather than implementing separate Animation classes to handle Effect animations (which would lead to a combinatorial explosion with the composition of Animation and State implementations to span the space of possible Effects instances, e.g. <code>HarzardContinuousAnimation</code>, <code>HazardPeriodicAnimation</code>, <code>HazardTemporaryAnimation</code> would have the same functional purpose of being a Hazard but different logic handling their Animation), Effects have a Lifecycle that determines how their Animation is handled.</p>
+<pre class="mermaid"><code>flowchart TD
+    Root["AssetCategory: EFFECTS"]
+
+    Root --&gt; PropertyModel
+    Root --&gt; StateModel
+    Root --&gt; BehaviorStrategy
+
+    subgraph PropertyModel ["Property Model"]
+        direction TB
+        PropContent["EffectProperties: dimensions, hitboxes, mass, lifecycle"]
+    end
+
+    subgraph StateModel ["State Model"]
+        direction TB
+        StateContent["Functional State: passive, hazard, collectable, interactable"]
+    end
+
+    subgraph BehaviorStrategy ["Behavior Strategy"]
+        direction TB
+        BehaviorContent["LifecycleAnimation: continuous, periodic, temporary"]
+    end</code></pre>
+<p>In other words, the State Model determines the function of the Effect, but the Lifecycle determines the Animation update schema.</p>
+<h3 id="passive">Passive</h3>
+<p>Ambient environmental effects that do not participate in collision resolution or health interactions (e.g., torches, water ripples, falling leaves).</p>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
@@ -2393,6 +2446,42 @@
 <li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
+</ul>
+<h3 id="hazard">Hazard</h3>
+<p>Environmental hazards that deal damage to overlapping dynamic entities (e.g., lava, floor spikes, poison gas clouds).</p>
+<p><strong>State: HazardState</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>depth: int</code></li>
+<li><code>height: int</code></li>
+<li><code>position: Position</code></li>
+<li><code>animation: Animation</code></li>
+<li><code>damage: Damage</code><ul>
+<li>TODO</li>
+</ul>
+</li>
+</ul>
+<h3 id="collectables">Collectables</h3>
+<p>World pickups that transfer loot keys into a Sprite's or Player's inventory upon hitbox intersection (e.g., dropped coins, potions).</p>
+<p><strong>State: CollectableState</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>depth: int</code></li>
+<li><code>height: int</code></li>
+<li><code>position: Position</code></li>
+<li><code>animation: Animation</code></li>
+<li>TODO</li>
+</ul>
+<h3 id="interactables">Interactables</h3>
+<p>Mechanized world props whose animations and states trigger upon intentional player or sprite actions (e.g., furnaces, sparring dummies).</p>
+<p><strong>State: InteractableState</strong></p>
+<ul>
+<li><code>layer: str</code></li>
+<li><code>depth: int</code></li>
+<li><code>height: int</code></li>
+<li><code>position: Position</code></li>
+<li><code>animation: Animation</code></li>
+<li>TODO</li>
 </ul>
 <h2 id="crafts">Crafts</h2>
 <ul>
