@@ -6,7 +6,11 @@ Package for managing tactical pathfinding trajectories and steering waypoints.
 from __future__ import annotations
 
 # Standard Libraries
-from typing import TYPE_CHECKING, List
+from typing import (
+    TYPE_CHECKING, 
+    List, 
+    Tuple
+)
 import collections
 import logging
 
@@ -88,23 +92,17 @@ class NavigationMechanics(Mechanic):
 
 
     @staticmethod
-    def _is_navigating(sprite: Asset) -> bool:
+    def navigating(sprite: Asset) -> bool:
         """
         Verifies if the sprite is pursuing a goal under an active navigation intention.
         """
-        if not sprite.state.goal or not sprite.state.intention:
+        if not sprite.state.goal:
             return False
-        intent = sprite.state.intention
-        intent_val = intent.value if hasattr(intent, "value") else intent
-        nav_vals = [
-            ni.value if hasattr(ni, "value") else ni
-            for ni in NavigationIntentions
-        ]
-        return intent_val in nav_vals
+        
+        return sprite.state.intention in NavigationIntentions
 
 
-    @staticmethod
-    def _clear_trajectory(sprite: Asset) -> None:
+    def _clear(self, sprite: Asset) -> None:
         """
         Resets tactical trajectory buffers when an entity ceases navigation.
         """
@@ -113,7 +111,7 @@ class NavigationMechanics(Mechanic):
         sprite.state.trajectory.stalled = False
 
 
-    def _target_anchor(self, sprite: Asset, board: Board) -> Position:
+    def _target(self, sprite: Asset, board: Board) -> Position:
         """
         Resolves the physical anchor coordinate of the sprite's goal.
         """
@@ -137,51 +135,87 @@ class NavigationMechanics(Mechanic):
         )
 
 
+    def _plan(self, 
+        sprite: Asset, 
+        anchor: Position, 
+        target: Position,
+        obstacles: List[Tuple[int, int, int, int]],
+        offset: Tuple[int, int]
+    ) -> None:
+        """
+        """
+        planner = Planner(
+            start=anchor,
+            target=target,
+            obstacles=obstacles,
+            step_size=32.0,
+            max_iter=300,
+        )
+        path = planner.plan()
+
+        if path:
+            # Subtract anchor offset to steer canvas origin cleanly
+            sprite.state.trajectory.vertices = [
+                Position(x=int(wp.x - offset[0]), y=int(wp.y - offset[1]))
+                for wp in path
+            ]
+            sprite.state.trajectory.target = sprite.state.trajectory.vertices[0]
+            sprite.state.trajectory.stalled = False
+            sprite.state.trajectory.cooldown = 0
+            return True
+
+        # Stall Handling
+        sprite.state.trajectory.stalled = True
+        sprite.state.trajectory.target = None
+        sprite.state.trajectory.vertices.clear()
+        sprite.state.trajectory.cooldown = settings.PATH_RETRY_INTERVAL
+        logger.info(f"Pathfinding stalled for {sprite.name}; no valid route found.")
+        return False
+
+        
     def _navigate(self, sprite: Asset, board: Board) -> None:
         """
         Tactical trajectory update lifecycle for an individual sprite.
         """
         # 1. Goal Verification
-        if not self._is_navigating(sprite):
-            self._clear_trajectory(sprite)
+        if not self.navigating(sprite):
+            self._clear(sprite)
             return
 
         # Cross-layer destinations are managed via door subsumption in CognitionMechanics
-        if sprite.state.goal.layer and sprite.state.goal.layer != sprite.state.layer:
-            self._clear_trajectory(sprite)
+        if sprite.state.goal.layer and (
+            sprite.state.goal.layer != sprite.state.layer
+        ):
+            self._clear(sprite)
             return
 
         # 2. Anchor Computation
         anchor = self.anchor(sprite)
         offset_x = anchor.x - sprite.state.position.x
         offset_y = anchor.y - sprite.state.position.y
-        target_point = self._target_anchor(sprite, board)
+        target = self._target(sprite, board)
 
-        exclude = [sprite.name]
+        exclude = [ sprite.name ]
         if sprite.state.goal.name:
             exclude.append(sprite.state.goal.name)
 
         obstacles = self.obstacles(sprite.state.layer, board, exclude=exclude)
 
-        # 3. Direct Line-of-Sight Check
-        has_los = geometry.los(
-            float(anchor.x),
-            float(anchor.y),
-            float(target_point.x),
-            float(target_point.y),
-            obstacles,
-        )
-
-        retry_interval = getattr(settings, "PATH_RETRY_INTERVAL", 60)
-        just_planned = False
+        planned = False
 
         # 4. Path Maintenance
-        if has_los:
+        if geometry.los(
+            float(anchor.x),
+            float(anchor.y),
+            float(target.x),
+            float(target.y),
+            obstacles,
+        ):
             # Line of sight is clear: direct tracking to strategic goal
-            sprite.state.trajectory.vertices.clear()
+            self._clear(sprite)
             sprite.state.trajectory.target = sprite.state.goal.position
-            sprite.state.trajectory.stalled = False
             sprite.state.trajectory.cooldown = 0
+
         else:
             # Line of sight is blocked
             if not sprite.state.trajectory.vertices:
@@ -190,102 +224,68 @@ class NavigationMechanics(Mechanic):
                     sprite.state.trajectory.cooldown -= 1
                     return
 
-                planner = Planner(
-                    start=anchor,
-                    target=target_point,
-                    obstacles=obstacles,
-                    step_size=32.0,
-                    max_iter=300,
-                )
-                path = planner.plan()
-                if path:
-                    # Subtract anchor offset to steer canvas origin cleanly
-                    sprite.state.trajectory.vertices = [
-                        Position(x=int(wp.x - offset_x), y=int(wp.y - offset_y))
-                        for wp in path
-                    ]
-                    sprite.state.trajectory.target = sprite.state.trajectory.vertices[0]
-                    sprite.state.trajectory.stalled = False
-                    sprite.state.trajectory.cooldown = 0
-                    just_planned = True
-                else:
-                    # 6. Stall Handling
-                    sprite.state.trajectory.stalled = True
-                    sprite.state.trajectory.target = None
-                    sprite.state.trajectory.vertices.clear()
-                    sprite.state.trajectory.cooldown = retry_interval
-                    logger.debug(f"Pathfinding stalled for {sprite.name}; no valid route found.")
-                    return
+                if not self._plan(
+                    sprite,
+                    anchor,
+                    target,
+                    obstacles,
+                    offset=(offset_x, offset_y)
+                ): return
+
+                planned = True
+
+                
             else:
                 # Active waypoints exist: validate LOS to immediate waypoint
                 target_anchor_x = sprite.state.trajectory.target.x + offset_x
                 target_anchor_y = sprite.state.trajectory.target.y + offset_y
-                wp_los = geometry.los(
+
+                if not geometry.los(
                     float(anchor.x),
                     float(anchor.y),
                     float(target_anchor_x),
                     float(target_anchor_y),
                     obstacles,
-                )
-                if not wp_los:
+                ):
                     # Waypoint path is blocked by dynamic obstacle: replan
                     logger.info(f"Waypoint path occluded for {sprite.name}. Replanning.")
                     sprite.state.trajectory.vertices.clear()
                     sprite.state.trajectory.target = None
 
-                    planner = Planner(
-                        start=anchor,
-                        target=target_point,
-                        obstacles=obstacles,
-                        step_size=32.0,
-                        max_iter=300,
-                    )
-                    path = planner.plan()
-                    if path:
-                        sprite.state.trajectory.vertices = [
-                            Position(x=int(wp.x - offset_x), y=int(wp.y - offset_y))
-                            for wp in path
-                        ]
-                        sprite.state.trajectory.target = sprite.state.trajectory.vertices[0]
-                        sprite.state.trajectory.stalled = False
-                        sprite.state.trajectory.cooldown = 0
-                        just_planned = True
-                    else:
-                        # 6. Stall Handling
-                        sprite.state.trajectory.stalled = True
-                        sprite.state.trajectory.target = None
-                        sprite.state.trajectory.vertices.clear()
-                        sprite.state.trajectory.cooldown = retry_interval
-                        return
+                    if not self._plan(
+                        sprite,
+                        anchor,
+                        target,
+                        obstacles,
+                        offset = (offset_x, offset_y)
+                    ): return False
+
+                    planned = True
 
         # 5. Waypoint Arrival
-        if not just_planned and sprite.state.trajectory.target and sprite.state.trajectory.vertices:
-            arrival_radius = 15
-            if (
-                sprite.state.mutators
-                and sprite.state.mutators.parameters
-                and sprite.state.mutators.parameters.action
-            ):
-                arrival_radius = sprite.state.mutators.parameters.action.radius
+        if not planned and \
+            sprite.state.trajectory.target \
+                and sprite.state.trajectory.vertices:
+            arrival_radius = sprite.state.mutators.parameters.action.radius
 
-            is_arrived = geometry.nearby(
+            if geometry.nearby(
                 int(sprite.state.position.x),
                 int(sprite.state.position.y),
                 int(sprite.state.trajectory.target.x),
                 int(sprite.state.trajectory.target.y),
                 arrival_radius,
-            )
-            if is_arrived:
-                if (
-                    sprite.state.trajectory.vertices
-                    and sprite.state.trajectory.target == sprite.state.trajectory.vertices[0]
+            ):
+                if sprite.state.trajectory.vertices and (
+                    sprite.state.trajectory.target == sprite.state.trajectory.vertices[0]
                 ):
                     sprite.state.trajectory.vertices.pop(0)
-
+                
                 if sprite.state.trajectory.vertices:
                     sprite.state.trajectory.target = sprite.state.trajectory.vertices[0]
-                else:
-                    sprite.state.trajectory.target = sprite.state.goal.position
+                    return
+                
+                sprite.state.trajectory.target = sprite.state.goal.position
+                return
 
 
     def update(
@@ -298,10 +298,9 @@ class NavigationMechanics(Mechanic):
         """
         Mechanic update loop iterating over all autonomous sprites.
         """
-        player = board.player()
-        player_name = player.name if player else None
-
         for sprite in board.instances(AssetInstances.SPRITES.value):
-            if player_name and sprite.name == player_name:
+
+            if sprite.name == board.player().name: 
                 continue
+
             self._navigate(sprite, board)
