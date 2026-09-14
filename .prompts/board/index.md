@@ -60,6 +60,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Bug B004: Friction Regression](./phases/patch/bug-b004.md)
     - [x]: [Bug B005: Speak Regression](./phases/patch/bug-b005.md)
     - [x]: [Bug B006: Raycast Boundary Grazing](./phases/patch/bug-b006.md)
+    - [ ]: [Bug B007: Cradle Spawning](./phases/patch/bug-b007.md)
   - Achieve:
     - [x]: [Goal 01: Boundaries](./phases/achieve/goal-01.md)
     - [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)
