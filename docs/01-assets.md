@@ -474,50 +474,65 @@ N/A
 
 * Property File: `/src/assets/effects/main.yaml`
 
-Effects are animate, immutable Objects. Effects iterate over a single row of frames. They are meant to encapsulate special effect and animation logic. For example, a projectile may produce a cloud of dust when impacting a surface or body of water may ripple when a Sprite moves through it. The dust cloud and ripples are Effects.
+Effects are animate Objects used for environmental dressing, hazards, pickups, and interactive mechanisms. 
 
-**Properties**
+All Effects iterate over a single row of frames using `IterableFrame` and advance via `LifecycleAnimation`. The only thing that differentiates their instances is their state model.
 
-* `dim: Dimensions`
+**Properties: EffectProperties**
+
+* `dimensions: Dimensions`
 * `count: int`
+* `mass: int`
+* `hitboxes: List[Hitbox]`
+* `lifecycle: LifecycleProperties`
+    * `type: str` (`continuous`, `periodic`, `temporary`)
+    * `delay: int` (tick pacing between frames)
+    * `frequency: int` (tick interval for periodic resets)
+    * `persist: bool` (whether temporary effects persist on their final frame)
 
-!!! todo
-    Further Refinement of Effects. After examining Asset files, the groupings that seem to logically classify this Asset through its "differentia" are: Permanent-Continuous, Permanent-Periodic, Permanent-Hazard, Temporary-Collectables, Temporary-Hazard. Needs more thought.
-    
-### Temporary
+**Animation: LifeCycleAnimation**
 
-Temporary Effects are brief, short-lived effects, such as explosions or magic. After their animation is concluded, they are garbage-collected and removed from the Board.
-
-**Animation: TemporaryAnimation**
-
-- `if state.animation.frame =< properties.count: state.animation.frame += 1`
-
-**Frame: IterableFrame**
-
-* `keys(id, state): returns [ "{id}-{state.animation.frame}" ]`
-* `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
-
-**State: AnimatorState**
-
-* `layer: str`
-* `depth: int`
-* `height: int`
-* `position: Position`
-* `animation: Animation`
-
-### Persistent
-
-Persistent Effects are long-term, continuous effects, such as water ripples or windmills, whose animation continuously cycles when the frame count is reached.
-
-**Animation: PersistentAnimation**
-
-- `if state.animation.frame >= properties.count: state.animation.frame = 0`
+TODO
 
 **Frame: IterableFrame**
 
 * `keys(id, state) : [ "{id}-{state.animation.frame}" ]`
 * `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
+**Lifecycles**
+
+Rather than implementing separate Animation classes to handle Effect animations (which would lead to a combinatorial explosion with the composition of Animation and State implementations to span the space of possible Effects instances, e.g. `HarzardContinuousAnimation`, `HazardPeriodicAnimation`, `HazardTemporaryAnimation` would have the same functional purpose of being a Hazard but different logic handling their Animation), Effects have a Lifecycle that determines how their Animation is handled.
+
+```mermaid
+flowchart TD
+    Root["AssetCategory: EFFECTS"]
+
+    Root --> PropertyModel
+    Root --> StateModel
+    Root --> BehaviorStrategy
+
+    subgraph PropertyModel ["Property Model"]
+        direction TB
+        PropContent["EffectProperties: dimensions, hitboxes, mass, lifecycle"]
+    end
+    
+    subgraph StateModel ["State Model"]
+        direction TB
+        StateContent["Functional State: passive, hazard, collectable, interactable"]
+    end
+
+    subgraph BehaviorStrategy ["Behavior Strategy"]
+        direction TB
+        BehaviorContent["LifecycleAnimation: continuous, periodic, temporary"]
+    end
+```
+
+In other words, the State Model determines the function of the Effect, but the Lifecycle determines the Animation update schema.
+
+### Passive
+
+Ambient environmental effects that do not participate in collision resolution or health interactions (e.g., torches, water ripples, falling leaves).
+
 **State: AnimatorState**
 
 * `layer: str`
@@ -525,6 +540,46 @@ Persistent Effects are long-term, continuous effects, such as water ripples or w
 * `height: int`
 * `position: Position`
 * `animation: Animation`
+
+### Hazard
+
+Environmental hazards that deal damage to overlapping dynamic entities (e.g., lava, floor spikes, poison gas clouds).
+
+**State: HazardState**
+
+* `layer: str`
+* `depth: int`
+* `height: int`
+* `position: Position`
+* `animation: Animation`
+* `damage: Damage`
+    - TODO
+
+### Collectables
+
+World pickups that transfer loot keys into a Sprite's or Player's inventory upon hitbox intersection (e.g., dropped coins, potions).
+
+**State: CollectableState**
+
+* `layer: str`
+* `depth: int`
+* `height: int`
+* `position: Position`
+* `animation: Animation`
+* TODO
+
+### Interactables
+
+Mechanized world props whose animations and states trigger upon intentional player or sprite actions (e.g., furnaces, sparring dummies).
+
+**State: InteractableState**
+
+* `layer: str`
+* `depth: int`
+* `height: int`
+* `position: Position`
+* `animation: Animation`
+* TODO
 
 ## Crafts
 

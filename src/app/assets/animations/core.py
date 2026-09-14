@@ -5,9 +5,17 @@ Package for Asset Animation implementations.
 """
 # Application Libraries
 import app.config.settings as settings
+from app.config.enums import Lifecycles
 from app.assets.base import Animation
-from app.models.properties import AssetProperties, SheetProperties
-from app.models.state import AssetState, SpriteState
+from app.models.properties import (
+    AssetProperties, 
+    EffectProperties,
+    SheetProperties
+)
+from app.models.state import (
+    AssetState, 
+    SpriteState
+)
 
 class NoAnimation(Animation):
     """
@@ -58,6 +66,37 @@ class TemporaryAnimation(Animation):
         return state
 
 
+class LifecycleAnimation(Animation):
+    def animate(self, state: AssetState, properties: EffectProperties) -> AssetState:
+        lifecycle = properties.lifecycle
+        anim = state.animation
+        anim.tick += 1
+
+        if lifecycle.type == Lifecycles.CONTINUOUS.value:
+            if anim.tick >= lifecycle.delay:
+                anim.tick = 0
+                anim.frame = (anim.frame + 1) % properties.count
+
+        elif lifecycle.type == Lifecycles.TEMPORARY.value:
+            if anim.frame < properties.count:
+                if anim.tick >= lifecycle.delay:
+                    anim.tick = 0
+                    anim.frame += 1
+
+        elif lifecycle.type == Lifecycles.PERIODIC.value:
+            active_duration = properties.count * lifecycle.delay
+            if anim.tick < active_duration:
+                anim.frame = anim.tick // lifecycle.delay
+            else:
+                anim.frame = 0
+            
+            if anim.tick >= max(lifecycle.frequency, active_duration):
+                anim.tick = 0
+                anim.frame = 0
+
+        return state
+
+    
 class StateAnimation(Animation):
     """
     Advances frame based on configured action delay.
@@ -96,3 +135,4 @@ class SpriteAnimation(StateAnimation):
             state.psyche.expression.ttl -= 1
             if state.psyche.expression.ttl <= 0:
                 state.psyche.expression = None
+
