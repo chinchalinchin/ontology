@@ -1901,12 +1901,12 @@
 <td>Dimensions</td>
 </tr>
 <tr>
-<td>Effects</td>
-<td>Dimensions, Count</td>
-</tr>
-<tr>
 <td>Objects</td>
 <td>Dimensions, Hitboxes, Mass</td>
+</tr>
+<tr>
+<td>Effects</td>
+<td>Dimensions, Hitboxes, Lifecycle, Count, Mass</td>
 </tr>
 <tr>
 <td>Crafts</td>
@@ -2105,8 +2105,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, None): returns [ id ] "</code></li>
-<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state): returns [ id ] "</code></li>
+<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
@@ -2122,8 +2122,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, None): returns [ id ] "</code></li>
-<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state): returns [ id ] "</code></li>
+<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
@@ -2145,7 +2145,7 @@
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
 <li><code>keys(id, None): returns [ id ] "</code></li>
-<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
 <ul>
@@ -2177,13 +2177,13 @@
 <p>When <em>interacting</em> with a Chest, the <a href="../02-sprites/#player">Player</a> is shown the <a href="../06-widgets/#menus">Chest menu</a>, allowing them to exchange the contents of their Inventory Loot with the contents of the Chest. A Sprite may also enter into an <code>interact</code> Intention with a Chest through its <a href="../04-intentions/#transition-matrix">Intention Transition Matrix</a>. This interaction is managed through a dedicated Sprite <a href="../05-mechanics/">Mechanic</a></p>
 <p><strong>Animation: BinaryAnimation</strong></p>
 <ul>
-<li><code>if switch == true: animation.frame = 1</code></li>
-<li><code>if switch != true: animation.frame = 0</code></li>
+<li><code>if state.switch == true: state.animation.frame = 1</code></li>
+<li><code>if state.switch != true: state.animation.frame = 0</code></li>
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>keys(id, animation): returns [ "{id}-{animation.frame}" ]</code></li>
-<li><code>index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state): returns [ "{id}-{state.animation.frame}" ]</code></li>
+<li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: ContainerState</strong></p>
 <ul>
@@ -2206,7 +2206,7 @@
 </ul>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, None): returns [ id ] "</code></li>
+<li><code>keys(id, state): returns [ id ] "</code></li>
 <li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="doors">Doors</h3>
@@ -2222,20 +2222,20 @@
 </ul>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, animation): returns [ id ]</code></li>
-<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state): returns [ id ]</code></li>
+<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="gates">Gates</h3>
 <p>Gates are Binary Objects whose state is connected to Plates. When a Gate is on (open), it does not have hitboxes and the player can pass freely through it. When a Gate is off (closed), its hitboxes prevent the player from passing through its area.</p>
 <p><strong>Animation: BinaryAnimation</strong></p>
 <ul>
-<li><code>if switch == true: animation.frame = 1</code></li>
-<li><code>if switch != true: animation.frame = 0</code></li>
+<li><code>if state.switch == true: state.animation.frame = 1</code></li>
+<li><code>if state.switch != true: state.animation.frame = 0</code></li>
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>keys(id, animation): returns [ "{id}-{animation.frame}" ]</code></li>
-<li><code>index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state): returns [ "{id}-{state.animation.frame}" ]</code></li>
+<li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SwitchState</strong></p>
 <ul>
@@ -2254,13 +2254,13 @@
 </div>
 <p><strong>Animation: BinaryAnimation</strong></p>
 <ul>
-<li><code>if switch == true: animation.frame = 1</code></li>
-<li><code>if switch != true: animation.frame = 0</code></li>
+<li><code>if state.switch == true: state.animation.frame = 1</code></li>
+<li><code>if state.switch != true: state.animation.frame = 0</code></li>
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>keys(id, animation): returns [ "{id}-{animation.frame}" ]</code></li>
-<li><code>index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state): returns [ "{id}-{state.animation.frame}" ]</code></li>
+<li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SwitchState</strong></p>
 <ul>
@@ -2278,8 +2278,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, animation): returns [ id ]</code></li>
-<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state): returns [ id ]</code></li>
+<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: DialogueState</strong></p>
 <ul>
@@ -2315,7 +2315,7 @@
 <p><strong>Frame: IndexFrame</strong></p>
 <ul>
 <li><code>keys(id, state): returns [ (id, 0, 0) ]</code> <em>(Note: Bypassed during active rendering; <code>SpriteFrame</code> handles the dynamic offset injection).</em></li>
-<li><code>index(self, id, properties): returns { "{id}-{properties.frames[i]}": (i * properties.dimension.w, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>index(id, properties): returns { "{id}-{properties.frames[i]}": (i * properties.dimension.w, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>"Phantom" State: AttachmentState</strong></p>
 <ul>
@@ -2329,8 +2329,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, animation): returns [ id ]</code></li>
-<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state): returns [ id ]</code></li>
+<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MotorState</strong></p>
 <ul>
@@ -2360,12 +2360,12 @@
 <p>Temporary Effects are brief, short-lived effects, such as explosions or magic. After their animation is concluded, they are garbage-collected and removed from the Board.</p>
 <p><strong>Animation: TemporaryAnimation</strong></p>
 <ul>
-<li><code>if animation.frame =&lt; properties.count: animation.frame += 1</code></li>
+<li><code>if state.animation.frame =&lt; properties.count: state.animation.frame += 1</code></li>
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>keys(id, animation): returns [ "{id}-{animation.frame}" ]</code></li>
-<li><code>index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state): returns [ "{id}-{state.animation.frame}" ]</code></li>
+<li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -2379,12 +2379,12 @@
 <p>Persistent Effects are long-term, continuous effects, such as water ripples or windmills, whose animation continuously cycles when the frame count is reached.</p>
 <p><strong>Animation: PersistentAnimation</strong></p>
 <ul>
-<li><code>if animation.frame &gt;= properties.count: animation.frame = 0</code></li>
+<li><code>if state.animation.frame &gt;= properties.count: state.animation.frame = 0</code></li>
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>keys(id, animation) : [ "{id}-{animation.frame}" ]</code></li>
-<li><code>index(self, id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state) : [ "{id}-{state.animation.frame}" ]</code></li>
+<li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -2420,8 +2420,8 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, None) returns [ id ]</code></li>
-<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>keys(id, state) returns [ id ]</code></li>
+<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: PropertyState</strong></p>
 <ul>
@@ -2432,6 +2432,8 @@
 <li><code>owner: str</code></li>
 </ul>
 <h2 id="resources">Resources</h2>
+<p>TODO</p>
+<p>A Resource contains a <code>loot</code> key. When Resources are mined through the <code>mine</code> <a href="../04-intentions/">Intention</a>, they are converted into <a href="#effects">Collectables</a>. The <code>loot</code> key from the Resource is passed to the Collectable when it is instantiated as a byproduct of <code>mine</code>.</p>
 <p>TODO</p>
 <h2 id="sheets">Sheets</h2>
 <ul>
@@ -2515,7 +2517,7 @@
 <p><strong>Frame: StateFrame</strong></p>
 <ul>
 <li><code>keys(id, state): returns [ "{id}-{state.animation.action}-{state,animation.direction}-{state.animation.frame}" ]</code></li>
-<li><code>index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
@@ -2535,7 +2537,7 @@
 <p><strong>Frame: SpriteFrame</strong></p>
 <ul>
 <li><code>keys(id, state): returns [ "{id}-{state.animation.action}-{state.animation.direction}-{animation.frame}" ] + [ &lt;equipment-frames&gt; ] + [ &lt;expression-frames&gt; ]</code></li>
-<li><code>index(self, id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SpriteState</strong></p>
 <ul>
