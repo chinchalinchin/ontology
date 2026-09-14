@@ -329,7 +329,7 @@ cpdef void constrain(
 # RECIPROCAL VELOCITY OBSTACLES (RVO)
 # -----------------------------------------------------------------------------
 
-cpdef Velocity desired_velocity(Position pos, Position target, float speed):
+cpdef Velocity aim(Position pos, Position target, float speed):
     """
     Calculates preferred velocity vector pointing toward target clamped to speed.
     """
@@ -342,11 +342,10 @@ cpdef Velocity desired_velocity(Position pos, Position target, float speed):
 
 
 cpdef Velocity avoid(
-    object agent_primitive,
-    Velocity pref_vel,
+    object asset,
+    Velocity vel,
     list neighbors,
-    float delta = 0.0,
-    float time_horizon = 2.0
+    float delta
 ):
     """
     Reciprocal Velocity Obstacles (RVO) local collision avoidance steering.
@@ -355,21 +354,22 @@ cpdef Velocity avoid(
     Kinematic agents (e.g. Player) impose full VO, forcing NPCs to steer around them.
     """
     cdef float ax, ay, ar
-    cdef float pref_vx = pref_vel.vx if pref_vel is not None else 0.0
-    cdef float pref_vy = pref_vel.vy if pref_vel is not None else 0.0
-    cdef float pref_speed = sqrt(pref_vx * pref_vx + pref_vy * pref_vy)
+    cdef float vx = vel.vx if vel is not None else 0.0
+    cdef float vy = vel.vy if vel is not None else 0.0
+    cdef float speed = sqrt(vx * vx + vy * vy)
+    cdef float time_horizon = 2.0
+    
+    if speed == 0.0 or not neighbors:
+        return Velocity(vx, vy)
 
-    if pref_speed == 0.0 or not neighbors:
-        return Velocity(pref_vx, pref_vy)
-
-    if isinstance(agent_primitive, tuple):
-        ax = agent_primitive[1] + agent_primitive[3] / 2.0
-        ay = agent_primitive[2] + agent_primitive[4] / 2.0
-        ar = (agent_primitive[3] if agent_primitive[3] > agent_primitive[4] else agent_primitive[4]) / 2.0
+    if isinstance(asset, tuple):
+        ax = asset[1] + asset[3] / 2.0
+        ay = asset[2] + asset[4] / 2.0
+        ar = (asset[3] if asset[3] > asset[4] else asset[4]) / 2.0
     else:
-        ax = agent_primitive.state.position.x + agent_primitive.dimensions.w / 2.0
-        ay = agent_primitive.state.position.y + agent_primitive.dimensions.l / 2.0
-        ar = (agent_primitive.dimensions.w if agent_primitive.dimensions.w > agent_primitive.dimensions.l else agent_primitive.dimensions.l) / 2.0
+        ax = asset.state.position.x + asset.dimensions.w / 2.0
+        ay = asset.state.position.y + asset.dimensions.l / 2.0
+        ar = (asset.dimensions.w if asset.dimensions.w > asset.dimensions.l else asset.dimensions.l) / 2.0
 
     cdef int num_neighbors = len(neighbors)
     cdef object n
@@ -377,7 +377,7 @@ cpdef Velocity avoid(
     cdef bint is_kinematic
 
     # Step 1: Validate if preferred velocity is already clear
-    cdef bint pref_clear = True
+    cdef bint clear = True
     cdef float px, py, r_comb, dist, rel_vx, rel_vy, v_sq, dot, t_proj, d_sq, r_sq
     cdef int i
 
@@ -404,15 +404,15 @@ cpdef Velocity avoid(
         dist = sqrt(px * px + py * py)
 
         if is_kinematic:
-            rel_vx = pref_vx - nvx
-            rel_vy = pref_vy - nvy
+            rel_vx = vx - nvx
+            rel_vy = vy - nvy
         else:
-            rel_vx = 2.0 * pref_vx - (pref_vx + nvx)
-            rel_vy = 2.0 * pref_vy - (pref_vy + nvy)
+            rel_vx = 2.0 * vx - (vx + nvx)
+            rel_vy = 2.0 * vy - (vy + nvy)
 
         if dist <= r_comb:
             if (rel_vx * px + rel_vy * py) > 0:
-                pref_clear = False
+                clear = False
                 break
         else:
             v_sq = rel_vx * rel_vx + rel_vy * rel_vy
@@ -424,14 +424,14 @@ cpdef Velocity avoid(
                         d_sq = (px * px + py * py) - (dot * dot) / v_sq
                         r_sq = r_comb * r_comb
                         if d_sq < r_sq:
-                            pref_clear = False
+                            clear = False
                             break
 
-    if pref_clear:
-        return Velocity(pref_vx, pref_vy)
+    if clear:
+        return Velocity(vx, vy)
 
     # Step 2: Sample candidate avoidance velocities around base angle
-    cdef float base_angle = atan2(pref_vy, pref_vx)
+    cdef float base_angle = atan2(vy, vx)
     cdef float PI = 3.141592653589793
     cdef float best_vx = 0.0
     cdef float best_vy = 0.0
@@ -449,7 +449,7 @@ cpdef Velocity avoid(
         for side in (1, -1):
             cand_angle = base_angle + side * angle_rad
             for s_step in range(4):
-                cand_speed = pref_speed * (1.0 - s_step * 0.25)
+                cand_speed = speed * (1.0 - s_step * 0.25)
                 cand_vx = cand_speed * cos(cand_angle)
                 cand_vy = cand_speed * sin(cand_angle)
 
@@ -466,8 +466,8 @@ cpdef Velocity avoid(
                     else:
                         nx = float(n.state.position.x + n.dimensions.w / 2.0)
                         ny = float(n.state.position.y + n.dimensions.l / 2.0)
-                        nvx = float(n.state.velocity.vx if n.state.velocity else 0.0)
-                        nvy = float(n.state.velocity.vy if n.state.velocity else 0.0)
+                        nvx = float(n.state.velocity.vx)
+                        nvy = float(n.state.velocity.vy)
                         nr = float(n.dimensions.w if n.dimensions.w > n.dimensions.l else n.dimensions.l) / 2.0
                         is_kinematic = False
 
@@ -480,8 +480,8 @@ cpdef Velocity avoid(
                         rel_vx = cand_vx - nvx
                         rel_vy = cand_vy - nvy
                     else:
-                        rel_vx = 2.0 * cand_vx - (pref_vx + nvx)
-                        rel_vy = 2.0 * cand_vy - (pref_vy + nvy)
+                        rel_vx = 2.0 * cand_vx - (vx + nvx)
+                        rel_vy = 2.0 * cand_vy - (vy + nvy)
 
                     if dist <= r_comb:
                         if (rel_vx * px + rel_vy * py) > 0:
@@ -501,8 +501,8 @@ cpdef Velocity avoid(
                                         break
 
                 if cand_clear:
-                    diff_vx = cand_vx - pref_vx
-                    diff_vy = cand_vy - pref_vy
+                    diff_vx = cand_vx - vx
+                    diff_vy = cand_vy - vy
                     penalty = diff_vx * diff_vx + diff_vy * diff_vy
                     if penalty < best_penalty:
                         best_penalty = penalty

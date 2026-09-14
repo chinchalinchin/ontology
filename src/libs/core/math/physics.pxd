@@ -42,3 +42,16 @@ cpdef void dynamics(
     float impulse, 
     float delta
 )
+
+cpdef Velocity aim(
+    Position pos, 
+    Position target, 
+    float speed
+)
+
+cpdef Velocity avoid(
+    object asset,
+    Velocity vel,
+    list neighbors,
+    float delta
+)

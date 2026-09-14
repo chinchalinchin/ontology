@@ -35,7 +35,7 @@ def update(sprites: List[Asset], board: Board, delta: float) -> None:
             sprite.state.velocity.vy = 0.0
             continue
 
-        pref_vel = physics.desired_velocity(
+        pref_vel = physics.aim(
             sprite.state.position,
             target_pos,
             sprite.state.character.speed
@@ -72,18 +72,19 @@ def update(sprites: List[Asset], board: Board, delta: float) -> None:
             delta
         )
 
-        # kinematic sliding
-        # sprite.state.velocity.vx = avoid_vel.vx
-        # sprite.state.velocity.vy = avoid_vel.vy
+        ## KINEMATIC SLIDING
+        # NOTE: more performant. keep.
+        sprite.state.velocity.vx = avoid_vel.vx
+        sprite.state.velocity.vy = avoid_vel.vy
 
-        # Steer toward the avoidance coordinate via dynamics to preserve impulse and momentum
-        physics.dynamics(
-            sprite.state.velocity,
-            sprite.state.position.x,
-            sprite.state.position.y,
-            sprite.state.position.x + avoid_vel.vx,
-            sprite.state.position.y + avoid_vel.vy,
-            sprite.state.character.speed,
-            sprite.state.character.impulse,
-            delta
-        )
+        ## DYNAMIC STEERING
+        # physics.dynamics(
+        #     sprite.state.velocity,
+        #     sprite.state.position.x,
+        #     sprite.state.position.y,
+        #     sprite.state.position.x + avoid_vel.vx,
+        #     sprite.state.position.y + avoid_vel.vy,
+        #     sprite.state.character.speed,
+        #     sprite.state.character.impulse,
+        #     delta
+        # )

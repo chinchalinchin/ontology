@@ -97,3 +97,12 @@ def test_planner_delegates_to_rrt():
 
         mock_rrt.assert_called_once_with(10.0, 20.0, 100.0, 200.0, obstacles, 20.0, 150)
         assert result == [target]
+
+def test_rrt_path_pruning_straightens_obstructed_corridor():
+    # Obstacle forcing RRT around a corner, with greedy string-pulling collapsing redundant vertices
+    wall = (40.0, -10.0, 10.0, 30.0)
+    path = rrt(0.0, 0.0, 100.0, 0.0, [wall], step_size=20.0, max_iter=300)
+    assert len(path) > 0
+    assert path[-1].x == 100
+    assert path[-1].y == 0
+    assert all(isinstance(p, Position) for p in path)

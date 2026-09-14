@@ -150,6 +150,6 @@ sprite.state.velocity.vy = avoid_vel.vy
 
 *Objective*: Verify path smoothness, planning performance, and agent passing behavior.
 
-* [!] Subtask: Add unit tests in `tests/unit/test_libs_core_math.py` validating path pruning on known stepped obstacle configurations.
+* [ ] Subtask: Add unit tests in `tests/unit/test_libs_core_math.py` validating path pruning on known stepped obstacle configurations.
 * [!] Subtask: Add benchmarks in `tests/algorithms/rrt.py` measuring iteration speedup from search-space obstacle culling.
-* [!] Subtask: Create unit tests in `tests/unit/test_app_game_logic_modules_motion_motive.py` verifying two opposing NPCs in a corridor steer laterally to pass without triggering `physics.collide`.
+* [ ] Subtask: Create unit tests in `tests/unit/test_app_game_logic_modules_motion_motive.py` verifying two opposing NPCs in a corridor steer laterally to pass without triggering `physics.collide`.
