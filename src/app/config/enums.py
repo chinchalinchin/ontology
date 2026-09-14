@@ -88,6 +88,10 @@ class Shortcuts(str, Enum):
     COMPOSITIONS    = "compositions"
     PLOTS           = "plots"
 
+class Lifecycles(str, Enum):
+    CONTINUOUS      = "continuous"
+    PERIODIC        = "periodic"
+    TEMPORARY       = "temporary"
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 
 class FrameRecipe(str, Enum):
@@ -212,7 +216,7 @@ class StationaryIntentions(str, Enum):
     IDLE            = "idle"
     INTERACT        = "interact"
     MINE            = "mine"
-    SPEAK           = "build"
+    SPEAK           = "speak"
 
 class Motivations(str, Enum):
     CONQUEST        = "conquest"

@@ -1,4 +1,4 @@
-#### Implement: Phase 07 - Intentions
+#### Implement: Phase 06 - Intentions
 
 ##### Goals
 

@@ -1,4 +1,4 @@
-#### Implement: Phase 08 - Compositions
+#### Implement: Phase 07 - Compositions
 
 The implementation of Compositions requires treating them as macros or "prefabs." They exist strictly as a data-abstraction layer. Once the Orchestrator or Cradle unpacks a Composition, the Engine and Board should remain completely ignorant of its existence, managing the unpacked components as standard flat Assets.
 

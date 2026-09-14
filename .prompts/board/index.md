@@ -18,7 +18,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 - Actions:
   - Implement:
     - [x]: [Phase 01: Renderer](./phases/implement/phase-01.md)
-    - [x]: [Phase 02: Player](./phases/implement/phase-02.md)
+    - [x]: [Phase 02: Game](./phases/implement/phase-02.md)
     - [x]: [Phase 03: Physics](./phases/implement/phase-03.md)
     - [x]: [Phase 04: Widgets](./phases/implement/phase-04.md)
     - [~]: [Phase 05: Editor](./phases/implement/phase-05.md)
@@ -36,6 +36,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 02.03: Equipment](./phases/refactor/refactor-02-03.md)
       - [x]: [Phase 02.04: Engine](./phases/refactor/refactor-02-04.md)
       - [x]: [Phase 02.05: Finetuning](./phases/refactor/refactor-02-05.md)
+      - [~]: [Phase 02.06: Effects](./phases/refactor/refactor-02-06.md)
     - Phase 03:
       - [x]: [Phase 03.01: Mechanics](./phases/refactor/refactor-03-01.md)
       - [x]: [Phase 03.02: Consolidation](./phases/refactor/refactor-03-02.md)

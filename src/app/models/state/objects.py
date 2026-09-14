@@ -43,12 +43,6 @@ class PropertyState(AssetState):
     position: Optional[Position] = None # type: ignore
 
 @dataclass(slots=True)
-class DialogueState:
-    persona: str
-    lexicon: str
-    position: Optional[Position] = None # type: ignore
-
-@dataclass(slots=True)
 class MotorState(AssetState):
     position: Optional[Position] = None # type: ignore
     initial: Optional[Position] = None # type: ignore

@@ -45,7 +45,7 @@ class RGBA:
 @dataclass(slots=True)
 class FontProperties:
     alignment: Alignments = Alignments.START.value
-    color: RGBA = field(default=lambda: RGBA(r=255, g=255, b=255, a=255))
+    color: RGBA = field(default_factory=lambda: RGBA(r=255, g=255, b=255, a=255))    
     bold: bool = False
     italics: bool = False
     margins: float = 0
