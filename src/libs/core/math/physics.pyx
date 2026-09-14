@@ -1,9 +1,16 @@
+"""
+# Ontology: libs.core.math.physics
+"""
 # cython: language_level=3
-from libc.math cimport sqrt
+from libc.math cimport sqrt, cos, sin, atan2
 
 from libs.core.models cimport Position, Dimensions, Hitbox, Velocity
 from libs.core.math.space cimport Space
 from libs.core.math.geometry cimport intersects, bounded
+
+# -----------------------------------------------------------------------------
+# COLLISION & MOTION INTEGRATION
+# -----------------------------------------------------------------------------
 
 cpdef list collisions(list primitive_data, Space grid):
     cdef int i, x, y, w, l
@@ -147,8 +154,8 @@ cpdef void integrate(list assets, float delta):
     cdef Velocity v
     for asset in assets:
         if getattr(asset.state, 'velocity', None) is not None:
-            p = <Position>asset.state.position
-            v = <Velocity>asset.state.velocity
+            p = asset.state.position
+            v = asset.state.velocity
 
             p.rx += v.vx * delta
             p.ry += v.vy * delta
@@ -227,7 +234,6 @@ cpdef void dynamics(
 
     mag = sqrt((dx * dx) + (dy * dy))
     
-    # Clamp velocity if within arrival threshold to prevent oscillation 
     if mag < speed * delta:
         vel.vx = dx / delta
         vel.vy = dy / delta
@@ -249,12 +255,10 @@ cpdef list boundaries(list asset_data, list boundary_data, Space grid):
     cdef tuple b_data, a_data
     cdef int i
     
-    # 1. Insert Boundaries (Using Negative IDs to differentiate them)
     for i in range(len(boundary_data)):
         b_data = boundary_data[i]
         grid.insert(-i - 1, b_data[1], b_data[2], b_data[3], b_data[4])
         
-    # 2. Insert Assets (Using Positive IDs)
     for a_data in asset_data:
         grid.insert(a_data[0], a_data[1], a_data[2], a_data[3], a_data[4])
         
@@ -266,7 +270,6 @@ cpdef list boundaries(list asset_data, list boundary_data, Space grid):
         id_a = pair[0]
         id_b = pair[1]
         
-        # 3. Filter strictly for (Asset vs Boundary) pairs
         if (id_a < 0 and id_b >= 0) or (id_a >= 0 and id_b < 0):
             asset_id = id_b if id_a < 0 else id_a
             bound_id = (-id_a - 1) if id_a < 0 else (-id_b - 1)
@@ -274,7 +277,6 @@ cpdef list boundaries(list asset_data, list boundary_data, Space grid):
             a_data = asset_data[asset_id]
             b_data = boundary_data[bound_id]
             
-            # Narrow-phase AABB validation
             if bounded(
                 a_data[1], a_data[2], a_data[5], 
                 b_data[1], b_data[2], b_data[3], b_data[4]
@@ -305,7 +307,6 @@ cpdef void constrain(
     cdef float overlap_x = (hb.dimensions.w / 2.0 + b_w / 2.0) - abs(dx)
     cdef float overlap_y = (hb.dimensions.l / 2.0 + b_l / 2.0) - abs(dy)
 
-    # 1. Spatial Resolution (Asset absorbs 100% of shift)
     if overlap_x > 0 and overlap_y > 0:
         if overlap_x < overlap_y:
             if dx > 0:
@@ -313,7 +314,6 @@ cpdef void constrain(
             else:
                 pos.x += int(overlap_x)
                 
-            # 2. Momentum Inversion
             if vel is not None and not is_kinematic:
                 vel.vx = -vel.vx
         else:
@@ -322,6 +322,197 @@ cpdef void constrain(
             else:
                 pos.y += int(overlap_y)
                 
-            # 2. Momentum Inversion
             if vel is not None and not is_kinematic:
                 vel.vy = -vel.vy
+
+# -----------------------------------------------------------------------------
+# RECIPROCAL VELOCITY OBSTACLES (RVO)
+# -----------------------------------------------------------------------------
+
+cpdef Velocity desired_velocity(Position pos, Position target, float speed):
+    """
+    Calculates preferred velocity vector pointing toward target clamped to speed.
+    """
+    cdef float dx = target.x - pos.x
+    cdef float dy = target.y - pos.y
+    cdef float dist = sqrt(dx * dx + dy * dy)
+    if dist == 0.0:
+        return Velocity(0.0, 0.0)
+    return Velocity((dx / dist) * speed, (dy / dist) * speed)
+
+
+cpdef Velocity avoid(
+    object agent_primitive,
+    Velocity pref_vel,
+    list neighbors,
+    float delta = 0.0,
+    float time_horizon = 2.0
+):
+    """
+    Reciprocal Velocity Obstacles (RVO) local collision avoidance steering.
+    Evaluates candidate velocity vectors around pref_vel to find an optimal velocity
+    outside reciprocal obstacle cones of neighboring agents.
+    Kinematic agents (e.g. Player) impose full VO, forcing NPCs to steer around them.
+    """
+    cdef float ax, ay, ar
+    cdef float pref_vx = pref_vel.vx if pref_vel is not None else 0.0
+    cdef float pref_vy = pref_vel.vy if pref_vel is not None else 0.0
+    cdef float pref_speed = sqrt(pref_vx * pref_vx + pref_vy * pref_vy)
+
+    if pref_speed == 0.0 or not neighbors:
+        return Velocity(pref_vx, pref_vy)
+
+    if isinstance(agent_primitive, tuple):
+        ax = agent_primitive[1] + agent_primitive[3] / 2.0
+        ay = agent_primitive[2] + agent_primitive[4] / 2.0
+        ar = (agent_primitive[3] if agent_primitive[3] > agent_primitive[4] else agent_primitive[4]) / 2.0
+    else:
+        ax = agent_primitive.state.position.x + agent_primitive.dimensions.w / 2.0
+        ay = agent_primitive.state.position.y + agent_primitive.dimensions.l / 2.0
+        ar = (agent_primitive.dimensions.w if agent_primitive.dimensions.w > agent_primitive.dimensions.l else agent_primitive.dimensions.l) / 2.0
+
+    cdef int num_neighbors = len(neighbors)
+    cdef object n
+    cdef float nx, ny, nvx, nvy, nr
+    cdef bint is_kinematic
+
+    # Step 1: Validate if preferred velocity is already clear
+    cdef bint pref_clear = True
+    cdef float px, py, r_comb, dist, rel_vx, rel_vy, v_sq, dot, t_proj, d_sq, r_sq
+    cdef int i
+
+    for i in range(num_neighbors):
+        n = neighbors[i]
+        if isinstance(n, tuple):
+            nx = float(n[0])
+            ny = float(n[1])
+            nvx = float(n[2])
+            nvy = float(n[3])
+            nr = float(n[4])
+            is_kinematic = bool(n[5])
+        else:
+            nx = float(n.state.position.x + n.dimensions.w / 2.0)
+            ny = float(n.state.position.y + n.dimensions.l / 2.0)
+            nvx = float(n.state.velocity.vx if n.state.velocity else 0.0)
+            nvy = float(n.state.velocity.vy if n.state.velocity else 0.0)
+            nr = float(n.dimensions.w if n.dimensions.w > n.dimensions.l else n.dimensions.l) / 2.0
+            is_kinematic = False
+
+        px = nx - ax
+        py = ny - ay
+        r_comb = ar + nr
+        dist = sqrt(px * px + py * py)
+
+        if is_kinematic:
+            rel_vx = pref_vx - nvx
+            rel_vy = pref_vy - nvy
+        else:
+            rel_vx = 2.0 * pref_vx - (pref_vx + nvx)
+            rel_vy = 2.0 * pref_vy - (pref_vy + nvy)
+
+        if dist <= r_comb:
+            if (rel_vx * px + rel_vy * py) > 0:
+                pref_clear = False
+                break
+        else:
+            v_sq = rel_vx * rel_vx + rel_vy * rel_vy
+            if v_sq > 1e-6:
+                dot = px * rel_vx + py * rel_vy
+                if dot > 0:
+                    t_proj = dot / v_sq
+                    if t_proj <= time_horizon:
+                        d_sq = (px * px + py * py) - (dot * dot) / v_sq
+                        r_sq = r_comb * r_comb
+                        if d_sq < r_sq:
+                            pref_clear = False
+                            break
+
+    if pref_clear:
+        return Velocity(pref_vx, pref_vy)
+
+    # Step 2: Sample candidate avoidance velocities around base angle
+    cdef float base_angle = atan2(pref_vy, pref_vx)
+    cdef float PI = 3.141592653589793
+    cdef float best_vx = 0.0
+    cdef float best_vy = 0.0
+    cdef float best_penalty = 1e12
+    cdef bint found_clear = False
+
+    cdef float cand_angle, cand_speed, cand_vx, cand_vy
+    cdef float diff_vx, diff_vy, penalty
+    cdef bint cand_clear
+    cdef int a_step, s_step, side
+    cdef float angle_rad
+
+    for a_step in range(1, 13):
+        angle_rad = (a_step * 15.0) * (PI / 180.0)
+        for side in (1, -1):
+            cand_angle = base_angle + side * angle_rad
+            for s_step in range(4):
+                cand_speed = pref_speed * (1.0 - s_step * 0.25)
+                cand_vx = cand_speed * cos(cand_angle)
+                cand_vy = cand_speed * sin(cand_angle)
+
+                cand_clear = True
+                for i in range(num_neighbors):
+                    n = neighbors[i]
+                    if isinstance(n, tuple):
+                        nx = float(n[0])
+                        ny = float(n[1])
+                        nvx = float(n[2])
+                        nvy = float(n[3])
+                        nr = float(n[4])
+                        is_kinematic = bool(n[5])
+                    else:
+                        nx = float(n.state.position.x + n.dimensions.w / 2.0)
+                        ny = float(n.state.position.y + n.dimensions.l / 2.0)
+                        nvx = float(n.state.velocity.vx if n.state.velocity else 0.0)
+                        nvy = float(n.state.velocity.vy if n.state.velocity else 0.0)
+                        nr = float(n.dimensions.w if n.dimensions.w > n.dimensions.l else n.dimensions.l) / 2.0
+                        is_kinematic = False
+
+                    px = nx - ax
+                    py = ny - ay
+                    r_comb = ar + nr
+                    dist = sqrt(px * px + py * py)
+
+                    if is_kinematic:
+                        rel_vx = cand_vx - nvx
+                        rel_vy = cand_vy - nvy
+                    else:
+                        rel_vx = 2.0 * cand_vx - (pref_vx + nvx)
+                        rel_vy = 2.0 * cand_vy - (pref_vy + nvy)
+
+                    if dist <= r_comb:
+                        if (rel_vx * px + rel_vy * py) > 0:
+                            cand_clear = False
+                            break
+                    else:
+                        v_sq = rel_vx * rel_vx + rel_vy * rel_vy
+                        if v_sq > 1e-6:
+                            dot = px * rel_vx + py * rel_vy
+                            if dot > 0:
+                                t_proj = dot / v_sq
+                                if t_proj <= time_horizon:
+                                    d_sq = (px * px + py * py) - (dot * dot) / v_sq
+                                    r_sq = r_comb * r_comb
+                                    if d_sq < r_sq:
+                                        cand_clear = False
+                                        break
+
+                if cand_clear:
+                    diff_vx = cand_vx - pref_vx
+                    diff_vy = cand_vy - pref_vy
+                    penalty = diff_vx * diff_vx + diff_vy * diff_vy
+                    if penalty < best_penalty:
+                        best_penalty = penalty
+                        best_vx = cand_vx
+                        best_vy = cand_vy
+                        found_clear = True
+                        if a_step <= 3:
+                            return Velocity(best_vx, best_vy)
+
+    if found_clear:
+        return Velocity(best_vx, best_vy)
+
+    return Velocity(0.0, 0.0)

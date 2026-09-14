@@ -1,19 +1,19 @@
 import pytest
 from app.game.logic.modules.motion import motive
 
-def test_motive_no_intention(mock_board_assets):
+def test_motive_no_intention(mock_board, mock_board_assets):
     sprite = mock_board_assets[0]
     sprite.state.intention = "IDLE" 
     sprite.state.velocity.vx = 5.0
     sprite.state.velocity.vy = 5.0
     
-    motive.update([sprite], 1.0)
+    motive.update([sprite], mock_board, 1.0)
     
     # When sprite is idle, motives are removed
     assert sprite.state.velocity.vx == 0.0
     assert sprite.state.velocity.vy == 0.0
 
-def test_motive_at_goal(mock_board_assets, monkeypatch):
+def test_motive_at_goal(mock_board, mock_board_assets, monkeypatch):
     sprite = mock_board_assets[0]
     monkeypatch.setattr('app.game.logic.modules.motion.motive.NavigationIntentions', ["FIND"])
     sprite.state.intention = "FIND"
@@ -25,12 +25,12 @@ def test_motive_at_goal(mock_board_assets, monkeypatch):
     
     sprite.state.velocity.vx = 5.0
     
-    motive.update([sprite], 1.0)
+    motive.update([sprite], mock_board, 1.0)
     
     assert sprite.state.velocity.vx == 0.0
     assert sprite.state.velocity.vy == 0.0
 
-def test_motive_accelerates_towards_goal(mock_board_assets, monkeypatch):
+def test_motive_accelerates_towards_goal(mock_board, mock_board_assets, monkeypatch):
     sprite = mock_board_assets[0]
     monkeypatch.setattr('app.game.logic.modules.motion.motive.NavigationIntentions', ["FIND"])
     sprite.state.intention = "FIND"
@@ -45,12 +45,12 @@ def test_motive_accelerates_towards_goal(mock_board_assets, monkeypatch):
     sprite.state.velocity.vx = 0.0
     sprite.state.velocity.vy = 0.0
     
-    motive.update([sprite], 1.0)
+    motive.update([sprite], mock_board, 1.0)
     
     assert sprite.state.velocity.vx == 5.0
     assert sprite.state.velocity.vy == 0.0
 
-def test_motive_clamps_to_speed(mock_board_assets, monkeypatch):
+def test_motive_clamps_to_speed(mock_board, mock_board_assets, monkeypatch):
     sprite = mock_board_assets[0]
     monkeypatch.setattr('app.game.logic.modules.motion.motive.NavigationIntentions', ["FIND"])
     sprite.state.intention = "FIND"
@@ -64,12 +64,12 @@ def test_motive_clamps_to_speed(mock_board_assets, monkeypatch):
     sprite.state.character.impulse = 15
     sprite.state.velocity.vx = 0.0
     
-    motive.update([sprite], 1.0)
+    motive.update([sprite], mock_board, 1.0)
     
     # Impulse pushes speed to 15, but magnitude clamping prevents exceeding 10
     assert sprite.state.velocity.vx == 10.0
 
-def test_motive_arrival_clamp(mock_board_assets, monkeypatch):
+def test_motive_arrival_clamp(mock_board, mock_board_assets, monkeypatch):
     sprite = mock_board_assets[0]
     monkeypatch.setattr('app.game.logic.modules.motion.motive.NavigationIntentions', ["FIND"])
     sprite.state.intention = "FIND"
@@ -84,7 +84,7 @@ def test_motive_arrival_clamp(mock_board_assets, monkeypatch):
     
     # distance (5) is less than speed * delta (20 * 1.0)
     # Velocity scales exactly to reach the goal to prevent jitter oscillation 
-    motive.update([sprite], 1.0)
+    motive.update([sprite], mock_board, 1.0)
     
     assert sprite.state.velocity.vx == 5.0
     assert sprite.state.velocity.vy == 0.0

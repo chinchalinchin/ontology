@@ -125,7 +125,8 @@ class MutatorParameters:
     fear: Optional[FearParameters] = field(default_factory=FearParameters)
     vision: Optional[RadialParameters] = field(default_factory=RadialParameters)
     action: Optional[RadialParameters] = field(default_factory=RadialParameters)
-
+    squeeze: Optional[RadialParameters] = field(default_factory=RadialParameters)
+    
 @dataclass(slots=True)
 class Mutators:
     triggers: MutatorTriggers = field(default_factory=MutatorTriggers)

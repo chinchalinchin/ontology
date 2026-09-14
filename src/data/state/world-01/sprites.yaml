@@ -22,13 +22,15 @@ sheets:
       mutators:
         parameters:
           fear:
-            radius: 128
+            radius: 100
             limit: 0.50
             enemy: 5
           vision:
-            radius: 128
+            radius: 150
           action:
             radius: 25
+          squeeze: 
+            radius: 10
       psyche:
         dialogue: greeting
         expression: null

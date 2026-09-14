@@ -121,7 +121,8 @@ class NavigationMechanics(Mechanic):
 
         # Same-layer deployed asset: track physical footprint center
         if goal.name:
-            target_asset = board.asset(goal.name, sprite.state.layer) or board.asset(goal.name)
+            target_asset = board.asset(goal.name, sprite.state.layer) or \
+                            board.asset(goal.name)
             if target_asset and target_asset.state.layer == sprite.state.layer:
                 return self.anchor(target_asset)
 

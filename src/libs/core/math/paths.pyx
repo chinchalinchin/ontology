@@ -1,3 +1,6 @@
+"""
+# Ontology: libs.core.math.paths
+"""
 # cython: language_level=3
 from libc.math cimport fabsf, fminf, fmaxf, atan2f, cosf, sinf, hypotf
 from libc.stdlib cimport malloc, free, rand, RAND_MAX
@@ -79,6 +82,58 @@ cdef inline void _steer(
     out_y[0] = from_y + step_size * sinf(theta)
 
 
+cdef inline int _prune_path(
+    int* forward_buf,
+    int forward_len,
+    int* pruned_buf,
+    RRTNode* nodes,
+    RRTObstacle* c_obstacles,
+    int num_obstacles
+) noexcept nogil:
+    """
+    Zero-allocation greedy raycast string-pulling (nogil).
+    Scans forward from current anchor index to the furthest unobstructed waypoint,
+    collapsing intermediate collinear and redundant vertices.
+    """
+    cdef int pruned_len = 0
+    cdef int anchor_idx = 0
+    cdef int scan_idx
+    cdef bint clear
+
+    if forward_len <= 0:
+        return 0
+
+    pruned_buf[pruned_len] = forward_buf[0]
+    pruned_len += 1
+
+    while anchor_idx < forward_len - 1:
+        scan_idx = forward_len - 1
+        clear = False
+        while scan_idx > anchor_idx + 1:
+            if _is_segment_clear(
+                nodes[forward_buf[anchor_idx]].x,
+                nodes[forward_buf[anchor_idx]].y,
+                nodes[forward_buf[scan_idx]].x,
+                nodes[forward_buf[scan_idx]].y,
+                c_obstacles,
+                num_obstacles
+            ):
+                clear = True
+                break
+            scan_idx -= 1
+
+        if clear:
+            pruned_buf[pruned_len] = forward_buf[scan_idx]
+            pruned_len += 1
+            anchor_idx = scan_idx
+        else:
+            anchor_idx += 1
+            pruned_buf[pruned_len] = forward_buf[anchor_idx]
+            pruned_len += 1
+
+    return pruned_len
+
+
 cpdef list rrt(
     float sx, 
     float sy, 
@@ -90,13 +145,16 @@ cpdef list rrt(
 ):
     """
     Zero-allocation Rapidly-exploring Random Tree (RRT) pathfinding engine.
-    Ingests obstacle geometry into C structs, releases the GIL during tree exploration,
-    and returns a reconstructed list of actionable Position models.
+    Ingests obstacle geometry into C structs, culls non-local obstacles outside the
+    search window, releases the GIL during tree exploration, prunes waypoints via
+    raycast string-pulling, and returns a reconstructed list of actionable Position models.
     """
     cdef int num_obstacles = len(obstacles)
     cdef RRTObstacle* c_obstacles = NULL
     cdef RRTNode* nodes = NULL
     cdef int* path_buf = NULL
+    cdef int* forward_buf = NULL
+    cdef int* pruned_buf = NULL
     cdef list result = []
 
     if max_iter <= 0:
@@ -110,30 +168,74 @@ cpdef list rrt(
     cdef float min_y = fminf(sy, ty) - pad_h
     cdef float max_y = fmaxf(sy, ty) + pad_h
 
+    # Fallback padding adjustments when bounds clamp to map boundaries (origin 0, 0)
+    if min_x < 0.0:
+        max_x += fabsf(min_x)
+        min_x = 0.0
+    if min_y < 0.0:
+        max_y += fabsf(min_y)
+        min_y = 0.0
+
     cdef object obs
     cdef int i, idx
+    cdef int culled_count = 0
+    cdef float ox, oy, ow, ol
+
+    # Broad-phase search-space obstacle partitioning: count intersecting AABBs
+    if num_obstacles > 0:
+        for i in range(num_obstacles):
+            obs = obstacles[i]
+            ox = float(obs[0])
+            oy = float(obs[1])
+            ow = float(obs[2])
+            ol = float(obs[3])
+            if (ox + ow >= min_x and ox <= max_x and
+                oy + ol >= min_y and oy <= max_y):
+                culled_count += 1
+
     cdef int node_count = 0
     cdef bint found = False
     cdef int target_idx = -1
     cdef int nearest_idx, new_idx
     cdef float rnd_x, rnd_y, new_x, new_y
-    cdef int iter_count, curr, path_len
+    cdef int iter_count, curr, path_len, forward_len, pruned_len
 
     try:
-        if num_obstacles > 0:
-            c_obstacles = <RRTObstacle*>malloc(sizeof(RRTObstacle) * num_obstacles)
+        # Pack only search-space intersecting obstacles into contiguous C-buffer
+        if culled_count > 0:
+            c_obstacles = <RRTObstacle*>malloc(sizeof(RRTObstacle) * culled_count)
             if c_obstacles == NULL:
-                raise MemoryError("Failed to allocate memory for obstacle buffer.")
+                raise MemoryError("Failed to allocate memory for culled obstacle buffer.")
+            idx = 0
             for i in range(num_obstacles):
                 obs = obstacles[i]
-                c_obstacles[i].x = float(obs[0])
-                c_obstacles[i].y = float(obs[1])
-                c_obstacles[i].w = float(obs[2])
-                c_obstacles[i].l = float(obs[3])
+                ox = float(obs[0])
+                oy = float(obs[1])
+                ow = float(obs[2])
+                ol = float(obs[3])
+                if (ox + ow >= min_x and ox <= max_x and
+                    oy + ol >= min_y and oy <= max_y):
+                    c_obstacles[idx].x = ox
+                    c_obstacles[idx].y = oy
+                    c_obstacles[idx].w = ow
+                    c_obstacles[idx].l = ol
+                    idx += 1
 
         nodes = <RRTNode*>malloc(sizeof(RRTNode) * (max_iter + 2))
         if nodes == NULL:
             raise MemoryError("Failed to allocate memory for RRT node buffer.")
+
+        path_buf = <int*>malloc(sizeof(int) * (max_iter + 2))
+        if path_buf == NULL:
+            raise MemoryError("Failed to allocate memory for RRT path buffer.")
+
+        forward_buf = <int*>malloc(sizeof(int) * (max_iter + 2))
+        if forward_buf == NULL:
+            raise MemoryError("Failed to allocate memory for forward buffer.")
+
+        pruned_buf = <int*>malloc(sizeof(int) * (max_iter + 2))
+        if pruned_buf == NULL:
+            raise MemoryError("Failed to allocate memory for pruned buffer.")
 
         # Root node
         nodes[0].x = sx
@@ -147,7 +249,7 @@ cpdef list rrt(
                 nearest_idx = _get_nearest_node_idx(nodes, node_count, rnd_x, rnd_y)
                 _steer(nodes[nearest_idx].x, nodes[nearest_idx].y, rnd_x, rnd_y, step_size, &new_x, &new_y)
 
-                if _is_segment_clear(nodes[nearest_idx].x, nodes[nearest_idx].y, new_x, new_y, c_obstacles, num_obstacles):
+                if _is_segment_clear(nodes[nearest_idx].x, nodes[nearest_idx].y, new_x, new_y, c_obstacles, culled_count):
                     new_idx = node_count
                     nodes[new_idx].x = new_x
                     nodes[new_idx].y = new_y
@@ -155,7 +257,7 @@ cpdef list rrt(
                     node_count += 1
 
                     if hypotf(tx - new_x, ty - new_y) <= step_size:
-                        if _is_segment_clear(new_x, new_y, tx, ty, c_obstacles, num_obstacles):
+                        if _is_segment_clear(new_x, new_y, tx, ty, c_obstacles, culled_count):
                             target_idx = node_count
                             nodes[target_idx].x = tx
                             nodes[target_idx].y = ty
@@ -164,20 +266,34 @@ cpdef list rrt(
                             found = True
                             break
 
-        if found:
-            path_buf = <int*>malloc(sizeof(int) * (max_iter + 2))
-            if path_buf == NULL:
-                raise MemoryError("Failed to allocate memory for RRT path buffer.")
+            if found:
+                # 1. Backtrace from target_idx to root node 0 (parent_idx == -1)
+                path_len = 0
+                curr = target_idx
+                while curr != -1:
+                    path_buf[path_len] = curr
+                    path_len += 1
+                    curr = nodes[curr].parent_idx
 
-            path_len = 0
-            curr = target_idx
-            while curr > 0 and curr != -1:
-                path_buf[path_len] = curr
-                path_len += 1
-                curr = nodes[curr].parent_idx
+                # 2. Reverse index chain to obtain forward route: start -> target
+                forward_len = path_len
+                for i in range(path_len):
+                    forward_buf[i] = path_buf[path_len - 1 - i]
 
-            for i in range(path_len - 1, -1, -1):
-                idx = path_buf[i]
+                # 3. Greedy string-pulling pruning pass (nogil)
+                pruned_len = _prune_path(
+                    forward_buf,
+                    forward_len,
+                    pruned_buf,
+                    nodes,
+                    c_obstacles,
+                    culled_count
+                )
+
+        # 4. Construct Position instances across Python boundary
+        if found and pruned_len > 1:
+            for i in range(1, pruned_len):
+                idx = pruned_buf[i]
                 result.append(Position(int(nodes[idx].x), int(nodes[idx].y)))
 
     finally:
@@ -187,5 +303,9 @@ cpdef list rrt(
             free(nodes)
         if path_buf != NULL:
             free(path_buf)
+        if forward_buf != NULL:
+            free(forward_buf)
+        if pruned_buf != NULL:
+            free(pruned_buf)
 
     return result

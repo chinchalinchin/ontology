@@ -1,3 +1,6 @@
+"""
+# Ontology: libs.core.math.space
+"""
 # cython: language_level=3
 from libc.stdlib cimport malloc, free
 from libc.string cimport memset

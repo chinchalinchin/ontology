@@ -1,9 +1,8 @@
-# /home/grant/Projects/ontology/libs/core/models.pyx
 """
 Ontology: libs.core.models
 """
+# cython: language_level=3
 
-from typing import List
 
 cdef class Position:
     """

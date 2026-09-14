@@ -120,28 +120,28 @@ sprite.state.velocity.vy = avoid_vel.vy
 
 *Objective*: Implement zero-allocation raycast shortcutting within `libs.core.math.paths`.
 
-* [ ] Subtask: In `src/libs/core/math/paths.pyx`, allocate an auxiliary `pruned_buf` sized to `max_iter + 2`.
-* [ ] Subtask: Implement the `_prune_path()` C helper executing greedy line-of-sight checks via `_is_segment_clear()`.
-* [ ] Subtask: Ensure string-pulling runs entirely within the `with nogil:` block prior to Python `Position` allocation.
-* [ ] Subtask: Verify collinear and redundant diagonal waypoints collapse into single straight-line vectors when unobstructed.
+* [x] Subtask: In `src/libs/core/math/paths.pyx`, allocate an auxiliary `pruned_buf` sized to `max_iter + 2`.
+* [x] Subtask: Implement the `_prune_path()` C helper executing greedy line-of-sight checks via `_is_segment_clear()`.
+* [x] Subtask: Ensure string-pulling runs entirely within the `with nogil:` block prior to Python `Position` allocation.
+* [x] Subtask: Verify collinear and redundant diagonal waypoints collapse into single straight-line vectors when unobstructed.
 
 **2. Task: Search-Space Obstacle Partitioning**
 
 *Objective*: Eliminate non-local geometry checks from the RRT exploration loop.
 
-* [ ] Subtask: In `src/libs/core/math/paths.pyx`, compute search bounds $[x_{\min}, y_{\min}, x_{\max}, y_{\max}]$ prior to obstacle ingestion.
-* [ ] Subtask: Filter input obstacles against search bounds, packing only intersecting AABBs into `c_obstacles`.
-* [ ] Subtask: Update memory allocation size to match the culled obstacle count rather than the layer-wide total.
-* [ ] Subtask: Add fallback padding adjustments when $x_{\min}, y_{\min}, x_{\max}, y_{\max}$ bounds clamp to map boundaries.
+* [x] Subtask: In `src/libs/core/math/paths.pyx`, compute search bounds $[x_{\min}, y_{\min}, x_{\max}, y_{\max}]$ prior to obstacle ingestion.
+* [x] Subtask: Filter input obstacles against search bounds, packing only intersecting AABBs into `c_obstacles`.
+* [x] Subtask: Update memory allocation size to match the culled obstacle count rather than the layer-wide total.
+* [x] Subtask: Add fallback padding adjustments when $x_{\min}, y_{\min}, x_{\max}, y_{\max}$ bounds clamp to map boundaries.
 
 **3. Task: Reciprocal Velocity Obstacles (RVO) Integration**
 
 *Objective*: Prevent multi-agent physical overlap grinding and corridor deadlocks.
 
-* [ ] Subtask: Implement `cpdef Velocity avoid(...)` in `src/libs/core/math/physics.pyx` calculating reciprocal velocity obstacles.
-* [ ] Subtask: In `src/app/game/logic/modules/motion/motive.py`, query `board.characters()` on the active layer within $2 \times \text{action.radius}$.
-* [ ] Subtask: Pass neighbors and preferred velocities into `physics.avoid()`, assigning the resulting vector to `sprite.state.velocity`.
-* [ ] Subtask: Ensure kinematic player entities retain absolute control while NPC sprites steer around them.
+* [x] Subtask: Implement `cpdef Velocity avoid(...)` in `src/libs/core/math/physics.pyx` calculating reciprocal velocity obstacles.
+* [x] Subtask: In `src/app/game/logic/modules/motion/motive.py`, query `board.characters()` on the active layer within $2 \times \text{squeeze.radius}$.
+* [x] Subtask: Pass neighbors and preferred velocities into `physics.avoid()`, assigning the resulting vector to `sprite.state.velocity`.
+* [x] Subtask: Ensure kinematic player entities retain absolute control while NPC sprites steer around them.
 
 **4. Task: Verification and Behavioral Regression Suite**
 

@@ -1,7 +1,8 @@
-# cython: language_level=3
 """
 # Ontology: libs.core.input
 """
+# cython: language_level=3
+
 cdef extern from "SDL2/SDL.h":
     void SDL_PumpEvents()
     const unsigned char* SDL_GetKeyboardState(int* numkeys)

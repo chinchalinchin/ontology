@@ -106,7 +106,7 @@ class MotionMechanics(Mechanic):
     def update(self, 
         board: Board, 
         delta: float, 
-        bus: collections.deque,
+        bus: collections.deque, 
         payload: DevicePayload
     ) -> None:
         players = board.instances(AssetInstances.PLAYERS)
@@ -115,7 +115,7 @@ class MotionMechanics(Mechanic):
         projectiles = board.instances(AssetInstances.PROJECTILES)
 
         kinematic.update(players, payload, delta)
-        motive.update(sprites, delta)
+        motive.update(sprites, board, delta)
         frictive.update(crates, board, delta)
         
         all_mutable = players + sprites + crates + projectiles
