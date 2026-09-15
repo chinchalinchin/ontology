@@ -37,33 +37,6 @@ class BinaryAnimation(Animation):
         state.animation.frame = settings.ON if state.switch else settings.OFF
         return state
 
-        
-class PersistentAnimation(Animation):
-    """
-    """
-
-    def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
-        """
-        """
-        state.animation.frame += 1
-
-        if state.animation.frame >= properties.count:
-            state.animation.frame = 0
-
-        return state
-
-    
-class TemporaryAnimation(Animation):
-    """
-    """
-
-    def animate(self, state: AssetState, properties: AssetProperties) -> AssetState:
-        """
-        """
-        if state.animation.frame <= properties.count:
-            state.animation.frame += 1
-
-        return state
 
 
 class LifecycleAnimation(Animation):

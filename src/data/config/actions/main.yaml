@@ -112,7 +112,7 @@ actions:
             row: 4
           left:
             row: 5
-          dowm:
+          down:
             row: 6
           right:
             row: 7

@@ -553,7 +553,9 @@ Environmental hazards that deal damage to overlapping dynamic entities (e.g., la
 * `position: Position`
 * `animation: Animation`
 * `damage: Damage`
-    - TODO
+    - `amount: int`
+    - `duration: int`
+    - `reaction: bounce | hinder`
 
 ### Collectables
 

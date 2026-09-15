@@ -11,6 +11,11 @@ from typing import (
 from dataclasses import dataclass, field
 
 # Application Libraries
+from app.config.enums import (
+    Reactions,
+    Directions,
+    Actions
+)
 from app.models.adapters import (
     PydanticPosition as Position, 
     PydanticMultiple as Multiple, 
@@ -25,7 +30,15 @@ from app.models.state.core import (
 from libs.core.models import Velocity as CoreVelocity
 
 # ---------------------------------------------------------------------------------------
-# --------------------------------------------------------------------- GAME ASSET STATES
+# -------------------------------------------------------------------------- ASSET STATES
+
+@dataclass(slots=True)
+class Damage:
+    amount: int = 0
+    duration: int = 0
+    reaction: Reactions = Reactions.BOUNCE.value
+
+# ------------------------------------------------------------------------ OBJECTS STATES
 
 @dataclass(slots=True)
 class MultiplierState(AssetState):
@@ -46,14 +59,9 @@ class PropertyState(AssetState):
 class MotorState(AssetState):
     position: Optional[Position] = None # type: ignore
     initial: Optional[Position] = None # type: ignore
-    direction: str = "down"
+    direction: Directions = Directions.DOWN.value
     speed: int = 10
     velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
-
-@dataclass(slots=True)
-class AnimatorState(AssetState):
-    position: Optional[Position] = None # type: ignore
-    animation: AnimationState = field(default_factory=AnimationState)
 
 @dataclass(slots=True)
 class ContainerState(AssetState):
@@ -81,8 +89,38 @@ class DialogueState(AssetState):
     persona: Optional[str] = None
     lexicon: Optional[str] = None
 
+# ------------------------------------------------------------------------- CURSOR STATES
+
+@dataclass(slots=True)
+class MotorState(AssetState):
+    position: Optional[Position] = None # type: ignore
+    initial: Optional[Position] = None # type: ignore
+    direction: Directions = Directions.DOWN.value
+    speed: int = 10
+    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
+
 @dataclass(slots=True)
 class AttachmentState(AssetState):
     icon: Optional[str] = None
     ttl: Optional[int] = 120
     offset: Optional[Position] = None # type: ignore
+
+# ------------------------------------------------------------------------ EFFECT STATES
+
+@dataclass(slots=True)
+class PassiveState(AssetState):
+    position: Optional[Position] = None # type: ignore
+    animation: AnimationState = field(default_factory=AnimationState)
+
+@dataclass(slots=True)
+class HazardState(PassiveState):
+    damage: Damage = field(default_factory=Damage)
+
+@dataclass(slots=True)
+class InteractableState(PassiveState):
+    action: Actions = Actions.SLASH.value
+    cooldown: int = 60
+
+@dataclass(slots=True)
+class CollectableState(PassiveState):
+    pass

@@ -17,7 +17,10 @@ from app.models.state.objects import (
     SwitchState,
     PropertyState,
     MotorState,
-    AnimatorState,
+    PassiveState,
+    HazardState,
+    InteractableState,
+    CollectableState,
     AttachmentState,
     DialogueState
 )
@@ -72,9 +75,13 @@ __all__ = [
     'SwitchState',
     'PropertyState',
     'MotorState',
-    'AnimatorState',
     'AttachmentState',
     'DialogueState',
+    # EFFECT STATES
+    'PassiveState',
+    'HazardState',
+    'InteractableState',
+    'CollectableState',
     # SPRITE STATES
     'SpriteState',
     'PlayerState',

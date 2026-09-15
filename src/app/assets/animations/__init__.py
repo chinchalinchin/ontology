@@ -1,8 +1,7 @@
 from app.assets.animations.core import (
     NoAnimation,
     BinaryAnimation,
-    PersistentAnimation,
-    TemporaryAnimation,
+    LifecycleAnimation,
     StateAnimation,
     SpriteAnimation
 )
@@ -14,8 +13,7 @@ from app.assets.animations.widgets import (
 __all__ = [
     'NoAnimation',
     'BinaryAnimation',
-    'PersistentAnimation',
-    'TemporaryAnimation',
+    'LifecycleAnimation',
     'StateAnimation',
     'TraversalAnimation',
     'MeterAnimation',

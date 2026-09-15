@@ -22,7 +22,10 @@ from app.models.state.objects import (
     SwitchState,
     PropertyState,
     MotorState,
-    AnimatorState,
+    PassiveState,
+    HazardState,
+    InteractableState,
+    CollectableState,
     DialogueState,
     AttachmentState
 )
@@ -59,12 +62,14 @@ class CursorStateInstances:
 
 @dataclass(slots=True)
 class EffectStateInstances:
-    temporary: List[PositionalState] = field(default_factory=list)
-    persistent: List[AnimatorState] = field(default_factory=list)
+    hazards: List[HazardState] = field(default_factory=list)
+    passive: List[PassiveState] = field(default_factory=list)
+    collectables: List[CollectableState] = field(default_factory=list)
+    interactables: List[InteractableState] = field(default_factory=list)
 
 @dataclass(slots=True)
 class SheetStateInstances:
-    pixies: List[AnimatorState] = field(default_factory=list)
+    pixies: List[PassiveState] = field(default_factory=list)
     sprites: List[SpriteState] = field(default_factory=list)
     players: List[PlayerState] = field(default_factory=list)
 

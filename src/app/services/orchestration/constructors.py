@@ -175,7 +175,8 @@ class Builder:
         spawnable_groups = SpawnableGroup(
             projectiles=self.context.properties.cursors.projectiles,
             expressions=self.context.properties.cursors.expressions,
-            temporary=self.context.properties.effects.temporary,
+            collectables=self.context.properties.effects.collectables,
+            hazards=self.context.properties.effects.hazards,
             struts=self.context.properties.crafts.struts
         )
         cradle = Factory.cradle(spawnable_groups, self.context.configurations.recipes, self.decomposer)

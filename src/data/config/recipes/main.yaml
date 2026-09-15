@@ -18,12 +18,18 @@ recipes:
       frame: single
       animation: none
   effects:
-    temporary:
+    collectables:
       frame: iterable
-      animation: temporary
-    persistent:
+      animation: lifecycle
+    interactables:
       frame: iterable
-      animation: persistent
+      animation: lifecycle
+    hazards:
+      frame: iterable
+      animation: lifecycle
+    passive:
+      frame: iterable
+      animation: lifecycle
   objects:
     chests:
       frame: iterable

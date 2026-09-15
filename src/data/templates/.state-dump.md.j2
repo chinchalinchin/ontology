@@ -10,6 +10,8 @@
   - Category: `{{ asset.category }}`
   - Instance: `{{ asset.instance }}`
   - ID: `{{ asset.id }}`
+  - Animation: `{{ asset.animation }}`
+  - Frame: `{{ asset.frame }}`
 {%- set props = asset.properties if (asset.properties is defined and asset.properties is not none) else asset %}
 {%- set dims = props.dimensions if (props.dimensions is defined and props.dimensions is not none) else (asset.dimensions if (asset.dimensions is defined and asset.dimensions is not none) else none) %}
 {%- if dims or (props.mass is defined and props.mass is not none) or (props.count is defined and props.count is not none) or (props.friction is defined and props.friction is not none) or (props.cost is defined and props.cost) or (props.stack is defined and props.stack) or (props.hitboxes is defined and props.hitboxes) or (props.actions is defined and props.actions) or (props.frames is defined and props.frames) or (props.alignment is defined and props.alignment is not none) or (props.color is defined and props.color is not none) or (props.bold is defined and props.bold is not none) or (props.italics is defined and props.italics is not none) or (props.margins is defined and props.margins is not none) or (props.size is defined and props.size is not none) or (props.font is defined and props.font is not none) %}

@@ -5,6 +5,24 @@ compositions:
         id: wall-castle
         name: castle-wall
       components:
+        effects:
+          passive:
+            - id: torch
+              name: torch-01
+              position:
+                x: 15
+                y: 58
+              depth: 1
+              height: bind(root.height)
+            - id: torch
+              name: torch-02
+              position:
+                x: 174
+                y: 58
+              animation:
+                frame: 4
+              depth: 1
+              height: bind(root.height)
         objects:
           gates:
             - id: gate-castle

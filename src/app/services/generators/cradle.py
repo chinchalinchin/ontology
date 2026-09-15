@@ -52,8 +52,10 @@ class Cradle:
         self.recipes = recipes
         self.decomposer = decomposer
 
-    def _generate(self):
+    @staticmethod
+    def name():
         return "TODO: generate unique name uuid"
+
     
     def spawn_expression(self, 
         id: str, 
@@ -65,6 +67,7 @@ class Cradle:
         # Calculate top-right anchor using properties and target dimensions
         if properties and target.dimensions:
             ox = target.dimensions.w - 2*properties.dimensions.w
+            # TODO: parameterize or shift to properties
             oy = -0.9*properties.dimensions.l
         else:
             ox, oy = 0, 0
@@ -85,7 +88,7 @@ class Cradle:
     ):
         recipe = self.recipes.cursors.projectiles
         properties = self.spawnables.projectiles.get(id)
-        name = self._generate()
+        name = self.name()
         
         # Instantiate natively
         state = MotorState(
@@ -115,21 +118,18 @@ class Cradle:
         
         return Asset(taxonomy, properties, state, frame, animation)
 
-    def spawn_temporary(self, 
+
+    def spawn_collectable(self, 
         id: str, 
         layer: str, 
         position: Position # type: ignore
     ):
-        recipe = self.recipes.effects.temporary
-        properties = self.spawnables.temporary.get(id)
-        name = self._generate()
+        recipe = self.recipes.effects.collectables
+        properties = self.spawnables.collectables.get(id)
+        name = self.name()
         
-        state = PositionalState(
-            id          = id, 
-            name        = name, 
-            layer       = layer, 
-            position    = position
-        )
+        state = "TODO"
+
         frame = Factory.frame(recipe.frame) \
                     if recipe else Factory.frame(None)
         animation = Factory.animation(recipe.animation) \
@@ -138,10 +138,36 @@ class Cradle:
             id          = id, 
             name        = name, 
             category    = AssetCategories.EFFECTS, 
-            instance    = AssetInstances.TEMPORARY
+            instance    = AssetInstances.COLLECTABLES
         )
         
         return Asset(taxonomy, properties, state, frame, animation)
+
+
+    def spawn_hazard(self, 
+        id: str, 
+        layer: str, 
+        position: Position # type: ignore
+    ):
+        recipe = self.recipes.effects.hazards
+        properties = self.spawnables.hazards.get(id)
+        name = self.name()
+        
+        state = "TODO"
+
+        frame = Factory.frame(recipe.frame) \
+                    if recipe else Factory.frame(None)
+        animation = Factory.animation(recipe.animation) \
+                    if recipe else Factory.animation(None)
+        taxonomy = Factory.taxonomy(
+            id          = id, 
+            name        = name, 
+            category    = AssetCategories.EFFECTS, 
+            instance    = AssetInstances.HAZARDS
+        )
+        
+        return Asset(taxonomy, properties, state, frame, animation)
+
 
     def spawn_strut(self, 
         id: str, 
@@ -151,7 +177,7 @@ class Cradle:
     ):
         recipe = self.recipes.crafts.struts
         properties = self.spawnables.struts.get(id)
-        name = self._generate()
+        name = self.name()
         
         state = PropertyState(
             id          = id, 
@@ -173,6 +199,7 @@ class Cradle:
         
         return Asset(taxonomy, properties, state, frame, animation)
 
+
     def spawn_composition(self, 
         id: str, 
         position: Position,  # type: ignore
@@ -182,7 +209,7 @@ class Cradle:
         """
         Dynamically spawn an entire composition schema through the engine's mechanics flow.
         """
-        name = self._generate()
+        name = self.name()
         pseudo_state    = PropertyState(
             id          = id, 
             name        = name, 
@@ -191,6 +218,7 @@ class Cradle:
             owner       = owner
         )
         return self.decomposer.unpack(pseudo_state)
+
 
     def cost(self, id: str) -> List['Cost']:
         """

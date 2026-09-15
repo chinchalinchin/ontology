@@ -4,7 +4,12 @@
 from typing import Dict, List, Union, Optional
 from dataclasses import dataclass, field
 
-from app.config.enums import Alignments
+from app.config.enums import (
+    Actions,
+    Directions,
+    Alignments,
+    Lifecycles
+)
 from app.models.adapters import (
     PydanticDimensions as Dimensions, 
     PydanticHitbox as Hitbox
@@ -19,13 +24,20 @@ class Direction:
 @dataclass(slots=True)
 class Action:
     count: int
-    directions: Dict[str, Direction]
+    directions: Dict[Directions, Direction]
     delay: int = 1
 
 @dataclass(slots=True)
 class Cost:
     item: str
     quantity: int
+
+@dataclass(slots=True)
+class Lifecycle:
+    type: Lifecycles = Lifecycles.CONTINUOUS.value
+    delay: int = 1
+    frequency: int = 0
+    persist: bool = False
 
 # ---------------------------------------------------------------------------------------
 
@@ -61,7 +73,10 @@ class CursorProperties(AssetProperties):
 @dataclass(slots=True)
 class EffectProperties(AssetProperties):
     dimensions: Dimensions # type: ignore
-    count: int 
+    count: int
+    lifecycle: Lifecycle = field(default_factory=Lifecycle)
+    mass: int = -1
+    hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
 
 @dataclass(slots=True)
 class ObjectProperties(AssetProperties):
@@ -88,7 +103,7 @@ class SheetProperties(AssetProperties):
     stack: List[str] = field(default_factory=list)
     mass: int = 0
     hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
-    actions: Union[str, Dict[str, Action]] = field(default_factory=dict)
+    actions: Union[str, Dict[Actions, Action]] = field(default_factory=dict)
 
 @dataclass(slots=True)
 class WidgetProperties(AssetProperties):
@@ -105,8 +120,10 @@ class TilePropertyInstances:
 
 @dataclass(slots=True)
 class EffectPropertyInstances:
-    persistent: Dict[str, EffectProperties] = field(default_factory=dict)
-    temporary: Dict[str, EffectProperties] = field(default_factory=dict)
+    collectables: Dict[str, EffectProperties] = field(default_factory=dict)
+    interactables: Dict[str, EffectProperties] = field(default_factory=dict)
+    hazards: Dict[str, EffectProperties] = field(default_factory=dict)
+    passive: Dict[str, EffectProperties] = field(default_factory=dict)
 
 @dataclass(slots=True)
 class ObjectPropertyInstances:

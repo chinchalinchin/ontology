@@ -39,8 +39,10 @@ class CursorRecipe:
 
 @dataclass(slots=True, frozen=True)
 class EffectRecipe:
-    temporary: Recipe = None
-    persistent: Recipe = None
+    hazards: Recipe = None
+    passive: Recipe = None 
+    collectables: Recipe = None
+    interactables: Recipe = None
 
 @dataclass(slots=True, frozen=True)
 class ObjectRecipe:

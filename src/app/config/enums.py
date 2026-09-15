@@ -35,8 +35,10 @@ class AssetInstances(str, Enum):
     EXPRESSIONS     = "expressions"
     PROJECTILES     = "projectiles"
     # EFFECTS
-    PERSISTENT      = "persistent"
-    TEMPORARY       = "temporary"
+    PASSIVE         = "passive"
+    HAZARDS         = "hazards"
+    COLLECTABLES    = "collectables"
+    INTERACTABLES   = "interactables"
     # OBJECTS
     CHESTS          = "chests"
     CRATES          = "crates"
@@ -46,6 +48,9 @@ class AssetInstances(str, Enum):
     SIGNS           = "signs"
     # CRAFTS
     STRUTS          = "struts"
+    ## TODO:
+    TRACKS          = "tracks"
+    DEVICES         = "devices"
     # SHEETS
     PIXIES          = "pixies"
     SPRITES         = "sprites"
@@ -92,6 +97,11 @@ class Lifecycles(str, Enum):
     CONTINUOUS      = "continuous"
     PERIODIC        = "periodic"
     TEMPORARY       = "temporary"
+
+class Reactions(str, Enum):
+    BOUNCE          = "bounce"
+    HINDER          = "hinder"
+
 # -------------------------------- ASSET RECIPE ENUMERATIONS
 
 class FrameRecipe(str, Enum):
@@ -106,13 +116,12 @@ class FrameRecipe(str, Enum):
 
 class AnimationRecipe(str, Enum):
     NONE            = "none"
-    TEMPORARY       = "temporary"
-    PERSISTENT      = "persistent"
     BINARY          = "binary"
     STATE           = "state"
     SPRITE          = "sprite"
     METER           = "meter"
     TRAVERSAL       = "traversal"
+    LIFECYCLE       = "lifecycle"
 
 class StateRecipe(str, Enum):
     NONE            = "none"

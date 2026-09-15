@@ -23,6 +23,7 @@ from app.config.enums import (
     AssetInstances, 
     Statuses, 
     Interactions,
+    Lifecycles,
     DeviceContexts
 )
 from app.game.logic.modules.motion import (
@@ -87,7 +88,11 @@ class RemoveMechanics(Mechanic):
         payload: DevicePayload
     ) -> None:          
         removals = []
-        for effect in board.instances(AssetInstances.TEMPORARY):
+        for effect in board.instances(AssetCategories.EFFECTS):
+            if effect.properties.lifecycle.persist or (
+                effect.properties.lifecycle != Lifecycles.TEMPORARY.value
+            ): continue
+
             if effect.state.animation.frame >= effect.properties.count:
                 removals.append(effect)
 

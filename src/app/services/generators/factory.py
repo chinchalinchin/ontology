@@ -3,13 +3,13 @@
 
 Package for instantiating Asset classes and their components.
 """
+# Standard Libraries
 from typing import Any
 
 # Application Libraries
 from app.assets.animations import (
     BinaryAnimation, 
-    PersistentAnimation, 
-    TemporaryAnimation, 
+    LifecycleAnimation,
     StateAnimation,
     SpriteAnimation,
     TraversalAnimation,
@@ -88,8 +88,7 @@ class Factory:
 
     ANIMATION_MAP = {
         AnimationRecipe.BINARY: BinaryAnimation,
-        AnimationRecipe.PERSISTENT: PersistentAnimation,
-        AnimationRecipe.TEMPORARY: TemporaryAnimation,
+        AnimationRecipe.LIFECYCLE: LifecycleAnimation,
         AnimationRecipe.STATE: StateAnimation,
         AnimationRecipe.SPRITE: SpriteAnimation,
         AnimationRecipe.TRAVERSAL: TraversalAnimation,
@@ -138,7 +137,7 @@ class Factory:
             for enum_key, frame_cls in Factory.FRAME_MAP.items():
                 if enum_key.value == recipe:
                     return frame_cls()
-        return Factory.FRAME_MAP.get(recipe, SingleFrame)()
+        return Factory.FRAME_MAP.get(recipe, NoFrame)()
 
     @staticmethod
     def animation(recipe: Any) -> Animation:
@@ -146,7 +145,7 @@ class Factory:
             for enum_key, anim_cls in Factory.ANIMATION_MAP.items():
                 if enum_key.value == recipe:
                     return anim_cls()
-        return Factory.ANIMATION_MAP.get(recipe, PersistentAnimation)()
+        return Factory.ANIMATION_MAP.get(recipe, NoAnimation)()
     
     @staticmethod
     def taxonomy(id: str, name: str, category: str, instance: str) -> Taxonomy:
