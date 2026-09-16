@@ -1,74 +1,74 @@
-sheets:
-  sprites: 
-    - id: jasilynn
-      name: evil-empress-jasilynn
-      layer: brick-house-compose-layer
-      depth: 0
-      position:
-        x: 175
-        y: 200
-      meters:
-        health: 
-          current: 50
-          maximum: 100
-        magic: 
-          current: 100
-          maximum: 100
-      character:
-        strength: 5
-        defense: 5
-        speed: 50
-        impulse: 25
-      mutators:
-        parameters:
-          fear:
-            radius: 100
-            limit: 0.50
-            enemy: 5
-          vision:
-            radius: 150
-          action:
-            radius: 25
-          squeeze: 
-            radius: 10
-      psyche:
-        dialogue: greeting
-        expression: null
-        motivation: conquest
-        persona: empress-jasilynn
-      intention: find
-      goal:
-        name: player
-        category: subject
-        layer: '0'
-        position:
-          x: 100
-          y: 200
-      memory:
-        goals:
-          player:
-            name: player
-            category: subject
-            layer: '0'
-            position:
-              x: 100
-              y: 200
-        prices: null
-        property: null
-        relationships: 
-          player: friend
-        rumors: null
-        sprites: 
-          player:
-            x: 100
-            y: 200
-      inventory: 
-        pouch: null
-        pack: null
-        equipment:
-          armor: null
-          tool: null
-          utility: null
-          weapon: shortsword
-          shield: null
-        wallet: 0
+# sheets:
+#   sprites: 
+#     - id: jasilynn
+#       name: evil-empress-jasilynn
+#       layer: brick-house-compose-layer
+#       depth: 0
+#       position:
+#         x: 175
+#         y: 200
+#       meters:
+#         health: 
+#           current: 50
+#           maximum: 100
+#         magic: 
+#           current: 100
+#           maximum: 100
+#       character:
+#         strength: 5
+#         defense: 5
+#         speed: 50
+#         impulse: 25
+#       mutators:
+#         parameters:
+#           fear:
+#             radius: 100
+#             limit: 0.50
+#             enemy: 5
+#           vision:
+#             radius: 150
+#           action:
+#             radius: 25
+#           squeeze: 
+#             radius: 10
+#       psyche:
+#         dialogue: greeting
+#         expression: null
+#         motivation: conquest
+#         persona: empress-jasilynn
+#       intention: find
+#       goal:
+#         name: player
+#         category: subject
+#         layer: '0'
+#         position:
+#           x: 100
+#           y: 200
+#       memory:
+#         goals:
+#           player:
+#             name: player
+#             category: subject
+#             layer: '0'
+#             position:
+#               x: 100
+#               y: 200
+#         prices: null
+#         property: null
+#         relationships: 
+#           player: friend
+#         rumors: null
+#         sprites: 
+#           player:
+#             x: 100
+#             y: 200
+#       inventory: 
+#         pouch: null
+#         pack: null
+#         equipment:
+#           armor: null
+#           tool: null
+#           utility: null
+#           weapon: shortsword
+#           shield: null
+#         wallet: 0

@@ -38,7 +38,7 @@ class AssetInstances(str, Enum):
     PASSIVE         = "passive"
     HAZARDS         = "hazards"
     COLLECTABLES    = "collectables"
-    INTERACTABLES   = "interactables"
+    REACTABLES   = "reactables"
     # OBJECTS
     CHESTS          = "chests"
     CRATES          = "crates"

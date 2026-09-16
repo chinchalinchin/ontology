@@ -520,7 +520,7 @@ flowchart TD
     
     subgraph StateModel ["State Model"]
         direction TB
-        StateContent["Functional State: passive, hazard, collectable, interactable"]
+        StateContent["Functional State: passive, hazard, collectable, reactable"]
     end
 
     subgraph BehaviorStrategy ["Behavior Strategy"]
@@ -575,11 +575,11 @@ Collectables are Effects that transfer loot keys into a Sprite's or Player's inv
     * `item: str`
     * `quantity: int`
 
-### Interactables
+### Reactables
 
 Mechanized world props whose animations and states trigger upon intentional player or sprite actions (e.g., furnaces, sparring dummies).
 
-**State: InteractableState**
+**State: ReactableState**
 
 * `layer: str`
 * `depth: int`
@@ -705,7 +705,11 @@ This snippet from the [Schemas](./appendices/01-schemas.md#configuration-actions
 
 **Action Sets**
 
-Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See [Action Configuration Schema](./appendices/01-schemas.md#configuration-actions) below for more details. 
+Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See [Action Configuration Schema](./appendices/01-schemas.md#configuration-actions) for more details. 
+
+**Attackboxes**
+
+An Attackbox is a special type of hitbox unique to Sheet Assets. It is mapped to a canonical `<action>-<direction>-<frame>` key (where `setting.SEPARATOR = "-"`) and applied during the animation state identified by this key. Attackboxes are used to augment the Sheet's basic hitbox collision detection during [CombatMechanics](./05-mechanics.md#spatial). While any Sprite can alter its Attackbox properties, this property is utilized mainly by [Equipment](./02-sprites.md#equipment).
 
 **Stacks**
 
@@ -720,6 +724,7 @@ For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.
 
 * `dimensions: Dimensions`
 * `stack: List[str]`
+* `attackboxes: Dict[str, Hitbox]`
 * `hitboxes: List[Hitbox]`
 * `actions: Actions`
 * `mass: int`

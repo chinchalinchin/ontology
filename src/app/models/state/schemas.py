@@ -24,7 +24,7 @@ from app.models.state.objects import (
     MotorState,
     EffectState,
     HazardState,
-    InteractableState,
+    ReactableState,
     CollectableState,
     DialogueState,
     AttachmentState
@@ -65,7 +65,7 @@ class EffectStateInstances:
     hazards: List[HazardState] = field(default_factory=list)
     passive: List[EffectState] = field(default_factory=list)
     collectables: List[CollectableState] = field(default_factory=list)
-    interactables: List[InteractableState] = field(default_factory=list)
+    reactables: List[ReactableState] = field(default_factory=list)
 
 @dataclass(slots=True)
 class SheetStateInstances:

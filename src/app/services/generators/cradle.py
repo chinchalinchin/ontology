@@ -8,6 +8,7 @@ from __future__ import annotations
 # Standard Libraries
 from typing import TYPE_CHECKING, List
 import logging 
+import uuid
 
 # Application Libraries
 import app.config.settings as settings
@@ -20,12 +21,16 @@ from app.services.generators.factory import Factory
 from app.models.config import RecipeConfiguration
 from app.models.groups import SpawnableGroup
 from app.models.state import (
-    PositionalState, 
     MotorState, 
     PropertyState,
-    AttachmentState
+    AttachmentState,
+    EffectState,
+    HazardState,
+    CollectableState,
+    ReactableState,
+    Damage,
+    Lot
 )
-
 if TYPE_CHECKING:
     from app.services.generators.decomposer import Decomposer
     from app.models.properties import Cost
@@ -33,6 +38,8 @@ if TYPE_CHECKING:
 from libs.core.models import Position, Velocity
 
 logger = logging.getLogger(__name__)
+
+SPAWN = "spawn"
 
 class Cradle:
     """
@@ -46,15 +53,15 @@ class Cradle:
     def __init__(self, 
         spawnables: SpawnableGroup, 
         recipes: RecipeConfiguration, 
-        decomposer: 'Decomposer'
+        decomposer: Decomposer
     ):
         self.spawnables = spawnables
         self.recipes = recipes
         self.decomposer = decomposer
 
     @staticmethod
-    def name():
-        return "TODO: generate unique name uuid"
+    def name() -> str:
+        return settings.SEPARATOR.join([ SPAWN, uuid.uuid4().hex[:8] ])
 
     
     def spawn_expression(self, 
@@ -79,6 +86,7 @@ class Cradle:
             offset=Position(x=ox, y=oy),
             ttl=settings.EXPRESSION_TTL
         )
+
 
     def spawn_projectile(self, 
         id: str, 
@@ -105,10 +113,8 @@ class Cradle:
         # Inject velocity for the physics loop
         state.velocity = velocity 
         
-        frame = Factory.frame(recipe.frame) \
-                    if recipe else Factory.frame(None)
-        animation = Factory.animation(recipe.animation) \
-                    if recipe else Factory.animation(None)
+        frame = Factory.frame(recipe.frame)
+        animation = Factory.animation(recipe.animation)
         taxonomy = Factory.taxonomy(
             id = id, 
             name = name, 
@@ -122,52 +128,56 @@ class Cradle:
     def spawn_collectable(self, 
         id: str, 
         layer: str, 
-        position: Position # type: ignore
-    ):
+        position: Position,
+        lot: Lot
+    ) -> Asset:
         recipe = self.recipes.effects.collectables
         properties = self.spawnables.collectables.get(id)
         name = self.name()
-        
-        state = "TODO"
 
-        frame = Factory.frame(recipe.frame) \
-                    if recipe else Factory.frame(None)
-        animation = Factory.animation(recipe.animation) \
-                    if recipe else Factory.animation(None)
-        taxonomy = Factory.taxonomy(
-            id          = id, 
-            name        = name, 
-            category    = AssetCategories.EFFECTS, 
-            instance    = AssetInstances.COLLECTABLES
+        state = CollectableState(
+            id=id,
+            name=name,
+            layer=layer,
+            position=position,
+            lot=lot
         )
-        
+        frame = Factory.frame(recipe.frame)
+        animation = Factory.animation(recipe.animation)
+        taxonomy = Factory.taxonomy(
+            id=id,
+            name=name,
+            category=AssetCategories.EFFECTS,
+            instance=AssetInstances.COLLECTABLES
+        )
         return Asset(taxonomy, properties, state, frame, animation)
-
 
     def spawn_hazard(self, 
         id: str, 
         layer: str, 
-        position: Position # type: ignore
-    ):
+        position: Position,
+        damage: Damage
+    ) -> Asset:
         recipe = self.recipes.effects.hazards
         properties = self.spawnables.hazards.get(id)
         name = self.name()
-        
-        state = "TODO"
 
-        frame = Factory.frame(recipe.frame) \
-                    if recipe else Factory.frame(None)
-        animation = Factory.animation(recipe.animation) \
-                    if recipe else Factory.animation(None)
-        taxonomy = Factory.taxonomy(
-            id          = id, 
-            name        = name, 
-            category    = AssetCategories.EFFECTS, 
-            instance    = AssetInstances.HAZARDS
+        state = HazardState(
+            id=id,
+            name=name,
+            layer=layer,
+            position=position,
+            damage=damage
         )
-        
+        frame = Factory.frame(recipe.frame)
+        animation = Factory.animation(recipe.animation)
+        taxonomy = Factory.taxonomy(
+            id=id,
+            name=name,
+            category=AssetCategories.EFFECTS,
+            instance=AssetInstances.HAZARDS
+        )
         return Asset(taxonomy, properties, state, frame, animation)
-
 
     def spawn_strut(self, 
         id: str, 
@@ -186,10 +196,8 @@ class Cradle:
             position    = position, 
             owner       = owner
         )
-        frame = Factory.frame(recipe.frame) \
-                    if recipe else Factory.frame(None)
-        animation = Factory.animation(recipe.animation) \
-                    if recipe else Factory.animation(None)
+        frame = Factory.frame(recipe.frame)
+        animation = Factory.animation(recipe.animation)
         taxonomy = Factory.taxonomy(
             id          = id, 
             name        = name, 

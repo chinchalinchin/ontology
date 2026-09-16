@@ -1,0 +1,11 @@
+sheets:
+  weapons:
+    longbow:
+      dimensions:
+        w: 64
+        l: 64
+      hitboxes: null
+      attackboxes: null
+      actions: lpc-shoot
+      stack:
+        - longbow

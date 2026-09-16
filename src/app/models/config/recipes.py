@@ -42,7 +42,7 @@ class EffectRecipe:
     hazards: Recipe = None
     passive: Recipe = None 
     collectables: Recipe = None
-    interactables: Recipe = None
+    reactables: Recipe = None
 
 @dataclass(slots=True, frozen=True)
 class ObjectRecipe:

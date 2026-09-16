@@ -19,10 +19,12 @@ from app.models.state.objects import (
     MotorState,
     EffectState,
     HazardState,
-    InteractableState,
+    ReactableState,
     CollectableState,
     AttachmentState,
-    DialogueState
+    DialogueState,
+    Damage,
+    Lot
 )
 from app.models.state.schemas import (
     TileStateInstances,
@@ -75,13 +77,15 @@ __all__ = [
     'SwitchState',
     'PropertyState',
     'DialogueState',
+    'Damage',
+    'Lot',
     # CURSOR STATES
     'MotorState',
     'AttachmentState',
     # EFFECT STATES
     'EffectState',
     'HazardState',
-    'InteractableState',
+    'ReactableState',
     'CollectableState',
     # SPRITE STATES
     'SpriteState',

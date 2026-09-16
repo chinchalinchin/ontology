@@ -1,0 +1,20 @@
+sheets:
+  weapons:
+    spear:
+      dimensions:
+        w: 64
+        l: 64
+      hitboxes: null
+      attackboxes: null
+      actions: lpc-thrust
+      stack:
+        - spear
+    crossbow:
+      dimensions:
+        w: 64
+        l: 64
+      hitboxes: null
+      attackboxes: null
+      actions: lpc-thrust
+      stack:
+        - crossbow

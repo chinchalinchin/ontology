@@ -8,6 +8,7 @@ sheets:
       dimensions:
         w: 64
         l: 64
+      attackboxes: null
       hitboxes: 
         - position: 
             x: 23
@@ -29,12 +30,12 @@ sheets:
     # ------------------------------------------------
     # ------------------------------ SPRITE PROPERTIES
     # ------------------------------------------------
-    # ------------------------------------------------
     jasilynn:
       mass: 25
       dimensions:
         w: 64
         l: 64
+      attackboxes: null
       hitboxes: 
         - position: 
             x: 23

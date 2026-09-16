@@ -15,7 +15,6 @@ if TYPE_CHECKING:
     from app.game.board import Board
 
 # Application Libraries
-import app.config.settings as settings
 from app.assets.base import Asset
 from app.config.enums import (
     Intentions, 
@@ -26,7 +25,6 @@ from app.config.enums import (
     Expressions
 )
 from app.game.logic.mechanics.core import Mechanic
-from app.game.logic.modules.paths.plan import Planner
 from app.models.state import (
     DevicePayload, 
     Goal

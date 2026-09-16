@@ -16,7 +16,7 @@ objects:
         x: 430
         y: 370
 effects:
-  interactables:
+  reactables:
     - id: spinning-dummy
       name: test-dummy
       layer: '0'

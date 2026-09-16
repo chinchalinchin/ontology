@@ -23,6 +23,7 @@ from app.config.enums import (
     AssetInstances, 
     Statuses, 
     Interactions,
+    Intentions,
     Lifecycles,
     DeviceContexts
 )
@@ -76,6 +77,10 @@ class AnimationMechanics(Mechanic):
                 asset.animation.animate(asset.state, asset.properties)
             for asset in board.instances(AssetInstances.PLATES):
                 asset.animation.animate(asset.state, asset.properties)
+
+            for effect in board.instances(AssetInstances.REACTABLES.value):
+                if effect.state.active:
+                    effect.animation.cooldown()
 
 
 

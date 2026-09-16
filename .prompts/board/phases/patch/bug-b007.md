@@ -1,8 +1,7 @@
 ##### Bug B007: Cradle Spawning
 
-**STATUS**: OPEN
-
-**SEVERITY**: HIGH
+**STATUS**: CLOSED
+**SEVERITY**: MEDIUM
 
 **Description**
 

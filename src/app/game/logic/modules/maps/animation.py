@@ -2,11 +2,16 @@
 # Ontology: app.game.maps
 """
 # Application Libraries
+import app.config.settings as settings
 from app.config.enums import (
     Actions, 
     Directions, 
     Intentions,
     StaticIntentions
+)
+from app.models.groups import EquipmentGroup
+from app.models.state import (
+    SpriteState
 )
 
 # Cython Libraries
@@ -17,7 +22,7 @@ class AnimationMap:
     """
 
     @staticmethod
-    def action(state, equipment) -> str:
+    def action(state: SpriteState, equipment: EquipmentGroup) -> Actions:
         """
         Resolves Sprite Intentions to Animation Actions.
 
@@ -91,3 +96,14 @@ class AnimationMap:
         
         # Higher than both diagonals means it is physically UP
         return Directions.RIGHT.value if dy > -dx else Directions.UP.value
+
+    @staticmethod
+    def attackbox(sprite: SpriteState, equipment: EquipmentGroup):
+        frame_key = settings.SEPARATOR.join([
+            sprite.state.animation.action,
+            sprite.state.animation.direction,
+            sprite.state.animation.frame
+        ])
+        weapon_key = sprite.state.inventory.equipment.weapon
+        weapon_props = equipment.weapons.get(weapon_key,{}).attackboxes.get(frame_key)
+

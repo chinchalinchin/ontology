@@ -3,10 +3,12 @@
 
 Package for CombatMechanics
 """
-# Standard Libraries
 from __future__ import annotations
+
+# Standard Libraries
 from typing import TYPE_CHECKING
 import collections
+import logging
 
 # Application Libraries
 if TYPE_CHECKING:
@@ -19,9 +21,12 @@ from app.config.enums import (
 )
 from app.models.state import DevicePayload
 from app.game.logic.mechanics.spatial import SpatialMechanic
+from app.game.logic.modules.maps import CombatMap
 
 # Cython Libraries
 import libs.core.math.geometry as geometry
+
+logger = logging.getLogger(__name__)
 
 class CombatMechanics(SpatialMechanic):
     """
@@ -54,64 +59,54 @@ class CombatMechanics(SpatialMechanic):
             melee_attackers = []
             
             for attacker in attackers:
-                # Determine effective hitboxes (fallback to base asset hitboxes if unarmed)
-                active_hitboxes = attacker.hitboxes                
-                weapon_key = attacker.state.inventory.equipment.weapon
-                if weapon_key and weapon_key in board.equipment.weapons:
-                    weapon_props = board.equipment.weapons[weapon_key]
-                    if weapon_props.hitboxes:
-                        active_hitboxes = weapon_props.hitboxes
+                # ---------- ATTACKBOX HANDLING
+                if attacker.state.animation.action not in [Actions.SHOOT.value, Actions.CAST.value]:
+                    attackboxes = CombatMap.attackboxes(attacker.state, board.equipment)
+                    melee_attackers.append((attacker, attackboxes))
+                    continue
 
-                action = attacker.state.animation.action
+                # ---------- RANGED COMBAT HANDLING
+                if attacker.state.animation.frame == 0 and \
+                    not attacker.state.mutators.triggers.executed:
+                    proj_id = "TODO"
+                    
+                    proj = board.cradle.spawn_projectile(
+                        id          = proj_id,
+                        layer       = attacker.state.layer,
+                        position    = attacker.state.position,
+                        velocity    = "TODO"
+                    )
 
-                # ---------------- TODO: Needs lots of work
-                # Ranged Combat
-                if action in [Actions.SHOOT.value, Actions.CAST.value]:
-                    # Trigger projectile spawn on critical frame (frame 0) to guarantee it's fired exactly once per action loop.
-                    # TODO: update frame calculation with configuration
+                    board.add([proj])
+                    attacker.state.mutators.triggers.executed = True
 
-                    if attacker.state.animation.frame == 0 and \
-                        not attacker.state.mutators.triggers.executed:
-                        proj_id = "TODO"
-                        
-                        proj = board.cradle.spawn_projectile(
-                            id          = proj_id,
-                            layer       = attacker.state.layer,
-                            position    = attacker.state.position,
-                            velocity    = "TODO"
-                        )
+                elif attacker.state.animation.frame != 0:
+                    attacker.state.mutators.triggers.executed = False
 
-                        board.add([proj])
-                        attacker.state.mutators.triggers.executed = True
-                    elif attacker.state.animation.frame != 0:
-                        attacker.state.mutators.triggers.executed = False
-                else:
-                    melee_attackers.append((attacker, active_hitboxes))
+            logger.info(f"attackboxes: {attackboxes}")
 
             if not melee_attackers:
                 continue
 
-            interactables = [
-                effect for effect in board.instances(AssetInstances.INTERACTABLES.value, layer)
+            reactables = [
+                effect for effect in board.instances(
+                    AssetInstances.REACTABLES.value, layer)
                 if effect.state.intention == Intentions.ATTACK.value
             ]
             targets = board.instances(AssetInstances.SPRITES.value, layer) + \
                         board.instances(AssetInstances.PLAYERS.value, layer) + \
-                        interactables
+                        reactables
             
             # Unpack melee_attackers for collision querying
             melee_assets = [a for a, hb in melee_attackers]
             colliding_pairs = self.collisions(melee_assets + targets)
             
             for asset_a, asset_b in colliding_pairs:
-                is_a_attacker = asset_a in melee_assets
-                is_b_target = asset_b in targets
-                is_b_attacker = asset_b in melee_assets
-                is_a_target = asset_a in targets
-                
-                if is_a_attacker and is_b_target:
+                # Asset A: Attacker, Asset B: Target
+                if asset_a in melee_assets and asset_b in targets:
                     attacker, target = asset_a, asset_b
-                elif is_b_attacker and is_a_target:
+                # Asset A: Target, Asset B: Attacker
+                elif asset_b in melee_assets and asset_a in targets:
                     attacker, target = asset_b, asset_a
                 else:
                     continue
@@ -135,7 +130,7 @@ class CombatMechanics(SpatialMechanic):
                     target.dimensions, 
                     target.hitboxes
                 ) is not None:
-                    if target.instance != AssetInstances.INTERACTABLES.value:
+                    if target.instance != AssetInstances.REACTABLES.value:
                         # Calculate and apply damage
                         damage = attacker.state.character.strength - target.state.character.defense
                         damage = max(1, damage)  # Minimum 1 damage on hit

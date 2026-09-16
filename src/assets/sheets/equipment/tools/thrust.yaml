@@ -1,0 +1,20 @@
+sheets:
+  tools:
+    shovel:
+      dimensions:
+        w: 64
+        l: 64
+      actions: lpc-thrust
+      attackboxes: null
+      hitboxes: null
+      stack:
+        - shovel
+    pickaxe:
+      dimensions:
+        w: 64
+        l: 64
+      actions: lpc-thrust
+      attackboxes: null
+      hitboxes: null
+      stack:
+        - pickaxe

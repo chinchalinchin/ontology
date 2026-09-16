@@ -37,6 +37,7 @@ class Lifecycle:
     type: Lifecycles = Lifecycles.CONTINUOUS.value
     delay: int = 1
     frequency: int = 0
+    cooldown: int = 0
     persist: bool = False
 
 # ---------------------------------------------------------------------------------------
@@ -104,7 +105,8 @@ class SheetProperties(AssetProperties):
     mass: int = 0
     hitboxes: Optional[List[Hitbox]] = field(default_factory=list) # type: ignore
     actions: Union[str, Dict[Actions, Action]] = field(default_factory=dict)
-
+    attackboxes: Optional[Dict[str, List[Hitbox]]] = field(default_factory=dict) # type: ignore
+    
 @dataclass(slots=True)
 class WidgetProperties(AssetProperties):
     dimensions: Dimensions # type: ignore
@@ -121,7 +123,7 @@ class TilePropertyInstances:
 @dataclass(slots=True)
 class EffectPropertyInstances:
     collectables: Dict[str, EffectProperties] = field(default_factory=dict)
-    interactables: Dict[str, EffectProperties] = field(default_factory=dict)
+    reactables: Dict[str, EffectProperties] = field(default_factory=dict)
     hazards: Dict[str, EffectProperties] = field(default_factory=dict)
     passive: Dict[str, EffectProperties] = field(default_factory=dict)
 

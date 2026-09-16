@@ -127,7 +127,7 @@
   - Initial Position: ({{ asset.state.initial.x }}, {{ asset.state.initial.y }})
 {%- endif %}
 {%- if asset.state.velocity is defined and asset.state.velocity is not none %}
-  - Velocity: ({{ asset.state.velocity.x }}, {{ asset.state.velocity.y }})
+  - Velocity: ({{ asset.state.velocity.vx }}, {{ asset.state.velocity.vy }})
 {%- endif %}
 {%- if asset.state.speed is defined and asset.state.speed is not none %}
   - Speed: {{ asset.state.speed }}

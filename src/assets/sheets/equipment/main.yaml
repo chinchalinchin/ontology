@@ -32,30 +32,6 @@ sheets:
       hitboxes: null
       stack:
         - buckler
-  tools:
-    axe:
-      dimensions:
-        w: 64
-        l: 64
-      actions: lpc-slash
-      hitboxes: null
-      stack:
-        - axe
-    shovel:
-      dimensions:
-        w: 64
-        l: 64
-      actions: lpc-thrust
-      stack:
-        - shovel
-    pickaxe:
-      dimensions:
-        w: 64
-        l: 64
-      actions: lpc-thrust
-      hitboxes: null
-      stack:
-        - pickaxe
   utilities:
     lantern:
       dimensions:

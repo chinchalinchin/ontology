@@ -9,7 +9,7 @@ effects:
         type: continuous
       hitboxes: null
       mass: -1
-  interactables:
+  reactables:
     spinning-dummy:
       count: 8
       dimensions:

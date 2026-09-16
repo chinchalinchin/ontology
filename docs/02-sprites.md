@@ -16,6 +16,7 @@ Everything that is rendered in Ontology is an Asset. Therefore, Sprites are Asse
     * `directions:`
         * `row: int` 
 * `dimensions: Dimensions`
+* `attackboxes: Dict[str, Hitbox]`
 * `hitboxes: List[Hitbox]` 
 * `stack: List[str]`
 
@@ -101,14 +102,12 @@ See [Goals documentation](./04-intentions.md) for more information.
 
 ### Trajectory
 
-Tactical obstacle avoidance is managed via `TrajectoryState`. When direct line of sight to a strategic Goal is occluded, `NavigationMechanics` executes an [Rapidly-exploring Random Tree pathfinding routine](./10-architecture.md#math) and populates the trajectory buffer:
+Tactical obstacle avoidance is managed via Trajecotires. When direct line of sight to a strategic Goal is occluded, [NavigationMechanics](./05-mechanics.md#intentional) executes an [Rapidly-exploring Random Tree pathfinding routine](./10-architecture.md#math) and populates the trajectory buffer:
 
 * `target`: The immediate physical coordinate \((x, y)\) that `MotionMechanics` steers toward on the current tick. If line of sight to the strategic goal is clear, `target == sprite.state.goal.position`. If occluded, `target == vertices[0]`.
 * `vertices`: The FIFO queue of intermediate RRT avoidance coordinates, adjusted for sensory anchor displacement.
 * `stalled`: Boolean flag set when RRT fails to resolve a valid route, signaling deliberative systems of an impassable obstruction.
 * `cooldown`: Tick accumulator enforcing a backoff interval (`settings.PATH_RETRY_INTERVAL`) before retrying path generation against impassable geometries.
-
-See [NavigationMechanics](./05-mechanics.md#intentional) for more information on path generation and navigation.
 
 ### Meters
 
@@ -155,6 +154,7 @@ Mutators are *condition-driven*. They may also be *parameterized*; In other word
 - `parameters.fear.enemy`: Number of enemies within the `parameters.fear.radius` that must be present to trigger the `triggers.fear` mutator.
 - `parameters.vision.radius`: Radius of separation within which the Sprite triggers the `triggers.vision` mutator. Measured in pixels.
 - `parameters.action.radius`: Radius of separation within which the Sprite triggers the `triggers.action` mutator. Measured in pixels.
+- `parameters.squeeze.radius`: Buffer radius used for avoiding obstacles during path-finding.
 - `parameters.community.radius`: Radius used for [Town Formation Mechanics](./09-emergence.md#towns).
 
 ### Animation
@@ -285,7 +285,7 @@ Equipment is a grouping of several Sheet Asset Instances that share the common f
 - Equipment: Armor, Tools, Utilities, Weapons
 
 !!! important
-    It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the [Sprite Sheets](./01-assets.md#sheets) equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This means Equipment frames may not be present in every frame. For example, the `longbow` only occupies the `(shoot, *)` rows of a Sheet, while all other rows of the `longbow` Asset file are blank.
+    It assumed Equipment Sheets conform to the same (Action, Direction) grouping utilized by the [Sprite Sheet](./01-assets.md#sheets) equipping it. In other words, the frames coordinates and dimensions in an Equipment Sheet must correspond exactly to frames in a Sprite Sheet. This does not mean Equipment frames may not be present in every frame, but rather what is present must conform to the schema. For example, the `longbow` only occupies the `(shoot, *)` rows of a Sheet, while all other rows of the `longbow` Asset file are blank.
 
 ### Equipment Frames
 

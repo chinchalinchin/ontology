@@ -40,7 +40,28 @@ class BinaryAnimation(Animation):
 
 
 class LifecycleAnimation(Animation):
-    def animate(self, state: EffectState, properties: EffectProperties) -> AssetState:
+    """
+    """
+
+    def cooldown(self, state: EffectState, properties: EffectProperties) -> EffectState:
+        """
+        """
+        limit = ( properties.count - 1 
+                    if properties.lifecycle.persist 
+                    else properties.count)
+        if state.animation.frame >= limit:
+            state.cooldown -= 1
+            if state.cooldown <= 0:
+                state.active = False
+                state.animation.frame = 0
+                state.animation.tick = 0
+                state.cooldown = properties.lifecycle.cooldown
+        return state
+
+
+    def animate(self, state: EffectState, properties: EffectProperties) -> EffectState:
+        """
+        """
         lifecycle = properties.lifecycle
         anim = state.animation
         anim.tick += 1

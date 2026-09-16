@@ -3,13 +3,11 @@
 
 Package for InteractionMechanics
 """
-# Standard Libraries
 from __future__ import annotations
 from typing import TYPE_CHECKING
 import collections
 import logging
 
-# Application Libraries
 if TYPE_CHECKING:
     from app.game.board import Board
 
@@ -26,32 +24,21 @@ from app.models.state import DevicePayload
 logger = logging.getLogger(__name__)
 
 class InteractionMechanics(SpatialMechanic):
-    """
-    ## InteractionMechanics
-
-    Mechanic responsible for resolving Asset interactions.
-    """
     def __init__(self):
         super().__init__(max_entities=2000)
 
     def update(self, 
         board: Board, 
         delta: float, 
-        bus: collections.deque,
+        bus: collections.deque, 
         payload: DevicePayload
     ) -> None:
-        """
-        Resolves interactions between Sprites/Players and Objects (e.g., Doors, Chests, Signs).
-        """
-        # Ensures an entity can only interact ONCE per frame, 
-        # preventing same-frame teleport bounces across layers.
         processed_sources = set()
 
         for layer in board.layers():
             sprites = board.instances(AssetInstances.SPRITES.value, layer)
             players = board.instances(AssetInstances.PLAYERS.value, layer)
             
-            # Filter sources with 'interact' intention
             sources = [
                 asset for asset in sprites + players
                 if asset.state.intention == Intentions.INTERACT.value
@@ -64,28 +51,21 @@ class InteractionMechanics(SpatialMechanic):
             doors = board.instances(AssetInstances.DOORS.value, layer)
             chests = board.instances(AssetInstances.CHESTS.value, layer)
             signs = board.instances(AssetInstances.SIGNS.value, layer)
-            interactables = [
-                effect for effect in board.instances(AssetInstances.INTERACTABLES.value, layer)
+            reactables = [
+                effect for effect in board.instances(AssetInstances.REACTABLES.value, layer)
                 if effect.state.intention == Intentions.INTERACT.value
             ]
-            targets = doors + chests + signs + interactables
+            targets = doors + chests + signs + reactables
 
             if not targets:
                 continue
 
-            # Route through dimension-based intersection rather than physics collision
             colliding_pairs = self.intersections(sources + targets)
 
             for asset_a, asset_b in colliding_pairs:
-                is_a_source = asset_a in sources
-                is_b_target = asset_b in targets
-                
-                is_b_source = asset_b in sources
-                is_a_target = asset_a in targets
-                
-                if is_a_source and is_b_target:
+                if asset_a in sources and asset_b in targets:
                     source, target = asset_a, asset_b
-                elif is_b_source and is_a_target:
+                elif asset_b in sources and asset_a in targets:
                     source, target = asset_b, asset_a
                 else:
                     continue
@@ -93,17 +73,7 @@ class InteractionMechanics(SpatialMechanic):
                 if source.name in processed_sources:
                     continue
 
-                # Check if the mutating Sprite's center point intersects the Target dimensions.
-                # cx, cy = self.center(source.state.position, source.dimensions)
-                # tx, ty = target.state.position.x, target.state.position.y
-                # tw, tl = target.dimensions.w, target.dimensions.l
-                
-                # if not (tx <= cx <= tx + tw and ty <= cy <= ty + tl):
-                #     continue
-
-                # -------------------------------- DOOR INTERACTIONS
                 if target.taxonomy.instance == AssetInstances.DOORS.value:
-                    # NPC Path Learning: Record the door-to-layer mapping before traversing
                     if source.taxonomy.instance == AssetInstances.SPRITES.value:
                         source.state.memory.doors[target.name] = target.state.outlayer
                         
@@ -111,35 +81,32 @@ class InteractionMechanics(SpatialMechanic):
                     source.state.position.x = target.state.out.x
                     source.state.position.y = target.state.out.y
 
-                    # Consume PLAYER intention ONLY
-                    # NOTE: Sprite Intentions MUST not be altered by logic
-                    #       to preserve Transition Matrix.
                     if source.taxonomy.instance == AssetInstances.PLAYERS.value:
                         source.state.intention = Intentions.IDLE.value
 
                     processed_sources.add(source.name)
 
-                # -------------------------------- CHEST INTERACTIONS
-                elif target.taxonomy.instance == AssetInstances.CHESTS:
-                    if source.taxonomy.instance == AssetInstances.SPRITES:
+                elif target.taxonomy.instance == AssetInstances.CHESTS.value:
+                    if source.taxonomy.instance == AssetInstances.SPRITES.value:
                         if target.state.content:
                             for item in target.state.content:
-                                source.state.inventory.loot[item] = source.state.inventory.loot.get(item, 0) + 1
+                                source.state.inventory.loot[item] = (
+                                    source.state.inventory.loot.get(item, 0) + 1
+                                )
                             target.state.content = []
                         processed_sources.add(source.name)
 
-                    elif source.taxonomy.instance == AssetInstances.PLAYERS:
-                        pass
-                        # TODO: ExchangeMenu and InventoryMenu routing
-
-                # -------------------------------- SIGN INTERACTIONS
-                elif target.taxonomy.instance == AssetInstances.SIGNS:
-                    if source.taxonomy.instance == AssetInstances.PLAYERS:
-                        # Pass the live PlotState reference directly into context
+                elif target.taxonomy.instance == AssetInstances.SIGNS.value:
+                    if source.taxonomy.instance == AssetInstances.PLAYERS.value:
                         bus.append(MenuEvent(
-                            id = Menus.TEXT.value,
-                            context = DialogueContext(
-                                plot = board.plot, 
-                                object = target.state
-                        )))
+                            id=Menus.TEXT.value,
+                            context=DialogueContext(
+                                plot=board.plot, 
+                                object=target.state
+                            )
+                        ))
                         processed_sources.add(source.name)
+
+                elif target.taxonomy.instance == AssetInstances.REACTABLES.value:
+                    target.state.active = True
+                    processed_sources.add(source.name)

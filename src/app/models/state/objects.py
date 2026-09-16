@@ -117,7 +117,7 @@ class HazardState(EffectState):
     damage: Damage = field(default_factory=Damage)
 
 @dataclass(slots=True)
-class InteractableState(EffectState):
+class ReactableState(EffectState):
     intention: str = Intentions.INTERACT.value
     cooldown: int = 60
     active: bool = False
