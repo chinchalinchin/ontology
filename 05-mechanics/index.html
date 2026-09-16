@@ -1138,23 +1138,23 @@
 <li><strong>MotionMechanics ("The Muscle")</strong>: Steers velocity vectors toward <code>sprite.state.trajectory.target</code> and integrates physics.</li>
 </ul>
 <p>To visualize how this all ties together for a <a href="../02-sprites/">Sprite</a> in a single frame,</p>
-<div class="highlight"><pre><span></span><code>flowchart TD
+<pre class="mermaid"><code>flowchart TD
     %% Mechanics Nodes
-    CM[&quot;CognitionMechanics&quot;]
-    TM[&quot;TransitionMechanics&quot;]
-    NM[&quot;NavigationMechanics&quot;]
-    MM[&quot;MotionMechanics&quot;]
+    CM["CognitionMechanics"]
+    TM["TransitionMechanics"]
+    NM["NavigationMechanics"]
+    MM["MotionMechanics"]
 
     %% Pipeline Flow
-    CM --&gt;|&quot;(sprite.state.goal)&quot;| TM
-    TM --&gt;|&quot;(sprite.state.intention)&quot;| NM
-    NM --&gt;|&quot;(sprite.state.trajectory.target)&quot;| MM
+    CM --&gt;|"(sprite.state.goal)"| TM
+    TM --&gt;|"(sprite.state.intention)"| NM
+    NM --&gt;|"(sprite.state.trajectory.target)"| MM
 
     %% Action / Output Annotations
-    CM --&gt; A1[&quot;Sets Strategic Goal (TARGET, SUBJECT, OBJECT, POSITION)&quot;]
-    TM --&gt; A2[&quot;Evaluates ISL Intention (hunt, find, wander, idle)&quot;]
-    NM --&gt; A3[&quot;Manages Obstacles, LOS &amp; RRT Queue (populates Trajectory)&quot;]
-    MM --&gt; A4[&quot;Steers Velocity Vector toward Trajectory Target&quot;]
+    CM --&gt; A1["Sets Strategic Goal (TARGET, SUBJECT, OBJECT, POSITION)"]
+    TM --&gt; A2["Evaluates ISL Intention (hunt, find, wander, idle)"]
+    NM --&gt; A3["Manages Obstacles, LOS &amp; RRT Queue (populates Trajectory)"]
+    MM --&gt; A4["Steers Velocity Vector toward Trajectory Target"]
 
     %% Class Assignments
     class CM,TM,NM,MM mechanic;
@@ -1168,8 +1168,7 @@
     classDef annotation fill:#1e2e4a,stroke:#448aff,stroke-width:1.5px,stroke-dasharray: 4 4,color:#e3f2fd,text-align:left;
 
     %% Edge Labels
-    linkStyle default color:#e0e0e0,stroke:#90caf9,stroke-width:1.5px;
-</code></pre></div>
+    linkStyle default color:#e0e0e0,stroke:#90caf9,stroke-width:1.5px;</code></pre>
 <h3 id="core">Core</h3>
 <p>These Mechanics handle the core engine logic.</p>
 <ul>
@@ -1271,6 +1270,52 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 </li>
 <li><strong>Phase 2 - Momentum Transfer:</strong> Bypass the 1D elastic collision calculation <em>only</em> for the Player.</li>
 </ul>
+<p><strong>CombatMechanics</strong></p>
+<pre class="mermaid"><code>flowchart TD
+    subgraph Input ["Intention &amp; Action Resolution"]
+      direction TB
+        PlayerInput["Device Poll: ATTACK"] --&gt; ActionMap["AnimationMap: slash"]
+        ActionMap --&gt; ActiveFrame["Frame Key: slash-right-3"]
+    end
+
+    subgraph Spatial ["Combat Spatial Query Pipeline"]
+      direction TB
+        ActiveFrame --&gt; AttackboxLookup["CombatMap.attackboxes(attacker)"]
+        AttackboxLookup --&gt; ExtentPrimitive["Construct Attacker Weapon Primitive: hitboxes = active_attackboxes"]
+        TargetHitboxes["Target Body Primitives: hitboxes = target.hitboxes"] --&gt; SpatialGrid["Space Grid Hash &amp; Query"]
+        ExtentPrimitive --&gt; SpatialGrid
+        SpatialGrid --&gt; CythonNarrow["physics.collisions(primitives, grid)"]
+    end
+
+    subgraph Resolution ["Combat &amp; Reactable Resolution"]
+      direction TB
+        CythonNarrow --&gt; ConfirmedPair["Intersecting Attacker &amp; Target Pair"]
+        ConfirmedPair --&gt; ReactableTrigger["ReactableState.active = True"]
+        ReactableTrigger --&gt; AnimTick["LifecycleAnimation.animate(): frame += 1"]
+        AnimTick --&gt; Clamp["Clamp to Final Frame: persist=True"]
+        Clamp --&gt; CooldownStep["LifecycleAnimation.cooldown(state, props): cooldown -= 1"]
+        CooldownStep --&gt; Reset["cooldown &lt;= 0: active = False, frame = 0, cooldown = default"]
+    end
+
+    %% Class Assignments
+    class ActionMap,AttackboxLookup,SpatialGrid,CythonNarrow,AnimTick,CooldownStep mechanic;
+    class PlayerInput,ActiveFrame,TargetHitboxes,ExtentPrimitive,ConfirmedPair,ReactableTrigger,Clamp,Reset data;
+
+    %% Material UI Palette for MkDocs Slate Theme (Primary: Deep Purple, Accent: Blue)
+    %% Mechanics &amp; Execution: Deep Purple 700 fill (#512da8) + Deep Purple 200 border (#b388ff)
+    classDef mechanic fill:#512da8,stroke:#b388ff,stroke-width:2px,color:#ffffff,font-weight:bold;
+
+    %% State, Primitives &amp; Event Boundaries: Dark Blue Container (#1e2e4a) + Blue A200 border (#448aff)
+    classDef data fill:#1e2e4a,stroke:#448aff,stroke-width:1.5px,color:#e3f2fd;
+
+    %% Subgraph Containers: Slate Darkened Backgrounds with Thematic Accents
+    style Input fill:#171926,stroke:#7e57c2,stroke-width:1.5px,stroke-dasharray: 4 4,color:#ede7f6;
+    style Spatial fill:#121d2d,stroke:#448aff,stroke-width:1.5px,stroke-dasharray: 4 4,color:#e3f2fd;
+    style Resolution fill:#181628,stroke:#b388ff,stroke-width:1.5px,stroke-dasharray: 4 4,color:#ede7f6;
+
+    %% Link Connectors: Light Blue Accent
+    linkStyle default color:#e0e0e0,stroke:#90caf9,stroke-width:1.5px;</code></pre>
+<p>In <code>CombatMechanics</code>, entities do not query spatial reach using their default body hitboxes (<code>asset.hitboxes</code>). Because <code>CollisionMechanics</code> prevents overlapping physical boundaries, character torsos will rarely intersect target bodies during weapon strikes. Instead, <code>CombatMechanics</code> queries the active weapon attackbox (<code>CombatMap.attackboxes</code>) associated with the entity's current <code>(action, direction, frame)</code>. Attacker spatial primitives are injected into the broad-phase spatial hash using their active weapon reach, evaluating collisions strictly against the target's physical hitboxes. Attackers with no attackboxes configured on their current animation frame bypass combat collision checks entirely.</p>
 <h3 id="intentional">Intentional</h3>
 <p>These Mechanics handle Sprite intentionality, goal-seeking, and tactical navigation.</p>
 <ul>

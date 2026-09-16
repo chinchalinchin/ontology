@@ -584,10 +584,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#interactables" class="md-nav__link">
+  <a href="#reactables" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Interactables
+        Reactables
       
     </span>
   </a>
@@ -1646,10 +1646,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#interactables" class="md-nav__link">
+  <a href="#reactables" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Interactables
+        Reactables
       
     </span>
   </a>
@@ -1968,6 +1968,14 @@
 </table>
 <p><strong>Instances</strong></p>
 <p>Each Category has Instances. Asset <em>Instances</em> form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. </p>
+<p>Each AssetState has, at bare minimum,</p>
+<ul>
+<li>Position</li>
+<li>Layer</li>
+<li>Depth </li>
+<li>Height</li>
+</ul>
+<p>These attributes are part of the base class from which all other states inherit. The following table details the <em>unique</em> state attributes of each Asset Instance (with the four attribute identified above labeled with the catchall "Base"),</p>
 <table>
 <thead>
 <tr>
@@ -1980,117 +1988,127 @@
 <tr>
 <td>Tile</td>
 <td>Back</td>
-<td>Position, Layer, Depth, Height</td>
+<td>Base</td>
 </tr>
 <tr>
 <td>Tile</td>
 <td>Fore</td>
-<td>Position, Layer, Depth, Height</td>
+<td>Base</td>
 </tr>
 <tr>
 <td>Tile</td>
 <td>Grid</td>
-<td>Position</td>
+<td>Base</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Crate</td>
-<td>Position, Layer, Depth, Height</td>
+<td>Base, Velocity</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Sign</td>
-<td>Position, Layer, Depth, Height, Persona, Lexicon</td>
+<td>Base, Persona, Lexicon</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Door</td>
-<td>Position, Layer, Depth, Height, OutLayer</td>
+<td>Base, OutLayer</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Chest</td>
-<td>Position, Layer, Depth, Height, Animation, Switch, Content</td>
+<td>Base, Animation, Switch, Content</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Gate</td>
-<td>Position, Layer, Depth, Height, Aniamtion, Switch, Link</td>
+<td>Base, Animation, Switch, Link</td>
 </tr>
 <tr>
 <td>Object</td>
 <td>Plate</td>
-<td>Position, Layer, Depth, Height, Animation, Switch, Link</td>
+<td>Base, Animation, Switch, Link</td>
 </tr>
 <tr>
 <td>Craft</td>
 <td>Strut</td>
-<td>Position, Layer, Depth, Height, Owner</td>
+<td>Base, Owner</td>
 </tr>
 <tr>
-<td>Craft</td>
+<td>Resource</td>
 <td>Crop</td>
-<td>Position, Layer, Depth, Height, Season</td>
+<td>Base, Season</td>
 </tr>
 <tr>
-<td>Craft</td>
+<td>Resource</td>
 <td>Ore</td>
-<td>Position, Layer, Depth, Height, Vein</td>
+<td>Base, Vein</td>
 </tr>
 <tr>
 <td>Cursor</td>
 <td>Expression</td>
-<td>Position, Layer, Depth, Height</td>
+<td>Base, Attachment</td>
 </tr>
 <tr>
 <td>Cursor</td>
 <td>Projectile</td>
-<td>Position, Layer, Depth, Height, Initial</td>
+<td>Base, Initial, Velocity</td>
 </tr>
 <tr>
 <td>Effect</td>
-<td>Temporary</td>
-<td>Position, Layer, Depth, Height, Animation</td>
+<td>Passive</td>
+<td>Base, Animation</td>
 </tr>
 <tr>
 <td>Effect</td>
-<td>Persistent</td>
-<td>Position, Layer, Depth, Height, Animation</td>
+<td>Hazard</td>
+<td>Base, Animation, Damage</td>
+</tr>
+<tr>
+<td>Effect</td>
+<td>Collectable</td>
+<td>Base, Animation, Lot</td>
+</tr>
+<tr>
+<td>Effect</td>
+<td>Reactable</td>
+<td>Base, Animation, Intention, Cooldown</td>
 </tr>
 <tr>
 <td>Sheet</td>
 <td>Pixie</td>
-<td>Position, Layer. Depth, Height, Animation</td>
+<td>Base, Animation</td>
 </tr>
 <tr>
 <td>Sheet</td>
 <td>Sprite</td>
-<td>Position, Layer, Depth, Height, Animation, Intention, Inventory, Meters, Memory, Mutators, Goal</td>
+<td>Base, Animation, Velocity, Intention, Inventory, Meters, Memory, Mutators, Goal, Trajectory</td>
 </tr>
 <tr>
 <td>Widget</td>
 <td>Icon</td>
-<td>Position, Frame</td>
+<td>Base, Frame</td>
 </tr>
 <tr>
 <td>Widget</td>
 <td>Pane</td>
-<td>Position, Layout, Alignment, Gap, Margins</td>
+<td>Base, Layout, Alignment, Gap, Margins</td>
 </tr>
 <tr>
 <td>Widget</td>
 <td>Button</td>
-<td>Position, Status, Icons, Animation</td>
+<td>Base, Status, Animation</td>
 </tr>
 <tr>
 <td>Widget</td>
 <td>Meter</td>
-<td>Position, Reading, Unit</td>
+<td>Base, Animation, Reading, Unit</td>
 </tr>
 <tr>
 <td>Widget</td>
 <td>Page</td>
-<td>Position, Content, Page Index, Page Size, Canvas</td>
+<td>Base, Animation, Content, Page Index, Page Size, Canvas</td>
 </tr>
 </tbody>
 </table>
@@ -2407,7 +2425,11 @@
 </li>
 </ul>
 <p><strong>Animation: LifeCycleAnimation</strong></p>
-<p>TODO</p>
+<ul>
+<li><code>if properties.lifcycle == TEMPORARY: if animation.state.frame &lt; properties.count: animation.state.frame += 1</code></li>
+<li><code>if properties.lifcycle == CONTINUOUS: if animation.state.frame &gt;= properties.count: animation.state.frame = 0</code></li>
+<li><code>if properties.lifcycle == PERIODIC: if animation.state.frame &gt; properties.lifecycle.frequency: animation.state.frame = 0</code></li>
+</ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
 <li><code>keys(id, state) : [ "{id}-{state.animation.frame}" ]</code></li>
@@ -2429,7 +2451,7 @@
 
     subgraph StateModel ["State Model"]
         direction TB
-        StateContent["Functional State: passive, hazard, collectable, interactable"]
+        StateContent["Functional State: passive, hazard, collectable, reactable"]
     end
 
     subgraph BehaviorStrategy ["Behavior Strategy"]
@@ -2438,7 +2460,7 @@
     end</code></pre>
 <p>In other words, the State Model determines the function of the Effect, but the Lifecycle determines the Animation update schema.</p>
 <h3 id="passive">Passive</h3>
-<p>Ambient environmental effects that do not participate in collision resolution or health interactions (e.g., torches, water ripples, falling leaves).</p>
+<p>Passive effects that do not participate in collision resolution or interactions (e.g., torches, water ripples, falling leaves).</p>
 <p><strong>State: AnimatorState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
@@ -2448,7 +2470,7 @@
 <li><code>animation: Animation</code></li>
 </ul>
 <h3 id="hazard">Hazard</h3>
-<p>Environmental hazards that deal damage to overlapping dynamic entities (e.g., lava, floor spikes, poison gas clouds).</p>
+<p>Hazard Effects deal damage to overlapping dynamic entities (e.g., lava, floor spikes, poison gas clouds).</p>
 <p><strong>State: HazardState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
@@ -2457,12 +2479,14 @@
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
 <li><code>damage: Damage</code><ul>
-<li>TODO</li>
+<li><code>amount: int</code></li>
+<li><code>duration: int</code></li>
+<li><code>reaction: bounce | hinder</code></li>
 </ul>
 </li>
 </ul>
 <h3 id="collectables">Collectables</h3>
-<p>World pickups that transfer loot keys into a Sprite's or Player's inventory upon hitbox intersection (e.g., dropped coins, potions).</p>
+<p>Collectables are Effects that transfer loot keys into a Sprite's or Player's inventory upon hitbox intersection (e.g., dropped coins, potions).</p>
 <p><strong>State: CollectableState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
@@ -2470,18 +2494,23 @@
 <li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
-<li>TODO</li>
+<li><code>lot: Lot</code><ul>
+<li><code>inventory: Inventories</code></li>
+<li><code>item: str</code></li>
+<li><code>quantity: int</code></li>
 </ul>
-<h3 id="interactables">Interactables</h3>
-<p>Mechanized world props whose animations and states trigger upon intentional player or sprite actions (e.g., furnaces, sparring dummies).</p>
-<p><strong>State: InteractableState</strong></p>
+</li>
+</ul>
+<h3 id="reactables">Reactables</h3>
+<p>Reactables Effects react to the <a href="../04-intentions/">Intentional</a> states of <a href="../02-sprites/">Sprites</a>.</p>
+<p><strong>State: ReactableState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
 <li><code>depth: int</code></li>
 <li><code>height: int</code></li>
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
-<li>TODO</li>
+<li><code>intention</code></li>
 </ul>
 <h2 id="crafts">Crafts</h2>
 <ul>
@@ -2580,7 +2609,9 @@
 <li><code>delay</code>: (<em>Optional</em>) Number of Engine ticks to accumulate before a frame update. Used to control the speed of the animation. Defaults to 1. </li>
 </ul>
 <p><strong>Action Sets</strong></p>
-<p>Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See <a href="../appendices/01-schemas/#configuration-actions">Action Configuration Schema</a> below for more details. </p>
+<p>Many Sheet Assets reuse the same Action specification. Common Asset Action specifications are configured and indexed in the Action Configuration file. These configurations are referred to as Action Sets. Each Sheet specifics an Action Set in its property index file. See <a href="../appendices/01-schemas/#configuration-actions">Action Configuration Schema</a> for more details. </p>
+<p><strong>Attackboxes</strong></p>
+<p>An Attackbox is a special type of hitbox unique to Sheet Assets. It is mapped to a canonical <code>&lt;action&gt;-&lt;direction&gt;-&lt;frame&gt;</code> key (where <code>setting.SEPARATOR = "-"</code>) and applied during the animation state identified by this key. Attackboxes are used to augment the Sheet's basic hitbox collision detection during <a href="../05-mechanics/#spatial">CombatMechanics</a>. While any Sprite can alter its Attackbox properties, this property is utilized mainly by <a href="../02-sprites/#equipment">Equipment</a>.</p>
 <p><strong>Stacks</strong></p>
 <p>A Stack is a list of Sheets keys to superimpose over one another to form the resultant Sheet used in the game. The Sheet stacks are drawn in the order they are specified, i.e. the first entry has the lowest Z coordinate, with each subsequent entry being stacked on top.</p>
 <p>For example, the <code>src/assets/sheets/&lt;sheet-category&gt;/features/hair-blonde-bangs.png</code> might be stacked on top of <code>src/assets/sheets/&lt;sheet-category&gt;/skins/male-dark-human.png</code> to create a new Sheet asset used in the game. This Sprite stack is assembled in the <a href="../00-overview/#registry">Registry</a> using the <code>stack</code> property during the <a href="../10-architecture/#initialization">application bootstrap</a>. The assembled <code>stack</code> is saved as a Sheet Asset, using the <code>&lt;sheet-id&gt;</code> as the Asset key. In other words, once assembled, Stacks are effectively new "virtualized" Assets.</p>
@@ -2592,6 +2623,7 @@
 <ul>
 <li><code>dimensions: Dimensions</code></li>
 <li><code>stack: List[str]</code></li>
+<li><code>attackboxes: Dict[str, Hitbox]</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
 <li><code>actions: Actions</code></li>
 <li><code>mass: int</code></li>
