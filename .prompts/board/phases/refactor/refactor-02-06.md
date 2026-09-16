@@ -221,10 +221,6 @@ equipment:
 
 Consideration: attack hitboxes are not necessarily present in every frame, so this may be the optimal solution.
 
-**TODO**
-
-Determine what needs put in place for successful test. Anaylze what needs changed to accomodate equipment attack hitboxes. Determine the most Pythonic solution that utilizes optimized data structures in elegant ways.
-
 ###### Initial State
 
 **Configurations**
@@ -640,39 +636,13 @@ class SheetProperties(AssetProperties):
     mass: int = 0
     hitboxes: Optional[Union[List[Hitbox], EquipmentHitboxMap]] = field(default_factory=list)
     actions: Union[str, Dict[Actions, Action]] = field(default_factory=dict)
-
 ```
 
 ##### Goal: Combat Reach Broad-Phase Expansion
 
 Update `CombatMechanics` to query composite equipment hitboxes based on `(action, direction, frame)`. For entities in the `ATTACK` intention, dynamically construct an encompassing primitive bounding box that passes broad-phase spatial grid hashing.
 
-##### Tasks
-
-**1. Task: Equipment Hitbox Schema & Adapters**
-
-*Objective*: Define and validate composite frame hitbox structures in property schemas.
-
-* [ ] Subtask: Update `SheetProperties` in `app.models.properties` to allow `hitboxes` as `Dict[str, List[Hitbox]]` for equipment instances.
-* [ ] Subtask: Configure `shortsword` properties in `src/assets/sheets/main.yaml` with explicit hitboxes for `slash` active frames (frames 2 and 3 across all four directions).
-* [ ] Subtask: Verify Pydantic TypeAdapters in `app.config.loader` cleanly parse composite string keys into Cython `Hitbox` objects.
-
-**2. Task: Combat Mechanics Spatial Query Refactor**
-
-*Objective*: Integrate frame-keyed weapon hitboxes into broad-phase and narrow-phase collision checks.
-
-* [ ] Subtask: Implement helper `CombatMechanics._active_hitboxes(entity, equipment)` to resolve the active frame hitbox list, defaulting to `entity.hitboxes` if unarmed or unmapped.
-* [ ] Subtask: Construct an encompassing primitive hitbox covering entity body plus weapon reach for all attackers passed to `self.collisions()`.
-* [ ] Subtask: Ensure narrow-phase `geometry.intersects()` receives only the active frame's weapon hitboxes.
-
-**3. Task: Interactable Reset and Cooldown Cycle**
-
-*Objective*: Implement cooldown tracking and state reset for triggered interactables.
-
-* [ ] Subtask: Add cooldown tick processing to `InteractionMechanics` or `CombatMechanics` for `InteractableState`.
-* [ ] Subtask: When `cooldown <= 0` following an active temporary animation, reset `state.active = False`, `state.animation.frame = 0`, and restore the base cooldown.
-
-### Proposed Hitbox Architecture Specifications
+### Goal: Equipment Hitbox Architecture Specifications
 
 To keep configuration concise and eliminate deep nesting, equipment YAML configurations should declare hitboxes using the canonical frame key format already enforced by `StateFrame`:
 
@@ -714,7 +684,31 @@ if weapon_props and isinstance(weapon_props.hitboxes, dict):
     active_hitboxes = weapon_props.hitboxes.get(frame_key, [])
 else:
     active_hitboxes = attacker.hitboxes
-
 ```
 
 This ensures that on windup frames (`frame 0`, `frame 1`), `active_hitboxes` is empty, natively preventing early hits without requiring special frame-checking logic in `CombatMechanics`. When the strike reaches `frame 2`, the hitbox becomes active, broad-phase evaluates the expanded boundary, narrow-phase detects overlap, and the dummy's `active` flag triggers.
+
+##### Tasks
+
+**1. Task: Equipment Hitbox Schema & Adapters**
+
+*Objective*: Define and validate composite frame hitbox structures in property schemas.
+
+* [ ] Subtask: Update `SheetProperties` in `app.models.properties` to allow `hitboxes` as `Dict[str, List[Hitbox]]` for equipment instances.
+* [ ] Subtask: Configure `shortsword` properties in `src/assets/sheets/main.yaml` with explicit hitboxes for `slash` active frames (frames 2 and 3 across all four directions).
+* [ ] Subtask: Verify Pydantic TypeAdapters in `app.config.loader` cleanly parse composite string keys into Cython `Hitbox` objects.
+
+**2. Task: Combat Mechanics Spatial Query Refactor**
+
+*Objective*: Integrate frame-keyed weapon hitboxes into broad-phase and narrow-phase collision checks.
+
+* [ ] Subtask: Implement helper `CombatMechanics._active_hitboxes(entity, equipment)` to resolve the active frame hitbox list, defaulting to `entity.hitboxes` if unarmed or unmapped.
+* [ ] Subtask: Construct an encompassing primitive hitbox covering entity body plus weapon reach for all attackers passed to `self.collisions()`.
+* [ ] Subtask: Ensure narrow-phase `geometry.intersects()` receives only the active frame's weapon hitboxes.
+
+**3. Task: Interactable Reset and Cooldown Cycle**
+
+*Objective*: Implement cooldown tracking and state reset for triggered interactables.
+
+* [ ] Subtask: Add cooldown tick processing to `InteractionMechanics` or `CombatMechanics` for `InteractableState`.
+* [ ] Subtask: When `cooldown <= 0` following an active temporary animation, reset `state.active = False`, `state.animation.frame = 0`, and restore the base cooldown.

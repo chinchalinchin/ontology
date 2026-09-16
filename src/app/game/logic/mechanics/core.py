@@ -77,6 +77,8 @@ class AnimationMechanics(Mechanic):
             for asset in board.instances(AssetInstances.PLATES):
                 asset.animation.animate(asset.state, asset.properties)
 
+
+
 class RemoveMechanics(Mechanic):
     """
     """
@@ -142,6 +144,7 @@ class MenuMechanics(Mechanic):
         elif item in board.equipment.shields.keys():
             state.inventory.equipment.shield = item
 
+
     def update(self, 
         board: Board, 
         delta: float, 
@@ -184,8 +187,8 @@ class MenuMechanics(Mechanic):
             neighbors = active_menu.graph.get(active_menu.focus, {})
             if direction in neighbors:
                 new_focus = neighbors[direction]
-                active_menu.widgets[active_menu.focus].state.status = Statuses.IDLE
-                active_menu.widgets[new_focus].state.status = Statuses.ACTIVE
+                active_menu.widgets[active_menu.focus].state.status = Statuses.IDLE.value
+                active_menu.widgets[new_focus].state.status = Statuses.ACTIVE.value
                 active_menu.focus = new_focus
 
         if interaction == Interactions.SELECT.value and active_menu.focus:
