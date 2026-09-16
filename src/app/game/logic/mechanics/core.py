@@ -80,7 +80,7 @@ class AnimationMechanics(Mechanic):
 
             for effect in board.instances(AssetInstances.REACTABLES.value):
                 if effect.state.active:
-                    effect.animation.cooldown()
+                    effect.animation.cooldown(asset.state, asset.properties)
 
 
 

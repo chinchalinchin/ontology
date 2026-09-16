@@ -1,0 +1,21 @@
+flowchart TD
+    Root["AssetCategory: EFFECTS"]
+
+    Root --> PropertyModel
+    Root --> StateModel
+    Root --> BehaviorStrategy
+
+    subgraph PropertyModel ["Property Model"]
+        direction TB
+        PropContent["EffectProperties: dimensions, hitboxes, mass, lifecycle"]
+    end
+    
+    subgraph StateModel ["State Model"]
+        direction TB
+        StateContent["Functional State: passive, hazard, collectable, reactable"]
+    end
+
+    subgraph BehaviorStrategy ["Behavior Strategy"]
+        direction TB
+        BehaviorContent["LifecycleAnimation: continuous, periodic, temporary"]
+    end

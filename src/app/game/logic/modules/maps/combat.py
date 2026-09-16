@@ -27,5 +27,7 @@ class CombatMap:
             str(sprite.animation.frame)
         ])
         weapon_key = sprite.inventory.equipment.weapon
-        return equipment.weapons.get(weapon_key,{}).attackboxes.get(frame_key)
-
+        weapon_props = equipment.weapons.get(weapon_key) if weapon_key else None
+        if not weapon_props or not weapon_props.attackboxes:
+            return []
+        return weapon_props.attackboxes.get(frame_key, [])

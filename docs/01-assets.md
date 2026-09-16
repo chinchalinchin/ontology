@@ -108,34 +108,46 @@ Asset *Categories* form the top layer of the hierarchy. Each Asset Category is d
 
 Each Category has Instances. Asset *Instances* form the bottom layer of the hierarchy. Each Asset Instance is defined by its dynamic state; an Asset's Instance determines what type of state it will parse from the state files and inject into its deployment. 
 
+Each AssetState has, at bare minimum,
+
+- Position
+- Layer
+- Depth 
+- Height
+
+These attributes are part of the base class from which all other states inherit. The following table details the *unique* state attributes of each Asset Instance (with the four attribute identified above labeled with the catchall "Base"),
+
 | Asset Category | Asset Instance | State |
 | - | - | - | 
-| Tile | Back | Position, Layer, Depth, Height |
-| Tile | Fore | Position, Layer, Depth, Height |
-| Tile | Grid | Position |
-| Object | Crate | Position, Layer, Depth, Height |
-| Object | Sign | Position, Layer, Depth, Height, Persona, Lexicon |
-| Object | Door | Position, Layer, Depth, Height, OutLayer |
-| Object | Chest | Position, Layer, Depth, Height, Animation, Switch, Content |
-| Object | Gate | Position, Layer, Depth, Height, Aniamtion, Switch, Link |
-| Object | Plate | Position, Layer, Depth, Height, Animation, Switch, Link |
-| Craft | Strut | Position, Layer, Depth, Height, Owner |
-| Craft | Crop | Position, Layer, Depth, Height, Season |
-| Craft | Ore | Position, Layer, Depth, Height, Vein |
-| Cursor | Expression | Position, Layer, Depth, Height |
-| Cursor | Projectile | Position, Layer, Depth, Height, Initial |
-| Effect | Temporary | Position, Layer, Depth, Height, Animation |
-| Effect | Persistent | Position, Layer, Depth, Height, Animation |
-| Sheet | Pixie | Position, Layer. Depth, Height, Animation |
-| Sheet | Sprite | Position, Layer, Depth, Height, Animation, Intention, Inventory, Meters, Memory, Mutators, Goal |
-| Widget | Icon | Position, Frame |
-| Widget | Pane | Position, Layout, Alignment, Gap, Margins |
-| Widget | Button  | Position, Status, Icons, Animation |
-| Widget | Meter | Position, Reading, Unit |
-| Widget | Page | Position, Content, Page Index, Page Size, Canvas |
+| Tile | Back | Base |
+| Tile | Fore | Base |
+| Tile | Grid | Base |
+| Object | Crate | Base, Velocity |
+| Object | Sign | Base, Persona, Lexicon |
+| Object | Door | Base, OutLayer |
+| Object | Chest | Base, Animation, Switch, Content |
+| Object | Gate | Base, Animation, Switch, Link |
+| Object | Plate | Base, Animation, Switch, Link |
+| Craft | Strut | Base, Owner |
+| Resource | Crop | Base, Season |
+| Resource | Ore | Base, Vein |
+| Cursor | Expression | Base, Attachment |
+| Cursor | Projectile | Base, Initial, Velocity |
+| Effect | Passive | Base, Animation |
+| Effect | Hazard | Base, Animation, Damage |
+| Effect | Collectable | Base, Animation, Lot |
+| Effect | Reactable | Base, Animation, Intention, Cooldown |
+| Sheet | Pixie | Base, Animation |
+| Sheet | Sprite | Base, Animation, Velocity, Intention, Inventory, Meters, Memory, Mutators, Goal, Trajectory |
+| Widget | Icon | Base, Frame |
+| Widget | Pane | Base, Layout, Alignment, Gap, Margins |
+| Widget | Button  | Base, Status, Animation |
+| Widget | Meter | Base, Animation, Reading, Unit |
+| Widget | Page | Base, Animation, Content, Page Index, Page Size, Canvas |
 
 !!! note
     [Equipment](./02-sprites.md#equipment) and [Player](./02-sprites.md#player) Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is a stateless Sheet, whereas the Player is a special type of [Sprite](./02-sprites.md).
+
 
 ### Asset Architecture
 
@@ -506,27 +518,7 @@ All Effects iterate over a single row of frames using `IterableFrame` and advanc
 Rather than implementing separate Animation classes to handle Effect animations (which would lead to a combinatorial explosion with the composition of Animation and State implementations to span the space of possible Effects instances, e.g. `HarzardContinuousAnimation`, `HazardPeriodicAnimation`, `HazardTemporaryAnimation` would have the same functional purpose of being a Hazard but different logic handling their Animation), Effects have a Lifecycle that determines how their Animation is handled.
 
 ```mermaid
-flowchart TD
-    Root["AssetCategory: EFFECTS"]
-
-    Root --> PropertyModel
-    Root --> StateModel
-    Root --> BehaviorStrategy
-
-    subgraph PropertyModel ["Property Model"]
-        direction TB
-        PropContent["EffectProperties: dimensions, hitboxes, mass, lifecycle"]
-    end
-    
-    subgraph StateModel ["State Model"]
-        direction TB
-        StateContent["Functional State: passive, hazard, collectable, reactable"]
-    end
-
-    subgraph BehaviorStrategy ["Behavior Strategy"]
-        direction TB
-        BehaviorContent["LifecycleAnimation: continuous, periodic, temporary"]
-    end
+--8<-- "static/mmd/effect-model.mmd"
 ```
 
 In other words, the State Model determines the function of the Effect, but the Lifecycle determines the Animation update schema.
@@ -545,7 +537,7 @@ Passive effects that do not participate in collision resolution or interactions 
 
 ### Hazard
 
-Hazard Effectsdeal damage to overlapping dynamic entities (e.g., lava, floor spikes, poison gas clouds).
+Hazard Effects deal damage to overlapping dynamic entities (e.g., lava, floor spikes, poison gas clouds).
 
 **State: HazardState**
 
@@ -577,7 +569,7 @@ Collectables are Effects that transfer loot keys into a Sprite's or Player's inv
 
 ### Reactables
 
-Mechanized world props whose animations and states trigger upon intentional player or sprite actions (e.g., furnaces, sparring dummies).
+Reactables Effects react to the [Intentional](./04-intentions.md) states of [Sprites](./02-sprites.md).
 
 **State: ReactableState**
 

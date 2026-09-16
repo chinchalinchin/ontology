@@ -30,38 +30,8 @@ As should already be obvious, much of the logic in Mechanics is in support of Sp
 
 To visualize how this all ties together for a [Sprite](./02-sprites.md) in a single frame,
 
-```
-flowchart TD
-    %% Mechanics Nodes
-    CM["CognitionMechanics"]
-    TM["TransitionMechanics"]
-    NM["NavigationMechanics"]
-    MM["MotionMechanics"]
-
-    %% Pipeline Flow
-    CM -->|"(sprite.state.goal)"| TM
-    TM -->|"(sprite.state.intention)"| NM
-    NM -->|"(sprite.state.trajectory.target)"| MM
-
-    %% Action / Output Annotations
-    CM --> A1["Sets Strategic Goal (TARGET, SUBJECT, OBJECT, POSITION)"]
-    TM --> A2["Evaluates ISL Intention (hunt, find, wander, idle)"]
-    NM --> A3["Manages Obstacles, LOS & RRT Queue (populates Trajectory)"]
-    MM --> A4["Steers Velocity Vector toward Trajectory Target"]
-
-    %% Class Assignments
-    class CM,TM,NM,MM mechanic;
-    class A1,A2,A3,A4 annotation;
-
-    %% Material UI Palette for MkDocs Slate Theme
-    %% Mechanics: Material Deep Purple 700 fill (#512da8) + Deep Purple 200 border (#b388ff)
-    classDef mechanic fill:#512da8,stroke:#b388ff,stroke-width:2px,color:#ffffff,font-weight:bold;
-
-    %% Annotations: Contrasting Lightened Blue Container (#1e2e4a) + Blue A200 border (#448aff)
-    classDef annotation fill:#1e2e4a,stroke:#448aff,stroke-width:1.5px,stroke-dasharray: 4 4,color:#e3f2fd,text-align:left;
-
-    %% Edge Labels
-    linkStyle default color:#e0e0e0,stroke:#90caf9,stroke-width:1.5px;
+```mermaid
+--8<-- "static/mmd/mechanics-flow.mmd"
 ```
 
 ### Core
@@ -167,6 +137,14 @@ The [Player](./02-sprites.md#player) does not observe momentum transfers. Instea
     * **Player vs. Wall ($m=0$):** `inv_total` is $> 0$. The Wall absorbs 0% of the overlap shift, and the Player absorbs 100%. The Player halts at the wall boundary.
     * **Player vs. Crate ($m=5$):** Both absorb the spatial shift proportional to their inverse mass. The Player pushes the Crate out of the way.
 * **Phase 2 - Momentum Transfer:** Bypass the 1D elastic collision calculation *only* for the Player.
+
+**CombatMechanics**
+
+```mermaid
+--8<-- "static/mmd/combat-mechanics.mmd"
+```
+
+In `CombatMechanics`, entities do not query spatial reach using their default body hitboxes (`asset.hitboxes`). Because `CollisionMechanics` prevents overlapping physical boundaries, character torsos will rarely intersect target bodies during weapon strikes. Instead, `CombatMechanics` queries the active weapon attackbox (`CombatMap.attackboxes`) associated with the entity's current `(action, direction, frame)`. Attacker spatial primitives are injected into the broad-phase spatial hash using their active weapon reach, evaluating collisions strictly against the target's physical hitboxes. Attackers with no attackboxes configured on their current animation frame bypass combat collision checks entirely.
 
 ### Intentional
 

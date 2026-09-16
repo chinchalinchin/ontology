@@ -813,7 +813,6 @@ libpng warning: iCCP: known incorrect sRGB profile
 2026-09-16 11:50:19,801 - INFO - __main__ - Generating state dump...
 2026-09-16 11:50:19,988 - INFO - __main__ - State dump successfully written to /home/grant/Projects/ontology/20260916_115019.state-dump.md
 2026-09-16 11:50:20,459 - INFO - __main__ - CLI processes completed.
-Segmentation fault (core dumped)
 ```
 
 **State Dump (Relevant Bits)**
@@ -963,3 +962,162 @@ Segmentation fault (core dumped)
         - Radius: 30
   - Intention: `idle`
 ```
+
+###### Analysis
+
+**1. Broad/Narrow Phase Isolation Failure in `CombatMechanics`**
+
+In `CombatMechanics.update`, the system evaluates melee collisions using:
+
+```python
+melee_assets = [a for a, hb in melee_attackers]
+colliding_pairs = self.collisions(melee_assets + targets)
+```
+
+`SpatialMechanic.collisions(assets)` delegates directly to `physics.collisions(primitive_data, self.grid)`:
+
+```python
+primitive_data = [asset.primitive(i) for i, asset in enumerate(assets)]
+```
+
+* `asset.primitive(i)` defaults strictly to `asset.hitboxes`—the entity's physical torso.
+* The player is at `(59, 42)` with hitbox `(23, 34, w=18, l=15)`. Absolute player body bounds are $x \in [82, 100]$, $y \in [76, 91]$.
+* `test-dummy` is at `(100, 50)` with dimensions `(64, 64)`. Absolute dummy bounds are $x \in [100, 164]$, $y \in [50, 114]$.
+* `physics.collisions` does not merely execute broad-phase grid hashing; step 3 of `physics.collisions` immediately executes narrow-phase `geometry.intersects` against the hitboxes passed in `primitive_data`.
+* In `geometry.intersects`, horizontal overlap requires $x_1 < x_2 + w_2 \land x_1 + w_1 > x_2$. Evaluating $x_1 + w_1 > x_2$ yields $100 > 100$, which evaluates to `False`.
+* `physics.collisions` discards the pair during narrow-phase culling before `CombatMechanics` ever inspects `active_hitboxes`. Even though the active shortsword attackbox on `slash-right-3` reaches $x \in [105, 112]$ (deep inside the dummy), the inner loop iterating over `colliding_pairs` never executes.
+
+**2. Unsafe Traversal in `CombatMap.attackboxes`**
+
+In `app/game/logic/modules/maps/combat.py`:
+
+```python
+weapon_key = sprite.inventory.equipment.weapon
+return equipment.weapons.get(weapon_key, {}).attackboxes.get(frame_key)
+
+```
+
+If an entity attacks unarmed (`weapon_key = None`) or equips an item lacking attackboxes, `equipment.weapons.get(None, {})` returns `{}`. Calling `{}.attackboxes` raises an unhandled `AttributeError`.
+
+###### Design
+
+```mermaid
+flowchart TD
+    subgraph Input ["Intention & Action Resolution"]
+      direction TB
+        PlayerInput["Device Poll: ATTACK"] --> ActionMap["AnimationMap: slash"]
+        ActionMap --> ActiveFrame["Frame Key: slash-right-3"]
+    end
+
+    subgraph Spatial ["Combat Spatial Query Pipeline"]
+      direction TB
+        ActiveFrame --> AttackboxLookup["CombatMap.attackboxes(attacker)"]
+        AttackboxLookup --> ExtentPrimitive["Construct Attacker Weapon Primitive hitboxes = active_attackboxes"]
+        TargetHitboxes["Target Body Primitives hitboxes = target.hitboxes"] --> SpatialGrid["Space Grid Hash & Query"]
+        ExtentPrimitive --> SpatialGrid
+        SpatialGrid --> CythonNarrow["physics.collisions(primitives, grid)"]
+    end
+
+    subgraph Resolution ["Combat & Reactable Resolution"]
+      direction TB
+        CythonNarrow --> ConfirmedPair["Intersecting Attacker & Target Pair"]
+        ConfirmedPair --> ReactableTrigger["ReactableState.active = True"]
+        ReactableTrigger --> AnimTick["LifecycleAnimation.animate() Frame 0 -> Count-1"]
+        AnimTick --> Clamp["Clamp to Final Frame (persist=True)"]
+        Clamp --> CooldownStep["LifecycleAnimation.cooldown(state, props) cooldown -= 1"]
+        CooldownStep --> Reset["cooldown <= 0: active = False, frame = 0, cooldown = default"]
+    end
+```
+
+**Decoupling Weapon Reach from Body Geometry**
+
+An entity's physical collision body (`asset.hitboxes`) and weapon reach (`attackboxes`) serve mutually exclusive functions:
+
+1. `CollisionMechanics` operates on physical bodies to maintain kinematic boundaries and prevent overlap.
+2. `CombatMechanics` must operate on the geometric union of the active attackboxes during windup/strike/recovery frames.
+
+When querying broad and narrow phase combat collisions, attackers must not be passed into `self.collisions()` using default body hitboxes. Instead:
+
+* If an attacker's `active_hitboxes` is empty (`None` or `[]` during windup or recovery frames), they must be excluded from combat collision candidate lists entirely.
+* If `active_hitboxes` exists, construct the attacker's primitive tuple by passing `hitboxes=active_hitboxes` directly into `attacker.primitive(index, hitboxes=active_hitboxes)`.
+* This allows `physics.collisions` to evaluate the actual weapon footprint against the target's body hitbox in C memory, eliminating the requirement for a redundant secondary Python-level `geometry.intersects()` call.
+
+**Reactable State Lifecycle**
+
+Reactables are props that respond to specific character intentions (`INTERACT` or `ATTACK`). Their lifecycle flow must remain deterministic and stateless:
+
+* **Trigger**: When an interaction or attack intersects a Reactable whose configured trigger matches the source intention, the system sets `state.active = True`.
+* **Execution**: While `state.active == True`, `LifecycleAnimation.animate()` advances frames according to `lifecycle.delay`.
+* **Persistence**: For `persist: True` effects (like sparring dummies or switches), the animation clamps at `properties.count - 1`.
+* **Cooldown & Reset**: Once clamped, `LifecycleAnimation.cooldown(state, properties)` decrements `state.cooldown`. When `state.cooldown <= 0`, it resets `state.active = False`, `state.animation.frame = 0`, `state.animation.tick = 0`, and restores `state.cooldown` from configuration.
+
+##### Bug B008: CombatMechanics Body-Hitbox Broad/Narrow Phase Culling Mismatch
+
+**STATUS**: OPEN
+**SEVERITY**: High
+
+**Description**
+
+`CombatMechanics.update` passes `melee_assets + targets` into `self.collisions()`. `SpatialMechanic.collisions` generates primitives using default entity body hitboxes (`asset.hitboxes`). Because `CollisionMechanics` prevents solid bodies from overlapping, an attacker standing adjacent to a target never registers a torso-to-torso collision ($x_1 + w_1 \le x_2$). `physics.collisions` discards the candidate pair during narrow-phase checking, preventing the secondary weapon-reach check (`geometry.intersects` with `active_hitboxes`) from ever executing.
+
+**Steps to Replicate**
+
+1. Deploy a player with `shortsword` at position `(59, 42)` on layer `0`.
+2. Deploy a reactable `test-dummy` with dimensions `(64, 64)` at position `(100, 50)`.
+3. Set player intention to `ATTACK` facing `RIGHT`.
+4. Observe that `CombatMechanics` outputs `attackboxes` during frames 3–5, but logs zero collision pairs and leaves `test-dummy.state.active = False`.
+
+**Proposed Remediation**
+
+In `CombatMechanics.update`, construct attacker primitives using `attacker.primitive(i, hitboxes=attackboxes)`. Filter out any attacker whose current frame has no active attackboxes before querying the spatial grid. Pass attacker primitives and target primitives into collision detection so narrow-phase evaluates weapon reach directly.
+
+#### Refactor: Phase 02.06.03: Combat Spatial Resolution
+
+**Overview**
+
+Align equipment attackbox schemas, spatial reach detection, and reactable animation lifecycles. Ensure equipment hitboxes instantiate strictly as Cython `Hitbox` objects, decouple weapon reach from torso collision geometry in `CombatMechanics`, and repair reactable cooldown resetting in `AnimationMechanics`.
+
+
+##### Goal: Independent Combat Spatial Hashing
+
+Refactor `CombatMechanics` to eliminate dependencies on character torso hitboxes. Dynamically build attacker primitives using active frame attackboxes, hash them against target body hitboxes in `libs.core.math.space.Space`, and directly evaluate reach collisions in Cython.
+
+##### Goal: Reactable State Reset & Cooldown Loop
+
+Correct the invocation signature of `LifecycleAnimation.cooldown` in `AnimationMechanics`. Normalize `cooldown` defaults between `LifecycleProperties` and `ReactableState` to ensure repeatable interaction triggers without state corruption.
+
+##### Tasks
+
+**1. Task: Schema Normalization & Adapter Coercion**
+
+*Objective*: Ensure attackbox definitions instantiate strictly as Cython `Hitbox` models across all equipment properties.
+
+* [x] Subtask: Update `SheetProperties.attackboxes` in `app/models/properties.py` to `Optional[Dict[str, List[Hitbox]]]`.
+* [x] Subtask: Validate that `app/config/loader.py` recursively instantiates `PydanticHitbox` instances across the `attackboxes` mapping.
+* [!: Dependent on Phase Completion] Subtask: Add unit tests in `tests/unit/test_libs_graphics_registry.py` confirming loaded equipment attackboxes are instances of `libs.core.models.Hitbox`.
+
+**2. Task: Combat Spatial Query Overhaul**
+
+*Objective*: Decouple combat reach evaluation from physical entity torso bounds.
+
+* [x] Subtask: Refactor `CombatMap.attackboxes` with defensive checks for unarmed sprites and null weapon attackbox mappings, returning `List[Hitbox]`.
+* [ ] Subtask: In `CombatMechanics.update`, filter out attackers where `active_hitboxes` is empty or `None`.
+* [ ] Subtask: Construct attacker primitives using `attacker.primitive(i, hitboxes=active_hitboxes)` and target primitives using `target.primitive(j)`.
+* [ ] Subtask: Query `physics.collisions` exclusively between active weapon primitives and valid target body primitives, bypassing the torso-to-torso broad-phase check.
+* [ ] Subtask: Trigger `target.state.active = True` when a reactable target intersects an active attackbox.
+
+**3. Task: Lifecycle Cooldown & Reactable State Alignment**
+
+*Objective*: Ensure persistent temporary effects reset cleanly after animation cycles.
+
+* [x] Subtask: Fix `AnimationMechanics.update` to pass `(effect.state, effect.properties)` to `effect.animation.cooldown()`.
+* [x] Subtask: Align `LifecycleProperties.cooldown` and `ReactableState.cooldown` defaults so expired reactables reset to their configured base interval.
+* [ ] Subtask: Verify that on animation clamp, `state.cooldown` decrements to `0`, resetting `state.active = False` and `state.animation.frame = 0`.
+
+**4. Task: Spinning Dummy Attack Regression Test**
+
+*Objective*: Confirm player attack triggers the reactable animation and resets cleanly.
+
+* [!: User Task] Subtask: Execute `cli.py start world-01` and verify `player` slashing rightward activates `test-dummy`.
+* [!: User Task] Subtask: Verify `test-dummy` cycles through frames `0` to `7` and clamps on frame `7`.
+* [!: User Task] Subtask: Verify cooldown decrements from `60` to `0`, restoring `test-dummy` to frame `0` and `active = False`.
