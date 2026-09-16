@@ -9,7 +9,7 @@ from app.game.logic.mechanics.spatial.interaction import InteractionMechanics
 from app.config.enums import Intentions, AssetInstances, AssetCategories, Menus
 from app.game.menus.events import MenuEvent
 from app.game.menus.contexts import DialogueContext
-from app.models.state import DevicePayload, ContainerState, DoorState, DialogueState
+from app.models.state import DevicePayload, DoorState, DialogueState
 from libs.core.models import Position, Dimensions
 
 

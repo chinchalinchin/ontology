@@ -11,6 +11,7 @@ from app.models.state import DevicePayload, MenuPayload, WorldPayload
 from app.assets.base import Animation
 from app.assets.animations import LifecycleAnimation
 
+
 def test_animation_mechanics_update():
     """
     Ensure the animate() interface is correctly invoked on the Animation
