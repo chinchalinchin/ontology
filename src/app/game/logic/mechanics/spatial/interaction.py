@@ -64,7 +64,11 @@ class InteractionMechanics(SpatialMechanic):
             doors = board.instances(AssetInstances.DOORS.value, layer)
             chests = board.instances(AssetInstances.CHESTS.value, layer)
             signs = board.instances(AssetInstances.SIGNS.value, layer)
-            targets = doors + chests + signs
+            interactables = [
+                effect for effect in board.instances(AssetInstances.INTERACTABLES.value, layer)
+                if effect.state.intention == Intentions.INTERACT.value
+            ]
+            targets = doors + chests + signs + interactables
 
             if not targets:
                 continue

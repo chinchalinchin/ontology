@@ -63,7 +63,8 @@ sheets:
             x: 100
             y: 200
       inventory: 
-        loot: null
+        pouch: null
+        pack: null
         equipment:
           armor: null
           tool: null

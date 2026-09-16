@@ -492,7 +492,9 @@ All Effects iterate over a single row of frames using `IterableFrame` and advanc
 
 **Animation: LifeCycleAnimation**
 
-TODO
+- `if properties.lifcycle == TEMPORARY: if animation.state.frame < properties.count: animation.state.frame += 1`
+- `if properties.lifcycle == CONTINUOUS: if animation.state.frame >= properties.count: animation.state.frame = 0`
+- `if properties.lifcycle == PERIODIC: if animation.state.frame > properties.lifecycle.frequency: animation.state.frame = 0 `
 
 **Frame: IterableFrame**
 
@@ -531,7 +533,7 @@ In other words, the State Model determines the function of the Effect, but the L
 
 ### Passive
 
-Ambient environmental effects that do not participate in collision resolution or health interactions (e.g., torches, water ripples, falling leaves).
+Passive effects that do not participate in collision resolution or interactions (e.g., torches, water ripples, falling leaves).
 
 **State: AnimatorState**
 
@@ -543,7 +545,7 @@ Ambient environmental effects that do not participate in collision resolution or
 
 ### Hazard
 
-Environmental hazards that deal damage to overlapping dynamic entities (e.g., lava, floor spikes, poison gas clouds).
+Hazard Effectsdeal damage to overlapping dynamic entities (e.g., lava, floor spikes, poison gas clouds).
 
 **State: HazardState**
 
@@ -559,7 +561,7 @@ Environmental hazards that deal damage to overlapping dynamic entities (e.g., la
 
 ### Collectables
 
-World pickups that transfer loot keys into a Sprite's or Player's inventory upon hitbox intersection (e.g., dropped coins, potions).
+Collectables are Effects that transfer loot keys into a Sprite's or Player's inventory upon hitbox intersection (e.g., dropped coins, potions).
 
 **State: CollectableState**
 
@@ -568,7 +570,10 @@ World pickups that transfer loot keys into a Sprite's or Player's inventory upon
 * `height: int`
 * `position: Position`
 * `animation: Animation`
-* TODO
+* `lot: Lot`
+    * `inventory: Inventories`
+    * `item: str`
+    * `quantity: int`
 
 ### Interactables
 
@@ -581,7 +586,7 @@ Mechanized world props whose animations and states trigger upon intentional play
 * `height: int`
 * `position: Position`
 * `animation: Animation`
-* TODO
+* `intention`
 
 ## Crafts
 

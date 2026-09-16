@@ -42,13 +42,7 @@ class Character:
     speed: int = 10
     impulse: int = 10
 
-@dataclass(slots=True)
-class Equipment:
-    armor: Optional[str] = None
-    weapon: Optional[str] = None
-    tool: Optional[str] = None
-    utility: Optional[str] = None
-    shield: Optional[str] = None
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class Meter:
@@ -59,6 +53,25 @@ class Meter:
 class Meters:
     health: Meter = field(default_factory=Meter)
     magic: Meter = field(default_factory=Meter)
+
+# ---------------------------------------------------------------------------------------
+
+@dataclass(slots=True)
+class Equipment:
+    armor: Optional[str] = None
+    weapon: Optional[str] = None
+    tool: Optional[str] = None
+    utility: Optional[str] = None
+    shield: Optional[str] = None
+
+@dataclass(slots=True)
+class Inventory:
+    pack: Optional[Dict[str, int]] = field(default_factory=dict)
+    pouch: Optional[Dict[str, int]] = field(default_factory=dict)
+    equipment: Optional[Equipment] = field(default_factory=Equipment)
+    wallet: int = 0
+
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class Psyche:
@@ -73,12 +86,6 @@ class Goal:
     category: Optional[str] = None
     layer: Optional[str] = None 
     position: Optional[Position] = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
-
-@dataclass(slots=True)
-class Inventory:
-    loot: Optional[Dict[str, int]] = field(default_factory=dict)
-    equipment: Optional[Equipment] = field(default_factory=Equipment)
-    wallet: int = 0
 
 @dataclass(slots=True)
 class Memory:
@@ -103,6 +110,15 @@ class Memory:
             self.rumors = []
         if self.doors is None:
             self.doors = {} 
+
+@dataclass(slots=True)
+class Trajectory:
+    target: Optional[Position] = None # type: ignore
+    vertices: List[Position] = field(default_factory=list) # type: ignore
+    stalled: bool = False
+    cooldown: int = 0
+
+# ---------------------------------------------------------------------------------------
 
 @dataclass(slots=True)
 class RadialParameters:
@@ -131,13 +147,6 @@ class MutatorParameters:
 class Mutators:
     triggers: MutatorTriggers = field(default_factory=MutatorTriggers)
     parameters: Optional[MutatorParameters] = None
-
-@dataclass(slots=True)
-class Trajectory:
-    target: Optional[Position] = None # type: ignore
-    vertices: List[Position] = field(default_factory=list) # type: ignore
-    stalled: bool = False
-    cooldown: int = 0
 
 # ---------------------------------------------------------------------------------------
 # ------------------------------------------------------------------------- SPRITE STATES

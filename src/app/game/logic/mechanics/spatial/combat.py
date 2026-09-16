@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 from app.config.enums import (
     AssetInstances,
     Intentions,
+    Actions
 )
 from app.models.state import DevicePayload
 from app.game.logic.mechanics.spatial import SpatialMechanic
@@ -65,11 +66,12 @@ class CombatMechanics(SpatialMechanic):
 
                 # ---------------- TODO: Needs lots of work
                 # Ranged Combat
-                if action in ['shoot', 'cast']:
+                if action in [Actions.SHOOT.value, Actions.CAST.value]:
                     # Trigger projectile spawn on critical frame (frame 0) to guarantee it's fired exactly once per action loop.
                     # TODO: update frame calculation with configuration
 
-                    if attacker.state.animation.frame == 0 and not attacker.state.mutators.triggers.executed:
+                    if attacker.state.animation.frame == 0 and \
+                        not attacker.state.mutators.triggers.executed:
                         proj_id = "TODO"
                         
                         proj = board.cradle.spawn_projectile(
@@ -89,8 +91,13 @@ class CombatMechanics(SpatialMechanic):
             if not melee_attackers:
                 continue
 
+            interactables = [
+                effect for effect in board.instances(AssetInstances.INTERACTABLES.value, layer)
+                if effect.state.intention == Intentions.ATTACK.value
+            ]
             targets = board.instances(AssetInstances.SPRITES.value, layer) + \
-                        board.instances(AssetInstances.PLAYERS.value, layer)
+                        board.instances(AssetInstances.PLAYERS.value, layer) + \
+                        interactables
             
             # Unpack melee_attackers for collision querying
             melee_assets = [a for a, hb in melee_attackers]
@@ -128,12 +135,15 @@ class CombatMechanics(SpatialMechanic):
                     target.dimensions, 
                     target.hitboxes
                 ) is not None:
-                    # Calculate and apply damage
-                    damage = attacker.state.character.strength - target.state.character.defense
-                    damage = max(1, damage)  # Minimum 1 damage on hit
-                    
-                    target.state.meters.health.current = max(0, 
-                        target.state.meters.health.current - damage)
-                    
-                    if target.state.meters.health.current == 0:
-                        target.state.mutators.triggers.dead = True
+                    if target.instance != AssetInstances.INTERACTABLES.value:
+                        # Calculate and apply damage
+                        damage = attacker.state.character.strength - target.state.character.defense
+                        damage = max(1, damage)  # Minimum 1 damage on hit
+                        
+                        target.state.meters.health.current = max(0, 
+                            target.state.meters.health.current - damage)
+                        
+                        if target.state.meters.health.current == 0:
+                            target.state.mutators.triggers.dead = True
+                    else:
+                        target.state.active = True

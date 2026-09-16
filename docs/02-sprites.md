@@ -246,17 +246,33 @@ TODO
 
 ### Inventory
 
+```mermaid
+flowchart TD
+    InventoryState["InventoryState"]
+    
+    Equipment["Equipment"]
+    Pouch["Pouch"]
+    Pack["Pack"]
+    Wallet["Wallet"]
+
+
+    InventoryState --> Equipment
+    InventoryState --> Pouch
+    InventoryState --> Pack
+    InventoryState --> Wallet
+```
+
 TODO
 
 **Equipment**
 
 Equipment, while part of the Inventory, affects the rendering of the Sprite, and thus is covered in its own section, [Equipment](#equipment).
 
-**Loot**
-
-Loot is added to the Inventory anytime a Sprite intersects a [Collectable](./01-assets.md#effects). 
+**Pouch**
 
 TODO
+
+**Pack**
 
 **Wallet**
 

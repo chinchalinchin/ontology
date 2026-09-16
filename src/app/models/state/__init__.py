@@ -17,7 +17,7 @@ from app.models.state.objects import (
     SwitchState,
     PropertyState,
     MotorState,
-    PassiveState,
+    EffectState,
     HazardState,
     InteractableState,
     CollectableState,
@@ -74,11 +74,12 @@ __all__ = [
     'DoorState',
     'SwitchState',
     'PropertyState',
+    'DialogueState',
+    # CURSOR STATES
     'MotorState',
     'AttachmentState',
-    'DialogueState',
     # EFFECT STATES
-    'PassiveState',
+    'EffectState',
     'HazardState',
     'InteractableState',
     'CollectableState',

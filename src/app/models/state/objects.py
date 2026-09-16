@@ -14,7 +14,8 @@ from dataclasses import dataclass, field
 from app.config.enums import (
     Reactions,
     Directions,
-    Actions
+    Intentions,
+    Inventories
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
@@ -38,6 +39,12 @@ class Damage:
     duration: int = 0
     reaction: Reactions = Reactions.BOUNCE.value
 
+@dataclass(slots=True)
+class Lot:
+    inventory: Inventories = Inventories.EQUIPMENT.value
+    item: Optional[str] = None 
+    quantity: int = 0
+
 # ------------------------------------------------------------------------ OBJECTS STATES
 
 @dataclass(slots=True)
@@ -54,14 +61,6 @@ class PositionalState(AssetState):
 class PropertyState(AssetState):
     owner: Optional[str] = None
     position: Optional[Position] = None # type: ignore
-
-@dataclass(slots=True)
-class MotorState(AssetState):
-    position: Optional[Position] = None # type: ignore
-    initial: Optional[Position] = None # type: ignore
-    direction: Directions = Directions.DOWN.value
-    speed: int = 10
-    velocity: Optional[Velocity] = field(default_factory=lambda: CoreVelocity(0.0, 0.0)) # type: ignore
 
 @dataclass(slots=True)
 class ContainerState(AssetState):
@@ -108,19 +107,21 @@ class AttachmentState(AssetState):
 # ------------------------------------------------------------------------ EFFECT STATES
 
 @dataclass(slots=True)
-class PassiveState(AssetState):
+class EffectState(AssetState):
     position: Optional[Position] = None # type: ignore
     animation: AnimationState = field(default_factory=AnimationState)
+    active: bool = True
 
 @dataclass(slots=True)
-class HazardState(PassiveState):
+class HazardState(EffectState):
     damage: Damage = field(default_factory=Damage)
 
 @dataclass(slots=True)
-class InteractableState(PassiveState):
-    action: Actions = Actions.SLASH.value
+class InteractableState(EffectState):
+    intention: str = Intentions.INTERACT.value
     cooldown: int = 60
+    active: bool = False
 
 @dataclass(slots=True)
-class CollectableState(PassiveState):
-    pass
+class CollectableState(EffectState):
+    lot: Lot = field(default_factory=Lot)

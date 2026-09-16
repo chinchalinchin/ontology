@@ -246,6 +246,12 @@ class ExpressionsPalette(str, Enum):
     BUBBLES         = "bubbles"
     BUFFS           = "buffs"
 
+class Inventories(str, Enum):
+    EQUIPMENT       = "equipment"
+    POUCH           = "pouch"
+    PACK            = "pack"
+    WALLET          = "wallet"
+    
 # -------------------------------- GOAL ENUMERATIONS
 
 class Goals(str, Enum):

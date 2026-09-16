@@ -88,7 +88,7 @@ class RemoveMechanics(Mechanic):
         payload: DevicePayload
     ) -> None:          
         removals = []
-        for effect in board.instances(AssetCategories.EFFECTS):
+        for effect in board.categories(AssetCategories.EFFECTS):
             if effect.properties.lifecycle.persist or (
                 effect.properties.lifecycle != Lifecycles.TEMPORARY.value
             ): continue

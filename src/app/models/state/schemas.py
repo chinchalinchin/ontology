@@ -22,7 +22,7 @@ from app.models.state.objects import (
     SwitchState,
     PropertyState,
     MotorState,
-    PassiveState,
+    EffectState,
     HazardState,
     InteractableState,
     CollectableState,
@@ -63,13 +63,12 @@ class CursorStateInstances:
 @dataclass(slots=True)
 class EffectStateInstances:
     hazards: List[HazardState] = field(default_factory=list)
-    passive: List[PassiveState] = field(default_factory=list)
+    passive: List[EffectState] = field(default_factory=list)
     collectables: List[CollectableState] = field(default_factory=list)
     interactables: List[InteractableState] = field(default_factory=list)
 
 @dataclass(slots=True)
 class SheetStateInstances:
-    pixies: List[PassiveState] = field(default_factory=list)
     sprites: List[SpriteState] = field(default_factory=list)
     players: List[PlayerState] = field(default_factory=list)
 

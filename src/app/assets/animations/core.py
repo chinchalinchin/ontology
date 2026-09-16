@@ -14,7 +14,8 @@ from app.models.properties import (
 )
 from app.models.state import (
     AssetState, 
-    SpriteState
+    SpriteState,
+    EffectState
 )
 
 class NoAnimation(Animation):
@@ -38,20 +39,25 @@ class BinaryAnimation(Animation):
         return state
 
 
-
 class LifecycleAnimation(Animation):
-    def animate(self, state: AssetState, properties: EffectProperties) -> AssetState:
+    def animate(self, state: EffectState, properties: EffectProperties) -> AssetState:
         lifecycle = properties.lifecycle
         anim = state.animation
         anim.tick += 1
 
+        if not state.active:
+            anim.frame = 0
+            anim.tick = 0
+            return state
+        
         if lifecycle.type == Lifecycles.CONTINUOUS.value:
             if anim.tick >= lifecycle.delay:
                 anim.tick = 0
                 anim.frame = (anim.frame + 1) % properties.count
 
         elif lifecycle.type == Lifecycles.TEMPORARY.value:
-            if anim.frame < properties.count:
+            limit = properties.count - 1 if lifecycle.persist else properties.count
+            if anim.frame < limit:
                 if anim.tick >= lifecycle.delay:
                     anim.tick = 0
                     anim.frame += 1
