@@ -4,13 +4,16 @@
 import pytest
 from unittest.mock import MagicMock
 from app.services.generators.cradle import Cradle
-from app.config.enums import AssetCategories, AssetInstances
+from app.config.enums import AssetCategories, AssetInstances, Reactions, Inventories
+from app.models.state import Damage, Lot
 from libs.core.models import Velocity, Position
+
 
 @pytest.fixture
 def cradle(mock_spawnables, mock_configurations):
     decomposer = MagicMock()
     return Cradle(mock_spawnables, mock_configurations.recipes, decomposer)
+
 
 def test_spawn_projectile(cradle):
     pos = Position(x=50, y=50)
@@ -27,6 +30,7 @@ def test_spawn_projectile(cradle):
     assert asset.state.velocity == vel
     assert asset.state.initial == pos
 
+
 def test_spawn_strut(cradle):
     pos = Position(x=100, y=100)
     
@@ -39,6 +43,37 @@ def test_spawn_strut(cradle):
     assert asset.state.layer == "layer_0"
     assert asset.state.position == pos
     assert asset.state.owner == "player"
+
+
+def test_spawn_collectable(cradle):
+    pos = Position(x=32, y=64)
+    lot = Lot(inventory=Inventories.EQUIPMENT.value, item="coin", quantity=10)
+
+    asset = cradle.spawn_collectable("gold-coin", "layer_0", pos, lot)
+
+    assert asset.taxonomy.id == "gold-coin"
+    assert asset.taxonomy.category == AssetCategories.EFFECTS
+    assert asset.taxonomy.instance == AssetInstances.COLLECTABLES
+    assert asset.state.position == pos
+    assert asset.state.layer == "layer_0"
+    assert asset.state.lot.item == "coin"
+    assert asset.state.lot.quantity == 10
+
+
+def test_spawn_hazard(cradle):
+    pos = Position(x=120, y=80)
+    damage = Damage(amount=25, duration=3, reaction=Reactions.BOUNCE.value)
+
+    asset = cradle.spawn_hazard("lava-pool", "layer_0", pos, damage)
+
+    assert asset.taxonomy.id == "lava-pool"
+    assert asset.taxonomy.category == AssetCategories.EFFECTS
+    assert asset.taxonomy.instance == AssetInstances.HAZARDS
+    assert asset.state.position == pos
+    assert asset.state.layer == "layer_0"
+    assert asset.state.damage.amount == 25
+    assert asset.state.damage.reaction == Reactions.BOUNCE.value
+
 
 def test_spawn_composition(cradle):
     pos = Position(x=0, y=0)

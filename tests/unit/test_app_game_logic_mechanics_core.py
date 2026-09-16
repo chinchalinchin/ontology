@@ -1,5 +1,3 @@
-# /home/grant/Projects/ontology/tests/unit/test_app_game_mechanics_core.py
-
 """
 # Ontology: tests.unit.test_app_game_mechanics_core
 
@@ -8,14 +6,16 @@ Unit tests for core engine mechanics including Animation and Garbage Collection.
 from unittest.mock import Mock, MagicMock
 import collections
 from app.game.logic.mechanics.core import AnimationMechanics, RemoveMechanics
-from app.config.enums import AssetInstances, AssetCategories
+from app.config.enums import AssetInstances, AssetCategories, Lifecycles
 from app.models.state import DevicePayload, MenuPayload, WorldPayload
 from app.assets.base import Animation
+from app.assets.animations import LifecycleAnimation
 
 def test_animation_mechanics_update():
     """
     Ensure the animate() interface is correctly invoked on the Animation
-    components of all targeted Asset Categories and Instances.
+    components of all targeted Asset Categories and Instances, and cooldown()
+    is processed for active Reactable effects.
     """
     board = MagicMock()
     mechanic = AnimationMechanics()
@@ -32,18 +32,21 @@ def test_animation_mechanics_update():
         
         a.state = MagicMock()
         a.state.mutators.triggers.animated = True
+        a.state.active = True
         
-        # Enforce spec matching so isinstance() checks don't skip the mock
         a.animation = MagicMock(spec=Animation)
         return a
 
-    effect_asset = make_asset(AssetCategories.EFFECTS, AssetInstances.TEMPORARY)
+    effect_asset = make_asset(AssetCategories.EFFECTS, AssetInstances.PASSIVE)
     sheet_asset = make_asset(AssetCategories.SHEETS, AssetInstances.SPRITES)
     chest_asset = make_asset(AssetCategories.OBJECTS, AssetInstances.CHESTS)
     gate_asset = make_asset(AssetCategories.OBJECTS, AssetInstances.GATES)
     plate_asset = make_asset(AssetCategories.OBJECTS, AssetInstances.PLATES)
+    
+    reactable_asset = make_asset(AssetCategories.EFFECTS, AssetInstances.REACTABLES)
+    reactable_asset.animation = MagicMock(spec=LifecycleAnimation)
 
-    assets = [effect_asset, sheet_asset, chest_asset, gate_asset, plate_asset]
+    assets = [effect_asset, sheet_asset, chest_asset, gate_asset, plate_asset, reactable_asset]
 
     board.paused = False
     board.assets.return_value = assets
@@ -68,6 +71,8 @@ def test_animation_mechanics_update():
     chest_asset.animation.animate.assert_called_once_with(chest_asset.state, chest_asset.properties)
     gate_asset.animation.animate.assert_called_once_with(gate_asset.state, gate_asset.properties)
     plate_asset.animation.animate.assert_called_once_with(plate_asset.state, plate_asset.properties)
+    reactable_asset.animation.cooldown.assert_called_once_with(reactable_asset.state, reactable_asset.properties)
+
 
 def test_remove_mechanics_update():
     board = Mock()
@@ -77,10 +82,26 @@ def test_remove_mechanics_update():
     temp_effect_remove = Mock()
     temp_effect_remove.state.animation.frame = 10
     temp_effect_remove.properties.count = 5
+    temp_effect_remove.properties.lifecycle.persist = False
+    temp_effect_remove.properties.lifecycle.type = Lifecycles.TEMPORARY.value
 
     temp_effect_keep = Mock()
     temp_effect_keep.state.animation.frame = 2
     temp_effect_keep.properties.count = 5
+    temp_effect_keep.properties.lifecycle.persist = False
+    temp_effect_keep.properties.lifecycle.type = Lifecycles.TEMPORARY.value
+
+    persist_effect_keep = Mock()
+    persist_effect_keep.state.animation.frame = 10
+    persist_effect_keep.properties.count = 5
+    persist_effect_keep.properties.lifecycle.persist = True
+    persist_effect_keep.properties.lifecycle.type = Lifecycles.TEMPORARY.value
+
+    continuous_effect_keep = Mock()
+    continuous_effect_keep.state.animation.frame = 10
+    continuous_effect_keep.properties.count = 5
+    continuous_effect_keep.properties.lifecycle.persist = False
+    continuous_effect_keep.properties.lifecycle.type = Lifecycles.CONTINUOUS.value
 
     dead_sprite = Mock()
     dead_sprite.state.mutators.triggers.dead = True
@@ -88,15 +109,13 @@ def test_remove_mechanics_update():
     alive_sprite = Mock()
     alive_sprite.state.mutators.triggers.dead = False
 
-    def mock_instances(inst, *args, **kwargs):
-        inst_val = getattr(inst, 'value', inst)
-        if inst_val == AssetInstances.TEMPORARY.value:
-            return [temp_effect_remove, temp_effect_keep]
-        if inst_val == AssetInstances.SPRITES.value:
-            return [dead_sprite, alive_sprite]
-        return []
-
-    board.instances.side_effect = mock_instances
+    board.categories.side_effect = lambda cat: (
+        [temp_effect_remove, temp_effect_keep, persist_effect_keep, continuous_effect_keep]
+        if cat == AssetCategories.EFFECTS else []
+    )
+    board.instances.side_effect = lambda inst, *args, **kwargs: (
+        [dead_sprite, alive_sprite] if inst == AssetInstances.SPRITES else []
+    )
 
     mechanic.update(board, 0.016, collections.deque(), payload)
 

@@ -5,25 +5,31 @@ from unittest.mock import MagicMock
 from app.assets.animations.core import (
     NoAnimation, 
     BinaryAnimation, 
-    PersistentAnimation, 
-    TemporaryAnimation, 
+    LifecycleAnimation, 
     StateAnimation, 
     SpriteAnimation
 )
+from app.config.enums import Lifecycles
+from app.models.properties import EffectProperties, Lifecycle
 from app.models.state import (
     AssetState, 
     AnimationState, 
     SpriteState, 
+    EffectState,
+    ReactableState,
     Psyche, 
     Mutators, 
     MutatorTriggers
 )
 from app.models.state.objects import AttachmentState
+from libs.core.models import Dimensions
+
 
 def test_no_animation():
     animation = NoAnimation()
     state = AssetState(id="test")
     assert animation.animate(state, None) == state
+
 
 def test_binary_animation():
     animation = BinaryAnimation()
@@ -37,36 +43,116 @@ def test_binary_animation():
     animation.animate(state, None)
     assert state.animation.frame == 0
 
-def test_persistent_animation():
-    animation = PersistentAnimation()
-    state = SpriteState(id="test")
-    state.animation.frame = 0
-    properties = MagicMock(count=3)
-    
-    animation.animate(state, properties)
-    assert state.animation.frame == 1
-    
-    state.animation.frame = 2
+
+def test_lifecycle_animation_inactive():
+    animation = LifecycleAnimation()
+    lifecycle = Lifecycle(type=Lifecycles.CONTINUOUS.value, delay=1)
+    properties = EffectProperties(dimensions=Dimensions(32, 32), count=4, lifecycle=lifecycle)
+    state = EffectState(id="effect-1", active=False, animation=AnimationState(frame=2, tick=3))
+
     animation.animate(state, properties)
     assert state.animation.frame == 0
+    assert state.animation.tick == 0
 
-def test_temporary_animation():
-    animation = TemporaryAnimation()
-    state = SpriteState(id="test")
-    state.animation.frame = 0
-    properties = MagicMock(count=3)
-    
+
+def test_lifecycle_animation_continuous():
+    animation = LifecycleAnimation()
+    lifecycle = Lifecycle(type=Lifecycles.CONTINUOUS.value, delay=2)
+    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, lifecycle=lifecycle)
+    state = EffectState(id="torch", active=True, animation=AnimationState(frame=0, tick=0))
+
+    # Tick 1: Pacing delay threshold not reached
+    animation.animate(state, properties)
+    assert state.animation.tick == 1
+    assert state.animation.frame == 0
+
+    # Tick 2: Delay reached, frame increments
+    animation.animate(state, properties)
+    assert state.animation.tick == 0
+    assert state.animation.frame == 1
+
+    # Advance to end of cycle and verify modulo wrap
+    state.animation.frame = 2
+    state.animation.tick = 1
+    animation.animate(state, properties)
+    assert state.animation.tick == 0
+    assert state.animation.frame == 0
+
+
+def test_lifecycle_animation_temporary_non_persisting():
+    animation = LifecycleAnimation()
+    lifecycle = Lifecycle(type=Lifecycles.TEMPORARY.value, delay=1, persist=False)
+    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, lifecycle=lifecycle)
+    state = EffectState(id="slash-spark", active=True, animation=AnimationState(frame=0, tick=0))
+
+    # Advances through frames up to count
     animation.animate(state, properties)
     assert state.animation.frame == 1
-    
-    # Should stop incrementing at count + 1 so RemoveMechanics can garbage collect
+
     state.animation.frame = 3
     animation.animate(state, properties)
-    assert state.animation.frame == 4
-    
-    state.animation.frame = 4
+    # Beyond count, frame advancement halts for garbage collection
+    assert state.animation.frame == 3
+
+
+def test_lifecycle_animation_temporary_persisting():
+    animation = LifecycleAnimation()
+    lifecycle = Lifecycle(type=Lifecycles.TEMPORARY.value, delay=1, persist=True)
+    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, lifecycle=lifecycle)
+    state = EffectState(id="dummy", active=True, animation=AnimationState(frame=0, tick=0))
+
+    state.animation.frame = 1
     animation.animate(state, properties)
-    assert state.animation.frame == 4
+    assert state.animation.frame == 2
+
+    # Clamps to count - 1 when persist=True
+    animation.animate(state, properties)
+    assert state.animation.frame == 2
+
+
+def test_lifecycle_animation_periodic():
+    animation = LifecycleAnimation()
+    lifecycle = Lifecycle(type=Lifecycles.PERIODIC.value, delay=2, frequency=8)
+    properties = EffectProperties(dimensions=Dimensions(32, 32), count=2, lifecycle=lifecycle)
+    state = EffectState(id="geyser", active=True, animation=AnimationState(frame=0, tick=0))
+
+    # Active duration = 2 * 2 = 4 ticks. Frame 0 during ticks 0-1
+    animation.animate(state, properties) # tick 1
+    assert state.animation.frame == 0
+
+    animation.animate(state, properties) # tick 2
+    assert state.animation.frame == 1
+
+    animation.animate(state, properties) # tick 3
+    assert state.animation.frame == 1
+
+    animation.animate(state, properties) # tick 4 -> idle resting frame
+    assert state.animation.frame == 0
+
+    state.animation.tick = 7
+    animation.animate(state, properties) # tick 8 reaches frequency limit
+    assert state.animation.tick == 0
+    assert state.animation.frame == 0
+
+
+def test_lifecycle_animation_cooldown_and_reset():
+    animation = LifecycleAnimation()
+    lifecycle = Lifecycle(type=Lifecycles.TEMPORARY.value, delay=1, cooldown=60, persist=True)
+    properties = EffectProperties(dimensions=Dimensions(32, 32), count=3, lifecycle=lifecycle)
+    state = ReactableState(id="dummy", active=True, cooldown=2, animation=AnimationState(frame=2, tick=0))
+
+    # Frame matches clamp limit (count - 1): decrement cooldown
+    animation.cooldown(state, properties)
+    assert state.cooldown == 1
+    assert state.active is True
+
+    # Cooldown expires: resets state and restores base cooldown
+    animation.cooldown(state, properties)
+    assert state.cooldown == 60
+    assert state.active is False
+    assert state.animation.frame == 0
+    assert state.animation.tick == 0
+
 
 def test_state_animation():
     animation = StateAnimation()
@@ -94,6 +180,7 @@ def test_state_animation():
     animation.animate(state, properties)
     assert state.animation.frame == 0
     assert state.animation.tick == 0
+
 
 def test_sprite_animation():
     animation = SpriteAnimation()

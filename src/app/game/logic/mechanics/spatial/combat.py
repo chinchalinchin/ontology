@@ -25,6 +25,7 @@ from app.game.logic.modules.maps import CombatMap
 
 # Cython Libraries
 import libs.core.math.geometry as geometry
+import libs.core.math.physics as physics
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +63,11 @@ class CombatMechanics(SpatialMechanic):
                 # ---------- ATTACKBOX HANDLING
                 if attacker.state.animation.action not in [Actions.SHOOT.value, Actions.CAST.value]:
                     attackboxes = CombatMap.attackboxes(attacker.state, board.equipment)
-                    melee_attackers.append((attacker, attackboxes))
+                    logger.info(
+                        f"attackboxes: {[hb.to_dict() for hb in attackboxes] if attackboxes else None}"
+                    )
+                    if attackboxes:
+                        melee_attackers.append((attacker, attackboxes))
                     continue
 
                 # ---------- RANGED COMBAT HANDLING
@@ -83,8 +88,6 @@ class CombatMechanics(SpatialMechanic):
                 elif attacker.state.animation.frame != 0:
                     attacker.state.mutators.triggers.executed = False
 
-            logger.info(f"attackboxes: {attackboxes}")
-
             if not melee_attackers:
                 continue
 
@@ -93,52 +96,58 @@ class CombatMechanics(SpatialMechanic):
                     AssetInstances.REACTABLES.value, layer)
                 if effect.state.intention == Intentions.ATTACK.value
             ]
-            targets = board.instances(AssetInstances.SPRITES.value, layer) + \
-                        board.instances(AssetInstances.PLAYERS.value, layer) + \
-                        reactables
-            
-            # Unpack melee_attackers for collision querying
-            melee_assets = [a for a, hb in melee_attackers]
-            colliding_pairs = self.collisions(melee_assets + targets)
-            
-            for asset_a, asset_b in colliding_pairs:
-                # Asset A: Attacker, Asset B: Target
-                if asset_a in melee_assets and asset_b in targets:
-                    attacker, target = asset_a, asset_b
-                # Asset A: Target, Asset B: Attacker
-                elif asset_b in melee_assets and asset_a in targets:
-                    attacker, target = asset_b, asset_a
+            targets = (
+                board.instances(AssetInstances.SPRITES.value, layer) +
+                board.instances(AssetInstances.PLAYERS.value, layer) +
+                reactables
+            )
+
+            if not targets:
+                continue
+
+            # Construct indexed primitives: weapon reach for attackers, body hitboxes for targets
+            attacker_map = {}
+            target_map = {}
+            primitives = []
+
+            for i, (attacker, active_hitboxes) in enumerate(melee_attackers):
+                attacker_map[i] = attacker
+                primitives.append(attacker.primitive(i, hitboxes=active_hitboxes))
+
+            target_offset = len(melee_attackers)
+            for j, target in enumerate(targets):
+                idx = target_offset + j
+                target_map[idx] = target
+                primitives.append(target.primitive(idx))
+
+            # Query physics.collisions exclusively between active weapon primitives and targets
+            self.grid.clear()
+            colliding_indices = physics.collisions(primitives, self.grid)
+
+            for id_a, id_b in colliding_indices:
+                if id_a in attacker_map and id_b in target_map:
+                    attacker, target = attacker_map[id_a], target_map[id_b]
+                elif id_b in attacker_map and id_a in target_map:
+                    attacker, target = attacker_map[id_b], target_map[id_a]
                 else:
                     continue
 
-                if attacker.name == target.name or target.state.mutators.triggers.dead:
+                if attacker.name == target.name or (
+                    getattr(target.state, 'mutators', None) and target.state.mutators.triggers.dead
+                ):
                     continue
-                    
-                # Retrieve the active hitboxes we cached earlier
-                active_hitboxes = next((
-                    hb for a, hb in melee_attackers 
-                    if a == attacker
-                ), attacker.hitboxes)
 
-                # The broad-phase checked the default hitboxes (because `primitive` uses `self.hitboxes`).
-                # We need to narrow-phase check the specific weapon hitboxes against the target hitboxes.
-                if geometry.intersects(
-                    attacker.state.position, 
-                    attacker.dimensions, 
-                    active_hitboxes,
-                    target.state.position, 
-                    target.dimensions, 
-                    target.hitboxes
-                ) is not None:
-                    if target.instance != AssetInstances.REACTABLES.value:
-                        # Calculate and apply damage
-                        damage = attacker.state.character.strength - target.state.character.defense
-                        damage = max(1, damage)  # Minimum 1 damage on hit
-                        
-                        target.state.meters.health.current = max(0, 
-                            target.state.meters.health.current - damage)
-                        
-                        if target.state.meters.health.current == 0:
-                            target.state.mutators.triggers.dead = True
-                    else:
-                        target.state.active = True
+                # Trigger reactable activation on confirmed attackbox intersection
+                if target.instance == AssetInstances.REACTABLES.value:
+                    target.state.active = True
+                else:
+                    # Calculate and apply damage
+                    damage = attacker.state.character.strength - target.state.character.defense
+                    damage = max(1, damage)  # Minimum 1 damage on hit
+
+                    target.state.meters.health.current = max(
+                        0, target.state.meters.health.current - damage
+                    )
+
+                    if target.state.meters.health.current == 0:
+                        target.state.mutators.triggers.dead = True

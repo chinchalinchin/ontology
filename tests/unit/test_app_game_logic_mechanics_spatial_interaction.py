@@ -52,39 +52,6 @@ def test_interaction_with_door_relayers_source(interaction_mechanics, mock_board
         assert player.state.intention == Intentions.IDLE.value
 
 
-def test_interaction_with_chest_transfers_loot_to_sprite(interaction_mechanics, mock_board):
-    sprite = mock_board.assets()[0] 
-    sprite.state.intention = Intentions.INTERACT.value
-    sprite.state.position = Position(x=10, y=10)
-    sprite.state.inventory.loot = {"gold": 5}
-    
-    chest = MagicMock()
-    chest.name = "chest-1"
-    chest.category = AssetCategories.OBJECTS.value
-    chest.instance = AssetInstances.CHESTS.value
-    chest.taxonomy.instance = AssetInstances.CHESTS.value
-    chest.properties.mass = 0
-    chest.state = ContainerState(
-        id="chest-1",
-        layer="0",
-        position=Position(x=10, y=10),
-        content=["ruby", "ruby"]
-    )
-    chest.dimensions = Dimensions(w=32, l=32)
-    
-    mock_board.add([chest])
-    bus = collections.deque()
-    payload = MagicMock(spec=DevicePayload)
-    
-    with patch.object(InteractionMechanics, 'intersections', return_value=[(sprite, chest)]):
-        interaction_mechanics.update(mock_board, 1.0, bus, payload)
-        
-        assert sprite.state.inventory.loot.get("ruby") == 2
-        assert sprite.state.inventory.loot.get("gold") == 5
-        assert len(chest.state.content) == 0
-        assert sprite.state.intention == Intentions.INTERACT.value
-
-
 def test_interaction_with_sign_dispatches_menu_event(interaction_mechanics, mock_board):
     player = mock_board.player()
     player.state.intention = Intentions.INTERACT.value

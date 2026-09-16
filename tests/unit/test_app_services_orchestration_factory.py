@@ -13,18 +13,17 @@ from app.assets.frames import (
     SpriteFrame, 
     SingleFrame, 
     IterableFrame, 
-    StateFrame,
-    TraversalFrame,
-    MeterFrame,
+    StateFrame, 
+    TraversalFrame, 
+    MeterFrame, 
     NoFrame
 )
 from app.assets.animations import (
-    PersistentAnimation, 
-    BinaryAnimation,
-    TemporaryAnimation,
-    StateAnimation,
-    TraversalAnimation,
-    MeterAnimation,
+    LifecycleAnimation, 
+    BinaryAnimation, 
+    StateAnimation, 
+    TraversalAnimation, 
+    MeterAnimation, 
     NoAnimation
 )
 from app.game.devices import Keyboard
@@ -33,14 +32,15 @@ from app.game.logic.mechanics import (
     PlayerMechanics
 )
 from app.game.menus.controllers import (
-    DisplayController,
+    DisplayController, 
     ScrollController
 )
 from app.models.config import (
-    DeviceMapping,
+    DeviceMapping, 
     WorldMapping, 
     MenuMapping
 )
+
 
 def test_factory_frame():
     assert isinstance(Factory.frame(FrameRecipe.SPRITE), SpriteFrame)
@@ -51,14 +51,15 @@ def test_factory_frame():
     assert isinstance(Factory.frame(FrameRecipe.METER), MeterFrame)
     assert isinstance(Factory.frame(FrameRecipe.NONE), NoFrame)
 
+
 def test_factory_animation():
-    assert isinstance(Factory.animation(AnimationRecipe.PERSISTENT), PersistentAnimation)
+    assert isinstance(Factory.animation(AnimationRecipe.LIFECYCLE), LifecycleAnimation)
     assert isinstance(Factory.animation(AnimationRecipe.BINARY), BinaryAnimation)
-    assert isinstance(Factory.animation(AnimationRecipe.TEMPORARY), TemporaryAnimation)
     assert isinstance(Factory.animation(AnimationRecipe.STATE), StateAnimation)
     assert isinstance(Factory.animation(AnimationRecipe.TRAVERSAL), TraversalAnimation)
     assert isinstance(Factory.animation(AnimationRecipe.METER), MeterAnimation)
     assert isinstance(Factory.animation(AnimationRecipe.NONE), NoAnimation)
+
 
 def test_factory_taxonomy():
     tax = Factory.taxonomy(
@@ -72,10 +73,12 @@ def test_factory_taxonomy():
     assert tax.category == "crafts"
     assert tax.instance == "struts"
 
+
 def test_factory_device():
     mapping = DeviceMapping(world=WorldMapping(), menu=MenuMapping())
     device = Factory.device(Devices.KEYBOARD, mapping)
     assert isinstance(device, Keyboard)
+
 
 def test_factory_mechanics():
     mechanic_anim = Factory.mechanics(Mechanics.ANIMATION)
@@ -84,6 +87,7 @@ def test_factory_mechanics():
     assert isinstance(mechanic_anim, AnimationMechanics)
     assert isinstance(mechanic_player, PlayerMechanics)
 
+
 def test_factory_controller():
     ctrl_display = Factory.controller(Controllers.DISPLAY)
     ctrl_scroll = Factory.controller(Controllers.SCROLL)
@@ -91,11 +95,12 @@ def test_factory_controller():
     assert isinstance(ctrl_display, DisplayController)
     assert isinstance(ctrl_scroll, ScrollController)
 
+
 def test_factory_string_resolution():
     """Verify Factory unboxes Cython strings correctly to their Enum equivalents."""
     from app.services.generators.factory import Factory
     from app.assets.frames import TraversalFrame
-    from app.assets.animations import MeterAnimation
+    from app.assets.animations import MeterAnimation, LifecycleAnimation
     from app.game.logic.mechanics.core import MenuMechanics
     from app.game.menus.controllers.display import DisplayController
 
@@ -106,6 +111,9 @@ def test_factory_string_resolution():
     # Test animation fallback
     anim = Factory.animation("meter")
     assert isinstance(anim, MeterAnimation)
+
+    anim_lifecycle = Factory.animation("lifecycle")
+    assert isinstance(anim_lifecycle, LifecycleAnimation)
     
     # Test mechanics fallback
     mech = Factory.mechanics("menu")

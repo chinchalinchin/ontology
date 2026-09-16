@@ -46,7 +46,7 @@ class LifecycleAnimation(Animation):
     def cooldown(self, state: EffectState, properties: EffectProperties) -> EffectState:
         """
         """
-        limit = ( properties.count - 1 
+        limit = (properties.count - 1 
                     if properties.lifecycle.persist 
                     else properties.count)
         if state.animation.frame >= limit:

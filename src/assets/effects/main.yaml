@@ -18,6 +18,7 @@ effects:
       lifecycle: 
         type: temporary
         persist: True
+        delay: 5
       hitboxes: null
       mass: 0
   hazards:

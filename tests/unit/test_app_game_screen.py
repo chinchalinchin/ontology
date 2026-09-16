@@ -13,9 +13,9 @@ from app.assets.frames import (
 )
 from app.models.state import (
     AssetState, 
+    EffectState,
     AnimationState, 
     SpriteState, 
-    AnimatorState,
     Inventory, 
     Equipment
 )
@@ -77,10 +77,10 @@ def test_screen_camera_clamping(mock_construct, mock_canvas, mock_registry):
 
 def test_frame_keys_generation():
     """Ensure keys() methods calculate correctly for all possible Frame implementations."""
-    state = AssetState(id="base_id")
+    state = EffectState(id="base_id")
     
     # Use AnimatorState since AssetState (base) has strict slots and no 'animation' attribute
-    anim_state = AnimatorState(id="anim_id")
+    anim_state = EffectState(id="anim_id")
     anim_state.animation = AnimationState(action=Actions.WALK, direction=Directions.DOWN, frame=2)
     
     sprite_state = SpriteState(id="player", name="player_1")

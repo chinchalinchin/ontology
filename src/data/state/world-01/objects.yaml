@@ -15,12 +15,3 @@ objects:
       position:
         x: 430
         y: 370
-effects:
-  reactables:
-    - id: spinning-dummy
-      name: test-dummy
-      layer: '0'
-      position:
-        x: 100
-        y: 50
-      intention: attack

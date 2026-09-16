@@ -5,10 +5,23 @@ import pytest
 import dataclasses
 from unittest.mock import patch, MagicMock
 
-from libs.graphics.registry import Registry, TTFFont
 from app.config.enums import FrameRecipe
-from app.models.config import SheetRecipe, EffectRecipe, ObjectRecipe, WidgetRecipe, Recipe
-from app.models.properties import Action, Direction, EffectProperties, ObjectProperties, FontProperties, RGBA
+from app.models.config import (
+    Recipe,
+    SheetRecipe,
+    EffectRecipe,
+    ObjectRecipe
+)
+from app.models.properties import (
+    Action, 
+    Direction, 
+    EffectProperties, 
+    ObjectProperties, 
+    FontProperties,
+    RGBA
+)
+
+from libs.graphics.registry import Registry, TTFFont
 from libs.core.models import Dimensions
 
 def test_registry_initialization_and_caching(mock_properties, mock_configurations):
@@ -92,7 +105,7 @@ def test_registry_indexing_and_retrieval(mock_properties, mock_configurations):
 
 def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
     """Test IterableFrame indexing for multi-frame animations."""
-    mock_properties.effects.temporary["explosion"] = EffectProperties(
+    mock_properties.effects.passive["explosion"] = EffectProperties(
         dimensions=Dimensions(w=32, l=32),
         count=3
     )
@@ -100,7 +113,7 @@ def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
         mock_configurations,
         recipes=dataclasses.replace(
             mock_configurations.recipes,
-            effects=EffectRecipe(temporary=Recipe(frame=FrameRecipe.ITERABLE))
+            effects=EffectRecipe(passive=Recipe(frame=FrameRecipe.ITERABLE))
         )
     )
     

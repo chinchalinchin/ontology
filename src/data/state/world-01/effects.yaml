@@ -1,0 +1,9 @@
+effects:
+  reactables:
+    - id: spinning-dummy
+      name: test-dummy
+      layer: '0'
+      position:
+        x: 225
+        y: 500
+      intention: attack

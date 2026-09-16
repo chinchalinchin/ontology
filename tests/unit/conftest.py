@@ -52,6 +52,7 @@ from app.models.config import (
     CursorRecipe,
     CraftRecipe,
     WidgetRecipe,
+    EffectRecipe,
     Recipe,
     IntentionConfiguration
 )
@@ -130,8 +131,18 @@ def mock_configurations():
             )
         ),
         recipes=RecipeConfiguration(
-            cursors=CursorRecipe(),
-            crafts=CraftRecipe()
+            cursors=CursorRecipe(
+                projectiles=Recipe(frame=FrameRecipe.SINGLE, animation=AnimationRecipe.NONE)
+            ),
+            crafts=CraftRecipe(
+                struts=Recipe(frame=FrameRecipe.SINGLE, animation=AnimationRecipe.NONE)
+            ),
+            effects=EffectRecipe(
+                collectables=Recipe(frame=FrameRecipe.ITERABLE, animation=AnimationRecipe.LIFECYCLE),
+                hazards=Recipe(frame=FrameRecipe.ITERABLE, animation=AnimationRecipe.LIFECYCLE),
+                passive=Recipe(frame=FrameRecipe.ITERABLE, animation=AnimationRecipe.LIFECYCLE),
+                reactables=Recipe(frame=FrameRecipe.ITERABLE, animation=AnimationRecipe.LIFECYCLE)
+            )
         )
     )
 
@@ -153,9 +164,11 @@ def mock_spawnables():
     return SpawnableGroup(
         projectiles={},
         expressions={},
-        temporary={},
+        collectables={},
+        hazards={},
         struts={}
     )
+
 
 @pytest.fixture
 def mock_mapping() -> DeviceMapping:

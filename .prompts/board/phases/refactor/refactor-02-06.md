@@ -1101,10 +1101,10 @@ Correct the invocation signature of `LifecycleAnimation.cooldown` in `AnimationM
 *Objective*: Decouple combat reach evaluation from physical entity torso bounds.
 
 * [x] Subtask: Refactor `CombatMap.attackboxes` with defensive checks for unarmed sprites and null weapon attackbox mappings, returning `List[Hitbox]`.
-* [ ] Subtask: In `CombatMechanics.update`, filter out attackers where `active_hitboxes` is empty or `None`.
-* [ ] Subtask: Construct attacker primitives using `attacker.primitive(i, hitboxes=active_hitboxes)` and target primitives using `target.primitive(j)`.
-* [ ] Subtask: Query `physics.collisions` exclusively between active weapon primitives and valid target body primitives, bypassing the torso-to-torso broad-phase check.
-* [ ] Subtask: Trigger `target.state.active = True` when a reactable target intersects an active attackbox.
+* [x] Subtask: In `CombatMechanics.update`, filter out attackers where `active_hitboxes` is empty or `None`.
+* [x] Subtask: Construct attacker primitives using `attacker.primitive(i, hitboxes=active_hitboxes)` and target primitives using `target.primitive(j)`.
+* [x] Subtask: Query `physics.collisions` exclusively between active weapon primitives and valid target body primitives, bypassing the torso-to-torso broad-phase check.
+* [x] Subtask: Trigger `target.state.active = True` when a reactable target intersects an active attackbox.
 
 **3. Task: Lifecycle Cooldown & Reactable State Alignment**
 

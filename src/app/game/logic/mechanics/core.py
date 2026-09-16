@@ -80,7 +80,7 @@ class AnimationMechanics(Mechanic):
 
             for effect in board.instances(AssetInstances.REACTABLES.value):
                 if effect.state.active:
-                    effect.animation.cooldown(asset.state, asset.properties)
+                    effect.animation.cooldown(effect.state, effect.properties)
 
 
 
@@ -97,7 +97,7 @@ class RemoveMechanics(Mechanic):
         removals = []
         for effect in board.categories(AssetCategories.EFFECTS):
             if effect.properties.lifecycle.persist or (
-                effect.properties.lifecycle != Lifecycles.TEMPORARY.value
+                effect.properties.lifecycle.type != Lifecycles.TEMPORARY.value
             ): continue
 
             if effect.state.animation.frame >= effect.properties.count:

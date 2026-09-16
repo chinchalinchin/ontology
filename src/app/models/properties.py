@@ -37,7 +37,7 @@ class Lifecycle:
     type: Lifecycles = Lifecycles.CONTINUOUS.value
     delay: int = 1
     frequency: int = 0
-    cooldown: int = 0
+    cooldown: int = 60
     persist: bool = False
 
 # ---------------------------------------------------------------------------------------
