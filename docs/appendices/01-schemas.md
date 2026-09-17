@@ -1,10 +1,5 @@
 # Ontology: Appendix I - Schemas
 
-## Compositions Schemas
-
-- [brick-house](../static/xcf/compositions/brick-house.xcf)
-- [postern-gate](../static/xcf/compositions/postern-gate.xcf)
-
 ## Hitboxes Schemas
 
 ### Sprites
@@ -28,6 +23,8 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 </div>
 
+- [sheet-weapon-shortsword-slash-left-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-3.xcf) | [sheet-weapon-shortsword-slash-left-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-4.xcf) | [sheet-weapon-shortsword-slash-left-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-left-5.xcf)
+
 <div class="grid cards" markdown>
 
 - ![sheet-weapon-slash-left-3](../static/png/hitboxes/sheet-weapon-shortsword-slash-left-3.png)
@@ -35,6 +32,8 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 - ![sheet-weapon-slash-left-5](../static/png/hitboxes/sheet-weapon-shortsword-slash-left-5.png)
 
 </div>
+
+- [sheet-weapon-shortsword-slash-up-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-3.xcf) | [sheet-weapon-shortsword-slash-down-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-4.xcf) | [sheet-weapon-shortsword-slash-up-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-up-5.xcf)
 
 <div class="grid cards" markdown>
 
@@ -44,6 +43,8 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 
 </div>
 
+- [sheet-weapon-shortsword-slash-right-3](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-3.xcf) | [sheet-weapon-shortsword-slash-right-4](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-4.xcf) | [sheet-weapon-shortsword-slash-right-5](../static/xcf/hitboxes/sheet-weapon-shortsword-slash-right-5.xcf)
+
 <div class="grid cards" markdown>
 
 - ![sheet-weapon-slash-right-3](../static/png/hitboxes/sheet-weapon-shortsword-slash-right-3.png)
@@ -51,6 +52,11 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 - ![sheet-weapon-slash-right-5](../static/png/hitboxes/sheet-weapon-shortsword-slash-right-5.png)
 
 </div>
+
+## Compositions Schemas
+
+- [brick-house](../static/xcf/compositions/brick-house.xcf)
+- [postern-gate](../static/xcf/compositions/postern-gate.xcf)
 
 ### Struts
 
