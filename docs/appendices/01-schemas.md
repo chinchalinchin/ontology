@@ -27,6 +27,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 - ![sheet-weapon-slash-down-5](../static/png/hitboxes/sheet-weapon-shortsword-slash-down-5.png)
 
 </div>
+
 <div class="grid cards" markdown>
 
 - ![sheet-weapon-slash-left-3](../static/png/hitboxes/sheet-weapon-shortsword-slash-left-3.png)
@@ -34,6 +35,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 - ![sheet-weapon-slash-left-5](../static/png/hitboxes/sheet-weapon-shortsword-slash-left-5.png)
 
 </div>
+
 <div class="grid cards" markdown>
 
 - ![sheet-weapon-slash-up-3](../static/png/hitboxes/sheet-weapon-shortsword-slash-up-3.png)
@@ -41,6 +43,7 @@ LPC Sprite Hitbox in (Walk, Down, 0) State
 - ![sheet-weapon-slash-up-5](../static/png/hitboxes/sheet-weapon-shortsword-slash-up-5.png)
 
 </div>
+
 <div class="grid cards" markdown>
 
 - ![sheet-weapon-slash-right-3](../static/png/hitboxes/sheet-weapon-shortsword-slash-right-3.png)
