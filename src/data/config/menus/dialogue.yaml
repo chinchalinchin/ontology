@@ -2,7 +2,7 @@ menus:
   dialogue:
     controller: scroll
     roots: 
-      - id: neutral
+      - id: neutral-small
         name: dialogue-menu
         position:
           # 480 x 480
@@ -20,6 +20,9 @@ menus:
             alignment: start
             gap: 0
             children:
+              - instance: pages
+                id: dark-portrait
+                name: character-portrait-bg
               - instance: icons
                 id: portraits
                 name: character-portrait-icon
@@ -29,7 +32,7 @@ menus:
                     icon: context.sprite.psyche.persona
           # ------------------------------- DIALOGUE DISPLAY
           - instance: pages
-            id: notification
+            id: dark-notification
             name: character-speech
             bind:
               schema: library

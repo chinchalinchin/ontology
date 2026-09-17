@@ -98,7 +98,15 @@ cdef extern from "SDL2/SDL.h":
         void* pixels, 
         int pitch
     )
-    
+    int SDL_SetRenderDrawBlendMode(
+        SDL_Renderer* renderer, 
+        int blendMode
+    )
+    int SDL_RenderFillRect(
+        SDL_Renderer* renderer, 
+        const SDL_Rect* rect
+    )
+
     SDL_Surface* SDL_CreateRGBSurfaceWithFormat(
         unsigned int flags, 
         int width, 
@@ -272,6 +280,15 @@ def superimpose(list assets):
         SDL_RenderCopy(_renderer, tex_wrapper.ptr, &c_src, &c_dst)
 
 
+def dim(int r=0, int g=0, int b=0, int a=160):
+    """
+    Draws a full-screen alpha-blended rectangle over the backbuffer.
+    """
+    SDL_SetRenderDrawBlendMode(_renderer, SDL_BLENDMODE_BLEND)
+    SDL_SetRenderDrawColor(_renderer, r, g, b, a)
+    SDL_RenderFillRect(_renderer, NULL)
+
+    
 def canvas(int w, int l, bint opaque=False) -> TexturePtr:
     """
     Instantiates a blank texture assigned as a rendering target using primitive integers.

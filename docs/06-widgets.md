@@ -520,27 +520,31 @@ The HUD is always painted on top of all dynamic Assets; as such, it is stored in
 
 ### Configurations
 
-1. Dialogue: 
-    - **Payload**: `DialogueContext(plot: PlotState, sprite: SpriteState, object: DialogueState)`
-    - **Events**:  TODO
+1. Dialogue:
+    * **Payload**: `DialogueContext(plot: PlotState, sprite: SpriteState, object: DialogueState)`
+    * **Events**: `UpdateEvent` (canvas paging and line progression), `TerminalEvent` (closing dialogue loop)
 2. Editor: TODO
-    - **Payload**: `EditorContext` (TBD)
-    - **Events**: TODO
-3. Inventory: TODO 
-    - **Payload**: `InventoryContext(inventory: Inventory)` (TBD)
-    - **Events**: TODO
+    * **Payload**: `EditorContext` (TBD)
+    * **Events**: TODO
+3. Inventory: Instantiated from the world loop via `MenuEvent('inventory')` in `PlayerMechanics`.
+    * **Payload**: `InventoryContext(inventory: Inventory)`
+    * **Events**: `UpdateEvent` (slot scrolling and selection previews), `TerminalEvent` (closing menu and unpausing world)
 4. Market: TODO
-    - **Payload**: `MarketContext(buyer: Inventory, seller: Inventory)` (TBD)
-    - **Events**: TODO
-5. Main: The Main Menu is not instantiated by MenuEvents. It is created before the Board initializes and the game loop starts. 
-    - **Payload**: `MainContext(registry: Registry)`
-    - **Outputs**: `<board-key>` for `/src/data/state/<board-key>`
-6. Pause: TODO
-    - **Payload**: TODO
-    - **Events**: TODO
-7. View: Also known as the Heads-Up Display (HUD). The View Menu is not instantiated by the MenuEvents. It is created when the game loop initializes and is painted onto the screen along with every frame. It is updated when UpdateEvents are fired by other Menus.
-    - **Payload**: `ViewContext(sprite: SpriteState)`
-    - **Events**: None
+    * **Payload**: `MarketContext(buyer: Inventory, seller: Inventory)` (TBD)
+    * **Events**: TODO
+5. Main: Instantiated at ignition by injecting a `MenuEvent('main')` directly onto the Engine event bus before world simulation begins.
+    * **Payload**: `MainContext(registry: Registry)`
+    * **Events**: `StateEvent` (triggers `Migrator` hydration for New/Load), `MenuEvent` (opens `options` or `editor` submenus)
+    * **Outputs**: `<board-key>` / save slot target for state migration
+6. Options: Generic settings modal invoked from the Main Menu or Pause Menu.
+    * **Payload**: `MenuContext` (generic or inherited context)
+    * **Events**: `UpdateEvent` (live preview text stamping on display canvas), `TerminalEvent` (returns to previous menu)
+7. Pause: Modal menu triggered from the world loop via `MenuEvent('pause')` in `PlayerMechanics`. Pauses the engine tick by setting `board.paused = True`.
+    * **Payload**: `PauseContext(board: Board)`
+    * **Events**: `TerminalEvent` (unpauses game simulation), `StateEvent` (triggers state rehydration for loads), `MenuEvent` (opens `options` submenu or resets board to return to `main`)
+8. View: Also known as the Heads-Up Display (HUD). Created during engine bootstrap and stored in `board.overlays` rather than the modal `board.menus` stack. It renders on top of world assets every frame without pausing simulation or intercepting input traversal.
+    * **Payload**: `ViewContext(sprite: SpriteState)`
+    * **Events**: None (passively evaluates live state bindings each tick)
 
 ## Design
 

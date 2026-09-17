@@ -12,6 +12,7 @@ widgets:
       dimensions:
         w: 142
         l: 28
+    # --------
     arrow-down:
       dimensions:
         w: 24
@@ -98,36 +99,47 @@ widgets:
         w: 72
         l: 20
   pages:
-    dialogue:
+    # -------- SOLID PAGES
+    dark-dialogue:
       dimensions:
         w: 640
         l: 96
-    header:
-      dimensions:
-        w: 426
-        l: 163 
-    scroll:
-      dimensions:
-        w: 330
-        l: 54
-    notification:
+    dark-notification:
       dimensions:
         w: 192
         l: 64
-    parchment:
+    dark-portrait:
+      dimensions:
+        w: 58
+        l: 69
+    # -------- FAUX PAPER PAGES
+    paper-scroll:
+      dimensions:
+        w: 189
+        l: 192
+    paper-header-torn:
+      dimensions:
+        w: 426
+        l: 163 
+    paper-header:
+      dimensions:
+        w: 330
+        l: 54
+    paper-area:
       dimensions:
         w: 465
         l: 273
-    portrait:
+    paper-weathered:
       dimensions:
         w: 96
         l: 95
-    # ------- TRANSPARENT PAGES
+    # -------- TRANSPARENT PAGES
     text-label:
       dimensions:
         w: 142
         l: 28
   panes:
+    # -------- DARK PANES
     dark:
       dimensions:
         w: 318
@@ -136,6 +148,11 @@ widgets:
       dimensions:
         w: 318
         l: 78
+    dark-thin:
+      dimensions:
+        w: 173
+        l: 180
+    # --------NEUTRAL PANES
     neutral:
       dimensions:
         w: 318
@@ -144,6 +161,7 @@ widgets:
       dimensions:
         w: 318
         l: 78
+    # -------- LIGHT PANES
     light:
       dimensions:
         w: 318 

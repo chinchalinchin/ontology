@@ -67,11 +67,10 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)
     - [ ]: [Goal 03: ExchangeController & Loot](./phases/achieve/goal-03.md)
     - [x]: [Goal 04: Main Menu & Saving](./phases/achieve/goal-04.md)
-    - [ ]: [Goal 05: InventoryController](./phases/achieve/goal-05.md)
+    - [~]: [Goal 05: InventoryController](./phases/achieve/goal-05.md)
     - [x]: [Goal 06: Speak Intentions](./phases/achieve/goal-06.md)
     - [x]: [Goal 07: Door Interact Intentions](./phases/achieve/goal-07.md)
-    - [ ]: [Goal 08: Pause Menu](./phases/achieve/goal-08.md)
-    - [x]: [Goal 09: CLI Handling](./phases/achieve/goal-09.md)
+    - [x]: [Goal 08: CLI Handling](./phases/achieve/goal-08.md)
 - Backlog:
   - [Telemetry Menu](./backlog/todo-t000.md)
 

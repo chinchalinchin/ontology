@@ -49,19 +49,19 @@ class PauseController(MenuController):
         selector = widget.binding.selector
 
         if selection == Selections.SAVE.value:
-            slot = selector or "save-01"
+            slot = selector
             logger.info(f"Executing save to slot '{slot}'...")
             board.serialize(slot)
 
         elif selection == Selections.LOAD.value:
-            slot = selector or "save-01"
+            slot = selector
             logger.info(f"Requesting load for slot '{slot}'...")
             # Pop pause menu and signal the Migrator to load new state
             bus.append(TerminalEvent())
             bus.append(StateEvent(id=slot))
 
         elif selection == Selections.MENU.value:
-            target_menu = selector or "options"
+            target_menu = selector
             logger.info(f"Opening submenu '{target_menu}'...")
             bus.append(MenuEvent(id=target_menu, context=menu.context))
 

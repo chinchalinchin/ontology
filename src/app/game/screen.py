@@ -17,24 +17,22 @@ from app.config.enums import (
     AssetInstances, 
     AssetCategories
 )
-from app.models.state.widgets import DisplayState
+from app.models.state.widgets import (
+    DisplayState,
+    PaneState
+)
+from app.models.state.sprites import (
+    SpriteState,
+    PlayerState
+)
 from app.game.menus.core import Menu
 
 # Cython Libraries
+import libs.graphics.render as render
+
 from libs.core.models import (
     Position, 
     Dimensions
-)
-from libs.graphics.render import (
-    clear, 
-    present,
-    canvas, 
-    construct, 
-    render, 
-    save, 
-    superimpose, 
-    write,
-    destroy
 )
 from libs.graphics.registry import (
     Registry, 
@@ -79,13 +77,20 @@ class Screen:
         is_opaque = len(tiles) == 0
 
         # Instantiate Painter's Algorithm Targets
-        self.bg_canvas = canvas(self.boardsize.w, self.boardsize.l, opaque=is_opaque)
-        self.fg_canvas = canvas(self.boardsize.w, self.boardsize.l) # Foreground stays transparent
+        self.bg_canvas = render.canvas(
+            self.boardsize.w, 
+            self.boardsize.l, 
+            opaque=is_opaque
+        )
+        self.fg_canvas = render.canvas(
+            self.boardsize.w, 
+            self.boardsize.l
+        ) # Foreground stays transparent
         
         back_tiles, fore_tiles = self._prerender(tiles)
         
-        construct(self.bg_canvas, back_tiles)
-        construct(self.fg_canvas, fore_tiles)
+        render.construct(self.bg_canvas, back_tiles)
+        render.construct(self.fg_canvas, fore_tiles)
 
 
     def _prerender(self, 
@@ -120,6 +125,48 @@ class Screen:
                     fore_tiles.append(tile_tuple)
                     
         return back_tiles, fore_tiles
+
+
+    def _widgets(self, menus: List[Menu]) -> None:
+        """Helper to collect and superimpose widget primitives for a set of menus."""
+        widgets = []
+        for menu in menus:
+            if menu.widgets:
+                widgets.extend(menu.widgets.values())
+
+        primitives = []
+        for widget in widgets:
+            if isinstance(widget.state, DisplayState):
+                tex = widget.state.canvas
+                primitives.append((
+                    tex, 0, 0, tex.w, tex.l,
+                    widget.state.position.x, widget.state.position.y,
+                    widget.dimensions.w, widget.dimensions.l
+                ))
+                continue
+
+            frame_keys = widget.frame.keys(widget.id, widget.state)
+            for key, ox, oy in frame_keys:
+                if key:
+                    tex_data = self.registry.image(key)
+
+                    if not tex_data:
+                        if not (
+                            isinstance(widget.state, DisplayState) or
+                            isinstance(widget.state, PaneState)
+                        ):
+                            logger.warning(f"Registry MISS: Frame key not found: '{key}'")
+                        continue
+
+                    tex, sx, sy, sw, sl = tex_data
+                    primitives.append((
+                        tex, sx, sy, sw, sl,
+                        widget.state.position.x + ox, widget.state.position.y + oy,
+                        sw, sl
+                    ))
+
+        if primitives:
+            render.superimpose(primitives)
 
 
     def _flatten(self, 
@@ -160,10 +207,10 @@ class Screen:
         return Position(x=cam_x, y=cam_y)
 
 
-    def clear(self) -> None: clear()
+    def clear(self) -> None: render.clear()
 
 
-    def present(self) -> None: present()
+    def present(self) -> None: render.present()
 
 
     def destroy(self) -> None:
@@ -171,10 +218,10 @@ class Screen:
         Explicitly destroys hardware canvas textures held by this screen.
         """
         if self.bg_canvas:
-            destroy(self.bg_canvas)
+            render.destroy(self.bg_canvas)
             self.bg_canvas = None
         if self.fg_canvas:
-            destroy(self.fg_canvas)
+            render.destroy(self.fg_canvas)
             self.fg_canvas = None
             
     # ------------------------------------------------ CANVAS METHODS
@@ -206,7 +253,14 @@ class Screen:
             frame_keys = asset.frame.keys(asset.id, asset.state)
             for frame_key, ox, oy in frame_keys:
                 tex_data = self.registry.image(frame_key)
-                if not tex_data: continue 
+
+                if not tex_data: 
+                    if not (
+                        isinstance(asset.state, SpriteState) or 
+                        isinstance(asset.state, PlayerState)
+                    ):
+                        logger.warning(f"Registry MISS: Frame key not found: '{frame_key}'")
+                    continue 
 
                 # Flatten mapping to C-level PRIMITIVE INTEGERS for destination logic
                 tex, sx, sy, sw, sl = tex_data
@@ -221,7 +275,7 @@ class Screen:
         logger.debug(f"Render Payload: Camera({pov.x}, {pov.y}) | Total Assets: {len(active_assets)}")
 
         # Pass purely native integers to bypass heavy object allocation
-        render(
+        render.render(
             self.bg_canvas, 
             self.fg_canvas,
             active_assets, 
@@ -245,61 +299,41 @@ class Screen:
 
         tex_data = self.registry.image(base_key)
         if not tex_data:
-            logger.warning(f"Missing image asset in registry: '{base_key}'")
+            logger.warning(f"Registry MISS: Frame key not found: '{base_key}'")
             return
 
         base_ptr, sx, sy, sw, sl = tex_data
         
         # 1. Fetch and stamp clean background
-        construct(tex, [(base_ptr, sx, sy, sw, sl, 0, 0, sw, sl, 1, 1)])
+        render.construct(tex, [(base_ptr, sx, sy, sw, sl, 0, 0, sw, sl, 1, 1)])
         
         # 2. Re-write the font over the cleared canvas
         if isinstance(content, str) and content:
             font_key = widget.state.font
             font = self.registry.font(font_key)
-            if font:
-                write((tex, 0, 0, sw, sl, 0, 0, sw, sl), content, font)
-            else:
+            if not font:
                 logger.warning(
                     f"Registry MISS: Font '{font_key}' not found for widget '{widget.name}'."
                 )
+                return
+            render.write((tex, 0, 0, sw, sl, 0, 0, sw, sl), content, font)
+               
 
     def interface(self, menus: List[Menu], overlays: List[Menu]) -> None:
+        """       
+        Renders HUD overlays, dims the background if modal menus exist, 
+        and renders modal menus on top.
         """
-        Bypasses baking to process the widget dictionaries in O(N) linear time directly.
-        """
-        widgets = self._flatten(menus, overlays)
-        primitives = []
-        
-        for widget in widgets:
-            if isinstance(widget.state, DisplayState):
-                tex = widget.state.canvas
-                primitives.append((
-                    tex, 0, 0, tex.w, tex.l, 
-                    widget.state.position.x, widget.state.position.y, 
-                    widget.dimensions.w, widget.dimensions.l
-                ))
-                continue 
+        # 1. Render HUD / Overlays over the raw world
+        if overlays:
+            self._widgets(overlays)
 
-            frame_keys = widget.frame.keys(widget.id, widget.state)
-            for key, ox, oy in frame_keys:
-                if key:
-                    tex_data = self.registry.image(key)
-                    if tex_data:
-                        tex, sx, sy, sw, sl = tex_data
-                        primitives.append((
-                            tex, sx, sy, sw, sl, 
-                            widget.state.position.x + ox, widget.state.position.y + oy, 
-                            sw, sl
-                        ))
-                    elif widget.taxonomy.instance != AssetInstances.PANES:
-                        # Ignore transparent layout panes
-                        logger.warning(
-                            f"Registry MISS: '{key}' on widget '{widget.name}'"
-                        )
-
-        superimpose(primitives)
-
+        # 2. Dim background and render modal menus
+        if menus:
+            # Alpha: 140-180 provides good contrast for UI panes
+            for menu in menus:
+                render.dim(r=0, g=0, b=0, a=120)
+                self._widgets([menu])
 
     def rebake(self, 
         tiles: List[Asset], 
@@ -314,9 +348,9 @@ class Screen:
 
         # 1. Explicitly free GPU memory immediately (bypassing Python GC)
         if self.bg_canvas:
-            destroy(self.bg_canvas)
+            render.destroy(self.bg_canvas)
         if self.fg_canvas:
-            destroy(self.fg_canvas)
+            render.destroy(self.fg_canvas)
 
         # 2. Update dimensions
         if screensize:
@@ -334,14 +368,21 @@ class Screen:
         is_opaque = len(tiles) == 0
 
         # 4. Reallocate VRAM
-        self.bg_canvas = canvas(self.boardsize.w, self.boardsize.l, opaque=is_opaque)
-        self.fg_canvas = canvas(self.boardsize.w, self.boardsize.l)
+        self.bg_canvas = render.canvas(
+            self.boardsize.w, 
+            self.boardsize.l, 
+            opaque=is_opaque
+        )
+        self.fg_canvas = render.canvas(
+            self.boardsize.w, 
+            self.boardsize.l
+        )
 
         # 5. Prerender and Construct
         back_tiles, fore_tiles = self._prerender(tiles)
 
-        construct(self.bg_canvas, back_tiles)
-        construct(self.fg_canvas, fore_tiles)
+        render.construct(self.bg_canvas, back_tiles)
+        render.construct(self.fg_canvas, fore_tiles)
 
     # ------------------------------------------------ EXPORT METHODS
 
@@ -350,7 +391,12 @@ class Screen:
         Exports the raw generated background canvas mapping to disk.
         """
         logger.info(f"Dumping pre-constructed map textures (bg_canvas) to file system -> {out_path}")
-        save(out_path, self.boardsize.w, self.boardsize.l, target=self.bg_canvas)
+        render.save(
+            out_path, 
+            self.boardsize.w, 
+            self.boardsize.l, 
+            target=self.bg_canvas
+        )
 
 
     def export_render(self, 
@@ -364,7 +410,11 @@ class Screen:
         """
         logger.info(f"Extracting VRAM view buffer representing full composition to file system -> {out_path}")
         self.draw(assets, focus, fdim)
-        save(out_path, self.screensize.w, self.screensize.l)
+        render.save(
+            out_path, 
+            self.screensize.w, 
+            self.screensize.l
+        )
 
 
     def export_map(self, out_path: str, assets: List[Asset]) -> None:
@@ -399,10 +449,14 @@ class Screen:
                     active_assets.append((tex, sx, sy, sw, sl, dx, dy, dw, dl))
         
         # 1. Allocate a temporary canvas matching the absolute board dimensions
-        full_target = canvas(self.boardsize.w, self.boardsize.l, opaque=True)
+        full_target = render.canvas(
+            self.boardsize.w, 
+            self.boardsize.l, 
+            opaque=True
+        )
 
         # 2. Render directly onto the transient target instead of the default viewport
-        render(
+        render.render(
             self.bg_canvas, 
             self.fg_canvas,
             active_assets, 
@@ -414,7 +468,7 @@ class Screen:
         )
         
         # 3. Read the pixels strictly from the custom target
-        save(out_path, self.boardsize.w, self.boardsize.l, target=full_target)
+        render.save(out_path, self.boardsize.w, self.boardsize.l, target=full_target)
         
         # 4. Explicitly free the GPU memory to prevent memory leaks
-        destroy(full_target)
+        render.destroy(full_target)

@@ -276,6 +276,7 @@ widgets:
       dimensions:
         w: 96
         l: 95
+    # ------- TRANSPARENT PAGES
     text-label:
       dimensions:
         w: 142
@@ -289,6 +290,10 @@ widgets:
       dimensions:
         w: 318
         l: 78
+    dark-thin:
+      dimensions:
+        w: 173
+        l: 180
     neutral:
       dimensions:
         w: 318
@@ -305,6 +310,11 @@ widgets:
       dimensions:
         w: 318
         l: 78
+    header-pane:
+      dimensions:
+        w: 160
+        l: 140
+    # ----- TRANSPARENT PANES
     transparent-slot:
       dimensions:
         w: 40
@@ -313,6 +323,10 @@ widgets:
       dimensions:
         w: 80
         l: 80
+    transparent-area:
+      dimensions:
+        w: 400
+        l: 400
     transparent-label:
       dimensions:
         w: 142

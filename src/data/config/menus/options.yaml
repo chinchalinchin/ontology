@@ -7,14 +7,14 @@ menus:
         font: menu
         position:
           # Centered anchor for 480 x 480 viewport
-          px: 0.05
-          py: 0.15
+          px: 0.075
+          py: 0.125
         layout: dock
         alignment: center
         gap: 15
         children:
           # --- Pane 1: Option Buttons Stack ---
-          - id: header-pane
+          - id: dark-thin
             name: options-button-pane
             layout: stack
             alignment: center
@@ -105,13 +105,13 @@ menus:
                         content: OPTION 4
 
           # --- Pane 2: Placeholder Display ---
-          - id: dark
+          - id: dark-thin
             name: options-display-pane
             layout: overlay
             alignment: center
             children:
               - instance: pages
-                id: portrait
+                id: paper-weathered
                 name: options-parchment
                 bind:
                   schema: text
