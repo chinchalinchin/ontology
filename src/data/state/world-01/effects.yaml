@@ -7,3 +7,4 @@ effects:
         x: 225
         y: 500
       intention: attack
+      cooldown: 30

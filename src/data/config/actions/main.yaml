@@ -130,7 +130,7 @@ actions:
             row: 11
       slash:
         count: 6
-        delay: 3
+        delay: 5
         directions:
           up:
             row: 12

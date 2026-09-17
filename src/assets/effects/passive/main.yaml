@@ -1,0 +1,32 @@
+effects:
+  passive:
+    birdbath:
+      count: 5
+      dimensions:
+        w: 32
+        l: 64
+      lifecycle: 
+        type: periodic
+        frequency: 1200
+      hitboxes: null
+      mass: -1
+    grandfather-clock: 
+      count: 12
+      dimensions:
+        w: 32
+        l: 96
+      lifecycle: 
+        type: continuous
+        delay: 60
+      hitboxes: null
+      mass: 0
+    torch: 
+      count: 9
+      dimensions:
+        w: 32
+        l: 64
+      lifecycle: 
+        type: continuous
+        delay: 15
+      hitboxes: null
+      mass: -1

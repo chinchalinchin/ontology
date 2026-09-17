@@ -1,0 +1,11 @@
+effects:
+  collectables:
+    coin:
+      count: 8
+      dimensions:
+        w: 32
+        l: 32
+      lifecycle:
+        type: continuous
+      hitboxes: null
+      mass: -1

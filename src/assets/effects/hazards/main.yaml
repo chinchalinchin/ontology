@@ -1,0 +1,39 @@
+effects:
+  hazards:
+    lava:
+      count: 45
+      dimensions:
+        w: 16
+        l: 16
+      lifecycle: 
+        type: continuous
+      hitboxes: null
+      mass: -1
+    spike:
+      count: 7
+      dimensions:
+        w: 64
+        l: 64
+      lifecycle: 
+        type: periodic
+        frequency: 120
+      hitboxes: null
+      mass: -1
+    bang:
+      count: 10
+      dimensions:
+        w: 32
+        l: 32
+      lifecycle: 
+        type: temporary
+      hitboxes: null
+      mass: -1
+    bomb:
+      count: 13
+      dimensions:
+        w: 32
+        l: 32
+      lifecycle: 
+        type: temporary
+      hitboxes: null
+      mass: -1

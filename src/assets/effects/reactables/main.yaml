@@ -1,0 +1,20 @@
+effects:
+  reactables:
+    spinning-dummy:
+      count: 8
+      dimensions:
+        w: 64
+        l: 64
+      lifecycle: 
+        type: temporary
+        persist: True
+        delay: 5
+        cooldown: 30
+      hitboxes: 
+        - position:
+            x: 2
+            y: 20
+          dimensions:
+            w: 14
+            l: 14
+      mass: 0
