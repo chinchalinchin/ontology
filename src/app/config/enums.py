@@ -332,13 +332,13 @@ class Interactions(str, Enum):
 class Menus(str, Enum):
     DIALOGUE        = "dialogue"
     INVENTORY       = "inventory"
+    LOAD            = "load"
     MAIN            = "main"
     PAUSE           = "pause"
     TEXT            = "text"
     TRADE           = "trade"
     VIEW            = "view"
-    LOAD            = "load"
-
+    
 class Selections(str, Enum):
     SCROLLUP        = "scrollup"
     SCROLLDOWN      = "scrolldown"

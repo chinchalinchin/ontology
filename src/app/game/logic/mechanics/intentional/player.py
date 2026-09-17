@@ -16,7 +16,8 @@ from app.config.enums import (
     PlayerGoals,
     Goals,
     AnimatedIntentions,
-    BlockingIntentions
+    BlockingIntentions,
+    Menus
 )
 from app.game.logic.modules.maps.animation import AnimationMap
 from app.game.logic.mechanics import Mechanic
@@ -24,15 +25,19 @@ from app.models.state import (
     Goal, 
     DevicePayload
 )
+from app.game.menus.events import MenuEvent
+from app.game.menus.contexts import (
+    InventoryContext,
+    PauseContext
+)
 
 # Cython Libraries
 from libs.core.models import Position
 
 logger = logging.getLogger(__name__)
 
+
 class PlayerMechanics(Mechanic):
-    """
-    """
 
     def update(self, 
         board: Board, 
@@ -40,31 +45,43 @@ class PlayerMechanics(Mechanic):
         bus: collections.deque,
         payload: DevicePayload
     ) -> None:
-        """
-        """
         player = board.player()
-        
+        if not player:
+            return
+
+        # 1. Intercept Menu Triggers
+        if payload.world.menu:
+            if payload.world.menu == Menus.INVENTORY.value:
+                bus.append(MenuEvent(
+                    id=Menus.INVENTORY.value,
+                    context=InventoryContext(inventory=player.state.inventory)
+                ))
+                return
+            elif payload.world.menu == Menus.PAUSE.value:
+                bus.append(MenuEvent(
+                    id=Menus.PAUSE.value,
+                    context=PauseContext(board=board)
+                ))
+                return
+
+        # 2. Process Intentions
         is_blocking = player.state.intention in BlockingIntentions
         is_animating = player.state.animation.frame > 0 or player.state.animation.tick > 0
         is_locked = is_blocking and is_animating
 
         if payload.world.intention:
-            # 2. Reject new intentions if the player is locked
             if not is_locked and player.state.intention != payload.world.intention:
                 player.state.intention = payload.world.intention
                 player.state.animation.frame = 0
                 player.state.animation.tick = 0
         else:
-            # 3. Cleanly fallback to IDLE if no input is provided and we aren't locked
             if not is_locked:
                 player.state.intention = Intentions.IDLE
         
+        # 3. Process Goals / Movement
         speed = player.state.character.speed
         goal_x = player.state.position.x
         goal_y = player.state.position.y
-        
-        # Track movement so the player doesn't instantly snap back to 'UP'
-        #   when inputs are released.
         has_movement = False
 
         if PlayerGoals.UP in payload.world.goals:
@@ -80,7 +97,6 @@ class PlayerMechanics(Mechanic):
             goal_x += speed
             has_movement = True
 
-        # Initialize missing goal tracking state
         if has_movement and not player.state.goal:
             player.state.goal = Goal(
                 name=player.name, 
@@ -108,12 +124,13 @@ class PlayerMechanics(Mechanic):
             )
 
         if player.state.intention == Intentions.ATTACK:
-            logger.info(f"[TELEMETRY] Intention: ATTACK | "
-                        f"Resolved Action: {player.state.animation.action}")
+            logger.info(f"PlayerState(intention=attack, "
+                        f"action={player.state.animation.action})")
             eq = player.state.inventory.equipment
-            logger.info(f"[TELEMETRY] Equipment State: "
-                            f"Weapon: {eq.weapon} | "
-                            f"Armor: {eq.armor} | "
-                            f"Shield: {eq.shield} | "
-                            f"Tool: {eq.tool}"
+            logger.info(f"Equipment("
+                        f"weapon={eq.weapon}, "
+                        f"armor={eq.armor}, "
+                        f"shield={eq.shield}, "
+                        f"tool={eq.tool}, "
+                        f"utility={eq.utility})"
             )

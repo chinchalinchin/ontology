@@ -4,8 +4,15 @@
 Package for Menu Context models.
 """
 # Standard Libraries
-from dataclasses import dataclass, field
-from typing import Any, Dict, Union, List, Optional
+from dataclasses import dataclass
+from typing import (
+    Any, 
+    Dict, 
+    Union, 
+    List, 
+    Optional, 
+    TYPE_CHECKING
+)
 
 # Application Classes
 from app.models.state.core import PlotState
@@ -16,20 +23,28 @@ from app.models.state.objects import DialogueState
 from libs.graphics.registry import Registry
 from libs.core.models import Dimensions
 
+if TYPE_CHECKING:
+    from app.game.board import Board
+
+
 class MenuContext:
     pass
+
 
 @dataclass(slots=True)
 class ViewContext(MenuContext):
     sprite: SpriteState
 
+
 @dataclass(slots=True)
 class MainContext(MenuContext):
     registry: Registry
 
+
 @dataclass(slots=True)
 class TextContext(MenuContext):
     content: Union[str, List[str]]
+
 
 @dataclass(slots=True)
 class LoadContext(MenuContext):
@@ -37,8 +52,19 @@ class LoadContext(MenuContext):
     screens: Dict[str, Any]
     screensize: Dimensions
 
+
 @dataclass(slots=True)
 class DialogueContext(MenuContext):
     plot: PlotState 
     sprite: SpriteState = None
     object: DialogueState = None
+
+
+@dataclass(slots=True)
+class InventoryContext(MenuContext):
+    inventory: Any
+
+
+@dataclass(slots=True)
+class PauseContext(MenuContext):
+    board: Board
