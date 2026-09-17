@@ -244,7 +244,9 @@ class Screen:
         base_key, ox, oy = base_keys[0]  # Just unpack the first element
 
         tex_data = self.registry.image(base_key)
-        if not tex_data: return
+        if not tex_data:
+            logger.warning(f"Missing image asset in registry: '{base_key}'")
+            return
 
         base_ptr, sx, sy, sw, sl = tex_data
         
