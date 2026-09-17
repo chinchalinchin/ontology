@@ -1,0 +1,86 @@
+recipes:
+  tiles:
+    back:
+      frame: single
+      animation: none
+    fore:
+      frame: single
+      animation: none
+  crafts:
+    struts:
+      frame: single
+      animation: none
+  cursors:
+    expressions:
+      frame: index
+      animation: none
+    projectiles:
+      frame: single
+      animation: none
+  effects:
+    temporary:
+      frame: iterable
+      animation: temporary
+    persistent:
+      frame: iterable
+      animation: persistent
+  objects:
+    chests:
+      frame: iterable
+      animation: binary
+    crates:
+      frame: single
+      animation: none
+    doors:
+      frame: single
+      animation: none
+    gates: 
+      frame: iterable
+      animation: binary
+    plates:
+      frame: iterable
+      animation: binary
+    signs:
+      frame: single
+      animation: none
+  sheets:
+    players:
+      frame: sprite
+      animation: sprite
+    pixies:
+      frame: state
+      animation: state
+    sprites:
+      frame: sprite
+      animation: sprite
+    armor:
+      frame: state
+      animation: none
+    tools:
+      frame: state
+      animation: none
+    shields:
+      frame: state
+      animation: none
+    utilities:
+      frame: state
+      animation: none
+    weapons:
+      frame: state
+      animation: none
+  widgets:
+    buttons:
+      frame: traversal
+      animation: traversal
+    icons:
+      frame: index
+      animation: none
+    meters:
+      frame: meter
+      animation: meter
+    pages:
+      frame: single
+      animation: none
+    panes:
+      frame: single
+      animation: none

@@ -1,0 +1,20 @@
+menus:
+  <menu-key>:
+    roots: 
+      - id:
+        position:
+          px:
+          py: 
+        layout: dock | stack | tab
+        alignment:
+        gap: 
+        headers:
+          - instance:
+            id:
+            synbols: 
+        children: 
+          - instance:
+            id: 
+            bind: 
+              ref: state | traversal
+              data: 

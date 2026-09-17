@@ -1,0 +1,66 @@
+graph LR
+    %% Base
+    Asset[Asset]
+
+    %% Categories
+    Asset --> Tiles[Tiles]
+    Asset --> Cursors[Cursors]
+    Asset --> Objects[Objects]
+    Asset --> Crafts[Crafts]
+    Asset --> Effects[Effects]
+    Asset --> Sheets[Sheets]
+    Asset --> Widgets[Widgets]
+
+    %% Tile Instances
+    Tiles --> Back[Back]
+    Tiles --> Fore[Fore]
+
+    %% Cursor Instances
+    Cursors --> Expressions[Expressions]
+    Cursors --> Projectiles[Projectiles]
+
+    %% Object Instances
+    Objects --> Chests[Chests]
+    Objects --> Crates[Crates]
+    Objects --> Doors[Doors]
+    Objects --> Gates[Gates]
+    Objects --> Plates[Plates]
+
+    %% Craft Instances
+    Crafts --> Struts[Struts]
+    Crafts --> Ore[Ore]
+    Crafts --> Crops[Crops]
+
+    %% Effect Instances
+    Effects --> Temporary[Temporary]
+    Effects --> Persistent[Persistent]
+
+    %% Sheet Instances & Sub-groups
+    Sheets --> Pixies[Pixies]
+    Sheets --> Sprites[Sprites]
+    Sheets --> Players[Players]
+    Sheets --> Equipment[Equipment Group]
+
+    Equipment -.-> Armor[Armor]
+    Equipment -.-> Tools[Tools]
+    Equipment -.-> Utilities[Utilities]
+    Equipment -.-> Weapons[Weapons]
+    Equipment -.-> Shields[Shields]
+
+    %% Widget Instances
+    Widgets --> Panes[Panes]
+    Widgets --> Buttons[Buttons]
+    Widgets --> Icons[Icons]
+    Widgets --> Meters[Meters]
+    Widgets --> Pages[Pages]
+
+    %% Styling (Material Theme: Slate background, Deep Purple primary, Blue accent)
+    classDef base fill:#4527a0,stroke:#b39ddb,stroke-width:2px,color:#ffffff;
+    classDef category fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff;
+    classDef instance fill:#263238,stroke:#78909c,stroke-width:1.5px,color:#ffffff;
+    classDef virtual fill:#1a202c,stroke:#90a4ae,stroke-width:1.5px,stroke-dasharray: 4 4,color:#eceff1;
+
+    class Asset base;
+    class Tiles,Cursors,Objects,Crafts,Effects,Sheets,Widgets category;
+    class Back,Fore,Expressions,Projectiles,Chests,Crates,Doors,Gates,Plates,Struts,Ore,Crops,Temporary,Persistent,Pixies,Sprites,Players,Panes,Buttons,Icons,Meters,Pages instance;
+    class Equipment,Armor,Tools,Utilities,Weapons,Shields virtual;

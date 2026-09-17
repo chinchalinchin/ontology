@@ -1,0 +1,31 @@
+flowchart TD
+    %% Mechanics Nodes
+    CM["CognitionMechanics"]
+    TM["TransitionMechanics"]
+    NM["NavigationMechanics"]
+    MM["MotionMechanics"]
+
+    %% Pipeline Flow
+    CM -->|"(sprite.state.goal)"| TM
+    TM -->|"(sprite.state.intention)"| NM
+    NM -->|"(sprite.state.trajectory.target)"| MM
+
+    %% Action / Output Annotations
+    CM --> A1["Sets Strategic Goal (TARGET, SUBJECT, OBJECT, POSITION)"]
+    TM --> A2["Evaluates ISL Intention (hunt, find, wander, idle)"]
+    NM --> A3["Manages Obstacles, LOS & RRT Queue (populates Trajectory)"]
+    MM --> A4["Steers Velocity Vector toward Trajectory Target"]
+
+    %% Class Assignments
+    class CM,TM,NM,MM mechanic;
+    class A1,A2,A3,A4 annotation;
+
+    %% Material UI Palette for MkDocs Slate Theme
+    %% Mechanics: Material Deep Purple 700 fill (#512da8) + Deep Purple 200 border (#b388ff)
+    classDef mechanic fill:#512da8,stroke:#b388ff,stroke-width:2px,color:#ffffff,font-weight:bold;
+
+    %% Annotations: Contrasting Lightened Blue Container (#1e2e4a) + Blue A200 border (#448aff)
+    classDef annotation fill:#1e2e4a,stroke:#448aff,stroke-width:1.5px,stroke-dasharray: 4 4,color:#e3f2fd,text-align:left;
+
+    %% Edge Labels
+    linkStyle default color:#e0e0e0,stroke:#90caf9,stroke-width:1.5px;

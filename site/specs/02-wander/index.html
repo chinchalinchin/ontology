@@ -1,0 +1,1299 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://chinchalinchin.github.io/ontology/specs/02-wander/">
+      
+      
+        <link rel="prev" href="../01-interaction/">
+      
+      
+        <link rel="next" href="../../appendices/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Wander Loop - Ontology</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ontology-specification-wander-loop" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Ontology" class="md-header__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Ontology
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Wander Loop
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Ontology" class="md-nav__button md-logo" aria-label="Ontology" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Ontology
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/chinchalinchin/ontology" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    chinchalinchin/ontology
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Index
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../00-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../01-assets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../02-sprites/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sprites
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../03-compositions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compositions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../04-intentions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intentions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../05-mechanics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mechanics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../06-widgets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Widgets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../07-sounds/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sounds
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../08-plots/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plots
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../09-emergence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emergence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../10-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_13" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Specifications
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_13" id="__nav_13_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_13_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_13">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Specifications
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../00-dialogue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Dialogue Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../01-interaction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interaction Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Wander Loop
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ontology-specification-wander-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ontology Specification: Wander Loop
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ontology Specification: Wander Loop">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architectural-note-loop-taxonomy-intentional-subsumption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Note: Loop Taxonomy &amp; Intentional Subsumption
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prologue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prologue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-entrypoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step: Entrypoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-exitpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step: Exitpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workflow-wander-intention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow: Wander Intention
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_14" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../appendices/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Appendix
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_14" id="__nav_14_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_14_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_14">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Appendix
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendices/00-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appendices/01-schemas/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Schemas
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_15" >
+        
+          
+          <label class="md-nav__link" for="__nav_15" id="__nav_15_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reports
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_15_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_15">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Reports
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/index" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Unit Test Coverage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ontology-specification-wander-loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ontology Specification: Wander Loop
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ontology Specification: Wander Loop">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#architectural-note-loop-taxonomy-intentional-subsumption" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architectural Note: Loop Taxonomy &amp; Intentional Subsumption
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prologue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prologue
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-entrypoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step: Entrypoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-exitpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step: Exitpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workflow-wander-intention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow: Wander Intention
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+  <h1>Wander Loop</h1>
+
+<h4 id="ontology-specification-wander-loop">Ontology Specification: Wander Loop</h4>
+<p>This specification governs autonomous exploratory navigation and target reacquisition.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All information in this section assumes the default values for the <a href="../../appendices/01-schemas/#configuration-intentions">Intention Configuration</a>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This specification excludes the <a href="../../02-sprites/#player">Player</a>, whose Intentions are handled through input polling and device mapping.</p>
+</div>
+<h5 id="architectural-note-loop-taxonomy-intentional-subsumption">Architectural Note: Loop Taxonomy &amp; Intentional Subsumption</h5>
+<p>There is an inherent ambiguity in designating an automaton cycle an "Intention Loop":</p>
+<ol>
+<li><strong>Terminal Action Loops (e.g., Dialogue, Combat)</strong>: Named after the discrete external emission or physical world mutation they produce (<code>speak:idle</code>, <code>attack:idle</code>, <code>interact:idle</code>). These are closed, finite cycles.</li>
+<li><strong>Residence Search Loops (e.g., Wander)</strong>: Named after an extended behavioral residence state. The Wander Loop produces no discrete terminal world event; it functions as an open-ended exploratory engine.</li>
+</ol>
+<p>The Wander Loop operates as a <strong>subsumptive secondary loop</strong>. It is entered when an entity loses direct sensory contact with a target or exhausts active ideations. Suspended primary goals are preserved in <code>memory.goals</code> until sensory predicates trigger re-entry into a terminal action loop.</p>
+<p>Tactical pathfinding around obstacles does <strong>not</strong> route through the Wander Loop. RRT steering is managed independently by <code>NavigationMechanics</code> via <code>sprite.state.trajectory</code>. Entities navigating around walls remain continuously in their primary intentions (<code>hunt</code>, <code>find</code>) without dropping into <code>idle</code> or <code>wander</code>.</p>
+<pre class="mermaid"><code>flowchart TD
+    A[Primary Loop Suspended] --&gt; B[wander]
+    B --&gt;|Target Seen| C[any_memories_visible]
+    C --&gt; D[find / hunt]
+    D --&gt;|Target Lost| B</code></pre>
+<h5 id="prologue">Prologue</h5>
+<p><strong>Subsumption</strong></p>
+<p>Before entering the Wander Loop from an interrupted action loop (<code>find</code> or <code>hunt</code>), <code>CognitionMechanics._resolve</code> ensures the unresolved overarching goal is saved to <code>sprite.state.memory.goals</code>. This guarantees the target identity, category, and last-known coordinate remain queryable throughout exploratory navigation.</p>
+<p><strong>Randomization</strong></p>
+<p>When an entity is in <code>wander</code> with no active goal (<code>not sprite.state.goal</code>) and no pending waypoints in memory, <code>CognitionMechanics._project</code> samples a coordinate within the bounding square <span class="arithmatex">\([-\text{radius}_{\text{vision}}, \text{radius}_{\text{vision}}]\)</span> relative to the Sprite's position. This coordinate is clamped against the physical boundaries of the active board layer:</p>
+<div class="arithmatex">\[
+x_{\text{dest}} = \max\left(0, \min(x_{\text{pos}} + \Delta x, W_{\text{layer}} - W_{\text{sprite}})\right)
+\]</div>
+<div class="arithmatex">\[
+y_{\text{dest}} = \max\left(0, \min(y_{\text{pos}} + \Delta y, L_{\text{layer}} - L_{\text{sprite}})\right)
+\]</div>
+<p>The resulting destination is committed as <code>Goal(name="wander", category=Goals.POSITION.value)</code>.</p>
+<h5 id="step-entrypoint">Step: Entrypoint</h5>
+<p><strong>idle:wander</strong></p>
+<ul>
+<li><code>not sprite.goal</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Autonomous Idle Exit</p>
+<p>Fires when the Sprite has exhausted all goals and has no immediate ideations.</p>
+</div>
+<p><strong>idle:wander</strong></p>
+<ul>
+<li><code>sprite.goal</code></li>
+<li><code>sprite.goal.category == constants.Goals.POSITION.value</code></li>
+<li><code>sprite.layer == sprite.goal.layer</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Positional Goal Consumption</p>
+<p>Fires when an autonomous wander destination or persistent coordinate goal is loaded as the active goal.</p>
+</div>
+<h5 id="step-exitpoints">Step: Exitpoints</h5>
+<p><strong>wander:find</strong></p>
+<ul>
+<li><code>sprite.goal</code></li>
+<li><code>functions.any_memories_visible(sprite, sprites, [ constants.Goals.SUBJECT.value ])</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Passive Target Reacquisition</p>
+<p>Fires when a remembered dialogue partner or interactive entity re-enters the active vision radius on the same layer.</p>
+</div>
+<p><strong>wander:hunt</strong></p>
+<ul>
+<li><code>sprite.goal</code></li>
+<li><code>functions.any_memories_visible(sprite, sprites, [ constants.Goals.TARGET.value ])</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Hostile Target Reacquisition</p>
+<p>Fires when a remembered hostile target re-enters the active vision radius on the same layer.</p>
+</div>
+<p><strong>wander:idle</strong></p>
+<ul>
+<li><code>not sprite.goal</code></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">External Goal Preemption</p>
+</div>
+<p>Fires if a mechanic, plot trigger, or mutator injects a non-positional goal directly into the active state.</p>
+<h5 id="workflow-wander-intention">Workflow: Wander Intention</h5>
+<p>Exploratory navigation adheres to the following mechanical lifecycle:</p>
+<ol>
+<li><strong>Resolution (<code>CognitionMechanics._resolve</code>)</strong>:<ul>
+<li>For an active wander goal (<code>name == "wander"</code>), <code>complete()</code> evaluates Euclidean proximity against <code>parameters.action.radius</code>. If within radius, <code>_resolve()</code> logs the resolution and sets <code>sprite.state.goal = None</code>.</li>
+<li>For an RRT waypoint (<code>name.startswith("path-")</code>), reaching the coordinate sets <code>sprite.state.goal = None</code>, leaving subsequent waypoints intact in <code>memory.goals</code>.</li>
+</ul>
+</li>
+<li><strong>Scanning (<code>CognitionMechanics._scan</code>)</strong>:<ul>
+<li>Entities visible within <code>parameters.vision.radius</code> update <code>memory.sprites</code>.</li>
+<li>Any matching key in <code>memory.goals</code> updates its internal <code>position</code> and <code>layer</code> attributes to match the live entity position.</li>
+</ul>
+</li>
+<li><strong>Recall (<code>CognitionMechanics._remember</code>)</strong>:<ul>
+<li>If <code>sprite.state.goal</code> is <code>None</code> and the Sprite is in <code>idle</code>, the next goal is popped from <code>memory.goals</code> (FIFO).</li>
+<li>If a candidate goal in <code>memory.goals</code> has already been reached without sight (<code>nearby and not vision</code>), it remains dormant in memory until <code>any_memories_visible</code> detects it.</li>
+</ul>
+</li>
+<li><strong>Projection (<code>CognitionMechanics._project</code>)</strong>:<ul>
+<li>If the Sprite remains in <code>wander</code> with <code>not sprite.state.goal</code>, no pending <code>path-*</code> waypoints, and no actionable memories waiting for recall, <code>_project()</code> samples and clamps a new random destination, setting <code>goal = Goal(name="wander", category=POSITION)</code>.</li>
+</ul>
+</li>
+<li><strong>Transition (<code>TransitionMechanics</code>)</strong>:<ul>
+<li>The ISL evaluator parses <code>wander</code>. If <code>any_memories_visible</code> evaluates to <code>True</code>, the automaton executes <code>wander -&gt; find</code> or <code>wander -&gt; hunt</code>.</li>
+<li>If <code>goal</code> is <code>None</code> (a waypoint finished), it transitions <code>wander -&gt; idle</code> so <code>_remember()</code> can pop the next step on the subsequent tick.</li>
+<li>If a new <code>wander</code> goal was generated by <code>_project()</code>, no transition conditions are met; the Sprite remains in <code>wander</code>.</li>
+</ul>
+</li>
+<li><strong>Kinematics (<code>MotionMechanics</code>)</strong>:<ul>
+<li><code>motive.update()</code> queries <code>sprite.state.goal.position</code> and applies acceleration vectors via <code>physics.dynamics()</code>, clamping speed to <code>character.speed</code>.</li>
+</ul>
+</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.copy", "navigation.expand", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../static/js/mathjax.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

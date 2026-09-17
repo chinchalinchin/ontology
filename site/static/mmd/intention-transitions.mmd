@@ -1,0 +1,53 @@
+stateDiagram-v2
+    direction LR
+
+    attack --> attack
+    attack --> hunt
+    attack --> scavenge
+
+    barter --> threaten
+    barter --> idle
+
+    build --> idle
+
+    escape --> escape
+    escape --> return
+
+    find --> interact
+    find --> speak
+    find --> idle
+
+    follow --> speak
+    follow --> idle
+
+    hunt --> attack
+    hunt --> idle
+
+    idle --> wander
+    idle --> find
+    idle --> hunt
+
+    interact --> idle
+
+    mine --> build
+    mine --> mine
+    mine --> idle
+
+    mock --> threaten
+    mock --> idle
+
+    return --> idle
+
+    scavenge --> idle
+
+    speak --> idle
+
+    sprint --> idle
+
+    threaten --> attack
+    threaten --> hunt
+    threaten --> idle
+
+    wander --> hunt
+    wander --> find
+    wander --> idle

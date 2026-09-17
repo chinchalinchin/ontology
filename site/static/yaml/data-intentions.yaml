@@ -1,0 +1,5 @@
+intentions:
+  <intention-key>:
+    - next: <intention-key>
+      conditions: 
+        - <condition-for-transition>

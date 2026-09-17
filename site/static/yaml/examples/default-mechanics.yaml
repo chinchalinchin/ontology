@@ -1,0 +1,13 @@
+mechanics:
+  order:
+    - player
+    - transition
+    - motion
+    - collision
+    - switch
+    - projectile
+    - combat
+    - commerce
+    - speech
+    - animation 
+    - remove

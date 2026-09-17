@@ -1,0 +1,91 @@
+menus:
+  text:
+    controller: scroll
+    roots: 
+      - id: neutral
+        name: text-menu
+        position:
+          px: 0.1
+          py: 0.75
+        layout: dock
+        alignment: left
+        gap: 10
+        children: 
+          - instance: page
+            id: text
+            name: text-display
+            bind:
+              selector: scroll
+              state: context.content
+          - instance: button
+            id: arrow-up
+            name: text-scroll-up
+            bind: 
+              selection: scrollup
+          - instance: button
+            id: arrow-down
+            name: text-scroll-down
+            bind: 
+              selection: scrolldown
+  dialogue:
+    controller: scroll
+    roots: 
+      - id: neutral
+        name: dialogue-menu
+        position:
+          px: 0.1
+          py: 0.75
+        layout: dock
+        alignment: left
+        gap: 10
+        children: 
+          - instance: page
+            id: portrait
+            name: character-portrait
+            bind: 
+              state: context.sprite.state.character.portrait
+          - instance: page
+            id: dialogue
+            name: character-speech
+            bind:
+              selector: scroll
+              state: context.sprite.state.psyche.communication
+          - instance: button
+            id: arrow-up
+            name: character-speech-scroll-up
+            bind: 
+              selection: scrollup
+          - instance: button
+            id: arrow-down
+            name: character-speech-scroll-down
+            bind: 
+              selection: scrolldown
+  view:
+    controller: display
+    roots: 
+      - id: transparent
+        name: hud-menu
+        position:
+          px: 0.1
+          py: 0.85
+        layout: dock
+        alignment: left
+        gap: 10
+        children: 
+          - instance: meter
+            id: health
+            name: health-meter
+            bind: 
+              state: context.sprite.state.meters.health
+          - instance: button
+            id: slot
+            name: weapon-slot
+            status: disabled
+            bind:
+              state: context.sprite.state.inventory.equipment.weapon
+          - instance: button 
+            id: slot
+            name: shield-slot
+            status: disable
+            bind:
+              state: context.sprite.state.inventory.equipment.shield

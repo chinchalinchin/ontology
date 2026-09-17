@@ -39,7 +39,8 @@ nav:
   - Reports:
     - Unit Test Coverage: coverage/index
 
-markdown_extensions:
+markdown_extensions:  
+  - attr_list
   - admonition
   - pymdownx.blocks.caption
   - pymdownx.details
