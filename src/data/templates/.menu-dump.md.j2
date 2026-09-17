@@ -3,12 +3,13 @@
 - **Board:** {{ board_key }}
 - **Timestamp:** {{ timestamp }}
 {%- for section_name, menu_list in [('Menus', menus), ('Overlays', overlays)] %}
-{%- if menu_list %}
+{%- set m_list = menu_list.values() if (menu_list is defined and menu_list is mapping) else (menu_list if menu_list is defined else []) %}
+{%- if m_list %}
 
 ---
 
 # {{ section_name }}
-{%- for menu in menu_list %}
+{%- for menu in m_list %}
 
 ## {{ section_name[:-1] }}: {{ menu.id | default(menu.name, true) }}
 
@@ -31,20 +32,40 @@
     {%- endfor %}
   {%- endfor %}
 {%- endif %}
-{%- if menu.widgets %}
+{%- set widget_items = menu.widgets.values() if (menu.widgets is defined and menu.widgets is mapping) else (menu.widgets if menu.widgets is defined else []) %}
+{%- if widget_items %}
 
 ### Widgets
-{%- for w_key, widget in menu.widgets.items() %}
+{%- for widget in widget_items %}
 
 #### {{ widget.name | default(widget.id, true) }} (`{{ widget.id }}`)
 
 - **Taxonomy:**
+  - ID: `{{ widget.id }}`
+  {%- if widget.name is defined and widget.name is not none %}
+  - Name: `{{ widget.name }}`
+  {%- endif %}
   - Category: `{{ widget.category }}`
   - Instance: `{{ widget.instance }}`
-  - ID: `{{ widget.id }}`
-{%- if widget.dimensions is defined and widget.dimensions %}
+{%- if (widget.dimensions is defined and widget.dimensions) or (widget.hitboxes is defined and widget.hitboxes) %}
 - **Properties:**
-  - Dimensions: w: {{ widget.dimensions.w }}, l: {{ widget.dimensions.l }}
+  {%- if widget.dimensions is defined and widget.dimensions %}
+  - Dimensions:
+    - Width: {{ widget.dimensions.w }}
+    - Length: {{ widget.dimensions.l }}
+  {%- endif %}
+  {%- if widget.hitboxes is defined and widget.hitboxes %}
+  - Hitboxes:
+    {%- for hb in widget.hitboxes %}
+    - Hitbox:
+      {%- if hb.position is defined and hb.position is not none %}
+      - Position: ({{ hb.position.x }}, {{ hb.position.y }})
+      {%- endif %}
+      {%- if hb.dimensions is defined and hb.dimensions is not none %}
+      - Dimensions: (w: {{ hb.dimensions.w }}, l: {{ hb.dimensions.l }})
+      {%- endif %}
+    {%- endfor %}
+  {%- endif %}
 {%- endif %}
 {%- if widget.frame or widget.animation %}
 - **Component Classes:**
@@ -62,6 +83,10 @@
 {%- set bind_obj = widget.binding if widget.binding is defined and widget.binding else widget.bind %}
 {%- if bind_obj %}
 - **Binding:**
+  - Class: `{{ bind_obj.__class__.__name__ }}`
+  {%- if bind_obj.target is defined and bind_obj.target is not none %}
+  - Target: `{{ bind_obj.target }}`
+  {%- endif %}
   {%- if bind_obj.selection is defined and bind_obj.selection is not none %}
   - Selection: `{{ bind_obj.selection }}`
   {%- endif %}
@@ -71,9 +96,19 @@
   {%- if bind_obj.state is defined and bind_obj.state is not none %}
   - State: `{{ bind_obj.state }}`
   {%- endif %}
+  {%- if bind_obj.context is defined and bind_obj.context is not none %}
+  - Context: `{{ bind_obj.context }}`
+  {%- endif %}
 {%- endif %}
 {%- if widget.state %}
 - **State:**
+  - Class: `{{ widget.state.__class__.__name__ }}`
+  {%- if widget.state.id is defined and widget.state.id is not none %}
+  - ID: `{{ widget.state.id }}`
+  {%- endif %}
+  {%- if widget.state.name is defined and widget.state.name is not none %}
+  - Name: `{{ widget.state.name }}`
+  {%- endif %}
   {%- if widget.state.layer is defined and widget.state.layer is not none %}
   - Layer: `{{ widget.state.layer }}`
   {%- endif %}
@@ -106,6 +141,8 @@
   {%- endif %}
   {%- if widget.state.reading is defined and widget.state.reading is not none %}
   - Reading: {{ widget.state.reading }}{% if widget.state.unit is defined and widget.state.unit is not none %} / {{ widget.state.unit }}{% endif %}
+  {%- elif widget.state.unit is defined and widget.state.unit is not none %}
+  - Unit: {{ widget.state.unit }}
   {%- endif %}
   {%- if widget.state.content is defined and widget.state.content is not none %}
     {%- if widget.state.content is iterable and widget.state.content is not string %}
@@ -117,12 +154,31 @@
   - Content: `{{ widget.state.content }}`
     {%- endif %}
   {%- endif %}
+  {%- if widget.state.current is defined and widget.state.current is not none %}
+    {%- if widget.state.current is callable %}
+  - Current: `{{ widget.state.current() }}`
+    {%- else %}
+  - Current: `{{ widget.state.current }}`
+    {%- endif %}
+  {%- endif %}
+  {%- if widget.state.previous is defined and widget.state.previous %}
+  - Previous:
+      {%- for prev in widget.state.previous %}
+    - `{{ prev }}`
+      {%- endfor %}
+  {%- endif %}
   {%- if widget.state.pageindex is defined and widget.state.pageindex is not none %}
   - Pagination:
     - Index: {{ widget.state.pageindex }}
     - Size: {{ widget.state.pagesize }}
     {%- if widget.state._pagecount is defined %}
     - Count: {{ widget.state._pagecount }}
+    {%- endif %}
+    {%- if widget.state.more is defined and widget.state.more is callable %}
+    - More: {{ widget.state.more() }}
+    {%- endif %}
+    {%- if widget.state.less is defined and widget.state.less is callable %}
+    - Less: {{ widget.state.less() }}
     {%- endif %}
   {%- endif %}
   {%- if widget.state.canvas is defined and widget.state.canvas is not none %}

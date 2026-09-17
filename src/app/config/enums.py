@@ -351,3 +351,8 @@ class Statuses(str, Enum):
     IDLE            = "idle"
     SELECTED        = "selected"
     DISABLED        = "disabled"
+
+class Fonts(str, Enum):
+    DIALOGUE        = "dialogue"
+    TITLE           = "title"
+    LABEL           = "label"

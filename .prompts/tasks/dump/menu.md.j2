@@ -3,16 +3,21 @@
 The dump template is used to dump game state at the end of a CLI session through the command,
 
 ```bash
-python main.py ---dump-state start world-01
+python main.py --dump-menu start
 ```
 
- Widgets are Menu components. 
+**Definitions**
+
+- Widgets are special type of Game asset.
+- Widgets are Menu components. They bind to game state.
+- Menus are instantiated on the fly during the game.
+- Overlays are HUD components that are always rendered.
 
 **Guidelines**
 
 - Update the template to match the latest models.
 - Ensure all whitespace in the Jinja2 template is properly handled.
-- Enumerate all Asset, Widget and Menu fields. 
+- Enumerate all Widget and Menu fields. 
 - Ensure Optional fields are handled appriopriately.
 - Ensure there are new lines between the end of sections and the next heading.
 - Ensure all attribute appear as nested markdown lists ,"-".
@@ -25,20 +30,49 @@ python main.py ---dump-state start world-01
 
 ## Latest Models
 
+### Asset Class
+
+```python
+{{ file(root + '/src/app/assets/base.py') }}
+```
+
 ### Widget State
+
+```python
+{{ file(root + '/src/app/models/state/core.py') }}
+```
 
 ```python
 {{ file(root + '/src/app/models/state/widgets.py') }}
 ```
 
-### Menu State
+### Menus
 
 ```python
 {{ file(root + '/src/app/game/menus/core.py') }}
 ```
 
+**Bindings**
+
+```python
+{{ file(root + '/src/app/game/menus/bindings/icon.py') }}
+```
+
+```python
+{{ file(root + '/src/app/game/menus/bindings/meter.py') }}
+```
+
+```python
+{{ file(root + '/src/app/game/menus/bindings/select.py') }}
+```
+
+```python
+{{ file(root + '/src/app/game/menus/bindings/text.py') }}
+```
+
+
 ## Previous Dump Template
 
 ```jinja2
-{{ file(root + '/src/data/templates/.menus-dump.md.j2') }}
+{{ file(root + '/src/data/templates/.menu-dump.md.j2') }}
 ```

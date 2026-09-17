@@ -1,15 +1,26 @@
 fonts:
   dialogue:
-      alignment: start
-      bold: false
-      italics: false
-      margins: 0.15
-      size: 12
-      color:
-        r: 250
-        g: 250
-        b: 250
-        a: 255
+    alignment: start
+    bold: false
+    italics: false
+    margins: 0.15
+    size: 12
+    color:
+      r: 250
+      g: 250
+      b: 250
+      a: 255
+  labels:
+    alignment: center
+    bold: false
+    italics: false
+    margins: 0.25
+    size: 10
+    color:
+      r: 005
+      g: 035
+      b: 064
+      a: 255
   title:
     alignment: center
     bold: false

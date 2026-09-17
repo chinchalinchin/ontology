@@ -17,8 +17,8 @@ from app.config.enums import (
     Statuses,
     Layouts,
     Alignments,
+    Fonts
 )
-from app.game.menus.core import Binding
 from app.models.adapters import (
     PydanticScreenPosition as ScreenPosition
 )
@@ -50,6 +50,7 @@ class MenuPane:
     gap: Optional[int] = 0
     margins: Optional[int] = 0
     position: Optional[ScreenPosition] = None # type: ignore
+    font: Optional[str] = Fonts.DIALOGUE.value
 
 @dataclass(slots=True, frozen=True)
 class MenuConfiguration(Configuration):

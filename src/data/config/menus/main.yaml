@@ -12,6 +12,7 @@ menus:
           # px: 0.0583
           # py: 0.25
         layout: stack
+        font: labels
         alignment: center
         gap: 10
         children: 

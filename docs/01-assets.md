@@ -805,3 +805,9 @@ See [Graphics Architecture documentation](./10-architecture.md#graphics) for mor
     * `g: int`
     * `b: int`
     * `a: float`
+
+**Required Fonts**
+
+- `dialogue`: Used to render Dialogue text.
+- `label`: Used to render Widget label text.
+- `title`: Used to render Menu headings.

@@ -17,7 +17,8 @@ from dataclasses import dataclass, field
 from app.config.enums import (
     Statuses,
     Layouts,
-    Alignments
+    Alignments,
+    Fonts
 )
 from app.models.adapters import (
     PydanticPosition as Position, 
@@ -43,11 +44,13 @@ class IconState(AssetState):
     def icon(self) -> str:
         return self.icon_function()
 
+
 @dataclass(slots=True)
 class TraversalState(AssetState):
     position: Position = field(default_factory=lambda: CorePosition(0,0)) # type: ignore
     status: Statuses = Statuses.IDLE.value
     animation: AnimationState = field(default_factory=AnimationState)
+
     
 @dataclass(slots=True)
 class PaneState:
@@ -56,6 +59,7 @@ class PaneState:
     alignment: Alignments = Alignments.CENTER.value
     gap: Optional[int] = 0
     margins: Optional[int] = 0
+
 
 @dataclass(slots=True)
 class MeterState(AssetState):
@@ -71,6 +75,7 @@ class MeterState(AssetState):
     @property
     def unit(self) -> Union[int, float]:
         return self.unit_function()
+
     
 @dataclass(slots=True)
 class DisplayState(AssetState):
@@ -78,6 +83,7 @@ class DisplayState(AssetState):
     content_function: Callable[[], Union[str, List[str]]] = field(default_factory=Callable)
     pageindex: int = 0
     pagesize: int = 1
+    font: str = Fonts.DIALOGUE.value
     canvas: Any = None
 
     @property

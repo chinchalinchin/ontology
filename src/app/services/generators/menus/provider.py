@@ -3,6 +3,7 @@
 
 Package for ingame Menu instantiation.
 """
+# Standard Libraries
 import logging
 from typing import (
     Dict, 
@@ -11,12 +12,14 @@ from typing import (
     List
 )
 
+# Application Libraries
 from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories, 
     AssetInstances, 
     Statuses, 
-    Menus
+    Menus,
+    Fonts
 )
 from app.services.generators.game.factory import Factory
 from app.models.properties import WidgetProperties
@@ -63,7 +66,11 @@ class Provider:
         self.binder = binder
 
 
-    def _unpack_page(self, cfg: MenuWidget, binding: Binding) -> DisplayState:
+    def _unpack_page(self, 
+        cfg: MenuWidget, 
+        binding: Binding,
+        font: Fonts
+    ) -> DisplayState:
         props_dict = getattr(self.properties, cfg.instance, {})
         props = props_dict.get(cfg.id)
         
@@ -78,16 +85,20 @@ class Provider:
             content_function = lambda: []
 
         return DisplayState(
-            id=cfg.id,
-            position=Position(x=0, y=0),
-            content_function=content_function,
-            pageindex=0,
-            pagesize=1,
-            canvas=canvas_ptr
+            id                  = cfg.id,
+            position            = Position(x=0, y=0),
+            content_function    = content_function,
+            font                = font, 
+            pageindex           = 0,
+            pagesize            = 1,
+            canvas              = canvas_ptr
         )
 
                     
-    def _unpack_meter(self, cfg: MenuWidget, binding: Binding) -> MeterState:
+    def _unpack_meter(self, 
+        cfg: MenuWidget, 
+        binding: Binding
+    ) -> MeterState:
         if binding:
             callables = binding.bind()
             reading_fn, unit_fn = callables if len(callables) >= 2 else (lambda: 0, lambda: 1)
@@ -95,10 +106,10 @@ class Provider:
             reading_fn, unit_fn = lambda: 0, lambda: 1
             
         state = MeterState(
-            id = cfg.id,
-            position=Position(x=0, y=0),
-            reading_function=reading_fn,
-            unit_function=unit_fn
+            id                  = cfg.id,
+            position            = Position(x=0, y=0),
+            reading_function    = reading_fn,
+            unit_function       = unit_fn
         )
         
         if state.unit > 0:
@@ -107,7 +118,10 @@ class Provider:
         return state
 
 
-    def _unpack_icon(self, cfg: MenuWidget, binding: Binding) -> IconState:
+    def _unpack_icon(self, 
+        cfg: MenuWidget, 
+        binding: Binding
+    ) -> IconState:
         if binding:
             callables = binding.bind()
             icon_function = callables[0] if callables else lambda: ""
@@ -115,22 +129,29 @@ class Provider:
             icon_function = lambda: ""
 
         return IconState(
-            id = cfg.id,
-            position=Position(x=0, y=0),
-            icon_function=icon_function
+            id                  = cfg.id,
+            position            = Position(x=0, y=0),
+            icon_function       = icon_function
         )
 
 
-    def _unpack_button(self, cfg: MenuWidget, binding: Binding) -> TraversalState:
+    def _unpack_button(self, 
+        cfg: MenuWidget, 
+        binding: Binding
+    ) -> TraversalState:
         return TraversalState(
-            id = cfg.id,
-            position=Position(x=0, y=0),
-            status=cfg.status,
-            animation=AnimationState(action=cfg.status)
+            id                  = cfg.id,
+            position            = Position(x=0, y=0),
+            status              = cfg.status,
+            animation           = AnimationState(action=cfg.status)
         )
 
     
-    def _unpack_widget(self, cfg: MenuWidget, context: MenuContext) -> Widget:
+    def _unpack_widget(self, 
+        cfg: MenuWidget, 
+        context: MenuContext,
+        font: Fonts
+    ) -> Widget:
         props_dict = getattr(self.properties, cfg.instance, {})
         properties = props_dict.get(cfg.id)
         recipe = getattr(self.recipes, cfg.instance, None)
@@ -140,7 +161,7 @@ class Provider:
         binding = self.binder.binding(cfg.bind, context)
 
         delegator = {
-            AssetInstances.PAGES.value: self._unpack_page,
+            AssetInstances.PAGES.value: lambda c, b: self._unpack_page(c, b, font),
             AssetInstances.METERS.value: self._unpack_meter,
             AssetInstances.BUTTONS.value: self._unpack_button,
             AssetInstances.ICONS.value: self._unpack_icon
@@ -149,10 +170,8 @@ class Provider:
         # Inject Component into State unpacking
         state = delegator[instance_key](cfg, binding)
 
-        frame = Factory.frame(recipe.frame) \
-                    if recipe else Factory.frame(None)
-        animation = Factory.animation(recipe.animation) \
-                    if recipe else Factory.animation(None)
+        frame = Factory.frame(recipe.frame)
+        animation = Factory.animation(recipe.animation)
         taxonomy = Factory.taxonomy(
             cfg.id, 
             cfg.name, 
@@ -161,58 +180,65 @@ class Provider:
         )
 
         return Widget(
-            taxonomy=taxonomy,
-            properties=properties,
-            state=state,
-            frame=frame,
-            animation=animation,
-            binding=binding
+            taxonomy            = taxonomy,
+            properties          = properties,
+            state               = state,
+            frame               = frame,
+            animation           = animation,
+            binding             = binding
         )
+
 
     def _unpack_node(self, 
         cfg: Union[MenuPane, MenuWidget], 
         context: MenuContext, 
-        widgets: Dict[str, Asset]
+        widgets: Dict[str, Asset],
+        font: Fonts
     ) -> None:
         if isinstance(cfg, MenuPane):
-            self._unpack_pane(cfg, context, widgets)
+            self._unpack_pane(cfg, context, widgets, font)
         else:
-            widgets[cfg.name] = self._unpack_widget(cfg, context)
+            widgets[cfg.name] = self._unpack_widget(cfg, context, font)
 
             
     def _unpack_pane(self, 
         pane: MenuPane, 
         context: MenuContext, 
-        widgets: Dict[str, Asset]
+        widgets: Dict[str, Asset],
+        font: Union[Fonts, None] = None
     ) -> None:
         props = self.properties.panes.get(pane.id)
         recipe = self.recipes.panes
-        
-        pane_asset = Asset(
-            taxonomy        = Factory.taxonomy(
-                id          = pane.id, 
-                name        = pane.name, 
-                category    = AssetCategories.WIDGETS.value, 
-                instance    = AssetInstances.PANES.value
+        font = font or pane.font
+
+        pane_asset              = Asset(
+            taxonomy            = Factory.taxonomy(
+                id              = pane.id, 
+                name            = pane.name, 
+                category        = AssetCategories.WIDGETS.value, 
+                instance        = AssetInstances.PANES.value
             ),
-            properties      = props,
-            state           = PaneState(
-                position    = Position(x=0, y=0),
-                layout      = pane.layout,
-                alignment   = pane.alignment,
-                gap         = pane.gap,
-                margins     = pane.margins
+            properties          = props,
+            state               = PaneState(
+                position        = Position(x=0, y=0),
+                layout          = pane.layout,
+                alignment       = pane.alignment,
+                gap             = pane.gap,
+                margins         = pane.margins
             ),
-            frame           = Factory.frame(recipe.frame) if recipe else Factory.frame(None),
-            animation       = Factory.animation(recipe.animation) if recipe else Factory.animation(None)
+            frame               = Factory.frame(recipe.frame),
+            animation           = Factory.animation(recipe.animation)
         )
         widgets[pane.name] = pane_asset
     
         for child in pane.children:
-            self._unpack_node(child, context, widgets)
+            self._unpack_node(child, context, widgets, font)
 
-
-    def _focus(self, id: str, widgets: List[Asset], graph: dict) -> str:
+    def _focus(self, 
+        id: str, 
+        widgets: List[Asset], 
+        graph: dict
+    ) -> str:
         """
         Compute the initial focused widget in the Menu.
         """
@@ -231,7 +257,12 @@ class Provider:
 
         return None
             
-    def unpack(self, id: str, config: MenuConfiguration, context: dict, screensize: Dimensions) -> Menu:
+    def unpack(self, 
+        id: str, 
+        config: MenuConfiguration, 
+        context: dict, 
+        screensize: Dimensions
+    ) -> Menu:
         context = context or {}
             
         widgets = {}
@@ -247,10 +278,10 @@ class Provider:
         focus = self._focus(id, ordered_widgets, graph)
 
         return Menu(
-            id          = id,
-            focus       = focus,
-            graph       = graph,
-            context     = context,
-            widgets     = ordered_widgets,
-            controller  = ctrl
+            id                  = id,
+            focus               = focus,
+            graph               = graph,
+            context             = context,
+            widgets             = ordered_widgets,
+            controller          = ctrl
         )

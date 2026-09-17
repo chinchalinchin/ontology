@@ -24,7 +24,7 @@ class Binding(ABC):
         self.resolved = {}
 
         if isinstance(target, str):
-            self.target = {'default': target}
+            self.target = {'content': target, 'default': target}
         else:
             self.target = target or {}
         # Pre-resolve all context paths in the target dictionary
@@ -66,12 +66,19 @@ class Binding(ABC):
 
     def _get(self, key: str, default: Any = None) -> Any:
         """Safely extracts the resolved value based on the target key."""
-        parent, attr = self.resolved.get(key, (None, None))
-        if parent is None or attr is None:
-            return default
-        if isinstance(parent, dict):
-            return parent.get(attr, default)
-        return getattr(parent, attr, default)
+        if key in self.resolved:
+            parent, attr = self.resolved[key]
+            if parent is None or attr is None:
+                return default
+            if isinstance(parent, dict):
+                return parent.get(attr, default)
+            return getattr(parent, attr, default)
+
+        # Fallback to literal target values (e.g. static labels or strings)
+        if key in self.target:
+            return self.target[key]
+
+        return default
 
     @abstractmethod
     def bind(self, **kwargs) -> Tuple[Callable, ...]:

@@ -253,11 +253,14 @@ class Screen:
         
         # 2. Re-write the font over the cleared canvas
         if isinstance(content, str) and content:
-            # TODO: determine how font key should be set
-            font = self.registry.font("dialogue")
+            font_key = widget.state.font
+            font = self.registry.font(font_key)
             if font:
                 write((tex, 0, 0, sw, sl, 0, 0, sw, sl), content, font)
-
+            else:
+                logger.warning(
+                    f"Registry MISS: Font '{font_key}' not found for widget '{widget.name}'."
+                )
 
     def interface(self, menus: List[Menu], overlays: List[Menu]) -> None:
         """

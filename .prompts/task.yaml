@@ -1,8 +1,8 @@
 
 ## LINUX
-# root: /home/grant/Projects/ontology
+root: /home/grant/Projects/ontology
 ## MAC
-root: /Users/gmoore/Home/projects/ontology
+# root: /Users/gmoore/Home/projects/ontology
 task:
-  verb: style
-  noun: mermaid
+  verb: dump
+  noun: menu

@@ -225,17 +225,22 @@ class Engine:
         self.bus.clear()
 
         registry = None
+
         if self.screens:
             registry = next(iter(self.screens.values())).registry
-        elif self.provider and hasattr(self.provider, 'binder') and self.provider.binder:
-            registry = getattr(self.provider.binder, 'registry', None)
+            if registry is not None:
+                registry.clear()
+
+        if self.provider and self.provider.binder:
+            registry = self.provider.binder.registry
+            if registry is not None:
+                registry.clear()
 
         for screen in list(self.screens.values()):
             screen.destroy()
+            
         self.screens.clear()
 
-        if registry is not None and hasattr(registry, 'clear'):
-            registry.clear()
 
         if self.board is not None:
             self.board.clear()
