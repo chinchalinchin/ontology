@@ -354,5 +354,5 @@ class Statuses(str, Enum):
 
 class Fonts(str, Enum):
     DIALOGUE        = "dialogue"
+    MENU            = "menu"
     TITLE           = "title"
-    LABEL           = "label"

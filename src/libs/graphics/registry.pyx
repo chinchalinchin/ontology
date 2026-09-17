@@ -31,7 +31,10 @@ cdef extern from "SDL2/SDL_ttf.h":
     int TTF_STYLE_NORMAL
     int TTF_STYLE_BOLD
     int TTF_STYLE_ITALIC
+    int TTF_STYLE_UNDERLINE
+    int TTF_STYLE_STRIKETHROUGH
     void TTF_SetFontStyle(TTF_Font* font, int style)
+    void TTF_SetFontOutline(TTF_Font* font, int outline)
 
     int TTF_WasInit()
     TTF_Font* TTF_OpenFont(const char* file, int ptsize)
@@ -49,11 +52,14 @@ cdef class TexturePtr:
 
 cdef class TTFFont:
     def __dealloc__(self):
-        # B008 Fix: Prevent closing font if TTF subsystem is already terminated
-        if self.ptr != NULL:
-            if TTF_WasInit():
+        # Prevent closing font if TTF subsystem is already terminated
+        if TTF_WasInit():
+            if self.ptr != NULL:
                 TTF_CloseFont(self.ptr)
-            self.ptr = NULL
+                self.ptr = NULL
+            if self.outline_ptr != NULL:
+                TTF_CloseFont(self.outline_ptr)
+                self.outline_ptr = NULL
 
 # -------------------------------------------------------------------------------
 
@@ -77,28 +83,57 @@ def _sys_load_font(filepath: str, style: dict):
     cdef int pt_size = style.get("size", 24)
     cdef bytes b_filepath = filepath.encode('utf-8')
     cdef TTF_Font* f_ptr = TTF_OpenFont(b_filepath, pt_size)
+    cdef int sdl_style = TTF_STYLE_NORMAL
+    cdef TTFFont font_obj
+    cdef dict color_cfg
+    cdef dict outline_cfg
+    cdef dict out_color
+    cdef int outline_width
     
     if f_ptr == NULL:
         raise RuntimeError(f"Failed to load font into memory: {filepath}")
         
-    cdef int sdl_style = TTF_STYLE_NORMAL
+    # 1. Composite Style Flags
     if style.get("bold", False): sdl_style |= TTF_STYLE_BOLD
     if style.get("italics", False): sdl_style |= TTF_STYLE_ITALIC
+    if style.get("underline", False): sdl_style |= TTF_STYLE_UNDERLINE
+    if style.get("strikethrough", False): sdl_style |= TTF_STYLE_STRIKETHROUGH
     TTF_SetFontStyle(f_ptr, sdl_style)
     
-    cdef TTFFont font_obj = TTFFont()
+    font_obj = TTFFont()
     font_obj.ptr = f_ptr
     font_obj.margins = style.get("margins", 0.05)
     font_obj.align_str = style.get("alignment", "left")
     
-    cdef dict color_cfg = style.get("color", {})
+    # 2. Base Color
+    color_cfg = style.get("color", {})
     font_obj.color.r = color_cfg.get("r", 255)
     font_obj.color.g = color_cfg.get("g", 255)
     font_obj.color.b = color_cfg.get("b", 255)
     font_obj.color.a = color_cfg.get("a", 255)
-    
-    return font_obj
 
+    # 3. Outline Resolution (Dedicated Secondary Pointer)
+    outline_cfg = style.get("outline", {}) if isinstance(style.get("outline"), dict) else {}
+    outline_width = outline_cfg.get("width", style.get("outline", 0) if isinstance(style.get("outline"), int) else 0)
+    
+    font_obj.outline_width = outline_width
+    font_obj.outline_ptr = NULL
+
+    if outline_width > 0:
+        font_obj.outline_ptr = TTF_OpenFont(b_filepath, pt_size)
+        if font_obj.outline_ptr != NULL:
+            TTF_SetFontStyle(font_obj.outline_ptr, sdl_style)
+            TTF_SetFontOutline(font_obj.outline_ptr, outline_width)
+            
+            # Outline Color (defaults to opaque black)
+            out_color = outline_cfg.get("color", {})
+            font_obj.outline_color.r = out_color.get("r", 0)
+            font_obj.outline_color.g = out_color.get("g", 0)
+            font_obj.outline_color.b = out_color.get("b", 0)
+            font_obj.outline_color.a = out_color.get("a", 255)
+
+    return font_obj
+    
 # -------------------------------------------------------------------------------
 
 cdef class Registry:

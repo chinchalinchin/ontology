@@ -28,6 +28,9 @@ cdef class TexturePtr:
 # Define the memory layout for the TTFFont extension type.
 cdef class TTFFont:
     cdef TTF_Font* ptr
+    cdef TTF_Font* outline_ptr
+    cdef public int outline_width
+    cdef public SDL_Color outline_color
     cdef public SDL_Color color
     cdef public float margins
     cdef public str align_str
