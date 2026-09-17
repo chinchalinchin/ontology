@@ -2,8 +2,16 @@ from setuptools import setup, Extension
 from Cython.Build import cythonize
 
 # Homebrew paths for both Apple Silicon (/opt/homebrew) and Intel (/usr/local)
-include_dirs = ["/opt/homebrew/include", "/usr/local/include"]
-library_dirs = ["/opt/homebrew/lib", "/usr/local/lib"]
+include_dirs = [
+    "/opt/homebrew/include",
+    "/opt/homebrew/include/SDL2",
+    "/usr/local/include",
+    "/usr/local/include/SDL2",
+]
+library_dirs = [
+    "/opt/homebrew/lib", 
+    "/usr/local/lib"
+]
 
 ext_modules = [
     Extension(
@@ -14,6 +22,8 @@ ext_modules = [
         "libs.core.input",
         sources=["src/libs/core/input.pyx"],
         libraries=["SDL2"],
+        include_dirs=include_dirs,
+        library_dirs=library_dirs
     ),
     Extension(
         "libs.core.math.geometry",

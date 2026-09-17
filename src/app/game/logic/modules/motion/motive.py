@@ -1,6 +1,8 @@
 """
 # Ontology: app.game.logic.mechanics.motion.motive
 """
+from __future__ import annotations
+
 # Standard Libraries
 from typing import List, TYPE_CHECKING
 

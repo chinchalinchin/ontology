@@ -34,7 +34,7 @@ def is_near(pos1: Position, pos2: Position, radius: int = 15) -> bool:
     dy = pos2.y - pos1.y
     return (dx*dx + dy*dy) <= (radius * radius)
 
-def any_goals(goals: Dict[Goal], category=None) -> bool:
+def any_goals(goals: Dict[str, Goal], category=None) -> bool:
     if not goals: 
         return False
     if category:

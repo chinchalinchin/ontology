@@ -1,6 +1,8 @@
 """
 # Ontology: app.game.logic.mechanics.world.plot
 """
+from __future__ import annotations
+
 import collections
 import logging
 from typing import TYPE_CHECKING

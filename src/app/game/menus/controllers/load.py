@@ -1,6 +1,8 @@
 """
 # Ontology: app.game.menus.controllers.load
 """
+from __future__ import annotations
+
 # Standard Libraries
 import collections
 import logging

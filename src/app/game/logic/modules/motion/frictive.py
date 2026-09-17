@@ -1,6 +1,8 @@
 """
 # Ontology: app.game.logic.mechanics.motion.frictive
 """
+from __future__ import annotations
+
 # Standard Libraries
 import logging
 from typing import List, TYPE_CHECKING

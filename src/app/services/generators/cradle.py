@@ -98,7 +98,6 @@ class Cradle:
         properties = self.spawnables.projectiles.get(id)
         name = self.name()
         
-        # Instantiate natively
         state = MotorState(
             id          = id, 
             name        = name, 
@@ -228,7 +227,7 @@ class Cradle:
         return self.decomposer.unpack(pseudo_state)
 
 
-    def cost(self, id: str) -> List['Cost']:
+    def cost(self, id: str) -> List[Cost]:
         """
         Delegates compositional cost aggregation to the Decomposer tree traverse utilities.
         """

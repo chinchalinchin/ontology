@@ -1,6 +1,8 @@
 """
 # Ontology: app.game.menus.controllers.main
 """
+from __future__ import annotations
+
 # Standard Libraries
 import collections
 from typing import TYPE_CHECKING
