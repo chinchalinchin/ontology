@@ -60,19 +60,22 @@ from app.game.menus.controllers import (
     DisplayController,
     ScrollController,
     MainController,
-    LoadController
+    LoadController,
+    PauseController,
+    OptionsController
 )
 from app.models.config import (
-    RecipeConfiguration,
+    RecipeConfiguration
 )
 from app.models.groups import SpawnableGroup
 from app.game.devices import (
     Keyboard,
     Controller
 )
-from app.services.translators.lamb import LambdaTranslator
-from app.services.translators.compiler import CompilerTranslator
-
+from app.services.translators import (
+    LambdaTranslator,
+    CompilerTranslator
+)
 
 class Factory:
     FRAME_MAP = {
@@ -124,6 +127,8 @@ class Factory:
         Controllers.SCROLL: ScrollController,
         Controllers.MAIN: MainController,
         Controllers.LOAD: LoadController,
+        Controllers.PAUSE: PauseController,
+        Controllers.OPTIONS: OptionsController
     }
     
     TRANSLATOR_MAP = {

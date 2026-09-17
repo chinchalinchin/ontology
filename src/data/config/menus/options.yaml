@@ -1,0 +1,119 @@
+menus:
+  options:
+    controller: options
+    roots:
+      - id: transparent-area
+        name: options-menu
+        font: menu
+        position:
+          # Centered anchor for 480 x 480 viewport
+          px: 0.05
+          py: 0.15
+        layout: dock
+        alignment: center
+        gap: 15
+        children:
+          # --- Pane 1: Option Buttons Stack ---
+          - id: header-pane
+            name: options-button-pane
+            layout: stack
+            alignment: center
+            gap: 8
+            children:
+              - id: transparent-label
+                name: option-1-slot
+                layout: overlay
+                alignment: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: option-1
+                    bind:
+                      schema: select
+                      target:
+                        selection: option_1
+                        selector: options-parchment
+                  - instance: pages
+                    id: text-label
+                    name: option-1-text
+                    bind:
+                      schema: text
+                      target:
+                        content: OPTION 1
+
+              - id: transparent-label
+                name: option-2-slot
+                layout: overlay
+                alignment: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: option-2
+                    bind:
+                      schema: select
+                      target:
+                        selection: option_2
+                        selector: options-parchment
+                  - instance: pages
+                    id: text-label
+                    name: option-2-text
+                    bind:
+                      schema: text
+                      target:
+                        content: OPTION 2
+
+              - id: transparent-label
+                name: option-3-slot
+                layout: overlay
+                alignment: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: option-3
+                    bind:
+                      schema: select
+                      target:
+                        selection: option_3
+                        selector: options-parchment
+                  - instance: pages
+                    id: text-label
+                    name: option-3-text
+                    bind:
+                      schema: text
+                      target:
+                        content: OPTION 3
+
+              - id: transparent-label
+                name: option-4-slot
+                layout: overlay
+                alignment: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: option-4
+                    bind:
+                      schema: select
+                      target:
+                        selection: option_4
+                        selector: options-parchment
+                  - instance: pages
+                    id: text-label
+                    name: option-4-text
+                    bind:
+                      schema: text
+                      target:
+                        content: OPTION 4
+
+          # --- Pane 2: Placeholder Display ---
+          - id: dark
+            name: options-display-pane
+            layout: overlay
+            alignment: center
+            children:
+              - instance: pages
+                id: portrait
+                name: options-parchment
+                bind:
+                  schema: text
+                  target:
+                    content: "SELECT AN OPTION"

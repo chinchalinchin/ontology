@@ -296,10 +296,12 @@ class Shortcuts(str, Enum):
 # -------------------------------- WIDGET ENUMERATIONS
 
 class Controllers(str, Enum):
-    SCROLL          = "scroll"
     DISPLAY         = "display"
-    MAIN            = "main"
     LOAD            = "load"
+    MAIN            = "main"
+    OPTIONS         = "options"
+    PAUSE           = "pause"
+    SCROLL          = "scroll"
     
 class Layouts(str, Enum):
     DOCK            = "dock"
@@ -334,17 +336,20 @@ class Menus(str, Enum):
     INVENTORY       = "inventory"
     LOAD            = "load"
     MAIN            = "main"
+    OPTIONS         = "options"
     PAUSE           = "pause"
     TEXT            = "text"
     TRADE           = "trade"
     VIEW            = "view"
-    
+
 class Selections(str, Enum):
-    SCROLLUP        = "scrollup"
-    SCROLLDOWN      = "scrolldown"
-    NEW             = "new"
     LOAD            = "load"
     MENU            = "menu"
+    NEW             = "new"
+    SAVE            = "save"
+    SCROLLUP        = "scrollup"
+    SCROLLDOWN      = "scrolldown"
+    QUIT            = "quit"
 
 class Statuses(str, Enum):
     ACTIVE          = "active"
