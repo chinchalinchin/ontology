@@ -165,6 +165,18 @@ class Screen:
 
     def present(self) -> None: present()
 
+
+    def destroy(self) -> None:
+        """
+        Explicitly destroys hardware canvas textures held by this screen.
+        """
+        if self.bg_canvas:
+            destroy(self.bg_canvas)
+            self.bg_canvas = None
+        if self.fg_canvas:
+            destroy(self.fg_canvas)
+            self.fg_canvas = None
+            
     # ------------------------------------------------ CANVAS METHODS
 
     def draw(self, 

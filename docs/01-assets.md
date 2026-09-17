@@ -148,7 +148,6 @@ These attributes are part of the base class from which all other states inherit.
 !!! note
     [Equipment](./02-sprites.md#equipment) and [Player](./02-sprites.md#player) Assets are excluded from this table, due to the special nature of these particular Assets. Equipment is a stateless Sheet, whereas the Player is a special type of [Sprite](./02-sprites.md).
 
-
 ### Asset Architecture
 
 Every physical entity in the game is an instance of the unified Asset class. The distinction between a Tile, a Gate, or a Sprite is determined entirely by the data models and components injected into them. Behaviors are decoupled from Assets and managed entirely by *Mechanic* classes that iterate over the Board Assets. See [Mechanics documentation](./05-mechanics.md) for more information.
@@ -159,7 +158,7 @@ The Recipe for an Asset, i.e. the list of components which go into a particular 
 2. **Model: State:** A model defining mutable data (e.g., `ContainerState`, `PositionalState`, etc.).
 3. **Behavior: Animation** Stateless strategies (e.g. `BinaryAnimation`, `StateAnimation`, etc.) injected into the Asset. These contain the specific logic for updating Animation frames.
     - `animate(state, properties)`: Interface for applying animation logic to Asset state.
-4. **Behavior: Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a `List[str]` rather than a single `str`. In addition, Frames provide the indexing schema for textures used by the [Registry](./00-overview.md#registry) to store Assets in memory.
+4. **Behavior: Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a `List[(str, int, int)]` rather than a single `str`. The tuple `(int, int)` controls how much the frame is offset from its origin (mainly used in [Expressions](#expressions) to pin a [Cursor Expressions](#cursors) to the relative Position of a Sprite) In addition, Frames provide the indexing schema for textures used by the [Registry](./00-overview.md#registry) to store Assets in memory.
     - `keys(id, state)`: Interface for retrieving Asset's current Frame key.
     - `index(id, properties)`: Interface for indexing Asset frames in Registry.
 
@@ -210,7 +209,7 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id, state): returns [ id ] "`
+* `keys(id, state): returns [ (id, 0, 0) ] "`
 * `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MultiplerState**
@@ -231,7 +230,7 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id, state): returns [ id ] "`
+* `keys(id, state): returns [ (id, 0, 0) ] "`
 * `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MultiplerState**
@@ -257,7 +256,7 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id, None): returns [ id ] "`
+* `keys(id, None): returns [ (id, 0, 0) ] "`
 * `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MultiplerState**
@@ -304,7 +303,7 @@ When *interacting* with a Chest, the [Player](./02-sprites.md#player) is shown t
 
 **Frame: IterableFrame**
 
-* `keys(id, state): returns [ "{id}-{state.animation.frame}" ]`
+* `keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]`
 * `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: ContainerState**
@@ -330,7 +329,7 @@ Crates are Objects who state can be altered by in-game physics. For example, whe
 
 **Frame: SingleFrame**
 
-* `keys(id, state): returns [ id ] "`
+* `keys(id, state): returns [ (id, 0, 0) ] "`
 * `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 ### Doors
@@ -348,7 +347,7 @@ Doors are Objects that alter a Sprite's `<layer>`. When a Sprite enters the hitb
 
 **Frame: SingleFrame**
 
-* `keys(id, state): returns [ id ]`
+* `keys(id, state): returns [ (id, 0, 0) ]`
 * `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 ### Gates
@@ -362,7 +361,7 @@ Gates are Binary Objects whose state is connected to Plates. When a Gate is on (
 
 **Frame: IterableFrame**
 
-* `keys(id, state): returns [ "{id}-{state.animation.frame}" ]`
+* `keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]`
 * `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SwitchState**
@@ -388,7 +387,7 @@ Plates are Binary Objects whose state can be changed by intersection, e.g. when 
 
 **Frame: IterableFrame**
 
-* `keys(id, state): returns [ "{id}-{state.animation.frame}" ]`
+* `keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]`
 * `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SwitchState**
@@ -412,7 +411,7 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id, state): returns [ id ]`
+* `keys(id, state): returns [ (id, 0, 0) ]`
 * `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: DialogueState**
@@ -469,7 +468,7 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id, state): returns [ id ]`
+* `keys(id, state): returns [ (id, 0, 0) ]`
 * `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: MotorState**
@@ -501,6 +500,7 @@ All Effects iterate over a single row of frames using `IterableFrame` and advanc
     * `delay: int` (tick pacing between frames)
     * `frequency: int` (tick interval for periodic resets)
     * `persist: bool` (whether temporary effects persist on their final frame)
+    * `cooldown: int`: (ticks before becoming active after animation)
 
 **Animation: LifeCycleAnimation**
 
@@ -510,7 +510,7 @@ All Effects iterate over a single row of frames using `IterableFrame` and advanc
 
 **Frame: IterableFrame**
 
-* `keys(id, state) : [ "{id}-{state.animation.frame}" ]`
+* `keys(id, state) : [ ("{id}-{state.animation.frame}", 0, 0) ]`
 * `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **Lifecycles**
@@ -617,7 +617,7 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id, state) returns [ id ]`
+* `keys(id, state) returns [ (id, 0, 0) ]`
 * `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: PropertyState**
@@ -716,14 +716,14 @@ For example, the `src/assets/sheets/<sheet-category>/features/hair-blonde-bangs.
 
 * `dimensions: Dimensions`
 * `stack: List[str]`
-* `attackboxes: Dict[str, Hitbox]`
+* `attackboxes: Dict[str, List[Hitbox]]`
 * `hitboxes: List[Hitbox]`
 * `actions: Actions`
 * `mass: int`
 
 ### Pixies
 
-Pixies are Sheets that have simple game mechanics, e.g. are excluded from the complex calculations of the [Intention Mechanic](./04-intentions.md). *Pixies* encapsulate simple Characters, such as animals or bugs.
+Pixies are Sheets that have simple game mechanics, i.e. they are excluded from the complex calculations of the [Intention Mechanic](./04-intentions.md). *Pixies* encapsulate simple Characters, such as animals or bugs.
 
 **Animation: StateAnimation**
 
@@ -732,29 +732,26 @@ Pixies are Sheets that have simple game mechanics, e.g. are excluded from the co
 
 **Frame: StateFrame**
 
-* `keys(id, state): returns [ "{id}-{state.animation.action}-{state,animation.direction}-{state.animation.frame}" ]`
+* `keys(id, state): returns [ ("{id}-{state.animation.action}-{state,animation.direction}-{state.animation.frame}", 0, 0) ]`
 * `index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
-**State: AnimatorState**
+**State: TBD**
 
-* `layer: str`
-* `depth: int`
-* `height: int`
-* `position: Position`
-* `animation: Animation`
+TODO
 
 ### Sprites
 
 Sprites are Sheets over multiple rows of frames, where each row may have a variable number of frames. Sprite have a diverse palette of Animation Actions. They are meant to encapsulate the core game entities, e.g. the player, NPCs, and enemies.
 
-**Animation: StateAnimation**
+**Animation: SpriteAnimation**
 
 - `state.animation.frame += 1`
 - `if state.animation.frame >= properties.actions[state.animation.action].count: state.animation.frame = 0`
+- `if state.psyche.expression: state.psyche.expression.ttl -= 1`
 
 **Frame: SpriteFrame**
 
-* `keys(id, state): returns [ "{id}-{state.animation.action}-{state.animation.direction}-{animation.frame}" ] + [ <equipment-frames> ] + [ <expression-frames> ]`
+* `keys(id, state): returns [ ("{id}-{state.animation.action}-{state.animation.direction}-{animation.frame}", 0, 0) ] + [ (<equipment-frames>, 0, 0) ] + [ (<expression-frames>, offset.x, offset.y) ]`
 * `index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: SpriteState**

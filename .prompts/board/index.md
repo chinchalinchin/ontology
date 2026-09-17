@@ -36,7 +36,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 02.03: Equipment](./phases/refactor/refactor-02-03.md)
       - [x]: [Phase 02.04: Engine](./phases/refactor/refactor-02-04.md)
       - [x]: [Phase 02.05: Finetuning](./phases/refactor/refactor-02-05.md)
-      - [~]: [Phase 02.06: Effects](./phases/refactor/refactor-02-06.md)
+      - [x]: [Phase 02.06: Effects](./phases/refactor/refactor-02-06.md)
     - Phase 03:
       - [x]: [Phase 03.01: Mechanics](./phases/refactor/refactor-03-01.md)
       - [x]: [Phase 03.02: Consolidation](./phases/refactor/refactor-03-02.md)
@@ -60,7 +60,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Bug B004: Friction Regression](./phases/patch/bug-b004.md)
     - [x]: [Bug B005: Speak Regression](./phases/patch/bug-b005.md)
     - [x]: [Bug B006: Raycast Boundary Grazing](./phases/patch/bug-b006.md)
-    - [ ]: [Bug B007: Cradle Spawning](./phases/patch/bug-b007.md)
+    - [x]: [Bug B007: Cradle Spawning](./phases/patch/bug-b007.md)
   - Achieve:
     - [x]: [Goal 01: Boundaries](./phases/achieve/goal-01.md)
     - [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)
@@ -70,6 +70,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Goal 06: Speak Intentions](./phases/achieve/goal-06.md)
     - [x]: [Goal 07: Door Interact Intentions](./phases/achieve/goal-07.md)
     - [ ]: [Goal 08: Pause Menu](./phases/achieve/goal-08.md)
+    - [~]: [Goal 09: CLI Handling](./phases/achieve/goal-09.md)
 - Backlog:
   - [Telemetry Menu](./backlog/todo-t000.md)
 

@@ -22,7 +22,10 @@ from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
 from app.game.logic.mechanics.core import Mechanic
-from app.game.menus.events import MenuEvent
+from app.game.menus.events import (
+    MenuEvent,
+    StateEvent
+)
 from app.game.menus.contexts import MainContext
 from app.models.groups import (
     SpawnableGroup, 
@@ -108,14 +111,19 @@ class Builder:
         )
 
 
-    def load_data(self, state_key: str) -> None:
+    def load_data(self, state_key: str = None) -> None:
         """
+        Loads YAML configuration data for properties and global configurations.
+        If state_key is None, state hydration is deferred to the Main Menu.
         """
-        logger.info(f"Loading YAML data for target state: {state_key} ...")
         self.context.properties = Loader.load_properties()
         self.context.configurations = Loader.load_configurations()
-        self.context.state = Loader.load_state(state_key)
-
+        if state_key is not None:
+            logger.info(f"Loading YAML data for target state: {state_key} ...")
+            self.context.state = Loader.load_state(state_key)
+        else:
+            logger.info("No state key provided. Booting in unhydrated mode for Main Menu...")
+            self.context.state = None
 
     def init_subsystems(self, screensize: Dimensions, headless: bool = True) -> None:
         """
@@ -262,9 +270,9 @@ class Orchestrator:
         self.builder = builder
 
     def orchestrate(self, 
-        state_key: str, 
-        screensize: Dimensions, 
-        device: str, 
+        state_key: str = None, 
+        screensize: Dimensions = None, 
+        device: str = None, 
         headless: bool = False
     ) -> Engine:
         # Load state definitions (deferred evaluation by Migrator)
@@ -280,7 +288,10 @@ class Orchestrator:
         engine = self.builder.get_engine()
         registry = next(iter(engine.screens.values())).registry
         
-        # Seed the Menu stack immediately for instantaneous launch
-        engine.bus.append(MenuEvent(Menus.MAIN.value, MainContext(registry=registry)))        
+        # Short-circuit to state hydration if state_key is given; otherwise boot to Main Menu
+        if state_key is not None:
+            engine.bus.append(StateEvent(id=state_key))
+        else:
+            engine.bus.append(MenuEvent(Menus.MAIN.value, MainContext(registry=registry)))        
 
         return engine

@@ -1094,7 +1094,7 @@ Correct the invocation signature of `LifecycleAnimation.cooldown` in `AnimationM
 
 * [x] Subtask: Update `SheetProperties.attackboxes` in `app/models/properties.py` to `Optional[Dict[str, List[Hitbox]]]`.
 * [x] Subtask: Validate that `app/config/loader.py` recursively instantiates `PydanticHitbox` instances across the `attackboxes` mapping.
-* [!: Dependent on Phase Completion] Subtask: Add unit tests in `tests/unit/test_libs_graphics_registry.py` confirming loaded equipment attackboxes are instances of `libs.core.models.Hitbox`.
+* [x] Subtask: Add unit tests in `tests/unit/test_libs_graphics_registry.py` confirming loaded equipment attackboxes are instances of `libs.core.models.Hitbox`.
 
 **2. Task: Combat Spatial Query Overhaul**
 
@@ -1112,12 +1112,12 @@ Correct the invocation signature of `LifecycleAnimation.cooldown` in `AnimationM
 
 * [x] Subtask: Fix `AnimationMechanics.update` to pass `(effect.state, effect.properties)` to `effect.animation.cooldown()`.
 * [x] Subtask: Align `LifecycleProperties.cooldown` and `ReactableState.cooldown` defaults so expired reactables reset to their configured base interval.
-* [ ] Subtask: Verify that on animation clamp, `state.cooldown` decrements to `0`, resetting `state.active = False` and `state.animation.frame = 0`.
+* [x] Subtask: Verify that on animation clamp, `state.cooldown` decrements to `0`, resetting `state.active = False` and `state.animation.frame = 0`.
 
 **4. Task: Spinning Dummy Attack Regression Test**
 
 *Objective*: Confirm player attack triggers the reactable animation and resets cleanly.
 
-* [!: User Task] Subtask: Execute `cli.py start world-01` and verify `player` slashing rightward activates `test-dummy`.
-* [!: User Task] Subtask: Verify `test-dummy` cycles through frames `0` to `7` and clamps on frame `7`.
-* [!: User Task] Subtask: Verify cooldown decrements from `60` to `0`, restoring `test-dummy` to frame `0` and `active = False`.
+* [x] Subtask: Execute `cli.py start world-01` and verify `player` slashing rightward activates `test-dummy`.
+* [x] Subtask: Verify `test-dummy` cycles through frames `0` to `7` and clamps on frame `7`.
+* [x] Subtask: Verify cooldown decrements from `60` to `0`, restoring `test-dummy` to frame `0` and `active = False`.

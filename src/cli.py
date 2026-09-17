@@ -9,6 +9,8 @@ import argparse
 import logging
 import gc
 import os
+import signal
+import faulthandler
 import datetime
 from pathlib import Path
 
@@ -58,6 +60,7 @@ def arguments():
 
     subparsers = parser.add_subparsers(dest="command", required=True)
     
+    # Headless subcommands: board_key remains strictly required
     for cmd in ["prerender", "render", "map"]:
         p = subparsers.add_parser(cmd)
         p.add_argument("board_key", type=str)
@@ -67,8 +70,10 @@ def arguments():
         p.add_argument("--height", type=int, default=SCREENSIZE)
         p.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
 
+    # Interactive start subcommand: board_key is optional (nargs="?", default=None)
     p_start = subparsers.add_parser("start")
-    p_start.add_argument("board_key", type=str)
+    p_start.add_argument("board_key", type=str, nargs="?", default=None,
+                         help="Optional board key to bypass the Main Menu and start immediately.")
     p_start.add_argument("--width", type=int, default=SCREENSIZE)
     p_start.add_argument("--height", type=int, default=SCREENSIZE)
     p_start.add_argument("--device", type=str, default=Devices.KEYBOARD.value)
@@ -96,7 +101,7 @@ def dump(board_key, context, temp='state'):
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
     args = {
-        'board_key': board_key,
+        'board_key': board_key or "default",
         'timestamp': timestamp
     }
 
@@ -199,9 +204,7 @@ def handle_map(args, orchestrator, screensize):
     out_dir.mkdir(parents=True, exist_ok=True)
 
     out_path = out_dir / f"{args.board_key}-{args.layer}-full.png"
-    
     assets = engine.board.renderables(args.layer)        
-
     screen.export_map(str(out_path), assets)
 
     return engine
@@ -227,11 +230,9 @@ def handle_render(args, orchestrator, screensize):
     out_dir.mkdir(parents=True, exist_ok=True)
 
     out_path = out_dir / f"{args.board_key}-{args.layer}.png"
-    
     assets = engine.board.renderables(args.layer)        
     player = engine.board.player()
 
-    # Provide fallback focus if the board lacks a player
     if player:
         focus, fdim = player.state.position, player.dimensions
     else:
@@ -276,15 +277,23 @@ def handle_start(args, orchestrator, screensize):
         headless=False
     )
     
+    def _sig_handler(signum, frame):
+        logger.info(f"Signal {signum} received. Requesting graceful engine shutdown...")
+        engine.running = False
+
+    # Intercept POSIX interruption signals to prevent thread-level C memory corruption
+    prev_sigint = signal.signal(signal.SIGINT, _sig_handler)
+    prev_sigterm = signal.signal(signal.SIGTERM, _sig_handler)
+
     try:
         engine.start()
-    except KeyboardInterrupt:
-        logger.info("Game engine loop interrupted by user.")
+    finally:
+        signal.signal(signal.SIGINT, prev_sigint)
+        signal.signal(signal.SIGTERM, prev_sigterm)
         
     return engine
 
 
-# Dispatcher Registry
 COMMAND_REGISTRY = {
     "prerender": handle_prerender,
     "render": handle_render,
@@ -297,6 +306,9 @@ COMMAND_REGISTRY = {
 # ---------------------------------------------------------
 
 def main():
+    # Diagnostic Instrumentation: dump C-level tracebacks on unexpected SIGSEGV
+    faulthandler.enable()
+
     args = arguments()
     configure_logging(log_level=args.log_level.upper())
 
@@ -329,12 +341,14 @@ def main():
     if args.dump_registry:
         dump(args.board_key, engine, 'registry')
     
-    if 'engine' in locals():
+    # Strictly ordered teardown to prevent post-SDL_Quit use-after-free
+    if 'engine' in locals() and engine is not None:
+        engine.stop()
         del engine
         
     gc.collect()
     quit_sdl()
     logger.info("CLI processes completed.")
-    
+
 if __name__ == "__main__":
     main()

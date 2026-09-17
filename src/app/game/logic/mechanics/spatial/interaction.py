@@ -89,11 +89,8 @@ class InteractionMechanics(SpatialMechanic):
                 elif target.taxonomy.instance == AssetInstances.CHESTS.value:
                     if source.taxonomy.instance == AssetInstances.SPRITES.value:
                         if target.state.content:
-                            for item in target.state.content:
-                                source.state.inventory.loot[item] = (
-                                    source.state.inventory.loot.get(item, 0) + 1
-                                )
-                            target.state.content = []
+                            pass
+                            # TODO: Inventory Management
                         processed_sources.add(source.name)
 
                 elif target.taxonomy.instance == AssetInstances.SIGNS.value:

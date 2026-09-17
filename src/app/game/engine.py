@@ -213,3 +213,29 @@ class Engine:
                 telemetry_frames = 0
                 telemetry_updates = 0
                 telemetry_start_time = self.time()
+
+
+    def stop(self) -> None:
+        """
+        Stops the game loop, drains active screens, destroys screen canvas textures,
+        clears registry caches, and releases board references.
+        """
+        logger.info("Stopping Engine and releasing resources...")
+        self.running = False
+        self.bus.clear()
+
+        registry = None
+        if self.screens:
+            registry = next(iter(self.screens.values())).registry
+        elif self.provider and hasattr(self.provider, 'binder') and self.provider.binder:
+            registry = getattr(self.provider.binder, 'registry', None)
+
+        for screen in list(self.screens.values()):
+            screen.destroy()
+        self.screens.clear()
+
+        if registry is not None and hasattr(registry, 'clear'):
+            registry.clear()
+
+        if self.board is not None:
+            self.board.clear()

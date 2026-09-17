@@ -71,14 +71,9 @@ class SocialMechanics(SpatialMechanic):
                     logger.info(f"Processing Interaction Collisions: {names}")
 
                 for asset_a, asset_b in colliding_pairs:
-                    is_a_player = asset_a in interacting_players
-                    is_b_sprite = asset_b in sprites
-                    is_b_player = asset_b in interacting_players
-                    is_a_sprite = asset_a in sprites
-
-                    if is_a_player and is_b_sprite:
+                    if asset_a in interacting_players and asset_b in sprites:
                         player, npc = asset_a, asset_b
-                    elif is_b_player and is_a_sprite:
+                    elif asset_b in interacting_players and asset_a in sprites:
                         player, npc = asset_b, asset_a
                     else:
                         continue
@@ -86,7 +81,6 @@ class SocialMechanics(SpatialMechanic):
                     if player.name in processed_sources:
                         continue
 
-                    # 1. Trigger Dialogue Menu
                     if npc.state.psyche.dialogue:
                         logger.info(f"Processing Dialogue: {npc.state.psyche.dialogue}")
                         bus.append(MenuEvent(
@@ -96,9 +90,9 @@ class SocialMechanics(SpatialMechanic):
                                 sprite=npc.state
                             )
                         ))
-                        # Consume PLAYER intention ONLY
-                        # NOTE: Sprite Intentions MUST not be altered by logic
-                        #       to preserve Transition Matrix.
+                        # NOTE: Consume PLAYER intention ONLY!
+                        #       Sprite Intentions MUST NOT be altered by 
+                        #       logic to preserve Transition Matrix.
                         player.state.intention = Intentions.IDLE.value
 
                     processed_sources.add(player.name)
@@ -117,7 +111,6 @@ class SocialMechanics(SpatialMechanic):
                         goal = sprite.state.goal
 
                         if goal and goal.category == Goals.SUBJECT.value:
-
                             target = board.asset(goal.name, sprite.state.layer)
                             
                             if target:

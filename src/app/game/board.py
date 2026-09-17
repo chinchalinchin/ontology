@@ -518,45 +518,14 @@ class Board:
                     del self._cached_characters[asset.name]
 
 
-    def serialize(self, slot: str) -> None:
+    def clear(self) -> None:
         """
-        Dumps runtime Board state back to YAML for saves.
+        Clears all cached and instantiated board assets and overlays.
         """
-        dump = {}
-        for asset in self._assets:
-            # Exclude highly transient or completely stateless system assets
-            if asset.category in (
-                AssetCategories.WIDGETS.value, 
-                AssetCategories.TILES.value, 
-                AssetCategories.EFFECTS.value
-            ):
-                continue
-                
-            # Exclude stateless Equipment wrappers (they bind directly to Sprite Inventories)
-            if asset.category == AssetCategories.SHEETS.value and asset.instance not in (
-                AssetInstances.SPRITES.value, 
-                AssetInstances.PLAYERS.value, 
-                AssetInstances.PIXIES.value
-            ):
-                continue
-                
-            cat = asset.category
-            inst = asset.instance
-            
-            if cat not in dump:
-                dump[cat] = {}
-            if inst not in dump[cat]:
-                dump[cat][inst] = []
-                
-            dump[cat][inst].append(asdict(asset.state))
-
-        # TODO: file access should be handled through app.config.loader
-        out_dir = settings.SAVE_DIR
-        out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / f"{slot}.yaml"
-        
-        with open(out_path, 'w') as f:
-            yaml.dump(dump, f, default_flow_style=False)
+        self._assets.clear()
+        self._init_cache()
+        self.menus.clear()
+        self.overlays.clear()
 
 
     def serialize(self, slot: str) -> None:

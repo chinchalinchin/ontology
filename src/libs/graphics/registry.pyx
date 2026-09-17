@@ -33,6 +33,7 @@ cdef extern from "SDL2/SDL_ttf.h":
     int TTF_STYLE_ITALIC
     void TTF_SetFontStyle(TTF_Font* font, int style)
 
+    int TTF_WasInit()
     TTF_Font* TTF_OpenFont(const char* file, int ptsize)
     void TTF_CloseFont(TTF_Font* font)
 
@@ -40,14 +41,18 @@ cdef extern from "SDL2/SDL_ttf.h":
 
 cdef class TexturePtr:
     def __dealloc__(self):
+        # B008 Fix: Prevent deallocation against torn-down SDL driver
         if self.ptr != NULL:
-            SDL_DestroyTexture(self.ptr)
+            if _renderer != NULL:
+                SDL_DestroyTexture(self.ptr)
             self.ptr = NULL
 
 cdef class TTFFont:
     def __dealloc__(self):
+        # B008 Fix: Prevent closing font if TTF subsystem is already terminated
         if self.ptr != NULL:
-            TTF_CloseFont(self.ptr)
+            if TTF_WasInit():
+                TTF_CloseFont(self.ptr)
             self.ptr = NULL
 
 # -------------------------------------------------------------------------------
@@ -273,3 +278,28 @@ cdef class Registry:
             self.current += 1
             
         return True
+
+    cpdef void clear(self):
+        """
+        Explicitly destroys and clears all cached GPU textures and font objects.
+        """
+        cdef TexturePtr tex
+        cdef TTFFont font_obj
+
+        for tex in list(self._textures.values()):
+            if tex is not None and tex.ptr != NULL:
+                if _renderer != NULL:
+                    SDL_DestroyTexture(tex.ptr)
+                tex.ptr = NULL
+        self._textures.clear()
+
+        for font_obj in list(self._fonts.values()):
+            if font_obj is not None and font_obj.ptr != NULL:
+                if TTF_WasInit():
+                    TTF_CloseFont(font_obj.ptr)
+                font_obj.ptr = NULL
+        self._fonts.clear()
+
+        self._frames.clear()
+        self._stacks.clear()
+        self._pending_assets.clear()

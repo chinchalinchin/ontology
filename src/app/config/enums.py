@@ -31,6 +31,7 @@ class AssetInstances(str, Enum):
     # TILES
     BACK            = "back"
     FORE            = "fore"
+    GRID            = "grid"
     # CURSORS
     EXPRESSIONS     = "expressions"
     PROJECTILES     = "projectiles"
@@ -38,7 +39,7 @@ class AssetInstances(str, Enum):
     PASSIVE         = "passive"
     HAZARDS         = "hazards"
     COLLECTABLES    = "collectables"
-    REACTABLES   = "reactables"
+    REACTABLES      = "reactables"
     # OBJECTS
     CHESTS          = "chests"
     CRATES          = "crates"
@@ -71,12 +72,14 @@ class AssetInstances(str, Enum):
     ICONS           = "icons"
 
 class Spawnables(str, Enum):
-    TEMPORARY       = "temporary"
-    PROJECTILES     = "projectiles"
-    STRUTS          = "struts"
+    COLLECTABLES    = "collectables"
     COMPOSITIONS    = "compositions"
     CROPS           = "crops"
+    EXPRESSIONS     = "expressions"
+    HAZARDS         = "hazards"
     ORE             = "ore"
+    PROJECTILES     = "projectiles"
+    STRUTS          = "struts"
 
 class Equipment(str, Enum):
     WEAPONS         = "weapons"
