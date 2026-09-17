@@ -98,24 +98,24 @@ To isolate any lingering low-level faults or race conditions during interruption
 
 *Objective*: Allow `start` to boot without arguments into the Main Menu while preserving headless subcommands.
 
-* [ ] Subtask: Update `cli.py` argument parser to define `board_key` as `nargs="?"`, defaulting to `None` for the `start` subcommand.
-* [ ] Subtask: Keep `board_key` as required positional argument for `prerender`, `render`, and `map`.
-* [ ] Subtask: Update `Orchestrator.orchestrate` to handle `state_key=None` by populating only core menus and emitting `MenuEvent(id=Menus.MAIN.value)`.
-* [ ] Subtask: Add conditional check in `Orchestrator` to emit `StateEvent(id=state_key)` directly when `state_key` is provided.
+* [x] Subtask: Update `cli.py` argument parser to define `board_key` as `nargs="?"`, defaulting to `None` for the `start` subcommand.
+* [x] Subtask: Keep `board_key` as required positional argument for `prerender`, `render`, and `map`.
+* [x] Subtask: Update `Orchestrator.orchestrate` to handle `state_key=None` by populating only core menus and emitting `MenuEvent(id=Menus.MAIN.value)`.
+* [x] Subtask: Add conditional check in `Orchestrator` to emit `StateEvent(id=state_key)` directly when `state_key` is provided.
 
 **2. Task: Clean Resource Teardown and Shutdown Pipeline**
 
 *Objective*: Enforce strict destruction order so all SDL textures and surfaces are released before calling `quit_sdl()`.
 
-* [ ] Subtask: Implement `Registry.clear()` to explicitly iterate, destroy, and nullify all `TexturePtr` and `TTFFont` objects held in `_textures` and `_fonts`.
-* [ ] Subtask: Implement `Engine.stop()` to drain active screens, destroy screen canvas textures, and clear all board references.
-* [ ] Subtask: Update `cli.py` teardown to invoke `engine.stop()`, clear `Screen` references, and execute `gc.collect()` *prior* to calling `quit_sdl()`.
-* [ ] Subtask: Add null pointer checks (`if target.ptr != NULL and _renderer != NULL`) inside `TexturePtr.__dealloc__` and `render.destroy` to prevent calling SDL against a torn-down driver.
+* [x] Subtask: Implement `Registry.clear()` to explicitly iterate, destroy, and nullify all `TexturePtr` and `TTFFont` objects held in `_textures` and `_fonts`.
+* [x] Subtask: Implement `Engine.stop()` to drain active screens, destroy screen canvas textures, and clear all board references.
+* [x] Subtask: Update `cli.py` teardown to invoke `engine.stop()`, clear `Screen` references, and execute `gc.collect()` *prior* to calling `quit_sdl()`.
+* [x] Subtask: Add null pointer checks (`if target.ptr != NULL and _renderer != NULL`) inside `TexturePtr.__dealloc__` and `render.destroy` to prevent calling SDL against a torn-down driver.
 
 **3. Task: Signal Handling and Diagnostic Instrumentation**
 
 *Objective*: Prevent abrupt `KeyboardInterrupt` corruption during rendering operations and verify C-level stack traces.
 
-* [ ] Subtask: Install graceful signal handlers in `cli.py` for `signal.SIGINT` and `signal.SIGTERM` setting `engine.running = False`.
-* [ ] Subtask: Enable `faulthandler.enable()` at CLI entry point to output C-level tracebacks if a segmentation fault occurs.
-* [ ] Subtask: Verify consecutive start/stop iterations with `^C` execute without segmentation faults or resource leakage.
+* [x] Subtask: Install graceful signal handlers in `cli.py` for `signal.SIGINT` and `signal.SIGTERM` setting `engine.running = False`.
+* [x] Subtask: Enable `faulthandler.enable()` at CLI entry point to output C-level tracebacks if a segmentation fault occurs.
+* [x] Subtask: Verify consecutive start/stop iterations with `^C` execute without segmentation faults or resource leakage.

@@ -46,6 +46,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 04.02: Simplification](./phases/refactor/refactor-04-02.md)
       - [x]: [Phase 04.03: EventHandlers](./phases/refactor/refactor-04-03.md)
       - [x]: [Phase 04.04: MenuContext](./phases/refactor/refactor-04-04.md)
+      - [~]: [Phase 04.05: Gizmos](./phases/refactor/refactor-04-05.md)
     - Phase 06:
       - [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
     - Phase 08:
@@ -70,7 +71,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Goal 06: Speak Intentions](./phases/achieve/goal-06.md)
     - [x]: [Goal 07: Door Interact Intentions](./phases/achieve/goal-07.md)
     - [ ]: [Goal 08: Pause Menu](./phases/achieve/goal-08.md)
-    - [~]: [Goal 09: CLI Handling](./phases/achieve/goal-09.md)
+    - [x]: [Goal 09: CLI Handling](./phases/achieve/goal-09.md)
 - Backlog:
   - [Telemetry Menu](./backlog/todo-t000.md)
 
