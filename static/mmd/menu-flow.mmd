@@ -1,0 +1,17 @@
+flowchart TD
+    A["MenuConfiguration (YAML)"]
+    B["MenuPane (Root)"]
+    C["MenuGizmo (Macro Node: e.g. item-grid)"]
+    D["MenuPane (Synthesized Subtree: Dock/Stack/Overlay)"]
+    E["Dict[str, Widget] (Instantiated Assets with Bindings)"]
+    F["Flat Render List + Traversal Graph (AABB Raycasting)"]
+
+    A --> B
+    B --> C
+    C -->|"GizmoGenerator.expand(node, context)"| D
+    D -->|"Provider._unpack_pane"| E
+    E -->|"Layout.compute"| F
+
+    classDef default fill:#2d223c,stroke:#7e57c2,stroke-width:1.5px,color:#ede7f6;
+    classDef edgeLabel fill:#1e2129,color:#82b1ff;
+    linkStyle default stroke:#448aff,stroke-width:1.5px;

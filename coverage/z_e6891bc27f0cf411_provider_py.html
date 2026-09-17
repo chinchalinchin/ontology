@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for src/app/services/generators/provider.py: 91%</title>
+    <title>Coverage for src/app/services/generators/menus/provider.py: 91%</title>
     <link rel="icon" sizes="32x32" href="favicon_32_cb_c827f16f.png">
     <link rel="stylesheet" href="style_cb_4667309f.css" type="text/css">
     <script src="coverage_html_cb_15cffcd0.js" defer></script>
@@ -11,7 +11,7 @@
 <header>
     <div class="content">
         <h1>
-            <span class="text">Coverage for </span><b>src<span class="sep">/</span>app<span class="sep">/</span>services<span class="sep">/</span>generators<span class="sep">/</span>provider.py</b>:
+            <span class="text">Coverage for </span><b>src<span class="sep">/</span>app<span class="sep">/</span>services<span class="sep">/</span>generators<span class="sep">/</span>menus<span class="sep">/</span>provider.py</b>:
             <span class="pc_cov">91%</span>
         </h1>
         <aside id="help_panel_wrapper">
@@ -54,18 +54,18 @@
             </div>
         </aside>
         <h2>
-            <span class="text">100 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">91<span class="text"> run</span></button>
+            <span class="text">99 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">90<span class="text"> run</span></button>
             <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">9<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
-            <a id="prevFileLink" class="nav" href="z_789b0f729b7ecdf7_perimeter_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a id="prevFileLink" class="nav" href="z_e6891bc27f0cf411_library_py.html">&#xab; prev</a> &nbsp; &nbsp;
             <a id="indexLink" class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
-            <a id="nextFileLink" class="nav" href="z_49b154c233cb5232_constructors_py.html">&#xbb; next</a>
+            <a id="nextFileLink" class="nav" href="z_49b154c233cb5232___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.1">coverage.py v7.16.1</a>,
-            created at 2026-09-17 11:06 +0000
+            created at 2026-09-17 12:00 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"></button>
@@ -100,7 +100,7 @@
     <p class="run run2"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t">    <span class="nam">Statuses</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t">    <span class="nam">Menus</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t"><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t"><span class="key">from</span> <span class="nam">app</span><span class="op">.</span><span class="nam">services</span><span class="op">.</span><span class="nam">generators</span><span class="op">.</span><span class="nam">factory</span> <span class="key">import</span> <span class="nam">Factory</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t"><span class="key">from</span> <span class="nam">app</span><span class="op">.</span><span class="nam">services</span><span class="op">.</span><span class="nam">generators</span><span class="op">.</span><span class="nam">game</span><span class="op">.</span><span class="nam">factory</span> <span class="key">import</span> <span class="nam">Factory</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t"><span class="key">from</span> <span class="nam">app</span><span class="op">.</span><span class="nam">models</span><span class="op">.</span><span class="nam">properties</span> <span class="key">import</span> <span class="nam">WidgetProperties</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t"><span class="key">from</span> <span class="nam">app</span><span class="op">.</span><span class="nam">models</span><span class="op">.</span><span class="nam">state</span> <span class="key">import</span> <span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="run run2"><span class="n"><a id="t24" href="#t24">24</a></span><span class="t">    <span class="nam">DisplayState</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -122,11 +122,11 @@
     <p class="run"><span class="n"><a id="t40" href="#t40">40</a></span><span class="t"><span class="key">from</span> <span class="nam">app</span><span class="op">.</span><span class="nam">game</span><span class="op">.</span><span class="nam">menus</span><span class="op">.</span><span class="nam">contexts</span> <span class="key">import</span> <span class="nam">MenuContext</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t41" href="#t41">41</a></span><span class="t"><span class="key">from</span> <span class="nam">app</span><span class="op">.</span><span class="nam">game</span><span class="op">.</span><span class="nam">menus</span><span class="op">.</span><span class="nam">bindings</span> <span class="key">import</span> <span class="nam">Binding</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t42" href="#t42">42</a></span><span class="t"><span class="key">from</span> <span class="nam">app</span><span class="op">.</span><span class="nam">game</span><span class="op">.</span><span class="nam">menus</span><span class="op">.</span><span class="nam">layout</span> <span class="key">import</span> <span class="nam">Layout</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t"><span class="key">from</span> <span class="nam">app</span><span class="op">.</span><span class="nam">services</span><span class="op">.</span><span class="nam">generators</span><span class="op">.</span><span class="nam">binder</span> <span class="key">import</span> <span class="nam">Binder</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t43" href="#t43">43</a></span><span class="t"><span class="key">from</span> <span class="nam">app</span><span class="op">.</span><span class="nam">services</span><span class="op">.</span><span class="nam">generators</span><span class="op">.</span><span class="nam">menus</span><span class="op">.</span><span class="nam">binder</span> <span class="key">import</span> <span class="nam">Binder</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t44" href="#t44">44</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t45" href="#t45">45</a></span><span class="t"><span class="key">import</span> <span class="nam">libs</span><span class="op">.</span><span class="nam">graphics</span><span class="op">.</span><span class="nam">render</span> <span class="key">as</span> <span class="nam">render</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t"><span class="key">from</span> <span class="nam">libs</span><span class="op">.</span><span class="nam">core</span><span class="op">.</span><span class="nam">models</span> <span class="key">import</span> <span class="nam">Dimensions</span><span class="op">,</span> <span class="nam">Position</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t47" href="#t47">47</a></span><span class="t"><span class="key">from</span> <span class="nam">libs</span><span class="op">.</span><span class="nam">graphics</span><span class="op">.</span><span class="nam">registry</span> <span class="key">import</span> <span class="nam">Registry</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t45" href="#t45">45</a></span><span class="t"><span class="com"># Cython Libraries</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t46" href="#t46">46</a></span><span class="t"><span class="key">import</span> <span class="nam">libs</span><span class="op">.</span><span class="nam">graphics</span><span class="op">.</span><span class="nam">render</span> <span class="key">as</span> <span class="nam">render</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t47" href="#t47">47</a></span><span class="t"><span class="key">from</span> <span class="nam">libs</span><span class="op">.</span><span class="nam">core</span><span class="op">.</span><span class="nam">models</span> <span class="key">import</span> <span class="nam">Dimensions</span><span class="op">,</span> <span class="nam">Position</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t48" href="#t48">48</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t49" href="#t49">49</a></span><span class="t"><span class="nam">logger</span> <span class="op">=</span> <span class="nam">logging</span><span class="op">.</span><span class="nam">getLogger</span><span class="op">(</span><span class="nam">__name__</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t50" href="#t50">50</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -346,12 +346,12 @@
 <footer>
     <div class="content">
         <p>
-            <a class="nav" href="z_789b0f729b7ecdf7_perimeter_py.html">&#xab; prev</a> &nbsp; &nbsp;
+            <a class="nav" href="z_e6891bc27f0cf411_library_py.html">&#xab; prev</a> &nbsp; &nbsp;
             <a class="nav" href="index.html">&Hat; index</a> &nbsp; &nbsp;
-            <a class="nav" href="z_49b154c233cb5232_constructors_py.html">&#xbb; next</a>
+            <a class="nav" href="z_49b154c233cb5232___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.16.1">coverage.py v7.16.1</a>,
-            created at 2026-09-17 11:06 +0000
+            created at 2026-09-17 12:00 +0000
         </p>
     </div>
 </footer>
