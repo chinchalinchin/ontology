@@ -11,6 +11,7 @@ menus:
         layout: dock
         alignment: center
         gap: 15
+        font: dialogue
         children: 
           - instance: pages
             id: notification

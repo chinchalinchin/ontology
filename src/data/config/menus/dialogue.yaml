@@ -9,6 +9,7 @@ menus:
           px: 0.175
           py: 0.60
         layout: dock
+        font: dialogue
         alignment: center
         gap: 5
         margin: 10
