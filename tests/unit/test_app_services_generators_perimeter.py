@@ -4,7 +4,7 @@
 import pytest
 from unittest.mock import patch
 
-from app.services.generators.perimeter import Perimeter
+from app.services.generators.game.perimeter import Perimeter
 from libs.core.models import Boundary, Position, Dimensions
 
 def test_perimeter_generator_extract(mock_board, mock_crate, mock_strut):
@@ -41,7 +41,7 @@ def test_perimeter_generator_generate(mock_board):
         Boundary(Position(64, 0), Dimensions(1, 64))
     ]
     
-    with patch('app.services.generators.perimeter.geometry.contours') as mock_sweep:
+    with patch('app.services.generators.game.perimeter.geometry.contours') as mock_sweep:
         mock_sweep.return_value = mock_boundaries
         
         perimeter = generator.generate(mock_board, "0")
@@ -55,7 +55,7 @@ def test_perimeter_generator_empty_layer(mock_board):
     """
     generator = Perimeter()
     
-    with patch('app.services.generators.perimeter.geometry.contours') as mock_sweep:
+    with patch('app.services.generators.game.perimeter.geometry.contours') as mock_sweep:
         perimeter = generator.generate(mock_board, "empty-ghost-layer")
         
         mock_sweep.assert_not_called()

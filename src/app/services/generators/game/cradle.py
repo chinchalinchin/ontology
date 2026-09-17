@@ -17,7 +17,7 @@ from app.config.enums import (
     AssetInstances, 
     AssetCategories
 )
-from app.services.generators.factory import Factory
+from app.services.generators.game.factory import Factory
 from app.models.config import RecipeConfiguration
 from app.models.groups import SpawnableGroup
 from app.models.state import (
@@ -32,7 +32,7 @@ from app.models.state import (
     Lot
 )
 if TYPE_CHECKING:
-    from app.services.generators.decomposer import Decomposer
+    from app.services.generators.game.decomposer import Decomposer
     from app.models.properties import Cost
 
 from libs.core.models import Position, Velocity

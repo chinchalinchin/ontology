@@ -18,7 +18,7 @@ from app.config.enums import (
     Statuses, 
     Menus
 )
-from app.services.generators.factory import Factory
+from app.services.generators.game.factory import Factory
 from app.models.properties import WidgetProperties
 from app.models.state import (
     DisplayState, 
@@ -40,11 +40,11 @@ from app.game.menus.core import (
 from app.game.menus.contexts import MenuContext
 from app.game.menus.bindings import Binding
 from app.game.menus.layout import Layout
-from app.services.generators.binder import Binder
+from app.services.generators.menus.binder import Binder
 
+# Cython Libraries
 import libs.graphics.render as render
 from libs.core.models import Dimensions, Position
-from libs.graphics.registry import Registry
 
 logger = logging.getLogger(__name__)
 

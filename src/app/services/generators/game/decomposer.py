@@ -19,7 +19,7 @@ from app.config.enums import (
     AssetCategories, 
     AssetInstances
 )
-from app.services.generators.factory import Factory
+from app.services.generators.game.factory import Factory
 from app.models.config import (
     CompositionConfiguration, 
     RecipeConfiguration

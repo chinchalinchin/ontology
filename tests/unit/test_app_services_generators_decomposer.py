@@ -2,7 +2,7 @@
 # Ontology: tests.unit.test_app_services_generators__decomposer
 """
 import pytest
-from app.services.generators.decomposer import Decomposer
+from app.services.generators.game.decomposer import Decomposer
 from app.models.config import CompositionConfiguration, CompositionPseudoState, RecipeConfiguration
 from app.models.properties import PropertiesSchema, CraftProperties, Cost
 from app.models.state import PropertyState, StateSchema, ObjectStateInstances, DoorState

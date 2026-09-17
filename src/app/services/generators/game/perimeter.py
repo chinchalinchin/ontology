@@ -3,13 +3,17 @@
 
 Package for dynamic environment boundary generation.
 """
+from __future__ import annotations
+
 # Standard Libraries
 import logging
-from typing import List
+from typing import List, TYPE_CHECKING
 
 # Application Libraries
-from app.game.board import Board
 from app.config.enums import AssetCategories, AssetInstances
+
+if TYPE_CHECKING:
+    from app.game.board import Board
 
 # Cython Libraries
 import libs.core.math.geometry as geometry

@@ -158,7 +158,7 @@ class Factory:
 
     @staticmethod
     def cradle(spawnables: SpawnableGroup, recipes: RecipeConfiguration, decomposer: Any):
-        from app.services.generators.cradle import Cradle
+        from app.services.generators.game.cradle import Cradle
         return Cradle(spawnables, recipes, decomposer)
 
     @staticmethod 

@@ -34,22 +34,22 @@ from app.models.groups import (
 from app.models.state import StateSchema
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
-from app.services.generators.factory import Factory
+from app.services.generators.game.factory import Factory
 from app.services.orchestration.migrator import Migrator
-from app.services.generators.decomposer import Decomposer
-from app.services.generators.provider import Provider
-from app.services.generators.library import Library
-from app.services.generators.binder import Binder
+from app.services.generators.game.decomposer import Decomposer
+from app.services.generators.menus.provider import Provider
+from app.services.generators.menus.library import Library
+from app.services.generators.menus.binder import Binder
 
 # Cython Libraries
-from libs.core.models import Dimensions
 import libs.graphics.render as render
+from libs.core.models import Dimensions
 from libs.graphics.registry import Registry
 
 logger = logging.getLogger(__name__)
 
 @dataclasses.dataclass
-class Context:
+class ApplicationContext:
     """
     Isolates raw data configurations before they are hydrated into Engine components.
     """
@@ -59,13 +59,12 @@ class Context:
     screensize: Dimensions = None
     headless: bool = False
 
-
 class Builder:
     """
     Constructs the discrete subsystems of the Ontology engine.
     """
     def __init__(self):
-        self.context = Context()
+        self.context = ApplicationContext()
         self.registry: Registry = None
         self.board: Board = None
         self.provider: Provider = None
@@ -167,6 +166,9 @@ class Builder:
         """
         logger.info("Initializing Registry...")
         # Unpack root dataclasses and resolve Enums to primitives
+        # TODO: make registry use python objects instead of dictionaries. makes no sense?
+        #       seems to just add unnecessary logic, e.g. unboxing and casting to dict.
+        #       would probably simplify the registry as well.
         properties_dict = self._unbox_enums(dataclasses.asdict(self.context.properties))
         recipes_dict = self._unbox_enums(dataclasses.asdict(self.context.configurations.recipes))
         fonts_dict = properties_dict.pop("fonts", {})

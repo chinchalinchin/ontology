@@ -10,7 +10,7 @@ from app.game.menus.contexts import MenuContext
 if TYPE_CHECKING:
     from app.game.board import Board
     from app.game.screen import Screen
-    from app.services.generators.provider import Provider
+    from app.services.generators.menus.provider import Provider
 
 class Event:
     pass

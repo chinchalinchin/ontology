@@ -21,9 +21,9 @@ from app.config.enums import (
 )
 from app.models.properties import PropertiesSchema
 from app.models.config import ConfigurationSchema
-from app.services.generators.factory import Factory
-from app.services.generators.decomposer import Decomposer
-from app.services.generators.perimeter import Perimeter
+from app.services.generators.game.factory import Factory
+from app.services.generators.game.decomposer import Decomposer
+from app.services.generators.game.perimeter import Perimeter
 
 if TYPE_CHECKING:
     from app.game.board import Board

@@ -4,7 +4,7 @@
 import pytest
 from unittest.mock import MagicMock
 
-from app.services.generators.binder import Binder
+from app.services.generators.menus.binder import Binder
 from app.game.menus.bindings import (
     LibraryBinding, 
     MeterBinding, 

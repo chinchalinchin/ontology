@@ -1,4 +1,8 @@
-root: /home/grant/Projects/ontology
+
+## LINUX
+# root: /home/grant/Projects/ontology
+## MAC
+root: /Users/gmoore/Home/projects/ontology
 task:
   verb: style
   noun: mermaid

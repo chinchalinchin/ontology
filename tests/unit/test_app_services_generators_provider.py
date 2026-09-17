@@ -48,7 +48,7 @@ def test_provider_paginate(mock_render):
 
 
 @patch("app.game.menus.bindings.text.render")
-@patch("app.services.generators.provider.render")
+@patch("app.services.generators.menus.provider.render")
 def test_provider_unpack_widget(mock_provider_render, mock_bindings_render, mock_provider):
     mock_provider_render.canvas.return_value = "mock_canvas_ptr"
     mock_bindings_render.measure.return_value = (10, 10)
@@ -102,7 +102,7 @@ def test_provider_unpack_widget_meter(mock_provider):
     assert widget.state.animation.frame == 75
 
 
-@patch("app.services.generators.provider.Layout")
+@patch("app.services.generators.menus.provider.Layout")
 def test_provider_unpack_menu(mock_layout_class, mock_provider):
     # (Implementation remains mostly untouched, only the layout setup)
     mock_layout = MagicMock()

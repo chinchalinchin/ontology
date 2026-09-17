@@ -1,7 +1,7 @@
 """
 # Ontology: tests.unit.test_app_services_factory
 """
-from app.services.generators.factory import Factory
+from app.services.generators.game.factory import Factory
 from app.config.enums import (
     FrameRecipe, 
     AnimationRecipe, 
@@ -29,7 +29,8 @@ from app.assets.animations import (
 from app.game.devices import Keyboard
 from app.game.logic.mechanics import (
     AnimationMechanics, 
-    PlayerMechanics
+    PlayerMechanics,
+    MenuMechanics
 )
 from app.game.menus.controllers import (
     DisplayController, 
@@ -98,12 +99,6 @@ def test_factory_controller():
 
 def test_factory_string_resolution():
     """Verify Factory unboxes Cython strings correctly to their Enum equivalents."""
-    from app.services.generators.factory import Factory
-    from app.assets.frames import TraversalFrame
-    from app.assets.animations import MeterAnimation, LifecycleAnimation
-    from app.game.logic.mechanics.core import MenuMechanics
-    from app.game.menus.controllers.display import DisplayController
-
     # Test frame fallback
     frame = Factory.frame("traversal")
     assert isinstance(frame, TraversalFrame)
