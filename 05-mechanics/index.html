@@ -1186,6 +1186,10 @@
 </ul>
 <p>Assets with Mass are divided into Kinenamtic, Motive, Inert and Frictive Assets. Kinematic and Motive Assets have Velocity states with (Speed, Impulse) properties that control the rate of change of their Velocity; Frictive and Inert Assets have a Velocity state, but have their Velocities controlled through external forces, i.e. Friction and garbage collection. </p>
 <p>Kinematic Assets snap to Velocity vectors and do not change vectorally. This is used for the Player. When the Player presses right, the Player Sprite immediately changes <em>Velocity</em> (not Position) to right, snapping to the inputted direction without getting sent into circular motion. In other words, velocities orthogonal to the Player's inputted direction are nulled out by the game loop; Velocity is used to control Player position, but only applies changes in one direction at once.</p>
+<div class="admonition todo">
+<p class="admonition-title">Out-Of-Date: 2026/09/16</p>
+<p>Motive assets now use reciprocal velocities and RRT-generated trajectories with kinematic sliding to navigate.</p>
+</div>
 <p>Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to Speed. Motive Assets experience friction to prevent the conservation of momentum from sending them into "orbit" around their Goal.</p>
 <p>Frictive Assets have motion imparted to them via collisions. Afterwards, the force of friction (technically an impulse) is applied to the resultant Velocity every game tick until that Velocity has been brought to zero. The force of friction is proportional to the currently occupied Tile's  <code>properties.friction</code>.</p>
 <p>Inert Assets are exluded from these considerations. They are spawned with a Velocity vector and an initial position; They follow the trajectory determined by these parameters until the distance between their initial and current position exceeds the garbage collection limit.</p>
@@ -1315,7 +1319,7 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 
     %% Link Connectors: Light Blue Accent
     linkStyle default color:#e0e0e0,stroke:#90caf9,stroke-width:1.5px;</code></pre>
-<p>In <code>CombatMechanics</code>, entities do not query spatial reach using their default body hitboxes (<code>asset.hitboxes</code>). Because <code>CollisionMechanics</code> prevents overlapping physical boundaries, character torsos will rarely intersect target bodies during weapon strikes. Instead, <code>CombatMechanics</code> queries the active weapon attackbox (<code>CombatMap.attackboxes</code>) associated with the entity's current <code>(action, direction, frame)</code>. Attacker spatial primitives are injected into the broad-phase spatial hash using their active weapon reach, evaluating collisions strictly against the target's physical hitboxes. Attackers with no attackboxes configured on their current animation frame bypass combat collision checks entirely.</p>
+<p>In CombatMechanics, entities do not query spatial reach using their default body hitboxes (<code>asset.hitboxes</code>). Because CollisionMechanics prevents overlapping physical boundaries, character torsos will rarely intersect target bodies during weapon strikes. Instead, CombatMechanics queries the active weapon attackbox (<code>CombatMap.attackboxes</code>) associated with the entity's current <code>(action, direction, frame)</code>. Attacker spatial primitives are injected into the broad-phase spatial hash using their active weapon reach, evaluating collisions strictly against the target's physical hitboxes. Attackers with no attackboxes configured on their current animation frame bypass combat collision checks entirely.</p>
 <h3 id="intentional">Intentional</h3>
 <p>These Mechanics handle Sprite intentionality, goal-seeking, and tactical navigation.</p>
 <ul>
@@ -1330,19 +1334,19 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 <p>CognitionMechanics mutates Goals, TransitionMechanics mutates Intentions, NavigationMechanics populates Trajectories, and MotionMechanics integrates velocities. This separation of concerns <strong>must</strong> be preserved at all times.</p>
 </div>
 <p><strong>CognitionMechanics</strong></p>
-<p>CognitionMechanics acts as the Sprite's deliberative core. It operates exclusively on high-level <strong>Strategic Goals</strong>:</p>
+<p>CognitionMechanics acts as the Sprite's deliberative core. It operates exclusively on high-level <strong>Strategic Goals</strong>. For example, for Sprite in the given Intention states, CognitionMechanics generates and manages the following Goals:</p>
 <ul>
 <li><code>wander</code>: Samples a random coordinate within the vision radius bounded by layer dimensions and commits a <code>Goal(name="wander", category=POSITION)</code>.</li>
 <li><code>find / follow / hunt</code>: Queries the Board for the target entity. If visible, updates <code>goal.position</code> to match the target's physical coordinates. If the target leaves the vision radius, coordinates freeze at the last known position.</li>
 <li><code>escape</code>: Extrapolates a spatial coordinate in the vector direction opposite to the threat.</li>
 <li><strong>Cross-Layer Subsumption</strong>: When a goal's layer mismatches the sprite's layer, Cognition pushes the goal to <code>memory.goals</code> and substitutes a prerequisite <code>OBJECT</code> goal for the nearest transition door.</li>
 </ul>
-<p>CognitionMechanics is completely decoupled from geometric obstacles, intermediate waypoints, and line-of-sight raycasts. Intermediate path planning is offloaded entirely to <code>NavigationMechanics</code>.</p>
+<p>This is by no means an exhaustive list of CognitionMechanics' responsibility, but instead an example of its domain operation, e.g. Sprites and their Goals. CognitionMechanics is completely decoupled from geometric obstacles, intermediate waypoints, and line-of-sight raycasts. Intermediate path planning is offloaded entirely to <code>NavigationMechanics</code>.</p>
 <p>Since CognitionMechanics is intrinsically tied to Sprite Intentions and Goals, the cognition workflow is covered in more detail in the <a href="../04-intentions/#cognition">Intentions amd Goals documentation</a>.</p>
 <p><strong>NavigationMechanics</strong></p>
 <p>NavigationMechanics acts as the Sprite's tactical navigator, bridging strategic intent with physical locomotion:</p>
 <ol>
-<li><strong>Goal Verification</strong>: Verifies <code>sprite.state.goal</code> exists and <code>sprite.state.intention</code> belongs to <code>NavigationIntentions</code>. Clears <code>trajectory</code> and yields if false.</li>
+<li><strong>Goal Verification</strong>: Verifies <code>sprite.state.goal</code> exists and <code>sprite.state.intention</code> belongs to NavigationIntentions. Clears <code>trajectory</code> and yields if false.</li>
 <li><strong>Anchor Resolution</strong>: Computes sensory footprints using <code>anchor(sprite)</code> and target footprint offsets, preventing top-left origin hitbox drift.</li>
 <li><strong>Line-of-Sight Check</strong>: Raycasts using Cython <code>geometry.los()</code> against active layer weights (<code>board.weights</code>) and boundary perimeters (<code>board.perimeters</code>).</li>
 <li><strong>Path Maintenance</strong>:<ul>

@@ -1912,15 +1912,15 @@
     Widgets --&gt; Meters[Meters]
     Widgets --&gt; Pages[Pages]
 
-    %% Styling (Material Design Slate/Dark Surface with WCAG AAA High-Contrast Text)
-    classDef base fill:#512da8,stroke:#d1c4e9,stroke-width:2px,color:#ffffff;
-    classDef category fill:#00838f,stroke:#80deea,stroke-width:2px,color:#ffffff;
-    classDef instance fill:#2e7d32,stroke:#a5d6a7,stroke-width:1.5px,color:#ffffff;
-    classDef virtual fill:#424242,stroke:#b0bec5,stroke-width:1.5px,stroke-dasharray: 5 5,color:#eceff1;
+    %% Styling (Material Theme: Slate background, Deep Purple primary, Blue accent)
+    classDef base fill:#4527a0,stroke:#b39ddb,stroke-width:2px,color:#ffffff;
+    classDef category fill:#0d47a1,stroke:#82b1ff,stroke-width:2px,color:#ffffff;
+    classDef instance fill:#263238,stroke:#78909c,stroke-width:1.5px,color:#ffffff;
+    classDef virtual fill:#1a202c,stroke:#90a4ae,stroke-width:1.5px,stroke-dasharray: 4 4,color:#eceff1;
 
     class Asset base;
     class Tiles,Cursors,Objects,Crafts,Effects,Sheets,Widgets category;
-    class Back,Fore,Expressions,Projectiles,Chests,Crates,Doors,Gates,Plates,Struts,Plots,Temporary,Persistent,Pixies,Sprites,Players,Panes,Buttons,Languages,Meters,Pages instance;
+    class Back,Fore,Expressions,Projectiles,Chests,Crates,Doors,Gates,Plates,Struts,Ore,Crops,Temporary,Persistent,Pixies,Sprites,Players,Panes,Buttons,Icons,Meters,Pages instance;
     class Equipment,Armor,Tools,Utilities,Weapons,Shields virtual;</code></pre>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -2126,7 +2126,7 @@
 <li><code>animate(state, properties)</code>: Interface for applying animation logic to Asset state.</li>
 </ul>
 </li>
-<li><strong>Behavior: Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string keys. An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a <code>List[str]</code> rather than a single <code>str</code>. In addition, Frames provide the indexing schema for textures used by the <a href="../00-overview/#registry">Registry</a> to store Assets in memory.<ul>
+<li><strong>Behavior: Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string keys. An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a <code>List[(str, int, int)]</code> rather than a single <code>str</code>. The tuple <code>(int, int)</code> controls how much the frame is offset from its origin (mainly used in <a href="#expressions">Expressions</a> to pin a <a href="#cursors">Cursor Expressions</a> to the relative Position of a Sprite) In addition, Frames provide the indexing schema for textures used by the <a href="../00-overview/#registry">Registry</a> to store Assets in memory.<ul>
 <li><code>keys(id, state)</code>: Interface for retrieving Asset's current Frame key.</li>
 <li><code>index(id, properties)</code>: Interface for indexing Asset frames in Registry.</li>
 </ul>
@@ -2167,7 +2167,7 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ id ] "</code></li>
+<li><code>keys(id, state): returns [ (id, 0, 0) ] "</code></li>
 <li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
@@ -2184,7 +2184,7 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ id ] "</code></li>
+<li><code>keys(id, state): returns [ (id, 0, 0) ] "</code></li>
 <li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
@@ -2206,7 +2206,7 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, None): returns [ id ] "</code></li>
+<li><code>keys(id, None): returns [ (id, 0, 0) ] "</code></li>
 <li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MultiplerState</strong></p>
@@ -2244,7 +2244,7 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ "{id}-{state.animation.frame}" ]</code></li>
+<li><code>keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: ContainerState</strong></p>
@@ -2268,7 +2268,7 @@
 </ul>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ id ] "</code></li>
+<li><code>keys(id, state): returns [ (id, 0, 0) ] "</code></li>
 <li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="doors">Doors</h3>
@@ -2284,7 +2284,7 @@
 </ul>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ id ]</code></li>
+<li><code>keys(id, state): returns [ (id, 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="gates">Gates</h3>
@@ -2296,7 +2296,7 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ "{id}-{state.animation.frame}" ]</code></li>
+<li><code>keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SwitchState</strong></p>
@@ -2321,7 +2321,7 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ "{id}-{state.animation.frame}" ]</code></li>
+<li><code>keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SwitchState</strong></p>
@@ -2340,7 +2340,7 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ id ]</code></li>
+<li><code>keys(id, state): returns [ (id, 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: DialogueState</strong></p>
@@ -2391,7 +2391,7 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ id ]</code></li>
+<li><code>keys(id, state): returns [ (id, 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: MotorState</strong></p>
@@ -2421,6 +2421,7 @@
 <li><code>delay: int</code> (tick pacing between frames)</li>
 <li><code>frequency: int</code> (tick interval for periodic resets)</li>
 <li><code>persist: bool</code> (whether temporary effects persist on their final frame)</li>
+<li><code>cooldown: int</code>: (ticks before becoming active after animation)</li>
 </ul>
 </li>
 </ul>
@@ -2432,7 +2433,7 @@
 </ul>
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
-<li><code>keys(id, state) : [ "{id}-{state.animation.frame}" ]</code></li>
+<li><code>keys(id, state) : [ ("{id}-{state.animation.frame}", 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>Lifecycles</strong></p>
@@ -2538,7 +2539,7 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, state) returns [ id ]</code></li>
+<li><code>keys(id, state) returns [ (id, 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: PropertyState</strong></p>
@@ -2623,13 +2624,13 @@
 <ul>
 <li><code>dimensions: Dimensions</code></li>
 <li><code>stack: List[str]</code></li>
-<li><code>attackboxes: Dict[str, Hitbox]</code></li>
+<li><code>attackboxes: Dict[str, List[Hitbox]]</code></li>
 <li><code>hitboxes: List[Hitbox]</code></li>
 <li><code>actions: Actions</code></li>
 <li><code>mass: int</code></li>
 </ul>
 <h3 id="pixies">Pixies</h3>
-<p>Pixies are Sheets that have simple game mechanics, e.g. are excluded from the complex calculations of the <a href="../04-intentions/">Intention Mechanic</a>. <em>Pixies</em> encapsulate simple Characters, such as animals or bugs.</p>
+<p>Pixies are Sheets that have simple game mechanics, i.e. they are excluded from the complex calculations of the <a href="../04-intentions/">Intention Mechanic</a>. <em>Pixies</em> encapsulate simple Characters, such as animals or bugs.</p>
 <p><strong>Animation: StateAnimation</strong></p>
 <ul>
 <li><code>state.animation.frame += 1</code></li>
@@ -2637,27 +2638,22 @@
 </ul>
 <p><strong>Frame: StateFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ "{id}-{state.animation.action}-{state,animation.direction}-{state.animation.frame}" ]</code></li>
+<li><code>keys(id, state): returns [ ("{id}-{state.animation.action}-{state,animation.direction}-{state.animation.frame}", 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
-<p><strong>State: AnimatorState</strong></p>
-<ul>
-<li><code>layer: str</code></li>
-<li><code>depth: int</code></li>
-<li><code>height: int</code></li>
-<li><code>position: Position</code></li>
-<li><code>animation: Animation</code></li>
-</ul>
+<p><strong>State: TBD</strong></p>
+<p>TODO</p>
 <h3 id="sprites">Sprites</h3>
 <p>Sprites are Sheets over multiple rows of frames, where each row may have a variable number of frames. Sprite have a diverse palette of Animation Actions. They are meant to encapsulate the core game entities, e.g. the player, NPCs, and enemies.</p>
-<p><strong>Animation: StateAnimation</strong></p>
+<p><strong>Animation: SpriteAnimation</strong></p>
 <ul>
 <li><code>state.animation.frame += 1</code></li>
 <li><code>if state.animation.frame &gt;= properties.actions[state.animation.action].count: state.animation.frame = 0</code></li>
+<li><code>if state.psyche.expression: state.psyche.expression.ttl -= 1</code></li>
 </ul>
 <p><strong>Frame: SpriteFrame</strong></p>
 <ul>
-<li><code>keys(id, state): returns [ "{id}-{state.animation.action}-{state.animation.direction}-{animation.frame}" ] + [ &lt;equipment-frames&gt; ] + [ &lt;expression-frames&gt; ]</code></li>
+<li><code>keys(id, state): returns [ ("{id}-{state.animation.action}-{state.animation.direction}-{animation.frame}", 0, 0) ] + [ (&lt;equipment-frames&gt;, 0, 0) ] + [ (&lt;expression-frames&gt;, offset.x, offset.y) ]</code></li>
 <li><code>index(id, properties): returns { "{id}-{properties.actions.*}-{properties.actions.*.directions.*}-{properties.actions.*.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: SpriteState</strong></p>
