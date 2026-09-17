@@ -54,7 +54,7 @@ flowchart TD
 
     A --> B
     B --> C
-    C -->|"GizmoGenerator.expand(node, context)"| D
+    C -->|"Fabricator.expand(node, context)"| D
     D -->|"Provider._unpack_pane"| E
     E -->|"Layout.compute"| F
 ```
