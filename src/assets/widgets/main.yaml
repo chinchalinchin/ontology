@@ -122,6 +122,10 @@ widgets:
       dimensions:
         w: 96
         l: 95
+    text-label:
+      dimensions:
+        w: 142
+        l: 28
   panes:
     dark:
       dimensions:
@@ -155,4 +159,8 @@ widgets:
       dimensions:
         w: 80
         l: 80
+    transparent-label:
+      dimensions:
+        w: 142
+        l: 28
     

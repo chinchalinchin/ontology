@@ -6,9 +6,9 @@
 
 **Overview**
 
-Implement the Gizmo configuration macro system within `app.services.generators.gizmo` to support dynamic, multi-widget UI components (such as item grids and equipment slots) for `InventoryController` and `ExchangeController`. Gizmos dynamically generate declarative `MenuPane` and `MenuWidget` subtrees from runtime collection data, preserving the zero-allocation rendering pipeline and offloading positioning and traversal graph generation entirely to `Layout`.
+Implement the Gizmo configuration macro system within `app.services.generators.menus.fabricator` to support dynamic, multi-widget UI components (such as item grids and equipment slots) for `InventoryController` and `ExchangeController`. Gizmos dynamically generate declarative `MenuPane` and `MenuWidget` subtrees from runtime collection data, preserving the zero-allocation rendering pipeline and offloading positioning and traversal graph generation entirely to `Layout`.
 
-##### Working Draft: 06-widgets#gizmos
+##### Working Updates: 06-widgets#gizmos
 
 A Gizmo is a declarative macro node within a Menu configuration tree. Gizmos bridge static UI layout structures with variable runtime collection data (e.g., inventory slots, trade grids, crafting lists).
 
@@ -88,7 +88,7 @@ The engine architecture already implements a clean, tested pattern in `ScrollCon
 
 ##### Goal: Gizmo Configuration Models & Macro Expansion
 
-Extend `app.models.config.menus` with a `MenuGizmo` configuration node. Implement `GizmoGenerator` to expand `MenuGizmo` specifications into concrete `MenuPane` hierarchies before `Provider` performs ECS widget instantiation.
+Extend `app.models.config.menus` with a `MenuGizmo` configuration node. Implement `Fabricator` to expand `MenuGizmo` specifications into concrete `MenuPane` hierarchies before `Provider` performs ECS widget instantiation.
 
 ```python
 @dataclass(slots=True, frozen=True)
@@ -99,9 +99,8 @@ class MenuGizmo:
     capacity: int
     columns: int
     gap: int = 5
-    pane_id: str = "transparent-slot"
-    button_id: str = "slot"
-
+    pane: str = "transparent-slot"
+    button: str = "slot"
 ```
 
 ##### Goal: Windowed Collection Bindings & Pseudo-State
@@ -115,6 +114,7 @@ Implement `InventoryController` to manage Gizmo pagination offsets, item equippi
 ##### Tasks
 
 **1. Task: Schematize MenuGizmo & Extend Menu AST**
+
 *Objective*: Allow Menu configurations to declare dynamic Gizmo macros alongside standard Panes and Widgets.
 
 * [ ] Subtask: Add `MenuGizmo` dataclass to `app.models.config.menus`.
@@ -122,14 +122,16 @@ Implement `InventoryController` to manage Gizmo pagination offsets, item equippi
 * [ ] Subtask: Add Pydantic schema validation for Gizmo properties (`capacity`, `columns`, `pane_id`, `button_id`).
 
 **2. Task: Implement GizmoGenerator Service**
+
 *Objective*: Build the expansion generator that transforms `MenuGizmo` nodes into standard `MenuPane` subtrees.
 
-* [ ] Subtask: Implement `app.services.generators.gizmo.GizmoGenerator`.
+* [ ] Subtask: Implement `app.services.generators.menus.Fabricator`.
 * [ ] Subtask: Build grid subdivision logic to partition `capacity` across `columns` using nested `dock` and `stack` panes.
 * [ ] Subtask: Generate `transparent-slot` overlay panes with child `buttons` and `icons` with deterministic IDs (`<name>-slot-<i>`, `<name>-icon-<i>`).
 * [ ] Subtask: Integrate `GizmoGenerator` into `Provider._unpack_node` so expansion occurs seamlessly during Menu hydration.
 
 **3. Task: Implement CollectionBinding & Slot Paging**
+
 *Objective*: Connect individual slot buttons and icons to underlying collection elements.
 
 * [ ] Subtask: Create `CollectionBinding` subclass in `app.game.menus.bindings.collection`.
@@ -137,88 +139,12 @@ Implement `InventoryController` to manage Gizmo pagination offsets, item equippi
 * [ ] Subtask: Register `collection` schema in `app.services.generators.binder.Binder`.
 
 **4. Task: Implement InventoryController**
+
 *Objective*: Manage selection events, pagination shifts, and item mutations for the player inventory.
 
 * [ ] Subtask: Implement `app.game.menus.controllers.inventory.InventoryController`.
 * [ ] Subtask: Implement `select()` to process slot clicks and emit `UpdateEvent` on scroll actions.
 * [ ] Subtask: Write unit tests covering Gizmo AST expansion, grid layout computation, and slot traversal graph generation.
-
----
-
-### Bug Reports
-
-##### Bug B008: `Provider._focus` StopIteration on Empty or Disabled Menus
-
-**STATUS**: OPEN
-
-**SEVERITY**: HIGH
-
-**Description**
-
-In `app.services.generators.provider.Provider._focus`, the initial focus resolution uses `focus = next(focus_names)` without providing a default fallback. If a menu contains no traversable buttons or if all buttons have their status set to `Statuses.DISABLED.value`, the iterator is exhausted, causing Python to raise an unhandled `StopIteration` exception and crashing the engine tick during menu instantiation.
-
-**Steps to Replicate**
-
-1. Instantiate a Menu where all configured button widgets have `status: disabled` (or a Menu with only `Pane` and `Page` assets, such as a static notification).
-2. Dispatch a `MenuEvent` for that menu to the engine bus.
-3. Observe unhandled `StopIteration` raised from `_focus` in `provider.py`.
-
-**Proposed Remediation**
-
-Pass `None` as the default sentinel to `next(focus_names, None)` in both the initial seed fetch and within the `while not focused:` search loop. Terminate iteration safely and return `None` when exhausted:
-
-```python
-focus_names = iter(graph.keys())
-focus = next(focus_names, None)
-
-while focus is not None:
-    if widgets[focus].state.status != Statuses.DISABLED.value:
-        widgets[focus].state.status = Statuses.ACTIVE.value
-        widgets[focus].state.animation.action = Statuses.ACTIVE.value
-        return focus
-    focus = next(focus_names, None)
-
-return None
-
-```
-
----
-
-##### Bug B009: `Binding` Target String Mapping Exception
-
-**STATUS**: OPEN
-
-**SEVERITY**: MEDIUM
-
-**Description**
-
-In `app.models.config.menus`, `MenuBinding.target` is typed as `Union[str, Dict[str, str]]`. However, `app.game.menus.bindings.base.Binding.__init__` assumes `target` is always a dictionary and calls `self.target.items()`. If a menu configuration supplies a scalar string path (e.g., `target: context.content`), an `AttributeError: 'str' object has no attribute 'items'` is raised at runtime during binding resolution.
-
-**Steps to Replicate**
-
-1. Configure a Menu YAML binding with a scalar target string:
-```yaml
-bind:
-  schema: text
-  target: context.content
-
-```
-
-
-2. Attempt to hydrate the menu via `Provider.unpack`.
-3. An `AttributeError` is raised in `Binding.__init__`.
-
-**Proposed Remediation**
-
-Normalize scalar string targets into dictionaries within `Binding.__init__` prior to path resolution:
-
-```python
-if isinstance(target, str):
-    self.target = {'default': target}
-else:
-    self.target = target or {}
-
-```
 
 ---
 

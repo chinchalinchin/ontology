@@ -121,7 +121,6 @@ class Provider:
         )
 
 
-
     def _unpack_button(self, cfg: MenuWidget, binding: Binding) -> TraversalState:
         return TraversalState(
             id = cfg.id,
@@ -221,21 +220,16 @@ class Provider:
             return None
         
         focus_names = iter(graph.keys())
-        focus = next(focus_names)
+        focus = next(focus_names, None)
 
-        if not focus or focus not in widgets:
-            return None
-
-        focused = False
-        while not focused:
+        while focus is not None:
             if widgets[focus].state.status != Statuses.DISABLED.value:
                 widgets[focus].state.status = Statuses.ACTIVE.value
                 widgets[focus].state.animation.action = Statuses.ACTIVE.value
                 return focus
-            
-            focus = next(focus_names)
-            if focus is None:
-                return None
+            focus = next(focus_names, None)
+
+        return None
             
     def unpack(self, id: str, config: MenuConfiguration, context: dict, screensize: Dimensions) -> Menu:
         context = context or {}

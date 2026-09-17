@@ -16,11 +16,17 @@ class Binding(ABC):
     """
     Base Component for associating live game state with UI Widgets.
     """
+    target: Dict[str, str]
+    resolved: Dict[str, Tuple[Any, str]]
+
     def __init__(self, target: dict, context: MenuContext, **kwargs):
         self.context = context
-        self.target = target or {}
-        self.resolved: Dict[str, Tuple[Any, str]] = {}
-        
+        self.resolved = {}
+
+        if isinstance(target, str):
+            self.target = {'default': target}
+        else:
+            self.target = target or {}
         # Pre-resolve all context paths in the target dictionary
         for key, val in self.target.items():
             # Skip literal strings used in SelectBindings
