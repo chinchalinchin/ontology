@@ -287,6 +287,8 @@ def handle_start(args, orchestrator, screensize):
 
     try:
         engine.start()
+    except KeyboardInterrupt:
+        logger.info("Game engine loop interrupted by user.")
     finally:
         signal.signal(signal.SIGINT, prev_sigint)
         signal.signal(signal.SIGTERM, prev_sigterm)
