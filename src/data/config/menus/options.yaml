@@ -4,7 +4,6 @@ menus:
     roots:
       - id: transparent-area
         name: options-menu
-        font: menu
         position:
           # Centered anchor for 480 x 480 viewport
           px: 0.075
@@ -17,6 +16,7 @@ menus:
           - id: dark-thin
             name: options-button-pane
             layout: stack
+            font: menu
             alignment: center
             gap: 8
             children:
@@ -31,8 +31,8 @@ menus:
                     bind:
                       schema: select
                       target:
-                        selection: option_1
-                        selector: options-parchment
+                        selection: option-1
+                        selector: options-display
                   - instance: pages
                     id: text-label
                     name: option-1-text
@@ -52,8 +52,8 @@ menus:
                     bind:
                       schema: select
                       target:
-                        selection: option_2
-                        selector: options-parchment
+                        selection: option-2
+                        selector: options-display
                   - instance: pages
                     id: text-label
                     name: option-2-text
@@ -73,8 +73,8 @@ menus:
                     bind:
                       schema: select
                       target:
-                        selection: option_3
-                        selector: options-parchment
+                        selection: option-3
+                        selector: options-display
                   - instance: pages
                     id: text-label
                     name: option-3-text
@@ -94,8 +94,8 @@ menus:
                     bind:
                       schema: select
                       target:
-                        selection: option_4
-                        selector: options-parchment
+                        selection: option-4
+                        selector: options-display
                   - instance: pages
                     id: text-label
                     name: option-4-text
@@ -109,10 +109,11 @@ menus:
             name: options-display-pane
             layout: overlay
             alignment: center
+            font: options
             children:
               - instance: pages
                 id: paper-weathered
-                name: options-parchment
+                name: options-display
                 bind:
                   schema: text
                   target:

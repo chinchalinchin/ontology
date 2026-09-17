@@ -39,6 +39,19 @@ fonts:
         g: 222
         b: 251
         a: 255
+  options:
+    alignment: center
+    bold: true
+    italics: false
+    margins: 0.075
+    underline: false
+    strikethrough: false
+    size: 10
+    color:
+      r: 005
+      g: 035
+      b: 064
+      a: 255
   title:
     alignment: center
     bold: false

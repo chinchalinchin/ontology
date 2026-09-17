@@ -818,7 +818,6 @@ See [Graphics Architecture documentation](./10-architecture.md#graphics) for tec
         * `b: int` (0–255)
         * `a: int` (0–255)
 
-
 **Required Fonts**
 
 * `dialogue`: Standard proportional font used to render NPC conversations and narrative logs.

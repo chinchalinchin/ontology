@@ -50,7 +50,7 @@ class MenuPane:
     gap: Optional[int] = 0
     margins: Optional[int] = 0
     position: Optional[ScreenPosition] = None # type: ignore
-    font: Optional[str] = Fonts.DIALOGUE.value
+    font: Optional[str] = None
 
 @dataclass(slots=True, frozen=True)
 class MenuConfiguration(Configuration):

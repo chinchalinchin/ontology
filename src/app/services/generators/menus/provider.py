@@ -209,7 +209,7 @@ class Provider:
     ) -> None:
         props = self.properties.panes.get(pane.id)
         recipe = self.recipes.panes
-        font = font or pane.font
+        font = pane.font or font
 
         pane_asset              = Asset(
             taxonomy            = Factory.taxonomy(

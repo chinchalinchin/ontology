@@ -12,7 +12,10 @@ from typing import TYPE_CHECKING, Optional
 
 # Application Libraries
 from app.game.menus.controllers.base import MenuController
-from app.game.menus.core import Menu
+from app.game.menus.core import (
+    Menu,
+    Widget
+)
 from app.game.menus.events import UpdateEvent
 
 if TYPE_CHECKING:
@@ -26,6 +29,7 @@ class OptionsController(MenuController):
     Controller handling options menu navigation and preview stamping.
     """
     _last_focus: Optional[str] = None
+    _selector: Optional[str] = None
 
     DESCRIPTIONS = {
         "option-1": "Audio Configuration (Placeholder)",
@@ -36,9 +40,11 @@ class OptionsController(MenuController):
 
     def open(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         self._last_focus = None
-        parchment = menu.widgets.get("options-parchment")
-        if parchment:
-            bus.append(UpdateEvent(widget=parchment, content="SELECT AN OPTION"))
+        self._selector = next((
+            widget.binding.selector for widget 
+            in menu.widgets.values() 
+            if isinstance(widget, Widget)
+        ), None)
 
     def select(self, name: str, menu: Menu, board: Board, bus: collections.deque) -> None:
         """Fires when pressing SELECT on the focused option."""
@@ -46,10 +52,12 @@ class OptionsController(MenuController):
         if not widget or not widget.binding:
             return
 
-        target_key = widget.binding.selector or "options-parchment"
-        parchment = menu.widgets.get(target_key)
+        if self._selector is None:
+            self._selector = widget.binding.selector
+
+        parchment = menu.widgets.get(self._selector)
         
-        selection = widget.binding.selection or name
+        selection = widget.binding.selection
         logger.info(f"Option selected: {selection}")
 
         if parchment:
@@ -58,13 +66,20 @@ class OptionsController(MenuController):
 
     def update(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         """Fires per tick; updates parchment preview when focus traverses buttons."""
+        if self._selector is None:
+            self._selector = next((
+                widget.binding.selector for widget 
+                in menu.widgets.values() 
+                if isinstance(widget, Widget)
+            ), None)
+
         if menu.focus != self._last_focus:
             self._last_focus = menu.focus
-            parchment = menu.widgets.get("options-parchment")
+            page_canvas = menu.widgets.get(self._selector)
             
-            if parchment and menu.focus in self.DESCRIPTIONS:
+            if page_canvas and menu.focus in self.DESCRIPTIONS:
                 content = self.DESCRIPTIONS[menu.focus]
-                bus.append(UpdateEvent(widget=parchment, content=content))
+                bus.append(UpdateEvent(widget=page_canvas, content=content))
 
     def close(self, menu: Menu, board: Board, bus: collections.deque) -> None:
         self._last_focus = None

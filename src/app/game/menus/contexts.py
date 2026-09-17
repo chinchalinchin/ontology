@@ -3,6 +3,8 @@
 
 Package for Menu Context models.
 """
+from __future__ import annotations
+
 # Standard Libraries
 from dataclasses import dataclass
 from typing import (
