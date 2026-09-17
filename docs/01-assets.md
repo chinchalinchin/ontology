@@ -786,28 +786,41 @@ Widgets are covered in their own section, [Widgets](./06-widgets.md).
 
 ## Fonts
 
-Fonts are stateless Assets initialized at [runtime](./10-architecture.md#initialization), i.e. they are not deployed onto the Board; instead Fonts are utilized by the [Screen](./00-overview.md#screen) to render text whenever the game loop calls for text. 
+## Fonts
 
-A Font is a wrapper `.ttf` file and a data structure used to configure the Font styling. Each styled Font is stored in the [Registy](./00-overview.md#registry) using its file name. The [Screen](./00-overview.md#screen) retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.
+Fonts are stateless Assets initialized at [runtime](./10-architecture.md#initialization). Rather than being deployed onto the Board, Fonts are loaded into the [Registry](./00-overview.md#registry) and utilized by the [Screen](./00-overview.md#screen) to rasterize text canvases for Widgets and dialogue modals.
 
-In other words, a Font Asset encapsulates both the script and the styling applied to the script. 
+A Font configuration pairs a `.ttf` file with styling rules. During bootstrap, the Registry ingests each font declared in `/src/assets/fonts/main.yaml` alongside its configuration, storing them as styled Cython `TTFFont` wrappers. When `outline` is specified, the Registry instantiates a secondary internal outline pointer configured via `TTF_SetFontOutline`, enabling `render.write()` to execute two-pass blended rendering (outline pass followed by foreground fill) without runtime glyph cache invalidation.
 
-See [Graphics Architecture documentation](./10-architecture.md#graphics) for more information on Fonts.
+In Menu hierarchies, fonts are scoped lexically at the `MenuPane` level: any `font` declared on a parent pane cascades down to all child panes and `Page` widgets unless explicitly shadowed by a nested pane.
+
+See [Graphics Architecture documentation](./10-architecture.md#graphics) for technical implementation details.
 
 **Properties: FontProperties**
 
-* `alignment: str`
-* `bold: bool`
-* `italics: bool`
-* `margins: int`
-* `color:`
-    * `r: int`
-    * `g: int`
-    * `b: int`
-    * `a: float`
+* `size: int`: Point size used during glyph rasterization (defaults to `24`).
+* `alignment: str`: Text alignment within the bounding box (`left`, `center`, `right`).
+* `bold: bool`: Toggles `TTF_STYLE_BOLD`.
+* `italics: bool`: Toggles `TTF_STYLE_ITALIC`.
+* `underline: bool`: Toggles `TTF_STYLE_UNDERLINE`.
+* `strikethrough: bool`: Toggles `TTF_STYLE_STRIKETHROUGH`.
+* `margins: float`: Fractional padding applied to the target canvas bounds before wrapping (e.g., `0.05` for 5%).
+* `color`: Primary glyph fill color.
+    * `r: int` (0–255)
+    * `g: int` (0–255)
+    * `b: int` (0–255)
+    * `a: int` (0–255)
+* `outline`: (*Optional*) Border styling configuration.
+    * `width: int`: Perimeter thickness in pixels (`outline > 0` enables two-pass rendering).
+    * `color`:
+        * `r: int` (0–255)
+        * `g: int` (0–255)
+        * `b: int` (0–255)
+        * `a: int` (0–255)
+
 
 **Required Fonts**
 
-- `dialogue`: Used to render Dialogue text.
-- `label`: Used to render Widget label text.
-- `title`: Used to render Menu headings.
+* `dialogue`: Standard proportional font used to render NPC conversations and narrative logs.
+* `menu`: High-contrast, styled font used for interactive UI controls and button labels.
+* `title`: Large-format font used for menu headers and screen titles.
