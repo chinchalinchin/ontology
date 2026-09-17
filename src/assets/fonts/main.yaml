@@ -4,30 +4,57 @@ fonts:
     bold: false
     italics: false
     margins: 0.15
+    underline: false
+    strikethrough: false
     size: 12
     color:
       r: 250
       g: 250
       b: 250
       a: 255
-  labels:
+    outline:
+      width: 1
+      color: 
+        r: 0
+        g: 0
+        b: 0
+        a: 255
+  menu:
     alignment: center
-    bold: false
+    bold: true
     italics: false
-    margins: 0.25
-    size: 10
+    margins: 0.30
+    underline: false
+    strikethrough: false
+    size: 11
     color:
       r: 005
       g: 035
       b: 064
       a: 255
+    outline:
+      width: 2
+      color: 
+        r: 187
+        g: 222
+        b: 251
+        a: 255
   title:
     alignment: center
     bold: false
     italics: false
+    underline: false
+    strikethrough: false
     margins: 0
     color: 
       r: 186
       g: 104
       b: 200
       a: 255
+    outline:
+      width: 1
+      color: 
+        r: 0
+        g: 0
+        b: 0
+        a: 255

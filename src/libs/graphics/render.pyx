@@ -390,26 +390,37 @@ def write(
         
     cdef TexturePtr tex
     cdef int sx, sy, sw, sl, dx, dy, dw, dl
+    cdef int margin_px_w, margin_px_h, wrap_width
+    cdef bytes b_content
+    cdef SDL_Surface* text_surface = NULL
+    cdef SDL_Texture* text_tex = NULL
+    cdef SDL_Surface* outline_surface = NULL
+    cdef SDL_Texture* outline_tex = NULL
+    cdef SDL_Rect dst_rect
+    cdef SDL_Rect outline_rect
+
     tex, sx, sy, sw, sl, dx, dy, dw, dl = asset
     
-    cdef int margin_px_w = int(sw * font.margins)
-    cdef int margin_px_h = int(sl * font.margins)
+    margin_px_w = int(sw * font.margins)
+    margin_px_h = int(sl * font.margins)
     
-    cdef int wrap_width = sw - (2 * margin_px_w)
+    wrap_width = sw - (2 * margin_px_w)
     if wrap_width <= 0:
         wrap_width = 1
         
-    cdef bytes b_content = content.encode('utf-8')
-    cdef SDL_Surface* text_surface = TTF_RenderUTF8_Blended_Wrapped(
+    b_content = content.encode('utf-8')
+    text_surface = TTF_RenderUTF8_Blended_Wrapped(
         font.ptr, b_content, font.color, wrap_width
     )
     
     if text_surface == NULL:
         return
         
-    cdef SDL_Texture* text_tex = SDL_CreateTextureFromSurface(_renderer, text_surface)
-    
-    cdef SDL_Rect dst_rect
+    text_tex = SDL_CreateTextureFromSurface(_renderer, text_surface)
+    if text_tex == NULL:
+        SDL_FreeSurface(text_surface)
+        return
+        
     dst_rect.y = margin_px_h    
     dst_rect.w = text_surface.w
     dst_rect.h = text_surface.h
@@ -420,16 +431,40 @@ def write(
         dst_rect.x = sx + sw - margin_px_w - text_surface.w
     else:
         dst_rect.x = sx + margin_px_w
-        
-    # Bake the text string permanently into the asset texture
+
+    # Pass 1: Render outline behind the primary text
+    if font.outline_ptr != NULL and font.outline_width > 0:
+        outline_surface = TTF_RenderUTF8_Blended_Wrapped(
+            font.outline_ptr, b_content, font.outline_color, wrap_width + (2 * font.outline_width)
+        )
+        if outline_surface != NULL:
+            outline_tex = SDL_CreateTextureFromSurface(_renderer, outline_surface)
+            outline_rect.x = dst_rect.x - font.outline_width
+            outline_rect.y = dst_rect.y - font.outline_width
+            outline_rect.w = outline_surface.w
+            outline_rect.h = outline_surface.h
+
+    # Bake onto the target texture
     SDL_SetRenderTarget(_renderer, tex.ptr)
+
+    if outline_tex != NULL:
+        SDL_SetTextureBlendMode(outline_tex, SDL_BLENDMODE_BLEND)
+        SDL_RenderCopy(_renderer, outline_tex, NULL, &outline_rect)
+
     SDL_SetTextureBlendMode(text_tex, SDL_BLENDMODE_BLEND)
     SDL_RenderCopy(_renderer, text_tex, NULL, &dst_rect)
+
     SDL_SetRenderTarget(_renderer, NULL)
     
+    # Cleanup surfaces and intermediate textures
+    if outline_tex != NULL:
+        SDL_DestroyTexture(outline_tex)
+    if outline_surface != NULL:
+        SDL_FreeSurface(outline_surface)
+
     SDL_DestroyTexture(text_tex)
     SDL_FreeSurface(text_surface)
-                
+                 
 
 def render(
     TexturePtr background, 
