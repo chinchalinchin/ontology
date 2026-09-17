@@ -155,15 +155,9 @@ Button Statuses are enumerated below,
 
 It assumed Button Asset files are arranged in horizontal rows ordered by their status in the sequence: `idle, active, selected, disabled`, where each frame is `properties.dimensions.w` wide.
 
-A Button may have `icons`. Each element of the `icon`  list is a frame key for an Icon Asset. Each Icon Asset frame is concatenated horizontally across the Button frame.
-
-!!! warning
-    The Button Asset must have large enough dimensions to accomodate the Icon Asset embeddings, i.e. the sum of the Icon widths must not exceed the width of the Button.
-
 **State: TraversalState**
 
 * `position: Position`
-* `icons: Optional[List[str]]`
 * `status: Status`
 
 **Animation: TraversalAnimation**
@@ -547,3 +541,40 @@ The HUD is always painted on top of all dynamic Assets; as such, it is stored in
 7. View: Also known as the Heads-Up Display (HUD). The View Menu is not instantiated by the MenuEvents. It is created when the game loop initializes and is painted onto the screen along with every frame. It is updated when UpdateEvents are fired by other Menus.
     - **Payload**: `ViewContext(sprite: SpriteState)`
     - **Events**: None
+
+## Design
+
+### Strategies
+
+**Icon Buttons**
+
+An [Icon](#icons) is not embedded into a Button, in the traditional sense of the Button "containing" the Icon. Instead, Icons and Buttons are overlaid in sequence on top of a transparent root [Pane](#panes) to achieve the effect of an "Icon Button". The following [Menu Configuration](#menus) demonstrates how to formalizes an Icon Button, in this case a Button Slot that displays the equipped Weapon,
+
+```yaml
+-   id: transparent-block
+    name: hud-slots-pane
+    layout: dock
+    alignment: start
+    gap: 5
+    children:
+        # --- bounding box for the slot ---
+        -   id: transparent-slot 
+            name: weapon-slot-container
+            layout: overlay
+            alignment: center
+            gap: 0
+            children:
+                # 1. The Background
+                -   instance: buttons
+                    id: slot
+                    name: weapon-slot
+                    status: disabled
+                # 2. The Foreground Decal
+                -   instance: icons
+                    id: weapons
+                    name: weapon-icon
+                    bind:
+                        schema: icon
+                        target: 
+                        icon: context.sprite.inventory.equipment.weapon
+```

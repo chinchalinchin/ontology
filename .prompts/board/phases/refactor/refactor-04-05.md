@@ -144,23 +144,8 @@ Implement `InventoryController` to manage Gizmo pagination offsets, item equippi
 
 * [ ] Subtask: Implement `app.game.menus.controllers.inventory.InventoryController`.
 * [ ] Subtask: Implement `select()` to process slot clicks and emit `UpdateEvent` on scroll actions.
-* [ ] Subtask: Write unit tests covering Gizmo AST expansion, grid layout computation, and slot traversal graph generation.
+* [!: Dependent on Phase Completion] Subtask: Write unit tests covering Gizmo AST expansion, grid layout computation, and slot traversal graph generation.
 
----
-
-##### Bug B010: TraversalState and TraversalFrame Decal Omission
-
-**STATUS**: OPEN
-
-**SEVERITY**: LOW
-
-**Description**
-
-The documentation in `06-widgets.md` states that `TraversalState` contains an `icons: Optional[List[str]]` field to embed icon decals onto buttons. However, `TraversalState` in `app.models.state.widgets` lacks this attribute, and `TraversalFrame.keys` only queries the base button frame (`settings.SEPARATOR.join([id, state.animation.action])`).
-
-**Proposed Remediation**
-
-Align the documentation with the actual engine rendering strategy: clarify that button decals must be composed hierarchically via `Layout.OVERLAY` inside a container `transparent-slot` Pane containing both a `Button` widget and an `Icon` widget, rather than expecting single `Button` assets to render multi-texture decal composites.
 
 ##### Refactor: Phase 04.05 - Appendix
 
@@ -291,6 +276,10 @@ widgets:
       dimensions:
         w: 96
         l: 95
+    text-label:
+      dimensions:
+        w: 142
+        l: 28
   panes:
     dark:
       dimensions:
@@ -324,6 +313,10 @@ widgets:
       dimensions:
         w: 80
         l: 80
+    transparent-label:
+      dimensions:
+        w: 142
+        l: 28
 ```
 
 **Current Dialogue Menu**
@@ -391,4 +384,114 @@ menus:
                   target:
                     selection: scrolldown
                     selector: character-speech
+```
+
+**Current Main Menu**
+
+```yaml
+menus:
+  main:
+    controller: main
+    roots: 
+      - id: neutral
+        name: main-menu
+        position:
+          # Centered for 480 x 480: (480 - 318)/2 -> 81px, (480 - 180)/2 -> 150px
+          px: 0.16875
+          py: 0.3125
+          # For 360 x 360:
+          # px: 0.0583
+          # py: 0.25
+        layout: stack
+        font: labels
+        alignment: center
+        gap: 10
+        children: 
+          # --- NEW GAME ---
+          - id: transparent-label
+            name: new-game-slot
+            layout: overlay
+            alignment: center
+            children:
+              - instance: buttons
+                id: label
+                name: new-game
+                bind: 
+                  schema: select
+                  target:
+                    selection: new
+                    selector: world-01
+              - instance: pages
+                id: text-label
+                name: new-game-text
+                bind:
+                  schema: text
+                  target:
+                    content: NEW
+
+          # --- LOAD GAME ---
+          - id: transparent-label
+            name: load-game-slot
+            layout: overlay
+            alignment: center
+            children:
+              - instance: buttons
+                id: label
+                name: load-game
+                bind: 
+                  schema: select
+                  target:
+                    selection: load
+                    selector: world-01
+              - instance: pages
+                id: text-label
+                name: load-game-text
+                bind:
+                  schema: text
+                  target:
+                    content: LOAD
+
+          # --- OPTIONS ---
+          - id: transparent-label
+            name: options-menu-slot
+            layout: overlay
+            alignment: center
+            children:
+              - instance: buttons
+                id: label
+                name: options-menu
+                bind:
+                  schema: select
+                  target:
+                    selector: options
+                    selection: menu
+              - instance: pages
+                id: text-label
+                name: options-menu-text
+                bind:
+                  schema: text
+                  target:
+                    content: OPTIONS
+
+          # --- EDITOR ---
+          - id: transparent-label
+            name: editor-menu-slot
+            layout: overlay
+            alignment: center
+            children:
+              - instance: buttons
+                id: label
+                name: editor-menu
+                bind:
+                  schema: select
+                  target:
+                    selector: editor
+                    selection: menu
+              - instance: pages
+                id: text-label
+                name: editor-menu-text
+                bind:
+                  schema: text
+                  target:
+                    content: EDITOR
 ```
