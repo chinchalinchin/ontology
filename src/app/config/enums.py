@@ -92,10 +92,6 @@ class Groups(str, Enum):
     EQUIPMENT       = "equipment"
     SPAWNABLES      = "spawnables"
 
-class Shortcuts(str, Enum):
-    COMPOSITIONS    = "compositions"
-    PLOTS           = "plots"
-
 class Lifecycles(str, Enum):
     CONTINUOUS      = "continuous"
     PERIODIC        = "periodic"
@@ -125,27 +121,6 @@ class AnimationRecipe(str, Enum):
     METER           = "meter"
     TRAVERSAL       = "traversal"
     LIFECYCLE       = "lifecycle"
-
-class StateRecipe(str, Enum):
-    NONE            = "none"
-    # ASSET STATES
-    SPRITE          = "sprite"
-    SWITCH          = "switch"
-    DOOR            = "door"
-    DIALOGUE        = "dialogue"
-    POSITIONAL      = "positional"
-    PROPERTY        = "property"
-    CONTAINER       = "container"
-    ANIMATOR        = "animator"
-    METRIC          = "metric"
-    MULTIPLIER      = "multiplier"
-    PLAYER          = "player"
-    # WIDGET STATES
-    TRAVERSAL       = "traversal"
-    METER           = "meter"
-    DISPLAY         = "display"
-    PANE            = "pane"
-    ICON            = "icon"
 
 # -------------------------------- SPRITE STATE ENUMERATIONS
 
@@ -291,12 +266,14 @@ class Mechanics(str, Enum):
 
 class Configurations(str, Enum):
     ACTIONS         = "actions"
+    COMPOSITIONS    = "compositions"
     INTENTIONS      = "intentions"
+    LIBRARY         = "library"
     MAPPINGS        = "mappings"
     MECHANICS       = "mechanics"
     MENUS           = "menus"
+    PLOTS           = "plots"
     RECIPES         = "recipes"
-    COMPOSITIONS    = "compositions"
 
 class MotiveAssets(str, Enum):
     PLAYERS         = "players"
@@ -311,7 +288,11 @@ class InertAssets(str, Enum):
 class Translators(str, Enum):
     COMPILER        = "compiler"
     LAMBDA          = "lambda"
-    
+
+class Shortcuts(str, Enum):
+    COMPOSITIONS    = "compositions"
+    PLOTS           = "plots"
+
 # -------------------------------- WIDGET ENUMERATIONS
 
 class Controllers(str, Enum):
@@ -329,6 +310,13 @@ class Alignments(str, Enum):
     START           = "start"
     END             = "end"
     CENTER          = "center"
+
+class Bindings(str, Enum):
+    LIBRARY         = "library"
+    METER           = "meter"
+    ICON            = "icon"
+    SELECT          = "select"
+    TEXT            = "text"
 
 class Traversal(str, Enum):
     NORTH           = "north"

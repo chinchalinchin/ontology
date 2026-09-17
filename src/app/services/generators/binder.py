@@ -3,7 +3,11 @@
 
 Factory for generating and preparing Binding components.
 """
+# Standard Libraries
 from typing import Any
+
+# Application Libraries
+from app.config.enums import Bindings
 from app.models.config import MenuBinding
 from app.game.menus.contexts import MenuContext
 from app.game.menus.bindings import (
@@ -32,13 +36,13 @@ class Binder:
             'library': self.library
         }
         
-        if schema == 'library':
+        if schema == Bindings.LIBRARY.value:
             return LibraryBinding(target, context, **kwargs)
-        elif schema == 'meter':
+        elif schema == Bindings.METER.value:
             return MeterBinding(target, context, **kwargs)
-        elif schema == 'icon':
+        elif schema == Bindings.ICON.value:
             return IconBinding(target, context, **kwargs)
-        elif schema == 'select':
+        elif schema == Bindings.SELECT.value:
             return SelectBinding(target, context, **kwargs)
         else:
             return TextBinding(target, context, **kwargs)
