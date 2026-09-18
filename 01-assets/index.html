@@ -710,6 +710,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#fonts_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fonts
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1772,6 +1783,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#fonts_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fonts
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2680,23 +2702,44 @@
 <p>Widgets are used to constructs Menus. They are not a part of the core gameplay loop and have special Mechanics for their interaction. </p>
 <p>Widgets are covered in their own section, <a href="../06-widgets/">Widgets</a>.</p>
 <h2 id="fonts">Fonts</h2>
-<p>Fonts are stateless Assets initialized at <a href="../10-architecture/#initialization">runtime</a>, i.e. they are not deployed onto the Board; instead Fonts are utilized by the <a href="../00-overview/#screen">Screen</a> to render text whenever the game loop calls for text. </p>
-<p>A Font is a wrapper <code>.ttf</code> file and a data structure used to configure the Font styling. Each styled Font is stored in the <a href="../00-overview/#registry">Registy</a> using its file name. The <a href="../00-overview/#screen">Screen</a> retrieves these Fonts from the Registry and passes them to the rendering engine when it needs to write text to screen.</p>
-<p>In other words, a Font Asset encapsulates both the script and the styling applied to the script. </p>
-<p>See <a href="../10-architecture/#graphics">Graphics Architecture documentation</a> for more information on Fonts.</p>
+<h2 id="fonts_1">Fonts</h2>
+<p>Fonts are stateless Assets initialized at <a href="../10-architecture/#initialization">runtime</a>. Rather than being deployed onto the Board, Fonts are loaded into the <a href="../00-overview/#registry">Registry</a> and utilized by the <a href="../00-overview/#screen">Screen</a> to rasterize text canvases for Widgets and dialogue modals.</p>
+<p>A Font configuration pairs a <code>.ttf</code> file with styling rules. During bootstrap, the Registry ingests each font declared in <code>/src/assets/fonts/main.yaml</code> alongside its configuration, storing them as styled Cython <code>TTFFont</code> wrappers. When <code>outline</code> is specified, the Registry instantiates a secondary internal outline pointer configured via <code>TTF_SetFontOutline</code>, enabling <code>render.write()</code> to execute two-pass blended rendering (outline pass followed by foreground fill) without runtime glyph cache invalidation.</p>
+<p>In Menu hierarchies, fonts are scoped lexically at the <code>MenuPane</code> level: any <code>font</code> declared on a parent pane cascades down to all child panes and <code>Page</code> widgets unless explicitly shadowed by a nested pane.</p>
+<p>See <a href="../10-architecture/#graphics">Graphics Architecture documentation</a> for technical implementation details.</p>
 <p><strong>Properties: FontProperties</strong></p>
 <ul>
-<li><code>alignment: str</code></li>
-<li><code>bold: bool</code></li>
-<li><code>italics: bool</code></li>
-<li><code>margins: int</code></li>
-<li><code>color:</code><ul>
-<li><code>r: int</code></li>
-<li><code>g: int</code></li>
-<li><code>b: int</code></li>
-<li><code>a: float</code></li>
+<li><code>size: int</code>: Point size used during glyph rasterization (defaults to <code>24</code>).</li>
+<li><code>alignment: str</code>: Text alignment within the bounding box (<code>left</code>, <code>center</code>, <code>right</code>).</li>
+<li><code>bold: bool</code>: Toggles <code>TTF_STYLE_BOLD</code>.</li>
+<li><code>italics: bool</code>: Toggles <code>TTF_STYLE_ITALIC</code>.</li>
+<li><code>underline: bool</code>: Toggles <code>TTF_STYLE_UNDERLINE</code>.</li>
+<li><code>strikethrough: bool</code>: Toggles <code>TTF_STYLE_STRIKETHROUGH</code>.</li>
+<li><code>margins: float</code>: Fractional padding applied to the target canvas bounds before wrapping (e.g., <code>0.05</code> for 5%).</li>
+<li><code>color</code>: Primary glyph fill color.<ul>
+<li><code>r: int</code> (0–255)</li>
+<li><code>g: int</code> (0–255)</li>
+<li><code>b: int</code> (0–255)</li>
+<li><code>a: int</code> (0–255)</li>
 </ul>
 </li>
+<li><code>outline</code>: (<em>Optional</em>) Border styling configuration.<ul>
+<li><code>width: int</code>: Perimeter thickness in pixels (<code>outline &gt; 0</code> enables two-pass rendering).</li>
+<li><code>color</code>:<ul>
+<li><code>r: int</code> (0–255)</li>
+<li><code>g: int</code> (0–255)</li>
+<li><code>b: int</code> (0–255)</li>
+<li><code>a: int</code> (0–255)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Required Fonts</strong></p>
+<ul>
+<li><code>dialogue</code>: Standard proportional font used to render NPC conversations and narrative logs.</li>
+<li><code>menu</code>: High-contrast, styled font used for interactive UI controls and button labels.</li>
+<li><code>title</code>: Large-format font used for menu headers and screen titles.</li>
 </ul>
 
 

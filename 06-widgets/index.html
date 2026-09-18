@@ -634,6 +634,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1350,6 +1378,34 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1490,15 +1546,9 @@
 <li>disabled: Button is intraversible.</li>
 </ul>
 <p>It assumed Button Asset files are arranged in horizontal rows ordered by their status in the sequence: <code>idle, active, selected, disabled</code>, where each frame is <code>properties.dimensions.w</code> wide.</p>
-<p>A Button may have <code>icons</code>. Each element of the <code>icon</code>  list is a frame key for an Icon Asset. Each Icon Asset frame is concatenated horizontally across the Button frame.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>The Button Asset must have large enough dimensions to accomodate the Icon Asset embeddings, i.e. the sum of the Icon widths must not exceed the width of the Button.</p>
-</div>
 <p><strong>State: TraversalState</strong></p>
 <ul>
 <li><code>position: Position</code></li>
-<li><code>icons: Optional[List[str]]</code></li>
 <li><code>status: Status</code></li>
 </ul>
 <p><strong>Animation: TraversalAnimation</strong></p>
@@ -1817,9 +1867,9 @@
 </ul>
 <h3 id="configurations">Configurations</h3>
 <ol>
-<li>Dialogue: <ul>
+<li>Dialogue:<ul>
 <li><strong>Payload</strong>: <code>DialogueContext(plot: PlotState, sprite: SpriteState, object: DialogueState)</code></li>
-<li><strong>Events</strong>:  TODO</li>
+<li><strong>Events</strong>: <code>UpdateEvent</code> (canvas paging and line progression), <code>TerminalEvent</code> (closing dialogue loop)</li>
 </ul>
 </li>
 <li>Editor: TODO<ul>
@@ -1827,9 +1877,9 @@
 <li><strong>Events</strong>: TODO</li>
 </ul>
 </li>
-<li>Inventory: TODO <ul>
-<li><strong>Payload</strong>: <code>InventoryContext(inventory: Inventory)</code> (TBD)</li>
-<li><strong>Events</strong>: TODO</li>
+<li>Inventory: Instantiated from the world loop via <code>MenuEvent('inventory')</code> in <code>PlayerMechanics</code>.<ul>
+<li><strong>Payload</strong>: <code>InventoryContext(inventory: Inventory)</code></li>
+<li><strong>Events</strong>: <code>UpdateEvent</code> (slot scrolling and selection previews), <code>TerminalEvent</code> (closing menu and unpausing world)</li>
 </ul>
 </li>
 <li>Market: TODO<ul>
@@ -1837,22 +1887,59 @@
 <li><strong>Events</strong>: TODO</li>
 </ul>
 </li>
-<li>Main: The Main Menu is not instantiated by MenuEvents. It is created before the Board initializes and the game loop starts. <ul>
+<li>Main: Instantiated at ignition by injecting a <code>MenuEvent('main')</code> directly onto the Engine event bus before world simulation begins.<ul>
 <li><strong>Payload</strong>: <code>MainContext(registry: Registry)</code></li>
-<li><strong>Outputs</strong>: <code>&lt;board-key&gt;</code> for <code>/src/data/state/&lt;board-key&gt;</code></li>
+<li><strong>Events</strong>: <code>StateEvent</code> (triggers <code>Migrator</code> hydration for New/Load), <code>MenuEvent</code> (opens <code>options</code> or <code>editor</code> submenus)</li>
+<li><strong>Outputs</strong>: <code>&lt;board-key&gt;</code> / save slot target for state migration</li>
 </ul>
 </li>
-<li>Pause: TODO<ul>
-<li><strong>Payload</strong>: TODO</li>
-<li><strong>Events</strong>: TODO</li>
+<li>Options: Generic settings modal invoked from the Main Menu or Pause Menu.<ul>
+<li><strong>Payload</strong>: <code>MenuContext</code> (generic or inherited context)</li>
+<li><strong>Events</strong>: <code>UpdateEvent</code> (live preview text stamping on display canvas), <code>TerminalEvent</code> (returns to previous menu)</li>
 </ul>
 </li>
-<li>View: Also known as the Heads-Up Display (HUD). The View Menu is not instantiated by the MenuEvents. It is created when the game loop initializes and is painted onto the screen along with every frame. It is updated when UpdateEvents are fired by other Menus.<ul>
+<li>Pause: Modal menu triggered from the world loop via <code>MenuEvent('pause')</code> in <code>PlayerMechanics</code>. Pauses the engine tick by setting <code>board.paused = True</code>.<ul>
+<li><strong>Payload</strong>: <code>PauseContext(board: Board)</code></li>
+<li><strong>Events</strong>: <code>TerminalEvent</code> (unpauses game simulation), <code>StateEvent</code> (triggers state rehydration for loads), <code>MenuEvent</code> (opens <code>options</code> submenu or resets board to return to <code>main</code>)</li>
+</ul>
+</li>
+<li>View: Also known as the Heads-Up Display (HUD). Created during engine bootstrap and stored in <code>board.overlays</code> rather than the modal <code>board.menus</code> stack. It renders on top of world assets every frame without pausing simulation or intercepting input traversal.<ul>
 <li><strong>Payload</strong>: <code>ViewContext(sprite: SpriteState)</code></li>
-<li><strong>Events</strong>: None</li>
+<li><strong>Events</strong>: None (passively evaluates live state bindings each tick)</li>
 </ul>
 </li>
 </ol>
+<h2 id="design">Design</h2>
+<h3 id="strategies">Strategies</h3>
+<p><strong>Icon Buttons</strong></p>
+<p>An <a href="#icons">Icon</a> is not embedded into a Button, in the traditional sense of the Button "containing" the Icon. Instead, Icons and Buttons are overlaid in sequence on top of a transparent root <a href="#panes">Pane</a> to achieve the effect of an "Icon Button". The following <a href="#menus">Menu Configuration</a> demonstrates how to formalizes an Icon Button, in this case a Button Slot that displays the equipped Weapon,</p>
+<div class="highlight"><pre><span></span><code><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">transparent-block</span>
+<span class="w">    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hud-slots-pane</span>
+<span class="w">    </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dock</span>
+<span class="w">    </span><span class="nt">alignment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">start</span>
+<span class="w">    </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="w">    </span><span class="nt">children</span><span class="p">:</span>
+<span class="w">        </span><span class="c1"># --- bounding box for the slot ---</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">transparent-slot</span><span class="w"> </span>
+<span class="w">            </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">weapon-slot-container</span>
+<span class="w">            </span><span class="nt">layout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">overlay</span>
+<span class="w">            </span><span class="nt">alignment</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">center</span>
+<span class="w">            </span><span class="nt">gap</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+<span class="w">            </span><span class="nt">children</span><span class="p">:</span>
+<span class="w">                </span><span class="c1"># 1. The Background</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">buttons</span>
+<span class="w">                    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">slot</span>
+<span class="w">                    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">weapon-slot</span>
+<span class="w">                    </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">disabled</span>
+<span class="w">                </span><span class="c1"># 2. The Foreground Decal</span>
+<span class="w">                </span><span class="p p-Indicator">-</span><span class="w">   </span><span class="nt">instance</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">icons</span>
+<span class="w">                    </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">weapons</span>
+<span class="w">                    </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">weapon-icon</span>
+<span class="w">                    </span><span class="nt">bind</span><span class="p">:</span>
+<span class="w">                        </span><span class="nt">schema</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">icon</span>
+<span class="w">                        </span><span class="nt">target</span><span class="p">:</span><span class="w"> </span>
+<span class="w">                        </span><span class="nt">icon</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context.sprite.inventory.equipment.weapon</span>
+</code></pre></div>
 
 
 
