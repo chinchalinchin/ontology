@@ -139,7 +139,7 @@ These attributes are part of the base class from which all other states inherit.
 | Effect | Reactable | Base, Animation, Intention, Cooldown |
 | Sheet | Pixie | Base, Animation |
 | Sheet | Sprite | Base, Animation, Velocity, Intention, Inventory, Meters, Memory, Mutators, Goal, Trajectory |
-| Widget | Icon | Base, Frame |
+| Widget | Icon | Base, Icon |
 | Widget | Pane | Base, Layout, Alignment, Gap, Margins |
 | Widget | Button  | Base, Status, Animation |
 | Widget | Meter | Base, Animation, Reading, Unit |
