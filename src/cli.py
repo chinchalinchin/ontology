@@ -29,7 +29,7 @@ import app.config.settings as settings
 from app.config.logging import configure_logging
 from app.config.enums import Devices, AssetCategories
 from app.game.screen import Screen
-from app.services.orchestration.builder import Orchestrator
+from app.services.orchestration import Orchestrator
 
 # Cython Libraries
 from libs.core.models import Dimensions, Position

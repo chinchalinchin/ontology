@@ -23,7 +23,6 @@ from app.config.enums import (
     AssetInstances, 
     Statuses, 
     Interactions,
-    Intentions,
     Lifecycles,
     DeviceContexts
 )

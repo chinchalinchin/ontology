@@ -117,37 +117,977 @@ Implement `InventoryController` to manage Gizmo pagination offsets, item equippi
 
 *Objective*: Allow Menu configurations to declare dynamic Gizmo macros alongside standard Panes and Widgets.
 
-* [ ] Subtask: Add `MenuGizmo` dataclass to `app.models.config.menus`.
-* [ ] Subtask: Update `MenuPane.children` type signature to `List[Union[MenuPane, MenuWidget, MenuGizmo]]`.
-* [ ] Subtask: Add Pydantic schema validation for Gizmo properties (`capacity`, `columns`, `pane_id`, `button_id`).
+* [x] Subtask: Add `MenuGizmo` dataclass to `app.models.config.menus`.
+* [x] Subtask: Update `MenuPane.children` type signature to `List[Union[MenuPane, MenuWidget, MenuGizmo]]`.
+* [x] Subtask: Add Pydantic schema validation for Gizmo properties (`capacity`, `columns`, `pane_id`, `button_id`).
 
 **2. Task: Implement GizmoGenerator Service**
 
 *Objective*: Build the expansion generator that transforms `MenuGizmo` nodes into standard `MenuPane` subtrees.
 
-* [ ] Subtask: Implement `app.services.generators.menus.Fabricator`.
-* [ ] Subtask: Build grid subdivision logic to partition `capacity` across `columns` using nested `dock` and `stack` panes.
-* [ ] Subtask: Generate `transparent-slot` overlay panes with child `buttons` and `icons` with deterministic IDs (`<name>-slot-<i>`, `<name>-icon-<i>`).
-* [ ] Subtask: Integrate `GizmoGenerator` into `Provider._unpack_node` so expansion occurs seamlessly during Menu hydration.
+* [x] Subtask: Implement `app.services.generators.menus.Fabricator`.
+* [x] Subtask: Build grid subdivision logic to partition `capacity` across `columns` using nested `dock` and `stack` panes.
+* [x] Subtask: Generate `transparent-slot` overlay panes with child `buttons` and `icons` with deterministic IDs (`<name>-slot-<i>`, `<name>-icon-<i>`).
+* [x] Subtask: Integrate `Fabricator` into `Provider._unpack_node` so expansion occurs seamlessly during Menu hydration.
 
 **3. Task: Implement CollectionBinding & Slot Paging**
 
 *Objective*: Connect individual slot buttons and icons to underlying collection elements.
 
-* [ ] Subtask: Create `CollectionBinding` subclass in `app.game.menus.bindings.collection`.
-* [ ] Subtask: Implement index-slice bounds checks returning empty strings and `DISABLED` statuses for vacant slots.
-* [ ] Subtask: Register `collection` schema in `app.services.generators.binder.Binder`.
+* [x] Subtask: Create `CollectionBinding` subclass in `app.game.menus.bindings.collection`.
+* [x] Subtask: Implement index-slice bounds checks returning empty strings and `DISABLED` statuses for vacant slots.
+* [x] Subtask: Register `collection` schema in `app.services.generators.binder.Binder`.
 
 **4. Task: Implement InventoryController**
 
 *Objective*: Manage selection events, pagination shifts, and item mutations for the player inventory.
 
-* [ ] Subtask: Implement `app.game.menus.controllers.inventory.InventoryController`.
-* [ ] Subtask: Implement `select()` to process slot clicks and emit `UpdateEvent` on scroll actions.
+* [x] Subtask: Implement `app.game.menus.controllers.inventory.InventoryController`.
+* [x] Subtask: Implement `select()` to process slot clicks and emit `UpdateEvent` on scroll actions.
 * [!: Dependent on Phase Completion] Subtask: Write unit tests covering Gizmo AST expansion, grid layout computation, and slot traversal graph generation.
 
+##### User Review
 
-##### Refactor: Phase 04.05 - Appendix
+Gizmos are rendering! However, the layout is messed up. The arrows are rendering on top of the grid. See state dump below.
+
+**Inventory Menu State Dump**
+
+```markdown
+# Ontology Menu Dump
+
+- **Board:** default
+- **Timestamp:** 20260917_203703
+
+---
+
+# Menus
+
+## Menu: inventory
+
+- **ID:** `inventory`
+- **Focus:** `inventory-scroll-down`
+- **Context:** `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **Controller:** `<app.game.menus.controllers.inventory.InventoryController object at 0x10a837d70>`
+- **Navigation Graph:**
+  - `inventory-pack-grid-slot-0`:
+    - Traversal.SOUTH: `inventory-pack-grid-slot-4`
+    - Traversal.EAST: `inventory-pack-grid-slot-1`
+  - `inventory-pack-grid-slot-1`:
+    - Traversal.SOUTH: `inventory-scroll-down`
+    - Traversal.NORTH: `inventory-scroll-up`
+    - Traversal.EAST: `inventory-scroll-up`
+    - Traversal.WEST: `inventory-pack-grid-slot-0`
+  - `inventory-pack-grid-slot-2`:
+    - Traversal.SOUTH: `inventory-pack-grid-slot-6`
+    - Traversal.EAST: `inventory-pack-grid-slot-3`
+    - Traversal.WEST: `inventory-scroll-up`
+  - `inventory-pack-grid-slot-3`:
+    - Traversal.SOUTH: `inventory-pack-grid-slot-7`
+    - Traversal.WEST: `inventory-pack-grid-slot-2`
+  - `inventory-pack-grid-slot-4`:
+    - Traversal.NORTH: `inventory-pack-grid-slot-0`
+    - Traversal.EAST: `inventory-pack-grid-slot-5`
+  - `inventory-pack-grid-slot-5`:
+    - Traversal.NORTH: `inventory-scroll-down`
+    - Traversal.EAST: `inventory-scroll-down`
+    - Traversal.WEST: `inventory-pack-grid-slot-4`
+  - `inventory-pack-grid-slot-6`:
+    - Traversal.NORTH: `inventory-pack-grid-slot-2`
+    - Traversal.EAST: `inventory-pack-grid-slot-7`
+    - Traversal.WEST: `inventory-scroll-down`
+  - `inventory-pack-grid-slot-7`:
+    - Traversal.NORTH: `inventory-pack-grid-slot-3`
+    - Traversal.WEST: `inventory-pack-grid-slot-6`
+  - `inventory-scroll-up`:
+    - Traversal.SOUTH: `inventory-pack-grid-slot-1`
+    - Traversal.EAST: `inventory-pack-grid-slot-2`
+    - Traversal.WEST: `inventory-pack-grid-slot-1`
+  - `inventory-scroll-down`:
+    - Traversal.SOUTH: `inventory-pack-grid-slot-5`
+    - Traversal.NORTH: `inventory-pack-grid-slot-1`
+    - Traversal.EAST: `inventory-pack-grid-slot-2`
+    - Traversal.WEST: `inventory-pack-grid-slot-1`
+
+### Widgets
+
+#### inventory-menu (`neutral`)
+
+- **Taxonomy:**
+  - ID: `neutral`
+  - Name: `inventory-menu`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 318
+    - Length: 180
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('neutral', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (81, 120)
+  - Layout: `Layouts.DOCK`
+  - Alignment: `Alignments.CENTER`
+  - Gap: 10
+  - Margins: 10
+
+#### inventory-pack-grid (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-pack-grid`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (195, 190)
+  - Layout: `Layouts.STACK`
+  - Alignment: `Alignments.START`
+  - Gap: 5
+  - Margins: 0
+
+#### inventory-pack-grid-row-0 (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-pack-grid-row-0`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (195, 190)
+  - Layout: `Layouts.DOCK`
+  - Alignment: `Alignments.START`
+  - Gap: 5
+  - Margins: 0
+
+#### inventory-pack-grid-slot-0-pane (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-pack-grid-slot-0-pane`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (195, 190)
+  - Layout: `Layouts.OVERLAY`
+  - Alignment: `Alignments.CENTER`
+  - Gap: 0
+  - Margins: 0
+
+#### inventory-pack-grid-slot-0 (`slot`)
+
+- **Taxonomy:**
+  - ID: `slot`
+  - Name: `inventory-pack-grid-slot-0`
+  - Category: `widgets`
+  - Instance: `buttons`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `TraversalFrame`
+  - Animation: `TraversalAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('slot-idle', 0, 0)]`
+- **Binding:**
+  - Class: `SelectBinding`
+  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-0', 'source': 'context.inventory.pack', 'index': '0'}`
+  - Selection: `slot`
+  - Selector: `inventory-pack-grid-icon-0`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `TraversalState`
+  - ID: `slot`
+  - Depth: 0
+  - Position: (195, 190)
+  - Status: `idle`
+  - Animation:
+    - Action: `idle`
+    - Direction: `down`
+    - Frame: 0
+    - Tick: 1
+
+#### inventory-pack-grid-icon-0 (`weapons`)
+
+- **Taxonomy:**
+  - ID: `weapons`
+  - Name: `inventory-pack-grid-icon-0`
+  - Category: `widgets`
+  - Instance: `icons`
+- **Properties:**
+  - Dimensions:
+    - Width: 32
+    - Length: 32
+- **Component Classes:**
+  - Frame: `IndexFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('weapons-', 0, 0)]`
+- **Binding:**
+  - Class: `CollectionBinding`
+  - Target: `{'source': 'context.inventory.pack', 'index': '0', 'offset': '0'}`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `IconState`
+  - ID: `weapons`
+  - Depth: 0
+  - Position: (199, 194)
+  - Icon: ``
+
+#### inventory-pack-grid-slot-1-pane (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-pack-grid-slot-1-pane`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (240, 190)
+  - Layout: `Layouts.OVERLAY`
+  - Alignment: `Alignments.CENTER`
+  - Gap: 0
+  - Margins: 0
+
+#### inventory-pack-grid-slot-1 (`slot`)
+
+- **Taxonomy:**
+  - ID: `slot`
+  - Name: `inventory-pack-grid-slot-1`
+  - Category: `widgets`
+  - Instance: `buttons`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `TraversalFrame`
+  - Animation: `TraversalAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('slot-idle', 0, 0)]`
+- **Binding:**
+  - Class: `SelectBinding`
+  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-1', 'source': 'context.inventory.pack', 'index': '1'}`
+  - Selection: `slot`
+  - Selector: `inventory-pack-grid-icon-1`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `TraversalState`
+  - ID: `slot`
+  - Depth: 0
+  - Position: (240, 190)
+  - Status: `idle`
+  - Animation:
+    - Action: `idle`
+    - Direction: `down`
+    - Frame: 0
+    - Tick: 1
+
+#### inventory-pack-grid-icon-1 (`weapons`)
+
+- **Taxonomy:**
+  - ID: `weapons`
+  - Name: `inventory-pack-grid-icon-1`
+  - Category: `widgets`
+  - Instance: `icons`
+- **Properties:**
+  - Dimensions:
+    - Width: 32
+    - Length: 32
+- **Component Classes:**
+  - Frame: `IndexFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('weapons-', 0, 0)]`
+- **Binding:**
+  - Class: `CollectionBinding`
+  - Target: `{'source': 'context.inventory.pack', 'index': '1', 'offset': '0'}`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `IconState`
+  - ID: `weapons`
+  - Depth: 0
+  - Position: (244, 194)
+  - Icon: ``
+
+#### inventory-pack-grid-slot-2-pane (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-pack-grid-slot-2-pane`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (285, 190)
+  - Layout: `Layouts.OVERLAY`
+  - Alignment: `Alignments.CENTER`
+  - Gap: 0
+  - Margins: 0
+
+#### inventory-pack-grid-slot-2 (`slot`)
+
+- **Taxonomy:**
+  - ID: `slot`
+  - Name: `inventory-pack-grid-slot-2`
+  - Category: `widgets`
+  - Instance: `buttons`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `TraversalFrame`
+  - Animation: `TraversalAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('slot-idle', 0, 0)]`
+- **Binding:**
+  - Class: `SelectBinding`
+  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-2', 'source': 'context.inventory.pack', 'index': '2'}`
+  - Selection: `slot`
+  - Selector: `inventory-pack-grid-icon-2`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `TraversalState`
+  - ID: `slot`
+  - Depth: 0
+  - Position: (285, 190)
+  - Status: `idle`
+  - Animation:
+    - Action: `idle`
+    - Direction: `down`
+    - Frame: 0
+    - Tick: 1
+
+#### inventory-pack-grid-icon-2 (`weapons`)
+
+- **Taxonomy:**
+  - ID: `weapons`
+  - Name: `inventory-pack-grid-icon-2`
+  - Category: `widgets`
+  - Instance: `icons`
+- **Properties:**
+  - Dimensions:
+    - Width: 32
+    - Length: 32
+- **Component Classes:**
+  - Frame: `IndexFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('weapons-', 0, 0)]`
+- **Binding:**
+  - Class: `CollectionBinding`
+  - Target: `{'source': 'context.inventory.pack', 'index': '2', 'offset': '0'}`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `IconState`
+  - ID: `weapons`
+  - Depth: 0
+  - Position: (289, 194)
+  - Icon: ``
+
+#### inventory-pack-grid-slot-3-pane (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-pack-grid-slot-3-pane`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (330, 190)
+  - Layout: `Layouts.OVERLAY`
+  - Alignment: `Alignments.CENTER`
+  - Gap: 0
+  - Margins: 0
+
+#### inventory-pack-grid-slot-3 (`slot`)
+
+- **Taxonomy:**
+  - ID: `slot`
+  - Name: `inventory-pack-grid-slot-3`
+  - Category: `widgets`
+  - Instance: `buttons`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `TraversalFrame`
+  - Animation: `TraversalAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('slot-idle', 0, 0)]`
+- **Binding:**
+  - Class: `SelectBinding`
+  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-3', 'source': 'context.inventory.pack', 'index': '3'}`
+  - Selection: `slot`
+  - Selector: `inventory-pack-grid-icon-3`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `TraversalState`
+  - ID: `slot`
+  - Depth: 0
+  - Position: (330, 190)
+  - Status: `idle`
+  - Animation:
+    - Action: `idle`
+    - Direction: `down`
+    - Frame: 0
+    - Tick: 1
+
+#### inventory-pack-grid-icon-3 (`weapons`)
+
+- **Taxonomy:**
+  - ID: `weapons`
+  - Name: `inventory-pack-grid-icon-3`
+  - Category: `widgets`
+  - Instance: `icons`
+- **Properties:**
+  - Dimensions:
+    - Width: 32
+    - Length: 32
+- **Component Classes:**
+  - Frame: `IndexFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('weapons-', 0, 0)]`
+- **Binding:**
+  - Class: `CollectionBinding`
+  - Target: `{'source': 'context.inventory.pack', 'index': '3', 'offset': '0'}`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `IconState`
+  - ID: `weapons`
+  - Depth: 0
+  - Position: (334, 194)
+  - Icon: ``
+
+#### inventory-pack-grid-row-1 (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-pack-grid-row-1`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (195, 235)
+  - Layout: `Layouts.DOCK`
+  - Alignment: `Alignments.START`
+  - Gap: 5
+  - Margins: 0
+
+#### inventory-pack-grid-slot-4-pane (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-pack-grid-slot-4-pane`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (195, 235)
+  - Layout: `Layouts.OVERLAY`
+  - Alignment: `Alignments.CENTER`
+  - Gap: 0
+  - Margins: 0
+
+#### inventory-pack-grid-slot-4 (`slot`)
+
+- **Taxonomy:**
+  - ID: `slot`
+  - Name: `inventory-pack-grid-slot-4`
+  - Category: `widgets`
+  - Instance: `buttons`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `TraversalFrame`
+  - Animation: `TraversalAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('slot-idle', 0, 0)]`
+- **Binding:**
+  - Class: `SelectBinding`
+  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-4', 'source': 'context.inventory.pack', 'index': '4'}`
+  - Selection: `slot`
+  - Selector: `inventory-pack-grid-icon-4`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `TraversalState`
+  - ID: `slot`
+  - Depth: 0
+  - Position: (195, 235)
+  - Status: `idle`
+  - Animation:
+    - Action: `idle`
+    - Direction: `down`
+    - Frame: 0
+    - Tick: 1
+
+#### inventory-pack-grid-icon-4 (`weapons`)
+
+- **Taxonomy:**
+  - ID: `weapons`
+  - Name: `inventory-pack-grid-icon-4`
+  - Category: `widgets`
+  - Instance: `icons`
+- **Properties:**
+  - Dimensions:
+    - Width: 32
+    - Length: 32
+- **Component Classes:**
+  - Frame: `IndexFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('weapons-', 0, 0)]`
+- **Binding:**
+  - Class: `CollectionBinding`
+  - Target: `{'source': 'context.inventory.pack', 'index': '4', 'offset': '0'}`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `IconState`
+  - ID: `weapons`
+  - Depth: 0
+  - Position: (199, 239)
+  - Icon: ``
+
+#### inventory-pack-grid-slot-5-pane (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-pack-grid-slot-5-pane`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (240, 235)
+  - Layout: `Layouts.OVERLAY`
+  - Alignment: `Alignments.CENTER`
+  - Gap: 0
+  - Margins: 0
+
+#### inventory-pack-grid-slot-5 (`slot`)
+
+- **Taxonomy:**
+  - ID: `slot`
+  - Name: `inventory-pack-grid-slot-5`
+  - Category: `widgets`
+  - Instance: `buttons`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `TraversalFrame`
+  - Animation: `TraversalAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('slot-idle', 0, 0)]`
+- **Binding:**
+  - Class: `SelectBinding`
+  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-5', 'source': 'context.inventory.pack', 'index': '5'}`
+  - Selection: `slot`
+  - Selector: `inventory-pack-grid-icon-5`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `TraversalState`
+  - ID: `slot`
+  - Depth: 0
+  - Position: (240, 235)
+  - Status: `idle`
+  - Animation:
+    - Action: `idle`
+    - Direction: `down`
+    - Frame: 0
+    - Tick: 1
+
+#### inventory-pack-grid-icon-5 (`weapons`)
+
+- **Taxonomy:**
+  - ID: `weapons`
+  - Name: `inventory-pack-grid-icon-5`
+  - Category: `widgets`
+  - Instance: `icons`
+- **Properties:**
+  - Dimensions:
+    - Width: 32
+    - Length: 32
+- **Component Classes:**
+  - Frame: `IndexFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('weapons-', 0, 0)]`
+- **Binding:**
+  - Class: `CollectionBinding`
+  - Target: `{'source': 'context.inventory.pack', 'index': '5', 'offset': '0'}`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `IconState`
+  - ID: `weapons`
+  - Depth: 0
+  - Position: (244, 239)
+  - Icon: ``
+
+#### inventory-pack-grid-slot-6-pane (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-pack-grid-slot-6-pane`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (285, 235)
+  - Layout: `Layouts.OVERLAY`
+  - Alignment: `Alignments.CENTER`
+  - Gap: 0
+  - Margins: 0
+
+#### inventory-pack-grid-slot-6 (`slot`)
+
+- **Taxonomy:**
+  - ID: `slot`
+  - Name: `inventory-pack-grid-slot-6`
+  - Category: `widgets`
+  - Instance: `buttons`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `TraversalFrame`
+  - Animation: `TraversalAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('slot-idle', 0, 0)]`
+- **Binding:**
+  - Class: `SelectBinding`
+  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-6', 'source': 'context.inventory.pack', 'index': '6'}`
+  - Selection: `slot`
+  - Selector: `inventory-pack-grid-icon-6`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `TraversalState`
+  - ID: `slot`
+  - Depth: 0
+  - Position: (285, 235)
+  - Status: `idle`
+  - Animation:
+    - Action: `idle`
+    - Direction: `down`
+    - Frame: 0
+    - Tick: 1
+
+#### inventory-pack-grid-icon-6 (`weapons`)
+
+- **Taxonomy:**
+  - ID: `weapons`
+  - Name: `inventory-pack-grid-icon-6`
+  - Category: `widgets`
+  - Instance: `icons`
+- **Properties:**
+  - Dimensions:
+    - Width: 32
+    - Length: 32
+- **Component Classes:**
+  - Frame: `IndexFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('weapons-', 0, 0)]`
+- **Binding:**
+  - Class: `CollectionBinding`
+  - Target: `{'source': 'context.inventory.pack', 'index': '6', 'offset': '0'}`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `IconState`
+  - ID: `weapons`
+  - Depth: 0
+  - Position: (289, 239)
+  - Icon: ``
+
+#### inventory-pack-grid-slot-7-pane (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-pack-grid-slot-7-pane`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (330, 235)
+  - Layout: `Layouts.OVERLAY`
+  - Alignment: `Alignments.CENTER`
+  - Gap: 0
+  - Margins: 0
+
+#### inventory-pack-grid-slot-7 (`slot`)
+
+- **Taxonomy:**
+  - ID: `slot`
+  - Name: `inventory-pack-grid-slot-7`
+  - Category: `widgets`
+  - Instance: `buttons`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `TraversalFrame`
+  - Animation: `TraversalAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('slot-idle', 0, 0)]`
+- **Binding:**
+  - Class: `SelectBinding`
+  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-7', 'source': 'context.inventory.pack', 'index': '7'}`
+  - Selection: `slot`
+  - Selector: `inventory-pack-grid-icon-7`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `TraversalState`
+  - ID: `slot`
+  - Depth: 0
+  - Position: (330, 235)
+  - Status: `idle`
+  - Animation:
+    - Action: `idle`
+    - Direction: `down`
+    - Frame: 0
+    - Tick: 1
+
+#### inventory-pack-grid-icon-7 (`weapons`)
+
+- **Taxonomy:**
+  - ID: `weapons`
+  - Name: `inventory-pack-grid-icon-7`
+  - Category: `widgets`
+  - Instance: `icons`
+- **Properties:**
+  - Dimensions:
+    - Width: 32
+    - Length: 32
+- **Component Classes:**
+  - Frame: `IndexFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('weapons-', 0, 0)]`
+- **Binding:**
+  - Class: `CollectionBinding`
+  - Target: `{'source': 'context.inventory.pack', 'index': '7', 'offset': '0'}`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `IconState`
+  - ID: `weapons`
+  - Depth: 0
+  - Position: (334, 239)
+  - Icon: ``
+
+#### inventory-scroll-controls (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-scroll-controls`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 40
+    - Length: 40
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (245, 190)
+  - Layout: `Layouts.STACK`
+  - Alignment: `Alignments.CENTER`
+  - Gap: 5
+  - Margins: 0
+
+#### inventory-scroll-up (`arrow-up`)
+
+- **Taxonomy:**
+  - ID: `arrow-up`
+  - Name: `inventory-scroll-up`
+  - Category: `widgets`
+  - Instance: `buttons`
+- **Properties:**
+  - Dimensions:
+    - Width: 24
+    - Length: 24
+- **Component Classes:**
+  - Frame: `TraversalFrame`
+  - Animation: `TraversalAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('arrow-up-idle', 0, 0)]`
+- **Binding:**
+  - Class: `SelectBinding`
+  - Target: `{'selection': 'scrollup', 'selector': 'inventory-pack-grid'}`
+  - Selection: `scrollup`
+  - Selector: `inventory-pack-grid`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `TraversalState`
+  - ID: `arrow-up`
+  - Depth: 0
+  - Position: (253, 183)
+  - Status: `idle`
+  - Animation:
+    - Action: `idle`
+    - Direction: `down`
+    - Frame: 0
+    - Tick: 1
+
+#### inventory-scroll-down (`arrow-down`)
+
+- **Taxonomy:**
+  - ID: `arrow-down`
+  - Name: `inventory-scroll-down`
+  - Category: `widgets`
+  - Instance: `buttons`
+- **Properties:**
+  - Dimensions:
+    - Width: 24
+    - Length: 24
+- **Component Classes:**
+  - Frame: `TraversalFrame`
+  - Animation: `TraversalAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('arrow-down-active', 0, 0)]`
+- **Binding:**
+  - Class: `SelectBinding`
+  - Target: `{'selection': 'scrolldown', 'selector': 'inventory-pack-grid'}`
+  - Selection: `scrolldown`
+  - Selector: `inventory-pack-grid`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `TraversalState`
+  - ID: `arrow-down`
+  - Depth: 0
+  - Position: (253, 212)
+  - Status: `active`
+  - Animation:
+    - Action: `active`
+    - Direction: `down`
+    - Frame: 0
+    - Tick: 1
+```
+
+##### Task: Architectural Assessment
+
+Diagnose the problem with the Gizmo layout.
+
+In addition, with the initial implementation of Gizmos in place, it needs refactored and reanalyzed to streamline the datastructures that support it and the logic that is used to construct it.
+
+Analyze the codebase for errors and bugs as they pertain to this phase.
+
+#### Appendix
 
 **Current Widget Properties**
 
@@ -166,6 +1106,7 @@ widgets:
       dimensions:
         w: 142
         l: 28
+    # --------
     arrow-down:
       dimensions:
         w: 24
@@ -252,36 +1193,47 @@ widgets:
         w: 72
         l: 20
   pages:
-    dialogue:
+    # -------- SOLID PAGES
+    dark-dialogue:
       dimensions:
         w: 640
         l: 96
-    header:
-      dimensions:
-        w: 426
-        l: 163 
-    scroll:
-      dimensions:
-        w: 330
-        l: 54
-    notification:
+    dark-notification:
       dimensions:
         w: 192
         l: 64
-    parchment:
+    dark-portrait:
+      dimensions:
+        w: 58
+        l: 69
+    # -------- FAUX PAPER PAGES
+    paper-scroll:
+      dimensions:
+        w: 189
+        l: 192
+    paper-header-torn:
+      dimensions:
+        w: 426
+        l: 163 
+    paper-header:
+      dimensions:
+        w: 330
+        l: 54
+    paper-area:
       dimensions:
         w: 465
         l: 273
-    portrait:
+    paper-weathered:
       dimensions:
         w: 96
         l: 95
-    # ------- TRANSPARENT PAGES
+    # -------- TRANSPARENT PAGES
     text-label:
       dimensions:
         w: 142
         l: 28
   panes:
+    # -------- DARK PANES
     dark:
       dimensions:
         w: 318
@@ -294,6 +1246,7 @@ widgets:
       dimensions:
         w: 173
         l: 180
+    # --------NEUTRAL PANES
     neutral:
       dimensions:
         w: 318
@@ -302,6 +1255,7 @@ widgets:
       dimensions:
         w: 318
         l: 78
+    # -------- LIGHT PANES
     light:
       dimensions:
         w: 318 
@@ -325,187 +1279,65 @@ widgets:
         l: 80
     transparent-area:
       dimensions:
-        w: 400
-        l: 400
+        w: 250
+        l: 250
     transparent-label:
       dimensions:
         w: 142
         l: 28
 ```
 
-**Current Dialogue Menu**
+**Current Inventory Menu**
 
 ```yaml
 menus:
-  dialogue:
-    controller: scroll
-    roots: 
+  inventory:
+    controller: inventory
+    roots:
       - id: neutral
-        name: dialogue-menu
+        name: inventory-menu
         position:
-          # 480 x 480
-          px: 0.175
-          py: 0.60
+          px: 0.16875
+          py: 0.25
         layout: dock
         alignment: center
-        gap: 5
-        margin: 10
+        gap: 10
+        margins: 10
         children:
-          # ------------------------------- PORTRAIT DISPLAY
-          - id: transparent-block 
-            name: character-portrait-container
-            layout: overlay
-            alignment: start
-            gap: 0
-            children:
-              - instance: icons
-                id: portraits
-                name: character-portrait-icon
-                bind:
-                  schema: icon
-                  target: 
-                    icon: context.sprite.psyche.persona
-          # ------------------------------- DIALOGUE DISPLAY
-          - instance: pages
-            id: notification
-            name: character-speech
+          # --- INVENTORY GRID GIZMO ---
+          - id: weapons
+            name: inventory-pack-grid
             bind:
-              schema: library
+              schema: collection
               target:
-                plot: context.plot.current
-                persona: context.sprite.psyche.persona
-                lexicon: context.sprite.psyche.dialogue
-          # ------------------------------- CONTROL DISPLAY
+                source: context.inventory.pack
+            capacity: 8
+            columns: 4
+            gap: 5
+            pane: transparent-slot
+            button: slot
+
+          # --- PAGINATION CONTROLS ---
           - id: transparent-slot
-            name: text-scroll-buttons
+            name: inventory-scroll-controls
             layout: stack
             alignment: center
             gap: 5
             children:
               - instance: buttons
                 id: arrow-up
-                name: text-scroll-up
-                bind: 
+                name: inventory-scroll-up
+                bind:
                   schema: select
                   target:
                     selection: scrollup
-                    selector: character-speech
+                    selector: inventory-pack-grid
               - instance: buttons
                 id: arrow-down
-                name: text-scroll-down
-                bind: 
+                name: inventory-scroll-down
+                bind:
                   schema: select
                   target:
                     selection: scrolldown
-                    selector: character-speech
-```
-
-**Current Main Menu**
-
-```yaml
-menus:
-  main:
-    controller: main
-    roots: 
-      - id: neutral
-        name: main-menu
-        position:
-          # Centered for 480 x 480: (480 - 318)/2 -> 81px, (480 - 180)/2 -> 150px
-          px: 0.16875
-          py: 0.3125
-          # For 360 x 360:
-          # px: 0.0583
-          # py: 0.25
-        layout: stack
-        font: labels
-        alignment: center
-        gap: 10
-        children: 
-          # --- NEW GAME ---
-          - id: transparent-label
-            name: new-game-slot
-            layout: overlay
-            alignment: center
-            children:
-              - instance: buttons
-                id: label
-                name: new-game
-                bind: 
-                  schema: select
-                  target:
-                    selection: new
-                    selector: world-01
-              - instance: pages
-                id: text-label
-                name: new-game-text
-                bind:
-                  schema: text
-                  target:
-                    content: NEW
-
-          # --- LOAD GAME ---
-          - id: transparent-label
-            name: load-game-slot
-            layout: overlay
-            alignment: center
-            children:
-              - instance: buttons
-                id: label
-                name: load-game
-                bind: 
-                  schema: select
-                  target:
-                    selection: load
-                    selector: world-01
-              - instance: pages
-                id: text-label
-                name: load-game-text
-                bind:
-                  schema: text
-                  target:
-                    content: LOAD
-
-          # --- OPTIONS ---
-          - id: transparent-label
-            name: options-menu-slot
-            layout: overlay
-            alignment: center
-            children:
-              - instance: buttons
-                id: label
-                name: options-menu
-                bind:
-                  schema: select
-                  target:
-                    selector: options
-                    selection: menu
-              - instance: pages
-                id: text-label
-                name: options-menu-text
-                bind:
-                  schema: text
-                  target:
-                    content: OPTIONS
-
-          # --- EDITOR ---
-          - id: transparent-label
-            name: editor-menu-slot
-            layout: overlay
-            alignment: center
-            children:
-              - instance: buttons
-                id: label
-                name: editor-menu
-                bind:
-                  schema: select
-                  target:
-                    selector: editor
-                    selection: menu
-              - instance: pages
-                id: text-label
-                name: editor-menu-text
-                bind:
-                  schema: text
-                  target:
-                    content: EDITOR
+                    selector: inventory-pack-grid
 ```

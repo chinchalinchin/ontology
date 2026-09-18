@@ -62,7 +62,8 @@ from app.game.menus.controllers import (
     MainController,
     LoadController,
     PauseController,
-    OptionsController
+    OptionsController,
+    InventoryController
 )
 from app.models.config import (
     RecipeConfiguration
@@ -128,7 +129,8 @@ class Factory:
         Controllers.MAIN: MainController,
         Controllers.LOAD: LoadController,
         Controllers.PAUSE: PauseController,
-        Controllers.OPTIONS: OptionsController
+        Controllers.OPTIONS: OptionsController,
+        Controllers.INVENTORY: InventoryController
     }
     
     TRANSLATOR_MAP = {

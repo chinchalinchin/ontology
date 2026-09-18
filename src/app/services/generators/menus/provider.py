@@ -3,13 +3,17 @@
 
 Package for ingame Menu instantiation.
 """
+from __future__ import annotations
+
 # Standard Libraries
 import logging
 from typing import (
     Dict, 
     Any, 
     Union, 
-    List
+    List,
+    Optional,
+    TYPE_CHECKING
 )
 
 # Application Libraries
@@ -34,7 +38,8 @@ from app.models.state import (
 from app.models.config import (
     MenuConfiguration, 
     MenuPane, 
-    MenuWidget
+    MenuWidget,
+    MenuGizmo
 )
 from app.game.menus.core import (
     Menu, 
@@ -43,7 +48,12 @@ from app.game.menus.core import (
 from app.game.menus.contexts import MenuContext
 from app.game.menus.bindings import Binding
 from app.game.menus.layout import Layout
-from app.services.generators.menus.binder import Binder
+
+if TYPE_CHECKING:
+    from app.services.generators.menus import (
+        Binder,
+        Fabricator
+    )
 
 # Cython Libraries
 import libs.graphics.render as render
@@ -52,18 +62,24 @@ from libs.core.models import Dimensions, Position
 logger = logging.getLogger(__name__)
 
 class Provider:
+    """
+    """
     recipes: Any
     properties: WidgetProperties
     binder: Binder
+    fabricator: Fabricator
 
     def __init__(self, 
         recipes: Any, 
         properties: WidgetProperties, 
-        binder: Binder
+        binder: Binder,
+        fabricator: Optional[Fabricator] = None
     ):
         self.recipes = recipes
         self.properties = properties
         self.binder = binder
+        self.fabricator = fabricator or Fabricator()
+
 
 
     def _unpack_page(self, 
@@ -78,12 +94,13 @@ class Provider:
         l = props.dimensions.l
         canvas_ptr = render.canvas(w, l)
 
+        logger.info(cfg)
+
         if binding:
-            callables = binding.bind(w=w, l=l)
-            content_function = callables[0] if callables else lambda: []
+            content_function = next(iter(binding.bind(w=w, l=w)))
         else:
             content_function = lambda: []
-
+            
         return DisplayState(
             id                  = cfg.id,
             position            = Position(x=0, y=0),
@@ -99,12 +116,7 @@ class Provider:
         cfg: MenuWidget, 
         binding: Binding
     ) -> MeterState:
-        if binding:
-            callables = binding.bind()
-            reading_fn, unit_fn = callables if len(callables) >= 2 else (lambda: 0, lambda: 1)
-        else:
-            reading_fn, unit_fn = lambda: 0, lambda: 1
-            
+        reading_fn, unit_fn = binding.bind()
         state = MeterState(
             id                  = cfg.id,
             position            = Position(x=0, y=0),
@@ -122,12 +134,7 @@ class Provider:
         cfg: MenuWidget, 
         binding: Binding
     ) -> IconState:
-        if binding:
-            callables = binding.bind()
-            icon_function = callables[0] if callables else lambda: ""
-        else:
-            icon_function = lambda: ""
-
+        icon_function = next(iter(binding.bind()))
         return IconState(
             id                  = cfg.id,
             position            = Position(x=0, y=0),
@@ -190,16 +197,23 @@ class Provider:
 
 
     def _unpack_node(self, 
-        cfg: Union[MenuPane, MenuWidget], 
+        cfg: Union[MenuPane, MenuWidget, MenuGizmo], 
         context: MenuContext, 
         widgets: Dict[str, Asset],
         font: Fonts
-    ) -> None:
-        if isinstance(cfg, MenuPane):
+    ) -> Union[MenuPane, MenuWidget]:
+        """
+        """
+        if isinstance(cfg, MenuGizmo):
+            expanded = self.fabricator.expand(cfg, context, self.properties)            
+            self._unpack_pane(expanded, context, widgets, font)
+            return expanded
+        elif isinstance(cfg, MenuPane):
             self._unpack_pane(cfg, context, widgets, font)
+            return cfg
         else:
             widgets[cfg.name] = self._unpack_widget(cfg, context, font)
-
+            return cfg
             
     def _unpack_pane(self, 
         pane: MenuPane, 
@@ -231,8 +245,10 @@ class Provider:
         )
         widgets[pane.name] = pane_asset
     
-        for child in pane.children:
-            self._unpack_node(child, context, widgets, font)
+        for i, child in enumerate(pane.children):
+            node = self._unpack_node(child, context, widgets, font)
+            if node is not child:
+                pane.children[i] = node
 
     def _focus(self, 
         id: str, 

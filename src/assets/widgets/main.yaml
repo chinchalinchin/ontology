@@ -185,8 +185,8 @@ widgets:
         l: 80
     transparent-area:
       dimensions:
-        w: 400
-        l: 400
+        w: 250
+        l: 250
     transparent-label:
       dimensions:
         w: 142

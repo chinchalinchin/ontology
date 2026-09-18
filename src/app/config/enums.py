@@ -297,6 +297,7 @@ class Shortcuts(str, Enum):
 
 class Controllers(str, Enum):
     DISPLAY         = "display"
+    INVENTORY       = "inventory"
     LOAD            = "load"
     MAIN            = "main"
     OPTIONS         = "options"
@@ -314,9 +315,10 @@ class Alignments(str, Enum):
     CENTER          = "center"
 
 class Bindings(str, Enum):
+    COLLECTION      = "collection"
+    ICON            = "icon"
     LIBRARY         = "library"
     METER           = "meter"
-    ICON            = "icon"
     SELECT          = "select"
     TEXT            = "text"
 

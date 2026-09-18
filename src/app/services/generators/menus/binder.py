@@ -12,6 +12,7 @@ from app.models.config import MenuBinding
 from app.game.menus.contexts import MenuContext
 from app.game.menus.bindings import (
     Binding, 
+    CollectionBinding,
     LibraryBinding, 
     MeterBinding, 
     IconBinding,
@@ -44,5 +45,7 @@ class Binder:
             return IconBinding(target, context, **kwargs)
         elif schema == Bindings.SELECT.value:
             return SelectBinding(target, context, **kwargs)
+        elif schema == Bindings.COLLECTION.value:
+            return CollectionBinding(target, context, **kwargs)
         else:
             return TextBinding(target, context, **kwargs)

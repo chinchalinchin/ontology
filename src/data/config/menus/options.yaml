@@ -9,6 +9,7 @@ menus:
           px: 0.075
           py: 0.125
         layout: dock
+        font: menu
         alignment: center
         gap: 15
         children:

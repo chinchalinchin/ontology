@@ -17,6 +17,7 @@ from app.models.config.menus import (
     MenuWidget,
     MenuPane,
     MenuConfiguration,
+    MenuGizmo,
     MenuBinding
 )
 from app.models.config.recipes import (
@@ -45,7 +46,8 @@ __all__ = [
     'MappingConfiguration',
     'MenuWidget',
     'MenuPane',
-    'MenuConfiguration'
+    'MenuGizmo',
+    'MenuConfiguration',
     'Recipe',
     'TileRecipe',
     'CraftRecipe',

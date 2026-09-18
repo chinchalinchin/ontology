@@ -1,0 +1,50 @@
+menus:
+  inventory:
+    controller: inventory
+    roots:
+      - id: neutral
+        name: inventory-menu
+        position:
+          px: 0.16875
+          py: 0.25
+        layout: dock
+        alignment: center
+        gap: 10
+        margins: 10
+        children:
+          # --- INVENTORY GRID GIZMO ---
+          - id: weapons
+            name: inventory-pack-grid
+            bind:
+              schema: collection
+              target:
+                source: context.inventory.pack
+            capacity: 8
+            columns: 4
+            gap: 5
+            pane: transparent-slot
+            button: slot
+
+          # --- PAGINATION CONTROLS ---
+          - id: transparent-slot
+            name: inventory-scroll-controls
+            layout: stack
+            alignment: center
+            gap: 5
+            children:
+              - instance: buttons
+                id: arrow-up
+                name: inventory-scroll-up
+                bind:
+                  schema: select
+                  target:
+                    selection: scrollup
+                    selector: inventory-pack-grid
+              - instance: buttons
+                id: arrow-down
+                name: inventory-scroll-down
+                bind:
+                  schema: select
+                  target:
+                    selection: scrolldown
+                    selector: inventory-pack-grid
