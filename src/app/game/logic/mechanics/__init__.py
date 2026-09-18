@@ -1,9 +1,9 @@
+from app.game.logic.mechanics.base import Mechanic
 from app.game.logic.mechanics.core import (
     AnimationMechanics,
     RemoveMechanics,
     MotionMechanics,
-    MenuMechanics,
-    Mechanic
+    MenuMechanics
 )
 from app.game.logic.mechanics.spatial import (
     SwitchMechanics,

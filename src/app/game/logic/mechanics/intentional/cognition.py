@@ -24,7 +24,7 @@ from app.config.enums import (
     ExpressionsPalette,
     Expressions
 )
-from app.game.logic.mechanics.core import Mechanic
+from app.game.logic.mechanics import Mechanic
 from app.models.state import (
     DevicePayload, 
     Goal

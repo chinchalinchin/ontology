@@ -689,223 +689,56 @@ Align Gizmo pagination with the established `ScrollController` pattern. Paginati
 
 *Objective*: Ensure `Provider._unpack_pane` respects explicit `dimensions` declared on synthesized AST nodes.
 
-* [ ] Subtask: Update `Provider._unpack_pane` to instantiate a custom `WidgetProperties` instance with `pane.dimensions` whenever `pane.dimensions` is defined.
-* [ ] Subtask: Configure explicit dimensions for `inventory-scroll-controls` in `data/config/menus/main.yaml` ($W=24, L=85$) to match the height of the $4 \times 2$ grid.
-* [ ] Subtask: Verify that `Layout._layout_dock` spaces `inventory-pack-grid` ($W=175$) and `inventory-scroll-controls` ($W=24$) with the configured $10\text{ px}$ gap, eliminating overlapping screen positions.
+* [x] Subtask: Update `Provider._unpack_pane` to instantiate a custom `WidgetProperties` instance with `pane.dimensions` whenever `pane.dimensions` is defined.
+* [x] Subtask: Configure explicit dimensions for `inventory-scroll-controls` in `data/config/menus/main.yaml` ($W=24, L=85$) to match the height of the $4 \times 2$ grid.
+* [x] Subtask: Verify that `Layout._layout_dock` spaces `inventory-pack-grid` ($W=175$) and `inventory-scroll-controls` ($W=24$) with the configured $10\text{ px}$ gap, eliminating overlapping screen positions.
 
 **2. Task: Implement CollectionState & Aperture Delegation Models**
 
 *Objective*: Create the centralized collection state and aperture delegation hooks.
 
-* [ ] Subtask: Implement `CollectionState` in `app.models.state.widgets` inheriting from `PaneState`, complete with `offset`, `capacity`, `columns`, `get_item()`, `is_occupied()`, `scrollup()`, and `scrolldown()`.
-* [ ] Subtask: Update `IndexFrame.keys()` in `app.assets.frames.widgets` to return an empty list `[]` when `state.icon` is empty or `None`, preventing missing texture logs for unoccupied apertures.
-* [ ] Subtask: Register `CollectionState` unpacking within `Provider._unpack_pane` for panes generated with collection schemas.
+* [x] Subtask: Implement `CollectionState` in `app.models.state.widgets` inheriting from `PaneState`, complete with `offset`, `capacity`, `columns`, `get_item()`, `is_occupied()`, `scrollup()`, and `scrolldown()`.
+* [x] Subtask: Update `IndexFrame.keys()` in `app.assets.frames.widgets` to return an empty list `[]` when `state.icon` is empty or `None`, preventing missing texture logs for unoccupied apertures.
+* [x] Subtask: Register `CollectionState` unpacking within `Provider._unpack_pane` for panes generated with collection schemas.
 
 **3. Task: Refactor Fabricator to the Composite Aperture Pattern**
 
 *Objective*: Structure Gizmo expansion so the root pane manages collection state and child widgets act as fixed apertures.
 
-* [ ] Subtask: Update `Fabricator.expand()` to configure the root Gizmo `MenuPane` with `dimensions=Dimensions(w=grid_w, l=grid_l)` and a root-level `CollectionBinding`.
-* [ ] Subtask: Generate child slot buttons with permanent `status: Statuses.IDLE` and `SelectBinding(selection="slot", selector=f"{gizmo.name}", index=slot_idx)`.
-* [ ] Subtask: Wire child icon widgets to evaluate the parent Gizmo pane's `get_item(slot_idx)` closure via `IconState.icon_function`.
-* [ ] Subtask: Ensure `Fabricator.expand()` treats the AST as a template and returns a detached copy of the pane tree to prevent in-place mutation of boot configurations.
+* [x] Subtask: Update `Fabricator.expand()` to configure the root Gizmo `MenuPane` with `dimensions=Dimensions(w=grid_w, l=grid_l)` and a root-level `CollectionBinding`.
+* [x] Subtask: Generate child slot buttons with permanent `status: Statuses.IDLE` and `SelectBinding(selection="slot", selector=f"{gizmo.name}", index=slot_idx)`.
+* [x] Subtask: Wire child icon widgets to evaluate the parent Gizmo pane's `get_item(slot_idx)` closure via `IconState.icon_function`.
+* [x] Subtask: Ensure `Fabricator.expand()` treats the AST as a template and returns a detached copy of the pane tree to prevent in-place mutation of boot configurations.
 
 **4. Task: Integrate Collection Pagination in InventoryController**
 
 *Objective*: Connect pagination controls and slot selections to centralized Gizmo state.
 
-* [ ] Subtask: Implement `scrolldown` and `scrollup` handling in `InventoryController.select()` to call `target_widget.state.scrolldown()` / `scrollup()` on the Gizmo pane and emit `UpdateEvent(widget=target_widget)`.
-* [ ] Subtask: Update `slot` handling in `InventoryController.select()` to query the item from the Gizmo pane state using the button's slot index, equipping the item if occupied or handling empty slot clicks gracefully.
-* [ ] Subtask: Remove the manual `_sync_slots()` loop from `InventoryController`, relying on dynamic state evaluation during render passes.
-* [ ] Subtask: Implement focus recovery in `InventoryController` to ensure that if focus is on a slot that becomes vacant after paging, focus safely resets to the first occupied slot or falls back to `inventory-scroll-up`.
+* [x] Subtask: Implement `scrolldown` and `scrollup` handling in `InventoryController.select()` to call `target_widget.state.scrolldown()` / `scrollup()` on the Gizmo pane and emit `UpdateEvent(widget=target_widget)`.
+* [x] Subtask: Update `slot` handling in `InventoryController.select()` to query the item from the Gizmo pane state using the button's slot index, equipping the item if occupied or handling empty slot clicks gracefully.
+* [x] Subtask: Remove the manual `_sync_slots()` loop from `InventoryController`, relying on dynamic state evaluation during render passes.
+* [x] Subtask: Implement focus recovery in `InventoryController` to ensure that if focus is on a slot that becomes vacant after paging, focus safely resets to the first occupied slot or falls back to `inventory-scroll-up`.
 
 **5. Task: Verification & Unit Testing**
 
 *Objective*: Validate spatial layout calculation, traversal graph stability, and pagination logic.
 
-* [!: Dependent on Phase Completion] Subtask: Write unit tests in `tests/unit/test_app_services_generators_fabricator.py` verifying AST expansion, root `CollectionState` attributes, and child aperture closures.
-* [!: Dependent on Phase Completion] Subtask: Write unit tests in `tests/unit/test_app_game_menus_layout.py` confirming `Layout.compute()` generates an unbroken traversal graph where all 8 slots and both arrows connect bidirectionally.
-* [!: Dependent on Phase Completion] Subtask: Write unit tests in `tests/unit/test_app_game_menus_controllers.py` validating that sending `scrolldown` to `inventory-pack-grid` increments offset by `columns`, slides item keys across apertures, and preserves active button traversal states.
+* [x] Subtask: Write unit tests in `tests/unit/test_app_services_generators_fabricator.py` verifying AST expansion, root `CollectionState` attributes, and child aperture closures.
+* [x] Subtask: Write unit tests in `tests/unit/test_app_game_menus_layout.py` confirming `Layout.compute()` generates an unbroken traversal graph where all 8 slots and both arrows connect bidirectionally.
+* [x] Subtask: Write unit tests in `tests/unit/test_app_game_menus_controllers.py` validating that sending `scrolldown` to `inventory-pack-grid` increments offset by `columns`, slides item keys across apertures, and preserves active button traversal states.
 
 #### User Review
 
 Dumped inventory menu state after changes,
 
 ```markdown
-# Ontology Menu Dump
-
-- **Board:** default
-- **Timestamp:** 20260918_094801
-
----
-
-# Menus
-
-## Menu: inventory
-
-- **ID:** `inventory`
-- **Focus:** `inventory-scroll-down`
-- **Context:** `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **Controller:** `<app.game.menus.controllers.inventory.InventoryController object at 0x7f72e788cc20>`
-- **Navigation Graph:**
-  - `inventory-scroll-up`:
-    - Traversal.SOUTH: `inventory-scroll-down`
-  - `inventory-scroll-down`:
-    - Traversal.NORTH: `inventory-scroll-up`
-
-### Widgets
-
-#### inventory-menu (`neutral`)
-
-- **Taxonomy:**
-  - ID: `neutral`
-  - Name: `inventory-menu`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 318
-    - Length: 180
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('neutral', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (81, 120)
-  - Layout: `Layouts.DOCK`
-  - Alignment: `Alignments.CENTER`
-  - Gap: 10
-  - Margins: 10
-
-#### inventory-pack-grid (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-pack-grid`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 175
-    - Length: 85
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **Binding:**
-  - Class: `CollectionBinding`
-  - Target: `{'source': 'context.inventory.pack', 'capacity': '8', 'columns': '4'}`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `CollectionState`
-  - Position: (135, 167)
-  - Layout: `Layouts.STACK`
-  - Alignment: `Alignments.START`
-  - Gap: 5
-  - Margins: 0
-
-#### inventory-scroll-controls (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-scroll-controls`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 24
-    - Length: 85
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (320, 167)
-  - Layout: `Layouts.STACK`
-  - Alignment: `Alignments.CENTER`
-  - Gap: 5
-  - Margins: 0
-
-#### inventory-scroll-up (`arrow-up`)
-
-- **Taxonomy:**
-  - ID: `arrow-up`
-  - Name: `inventory-scroll-up`
-  - Category: `widgets`
-  - Instance: `buttons`
-- **Properties:**
-  - Dimensions:
-    - Width: 24
-    - Length: 24
-- **Component Classes:**
-  - Frame: `TraversalFrame`
-  - Animation: `TraversalAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('arrow-up-idle', 0, 0)]`
-- **Binding:**
-  - Class: `SelectBinding`
-  - Target: `{'selection': 'scrollup', 'selector': 'inventory-pack-grid'}`
-  - Selection: `scrollup`
-  - Selector: `inventory-pack-grid`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `TraversalState`
-  - ID: `arrow-up`
-  - Depth: 0
-  - Position: (320, 183)
-  - Status: `idle`
-  - Animation:
-    - Action: `idle`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
-
-#### inventory-scroll-down (`arrow-down`)
-
-- **Taxonomy:**
-  - ID: `arrow-down`
-  - Name: `inventory-scroll-down`
-  - Category: `widgets`
-  - Instance: `buttons`
-- **Properties:**
-  - Dimensions:
-    - Width: 24
-    - Length: 24
-- **Component Classes:**
-  - Frame: `TraversalFrame`
-  - Animation: `TraversalAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('arrow-down-active', 0, 0)]`
-- **Binding:**
-  - Class: `SelectBinding`
-  - Target: `{'selection': 'scrolldown', 'selector': 'inventory-pack-grid'}`
-  - Selection: `scrolldown`
-  - Selector: `inventory-pack-grid`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `TraversalState`
-  - ID: `arrow-down`
-  - Depth: 0
-  - Position: (320, 212)
-  - Status: `active`
-  - Animation:
-    - Action: `active`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
+Removed after bug identified for brevity.
 ```
-
-A few points: 
 
 - No slots are being rendered. Probably because the Player inventory is empty. However, the slots should always be rendered up to the capacity of the Gizmo.
 - The code assumes slots are permanently disabled and non-traversible, but can't test until first point is addressed.
 - Let's alter the Gizmo schema to align with the existing menu config schema and ensure the data shapes of elements are consistent.
-- Ensure the Fabricator binding instantiations are funneled through the Binder service. This will require Fabricator and Binder updates. Goal is to treat a GIzmo like a "virtual asset" in the Menu schema.
+- Ensure the Fabricator binding instantiations are funneled through the Binder service. This will require Fabricator and Binder updates. Goal is to treat a Gizmo like a "virtual asset" in the Menu schema.
 
 Here is the goal menu schema:
 
@@ -971,262 +804,146 @@ menus:
                         selector: inventory-pack-grid
 ```
 
-I am hoping by making the data structures align, this will simplify the Provider, Binder and Fabricator flows.
+#### Refactor: Phase 04.05.04 - Unified Menu AST & Virtual Gizmo Architecture
 
-Put together a Phase Template for accomplishing these changes. Do not implement anything until user approval is given.
+**Overview**
 
- 
-#### Appendix
+Refactor the Menu configuration AST, `Fabricator`, `Binder`, and `Provider` to adopt a unified node structure where every element in the menu tree shares a consistent data shape (`id`, `name`, `instance`, `bind`, `parameters`). Under this model, a Gizmo is treated as a "virtual asset" (`instance: gizmos`) within the configuration AST, directly mirroring how Compositions act as virtual assets for the world simulation.
 
-**Current Widget Properties**
+This phase also remedies the missing slot rendering in the recent dump. The slots were missing because `Provider.unpack()` did not splice the expanded subtree into the AST tree before invoking `Layout.compute()`. `Layout._compute_recursive()` encountered the unexpanded `MenuGizmo` node, failed the `isinstance(cfg, MenuPane)` check, and aborted recursion before slot positions and traversal edges could be generated. Additionally, this phase introduces `ApertureBinding` into `Binder` so all widget binding generation routes through a single service rather than relying on ad-hoc closures created in `Provider`.
 
-```yaml
-widgets:
-  buttons:
-    slot: 
-      dimensions:
-        w: 40
-        l: 40
-    icon:
-      dimensions:
-        w: 71
-        l: 28
-    label: 
-      dimensions:
-        w: 142
-        l: 28
-    # --------
-    arrow-down:
-      dimensions:
-        w: 24
-        l: 24
-    arrow-left:
-      dimensions:
-        w: 24
-        l: 24
-    arrow-right:
-      dimensions:
-        w: 24
-        l: 24
-    arrow-up:
-      dimensions:
-        w: 24
-        l: 24
-  icons:
-    digits:
-      dimensions:
-        w: 12
-        l: 14
-      frames:
-        - zero
-        - one
-        - two
-        - three
-        - four
-        - five
-        - six
-        - seven
-        - eight
-        - nine
-    weapons:
-      dimensions:
-        w: 32
-        l: 32
-      frames:
-        - shortsword
-        - dagger
-        - knife
-        - spear
-    shields:
-      dimensions:
-        w: 32
-        l: 32
-      frames:
-        - buckler
-    portraits:
-      dimensions: 
-        w: 50
-        l: 63
-      frames:
-        - female-persona-1
-        - female-persona-2
-        - female-persona-3
-        - female-persona-4
-        - female-persona-5
-        - female-persona-6
-        - empress-jasilynn
-        - female-persona-8
-        - female-persona-9
-        - female-persona-10
-        - female-persona-11
-        - female-persona-12
-        - female-persona-13
-        - male-persona-1
-        - male-persona-2
-        - male-persona-3
-        - male-persona-4
-        - male-persona-5
-        - male-persona-6
-        - male-persona-7
-        - male-persona-8
-        - male-persona-9
-        - male-persona-10
-        - male-persona-11
-  meters:
-    health:
-      dimensions:
-        w: 72
-        l: 20
-    magic:
-      dimensions:
-        w: 72
-        l: 20
-  pages:
-    # -------- SOLID PAGES
-    dark-dialogue:
-      dimensions:
-        w: 640
-        l: 96
-    dark-notification:
-      dimensions:
-        w: 192
-        l: 64
-    dark-portrait:
-      dimensions:
-        w: 58
-        l: 69
-    # -------- FAUX PAPER PAGES
-    paper-scroll:
-      dimensions:
-        w: 189
-        l: 192
-    paper-header-torn:
-      dimensions:
-        w: 426
-        l: 163 
-    paper-header:
-      dimensions:
-        w: 330
-        l: 54
-    paper-area:
-      dimensions:
-        w: 465
-        l: 273
-    paper-weathered:
-      dimensions:
-        w: 96
-        l: 95
-    # -------- TRANSPARENT PAGES
-    text-label:
-      dimensions:
-        w: 142
-        l: 28
-  panes:
-    # -------- DARK PANES
-    dark:
-      dimensions:
-        w: 318
-        l: 180
-    dark-small:
-      dimensions:
-        w: 318
-        l: 78
-    dark-thin:
-      dimensions:
-        w: 173
-        l: 180
-    # --------NEUTRAL PANES
-    neutral:
-      dimensions:
-        w: 318
-        l: 180
-    neutral-small:
-      dimensions:
-        w: 318
-        l: 78
-    # -------- LIGHT PANES
-    light:
-      dimensions:
-        w: 318 
-        l: 180
-    light-small:
-      dimensions:
-        w: 318
-        l: 78
-    header-pane:
-      dimensions:
-        w: 160
-        l: 140
-    # ----- TRANSPARENT PANES
-    transparent-slot:
-      dimensions:
-        w: 40
-        l: 40
-    transparent-block:
-      dimensions:
-        w: 80
-        l: 80
-    transparent-area:
-      dimensions:
-        w: 250
-        l: 250
-    transparent-label:
-      dimensions:
-        w: 142
-        l: 28
+##### Goal: Root Cause Remediation - AST Tree Substitution & Traversal Recursion
+
+In the previous implementation, `Provider._unpack_pane()` called `Fabricator.expand()` and unpacked the resulting widgets into the flat `widgets` dictionary, but it avoided mutating `pane.children` in-place. Consequently, the AST tree passed to `Layout.compute(runtime_roots, widgets)` still held the unexpanded `MenuGizmo` macro node.
+
+When `Layout._compute_recursive` encountered `MenuGizmo`:
+
+```python
+if not isinstance(cfg, MenuPane):
+    return
 ```
 
-**Current Inventory Menu**
+The recursion halted immediately. The child row panes, slot overlay panes, buttons, and icons were never visited by `Layout`. They received no absolute positions, were omitted from the `flattened` render list, and were excluded from `Layout._build_graph()`.
+
+To resolve this, `Provider.unpack()` must perform a pure tree transformation pass that clones the configuration tree and replaces `instance: gizmos` nodes with their expanded `instance: panes` subtrees before layout resolution begins.
+
+##### Goal: Unified Menu AST Data Model
+
+Replace divergent configuration classes (`MenuPane`, `MenuWidget`, `MenuGizmo`) with a unified node structure where every element declares `id`, `name`, `instance`, an optional `bind`, and a polymorphic `parameters` payload.
+
+```python
+@dataclass(slots=True, frozen=True)
+class MenuBinding:
+    schema: str
+    target: Union[str, Dict[str, str]]
+
+
+@dataclass(slots=True, frozen=True)
+class PaneParameters:
+    layout: Layouts = Layouts.STACK
+    alignment: Alignments = Alignments.START
+    gap: int = 0
+    margins: int = 0
+    position: Optional[ScreenPosition] = None
+    dimensions: Optional[Dimensions] = None
+    font: Optional[str] = None
+    children: List['MenuNode'] = field(default_factory=list)
+
+
+@dataclass(slots=True, frozen=True)
+class GizmoParameters:
+    capacity: int
+    columns: int
+    gap: int = 5
+    pane: str = "transparent-slot"
+    button: str = "slot"
+
+
+@dataclass(slots=True, frozen=True)
+class ButtonParameters:
+    status: Statuses = Statuses.IDLE
+
+
+@dataclass(slots=True, frozen=True)
+class MenuNode:
+    id: str
+    name: str
+    instance: str
+    bind: Optional[MenuBinding] = None
+    parameters: Optional[Union[PaneParameters, GizmoParameters, ButtonParameters, Dict[str, Any]]] = None
+```
+
+##### Goal: ApertureBinding & Binder Funneling
+
+Formalize aperture delegation by implementing `ApertureBinding` in `app.game.menus.bindings.aperture` and registering it in `Binder`. Instead of `Provider` manually assembling closures against `widgets`, `Fabricator` declares standard bindings:
 
 ```yaml
-menus:
-  inventory:
-    controller: inventory
-    roots:
-      - id: neutral
-        name: inventory-menu
-        position:
-          px: 0.16875
-          py: 0.25
-        layout: dock
-        alignment: center
-        gap: 10
-        margins: 10
-        children:
-          # --- INVENTORY GRID GIZMO ---
-          - id: weapons
-            name: inventory-pack-grid
-            bind:
-              schema: collection
-              target:
-                source: context.inventory.pack
-            capacity: 8
-            columns: 4
-            gap: 5
-            pane: transparent-slot
-            button: slot
-
-          # --- PAGINATION CONTROLS ---
-          - id: transparent-slot
-            name: inventory-scroll-controls
-            layout: stack
-            alignment: center
-            gap: 5
-            children:
-              - instance: buttons
-                id: arrow-up
-                name: inventory-scroll-up
-                bind:
-                  schema: select
-                  target:
-                    selection: scrollup
-                    selector: inventory-pack-grid
-              - instance: buttons
-                id: arrow-down
-                name: inventory-scroll-down
-                bind:
-                  schema: select
-                  target:
-                    selection: scrolldown
-                    selector: inventory-pack-grid
+bind:
+  schema: aperture
+  target:
+    selector: inventory-pack-grid
+    index: "0"
 ```
+
+When evaluated, `ApertureBinding` resolves the target Gizmo pane via context/widget registry and returns the item string via `target_pane.state.get_item(index)`. If vacant, it returns `""`, which `IndexFrame.keys()` converts to `[]` to suppress texture rendering while keeping the slot button `IDLE` and traversable.
+
+##### Goal: Virtual Gizmo Lifecycle & Strategy Pipeline
+
+Structure `Fabricator` as an AST-to-AST compiler:
+
+```
+MenuNode(instance="gizmos") 
+       │
+       ▼  Fabricator.expand(node, properties)
+MenuNode(instance="panes", parameters=PaneParameters(children=[row_panes...]))
+```
+
+The `Provider` operates in two explicit phases:
+
+1. **Macro Expansion (AST Pass)**: Recursively walk `config.roots`, delegating any node with `instance == "gizmos"` to `Fabricator.expand()`. Return a fresh, detached AST where all macro nodes are replaced with standard `panes` and `widgets`.
+2. **ECS Hydration (Asset Pass)**: Hydrate the resulting tree into `Asset` and `Widget` instances using `Binder` for all bindings. Pass the hydrated tree to `Layout.compute()` to compute spatial coordinates and build the complete traversal graph across all physical slots.
+
+##### Tasks
+
+**1. Task: Schematize Unified Menu AST Models**
+
+*Objective*: Unify all menu configuration nodes into a standardized schema matching the `(id, name, instance, bind, parameters)` specification.
+
+* [x] Subtask: Define `PaneParameters`, `GizmoParameters`, and `ButtonParameters` dataclasses in `app.models.config.menus`.
+* [x] Subtask: Implement the unified `MenuNode` configuration model in `app.models.config.menus` replacing separate `MenuPane`, `MenuWidget`, and `MenuGizmo` classes.
+* [x] Subtask: Update `MenuConfiguration` to hold `roots: List[MenuNode]`.
+* [x] Subtask: Update Pydantic adapter schemas in `app.models.adapters` to validate the nested `parameters` dictionary into the correct parameter dataclass based on `instance`.
+
+**2. Task: Implement ApertureBinding & Extend Binder**
+
+*Objective*: Funnel aperture delegation through the `Binder` service to eliminate inline closure wiring in `Provider`.
+
+* [x] Subtask: Implement `ApertureBinding` in `app.game.menus.bindings.aperture` inheriting from `Binding`, managing `selector` and `index` resolution.
+* [x] Subtask: Register `Bindings.APERTURE` in `app.config.enums` and add schema resolution in `app.services.generators.menus.binder.Binder`.
+* [x] Subtask: Update `Binder.binding()` to accept an optional widget dictionary or registry reference so `ApertureBinding` can resolve target pane states cleanly.
+
+**3. Task: Refactor Fabricator to the Unified Virtual Asset Schema**
+
+*Objective*: Update `Fabricator` to consume `MenuNode(instance="gizmos")` and synthesize a detached `MenuNode(instance="panes")` subtree.
+
+* [x] Subtask: Refactor `Fabricator.expand()` to ingest a unified `MenuNode` with `GizmoParameters`.
+* [x] Subtask: Generate row and slot containers as `MenuNode(instance="panes", parameters=PaneParameters(...))` with explicit grid dimensions.
+* [x] Subtask: Generate child slot buttons as `MenuNode(instance="buttons", bind=MenuBinding(schema="select", ...))` with default `status: Statuses.IDLE`.
+* [x] Subtask: Generate child slot icons as `MenuNode(instance="icons", bind=MenuBinding(schema="aperture", ...))`.
+* [x] Subtask: Attach `MenuBinding(schema="collection", ...)` to the synthesized root pane node.
+
+**4. Task: Refactor Provider Hydration & Runtime AST Tree Substitution**
+
+*Objective*: Ensure macro expansion fully replaces Gizmo nodes in the runtime AST before `Layout` calculates screen coordinates and traversal graphs.
+
+* [x] Subtask: Implement `Provider._expand_tree(node: MenuNode) -> MenuNode` to recursively clone and substitute `instance: "gizmos"` nodes prior to ECS hydration.
+* [x] Subtask: Update `Provider._unpack_node()` to unpack elements polymorphically based on `node.instance`.
+* [x] Subtask: Ensure `Provider._unpack_pane()` reads `parameters.dimensions` to instantiate `WidgetProperties` overrides, preserving dock spacing.
+* [x] Subtask: Pass the expanded AST tree directly into `Layout.compute()`, verifying all 8 slot buttons and pagination arrows are processed into `flattened` and `menu.graph`.
+
+**5. Task: Update Menu Configuration Files**
+
+*Objective*: Migrate existing YAML configurations to the unified node schema.
+
+* [x] Subtask: Update `src/data/config/menus/main.yaml` to conform to the new `instance` and `parameters` schema for `inventory`, `text`, `main`, and `pause` menus.
+* [x] Subtask: Set explicit dimensions on `inventory-scroll-controls` ($W=24, L=85$) inside its `parameters` block.

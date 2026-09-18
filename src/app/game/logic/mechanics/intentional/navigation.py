@@ -24,7 +24,7 @@ from app.config.enums import (
     NavigationIntentions,
 )
 import app.config.settings as settings
-from app.game.logic.mechanics.core import Mechanic
+from app.game.logic.mechanics import Mechanic
 from app.game.logic.modules.paths.plan import Planner
 from app.models.state import DevicePayload
 

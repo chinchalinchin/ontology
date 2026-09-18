@@ -12,7 +12,7 @@ import logging
 # Application Libraries
 import app.config.settings as settings
 from app.game.board import Board
-from app.game.logic.mechanics.core import Mechanic
+from app.game.logic.mechanics import Mechanic
 from app.game.screen import Screen
 from app.services.generators.menus.provider import Provider
 from app.game.menus.events import (

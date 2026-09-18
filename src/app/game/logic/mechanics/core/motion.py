@@ -1,7 +1,7 @@
 """
-# Ontology: app.game.logic.mechanics.core
+# Ontology: app.game.logic.mechanics.core.motion
 
-Package for core game Mechanic implementations.
+Package for MotionMechanics
 """
 from __future__ import annotations
 
@@ -11,36 +11,29 @@ from typing import TYPE_CHECKING
 import collections
 import logging
 
-from app.game.logic.modules.motion import kinematic
-from app.game.logic.modules.motion import frictive
-
-if TYPE_CHECKING:
-    from app.game.board import Board
-
 # Application Libraries
 from app.config.enums import (
     AssetCategories, 
     AssetInstances, 
-    Statuses, 
-    Interactions,
     Lifecycles,
-    DeviceContexts
 )
 from app.game.logic.modules.motion import (
-    motive
+    motive,
+    kinematic,
+    frictive
 )
-from app.game.menus.events import (
-    TerminalEvent
-)
-from app.models.state import (
-    SpriteState,
-    DevicePayload
-)
+
+from app.models.state import DevicePayload
+
+if TYPE_CHECKING:
+    from app.game.board import Board
 
 # Cython Libraries
 import libs.core.math.physics as physics
 
+
 logger = logging.getLogger(__name__)
+
 
 class Mechanic(ABC):
     """
@@ -131,69 +124,3 @@ class MotionMechanics(Mechanic):
         
         all_mutable = players + sprites + crates + projectiles
         physics.integrate(all_mutable, delta)
-
-
-class MenuMechanics(Mechanic):
-
-    # TODO: should be handled by an inventory controller, not mechanic
-    def equip(self, item: str, state: SpriteState, board: Board) -> None:
-        if item in board.equipment.weapons.keys():
-            state.inventory.equipment.weapon = item
-        elif item in board.equipment.armor.keys():
-            state.inventory.equipment.armor = item
-        elif item in board.equipment.utilities.keys():
-            state.inventory.equipment.utility = item
-        elif item in board.equipment.tools.keys():
-            state.inventory.equipment.tool = item
-        elif item in board.equipment.shields.keys():
-            state.inventory.equipment.shield = item
-
-
-    def update(self, 
-        board: Board, 
-        delta: float, 
-        bus: collections.deque,
-        payload: DevicePayload
-    ) -> None:
-        # Animate Overlays (World-time)
-        for overlay in board.overlays:
-            for widget in overlay.widgets.values():
-                widget.animation.animate(widget.state, widget.properties)
-
-            if overlay.controller:
-                overlay.controller.update(overlay, board, bus)
-
-        # Context Control
-        if not board.menus:
-            board.device.context(DeviceContexts.WORLD.value)
-            return
-
-        board.device.context(DeviceContexts.MENU.value)
-
-        active_menu = board.menus[-1]
-        
-        # Animate Active Menu (Menu-time)
-        for widget in active_menu.widgets.values():
-            widget.animation.animate(widget.state, widget.properties)
-            
-        active_menu.controller.update(active_menu, board, bus)
-
-        # Input Interception
-        traversal = payload.menu.traversal
-        interaction = payload.menu.interaction
-
-        if interaction == Interactions.CANCEL.value:
-            bus.append(TerminalEvent())
-            return
-
-        if traversal and active_menu.focus:
-            direction = traversal
-            neighbors = active_menu.graph.get(active_menu.focus, {})
-            if direction in neighbors:
-                new_focus = neighbors[direction]
-                active_menu.widgets[active_menu.focus].state.status = Statuses.IDLE.value
-                active_menu.widgets[new_focus].state.status = Statuses.ACTIVE.value
-                active_menu.focus = new_focus
-
-        if interaction == Interactions.SELECT.value and active_menu.focus:
-            active_menu.controller.select(active_menu.focus, active_menu, board, bus)

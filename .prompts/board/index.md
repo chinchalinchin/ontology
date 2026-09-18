@@ -46,7 +46,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 04.02: Simplification](./phases/refactor/refactor-04-02.md)
       - [x]: [Phase 04.03: EventHandlers](./phases/refactor/refactor-04-03.md)
       - [x]: [Phase 04.04: MenuContext](./phases/refactor/refactor-04-04.md)
-      - [~]: [Phase 04.05: Gizmos](./phases/refactor/refactor-04-05.md)
+      - [x]: [Phase 04.05: Gizmos](./phases/refactor/refactor-04-05.md)
     - Phase 06:
       - [x]: [Phase 06.01: Expressions](./phases/refactor/refactor-06-01.md)
     - Phase 08:
@@ -74,11 +74,15 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 - Backlog:
   - [Telemetry Menu](./backlog/todo-t000.md)
 
-#### Bug Report Template
+#### Task Templates
+
+The templates in this section. can be used to modify the Task Board.
+
+##### Template: Bug Report
 
 For ancillary or tangential bugs detected, use the following template to open new Bugs,
 
-```markdown
+```jinja2
 {% for bug in bugs %}
 ##### Bug {{ bug.id }}: {{ bug.title }}
 
@@ -102,11 +106,11 @@ For ancillary or tangential bugs detected, use the following template to open ne
 {% endfor %}
 ```
 
-#### Phase Template
+##### Template: Backlog
 
 To add new Tasks to the backlog, use the following template,
 
-```markdown
+```jinja2
 #### Backlog: {{ title }}
 
 **Overview** 
@@ -132,4 +136,23 @@ To add new Tasks to the backlog, use the following template,
 {% endfor %}
 
 {% endfor %}
+```
+
+##### Template: Documentation
+
+For documentation divergences detected, use the following template,
+
+```
+#### Draft: {{ title }}
+
+- **Page**: {{ page.file }}
+- **Heading**: {{ page.heading }}
+
+##### Drift
+
+{{ drift.description | justification }}
+
+##### Update
+
+{{ update.description | markdown }}
 ```

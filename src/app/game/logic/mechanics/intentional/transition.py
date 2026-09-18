@@ -17,7 +17,7 @@ from app.config.enums import (
     Intentions
 )
 from app.game.logic.modules.maps import AnimationMap
-from app.game.logic.mechanics.core import Mechanic
+from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
 from app.services.translators.base import Executor
 

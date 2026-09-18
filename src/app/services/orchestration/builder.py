@@ -21,13 +21,12 @@ from app.config.loader import Loader
 from app.config.enums import (
     Devices, 
     Mechanics,
-    Menus,
     AssetCategories
 )
 from app.game.board import Board
 from app.game.engine import Engine
 from app.game.screen import Screen
-from app.game.logic.mechanics.core import Mechanic
+from app.game.logic.mechanics import Mechanic
 from app.models.groups import (
     SpawnableGroup, 
     EquipmentGroup
