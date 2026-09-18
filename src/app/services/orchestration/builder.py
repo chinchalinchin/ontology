@@ -10,8 +10,7 @@ import logging
 import dataclasses
 from typing import (
     Dict, 
-    List,
-    TYPE_CHECKING
+    List
 )
 from enum import Enum
 

@@ -16,7 +16,7 @@ menus:
           font: dialogue
           children: 
             - instance: pages
-              id: notification
+              id: dark-notification
               name: text-display
               bind:
                 schema: library
