@@ -25,17 +25,12 @@ from app.config.enums import (
     AssetCategories, 
     AssetInstances,
     Intentions,
-    Motivations
+    Motivations,
+    Shortcuts,
+    Bindings
 )
+
 from app.game.board import Board
-from app.services.orchestration import (
-    Builder, 
-    Orchestrator
-)
-from app.services.generators.menus import (
-    Provider,
-    Binder
-)
 from app.models.properties import (
     PropertiesSchema, 
     ObjectProperties,
@@ -55,7 +50,10 @@ from app.models.config import (
     WidgetRecipe,
     EffectRecipe,
     Recipe,
-    IntentionConfiguration
+    IntentionConfiguration,
+    MenuNode,
+    GizmoParameters,
+    MenuBinding
 )
 from app.models.state import (
     StateSchema, 
@@ -75,15 +73,23 @@ from app.models.state import (
     Meters,
     Meter,
     Psyche,
-    PropertyState
+    PropertyState,
+    PositionalState,
+    CollectionState
 )
 from app.models.properties import CraftProperties
 from app.models.groups import (
     SpawnableGroup,
     EquipmentGroup
 )
-
-from app.models.state.objects import PositionalState
+from app.services.orchestration import (
+    Builder, 
+    Orchestrator
+)
+from app.services.generators.menus import (
+    Provider,
+    Binder
+)
 
 # Cython Libraries
 from libs.core.models import (
@@ -93,6 +99,7 @@ from libs.core.models import (
     Velocity,
     Hitbox
 )
+from libs.core.math.space import Space
 
 # ---------------------------------------------------------------------------
 # -------------------------------------------------------------- MOCK CLASSES
@@ -107,11 +114,13 @@ class DummyAnimation(Animation):
 # ---------------------------------------------------------------------------
 # ------------------------------------------------------------------ FIXTURES
 
+
 @pytest.fixture
 def mock_registry():
     registry = MagicMock()
     registry.image.side_effect = lambda key: (MagicMock(), 0, 0, 32, 32)
     return registry
+
 
 @pytest.fixture
 def mock_properties():
@@ -121,6 +130,7 @@ def mock_properties():
         mass=7
     )
     return props
+
 
 @pytest.fixture
 def mock_configurations():
@@ -147,6 +157,7 @@ def mock_configurations():
         )
     )
 
+
 @pytest.fixture
 def mock_state():
     state = StateSchema()
@@ -159,6 +170,7 @@ def mock_state():
         )
     )
     return state
+
 
 @pytest.fixture
 def mock_spawnables():
@@ -190,9 +202,11 @@ def mock_builder(mock_properties, mock_configurations, mock_state):
         
         yield Builder()
 
+
 @pytest.fixture
 def mock_orchestrator(mock_builder):
     return Orchestrator(mock_builder)
+
 
 @pytest.fixture
 def mock_provider(mock_registry):
@@ -214,6 +228,7 @@ def mock_provider(mock_registry):
     
     binder = Binder(registry=mock_registry, library=MagicMock())
     return Provider(recipes=recipes, properties=properties, binder=binder)
+
 
 @pytest.fixture
 def mock_board_assets():
@@ -266,12 +281,14 @@ def mock_board_assets():
     
     return [sprite, tile, player]
 
+
 @pytest.fixture
 def mock_board(mock_board_assets, mock_configurations):
     equipment = EquipmentGroup(armor={}, tools={}, utilities={}, weapons={})
     
     with patch('app.game.board.settings.TILE_HASH_SIZE', 32):
         return Board(assets=mock_board_assets, configurations=mock_configurations, equipment=equipment)
+
 
 @pytest.fixture
 def mock_isl_configs():
@@ -299,6 +316,7 @@ def mock_isl_configs():
         ]
     }
 
+
 @pytest.fixture
 def mock_crate():
     """
@@ -311,14 +329,15 @@ def mock_crate():
     )
     return Asset(tax, props, state, DummyFrame(), DummyAnimation())
 
+
 @pytest.fixture
 def mock_space_grid():
     """
     Fixture providing an initialized Cython Space grid for testing 
     O(1) bucket lookups and broad-phase physics.
     """
-    from libs.core.math.space import Space
     return Space(cell_size=64, max_entities=100)
+
 
 @pytest.fixture
 def mock_strut():
@@ -331,6 +350,7 @@ def mock_strut():
         id="strut-1", layer="0", position=Position(x=40, y=40), owner="player"
     )
     return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+
 
 # ---------------------------------------------------------------------------
 # -------------------------------------------------------- PATHFINDING FIXTURES
@@ -413,6 +433,7 @@ def mock_sprite_with_hitbox():
     )
     return Asset(tax, props, state, DummyFrame(), DummyAnimation())
 
+
 @pytest.fixture
 def mock_door_asset():
     """
@@ -433,3 +454,65 @@ def mock_door_asset():
         out=Position(x=20, y=20)
     )
     return Asset(tax, props, state, DummyFrame(), DummyAnimation())
+
+
+@pytest.fixture
+def mock_provider(mock_registry):
+    recipes = WidgetRecipe(
+        pages=Recipe(frame=FrameRecipe.SINGLE),
+        buttons=Recipe(frame=FrameRecipe.TRAVERSAL, animation=AnimationRecipe.TRAVERSAL),
+        meters=Recipe(frame=FrameRecipe.METER, animation=AnimationRecipe.METER),
+        panes=Recipe(frame=FrameRecipe.NONE),
+        icons=Recipe(frame=FrameRecipe.INDEX)
+    )
+    
+    properties = MagicMock()
+    properties.pages = {"test-page": WidgetProperties(dimensions=Dimensions(w=100, l=100))}
+    properties.buttons = {
+        "test-btn": WidgetProperties(dimensions=Dimensions(w=32, l=32)),
+        "slot": WidgetProperties(dimensions=Dimensions(w=40, l=40)),
+        "arrow-up": WidgetProperties(dimensions=Dimensions(w=24, l=24)),
+        "arrow-down": WidgetProperties(dimensions=Dimensions(w=24, l=24))
+    }
+    properties.meters = {"test-meter": WidgetProperties(dimensions=Dimensions(w=50, l=10))}
+    properties.panes = {
+        "test-pane": WidgetProperties(dimensions=Dimensions(w=200, l=200)),
+        "transparent-slot": WidgetProperties(dimensions=Dimensions(w=40, l=40)),
+        "neutral": WidgetProperties(dimensions=Dimensions(w=318, l=180))
+    }
+    properties.icons = {
+        "test-icon": WidgetProperties(dimensions=Dimensions(w=16, l=16), frames=["sword"]),
+        "weapons": WidgetProperties(dimensions=Dimensions(w=32, l=32), frames=["shortsword", "dagger"])
+    }
+    
+    binder = Binder(registry=mock_registry, library=MagicMock())
+    return Provider(recipes=recipes, properties=properties, binder=binder)
+
+
+@pytest.fixture
+def mock_gizmo_node():
+    return MenuNode(
+        id="weapons",
+        name="inventory-pack-grid",
+        instance=Shortcuts.GIZMOS.value,
+        bind=MenuBinding(
+            schema=Bindings.COLLECTION.value,
+            target={"source": "context.inventory.pack"}
+        ),
+        parameters=GizmoParameters(
+            capacity=8,
+            columns=4,
+            pane="transparent-slot",
+            button="slot",
+            gap=5
+        )
+    )
+
+@pytest.fixture
+def mock_collection_state():
+    return CollectionState(
+        collection_function=lambda: ["shortsword", "dagger", "buckler"],
+        capacity=8,
+        columns=4,
+        offset=0
+    )

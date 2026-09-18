@@ -1,13 +1,31 @@
 """
-# Ontology: tests.unit.test_app_services_generators_provider.py
+# Ontology: tests.unit.test_app_services_generators_menus_provider
 """
-import pytest
+# Standard Libraries
 from unittest.mock import MagicMock, patch
 
-from app.models.config import MenuWidget, MenuPane, MenuConfiguration, MenuBinding
-from app.config.enums import AssetInstances, Layouts, Alignments, Statuses
-from libs.core.models import Dimensions, ScreenPosition
+# Application Libraries
+from app.models.config.menus import (
+    MenuNode, 
+    PaneParameters, 
+    ButtonParameters, 
+    MenuConfiguration, 
+    MenuBinding
+)
+from app.config.enums import (
+    AssetInstances, 
+    Layouts, 
+    Alignments, 
+    Statuses, 
+    Fonts, 
+    Bindings, 
+)
 from app.game.menus.bindings.text import TextBinding, paginate
+from app.models.state.widgets import CollectionState
+
+# Cython Libraries
+from libs.core.models import Dimensions, ScreenPosition
+
 
 def test_provider_resolve():
     context = {
@@ -31,10 +49,7 @@ def test_provider_resolve():
 
 @patch("app.game.menus.bindings.text.render")
 def test_provider_paginate(mock_render):
-    def measure_side_effect(text, font):
-        return (len(text) * 10, 10)
-    
-    mock_render.measure.side_effect = measure_side_effect
+    mock_render.measure.side_effect = lambda text, font: (len(text) * 10, 10)
     mock_font = MagicMock()
     mock_font.margins = 0.0
     
@@ -49,20 +64,19 @@ def test_provider_paginate(mock_render):
 
 @patch("app.game.menus.bindings.text.render")
 @patch("app.services.generators.menus.provider.render")
-def test_provider_unpack_widget(mock_provider_render, mock_bindings_render, mock_provider):
+def test_provider_unpack_widget_page(mock_provider_render, mock_bindings_render, mock_provider):
     mock_provider_render.canvas.return_value = "mock_canvas_ptr"
     mock_bindings_render.measure.return_value = (10, 10)
     
-    cfg = MenuWidget(
-        instance=AssetInstances.PAGES.value,
+    cfg = MenuNode(
         id="test-page",
         name="page-1",
-        bind=MenuBinding(schema="text", target={"content": "context.text"}),
-        status=Statuses.IDLE.value
+        instance=AssetInstances.PAGES.value,
+        bind=MenuBinding(schema=Bindings.TEXT.value, target={"content": "context.text"})
     )
     context = {"text": "Hello World"}
     
-    widget = mock_provider._unpack_widget(cfg, context)
+    widget = mock_provider._unpack_widget(cfg, context, Fonts.DIALOGUE.value, {})
     
     assert widget.id == "test-page"
     assert widget.name == "page-1"
@@ -71,44 +85,101 @@ def test_provider_unpack_widget(mock_provider_render, mock_bindings_render, mock
 
 
 def test_provider_unpack_widget_traversal(mock_provider):
-    cfg = MenuWidget(
-        instance=AssetInstances.BUTTONS.value,
+    cfg = MenuNode(
         id="test-btn",
         name="btn-1",
-        bind=None,
-        status=Statuses.DISABLED.value
+        instance=AssetInstances.BUTTONS.value,
+        parameters=ButtonParameters(status=Statuses.DISABLED.value)
     )
-    widget = mock_provider._unpack_widget(cfg, {})
+    widget = mock_provider._unpack_widget(cfg, {}, Fonts.MENU.value, {})
     assert widget.state.status == Statuses.DISABLED.value
     assert widget.state.animation.action == Statuses.DISABLED.value
 
 
 def test_provider_unpack_widget_meter(mock_provider):
-    cfg = MenuWidget(
-        instance=AssetInstances.METERS.value,
+    cfg = MenuNode(
         id="test-meter",
         name="meter-1",
-        bind=MenuBinding(schema="meter", target={"meter": "context.hp"}),
-        status=Statuses.IDLE.value
+        instance=AssetInstances.METERS.value,
+        bind=MenuBinding(schema=Bindings.METER.value, target={"meter": "context.hp"})
     )
     
     class MockHP:
         current = 75
         maximum = 100
     
-    widget = mock_provider._unpack_widget(cfg, {"hp": MockHP()})
+    widget = mock_provider._unpack_widget(cfg, {"hp": MockHP()}, Fonts.MENU.value, {})
     assert widget.state.reading == 75
     assert widget.state.unit == 100
     assert widget.state.animation.frame == 75
 
 
+def test_provider_unpack_widget_icon(mock_provider):
+    cfg = MenuNode(
+        id="test-icon",
+        name="icon-1",
+        instance=AssetInstances.ICONS.value,
+        bind=MenuBinding(
+            schema=Bindings.ICON.value, 
+            target={"icon": "context.equipped_item"}
+        )
+    )
+    
+    widget = mock_provider._unpack_widget(cfg, {"equipped_item": "sword"}, Fonts.MENU.value, {})
+    assert widget.state.icon == "sword"
+    assert widget.state.position.x == 0
+    assert widget.state.position.y == 0
+
+
+def test_provider_expand_tree_gizmo(mock_provider, mock_gizmo_node):
+    context = {"inventory": {"pack": ["shortsword"]}}
+    expanded = mock_provider._expand_tree(mock_gizmo_node, context)
+
+    assert expanded.instance == AssetInstances.PANES.value
+    assert isinstance(expanded.parameters, PaneParameters)
+    assert expanded.bind.schema == Bindings.COLLECTION.value
+    assert len(expanded.parameters.children) == 2  # 8 slots over 4 columns = 2 row panes
+
+
+def test_provider_unpack_pane_collection_state(mock_provider):
+    pane_node = MenuNode(
+        id="transparent-slot",
+        name="inventory-pack-grid",
+        instance=AssetInstances.PANES.value,
+        bind=MenuBinding(
+            schema=Bindings.COLLECTION.value,
+            target={"source": "context.inventory.pack", "capacity": "8", "columns": "4"}
+        ),
+        parameters=PaneParameters(
+            layout=Layouts.STACK,
+            alignment=Alignments.START,
+            dimensions=Dimensions(w=175, l=85)
+        )
+    )
+    context = {"inventory": {"pack": ["shortsword", "dagger"]}}
+    widgets = {}
+
+    mock_provider._unpack_pane(pane_node, context, widgets)
+
+    grid_asset = widgets["inventory-pack-grid"]
+    assert isinstance(grid_asset.state, CollectionState)
+    assert grid_asset.state.capacity == 8
+    assert grid_asset.state.columns == 4
+    assert grid_asset.state.get_item(0) == "shortsword"
+    assert grid_asset.state.get_item(1) == "dagger"
+    assert grid_asset.state.get_item(2) == ""
+    assert grid_asset.properties.dimensions.w == 175
+    assert grid_asset.properties.dimensions.l == 85
+
+
 @patch("app.services.generators.menus.provider.Layout")
 def test_provider_unpack_menu(mock_layout_class, mock_provider):
-    # (Implementation remains mostly untouched, only the layout setup)
     mock_layout = MagicMock()
     mock_btn_asset = MagicMock()
     mock_btn_asset.id = "test-btn"
-    mock_btn_asset.name = "btn-1" 
+    mock_btn_asset.name = "btn-1"
+    mock_btn_asset.instance = AssetInstances.BUTTONS.value
+    mock_btn_asset.state.status = Statuses.IDLE.value
     
     mock_layout.compute.return_value = ([mock_btn_asset], {"btn-1": {}})
     mock_layout_class.return_value = mock_layout
@@ -116,22 +187,24 @@ def test_provider_unpack_menu(mock_layout_class, mock_provider):
     cfg = MenuConfiguration(
         controller="scroll",
         roots=[
-            MenuPane(
+            MenuNode(
                 id="test-pane",
                 name="pane-1",
-                position=ScreenPosition(px=0.0, py=0.0),
-                layout=Layouts.DOCK,
-                alignment=Alignments.START,
-                gap=5,
-                children=[
-                    MenuWidget(
-                        instance=AssetInstances.BUTTONS.value,
-                        id="test-btn",
-                        name="btn-1",
-                        bind=None,
-                        status=Statuses.IDLE.value
-                    )
-                ]
+                instance=AssetInstances.PANES.value,
+                parameters=PaneParameters(
+                    position=ScreenPosition(px=0.0, py=0.0),
+                    layout=Layouts.DOCK,
+                    alignment=Alignments.START,
+                    gap=5,
+                    children=[
+                        MenuNode(
+                            id="test-btn",
+                            name="btn-1",
+                            instance=AssetInstances.BUTTONS.value,
+                            parameters=ButtonParameters(status=Statuses.IDLE)
+                        )
+                    ]
+                )
             )
         ]
     )
@@ -143,21 +216,3 @@ def test_provider_unpack_menu(mock_layout_class, mock_provider):
     assert "btn-1" in menu.widgets
     assert menu.widgets["btn-1"] == mock_btn_asset
     assert menu.focus == "btn-1"
-
-
-def test_provider_unpack_widget_icon(mock_provider):
-    from app.models.config import MenuWidget, MenuBinding
-    from app.config.enums import AssetInstances, Statuses
-    
-    cfg = MenuWidget(
-        instance=AssetInstances.ICONS.value,
-        id="test-icon",
-        name="icon-1",
-        bind=MenuBinding(schema="icon", target={"icon": "context.equipped_item"}),
-        status=Statuses.IDLE.value
-    )
-    
-    widget = mock_provider._unpack_widget(cfg, {"equipped_item": "sword_icon"})
-    assert widget.state.icon == "sword_icon"
-    assert widget.state.position.x == 0
-    assert widget.state.position.y == 0

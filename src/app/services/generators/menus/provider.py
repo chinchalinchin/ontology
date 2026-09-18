@@ -11,7 +11,6 @@ from typing import (
     Dict, 
     Any, 
     Union, 
-    List, 
     Optional, 
     TYPE_CHECKING
 )
@@ -25,8 +24,6 @@ from app.config.enums import (
     Menus, 
     Fonts,
     Bindings,
-    Layouts,
-    Alignments,
     Shortcuts
 )
 from app.services.generators.game.factory import Factory
@@ -53,12 +50,11 @@ from app.game.menus.core import (
 from app.game.menus.contexts import MenuContext
 from app.game.menus.bindings import Binding
 from app.game.menus.layout import Layout
+from app.services.generators.menus.fabricator import Fabricator
 
 if TYPE_CHECKING:
-    from app.services.generators.menus import (
-        Binder,
-        Fabricator
-    )
+    from app.services.generators.menus import Binder
+    
 
 # Cython Libraries
 import libs.graphics.render as render

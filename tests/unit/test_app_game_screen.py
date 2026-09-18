@@ -12,7 +12,6 @@ from app.assets.frames import (
     SpriteFrame
 )
 from app.models.state import (
-    AssetState, 
     EffectState,
     AnimationState, 
     SpriteState, 
@@ -29,8 +28,8 @@ from app.config.enums import (
     Directions
 )
 
-@patch('app.game.screen.canvas')
-@patch('app.game.screen.construct')
+@patch('app.game.screen.render.canvas')
+@patch('app.game.screen.render.construct')
 def test_screen_initialization(mock_construct, mock_canvas, mock_registry):
     """Test screen canvas initialization and geometry construction mapping."""
     mock_canvas.return_value = MagicMock()
@@ -48,8 +47,8 @@ def test_screen_initialization(mock_construct, mock_canvas, mock_registry):
     assert screen.boardsize.w == 1600
 
 
-@patch('app.game.screen.canvas')
-@patch('app.game.screen.construct')
+@patch('app.game.screen.render.canvas')
+@patch('app.game.screen.render.construct')
 def test_screen_camera_clamping(mock_construct, mock_canvas, mock_registry):
     """Test that the camera clamps firmly to the board boundaries."""
     screen = Screen(
@@ -117,9 +116,9 @@ def test_frame_keys_generation():
     assert keys == expected_keys
 
 
-@patch('app.game.screen.render')
-@patch('app.game.screen.canvas')
-@patch('app.game.screen.construct')
+@patch('app.game.screen.render.render')
+@patch('app.game.screen.render.canvas')
+@patch('app.game.screen.render.construct')
 def test_screen_draw_culling_and_sorting(mock_construct, mock_canvas, mock_render, mock_registry):
     """Test that Screen.draw correctly culls out-of-bounds assets and sorts by height/depth."""
     screen = Screen(

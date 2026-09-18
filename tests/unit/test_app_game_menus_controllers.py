@@ -1,17 +1,44 @@
 """
 # Ontology: tests.unit.test_app_game_menus_controllers
 """
+# Standard Libraries
 from unittest.mock import MagicMock
 from collections import deque
 
-from app.game.menus.controllers.main import MainController
-from app.game.menus.controllers.load import LoadController
-from app.game.menus.controllers.scroll import ScrollController
-from app.game.menus.contexts import MainContext, LoadContext
-from app.game.menus.core import Menu, Widget
-from app.game.menus.events import StateEvent, TerminalEvent, UpdateEvent
+# Application Libraries
+from app.config.enums import (
+    Selections,
+    Statuses
+)
+from app.assets.base import Taxonomy
+from app.game.menus.controllers import (
+    InventoryController,
+    MainController,
+    LoadController,
+    ScrollController
+)
+from app.game.menus.contexts import (
+    MainContext, 
+    LoadContext
+)
+from app.game.menus.core import (
+    Menu, 
+    Widget
+)
+from app.game.menus.events import (
+    StateEvent, 
+    TerminalEvent, 
+    UpdateEvent
+)
 from app.game.menus.bindings import SelectBinding
-from app.config.enums import Selections
+from app.models.state.widgets import (
+    CollectionState, 
+    TraversalState
+)
+from app.models.properties import WidgetProperties
+
+# Cython Libraries
+from libs.core.models import Dimensions
 
 def test_main_controller_select():
     ctrl = MainController()
@@ -154,3 +181,186 @@ def test_scroll_controller_select():
     assert len(bus) == 1
     event = bus.popleft()
     assert isinstance(event, UpdateEvent)
+
+def test_inventory_controller_pagination():
+    controller = InventoryController()
+    bus = deque()
+
+    col_state = CollectionState(
+        collection_function=lambda: [f"item-{i}" for i in range(12)],
+        capacity=8,
+        columns=4,
+        offset=0
+    )
+    grid_pane = Widget(
+        taxonomy=Taxonomy("transparent-slot", "inventory-pack-grid", "widgets", "panes"),
+        properties=WidgetProperties(dimensions=Dimensions(175, 85)),
+        state=col_state,
+        frame=None,
+        animation=None,
+        binding=None
+    )
+
+    btn_down = Widget(
+        taxonomy=Taxonomy("arrow-down", "inventory-scroll-down", "widgets", "buttons"),
+        properties=WidgetProperties(dimensions=Dimensions(24, 24)),
+        state=TraversalState(id="arrow-down", status=Statuses.IDLE.value),
+        frame=None,
+        animation=None,
+        binding=SelectBinding(
+            target={'selection': Selections.SCROLLDOWN.value, 'selector': 'inventory-pack-grid'},
+            context={}
+        )
+    )
+    btn_up = Widget(
+        taxonomy=Taxonomy("arrow-up", "inventory-scroll-up", "widgets", "buttons"),
+        properties=WidgetProperties(dimensions=Dimensions(24, 24)),
+        state=TraversalState(id="arrow-up", status=Statuses.IDLE.value),
+        frame=None,
+        animation=None,
+        binding=SelectBinding(
+            target={'selection': Selections.SCROLLUP.value, 'selector': 'inventory-pack-grid'},
+            context={}
+        )
+    )
+
+    menu = MagicMock(spec=Menu)
+    menu.focus = "inventory-scroll-down"
+    menu.widgets = {
+        "inventory-pack-grid": grid_pane,
+        "inventory-scroll-down": btn_down,
+        "inventory-scroll-up": btn_up
+    }
+
+    controller.select("inventory-scroll-down", menu, MagicMock(), bus)
+    assert col_state.offset == 4
+    assert len(bus) == 1
+    event = bus.popleft()
+    assert isinstance(event, UpdateEvent)
+    assert event.content == "4"
+
+    controller.select("inventory-scroll-up", menu, MagicMock(), bus)
+    assert col_state.offset == 0
+    assert len(bus) == 1
+
+
+def test_inventory_controller_slot_equip():
+    controller = InventoryController()
+    bus = deque()
+
+    col_state = CollectionState(
+        collection_function=lambda: ["shortsword"],
+        capacity=8,
+        columns=4,
+        offset=0
+    )
+    grid_pane = Widget(
+        taxonomy=Taxonomy("transparent-slot", "inventory-pack-grid", "widgets", "panes"),
+        properties=WidgetProperties(dimensions=Dimensions(175, 85)),
+        state=col_state,
+        frame=None,
+        animation=None,
+        binding=None
+    )
+
+    slot_btn = Widget(
+        taxonomy=Taxonomy("slot", "inventory-pack-grid-slot-0", "widgets", "buttons"),
+        properties=WidgetProperties(dimensions=Dimensions(40, 40)),
+        state=TraversalState(id="slot", status=Statuses.ACTIVE.value),
+        frame=None,
+        animation=None,
+        binding=SelectBinding(
+            target={'selection': Selections.SLOT.value, 'selector': 'inventory-pack-grid', 'index': '0'},
+            context={}
+        )
+    )
+
+    board = MagicMock()
+    mock_player = MagicMock()
+    board.player.return_value = mock_player
+    board.equipment.weapons = {"shortsword": MagicMock()}
+
+    menu = MagicMock(spec=Menu)
+    menu.widgets = {
+        "inventory-pack-grid": grid_pane,
+        "inventory-pack-grid-slot-0": slot_btn
+    }
+
+    controller.select("inventory-pack-grid-slot-0", menu, board, bus)
+
+    assert mock_player.state.inventory.equipment.weapon == "shortsword"
+    assert len(bus) == 1
+    event = bus.popleft()
+    assert isinstance(event, UpdateEvent)
+    assert event.content == "shortsword"
+
+
+def test_inventory_controller_focus_recovery():
+    controller = InventoryController()
+    bus = deque()
+
+    # 10 items: at offset 0, slot 7 (index 7) is occupied; at offset 4, slot 7 (index 11) is vacant
+    col_state = CollectionState(
+        collection_function=lambda: [f"item-{i}" for i in range(10)],
+        capacity=8,
+        columns=4,
+        offset=0
+    )
+    grid_pane = Widget(
+        taxonomy=Taxonomy("transparent-slot", "inventory-pack-grid", "widgets", "panes"),
+        properties=WidgetProperties(dimensions=Dimensions(175, 85)),
+        state=col_state,
+        frame=None,
+        animation=None,
+        binding=None
+    )
+
+    btn_slot_7 = Widget(
+        taxonomy=Taxonomy("slot", "inventory-pack-grid-slot-7", "widgets", "buttons"),
+        properties=WidgetProperties(dimensions=Dimensions(40, 40)),
+        state=TraversalState(id="slot", status=Statuses.ACTIVE.value),
+        frame=None,
+        animation=None,
+        binding=SelectBinding(
+            target={'selection': Selections.SLOT.value, 'selector': 'inventory-pack-grid', 'index': '7'},
+            context={}
+        )
+    )
+    btn_slot_0 = Widget(
+        taxonomy=Taxonomy("slot", "inventory-pack-grid-slot-0", "widgets", "buttons"),
+        properties=WidgetProperties(dimensions=Dimensions(40, 40)),
+        state=TraversalState(id="slot", status=Statuses.IDLE.value),
+        frame=None,
+        animation=None,
+        binding=SelectBinding(
+            target={'selection': Selections.SLOT.value, 'selector': 'inventory-pack-grid', 'index': '0'},
+            context={}
+        )
+    )
+    btn_down = Widget(
+        taxonomy=Taxonomy("arrow-down", "inventory-scroll-down", "widgets", "buttons"),
+        properties=WidgetProperties(dimensions=Dimensions(24, 24)),
+        state=TraversalState(id="arrow-down", status=Statuses.IDLE.value),
+        frame=None,
+        animation=None,
+        binding=SelectBinding(
+            target={'selection': Selections.SCROLLDOWN.value, 'selector': 'inventory-pack-grid'},
+            context={}
+        )
+    )
+
+    menu = MagicMock(spec=Menu)
+    menu.focus = "inventory-pack-grid-slot-7"
+    menu.widgets = {
+        "inventory-pack-grid": grid_pane,
+        "inventory-pack-grid-slot-7": btn_slot_7,
+        "inventory-pack-grid-slot-0": btn_slot_0,
+        "inventory-scroll-down": btn_down
+    }
+
+    controller.select("inventory-scroll-down", menu, MagicMock(), bus)
+
+    assert col_state.offset == 4
+    assert menu.focus == "inventory-pack-grid-slot-0"
+    assert btn_slot_7.state.status == Statuses.IDLE.value
+    assert btn_slot_0.state.status == Statuses.ACTIVE.value

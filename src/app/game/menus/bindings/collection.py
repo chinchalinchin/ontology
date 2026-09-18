@@ -45,6 +45,12 @@ class CollectionBinding(Binding):
             return val
         return []
 
+
+    def get_collection(self) -> List[Any]:
+        """Returns the evaluated collection list."""
+        return self._get_collection()
+
+
     def get_effective_index(self) -> int:
         """Calculates k = offset + index."""
         raw_offset = self._get("offset", self.offset)
@@ -53,6 +59,7 @@ class CollectionBinding(Binding):
         except (ValueError, TypeError):
             offset_val = self.offset
         return offset_val + self.index
+
 
     def get_item(self) -> str:
         """
@@ -74,6 +81,7 @@ class CollectionBinding(Binding):
             return str(item)
         return ""
 
+
     def get_status(self) -> str:
         """Returns IDLE for populated slots, and DISABLED for vacant slots."""
         collection = self._get_collection()
@@ -82,11 +90,13 @@ class CollectionBinding(Binding):
             return Statuses.IDLE.value
         return Statuses.DISABLED.value
 
+
     def is_vacant(self) -> bool:
         """Evaluates whether the effective index falls outside the collection bounds."""
         collection = self._get_collection()
         k = self.get_effective_index()
         return k < 0 or k >= len(collection)
 
-    def bind(self, **kwargs) -> Tuple[Callable[[], str]]:
-        return (self.get_item,)
+
+    def bind(self, **kwargs) -> Tuple[Callable[[], List[Any]]]:
+        return (self.get_collection,)

@@ -1,25 +1,29 @@
 """
 # Ontology: tests.unit.test_app_assets_frames
 """
-from app.assets.frames.core import (
+from app.config.settings import SEPARATOR
+from app.assets.frames import (
     NoFrame, 
     SingleFrame, 
     IterableFrame, 
     StateFrame, 
-    SpriteFrame
+    SpriteFrame,
+    IndexFrame
 )
 from app.models.state import (
-    AssetState, 
     AnimationState, 
     SpriteState, 
     Inventory, 
     Equipment, 
-    Psyche
+    Psyche,
+    IconState,
+    AttachmentState
 )
-from app.models.state.objects import AttachmentState
 from app.config.enums import ExpressionsPalette
+
+# Cython Libraries
 from libs.core.models import Position
-from app.config.settings import SEPARATOR
+
 
 def test_no_frame():
     frame = NoFrame()
@@ -91,3 +95,17 @@ def test_sprite_frame():
     # 7. Dynamic Expression Overlays
     expr_key = f"{ExpressionsPalette.BUBBLES.value}{SEPARATOR}loquacity"
     assert keys[6] == (expr_key, 10, -10)
+
+
+def test_index_frame_suppresses_vacant_slot():
+    frame = IndexFrame()
+    
+    occupied_state = IconState(id="weapons", icon_function=lambda: "shortsword")
+    keys = frame.keys("weapons", occupied_state)
+    assert keys == [("weapons-shortsword", 0, 0)]
+
+    empty_state = IconState(id="weapons", icon_function=lambda: "")
+    assert frame.keys("weapons", empty_state) == []
+
+    none_state = IconState(id="weapons", icon_function=lambda: None)
+    assert frame.keys("weapons", none_state) == []
