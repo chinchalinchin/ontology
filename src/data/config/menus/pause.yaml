@@ -2,101 +2,111 @@ menus:
   pause:
     controller: pause
     roots:
-      - id: dark
+      - instance: panes
+        id: dark
         name: pause-menu
-        font: menu
-        position:
-          # Centered for 480 x 480 viewport: (480 - 318)/2 = 81px, (480 - 180)/2 = 150px
-          px: 0.16875
-          py: 0.3125
-        layout: stack
-        alignment: center
-        gap: 10
-        children:
-          # --- SAVE GAME ---
-          - id: transparent-label
-            name: pause-save-slot
-            layout: overlay
-            alignment: center
-            children:
-              - instance: buttons
-                id: label
-                name: pause-save
-                bind:
-                  schema: select
-                  target:
-                    selection: save
-                    selector: save-01
-              - instance: pages
-                id: text-label
-                name: pause-save-text
-                bind:
-                  schema: text
-                  target:
-                    content: SAVE
+        parameters:
+          font: menu
+          position:
+            # Centered for 480 x 480 viewport: (480 - 318)/2 = 81px, (480 - 180)/2 = 150px
+            px: 0.16875
+            py: 0.3125
+          layout: stack
+          alignment: center
+          gap: 10
+          children:
+            # --- SAVE GAME ---
+            - instance: panes
+              id: transparent-label
+              name: pause-save-slot
+              parameters:
+                layout: overlay
+                alignment: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: pause-save
+                    bind:
+                      schema: select
+                      target:
+                        selection: save
+                        selector: save-01
+                  - instance: pages
+                    id: text-label
+                    name: pause-save-text
+                    bind:
+                      schema: text
+                      target:
+                        content: SAVE
 
-          # --- LOAD GAME ---
-          - id: transparent-label
-            name: pause-load-slot
-            layout: overlay
-            alignment: center
-            children:
-              - instance: buttons
-                id: label
-                name: pause-load
-                bind:
-                  schema: select
-                  target:
-                    selection: load
-                    selector: save-01
-              - instance: pages
-                id: text-label
-                name: pause-load-text
-                bind:
-                  schema: text
-                  target:
-                    content: LOAD
+            # --- LOAD GAME ---
+            - instance: panes
+              id: transparent-label
+              name: pause-load-slot
+              parameters:
+                layout: overlay
+                alignment: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: pause-load
+                    bind:
+                      schema: select
+                      target:
+                        selection: load
+                        selector: save-01
+                  - instance: pages
+                    id: text-label
+                    name: pause-load-text
+                    bind:
+                      schema: text
+                      target:
+                        content: LOAD
 
-          # --- OPTIONS ---
-          - id: transparent-label
-            name: pause-options-slot
-            layout: overlay
-            alignment: center
-            children:
-              - instance: buttons
-                id: label
-                name: pause-options
-                bind:
-                  schema: select
-                  target:
-                    selection: menu
-                    selector: options
-              - instance: pages
-                id: text-label
-                name: pause-options-text
-                bind:
-                  schema: text
-                  target:
-                    content: OPTIONS
+            # --- OPTIONS ---
+            - instance: panes
+              id: transparent-label
+              name: pause-options-slot
+              parameters:
+                layout: overlay
+                alignment: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: pause-options
+                    bind:
+                      schema: select
+                      target:
+                        selection: menu
+                        selector: options
+                  - instance: pages
+                    id: text-label
+                    name: pause-options-text
+                    bind:
+                      schema: text
+                      target:
+                        content: OPTIONS
 
-          # --- QUIT ---
-          - id: transparent-label
-            name: pause-quit-slot
-            layout: overlay
-            alignment: center
-            children:
-              - instance: buttons
-                id: label
-                name: pause-quit
-                bind:
-                  schema: select
-                  target:
-                    selection: quit
-                    selector: main
-              - instance: pages
-                id: text-label
-                name: pause-quit-text
-                bind:
-                  schema: text
-                  target:
-                    content: QUIT
+            # --- QUIT ---
+            - instance: panes
+              id: transparent-label
+              name: pause-quit-slot
+              parameters:
+                layout: overlay
+                alignment: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: pause-quit
+                    bind:
+                      schema: select
+                      target:
+                        selection: quit
+                        selector: main
+                  - instance: pages
+                    id: text-label
+                    name: pause-quit-text
+                    bind:
+                      schema: text
+                      target:
+                        content: QUIT

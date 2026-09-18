@@ -8,21 +8,23 @@ from typing import (
     List, 
     Dict, 
     Tuple, 
-    Union
+    Union,
+    Any
 )
 import logging
 
 # Application Libraries
 from app.assets.base import Asset
 from app.config.enums import (
+    AssetInstances,
     Layouts, 
-    Alignments,
-    Traversal,
+    Alignments, 
+    Traversal, 
     Statuses
 )
-from app.models.config import (
-    MenuPane, 
-    MenuWidget
+from app.models.config.menus import (
+    MenuNode,
+    PaneParameters
 )
 
 # Cython Libraries
@@ -30,55 +32,74 @@ from libs.core.models import Position, Dimensions
 
 logger = logging.getLogger(__name__)
 
+
 class Layout:
     screensize: Dimensions
 
     def __init__(self, screensize: Dimensions):
         self.screensize = screensize
 
-    def compute(self, root_cfgs: List[MenuPane], widgets: Dict[str, Asset]) -> Tuple[List[Asset], Dict]:
+    def compute(self, root_cfgs: List[MenuNode], widgets: Dict[str, Asset]) -> Tuple[List[Asset], Dict]:
         flattened = []
         
         for root_cfg in root_cfgs:
-            # 1. Calculate the initial Root Anchor from percentages
-            root_asset = widgets[root_cfg.name]
-            if root_cfg.position:
+            root_asset = widgets.get(root_cfg.name)
+            if not root_asset:
+                continue
+
+            pos = None
+            if isinstance(root_cfg.parameters, PaneParameters):
+                pos = root_cfg.parameters.position
+            elif isinstance(root_cfg.parameters, dict):
+                pos = root_cfg.parameters.get("position")
+
+            if pos:
                 root_asset.state.position = Position(
-                    x=int(root_cfg.position.px * self.screensize.w),
-                    y=int(root_cfg.position.py * self.screensize.l)
+                    x=int(pos.px * self.screensize.w),
+                    y=int(pos.py * self.screensize.l)
                 )
-            # 2. Kick off the recursion
+
             self._compute_recursive(root_cfg, widgets, flattened)
 
-        graph = self._build_graph([w for w in flattened if w.instance == 'buttons'])
+        graph = self._build_graph([w for w in flattened if w.instance == AssetInstances.BUTTONS.value])
         return flattened, graph
 
-
-    def _compute_recursive(self, cfg: Union[MenuPane, MenuWidget], widgets: Dict, flattened: List) -> None:
+    def _compute_recursive(self, cfg: MenuNode, widgets: Dict[str, Asset], flattened: List[Asset]) -> None:
         asset = widgets.get(cfg.name)
-        if not asset: return
-
-        # Add to rendering list in exact DFS topological order
-        flattened.append(asset)
-
-        # Base Case: Controls/Widgets have no children to layout
-        if not isinstance(cfg, MenuPane):
+        if not asset:
             return
 
-        # Recursive Step: Parent computes absolute positions for immediate children
-        children_assets = [widgets[c.name] for c in cfg.children if c.name in widgets]
+        flattened.append(asset)
+
+        # Non-pane endpoints terminate branch recursion
+        if cfg.instance not in (AssetInstances.PANES.value, "panes"):
+            return
+
+        params = cfg.parameters
+        if isinstance(params, PaneParameters):
+            layout = params.layout
+            alignment = params.alignment
+            gap = params.gap
+            children = params.children
+        elif isinstance(params, dict):
+            layout = params.get("layout", Layouts.STACK)
+            alignment = params.get("alignment", Alignments.START)
+            gap = params.get("gap", 0)
+            children = params.get("children", [])
+        else:
+            return
+
+        children_assets = [widgets[c.name] for c in children if c.name in widgets]
         
-        if cfg.layout == Layouts.DOCK:
-            self._layout_dock(asset, children_assets, cfg.alignment, cfg.gap)
-        elif cfg.layout == Layouts.STACK:
-            self._layout_stack(asset, children_assets, cfg.alignment, cfg.gap)
-        elif cfg.layout == Layouts.OVERLAY:
+        if layout == Layouts.DOCK:
+            self._layout_dock(asset, children_assets, alignment, gap)
+        elif layout == Layouts.STACK:
+            self._layout_stack(asset, children_assets, alignment, gap)
+        elif layout == Layouts.OVERLAY:
             self._layout_overlay(asset, children_assets)
 
-        # Now that children have absolute physical coordinates, tell them to layout THEIR children
-        for child_cfg in cfg.children:
+        for child_cfg in children:
             self._compute_recursive(child_cfg, widgets, flattened)
-
 
     def _layout_dock(self, 
         pane: Asset, 
@@ -93,10 +114,7 @@ class Layout:
         current_x = pane.state.position.x + margin
         current_y = pane.state.position.y + margin
         
-        # Main-axis (X) alignment calculation
         total_w = sum((c.dimensions.w if c.dimensions else 0) for c in children) + gap * (len(children) - 1)
-        
-        # Usable width subtracts both left and right margins
         pane_w = (pane.dimensions.w - 2 * margin) if pane.dimensions else total_w
         
         if alignment == Alignments.CENTER:
@@ -104,18 +122,15 @@ class Layout:
         elif alignment == Alignments.END:
             current_x += (pane_w - total_w)
 
-        # Cross-axis (Y) alignment: Center vertically within the usable Pane space
         pane_h = (pane.dimensions.l - 2 * margin) if pane.dimensions else max((c.dimensions.l if c.dimensions else 0) for c in children)
 
         for child in children:
             w = child.dimensions.w if child.dimensions else 0
             h = child.dimensions.l if child.dimensions else 0
-            
             y_offset = (pane_h - h) // 2
             
             child.state.position = Position(x=current_x, y=current_y + y_offset)
             current_x += w + gap
-
 
     def _layout_stack(self,
         pane: Asset, 
@@ -130,10 +145,7 @@ class Layout:
         current_x = pane.state.position.x + margin
         current_y = pane.state.position.y + margin
         
-        # Main-axis (Y) alignment calculation
         total_l = sum((c.dimensions.l if c.dimensions else 0) for c in children) + gap * (len(children) - 1)
-        
-        # Usable length (height) subtracts top and bottom margins
         pane_l = (pane.dimensions.l - 2 * margin) if pane.dimensions else total_l
 
         if alignment == Alignments.CENTER:
@@ -141,23 +153,17 @@ class Layout:
         elif alignment == Alignments.END:
             current_y += (pane_l - total_l)
 
-        # Cross-axis (X) alignment: Center horizontally within the usable Pane space
         pane_w = (pane.dimensions.w - 2 * margin) if pane.dimensions else max((c.dimensions.w if c.dimensions else 0) for c in children)
 
         for child in children:
             w = child.dimensions.w if child.dimensions else 0
             l = child.dimensions.l if child.dimensions else 0
-            
             x_offset = (pane_w - w) // 2
             
             child.state.position = Position(x=current_x + x_offset, y=current_y)
             current_y += l + gap
 
-
     def _layout_overlay(self, pane: Asset, children: List[Asset]):
-        """
-        Overlays superimpose children centered natively at the exact anchor of the parent.
-        """
         margin = getattr(pane.state, 'margins', 0)
         pane_x = pane.state.position.x + margin
         pane_y = pane.state.position.y + margin
@@ -177,14 +183,7 @@ class Layout:
                 y=pane_y + y_offset
             )
 
-            
-    def _build_graph(self, 
-        buttons: List[Asset]
-    ) -> Dict[str, Dict[str, str]]:
-        """
-        Uses an Axis-Aligned Bounding Box (AABB) spatial projection algorithm 
-        to link traversable Button widgets based on absolute coordinates.
-        """
+    def _build_graph(self, buttons: List[Asset]) -> Dict[str, Dict[str, str]]:
         graph = {}
         for b1 in buttons:
             if b1.state.status == Statuses.DISABLED.value:
@@ -214,14 +213,17 @@ class Layout:
                 y_overlap = not (b1_pos.y + b1_dim.l <= b2_pos.y or b2_pos.y + b2_dim.l <= b1_pos.y)
 
                 if x_overlap:
-                    if b2_pos.y > b1_pos.y: south_candidates.append(b2)
-                    if b2_pos.y < b1_pos.y: north_candidates.append(b2)
+                    if b2_pos.y > b1_pos.y: 
+                        south_candidates.append(b2)
+                    if b2_pos.y < b1_pos.y: 
+                        north_candidates.append(b2)
 
                 if y_overlap:
-                    if b2_pos.x > b1_pos.x: east_candidates.append(b2)
-                    if b2_pos.x < b1_pos.x: west_candidates.append(b2)
+                    if b2_pos.x > b1_pos.x: 
+                        east_candidates.append(b2)
+                    if b2_pos.x < b1_pos.x: 
+                        west_candidates.append(b2)
 
-            # Assign adjacent boundaries based on min/max distances
             if south_candidates:
                 closest = min(south_candidates, key=lambda b: b.state.position.y)
                 graph[b1_name][Traversal.SOUTH] = closest.name

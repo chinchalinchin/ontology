@@ -2,46 +2,50 @@ menus:
   text:
     controller: scroll
     roots: 
-      - id: neutral
+      - instance: panes
+        id: neutral
         name: text-menu
-        position:
-          # 480 x 480
-          px: 0.175
-          py: 0.60
-        layout: dock
-        alignment: center
-        gap: 15
-        font: dialogue
-        children: 
-          - instance: pages
-            id: notification
-            name: text-display
-            bind:
-              schema: library
-              target: 
-                plot: context.plot.current
-                persona: context.object.persona
-                lexicon: context.object.lexicon
-          # Use the 40x40 slot to constrain horizontal width
-          - id: transparent-slot
-            name: text-scroll-buttons
-            layout: stack
-            alignment: center
-            gap: 5
-            children:
-              - instance: buttons
-                id: arrow-up
-                name: text-scroll-up
-                bind: 
-                  schema: select
-                  target:
-                    selection: scrollup
-                    selector: text-display
-              - instance: buttons
-                id: arrow-down
-                name: text-scroll-down
-                bind: 
-                  schema: select
-                  target:
-                    selection: scrolldown
-                    selector: text-display
+        parameters:
+          position:
+            # 480 x 480
+            px: 0.175
+            py: 0.60
+          layout: dock
+          alignment: center
+          gap: 15
+          font: dialogue
+          children: 
+            - instance: pages
+              id: notification
+              name: text-display
+              bind:
+                schema: library
+                target: 
+                  plot: context.plot.current
+                  persona: context.object.persona
+                  lexicon: context.object.lexicon
+            # Use the 40x40 slot to constrain horizontal width
+            - instance: panes
+              id: transparent-slot
+              name: text-scroll-buttons
+              parameters:
+                layout: stack
+                alignment: center
+                gap: 5
+                children:
+                  - instance: buttons
+                    id: arrow-up
+                    name: text-scroll-up
+                    bind: 
+                      schema: select
+                      target:
+                        selection: scrollup
+                        selector: text-display
+                  - instance: buttons
+                    id: arrow-down
+                    name: text-scroll-down
+                    bind: 
+                      schema: select
+                      target:
+                        selection: scrolldown
+                        selector: text-display

@@ -57,7 +57,8 @@ from app.models.state.widgets import (
     TraversalState,
     PaneState,
     DisplayState,
-    MeterState
+    MeterState,
+    CollectionState
 )
 
 __all__ = [ 
@@ -110,6 +111,7 @@ __all__ = [
     'PaneState',
     'DisplayState',
     'MeterState',
+    'CollectionState',
     ## SCHEMAS
     'TileStateInstances',
     'ObjectStateInstances',

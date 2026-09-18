@@ -59,9 +59,11 @@ def paginate(text: str, font: Any, w: int, l: int) -> List[str]:
         
     return pages
 
+
 class LibraryBinding(Binding):
     def __init__(self, target: dict, context: MenuContext, **kwargs):
         super().__init__(target, context, **kwargs)
+        self.registry = kwargs.get('registry')
         self.library = kwargs.get('library')
         self._cached_pages = None
         

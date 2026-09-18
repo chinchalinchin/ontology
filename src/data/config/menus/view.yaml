@@ -2,81 +2,91 @@ menus:
   view:
     controller: display
     roots: 
-      - id: dark-small
+      - instance: panes
+        id: dark-small
         name: hud-menu
-        position:
-          # ---- 360 x 360
-          # px: 0.075
-          # py: 0.75
-          # ---- 480 x 480
-          px: 0.175
-          py: 0.80
-        layout: dock
-        alignment: start
-        gap: 10
-        margins: 15
-        children: 
-          - id: transparent-block
-            name: hud-meters-pane
-            layout: stack
-            alignment: center
-            gap: 5
-            children: 
-              - instance: meters
-                id: health
-                name: health-meter
-                bind: 
-                  schema: meter
-                  target: 
-                    meter: context.sprite.meters.health
-              - instance: meters
-                id: magic
-                name: magic-meter
-                bind: 
-                  schema: meter
-                  target: 
-                    meter: context.sprite.meters.magic
-          - id: transparent-block
-            name: hud-slots-pane
-            layout: dock
-            alignment: start
-            gap: 5
-            children:
-              # --- bounding box for the slot ---
-              - id: transparent-slot 
-                name: weapon-slot-container
-                layout: overlay
+        parameters:
+          position:
+            # ---- 360 x 360
+            # px: 0.075
+            # py: 0.75
+            # ---- 480 x 480
+            px: 0.175
+            py: 0.80
+          layout: dock
+          alignment: start
+          gap: 10
+          margins: 15
+          children: 
+            - instance: panes
+              id: transparent-block
+              name: hud-meters-pane
+              parameters:
+                layout: stack
                 alignment: center
-                gap: 0
-                children:
-                  # 1. The Background
-                  - instance: buttons
-                    id: slot
-                    name: weapon-slot
-                    status: disabled
-                  # 2. The Foreground Decal
-                  - instance: icons
-                    id: weapons
-                    name: weapon-icon
-                    bind:
-                      schema: icon
+                gap: 5
+                children: 
+                  - instance: meters
+                    id: health
+                    name: health-meter
+                    bind: 
+                      schema: meter
                       target: 
-                        icon: context.sprite.inventory.equipment.weapon
-              # --- bounding box for the slot ---
-              - id: transparent-slot
-                name: shield-slot-container
-                layout: overlay
-                alignment: center
-                gap: 0
-                children:
-                  - instance: buttons
-                    id: slot
-                    name: shield-slot
-                    status: disabled
-                  - instance: icons
-                    id: shields
-                    name: shield-icon
-                    bind:
-                      schema: icon
+                        meter: context.sprite.meters.health
+                  - instance: meters
+                    id: magic
+                    name: magic-meter
+                    bind: 
+                      schema: meter
                       target: 
-                        icon: context.sprite.inventory.equipment.shield
+                        meter: context.sprite.meters.magic
+            - instance: panes
+              id: transparent-block
+              name: hud-slots-pane
+              parameters:
+                layout: dock
+                alignment: start
+                gap: 5
+                children:
+                  # --- bounding box for the slot ---
+                  - instance: panes
+                    id: transparent-slot 
+                    name: weapon-slot-container
+                    parameters:
+                      layout: overlay
+                      alignment: center
+                      gap: 0
+                      children:
+                        # 1. The Background
+                        - instance: buttons
+                          id: slot
+                          name: weapon-slot
+                          status: disabled
+                        # 2. The Foreground Decal
+                        - instance: icons
+                          id: weapons
+                          name: weapon-icon
+                          bind:
+                            schema: icon
+                            target: 
+                              icon: context.sprite.inventory.equipment.weapon
+                  # --- bounding box for the slot ---
+                  - instance: panes
+                    id: transparent-slot
+                    name: shield-slot-container
+                    parameters:
+                      layout: overlay
+                      alignment: center
+                      gap: 0
+                      children:
+                        - instance: buttons
+                          id: slot
+                          name: shield-slot
+                          status: disabled
+                        - instance: icons
+                          id: shields
+                          name: shield-icon
+                          bind:
+                            schema: icon
+                            target: 
+                              icon: context.sprite.inventory.equipment.shield

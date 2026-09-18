@@ -77,14 +77,15 @@ class MeterFrame(Frame):
 
 class IndexFrame(Frame):
     """
-    ## IndexedFrame
+    ## IndexFrame
 
     Parses horizontal sheets where each frame corresponds to a specific string key.
     """
-    def keys(self, id: str, state: AssetState) -> List[str]:
-        # Retrieve the specific icon key from the state, defaulting to the asset ID
-        return [(settings.SEPARATOR.join([id, state.icon]), 0, 0)]
-
+    def keys(self, id: str, state: AssetState) -> List[Tuple[str, int, int]]:
+        icon_key = getattr(state, "icon", None)
+        if not icon_key:
+            return []
+        return [(settings.SEPARATOR.join([id, icon_key]), 0, 0)]
 
     def index(self, id: str, properties: Dict[str, Any]) -> Dict[str, Tuple[int, int, int, int]]:
         w, l = safe_dim(properties)
@@ -100,4 +101,3 @@ class IndexFrame(Frame):
             crops[frame_index] = (i * w, 0, w, l)
             
         return crops
-

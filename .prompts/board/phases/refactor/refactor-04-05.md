@@ -35,9 +35,15 @@ Widgets adhere strictly to single-texture rendering. Composite controls (e.g., a
 2. Child 1 (`Button`) renders the interactive background and captures traversal focus.
 3. Child 2 (`Icon`) centers natively on top of the button, binding to the item texture key.
 
----
+**Pane Dimensional Hierarchy**
 
-##### Architectural Assessment
+When a `MenuPane` declares explicit `dimensions`, the `Provider` overrides the prototype dimensions declared in `properties.panes[id]`. This is mandatory for macro nodes (such as Gizmos) whose dimensions are derived dynamically from child counts:
+
+$$\text{Width} = C \cdot w_{\text{slot}} + (C - 1) \cdot \text{gap}$$
+
+$$\text{Length} = R \cdot l_{\text{slot}} + (R - 1) \cdot \text{gap}$$
+
+##### Architectural Assessment I
 
 In the world simulation, `Decomposer` does not invent ad-hoc asset classes; it reads a blueprint from `/src/data/config/compositions/` and expands deployed pseudo-state into standard `Asset` instances that the `Board` consumes uniformly.
 
@@ -146,7 +152,7 @@ Implement `InventoryController` to manage Gizmo pagination offsets, item equippi
 * [x] Subtask: Implement `select()` to process slot clicks and emit `UpdateEvent` on scroll actions.
 * [!: Dependent on Phase Completion] Subtask: Write unit tests covering Gizmo AST expansion, grid layout computation, and slot traversal graph generation.
 
-##### User Review
+##### User Review I
 
 Gizmos are rendering! However, the layout is messed up. The arrows are rendering on top of the grid. See state dump below.
 
@@ -156,10 +162,7 @@ Gizmos are rendering! However, the layout is messed up. The arrows are rendering
 Omitted after bug identified for brevity.
 ```
 
-
-##### Task: Architectural Assessment
-
-- [x] Complete
+**[x] Task: Architectural Assessment**
 
 With the initial implementation of Gizmos in place, it needs refactored and reanalyzed to streamline the datastructures that support it and the logic that is used to construct it.
 
@@ -180,11 +183,11 @@ A Gizmo is currently specific to a "Collection". However, there are other config
 
 - The Fabricator doesn't use the MenuContext, despite it being passed into `expand()`.
 
----
+##### Architectural Assessment II
 
 The arrows render on top of the inventory grid because `Provider._unpack_pane` silently discards the synthetic dimensions calculated by `Fabricator`, forcing `Layout._layout_dock` to treat the entire $175 \times 85\text{ px}$ grid as a single $40 \times 40\text{ px}$ cell.
 
-### Layout Problem Diagnosis
+**Layout Problem Diagnosis**
 
 In `Fabricator.expand()`, the grid dimensions are calculated correctly based on capacity, column count, slot size ($40 \times 40$), and gap ($5\text{ px}$):
 
@@ -215,35 +218,34 @@ pane_asset = Asset(
 When `Layout._layout_dock` executes on the parent `inventory-menu` ($W=318, L=180, \text{margin}=10, \text{gap}=10$):
 
 1. **Child Measurement**: `c.dimensions` accesses `Asset.dimensions`, resolving to `Asset.properties.dimensions`.
-* `inventory-pack-grid`: Measured as **$40\text{ px}$** instead of **$175\text{ px}$**.
-* `inventory-scroll-controls`: Measured as **$40\text{ px}$** (also using `transparent-slot`).
-
+  * `inventory-pack-grid`: Measured as **$40\text{ px}$** instead of **$175\text{ px}$**.
+  * `inventory-scroll-controls`: Measured as **$40\text{ px}$** (also using `transparent-slot`).
 
 2. **Total Width**:
 
-$$\text{total\_w} = 40 + 40 + 10 = 90\text{ px} \quad (\text{expected } 175 + 40 + 10 = 225\text{ px})$$
-
+$$
+\text{total\_w} = 40 + 40 + 10 = 90\text{ px} \quad (\text{expected } 175 + 40 + 10 = 225\text{ px})
+$$
 
 3. **Anchor Positioning**: With `alignment: center` and usable width $318 - 20 = 298\text{ px}$:
 
-$$\text{offset\_x} = \frac{298 - 90}{2} = 104\text{ px}$$
+$$
+\text{offset\_x} = \frac{298 - 90}{2} = 104\text{px}
+$$
 
-
-$$\text{current\_x} = 81 + 10 + 104 = 195\text{ px}$$
+$$
+\text{current\_x} = 81 + 10 + 104 = 195\text{px}
+$$
 
 
 4. **Placement Collision**:
-* `inventory-pack-grid` is placed at $X = 195$. Its internal slots expand across $X \in [195, 370]$ (Slot 0 at 195, Slot 1 at 240, Slot 2 at 285, Slot 3 at 330).
-* `inventory-scroll-controls` is placed at $X = 195 + 40 + 10 = \mathbf{245}$.
-* The arrows ($W=24$) center inside the controls at $X = 245 + \frac{40 - 24}{2} = \mathbf{253}$.
-
-
+  * `inventory-pack-grid` is placed at $X = 195$. Its internal slots expand across $X \in [195, 370]$ (Slot 0 at 195, Slot 1 at 240, Slot 2 at 285, Slot 3 at 330).
+  * `inventory-scroll-controls` is placed at $X = 195 + 40 + 10 = \mathbf{245}$.
+  * The arrows ($W=24$) center inside the controls at $X = 245 + \frac{40 - 24}{2} = \mathbf{253}$.
 
 The scroll controls are stamped directly between Slot 1 ($X=240$) and Slot 2 ($X=285$).
 
----
-
-### Codebase Analysis: Critical Phase Bugs
+**Codebase Analysis: Critical Phase Bugs**
 
 Beyond the dimensional collapse, four architectural bugs break Gizmo functionality:
 
@@ -252,9 +254,7 @@ Beyond the dimensional collapse, four architectural bugs break Gizmo functionali
 3. **Registry Miss Logging Storm**: When a slot is vacant, `CollectionBinding.get_item()` returns `""`. `IndexFrame.keys()` evaluates this to `[("weapons-", 0, 0)]`. Because `IconState` is not excluded from missing frame checks in `Screen._widgets`, the engine logs `Registry MISS: Frame key not found: 'weapons-'` for every empty slot on every frame, generating hundreds of I/O log writes per second.
 4. **AST Mutation of Frozen Configurations**: In `Provider._unpack_pane()`, the loop executes `pane.children[i] = node`. Mutating `pane.children` in-place mutates the long-lived `MenuConfiguration` loaded during boot. Once expanded, the `MenuGizmo` macro node is permanently replaced by a concrete `MenuPane`, preventing subsequent re-expansions or dynamic re-bindings.
 
----
-
-### Gizmo Scrolling Architecture
+**Gizmo Scrolling Architecture**
 
 Supporting collection scrolling requires minimal effort and zero ugly code because **texture rebaking is not involved**.
 
@@ -262,31 +262,22 @@ Unlike text scrolling—which requires rasterizing glyphs onto an SDL surface ca
 
 ```python
 keys = [(f"{widget.id}-{state.icon}", 0, 0)]
-
 ```
 
 Where `state.icon` evaluates `CollectionBinding.get_item()` dynamically:
 
 $$k = \text{offset} + \text{index}$$
 
-#### Clean Implementation Strategy
+**Clean Implementation Strategy**
 
 1. **Store Offset on Context**: Move pagination tracking into the context (e.g., `context.offset` or a controller-backed property).
 2. **Targeted Paging Bounds**: In `InventoryController.select()`:
-* When `selection == SCROLLDOWN`: Advance offset by `columns` (e.g., $+4$), clamped to:
-
-$$\text{max\_offset} = \max\left(0, \left\lceil \frac{N - \text{capacity}}{\text{columns}} \right\rceil \times \text{columns}\right)$$
-
-
-* When `selection == SCROLLUP`: Decrement offset by `columns`, clamped to $\ge 0$.
-
-
+  * When `selection == SCROLLDOWN`: Advance offset by `columns` (e.g., $+4$), clamped to: $\text{max\_offset} = \max\left(0, \left\lceil \frac{N - \text{capacity}}{\text{columns}} \right\rceil \times \text{columns}\right)$
+  * When `selection == SCROLLUP`: Decrement offset by `columns`, clamped to $\ge 0$.
 3. **Direct Context Resolution**: Configure `CollectionBinding` to resolve `offset` dynamically via path (`target: {"offset": "context.offset", ...}`), eliminating the manual `_sync_slots()` iteration loop entirely.
 4. **Focus Recovery**: If `menu.focus` belongs to a slot whose effective index $k \ge N$ after a scroll event, clamp focus to the nearest valid slot or default to `inventory-scroll-up`.
 
----
-
-### Gizmo Generalization & Fabricator Architecture
+**Gizmo Generalization & Fabricator Architecture**
 
 `Fabricator` should not be hardcoded to grid collections. Refactor it into an extensible generator factory that selects an expansion strategy based on `gizmo.bind.schema`:
 
@@ -295,10 +286,9 @@ Fabricator.expand(gizmo, context, properties)
  ├── schema == "collection" / "grid"   ──> GridFabricator
  ├── schema == "equipment" / "record" ──> EquipmentFabricator
  └── schema == "pagination"           ──> PaginationFabricator
-
 ```
 
-#### Utilizing MenuContext in Expansion
+**Utilizing MenuContext in Expansion**
 
 `context` is currently passed to `expand()` and unused. Integrating `context` unlocks three capabilities:
 
@@ -306,9 +296,7 @@ Fabricator.expand(gizmo, context, properties)
 * **Direct Path Binding**: Generates declarative select targets that bind buttons directly to underlying domain entities (e.g., `target: {"entity": f"{source_path}[{k}]"}`).
 * **Pre-computed Traversal States**: Evaluates collection bounds during expansion so empty slots are initialized directly as `DISABLED` before `Layout._build_graph()` executes, preventing phantom nodes in the initial navigation graph.
 
----
-
-### Bug Reports
+#### Bug Reports
 
 ##### Bug B008: Pane Asset Discards AST Dimensions in Provider Unpack
 
@@ -338,30 +326,7 @@ if pane.dimensions is not None:
 
 ```
 
----
-
-##### Bug B009: Slot Button Decoupled from CollectionBinding
-
-**STATUS**: OPEN
-**SEVERITY**: HIGH
-
-**Description**
-
-`Fabricator.expand()` attaches a `CollectionBinding` to the slot's child icon widget, but assigns a standard `SelectBinding` to the slot's button widget. `InventoryController._sync_slots()` checks `hasattr(widget.binding, "offset")`, which succeeds only on the icon widget. The icon widget state (`IconState`) has no `status` property, while the button widget retains `SelectBinding` and stays permanently `IDLE`. This causes empty inventory slots to remain active and traversable in `menu.graph` even when the backing inventory is empty.
-
-**Steps to Replicate**
-
-1. Open `inventory` menu when `player.inventory.pack` is empty or contains fewer items than `gizmo.capacity`.
-2. Inspect `menu.graph` or navigate using directional inputs.
-3. Observe focus landing on empty slots that display no item.
-
-**Proposed Remediation**
-
-Introduce a composite `SlotBinding` subclassing `SelectBinding` (or add collection index awareness to `SelectBinding`) that evaluates collection length against `effective_index = offset + index`. When $k \ge \text{len}(\text{collection})$, the button automatically yields `status = Statuses.DISABLED.value`.
-
----
-
-##### Bug B010: Registry Miss Storm on Vacant Icon Frame Keys
+##### Bug B009: Registry Miss Storm on Vacant Icon Frame Keys
 
 **STATUS**: OPEN
 **SEVERITY**: MEDIUM
@@ -385,12 +350,9 @@ def keys(self, id: str, state: AssetState) -> List[Tuple[str, int, int]]:
   if not getattr(state, "icon", None):
     return []
   return [(settings.SEPARATOR.join([id, state.icon]), 0, 0)]
-
 ```
 
----
-
-##### Bug B011: Static Menu AST Mutation in Provider Unpack
+##### Bug B010: Static Menu AST Mutation in Provider Unpack
 
 **STATUS**: OPEN
 **SEVERITY**: MEDIUM
@@ -413,7 +375,7 @@ Treat incoming configuration trees as read-only templates. In `Provider.unpack()
 
 ---
 
-### Backlog: Phase 04.05 - Gizmos & Dynamic UI Architecture
+#### Refactor Phase 04.05.02 - Gizmos & Dynamic UI Architecture
 
 **Overview**
 
@@ -437,6 +399,9 @@ Connect pagination buttons to controller offset states, implement row-based pagi
 
 ##### Tasks
 
+!!! warning
+  Many tasks have been cancelled following a subsequent user review and architectural assessment.
+
 **1. Task: Fix Pane Geometry Propagation in Provider**
 
 *Objective*: Allow synthesized `MenuPane.dimensions` to override prototype asset properties during unpacking.
@@ -449,57 +414,568 @@ Connect pagination buttons to controller offset states, implement row-based pagi
 
 *Objective*: Synchronize button traversal status and icon frame generation with collection item bounds.
 
-* [ ] Subtask: Implement `SlotBinding` in `app.game.menus.bindings.slot` combining select commands with collection bounds checking.
+* [!: Cancelled] Subtask: Implement `SlotBinding` in `app.game.menus.bindings.slot` combining select commands with collection bounds checking.
 * [ ] Subtask: Update `IndexFrame.keys()` to return an empty list when `state.icon` is empty, eliminating missing texture log warnings.
-* [ ] Subtask: Ensure `Provider._focus()` selects the first valid, non-disabled button upon initial menu hydration.
+* [!: Cancelled] Subtask: Ensure `Provider._focus()` selects the first valid, non-disabled button upon initial menu hydration.
 
 **3. Task: Refactor Fabricator to Strategy Factory**
 
 *Objective*: Abstract macro expansion to support arbitrary dynamic UI patterns.
 
-* [ ] Subtask: Define `GizmoStrategy` abstract base class with `expand(gizmo, context, properties) -> MenuPane`.
-* [ ] Subtask: Extract grid generation logic into `CollectionGridStrategy`.
-* [ ] Subtask: Implement `EquipmentSlotStrategy` for binding discrete equipment fields (`weapon`, `shield`, `armor`).
-* [ ] Subtask: Register strategies within `Fabricator` keyed by `bind.schema`.
+* [!: Cancelled] Subtask: Define `GizmoStrategy` abstract base class with `expand(gizmo, context, properties) -> MenuPane`.
+* [!: Cancelled] Subtask: Extract grid generation logic into `CollectionGridStrategy`.
+* [!: Cancelled] Subtask: Implement `EquipmentSlotStrategy` for binding discrete equipment fields (`weapon`, `shield`, `armor`).
+* [!: Cancelled] Subtask: Register strategies within `Fabricator` keyed by `bind.schema`.
 
 **4. Task: Integrate Collection Pagination in InventoryController**
 
 *Objective*: Implement row-based collection scrolling and focus recovery.
 
-* [ ] Subtask: Update `InventoryController.select()` to advance/decrement `offset` by `columns`.
-* [ ] Subtask: Add upper and lower offset clamping based on collection length and grid capacity.
-* [ ] Subtask: Implement focus recovery logic shifting traversal focus to `inventory-scroll-up` when the selected slot scrolls out of view.
-* [ ] Subtask: Write unit tests covering AST expansion, dock spacing with dynamic pane dimensions, and empty slot traversal exclusion.
+* [!: Cancelled] Subtask: Update `InventoryController.select()` to advance/decrement `offset` by `columns`.
+* [!: Cancelled] Subtask: Add upper and lower offset clamping based on collection length and grid capacity.
+* [!: Cancelled] Subtask: Implement focus recovery logic shifting traversal focus to `inventory-scroll-up` when the selected slot scrolls out of view.
+* [!: Cancelled] Subtask: Write unit tests covering AST expansion, dock spacing with dynamic pane dimensions, and empty slot traversal exclusion.
+
+##### User Review II
+
+The current plan fails to consider how slot pagination breaks the traversal graph generation.
+
+- Slots need to stay traversible in the collection. User has to be able to navigate and select them.
+- Arrows page through the slots.
+
+##### Architectural Assessment III
+
+Treating empty slots as `DISABLED` was an error: disabling vacant slots punches physical holes into the Axis-Aligned Bounding Box (AABB) projection, destroying the spatial bridges needed to reach neighboring slots and pagination controls.
+
+The core conflict lies in an architectural impedance mismatch: **`Layout._build_graph` is a purely spatial raycaster operating on physical screen geometry, whereas a paginated collection is a windowed data stream.**
+
+**The Breakdown: Spatial Raycasting vs. Paginated Collections**
+
+`Layout._build_graph` operates under three strict invariants:
+
+1. Every traversable node must exist as an instantiated `Asset` with an absolute `Position` and physical `Dimensions`.
+2. Edges are established strictly by 1D interval overlap ($X$ overlap for vertical rays, $Y$ overlap for horizontal rays) and Euclidean distance minimization.
+3. Any node omitted or marked `DISABLED` is discarded from candidate evaluation.
+
+```
+[Slot 0] <---> [Slot 1] <---> [Slot 2] <---> [Slot 3] <---> [Arrow Up]
+   ^              ^              ^              ^
+   |              |              |              |
+   v              v              v              v
+[Slot 4] <---> [Slot 5] <---> [Slot 6] <---> [Slot 7] <---> [Arrow Down]
+   |              |              |              |
+   x              x              x              x   <-- Offscreen slots 8-11 do not exist!
+
+```
+
+When paginating a collection of 24 items across an 8-slot Gizmo ($4 \times 2$ grid), two distinct failures emerge:
+
+**1. The Empty Slot Collapse**
+
+If an inventory only contains 2 items and slots 2 through 7 are marked `DISABLED`:
+
+* `b1.state.status == Statuses.DISABLED.value` strips slots 2–7 from graph construction.
+* Slot 0 and Slot 1 can raycast to each other, but the ray from Slot 1 looking `EAST` finds nothing within its $Y$-interval until the right screen margin. If the pagination arrows sit at a different $Y$-offset, the ray misses entirely.
+* The player is physically trapped in the first two slots and cannot navigate to the scroll arrows or inspect empty spaces.
+* **Rule**: All physical aperture slots in a Gizmo must remain `IDLE` and traversable at all times, regardless of whether their backing collection index holds data.
+
+**2. The Offscreen Horizon**
+
+Items 8 through 23 cannot participate in `Layout._build_graph`:
+
+* If they are not instantiated as widgets, they have no spatial coordinates; a ray cast `SOUTH` from Slot 4 finds no candidate bounding boxes and terminates with no edge.
+* If they *were* instantiated and positioned offscreen below the pane, raycasting would successfully link Slot 4 to Slot 8. However, traversing `SOUTH` would shift `menu.focus` to a coordinate outside the window bounds. Because the engine lacks automatic viewport camera tracking for Menu panes, the focus indicator would vanish off the screen into void space.
+
+##### User Review III
+
+Why are we paging through slots? The physical slots don't have been to rerendered. That's actually absurdly inefficient, if you think about it. It's just their icons that are changing. Okay, so the solution is this, I think: A collection renders a determinate grid of slot and contains data struture of paginated icon strs, e.g. `[ [icon_1, icon_2, ... ], [icon_n, icon_n+1, ...] , ... ]`. Then when user scrolls, it's just rerendering the icons on top of the same slots. It's the "illusion" of slot scrolling. 
+
+However, that requires a Gizmo "state", where the paginated structure can live and be accessed. Which I suppose is what the binding is. However, the Gizmo binding needs to return more than just get_item(). It needs interfaces for scrollup() and scrolldown().
+
+That is the ambiguity in the current setup: Gizmos don't have bindings, their components do. So the collection binding is being made to the icons. That's not correct, I don't think, or atleast it's incomplete, and the source of the woes. 
+
+The question that needs answered is: What *is* a Collection? Is it a binding? What Widget state is it binding to?
+
+- Thought: a Collection binding is actually the ENTIRE schema of bindings for all widgets in the Gizmo. What is lacking a Widget with a scrollup and scrolldown interface for rendering non-text. But that's exactly what a Collection is. Except it's not a concrete Widget, it's an abstract schema.
+
+Right now the whole setup works by utilizing the existing binding flow on Widgets. But it seems like the current Widgets are insufficient to complete what the binding requires.
+
+##### Architectural Assessment IV
+
+Paging the physical slots is an anti-pattern: **slots are static spatial apertures (viewports), while the items sliding underneath them are a windowed data stream.**
+
+The physical buttons must never move, resize, or be rebuilt. They exist solely to provide fixed $(X, Y)$ hitboxes so `Layout._build_graph` can compute an immutable AABB traversal mesh. Only the icon texture keys bound to those apertures change when scrolling.
+
+The reason the current implementation feels broken is an architectural identity crisis: **`Fabricator` decomposes the Gizmo into leaf widgets, but fractures the collection's state across $N$ disconnected child bindings.**
+
+**The Root Cause: Orphaned Window State**
+
+Currently:
+
+1. `Fabricator` stamps out 8 independent `CollectionBinding` instances (one per icon) and 8 independent `SelectBinding` instances (one per button).
+2. Each `CollectionBinding` maintains its own `offset` attribute.
+3. Because there is no central "collection" entity at runtime, `InventoryController` is forced to iterate over every widget in `menu.widgets`, search for `binding.offset`, and manually mutate it.
+4. The slot buttons don't know what their sibling icons are displaying, and the pagination controls have no concrete target to send `scrollup` or `scrolldown` commands to.
+
+In the existing engine design, `ScrollController` works cleanly with `Page` widgets because `Page` has a **single state** (`DisplayState`) with concrete methods: `scrollup()`, `scrolldown()`, `more()`, and `less()`.
+
+A Gizmo cannot be a single leaf widget like `Page` because the engine's traversal system requires discrete `Button` entities with individual bounding boxes. However, **the Gizmo's root `Pane` can own the composite Collection State.**
+
+**The Solution: The Composite Aperture Pattern**
+
+Rather than scattering bindings across individual slots, treat the **Gizmo Pane** as the stateful collection manager, and treat the child slots as **aperture delegates**.
+
+```mermaid
+flowchart TD
+    A["Gizmo Root Pane (inventory-pack-grid)<br/>State: CollectionState (offset, capacity, collection)<br/>Methods: scrollup(), scrolldown(), get_item(i)"]
+    
+    A --- B["Slot 0 (Aperture)<br/>Button: delegate(parent, 0)<br/>Icon: delegate(parent, 0)"]
+    A --- C["Slot 1 (Aperture)<br/>Button: delegate(parent, 1)<br/>Icon: delegate(parent, 1)"]
+    A --- D["... Slots 2-7 ..."]
+    
+    E["Scroll Up Button<br/>Target: inventory-pack-grid<br/>Action: scrollup"] -.->|"invokes"| A
+    F["Scroll Down Button<br/>Target: inventory-pack-grid<br/>Action: scrolldown"] -.->|"invokes"| A
+
+```
+
+**1. The Gizmo Root Pane Holds `CollectionState`**
+
+Instead of a generic `PaneState`, the root container of the Gizmo (`inventory-pack-grid`) receives a specialized `CollectionState` (or a composite `CollectionBinding`):
+
+```python
+@dataclass(slots=True)
+class CollectionState(PaneState):
+    collection_function: Callable[[], List[Any]]
+    capacity: int = 8
+    columns: int = 4
+    offset: int = 0
+
+    @property
+    def collection(self) -> List[Any]:
+        return self.collection_function() or []
+
+    def get_item(self, slot_index: int) -> str:
+        k = self.offset + slot_index
+        if 0 <= k < len(self.collection):
+            item = self.collection[k]
+            return item if isinstance(item, str) else getattr(item, "id", "")
+        return ""
+
+    def is_occupied(self, slot_index: int) -> bool:
+        return (self.offset + slot_index) < len(self.collection)
+
+    def scrollup(self) -> None:
+        if self.offset > 0:
+            self.offset = max(0, self.offset - self.columns)
+
+    def scrolldown(self) -> None:
+        if self.offset + self.capacity < len(self.collection):
+            self.offset += self.columns
+```
+
+**2. Child Slots Use Aperture Delegates**
+
+When `Fabricator` expands the slots, it doesn't give them independent collection paths. It binds them directly to the **parent Gizmo pane**:
+
+* **Child Icon $i$**: `icon_function = lambda: parent_pane.state.get_item(i)`
+* **Child Button $i$**: When selected, emits the item at `parent_pane.state.offset + i`.
+* **Empty Slots**: If `not parent_pane.state.is_occupied(i)`, the icon returns `""` (rendering nothing), but the button remains `IDLE` so the spatial graph stays intact.
+
+**3. Seamless Integration with `ScrollController`**
+
+This mirrors the existing `Page` architecture. In `main.yaml`, the scroll buttons target `inventory-pack-grid`:
+
+```yaml
+- id: arrow-down
+  name: inventory-scroll-down
+  bind:
+    schema: select
+    target:
+      selection: scrolldown
+      selector: inventory-pack-grid
+
+```
+
+When `InventoryController.select()` receives `scrolldown` on selector `inventory-pack-grid`:
+
+1. It looks up `target = menu.widgets["inventory-pack-grid"]`.
+2. It calls `target.state.scrolldown()`.
+3. It emits `UpdateEvent(widget=target)`.
+4. The next frame, every child slot icon automatically pulls the newly shifted item key during standard render passes—**zero allocations, zero widget tree rebuilding, and zero manual loop updates.**
+
+**Architectural Verdict**
+
+We don't need new primitive rendering widgets. The primitive widgets (`Pane`, `Button`, `Icon`) are doing their jobs.
+
+What was missing is the **Composite Container**:
+
+1. **Physical Viewport (Layout)**: Handled by `MenuPane` + child `Button`/`Icon` pairs.
+2. **Collection Slicing & Scrolling**: Owned centrally by the parent Gizmo node's state/binding.
+3. **Traversal Graph**: Built once over the static apertures and never invalidated by scrolling.
 
 ---
 
-### Suggested Documentation Updates
+#### Refactor: Phase 04.05.03 - Gizmos & Composite Apertures
 
-#### Update to `docs/06-widgets.md#gizmos`
+**Overview**
 
-Add an explicit subsection documenting dimensional propagation rules for composite panes:
+Refactor the Gizmo UI macro system from fragmented, leaf-level slot bindings to the **Composite Aperture Pattern**. Instead of distributing pagination offsets and collection queries across $N$ isolated child widgets, the root Gizmo `MenuPane` assumes central ownership of a `CollectionState` with windowing and paging mechanics (`scrollup()`, `scrolldown()`, `get_item(i)`).
 
-> **Pane Dimensional Hierarchy**
-> When a `MenuPane` declares explicit `dimensions`, the `Provider` overrides the prototype dimensions declared in `properties.panes[id]`. This is mandatory for macro nodes (such as Gizmos) whose dimensions are derived dynamically from child counts:
-> $$\text{Width} = C \cdot w_{\text{slot}} + (C - 1) \cdot \text{gap}$$
-> 
-> 
-> $$\text{Length} = R \cdot l_{\text{slot}} + (R - 1) \cdot \text{gap}$$
-> 
-> 
-> Any parent layout (`dock` or `stack`) evaluates these synthetic dimensions directly when allocating sibling offsets.
+Child slots are instantiated as fixed spatial apertures (permanent `IDLE` buttons with delegated child icons) that pull their display keys dynamically from the parent Gizmo state. This preserves immutable AABB raycast topology in `Layout._build_graph`, eliminates redundant widget tree rebuilding, and fixes the dock measurement collapse where the pagination controls overlap the grid.
 
-#### Update to `docs/06-widgets.md#bindings`
+##### Goal: Composite Pane Dimensional Propagation
 
-Add the specification for `SlotBinding`:
+Ensure synthesized and container panes propagate explicit dimensional geometry to `Asset.properties` during hydration, allowing `Layout._layout_dock` and `_layout_stack` to calculate sibling spacing using actual subtree bounds rather than prototype asset dimensions.
 
-> **SlotBinding (`schema: slot`)**
-> Combines `SelectBinding` interaction semantics with `CollectionBinding` index slicing:
-> * If $k = \text{offset} + \text{index} < \text{len}(\text{collection})$: Button status evaluates to `IDLE`, and selecting emits the specified command with payload `collection[k]`.
-> * If $k \ge \text{len}(\text{collection})$: Button status evaluates to `DISABLED`, suppressing focus capture and eliminating the node from the traversal graph.
-> 
->
+```python
+# Provider._unpack_pane dimensional override
+if pane.dimensions is not None:
+  props = WidgetProperties(
+      dimensions=pane.dimensions,
+      frames=getattr(props, "frames", None),
+  )
 
+```
+
+##### Goal: Centralized CollectionState & Paging Apertures
+
+Model the collection window as a unified state on the Gizmo root pane rather than scattering state across individual slots. The parent `CollectionState` manages the active slice $[O, O + C)$ and handles pagination shifts, while child slots pull data through deterministic slot indices.
+
+```python
+@dataclass(slots=True)
+class CollectionState(PaneState):
+  collection_function: Callable[[], List[Any]] = field(default_factory=Callable)
+  capacity: int = 8
+  columns: int = 4
+  offset: int = 0
+
+  @property
+  def collection(self) -> List[Any]:
+    return self.collection_function() or []
+
+  def get_item(self, slot_index: int) -> str:
+    k = self.offset + slot_index
+    if 0 <= k < len(self.collection):
+      item = self.collection[k]
+      return item if isinstance(item, str) else getattr(item, "id", str(item))
+    return ""
+
+  def is_occupied(self, slot_index: int) -> bool:
+    return (self.offset + slot_index) < len(self.collection)
+
+  def scrollup(self) -> None:
+    if self.offset > 0:
+      self.offset = max(0, self.offset - self.columns)
+
+  def scrolldown(self) -> None:
+    if self.offset + self.capacity < len(self.collection):
+      self.offset += self.columns
+
+```
+
+##### Goal: Aperture Delegation & Traversal Stability
+
+Maintain a permanently stable traversal graph across collection mutations. Slot buttons remain continuously `IDLE` to serve as fixed raycasting anchors. Child icons pull dynamically from `parent.get_item(slot_index)`. When a slot is vacant, the icon returns an empty key which `IndexFrame` converts to an empty list `[]`, suppressing texture rendering and eliminating `Registry MISS` warnings without altering button status.
+
+##### Goal: Centralized Pagination Commands in InventoryController
+
+Align Gizmo pagination with the established `ScrollController` pattern. Pagination buttons target the root Gizmo pane identifier via `SelectBinding(selection="scrolldown", selector="inventory-pack-grid")`. The controller invokes `scrollup()` or `scrolldown()` directly on the target pane's `CollectionState` and emits a single `UpdateEvent`, avoiding manual iteration over individual slot widgets.
+
+---
+
+##### Tasks
+
+**1. Task: Fix Pane Geometry Propagation in Provider**
+
+*Objective*: Ensure `Provider._unpack_pane` respects explicit `dimensions` declared on synthesized AST nodes.
+
+* [ ] Subtask: Update `Provider._unpack_pane` to instantiate a custom `WidgetProperties` instance with `pane.dimensions` whenever `pane.dimensions` is defined.
+* [ ] Subtask: Configure explicit dimensions for `inventory-scroll-controls` in `data/config/menus/main.yaml` ($W=24, L=85$) to match the height of the $4 \times 2$ grid.
+* [ ] Subtask: Verify that `Layout._layout_dock` spaces `inventory-pack-grid` ($W=175$) and `inventory-scroll-controls` ($W=24$) with the configured $10\text{ px}$ gap, eliminating overlapping screen positions.
+
+**2. Task: Implement CollectionState & Aperture Delegation Models**
+
+*Objective*: Create the centralized collection state and aperture delegation hooks.
+
+* [ ] Subtask: Implement `CollectionState` in `app.models.state.widgets` inheriting from `PaneState`, complete with `offset`, `capacity`, `columns`, `get_item()`, `is_occupied()`, `scrollup()`, and `scrolldown()`.
+* [ ] Subtask: Update `IndexFrame.keys()` in `app.assets.frames.widgets` to return an empty list `[]` when `state.icon` is empty or `None`, preventing missing texture logs for unoccupied apertures.
+* [ ] Subtask: Register `CollectionState` unpacking within `Provider._unpack_pane` for panes generated with collection schemas.
+
+**3. Task: Refactor Fabricator to the Composite Aperture Pattern**
+
+*Objective*: Structure Gizmo expansion so the root pane manages collection state and child widgets act as fixed apertures.
+
+* [ ] Subtask: Update `Fabricator.expand()` to configure the root Gizmo `MenuPane` with `dimensions=Dimensions(w=grid_w, l=grid_l)` and a root-level `CollectionBinding`.
+* [ ] Subtask: Generate child slot buttons with permanent `status: Statuses.IDLE` and `SelectBinding(selection="slot", selector=f"{gizmo.name}", index=slot_idx)`.
+* [ ] Subtask: Wire child icon widgets to evaluate the parent Gizmo pane's `get_item(slot_idx)` closure via `IconState.icon_function`.
+* [ ] Subtask: Ensure `Fabricator.expand()` treats the AST as a template and returns a detached copy of the pane tree to prevent in-place mutation of boot configurations.
+
+**4. Task: Integrate Collection Pagination in InventoryController**
+
+*Objective*: Connect pagination controls and slot selections to centralized Gizmo state.
+
+* [ ] Subtask: Implement `scrolldown` and `scrollup` handling in `InventoryController.select()` to call `target_widget.state.scrolldown()` / `scrollup()` on the Gizmo pane and emit `UpdateEvent(widget=target_widget)`.
+* [ ] Subtask: Update `slot` handling in `InventoryController.select()` to query the item from the Gizmo pane state using the button's slot index, equipping the item if occupied or handling empty slot clicks gracefully.
+* [ ] Subtask: Remove the manual `_sync_slots()` loop from `InventoryController`, relying on dynamic state evaluation during render passes.
+* [ ] Subtask: Implement focus recovery in `InventoryController` to ensure that if focus is on a slot that becomes vacant after paging, focus safely resets to the first occupied slot or falls back to `inventory-scroll-up`.
+
+**5. Task: Verification & Unit Testing**
+
+*Objective*: Validate spatial layout calculation, traversal graph stability, and pagination logic.
+
+* [!: Dependent on Phase Completion] Subtask: Write unit tests in `tests/unit/test_app_services_generators_fabricator.py` verifying AST expansion, root `CollectionState` attributes, and child aperture closures.
+* [!: Dependent on Phase Completion] Subtask: Write unit tests in `tests/unit/test_app_game_menus_layout.py` confirming `Layout.compute()` generates an unbroken traversal graph where all 8 slots and both arrows connect bidirectionally.
+* [!: Dependent on Phase Completion] Subtask: Write unit tests in `tests/unit/test_app_game_menus_controllers.py` validating that sending `scrolldown` to `inventory-pack-grid` increments offset by `columns`, slides item keys across apertures, and preserves active button traversal states.
+
+#### User Review
+
+Dumped inventory menu state after changes,
+
+```markdown
+# Ontology Menu Dump
+
+- **Board:** default
+- **Timestamp:** 20260918_094801
+
+---
+
+# Menus
+
+## Menu: inventory
+
+- **ID:** `inventory`
+- **Focus:** `inventory-scroll-down`
+- **Context:** `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **Controller:** `<app.game.menus.controllers.inventory.InventoryController object at 0x7f72e788cc20>`
+- **Navigation Graph:**
+  - `inventory-scroll-up`:
+    - Traversal.SOUTH: `inventory-scroll-down`
+  - `inventory-scroll-down`:
+    - Traversal.NORTH: `inventory-scroll-up`
+
+### Widgets
+
+#### inventory-menu (`neutral`)
+
+- **Taxonomy:**
+  - ID: `neutral`
+  - Name: `inventory-menu`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 318
+    - Length: 180
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('neutral', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (81, 120)
+  - Layout: `Layouts.DOCK`
+  - Alignment: `Alignments.CENTER`
+  - Gap: 10
+  - Margins: 10
+
+#### inventory-pack-grid (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-pack-grid`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 175
+    - Length: 85
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **Binding:**
+  - Class: `CollectionBinding`
+  - Target: `{'source': 'context.inventory.pack', 'capacity': '8', 'columns': '4'}`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `CollectionState`
+  - Position: (135, 167)
+  - Layout: `Layouts.STACK`
+  - Alignment: `Alignments.START`
+  - Gap: 5
+  - Margins: 0
+
+#### inventory-scroll-controls (`transparent-slot`)
+
+- **Taxonomy:**
+  - ID: `transparent-slot`
+  - Name: `inventory-scroll-controls`
+  - Category: `widgets`
+  - Instance: `panes`
+- **Properties:**
+  - Dimensions:
+    - Width: 24
+    - Length: 85
+- **Component Classes:**
+  - Frame: `SingleFrame`
+  - Animation: `NoAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('transparent-slot', 0, 0)]`
+- **State:**
+  - Class: `PaneState`
+  - Position: (320, 167)
+  - Layout: `Layouts.STACK`
+  - Alignment: `Alignments.CENTER`
+  - Gap: 5
+  - Margins: 0
+
+#### inventory-scroll-up (`arrow-up`)
+
+- **Taxonomy:**
+  - ID: `arrow-up`
+  - Name: `inventory-scroll-up`
+  - Category: `widgets`
+  - Instance: `buttons`
+- **Properties:**
+  - Dimensions:
+    - Width: 24
+    - Length: 24
+- **Component Classes:**
+  - Frame: `TraversalFrame`
+  - Animation: `TraversalAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('arrow-up-idle', 0, 0)]`
+- **Binding:**
+  - Class: `SelectBinding`
+  - Target: `{'selection': 'scrollup', 'selector': 'inventory-pack-grid'}`
+  - Selection: `scrollup`
+  - Selector: `inventory-pack-grid`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `TraversalState`
+  - ID: `arrow-up`
+  - Depth: 0
+  - Position: (320, 183)
+  - Status: `idle`
+  - Animation:
+    - Action: `idle`
+    - Direction: `down`
+    - Frame: 0
+    - Tick: 1
+
+#### inventory-scroll-down (`arrow-down`)
+
+- **Taxonomy:**
+  - ID: `arrow-down`
+  - Name: `inventory-scroll-down`
+  - Category: `widgets`
+  - Instance: `buttons`
+- **Properties:**
+  - Dimensions:
+    - Width: 24
+    - Length: 24
+- **Component Classes:**
+  - Frame: `TraversalFrame`
+  - Animation: `TraversalAnimation`
+- **Calculated Values:**
+  - Computed Keys: `[('arrow-down-active', 0, 0)]`
+- **Binding:**
+  - Class: `SelectBinding`
+  - Target: `{'selection': 'scrolldown', 'selector': 'inventory-pack-grid'}`
+  - Selection: `scrolldown`
+  - Selector: `inventory-pack-grid`
+  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
+- **State:**
+  - Class: `TraversalState`
+  - ID: `arrow-down`
+  - Depth: 0
+  - Position: (320, 212)
+  - Status: `active`
+  - Animation:
+    - Action: `active`
+    - Direction: `down`
+    - Frame: 0
+    - Tick: 1
+```
+
+A few points: 
+
+- No slots are being rendered. Probably because the Player inventory is empty. However, the slots should always be rendered up to the capacity of the Gizmo.
+- The code assumes slots are permanently disabled and non-traversible, but can't test until first point is addressed.
+- Let's alter the Gizmo schema to align with the existing menu config schema and ensure the data shapes of elements are consistent.
+- Ensure the Fabricator binding instantiations are funneled through the Binder service. This will require Fabricator and Binder updates. Goal is to treat a GIzmo like a "virtual asset" in the Menu schema.
+
+Here is the goal menu schema:
+
+```yaml
+menus:
+  inventory:
+    controller: inventory
+    roots:
+      - id: neutral
+        name: inventory-menu
+        instance: panes
+        parameters:
+          position:
+            px: 0.16875
+            py: 0.25
+          layout: dock
+          alignment: center
+          gap: 10
+          margins: 10
+          children:
+            # --- INVENTORY GRID GIZMO ---
+            - id: weapons
+              name: inventory-pack-grid
+              instance: gizmos
+              bind:
+                schema: collection
+                target:
+                  source: context.inventory.pack
+              parameters:
+                capacity: 8
+                columns: 4
+                gap: 5
+                pane: transparent-slot
+                button: slot
+
+            # --- PAGINATION CONTROLS ---
+            - id: transparent-slot
+              name: inventory-scroll-controls
+              instance: panes
+              parameters:
+                dimensions:
+                  w: 24
+                  l: 85
+                layout: stack
+                alignment: center
+                gap: 5
+                children:
+                  - instance: buttons
+                    id: arrow-up
+                    name: inventory-scroll-up
+                    bind:
+                      schema: select
+                      target:
+                        selection: scrollup
+                        selector: inventory-pack-grid
+                  - instance: buttons
+                    id: arrow-down
+                    name: inventory-scroll-down
+                    bind:
+                      schema: select
+                      target:
+                        selection: scrolldown
+                        selector: inventory-pack-grid
+```
+
+I am hoping by making the data structures align, this will simplify the Provider, Binder and Fabricator flows.
+
+Put together a Phase Template for accomplishing these changes. Do not implement anything until user approval is given.
+
+ 
 #### Appendix
 
 **Current Widget Properties**

@@ -14,11 +14,12 @@ from app.models.config.mappings import (
     MappingConfiguration
 )
 from app.models.config.menus import (
-    MenuWidget,
-    MenuPane,
     MenuConfiguration,
-    MenuGizmo,
-    MenuBinding
+    MenuNode,
+    MenuBinding,
+    ButtonParameters,
+    PaneParameters,
+    GizmoParameters
 )
 from app.models.config.recipes import (
     Recipe,
@@ -44,9 +45,10 @@ __all__ = [
     'MenuMapping',
     'DeviceMapping',
     'MappingConfiguration',
-    'MenuWidget',
-    'MenuPane',
-    'MenuGizmo',
+    'ButtonParameters',
+    'PaneParameters',
+    'GizmoParameters',
+    'MenuNode',
     'MenuConfiguration',
     'Recipe',
     'TileRecipe',

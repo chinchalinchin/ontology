@@ -291,6 +291,7 @@ class Translators(str, Enum):
 
 class Shortcuts(str, Enum):
     COMPOSITIONS    = "compositions"
+    GIZMOS          = "gizmos"
     PLOTS           = "plots"
 
 # -------------------------------- WIDGET ENUMERATIONS
@@ -315,6 +316,7 @@ class Alignments(str, Enum):
     CENTER          = "center"
 
 class Bindings(str, Enum):
+    APERTURE        = "aperture"
     COLLECTION      = "collection"
     ICON            = "icon"
     LIBRARY         = "library"

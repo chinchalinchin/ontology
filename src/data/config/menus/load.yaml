@@ -2,23 +2,25 @@ menus:
   load:
     controller: load
     roots: 
-      - id: neutral
+      - instance: panes
+        id: neutral
         name: main-menu
-        position:
-          # ---- 360x360
-          # px: 0.075
-          # py: 0.15
-          # ---- 480 x 480
-          px: 0.175
-          py: 0.275
-        layout: stack
-        alignment: center
-        gap: 10
-        children: 
-          - instance: meters
-            id: health
-            name: load-bar
-            bind: 
-              schema: meter
-              target: 
-                meter: context.registry
+        parameters:
+          position:
+            # ---- 360x360
+            # px: 0.075
+            # py: 0.15
+            # ---- 480 x 480
+            px: 0.175
+            py: 0.275
+          layout: stack
+          alignment: center
+          gap: 10
+          children: 
+            - instance: meters
+              id: health
+              name: load-bar
+              bind: 
+                schema: meter
+                target: 
+                  meter: context.registry

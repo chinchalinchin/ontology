@@ -3,14 +3,16 @@
 
 Models for typing the configuration attributes of Menus.
 """
+from __future__ import annotations
+
 # Standard Libraries
 from typing import (
     List, 
     Optional, 
-    Union,
-    Dict
+    Union, 
+    Dict,
 )
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 # Application Libraries
 from app.config.enums import (
@@ -24,72 +26,79 @@ from app.models.adapters import (
 )
 from app.models.config.core import Configuration
 
-# ---------------------------------------------------------------------------------------
-# -------------------------------------------------------------------- MENU CONFIGURATION
 
 @dataclass(slots=True, frozen=True)
 class MenuBinding:
-    schema: str = None
-    target: Union[str, Dict[str, str]] = None
+    """
+    Associates UI controls or panes with runtime context paths or commands.
+    """
+    schema: Optional[str] = None
+    target: Optional[Union[str, Dict[str, str]]] = None
 
 
 @dataclass(slots=True, frozen=True)
-class MenuWidget:
-    instance: str
-    id: str
-    name: str
-    bind: Optional[MenuBinding] = None
-    status: Optional[Statuses] = Statuses.IDLE
+class PaneParameters:
+    """
+    Structural and spatial layout parameters for container panes.
+    """
+    layout: Layouts = Layouts.STACK
+    alignment: Alignments = Alignments.START
+    gap: int = 0
+    margins: int = 0
+    position: Optional[ScreenPosition] = None # type: ignore
+    dimensions: Optional[Dimensions] = None # type: ignore
+    font: Optional[str] = None
+    children: List[MenuNode] = field(default_factory=list)
 
 
 @dataclass(slots=True, frozen=True)
-class MenuGizmo:
+class GizmoParameters:
     """
-    Declarative macro node within a Menu configuration tree.
-    Bridges static UI layouts with dynamic collection data.
+    Macro expansion configuration for virtual collection gizmos.
     """
-    id: str
-    name: str
-    bind: MenuBinding
     capacity: int
     columns: int
+    pane: str 
+    button: str
     gap: int = 5
-    pane: str = "transparent-slot"
-    button: str = "slot"
 
     def __post_init__(self):
         if self.capacity <= 0:
-            raise ValueError(f"MenuGizmo capacity must be greater than 0, got {self.capacity}")
+            raise ValueError(f"GizmoParameters capacity must be greater than 0, got {self.capacity}")
         if self.columns <= 0:
-            raise ValueError(f"MenuGizmo columns must be greater than 0, got {self.columns}")
+            raise ValueError(f"GizmoParameters columns must be greater than 0, got {self.columns}")
         if not self.pane:
-            raise ValueError("MenuGizmo pane identifier cannot be empty")
+            raise ValueError("GizmoParameters pane identifier cannot be empty")
         if not self.button:
-            raise ValueError("MenuGizmo button identifier cannot be empty")
-
-    @property
-    def pane_id(self) -> str:
-        return self.pane
-
-    @property
-    def button_id(self) -> str:
-        return self.button
+            raise ValueError("GizmoParameters button identifier cannot be empty")
 
 
 @dataclass(slots=True, frozen=True)
-class MenuPane:
-    id: str 
+class ButtonParameters:
+    """
+    State parameters for traversable interactive button widgets.
+    """
+    status: Statuses = Statuses.IDLE
+
+
+@dataclass(slots=True, frozen=True)
+class MenuNode:
+    """
+    Unified AST node representing panes, widgets, and virtual macro gizmos.
+    """
+    id: str
     name: str
-    layout: Layouts
-    alignment: Alignments
-    children: List[Union['MenuPane', MenuWidget, MenuGizmo]]
-    gap: Optional[int] = 0
-    margins: Optional[int] = 0
-    position: Optional[ScreenPosition] = None  # type: ignore
-    font: Optional[str] = None
-    dimensions: Optional[Dimensions] = None # type: ignore
+    instance: str
+    bind: Optional[MenuBinding] = None
+    parameters: Optional[Union[PaneParameters, GizmoParameters, ButtonParameters]] = None
+
 
 @dataclass(slots=True, frozen=True)
 class MenuConfiguration(Configuration):
+    """
+    Root menu configuration containing high-level controller and node hierarchy.
+    """
     controller: str
-    roots: List[MenuPane]
+    roots: List[MenuNode]
+
+# NOTE: backwards compatibility is pointless when we are in the process of refactoring this exact functionality. let it fail, so we know where the bugs are.

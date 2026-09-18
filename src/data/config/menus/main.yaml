@@ -2,104 +2,114 @@ menus:
   main:
     controller: main
     roots: 
-      - id: neutral
+      - instance: panes
+        id: neutral
         name: main-menu
-        position:
-          # Centered for 480 x 480: (480 - 318)/2 -> 81px, (480 - 180)/2 -> 150px
-          px: 0.16875
-          py: 0.3125
-          # For 360 x 360:
-          # px: 0.0583
-          # py: 0.25
-        layout: stack
-        font: menu
-        alignment: center
-        gap: 10
-        children: 
-          # --- NEW GAME ---
-          - id: transparent-label
-            name: new-game-slot
-            layout: overlay
-            alignment: center
-            children:
-              - instance: buttons
-                id: label
-                name: new-game
-                bind: 
-                  schema: select
-                  target:
-                    selection: new
-                    selector: world-01
-              - instance: pages
-                id: text-label
-                name: new-game-text
-                bind:
-                  schema: text
-                  target:
-                    content: NEW
+        parameters:
+          position:
+            # Centered for 480 x 480: (480 - 318)/2 -> 81px, (480 - 180)/2 -> 150px
+            px: 0.16875
+            py: 0.3125
+            # For 360 x 360:
+            # px: 0.0583
+            # py: 0.25
+          layout: stack
+          font: menu
+          alignment: center
+          gap: 10
+          children: 
+            # --- NEW GAME ---
+            - instance: panes
+              id: transparent-label
+              name: new-game-slot
+              parameters:
+                layout: overlay
+                alignment: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: new-game
+                    bind: 
+                      schema: select
+                      target:
+                        selection: new
+                        selector: world-01
+                  - instance: pages
+                    id: text-label
+                    name: new-game-text
+                    bind:
+                      schema: text
+                      target:
+                        content: NEW
 
-          # --- LOAD GAME ---
-          - id: transparent-label
-            name: load-game-slot
-            layout: overlay
-            alignment: center
-            children:
-              - instance: buttons
-                id: label
-                name: load-game
-                bind: 
-                  schema: select
-                  target:
-                    selection: load
-                    selector: world-01
-              - instance: pages
-                id: text-label
-                name: load-game-text
-                bind:
-                  schema: text
-                  target:
-                    content: LOAD
+            # --- LOAD GAME ---
+            - instance: panes
+              id: transparent-label
+              name: load-game-slot
+              parameters:
+                layout: overlay
+                alignment: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: load-game
+                    bind: 
+                      schema: select
+                      target:
+                        selection: load
+                        selector: world-01
+                  - instance: pages
+                    id: text-label
+                    name: load-game-text
+                    bind:
+                      schema: text
+                      target:
+                        content: LOAD
 
-          # --- OPTIONS ---
-          - id: transparent-label
-            name: options-menu-slot
-            layout: overlay
-            alignment: center
-            children:
-              - instance: buttons
-                id: label
-                name: options-menu
-                bind:
-                  schema: select
-                  target:
-                    selector: options
-                    selection: menu
-              - instance: pages
-                id: text-label
-                name: options-menu-text
-                bind:
-                  schema: text
-                  target:
-                    content: OPTIONS
+            # --- OPTIONS ---
+            - instance: panes
+              id: transparent-label
+              name: options-menu-slot
+              parameters:
+                layout: overlay
+                alignment: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: options-menu
+                    bind:
+                      schema: select
+                      target:
+                        selector: options
+                        selection: menu
+                  - instance: pages
+                    id: text-label
+                    name: options-menu-text
+                    bind:
+                      schema: text
+                      target:
+                        content: OPTIONS
 
-          # --- EDITOR ---
-          - id: transparent-label
-            name: editor-menu-slot
-            layout: overlay
-            alignment: center
-            children:
-              - instance: buttons
-                id: label
-                name: editor-menu
-                bind:
-                  schema: select
-                  target:
-                    selector: editor
-                    selection: menu
-              - instance: pages
-                id: text-label
-                name: editor-menu-text
-                bind:
-                  schema: text
-                  target:
-                    content: EDITOR
+            # --- EDITOR ---
+            - instance: panes
+              id: transparent-label
+              name: editor-menu-slot
+              parameters:
+                layout: overlay
+                alignment: center
+                children:
+                  - instance: buttons
+                    id: label
+                    name: editor-menu
+                    bind:
+                      schema: select
+                      target:
+                        selector: editor
+                        selection: menu
+                  - instance: pages
+                    id: text-label
+                    name: editor-menu-text
+                    bind:
+                      schema: text
+                      target:
+                        content: EDITOR

@@ -122,3 +122,58 @@ class DisplayState(AssetState):
     def scrolldown(self) -> None:
         if self.more():
             self.pageindex += 1
+
+
+@dataclass(slots=True)
+class CollectionState(PaneState):
+    """
+    ## CollectionState
+
+    Composite state container for collection-bound macro panes (Gizmos).
+    Centralizes windowing offsets, capacity limits, and item retrieval
+    for delegated aperture slots.
+    """
+    collection_function: Callable[[], List[Any]] = field(default_factory=Callable)
+    capacity: int = 8
+    columns: int = 4
+    offset: int = 0
+
+    @property
+    def collection(self) -> List[Any]:
+        """Evaluates the live collection closure safely."""
+        items = self.collection_function() if callable(self.collection_function) else []
+        return items or []
+
+    def get_item(self, slot_index: int) -> str:
+        """
+        Retrieves the item string identifier at the windowed collection index.
+        Returns an empty string for vacant slots to suppress texture rendering.
+        """
+        k = self.offset + slot_index
+        items = self.collection
+        if 0 <= k < len(items):
+            item = items[k]
+            if isinstance(item, str):
+                return item
+            if hasattr(item, "id"):
+                return getattr(item, "id")
+            if hasattr(item, "name"):
+                return getattr(item, "name")
+            if isinstance(item, dict):
+                return item.get("id", item.get("name", ""))
+            return str(item)
+        return ""
+
+    def is_occupied(self, slot_index: int) -> bool:
+        """Determines whether a physical aperture index holds an active entity."""
+        return (self.offset + slot_index) < len(self.collection)
+
+    def scrollup(self) -> None:
+        """Decrements offset by column count, clamped to the lower bound (0)."""
+        if self.offset > 0:
+            self.offset = max(0, self.offset - self.columns)
+
+    def scrolldown(self) -> None:
+        """Advances offset by column count if additional elements exist beyond capacity."""
+        if self.offset + self.capacity < len(self.collection):
+            self.offset += self.columns
