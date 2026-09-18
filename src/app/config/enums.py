@@ -351,6 +351,7 @@ class Selections(str, Enum):
     SAVE            = "save"
     SCROLLUP        = "scrollup"
     SCROLLDOWN      = "scrolldown"
+    SLOT            = "slot"
     QUIT            = "quit"
 
 class Statuses(str, Enum):

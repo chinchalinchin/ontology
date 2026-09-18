@@ -152,940 +152,353 @@ Gizmos are rendering! However, the layout is messed up. The arrows are rendering
 
 **Inventory Menu State Dump**
 
-```markdown
-# Ontology Menu Dump
-
-- **Board:** default
-- **Timestamp:** 20260917_203703
-
----
-
-# Menus
-
-## Menu: inventory
-
-- **ID:** `inventory`
-- **Focus:** `inventory-scroll-down`
-- **Context:** `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **Controller:** `<app.game.menus.controllers.inventory.InventoryController object at 0x10a837d70>`
-- **Navigation Graph:**
-  - `inventory-pack-grid-slot-0`:
-    - Traversal.SOUTH: `inventory-pack-grid-slot-4`
-    - Traversal.EAST: `inventory-pack-grid-slot-1`
-  - `inventory-pack-grid-slot-1`:
-    - Traversal.SOUTH: `inventory-scroll-down`
-    - Traversal.NORTH: `inventory-scroll-up`
-    - Traversal.EAST: `inventory-scroll-up`
-    - Traversal.WEST: `inventory-pack-grid-slot-0`
-  - `inventory-pack-grid-slot-2`:
-    - Traversal.SOUTH: `inventory-pack-grid-slot-6`
-    - Traversal.EAST: `inventory-pack-grid-slot-3`
-    - Traversal.WEST: `inventory-scroll-up`
-  - `inventory-pack-grid-slot-3`:
-    - Traversal.SOUTH: `inventory-pack-grid-slot-7`
-    - Traversal.WEST: `inventory-pack-grid-slot-2`
-  - `inventory-pack-grid-slot-4`:
-    - Traversal.NORTH: `inventory-pack-grid-slot-0`
-    - Traversal.EAST: `inventory-pack-grid-slot-5`
-  - `inventory-pack-grid-slot-5`:
-    - Traversal.NORTH: `inventory-scroll-down`
-    - Traversal.EAST: `inventory-scroll-down`
-    - Traversal.WEST: `inventory-pack-grid-slot-4`
-  - `inventory-pack-grid-slot-6`:
-    - Traversal.NORTH: `inventory-pack-grid-slot-2`
-    - Traversal.EAST: `inventory-pack-grid-slot-7`
-    - Traversal.WEST: `inventory-scroll-down`
-  - `inventory-pack-grid-slot-7`:
-    - Traversal.NORTH: `inventory-pack-grid-slot-3`
-    - Traversal.WEST: `inventory-pack-grid-slot-6`
-  - `inventory-scroll-up`:
-    - Traversal.SOUTH: `inventory-pack-grid-slot-1`
-    - Traversal.EAST: `inventory-pack-grid-slot-2`
-    - Traversal.WEST: `inventory-pack-grid-slot-1`
-  - `inventory-scroll-down`:
-    - Traversal.SOUTH: `inventory-pack-grid-slot-5`
-    - Traversal.NORTH: `inventory-pack-grid-slot-1`
-    - Traversal.EAST: `inventory-pack-grid-slot-2`
-    - Traversal.WEST: `inventory-pack-grid-slot-1`
-
-### Widgets
-
-#### inventory-menu (`neutral`)
-
-- **Taxonomy:**
-  - ID: `neutral`
-  - Name: `inventory-menu`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 318
-    - Length: 180
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('neutral', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (81, 120)
-  - Layout: `Layouts.DOCK`
-  - Alignment: `Alignments.CENTER`
-  - Gap: 10
-  - Margins: 10
-
-#### inventory-pack-grid (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-pack-grid`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (195, 190)
-  - Layout: `Layouts.STACK`
-  - Alignment: `Alignments.START`
-  - Gap: 5
-  - Margins: 0
-
-#### inventory-pack-grid-row-0 (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-pack-grid-row-0`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (195, 190)
-  - Layout: `Layouts.DOCK`
-  - Alignment: `Alignments.START`
-  - Gap: 5
-  - Margins: 0
-
-#### inventory-pack-grid-slot-0-pane (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-pack-grid-slot-0-pane`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (195, 190)
-  - Layout: `Layouts.OVERLAY`
-  - Alignment: `Alignments.CENTER`
-  - Gap: 0
-  - Margins: 0
-
-#### inventory-pack-grid-slot-0 (`slot`)
-
-- **Taxonomy:**
-  - ID: `slot`
-  - Name: `inventory-pack-grid-slot-0`
-  - Category: `widgets`
-  - Instance: `buttons`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `TraversalFrame`
-  - Animation: `TraversalAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('slot-idle', 0, 0)]`
-- **Binding:**
-  - Class: `SelectBinding`
-  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-0', 'source': 'context.inventory.pack', 'index': '0'}`
-  - Selection: `slot`
-  - Selector: `inventory-pack-grid-icon-0`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `TraversalState`
-  - ID: `slot`
-  - Depth: 0
-  - Position: (195, 190)
-  - Status: `idle`
-  - Animation:
-    - Action: `idle`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
-
-#### inventory-pack-grid-icon-0 (`weapons`)
-
-- **Taxonomy:**
-  - ID: `weapons`
-  - Name: `inventory-pack-grid-icon-0`
-  - Category: `widgets`
-  - Instance: `icons`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-- **Component Classes:**
-  - Frame: `IndexFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('weapons-', 0, 0)]`
-- **Binding:**
-  - Class: `CollectionBinding`
-  - Target: `{'source': 'context.inventory.pack', 'index': '0', 'offset': '0'}`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `IconState`
-  - ID: `weapons`
-  - Depth: 0
-  - Position: (199, 194)
-  - Icon: ``
-
-#### inventory-pack-grid-slot-1-pane (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-pack-grid-slot-1-pane`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (240, 190)
-  - Layout: `Layouts.OVERLAY`
-  - Alignment: `Alignments.CENTER`
-  - Gap: 0
-  - Margins: 0
-
-#### inventory-pack-grid-slot-1 (`slot`)
-
-- **Taxonomy:**
-  - ID: `slot`
-  - Name: `inventory-pack-grid-slot-1`
-  - Category: `widgets`
-  - Instance: `buttons`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `TraversalFrame`
-  - Animation: `TraversalAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('slot-idle', 0, 0)]`
-- **Binding:**
-  - Class: `SelectBinding`
-  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-1', 'source': 'context.inventory.pack', 'index': '1'}`
-  - Selection: `slot`
-  - Selector: `inventory-pack-grid-icon-1`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `TraversalState`
-  - ID: `slot`
-  - Depth: 0
-  - Position: (240, 190)
-  - Status: `idle`
-  - Animation:
-    - Action: `idle`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
-
-#### inventory-pack-grid-icon-1 (`weapons`)
-
-- **Taxonomy:**
-  - ID: `weapons`
-  - Name: `inventory-pack-grid-icon-1`
-  - Category: `widgets`
-  - Instance: `icons`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-- **Component Classes:**
-  - Frame: `IndexFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('weapons-', 0, 0)]`
-- **Binding:**
-  - Class: `CollectionBinding`
-  - Target: `{'source': 'context.inventory.pack', 'index': '1', 'offset': '0'}`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `IconState`
-  - ID: `weapons`
-  - Depth: 0
-  - Position: (244, 194)
-  - Icon: ``
-
-#### inventory-pack-grid-slot-2-pane (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-pack-grid-slot-2-pane`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (285, 190)
-  - Layout: `Layouts.OVERLAY`
-  - Alignment: `Alignments.CENTER`
-  - Gap: 0
-  - Margins: 0
-
-#### inventory-pack-grid-slot-2 (`slot`)
-
-- **Taxonomy:**
-  - ID: `slot`
-  - Name: `inventory-pack-grid-slot-2`
-  - Category: `widgets`
-  - Instance: `buttons`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `TraversalFrame`
-  - Animation: `TraversalAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('slot-idle', 0, 0)]`
-- **Binding:**
-  - Class: `SelectBinding`
-  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-2', 'source': 'context.inventory.pack', 'index': '2'}`
-  - Selection: `slot`
-  - Selector: `inventory-pack-grid-icon-2`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `TraversalState`
-  - ID: `slot`
-  - Depth: 0
-  - Position: (285, 190)
-  - Status: `idle`
-  - Animation:
-    - Action: `idle`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
-
-#### inventory-pack-grid-icon-2 (`weapons`)
-
-- **Taxonomy:**
-  - ID: `weapons`
-  - Name: `inventory-pack-grid-icon-2`
-  - Category: `widgets`
-  - Instance: `icons`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-- **Component Classes:**
-  - Frame: `IndexFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('weapons-', 0, 0)]`
-- **Binding:**
-  - Class: `CollectionBinding`
-  - Target: `{'source': 'context.inventory.pack', 'index': '2', 'offset': '0'}`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `IconState`
-  - ID: `weapons`
-  - Depth: 0
-  - Position: (289, 194)
-  - Icon: ``
-
-#### inventory-pack-grid-slot-3-pane (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-pack-grid-slot-3-pane`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (330, 190)
-  - Layout: `Layouts.OVERLAY`
-  - Alignment: `Alignments.CENTER`
-  - Gap: 0
-  - Margins: 0
-
-#### inventory-pack-grid-slot-3 (`slot`)
-
-- **Taxonomy:**
-  - ID: `slot`
-  - Name: `inventory-pack-grid-slot-3`
-  - Category: `widgets`
-  - Instance: `buttons`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `TraversalFrame`
-  - Animation: `TraversalAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('slot-idle', 0, 0)]`
-- **Binding:**
-  - Class: `SelectBinding`
-  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-3', 'source': 'context.inventory.pack', 'index': '3'}`
-  - Selection: `slot`
-  - Selector: `inventory-pack-grid-icon-3`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `TraversalState`
-  - ID: `slot`
-  - Depth: 0
-  - Position: (330, 190)
-  - Status: `idle`
-  - Animation:
-    - Action: `idle`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
-
-#### inventory-pack-grid-icon-3 (`weapons`)
-
-- **Taxonomy:**
-  - ID: `weapons`
-  - Name: `inventory-pack-grid-icon-3`
-  - Category: `widgets`
-  - Instance: `icons`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-- **Component Classes:**
-  - Frame: `IndexFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('weapons-', 0, 0)]`
-- **Binding:**
-  - Class: `CollectionBinding`
-  - Target: `{'source': 'context.inventory.pack', 'index': '3', 'offset': '0'}`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `IconState`
-  - ID: `weapons`
-  - Depth: 0
-  - Position: (334, 194)
-  - Icon: ``
-
-#### inventory-pack-grid-row-1 (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-pack-grid-row-1`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (195, 235)
-  - Layout: `Layouts.DOCK`
-  - Alignment: `Alignments.START`
-  - Gap: 5
-  - Margins: 0
-
-#### inventory-pack-grid-slot-4-pane (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-pack-grid-slot-4-pane`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (195, 235)
-  - Layout: `Layouts.OVERLAY`
-  - Alignment: `Alignments.CENTER`
-  - Gap: 0
-  - Margins: 0
-
-#### inventory-pack-grid-slot-4 (`slot`)
-
-- **Taxonomy:**
-  - ID: `slot`
-  - Name: `inventory-pack-grid-slot-4`
-  - Category: `widgets`
-  - Instance: `buttons`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `TraversalFrame`
-  - Animation: `TraversalAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('slot-idle', 0, 0)]`
-- **Binding:**
-  - Class: `SelectBinding`
-  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-4', 'source': 'context.inventory.pack', 'index': '4'}`
-  - Selection: `slot`
-  - Selector: `inventory-pack-grid-icon-4`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `TraversalState`
-  - ID: `slot`
-  - Depth: 0
-  - Position: (195, 235)
-  - Status: `idle`
-  - Animation:
-    - Action: `idle`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
-
-#### inventory-pack-grid-icon-4 (`weapons`)
-
-- **Taxonomy:**
-  - ID: `weapons`
-  - Name: `inventory-pack-grid-icon-4`
-  - Category: `widgets`
-  - Instance: `icons`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-- **Component Classes:**
-  - Frame: `IndexFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('weapons-', 0, 0)]`
-- **Binding:**
-  - Class: `CollectionBinding`
-  - Target: `{'source': 'context.inventory.pack', 'index': '4', 'offset': '0'}`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `IconState`
-  - ID: `weapons`
-  - Depth: 0
-  - Position: (199, 239)
-  - Icon: ``
-
-#### inventory-pack-grid-slot-5-pane (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-pack-grid-slot-5-pane`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (240, 235)
-  - Layout: `Layouts.OVERLAY`
-  - Alignment: `Alignments.CENTER`
-  - Gap: 0
-  - Margins: 0
-
-#### inventory-pack-grid-slot-5 (`slot`)
-
-- **Taxonomy:**
-  - ID: `slot`
-  - Name: `inventory-pack-grid-slot-5`
-  - Category: `widgets`
-  - Instance: `buttons`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `TraversalFrame`
-  - Animation: `TraversalAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('slot-idle', 0, 0)]`
-- **Binding:**
-  - Class: `SelectBinding`
-  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-5', 'source': 'context.inventory.pack', 'index': '5'}`
-  - Selection: `slot`
-  - Selector: `inventory-pack-grid-icon-5`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `TraversalState`
-  - ID: `slot`
-  - Depth: 0
-  - Position: (240, 235)
-  - Status: `idle`
-  - Animation:
-    - Action: `idle`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
-
-#### inventory-pack-grid-icon-5 (`weapons`)
-
-- **Taxonomy:**
-  - ID: `weapons`
-  - Name: `inventory-pack-grid-icon-5`
-  - Category: `widgets`
-  - Instance: `icons`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-- **Component Classes:**
-  - Frame: `IndexFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('weapons-', 0, 0)]`
-- **Binding:**
-  - Class: `CollectionBinding`
-  - Target: `{'source': 'context.inventory.pack', 'index': '5', 'offset': '0'}`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `IconState`
-  - ID: `weapons`
-  - Depth: 0
-  - Position: (244, 239)
-  - Icon: ``
-
-#### inventory-pack-grid-slot-6-pane (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-pack-grid-slot-6-pane`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (285, 235)
-  - Layout: `Layouts.OVERLAY`
-  - Alignment: `Alignments.CENTER`
-  - Gap: 0
-  - Margins: 0
-
-#### inventory-pack-grid-slot-6 (`slot`)
-
-- **Taxonomy:**
-  - ID: `slot`
-  - Name: `inventory-pack-grid-slot-6`
-  - Category: `widgets`
-  - Instance: `buttons`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `TraversalFrame`
-  - Animation: `TraversalAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('slot-idle', 0, 0)]`
-- **Binding:**
-  - Class: `SelectBinding`
-  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-6', 'source': 'context.inventory.pack', 'index': '6'}`
-  - Selection: `slot`
-  - Selector: `inventory-pack-grid-icon-6`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `TraversalState`
-  - ID: `slot`
-  - Depth: 0
-  - Position: (285, 235)
-  - Status: `idle`
-  - Animation:
-    - Action: `idle`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
-
-#### inventory-pack-grid-icon-6 (`weapons`)
-
-- **Taxonomy:**
-  - ID: `weapons`
-  - Name: `inventory-pack-grid-icon-6`
-  - Category: `widgets`
-  - Instance: `icons`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-- **Component Classes:**
-  - Frame: `IndexFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('weapons-', 0, 0)]`
-- **Binding:**
-  - Class: `CollectionBinding`
-  - Target: `{'source': 'context.inventory.pack', 'index': '6', 'offset': '0'}`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `IconState`
-  - ID: `weapons`
-  - Depth: 0
-  - Position: (289, 239)
-  - Icon: ``
-
-#### inventory-pack-grid-slot-7-pane (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-pack-grid-slot-7-pane`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (330, 235)
-  - Layout: `Layouts.OVERLAY`
-  - Alignment: `Alignments.CENTER`
-  - Gap: 0
-  - Margins: 0
-
-#### inventory-pack-grid-slot-7 (`slot`)
-
-- **Taxonomy:**
-  - ID: `slot`
-  - Name: `inventory-pack-grid-slot-7`
-  - Category: `widgets`
-  - Instance: `buttons`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `TraversalFrame`
-  - Animation: `TraversalAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('slot-idle', 0, 0)]`
-- **Binding:**
-  - Class: `SelectBinding`
-  - Target: `{'selection': 'slot', 'selector': 'inventory-pack-grid-icon-7', 'source': 'context.inventory.pack', 'index': '7'}`
-  - Selection: `slot`
-  - Selector: `inventory-pack-grid-icon-7`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `TraversalState`
-  - ID: `slot`
-  - Depth: 0
-  - Position: (330, 235)
-  - Status: `idle`
-  - Animation:
-    - Action: `idle`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
-
-#### inventory-pack-grid-icon-7 (`weapons`)
-
-- **Taxonomy:**
-  - ID: `weapons`
-  - Name: `inventory-pack-grid-icon-7`
-  - Category: `widgets`
-  - Instance: `icons`
-- **Properties:**
-  - Dimensions:
-    - Width: 32
-    - Length: 32
-- **Component Classes:**
-  - Frame: `IndexFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('weapons-', 0, 0)]`
-- **Binding:**
-  - Class: `CollectionBinding`
-  - Target: `{'source': 'context.inventory.pack', 'index': '7', 'offset': '0'}`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `IconState`
-  - ID: `weapons`
-  - Depth: 0
-  - Position: (334, 239)
-  - Icon: ``
-
-#### inventory-scroll-controls (`transparent-slot`)
-
-- **Taxonomy:**
-  - ID: `transparent-slot`
-  - Name: `inventory-scroll-controls`
-  - Category: `widgets`
-  - Instance: `panes`
-- **Properties:**
-  - Dimensions:
-    - Width: 40
-    - Length: 40
-- **Component Classes:**
-  - Frame: `SingleFrame`
-  - Animation: `NoAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('transparent-slot', 0, 0)]`
-- **State:**
-  - Class: `PaneState`
-  - Position: (245, 190)
-  - Layout: `Layouts.STACK`
-  - Alignment: `Alignments.CENTER`
-  - Gap: 5
-  - Margins: 0
-
-#### inventory-scroll-up (`arrow-up`)
-
-- **Taxonomy:**
-  - ID: `arrow-up`
-  - Name: `inventory-scroll-up`
-  - Category: `widgets`
-  - Instance: `buttons`
-- **Properties:**
-  - Dimensions:
-    - Width: 24
-    - Length: 24
-- **Component Classes:**
-  - Frame: `TraversalFrame`
-  - Animation: `TraversalAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('arrow-up-idle', 0, 0)]`
-- **Binding:**
-  - Class: `SelectBinding`
-  - Target: `{'selection': 'scrollup', 'selector': 'inventory-pack-grid'}`
-  - Selection: `scrollup`
-  - Selector: `inventory-pack-grid`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `TraversalState`
-  - ID: `arrow-up`
-  - Depth: 0
-  - Position: (253, 183)
-  - Status: `idle`
-  - Animation:
-    - Action: `idle`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
-
-#### inventory-scroll-down (`arrow-down`)
-
-- **Taxonomy:**
-  - ID: `arrow-down`
-  - Name: `inventory-scroll-down`
-  - Category: `widgets`
-  - Instance: `buttons`
-- **Properties:**
-  - Dimensions:
-    - Width: 24
-    - Length: 24
-- **Component Classes:**
-  - Frame: `TraversalFrame`
-  - Animation: `TraversalAnimation`
-- **Calculated Values:**
-  - Computed Keys: `[('arrow-down-active', 0, 0)]`
-- **Binding:**
-  - Class: `SelectBinding`
-  - Target: `{'selection': 'scrolldown', 'selector': 'inventory-pack-grid'}`
-  - Selection: `scrolldown`
-  - Selector: `inventory-pack-grid`
-  - Context: `InventoryContext(inventory=Inventory(pack=None, pouch=None, equipment=Equipment(armor=None, weapon='shortsword', tool=None, utility=None, shield='buckler'), wallet=0))`
-- **State:**
-  - Class: `TraversalState`
-  - ID: `arrow-down`
-  - Depth: 0
-  - Position: (253, 212)
-  - Status: `active`
-  - Animation:
-    - Action: `active`
-    - Direction: `down`
-    - Frame: 0
-    - Tick: 1
 ```
+Omitted after bug identified for brevity.
+```
+
 
 ##### Task: Architectural Assessment
 
-Diagnose the problem with the Gizmo layout.
+- [x] Complete
 
-In addition, with the initial implementation of Gizmos in place, it needs refactored and reanalyzed to streamline the datastructures that support it and the logic that is used to construct it.
+With the initial implementation of Gizmos in place, it needs refactored and reanalyzed to streamline the datastructures that support it and the logic that is used to construct it.
 
-Analyze the codebase for errors and bugs as they pertain to this phase.
+- Diagnose the problem with the Gizmo layout.
+- Analyze the codebase for errors and bugs as they pertain to this phase.
+
+**Scrolling**
+
+The Inventory menu currently has arrow Buttons for scrolling, but they do not hook into anything. 
+
+Scrolling is currently a "text" only feature. Determine the level of effort and how ugly the code has to be made in order to support scrolling through a collection of slots (gizmo).
+
+**Generalization**
+
+A Gizmo is currently specific to a "Collection". However, there are other configurations of Gizmos that may be useful in the future. The Fabricator should be more like a Factory class, that generates the Gizmo layout from its binded schema.
+
+**Various Notes**
+
+- The Fabricator doesn't use the MenuContext, despite it being passed into `expand()`.
+
+---
+
+The arrows render on top of the inventory grid because `Provider._unpack_pane` silently discards the synthetic dimensions calculated by `Fabricator`, forcing `Layout._layout_dock` to treat the entire $175 \times 85\text{ px}$ grid as a single $40 \times 40\text{ px}$ cell.
+
+### Layout Problem Diagnosis
+
+In `Fabricator.expand()`, the grid dimensions are calculated correctly based on capacity, column count, slot size ($40 \times 40$), and gap ($5\text{ px}$):
+
+$$\text{grid\_w} = 4 \times 40 + (4 - 1) \times 5 = 175\text{ px}$$
+
+$$\text{grid\_l} = 2 \times 40 + (2 - 1) \times 5 = 85\text{ px}$$
+
+These values are attached to the synthesized `MenuPane(dimensions=Dimensions(w=175, l=85))`. However, inside `Provider._unpack_pane()`:
+
+```python
+props = self.properties.panes.get(pane.id)
+# ...
+pane_asset = Asset(
+    taxonomy=Factory.taxonomy(
+        id=pane.id,
+        name=pane.name,
+        category=AssetCategories.WIDGETS.value,
+        instance=AssetInstances.PANES.value,
+    ),
+    properties=props,  # Static 40x40 from transparent-slot in main.yaml
+    state=PaneState(...),
+)
+
+```
+
+`pane.dimensions` on the AST node is ignored. `props` is retrieved directly from `self.properties.panes["transparent-slot"]`, which defines static dimensions of $40 \times 40$.
+
+When `Layout._layout_dock` executes on the parent `inventory-menu` ($W=318, L=180, \text{margin}=10, \text{gap}=10$):
+
+1. **Child Measurement**: `c.dimensions` accesses `Asset.dimensions`, resolving to `Asset.properties.dimensions`.
+* `inventory-pack-grid`: Measured as **$40\text{ px}$** instead of **$175\text{ px}$**.
+* `inventory-scroll-controls`: Measured as **$40\text{ px}$** (also using `transparent-slot`).
+
+
+2. **Total Width**:
+
+$$\text{total\_w} = 40 + 40 + 10 = 90\text{ px} \quad (\text{expected } 175 + 40 + 10 = 225\text{ px})$$
+
+
+3. **Anchor Positioning**: With `alignment: center` and usable width $318 - 20 = 298\text{ px}$:
+
+$$\text{offset\_x} = \frac{298 - 90}{2} = 104\text{ px}$$
+
+
+$$\text{current\_x} = 81 + 10 + 104 = 195\text{ px}$$
+
+
+4. **Placement Collision**:
+* `inventory-pack-grid` is placed at $X = 195$. Its internal slots expand across $X \in [195, 370]$ (Slot 0 at 195, Slot 1 at 240, Slot 2 at 285, Slot 3 at 330).
+* `inventory-scroll-controls` is placed at $X = 195 + 40 + 10 = \mathbf{245}$.
+* The arrows ($W=24$) center inside the controls at $X = 245 + \frac{40 - 24}{2} = \mathbf{253}$.
+
+
+
+The scroll controls are stamped directly between Slot 1 ($X=240$) and Slot 2 ($X=285$).
+
+---
+
+### Codebase Analysis: Critical Phase Bugs
+
+Beyond the dimensional collapse, four architectural bugs break Gizmo functionality:
+
+1. **Button Status Decoupled from CollectionBinding**: `Fabricator.expand()` assigns `CollectionBinding` to the `icon` widget, but assigns `SelectBinding` to the `button` widget. `InventoryController._sync_slots()` queries `hasattr(widget.binding, "offset")` and attempts to set `widget.state.status = binding.get_status()`. This operation targets the `IconState` (which has no `status` field), while the slot button retains `SelectBinding` and stays permanently `IDLE`. As seen in the state dump, all 8 buttons remain traversable in `menu.graph` even when `context.inventory.pack` is `None`.
+2. **Static Traversal Graph Invalidation**: `Layout._build_graph` runs once during `Provider.unpack()`. When collection pagination or inventory mutation changes a slot from active to empty, `menu.graph` is never updated. Traversing into a newly disabled slot causes focus to land on an intraversable widget.
+3. **Registry Miss Logging Storm**: When a slot is vacant, `CollectionBinding.get_item()` returns `""`. `IndexFrame.keys()` evaluates this to `[("weapons-", 0, 0)]`. Because `IconState` is not excluded from missing frame checks in `Screen._widgets`, the engine logs `Registry MISS: Frame key not found: 'weapons-'` for every empty slot on every frame, generating hundreds of I/O log writes per second.
+4. **AST Mutation of Frozen Configurations**: In `Provider._unpack_pane()`, the loop executes `pane.children[i] = node`. Mutating `pane.children` in-place mutates the long-lived `MenuConfiguration` loaded during boot. Once expanded, the `MenuGizmo` macro node is permanently replaced by a concrete `MenuPane`, preventing subsequent re-expansions or dynamic re-bindings.
+
+---
+
+### Gizmo Scrolling Architecture
+
+Supporting collection scrolling requires minimal effort and zero ugly code because **texture rebaking is not involved**.
+
+Unlike text scrolling—which requires rasterizing glyphs onto an SDL surface canvas via `Screen.stamp()`—Gizmo slot textures are static sprites already cached in the `Registry`. An icon's displayed texture is resolved on the fly each frame through its frame key:
+
+```python
+keys = [(f"{widget.id}-{state.icon}", 0, 0)]
+
+```
+
+Where `state.icon` evaluates `CollectionBinding.get_item()` dynamically:
+
+$$k = \text{offset} + \text{index}$$
+
+#### Clean Implementation Strategy
+
+1. **Store Offset on Context**: Move pagination tracking into the context (e.g., `context.offset` or a controller-backed property).
+2. **Targeted Paging Bounds**: In `InventoryController.select()`:
+* When `selection == SCROLLDOWN`: Advance offset by `columns` (e.g., $+4$), clamped to:
+
+$$\text{max\_offset} = \max\left(0, \left\lceil \frac{N - \text{capacity}}{\text{columns}} \right\rceil \times \text{columns}\right)$$
+
+
+* When `selection == SCROLLUP`: Decrement offset by `columns`, clamped to $\ge 0$.
+
+
+3. **Direct Context Resolution**: Configure `CollectionBinding` to resolve `offset` dynamically via path (`target: {"offset": "context.offset", ...}`), eliminating the manual `_sync_slots()` iteration loop entirely.
+4. **Focus Recovery**: If `menu.focus` belongs to a slot whose effective index $k \ge N$ after a scroll event, clamp focus to the nearest valid slot or default to `inventory-scroll-up`.
+
+---
+
+### Gizmo Generalization & Fabricator Architecture
+
+`Fabricator` should not be hardcoded to grid collections. Refactor it into an extensible generator factory that selects an expansion strategy based on `gizmo.bind.schema`:
+
+```
+Fabricator.expand(gizmo, context, properties)
+ ├── schema == "collection" / "grid"   ──> GridFabricator
+ ├── schema == "equipment" / "record" ──> EquipmentFabricator
+ └── schema == "pagination"           ──> PaginationFabricator
+
+```
+
+#### Utilizing MenuContext in Expansion
+
+`context` is currently passed to `expand()` and unused. Integrating `context` unlocks three capabilities:
+
+* **Dynamic Capacity Sizing**: If `gizmo.capacity` is set to `0` or omitted in YAML, the Fabricator queries `len(context.resolve(source_path))` to generate exactly the required slot count, eliminating empty placeholder slots for fixed lists.
+* **Direct Path Binding**: Generates declarative select targets that bind buttons directly to underlying domain entities (e.g., `target: {"entity": f"{source_path}[{k}]"}`).
+* **Pre-computed Traversal States**: Evaluates collection bounds during expansion so empty slots are initialized directly as `DISABLED` before `Layout._build_graph()` executes, preventing phantom nodes in the initial navigation graph.
+
+---
+
+### Bug Reports
+
+##### Bug B008: Pane Asset Discards AST Dimensions in Provider Unpack
+
+**STATUS**: OPEN
+**SEVERITY**: HIGH
+
+**Description**
+
+When `Provider._unpack_pane()` instantiates a `MenuPane` Asset, it assigns properties solely via `self.properties.panes.get(pane.id)`. Any synthetic or explicit dimensions defined on the configuration AST node (`pane.dimensions`, such as those calculated by `Fabricator`) are ignored. Consequently, `Layout._layout_dock` and `_layout_stack` read the fallback asset dimensions (e.g., $40 \times 40$ for `transparent-slot`), causing subsequent siblings in dock/stack layouts to compute overlapping coordinates.
+
+**Steps to Replicate**
+
+1. Launch `inventory` menu with an expanded Gizmo grid ($175\text{ px}$ wide) and pagination controls in a horizontal `dock` pane.
+2. Inspect the resulting `PaneState.position` and button coordinates via state dump.
+3. Observe `inventory-scroll-controls` placed at $X=245$, overlapping the grid which extends to $X=370$.
+
+**Proposed Remediation**
+
+In `Provider._unpack_pane()`, check if `pane.dimensions` is set. If present, instantiate an overridden `WidgetProperties` container with `dimensions=pane.dimensions` instead of directly sharing the static prototype from `self.properties.panes`:
+
+```python
+if pane.dimensions is not None:
+  props = WidgetProperties(
+      dimensions=pane.dimensions,
+      frames=props.frames if props else None,
+  )
+
+```
+
+---
+
+##### Bug B009: Slot Button Decoupled from CollectionBinding
+
+**STATUS**: OPEN
+**SEVERITY**: HIGH
+
+**Description**
+
+`Fabricator.expand()` attaches a `CollectionBinding` to the slot's child icon widget, but assigns a standard `SelectBinding` to the slot's button widget. `InventoryController._sync_slots()` checks `hasattr(widget.binding, "offset")`, which succeeds only on the icon widget. The icon widget state (`IconState`) has no `status` property, while the button widget retains `SelectBinding` and stays permanently `IDLE`. This causes empty inventory slots to remain active and traversable in `menu.graph` even when the backing inventory is empty.
+
+**Steps to Replicate**
+
+1. Open `inventory` menu when `player.inventory.pack` is empty or contains fewer items than `gizmo.capacity`.
+2. Inspect `menu.graph` or navigate using directional inputs.
+3. Observe focus landing on empty slots that display no item.
+
+**Proposed Remediation**
+
+Introduce a composite `SlotBinding` subclassing `SelectBinding` (or add collection index awareness to `SelectBinding`) that evaluates collection length against `effective_index = offset + index`. When $k \ge \text{len}(\text{collection})$, the button automatically yields `status = Statuses.DISABLED.value`.
+
+---
+
+##### Bug B010: Registry Miss Storm on Vacant Icon Frame Keys
+
+**STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+When an inventory slot is vacant, `CollectionBinding.get_item()` returns an empty string. `IndexFrame.keys()` joins this with the asset identifier, producing `weapons-`. `Screen._widgets()` queries `self.registry.image("weapons-")`, fails, and logs a warning on every frame because `IconState` is not excluded from missing texture checks.
+
+**Steps to Replicate**
+
+1. Open the inventory menu with empty slots.
+2. Monitor application logs.
+3. Observe `Registry MISS: Frame key not found: 'weapons-'` logged 60 times per second per empty slot.
+
+**Proposed Remediation**
+
+Update `IndexFrame.keys()` to return an empty list `[]` when `state.icon` is empty or `None`, preventing texture lookup entirely:
+
+```python
+def keys(self, id: str, state: AssetState) -> List[Tuple[str, int, int]]:
+  if not getattr(state, "icon", None):
+    return []
+  return [(settings.SEPARATOR.join([id, state.icon]), 0, 0)]
+
+```
+
+---
+
+##### Bug B011: Static Menu AST Mutation in Provider Unpack
+
+**STATUS**: OPEN
+**SEVERITY**: MEDIUM
+
+**Description**
+
+In `Provider._unpack_pane()`, the loop performs `pane.children[i] = node`. This mutates the child list of the master `MenuConfiguration` in place. Once a `MenuGizmo` macro is expanded into a `MenuPane`, the configuration tree permanently loses the macro definition, preventing re-expansion or dynamic reconstruction on future menu invocations.
+
+**Steps to Replicate**
+
+1. Open `inventory` menu (triggering Gizmo expansion).
+2. Close `inventory` menu.
+3. Modify player inventory.
+4. Re-open `inventory` menu.
+5. Observe that `Provider._unpack_node` receives the stale `MenuPane` rather than the `MenuGizmo` macro node.
+
+**Proposed Remediation**
+
+Treat incoming configuration trees as read-only templates. In `Provider.unpack()`, clone or copy the root panes prior to traversal, or maintain a distinct runtime AST separate from the configuration specification.
+
+---
+
+### Backlog: Phase 04.05 - Gizmos & Dynamic UI Architecture
+
+**Overview**
+
+Refactor the Gizmo subsystem to address dimensional layout bugs, eliminate traversal over vacant slots, generalize macro expansion across collection and equipment schemas, and implement pagination controls.
+
+##### Goal: Dynamic Layout Sizing & Overlap Remediation
+
+Ensure synthesized and container panes propagate explicit dimensional geometry to `Asset.properties` during hydration, allowing `Layout._layout_dock` and `_layout_stack` to calculate spacing using actual subtree bounds.
+
+##### Goal: Unified Slot Bindings & Traversal Integrity
+
+Unify button traversal state with collection item occupancy. When a slot is vacant, its button must automatically assume `DISABLED` status prior to `Layout._build_graph()`, preventing intraversable elements from populating the navigation topology.
+
+##### Goal: Generalized Strategy-Based Fabricator
+
+Refactor `Fabricator` from a concrete grid generator into a factory service delegating macro expansion to dedicated schema generators (`collection`, `equipment`, `pagination`).
+
+##### Goal: Windowed Collection Pagination & Focus Clamping
+
+Connect pagination buttons to controller offset states, implement row-based pagination stepping, and add deterministic focus recovery when the active slot leaves the visible window.
+
+##### Tasks
+
+**1. Task: Fix Pane Geometry Propagation in Provider**
+
+*Objective*: Allow synthesized `MenuPane.dimensions` to override prototype asset properties during unpacking.
+
+* [ ] Subtask: Update `Provider._unpack_pane` to construct custom `WidgetProperties` when `pane.dimensions` is defined.
+* [ ] Subtask: Define explicit dimensions for `inventory-scroll-controls` in `data/config/menus/main.yaml` ($W=24, L=53$).
+* [ ] Subtask: Verify `inventory-pack-grid` ($W=175$) and scroll controls ($W=24$) dock horizontally without spatial overlap.
+
+**2. Task: Implement SlotBinding & Vacancy Handling**
+
+*Objective*: Synchronize button traversal status and icon frame generation with collection item bounds.
+
+* [ ] Subtask: Implement `SlotBinding` in `app.game.menus.bindings.slot` combining select commands with collection bounds checking.
+* [ ] Subtask: Update `IndexFrame.keys()` to return an empty list when `state.icon` is empty, eliminating missing texture log warnings.
+* [ ] Subtask: Ensure `Provider._focus()` selects the first valid, non-disabled button upon initial menu hydration.
+
+**3. Task: Refactor Fabricator to Strategy Factory**
+
+*Objective*: Abstract macro expansion to support arbitrary dynamic UI patterns.
+
+* [ ] Subtask: Define `GizmoStrategy` abstract base class with `expand(gizmo, context, properties) -> MenuPane`.
+* [ ] Subtask: Extract grid generation logic into `CollectionGridStrategy`.
+* [ ] Subtask: Implement `EquipmentSlotStrategy` for binding discrete equipment fields (`weapon`, `shield`, `armor`).
+* [ ] Subtask: Register strategies within `Fabricator` keyed by `bind.schema`.
+
+**4. Task: Integrate Collection Pagination in InventoryController**
+
+*Objective*: Implement row-based collection scrolling and focus recovery.
+
+* [ ] Subtask: Update `InventoryController.select()` to advance/decrement `offset` by `columns`.
+* [ ] Subtask: Add upper and lower offset clamping based on collection length and grid capacity.
+* [ ] Subtask: Implement focus recovery logic shifting traversal focus to `inventory-scroll-up` when the selected slot scrolls out of view.
+* [ ] Subtask: Write unit tests covering AST expansion, dock spacing with dynamic pane dimensions, and empty slot traversal exclusion.
+
+---
+
+### Suggested Documentation Updates
+
+#### Update to `docs/06-widgets.md#gizmos`
+
+Add an explicit subsection documenting dimensional propagation rules for composite panes:
+
+> **Pane Dimensional Hierarchy**
+> When a `MenuPane` declares explicit `dimensions`, the `Provider` overrides the prototype dimensions declared in `properties.panes[id]`. This is mandatory for macro nodes (such as Gizmos) whose dimensions are derived dynamically from child counts:
+> $$\text{Width} = C \cdot w_{\text{slot}} + (C - 1) \cdot \text{gap}$$
+> 
+> 
+> $$\text{Length} = R \cdot l_{\text{slot}} + (R - 1) \cdot \text{gap}$$
+> 
+> 
+> Any parent layout (`dock` or `stack`) evaluates these synthetic dimensions directly when allocating sibling offsets.
+
+#### Update to `docs/06-widgets.md#bindings`
+
+Add the specification for `SlotBinding`:
+
+> **SlotBinding (`schema: slot`)**
+> Combines `SelectBinding` interaction semantics with `CollectionBinding` index slicing:
+> * If $k = \text{offset} + \text{index} < \text{len}(\text{collection})$: Button status evaluates to `IDLE`, and selecting emits the specified command with payload `collection[k]`.
+> * If $k \ge \text{len}(\text{collection})$: Button status evaluates to `DISABLED`, suppressing focus capture and eliminating the node from the traversal graph.
+> 
+>
 
 #### Appendix
 
