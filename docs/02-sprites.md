@@ -135,7 +135,7 @@ Mutators are attributes that alter Sprite behavior. They are functions of the Sp
 Mutators are *condition-driven*. They may also be *parameterized*; In other words, all Mutators are *conditional* but not all Mutators are parameterized. Parameters modulate the conditions underlying the Mutator calculation. Both Sprites and the [Player](#player) have Mutator fields, but only Sprites have parameterized Mutators; the Player Mutators are all purely driven by game logic. In other words, the Player Mutator triggers serve to flag the game-loop to apply trigger-specific procedures to the Player Asset, whereas Sprite Mutator triggers depend on the specific parameters unique to the Sprite's deployment. 
 
 - Parameterized Mutators: `fear`, `vision`
-- Conditional Mutators: `animated`, `dead`, `struck`
+- Conditional Mutators: `animated`, `dead`
 
 **Triggers**
 
@@ -274,6 +274,8 @@ TODO
 
 **Pack**
 
+TODO
+
 **Wallet**
 
 TODO
@@ -324,7 +326,7 @@ sprite.state.animation.action = AnimationMap.action(
 
 ## Player
 
-A Player is a special type of Sprite Sheet Asset Instance. It may be thought of as a "*pseudo*"-Asset. It has no properties that differentiate it in the Hierarchy; Instead, it utilizes Sprite Sheet properties. It has own state and Intention management Mechanics. 
+A Player is a special type of Sprite Sheet Asset Instance. It may be thought of as a "*pseudo*"-Asset. It has no properties that differentiate it in the Hierarchy; Instead, it utilizes Sprite Sheet properties. However, it is differentiated by having a unique state and isolated Intention management Mechanics. 
 
 The Player Sprite Sheet is configured through the `player` Sprite Sheet. 
 

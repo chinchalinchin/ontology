@@ -74,13 +74,16 @@ The `AnimationMap` plays a crucial role in enforcing logical constraints. For ex
 
 ### Spatial Grid Caching
 
-To optimize environmental queries during the game loop, the Board implements an $O(1)$ spatial hashing grid (`_cached_tilemap`). The Board chunks static Assets into a dictionary grid during initialization, keyed by a fixed `TILE_HASH_SIZE` (defaulting to 32x32 pixels).
 
-When systems like MotionMechanics need to compute the environmental friction acting on a moving Crate or Sprite, the Board divides the Asset's absolute `(x, y)` coordinates by the hash size to retrieve the exact Tile beneath it. 
+To optimize environmental lookups without traversing linear asset arrays, the Board partitions static tiles into an $O(1)$ spatial hash grid (`_cached_tilemap`), indexed with bucket size `TILE_HASH_SIZE = 32`.
 
-!!! important
-    The `_cached_tilemap` dictionary nests by `[layer][instance][(cx, cy)]` to prevent foreground architectural tiles from overwriting the background terrain tiles necessary for [MotionMechanics](./05-mechanics.md#spatial) friction lookups.
-    
+To prevent foreground architectural tiles (`fore`) from overwriting terrain friction data (`back`), the cache nests by layer and instance:
+
+$$\text{tilemap}[\text{layer}][\text{instance}][(c_x, c_y)] \to \text{Asset}$$
+
+!!! note
+    `Board.tile(layer, position, instance=AssetInstances.BACK.value)` queries background friction tiles by default.
+
 ## Rendering
 
 ### Depth & Height
