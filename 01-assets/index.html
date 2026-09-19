@@ -2149,8 +2149,8 @@
 </ul>
 </li>
 <li><strong>Behavior: Frame:</strong> A static schema calculation used by the renderer to determine the correct texture string keys. An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a <code>List[(str, int, int)]</code> rather than a single <code>str</code>. The tuple <code>(int, int)</code> controls how much the frame is offset from its origin (mainly used in <a href="#expressions">Expressions</a> to pin a <a href="#cursors">Cursor Expressions</a> to the relative Position of a Sprite) In addition, Frames provide the indexing schema for textures used by the <a href="../00-overview/#registry">Registry</a> to store Assets in memory.<ul>
-<li><code>keys(id, state)</code>: Interface for retrieving Asset's current Frame key.</li>
-<li><code>index(id, properties)</code>: Interface for indexing Asset frames in Registry.</li>
+<li><code>keys(id: str, state: AssetState) -&gt; List[Tuple[str, int, int]]</code>: Interface for retrieving Asset's current Frame key.</li>
+<li><code>index(id: str, properties: AssetProperties) -&gt; Dict[str, Tuple[int, int, int, int]]</code>: Interface for indexing Asset frames in Registry.</li>
 </ul>
 </li>
 </ol>
@@ -2218,7 +2218,7 @@
 <li><code>multiple: Multiple</code></li>
 </ul>
 <h3 id="grid">Grid</h3>
-<p>A Grid is a special Type reserved for use in the <a href="../06-widgets/#menus">Editor Menu</a>. It is used overlay canvases in the Editor with a spatial grid that can be traversed through focus. </p>
+<p>A Grid is a special Type reserved for use in the <a href="../06-widgets/#menus">Editor Menu</a>. It is used as an overlay canvas in the Editor,to create a spatial grid that can be traversed through focus. </p>
 <p>There must be precisely <em>two</em> Grid tiles:</p>
 <ul>
 <li><code>focus</code>: A Grid Tile to represent active selections.</li>
@@ -2250,7 +2250,7 @@
 <p>Binary Objects have a <code>count</code> of 2, where as all other Objects are initialized with <code>count = 1</code> by default.</p>
 <p><strong>Properties: ObjectProperties</strong></p>
 <ul>
-<li><code>dim: Dimensions</code></li>
+<li><code>dimensions: Dimensions</code></li>
 <li><code>hitboxes: List[Hitbox]</code> </li>
 <li><code>count: int = 1</code></li>
 <li><code>mass: int</code></li>
@@ -2267,7 +2267,7 @@
 <p><strong>Frame: IterableFrame</strong></p>
 <ul>
 <li><code>keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]</code></li>
-<li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimensions.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: ContainerState</strong></p>
 <ul>
@@ -2291,10 +2291,10 @@
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
 <li><code>keys(id, state): returns [ (id, 0, 0) ] "</code></li>
-<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>index(self, id, properties): returns { id: (0, 0, properties.dimensions.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="doors">Doors</h3>
-<p>Doors are Objects that alter a Sprite's <code>&lt;layer&gt;</code>. When a Sprite enters the hitbox of a door, the <code>&lt;layer&gt;</code> is changed to the <code>&lt;outlayer&gt;</code> at the <code>&lt;out&gt;</code> Position.</p>
+<p>Doors are Objects that alter a Sprite's <code>sprite.state.layer</code>. When a Sprite enters the hitbox of a Door, the <code>sprite.state.layer</code> is changed to the <code>door.state.outlayer</code> at the <code>door.state.out</code> Position.</p>
 <p><strong>State: DoorState</strong></p>
 <ul>
 <li><code>layer: str</code></li>
@@ -2307,7 +2307,7 @@
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
 <li><code>keys(id, state): returns [ (id, 0, 0) ]</code></li>
-<li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
+<li><code>index(id, properties): returns { id: (0, 0, properties.dimensions.w, properties.dimensions.l) }</code></li>
 </ul>
 <h3 id="gates">Gates</h3>
 <p>Gates are Binary Objects whose state is connected to Plates. When a Gate is on (open), it does not have hitboxes and the player can pass freely through it. When a Gate is off (closed), its hitboxes prevent the player from passing through its area.</p>
