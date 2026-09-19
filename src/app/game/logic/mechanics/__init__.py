@@ -20,8 +20,9 @@ from app.game.logic.mechanics.intentional import (
     CognitionMechanics,
     NavigationMechanics
 )
-from app.game.logic.mechanics.world.plot import (
-    PlotMechanics
+from app.game.logic.mechanics.world import (
+    PlotMechanics,
+    FluidMechanics
 )
 
 __all__ = [ 
@@ -44,5 +45,6 @@ __all__ = [
     'CognitionMechanics',
     'NavigationMechanics',
     # 
-    'PlotMechanics'
+    'PlotMechanics',
+    'FluidMechanics'
 ]

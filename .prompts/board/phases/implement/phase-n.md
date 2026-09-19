@@ -1,4 +1,4 @@
-#### Implement: Phase 10 - Commerce
+#### Implement: Phase N - Commerce
 
 1. Subjective Value and "Gossip" Pricing
 

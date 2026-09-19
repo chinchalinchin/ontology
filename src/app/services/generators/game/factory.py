@@ -54,7 +54,8 @@ from app.game.logic.mechanics import (
     MenuMechanics,
     CognitionMechanics,
     PlotMechanics,
-    NavigationMechanics
+    NavigationMechanics,
+    FluidMechanics
 )
 from app.game.menus.controllers import (
     DisplayController,
@@ -120,7 +121,8 @@ class Factory:
         Mechanics.MENU: MenuMechanics,
         Mechanics.COGNITION: CognitionMechanics,
         Mechanics.PLOT: PlotMechanics,
-        Mechanics.NAVIGATION: NavigationMechanics
+        Mechanics.NAVIGATION: NavigationMechanics,
+        Mechanics.FLUID: FluidMechanics
     }
 
     CONTROLLER_MAP  = {

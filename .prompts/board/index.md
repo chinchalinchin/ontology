@@ -77,7 +77,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
 
 #### Task Templates
 
-The templates in this section. can be used to modify the Task Board.
+The templates in this section can be used to modify the Task Board.
 
 ##### Template: Bug Report
 

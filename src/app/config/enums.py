@@ -252,6 +252,7 @@ class Mechanics(str, Enum):
     COGNITION       = "cognition"
     COLLISION       = "collision"
     COMBAT          = "combat"
+    FLUID           = "fluid"
     INTERACTION     = "interaction"
     MOTION          = "motion"
     MENU            = "menu"

@@ -3,17 +3,19 @@
 """
 from __future__ import annotations
 
+# Standard Libraries
 import collections
 import logging
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from app.game.board import Board
-    
+# Application Libraries
 from app.game.logic.mechanics import Mechanic
 from app.models.state import DevicePayload
 from app.services.translators.base import Executor
 
+if TYPE_CHECKING:
+    from app.game.board import Board
+    
 logger = logging.getLogger(__name__)
 
 class PlotMechanics(Mechanic):
@@ -41,7 +43,7 @@ class PlotMechanics(Mechanic):
         )
         
         if next_plot_str and next_plot_str != current_plot:
-            logger.info(f"Plot advancing from '{current_plot}' to '{next_plot_str}'")
+            logger.info(f"Transition(plot): {current_plot} -> {next_plot_str}")
             if board.plot.previous:
                 board.plot.previous.append(current_plot)
             board.plot.current = next_plot_str
