@@ -594,6 +594,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#fluids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fluids
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1667,6 +1678,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#fluids" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fluids
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2058,6 +2080,21 @@
 <td>Base, Owner</td>
 </tr>
 <tr>
+<td>Craft</td>
+<td>Decor</td>
+<td>Base, Owner</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td>Forge</td>
+<td>Base, TODO</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td>Device</td>
+<td>Base, TODO</td>
+</tr>
+<tr>
 <td>Resource</td>
 <td>Crop</td>
 <td>Base, Season</td>
@@ -2096,6 +2133,11 @@
 <td>Effect</td>
 <td>Reactable</td>
 <td>Base, Animation, Intention, Cooldown</td>
+</tr>
+<tr>
+<td>Effect</td>
+<td>Fluid</td>
+<td>Base, Animation, Source, Flow</td>
 </tr>
 <tr>
 <td>Sheet</td>
@@ -2534,6 +2576,36 @@
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
 <li><code>intention</code></li>
+</ul>
+<h3 id="fluids">Fluids</h3>
+<p>Fluids are directional Effects that project along a designated source vector until obstructed by environmental boundaries or physical weights. Because Fluid assets span multiple grid units, they bypass standard geometric height calculation (<code>pos.y + dim.l</code>).</p>
+<p><strong>Z-Ordering &amp; Sorting</strong></p>
+<p>Fluids declare an explicit <code>height: 0</code> and <code>depth: -1</code>. This ensures the rendering pipeline (<code>Screen.draw</code>) sorts the compound stream directly above the pre-rendered terrain canvas (<code>bg_canvas</code>) while maintaining correct perspective beneath dynamic bodies, movable crates, bridges, and foreground overlays.</p>
+<p><strong>Properties: FluidProperties</strong></p>
+<ul>
+<li><code>dimensions: Dimensions</code></li>
+<li><code>count: int</code></li>
+<li><code>source: str</code> (<code>up</code>, <code>down</code>, <code>left</code>, <code>right</code>)</li>
+<li><code>flow: int</code> (radial perimeter expansion multiplier)</li>
+<li><code>lifecycle: LifecycleProperties</code></li>
+<li><code>mass: int = -1</code></li>
+</ul>
+<p><strong>Frame: FluidFrame</strong></p>
+<ul>
+<li><code>keys(id, state)</code>: Assembles <code>(frame_key, offset_x, offset_y)</code> tuples from the state's cached offset manifest.</li>
+<li><code>index(id, properties)</code>: Indexes full frames and directional fractional slices (both forward and reverse across <span class="arithmatex">\(w\)</span> and <span class="arithmatex">\(l\)</span>) for each animation frame index <span class="arithmatex">\(0 \le f &lt; \text{count}\)</span>.</li>
+</ul>
+<p><strong>State: FluidState</strong></p>
+<ul>
+<li><code>position: Position</code></li>
+<li><code>source: Optional[str]</code></li>
+<li><code>flow: Optional[int]</code></li>
+<li><code>stream_length: int</code></li>
+<li><code>pool: List[Tuple[str, int, int]]</code></li>
+<li><code>stream: List[Tuple[str, int, int]]</code></li>
+<li><code>dirty: bool</code></li>
+<li><code>height: Optional[Union[int, str]] = 0</code></li>
+<li><code>depth: int = -1</code></li>
 </ul>
 <h2 id="crafts">Crafts</h2>
 <ul>

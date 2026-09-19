@@ -458,6 +458,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#world" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        World
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1068,6 +1079,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#world" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        World
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1352,6 +1374,20 @@ v_{1f} = \frac{v_1(m_1 - m_2) + 2m_2v_2}{m_1 + m_2}
 </li>
 <li><strong>Waypoint Arrival</strong>: When the entity arrives within <code>action_radius</code> of <code>trajectory.target</code>, pops the completed waypoint from <code>trajectory.vertices</code> and sets <code>target</code> to the next vertex (or strategic goal when vertices are exhausted).</li>
 <li><strong>Stall &amp; Cooldown Handling</strong>: When RRT cannot resolve a collision-free path, sets <code>trajectory.stalled = True</code> and starts a <code>cooldown</code> timer (<code>settings.PATH_RETRY_INTERVAL</code>) to prevent per-frame re-planning thrash.</li>
+</ol>
+<h3 id="world">World</h3>
+<p>These Mechanics handle ambient world state, high-level game calculations and other abstract accounting.</p>
+<ul>
+<li><code>plot: PlotMechanics</code>: Evaluates the <a href="../08-plots/">Plot Transition matrix</a> to transition the <a href="../00-overview/#board">Board's</a> plot state.</li>
+<li><code>fluid: FluidMechanics</code>: Resolves directional fluid propagation, obstacle impact truncation, and radial pool perimeter calculation.</li>
+</ul>
+<p><strong>FluidMechanics</strong></p>
+<p>FluidMechanics governs fluid emission across active layers. It executes after physical momentum updates (<code>MotionMechanics</code> and <code>CollisionMechanics</code>) and uses reactive dirty-checking:</p>
+<ol>
+<li><strong>Change Detection</strong>: Inspects active crates (<span class="arithmatex">\(\vert{}v\vert{} &gt; 0\)</span>) and switch-linked gates. If any dynamic obstacle within a fluid's influence zone mutates, <code>fluid.state.dirty</code> is set to <code>True</code>.</li>
+<li><strong>Raycast Truncation</strong>: Raycasts along <code>properties.source</code> against board boundaries and non-sheet solid assets (<span class="arithmatex">\(m \ge 0\)</span>). Calculates distance <span class="arithmatex">\(D\)</span> to the nearest occluder.</li>
+<li><strong>Annular Pooling</strong>: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius <code>flow</code> around the obstacle perimeter, partitioned into four rectangular bounding boxes.</li>
+<li><strong>Hitbox Update</strong>: Injects composite hitboxes for the stream path and pool boundaries into the broad-phase spatial hash.</li>
 </ol>
 <h2 id="configuration">Configuration</h2>
 <ul>
