@@ -41,8 +41,8 @@ class PaneParameters:
     """
     Structural and spatial layout parameters for container panes.
     """
-    layout: Layouts = Layouts.STACK
-    alignment: Alignments = Alignments.START
+    layout: Layouts = Layouts.STACK.value
+    alignment: Alignments = Alignments.START.value
     gap: int = 0
     margins: int = 0
     position: Optional[ScreenPosition] = None # type: ignore

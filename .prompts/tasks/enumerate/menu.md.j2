@@ -1,14 +1,14 @@
-# Task: update(dump template)
+# Task: update(/templates/.menu-dump.md.j2)
 
 The dump template is used to dump game state at the end of a CLI session through the command,
 
 ```bash
-python main.py --dump-menu start
+python main.py --dump-menus start
 ```
 
 **Definitions**
 
-- Widgets are special type of Game asset.
+- Widgets are a specialized type of Game asset.
 - Widgets are Menu components. They bind to game state.
 - Menus are instantiated on the fly during the game.
 - Overlays are HUD components that are always rendered.
@@ -55,6 +55,14 @@ python main.py --dump-menu start
 **Bindings**
 
 ```python
+{{ file(root + '/src/app/game/menus/bindings/aperture.py') }}
+```
+
+```python
+{{ file(root + '/src/app/game/menus/bindings/collection.py')}}
+```
+
+```python
 {{ file(root + '/src/app/game/menus/bindings/icon.py') }}
 ```
 
@@ -69,7 +77,6 @@ python main.py --dump-menu start
 ```python
 {{ file(root + '/src/app/game/menus/bindings/text.py') }}
 ```
-
 
 ## Previous Dump Template
 

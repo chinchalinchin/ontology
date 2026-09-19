@@ -4,5 +4,5 @@ root: /home/grant/Projects/ontology
 ## MAC
 # root: /Users/gmoore/Home/projects/ontology
 task:
-  verb: dump
+  verb: enumerate
   noun: menu
