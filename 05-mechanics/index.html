@@ -1178,27 +1178,22 @@
 <li><code>menu: MenuMechanics</code>: Handles Menu and Widget interactions.</li>
 </ul>
 <p><strong>MotionMechanics</strong></p>
-<ul>
-<li>Kinematic Assets: Players</li>
-<li>Motive Assets: Sprites</li>
-<li>Inert Assets: Projectiles</li>
-<li>Frictive Assets: Crates</li>
-</ul>
 <p>Assets with Mass are divided into Kinenamtic, Motive, Inert and Frictive Assets. Kinematic and Motive Assets have Velocity states with (Speed, Impulse) properties that control the rate of change of their Velocity; Frictive and Inert Assets have a Velocity state, but have their Velocities controlled through external forces, i.e. Friction and garbage collection. </p>
-<p>Kinematic Assets snap to Velocity vectors and do not change vectorally. This is used for the Player. When the Player presses right, the Player Sprite immediately changes <em>Velocity</em> (not Position) to right, snapping to the inputted direction without getting sent into circular motion. In other words, velocities orthogonal to the Player's inputted direction are nulled out by the game loop; Velocity is used to control Player position, but only applies changes in one direction at once.</p>
+<p>Kinematic Assets snap to Velocity vectors and do not change vectorally. This is used for the Player; When the Player presses right, the Player Sprite immediately changes <em>Velocity</em> (not Position) to the right, snapping to the inputted direction without getting sent into circular motion. In other words, velocities orthogonal to the Player's inputted direction are nulled out by the game loop; Velocity is used to control Player position, but only applies changes in one direction at once.</p>
 <div class="admonition todo">
 <p class="admonition-title">Out-Of-Date: 2026/09/16</p>
 <p>Motive assets now use reciprocal velocities and RRT-generated trajectories with kinematic sliding to navigate.</p>
 </div>
-<p>Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to Speed. Motive Assets experience friction to prevent the conservation of momentum from sending them into "orbit" around their Goal.</p>
+<p>Motive Assets generate their own motion through their internal state by applying an Impulse every game tick, a directional acceleration vector that is applied until the magnitude of the resultant Velocity vector is equal to Speed. </p>
 <p>Frictive Assets have motion imparted to them via collisions. Afterwards, the force of friction (technically an impulse) is applied to the resultant Velocity every game tick until that Velocity has been brought to zero. The force of friction is proportional to the currently occupied Tile's  <code>properties.friction</code>.</p>
 <p>Inert Assets are exluded from these considerations. They are spawned with a Velocity vector and an initial position; They follow the trajectory determined by these parameters until the distance between their initial and current position exceeds the garbage collection limit.</p>
 <p>The general flow of MotionMechanics is given by,</p>
 <ul>
-<li><strong>Kinematic Motion</strong> Check <code>device.poll()</code>. If directional input is present, accelerate velocity to direction and null out orthogonal velocity. If no input is present, hardcode <code>velocity = (0,0)</code>.</li>
-<li><strong>Motive Motion</strong>: Resolves the target coordinate from <code>sprite.state.trajectory.target</code> (falling back to <code>sprite.state.goal.position</code>). Calculates the unit vector pointing from <code>current_position</code> to target. Multiplies by <code>character.impulse</code> and <span class="arithmatex">\(\Delta t\)</span>, adds to <code>velocity</code>, and clamps magnitude to <code>character.speed</code> via <code>physics.dynamics()</code>.</li>
-<li><strong>Frictive Motion</strong> Query <code>Board.tile()</code> at asset's center. Calculate <span class="arithmatex">\(\Delta v = \text{friction} \cdot \Delta t\)</span>. Apply <span class="arithmatex">\(\Delta v\)</span> in the direction opposite to the current <code>velocity</code>. If <span class="arithmatex">\(\Delta v &gt; \vert{}\text{velocity}\vert{}\)</span>, set <code>velocity = (0,0)</code>.</li>
-<li><strong>Inert Motion</strong> Exclude Inert from the above steps. For all assets, apply <span class="arithmatex">\(v \cdot \Delta t\)</span> to the sub-pixel accumulators <code>rx/ry</code>. When <code>rx/ry</code> exceed <span class="arithmatex">\(1.0\)</span> or <span class="arithmatex">\(-1.0\)</span>, cast to <code>int</code>, shift the physical <code>Position</code>, and decrement the accumulator.</li>
+<li><strong>Kinematic Assets (Players)</strong>: Directly polls input devices. Directional inputs clamp velocity vectors to <code>character.speed</code> and immediately nullify orthogonal velocity components.</li>
+<li><strong>Motive Assets (Sprites)</strong>: Guided by <code>NavigationMechanics</code>. Evaluates <code>sprite.state.trajectory.target</code> (generated via RRT pathfinding and line-of-sight checks). Calculates the steering vector toward the current waypoint, accelerates by <code>character.impulse * dt</code>, and clamps velocity to <code>character.speed</code> via <code>physics.dynamics()</code>.</li>
+<li><strong>Frictive Assets (Crates)</strong>: Passively receive momentum from physical collisions. Velocity magnitude decays linearly each tick according to the underlying tile's <code>TileProperties.friction</code> coefficient:
+  $<span class="arithmatex">\(v_{n+1} = \max(0, v_n - \text{friction} \cdot \Delta t)\)</span>$</li>
+<li><strong>Inert Assets (Projectiles)</strong>: Translate along ballistic linear trajectories until lifetime expiration or boundary collision triggers garbage collection.</li>
 </ul>
 <p>The mathematical bounds for Friction are <span class="arithmatex">\([0, \infty)\)</span>.</p>
 <ul>

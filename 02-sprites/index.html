@@ -1561,7 +1561,7 @@
 <p>Mutators are <em>condition-driven</em>. They may also be <em>parameterized</em>; In other words, all Mutators are <em>conditional</em> but not all Mutators are parameterized. Parameters modulate the conditions underlying the Mutator calculation. Both Sprites and the <a href="#player">Player</a> have Mutator fields, but only Sprites have parameterized Mutators; the Player Mutators are all purely driven by game logic. In other words, the Player Mutator triggers serve to flag the game-loop to apply trigger-specific procedures to the Player Asset, whereas Sprite Mutator triggers depend on the specific parameters unique to the Sprite's deployment. </p>
 <ul>
 <li>Parameterized Mutators: <code>fear</code>, <code>vision</code></li>
-<li>Conditional Mutators: <code>animated</code>, <code>dead</code>, <code>struck</code></li>
+<li>Conditional Mutators: <code>animated</code>, <code>dead</code></li>
 </ul>
 <p><strong>Triggers</strong></p>
 <ul>
@@ -1671,6 +1671,7 @@
 <p><strong>Pouch</strong></p>
 <p>TODO</p>
 <p><strong>Pack</strong></p>
+<p>TODO</p>
 <p><strong>Wallet</strong></p>
 <p>TODO</p>
 <h2 id="equipment">Equipment</h2>
@@ -1710,7 +1711,7 @@
 <p>Equipment properties are stored in the <a href="../00-overview/#board">Board</a> database.</p>
 </div>
 <h2 id="player">Player</h2>
-<p>A Player is a special type of Sprite Sheet Asset Instance. It may be thought of as a "<em>pseudo</em>"-Asset. It has no properties that differentiate it in the Hierarchy; Instead, it utilizes Sprite Sheet properties. It has own state and Intention management Mechanics. </p>
+<p>A Player is a special type of Sprite Sheet Asset Instance. It may be thought of as a "<em>pseudo</em>"-Asset. It has no properties that differentiate it in the Hierarchy; Instead, it utilizes Sprite Sheet properties. However, it is differentiated by having a unique state and isolated Intention management Mechanics. </p>
 <p>The Player Sprite Sheet is configured through the <code>player</code> Sprite Sheet. </p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>

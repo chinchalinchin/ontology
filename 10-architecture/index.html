@@ -1373,11 +1373,12 @@
 <p>The <code>AnimationMap</code> plays a crucial role in enforcing logical constraints. For example, <code>TransitionMechanics</code> and <code>PlayerMechanics</code> utilize <code>AnimationMap.action(state, equipment)</code> to resolve whether an intended action is possible. This guarantees that an <code>attack</code> intention will not translate into a <code>thrust</code> animation action if the Sprite currently lacks the required tool or weapon equipped in its inventory.</p>
 <h2 id="board">Board</h2>
 <h3 id="spatial-grid-caching">Spatial Grid Caching</h3>
-<p>To optimize environmental queries during the game loop, the Board implements an <span class="arithmatex">\(O(1)\)</span> spatial hashing grid (<code>_cached_tilemap</code>). The Board chunks static Assets into a dictionary grid during initialization, keyed by a fixed <code>TILE_HASH_SIZE</code> (defaulting to 32x32 pixels).</p>
-<p>When systems like MotionMechanics need to compute the environmental friction acting on a moving Crate or Sprite, the Board divides the Asset's absolute <code>(x, y)</code> coordinates by the hash size to retrieve the exact Tile beneath it. </p>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>The <code>_cached_tilemap</code> dictionary nests by <code>[layer][instance][(cx, cy)]</code> to prevent foreground architectural tiles from overwriting the background terrain tiles necessary for <a href="../05-mechanics/#spatial">MotionMechanics</a> friction lookups.</p>
+<p>To optimize environmental lookups without traversing linear asset arrays, the Board partitions static tiles into an <span class="arithmatex">\(O(1)\)</span> spatial hash grid (<code>_cached_tilemap</code>), indexed with bucket size <code>TILE_HASH_SIZE = 32</code>.</p>
+<p>To prevent foreground architectural tiles (<code>fore</code>) from overwriting terrain friction data (<code>back</code>), the cache nests by layer and instance:</p>
+<div class="arithmatex">\[\text{tilemap}[\text{layer}][\text{instance}][(c_x, c_y)] \to \text{Asset}\]</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>Board.tile(layer, position, instance=AssetInstances.BACK.value)</code> queries background friction tiles by default.</p>
 </div>
 <h2 id="rendering">Rendering</h2>
 <h3 id="depth-height">Depth &amp; Height</h3>
