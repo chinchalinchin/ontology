@@ -38,11 +38,12 @@ This is the Task Board for the project. Below is a backlog of completed and pend
       - [x]: [Phase 02.04: Engine](./phases/refactor/refactor-02-04.md)
       - [x]: [Phase 02.05: Finetuning](./phases/refactor/refactor-02-05.md)
       - [x]: [Phase 02.06: Effects](./phases/refactor/refactor-02-06.md)
-      - [~]: [Phase 02.07: Registry Data Structures](./phases/refactor/refactor-02-07.md)
+      - [x]: [Phase 02.07: Registry Data Structures](./phases/refactor/refactor-02-07.md)
     - Phase 03:
       - [x]: [Phase 03.01: Mechanics](./phases/refactor/refactor-03-01.md)
       - [x]: [Phase 03.02: Consolidation](./phases/refactor/refactor-03-02.md)
       - [x]: [Phase 03.03: Motion](./phases/refactor/refactor-03-03.md)
+      - [ ]: [Phase 03.04: Projectiles](./phases/refactor/refactor-03-04.md)
     - Phase 05:
       - [x]: [Phase 04.01: Typography](./phases/refactor/refactor-04-01.md)
       - [x]: [Phase 04.02: Simplification](./phases/refactor/refactor-04-02.md)
@@ -64,6 +65,7 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Bug B005: Speak Regression](./phases/patch/bug-b005.md)
     - [x]: [Bug B006: Raycast Boundary Grazing](./phases/patch/bug-b006.md)
     - [x]: [Bug B007: Cradle Spawning](./phases/patch/bug-b007.md)
+    - [ ]: [Bug B008: Open Gate Obstruction](./phases/patch/bug-b008.md)
   - Achieve:
     - [x]: [Goal 01: Boundaries](./phases/achieve/goal-01.md)
     - [x]: [Goal 02: ScrollController, Library & Plots](./phases/achieve/goal-02)

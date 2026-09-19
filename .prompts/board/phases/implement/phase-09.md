@@ -7,10 +7,10 @@ Establish an autonomous fluid flow and obstacle occlusion system. Introduces a d
 **Principles**
 
 1. (**Source**) A Fluid Effect has a `source`. A `source` is a Direction. Fluid flows in the Direction of its `source`.
-    - In game, this means Fluid Effect assets are multiplied in the downward direction until they meet an Obstacle. 
-    - **NOTE**: This means a Fluid Effect with  `source = down` may be truncated into a fraction of its dimensions. For example, if a Fluid Effect of 32px x 32px is 48px away (measured from its top left corner) from an Obstacle, the Fluid Effect will be multiplied 1.5 times (32 + 16 = 48) in the `down` direction to achieve a resulting dimension of 32px x 48px.
+    - In game, this means Fluid Effect assets are multiplied in the indicated direction until they meet an Obstacle. 
+    - **NOTE**: This means a Fluid Effect may be truncated into a fraction of its dimensions. For example, if a Fluid Effect of 32px x 32px with a `source = down` is 48px away (measured from its top left corner) from an Obstacle, the Fluid Effect will be multiplied 1.5 times (32 + 16 = 48) in the `down` direction to achieve a resulting dimension of 32px x 48px.
 2. (**Obstruction**) Fluid is obstructed by Board boundaries or non-Sheet weights: $\text{Fluid Obstacles} = \text{Boundaries} \cup \{ a \in \text{Weights} \mid a.\text{category} \neq \text{SHEETS} \land (a.m > 0 \lor (a.m = 0 \land a.\text{instance} \in \text{SOLID\_OBJECTS})) \}$
-3. (**Flow**) A Fluid Effect has a `flow`.A `flow` is a radial parameter that determines the boundaries of the resultant body of water that is formed *around* the Obstacle. 
+3. (**Flow**) A Fluid Effect has a `flow`.A `flow` is a radial-esque (rectangular, not circular) parameter that determines the boundaries of the resultant body of water that is formed *around* the Obstacle. 
     - **Example**: Suppose an Obstacle with dimensions 10px x 10px at (100, 100) is met by a Fluid Effect with dimensions 10px x 10px travelling in the `down` direction with  `flow = 3`. The Fluid will thus multiply *around* the Obstacle to form a perimeter with vertices (70, 70), (70, 140), (140, 70), (140, 140) and a hole of dimensions 10px by 10px at (100, 100), where the Obstacle is rendered. In this example, `top_left_vertex = (obstacle.position.x - flow * effect.dimensions.w, obstacle.position.y - flow * effect.dimensions.l` and `bottom_right_vertex = (obstacle.position.x + obstacle.dimensions.w + flow * effect.dimensions.w, obstacle.position.y + obstacle.dimensions.l + flow * effect.dimensions.l)`
 
 **Corollaries**
@@ -29,7 +29,7 @@ Establish an autonomous fluid flow and obstacle occlusion system. Introduces a d
 
 - After Fluid Flow is established, Bridges will need introduced to allow movement over the Fluid's hitboxes. This will require an Object whose hitboxes override the hitboxes of the Fluid over which it is superimposed. Not a pressing concern right now, but something to keep in mind.
 
-##### Architectural Analysis
+##### Architectural Analysis I
 
 ```
 +-----------------------------------------------------------------------------------+
@@ -116,12 +116,185 @@ $$
 3. **Left Flank:** Width $= F w_{\text{eff}}$, Height $= l_{\text{obs}}$
 4. **Right Flank:** Width $= F w_{\text{eff}}$, Height $= l_{\text{obs}}$
 
-##### Goal: Fluid & Obstacle Data Architecture
+**Overview**
 
-Extend property and state schemas to support directional fluid propagation, flow radii, and explicit static fluid obstacles.
+Establish an autonomous fluid flow and obstacle occlusion system. Extends effect and object taxonomies to support directional fluid propagation, multi-axis fractional frame cropping, reactive obstacle occlusion, and annular pooling. Aligns fluid frame keys and Z-index state with `Registry` indexing and `Screen.draw` sorting rules.
+
+##### Architectural Analysis II
+
+The underlying Cython rendering pipeline (`libs.graphics.render`), the asset registry (`libs.graphics.registry`), and the `Screen` abstraction (`app.game.screen`) require specific updates to the Phase 09 backlog.
+
+**Graphics & Pipeline Findings**
+
+1. **Painter's Algorithm Inversion in `Screen.draw`**: `Screen.draw` height-sorts assets using `asset.state.height if asset.state.height is not None else (asset.state.position.y + asset.dimensions.l)`. Because a fluid stream is a spatially distributed compound entity rather than a localized bounding box, an upward (`up`) or lateral (`left`) stream anchored at `position.y = 400` flowing to an obstacle at `y = 100` receives an implicit sort key of `432`. It sorts *after* the obstacle at `y = 100` (sort key `132`) and characters at `y = 250` (sort key `314`), drawing fluid directly over the obstacle that blocked it.
+    - *Resolution*: `FluidState` must enforce `height = 0` and `depth = -1` by default. This forces the entire compound fluid body to sort immediately above `bg_canvas` (terrain tiles) and underneath all dynamic bodies, obstacles, and bridges.
+2. **Crop Invariance in `Screen.draw` and `render.pyx`**: `Screen.draw` flattens texture tuples as `tex, sx, sy, sw, sl = tex_data` and sets `dw, dl = sw, sl` before passing them across the Cython boundary to `render.render()`. `render.render()` blits slices 1:1 using `c_src = (sx, sy, sw, sl)` and `c_dst = (dx - cam_x, dy - cam_y, dw, dl)`. The Cython rendering loop natively supports variable sub-tile slices without requiring scaling, new SDL bindings, or texture allocations.
+3. **Multi-Axis & Reverse Slicing in `FluidFrame`**: The initial Phase 09 design assumed vertical length slicing `(0, 0, w, slice_len)`. Slicing must support:
+    * **Lateral Flow (`left`, `right`)**: Slices varying width $1 \le \text{slice\_w} < w$.
+    * **Vector Anchoring**: For `down` and `right`, the truncated edge anchors at texture origin $(0, 0)$. For `up` and `left`, the truncated edge anchors at the distal edge: `(0, l - slice_l, w, slice_l)` or `(w - slice_w, 0, slice_w, l)`.
+4. **Animation Lifecycle Collision**: In `AnimationMechanics`, all entities under `AssetCategories.EFFECTS` advance their animation frame every tick via `asset.animation.animate()`. If `FluidFrame.index()` only indexes static slice keys (`f"{id}-slice-{len}"`), every animated frame tick ($f > 0$) causes `self.registry.image(frame_key)` to fail and triggers `Registry MISS` warnings in `Screen.draw`. Slices must be indexed per animation frame: `f"{id}-{f}-{direction}-slice-{len}"`.
+5. **Inner-Loop Allocation Overhead**: `Screen.draw()` calls `asset.frame.keys()` every render frame (60 FPS). Dynamically computing raycasts, assembling 40–80 coordinate offsets, and allocating string keys each render frame introduces Python heap fragmentation. `FluidMechanics` must cache the computed offset manifest on `FluidState` during the game tick; `FluidFrame.keys()` merely applies the current `state.animation.frame` to pre-calculated offsets.
+
+##### Architectural Analysis III
+
+**1. The Fluid Generator & Hydration Lifecycle**
+
+Introducing a dedicated generator service—let's call it `Actuator` in `src/app/services/generators/game/fluid.py`—is architecturally sound and aligns with how the engine handles procedural geometry elsewhere.
+
+In `Migrator.step()`, procedural boundaries are handled immediately after ECS entity injection:
 
 ```python
-# Pseudo-schema additions for models/properties.py and models/state/objects.py
+# 3. Post-Hydration Phase: Procedural Boundaries
+perimeter_gen = Perimeter()
+for layer in self.board.layers():
+    self.board.perimeters[layer] = perimeter_gen.generate(self.board, layer)
+
+```
+
+If fluid propagation is left entirely to `FluidMechanics.update()`, the engine enters a race condition on boot:
+
+1. `Migrator` finishes hydration and emits a `TerminalEvent`.
+2. `Engine._render()` executes before the unpaused `world` mechanics have ticked.
+3. The fluid asset renders with uninitialized stream dimensions (zero length, no pool).
+4. `FluidMechanics` runs on the next logic tick, snapping the river into existence one frame late.
+
+**2. The Division of Responsibilities**
+
+Separating the geometric math from the runtime orchestration creates clean boundaries:
+
+```
++--------------------------------------------------------------------------------+
+|                        src/app/services/generators/game                        |
+|                                                                                |
+|  Actuator                                                                |
+|    - Inputs: Fluid Asset, Board, Layer                                         |
+|    - Logic:                                                                    |
+|        1. Queries board obstacles & layer boundaries                           |
+|        2. Executes geometry.raycast_obstacle()                                 |
+|        3. Computes stream length & truncated edge slice                        |
+|        4. Partitions annular pool into 4 bounding rects                        |
+|        5. Returns: (stream_length, pool_rects, hitboxes)                       |
++--------------------------------------------------------------------------------+
+                               ▲                                ▲
+                  Called at    │                                │ Called on
+                  Bootstrap    │                                │ Dirty Flag
+                               │                                │
++------------------------------┴---------+    +-----------------┴----------------+
+|               MIGRATOR                 |    |         FLUID MECHANICS          |
+|                                        |    |                                  |
+| - Runs post-hydration pass             |    | - Runs in world mechanics loop   |
+| - Hydrates static steady-state flow    |    | - Monitors dynamic obstacles     |
+|   before the first frame renders       |    | - Sets dirty = True on movement  |
+| - Pre-warms initial hitboxes           |    | - Re-invokes Actuator      |
++----------------------------------------+    +----------------------------------+
+```
+
+* **`Actuator` (Stateless Service)**: Pure math and spatial queries. Ingests the fluid emitter and the board state, runs the Cython `raycast`, calculates the stream truncation distance, calculates the 4-quadrant annular pool geometry around the struck obstacle, and constructs the composite `Hitbox` list.
+* **`Migrator` (Bootstrapping)**: Instantiates `Actuator` during Step 3 of `_build_generator()` and computes initial steady-state dimensions for all `fluids` in the world state.
+* **`FluidMechanics` (Runtime System)**: Monitors dynamic obstacle mutations (e.g., crates with $\vert{}v\vert{} > 0$ or gates toggling switches). When an obstacle within a fluid's zone moves, it flags the fluid as `dirty = True` and delegates re-calculation to `Actuator`.
+
+**2. Deconstructing `FluidState`: What Is Actually Needed?**
+
+The previous formulation of `FluidState` had:
+
+```python
+stream_length: int = 0
+pool_offsets: List[Tuple[str, int, int]] = field(default_factory=list)
+stream_offsets: List[Tuple[str, int, int]] = field(default_factory=list)
+
+```
+
+The reason for this verbosity stemmed from a **premature optimization around rendering throughput**.
+
+*The Original Rationale*
+
+In `Screen.draw()`, the engine iterates through all visible assets and calls `asset.frame.keys(asset.id, asset.state)` at 60 FPS. If `FluidFrame.keys()` had to recalculate tile multiples, division remainders, and annular rectangle offsets on every single frame, it was doing redundant arithmetic.
+
+By pre-calculating the exact rendering manifest—the string suffix for the crop key and the pixel offsets `(key_suffix, ox, oy)`—and storing them in `stream_offsets` and `pool_offsets`, `FluidFrame.keys()` became a single lookup that appended the asset ID and animation frame index. `stream_length` was kept separately as a scalar pixel value for hitbox generation.
+
+*Why This Design Is Flawed*
+
+It breaks the core architectural boundary of the engine: **Simulation State should not know about Texture Frame Keys.**
+
+1. **State Pollution**: `stream_offsets` and `pool_offsets` stored rendering instructions (`key_suffix`) inside `app.models.state`. A state model should describe the physical reality in the simulation, not cache texture keys for SDL.
+2. **Unnecessary Caching**: A 256px fluid stream composed of 32px tiles is 8 tiles long. Looping 8 times to emit 8 tuples in Python takes roughly **$0.4$ microseconds**. Doing that 60 times a second for a handful of fluid emitters uses a negligible fraction of the frame budget. Caching those tuples in `State` introduced object bloat to solve a performance bottleneck that does not exist.
+
+*The Leaner, Principled Replacement*
+
+`FluidState` only needs to represent the **physical result of hydrodynamics in the game world**, leaving texture decomposition entirely to `FluidFrame`:
+
+```python
+@dataclass(slots=True)
+class PoolBounds:
+    x: int
+    y: int
+    w: int
+    l: int
+
+@dataclass(slots=True)
+class FluidState(EffectState):
+    length: int = 0
+    pool: Optional[PoolBounds] = None
+    hitboxes: List[Hitbox] = field(default_factory=list)
+    dirty: bool = True
+    height: Optional[Union[int, str]] = 0
+    depth: int = -1
+
+```
+
+Here is why each field is present:
+
+* **`length: int`**: The scalar distance (in pixels) the stream travels from `position` along its `source` vector before hitting an obstacle or map perimeter.
+* **`pool: Optional[PoolBounds]`**: If the stream strikes an internal obstacle rather than a boundary, `pool` stores the outer bounding box of the flooded area surrounding the obstacle. If it hits a boundary wall, `pool` is `None`.
+* **`hitboxes: List[Hitbox]`**: Because a fluid's physical footprint changes dynamically as crates move, the active sensor hitboxes (one for the stream corridor and four for the annular pool flanks) are cached directly on the state so `SpatialMechanic` and broad-phase collision checks don't recompute them.
+* **`dirty: bool`**: Invalidation flag for `FluidMechanics`.
+* **`height: 0` / `depth: -1**`: Forces `Screen.draw()` to sort fluid directly above background tiles and below dynamic entities.
+
+*How `FluidFrame` Consumes This Lean State*
+
+`FluidFrame` does its proper job: translating pure state into texture keys on demand:
+
+```python
+class FluidFrame(Frame):
+    def keys(self, id: str, state: FluidState) -> List[Tuple[str, int, int]]:
+        keys = []
+        frame_idx = str(state.animation.frame)
+        w, l = self.tile_w, self.tile_l  # Emitter dimensions (e.g., 32x32)
+        
+        # 1. Emit stream corridor tiles
+        full_tiles = state.length // l
+        rem = state.length % l
+        
+        for i in range(full_tiles):
+            keys.append((f"{id}-{frame_idx}", 0, i * l))
+            
+        # 2. Emit terminal truncated slice (if length is not an exact tile multiple)
+        if rem > 0:
+            slice_key = f"{id}-{frame_idx}-{state.source}-{rem}"
+            keys.append((slice_key, 0, full_tiles * l))
+            
+        # 3. Emit pool tiles (if an annular pool exists)
+        if state.pool:
+            # Trivial grid iteration over the 4 rectangular flanks
+            ...
+            
+        return keys
+
+```
+
+This keeps `FluidState` clean, eliminates leaked rendering keys, and maintains strict separation between the simulation and graphics subsystems.
+
+##### Goal: Fluid & Obstacle Data Architecture
+
+Extend property and state schemas to represent directional fluid streams, flow parameters, and obstacle bounding boxes with ground-plane Z-indexing.
+
+```python
+@dataclass(slots=True)
+class Pool:
+    x: int
+    y: int
+    w: int
+    l: int
 
 @dataclass(slots=True)
 class FluidProperties(EffectProperties):
@@ -131,183 +304,103 @@ class FluidProperties(EffectProperties):
 
 @dataclass(slots=True)
 class FluidState(EffectState):
-    source: Optional[str] = Directions.DOWN.value
-    flow: Optional[int] = 1
-    stream_length: int = 0
-    pool_rects: List[Tuple[int, int, int, int]] = field(default_factory=list)
+    length: int = 0
+    pool: Optional[Pool] = None
+    hitboxes: List[Hitbox] = field(default_factory=list)
     dirty: bool = True
+    height: Optional[int] = 0
+    depth: int = -1
+
 ```
 
-##### Goal: Sliced Frame Ingestion (`FluidFrame`)
+##### Goal: Procedural Fluid Generator Service
 
-Implement `FluidFrame` to pre-crop fractional slices in `index()` and yield compound stream and pool texture offsets in `keys()`.
+Implement `Actuator` in `src/app/services/generators/game/fluid.py` to encapsulate raycasting, stream truncation, annular pool geometry, and composite hitbox generation.
+
+```python
+class Actuator:
+    def pump(self, fluid: Asset, board: Board) -> Tuple[int, Optional[PoolBounds], List[Hitbox]]:
+        # 1. Query board obstacles (crates, closed gates, struts) & boundaries
+        # 2. Call geometry.raycast_obstacle() along fluid.properties.source
+        # 3. Calculate distance, remainder slice, and annular pool bounds
+        # 4. Construct composite Hitbox list (stream box + pool flank boxes)
+        # Returns: (stream_length, pool_bounds, hitboxes)
+        ...
+
+```
+
+##### Goal: Multi-Axis Sliced Frame Ingestion (`FluidFrame`)
+
+Implement `FluidFrame` to index full and fractional crops across all animation frames and directional vectors in `Registry`, and emit pre-cached offset manifests in `Screen.draw`.
 
 ```python
 class FluidFrame(Frame):
     def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
-        w, l = safe_dim(properties)
-        crops = {id: (0, 0, w, l)}
-        # Pre-index longitudinal slices for fractional edge truncation
-        for slice_len in range(1, l):
-            crops[f"{id}-slice-{slice_len}"] = (0, 0, w, slice_len)
-        return crops
-
-    def keys(self, id: str, state: FluidState) -> List[Tuple[str, int, int]]:
-        # Emit full tiles along stream + fractional slice + annular pool tiles
+        # Index full tiles and forward/reverse slices along w and l per animation frame
         ...
+
+    def keys(self, id: str, state: AssetState) -> List[Tuple[str, int, int]]:
+        # Emit N full-tile keys + 1 fractional slice key + annular pool grid keys
+        ...
+
 ```
 
-##### Goal: Reactive Flow Propagation (`FluidMechanics`)
+##### Goal: Reactive Flow Propagation & Offset Caching (`FluidMechanics`)
 
-Implement `FluidMechanics` in the `world` mechanics pipeline, executing raycasts against boundaries and non-sheet weights. Recalculations are triggered strictly on dirty flags set when dynamic obstacles shift position.
+Implement `FluidMechanics` in the `world` mechanics pipeline to handle spatial raycasts, annular pool partitioning, composite hitbox synchronizations, and dirty-flag invalidation.
 
 ```python
 class FluidMechanics(Mechanic):
     def update(self, board: Board, delta: float, bus: deque, payload: DevicePayload) -> None:
-        # 1. Broad-phase invalidation: check if any crates/gates moved on this layer
-        # 2. Narrow-phase raycast for dirty fluids
-        # 3. Partition pool annulus into 4 bounding boxes
-        # 4. Synchronize fluid hitboxes on board
+        # 1. Invalidation: mark fluids dirty if layer obstacles/crates moved
+        # 2. Narrow-phase raycast: source -> nearest boundary or non-sheet weight
+        # 3. Partition stream: N full tiles + 1 directional truncated slice
+        # 4. Partition pool: 4 rectangular flanks surrounding obstacle
+        # 5. Cache relative (key_suffix, ox, oy) offsets on state
+        # 6. Update broad-phase hitboxes
         ...
+
 ```
 
-##### Tasks
+##### Tasks 09.01
 
 **1. Task: Schemas & Taxonomy Registration**
 
 *Objective*: Register `fluids` under `AssetCategories.EFFECTS` and `obstacles` under `AssetCategories.OBJECTS` across enums, properties, state, and recipe configurations.
 
-* [ ] Subtask: Add `FLUIDS` to `AssetInstances` enum and `EffectPropertyInstances` schema.
-* [ ] Subtask: Add `OBSTACLES` to `AssetInstances` enum and `ObjectPropertyInstances` schema.
-* [ ] Subtask: Define `FluidProperties` and `FluidState` dataclasses with slots in `models/properties.py` and `models/state/objects.py`.
-* [ ] Subtask: Add default recipes for `fluids` and `obstacles` in `src/data/config/recipes/main.yaml`.
+* [x] Subtask: Add `FLUIDS` to `AssetInstances` enum and `EffectPropertyInstances` schema.
+* [x] Subtask: Add `OBSTACLES` to `AssetInstances` enum and `ObjectPropertyInstances` schema.
+* [x] Subtask: Define `FluidProperties` and `FluidState` dataclasses with slots in `models/properties.py` and `models/state/objects.py`.
+* [x] Subtask: Add default recipes for `fluids` and `obstacles` in `src/data/config/recipes/main.yaml`.
 
-**2. Task: FluidFrame Component Implementation**
+**2. Task: Actuator Service Implementation**
 
-*Objective*: Implement `FluidFrame` in `app/assets/frames/core.py` to support multi-tile linear extension and fractional border cropping.
+*Objective*: Create `Actuator` in `app/services/generators/game/fluid.py` to calculate flow extents and hitboxes.
 
-* [ ] Subtask: Implement `FluidFrame.index()` to generate crop maps for full tiles and 1-pixel granular slices along the flow direction.
-* [ ] Subtask: Implement `FluidFrame.keys()` to assemble compound render tuples `(frame_key, offset_x, offset_y)` for the stream corridor and the radial pool.
-* [ ] Subtask: Register `FluidFrame` factory mapping in `app/services/generators/game/factory.py`.
+* [ ] Subtask: Implement `Actuator.pump(fluid, board)` using `geometry.raycast()`.
+* [ ] Subtask: Implement annular perimeter partitioning around struck obstacles using the `flow` radius.
+* [ ] Subtask: Generate compound `Hitbox` objects covering the active stream and pool rectangles.
 
-**3. Task: Spatial Occlusion & Raycast Math**
+**3. Task: Multi-Axis FluidFrame Implementation**
 
-*Objective*: Build directional 1D raycast clipping to determine obstacle impact coordinates and compute the 4-quadrant pooling perimeter.
+*Objective*: Implement `FluidFrame` in `app/assets/frames/core.py` to handle dynamic key generation without polluting state.
 
-* [ ] Subtask: Implement `geometry.raycast_obstacle(origin, direction, obstacles, boundaries)` returning collision distance $D$ and target obstacle.
-* [ ] Subtask: Implement annular decomposition function calculating the 4 non-overlapping bounding rectangles for radial pool flow around the obstacle.
-* [ ] Subtask: Unit test raycast clipping against static bounds, closed gates, and movable crates.
+* [ ] Subtask: Implement `FluidFrame.index()` generating forward and reverse slices along width and length across all animation frames.
+* [ ] Subtask: Implement `FluidFrame.keys()` calculating tile coordinates dynamically from `state.length` and `state.pool`.
+* [x] Subtask: Register `FluidFrame` in `app/services/generators/game/factory.py`.
 
-**4. Task: FluidMechanics Engine System**
 
-*Objective*: Implement `FluidMechanics` in `app/game/logic/mechanics/world/fluid.py` and integrate it into the engine pipeline.
+**4. Task: Migrator Bootstrap Hydration**
 
-* [ ] Subtask: Implement dynamic obstacle motion detection to flag intersecting fluids as dirty.
-* [ ] Subtask: Compute stream length, fractional end slices, and pool bounding boxes during dirty updates.
-* [ ] Subtask: Synchronize compound `Hitbox` models onto the `Fluid` asset to support sensor detection and hazard overlaps.
-* [ ] Subtask: Register `FluidMechanics` in `src/data/config/mechanics/main.yaml` directly following `MotionMechanics` and `CollisionMechanics`.
+*Objective*: Integrate `Actuator` into `Migrator.step()` to ensure fluids are fully calculated before the first frame renders.
 
----
+* [ ] Subtask: Instantiate `Actuator` during Step 3 of `Migrator._build_generator()`.
+* [ ] Subtask: Execute an initial flow pass for all `fluids` in `board`, populating `length`, `pool`, and `hitboxes`.
 
-### Documentation Updates
+**5. Task: FluidMechanics Engine System**
 
-#### Draft: Fluid and Obstacle Asset Specifications
+*Objective*: Implement `FluidMechanics` in `app/game/logic/mechanics/world/fluid.py` to handle dynamic obstacle invalidation.
 
-* **Page**: `docs/01-assets.md`
-* **Heading**: `## Effects`
-
-##### Drift
-
-Phase 09 introduces `fluids` under the `Effects` category and `obstacles` under the `Objects` category. The current documentation only accounts for `passive`, `hazard`, `collectable`, and `reactable` effects.
-
-##### Update
-
-```markdown
-### Fluids
-
-Fluids are directional Effects that project along a designated source vector until obstructed by environmental boundaries or physical weights.
-
-**Properties: FluidProperties**
-
-* `dimensions: Dimensions`
-* `count: int`
-* `source: str` (`up`, `down`, `left`, `right`)
-* `flow: int` (radial perimeter expansion multiplier)
-* `lifecycle: LifecycleProperties`
-* `mass: int = -1`
-
-**Frame: FluidFrame**
-
-* `keys(id, state)`: Returns compound list of `(frame_key, offset_x, offset_y)` spanning the stream corridor, terminal truncated slice, and radial pool rectangles.
-* `index(id, properties)`: Indexes base animation frames alongside longitudinal fractional slices from $1\text{ px}$ to $\text{dimension} - 1\text{ px}$.
-
-**State: FluidState**
-
-* `position: Position`
-* `source: Optional[str]`
-* `flow: Optional[int]`
-* `stream_length: int`
-* `pool_rects: List[Tuple[int, int, int, int]]`
-* `dirty: bool`
-
-```
-
----
-
-#### Draft: Hydrodynamics Mechanics Pipeline
-
-* **Page**: `docs/05-mechanics.md`
-* **Heading**: `### Spatial`
-
-##### Drift
-
-Missing documentation for `FluidMechanics` and the separation of concerns regarding static vs. dynamic obstacle invalidation.
-
-##### Update
-
-```markdown
-- `fluid: FluidMechanics`: Resolves directional fluid propagation, obstacle impact truncation, and radial pool perimeter calculation.
-
-**FluidMechanics**
-
-FluidMechanics governs fluid emission across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses reactive dirty-checking:
-
-1. **Change Detection**: Inspects active crates ($\vert{}v\vert{} > 0$) and switch-linked gates. If any dynamic obstacle within a fluid's influence zone mutates, `fluid.state.dirty` is set to `True`.
-2. **Raycast Truncation**: Raycasts along `properties.source` against board boundaries and non-sheet solid assets ($m \ge 0$). Calculates distance $D$ to the nearest occluder.
-3. **Annular Pooling**: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius `flow` around the obstacle perimeter, partitioned into four rectangular bounding boxes.
-4. **Hitbox Update**: Injects composite hitboxes for the stream path and pool boundaries into the broad-phase spatial hash.
-
-```
-
----
-
-### Bug Reports
-
-##### Bug B008: Open Gates Included in Board Obstacles Query
-
-**STATUS**: OPEN
-
-**SEVERITY**: Medium
-
-**Description**
-
-`Board.obstacles()` retrieves all gates via `self._cached_instances.get(layer, {}).get(AssetInstances.GATES.value, [])` without checking their `state.switch` value. In the engine specification, an open gate (`switch == True`) has no physical hitboxes and allows entities to pass freely. Including open gates in `Board.obstacles()` causes pathfinding algorithms (`NavigationMechanics`) and line-of-sight checks to treat open passages as solid barriers.
-
-**Steps to Replicate**
-
-1. Deploy a gate linked to a pressure plate on Layer `0`.
-2. Trigger the plate so `gate.state.switch = True`.
-3. Call `board.obstacles('0')`.
-4. Observe that the open gate is still returned in the obstacle list.
-
-**Proposed Remediation**
-
-Filter gates in `Board.obstacles()` by switch state:
-
-```python
-gates = [
-    g for g in self._cached_instances.get(layer, {}).get(AssetInstances.GATES.value, [])
-    if not getattr(g.state, "switch", False)
-]
-```
-
+* [ ] Subtask: Implement change detection monitoring crate velocities and gate switch state transitions.
+* [ ] Subtask: Re-invoke `Actuator` for invalidated fluids to update state and hitboxes.
+* [x] Subtask: Register `FluidMechanics` in `src/data/config/mechanics/main.yaml` directly following `CollisionMechanics`.

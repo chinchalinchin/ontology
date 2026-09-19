@@ -100,6 +100,6 @@ cdef class Registry:
 
 *Objective*: Ensure all unit tests reflect the new data structure contracts and confirm zero behavioral regression.
 
-* [!: Dependent on User Acceptence] Subtask: Update `tests/unit/test_libs_graphics_registry.py` fixtures to supply mock `PropertiesSchema`, `RecipeConfiguration`, and `FontProperties` dataclasses.
-* [!: Dependent on User Acceptance] Subtask: Verify frame crop index generation matches expected `(item_id, sx, sy, w, l)` tuples across all asset categories.
-* [!: Dependent on User Acceptance] Subtask: Execute full test suite (`pytest`) to confirm boot, hydration, and rendering pipelines pass cleanly.
+* [x] Subtask: Update `tests/unit/test_libs_graphics_registry.py` fixtures to supply mock `PropertiesSchema`, `RecipeConfiguration`, and `FontProperties` dataclasses.
+* [x] Subtask: Verify frame crop index generation matches expected `(item_id, sx, sy, w, l)` tuples across all asset categories.
+* [x] Subtask: Execute full test suite (`pytest`) to confirm boot, hydration, and rendering pipelines pass cleanly.

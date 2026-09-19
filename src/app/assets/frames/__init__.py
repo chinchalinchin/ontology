@@ -3,7 +3,8 @@ from app.assets.frames.core import (
     SingleFrame,
     IterableFrame,
     StateFrame,
-    SpriteFrame
+    SpriteFrame,
+    FluidFrame
 )
 from app.assets.frames.widgets import (
     TraversalFrame,
@@ -16,6 +17,7 @@ __all__ = [
     'IterableFrame',
     'StateFrame',
     'SpriteFrame',
+    'FluidFrame',
     'TraversalFrame',
     'MeterFrame',
     'IndexFrame'

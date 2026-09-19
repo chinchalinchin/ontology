@@ -40,17 +40,19 @@ class AssetInstances(str, Enum):
     HAZARDS         = "hazards"
     COLLECTABLES    = "collectables"
     REACTABLES      = "reactables"
+    FLUIDS          = "fluids"
     # OBJECTS
     CHESTS          = "chests"
     CRATES          = "crates"
     DOORS           = "doors"
     GATES           = "gates"
+    OBSTACLES       = "obstacles"
     PLATES          = "plates"
     SIGNS           = "signs"
     # CRAFTS
     STRUTS          = "struts"
-    ## TODO:
-    TRACKS          = "tracks"
+    DECORS          = "decors"
+    FORGES          = "forges"
     DEVICES         = "devices"
     # SHEETS
     PIXIES          = "pixies"
@@ -107,6 +109,7 @@ class FrameRecipe(str, Enum):
     NONE            = "none"
     SINGLE          = "single"
     ITERABLE        = "iterable"
+    FLUID           = "fluid"
     STATE           = "state"
     SPRITE          = "sprite"
     METER           = "meter"

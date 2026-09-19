@@ -121,6 +121,14 @@ class WidgetProperties(AssetProperties):
     frames: Optional[List[str]] = field(default_factory=list)
 
 # ---------------------------------------------------------------------------------------
+
+@dataclass(slots=True)
+class FluidProperties(EffectProperties):
+    source: str = Directions.DOWN.value
+    flow: int = 1
+    mass: int = -1
+
+# ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- ROOT SCHEMAS
 
 @dataclass(slots=True)

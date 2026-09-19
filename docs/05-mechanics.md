@@ -185,6 +185,22 @@ NavigationMechanics acts as the Sprite's tactical navigator, bridging strategic 
 5. **Waypoint Arrival**: When the entity arrives within `action_radius` of `trajectory.target`, pops the completed waypoint from `trajectory.vertices` and sets `target` to the next vertex (or strategic goal when vertices are exhausted).
 6. **Stall & Cooldown Handling**: When RRT cannot resolve a collision-free path, sets `trajectory.stalled = True` and starts a `cooldown` timer (`settings.PATH_RETRY_INTERVAL`) to prevent per-frame re-planning thrash.
 
+### World
+
+These Mechanics handle ambient world state, high-level game calculations and other abstract accounting.
+
+- `plot: PlotMechanics`: Evaluates the [Plot Transition matrix](./08-plots.md) to transition the [Board's](./00-overview.md#board) plot state.
+- `fluid: FluidMechanics`: Resolves directional fluid propagation, obstacle impact truncation, and radial pool perimeter calculation.
+
+**FluidMechanics**
+
+FluidMechanics governs fluid emission across active layers. It executes after physical momentum updates (`MotionMechanics` and `CollisionMechanics`) and uses reactive dirty-checking:
+
+1. **Change Detection**: Inspects active crates ($\vert{}v\vert{} > 0$) and switch-linked gates. If any dynamic obstacle within a fluid's influence zone mutates, `fluid.state.dirty` is set to `True`.
+2. **Raycast Truncation**: Raycasts along `properties.source` against board boundaries and non-sheet solid assets ($m \ge 0$). Calculates distance $D$ to the nearest occluder.
+3. **Annular Pooling**: If the occluder is an internal obstacle rather than a perimeter boundary, expands a radial pool of radius `flow` around the obstacle perimeter, partitioned into four rectangular bounding boxes.
+4. **Hitbox Update**: Injects composite hitboxes for the stream path and pool boundaries into the broad-phase spatial hash.
+
 ## Configuration
 
 * Location: `/src/data/config/mechanics/main.yaml`

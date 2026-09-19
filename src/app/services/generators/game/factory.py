@@ -26,6 +26,7 @@ from app.assets.frames import (
     IterableFrame, 
     StateFrame,
     SpriteFrame,
+    FluidFrame,
     TraversalFrame,
     MeterFrame,
     IndexFrame,

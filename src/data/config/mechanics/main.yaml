@@ -12,6 +12,7 @@ mechanics:
     - interaction
     - social
     - collision
+    - fluid
     - combat
     - switch
     - projectile

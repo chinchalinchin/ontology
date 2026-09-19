@@ -10,6 +10,7 @@ from app.models.state.devices import (
     WorldPayload
 )
 from app.models.state.objects import (
+    FluidState,
     MultiplierState,
     ContainerState,
     PositionalState,
@@ -71,6 +72,7 @@ __all__ = [
     'WorldPayload',
     'MenuPayload',
     # OBJECT STATES
+    'FluidState',
     'MultiplierState',
     'ContainerState',
     'PositionalState',

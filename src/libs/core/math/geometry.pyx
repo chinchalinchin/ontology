@@ -398,3 +398,76 @@ cpdef list contours(list rects):
         prev_merged_h = curr_merged_h
 
     return boundaries
+
+cpdef tuple raycast(
+    int sx, 
+    int sy, 
+    int sw, 
+    int sl, 
+    str direction, 
+    list obstacles, 
+    int max_dist
+):
+    """
+    Casts a directional 2D stream corridor of cross-section (sw, sl) from origin (sx, sy)
+    against candidate AABB obstacles along cardinal directions.
+
+    Obstacle items in `obstacles` must be primitive tuples:
+        (ox, oy, ow, ol) or (ox, oy, ow, ol, ref)
+
+    Returns:
+        tuple: (int min_dist, object hit_obstacle)
+               If no obstacle is struck within max_dist, returns (max_dist, None).
+    """
+    cdef int min_dist = max_dist
+    cdef object hit_obs = None
+    cdef tuple obs
+    cdef int ox, oy, ow, ol
+    cdef int dist
+    cdef object ref
+
+    for item in obstacles:
+        obs = <tuple>item
+        ox = obs[0]
+        oy = obs[1]
+        ow = obs[2]
+        ol = obs[3]
+        ref = obs[4] if len(obs) >= 5 else obs
+
+        if direction == "down":
+            # Orthogonal cross-sectional overlap on X
+            if ox < sx + sw and ox + ow > sx:
+                if oy >= sy:
+                    dist = oy - sy
+                    if dist < min_dist:
+                        min_dist = dist
+                        hit_obs = ref
+
+        elif direction == "up":
+            # Orthogonal cross-sectional overlap on X
+            if ox < sx + sw and ox + ow > sx:
+                if oy + ol <= sy:
+                    dist = sy - (oy + ol)
+                    if dist < min_dist:
+                        min_dist = dist
+                        hit_obs = ref
+
+        elif direction == "right":
+            # Orthogonal cross-sectional overlap on Y
+            if oy < sy + sl and oy + ol > sy:
+                if ox >= sx:
+                    dist = ox - sx
+                    if dist < min_dist:
+                        min_dist = dist
+                        hit_obs = ref
+
+        elif direction == "left":
+            # Orthogonal cross-sectional overlap on Y
+            if oy < sy + sl and oy + ol > sy:
+                if ox + ow <= sx:
+                    dist = sx - (ox + ow)
+                    if dist < min_dist:
+                        min_dist = dist
+                        hit_obs = ref
+
+    return (min_dist, hit_obs)

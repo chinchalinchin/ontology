@@ -129,6 +129,9 @@ These attributes are part of the base class from which all other states inherit.
 | Object | Gate | Base, Animation, Switch, Link |
 | Object | Plate | Base, Animation, Switch, Link |
 | Craft | Strut | Base, Owner |
+| Craft | Decor | Base, Owner |
+| Craft | Forge | Base, TODO |
+| Craft | Device | Base, TODO |
 | Resource | Crop | Base, Season |
 | Resource | Ore | Base, Vein |
 | Cursor | Expression | Base, Attachment |
@@ -137,6 +140,7 @@ These attributes are part of the base class from which all other states inherit.
 | Effect | Hazard | Base, Animation, Damage |
 | Effect | Collectable | Base, Animation, Lot |
 | Effect | Reactable | Base, Animation, Intention, Cooldown |
+| Effect | Fluid | Base, Animation, Source, Flow |
 | Sheet | Pixie | Base, Animation |
 | Sheet | Sprite | Base, Animation, Velocity, Intention, Inventory, Meters, Memory, Mutators, Goal, Trajectory |
 | Widget | Icon | Base, Icon |
@@ -579,6 +583,40 @@ Reactables Effects react to the [Intentional](./04-intentions.md) states of [Spr
 * `position: Position`
 * `animation: Animation`
 * `intention`
+
+### Fluids
+
+Fluids are directional Effects that project along a designated source vector until obstructed by environmental boundaries or physical weights. Because Fluid assets span multiple grid units, they bypass standard geometric height calculation (`pos.y + dim.l`).
+
+**Z-Ordering & Sorting**
+
+Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the rendering pipeline (`Screen.draw`) sorts the compound stream directly above the pre-rendered terrain canvas (`bg_canvas`) while maintaining correct perspective beneath dynamic bodies, movable crates, bridges, and foreground overlays.
+
+**Properties: FluidProperties**
+
+* `dimensions: Dimensions`
+* `count: int`
+* `source: str` (`up`, `down`, `left`, `right`)
+* `flow: int` (radial perimeter expansion multiplier)
+* `lifecycle: LifecycleProperties`
+* `mass: int = -1`
+
+**Frame: FluidFrame**
+
+* `keys(id, state)`: Assembles `(frame_key, offset_x, offset_y)` tuples from the state's cached offset manifest.
+* `index(id, properties)`: Indexes full frames and directional fractional slices (both forward and reverse across $w$ and $l$) for each animation frame index $0 \le f < \text{count}$.
+
+**State: FluidState**
+
+* `position: Position`
+* `source: Optional[str]`
+* `flow: Optional[int]`
+* `stream_length: int`
+* `pool: List[Tuple[str, int, int]]`
+* `stream: List[Tuple[str, int, int]]`
+* `dirty: bool`
+* `height: Optional[Union[int, str]] = 0`
+* `depth: int = -1`
 
 ## Crafts
 

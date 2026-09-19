@@ -27,7 +27,8 @@ from app.models.state.objects import (
     ReactableState,
     CollectableState,
     DialogueState,
-    AttachmentState
+    AttachmentState,
+    FluidState
 )
 from app.models.state.sprites import (
     SpriteState,
@@ -48,13 +49,15 @@ class ObjectStateInstances:
     crates: List[PositionalState] = field(default_factory=list)
     doors: List[DoorState] = field(default_factory=list)
     gates: List[SwitchState] = field(default_factory=list)
+    obstacles: List[PositionalState] = field(default_factory=list)
     plates: List[SwitchState] = field(default_factory=list)
     signs: List[DialogueState] = field(default_factory=list)
     
 @dataclass(slots=True)
 class CraftStateInstances:
     struts: List[PropertyState] = field(default_factory=list)
-
+    decors: List[PropertyState] = field(default_factory=list)
+    
 @dataclass(slots=True)
 class CursorStateInstances:
     expressions: List[AttachmentState] = field(default_factory=list)
@@ -66,6 +69,7 @@ class EffectStateInstances:
     passive: List[EffectState] = field(default_factory=list)
     collectables: List[CollectableState] = field(default_factory=list)
     reactables: List[ReactableState] = field(default_factory=list)
+    fluids: List[FluidState] = field(default_factory=list)
 
 @dataclass(slots=True)
 class SheetStateInstances:

@@ -30,6 +30,9 @@ recipes:
     passive:
       frame: iterable
       animation: lifecycle
+    fluid:
+      frame: fluid
+      animation: lifecycle
   objects:
     chests:
       frame: iterable
@@ -43,6 +46,9 @@ recipes:
     gates: 
       frame: iterable
       animation: binary
+    obstacles:
+      frame: single
+      animation: none
     plates:
       frame: iterable
       animation: binary

@@ -21,6 +21,7 @@ from app.models.adapters import (
     PydanticPosition as Position, 
     PydanticMultiple as Multiple, 
     PydanticVelocity as Velocity,
+    PydanticHitbox as Hitbox
 )
 from app.models.state.core import (
     AnimationState,
@@ -33,6 +34,8 @@ from libs.core.models import Velocity as CoreVelocity
 # ---------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------- ASSET STATES
 
+# ------------------------------------------------------------------------ OBJECT FIELDS
+
 @dataclass(slots=True)
 class Damage:
     amount: int = 0
@@ -44,6 +47,13 @@ class Lot:
     inventory: Inventories = Inventories.EQUIPMENT.value
     item: Optional[str] = None 
     quantity: int = 0
+
+@dataclass(slots=True)
+class Pool:
+    x: int
+    y: int
+    w: int
+    l: int
 
 # ------------------------------------------------------------------------ OBJECTS STATES
 
@@ -125,3 +135,12 @@ class ReactableState(EffectState):
 @dataclass(slots=True)
 class CollectableState(EffectState):
     lot: Lot = field(default_factory=Lot)
+
+@dataclass(slots=True)
+class FluidState(EffectState):
+    length: int = 0
+    pool: Optional[Pool] = None
+    hitboxes: List[Hitbox] = field(default_factory=list) # type: ignore
+    dirty: bool = True
+    height: Optional[int] = 0
+    depth: int = -1

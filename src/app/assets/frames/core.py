@@ -28,11 +28,13 @@ from app.config.enums import (
 from app.assets.base import Frame
 from app.models.state import (
     AssetState, 
-    SpriteState
+    SpriteState,
+    FluidState
 )
 from app.models.properties import (
     AssetProperties,
-    SheetProperties
+    SheetProperties,
+    FluidProperties
 )
 
 logger = logging.getLogger(__name__)
@@ -98,6 +100,21 @@ class IterableFrame(Frame):
             settings.SEPARATOR.join([id,str(i)]): (i * w, 0, w, l)
             for i in range(properties.count) 
         }
+
+# -------------------------------------------------------------------------------------
+
+class FluidFrame(Frame):
+    """
+    ## FluidFrame
+    """
+
+    def keys(self, id: str, state: FluidState) -> List[str]:
+        # TODO
+        pass
+
+    def index(self, id:str, properties: FluidProperties) -> Dict[str, Tuple[int, int, int, int]]:
+        # TODO
+        pass
 
 # -------------------------------------------------------------------------------------
 
