@@ -1,5 +1,8 @@
 effects:
   passive:
+    # -------------------------------------------------------
+    # ------------------------------------ PERIODIC EFFECTS
+    # -------------------------------------------------------
     birdbath:
       count: 5
       dimensions:
@@ -10,6 +13,9 @@ effects:
         frequency: 1200
       hitboxes: null
       mass: -1
+    # -------------------------------------------------------
+    # ------------------------------------ CONTINUOUS EFFECTS
+    # -------------------------------------------------------
     grandfather-clock: 
       count: 12
       dimensions:
@@ -20,6 +26,7 @@ effects:
         delay: 60
       hitboxes: null
       mass: 0
+    # -------------------------------------------------------
     torch: 
       count: 9
       dimensions:
@@ -30,3 +37,15 @@ effects:
         delay: 15
       hitboxes: null
       mass: -1
+    # -------------------------------------------------------
+    water-ripples-vertical:
+      count: 5
+      dimensions:
+        w: 32
+        l: 96
+      lifecycle:
+        type: continuous
+        delay: 20
+      hitboxes: null
+      mass: 0
+

@@ -34,7 +34,7 @@ class Loader:
         merged_data: dict[str, Any] = {}
         
         logger.info(f"Loading YAML state configurations from {target_dir} ...")
-        for file_path in target_dir.glob("*.yaml"):
+        for file_path in target_dir.rglob("*.yaml"):
             with file_path.open("r", encoding="utf-8") as f:
                 data = yaml.safe_load(f)
                 if isinstance(data, dict):

@@ -25,8 +25,9 @@ This is the Task Board for the project. Below is a backlog of completed and pend
     - [x]: [Phase 06: Intentions](./phases/implement/phase-06.md)
     - [x]: [Phase 07: Compositions](./phases/implement/phase-07.md)
     - [x]: [Phase 08: Pathfinding](./phases/implement/phase-08.md)
-    - [ ]: [Phase 09: Commerce](./phases/implement/phase-09.md)
-    - [ ]: [Phase 10: Towns](./phase/implement/phase-10.md)
+    - [ ]: [Phase 09: Hydrodynamics](./phases/implement/phase-09.md)
+    - [ ]: [Phase n: Commerce](./phases/implement/phase-n.md)
+    - [ ]: [Phase n+1: Towns](./phase/implement/phase-n+1.md)
   - Refactor:
     - Phase 01:
       - [x]: [Phase 01.01: Orchestration](./phases/refactor/refactor-01-01.md)
