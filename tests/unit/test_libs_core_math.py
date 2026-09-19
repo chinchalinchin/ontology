@@ -139,3 +139,8 @@ def test_geometry_los_obstructed():
     ]
     # Trajectory intersects the middle obstacle
     assert geometry.los(0.0, 10.0, 100.0, 10.0, rects) is False
+
+
+def test_boundary_primitive(mock_boundary):
+    """Verify Boundary.primitive unpacks spatial coordinates into a 4-tuple."""
+    assert mock_boundary.primitive() == (10, 20, 30, 40)

@@ -69,9 +69,9 @@ Establish an autonomous fluid flow and obstacle occlusion system. Introduces a d
 
 * **The Dilemma:** Pre-computing water bodies during `Migrator` bootstrap creates high runtime efficiency, but fails when crates slide or gates toggle. Running linear raycasts and polygon bounds every tick for every fluid source wastes CPU cycles and thrashes the board.
 * **The Solution:** A **Reactive Invalidation (Dirty-Flag) Pattern**.
-* **Bootstrap:** During `Migrator` hydration, an initial fluid flow pass computes the steady-state stream length and pool boundary against static geometry.
-* **Tick Update:** `FluidMechanics` does not recalculate flow every frame. Instead, it checks whether any dynamic obstacle ($m > 0$ crates with $\vert{}v\vert{} > 0$ or gates with flipped switches) intersects the fluid's active stream or pool bounds.
-* Only when an obstacle mutates within the fluid's influence zone is the fluid marked `dirty = True`, triggering a re-raycast. Otherwise, `FluidMechanics` yields in $O(1)$ time.
+    * **Bootstrap:** During `Migrator` hydration, an initial fluid flow pass computes the steady-state stream length and pool boundary against static geometry.
+    * **Tick Update:** `FluidMechanics` does not recalculate flow every frame. Instead, it checks whether any dynamic obstacle ($m > 0$ crates with $\vert{}v\vert{} > 0$ or gates with flipped switches) intersects the fluid's active stream or pool bounds.
+    * Only when an obstacle mutates within the fluid's influence zone is the fluid marked `dirty = True`, triggering a re-raycast. Otherwise, `FluidMechanics` yields in $O(1)$ time.
 
 **2. Entity Representation: Single Compound Asset vs. Spawned Tiles**
 
@@ -131,16 +131,11 @@ class FluidProperties(EffectProperties):
 
 @dataclass(slots=True)
 class FluidState(EffectState):
-    source: Optional[str] = None
-    flow: Optional[int] = None
+    source: Optional[str] = Directions.DOWN.value
+    flow: Optional[int] = 1
     stream_length: int = 0
     pool_rects: List[Tuple[int, int, int, int]] = field(default_factory=list)
     dirty: bool = True
-
-@dataclass(slots=True)
-class ObstacleProperties(ObjectProperties):
-    mass: int = 0
-
 ```
 
 ##### Goal: Sliced Frame Ingestion (`FluidFrame`)
@@ -157,7 +152,7 @@ class FluidFrame(Frame):
             crops[f"{id}-slice-{slice_len}"] = (0, 0, w, slice_len)
         return crops
 
-    def keys(self, id: str, state: AssetState) -> List[Tuple[str, int, int]]:
+    def keys(self, id: str, state: FluidState) -> List[Tuple[str, int, int]]:
         # Emit full tiles along stream + fractional slice + annular pool tiles
         ...
 ```
@@ -314,13 +309,5 @@ gates = [
     g for g in self._cached_instances.get(layer, {}).get(AssetInstances.GATES.value, [])
     if not getattr(g.state, "switch", False)
 ]
-
 ```
 
----
-
-### Verification and Sanity Check
-
-1. **State Independence:** CognitionMechanics remains the sole mutator of `Goal`, and TransitionMechanics remains the sole mutator of `Intention`. Fluid flow mechanics strictly mutate `FluidState` and spatial hitboxes.
-2. **Performance Safety:** By representing fluids as single compound assets using pre-indexed `FluidFrame` slices and gating re-calculations behind obstacle velocity/switch checks, Board list removal and cache invalidation thrash are avoided.
-3. **Engine Alignment:** The proposed design adheres strictly to the existing ECS frame-indexing architecture (`safe_dim`, `Registry`, `Frame.keys()`).

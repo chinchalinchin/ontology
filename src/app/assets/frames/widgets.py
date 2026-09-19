@@ -15,9 +15,9 @@ import logging
 # Application Libraries
 import app.config.settings as settings
 from app.assets.base import Frame
-from app.assets.frames.core import safe_dim
 from app.config.enums import Statuses
 from app.models.state import AssetState
+from app.models.properties import WidgetProperties
 
 logger = logging.getLogger(__name__)
 
@@ -37,10 +37,12 @@ class TraversalFrame(Frame):
         ]
 
 
-    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, id: str, properties: WidgetProperties) -> dict[str, tuple[int, int, int, int]]:
         """
         """
-        w, l = safe_dim(properties)
+        w = properties.dimensions.w
+        l = properties.dimensions.l
+
         return {
             settings.SEPARATOR.join([id, Statuses.IDLE.value]): (0, 0, w, l),
             settings.SEPARATOR.join([id, Statuses.ACTIVE.value]): (w, 0, w, l),
@@ -62,10 +64,11 @@ class MeterFrame(Frame):
         ]
 
 
-    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, id: str, properties: WidgetProperties) -> dict[str, tuple[int, int, int, int]]:
         """
         """
-        w, l = safe_dim(properties)
+        w = properties.dimensions.w
+        l = properties.dimensions.l
         crops = {
            settings.SEPARATOR.join([id, str(settings.EMPTY)]): (0, 0, w, l)
         }
@@ -87,10 +90,11 @@ class IndexFrame(Frame):
             return []
         return [(settings.SEPARATOR.join([id, icon_key]), 0, 0)]
 
-    def index(self, id: str, properties: Dict[str, Any]) -> Dict[str, Tuple[int, int, int, int]]:
-        w, l = safe_dim(properties)
+    def index(self, id: str, properties: WidgetProperties) -> Dict[str, Tuple[int, int, int, int]]:
+        w = properties.dimensions.w
+        l = properties.dimensions.l
+        frames = properties.frames
         crops = {}
-        frames = properties.get("frames", [])
         
         # Failsafe: if no frames are defined, index the whole image
         if not frames:

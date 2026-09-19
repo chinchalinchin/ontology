@@ -6,6 +6,7 @@
 import os
 import time
 import logging
+import dataclasses
 
 # Application Libraries
 import app.config.settings as settings
@@ -79,67 +80,56 @@ def _sys_load_image(filepath: str):
     wrapper.l = l
     return wrapper
 
-def _sys_load_font(filepath: str, style: dict):
-    cdef int pt_size = style.get("size", 24)
+def _sys_load_font(filepath: str, object style):
+    cdef int pt_size = style.size
     cdef bytes b_filepath = filepath.encode('utf-8')
     cdef TTF_Font* f_ptr = TTF_OpenFont(b_filepath, pt_size)
     cdef int sdl_style = TTF_STYLE_NORMAL
     cdef TTFFont font_obj
-    cdef dict color_cfg
-    cdef dict outline_cfg
-    cdef dict out_color
-    cdef int outline_width
-    
+    cdef int outline_width = 0
+
     if f_ptr == NULL:
         raise RuntimeError(f"Failed to load font into memory: {filepath}")
-        
-    # 1. Composite Style Flags
-    if style.get("bold", False): sdl_style |= TTF_STYLE_BOLD
-    if style.get("italics", False): sdl_style |= TTF_STYLE_ITALIC
-    if style.get("underline", False): sdl_style |= TTF_STYLE_UNDERLINE
-    if style.get("strikethrough", False): sdl_style |= TTF_STYLE_STRIKETHROUGH
+
+    if style.bold: sdl_style |= TTF_STYLE_BOLD
+    if style.italics: sdl_style |= TTF_STYLE_ITALIC
+    if style.underline: sdl_style |= TTF_STYLE_UNDERLINE
+    if style.strikethrough: sdl_style |= TTF_STYLE_STRIKETHROUGH
     TTF_SetFontStyle(f_ptr, sdl_style)
-    
+
     font_obj = TTFFont()
     font_obj.ptr = f_ptr
-    font_obj.margins = style.get("margins", 0.05)
-    font_obj.align_str = style.get("alignment", "left")
-    
-    # 2. Base Color
-    color_cfg = style.get("color", {})
-    font_obj.color.r = color_cfg.get("r", 255)
-    font_obj.color.g = color_cfg.get("g", 255)
-    font_obj.color.b = color_cfg.get("b", 255)
-    font_obj.color.a = color_cfg.get("a", 255)
+    font_obj.margins = style.margins
+    font_obj.align_str = style.alignment.value
 
-    # 3. Outline Resolution (Dedicated Secondary Pointer)
-    outline_cfg = style.get("outline", {}) if isinstance(style.get("outline"), dict) else {}
-    outline_width = outline_cfg.get("width", style.get("outline", 0) if isinstance(style.get("outline"), int) else 0)
-    
-    font_obj.outline_width = outline_width
+    font_obj.color.r = style.color.r
+    font_obj.color.g = style.color.g
+    font_obj.color.b = style.color.b
+    font_obj.color.a = style.color.a
+
     font_obj.outline_ptr = NULL
-
-    if outline_width > 0:
+    if style.outline is not None and style.outline.width > 0:
+        outline_width = style.outline.width
+        font_obj.outline_width = outline_width
         font_obj.outline_ptr = TTF_OpenFont(b_filepath, pt_size)
         if font_obj.outline_ptr != NULL:
             TTF_SetFontStyle(font_obj.outline_ptr, sdl_style)
             TTF_SetFontOutline(font_obj.outline_ptr, outline_width)
-            
-            # Outline Color (defaults to opaque black)
-            out_color = outline_cfg.get("color", {})
-            font_obj.outline_color.r = out_color.get("r", 0)
-            font_obj.outline_color.g = out_color.get("g", 0)
-            font_obj.outline_color.b = out_color.get("b", 0)
-            font_obj.outline_color.a = out_color.get("a", 255)
+            font_obj.outline_color.r = style.outline.color.r
+            font_obj.outline_color.g = style.outline.color.g
+            font_obj.outline_color.b = style.outline.color.b
+            font_obj.outline_color.a = style.outline.color.a
+    else:
+        font_obj.outline_width = 0
 
     return font_obj
     
 # -------------------------------------------------------------------------------
 
 cdef class Registry:
-    cdef public dict properties
-    cdef public dict recipes
-    cdef public dict typography
+    cdef public object properties   # PropertiesSchema
+    cdef public object recipes      # RecipeConfiguration
+    cdef public dict typography     # Dict[str, FontProperties]
 
     cdef public dict _textures
     cdef public dict _frames
@@ -150,11 +140,8 @@ cdef class Registry:
     cdef public int maximum
     cdef public int current
 
-    def __init__(self, dict properties, dict recipes, dict typography=None):
-        if typography is None:
-            typography = {}
-            
-        logger.debug("Initializing Asset Registry...")
+    def __init__(self, object properties, object recipes, dict typography=None):
+        logger.debug("Initializing Asset Registry with native application models...")
         self._textures = {}
         self._frames = {}
         self._fonts = {}
@@ -165,11 +152,12 @@ cdef class Registry:
         self.current = 0
         self.properties = properties
         self.recipes = recipes
-        self.typography = typography
+        self.typography = typography if typography is not None else {}
         
         self._cache()
         self._stack()
         self._index()
+
 
     def _cache(self):
         asset_dir = str(settings.ASSET_DIR)
@@ -184,6 +172,7 @@ cdef class Registry:
                     self._pending_assets.append(asset_key)
         self.maximum = len(self._pending_assets)
         self.current = 0
+
 
     def _get_or_load_texture(self, asset_key: str, bint raw_only=False):
         if not raw_only and asset_key in self._textures:
@@ -214,7 +203,7 @@ cdef class Registry:
         # 2. Physical File Resolution
         filepath = self._filepaths.get(asset_key)
         if filepath and filepath.endswith('.png'):
-            tex = self._load_image(filepath)
+            tex = self._load_texture(filepath)
             # Prevent intermediate raw textures from polluting the composited cache
             if not raw_only and tex: 
                 self._textures[asset_key] = tex
@@ -222,8 +211,10 @@ cdef class Registry:
             
         return None
 
-    def _load_image(self, filepath: str):
+
+    def _load_texture(self, filepath: str):
         return _sys_load_image(filepath)
+
 
     def _get_or_load_font(self, font_key: str):
         if font_key in self._fonts:
@@ -236,55 +227,71 @@ cdef class Registry:
             return font_obj
         return None
 
+
     def _load_font(self, font_key: str, filepath: str):
         if font_key not in self.typography:
             return None
-            
-        cdef dict style = self.typography[font_key]
+        style = self.typography[font_key]
         return _sys_load_font(filepath, style)
 
-    def _extract(self, inst_props):
-        if not isinstance(inst_props, dict): return
-        else:
-            for k, v in inst_props.items():
-                if isinstance(v, dict): yield k, v
 
     def _stack(self):
-        logger.debug("Registering Texture Stacks dependencies...")
-        for _, cat_props in self.properties.items():
-            if not cat_props: continue
-            for _, inst_props in cat_props.items():
-                for item_id, item_props in self._extract(inst_props):
-                    stack = item_props.get("stack", [])
-                    if not stack: continue
-                    self._stacks[item_id] = stack
-                    if item_id not in self._pending_assets:
-                        self._pending_assets.append(item_id)
-                        self.maximum += 1
+        """
+        Extracts Sheet stack dependencies from SheetPropertyInstances.
+        """
+        logger.debug("Registering Texture Stacks dependencies from Sheet properties...")
+        if not hasattr(self.properties, "sheets") or not self.properties.sheets:
+            return
+
+        for sheet_field in dataclasses.fields(self.properties.sheets):
+            sheet_instances = getattr(self.properties.sheets, sheet_field.name, {})
+            if not isinstance(sheet_instances, dict):
+                continue
+            for item_id, item_props in sheet_instances.items():
+                stack = getattr(item_props, "stack", None)
+                if not stack:
+                    continue
+                self._stacks[item_id] = stack
+                if item_id not in self._pending_assets:
+                    self._pending_assets.append(item_id)
+                    self.maximum += 1
+
 
     def _index(self):
+        """
+        Indexes frame coordinates by mapping Category and Instance dataclass fields.
+        """
         from app.services.generators.game.factory import Factory
 
-        logger.debug("Indexing Frame Keys to Texture Crops...")
-        for cat_name, cat_props in self.properties.items():
-            if not cat_props: continue
-            cat_recipes = self.recipes.get(cat_name)
-            
-            if not cat_recipes: continue
+        logger.debug("Indexing Frame Keys to Texture Crops using native data models...")
+        for cat_field in dataclasses.fields(self.properties):
+            cat_name = cat_field.name
+            if cat_name == "fonts":
+                continue
 
-            for inst_name, recipe in cat_recipes.items():
-                if not recipe: continue
+            cat_props = getattr(self.properties, cat_name, None)
+            cat_recipes = getattr(self.recipes, cat_name, None)
+            if not cat_props or not cat_recipes:
+                continue
 
-                inst_props = cat_props.get(inst_name)
-                if not inst_props: continue
+            for inst_field in dataclasses.fields(cat_props):
+                inst_name = inst_field.name
+                recipe = getattr(cat_recipes, inst_name, None)
+                if not recipe:
+                    continue
 
-                frame_worker = Factory.frame(recipe["frame"])
-                for item_id, item_props in self._extract(inst_props):
-                    if item_id not in self._filepaths and item_id not in self._stacks: 
+                inst_dict = getattr(cat_props, inst_name, {})
+                if not inst_dict or not isinstance(inst_dict, dict):
+                    continue
+
+                frame_worker = Factory.frame(recipe.frame)
+                for item_id, item_props in inst_dict.items():
+                    if item_id not in self._filepaths and item_id not in self._stacks:
                         continue
                     crop_map = frame_worker.index(item_id, item_props)
                     for frame_key, crop in crop_map.items():
                         self._frames[frame_key] = (item_id, crop[0], crop[1], crop[2], crop[3])
+
 
     def image(self, frame_key: str) -> tuple:
         if frame_key in self._frames:
@@ -298,9 +305,11 @@ cdef class Registry:
             
         return None
 
+
     def font(self, font_key: str):
         return self._get_or_load_font(font_key)
         
+
     def prewarm(self, budget_ms: int) -> bool:
         start = time.perf_counter()
         while self._pending_assets:
@@ -313,6 +322,7 @@ cdef class Registry:
             self.current += 1
             
         return True
+
 
     cpdef void clear(self):
         """

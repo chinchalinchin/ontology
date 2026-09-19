@@ -29,7 +29,6 @@ from app.config.enums import (
     Shortcuts,
     Bindings
 )
-
 from app.game.board import Board
 from app.models.properties import (
     PropertiesSchema, 
@@ -37,27 +36,38 @@ from app.models.properties import (
     SheetProperties,
     WidgetProperties,
     TileProperties,
+    CraftProperties,
+    ObjectProperties,
+    FontProperties,
     WidgetPropertyInstances,
+    RGBA,
+    Outline,
+    Cost
 )
 from app.models.config import (
-    ConfigurationSchema, 
-    MappingConfiguration, 
-    DeviceMapping,
-    WorldMapping,
-    MenuMapping,
+    CompositionConfiguration, 
+    CompositionPseudoState, 
     RecipeConfiguration,
     CursorRecipe,
     CraftRecipe,
     WidgetRecipe,
     EffectRecipe,
+    ObjectRecipe,
+    SheetRecipe,
     Recipe,
     IntentionConfiguration,
+    MappingConfiguration, 
+    DeviceMapping,
+    WorldMapping,
+    MenuMapping,
     MenuNode,
     GizmoParameters,
-    MenuBinding
+    MenuBinding,
+    ConfigurationSchema
 )
 from app.models.state import (
     StateSchema, 
+    ObjectStateInstances, 
     SpriteState,
     PlayerState,
     DoorState,
@@ -78,7 +88,6 @@ from app.models.state import (
     PositionalState,
     CollectionState
 )
-from app.models.properties import CraftProperties
 from app.models.groups import (
     SpawnableGroup,
     EquipmentGroup
@@ -91,6 +100,9 @@ from app.services.generators.menus import (
     Provider,
     Binder
 )
+from app.services.generators.game import (
+    Decomposer
+)
 
 # Cython Libraries
 from libs.core.models import (
@@ -98,12 +110,14 @@ from libs.core.models import (
     Position,
     Multiple,
     Velocity,
-    Hitbox
+    Hitbox,
+    Boundary
 )
 from libs.core.math.space import Space
 
 # ---------------------------------------------------------------------------
 # -------------------------------------------------------------- MOCK CLASSES
+# ---------------------------------------------------------------------------
 
 class DummyFrame(Frame):
     def keys(self, id, state): return [id]
@@ -114,7 +128,10 @@ class DummyAnimation(Animation):
 
 # ---------------------------------------------------------------------------
 # ------------------------------------------------------------------ FIXTURES
+# ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# ----------------------------------------------------------- MOCK COMPONENTS
 
 @pytest.fixture
 def mock_registry():
@@ -124,13 +141,161 @@ def mock_registry():
 
 
 @pytest.fixture
-def mock_properties():
+def mock_decomposer():
+    # 1. Setup mock properties with costs for aggregation
     props = PropertiesSchema()
-    props.sheets.sprites["player"] = SheetProperties(
-        dimensions=Dimensions(w=64, l=64),
-        mass=7
+    props.crafts.struts["frame-wood"] = CraftProperties(
+        dimensions=Dimensions(w=100, l=100),
+        cost=[Cost(item="wood", quantity=10)]
     )
-    return props
+    props.crafts.struts["wall-blue"] = CraftProperties(
+        dimensions=Dimensions(w=50, l=50),
+        cost=[Cost(item="stone", quantity=5)]
+    )
+    props.objects.doors["door-front"] = ObjectProperties(
+        dimensions=Dimensions(w=32, l=32)
+    )
+
+    # 2. Setup a complex Composition with a root, a branch, and a component
+    comp_config = CompositionConfiguration(
+        root=CompositionPseudoState(
+            strut=PropertyState(id="frame-wood", name="base_house"),
+            components=StateSchema(
+                objects=ObjectStateInstances(
+                    doors=[
+                        DoorState(
+                            id="door-front",
+                            name="entrance",
+                            position=Position(x=20, y=20),
+                            out=Position(x=5, y=5),
+                            outlayer="bind(root.layer)"
+                        )
+                    ]
+                )
+            )
+        ),
+        branches=[
+            CompositionPseudoState(
+                strut=PropertyState(
+                    id="wall-blue", 
+                    name="interior",
+                    position=Position(x=10, y=10),
+                    owner="bind(parent.owner)"
+                ),
+                components=StateSchema()
+            )
+        ]
+    )
+    
+    compositions = {"test-house": comp_config}
+    recipes = RecipeConfiguration(
+        crafts=CraftRecipe(
+            struts=Recipe(frame=FrameRecipe.SINGLE, animation=AnimationRecipe.NONE)
+        ),
+        objects=ObjectRecipe(
+            doors=Recipe(frame=FrameRecipe.SINGLE, animation=AnimationRecipe.NONE)
+        )
+    )
+    
+    return Decomposer(compositions=compositions, properties=props, recipes=recipes)
+
+
+@pytest.fixture
+def mock_builder(mock_properties, mock_configurations, mock_state):
+    with patch('app.services.orchestration.builder.Loader') as mock_loader:
+        mock_loader.load_properties.return_value = mock_properties
+        mock_loader.load_configurations.return_value = mock_configurations
+        mock_loader.load_state.return_value = mock_state
+        
+        yield Builder()
+
+
+@pytest.fixture
+def mock_orchestrator(mock_builder):
+    return Orchestrator(mock_builder)
+
+
+@pytest.fixture
+def mock_provider(mock_registry):
+    recipes = WidgetRecipe(
+        pages=Recipe(frame=FrameRecipe.SINGLE),
+        buttons=Recipe(frame=FrameRecipe.TRAVERSAL, animation=AnimationRecipe.TRAVERSAL),
+        meters=Recipe(frame=FrameRecipe.METER, animation=AnimationRecipe.METER),
+        panes=Recipe(frame=FrameRecipe.NONE),
+        icons=Recipe(frame=FrameRecipe.INDEX)
+    )
+    
+    properties = MagicMock()
+    properties.pages = {"test-page": WidgetProperties(dimensions=Dimensions(w=100, l=100))}
+    properties.buttons = {
+        "test-btn": WidgetProperties(dimensions=Dimensions(w=32, l=32)),
+        "slot": WidgetProperties(dimensions=Dimensions(w=40, l=40)),
+        "arrow-up": WidgetProperties(dimensions=Dimensions(w=24, l=24)),
+        "arrow-down": WidgetProperties(dimensions=Dimensions(w=24, l=24))
+    }
+    properties.meters = {"test-meter": WidgetProperties(dimensions=Dimensions(w=50, l=10))}
+    properties.panes = {
+        "test-pane": WidgetProperties(dimensions=Dimensions(w=200, l=200)),
+        "transparent-slot": WidgetProperties(dimensions=Dimensions(w=40, l=40)),
+        "neutral": WidgetProperties(dimensions=Dimensions(w=318, l=180))
+    }
+    properties.icons = {
+        "test-icon": WidgetProperties(dimensions=Dimensions(w=16, l=16), frames=["sword"]),
+        "weapons": WidgetProperties(dimensions=Dimensions(w=32, l=32), frames=["shortsword", "dagger"])
+    }
+    
+    binder = Binder(registry=mock_registry, library=MagicMock())
+    return Provider(recipes=recipes, properties=properties, binder=binder)
+
+
+@pytest.fixture
+def mock_board(mock_board_assets, mock_configurations):
+    equipment = EquipmentGroup(armor={}, tools={}, utilities={}, weapons={})
+    
+    with patch('app.game.board.settings.TILE_HASH_SIZE', 32):
+        return Board(assets=mock_board_assets, configurations=mock_configurations, equipment=equipment)
+
+# ---------------------------------------------------------------------------
+# ------------------------------------------------------- MOCK CONFIGURATIONS
+
+@pytest.fixture
+def mock_recipes():
+    """Complete RecipeConfiguration matching native engine schemas."""
+    return RecipeConfiguration(
+        cursors=CursorRecipe(
+            projectiles=Recipe(frame=FrameRecipe.SINGLE, animation=AnimationRecipe.NONE),
+            expressions=Recipe(frame=FrameRecipe.INDEX, animation=AnimationRecipe.NONE)
+        ),
+        crafts=CraftRecipe(
+            struts=Recipe(frame=FrameRecipe.SINGLE, animation=AnimationRecipe.NONE)
+        ),
+        effects=EffectRecipe(
+            collectables=Recipe(frame=FrameRecipe.ITERABLE, animation=AnimationRecipe.LIFECYCLE),
+            hazards=Recipe(frame=FrameRecipe.ITERABLE, animation=AnimationRecipe.LIFECYCLE),
+            passive=Recipe(frame=FrameRecipe.ITERABLE, animation=AnimationRecipe.LIFECYCLE),
+            reactables=Recipe(frame=FrameRecipe.ITERABLE, animation=AnimationRecipe.LIFECYCLE)
+        ),
+        objects=ObjectRecipe(
+            chests=Recipe(frame=FrameRecipe.ITERABLE, animation=AnimationRecipe.BINARY),
+            crates=Recipe(frame=FrameRecipe.SINGLE, animation=AnimationRecipe.NONE),
+            doors=Recipe(frame=FrameRecipe.SINGLE, animation=AnimationRecipe.NONE),
+            gates=Recipe(frame=FrameRecipe.ITERABLE, animation=AnimationRecipe.BINARY),
+            plates=Recipe(frame=FrameRecipe.ITERABLE, animation=AnimationRecipe.BINARY),
+            signs=Recipe(frame=FrameRecipe.SINGLE, animation=AnimationRecipe.NONE)
+        ),
+        sheets=SheetRecipe(
+            sprites=Recipe(frame=FrameRecipe.SPRITE, animation=AnimationRecipe.SPRITE),
+            players=Recipe(frame=FrameRecipe.SPRITE, animation=AnimationRecipe.SPRITE),
+            pixies=Recipe(frame=FrameRecipe.STATE, animation=AnimationRecipe.STATE)
+        ),
+        widgets=WidgetRecipe(
+            pages=Recipe(frame=FrameRecipe.SINGLE, animation=AnimationRecipe.NONE),
+            buttons=Recipe(frame=FrameRecipe.TRAVERSAL, animation=AnimationRecipe.TRAVERSAL),
+            meters=Recipe(frame=FrameRecipe.METER, animation=AnimationRecipe.METER),
+            panes=Recipe(frame=FrameRecipe.NONE, animation=AnimationRecipe.NONE),
+            icons=Recipe(frame=FrameRecipe.INDEX, animation=AnimationRecipe.NONE)
+        )
+    )
 
 
 @pytest.fixture
@@ -160,6 +325,123 @@ def mock_configurations():
 
 
 @pytest.fixture
+def mock_spawnables():
+    return SpawnableGroup(
+        projectiles={},
+        expressions={},
+        collectables={},
+        hazards={},
+        struts={}
+    )
+
+
+@pytest.fixture
+def mock_mapping() -> DeviceMapping:
+    """Base keyboard mapping matching baseline world scancodes {44, 8, 26, 22}."""
+    return DeviceMapping(
+        world=WorldMapping(
+            intentions={'attack': 44, 'interact': 8},
+            goals={'up': 26, 'down': 22}
+        ),
+        menu=MenuMapping()
+    )
+
+
+@pytest.fixture
+def mock_menu_device_mapping() -> DeviceMapping:
+    """DeviceMapping with world menu triggers and menu traversal/interactions."""
+    return DeviceMapping(
+        world=WorldMapping(
+            menus={'pause': 41},
+            intentions={'attack': 44, 'interact': 8},
+            goals={'up': 26, 'down': 22}
+        ),
+        menu=MenuMapping(
+            traversal={'north': 79, 'south': 80},
+            interactions={'select': 40, 'cancel': 41}
+        )
+    )
+
+
+@pytest.fixture
+def mock_isl_configs():
+    """
+    Shared mock configurations covering various ISL edge cases.
+    """
+    return {
+        "idle": [
+            IntentionConfiguration(next="attack", conditions=["sprite.health < 50"]),
+            IntentionConfiguration(next="wander", conditions=["sprite.health >= 50"])
+        ],
+        "attack": [
+            IntentionConfiguration(next="idle", conditions=["sprites['enemy'].dead"])
+        ],
+        "town-locked": [
+            IntentionConfiguration(next="town-unlocked", conditions=["plot.mayor_bribed == True"])
+        ],
+        "find": [
+            # BUGFIX: Route targeting through the standard 'sprites' ISL dictionary namespace 
+            # instead of creating a custom root namespace.
+            IntentionConfiguration(next="interact", conditions=["functions.is_near(sprite.pos, sprites['target'].pos, 10)"])
+        ],
+        "bad_syntax": [
+            IntentionConfiguration(next="idle", conditions=["sprite.health =="]) # syntax error
+        ]
+    }
+
+
+# ---------------------------------------------------------------------------
+# ----------------------------------------------------------- MOCK PROPERTIES
+
+@pytest.fixture
+def mock_properties():
+    props = PropertiesSchema()
+    props.sheets.sprites["player"] = SheetProperties(
+        dimensions=Dimensions(w=64, l=64),
+        mass=7
+    )
+    return props
+
+
+@pytest.fixture
+def mock_font_properties():
+    """FontProperties dataclass fixture for typography testing."""
+    return FontProperties(
+        size=24,
+        alignment="left",
+        color=RGBA(r=255, g=255, b=255, a=255),
+        outline=Outline(color=RGBA(r=0, g=0, b=0, a=255), width=2),
+        bold=True,
+        italics=False,
+        underline=False,
+        strikethrough=False,
+        margins=0.05
+    )
+
+
+@pytest.fixture
+def mock_widget_properties():
+    """
+    Standard widget properties fixture providing prototype dimensions for
+    slot buttons and transparent slot overlay panes.
+    """
+    return WidgetPropertyInstances(
+        panes={
+            "transparent-slot": WidgetProperties(dimensions=Dimensions(w=40, l=40)),
+            "neutral": WidgetProperties(dimensions=Dimensions(w=318, l=180))
+        },
+        buttons={
+            "slot": WidgetProperties(dimensions=Dimensions(w=40, l=40)),
+            "arrow-up": WidgetProperties(dimensions=Dimensions(w=24, l=24)),
+            "arrow-down": WidgetProperties(dimensions=Dimensions(w=24, l=24))
+        }
+    )
+
+
+# ---------------------------------------------------------------------------
+# --------------------------------------------------------------- MOCK STATES
+
+@pytest.fixture
 def mock_state():
     state = StateSchema()
     state.sheets.sprites.append(
@@ -173,62 +455,13 @@ def mock_state():
     return state
 
 
-@pytest.fixture
-def mock_spawnables():
-    return SpawnableGroup(
-        projectiles={},
-        expressions={},
-        collectables={},
-        hazards={},
-        struts={}
-    )
-
+# ---------------------------------------------------------------------------
+# ------------------------------------------------------ MOCK DATA STRUCTURES
 
 @pytest.fixture
-def mock_mapping() -> DeviceMapping:
-    return DeviceMapping(
-        world=WorldMapping(
-            intentions={'attack': 44, 'interact': 8},
-            goals={'up': 26, 'down': 22}
-        ),
-        menu=MenuMapping()
-    )
-
-@pytest.fixture
-def mock_builder(mock_properties, mock_configurations, mock_state):
-    with patch('app.services.orchestration.builder.Loader') as mock_loader:
-        mock_loader.load_properties.return_value = mock_properties
-        mock_loader.load_configurations.return_value = mock_configurations
-        mock_loader.load_state.return_value = mock_state
-        
-        yield Builder()
-
-
-@pytest.fixture
-def mock_orchestrator(mock_builder):
-    return Orchestrator(mock_builder)
-
-
-@pytest.fixture
-def mock_provider(mock_registry):
-    
-    recipes = WidgetRecipe(
-        pages=Recipe(frame=FrameRecipe.SINGLE),
-        buttons=Recipe(frame=FrameRecipe.TRAVERSAL, animation=AnimationRecipe.TRAVERSAL),
-        meters=Recipe(frame=FrameRecipe.METER, animation=AnimationRecipe.METER),
-        panes=Recipe(frame=FrameRecipe.NONE),
-        icons=Recipe(frame=FrameRecipe.INDEX)
-    )
-    
-    properties = MagicMock()
-    properties.pages = {"test-page": WidgetProperties(dimensions=Dimensions(w=100, l=100))}
-    properties.buttons = {"test-btn": WidgetProperties(dimensions=Dimensions(w=32, l=32))}
-    properties.meters = {"test-meter": WidgetProperties(dimensions=Dimensions(w=50, l=10))}
-    properties.panes = {"test-pane": WidgetProperties(dimensions=Dimensions(w=200, l=200))}
-    properties.icons = {"test-icon": WidgetProperties(dimensions=Dimensions(w=16, l=16), frames=["sword"])}
-    
-    binder = Binder(registry=mock_registry, library=MagicMock())
-    return Provider(recipes=recipes, properties=properties, binder=binder)
+def mock_boundary():
+    """Boundary spatial constraint fixture."""
+    return Boundary(Position(10, 20), Dimensions(30, 40))
 
 
 @pytest.fixture
@@ -284,41 +517,6 @@ def mock_board_assets():
 
 
 @pytest.fixture
-def mock_board(mock_board_assets, mock_configurations):
-    equipment = EquipmentGroup(armor={}, tools={}, utilities={}, weapons={})
-    
-    with patch('app.game.board.settings.TILE_HASH_SIZE', 32):
-        return Board(assets=mock_board_assets, configurations=mock_configurations, equipment=equipment)
-
-
-@pytest.fixture
-def mock_isl_configs():
-    """
-    Shared mock configurations covering various ISL edge cases.
-    """
-    return {
-        "idle": [
-            IntentionConfiguration(next="attack", conditions=["sprite.health < 50"]),
-            IntentionConfiguration(next="wander", conditions=["sprite.health >= 50"])
-        ],
-        "attack": [
-            IntentionConfiguration(next="idle", conditions=["sprites['enemy'].dead"])
-        ],
-        "town-locked": [
-            IntentionConfiguration(next="town-unlocked", conditions=["plot.mayor_bribed == True"])
-        ],
-        "find": [
-            # BUGFIX: Route targeting through the standard 'sprites' ISL dictionary namespace 
-            # instead of creating a custom root namespace.
-            IntentionConfiguration(next="interact", conditions=["functions.is_near(sprite.pos, sprites['target'].pos, 10)"])
-        ],
-        "bad_syntax": [
-            IntentionConfiguration(next="idle", conditions=["sprite.health =="]) # syntax error
-        ]
-    }
-
-
-@pytest.fixture
 def mock_crate():
     """
     Generic crate asset to support mechanics tests utilizing frictive motion.
@@ -353,7 +551,7 @@ def mock_strut():
     return Asset(tax, props, state, DummyFrame(), DummyAnimation())
 
 
-# ---------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # -------------------------------------------------------- PATHFINDING FIXTURES
 
 @pytest.fixture
@@ -457,38 +655,8 @@ def mock_door_asset():
     return Asset(tax, props, state, DummyFrame(), DummyAnimation())
 
 
-@pytest.fixture
-def mock_provider(mock_registry):
-    recipes = WidgetRecipe(
-        pages=Recipe(frame=FrameRecipe.SINGLE),
-        buttons=Recipe(frame=FrameRecipe.TRAVERSAL, animation=AnimationRecipe.TRAVERSAL),
-        meters=Recipe(frame=FrameRecipe.METER, animation=AnimationRecipe.METER),
-        panes=Recipe(frame=FrameRecipe.NONE),
-        icons=Recipe(frame=FrameRecipe.INDEX)
-    )
-    
-    properties = MagicMock()
-    properties.pages = {"test-page": WidgetProperties(dimensions=Dimensions(w=100, l=100))}
-    properties.buttons = {
-        "test-btn": WidgetProperties(dimensions=Dimensions(w=32, l=32)),
-        "slot": WidgetProperties(dimensions=Dimensions(w=40, l=40)),
-        "arrow-up": WidgetProperties(dimensions=Dimensions(w=24, l=24)),
-        "arrow-down": WidgetProperties(dimensions=Dimensions(w=24, l=24))
-    }
-    properties.meters = {"test-meter": WidgetProperties(dimensions=Dimensions(w=50, l=10))}
-    properties.panes = {
-        "test-pane": WidgetProperties(dimensions=Dimensions(w=200, l=200)),
-        "transparent-slot": WidgetProperties(dimensions=Dimensions(w=40, l=40)),
-        "neutral": WidgetProperties(dimensions=Dimensions(w=318, l=180))
-    }
-    properties.icons = {
-        "test-icon": WidgetProperties(dimensions=Dimensions(w=16, l=16), frames=["sword"]),
-        "weapons": WidgetProperties(dimensions=Dimensions(w=32, l=32), frames=["shortsword", "dagger"])
-    }
-    
-    binder = Binder(registry=mock_registry, library=MagicMock())
-    return Provider(recipes=recipes, properties=properties, binder=binder)
-
+# -----------------------------------------------------------------------------
+# -------------------------------------------------------- MOCK MENU COMPONENTS
 
 @pytest.fixture
 def mock_gizmo_node():
@@ -509,6 +677,7 @@ def mock_gizmo_node():
         )
     )
 
+
 @pytest.fixture
 def mock_collection_state():
     return CollectionState(
@@ -516,22 +685,4 @@ def mock_collection_state():
         capacity=8,
         columns=4,
         offset=0
-    )
-
-@pytest.fixture
-def widget_properties() -> WidgetPropertyInstances:
-    """
-    Standard widget properties fixture providing prototype dimensions for
-    slot buttons and transparent slot overlay panes.
-    """
-    return WidgetPropertyInstances(
-        panes={
-            "transparent-slot": WidgetProperties(dimensions=Dimensions(w=40, l=40)),
-            "neutral": WidgetProperties(dimensions=Dimensions(w=318, l=180))
-        },
-        buttons={
-            "slot": WidgetProperties(dimensions=Dimensions(w=40, l=40)),
-            "arrow-up": WidgetProperties(dimensions=Dimensions(w=24, l=24)),
-            "arrow-down": WidgetProperties(dimensions=Dimensions(w=24, l=24))
-        }
     )

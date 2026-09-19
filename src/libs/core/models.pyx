@@ -92,7 +92,7 @@ cdef class Boundary:
             "dimensions": self.dimensions.to_dict() if self.dimensions is not None else None
         }
     
-    def primitve(self) -> tuple:
+    def primitive(self) -> tuple:
         return (
             self.position.x,
             self.position.y,

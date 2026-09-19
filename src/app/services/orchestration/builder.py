@@ -76,22 +76,8 @@ class Builder:
         self.core: List[Mechanic] = []
         self.world: List[Mechanic] = []
 
-
-    @staticmethod
-    def _unbox_enums(data):
-        """
-        Recursively resolves Enum instances to their primitive values.
-        """
-        if isinstance(data, dict):
-            return {k: Builder._unbox_enums(v) for k, v in data.items()}
-        elif isinstance(data, list):
-            return [Builder._unbox_enums(v) for v in data]
-        elif isinstance(data, Enum):
-            return data.value
-        return data
-
     
-    def _resolve_actions(self) -> None:
+    def _actions(self) -> None:
         """
         Globally pre-hydrates Actions in Properties.
         """
@@ -102,7 +88,11 @@ class Builder:
             resolved_dict = {}
             for e_id, e_props in sheet_dict.items():
                 if isinstance(e_props.actions, str):
-                    action_data = next((a.data for a in self.context.configurations.actions if a.id == e_props.actions), {})
+                    action_data = next((
+                        a.data 
+                        for a in self.context.configurations.actions
+                        if a.id == e_props.actions
+                    ), {})
                     resolved_dict[e_id] = dataclasses.replace(e_props, actions=action_data)
                 else:
                     resolved_dict[e_id] = e_props
@@ -128,6 +118,7 @@ class Builder:
             logger.info("No state key provided. Booting in unhydrated mode for Main Menu...")
             self.context.state = None
 
+
     def init_subsystems(self, screensize: Dimensions, headless: bool = True) -> None:
         """
         """
@@ -143,7 +134,7 @@ class Builder:
 
     def build_board(self) -> None:
         logger.info("Constructing Empty Board and Migrator subsystem...")
-        self._resolve_actions()
+        self._actions()
 
         # 1. Instantiate Decomposer ahead of standard Asset migrations
         self.decomposer = Decomposer(
@@ -166,18 +157,17 @@ class Builder:
         from app.services.orchestration import Migrator
         self.board.migrator = Migrator(self.board, self.context.properties, self.context.configurations)
 
+
     def build_registry(self) -> None:
         """
+        Initializes Registry directly using native application models.
         """
-        logger.info("Initializing Registry...")
-        # Unpack root dataclasses and resolve Enums to primitives
-        # TODO: make registry use python objects instead of dictionaries. makes no sense?
-        #       seems to just add unnecessary logic, e.g. unboxing and casting to dict.
-        #       would probably simplify the registry as well.
-        properties_dict = self._unbox_enums(dataclasses.asdict(self.context.properties))
-        recipes_dict = self._unbox_enums(dataclasses.asdict(self.context.configurations.recipes))
-        fonts_dict = properties_dict.pop("fonts", {})
-        self.registry = Registry(properties_dict, recipes_dict, fonts_dict)
+        logger.info("Initializing Registry with native models...")
+        self.registry = Registry(
+            properties=self.context.properties,
+            recipes=self.context.configurations.recipes,
+            typography=self.context.properties.fonts
+        )
 
 
     def build_services(self, device: Devices) -> None:

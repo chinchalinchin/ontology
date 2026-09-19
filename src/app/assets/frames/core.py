@@ -11,7 +11,11 @@ Frames exist on the boundary of the Python-Cython interface.
 - `keys()` interface is a runtime method for accessing the Frame key that corresponds to an Asset Frame state. It is called inside of Python from the Screen. Asset States are passed in as Python objects.
 """
 # Stamdard Libraries
-from typing import List
+from typing import (
+    List,
+    Tuple,
+    Dict
+)
 import logging
 
 # Application Libraries
@@ -22,20 +26,16 @@ from app.config.enums import (
     ExpressionsPalette
 )
 from app.assets.base import Frame
-from app.models.state import AssetState, SpriteState
+from app.models.state import (
+    AssetState, 
+    SpriteState
+)
+from app.models.properties import (
+    AssetProperties,
+    SheetProperties
+)
 
 logger = logging.getLogger(__name__)
-
-def safe_dim(properties: dict) -> tuple[int, int]:
-    """
-    Extract dimensions safely whether it's a raw dict or a Cython object bypassing asdict().
-    """
-    dim = properties.get("dimensions")
-    if hasattr(dim, 'w'):
-        return dim.w, dim.l
-    elif isinstance(dim, dict):
-        return dim.get("w", 0), dim.get("l", 0)
-    return 0, 0
 
 # -------------------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@ class NoFrame(Frame):
         return [(id, 0, 0)]
 
             
-    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]:
         """
         """
         return {id: (0, 0, 0, 0)}
@@ -68,11 +68,12 @@ class SingleFrame(Frame):
         return [(id, 0, 0)]
 
         
-    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]:
         """
         """
-        w, l = safe_dim(properties)
-        return {id: (0, 0, w, l)}
+        return {id: (0, 0, properties.dimensions.w, properties.dimensions.l)}
+
+# -------------------------------------------------------------------------------------
 
         
 class IterableFrame(Frame):
@@ -87,16 +88,18 @@ class IterableFrame(Frame):
         ]
 
         
-    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]:
         """
         """
-        w, l = safe_dim(properties)
-        crops = {}
-        count = properties.get("count", 1)
-        for f in range(count):
-            crops[settings.SEPARATOR.join([id,str(f)])] = (f * w, 0, w, l)
-        return crops
+        w = properties.dimensions.w 
+        l = properties.dimensions.l
 
+        return { 
+            settings.SEPARATOR.join([id,str(i)]): (i * w, 0, w, l)
+            for i in range(properties.count) 
+        }
+
+# -------------------------------------------------------------------------------------
 
 class StateFrame(Frame):
     """
@@ -114,17 +117,19 @@ class StateFrame(Frame):
         ]), 0, 0)]
 
 
-    def index(self, id: str, properties: dict) -> dict[str, tuple[int, int, int, int]]:
+    def index(self, id: str, properties: SheetProperties) -> dict[str, tuple[int, int, int, int]]:
         """
         """
-        w, l = safe_dim(properties)
+        w = properties.dimensions.w
+        l = properties.dimensions.l
         crops = {}
-        
+
+        properties.actions
         # Handle dict format since this goes through dataclasses.asdict()
-        for action, action_prop in properties.get("actions", {}).items():
-            for direction, dir_prop in action_prop.get("directions", {}).items():
-                row = dir_prop["row"]
-                count = action_prop["count"]
+        for action, action_prop in properties.actions.items():
+            for direction, dir_prop in action_prop.directions.items():
+                row = dir_prop.row 
+                count = action_prop.count
                 for f in range(count):
                     frame_key = settings.SEPARATOR.join([
                         id,
@@ -135,6 +140,7 @@ class StateFrame(Frame):
                     crops[frame_key] = (f * w, row * l, w, l)
         return crops
 
+# -------------------------------------------------------------------------------------
 
 class SpriteFrame(StateFrame):
     """

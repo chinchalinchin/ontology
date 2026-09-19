@@ -159,8 +159,8 @@ The Recipe for an Asset, i.e. the list of components which go into a particular 
 3. **Behavior: Animation** Stateless strategies (e.g. `BinaryAnimation`, `StateAnimation`, etc.) injected into the Asset. These contain the specific logic for updating Animation frames.
     - `animate(state, properties)`: Interface for applying animation logic to Asset state.
 4. **Behavior: Frame:** A static schema calculation used by the renderer to determine the correct texture string keys. An Asset can be a single logical entity composed of multiple superimposed rendered textures, therefore a Frame component returns a `List[(str, int, int)]` rather than a single `str`. The tuple `(int, int)` controls how much the frame is offset from its origin (mainly used in [Expressions](#expressions) to pin a [Cursor Expressions](#cursors) to the relative Position of a Sprite) In addition, Frames provide the indexing schema for textures used by the [Registry](./00-overview.md#registry) to store Assets in memory.
-    - `keys(id, state)`: Interface for retrieving Asset's current Frame key.
-    - `index(id, properties)`: Interface for indexing Asset frames in Registry.
+    - `keys(id: str, state: AssetState) -> List[Tuple[str, int, int]]`: Interface for retrieving Asset's current Frame key.
+    - `index(id: str, properties: AssetProperties) -> Dict[str, Tuple[int, int, int, int]]`: Interface for indexing Asset frames in Registry.
 
 !!! note
     The state model can be calculated from (Category, Instance), but (Animation, Frame) is independent of the state assigned to an Asset through the Asset Hierarchy. It must be specified through a Recipe.
@@ -243,7 +243,7 @@ N/A
 
 ### Grid
 
-A Grid is a special Type reserved for use in the [Editor Menu](./06-widgets.md#menus). It is used overlay canvases in the Editor with a spatial grid that can be traversed through focus. 
+A Grid is a special Type reserved for use in the [Editor Menu](./06-widgets.md#menus). It is used as an overlay canvas in the Editor,to create a spatial grid that can be traversed through focus. 
 
 There must be precisely *two* Grid tiles:
 
@@ -283,7 +283,7 @@ Binary Objects have a `count` of 2, where as all other Objects are initialized w
 
 **Properties: ObjectProperties**
 
-* `dim: Dimensions`
+* `dimensions: Dimensions`
 * `hitboxes: List[Hitbox]` 
 * `count: int = 1`
 * `mass: int`
@@ -304,7 +304,7 @@ When *interacting* with a Chest, the [Player](./02-sprites.md#player) is shown t
 **Frame: IterableFrame**
 
 * `keys(id, state): returns [ ("{id}-{state.animation.frame}", 0, 0) ]`
-* `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `index(id, properties): returns { "{id}-{properties.count}": (0, 0, properties.dimensions.w, properties.dimensions.l) }`
 
 **State: ContainerState**
 
@@ -330,11 +330,11 @@ Crates are Objects who state can be altered by in-game physics. For example, whe
 **Frame: SingleFrame**
 
 * `keys(id, state): returns [ (id, 0, 0) ] "`
-* `index(self, id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `index(self, id, properties): returns { id: (0, 0, properties.dimensions.w, properties.dimensions.l) }`
 
 ### Doors
 
-Doors are Objects that alter a Sprite's `<layer>`. When a Sprite enters the hitbox of a door, the `<layer>` is changed to the `<outlayer>` at the `<out>` Position.
+Doors are Objects that alter a Sprite's `sprite.state.layer`. When a Sprite enters the hitbox of a Door, the `sprite.state.layer` is changed to the `door.state.outlayer` at the `door.state.out` Position.
 
 **State: DoorState**
 
@@ -348,7 +348,7 @@ Doors are Objects that alter a Sprite's `<layer>`. When a Sprite enters the hitb
 **Frame: SingleFrame**
 
 * `keys(id, state): returns [ (id, 0, 0) ]`
-* `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
+* `index(id, properties): returns { id: (0, 0, properties.dimensions.w, properties.dimensions.l) }`
 
 ### Gates
 

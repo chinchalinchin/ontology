@@ -5,8 +5,9 @@ Unit tests for input polling devices.
 """
 
 from unittest.mock import patch
-from app.game.devices import Keyboard
-from app.models.config import DeviceMapping
+from app.config.enums import DeviceContexts
+from app.game.devices import Keyboard, Controller
+from app.models.config import DeviceMapping, WorldMapping, MenuMapping
 from app.models.state import DevicePayload
 
 
@@ -22,6 +23,30 @@ def test_keyboard_initialization(mock_mapping: DeviceMapping):
     # Ensure the initial state frame is populated with 0s
     assert all(state == 0 for state in keyboard._last_state.values())
     assert len(keyboard._last_state) == len(expected_scancodes)
+
+
+def test_controller_initialization(mock_mapping: DeviceMapping):
+    """
+    Ensure Controller instantiates and retains its mapping configuration.
+    """
+    controller = Controller(mock_mapping)
+    assert controller.mapping == mock_mapping
+
+
+def test_keyboard_handles_none_scancodes():
+    """
+    Ensure None values in mapping definitions are excluded from the active scancodes tuple.
+    """
+    mapping = DeviceMapping(
+        world=WorldMapping(
+            intentions={'attack': 44, 'interact': None},
+            goals={'up': 26, 'down': None},
+            menus={'pause': None}
+        ),
+        menu=MenuMapping()
+    )
+    keyboard = Keyboard(mapping)
+    assert set(keyboard._scancodes) == {44, 26}
 
 
 @patch('app.game.devices.sdl.pump')
@@ -44,7 +69,6 @@ def test_keyboard_polling_return_type_and_mappings(mock_poll, mock_pump, mock_ma
     
     assert 'up' in result.world.goals
     assert len(result.world.goals) == 1
-    
     assert result.world.intention == 'interact'
 
 
@@ -99,3 +123,95 @@ def test_keyboard_level_triggered_goals(mock_poll, mock_pump, mock_mapping: Devi
     mock_poll.return_value = tuple(0 for _ in keyboard._scancodes)
     result_frame_3 = keyboard.poll()
     assert 'down' not in result_frame_3.world.goals
+
+
+@patch('app.game.devices.sdl.pump')
+@patch('app.game.devices.sdl.poll')
+def test_keyboard_multiple_goals_accumulation(mock_poll, mock_pump, mock_mapping: DeviceMapping):
+    """
+    Ensure multiple simultaneously pressed directional keys accumulate into world.goals.
+    """
+    keyboard = Keyboard(mock_mapping)
+    
+    # Simulate 'up' (26) and 'down' (22) pressed simultaneously
+    pressed_codes = {26, 22}
+    mock_poll.return_value = tuple(1 if code in pressed_codes else 0 for code in keyboard._scancodes)
+    result = keyboard.poll()
+    
+    assert set(result.world.goals) == {'up', 'down'}
+
+
+def test_keyboard_context_switching(mock_menu_device_mapping: DeviceMapping):
+    """
+    Ensure switching contexts recalculates scancodes and resets tracking state.
+    """
+    keyboard = Keyboard(mock_menu_device_mapping)
+    
+    # World Context
+    expected_world_codes = {44, 8, 26, 22, 41}
+    assert set(keyboard._scancodes) == expected_world_codes
+    assert keyboard._context == DeviceContexts.WORLD
+
+    # Switch to Menu Context
+    keyboard.context(DeviceContexts.MENU)
+    expected_menu_codes = {79, 80, 40, 41}
+    assert set(keyboard._scancodes) == expected_menu_codes
+    assert keyboard._context == DeviceContexts.MENU
+
+    # Guard clause: Re-invoking the same context preserves the state buffer
+    keyboard._last_state[79] = 1
+    keyboard.context(DeviceContexts.MENU)
+    assert keyboard._last_state[79] == 1
+
+
+@patch('app.game.devices.sdl.pump')
+@patch('app.game.devices.sdl.poll')
+def test_keyboard_menu_polling_edge_triggered(mock_poll, mock_pump, mock_menu_device_mapping: DeviceMapping):
+    """
+    Ensure Traversal and Interaction inputs in MENU context trigger only on rising edges.
+    """
+    keyboard = Keyboard(mock_menu_device_mapping)
+    keyboard.context(DeviceContexts.MENU)
+
+    # Frame 1: Press 'north' (79) and 'select' (40)
+    mock_poll.return_value = tuple(1 if code in {79, 40} else 0 for code in keyboard._scancodes)
+    payload_1 = keyboard.poll()
+    assert payload_1.menu.traversal == 'north'
+    assert payload_1.menu.interaction == 'select'
+    assert payload_1.world.intention is None
+
+    # Frame 2: Hold 'north' (79) and 'select' (40)
+    mock_poll.return_value = tuple(1 if code in {79, 40} else 0 for code in keyboard._scancodes)
+    payload_2 = keyboard.poll()
+    assert payload_2.menu.traversal is None
+    assert payload_2.menu.interaction is None
+
+    # Frame 3: Release all keys
+    mock_poll.return_value = tuple(0 for _ in keyboard._scancodes)
+    payload_3 = keyboard.poll()
+    assert payload_3.menu.traversal is None
+    assert payload_3.menu.interaction is None
+
+    # Frame 4: Press 'cancel' (41)
+    mock_poll.return_value = tuple(1 if code == 41 else 0 for code in keyboard._scancodes)
+    payload_4 = keyboard.poll()
+    assert payload_4.menu.interaction == 'cancel'
+
+
+@patch('app.game.devices.sdl.pump')
+@patch('app.game.devices.sdl.poll')
+def test_keyboard_world_menu_trigger(mock_poll, mock_pump, mock_menu_device_mapping: DeviceMapping):
+    """
+    Ensure opening a menu while in WORLD context is edge-triggered.
+    """
+    keyboard = Keyboard(mock_menu_device_mapping)
+
+    # Frame 1: Press 'pause' (41)
+    mock_poll.return_value = tuple(1 if code == 41 else 0 for code in keyboard._scancodes)
+    payload = keyboard.poll()
+    assert payload.world.menu == 'pause'
+
+    # Frame 2: Hold 'pause' (41)
+    mock_poll.return_value = tuple(1 if code == 41 else 0 for code in keyboard._scancodes)
+    payload_held = keyboard.poll()
+    assert payload_held.world.menu is None

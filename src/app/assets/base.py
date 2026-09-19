@@ -43,16 +43,12 @@ class Frame(ABC):
         id: str, 
         state: AssetState
     ) -> List[Tuple[str, int, int]]:
-        """
-        Abstract method for Asset's frame key schema. 
-        Returns a list of tuples: (frame_key, offset_x, offset_y)
-        """
         pass
 
     @abstractmethod
     def index(self, 
         id: str, 
-        properties: Dict[str, Any]
+        properties: AssetProperties
     ) -> Dict[str, Tuple[int, int, int, int]]:
         """
         Generates a mapping of all possible frame keys to their crop coordinates (sx, sy, w, l).

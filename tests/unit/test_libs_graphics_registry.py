@@ -1,34 +1,37 @@
 """
 # Ontology: tests.unit.test_libs_graphics_registry.py
 """
-import pytest
+# Standard Libraries
 import dataclasses
 from unittest.mock import patch, MagicMock
 
+# Application Libraries
 from app.config.enums import FrameRecipe
 from app.models.config import (
     Recipe,
     SheetRecipe,
     EffectRecipe,
-    ObjectRecipe
+    ObjectRecipe,
+    WidgetRecipe
 )
 from app.models.properties import (
     Action, 
     Direction, 
     EffectProperties, 
     ObjectProperties, 
+    WidgetProperties,
     FontProperties,
     RGBA
 )
 
-from libs.graphics.registry import Registry, TTFFont
+from libs.graphics.registry import (
+    Registry, 
+    TTFFont
+)
 from libs.core.models import Dimensions
 
 def test_registry_initialization_and_caching(mock_properties, mock_configurations):
     """Test that Registry walks the asset directory and caches filepaths lazily."""
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
-
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load:
          
@@ -37,13 +40,12 @@ def test_registry_initialization_and_caching(mock_properties, mock_configuration
         ]
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         mock_walk.assert_called_once()
-        # With lazy loading, textures are not loaded at boot
         assert mock_load.call_count == 0
         assert 'player' in registry._filepaths
         assert 'sword' in registry._filepaths
@@ -65,9 +67,6 @@ def test_registry_indexing_and_retrieval(mock_properties, mock_configurations):
         "walk": Action(count=3, directions={"down": Direction(row=0), "up": Direction(row=1)})
     }
     mock_properties.sheets.sprites["player"].actions = actions
-    
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
 
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load:
@@ -82,9 +81,9 @@ def test_registry_indexing_and_retrieval(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         expected_key_1 = "player-walk-down-0"
@@ -116,9 +115,6 @@ def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
             effects=EffectRecipe(passive=Recipe(frame=FrameRecipe.ITERABLE))
         )
     )
-    
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
 
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load:
@@ -133,9 +129,9 @@ def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         for f in range(3):
@@ -151,9 +147,6 @@ def test_registry_iterable_frame_indexing(mock_properties, mock_configurations):
 
 def test_registry_fallback_retrieval(mock_properties, mock_configurations):
     """Test that Registry correctly falls back to raw textures for unindexed assets."""
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
-
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load:
          
@@ -167,9 +160,9 @@ def test_registry_fallback_retrieval(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         assert "single_frame_tile" not in registry._frames
@@ -186,9 +179,6 @@ def test_registry_fallback_retrieval(mock_properties, mock_configurations):
 def test_registry_stack_assembly(mock_properties, mock_configurations):
     """Test that Registry data-driven stacking works correctly via JIT compilation."""
     mock_properties.sheets.sprites["player"].stack = ["base_body", "armor", "helmet"]
-    
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
 
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load, \
@@ -207,9 +197,9 @@ def test_registry_stack_assembly(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         assert isinstance(registry._stacks["player"], list)
@@ -228,9 +218,6 @@ def test_registry_stack_assembly(mock_properties, mock_configurations):
 def test_registry_cyclic_stack_resolution(mock_properties, mock_configurations):
     """Test that Registry breaks cyclic stack dependencies to prevent C-stack overflow."""
     mock_properties.sheets.sprites["player"].stack = ["player", "player-aura"]
-    
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
 
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load, \
@@ -248,9 +235,9 @@ def test_registry_cyclic_stack_resolution(mock_properties, mock_configurations):
         mock_load.side_effect = [mock_base_tex, mock_aura_tex]
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         assert "player" in registry._filepaths
@@ -266,9 +253,6 @@ def test_registry_cyclic_stack_resolution(mock_properties, mock_configurations):
 
 def test_registry_prewarm_budget(mock_properties, mock_configurations):
     """Test that prewarming exhausts the queue or yields to the time budget."""
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
-
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load, \
          patch('libs.graphics.registry.time.perf_counter') as mock_time:
@@ -280,26 +264,21 @@ def test_registry_prewarm_budget(mock_properties, mock_configurations):
         mock_load.return_value = MagicMock()
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         assert registry.maximum == 3
         assert registry.current == 0
         
-        # Simulate an immediate time budget breach
         mock_time.side_effect = [0.0, 0.020] 
-        
-        # Budget is 10ms. 20ms delta should trigger an early exit returning False.
         done = registry.prewarm(budget_ms=10)
         assert done is False
         assert registry.current == 0 
         assert len(registry._pending_assets) == 3
         
-        # Simulate plenty of time to process everything
         mock_time.side_effect = [0.0, 0.001, 0.001, 0.001, 0.001]
-        
         done = registry.prewarm(budget_ms=10)
         assert done is True
         assert registry.current == 3
@@ -318,9 +297,6 @@ def test_registry_noframe_indexing(mock_properties, mock_configurations):
         dimensions=Dimensions(w=32, l=32)
     )
 
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
-
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load:
          
@@ -332,9 +308,9 @@ def test_registry_noframe_indexing(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         assert "invisible_chest" in registry._frames
@@ -360,9 +336,6 @@ def test_registry_spriteframe_indexing(mock_properties, mock_configurations):
         "slash": Action(count=6, directions={"left": Direction(row=2)})
     }
     mock_properties.sheets.sprites["player"].actions = actions
-    
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
 
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load:
@@ -377,9 +350,9 @@ def test_registry_spriteframe_indexing(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         expected_key = "player-slash-left-5"
@@ -401,9 +374,6 @@ def test_registry_font_loading_and_retrieval(mock_properties, mock_configuration
         color=RGBA(255, 255, 255, 255)
     )
     
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
-    
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_font') as mock_font:
          
@@ -415,9 +385,9 @@ def test_registry_font_loading_and_retrieval(mock_properties, mock_configuration
         mock_font.return_value = mock_font_obj
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         assert "arial" in registry._filepaths
@@ -429,24 +399,18 @@ def test_registry_font_loading_and_retrieval(mock_properties, mock_configuration
 
 def test_registry_missing_font(mock_properties, mock_configurations):
     """Test font retrieval for missing font returns None."""
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
-    
     with patch('libs.graphics.registry.os.walk') as mock_walk:
         mock_walk.return_value = []
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
     
     assert registry.font("missing_font") is None
 
 def test_registry_traversal_frame_indexing(mock_properties, mock_configurations):
     """Test TraversalFrame indexing for UI buttons."""
-    from app.models.properties import WidgetProperties
-    from app.models.config import WidgetRecipe
-    
     mock_properties.widgets.buttons["ui_btn"] = WidgetProperties(
         dimensions=Dimensions(w=32, l=32)
     )
@@ -457,9 +421,6 @@ def test_registry_traversal_frame_indexing(mock_properties, mock_configurations)
             widgets=WidgetRecipe(buttons=Recipe(frame=FrameRecipe.TRAVERSAL))
         )
     )
-    
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
 
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load:
@@ -472,9 +433,9 @@ def test_registry_traversal_frame_indexing(mock_properties, mock_configurations)
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         expected_keys = ["ui_btn-idle", "ui_btn-active", "ui_btn-selected", "ui_btn-disabled"]
@@ -490,9 +451,6 @@ def test_registry_traversal_frame_indexing(mock_properties, mock_configurations)
 
 def test_registry_meter_frame_indexing(mock_properties, mock_configurations):
     """Test MeterFrame indexing for HUD gauges."""
-    from app.models.properties import WidgetProperties
-    from app.models.config import WidgetRecipe
-    
     mock_properties.widgets.meters["health_bar"] = WidgetProperties(
         dimensions=Dimensions(w=100, l=10)
     )
@@ -503,9 +461,6 @@ def test_registry_meter_frame_indexing(mock_properties, mock_configurations):
             widgets=WidgetRecipe(meters=Recipe(frame=FrameRecipe.METER))
         )
     )
-    
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
 
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load:
@@ -518,9 +473,9 @@ def test_registry_meter_frame_indexing(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         assert "health_bar-0" in registry._frames
@@ -529,21 +484,13 @@ def test_registry_meter_frame_indexing(mock_properties, mock_configurations):
         
         data_50 = registry.image("health_bar-50")
         assert data_50 is not None
-        assert data_50[1] == 100 # sx offset by 1 full width for 'filled' crop
+        assert data_50[1] == 100  # sx offset by 1 full width for 'filled' crop
         assert data_50[2] == 0
-        assert data_50[3] == 50  # int(100 * 50 / 100)
+        assert data_50[3] == 50   # int(100 * 50 / 100)
         assert data_50[4] == 10
 
 def test_registry_index_frame_indexing(mock_properties, mock_configurations):
     """Test IndexFrame correctly maps a list of keys to horizontal sprite crops."""
-    from app.models.properties import WidgetProperties
-    from app.models.config import WidgetRecipe
-    from app.config.enums import FrameRecipe
-    from libs.core.models import Dimensions
-    import dataclasses
-    from unittest.mock import patch, MagicMock
-    from libs.graphics.registry import Registry
-    
     mock_properties.widgets.icons["items_sheet"] = WidgetProperties(
         dimensions=Dimensions(w=16, l=16),
         frames=["sword", "shield", "potion"]
@@ -555,9 +502,6 @@ def test_registry_index_frame_indexing(mock_properties, mock_configurations):
             widgets=WidgetRecipe(icons=Recipe(frame=FrameRecipe.INDEX))
         )
     )
-    
-    properties_dict = dataclasses.asdict(mock_properties)
-    fonts_dict = properties_dict.pop("fonts", {})
 
     with patch('libs.graphics.registry.os.walk') as mock_walk, \
          patch('libs.graphics.registry._sys_load_image') as mock_load:
@@ -570,9 +514,9 @@ def test_registry_index_frame_indexing(mock_properties, mock_configurations):
         mock_load.return_value = mock_tex
         
         registry = Registry(
-            properties_dict, 
-            dataclasses.asdict(mock_configurations.recipes),
-            fonts_dict
+            mock_properties, 
+            mock_configurations.recipes, 
+            mock_properties.fonts
         )
         
         assert "items_sheet-sword" in registry._frames

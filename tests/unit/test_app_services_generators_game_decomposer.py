@@ -1,61 +1,12 @@
 """
 # Ontology: tests.unit.test_app_services_generators__decomposer
 """
-import pytest
-from app.services.generators.game.decomposer import Decomposer
-from app.models.config import CompositionConfiguration, CompositionPseudoState, RecipeConfiguration
-from app.models.properties import PropertiesSchema, CraftProperties, Cost
-from app.models.state import PropertyState, StateSchema, ObjectStateInstances, DoorState
-from libs.core.models import Position, Dimensions
+# Application Libraries
+from app.models.state import PropertyState
 
-@pytest.fixture
-def mock_decomposer():
-    # 1. Setup mock properties with costs for aggregation
-    props = PropertiesSchema()
-    props.crafts.struts["frame-wood"] = CraftProperties(
-        dimensions=Dimensions(w=100, l=100),
-        cost=[Cost(item="wood", quantity=10)]
-    )
-    props.crafts.struts["wall-blue"] = CraftProperties(
-        dimensions=Dimensions(w=50, l=50),
-        cost=[Cost(item="stone", quantity=5)]
-    )
+# Cython Libraries
+from libs.core.models import Position
 
-    # 2. Setup a complex Composition with a root, a branch, and a component
-    comp_config = CompositionConfiguration(
-        root=CompositionPseudoState(
-            strut=PropertyState(id="frame-wood", name="base_house"),
-            components=StateSchema(
-                objects=ObjectStateInstances(
-                    doors=[
-                        DoorState(
-                            id="door-front",
-                            name="entrance",
-                            position=Position(x=20, y=20),
-                            out=Position(x=5, y=5),
-                            outlayer="bind(root.layer)"
-                        )
-                    ]
-                )
-            )
-        ),
-        branches=[
-            CompositionPseudoState(
-                strut=PropertyState(
-                    id="wall-blue", 
-                    name="interior",
-                    position=Position(x=10, y=10),
-                    owner="bind(parent.owner)"
-                ),
-                components=StateSchema()
-            )
-        ]
-    )
-    
-    compositions = {"test-house": comp_config}
-    recipes = RecipeConfiguration()
-    
-    return Decomposer(compositions=compositions, properties=props, recipes=recipes)
 
 def test_decomposer_cost_aggregation(mock_decomposer):
     costs = mock_decomposer.cost("test-house")
@@ -126,3 +77,36 @@ def test_decomposer_nomenclature_generation(mock_decomposer):
     # The component appends its instance and the new increment to the fully hydrated parent name
     assert door1.name == "door-strut-base_house-1-1"
     assert door2.name == "door-strut-base_house-2-2"
+
+def test_decomposer_unmapped_composition(mock_decomposer):
+    """
+    Ensure non-existent composition keys yield empty lists without throwing exceptions.
+    """
+    deployed = PropertyState(id="missing-comp", name="none", layer="0", position=Position(0, 0))
+    assert mock_decomposer.unpack(deployed) == []
+    assert mock_decomposer.cost("missing-comp") == []
+
+def test_decomposer_resolve_bind_patterns(mock_decomposer):
+    """
+    Validate bind parsing logic across explicit parent, explicit root, and legacy syntax.
+    """
+    root_ctx = {"layer": "world_1", "owner": "alice"}
+    parent_ctx = {"layer": "sub_2", "owner": "bob"}
+    
+    # Non-string values pass through unaltered
+    assert mock_decomposer._resolve_bind(100, root_ctx, parent_ctx) == 100
+    
+    # Unbound strings pass through unaltered
+    assert mock_decomposer._resolve_bind("stone_wall", root_ctx, parent_ctx) == "stone_wall"
+    
+    # Explicit parent binding
+    assert mock_decomposer._resolve_bind("bind(parent.owner)", root_ctx, parent_ctx) == "bob"
+    
+    # Explicit root binding
+    assert mock_decomposer._resolve_bind("bind(root.layer)", root_ctx, parent_ctx) == "world_1"
+    
+    # Legacy prefix-free root binding
+    assert mock_decomposer._resolve_bind("bind(owner)", root_ctx, parent_ctx) == "alice"
+    
+    # Unmatched keys return the original bind expression
+    assert mock_decomposer._resolve_bind("bind(parent.nonexistent)", root_ctx, parent_ctx) == "bind(parent.nonexistent)"
