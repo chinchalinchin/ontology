@@ -70,3 +70,23 @@ class Loader:
                     merged_data = Loader.merge(merged_data, data)
                     
         return TypeAdapter(ConfigurationSchema).validate_python(merged_data)
+
+    @staticmethod
+    def save_state(slot: str, state_data: dict[str, Any]) -> None:
+        """
+        Validates and serializes runtime state to disk matching StateSchema.
+        """
+        adapter = TypeAdapter(StateSchema)
+        
+        # 1. Validate structure against StateSchema and coerce to pure primitives
+        validated_schema = adapter.validate_python(state_data)
+        primitive_dump = adapter.dump_python(validated_schema, mode="json", exclude_none=True)
+
+        # 2. Write clean YAML via safe_dump
+        out_dir = settings.SAVE_DIR.expanduser()
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / f"{slot}.yaml"
+
+        logger.info(f"Serializing board state to {out_path} ...")
+        with out_path.open("w", encoding="utf-8") as f:
+            yaml.safe_dump(primitive_dump, f, default_flow_style=False, sort_keys=False)

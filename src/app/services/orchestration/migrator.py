@@ -111,10 +111,11 @@ class Migrator:
             else:
                 _, category_key, instance_key, state_obj = task
                 asset_id = state_obj.id
-                asset_name = getattr(state_obj, 'name', None) or asset_id
+                asset_name = state_obj.name
                 
                 cat_recipes = getattr(self.configurations.recipes, category_key, None)
-                recipe = getattr(cat_recipes, instance_key, None) if cat_recipes else None
+                recipe = getattr(cat_recipes, instance_key, None)
+
                 
                 prop_instance_key = instance_key
                 if category_key == AssetCategories.SHEETS.value and \
@@ -122,9 +123,9 @@ class Migrator:
                     prop_instance_key = AssetInstances.SPRITES.value
                     
                 cat_props = getattr(self.properties, category_key, None)
-                inst_props = getattr(cat_props, prop_instance_key, {}) if cat_props else {}
+                inst_props = getattr(cat_props, prop_instance_key, {})
                 props = inst_props.get(asset_id)
-                
+
                 asset = Asset(
                     taxonomy   = Factory.taxonomy(
                         asset_id, 
@@ -134,12 +135,8 @@ class Migrator:
                     ),
                     properties = props,
                     state      = state_obj,
-                    frame      = Factory.frame(recipe.frame) \
-                                    if recipe and getattr(recipe, 'frame', None) \
-                                        else Factory.frame(None),
-                    animation  = Factory.animation(recipe.animation) \
-                                    if recipe and getattr(recipe, 'animation', None) \
-                                        else Factory.animation(None)
+                    frame      = Factory.frame(recipe.frame),
+                    animation  = Factory.animation(recipe.animation) 
                 )
                 self.board.add([asset])
             

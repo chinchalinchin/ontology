@@ -23,14 +23,18 @@
 {%- if menu.controller is defined and menu.controller is not none %}
 - **Controller:** `{{ menu.controller }}`
 {%- endif %}
-{%- if menu.graph is defined and menu.graph %}
+{%- if menu.graph is defined and menu.graph is not none %}
+  {%- if menu.graph %}
 - **Navigation Graph:**
-  {%- for src_node, edges in menu.graph.items() %}
+    {%- for src_node, edges in menu.graph.items() %}
   - `{{ src_node }}`:
-    {%- for dir_key, dest_node in edges.items() %}
+      {%- for dir_key, dest_node in edges.items() %}
     - {{ dir_key }}: `{{ dest_node }}`
+      {%- endfor %}
     {%- endfor %}
-  {%- endfor %}
+  {%- else %}
+- **Navigation Graph:** {}
+  {%- endif %}
 {%- endif %}
 {%- set widget_items = menu.widgets.values() if (menu.widgets is defined and menu.widgets is mapping) else (menu.widgets if menu.widgets is defined else []) %}
 {%- if widget_items %}
@@ -47,9 +51,9 @@
   {%- endif %}
   - Category: `{{ widget.category }}`
   - Instance: `{{ widget.instance }}`
-{%- if (widget.dimensions is defined and widget.dimensions) or (widget.hitboxes is defined and widget.hitboxes) %}
+{%- if (widget.dimensions is defined and widget.dimensions is not none) or (widget.hitboxes is defined and widget.hitboxes) %}
 - **Properties:**
-  {%- if widget.dimensions is defined and widget.dimensions %}
+  {%- if widget.dimensions is defined and widget.dimensions is not none %}
   - Dimensions:
     - Width: {{ widget.dimensions.w }}
     - Length: {{ widget.dimensions.l }}
@@ -87,6 +91,12 @@
   {%- if bind_obj.target is defined and bind_obj.target is not none %}
   - Target: `{{ bind_obj.target }}`
   {%- endif %}
+  {%- if bind_obj.index is defined and bind_obj.index is not none %}
+  - Index: {{ bind_obj.index }}
+  {%- endif %}
+  {%- if bind_obj.offset is defined and bind_obj.offset is not none %}
+  - Offset: {{ bind_obj.offset }}
+  {%- endif %}
   {%- if bind_obj.selection is defined and bind_obj.selection is not none %}
   - Selection: `{{ bind_obj.selection }}`
   {%- endif %}
@@ -98,6 +108,9 @@
   {%- endif %}
   {%- if bind_obj.context is defined and bind_obj.context is not none %}
   - Context: `{{ bind_obj.context }}`
+  {%- endif %}
+  {%- if bind_obj.resolved is defined and bind_obj.resolved %}
+  - Resolved: `{{ bind_obj.resolved }}`
   {%- endif %}
 {%- endif %}
 {%- if widget.state %}
@@ -136,6 +149,27 @@
   {%- if widget.state.margins is defined and widget.state.margins is not none %}
   - Margins: {{ widget.state.margins }}
   {%- endif %}
+  {%- if widget.state.capacity is defined and widget.state.capacity is not none %}
+  - Capacity: {{ widget.state.capacity }}
+  {%- endif %}
+  {%- if widget.state.columns is defined and widget.state.columns is not none %}
+  - Columns: {{ widget.state.columns }}
+  {%- endif %}
+  {%- if widget.state.offset is defined and widget.state.offset is not none %}
+  - Offset: {{ widget.state.offset }}
+  {%- endif %}
+  {%- if widget.state.collection is defined and widget.state.collection is not none %}
+    {%- if widget.state.collection is iterable and widget.state.collection is not string and widget.state.collection %}
+  - Collection:
+      {%- for item in widget.state.collection %}
+    - `{{ item }}`
+      {%- endfor %}
+    {%- elif widget.state.collection is iterable and widget.state.collection is not string %}
+  - Collection: []
+    {%- else %}
+  - Collection: `{{ widget.state.collection }}`
+    {%- endif %}
+  {%- endif %}
   {%- if widget.state.icon is defined and widget.state.icon is not none %}
   - Icon: `{{ widget.state.icon }}`
   {%- endif %}
@@ -143,6 +177,9 @@
   - Reading: {{ widget.state.reading }}{% if widget.state.unit is defined and widget.state.unit is not none %} / {{ widget.state.unit }}{% endif %}
   {%- elif widget.state.unit is defined and widget.state.unit is not none %}
   - Unit: {{ widget.state.unit }}
+  {%- endif %}
+  {%- if widget.state.font is defined and widget.state.font is not none %}
+  - Font: `{{ widget.state.font }}`
   {%- endif %}
   {%- if widget.state.content is defined and widget.state.content is not none %}
     {%- if widget.state.content is iterable and widget.state.content is not string %}
@@ -170,8 +207,10 @@
   {%- if widget.state.pageindex is defined and widget.state.pageindex is not none %}
   - Pagination:
     - Index: {{ widget.state.pageindex }}
+    {%- if widget.state.pagesize is defined and widget.state.pagesize is not none %}
     - Size: {{ widget.state.pagesize }}
-    {%- if widget.state._pagecount is defined %}
+    {%- endif %}
+    {%- if widget.state._pagecount is defined and widget.state._pagecount is not none %}
     - Count: {{ widget.state._pagecount }}
     {%- endif %}
     {%- if widget.state.more is defined and widget.state.more is callable %}

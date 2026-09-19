@@ -13,17 +13,15 @@ from typing import (
 )
 from dataclasses import asdict
 
-# External Libraries
-import yaml
-
 # Application Libraries
+import app.config.settings as settings
 from app.assets.base import Asset
 from app.config.enums import (
     AssetCategories,
     AssetInstances,
     Lifecycles
 )
-import app.config.settings as settings
+from app.config.loader import Loader
 from app.game.devices import Device
 from app.game.menus.core import Menu
 from app.services.generators.game.cradle import Cradle
@@ -530,44 +528,37 @@ class Board:
 
     def serialize(self, slot: str) -> None:
         """
-        Dumps runtime Board state back to YAML for saves.
+        Extracts active Board asset states and delegates serialization to Loader.
         """
-        dump = {}
+        dump: dict[str, dict[str, list[dict[str, Any]]]] = {}
+
         for asset in self._assets:
-            if asset.category in (
-                AssetCategories.WIDGETS.value, 
-                AssetCategories.TILES.value
-            ):
+            # Exclude UI widgets from world saves
+            if asset.category == AssetCategories.WIDGETS.value:
                 continue
-                
+
             # Exclude temporary effects that self-terminate on final frame
             if asset.category == AssetCategories.EFFECTS.value:
-                if (asset.properties.lifecycle.type == Lifecycles.TEMPORARY.value 
-                        and not asset.properties.lifecycle.persist):
+                lifecycle = getattr(asset.properties, "lifecycle", None)
+                if lifecycle and lifecycle.type == Lifecycles.TEMPORARY.value and not lifecycle.persist:
                     continue
 
             # Exclude stateless Equipment wrappers
             if asset.category == AssetCategories.SHEETS.value and asset.instance not in (
-                AssetInstances.SPRITES.value, 
-                AssetInstances.PLAYERS.value, 
-                AssetInstances.PIXIES.value
+                AssetInstances.SPRITES.value,
+                AssetInstances.PLAYERS.value,
+                AssetInstances.PIXIES.value,
             ):
                 continue
-                
-            cat = asset.category
-            inst = asset.instance
-            
+
+            cat = str(asset.category)
+            inst = str(asset.instance)
+
             if cat not in dump:
                 dump[cat] = {}
             if inst not in dump[cat]:
                 dump[cat][inst] = []
-                
+
             dump[cat][inst].append(asdict(asset.state))
 
-        # TODO: file access should be handled through app.config.loader
-        out_dir = settings.SAVE_DIR
-        out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / f"{slot}.yaml"
-        
-        with open(out_path, 'w') as f:
-            yaml.dump(dump, f, default_flow_style=False)
+        Loader.save_state(slot, dump)

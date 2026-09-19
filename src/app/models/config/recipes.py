@@ -51,6 +51,7 @@ class ObjectRecipe:
     doors: Recipe = None
     gates: Recipe = None
     plates: Recipe = None
+    signs: Recipe = None
 
 @dataclass(slots=True, frozen=True)
 class SheetRecipe:
