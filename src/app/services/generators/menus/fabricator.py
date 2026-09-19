@@ -4,7 +4,12 @@
 Package for constructing Gizmos.
 """
 # Standard Libraries
-from typing import Optional, List, Any
+from typing import (
+    Optional, 
+    List, 
+    Dict, 
+    Callable
+)
 
 # Application Libraries
 from app.config.enums import (
@@ -31,10 +36,8 @@ from libs.core.models import Dimensions
 
 class Fabricator:
     """
-    ## Fabricator
-
     Transforms declarative virtual MenuNode(instance="gizmos") into
-    concrete MenuNode(instance="panes") subtrees.
+    concrete MenuNode(instance="panes") subtrees based on binding schema.
     """
 
     @staticmethod
@@ -45,6 +48,7 @@ class Fabricator:
             return bind.target
         return bind.target.get("source", bind.target.get("collection", ""))
 
+
     @classmethod
     def expand(
         cls,
@@ -52,19 +56,41 @@ class Fabricator:
         context: MenuContext,
         properties: WidgetProperties
     ) -> MenuNode:
-        source_path = cls._extract_source_path(node.bind)
+        if not node.bind or not node.bind.schema:
+            raise ValueError(f"Gizmo '{node.name}' declared without a binding schema.")
 
-        # Unpack parameters whether provided as a typed dataclass or mapping
+        handlers: Dict[str, Callable[[MenuNode, MenuContext, WidgetProperties], MenuNode]] = {
+            Bindings.COLLECTION.value: cls._expand_collection,
+        }
+
+        handler = handlers.get(node.bind.schema)
+        if not handler:
+            raise NotImplementedError(
+                f"Unsupported gizmo schema '{node.bind.schema}' for node '{node.name}'."
+            )
+
+        return handler(node, context, properties)
+
+
+    @classmethod
+    def _expand_collection(
+        cls,
+        node: MenuNode,
+        context: MenuContext,
+        properties: WidgetProperties
+    ) -> MenuNode:
         params = node.parameters
         if not isinstance(params, GizmoParameters):
-            return 
-        
+            raise TypeError(
+                f"Gizmo '{node.name}' with collection schema expects GizmoParameters, got {type(params)}"
+            )
+
+        source_path = cls._extract_source_path(node.bind)
         capacity = params.capacity
         columns = params.columns
         gap = params.gap
         pane_id = params.pane
         button_id = params.button
-
 
         slot_props = properties.panes[pane_id]
         slot_w = slot_props.dimensions.w
@@ -94,7 +120,7 @@ class Fabricator:
                     bind=MenuBinding(
                         schema=Bindings.SELECT.value,
                         target={
-                            "selection": Selections.SLOT.value ,
+                            "selection": Selections.SLOT.value,
                             "selector": node.name,
                             "index": str(slot_idx)
                         }

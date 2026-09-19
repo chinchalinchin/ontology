@@ -36,7 +36,8 @@ from app.models.properties import (
     ObjectProperties,
     SheetProperties,
     WidgetProperties,
-    TileProperties
+    TileProperties,
+    WidgetPropertyInstances,
 )
 from app.models.config import (
     ConfigurationSchema, 
@@ -515,4 +516,22 @@ def mock_collection_state():
         capacity=8,
         columns=4,
         offset=0
+    )
+
+@pytest.fixture
+def widget_properties() -> WidgetPropertyInstances:
+    """
+    Standard widget properties fixture providing prototype dimensions for
+    slot buttons and transparent slot overlay panes.
+    """
+    return WidgetPropertyInstances(
+        panes={
+            "transparent-slot": WidgetProperties(dimensions=Dimensions(w=40, l=40)),
+            "neutral": WidgetProperties(dimensions=Dimensions(w=318, l=180))
+        },
+        buttons={
+            "slot": WidgetProperties(dimensions=Dimensions(w=40, l=40)),
+            "arrow-up": WidgetProperties(dimensions=Dimensions(w=24, l=24)),
+            "arrow-down": WidgetProperties(dimensions=Dimensions(w=24, l=24))
+        }
     )

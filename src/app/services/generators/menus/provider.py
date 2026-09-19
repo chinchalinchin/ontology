@@ -198,6 +198,7 @@ class Provider:
         else:
             widgets[cfg.name] = self._unpack_widget(cfg, context, font, widgets)
 
+
     def _unpack_pane(self, 
         pane: MenuNode, 
         context: MenuContext, 
