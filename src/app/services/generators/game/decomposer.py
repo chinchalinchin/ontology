@@ -63,12 +63,12 @@ class Decomposer:
         asset_id: str, 
         cost_map: Dict[str, int]
     ) -> None:
-        if cat == AssetCategories.CRAFTS:
+        if cat == AssetCategories.CRAFTS.value:
             cat_props = getattr(self.properties.crafts, inst, {})
             props = cat_props.get(asset_id)
-            if props and hasattr(props, 'cost') and props.cost:
-                for c in props.cost:
-                    cost_map[c.item] = cost_map.get(c.item, 0) + c.quantity
+            for c in props.cost:
+                cost_map[c.item] = cost_map.get(c.item, 0) + c.quantity
+
 
     def _aggregate_components_cost(self, 
         components: Any, 
@@ -80,11 +80,13 @@ class Decomposer:
         for cat_field in dataclasses.fields(components):
             cat_key = cat_field.name
             cat_data = getattr(components, cat_key)
+
             if not cat_data: continue
             
             for inst_field in dataclasses.fields(cat_data):
                 inst_key = inst_field.name
                 inst_list = getattr(cat_data, inst_key)
+
                 if not inst_list: continue
                 
                 for state_obj in inst_list:
@@ -118,6 +120,7 @@ class Decomposer:
             
         return val
 
+
     def _hydrate_state(self, 
         state_obj: AssetState, 
         root_context: Dict[str, Any], 
@@ -137,6 +140,7 @@ class Decomposer:
             kwargs['layer'] = parent_context['layer']
         if 'owner' in kwargs and not kwargs['owner']:
             kwargs['owner'] = parent_context['owner']
+
             
         pseudo_pos = kwargs.get('position')
         if pseudo_pos:
@@ -145,7 +149,10 @@ class Decomposer:
                 y=parent_context['position'].y + pseudo_pos.y
             )
         else:
-            kwargs['position'] = Position(parent_context['position'].x, parent_context['position'].y)
+            kwargs['position'] = Position(
+                parent_context['position'].x, 
+                parent_context['position'].y
+            )
 
         # Apply spatial superposition to the teleport out coordinate
         pseudo_out = kwargs.get('out')
@@ -165,28 +172,27 @@ class Decomposer:
         
         return type(state_obj)(**kwargs)
 
+
     def _create_asset(self, 
         cat_key: str, 
         inst_key: str, 
         state_obj: AssetState
     ) -> Asset:
         cat_recipes = getattr(self.recipes, cat_key, None)
-        recipe = getattr(cat_recipes, inst_key, None) if cat_recipes else None
+        recipe = getattr(cat_recipes, inst_key, None)
         
         prop_instance_key = inst_key
-        if cat_key == AssetCategories.SHEETS and inst_key == AssetInstances.PLAYERS:
-            prop_instance_key = AssetInstances.SPRITES
+
+        if cat_key == AssetCategories.SHEETS.value and inst_key == AssetInstances.PLAYERS.value:
+            prop_instance_key = AssetInstances.SPRITES.value
             
         cat_props = getattr(self.properties, cat_key, None)
-        inst_props = getattr(cat_props, prop_instance_key, {}) \
-                        if cat_props else {}
+        inst_props = getattr(cat_props, prop_instance_key, {}) 
         props = inst_props.get(state_obj.id)
         
         taxonomy = Factory.taxonomy(state_obj.id, state_obj.name, cat_key, inst_key)
-        frame = Factory.frame(recipe.frame) \
-                        if recipe and recipe.frame else Factory.frame(None)
-        animation = Factory.animation(recipe.animation) \
-                        if recipe and recipe.animation else Factory.animation(None)
+        frame = Factory.frame(recipe.frame)
+        animation = Factory.animation(recipe.animation)
         
         return Asset(taxonomy, props, state_obj, frame, animation)
 
@@ -207,10 +213,14 @@ class Decomposer:
             root_context,
             parent_context,
             inc,
-            AssetInstances.STRUTS,
+            AssetInstances.STRUTS.value,
             is_strut=True
         )
-        strut_asset = self._create_asset(AssetCategories.CRAFTS, AssetInstances.STRUTS, strut_state)
+        strut_asset = self._create_asset(
+            AssetCategories.CRAFTS.value, 
+            AssetInstances.STRUTS.value, 
+            strut_state
+        )
         assets.append(strut_asset)
 
         # 1. Calculate the physical bottom edge (height) of the instantiated Strut
@@ -302,13 +312,23 @@ class Decomposer:
         cost_map = {}
         
         # Traverse Root
-        self._accumulate_cost(AssetCategories.CRAFTS, AssetInstances.STRUTS, config.root.strut.id, cost_map)
+        self._accumulate_cost(
+            AssetCategories.CRAFTS.value, 
+            AssetInstances.STRUTS.value, 
+            config.root.strut.id, 
+            cost_map
+        )
         self._aggregate_components_cost(config.root.components, cost_map)
         
         # Traverse Branches
         if config.branches:
             for branch in config.branches:
-                self._accumulate_cost(AssetCategories.CRAFTS, AssetInstances.STRUTS, branch.strut.id, cost_map)
+                self._accumulate_cost(
+                    AssetCategories.CRAFTS.value, 
+                    AssetInstances.STRUTS.value, 
+                    branch.strut.id, 
+                    cost_map
+                )
                 self._aggregate_components_cost(branch.components, cost_map)
                 
         return [Cost(item=k, quantity=v) for k, v in cost_map.items()]

@@ -20,7 +20,7 @@ objects:
     depth: 0
     position:
       x: 100
-      y: 176
+      y: 189
     velocity:
       vx: 0.0
       vy: 0.0
@@ -101,6 +101,22 @@ objects:
     lexicon: spring
 crafts:
   struts:
+  - id: frame-brick
+    name: strut-house-1
+    layer: '0'
+    depth: 0
+    owner: player
+    position:
+      x: 150
+      y: 150
+  - id: wall-blue
+    name: strut-house-interior-1
+    layer: brick-house-compose-layer
+    depth: 0
+    owner: player
+    position:
+      x: 150
+      y: 150
   - id: floor-wood
     name: strut-strut-house-interior-1-1
     layer: brick-house-compose-layer
@@ -110,6 +126,14 @@ crafts:
     position:
       x: 150
       y: 246
+  - id: wall-castle
+    name: strut-castle-wall-2
+    layer: '0'
+    depth: 0
+    owner: the-government
+    position:
+      x: 250
+      y: 250
 cursors:
   expressions: []
   projectiles: []
@@ -186,11 +210,11 @@ sheets:
       category: subject
       layer: '0'
       position:
-        x: 261
-        y: 108
+        x: 226
+        y: 80
     position:
-      x: 119
-      y: 123
+      x: 184
+      y: 96
     character:
       strength: 5
       defense: 5
@@ -232,8 +256,8 @@ sheets:
       property: {}
       sprites:
         player:
-          x: 380
-          y: 195
+          x: 448
+          y: 131
       doors:
         door-strut-house-interior-1-1: '0'
     psyche:
@@ -241,8 +265,8 @@ sheets:
       motivation: conquest
       dialogue: greeting
     velocity:
-      vx: -49.94723892211914
-      vy: -2.296424627304077
+      vx: 46.49803161621094
+      vy: -18.382944107055664
     animation:
       action: walk
       direction: right
@@ -250,13 +274,9 @@ sheets:
       tick: 0
     trajectory:
       target:
-        x: 293
-        y: 115
-      vertices:
-      - x: 293
-        y: 115
-      - x: 284
-        y: 130
+        x: 226
+        y: 80
+      vertices: []
       stalled: false
       cooldown: 0
   players:
@@ -265,8 +285,8 @@ sheets:
     layer: '0'
     depth: 0
     position:
-      x: 380
-      y: 195
+      x: 448
+      y: 131
     character:
       strength: 5
       defense: 5
@@ -303,8 +323,8 @@ sheets:
           radius: 30
     goal:
       position:
-        x: 380
-        y: 195
+        x: 448
+        y: 131
     intention: idle
     velocity:
       vx: 0.0
