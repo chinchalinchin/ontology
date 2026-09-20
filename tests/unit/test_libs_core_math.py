@@ -144,3 +144,67 @@ def test_geometry_los_obstructed():
 def test_boundary_primitive(mock_boundary):
     """Verify Boundary.primitive unpacks spatial coordinates into a 4-tuple."""
     assert mock_boundary.primitive() == (10, 20, 30, 40)
+
+
+def test_geometry_raycast_down_hit():
+    """
+    Verify downward raycast strikes obstacle within corridor cross-section.
+    """
+    obstacles = [(10, 100, 32, 32, "crate")]
+    dist, hit = geometry.raycast(10, 0, 32, 32, "down", obstacles, 500)
+
+    assert dist == 100
+    assert hit == "crate"
+
+
+def test_geometry_raycast_down_collinear_ignored():
+    """
+    Verify raycast ignores occluders sharing emitter origin Y-coordinate.
+    """
+    obstacles = [
+        (10, 0, 32, 1, "boundary-top"),
+        (10, 120, 32, 32, "crate")
+    ]
+    dist, hit = geometry.raycast(10, 0, 32, 32, "down", obstacles, 500)
+
+    assert dist == 120
+    assert hit == "crate"
+
+
+def test_geometry_raycast_up_hit():
+    """
+    Verify upward raycast detects distal bottom edge of obstacle.
+    """
+    obstacles = [(10, 50, 32, 50, "wall")]  # Bottom edge at 50 + 50 = 100
+    dist, hit = geometry.raycast(10, 200, 32, 32, "up", obstacles, 500)
+
+    assert dist == 100
+    assert hit == "wall"
+
+
+def test_geometry_raycast_lateral_directions():
+    """
+    Verify right and left raycasts calculate accurate X-axis displacement.
+    """
+    # Right
+    obs_right = [(100, 10, 32, 32, "crate-right")]
+    dist_r, hit_r = geometry.raycast(0, 10, 32, 32, "right", obs_right, 500)
+    assert dist_r == 100
+    assert hit_r == "crate-right"
+
+    # Left (right edge of obstacle at 50 + 30 = 80; emitter at 200 -> dist 120)
+    obs_left = [(50, 10, 30, 32, "crate-left")]
+    dist_l, hit_l = geometry.raycast(200, 10, 32, 32, "left", obs_left, 500)
+    assert dist_l == 120
+    assert hit_l == "crate-left"
+
+
+def test_geometry_raycast_miss():
+    """
+    Verify raycast returns max_dist and None when path is clear.
+    """
+    obstacles = [(100, 100, 32, 32, "distant-crate")]
+    dist, hit = geometry.raycast(0, 0, 32, 32, "down", obstacles, 300)
+
+    assert dist == 300
+    assert hit is None

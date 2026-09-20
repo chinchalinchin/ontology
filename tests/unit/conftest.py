@@ -19,6 +19,12 @@ from app.assets.base import (
     Frame,
     Animation
 )
+from app.assets.frames import (
+    FluidFrame
+)
+from app.assets.animations import (
+    LifecycleAnimation
+)
 from app.config.enums import ( 
     FrameRecipe,
     AnimationRecipe,
@@ -27,7 +33,9 @@ from app.config.enums import (
     Intentions,
     Motivations,
     Shortcuts,
-    Bindings
+    Bindings,
+    Directions,
+    Lifecycles
 )
 from app.game.board import Board
 from app.models.properties import (
@@ -38,11 +46,13 @@ from app.models.properties import (
     TileProperties,
     CraftProperties,
     ObjectProperties,
+    EffectProperties,
     FontProperties,
     WidgetPropertyInstances,
     RGBA,
     Outline,
-    Cost
+    Cost,
+    Lifecycle
 )
 from app.models.config import (
     CompositionConfiguration, 
@@ -86,7 +96,8 @@ from app.models.state import (
     Psyche,
     PropertyState,
     PositionalState,
-    CollectionState
+    CollectionState,
+    FluidState
 )
 from app.models.groups import (
     SpawnableGroup,
@@ -255,6 +266,38 @@ def mock_board(mock_board_assets, mock_configurations):
     with patch('app.game.board.settings.TILE_HASH_SIZE', 32):
         return Board(assets=mock_board_assets, configurations=mock_configurations, equipment=equipment)
 
+
+@pytest.fixture
+def mock_fluid_board(mock_fluid, mock_crate, mock_configurations):
+    """
+    Board pre-hydrated with a fluid emitter, dynamic crate, and terrain tiles.
+    """
+    tile_tax = Taxonomy("tile-1", "grass", AssetCategories.TILES.value, AssetInstances.BACK.value)
+    tile_props = TileProperties(dimensions=Dimensions(w=32, l=32))
+    tile_state = MultiplierState(
+        id="tile-1",
+        name="grass",
+        layer="0",
+        position=Position(x=0, y=0),
+        multiple=Multiple(nx=10, ny=10)
+    )
+    tile = Asset(tile_tax, tile_props, tile_state, DummyFrame(), DummyAnimation())
+    equipment = EquipmentGroup(armor={}, tools={}, utilities={}, weapons={}, shields={})
+
+    with patch("app.game.board.settings.TILE_HASH_SIZE", 32):
+        board = Board(
+            assets=[tile, mock_fluid, mock_crate],
+            configurations=mock_configurations,
+            equipment=equipment
+        )
+        board.perimeters["0"] = [
+            Boundary(Position(0, 0), Dimensions(320, 1)),
+            Boundary(Position(0, 319), Dimensions(320, 1)),
+            Boundary(Position(0, 0), Dimensions(1, 320)),
+            Boundary(Position(319, 0), Dimensions(1, 320))
+        ]
+        return board
+    
 # ---------------------------------------------------------------------------
 # ------------------------------------------------------- MOCK CONFIGURATIONS
 
@@ -439,7 +482,7 @@ def mock_widget_properties():
 
 
 # ---------------------------------------------------------------------------
-# --------------------------------------------------------------- MOCK STATES
+# ------------------------------------------------------ MOCK DATA STRUCTURES
 
 @pytest.fixture
 def mock_state():
@@ -454,9 +497,6 @@ def mock_state():
     )
     return state
 
-
-# ---------------------------------------------------------------------------
-# ------------------------------------------------------ MOCK DATA STRUCTURES
 
 @pytest.fixture
 def mock_boundary():
@@ -550,6 +590,35 @@ def mock_strut():
     )
     return Asset(tax, props, state, DummyFrame(), DummyAnimation())
 
+
+@pytest.fixture
+def mock_fluid():
+    """
+    Standard directional fluid emitter asset configured with continuous lifecycle.
+    """
+    tax = Taxonomy(
+        "waterflow-1",
+        "jasilynns-tears",
+        AssetCategories.EFFECTS.value,
+        AssetInstances.FLUIDS.value
+    )
+    props = EffectProperties(
+        dimensions=Dimensions(w=32, l=32),
+        count=3,
+        mass=-1,
+        lifecycle=Lifecycle(delay=60, persist=False)
+    )
+    state = FluidState(
+        id="waterflow-1",
+        name="jasilynns-tears",
+        layer="0",
+        position=Position(x=70, y=0),
+        source=Directions.DOWN.value,
+        flow=2,
+        length=0,
+        dirty=True
+    )
+    return Asset(tax, props, state, FluidFrame(tile_w=32, tile_l=32), LifecycleAnimation())
 
 # -----------------------------------------------------------------------------
 # -------------------------------------------------------- PATHFINDING FIXTURES

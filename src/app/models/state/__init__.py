@@ -25,7 +25,8 @@ from app.models.state.objects import (
     AttachmentState,
     DialogueState,
     Damage,
-    Lot
+    Lot,
+    Pool
 )
 from app.models.state.schemas import (
     TileStateInstances,
@@ -82,6 +83,7 @@ __all__ = [
     'DialogueState',
     'Damage',
     'Lot',
+    'Pool',
     # CURSOR STATES
     'MotorState',
     'AttachmentState',

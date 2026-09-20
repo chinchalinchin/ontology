@@ -72,10 +72,13 @@ class Actuator:
             if asset is fluid:
                 continue
 
-            if asset.category in (AssetCategories.SHEETS.value, AssetCategories.EFFECTS.value):
+            if asset.category in (
+                AssetCategories.SHEETS.value, 
+                AssetCategories.EFFECTS.value
+            ):
                 continue
 
-            if asset.instance == AssetInstances.GATES.value and getattr(asset.state, "switch", False):
+            if asset.instance == AssetInstances.GATES.value and asset.state.switch:
                 continue
 
             for hb in asset.hitboxes:
@@ -177,7 +180,7 @@ class Actuator:
 
     def pump(self, fluid: Asset, board: Board) -> Tuple[int, Optional[Pool], List[Hitbox]]:
         source_prop = fluid.state.source
-        direction = source_prop.value
+        direction = source_prop.value if hasattr(source_prop, "value") else str(source_prop)        
         flow = fluid.state.flow
         fw = fluid.properties.dimensions.w
         fl = fluid.properties.dimensions.l
