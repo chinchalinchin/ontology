@@ -224,7 +224,10 @@ class FluidFrame(Frame):
         # ---------------------------------------------------------
         # 1. STREAM CORRIDOR DECOMPOSITION
         # ---------------------------------------------------------
-        dim = l if direction in (Directions.DOWN.value, Directions.UP.value) else w
+        dim = l if direction in (
+            Directions.DOWN.value, 
+            Directions.UP.value
+        ) else w
         full_tiles = length // dim
         rem = length % dim
 

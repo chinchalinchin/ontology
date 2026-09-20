@@ -491,7 +491,7 @@ N/A
 
 Effects are animate Objects used for environmental dressing, hazards, pickups, and interactive mechanisms. 
 
-All Effects iterate over a single row of frames using `IterableFrame` and advance via `LifecycleAnimation`. The only thing that differentiates their instances is their state model.
+Most Effects iterate over a single row of frames using `IterableFrame` and advance via `LifecycleAnimation`. The only thing that differentiates their instances is their state model.
 
 **Properties: EffectProperties**
 
@@ -539,7 +539,7 @@ Passive effects that do not participate in collision resolution or interactions 
 * `position: Position`
 * `animation: Animation`
 
-### Hazard
+### Hazards
 
 Hazard Effects deal damage to overlapping dynamic entities (e.g., lava, floor spikes, poison gas clouds).
 
@@ -586,36 +586,38 @@ Reactables Effects react to the [Intentional](./04-intentions.md) states of [Spr
 
 ### Fluids
 
-Fluids are directional Effects that project along a designated source vector until obstructed by environmental boundaries or physical weights. Because Fluid assets span multiple grid units, they bypass standard geometric height calculation (`pos.y + dim.l`).
+Fluids are directional Effects that project along a `source` Direction until obstructed by an obstacle. Once obstructed, Fluids form Pools around the obstacle and bifuricate into secondary streams.
+
+!!! note
+    Because Fluid assets span multiple grid units, they bypass standard geometric height calculation (`pos.y + dim.l`).
+
+**Principles of Fluid Flow**
+
+1. (**Source**) A Fluid has a `source`. A `source` is a Direction. Fluid flows in the Direction of its `source`. 
+2. (**Obstruction**) Fluids are obstructed by obstacles. Fluids form Pools around obstacles, determined by their `flow` rate.
+3. (**Bifurication**) When a Fluid meets an obstacle, it bifuricates across its orthogonal axes (e.g., a `down` flowing Fluid bifuricates in the `left` and `right` directions) until unobstructed and then continues flowing in its original `source` Direction (e.g. `down`). The number of times a Fluid may bifuricate is equal to its `flow`, e.g. a `flow = 3` means the Fluid may bifuricate three times.
+4. (**Fields**) When Sprites, Players or Pixies intersect a Fluid, they acquire a Velocity in the Direction of `source`, getting "swept" away. The speed imparted to a Sheet Asset by a Fluid is proportional to its `flow`, i.e. the higher the `flow`, the faster the resulting speed of the "swept" Asset.
 
 **Z-Ordering & Sorting**
 
-Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the rendering pipeline (`Screen.draw`) sorts the compound stream directly above the pre-rendered terrain canvas (`bg_canvas`) while maintaining correct perspective beneath dynamic bodies, movable crates, bridges, and foreground overlays.
-
-**Properties: FluidProperties**
-
-* `dimensions: Dimensions`
-* `count: int`
-* `source: str` (`up`, `down`, `left`, `right`)
-* `flow: int` (radial perimeter expansion multiplier)
-* `lifecycle: LifecycleProperties`
-* `mass: int = -1`
+Fluids declare an explicit `height: 0` and `depth: -1`. This ensures the [rendering pipeline](./10-architecture.md#graphics) sorts the resulting stream above Tiles but underneath other mutable Assets.
 
 **Frame: FluidFrame**
 
-* `keys(id, state)`: Assembles `(frame_key, offset_x, offset_y)` tuples from the state's cached offset manifest.
-* `index(id, properties)`: Indexes full frames and directional fractional slices (both forward and reverse across $w$ and $l$) for each animation frame index $0 \le f < \text{count}$.
+* `keys(id, state): returns [ ("{id}-{state.animation.frame}-{slices(state.pool, state.length)}", 0, 0)]` 
+* `index(id, properties): returns { "{id}-{properties.count}-{slice(dimensions, directions)}": ( base_x, base_y, slice_w, slice_l ) }`: 
 
 **State: FluidState**
 
+* `layer: Optional[str]`
 * `position: Position`
-* `source: Optional[str]`
-* `flow: Optional[int]`
-* `stream_length: int`
-* `pool: List[Tuple[str, int, int]]`
-* `stream: List[Tuple[str, int, int]]`
-* `dirty: bool`
-* `height: Optional[Union[int, str]] = 0`
+* `source: Directions = Directions.DOWN.value`
+* `flow: int = 1`
+* `length: int = 0`
+* `pool: Optional[Pool] = None`
+* `hitboxes: List[Hitbox]`
+* `dirty: bool = True`
+* `height: Optional[int] = 0`
 * `depth: int = -1`
 
 ## Crafts
@@ -655,7 +657,7 @@ N/A
 
 **Frame: SingleFrame**
 
-* `keys(id, state) returns [ (id, 0, 0) ]`
+* `keys(id, state): returns [ (id, 0, 0) ]`
 * `index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }`
 
 **State: PropertyState**
@@ -821,8 +823,6 @@ Equipment is covered in more detail in the [Sprites documentation](./02-sprites.
 Widgets are used to constructs Menus. They are not a part of the core gameplay loop and have special Mechanics for their interaction. 
 
 Widgets are covered in their own section, [Widgets](./06-widgets.md).
-
-## Fonts
 
 ## Fonts
 

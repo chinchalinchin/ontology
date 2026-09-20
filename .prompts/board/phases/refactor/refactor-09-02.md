@@ -1,44 +1,4 @@
-### Architectural & Design Synthesis
 
-The completion of Phase 09 marks a pivotal transition in *Ontology*: moving from closed, discrete rigid-body kinematics to continuous environmental fields.
-
-#### 1. The Separation of Simulation State and Render Manifests
-
-The refactoring of `FluidState` during Phase 09 reinforces the engine's guiding principle: **Simulation state must remain decoupled from rendering and texture instructions.** By stripping out pre-computed frame key strings (`stream_offsets` and `pool_offsets`) in favor of pure scalar metrics (`length`, `pool`, `hitboxes`), `FluidState` remains a serializable representation of physical space. `FluidFrame` successfully assumes full responsibility for translating continuous Euclidean distances into discrete SDL crop keys and blit offsets at draw time.
-
-#### 2. The Reactive Invalidation Pattern
-
-The engine's hybrid update strategy balances hydration efficiency with runtime responsiveness:
-
-* **Hydration (`Migrator`)**: Steady-state flow dimensions and static boundary truncation are resolved prior to the first rendering tick via `Actuator.pump()`, eliminating visual pop-in.
-* **Runtime Mechanics (`FluidMechanics`)**: Rather than running raycasts across the spatial hash every tick ($O(N)$), the system executes a reactive dirty-flag check monitoring dynamic obstacle state mutations ($\vert{}v\vert{} > 0$ and gate switches).
-
-#### 3. Strategic Tensions & The Roadmap Ahead
-
-While Phase 09 establishes unidirectional propagation, it exposes three structural bottlenecks that must be resolved before higher-order emergence can occur:
-
-1. **Field Continuity vs. Single Raycasts**: Real fluids do not terminate upon striking an obstacle; they divert around it and continue downstream. Treating fluid propagation as a single linear raycast prevents downstream flow continuation (stream bifurcation and confluence).
-2. **Environmental Interaction**: Currently, fluid exists purely as a visual strip and sensor hitbox. To satisfy the mandate of emergence, fluid must impart forces (buoyancy on frictive crates, current drag on navigating sprites, drowning hazard vs. swimming state transitions).
-3. **Bridge Superimposition**: Without multi-elevation traversal or hitbox masking, fluids permanently partition the map grid, severing RRT navigation paths for ground entities.
-
----
-
-### Roadmap Re-Evaluation & Strategic Priorities
-
-```
-[Phase 03.04: Projectiles] ──┐
-                             ├─► [Phase 09.01: Fluid Flows & Bridges] ──► [Phase 10: Commerce & Ecosystem]
-[Phase 08.03: Navigation]   ──┘
-
-```
-
-The next logical step is **Phase 09.01: Fluid Flows, Bridges & Buoyancy**, followed immediately by **Phase 03.04: Projectiles**.
-
-1. **Phase 09.01 (Hydrodynamic Flows & Traversal)**: Completes fluid mechanics by introducing bridge z-masking, flow bifurcation around obstacles, and current displacement vectors for floating assets.
-2. **Phase 03.04 (Projectiles)**: Integrates ballistic trajectories with the unified Cython raycasting pipeline already refined by `FluidMechanics` and `NavigationMechanics`.
-3. **Phase 10 (Commerce & Town Emergence)**: With the physical and environmental substrate stabilized, entities can operate under metabolic and economic drives (resource extraction, goods exchange, municipal governance).
-
----
 
 ### Documentation Divergences
 
