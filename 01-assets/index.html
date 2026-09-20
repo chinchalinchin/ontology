@@ -562,10 +562,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#hazard" class="md-nav__link">
+  <a href="#hazards" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Hazard
+        Hazards
       
     </span>
   </a>
@@ -712,17 +712,6 @@
       
         <li class="md-nav__item">
   <a href="#fonts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Fonts
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#fonts_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fonts
@@ -1646,10 +1635,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#hazard" class="md-nav__link">
+  <a href="#hazards" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Hazard
+        Hazards
       
     </span>
   </a>
@@ -1796,17 +1785,6 @@
       
         <li class="md-nav__item">
   <a href="#fonts" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Fonts
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#fonts_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Fonts
@@ -2473,7 +2451,7 @@
 <li>Property File: <code>/src/assets/effects/main.yaml</code></li>
 </ul>
 <p>Effects are animate Objects used for environmental dressing, hazards, pickups, and interactive mechanisms. </p>
-<p>All Effects iterate over a single row of frames using <code>IterableFrame</code> and advance via <code>LifecycleAnimation</code>. The only thing that differentiates their instances is their state model.</p>
+<p>Most Effects iterate over a single row of frames using <code>IterableFrame</code> and advance via <code>LifecycleAnimation</code>. The only thing that differentiates their instances is their state model.</p>
 <p><strong>Properties: EffectProperties</strong></p>
 <ul>
 <li><code>dimensions: Dimensions</code></li>
@@ -2534,7 +2512,7 @@
 <li><code>position: Position</code></li>
 <li><code>animation: Animation</code></li>
 </ul>
-<h3 id="hazard">Hazard</h3>
+<h3 id="hazards">Hazards</h3>
 <p>Hazard Effects deal damage to overlapping dynamic entities (e.g., lava, floor spikes, poison gas clouds).</p>
 <p><strong>State: HazardState</strong></p>
 <ul>
@@ -2578,33 +2556,36 @@
 <li><code>intention</code></li>
 </ul>
 <h3 id="fluids">Fluids</h3>
-<p>Fluids are directional Effects that project along a designated source vector until obstructed by environmental boundaries or physical weights. Because Fluid assets span multiple grid units, they bypass standard geometric height calculation (<code>pos.y + dim.l</code>).</p>
+<p>Fluids are directional Effects that project along a <code>source</code> Direction until obstructed by an obstacle. Once obstructed, Fluids form Pools around the obstacle and bifuricate into secondary streams.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Because Fluid assets span multiple grid units, they bypass standard geometric height calculation (<code>pos.y + dim.l</code>).</p>
+</div>
+<p><strong>Principles of Fluid Flow</strong></p>
+<ol>
+<li>(<strong>Source</strong>) A Fluid has a <code>source</code>. A <code>source</code> is a Direction. Fluid flows in the Direction of its <code>source</code>. </li>
+<li>(<strong>Obstruction</strong>) Fluids are obstructed by obstacles. Fluids form Pools around obstacles, determined by their <code>flow</code> rate.</li>
+<li>(<strong>Bifurication</strong>) When a Fluid meets an obstacle, it bifuricates across its orthogonal axes (e.g., a <code>down</code> flowing Fluid bifuricates in the <code>left</code> and <code>right</code> directions) until unobstructed and then continues flowing in its original <code>source</code> Direction (e.g. <code>down</code>). The number of times a Fluid may bifuricate is equal to its <code>flow</code>, e.g. a <code>flow = 3</code> means the Fluid may bifuricate three times.</li>
+<li>(<strong>Fields</strong>) When Sprites, Players or Pixies intersect a Fluid, they acquire a Velocity in the Direction of <code>source</code>, getting "swept" away. The speed imparted to a Sheet Asset by a Fluid is proportional to its <code>flow</code>, i.e. the higher the <code>flow</code>, the faster the resulting speed of the "swept" Asset.</li>
+</ol>
 <p><strong>Z-Ordering &amp; Sorting</strong></p>
-<p>Fluids declare an explicit <code>height: 0</code> and <code>depth: -1</code>. This ensures the rendering pipeline (<code>Screen.draw</code>) sorts the compound stream directly above the pre-rendered terrain canvas (<code>bg_canvas</code>) while maintaining correct perspective beneath dynamic bodies, movable crates, bridges, and foreground overlays.</p>
-<p><strong>Properties: FluidProperties</strong></p>
-<ul>
-<li><code>dimensions: Dimensions</code></li>
-<li><code>count: int</code></li>
-<li><code>source: str</code> (<code>up</code>, <code>down</code>, <code>left</code>, <code>right</code>)</li>
-<li><code>flow: int</code> (radial perimeter expansion multiplier)</li>
-<li><code>lifecycle: LifecycleProperties</code></li>
-<li><code>mass: int = -1</code></li>
-</ul>
+<p>Fluids declare an explicit <code>height: 0</code> and <code>depth: -1</code>. This ensures the <a href="../10-architecture/#graphics">rendering pipeline</a> sorts the resulting stream above Tiles but underneath other mutable Assets.</p>
 <p><strong>Frame: FluidFrame</strong></p>
 <ul>
-<li><code>keys(id, state)</code>: Assembles <code>(frame_key, offset_x, offset_y)</code> tuples from the state's cached offset manifest.</li>
-<li><code>index(id, properties)</code>: Indexes full frames and directional fractional slices (both forward and reverse across <span class="arithmatex">\(w\)</span> and <span class="arithmatex">\(l\)</span>) for each animation frame index <span class="arithmatex">\(0 \le f &lt; \text{count}\)</span>.</li>
+<li><code>keys(id, state): returns [ ("{id}-{state.animation.frame}-{slices(state.pool, state.length)}", 0, 0)]</code> </li>
+<li><code>index(id, properties): returns { "{id}-{properties.count}-{slice(dimensions, directions)}": ( base_x, base_y, slice_w, slice_l ) }</code>: </li>
 </ul>
 <p><strong>State: FluidState</strong></p>
 <ul>
+<li><code>layer: Optional[str]</code></li>
 <li><code>position: Position</code></li>
-<li><code>source: Optional[str]</code></li>
-<li><code>flow: Optional[int]</code></li>
-<li><code>stream_length: int</code></li>
-<li><code>pool: List[Tuple[str, int, int]]</code></li>
-<li><code>stream: List[Tuple[str, int, int]]</code></li>
-<li><code>dirty: bool</code></li>
-<li><code>height: Optional[Union[int, str]] = 0</code></li>
+<li><code>source: Directions = Directions.DOWN.value</code></li>
+<li><code>flow: int = 1</code></li>
+<li><code>length: int = 0</code></li>
+<li><code>pool: Optional[Pool] = None</code></li>
+<li><code>hitboxes: List[Hitbox]</code></li>
+<li><code>dirty: bool = True</code></li>
+<li><code>height: Optional[int] = 0</code></li>
 <li><code>depth: int = -1</code></li>
 </ul>
 <h2 id="crafts">Crafts</h2>
@@ -2633,7 +2614,7 @@
 <p>N/A</p>
 <p><strong>Frame: SingleFrame</strong></p>
 <ul>
-<li><code>keys(id, state) returns [ (id, 0, 0) ]</code></li>
+<li><code>keys(id, state): returns [ (id, 0, 0) ]</code></li>
 <li><code>index(id, properties): returns { id: (0, 0, properties.dimension.w, properties.dimensions.l) }</code></li>
 </ul>
 <p><strong>State: PropertyState</strong></p>
@@ -2774,7 +2755,6 @@
 <p>Widgets are used to constructs Menus. They are not a part of the core gameplay loop and have special Mechanics for their interaction. </p>
 <p>Widgets are covered in their own section, <a href="../06-widgets/">Widgets</a>.</p>
 <h2 id="fonts">Fonts</h2>
-<h2 id="fonts_1">Fonts</h2>
 <p>Fonts are stateless Assets initialized at <a href="../10-architecture/#initialization">runtime</a>. Rather than being deployed onto the Board, Fonts are loaded into the <a href="../00-overview/#registry">Registry</a> and utilized by the <a href="../00-overview/#screen">Screen</a> to rasterize text canvases for Widgets and dialogue modals.</p>
 <p>A Font configuration pairs a <code>.ttf</code> file with styling rules. During bootstrap, the Registry ingests each font declared in <code>/src/assets/fonts/main.yaml</code> alongside its configuration, storing them as styled Cython <code>TTFFont</code> wrappers. When <code>outline</code> is specified, the Registry instantiates a secondary internal outline pointer configured via <code>TTF_SetFontOutline</code>, enabling <code>render.write()</code> to execute two-pass blended rendering (outline pass followed by foreground fill) without runtime glyph cache invalidation.</p>
 <p>In Menu hierarchies, fonts are scoped lexically at the <code>MenuPane</code> level: any <code>font</code> declared on a parent pane cascades down to all child panes and <code>Page</code> widgets unless explicitly shadowed by a nested pane.</p>
